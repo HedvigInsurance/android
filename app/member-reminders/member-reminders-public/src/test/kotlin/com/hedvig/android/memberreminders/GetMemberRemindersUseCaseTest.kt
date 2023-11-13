@@ -19,7 +19,6 @@ import kotlinx.datetime.LocalDate
 import org.junit.Test
 
 class GetMemberRemindersUseCaseTest {
-
   @Test
   fun `no reminders returns all null reminders`() = runTest {
     val enableNotificationsReminderManager = TestEnableNotificationsReminderManager()
@@ -81,6 +80,7 @@ class GetMemberRemindersUseCaseTest {
 
   class TestGetConnectPaymentReminderUseCase : GetConnectPaymentReminderUseCase {
     val turbine = Turbine<Either<ConnectPaymentReminderError, ShowConnectPaymentReminder>>()
+
     override suspend fun invoke(): Either<ConnectPaymentReminderError, ShowConnectPaymentReminder> {
       return turbine.awaitItem()
     }
@@ -88,6 +88,7 @@ class GetMemberRemindersUseCaseTest {
 
   class TestGetUpcomingRenewalRemindersUseCase : GetUpcomingRenewalRemindersUseCase {
     val turbine = Turbine<Either<UpcomingRenewalReminderError, NonEmptyList<UpcomingRenewal>>>()
+
     override suspend fun invoke(): Either<UpcomingRenewalReminderError, NonEmptyList<UpcomingRenewal>> {
       return turbine.awaitItem()
     }

@@ -67,8 +67,8 @@ import com.hedvig.android.feature.login.marketing.ui.LoginBackgroundImage
 import com.hedvig.android.language.Language
 import com.hedvig.android.market.Market
 import hedvig.resources.R
-import kotlinx.coroutines.launch
 import kotlin.math.max
+import kotlinx.coroutines.launch
 
 @Composable
 internal fun MarketingDestination(
@@ -103,26 +103,29 @@ private fun MarketingScreen(
     val sheetState = rememberModalBottomSheetState(true)
     val coroutineScope = rememberCoroutineScope()
     if (showPreferencesSheet && uiState is MarketingUiState.Success) {
-      ModalBottomSheet(
-        onDismissRequest = { showPreferencesSheet = false },
-        sheetState = sheetState,
-        windowInsets = BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top),
-      ) {
-        Column(Modifier.verticalScroll(rememberScrollState())) {
-          PreferencesSheetContent(
-            chosenMarket = uiState.market,
-            chosenLanguage = uiState.language,
-            appVersionName = appVersionName,
-            selectMarket = selectMarket,
-            selectLanguage = selectLanguage,
-            dismissSheet = {
-              coroutineScope.launch {
-                sheetState.hide()
-              }.invokeOnCompletion {
-                showPreferencesSheet = false
-              }
-            },
-          )
+      HedvigTheme {
+        ModalBottomSheet(
+          containerColor = MaterialTheme.colorScheme.background,
+          onDismissRequest = { showPreferencesSheet = false },
+          sheetState = sheetState,
+          windowInsets = BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top),
+        ) {
+          Column(Modifier.verticalScroll(rememberScrollState())) {
+            PreferencesSheetContent(
+              chosenMarket = uiState.market,
+              chosenLanguage = uiState.language,
+              appVersionName = appVersionName,
+              selectMarket = selectMarket,
+              selectLanguage = selectLanguage,
+              dismissSheet = {
+                coroutineScope.launch {
+                  sheetState.hide()
+                }.invokeOnCompletion {
+                  showPreferencesSheet = false
+                }
+              },
+            )
+          }
         }
       }
     }
@@ -286,6 +289,7 @@ private fun PreferencesPagerSelector(pagerState: PagerState) {
   val couroutineScope = rememberCoroutineScope()
   TabRow(
     selectedTabIndex = pagerState.currentPage,
+    containerColor = MaterialTheme.colorScheme.background,
   ) {
     Tab(
       selected = pagerState.currentPage == 0,
@@ -354,7 +358,7 @@ private fun Language.flag(): ImageVector {
 private fun PreviewMarketingScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      MarketingScreen(MarketingUiState.Success(Market.SE, Language.EN_SE), "12.0.0", {}, {}, {}, {})
+      MarketingScreen(MarketingUiState.Success(Market.SE, Language.EN_SE), "X.Y.Z", {}, {}, {}, {})
     }
   }
 }
@@ -365,7 +369,7 @@ private fun PreviewPreferencesSheetContent() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.surface) {
       Column {
-        PreferencesSheetContent(Market.SE, Language.EN_SE, "12.0.0", {}, {}, {})
+        PreferencesSheetContent(Market.SE, Language.EN_SE, "X.Y.Z", {}, {}, {})
       }
     }
   }

@@ -10,7 +10,6 @@ import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
-import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import kotlinx.datetime.LocalDate
 import octopus.TravelCertificateSpecificationsQuery
@@ -23,20 +22,21 @@ internal class GetTravelCertificateSpecificationsUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,
 ) : GetTravelCertificateSpecificationsUseCase {
-
-  private val query = TravelCertificateSpecificationsQuery()
-
   override suspend fun invoke(): Either<TravelCertificateError, TravelCertificateData> {
     return either {
       ensure(featureManager.isFeatureEnabled(Feature.TRAVEL_CERTIFICATE)) {
         TravelCertificateError.NotEligible
       }
       val member = apolloClient
-        .query(query)
+        .query(TravelCertificateSpecificationsQuery())
         .safeExecute()
         .toEither(::ErrorMessage)
         .mapLeft(TravelCertificateError::Error)
-        .onLeft { logcat(LogPriority.ERROR, it.throwable) { it.message ?: "Could not fetch travel certificate" } }
+        .onLeft {
+          logcat(throwable = it.throwable) {
+            "GetTravelCertificateSpecificationsUseCaseImpl: ${it.message ?: "Could not fetch travel certificate"}"
+          }
+        }
         .bind()
         .currentMember
 
@@ -57,7 +57,7 @@ internal class GetTravelCertificateSpecificationsUseCaseImpl(
   }
 }
 
-// ktlint-disable max-line-length
+@Suppress("ktlint:standard:max-line-length")
 private fun TravelCertificateSpecificationsQuery.Data.CurrentMember.TravelCertificateSpecifications.ContractSpecification.toTravelCertificateSpecification(
   email: String,
 ) = TravelCertificateData.TravelCertificateSpecification(

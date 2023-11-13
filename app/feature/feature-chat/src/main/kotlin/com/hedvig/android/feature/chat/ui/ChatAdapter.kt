@@ -28,7 +28,6 @@ import giraffe.fragment.ChatMessageFragment
 internal class ChatAdapter(
   private val imageLoader: ImageLoader,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
   var messages: List<ChatMessagesQuery.Message> = listOf()
     set(value) {
       val oldMessages = messages.toList()
@@ -38,10 +37,7 @@ internal class ChatAdapter(
       val diff =
         DiffUtil.calculateDiff(
           object : DiffUtil.Callback() {
-            override fun areItemsTheSame(
-              oldItemPosition: Int,
-              newItemPosition: Int,
-            ): Boolean =
+            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
               oldMessages.getOrNull(oldItemPosition)?.fragments?.chatMessageFragment?.globalId ==
                 value.getOrNull(newItemPosition)?.fragments?.chatMessageFragment?.globalId
 
@@ -49,10 +45,7 @@ internal class ChatAdapter(
 
             override fun getNewListSize(): Int = value.size
 
-            override fun areContentsTheSame(
-              oldItemPosition: Int,
-              newItemPosition: Int,
-            ): Boolean =
+            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
               oldMessages.getOrNull(oldItemPosition)?.fragments?.chatMessageFragment ==
                 value.getOrNull(newItemPosition)?.fragments?.chatMessageFragment
           },
@@ -60,63 +53,59 @@ internal class ChatAdapter(
       diff.dispatchUpdatesTo(this)
     }
 
-  override fun onCreateViewHolder(
-    parent: ViewGroup,
-    viewType: Int,
-  ): RecyclerView.ViewHolder =
-    when (viewType) {
-      FROM_HEDVIG -> HedvigMessage(
-        LayoutInflater.from(parent.context).inflate(
-          R.layout.chat_message_hedvig,
-          parent,
-          false,
-        ),
-      )
-      FROM_HEDVIG_GIPHY -> HedvigGiphyMessage(
-        LayoutInflater.from(parent.context).inflate(
-          R.layout.chat_message_hedvig_giphy,
-          parent,
-          false,
-        ),
-      )
-      FROM_ME_TEXT -> UserMessage(
-        LayoutInflater.from(parent.context).inflate(
-          R.layout.chat_message_user,
-          parent,
-          false,
-        ),
-      )
-      FROM_ME_GIPHY -> GiphyUserMessage(
-        LayoutInflater.from(parent.context).inflate(
-          R.layout.chat_message_user_giphy,
-          parent,
-          false,
-        ),
-      )
-      FROM_ME_IMAGE -> ImageUserMessage(
-        LayoutInflater.from(parent.context).inflate(
-          R.layout.chat_message_user_image,
-          parent,
-          false,
-        ),
-      )
-      FROM_ME_IMAGE_UPLOAD -> ImageUploadUserMessage(
-        LayoutInflater.from(parent.context).inflate(
-          R.layout.chat_message_user_image,
-          parent,
-          false,
-        ),
-      )
-      FROM_ME_FILE_UPLOAD -> FileUploadUserMessage(
-        LayoutInflater.from(parent.context).inflate(
-          R.layout.chat_message_file_upload,
-          parent,
-          false,
-        ),
-      )
-      NULL_RENDER -> NullMessage(View(parent.context))
-      else -> TODO("Handle the invalid invariant")
-    }
+  override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder = when (viewType) {
+    FROM_HEDVIG -> HedvigMessage(
+      LayoutInflater.from(parent.context).inflate(
+        R.layout.chat_message_hedvig,
+        parent,
+        false,
+      ),
+    )
+    FROM_HEDVIG_GIPHY -> HedvigGiphyMessage(
+      LayoutInflater.from(parent.context).inflate(
+        R.layout.chat_message_hedvig_giphy,
+        parent,
+        false,
+      ),
+    )
+    FROM_ME_TEXT -> UserMessage(
+      LayoutInflater.from(parent.context).inflate(
+        R.layout.chat_message_user,
+        parent,
+        false,
+      ),
+    )
+    FROM_ME_GIPHY -> GiphyUserMessage(
+      LayoutInflater.from(parent.context).inflate(
+        R.layout.chat_message_user_giphy,
+        parent,
+        false,
+      ),
+    )
+    FROM_ME_IMAGE -> ImageUserMessage(
+      LayoutInflater.from(parent.context).inflate(
+        R.layout.chat_message_user_image,
+        parent,
+        false,
+      ),
+    )
+    FROM_ME_IMAGE_UPLOAD -> ImageUploadUserMessage(
+      LayoutInflater.from(parent.context).inflate(
+        R.layout.chat_message_user_image,
+        parent,
+        false,
+      ),
+    )
+    FROM_ME_FILE_UPLOAD -> FileUploadUserMessage(
+      LayoutInflater.from(parent.context).inflate(
+        R.layout.chat_message_file_upload,
+        parent,
+        false,
+      ),
+    )
+    NULL_RENDER -> NullMessage(View(parent.context))
+    else -> TODO("Handle the invalid invariant")
+  }
 
   override fun getItemCount() = messages.size
 
@@ -220,6 +209,7 @@ internal class ChatAdapter(
 
   inner class HedvigMessage(view: View) : RecyclerView.ViewHolder(view) {
     private val binding by viewBinding(ChatMessageHedvigBinding::bind)
+
     private fun reset() {
       binding.hedvigMessage.remove()
     }
@@ -238,6 +228,7 @@ internal class ChatAdapter(
 
   inner class HedvigGiphyMessage(view: View) : RecyclerView.ViewHolder(view) {
     val binding by viewBinding(ChatMessageUserGiphyBinding::bind)
+
     fun bind(url: String?) {
       binding.messageImage.load(url, imageLoader)
     }
@@ -245,6 +236,7 @@ internal class ChatAdapter(
 
   inner class UserMessage(view: View) : RecyclerView.ViewHolder(view) {
     private val binding by viewBinding(ChatMessageUserBinding::bind)
+
     fun bind(text: String?, position: Int, statusText: String?) {
       binding.apply {
         userMessage.text = text
@@ -261,6 +253,7 @@ internal class ChatAdapter(
 
   inner class GiphyUserMessage(view: View) : RecyclerView.ViewHolder(view) {
     val binding by viewBinding(ChatMessageUserGiphyBinding::bind)
+
     fun bind(url: String?) {
       binding.messageImage.load(url, imageLoader)
     }
@@ -284,6 +277,7 @@ internal class ChatAdapter(
 
   inner class FileUploadUserMessage(view: View) : RecyclerView.ViewHolder(view) {
     private val binding by viewBinding(ChatMessageFileUploadBinding::bind)
+
     fun bind(url: String?) {
       val asUri = Uri.parse(url)
       val extension = getExtension(asUri)
@@ -318,7 +312,9 @@ internal class ChatAdapter(
     )
 
     private fun isGiphyMessage(text: String?) = text?.contains("giphy.com") ?: false
+
     private fun getExtension(uri: Uri) = uri.lastPathSegment?.substringAfterLast('.', "")
+
     private fun isImageMessage(text: String?): Boolean {
       val asUri = Uri.parse(text)
 
@@ -337,10 +333,8 @@ internal class ChatAdapter(
       return !isImageMessage(asUpload.file.signedUrl)
     }
 
-    private fun isAudioMessage(body: ChatMessageFragment.Body?) =
-      body?.asMessageBodyAudio != null
+    private fun isAudioMessage(body: ChatMessageFragment.Body?) = body?.asMessageBodyAudio != null
 
-    private fun getFileUrl(body: ChatMessageFragment.Body?) =
-      body?.asMessageBodyFile?.file?.signedUrl
+    private fun getFileUrl(body: ChatMessageFragment.Body?) = body?.asMessageBodyFile?.file?.signedUrl
   }
 }

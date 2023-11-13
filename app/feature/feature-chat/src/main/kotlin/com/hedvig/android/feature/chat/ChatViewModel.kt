@@ -14,6 +14,7 @@ import com.hedvig.android.logger.logcat
 import giraffe.ChatMessagesQuery
 import giraffe.GifQuery
 import giraffe.UploadFileMutation
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -29,7 +30,6 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.time.Duration.Companion.seconds
 
 internal class ChatViewModel(
   private val chatRepository: ChatRepository,
@@ -37,7 +37,6 @@ internal class ChatViewModel(
   private val featureManager: FeatureManager,
   private val demoManager: DemoManager,
 ) : ViewModel() {
-
   private val retryChannel = RetryChannel()
 
   private val _messages = MutableStateFlow<ChatMessagesQuery.Data?>(null)
@@ -228,9 +227,8 @@ internal class ChatViewModel(
     }
   }
 
-  private fun getLastId(): String =
-    _messages.value?.messages?.firstOrNull()?.fragments?.chatMessageFragment?.globalId
-      ?: error("Messages is not initialized!")
+  private fun getLastId(): String = _messages.value?.messages?.firstOrNull()?.fragments?.chatMessageFragment?.globalId
+    ?: error("Messages is not initialized!")
 
   fun searchGifs(query: String) {
     viewModelScope.launch {
@@ -263,9 +261,12 @@ sealed class ChatEvent {
 
 sealed interface ChatEnabledStatus {
   data object Uninitialized : ChatEnabledStatus
+
   data object Enabled : ChatEnabledStatus
+
   sealed interface Disabled : ChatEnabledStatus {
     data object FromFeatureFlag : Disabled
+
     data object IsInDemoMode : Disabled
   }
 }

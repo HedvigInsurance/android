@@ -9,10 +9,10 @@ import com.hedvig.android.data.claimflow.model.AudioUrl
 import com.hedvig.android.data.claimflow.model.FlowId
 import com.hedvig.android.data.claimtriaging.EntryPointId
 import com.hedvig.android.data.claimtriaging.EntryPointOptionId
+import java.io.File
 import kotlinx.datetime.LocalDate
 import octopus.type.FlowClaimItemBrandInput
 import octopus.type.FlowClaimItemModelInput
-import java.io.File
 
 internal class TestClaimFlowRepository : ClaimFlowRepository {
   override suspend fun startClaimFlow(
@@ -84,6 +84,10 @@ internal class TestClaimFlowRepository : ClaimFlowRepository {
     purchaseDate: LocalDate?,
     purchasePrice: Double?,
   ): Either<ErrorMessage, ClaimFlowStep> {
+    error("Not implemented")
+  }
+
+  override suspend fun submitUrgentEmergency(isUrgentEmergency: Boolean): Either<ErrorMessage, ClaimFlowStep> {
     error("Not implemented")
   }
 }

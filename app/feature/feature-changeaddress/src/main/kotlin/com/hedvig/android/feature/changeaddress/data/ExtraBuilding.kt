@@ -1,16 +1,16 @@
 package com.hedvig.android.feature.changeaddress.data
 
-import octopus.type.MoveExtraBuildingType
 import java.util.UUID
+import octopus.type.MoveExtraBuildingType
 
-data class ExtraBuilding(
+internal data class ExtraBuilding(
   val id: String = UUID.randomUUID().toString(),
   val size: Int,
   val type: ExtraBuildingType,
   val hasWaterConnected: Boolean,
 )
 
-enum class ExtraBuildingType {
+internal enum class ExtraBuildingType {
   GARAGE,
   CARPORT,
   SHED,
@@ -28,7 +28,7 @@ enum class ExtraBuildingType {
   UNKNOWN,
 }
 
-fun ExtraBuildingType.stringRes(): Int = when (this) {
+internal fun ExtraBuildingType.stringRes(): Int = when (this) {
   ExtraBuildingType.GARAGE -> hedvig.resources.R.string.FIELD_EXTRA_BUIDLINGS_GARAGE_LABEL
   ExtraBuildingType.CARPORT -> hedvig.resources.R.string.FIELD_EXTRA_BUIDLINGS_CARPORT_LABEL
   ExtraBuildingType.SHED -> hedvig.resources.R.string.FIELD_EXTRA_BUIDLINGS_SHED_LABEL
@@ -46,7 +46,7 @@ fun ExtraBuildingType.stringRes(): Int = when (this) {
   ExtraBuildingType.UNKNOWN -> hedvig.resources.R.string.FIELD_EXTRA_BUIDLINGS_OTHER_LABEL
 }
 
-fun ExtraBuildingType.toMoveExtraBuildingType() = when (this) {
+internal fun ExtraBuildingType.toMoveExtraBuildingType() = when (this) {
   ExtraBuildingType.GARAGE -> MoveExtraBuildingType.GARAGE
   ExtraBuildingType.CARPORT -> MoveExtraBuildingType.CARPORT
   ExtraBuildingType.SHED -> MoveExtraBuildingType.SHED
@@ -64,7 +64,7 @@ fun ExtraBuildingType.toMoveExtraBuildingType() = when (this) {
   ExtraBuildingType.UNKNOWN -> MoveExtraBuildingType.UNKNOWN__
 }
 
-fun MoveExtraBuildingType.toExtraBuildingType() = when (this) {
+internal fun MoveExtraBuildingType.toExtraBuildingType() = when (this) {
   MoveExtraBuildingType.GARAGE -> ExtraBuildingType.GARAGE
   MoveExtraBuildingType.CARPORT -> ExtraBuildingType.CARPORT
   MoveExtraBuildingType.SHED -> ExtraBuildingType.SHED

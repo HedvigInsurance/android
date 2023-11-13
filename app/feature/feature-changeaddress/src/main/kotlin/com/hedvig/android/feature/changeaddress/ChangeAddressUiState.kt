@@ -39,8 +39,17 @@ internal data class ChangeAddressUiState(
   val moveFromAddressId: AddressId? = null,
   val quotes: List<MoveQuote> = emptyList(),
   val successfulMoveResult: SuccessfulMove? = null,
+  /**
+   * When we receive the moveIntentId, we want to navigate to the next step. We keep this signal here so that we can
+   * still go back to the previous screen and not introduce an infinite navigation loop
+   */
+  val navigateToFirstStepAfterHavingReceivedMoveIntentId: Boolean = false,
+  /**
+   * When we receive some quotes from submitting all the data, we want to navigate to the offer destination. We keep
+   * this signal so that we can go back to the previous screen and not introduce an infinite navigation loop.
+   */
+  val navigateToOfferScreenAfterHavingReceivedQuotes: Boolean = false,
 ) {
-
   val isHousingTypeValid: Boolean
     get() = housingType.input != null
 
@@ -132,24 +141,24 @@ internal data class ChangeAddressUiState(
     )
   }
 
-  private fun isSquareMetersWithinBounds(squareMeters: Int?) = if (maxSquareMeters != null) {
-    if (squareMeters == null) {
-      false
-    } else {
-      squareMeters <= maxSquareMeters
+  private fun isSquareMetersWithinBounds(squareMeters: Int?): Boolean {
+    if (maxSquareMeters == null) {
+      return true
     }
-  } else {
-    true
+    if (squareMeters == null) {
+      return false
+    }
+    return squareMeters <= maxSquareMeters
   }
 
-  private fun isNumberCoInsuredWithinBounds(numberCoInsured: Int?) = if (maxNumberCoInsured != null) {
-    if (numberCoInsured == null) {
-      false
-    } else {
-      numberCoInsured <= maxNumberCoInsured
+  private fun isNumberCoInsuredWithinBounds(numberCoInsured: Int?): Boolean {
+    if (maxNumberCoInsured == null) {
+      return true
     }
-  } else {
-    true
+    if (numberCoInsured == null) {
+      return false
+    }
+    return numberCoInsured <= maxNumberCoInsured
   }
 }
 

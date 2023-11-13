@@ -1,8 +1,8 @@
 package com.hedvig.android.test.clock
 
+import kotlin.time.Duration
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
-import kotlin.time.Duration
 
 class TestClock : Clock {
   private var now = Clock.System.now()

@@ -1,5 +1,6 @@
 package com.hedvig.android.core.designsystem.component.textfield
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloat
@@ -49,7 +50,8 @@ internal fun HedvigDecorationBox(
   prefix: @Composable (() -> Unit)? = null,
   suffix: @Composable (() -> Unit)? = null,
   supportingText: @Composable (() -> Unit)? = null,
-  withNewDesign: Boolean = false, // Adapts the TextField to have the big card size and the bigger text size.
+  // Adapts the TextField to have the big card size and the bigger text size.
+  withNewDesign: Boolean = false,
   singleLine: Boolean = false,
   enabled: Boolean = true,
   isError: Boolean = false,
@@ -119,7 +121,11 @@ internal fun HedvigDecorationBox(
         @Composable { modifier ->
           Box(modifier.alpha(placeholderAlphaProgress)) {
             Decoration(
-              contentColor = colors.placeholderColor(enabled, isError, interactionSource).value,
+              contentColor = colors.placeholderColor(
+                enabled,
+                isError,
+                interactionSource,
+              ).value,
               typography = smallTypography,
               content = placeholder,
             )
@@ -152,7 +158,8 @@ internal fun HedvigDecorationBox(
           Box(Modifier.alpha(prefixSuffixAlphaProgress)) {
             Decoration(
               contentColor = suffixColor,
-              typography = bigTypography, // Hedvig adjusted to big typography
+              // Hedvig adjusted to big typography
+              typography = bigTypography,
               content = suffix,
             )
           }
@@ -164,6 +171,7 @@ internal fun HedvigDecorationBox(
     // Developers need to handle invalid input manually. But since we don't provide error
     // message slot API, we can set the default error message in case developers forget about
     // it.
+    @SuppressLint("PrivateResource")
     val defaultErrorMessage = stringResource(androidx.compose.ui.R.string.default_error_message)
     val decorationBoxModifier = Modifier.semantics { if (isError) error(defaultErrorMessage) }
 
@@ -181,7 +189,8 @@ internal fun HedvigDecorationBox(
       }
     }
 
-    val supportingTextColor = colors.supportingTextColor(enabled, isError, interactionSource).value
+    val supportingTextColor =
+      colors.supportingTextColor(enabled, isError, interactionSource).value
     val decoratedSupporting: @Composable (() -> Unit)? = supportingText?.let {
       @Composable {
         Decoration(
@@ -223,11 +232,7 @@ internal fun HedvigDecorationBox(
  * Set content color, typography and emphasis for [content] composable
  */
 @Composable
-internal fun Decoration(
-  contentColor: Color,
-  typography: TextStyle? = null,
-  content: @Composable () -> Unit,
-) {
+internal fun Decoration(contentColor: Color, typography: TextStyle? = null, content: @Composable () -> Unit) {
   val contentWithColor: @Composable () -> Unit = @Composable {
     CompositionLocalProvider(
       LocalContentColor provides contentColor,
@@ -238,6 +243,7 @@ internal fun Decoration(
 }
 
 internal fun widthOrZero(placeable: Placeable?) = placeable?.width ?: 0
+
 internal fun heightOrZero(placeable: Placeable?) = placeable?.height ?: 0
 
 private object TextFieldTransitionScope {
@@ -365,7 +371,7 @@ internal const val SupportingId = "Supporting"
 internal const val ContainerId = "Container"
 internal val ZeroConstraints = Constraints(0, 0, 0, 0)
 
-internal const val SignalAnimationDuration = 400L // TODO double check with web on animation specs
+internal const val SignalAnimationDuration = 400L
 internal const val AnimationDuration = 150
 private const val PlaceholderAnimationDuration = 83
 private const val PlaceholderAnimationDelayOrDuration = 67

@@ -12,9 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -24,14 +22,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
-import com.hedvig.android.core.designsystem.material3.onWarningContainer
-import com.hedvig.android.core.designsystem.material3.warningContainer
-import com.hedvig.android.core.designsystem.material3.warningElement
+import com.hedvig.android.core.designsystem.material3.containedButtonContainer
+import com.hedvig.android.core.designsystem.material3.onContainedButtonContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.hedvig.normal.WarningFilled
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
+import com.hedvig.android.core.ui.infocard.VectorWarningCard
 import com.hedvig.android.memberreminders.ApplicableMemberReminders
 import com.hedvig.android.memberreminders.UpcomingRenewal
 import com.hedvig.android.notification.permission.NotificationPermissionState
@@ -175,18 +171,9 @@ fun ReminderCardEnableNotifications(
 }
 
 @Composable
-private fun ReminderCardConnectPayment(
-  navigateToConnectPayment: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  VectorInfoCard(
+private fun ReminderCardConnectPayment(navigateToConnectPayment: () -> Unit, modifier: Modifier = Modifier) {
+  VectorWarningCard(
     text = stringResource(R.string.info_card_missing_payment_body),
-    icon = Icons.Hedvig.WarningFilled,
-    iconColor = MaterialTheme.colorScheme.warningElement,
-    colors = CardDefaults.outlinedCardColors(
-      containerColor = MaterialTheme.colorScheme.warningContainer,
-      contentColor = MaterialTheme.colorScheme.onWarningContainer,
-    ),
     modifier = modifier,
   ) {
     InfoCardTextButton(
@@ -224,17 +211,13 @@ private fun ReminderCardUpcomingRenewals(
 }
 
 @Composable
-private fun InfoCardTextButton(
-  onClick: () -> Unit,
-  text: String,
-  modifier: Modifier = Modifier,
-) {
+private fun InfoCardTextButton(onClick: () -> Unit, text: String, modifier: Modifier = Modifier) {
   HedvigContainedSmallButton(
     text = text,
     onClick = onClick,
     colors = ButtonDefaults.buttonColors(
-      containerColor = MaterialTheme.colorScheme.background,
-      contentColor = MaterialTheme.colorScheme.onBackground,
+      containerColor = MaterialTheme.colorScheme.containedButtonContainer,
+      contentColor = MaterialTheme.colorScheme.onContainedButtonContainer,
     ),
     textStyle = MaterialTheme.typography.bodyMedium,
     modifier = modifier,

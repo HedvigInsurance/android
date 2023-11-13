@@ -20,7 +20,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.feature.login.navigation.loginGraph
@@ -88,11 +88,10 @@ class MarketingActivity : AppCompatActivity() {
   }
 
   companion object {
-    fun newInstance(context: Context): Intent =
-      Intent(context, MarketingActivity::class.java).apply {
-        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-      }
+    fun newInstance(context: Context): Intent = Intent(context, MarketingActivity::class.java).apply {
+      addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+      addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+    }
   }
 }
 

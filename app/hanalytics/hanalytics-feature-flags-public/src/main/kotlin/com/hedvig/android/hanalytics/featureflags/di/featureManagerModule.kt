@@ -1,17 +1,16 @@
 package com.hedvig.android.hanalytics.featureflags.di
 
 import com.hedvig.android.auth.event.AuthEventListener
-import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.hanalytics.featureflags.ClearHAnalyticsExperimentsCacheUseCase
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.FeatureManagerImpl
 import com.hedvig.android.hanalytics.featureflags.flags.DevFeatureFlagProvider
 import com.hedvig.android.hanalytics.featureflags.flags.FeatureFlagAuthEventListener
+import com.hedvig.android.hanalytics.featureflags.flags.FeatureFlagProvider
 import com.hedvig.android.hanalytics.featureflags.flags.HAnalyticsFeatureFlagProvider
-import com.hedvig.android.hanalytics.featureflags.loginmethod.DevLoginMethodProvider
-import com.hedvig.android.hanalytics.featureflags.loginmethod.HAnalyticsLoginMethodProvider
-import com.hedvig.android.hanalytics.featureflags.paymenttype.DevPaymentTypeProvider
-import com.hedvig.android.hanalytics.featureflags.paymenttype.HAnalyticsPaymentTypeProvider
+import com.hedvig.android.market.MarketManager
+import com.hedvig.hanalytics.HAnalytics
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
@@ -19,21 +18,15 @@ import org.koin.dsl.module
 val featureManagerModule = module {
   single<ClearHAnalyticsExperimentsCacheUseCase> { ClearHAnalyticsExperimentsCacheUseCase(get()) }
   single<FeatureManager> {
-    if (get<HedvigBuildConstants>().isDebug) {
-      FeatureManagerImpl(
-        DevFeatureFlagProvider(get()),
-        DevLoginMethodProvider(get()),
-        DevPaymentTypeProvider(get()),
-        get<ClearHAnalyticsExperimentsCacheUseCase>(),
-      )
+    val featureFlagProvider: FeatureFlagProvider = if (get<HedvigBuildConstants>().isDebug) {
+      DevFeatureFlagProvider(get<MarketManager>())
     } else {
-      FeatureManagerImpl(
-        HAnalyticsFeatureFlagProvider(get()),
-        HAnalyticsLoginMethodProvider(get()),
-        HAnalyticsPaymentTypeProvider(get()),
-        get<ClearHAnalyticsExperimentsCacheUseCase>(),
-      )
+      HAnalyticsFeatureFlagProvider(get<HAnalytics>())
     }
+    FeatureManagerImpl(
+      featureFlagProvider,
+      get<ClearHAnalyticsExperimentsCacheUseCase>(),
+    )
   }
   single<FeatureFlagAuthEventListener> {
     FeatureFlagAuthEventListener(get<ClearHAnalyticsExperimentsCacheUseCase>())

@@ -2,7 +2,7 @@ package com.hedvig.android.feature.forever.navigation
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
-import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.feature.forever.ForeverViewModel
 import com.hedvig.android.feature.forever.ui.ForeverDestination

@@ -4,7 +4,7 @@ import com.hedvig.android.core.uidata.UiMoney
 import octopus.ReferralsQuery
 import octopus.type.MemberReferralStatus
 
-data class ForeverData(
+internal data class ForeverData(
   val campaignCode: String?,
   val incentive: UiMoney?,
   val currentDiscountAmountExcludingReferrals: UiMoney?,
@@ -39,12 +39,15 @@ data class ForeverData(
   )
 }
 
-data class Referral(
+internal data class Referral(
   val name: String?,
   val state: ReferralState,
   val discount: UiMoney?,
 )
 
-enum class ReferralState {
-  ACTIVE, IN_PROGRESS, TERMINATED, UNKNOWN
+internal enum class ReferralState {
+  ACTIVE,
+  IN_PROGRESS,
+  TERMINATED,
+  UNKNOWN,
 }

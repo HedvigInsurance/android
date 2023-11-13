@@ -10,8 +10,8 @@ import androidx.compose.runtime.setValue
 import arrow.core.raise.either
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.demomode.Provider
-import com.hedvig.android.data.forever.ForeverRepository
 import com.hedvig.android.feature.forever.data.ForeverData
+import com.hedvig.android.feature.forever.data.ForeverRepository
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -19,11 +19,11 @@ import com.hedvig.android.molecule.public.MoleculePresenterScope
 internal class ForeverViewModel(
   foreverRepositoryProvider: Provider<ForeverRepository>,
 ) : MoleculeViewModel<ForeverEvent, ForeverUiState>(
-  ForeverUiState.Loading,
-  ForeverPresenter(
-    foreverRepositoryProvider = foreverRepositoryProvider,
-  ),
-)
+    ForeverUiState.Loading,
+    ForeverPresenter(
+      foreverRepositoryProvider = foreverRepositoryProvider,
+    ),
+  )
 
 internal class ForeverPresenter(
   private val foreverRepositoryProvider: Provider<ForeverRepository>,
@@ -89,8 +89,11 @@ internal class ForeverPresenter(
 
 sealed interface ForeverEvent {
   data object ShowedReferralCodeSuccessfulChangeMessage : ForeverEvent
+
   data object ShowedReferralCodeSubmissionError : ForeverEvent
+
   data class SubmitNewReferralCode(val code: String) : ForeverEvent
+
   data object RetryLoadReferralData : ForeverEvent
 }
 
@@ -102,7 +105,6 @@ internal data class ForeverUiState(
   val referralCodeErrorMessage: ForeverRepository.ReferralError?,
   val showReferralCodeSuccessfullyChangedMessage: Boolean,
 ) {
-
   companion object {
     val Loading: ForeverUiState = ForeverUiState(
       foreverData = null,

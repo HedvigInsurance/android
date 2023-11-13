@@ -17,6 +17,7 @@ dependencies {
   api(libs.androidx.compose.foundation)
   api(libs.androidx.compose.material3)
   api(libs.arrow.core)
+  api(projects.coreIcons)
 
   implementation(libs.accompanist.insetsUi)
   implementation(libs.androidx.compose.material3.windowSizeClass)
@@ -32,6 +33,5 @@ dependencies {
   implementation(projects.apolloGiraffePublic)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.coreDesignSystem)
-  implementation(projects.coreIcons)
   implementation(projects.coreResources)
 }

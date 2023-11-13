@@ -1,5 +1,0 @@
-fragment CurrentInsurerFragment on CurrentInsurer {
-  id
-  displayName
-  switchable
-}

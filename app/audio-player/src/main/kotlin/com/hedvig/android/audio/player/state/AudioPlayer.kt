@@ -15,6 +15,7 @@ import com.hedvig.android.audio.player.internal.hasReachedTheEnd
 import com.hedvig.android.audio.player.internal.seekToPercent
 import com.hedvig.android.core.common.android.ProgressPercentage
 import com.hedvig.android.logger.logcat
+import java.io.Closeable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.awaitCancellation
@@ -37,15 +38,18 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.yield
-import java.io.Closeable
 
 interface AudioPlayer : Closeable {
   val audioPlayerState: StateFlow<AudioPlayerState>
 
   fun initialize()
+
   fun startPlayer()
+
   fun pausePlayer()
+
   fun retryLoadingAudio()
+
   fun seekTo(progressPercentage: ProgressPercentage)
 }
 

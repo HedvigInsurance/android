@@ -2,28 +2,34 @@ package com.hedvig.android.feature.changeaddress.data
 
 import arrow.core.Either
 import arrow.core.raise.either
+import arrow.core.raise.ensureNotNull
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.core.ui.insurance.toProductVariant
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.productVariant.android.toProductVariant
+import com.hedvig.android.logger.logcat
+import kotlinx.collections.immutable.toImmutableList
 import octopus.MoveIntentCommitMutation
 import octopus.MoveIntentCreateMutation
 import octopus.MoveIntentRequestMutation
 
 internal interface ChangeAddressRepository {
   suspend fun createMoveIntent(): Either<ErrorMessage, MoveIntent>
+
   suspend fun createQuotes(input: QuoteInput): Either<ErrorMessage, List<MoveQuote>>
+
   suspend fun commitMove(id: MoveIntentId): Either<ErrorMessage, SuccessfulMove>
 }
 
-data object SuccessfulMove
+internal data object SuccessfulMove
 
 internal class NetworkChangeAddressRepository(
   private val apolloClient: ApolloClient,
 ) : ChangeAddressRepository {
   override suspend fun createMoveIntent(): Either<ErrorMessage, MoveIntent> {
+    logcat { "Moving Flow: createMoveIntent" }
     return either {
       val result = apolloClient
         .mutation(MoveIntentCreateMutation())
@@ -32,18 +38,20 @@ internal class NetworkChangeAddressRepository(
         .bind()
         .moveIntentCreate
 
-      val moveIntent = result.moveIntent
       val userError = result.userError
-
-      when {
-        moveIntent != null -> moveIntent.toMoveIntent()
-        userError != null -> raise(ErrorMessage(userError.message))
-        else -> raise(ErrorMessage("No data found in MoveIntent"))
+      if (userError != null) {
+        raise(ErrorMessage(userError.message))
       }
+      val moveIntent = result.moveIntent
+      ensureNotNull(moveIntent) {
+        ErrorMessage("No data found in MoveIntent")
+      }
+      moveIntent.toMoveIntent()
     }
   }
 
   override suspend fun createQuotes(input: QuoteInput): Either<ErrorMessage, List<MoveQuote>> {
+    logcat { "Moving Flow: createQuotes with input:$input" }
     return either {
       val result = apolloClient
         .mutation(input.toMoveIntentRequestMutation())
@@ -52,18 +60,21 @@ internal class NetworkChangeAddressRepository(
         .bind()
         .moveIntentRequest
 
-      val moveIntent = result.moveIntent
       val userError = result.userError
-
-      when {
-        userError != null -> raise(ErrorMessage(userError.message))
-        moveIntent != null -> moveIntent.toMoveQuotes()
-        else -> raise(ErrorMessage("No data found in MoveIntent"))
+      if (userError != null) {
+        raise(ErrorMessage(userError.message))
       }
+
+      val moveIntent = result.moveIntent
+      ensureNotNull(moveIntent) {
+        ErrorMessage("No data found in MoveIntent")
+      }
+      moveIntent.toMoveQuotes()
     }
   }
 
   override suspend fun commitMove(id: MoveIntentId): Either<ErrorMessage, SuccessfulMove> {
+    logcat { "Moving Flow: commitMove with id:$id" }
     return either {
       val result = apolloClient
         .mutation(MoveIntentCommitMutation(id.id))
@@ -73,16 +84,15 @@ internal class NetworkChangeAddressRepository(
         .moveIntentCommit
 
       val userError = result.userError
-
-      when {
-        userError != null -> raise(ErrorMessage(userError.message))
-        else -> SuccessfulMove
+      if (userError != null) {
+        raise(ErrorMessage(userError.message))
       }
+      SuccessfulMove
     }
   }
 }
 
-private fun MoveIntentCreateMutation.Data.MoveIntentCreate.MoveIntent.toMoveIntent() = MoveIntent(
+private fun MoveIntentCreateMutation.Data.MoveIntentCreate.MoveIntent.toMoveIntent(): MoveIntent = MoveIntent(
   id = MoveIntentId(id),
   currentHomeAddresses = currentHomeAddresses.map { currentHomeAddress ->
     Address(
@@ -92,7 +102,8 @@ private fun MoveIntentCreateMutation.Data.MoveIntentCreate.MoveIntent.toMoveInte
     )
   },
   movingDateRange = minMovingDate..maxMovingDate,
-  suggestedNumberInsured = suggestedNumberCoInsured.plus(1), // numberInsured = numberCoInsured + member,
+  // numberInsured = numberCoInsured + member,
+  suggestedNumberInsured = suggestedNumberCoInsured.plus(1),
   isApartmentAvailableforStudent = isApartmentAvailableforStudent,
   maxApartmentSquareMeters = maxApartmentSquareMeters,
   maxHouseSquareMeters = maxHouseSquareMeters,
@@ -101,22 +112,21 @@ private fun MoveIntentCreateMutation.Data.MoveIntentCreate.MoveIntent.toMoveInte
   extraBuildingTypes = extraBuildingTypes.map { it.toExtraBuildingType() },
 )
 
-private fun MoveIntentRequestMutation.Data.MoveIntentRequest.MoveIntent.toMoveQuotes() = quotes.map { quote ->
-  MoveQuote(
-    id = id,
-    insuranceName = quote.productVariant.displayName,
-    moveIntentId = MoveIntentId(id),
-    address = Address(
-      id = AddressId(quote.address.id),
-      postalCode = quote.address.postalCode,
-      street = quote.address.street,
-    ),
-    numberInsured = quote.numberCoInsured?.plus(1) ?: 1, // numberInsured = numberCoInsured + member
-    premium = UiMoney(
-      amount = quote.premium.amount,
-      currencyCode = quote.premium.currencyCode,
-    ),
-    startDate = quote.startDate,
-    productVariant = quote.productVariant.toProductVariant(),
-  )
+private fun MoveIntentRequestMutation.Data.MoveIntentRequest.MoveIntent.toMoveQuotes(): List<MoveQuote> {
+  return quotes.map { quote ->
+    MoveQuote(
+      id = id,
+      insuranceName = quote.exposureName ?: quote.productVariant.displayName,
+      moveIntentId = MoveIntentId(id),
+      premium = UiMoney(
+        amount = quote.premium.amount,
+        currencyCode = quote.premium.currencyCode,
+      ),
+      startDate = quote.startDate,
+      productVariant = quote.productVariant.toProductVariant(),
+      displayItems = quote.displayItems
+        .map { it.displayTitle to it.displayValue }
+        .toImmutableList(),
+    )
+  }
 }

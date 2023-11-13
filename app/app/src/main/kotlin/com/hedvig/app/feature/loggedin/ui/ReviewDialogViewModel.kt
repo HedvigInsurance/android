@@ -14,7 +14,6 @@ import kotlinx.coroutines.launch
 class ReviewDialogViewModel(
   private val chatEventStore: ChatEventStore,
 ) : ViewModel() {
-
   val _shouldOpenReviewDialog: Channel<Boolean> = Channel(Channel.CONFLATED)
   val shouldOpenReviewDialog: Flow<Boolean> = _shouldOpenReviewDialog.receiveAsFlow()
 

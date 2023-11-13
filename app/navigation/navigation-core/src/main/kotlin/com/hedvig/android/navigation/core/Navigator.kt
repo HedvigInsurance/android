@@ -2,7 +2,9 @@ package com.hedvig.android.navigation.core
 
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavOptions
+import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.Navigator
+import androidx.navigation.navOptions
 import com.kiwi.navigationcompose.typed.Destination
 
 interface Navigator {
@@ -11,6 +13,10 @@ interface Navigator {
     navOptions: NavOptions? = null,
     navigatorExtras: Navigator.Extras? = null,
   )
+
+  fun NavBackStackEntry.navigate(destination: Destination, builder: NavOptionsBuilder.() -> Unit) {
+    navigate(destination, navOptions(builder))
+  }
 
   /**
    * This navigate event doesn't check if the current lifecycle state is resumed before navigating. Using this may mean
@@ -23,5 +29,6 @@ interface Navigator {
   )
 
   fun navigateUp()
+
   fun popBackStack()
 }

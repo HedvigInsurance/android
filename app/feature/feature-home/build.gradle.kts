@@ -3,6 +3,7 @@ plugins {
   id("hedvig.android.library")
   id("hedvig.android.library.compose")
   id("kotlin-parcelize")
+  alias(libs.plugins.apollo)
   alias(libs.plugins.serialization)
   alias(libs.plugins.squareSortDependencies)
 }
@@ -15,7 +16,8 @@ android {
 }
 
 dependencies {
-  implementation(libs.accompanist.pagerIndicators)
+  apolloMetadata(projects.apolloOctopusPublic)
+
   implementation(libs.accompanist.permissions)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material3)
@@ -39,11 +41,13 @@ dependencies {
   implementation(libs.materialComponents)
   implementation(libs.moneta)
   implementation(projects.apolloCore)
-  implementation(projects.apolloGiraffePublic)
+  implementation(projects.apolloOctopusPublic)
   implementation(projects.audioPlayer)
   implementation(projects.authAndroid)
+  implementation(projects.claimStatus)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
+  implementation(projects.coreDemoMode)
   implementation(projects.coreDesignSystem)
   implementation(projects.coreIcons)
   implementation(projects.coreResources)
@@ -52,7 +56,6 @@ dependencies {
   implementation(projects.hanalyticsCore)
   implementation(projects.hanalyticsFeatureFlagsPublic)
   implementation(projects.languageCore)
-  implementation(projects.coreDemoMode)
   implementation(projects.marketCore)
   implementation(projects.memberRemindersPublic)
   implementation(projects.memberRemindersUi)
@@ -68,8 +71,9 @@ dependencies {
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)
+  testImplementation(libs.testParameterInjector)
   testImplementation(libs.turbine)
-  testImplementation(projects.apolloGiraffeTest)
+  testImplementation(projects.apolloOctopusTest)
   testImplementation(projects.apolloTest)
   testImplementation(projects.coreCommonTest)
   testImplementation(projects.dataTravelCertificateTest)
@@ -78,4 +82,12 @@ dependencies {
   testImplementation(projects.loggingTest)
   testImplementation(projects.memberRemindersTest)
   testImplementation(projects.moleculeTest)
+  testImplementation(projects.testClock)
+}
+
+apollo {
+  service("octopus") {
+    packageName.set("octopus")
+    generateDataBuilders.set(true)
+  }
 }

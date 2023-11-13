@@ -15,7 +15,6 @@ internal class InsuranceDeletionViewModel(
   insuranceDeletion: TerminateInsuranceDestination.InsuranceDeletion,
   private val terminateInsuranceRepository: TerminateInsuranceRepository,
 ) : ViewModel() {
-
   private val _uiState: MutableStateFlow<InsuranceDeletionUiState> =
     MutableStateFlow(InsuranceDeletionUiState(insuranceDeletion.disclaimer))
   val uiState: StateFlow<InsuranceDeletionUiState> = _uiState.asStateFlow()

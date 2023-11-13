@@ -1,6 +1,7 @@
 package com.hedvig.android.notification.firebase
 
 import android.content.Context
+import android.os.Build
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.NetworkType
@@ -10,10 +11,10 @@ import androidx.work.await
 import com.google.firebase.messaging.FirebaseMessaging
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.tasks.await
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.tasks.await
 
 /**
  * A central place to handle firebase push tokens. Currently called both from the login auth event, and when a new
@@ -31,7 +32,11 @@ internal class FCMTokenManager(
       .await()
     WorkManager.getInstance(applicationContext).enqueue(
       OneTimeWorkRequestBuilder<FCMTokenUploadWorker>()
-        .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 30.seconds.toJavaDuration())
+        .apply {
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 30.seconds.toJavaDuration())
+          }
+        }
         .setConstraints(Constraints(requiredNetworkType = NetworkType.CONNECTED))
         .addTag(FIREBASE_PUSH_TOKEN_MUTATION_WORKER_TAG)
         .build(),

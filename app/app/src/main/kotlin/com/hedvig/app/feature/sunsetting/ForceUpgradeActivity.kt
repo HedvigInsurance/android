@@ -45,9 +45,7 @@ class ForceUpgradeActivity : AppCompatActivity() {
 }
 
 @Composable
-fun UpgradeApp(
-  goToPlayStore: () -> Unit,
-) {
+fun UpgradeApp(goToPlayStore: () -> Unit) {
   Column(
     verticalArrangement = Arrangement.Center,
     horizontalAlignment = Alignment.CenterHorizontally,

@@ -6,6 +6,7 @@ import kotlinx.coroutines.sync.withLock
 
 interface HAnalyticsExperimentManager {
   suspend fun getExperiment(name: String): HAnalyticsExperiment
+
   suspend fun invalidateExperiments()
 }
 

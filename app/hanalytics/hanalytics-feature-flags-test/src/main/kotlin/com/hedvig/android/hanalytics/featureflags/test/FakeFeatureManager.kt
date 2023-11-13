@@ -3,27 +3,15 @@ package com.hedvig.android.hanalytics.featureflags.test
 import app.cash.turbine.Turbine
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
-import com.hedvig.hanalytics.LoginMethod
-import com.hedvig.hanalytics.PaymentType
 
 class FakeFeatureManager(
   private val featureMap: (() -> Map<Feature, Boolean>)? = null,
-  private val loginMethod: (() -> LoginMethod)? = null,
-  private val paymentType: (() -> PaymentType)? = null,
 ) : FeatureManager {
   override suspend fun invalidateExperiments() {}
 
   override suspend fun isFeatureEnabled(feature: Feature): Boolean {
     val featureMap = featureMap?.invoke() ?: error("Set the featureMap returned from FakeFeatureManager")
     return featureMap[feature] ?: error("Set a return value for feature:$feature on FakeFeatureManager")
-  }
-
-  override suspend fun getLoginMethod(): LoginMethod {
-    return loginMethod?.invoke() ?: error("Set the loginMethod returned from FakeFeatureManager")
-  }
-
-  override suspend fun getPaymentType(): PaymentType {
-    return paymentType?.invoke() ?: error("Set the paymentType returned from FakeFeatureManager")
   }
 
   companion object {
@@ -35,8 +23,6 @@ class FakeFeatureManager(
       return if (noopFeatureManager) {
         FakeFeatureManager(
           { Feature.entries.associateWith { false } },
-          { LoginMethod.OTP },
-          { PaymentType.ADYEN },
         )
       } else {
         error("Use the normal constructor instead")
@@ -52,6 +38,11 @@ class FakeFeatureManager(
 class FakeFeatureManager2(
   private val fixedMap: Map<Feature, Boolean> = emptyMap(),
 ) : FeatureManager {
+  /**
+   * Allow the feature manager to return [fixedReturnForAll] for all features
+   */
+  constructor(fixedReturnForAll: Boolean) : this(Feature.entries.associateWith { fixedReturnForAll })
+
   val featureTurbine = Turbine<Pair<Feature, Boolean>>(name = "FeatureTurbine")
 
   override suspend fun invalidateExperiments() {}
@@ -63,13 +54,5 @@ class FakeFeatureManager2(
     val pair = featureTurbine.awaitItem()
     require(feature == pair.first)
     return pair.second
-  }
-
-  override suspend fun getLoginMethod(): LoginMethod {
-    error("Not supported")
-  }
-
-  override suspend fun getPaymentType(): PaymentType {
-    error("Not supported")
   }
 }

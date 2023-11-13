@@ -110,14 +110,13 @@ private class PlaceableWithCoordinates(
   private val y: Int,
 ) {
   operator fun component1() = placeable
+
   operator fun component2() = x
+
   operator fun component3() = y
 }
 
-private fun Placeable.withCoordinates(
-  x: Int,
-  y: Int,
-): PlaceableWithCoordinates = PlaceableWithCoordinates(this, x, y)
+private fun Placeable.withCoordinates(x: Int, y: Int): PlaceableWithCoordinates = PlaceableWithCoordinates(this, x, y)
 
 @HedvigPreview
 @Composable

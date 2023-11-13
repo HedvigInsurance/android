@@ -26,7 +26,6 @@ import org.junit.Test
 
 @OptIn(ApolloExperimental::class)
 internal class GetTravelCertificateSpecificationsUseCaseTest {
-
   @get:Rule
   val testLogcatLogger = TestLogcatLoggingRule()
 

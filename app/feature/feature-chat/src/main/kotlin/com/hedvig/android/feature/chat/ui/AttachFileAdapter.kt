@@ -13,7 +13,6 @@ internal class AttachFileAdapter(
   private val takePhoto: () -> Unit,
   private val showUploadFileDialog: () -> Unit,
 ) : RecyclerView.Adapter<AttachFileAdapter.CameraAndMiscViewHolder>() {
-
   var isUploadingTakenPicture: Boolean = false
     set(value) {
       field = value
@@ -46,11 +45,7 @@ internal class AttachFileAdapter(
   class CameraAndMiscViewHolder(
     val binding: CameraAndMiscItemBinding,
   ) : RecyclerView.ViewHolder(binding.root) {
-    fun bind(
-      isUploadingTakenPicture: Boolean,
-      takePhoto: () -> Unit,
-      showUploadFileDialog: () -> Unit,
-    ) {
+    fun bind(isUploadingTakenPicture: Boolean, takePhoto: () -> Unit, showUploadFileDialog: () -> Unit) {
       binding.apply {
         if (isUploadingTakenPicture) {
           loadingSpinner.root.show()

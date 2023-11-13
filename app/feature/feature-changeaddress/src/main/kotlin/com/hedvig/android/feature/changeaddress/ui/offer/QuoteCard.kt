@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
@@ -29,18 +30,24 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.insurance.toPillow
+import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.hedvig.normal.ChevronDown
+import com.hedvig.android.core.icons.hedvig.normal.InfoFilled
+import com.hedvig.android.core.ui.getLocale
+import com.hedvig.android.core.ui.hedvigDateTimeFormatter
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.data.contract.android.toPillow
 import com.hedvig.android.feature.changeaddress.data.MoveQuote
 import hedvig.resources.R
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.toJavaLocalDate
 
 @Composable
 internal fun QuoteCard(
-  movingDate: String?,
+  movingDate: LocalDate,
   quote: MoveQuote,
   onExpandClicked: () -> Unit,
   isExpanded: Boolean,
@@ -74,33 +81,33 @@ internal fun QuoteCard(
 }
 
 @Composable
-private fun PillAndBasicInfo(quote: MoveQuote, movingDate: String?) {
+private fun PillAndBasicInfo(quote: MoveQuote, movingDate: LocalDate) {
   Row(verticalAlignment = Alignment.CenterVertically) {
     Image(
       painter = painterResource(id = quote.productVariant.contractType.toPillow()),
-      contentDescription = "pillow",
+      contentDescription = null,
       modifier = Modifier.size(48.dp),
     )
     Spacer(modifier = Modifier.width(16.dp))
     Column {
       Text(
         text = quote.insuranceName,
-        style = MaterialTheme.typography.titleMedium,
-        fontSize = 18.sp,
+        style = MaterialTheme.typography.bodyLarge,
       )
       CompositionLocalProvider(LocalContentColor.provides(MaterialTheme.colorScheme.onSurfaceVariant)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
           Text(
-            text = stringResource(id = R.string.CHANGE_ADDRESS_ACTIVATION_DATE, movingDate.toString()),
-            fontSize = 18.sp,
+            text = stringResource(
+              id = R.string.CHANGE_ADDRESS_ACTIVATION_DATE,
+              movingDate.toJavaLocalDate().format(hedvigDateTimeFormatter(getLocale())),
+            ),
+            style = MaterialTheme.typography.bodyLarge,
           )
           Spacer(modifier = Modifier.width(4.dp))
           Icon(
-            painter = painterResource(id = com.hedvig.android.core.design.system.R.drawable.ic_info),
+            imageVector = Icons.Hedvig.InfoFilled,
             contentDescription = null,
-            modifier = Modifier
-              .size(16.dp)
-              .padding(1.dp),
+            modifier = Modifier.size(16.dp),
           )
         }
       }
@@ -109,17 +116,13 @@ private fun PillAndBasicInfo(quote: MoveQuote, movingDate: String?) {
 }
 
 @Composable
-private fun QuoteDetailsAndPrice(
-  isExpanded: Boolean,
-  quote: MoveQuote,
-) {
+private fun QuoteDetailsAndPrice(isExpanded: Boolean, quote: MoveQuote) {
   HorizontalItemsWithMaximumSpaceTaken(
     startSlot = {
       Row(verticalAlignment = Alignment.CenterVertically) {
         Text(
           text = stringResource(id = R.string.CHANGE_ADDRESS_DETAILS_LABEL),
-          style = MaterialTheme.typography.titleMedium,
-          fontSize = 18.sp,
+          style = MaterialTheme.typography.bodyLarge,
         )
         Spacer(Modifier.width(8.dp))
         val angle = animateFloatAsState(
@@ -131,9 +134,9 @@ private fun QuoteDetailsAndPrice(
           label = "",
         )
         Icon(
-          painter = painterResource(com.hedvig.android.core.design.system.R.drawable.ic_drop_down_indicator),
+          imageVector = Icons.Hedvig.ChevronDown,
           contentDescription = null,
-          tint = MaterialTheme.colorScheme.outlineVariant,
+          tint = MaterialTheme.colorScheme.onSurfaceVariant,
           modifier = Modifier
             .size(16.dp)
             .graphicsLayer {
@@ -148,8 +151,7 @@ private fun QuoteDetailsAndPrice(
           id = R.string.CHANGE_ADDRESS_PRICE_PER_MONTH_LABEL,
           quote.premium.toString(),
         ),
-        style = MaterialTheme.typography.titleMedium,
-        fontSize = 18.sp,
+        style = MaterialTheme.typography.bodyLarge,
         textAlign = TextAlign.End,
       )
     },
@@ -157,24 +159,12 @@ private fun QuoteDetailsAndPrice(
 }
 
 @Composable
-private fun ExpandedInformation(
-  quote: MoveQuote,
-) {
+private fun ExpandedInformation(quote: MoveQuote) {
   Column {
-    HorizontalItemsWithMaximumSpaceTaken(
-      startSlot = { Text(stringResource(id = R.string.CHANGE_ADDRESS_NEW_ADDRESS_LABEL)) },
-      endSlot = { Text(quote.address.street, textAlign = TextAlign.End) },
-      spaceBetween = 4.dp,
-    )
-    HorizontalItemsWithMaximumSpaceTaken(
-      startSlot = { Text(stringResource(id = R.string.CHANGE_ADDRESS_NEW_POSTAL_CODE_LABEL)) },
-      endSlot = { Text(quote.address.postalCode, textAlign = TextAlign.End) },
-      spaceBetween = 4.dp,
-    )
-    quote.numberInsured?.let {
+    quote.displayItems.forEach {
       HorizontalItemsWithMaximumSpaceTaken(
-        startSlot = { Text(stringResource(id = R.string.CHANGE_ADDRESS_CO_INSURED_LABEL)) },
-        endSlot = { Text(quote.numberInsured.toString(), textAlign = TextAlign.End) },
+        startSlot = { Text(it.first) },
+        endSlot = { Text(it.second, textAlign = TextAlign.End) },
         spaceBetween = 4.dp,
       )
     }
@@ -183,11 +173,11 @@ private fun ExpandedInformation(
 
 @HedvigPreview
 @Composable
-fun PreviewQuoteCard() {
+private fun PreviewQuoteCard() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       QuoteCard(
-        movingDate = "2021-01-02",
+        movingDate = LocalDate.fromEpochDays(3000),
         quote = MoveQuote.PreviewData(),
         onExpandClicked = {},
         isExpanded = true,

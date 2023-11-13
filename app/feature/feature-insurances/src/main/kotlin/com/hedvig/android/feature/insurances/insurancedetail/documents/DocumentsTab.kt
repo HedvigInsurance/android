@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -35,13 +34,13 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.small.hedvig.ArrowNorthEast
-import com.hedvig.android.core.ui.insurance.Document
+import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 internal fun DocumentsTab(
-  documents: ImmutableList<Document>,
+  documents: ImmutableList<InsuranceVariantDocument>,
   onDocumentClicked: (Uri) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -63,17 +62,9 @@ internal fun DocumentsTab(
 }
 
 @Composable
-private fun DocumentCard(
-  onClick: () -> Unit,
-  title: String?,
-  subtitle: String?,
-) {
+private fun DocumentCard(onClick: () -> Unit, title: String?, subtitle: String?) {
   HedvigCard(
     onClick = onClick,
-    colors = CardDefaults.outlinedCardColors(
-      containerColor = MaterialTheme.colorScheme.surfaceVariant,
-      contentColor = MaterialTheme.colorScheme.onSurface,
-    ),
     modifier = Modifier
       .padding(horizontal = 16.dp)
       .heightIn(min = 72.dp),
@@ -122,8 +113,8 @@ private fun PreviewDocumentsScreen() {
     Surface(color = MaterialTheme.colorScheme.background) {
       DocumentsTab(
         documents = persistentListOf(
-          Document("", "test", Document.InsuranceDocumentType.GENERAL_TERMS),
-          Document("", "", Document.InsuranceDocumentType.PRE_SALE_INFO),
+          InsuranceVariantDocument("", "test", InsuranceVariantDocument.InsuranceDocumentType.GENERAL_TERMS),
+          InsuranceVariantDocument("", "", InsuranceVariantDocument.InsuranceDocumentType.PRE_SALE_INFO),
         ),
         onDocumentClicked = {},
       )

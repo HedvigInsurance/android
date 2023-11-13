@@ -2,21 +2,16 @@ package com.hedvig.android.feature.profile.di
 
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.NetworkCacheManager
-import com.hedvig.android.apollo.giraffe.di.giraffeClient
+import com.hedvig.android.apollo.auth.listeners.UploadLanguagePreferenceToBackendUseCase
 import com.hedvig.android.apollo.octopus.di.octopusClient
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.core.demomode.DemoManager
-import com.hedvig.android.data.forever.di.ForeverRepositoryProvider
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.feature.profile.aboutapp.AboutAppViewModel
 import com.hedvig.android.feature.profile.data.ProfileRepositoryDemo
 import com.hedvig.android.feature.profile.data.ProfileRepositoryImpl
 import com.hedvig.android.feature.profile.eurobonus.EurobonusViewModel
 import com.hedvig.android.feature.profile.myinfo.MyInfoViewModel
-import com.hedvig.android.feature.profile.payment.PaymentViewModel
-import com.hedvig.android.feature.profile.payment.history.PaymentHistoryViewModel
-import com.hedvig.android.feature.profile.settings.NotifyBackendAboutLanguageChangeUseCase
-import com.hedvig.android.feature.profile.settings.NotifyBackendAboutLanguageChangeUseCaseImpl
 import com.hedvig.android.feature.profile.settings.SettingsViewModel
 import com.hedvig.android.feature.profile.tab.GetEurobonusStatusUseCase
 import com.hedvig.android.feature.profile.tab.NetworkGetEurobonusStatusUseCase
@@ -26,8 +21,6 @@ import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.memberreminders.EnableNotificationsReminderManager
 import com.hedvig.android.memberreminders.GetMemberRemindersUseCase
-import com.hedvig.android.payment.di.PaymentRepositoryProvider
-import com.hedvig.hanalytics.HAnalytics
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -44,17 +37,10 @@ val profileModule = module {
   }
   viewModel<EurobonusViewModel> { EurobonusViewModel(get<ApolloClient>(octopusClient)) }
 
-  single<NotifyBackendAboutLanguageChangeUseCase> {
-    NotifyBackendAboutLanguageChangeUseCaseImpl(
-      apolloClient = get<ApolloClient>(giraffeClient),
-      cacheManager = get<NetworkCacheManager>(),
-    )
-  }
-
   single<ProfileRepositoryImpl> {
     ProfileRepositoryImpl(
-      giraffeApolloClient = get<ApolloClient>(giraffeClient),
-      octopusApolloClient = get<ApolloClient>(octopusClient),
+      apolloClient = get<ApolloClient>(octopusClient),
+      networkCacheManager = get<NetworkCacheManager>(),
     )
   }
   single<ProfileRepositoryDemo> {
@@ -70,35 +56,17 @@ val profileModule = module {
 
   viewModel<SettingsViewModel> {
     SettingsViewModel(
-      hAnalytics = get<HAnalytics>(),
-      notifyBackendAboutLanguageChangeUseCase = get<NotifyBackendAboutLanguageChangeUseCase>(),
       marketManager = get<MarketManager>(),
       languageService = get<LanguageService>(),
       settingsDataStore = get<SettingsDataStore>(),
       enableNotificationsReminderManager = get<EnableNotificationsReminderManager>(),
-      featureManager = get<FeatureManager>(),
+      cacheManager = get<NetworkCacheManager>(),
+      uploadLanguagePreferenceToBackendUseCase = get<UploadLanguagePreferenceToBackendUseCase>(),
     )
   }
 
   viewModel<MyInfoViewModel> {
-    MyInfoViewModel(
-      get<HAnalytics>(),
-      get<ProfileRepositoryProvider>(),
-    )
+    MyInfoViewModel(get<ProfileRepositoryProvider>())
   }
-  viewModel<AboutAppViewModel> { AboutAppViewModel(get(), get<ApolloClient>(giraffeClient)) }
-
-  viewModel<PaymentViewModel> {
-    PaymentViewModel(
-      get<ForeverRepositoryProvider>(),
-      get<PaymentRepositoryProvider>(),
-      get<LanguageService>(),
-    )
-  }
-  viewModel<PaymentHistoryViewModel> {
-    PaymentHistoryViewModel(
-      get<PaymentRepositoryProvider>(),
-      get<LanguageService>(),
-    )
-  }
+  viewModel<AboutAppViewModel> { AboutAppViewModel(get(), get<ApolloClient>(octopusClient)) }
 }

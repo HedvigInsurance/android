@@ -41,7 +41,9 @@ fun AppStateInformation(
 }
 
 enum class AppStateInformationType {
-  Success, Information, Failure
+  Success,
+  Information,
+  Failure,
 }
 
 @Composable

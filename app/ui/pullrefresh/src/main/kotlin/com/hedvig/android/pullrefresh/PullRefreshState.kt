@@ -7,6 +7,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -15,10 +16,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.pow
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 /**
  * Creates a [PullRefreshState] that is remembered across compositions.
@@ -102,10 +103,10 @@ class PullRefreshState internal constructor(
   private val adjustedDistancePulled by derivedStateOf { distancePulled * DragMultiplier }
 
   private var _refreshing by mutableStateOf(false)
-  private var _position by mutableStateOf(0f)
-  private var distancePulled by mutableStateOf(0f)
-  private var _threshold by mutableStateOf(threshold)
-  private var _refreshingOffset by mutableStateOf(refreshingOffset)
+  private var _position by mutableFloatStateOf(0f)
+  private var distancePulled by mutableFloatStateOf(0f)
+  private var _threshold by mutableFloatStateOf(threshold)
+  private var _refreshingOffset by mutableFloatStateOf(refreshingOffset)
 
   internal fun onPull(pullDelta: Float): Float {
     if (_refreshing) return 0f // Already refreshing, do nothing.

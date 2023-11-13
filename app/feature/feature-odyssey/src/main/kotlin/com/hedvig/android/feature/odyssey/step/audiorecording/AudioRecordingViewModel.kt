@@ -9,16 +9,16 @@ import com.hedvig.android.data.claimflow.ClaimFlowRepository
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.model.AudioUrl
 import com.hedvig.android.data.claimflow.model.FlowId
+import java.io.File
+import java.util.Timer
+import java.util.TimerTask
+import java.util.UUID
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
-import java.io.File
-import java.util.Timer
-import java.util.TimerTask
-import java.util.UUID
 
 internal class AudioRecordingViewModel(
   private val flowId: FlowId,
@@ -26,7 +26,6 @@ internal class AudioRecordingViewModel(
   private val claimFlowRepository: ClaimFlowRepository,
   val clock: Clock = Clock.System,
 ) : ViewModel() {
-
   private var recorder: MediaRecorder? = null
   private var timer: Timer? = null
   private var player: MediaPlayer? = null
@@ -220,6 +219,7 @@ internal sealed interface AudioRecordingUiState {
     get() = false
 
   object NotRecording : AudioRecordingUiState
+
   data class Recording(
     val amplitudes: List<Int>,
     val startedAt: Instant,

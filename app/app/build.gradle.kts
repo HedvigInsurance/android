@@ -5,7 +5,6 @@ plugins {
   id("hedvig.android.application.compose")
   id("hedvig.android.ktlint")
   id("kotlin-parcelize")
-  alias(libs.plugins.androidRemoveUnusedResourcesPlugin)
   alias(libs.plugins.appIconBannerGenerator) // Automatically adds the "DEBUG" banner on the debug app icon
   alias(libs.plugins.crashlytics)
   alias(libs.plugins.datadog)
@@ -27,13 +26,11 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "12.1.0"
+    versionName = "12.2.3"
 
     vectorDrawables.useSupportLibrary = true
 
     resourceConfigurations.addAll(listOf("en", "en-rNO", "en-rSE", "en-rDK", "nb-rNO", "sv-rSE", "da-rDK"))
-
-    testInstrumentationRunner = "com.hedvig.app.TestRunner"
   }
 
   packaging {
@@ -42,6 +39,7 @@ android {
       excludes += "README.txt"
       excludes += "META-INF/LGPL2.1"
       excludes += "META-INF/AL2.0"
+      excludes += "META-INF/versions/9/previous-compilation-data.bin" // https://github.com/Kotlin/kotlinx-datetime/issues/304
     }
   }
 
@@ -93,6 +91,12 @@ android {
     }
   }
 
+  signingConfigs {
+    named("debug") {
+      storeFile = file("../../debug.keystore")
+    }
+  }
+
   configurations.all {
     resolutionStrategy.force(
       "org.hamcrest:hamcrest-core:2.2",
@@ -107,7 +111,6 @@ dependencies {
   implementation(libs.accompanist.insetsUi)
   implementation(libs.accompanist.pagerIndicators)
   implementation(libs.accompanist.systemUiController)
-  implementation(libs.adyen)
   implementation(libs.androidx.compose.animation)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material)
@@ -157,7 +160,8 @@ dependencies {
   implementation(libs.concatAdapterExtension)
   implementation(libs.coroutines.android)
   implementation(libs.coroutines.core)
-  implementation(libs.datadog.sdk)
+  implementation(libs.datadog.sdk.core)
+  implementation(libs.datadog.sdk.rum)
   implementation(libs.firebase.analytics)
   implementation(libs.firebase.crashlytics)
   implementation(libs.firebase.dynamicLinks)
@@ -191,7 +195,7 @@ dependencies {
   implementation(projects.apolloOctopusPublic)
   implementation(projects.audioPlayer)
   implementation(projects.authAndroid)
-  implementation(projects.authCore)
+  implementation(projects.authCorePublic)
   implementation(projects.authEventCore)
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonAndroidPublic)
@@ -204,7 +208,6 @@ dependencies {
   implementation(projects.coreUi)
   implementation(projects.dataClaimFlow)
   implementation(projects.dataClaimTriaging)
-  implementation(projects.dataForever)
   implementation(projects.dataSettingsDatastorePublic)
   implementation(projects.dataTravelCertificatePublic)
   implementation(projects.datadogCore)
@@ -213,12 +216,16 @@ dependencies {
   implementation(projects.moleculePublic)
   implementation(projects.featureChangeaddress)
   implementation(projects.featureChat)
+  implementation(projects.featureClaimDetails)
   implementation(projects.featureClaimTriaging)
+  implementation(projects.featureConnectPaymentAdyen)
+  implementation(projects.featureConnectPaymentTrustly)
   implementation(projects.featureForever)
   implementation(projects.featureHome)
   implementation(projects.featureInsurances)
   implementation(projects.featureLogin)
   implementation(projects.featureOdyssey)
+  implementation(projects.featurePayments)
   implementation(projects.featureProfile)
   implementation(projects.featureTerminateInsurance)
   implementation(projects.featureTravelCertificate)
@@ -227,6 +234,7 @@ dependencies {
   implementation(projects.hanalyticsFeatureFlagsPublic)
   implementation(projects.initializable)
   implementation(projects.languageCore)
+  implementation(projects.languageData)
   implementation(projects.loggingAndroid)
   implementation(projects.loggingPublic)
   implementation(projects.marketCore)
@@ -237,15 +245,11 @@ dependencies {
   implementation(projects.notificationBadgeDataPublic)
   implementation(projects.notificationCore)
   implementation(projects.notificationFirebase)
-  implementation(projects.payment)
   implementation(projects.theme)
-
-  stagingImplementation(projects.testdata)
 
   debugImplementation(libs.androidx.compose.uiTestManifest)
   debugImplementation(libs.androidx.compose.uiTooling)
   debugImplementation(libs.leakCanary)
-  debugImplementation(projects.testdata)
 
   testImplementation(libs.androidx.arch.testing)
   testImplementation(libs.androidx.test.junit)
@@ -257,9 +261,8 @@ dependencies {
   testImplementation(libs.koin.test)
   testImplementation(libs.mockk.jvm)
   testImplementation(libs.turbine)
-  testImplementation(projects.apolloGiraffeTest)
+  testImplementation(projects.authCoreTest)
   testImplementation(projects.authEventFake)
-  testImplementation(projects.authTest)
   testImplementation(projects.coreCommonTest)
   testImplementation(projects.coreDatastoreTest)
   testImplementation(projects.hanalyticsFeatureFlagsTest)
@@ -267,23 +270,6 @@ dependencies {
   testImplementation(projects.languageTest)
   testImplementation(projects.loggingTest)
   testImplementation(projects.marketTest)
-  testImplementation(projects.testdata)
-
-  androidTestImplementation(libs.androidx.compose.uiTestJunit)
-  androidTestImplementation(libs.androidx.espresso.contrib)
-  androidTestImplementation(libs.androidx.espresso.core)
-  androidTestImplementation(libs.androidx.espresso.intents)
-  androidTestImplementation(libs.androidx.test.junit)
-  androidTestImplementation(libs.androidx.test.rules)
-  androidTestImplementation(libs.androidx.test.runner)
-  androidTestImplementation(libs.apollo.idlingResource)
-  androidTestImplementation(libs.assertK)
-  androidTestImplementation(libs.kaspresso)
-  androidTestImplementation(libs.koin.test)
-  androidTestImplementation(libs.mockk.android)
-  androidTestImplementation(libs.okhttp.mockWebServer)
-  androidTestImplementation(projects.hanalyticsFeatureFlagsTest)
-  androidTestImplementation(projects.testdata)
 }
 
 fun DependencyHandlerScope.stagingImplementation(dependencyNotation: Any) {

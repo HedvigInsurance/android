@@ -12,7 +12,6 @@
     <item name="colorOnBackground" type="color">@color/hedvig_white</item>
     <item name="colorSurface" type="color">#252525</item>
     <item name="colorOnSurface" type="color">@color/colorPrimary</item>
-    <item name="colorSurfaceOnSurface" type="color">#505050</item>
     <item name="colorSecondary" type="color">@color/lavender_400</item>
     <item name="colorOnSecondary" type="color">@color/hedvig_black</item>
     <item name="colorPlaceholder" type="color">#45FAFAFA</item>
@@ -21,18 +20,10 @@
     <item name="colorError" type="color">#E24646</item>
 
     <item name="textColorPrimary" type="color">#8FFAFAFA</item>
-    <item name="textColorSecondary" type="color">#FAFAFA</item>
     <item name="textColorThird" type="color">#70FAFAFA</item>
 
     <item name="colorButton" type="color">@color/colorSecondary</item>
     <item name="textColorLink" type="color">@color/colorSecondary</item>
     <item name="textColorLargeButton" type="color">@color/colorOnPrimary</item>
 
-    <item name="colorChatUserBackground" type="color">#FF30577E</item>
-    <item name="colorChatHedvigBackground" type="color">#FF505050</item>
-
-
-    <item name="colorInfoCardSurface" type="color">@color/lavender_900</item>
-
-    <item name="colorTooltip" type="color">@color/hedvig_dark_gray</item>
 </resources>

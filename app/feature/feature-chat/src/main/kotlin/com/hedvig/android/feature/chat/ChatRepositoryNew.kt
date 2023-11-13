@@ -28,10 +28,9 @@ import octopus.type.ChatMessageTextInput
 
 interface ChatRepositoryNew {
   suspend fun fetchChatMessages(until: Instant? = null): Either<ErrorMessage, ChatMessagesResult>
-  suspend fun sendFile(
-    file: File,
-    contentType: String,
-  ): Either<ErrorMessage, ChatMessageResult>
+
+  suspend fun sendFile(file: File, contentType: String): Either<ErrorMessage, ChatMessageResult>
+
   suspend fun sendMessage(text: String): Either<ErrorMessage, ChatMessageResult>
 }
 
@@ -52,12 +51,10 @@ internal class ChatRepositoryNewImpl(
     )
   }
 
-  override suspend fun sendFile(
-    file: File,
-    contentType: String,
-  ) = either {
+  override suspend fun sendFile(file: File, contentType: String) = either {
     val fileUpload = file.toUpload(contentType)
-    val input = ChatMessageFileInput(fileUpload)
+//    val input = ChatMessageFileInput(fileUpload) // todo here upload file directly through HTTP instead
+    val input = ChatMessageFileInput("")
     val mutation = ChatSendFileMutation(input)
 
     val result = apolloClientOctopus.mutation(mutation)

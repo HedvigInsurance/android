@@ -3,8 +3,8 @@ package com.hedvig.android.feature.insurances.data
 import arrow.core.Either
 import arrow.core.raise.either
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.core.ui.insurance.ContractType
-import com.hedvig.android.core.ui.insurance.ProductVariant
+import com.hedvig.android.data.contract.ContractType
+import com.hedvig.android.data.productvariant.ProductVariant
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate
 
@@ -18,7 +18,7 @@ internal class GetInsuranceContractsUseCaseDemo : GetInsuranceContractsUseCase {
           exposureDisplayName = "Test exposure",
           inceptionDate = LocalDate.fromEpochDays(200),
           terminationDate = LocalDate.fromEpochDays(400),
-          currentAgreement = Agreement(
+          currentInsuranceAgreement = InsuranceAgreement(
             activeFrom = LocalDate.fromEpochDays(240),
             activeTo = LocalDate.fromEpochDays(340),
             displayItems = persistentListOf(),
@@ -30,8 +30,9 @@ internal class GetInsuranceContractsUseCaseDemo : GetInsuranceContractsUseCase {
               insurableLimits = persistentListOf(),
               documents = persistentListOf(),
             ),
+            certificateUrl = null,
           ),
-          upcomingAgreement = null,
+          upcomingInsuranceAgreement = null,
           renewalDate = LocalDate.fromEpochDays(500),
           supportsAddressChange = false,
           isTerminated = false,

@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.chat
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import arrow.core.Either
@@ -19,6 +18,7 @@ import com.apollographql.apollo3.cache.normalized.watch
 import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
+import com.hedvig.android.core.common.cast
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import giraffe.ChatMessageIdQuery
@@ -36,11 +36,11 @@ import giraffe.type.ChatResponseBodyTextInput
 import giraffe.type.ChatResponseFileInput
 import giraffe.type.ChatResponseSingleSelectInput
 import giraffe.type.ChatResponseTextInput
+import java.io.File
+import java.util.UUID
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
-import java.io.File
-import java.util.UUID
 
 class ChatRepository(
   val apolloClient: ApolloClient,
@@ -56,11 +56,10 @@ class ChatRepository(
       .watch(fetchThrows = true)
   }
 
-  suspend fun messageIds(): ApolloResponse<ChatMessageIdQuery.Data> =
-    apolloClient
-      .query(ChatMessageIdQuery())
-      .fetchPolicy(FetchPolicy.NetworkOnly)
-      .execute()
+  suspend fun messageIds(): ApolloResponse<ChatMessageIdQuery.Data> = apolloClient
+    .query(ChatMessageIdQuery())
+    .fetchPolicy(FetchPolicy.NetworkOnly)
+    .execute()
 
   fun subscribeToChatMessages(): Flow<ApolloResponse<ChatMessageSubscription.Data>> =
     apolloClient.subscription(ChatMessageSubscription()).toFlow()
@@ -87,16 +86,12 @@ class ChatRepository(
       }
   }
 
-  suspend fun sendSingleSelect(
-    id: String,
-    value: String,
-  ) = apolloClient.mutation(
+  suspend fun sendSingleSelect(id: String, value: String) = apolloClient.mutation(
     SendChatSingleSelectResponseMutation(
       ChatResponseSingleSelectInput(id, ChatResponseBodySingleSelectInput(value)),
     ),
   ).execute()
 
-  @SuppressLint("Recycle")
   suspend fun uploadFileFromProvider(uri: Uri): Either<OperationResult.Error, UploadFileMutation.Data> {
     val mimeType = fileService.getMimeType(uri)
     val file = File(
@@ -140,11 +135,7 @@ class ChatRepository(
     return apolloClient.mutation(UploadFileMutation(file.toUpload(mimeType))).safeExecute().toEither()
   }
 
-  suspend fun sendFileResponse(
-    id: String,
-    key: String,
-    uri: Uri,
-  ): ApolloResponse<SendChatFileResponseMutation.Data> {
+  suspend fun sendFileResponse(id: String, key: String, uri: Uri): ApolloResponse<SendChatFileResponseMutation.Data> {
     val mimeType = fileService.getMimeType(uri)
 
     val input = ChatResponseFileInput(
@@ -160,8 +151,7 @@ class ChatRepository(
     return apolloClient.mutation(chatFileResponse).execute()
   }
 
-  suspend fun searchGifs(query: String): ApolloResponse<GifQuery.Data> =
-    apolloClient.query(GifQuery(query)).execute()
+  suspend fun searchGifs(query: String): ApolloResponse<GifQuery.Data> = apolloClient.query(GifQuery(query)).execute()
 
   suspend fun writeNewMessageToApolloCache(message: ChatMessageFragment) {
     /**
@@ -281,5 +271,3 @@ class ChatRepository(
     const val MESSAGES_QUERY_NAME = "messages"
   }
 }
-
-private inline fun <reified T> Any?.cast() = this as T

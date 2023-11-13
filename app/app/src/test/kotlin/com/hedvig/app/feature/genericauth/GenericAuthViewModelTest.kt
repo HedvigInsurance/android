@@ -16,6 +16,7 @@ import com.hedvig.authlib.ResendOtpResult
 import com.hedvig.authlib.RevokeResult
 import com.hedvig.authlib.StatusUrl
 import com.hedvig.authlib.SubmitOtpResult
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -23,10 +24,8 @@ import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
-import kotlin.time.Duration.Companion.milliseconds
 
 class GenericAuthViewModelTest {
-
   @get:Rule
   val mainCoroutineRule = MainCoroutineRule()
 

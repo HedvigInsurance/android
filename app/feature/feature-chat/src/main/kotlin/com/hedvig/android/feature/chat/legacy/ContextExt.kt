@@ -20,23 +20,22 @@ internal fun Context.showAlert(
   @StringRes negativeLabel: Int? = android.R.string.cancel,
   positiveAction: () -> Unit,
   negativeAction: (() -> Unit)? = null,
-): androidx.appcompat.app.AlertDialog? =
-  MaterialAlertDialogBuilder(this)
-    .apply {
-      setTitle(resources.getString(title))
-      if (positiveLabel != null) {
-        setPositiveButton(resources.getString(positiveLabel)) { _, _ ->
-          positiveAction()
-        }
+): androidx.appcompat.app.AlertDialog? = MaterialAlertDialogBuilder(this)
+  .apply {
+    setTitle(resources.getString(title))
+    if (positiveLabel != null) {
+      setPositiveButton(resources.getString(positiveLabel)) { _, _ ->
+        positiveAction()
       }
-      if (negativeLabel != null) {
-        setNegativeButton(resources.getString(negativeLabel)) { _, _ ->
-          negativeAction?.let { it() }
-        }
-      }
-      message?.let { setMessage(it) }
     }
-    .show()
+    if (negativeLabel != null) {
+      setNegativeButton(resources.getString(negativeLabel)) { _, _ ->
+        negativeAction?.let { it() }
+      }
+    }
+    message?.let { setMessage(it) }
+  }
+  .show()
 
 internal fun Context.composeContactSupportEmail(
   emailAddresses: List<String> = listOf(getString(hedvig.resources.R.string.GENERAL_EMAIL)),
@@ -57,11 +56,9 @@ internal fun Context.composeContactSupportEmail(
 
 internal fun Context.openUri(uri: Uri) = startActivity(Intent(Intent.ACTION_VIEW, uri))
 
-fun Context.getStoredBoolean(key: String): Boolean =
-  getSharedPreferences().getBoolean(key, false)
+fun Context.getStoredBoolean(key: String): Boolean = getSharedPreferences().getBoolean(key, false)
 
 internal fun Context.storeBoolean(key: String, value: Boolean): Boolean =
   getSharedPreferences().edit().putBoolean(key, value).commit()
 
-private fun Context.getSharedPreferences() =
-  this.getSharedPreferences(SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE)
+private fun Context.getSharedPreferences() = this.getSharedPreferences(SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE)

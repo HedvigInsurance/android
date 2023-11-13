@@ -53,8 +53,11 @@ internal data class PayoutUiState(
 
   sealed interface Status {
     object NotStarted : Status // Before the member has started the payout process in the first place
+
     object Loading : Status // While the network request is being handled to give the payout
+
     object Error : Status // If an error has happened while processing the payout in the backend
+
     object PaidOut : Status // Terminal state, where the payout is complete, and we can exit the flow
   }
 }

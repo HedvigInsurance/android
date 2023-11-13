@@ -1,0 +1,7 @@
+query GetPayinMethodStatus {
+  currentMember {
+    paymentInformation {
+      status
+    }
+  }
+}

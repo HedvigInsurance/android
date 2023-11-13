@@ -46,13 +46,14 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.card.InsuranceCard
-import com.hedvig.android.core.ui.insurance.ContractType
-import com.hedvig.android.core.ui.insurance.ProductVariant
-import com.hedvig.android.core.ui.insurance.canChangeCoInsured
 import com.hedvig.android.core.ui.plus
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
-import com.hedvig.android.feature.insurances.data.Agreement
+import com.hedvig.android.data.contract.ContractType
+import com.hedvig.android.data.contract.canChangeCoInsured
+import com.hedvig.android.data.productvariant.InsuranceVariantDocument
+import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
+import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceContract
 import com.hedvig.android.feature.insurances.insurancedetail.coverage.CoverageTab
 import com.hedvig.android.feature.insurances.insurancedetail.documents.DocumentsTab
@@ -60,6 +61,7 @@ import com.hedvig.android.feature.insurances.insurancedetail.yourinfo.YourInfoTa
 import com.hedvig.android.feature.insurances.ui.createChips
 import com.hedvig.android.feature.insurances.ui.createPainter
 import hedvig.resources.R
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
@@ -141,7 +143,7 @@ private fun ContractDetailScreen(
               val contract = state.insuranceContract
               InsuranceCard(
                 chips = contract.createChips(),
-                topText = contract.currentAgreement.productVariant.displayName,
+                topText = contract.currentInsuranceAgreement.productVariant.displayName,
                 bottomText = contract.exposureDisplayName,
                 imageLoader = imageLoader,
                 modifier = Modifier.padding(horizontal = 16.dp),
@@ -163,10 +165,10 @@ private fun ContractDetailScreen(
                 when (pageIndex) {
                   0 -> {
                     YourInfoTab(
-                      coverageItems = state.insuranceContract.currentAgreement.displayItems
+                      coverageItems = state.insuranceContract.currentInsuranceAgreement.displayItems
                         .map { it.title to it.value }
                         .toImmutableList(),
-                      allowEditCoInsured = state.insuranceContract.currentAgreement.productVariant.contractType
+                      allowEditCoInsured = state.insuranceContract.currentInsuranceAgreement.productVariant.contractType
                         .canChangeCoInsured(),
                       allowChangeAddress = state.insuranceContract.supportsAddressChange,
                       onEditCoInsuredClick = onEditCoInsuredClick,
@@ -176,25 +178,25 @@ private fun ContractDetailScreen(
                         onCancelInsuranceClick(
                           CancelInsuranceData(
                             state.insuranceContract.id,
-                            state.insuranceContract.currentAgreement.productVariant.displayName,
+                            state.insuranceContract.currentInsuranceAgreement.productVariant.displayName,
                           ),
                         )
                       },
-                      upcomingChangesAgreement = state.insuranceContract.upcomingAgreement,
+                      upcomingChangesInsuranceAgreement = state.insuranceContract.upcomingInsuranceAgreement,
                       isTerminated = state.insuranceContract.isTerminated,
                     )
                   }
 
                   1 -> {
                     CoverageTab(
-                      state.insuranceContract.currentAgreement.productVariant.insurableLimits,
-                      state.insuranceContract.currentAgreement.productVariant.perils,
+                      state.insuranceContract.currentInsuranceAgreement.productVariant.insurableLimits,
+                      state.insuranceContract.currentInsuranceAgreement.productVariant.perils,
                     )
                   }
 
                   2 -> {
                     DocumentsTab(
-                      documents = state.insuranceContract.currentAgreement.productVariant.documents,
+                      documents = state.insuranceContract.getAllDocuments(),
                       onDocumentClicked = openWebsite,
                     )
                   }
@@ -209,6 +211,19 @@ private fun ContractDetailScreen(
     }
   }
 }
+
+@Composable
+private fun InsuranceContract.getAllDocuments(): ImmutableList<InsuranceVariantDocument> = buildList {
+  addAll(currentInsuranceAgreement.productVariant.documents)
+  if (currentInsuranceAgreement.certificateUrl != null) {
+    val certificate = InsuranceVariantDocument(
+      stringResource(id = R.string.MY_DOCUMENTS_INSURANCE_CERTIFICATE),
+      url = currentInsuranceAgreement.certificateUrl,
+      type = InsuranceVariantDocument.InsuranceDocumentType.PRE_SALE_INFO_EU_STANDARD,
+    )
+    add(certificate)
+  }
+}.toImmutableList()
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -257,7 +272,7 @@ private fun PreviewContractDetailScreen() {
             exposureDisplayName = "Test exposure",
             inceptionDate = LocalDate.fromEpochDays(200),
             terminationDate = LocalDate.fromEpochDays(400),
-            currentAgreement = Agreement(
+            currentInsuranceAgreement = InsuranceAgreement(
               activeFrom = LocalDate.fromEpochDays(240),
               activeTo = LocalDate.fromEpochDays(340),
               displayItems = persistentListOf(),
@@ -269,8 +284,9 @@ private fun PreviewContractDetailScreen() {
                 insurableLimits = persistentListOf(),
                 documents = persistentListOf(),
               ),
+              certificateUrl = null,
             ),
-            upcomingAgreement = null,
+            upcomingInsuranceAgreement = null,
             renewalDate = LocalDate.fromEpochDays(500),
             supportsAddressChange = false,
             isTerminated = false,

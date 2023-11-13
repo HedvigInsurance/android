@@ -11,7 +11,6 @@ import com.hedvig.android.language.Language
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.Market
-import com.hedvig.android.market.createOnboardingUri
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.Navigator
 import com.kiwi.navigationcompose.typed.composable
@@ -68,4 +67,31 @@ fun NavGraphBuilder.loginGraph(
       )
     }
   }
+}
+
+private fun Market.createOnboardingUri(baseUrl: String, language: Language): Uri {
+  val webPath = language.webPath()
+  val builder = Uri.Builder()
+    .scheme("https")
+    .authority(baseUrl)
+    .appendPath(webPath)
+    .appendPath(
+      when (language) {
+        Language.SV_SE -> "forsakringar"
+        Language.EN_SE,
+        Language.NB_NO,
+        Language.EN_NO,
+        Language.DA_DK,
+        Language.EN_DK,
+        -> "insurances"
+      },
+    )
+    .appendQueryParameter("utm_source", "android")
+    .appendQueryParameter("utm_medium", "hedvig-app")
+
+  if (this == Market.SE) {
+    builder.appendQueryParameter("utm_campaign", "se")
+  }
+
+  return builder.build()
 }

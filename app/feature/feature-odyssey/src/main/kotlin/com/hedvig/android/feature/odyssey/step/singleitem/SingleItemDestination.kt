@@ -241,11 +241,7 @@ private fun Brands(
 }
 
 @Composable
-private fun DateOfPurchase(
-  uiState: DatePickerUiState,
-  canInteract: Boolean,
-  modifier: Modifier = Modifier,
-) {
+private fun DateOfPurchase(uiState: DatePickerUiState, canInteract: Boolean, modifier: Modifier = Modifier) {
   DatePickerWithDialog(
     uiState = uiState,
     canInteract = canInteract,
@@ -256,11 +252,7 @@ private fun DateOfPurchase(
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-private fun PriceOfPurchase(
-  uiState: PurchasePriceUiState,
-  canInteract: Boolean,
-  modifier: Modifier = Modifier,
-) {
+private fun PriceOfPurchase(uiState: PurchasePriceUiState, canInteract: Boolean, modifier: Modifier = Modifier) {
   val focusRequester = remember { FocusRequester() }
   MonetaryAmountInput(
     value = uiState.uiMoney.amount?.toString() ?: "",

@@ -13,8 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
-import com.hedvig.android.core.designsystem.component.button.LargeOutlinedTextButton
+import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
+import com.hedvig.android.core.designsystem.component.button.HedvigOutlinedTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.preview.calculateForPreview
@@ -68,12 +68,12 @@ private fun TerminationSuccessScreen(
     navigateUp = navigateUp,
   ) {
     Column {
-      LargeOutlinedTextButton(
+      HedvigOutlinedTextButton(
         text = stringResource(R.string.general_done_button),
         onClick = navigateBack,
       )
       Spacer(Modifier.height(16.dp))
-      LargeContainedTextButton(
+      HedvigContainedButton(
         text = stringResource(R.string.TERMINATION_OPEN_SURVEY_LABEL),
         onClick = onOpenSurvey,
       )

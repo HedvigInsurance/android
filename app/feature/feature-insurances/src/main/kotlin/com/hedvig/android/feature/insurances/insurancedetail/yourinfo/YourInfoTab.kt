@@ -39,10 +39,10 @@ import com.hedvig.android.core.designsystem.material3.squircleLargeTop
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
-import com.hedvig.android.core.ui.insurance.ContractType
-import com.hedvig.android.core.ui.insurance.ProductVariant
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
-import com.hedvig.android.feature.insurances.data.Agreement
+import com.hedvig.android.data.contract.ContractType
+import com.hedvig.android.data.productvariant.ProductVariant
+import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -56,7 +56,7 @@ internal fun YourInfoTab(
   coverageItems: ImmutableList<Pair<String, String>>,
   allowChangeAddress: Boolean,
   allowEditCoInsured: Boolean,
-  upcomingChangesAgreement: Agreement?,
+  upcomingChangesInsuranceAgreement: InsuranceAgreement?,
   onEditCoInsuredClick: () -> Unit,
   onChangeAddressClick: () -> Unit,
   openChat: () -> Unit,
@@ -69,6 +69,7 @@ internal fun YourInfoTab(
   if (showEditYourInfoBottomSheet) {
     val sheetState = rememberModalBottomSheetState(true)
     ModalBottomSheet(
+      containerColor = MaterialTheme.colorScheme.background,
       onDismissRequest = {
         showEditYourInfoBottomSheet = false
       },
@@ -83,6 +84,7 @@ internal fun YourInfoTab(
         onEditCoInsuredClick = {
           coroutineScope.launch {
             sheetState.hide()
+          }.invokeOnCompletion {
             showEditYourInfoBottomSheet = false
             onEditCoInsuredClick()
           }
@@ -90,6 +92,7 @@ internal fun YourInfoTab(
         onChangeAddressClick = {
           coroutineScope.launch {
             sheetState.hide()
+          }.invokeOnCompletion {
             showEditYourInfoBottomSheet = false
             onChangeAddressClick()
           }
@@ -97,6 +100,7 @@ internal fun YourInfoTab(
         onDismiss = {
           coroutineScope.launch {
             sheetState.hide()
+          }.invokeOnCompletion {
             showEditYourInfoBottomSheet = false
           }
         },
@@ -112,9 +116,10 @@ internal fun YourInfoTab(
   }
 
   var showUpcomingChangesBottomSheet by rememberSaveable { mutableStateOf(false) }
-  if (showUpcomingChangesBottomSheet && upcomingChangesAgreement != null) {
+  if (showUpcomingChangesBottomSheet && upcomingChangesInsuranceAgreement != null) {
     val sheetState = rememberModalBottomSheetState(true)
     ModalBottomSheet(
+      containerColor = MaterialTheme.colorScheme.background,
       onDismissRequest = {
         showUpcomingChangesBottomSheet = false
       },
@@ -125,10 +130,10 @@ internal fun YourInfoTab(
     ) {
       UpcomingChangesBottomSheetContent(
         infoText = stringResource(
-          id = R.string.insurances_tab_your_insurance_will_be_updated,
-          upcomingChangesAgreement.activeFrom,
+          id = R.string.insurances_tab_your_insurance_will_be_updated_with_info,
+          upcomingChangesInsuranceAgreement.activeFrom,
         ),
-        sections = upcomingChangesAgreement.displayItems
+        sections = upcomingChangesInsuranceAgreement.displayItems
           .map { it.title to it.value }
           .toImmutableList(),
         onOpenChat = openChat,
@@ -151,17 +156,17 @@ internal fun YourInfoTab(
 
   Column(modifier) {
     Spacer(Modifier.height(16.dp))
-    if (upcomingChangesAgreement != null) {
+    if (upcomingChangesInsuranceAgreement != null) {
       VectorInfoCard(
         text = stringResource(
           id = R.string.insurances_tab_your_insurance_will_be_updated,
-          upcomingChangesAgreement.activeFrom,
+          upcomingChangesInsuranceAgreement.activeFrom,
         ),
         modifier = Modifier
           .fillMaxWidth()
           .padding(horizontal = 16.dp),
       ) {
-        if (upcomingChangesAgreement.displayItems.isNotEmpty()) {
+        if (upcomingChangesInsuranceAgreement.displayItems.isNotEmpty()) {
           HedvigContainedSmallButton(
             text = stringResource(id = R.string.insurances_tab_view_details),
             onClick = { showUpcomingChangesBottomSheet = true },
@@ -182,10 +187,6 @@ internal fun YourInfoTab(
         HedvigContainedButton(
           text = stringResource(R.string.CONTRACT_EDIT_INFO_LABEL),
           onClick = { showEditYourInfoBottomSheet = true },
-          colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-            contentColor = MaterialTheme.colorScheme.onSurface,
-          ),
           modifier = Modifier.padding(horizontal = 16.dp),
         )
         Spacer(Modifier.height(8.dp))
@@ -204,10 +205,7 @@ internal fun YourInfoTab(
 }
 
 @Composable
-internal fun CoverageRows(
-  coverageRowItems: ImmutableList<Pair<String, String>>,
-  modifier: Modifier = Modifier,
-) {
+internal fun CoverageRows(coverageRowItems: ImmutableList<Pair<String, String>>, modifier: Modifier = Modifier) {
   Column(modifier = modifier) {
     coverageRowItems.forEachIndexed { index, (firstText, secondText) ->
       HorizontalItemsWithMaximumSpaceTaken(
@@ -260,11 +258,11 @@ private fun PreviewYourInfoTab() {
         onChangeAddressClick = {},
         openChat = {},
         onCancelInsuranceClick = {},
-        upcomingChangesAgreement = Agreement(
+        upcomingChangesInsuranceAgreement = InsuranceAgreement(
           activeFrom = LocalDate.fromEpochDays(200),
           activeTo = LocalDate.fromEpochDays(300),
           displayItems = listOf(
-            Agreement.DisplayItem(
+            InsuranceAgreement.DisplayItem(
               title = "test title",
               value = "test value",
             ),
@@ -277,6 +275,7 @@ private fun PreviewYourInfoTab() {
             insurableLimits = persistentListOf(),
             documents = persistentListOf(),
           ),
+          certificateUrl = null,
         ),
         isTerminated = false,
       )

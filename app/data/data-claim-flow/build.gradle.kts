@@ -1,6 +1,7 @@
 plugins {
   id("hedvig.android.ktlint")
   id("hedvig.android.library")
+  id("hedvig.android.library.compose")
   alias(libs.plugins.serialization)
   alias(libs.plugins.squareSortDependencies)
 }
@@ -10,6 +11,7 @@ dependencies {
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
   implementation(libs.koin.core)
+  implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)
   implementation(libs.retrofit)

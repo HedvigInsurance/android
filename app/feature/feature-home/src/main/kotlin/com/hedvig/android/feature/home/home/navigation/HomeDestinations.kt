@@ -6,8 +6,5 @@ import kotlinx.serialization.Serializable
 
 internal sealed interface HomeDestinations : Destination {
   @Serializable
-  data class ClaimDetailDestination(val claimId: String) : HomeDestinations
-
-  @Serializable
   data class CommonClaimDestination(val claimsData: CommonClaimsData) : Destination
 }

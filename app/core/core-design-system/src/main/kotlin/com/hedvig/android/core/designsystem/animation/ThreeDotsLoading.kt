@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -24,7 +25,6 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -33,12 +33,10 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 
 @Composable
-internal fun ThreeDotsLoading(
+fun ThreeDotsLoading(
   modifier: Modifier = Modifier,
-  stableColor: Color = MaterialTheme.colorScheme.onPrimary,
-  temporaryColor: Color = MaterialTheme.colorScheme.onPrimary
-    .copy(alpha = DisabledAlpha)
-    .compositeOver(MaterialTheme.colorScheme.primary),
+  stableColor: Color = LocalContentColor.current,
+  temporaryColor: Color = LocalContentColor.current.copy(alpha = DisabledAlpha),
   stableScale: Float = 1f,
   temporaryScale: Float = 0.9f,
   circleRadius: Dp = 6.dp,
@@ -72,13 +70,17 @@ private fun LoadingDot(
 ) {
   val transition = rememberInfiniteTransition()
   val color by transition.animateColor(
-    initialValue = stableColor, // ignored since the keyFrames DSL overrides it
-    targetValue = stableColor, // ignored since the keyFrames DSL overrides it
+    // ignored since the keyFrames DSL overrides it
+    initialValue = stableColor,
+    // ignored since the keyFrames DSL overrides it
+    targetValue = stableColor,
     animationSpec = dotInfiniteRepeatableSpec(stableColor, temporaryColor, startDelay),
   )
   val scale by transition.animateFloat(
-    initialValue = 1f, // ignored since the keyFrames DSL overrides it
-    targetValue = 1f, // ignored since the keyFrames DSL overrides it
+    // ignored since the keyFrames DSL overrides it
+    initialValue = 1f,
+    // ignored since the keyFrames DSL overrides it
+    targetValue = 1f,
     animationSpec = dotInfiniteRepeatableSpec(stableScale, temporaryScale, startDelay),
   )
   Box(

@@ -1,8 +1,8 @@
 package com.hedvig.android.core
 
+import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import assertk.assertions.isFailure
 import assertk.assertions.isInstanceOf
 import com.hedvig.android.core.common.android.asMap
 import com.hedvig.android.core.common.android.jsonArrayOf
@@ -42,7 +42,7 @@ class JSONObjectTest {
       1 to "foo",
     )
 
-    assertThat { map.toJsonObject() }.isFailure().isInstanceOf(IllegalArgumentException::class)
+    assertFailure { map.toJsonObject() }.isInstanceOf(IllegalArgumentException::class)
   }
 
   @Test

@@ -12,8 +12,8 @@ internal object HedvigTextFieldTokens {
   val CaretColor = HedvigColorSchemeKeyTokens.Primary
   val ContainerColor = HedvigColorSchemeKeyTokens.Surface // HedvigColorSchemeKeyTokens.SurfaceVariant Hedvig adjusted
   val ContainerHeight = 56.0.dp
-  val TypeContainerColor = HedvigColorSchemeKeyTokens.TypeContainer
-  val ErrorTypeContainerColor = HedvigColorSchemeKeyTokens.WarningContainer
+  val TypeHighlightColor = HedvigColorSchemeKeyTokens.TypeHighlight
+  val ErrorTypeHighlightColor = HedvigColorSchemeKeyTokens.WarningHighlight
   val ContainerShape = HedvigShapeKeyTokens.CornerMedium
   val DisabledActiveIndicatorColor = HedvigColorSchemeKeyTokens.OnSurface
   val DisabledActiveIndicatorHeight = 1.0.dp
@@ -47,7 +47,7 @@ internal object HedvigTextFieldTokens {
   val ErrorInputColor = HedvigColorSchemeKeyTokens.OnWarningContainer
   val ErrorLabelColor = HedvigColorSchemeKeyTokens.OnWarningContainer
   val ErrorLeadingIconColor = HedvigColorSchemeKeyTokens.OnWarningContainer
-  val ErrorSupportingColor = HedvigColorSchemeKeyTokens.OnWarningContainer
+  val ErrorSupportingColor = HedvigColorSchemeKeyTokens.WarningElement
   val ErrorTrailingIconColor = HedvigColorSchemeKeyTokens.OnWarningContainer
   val FocusActiveIndicatorColor = HedvigColorSchemeKeyTokens.Primary
   val FocusActiveIndicatorHeight = 2.0.dp

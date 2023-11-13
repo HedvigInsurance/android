@@ -22,11 +22,8 @@ internal class ChatFileUploadBottomSheet : BottomSheetDialogFragment() {
   private val chatViewModel: ChatViewModel by activityViewModel()
   private val binding by viewBinding(FileUploadDialogBinding::bind)
 
-  override fun onCreateView(
-    inflater: LayoutInflater,
-    container: ViewGroup?,
-    savedInstanceState: Bundle?,
-  ): View? = inflater.inflate(R.layout.file_upload_dialog, container, false)
+  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+    inflater.inflate(R.layout.file_upload_dialog, container, false)
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)

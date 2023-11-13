@@ -72,10 +72,7 @@ internal fun ReferralList(
 
 @Suppress("UnusedReceiverParameter")
 @Composable
-private fun ColumnScope.ReferralRow(
-  referral: Referral,
-  modifier: Modifier = Modifier,
-) {
+private fun ColumnScope.ReferralRow(referral: Referral, modifier: Modifier = Modifier) {
   Row(
     modifier = modifier
       .padding(vertical = 16.dp)

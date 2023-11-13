@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
@@ -18,7 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.material3.onWarningContainer
@@ -26,12 +26,11 @@ import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.material3.warningContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.hedvig.normal.WarningFilled
 
 @Composable
-internal fun FailedAudioPlayerCard(
-  tryAgain: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
+internal fun FailedAudioPlayerCard(tryAgain: () -> Unit, modifier: Modifier = Modifier) {
   Column(modifier.clip(MaterialTheme.shapes.squircleMedium)) {
     Spacer(Modifier.height(20.dp))
     Row(
@@ -40,8 +39,9 @@ internal fun FailedAudioPlayerCard(
       modifier = Modifier.padding(horizontal = 16.dp),
     ) {
       Icon(
-        painter = painterResource(com.hedvig.android.core.design.system.R.drawable.ic_warning_triangle),
+        imageVector = Icons.Hedvig.WarningFilled,
         contentDescription = null,
+        modifier = Modifier.padding(top = 4.dp),
       )
       Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Text(

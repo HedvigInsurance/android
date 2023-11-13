@@ -1,0 +1,56 @@
+query Home {
+  currentMember {
+    claims {
+      ...ClaimFragment
+    }
+    isEligibleToMakeClaim
+    terminatedContracts {
+      id
+    }
+    pendingContracts {
+      id
+      externalInsuranceCancellationHandledByHedvig
+      exposureDisplayName
+    }
+    importantMessages {
+      id
+      message
+      link
+    }
+    activeContracts {
+      id
+      masterInceptionDate
+      currentAgreement {
+        productVariant {
+          displayName
+          commonClaimDescriptions {
+            id
+            icon {
+              ...IconsFragment
+            }
+            title
+            layout {
+              ... on CommonClaimLayoutEmergency {
+                title
+                color
+                emergencyNumber
+              }
+              ... on CommonClaimLayoutTitleAndBulletPoints {
+                title
+                color
+                buttonTitle
+                bulletPoints {
+                  title
+                  description
+                  icon {
+                    ...IconsFragment
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

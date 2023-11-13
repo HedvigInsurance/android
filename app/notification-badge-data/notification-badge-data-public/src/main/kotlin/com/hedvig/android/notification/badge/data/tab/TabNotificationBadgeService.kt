@@ -9,7 +9,6 @@ class TabNotificationBadgeService internal constructor(
   private val crossSellBottomNavNotificationBadgeService: CrossSellBottomNavNotificationBadgeService,
   private val referralsNotificationBadgeService: ReferralsNotificationBadgeService,
 ) {
-
   fun unseenTabNotificationBadges(): Flow<Set<BottomNavTab>> {
     return combine(
       crossSellBottomNavNotificationBadgeService.showNotification(),

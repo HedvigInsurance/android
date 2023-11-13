@@ -7,6 +7,9 @@ import com.hedvig.android.core.common.android.plus
 import com.hedvig.android.core.common.await
 import com.hedvig.android.core.datastore.DeviceIdDataStore
 import com.hedvig.hanalytics.HAnalytics
+import java.util.Locale
+import java.util.TimeZone
+import java.util.UUID
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
@@ -15,9 +18,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okio.IOException
-import java.util.Locale
-import java.util.TimeZone
-import java.util.UUID
 
 internal class AndroidHAnalyticsService(
   private val context: Context,
@@ -28,7 +28,6 @@ internal class AndroidHAnalyticsService(
   private val appVersionCode: String,
   private val appId: String,
 ) : HAnalyticsService {
-
   private val sessionId = UUID.randomUUID()
 
   override suspend fun getExperiments(): List<Experiment>? {

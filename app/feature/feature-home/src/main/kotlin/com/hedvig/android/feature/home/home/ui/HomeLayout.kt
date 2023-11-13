@@ -42,14 +42,14 @@ import kotlin.math.max
 @Composable
 internal fun HomeLayout(
   fullScreenSize: IntSize,
-  welcomeMessage: @Composable @UiComposable  () -> Unit,
-  claimStatusCards: @Composable @UiComposable  () -> Unit,
-  veryImportantMessages: @Composable @UiComposable  () -> Unit,
-  memberReminderCards: @Composable @UiComposable  () -> Unit,
-  startClaimButton: @Composable @UiComposable  () -> Unit,
-  otherServicesButton: @Composable @UiComposable  () -> Unit,
-  topSpacer: @Composable @UiComposable  () -> Unit,
-  bottomSpacer: @Composable @UiComposable  () -> Unit,
+  welcomeMessage: @Composable @UiComposable () -> Unit,
+  claimStatusCards: @Composable @UiComposable () -> Unit,
+  veryImportantMessages: @Composable @UiComposable () -> Unit,
+  memberReminderCards: @Composable @UiComposable () -> Unit,
+  startClaimButton: @Composable @UiComposable () -> Unit,
+  otherServicesButton: @Composable @UiComposable () -> Unit,
+  topSpacer: @Composable @UiComposable () -> Unit,
+  bottomSpacer: @Composable @UiComposable () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Layout(
@@ -93,12 +93,19 @@ internal fun HomeLayout(
 
     val bottomAttachedPlaceables = buildList {
       add(FixedSizePlaceable(0, 16.dp.roundToPx()))
-      if (veryImportantMessagesPlaceable.height > 0) {
+      val doPlaceVeryImportantMessages = veryImportantMessagesPlaceable.height > 0
+      val doPlaceMemberReminderCards = memberReminderCardsPlaceable.height > 0
+
+      if (doPlaceVeryImportantMessages) {
         add(veryImportantMessagesPlaceable)
+      }
+      if (doPlaceVeryImportantMessages && doPlaceMemberReminderCards) {
         add(FixedSizePlaceable(0, 8.dp.roundToPx()))
       }
-      if (memberReminderCardsPlaceable.height > 0) {
+      if (doPlaceMemberReminderCards) {
         add(memberReminderCardsPlaceable)
+      }
+      if (doPlaceVeryImportantMessages || doPlaceMemberReminderCards) {
         add(FixedSizePlaceable(0, 16.dp.roundToPx()))
       }
       add(startClaimButtonPlaceable)
@@ -165,8 +172,14 @@ private fun Placeable.PlacementScope.placeAsColumn(
 }
 
 private enum class HomeLayoutContent {
-  WelcomeMessage, ClaimStatusCards, MemberReminderCards, StartClaimButton, OtherServicesButton, VeryImportantMessages,
-  TopSpacer, BottomSpacer
+  WelcomeMessage,
+  ClaimStatusCards,
+  MemberReminderCards,
+  StartClaimButton,
+  OtherServicesButton,
+  VeryImportantMessages,
+  TopSpacer,
+  BottomSpacer,
 }
 
 // region previews
@@ -181,7 +194,7 @@ private fun PreviewHomeLayoutCenteredContent() {
           maxHeight = constraints.maxHeight,
           claimStatusCards = {
             Column(Modifier.padding(horizontal = 16.dp), Arrangement.spacedBy(8.dp)) {
-              PreviewBox() { Text("claim status card") }
+              PreviewBox { Text("claim status card") }
             }
           },
         )
@@ -250,7 +263,7 @@ private fun PreviewHomeLayoutScrollingContent() {
           maxHeight = constraints.maxHeight,
           claimStatusCards = {
             Column(Modifier.padding(horizontal = 16.dp), Arrangement.spacedBy(8.dp)) {
-              PreviewBox() { Text("claim status card") }
+              PreviewBox { Text("claim status card") }
             }
           },
           memberReminderCards = {
@@ -271,9 +284,9 @@ private fun PreviewHomeLayout(
   maxWidth: Int,
   maxHeight: Int,
   modifier: Modifier = Modifier,
-  claimStatusCards: @Composable @UiComposable  () -> Unit = {},
-  veryImportantMessages: @Composable @UiComposable  () -> Unit = {},
-  memberReminderCards: @Composable @UiComposable  () -> Unit = {},
+  claimStatusCards: @Composable @UiComposable () -> Unit = {},
+  veryImportantMessages: @Composable @UiComposable () -> Unit = {},
+  memberReminderCards: @Composable @UiComposable () -> Unit = {},
 ) {
   HomeLayout(
     fullScreenSize = IntSize(maxWidth, maxHeight),

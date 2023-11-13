@@ -25,10 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.TextStyle
 
 @Composable
-internal fun M3OnSurfaceText(
-  text: String,
-  style: TextStyle,
-) {
+internal fun M3OnSurfaceText(text: String, style: TextStyle) {
   Text(
     color = MaterialTheme.colorScheme.onSurface,
     text = text,

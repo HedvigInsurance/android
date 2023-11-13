@@ -1,7 +1,6 @@
 package com.hedvig.android.notification.badge.data.crosssell
 
 import com.hedvig.android.notification.badge.data.storage.NotificationBadgeStorage
-import giraffe.type.TypeOfContract
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
@@ -14,13 +13,16 @@ import kotlinx.coroutines.flow.map
  * The cross-sells come from the backend as [TypeOfContract] and we store the string representation of them locally.
  */
 internal class CrossSellNotificationBadgeService(
-  private val getCrossSellsContractTypesUseCase: GetCrossSellsContractTypesUseCase,
+  private val getCrossSellIdentifiersUseCase: GetCrossSellIdentifiersUseCase,
   private val notificationBadgeStorage: NotificationBadgeStorage,
 ) {
   fun showNotification(badgeType: CrossSellBadgeType): Flow<Boolean> {
     return flow {
       val notificationBadge = badgeType.associatedNotificationBadge
-      val potentialCrossSells = getCrossSellsContractTypesUseCase.invoke().map(TypeOfContract::rawValue).toSet()
+      val potentialCrossSells = getCrossSellIdentifiersUseCase
+        .invoke()
+        .filter(CrossSellIdentifier::isKnownCrossSell)
+        .map(CrossSellIdentifier::rawValue)
 
       emitAll(
         notificationBadgeStorage.getValue(notificationBadge)
@@ -36,11 +38,16 @@ internal class CrossSellNotificationBadgeService(
 
   suspend fun markCurrentCrossSellsAsSeen(badgeType: CrossSellBadgeType) {
     val notificationBadge = badgeType.associatedNotificationBadge
-    val potentialCrossSells = getCrossSellsContractTypesUseCase.invoke().map(TypeOfContract::rawValue).toSet()
+    val potentialCrossSells = getCrossSellIdentifiersUseCase
+      .invoke()
+      .filter(CrossSellIdentifier::isKnownCrossSell)
+      .map(CrossSellIdentifier::rawValue)
+      .toSet()
+
     val alreadySeenCrossSells = notificationBadgeStorage.getValue(notificationBadge).first()
     notificationBadgeStorage.setValue(
-      notificationBadge,
-      potentialCrossSells + alreadySeenCrossSells,
+      notificationBadge = notificationBadge,
+      newStatus = potentialCrossSells + alreadySeenCrossSells,
     )
   }
 }

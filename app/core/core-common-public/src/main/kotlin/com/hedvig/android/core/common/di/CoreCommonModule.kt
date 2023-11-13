@@ -1,9 +1,9 @@
 package com.hedvig.android.core.common.di
 
 import com.hedvig.android.core.common.ApplicationScope
+import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.Dispatchers
 import org.koin.dsl.module
-import kotlin.coroutines.CoroutineContext
 
 @Suppress("RemoveExplicitTypeArguments")
 val coreCommonModule = module {

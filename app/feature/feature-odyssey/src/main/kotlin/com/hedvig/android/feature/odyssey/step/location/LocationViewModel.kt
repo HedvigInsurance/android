@@ -16,7 +16,6 @@ internal class LocationViewModel(
   private val locationOptions: List<LocationOption>,
   private val claimFlowRepository: ClaimFlowRepository,
 ) : ViewModel() {
-
   private val _uiState =
     MutableStateFlow(LocationUiState.fromInitialSelection(initialSelectedLocation, locationOptions))
   val uiState: StateFlow<LocationUiState> = _uiState.asStateFlow()

@@ -20,7 +20,6 @@ internal class GifAdapter(
   private val imageLoader: ImageLoader,
   private val sendGif: (String) -> Unit,
 ) : ListAdapter<GifQuery.Gif, GifAdapter.GifViewHolder>(GenericDiffUtilItemCallback()) {
-
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = GifViewHolder(
     imageLoader,
     LayoutInflater
@@ -45,6 +44,7 @@ internal class GifAdapter(
     view: View,
   ) : RecyclerView.ViewHolder(view) {
     val binding by viewBinding(GifItemBinding::bind)
+
     fun bind(item: GifQuery.Gif, sendGif: (String) -> Unit) {
       binding.apply {
         item.url?.let { url ->

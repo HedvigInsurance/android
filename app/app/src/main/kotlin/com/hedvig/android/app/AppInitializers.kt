@@ -7,7 +7,7 @@ class AppInitializers(
 ) {
   fun initialize() {
     for (initializable in initializables) {
-      initializable.intialize()
+      initializable.initialize()
     }
   }
 }

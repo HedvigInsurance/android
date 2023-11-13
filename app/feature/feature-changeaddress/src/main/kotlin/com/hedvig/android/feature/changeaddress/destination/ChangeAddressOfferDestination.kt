@@ -16,16 +16,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -34,9 +33,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.layout.positionInParent
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -51,15 +49,18 @@ import com.hedvig.android.core.designsystem.component.button.HedvigContainedButt
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.card.HedvigInfoCard
+import com.hedvig.android.core.designsystem.material3.squircleExtraSmall
 import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.hedvig.small.hedvig.ArrowNorthEast
 import com.hedvig.android.core.ui.ValidatedInput
-import com.hedvig.android.core.ui.appbar.m3.TopAppBarActionType
 import com.hedvig.android.core.ui.dialog.ErrorDialog
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.productVariant.android.getStringRes
 import com.hedvig.android.feature.changeaddress.ChangeAddressUiState
 import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
 import com.hedvig.android.feature.changeaddress.data.MoveIntentId
@@ -69,6 +70,7 @@ import com.hedvig.android.feature.changeaddress.ui.offer.QuoteCard
 import hedvig.resources.R
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
@@ -76,8 +78,8 @@ import kotlinx.datetime.toLocalDateTime
 internal fun ChangeAddressOfferDestination(
   viewModel: ChangeAddressViewModel,
   openChat: () -> Unit,
-  close: () -> Unit,
-  onChangeAddressResult: (String?) -> Unit,
+  navigateUp: () -> Unit,
+  onChangeAddressResult: (LocalDate?) -> Unit,
   openUrl: (String) -> Unit,
 ) {
   val uiState: ChangeAddressUiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -85,13 +87,13 @@ internal fun ChangeAddressOfferDestination(
 
   LaunchedEffect(moveResult) {
     if (moveResult != null) {
-      onChangeAddressResult(uiState.movingDate.input?.toString())
+      onChangeAddressResult(uiState.movingDate.input)
     }
   }
   ChangeAddressOfferScreen(
     uiState = uiState,
     openChat = openChat,
-    close = close,
+    navigateUp = navigateUp,
     onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
     onExpandQuote = viewModel::onExpandQuote,
     onConfirmMove = viewModel::onConfirmMove,
@@ -103,7 +105,7 @@ internal fun ChangeAddressOfferDestination(
 private fun ChangeAddressOfferScreen(
   uiState: ChangeAddressUiState,
   openChat: () -> Unit,
-  close: () -> Unit,
+  navigateUp: () -> Unit,
   onErrorDialogDismissed: () -> Unit,
   onExpandQuote: (MoveQuote) -> Unit,
   onConfirmMove: (MoveIntentId) -> Unit,
@@ -121,15 +123,14 @@ private fun ChangeAddressOfferScreen(
   val scrollState = rememberScrollState()
   HedvigScaffold(
     topAppBarText = stringResource(id = R.string.CHANGE_ADDRESS_SUMMARY_TITLE),
-    navigateUp = close,
+    navigateUp = navigateUp,
     topAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
-    topAppBarActionType = TopAppBarActionType.CLOSE,
     scrollState = scrollState,
   ) {
     Spacer(Modifier.height(8.dp))
     for (quote in uiState.quotes) {
       QuoteCard(
-        movingDate = uiState.movingDate.input?.toString(),
+        movingDate = quote.startDate,
         quote = quote,
         onExpandClicked = { onExpandQuote(quote) },
         isExpanded = quote.isExpanded,
@@ -170,7 +171,7 @@ private fun ChangeAddressOfferScreen(
       },
       modifier = Modifier
         .padding(horizontal = 16.dp)
-        .onGloballyPositioned { layoutCoordinates ->
+        .onPlaced { layoutCoordinates ->
           // Find the Y position where this button ends, to scroll right below it on click.
           whatsIncludedButtonPositionY =
             layoutCoordinates.positionInParent().y + layoutCoordinates.size.height
@@ -178,7 +179,7 @@ private fun ChangeAddressOfferScreen(
     )
     Spacer(Modifier.height(80.dp))
 
-    for (quote in uiState.quotes) {
+    for (quote in uiState.quotes.distinctBy { it.productVariant.contractType }) {
       QuoteDetailsAndPdfs(
         quote = quote,
         openUrl = openUrl,
@@ -209,7 +210,7 @@ private fun ChangeAddressOfferScreen(
     Spacer(Modifier.height(64.dp))
     Text(
       text = stringResource(id = R.string.CHANGE_ADDRESS_NO_FIND),
-      fontSize = 18.sp,
+      style = MaterialTheme.typography.bodyLarge,
       textAlign = TextAlign.Center,
       modifier = Modifier
         .fillMaxWidth()
@@ -226,7 +227,7 @@ private fun ChangeAddressOfferScreen(
     ) {
       Text(
         text = stringResource(R.string.open_chat),
-        fontSize = 18.sp,
+        style = MaterialTheme.typography.bodyLarge,
       )
     }
     Spacer(Modifier.height(16.dp))
@@ -234,22 +235,19 @@ private fun ChangeAddressOfferScreen(
 }
 
 @Composable
-private fun QuotesPriceSum(
-  quotes: List<MoveQuote>,
-  modifier: Modifier = Modifier,
-) {
+private fun QuotesPriceSum(quotes: List<MoveQuote>, modifier: Modifier = Modifier) {
   HorizontalItemsWithMaximumSpaceTaken(
     startSlot = {
       Text(
         text = stringResource(id = R.string.CHANGE_ADDRESS_TOTAL),
-        fontSize = 18.sp,
+        style = MaterialTheme.typography.bodyLarge,
       )
     },
     endSlot = {
       val summedPrice = quotes.map(MoveQuote::premium).reduce(UiMoney::plus)
       Text(
         text = stringResource(R.string.CHANGE_ADDRESS_PRICE_PER_MONTH_LABEL, summedPrice.toString()),
-        fontSize = 18.sp,
+        style = MaterialTheme.typography.bodyLarge,
         textAlign = TextAlign.End,
       )
     },
@@ -258,16 +256,16 @@ private fun QuotesPriceSum(
 }
 
 @Composable
-private fun QuoteDetailsAndPdfs(
-  quote: MoveQuote,
-  openUrl: (String) -> Unit,
-  modifier: Modifier = Modifier,
-) {
+private fun QuoteDetailsAndPdfs(quote: MoveQuote, openUrl: (String) -> Unit, modifier: Modifier = Modifier) {
   Column(modifier) {
     HedvigInfoCard(
       contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
+      shape = MaterialTheme.shapes.squircleExtraSmall,
     ) {
-      Text(quote.productVariant.displayName)
+      Text(
+        text = quote.productVariant.displayName,
+        style = MaterialTheme.typography.bodyMedium,
+      )
     }
     Spacer(Modifier.height(32.dp))
     InsurableLimits(quote)
@@ -282,14 +280,20 @@ private fun ColumnScope.InsurableLimits(quote: MoveQuote) {
   quote.productVariant.insurableLimits.mapIndexed { index, highlight ->
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
-        Text(highlight.label, fontSize = 18.sp)
+        Text(
+          text = highlight.label,
+          style = MaterialTheme.typography.bodyLarge,
+        )
       },
       endSlot = {
         Row(
           verticalAlignment = Alignment.CenterVertically,
           horizontalArrangement = Arrangement.End,
         ) {
-          Text(highlight.limit, fontSize = 18.sp)
+          Text(
+            text = highlight.limit,
+            style = MaterialTheme.typography.bodyLarge,
+          )
         }
       },
       spaceBetween = 18.dp,
@@ -303,11 +307,11 @@ private fun ColumnScope.InsurableLimits(quote: MoveQuote) {
 }
 
 @Composable
-private fun Documents(
-  quote: MoveQuote,
-  openUrl: (String) -> Unit,
-) {
+private fun Documents(quote: MoveQuote, openUrl: (String) -> Unit) {
   quote.productVariant.documents.mapIndexed { index, document ->
+    if (index > 0) {
+      Spacer(Modifier.height(8.dp))
+    }
     HedvigCard(
       onClick = { openUrl(document.url) },
     ) {
@@ -330,22 +334,20 @@ private fun Documents(
                 append(" PDF")
               }
             },
-            fontSize = 18.sp,
+            style = MaterialTheme.typography.bodyLarge,
           )
-          CompositionLocalProvider(LocalContentColor.provides(MaterialTheme.colorScheme.onSurfaceVariant)) {
-            Text(document.displayName, fontSize = 18.sp)
-          }
+          Text(
+            text = document.displayName,
+            style = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
+          )
         }
         Spacer(Modifier.width(8.dp))
         Icon(
-          painter = painterResource(R.drawable.ic_north_east),
+          imageVector = Icons.Hedvig.ArrowNorthEast,
           contentDescription = null,
           modifier = Modifier.size(16.dp),
         )
       }
-    }
-    if (index != quote.productVariant.documents.lastIndex) {
-      Spacer(Modifier.height(8.dp))
     }
   }
 }

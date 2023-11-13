@@ -3,16 +3,16 @@ package com.hedvig.android.memberreminders
 import assertk.assertThat
 import assertk.assertions.isFalse
 import assertk.assertions.isTrue
-import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.datastore.TestPreferencesDataStore
 import com.hedvig.android.test.clock.TestClock
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
-import kotlin.time.Duration.Companion.days
-import kotlin.time.Duration.Companion.seconds
 
 class EnableNotificationsReminderManagerTest {
   @get:Rule
@@ -127,6 +127,7 @@ private val TestHedvigBuildConstants = object : HedvigBuildConstants {
   override val urlBaseWeb: String = ""
   override val urlHanalytics: String = ""
   override val urlOdyssey: String = ""
+  override val deepLinkHost: String = ""
   override val appVersionName: String = ""
   override val appVersionCode: String = ""
   override val appId: String = ""

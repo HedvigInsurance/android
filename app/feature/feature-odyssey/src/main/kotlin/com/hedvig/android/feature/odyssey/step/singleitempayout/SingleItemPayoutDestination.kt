@@ -39,15 +39,15 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
+import com.hedvig.android.core.designsystem.component.button.HedvigOutlinedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
-import com.hedvig.android.core.designsystem.component.button.LargeOutlinedButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.uidata.UiMoney
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import octopus.type.CurrencyCode
-import kotlin.time.Duration.Companion.seconds
 
 @Composable
 internal fun SingleItemPayoutDestination(
@@ -140,7 +140,7 @@ private fun BoxScope.ErrorContent(
       horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
       item {
-        LargeOutlinedButton(
+        HedvigOutlinedButton(
           onClick = openChat,
           enabled = allowInteraction,
         ) {
@@ -148,7 +148,7 @@ private fun BoxScope.ErrorContent(
         }
       }
       item {
-        LargeOutlinedButton(
+        HedvigOutlinedButton(
           onClick = exitFlow,
           enabled = allowInteraction,
         ) {
@@ -239,11 +239,7 @@ private fun BoxScope.PaidOutContent(
  * And scale the content up and fade it out as it exits the UI
  */
 @Composable
-private fun PoppingContent(
-  show: Boolean,
-  modifier: Modifier = Modifier,
-  content: @Composable () -> Unit,
-) {
+private fun PoppingContent(show: Boolean, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
   AnimatedVisibility(
     visible = show,
     enter = fadeIn(tween(300, 300, FastOutSlowInEasing))

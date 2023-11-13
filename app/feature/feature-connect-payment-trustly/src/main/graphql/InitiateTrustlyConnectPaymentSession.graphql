@@ -1,0 +1,6 @@
+mutation InitiateTrustlyConnectPaymentSession($successUrl: String!, $failureUrl: String!) {
+  registerDirectDebit2(clientContext: { successUrl: $successUrl, failureUrl: $failureUrl }) {
+    url
+    orderId
+  }
+}

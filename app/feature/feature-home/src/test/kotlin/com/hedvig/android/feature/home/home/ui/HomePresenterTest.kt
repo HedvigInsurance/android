@@ -12,7 +12,6 @@ import assertk.assertions.isInstanceOf
 import assertk.assertions.isTrue
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.demomode.Provider
-import com.hedvig.android.feature.home.claimstatus.data.ClaimStatusCardUiState
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
@@ -20,6 +19,7 @@ import com.hedvig.android.hanalytics.featureflags.test.FakeFeatureManager2
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.test.test
+import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -27,7 +27,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 internal class HomePresenterTest {
-
   @Test
   fun `asking to refresh successfully asks for a fetch from the network`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
@@ -78,15 +77,12 @@ internal class HomePresenterTest {
 
       getHomeDataUseCase.responseTurbine.add(
         HomeData(
-          memberName = "member's name",
           contractStatus = HomeData.ContractStatus.Active,
           claimStatusCardsData = HomeData.ClaimStatusCardsData(
             nonEmptyListOf(
               ClaimStatusCardUiState(
                 id = "id",
-                title = "title",
-                subtitle = "subtitle",
-                pillsUiState = emptyList(),
+                pillTypes = emptyList(),
                 claimProgressItemsUiState = emptyList(),
               ),
             ),
@@ -102,14 +98,12 @@ internal class HomePresenterTest {
       assertThat(awaitItem()).isEqualTo(
         HomeUiState.Success(
           isReloading = false,
-          homeText = HomeText.Active("member's name"),
+          homeText = HomeText.Active,
           claimStatusCardsData = HomeData.ClaimStatusCardsData(
             nonEmptyListOf(
               ClaimStatusCardUiState(
                 id = "id",
-                title = "title",
-                subtitle = "subtitle",
-                pillsUiState = emptyList(),
+                pillTypes = emptyList(),
                 claimProgressItemsUiState = emptyList(),
               ),
             ),
@@ -136,7 +130,6 @@ internal class HomePresenterTest {
 
       getHomeDataUseCase.responseTurbine.add(
         HomeData(
-          memberName = null,
           contractStatus = HomeData.ContractStatus.Active,
           claimStatusCardsData = null,
           memberReminders = MemberReminders(
@@ -152,7 +145,7 @@ internal class HomePresenterTest {
       assertThat(awaitItem()).isEqualTo(
         HomeUiState.Success(
           isReloading = false,
-          homeText = HomeText.Active(null),
+          homeText = HomeText.Active,
           claimStatusCardsData = null,
           veryImportantMessages = persistentListOf(),
           memberReminders = MemberReminders(
@@ -195,7 +188,7 @@ internal class HomePresenterTest {
     homePresenter.test(
       HomeUiState.Success(
         isReloading = true,
-        HomeText.Active(""),
+        HomeText.Active,
         null,
         persistentListOf(),
         MemberReminders(),
@@ -222,7 +215,7 @@ internal class HomePresenterTest {
     homePresenter.test(
       HomeUiState.Success(
         isReloading = true,
-        HomeText.Active(""),
+        HomeText.Active,
         null,
         persistentListOf(),
         MemberReminders(),
@@ -242,6 +235,7 @@ internal class HomePresenterTest {
   private class TestGetHomeDataUseCase() : GetHomeDataUseCase {
     val forceNetworkFetchTurbine = Turbine<Boolean>()
     val responseTurbine = Turbine<Either<ErrorMessage, HomeData>>()
+
     override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, HomeData>> {
       forceNetworkFetchTurbine.add(forceNetworkFetch)
       return responseTurbine.asChannel().receiveAsFlow()
@@ -249,7 +243,6 @@ internal class HomePresenterTest {
   }
 
   private val someIrrelevantHomeDataInstance: HomeData = HomeData(
-    memberName = "name",
     contractStatus = HomeData.ContractStatus.Active,
     claimStatusCardsData = null,
     veryImportantMessages = persistentListOf(),

@@ -10,19 +10,21 @@ import octopus.type.MoveToAddressInput
 import octopus.type.MoveToApartmentInput
 import octopus.type.MoveToHouseInput
 
-enum class HousingType {
-  APARTMENT_RENT, APARTMENT_OWN, VILLA
+internal enum class HousingType {
+  APARTMENT_RENT,
+  APARTMENT_OWN,
+  VILLA,
 }
 
-fun HousingType.displayNameResource() = when (this) {
+internal fun HousingType.displayNameResource() = when (this) {
   HousingType.APARTMENT_RENT -> hedvig.resources.R.string.CHANGE_ADDRESS_APARTMENT_RENT_LABEL
   HousingType.APARTMENT_OWN -> hedvig.resources.R.string.CHANGE_ADDRESS_APARTMENT_OWN_LABEL
   HousingType.VILLA -> hedvig.resources.R.string.CHANGE_ADDRESS_VILLA_LABEL
 }
 
-sealed interface QuoteInput {
-
+internal sealed interface QuoteInput {
   fun toMoveIntentRequestMutation(): MoveIntentRequestMutation
+
   data class ApartmentInput(
     val moveIntentId: MoveIntentId,
     val moveFromAddressId: AddressId,
@@ -33,7 +35,7 @@ sealed interface QuoteInput {
     val apartmentOwnerType: HousingType,
     val isStudent: Boolean,
   ) : QuoteInput {
-    override fun toMoveIntentRequestMutation() = MoveIntentRequestMutation(
+    override fun toMoveIntentRequestMutation(): MoveIntentRequestMutation = MoveIntentRequestMutation(
       intentId = moveIntentId.id,
       input = MoveIntentRequestInput(
         moveToAddress = MoveToAddressInput(
@@ -74,7 +76,7 @@ sealed interface QuoteInput {
     val extraBuildings: List<ExtraBuilding>,
     val isStudent: Boolean,
   ) : QuoteInput {
-    override fun toMoveIntentRequestMutation() = MoveIntentRequestMutation(
+    override fun toMoveIntentRequestMutation(): MoveIntentRequestMutation = MoveIntentRequestMutation(
       intentId = moveIntentId.id,
       input = MoveIntentRequestInput(
         moveToAddress = MoveToAddressInput(

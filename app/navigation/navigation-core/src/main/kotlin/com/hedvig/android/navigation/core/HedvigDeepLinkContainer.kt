@@ -1,5 +1,7 @@
 package com.hedvig.android.navigation.core
 
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+
 interface HedvigDeepLinkContainer {
   val home: String // Home destination, the start destination of the app
   val insurances: String // The insurances destination, which also shows cross sells
@@ -7,22 +9,24 @@ interface HedvigDeepLinkContainer {
   val profile: String // The profile screen, which acts as a gateway to several app settings
   val eurobonus: String // The destination allowing to edit your current Eurobonus (SAS) number
   val chat: String // Hedvig Chat
+  val connectPayment: String // Screen where the member can connect their payment method to Hedvig to pay for insurance
+  val directDebit: String // Same as connectPayment but to support an old link to it
+  val payments: String // The payments screen, showing the payments history and the upcoming payment information
 }
 
 internal class HedvigDeepLinkContainerImpl(
-  isProduction: Boolean,
+  hedvigBuildConstants: HedvigBuildConstants,
 ) : HedvigDeepLinkContainer {
-  private val baseFirebaseLink = if (isProduction) {
-    "https://hedvig.page.link"
-  } else {
-    "https://hedvigtest.page.link"
-  }
+  private val baseDeepLinkDomain = "https://${hedvigBuildConstants.deepLinkHost}"
 
   // Home does not have some special text, acts as the fallback to all unknown deep links
-  override val home: String = baseFirebaseLink
-  override val insurances: String = "$baseFirebaseLink/insurances"
-  override val forever: String = "$baseFirebaseLink/forever"
-  override val profile: String = "$baseFirebaseLink/profile"
-  override val eurobonus: String = "$baseFirebaseLink/eurobonus"
-  override val chat: String = "$baseFirebaseLink/chat"
+  override val home: String = baseDeepLinkDomain
+  override val insurances: String = "$baseDeepLinkDomain/insurances"
+  override val forever: String = "$baseDeepLinkDomain/forever"
+  override val profile: String = "$baseDeepLinkDomain/profile"
+  override val eurobonus: String = "$baseDeepLinkDomain/eurobonus"
+  override val chat: String = "$baseDeepLinkDomain/chat"
+  override val connectPayment: String = "$baseDeepLinkDomain/connect-payment"
+  override val directDebit: String = "$baseDeepLinkDomain/direct-debit"
+  override val payments: String = "$baseDeepLinkDomain/payments"
 }

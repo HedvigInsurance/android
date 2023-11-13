@@ -2,16 +2,14 @@ package com.hedvig.android.audio.player.internal
 
 import android.media.MediaPlayer
 import com.hedvig.android.core.common.android.ProgressPercentage
-import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
+import kotlinx.coroutines.suspendCancellableCoroutine
 
 /**
  * Requires that [MediaPlayer] does not have a [MediaPlayer.OnSeekCompleteListener] registered on it, as it will
  * replace it when this method is called, and set it as null right before this suspending function returns.
  */
-internal suspend fun MediaPlayer.seekToPercent(
-  percentage: ProgressPercentage,
-) = suspendCancellableCoroutine { cont ->
+internal suspend fun MediaPlayer.seekToPercent(percentage: ProgressPercentage) = suspendCancellableCoroutine { cont ->
   val callback = MediaPlayer.OnSeekCompleteListener {
     this.setOnSeekCompleteListener(null)
     cont.resume(Unit)

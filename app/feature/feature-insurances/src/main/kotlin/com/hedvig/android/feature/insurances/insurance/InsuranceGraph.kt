@@ -27,8 +27,8 @@ fun NavGraphBuilder.insuranceGraph(
   nestedGraphs: NavGraphBuilder.() -> Unit,
   navigator: Navigator,
   openWebsite: (Uri) -> Unit,
-  openChat: () -> Unit,
-  startMovingFlow: () -> Unit,
+  openChat: (NavBackStackEntry) -> Unit,
+  startMovingFlow: (NavBackStackEntry) -> Unit,
   startTerminationFlow: (backStackEntry: NavBackStackEntry, insuranceId: String, insuranceDisplayName: String) -> Unit,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   imageLoader: ImageLoader,
@@ -62,8 +62,8 @@ fun NavGraphBuilder.insuranceGraph(
       val viewModel: ContractDetailViewModel = koinViewModel { parametersOf(contractDetail.contractId) }
       ContractDetailDestination(
         viewModel = viewModel,
-        onEditCoInsuredClick = openChat,
-        onChangeAddressClick = { startMovingFlow() },
+        onEditCoInsuredClick = { openChat(backStackEntry) },
+        onChangeAddressClick = { startMovingFlow(backStackEntry) },
         onCancelInsuranceClick = { cancelInsuranceData: CancelInsuranceData ->
           // open termination flow
           startTerminationFlow(
@@ -73,7 +73,7 @@ fun NavGraphBuilder.insuranceGraph(
           )
         },
         openWebsite = openWebsite,
-        openChat = openChat,
+        openChat = { openChat(backStackEntry) },
         navigateUp = navigator::navigateUp,
         imageLoader = imageLoader,
       )

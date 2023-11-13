@@ -239,19 +239,17 @@ class SingleItemViewModelTest {
   }
 
   companion object {
-    private fun testSingleItem(
-      itemBrands: List<ItemBrand> = emptyList(),
-      itemModels: List<ItemModel> = emptyList(),
-    ) = ClaimFlowDestination.SingleItem(
-      CurrencyCode.SEK,
-      null,
-      null,
-      itemBrands,
-      null,
-      itemModels,
-      null,
-      emptyList(),
-      emptyList(),
-    )
+    private fun testSingleItem(itemBrands: List<ItemBrand> = emptyList(), itemModels: List<ItemModel> = emptyList()) =
+      ClaimFlowDestination.SingleItem(
+        CurrencyCode.SEK,
+        null,
+        null,
+        itemBrands,
+        null,
+        itemModels,
+        null,
+        emptyList(),
+        emptyList(),
+      )
   }
 }

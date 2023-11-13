@@ -4,5 +4,4 @@ enum class Theme {
   LIGHT,
   DARK,
   SYSTEM_DEFAULT,
-  ;
 }

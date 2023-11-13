@@ -9,8 +9,8 @@ import com.hedvig.android.apollo.toEither
 import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.logger.logcat
-import giraffe.NotificationRegisterDeviceMutation
 import kotlinx.coroutines.flow.first
+import octopus.MemberDeviceRegisterMutation
 
 /**
  * When we get a new firebase token, we need to make sure that we do not fail to upload it to the backend. If we are in
@@ -37,7 +37,7 @@ internal class FCMTokenUploadWorker(
       return Result.success()
     }
     return apolloClient
-      .mutation(NotificationRegisterDeviceMutation(storedToken))
+      .mutation(MemberDeviceRegisterMutation(storedToken))
       .safeExecute()
       .toEither()
       .fold(

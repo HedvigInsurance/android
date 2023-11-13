@@ -23,11 +23,11 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.card.InsuranceCard
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
-import com.hedvig.android.core.ui.insurance.ContractType
-import com.hedvig.android.core.ui.insurance.ProductVariant
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
-import com.hedvig.android.feature.insurances.data.Agreement
+import com.hedvig.android.data.contract.ContractType
+import com.hedvig.android.data.productvariant.ProductVariant
+import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceContract
 import com.hedvig.android.feature.insurances.ui.createChips
 import hedvig.resources.R
@@ -81,7 +81,7 @@ private fun TerminatedContractsScreen(
         for ((index, contract) in uiState.insuranceContracts.withIndex()) {
           InsuranceCard(
             chips = contract.createChips(),
-            topText = contract.currentAgreement.productVariant.displayName,
+            topText = contract.currentInsuranceAgreement.productVariant.displayName,
             bottomText = contract.exposureDisplayName,
             imageLoader = imageLoader,
             shape = MaterialTheme.shapes.squircleMedium,
@@ -120,7 +120,7 @@ private fun PreviewTerminatedContractsScreen(
   }
 }
 
-private class PreviewTerminatedContractsUiStateProvider() :
+private class PreviewTerminatedContractsUiStateProvider :
   CollectionPreviewParameterProvider<TerminatedContractsUiState>(
     listOf(
       TerminatedContractsUiState.Loading,
@@ -134,7 +134,7 @@ private class PreviewTerminatedContractsUiStateProvider() :
             exposureDisplayName = "Test exposure",
             inceptionDate = LocalDate.fromEpochDays(200),
             terminationDate = LocalDate.fromEpochDays(400),
-            currentAgreement = Agreement(
+            currentInsuranceAgreement = InsuranceAgreement(
               activeFrom = LocalDate.fromEpochDays(240),
               activeTo = LocalDate.fromEpochDays(340),
               displayItems = persistentListOf(),
@@ -146,8 +146,9 @@ private class PreviewTerminatedContractsUiStateProvider() :
                 insurableLimits = persistentListOf(),
                 documents = persistentListOf(),
               ),
+              certificateUrl = null,
             ),
-            upcomingAgreement = null,
+            upcomingInsuranceAgreement = null,
             renewalDate = LocalDate.fromEpochDays(500),
             supportsAddressChange = false,
             isTerminated = true,

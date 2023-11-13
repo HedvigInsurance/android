@@ -5,7 +5,6 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
 import coil.ImageLoader
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
-import com.hedvig.android.feature.home.claimdetail.claimDetailGraph
 import com.hedvig.android.feature.home.claims.commonclaim.commonClaimGraph
 import com.hedvig.android.feature.home.home.ui.HomeDestination
 import com.hedvig.android.feature.home.home.ui.HomeViewModel
@@ -25,8 +24,9 @@ fun NavGraphBuilder.homeGraph(
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   onStartChat: (NavBackStackEntry) -> Unit,
   onStartClaim: (NavBackStackEntry) -> Unit,
-  startMovingFlow: () -> Unit,
+  startMovingFlow: (NavBackStackEntry) -> Unit,
   onGenerateTravelCertificateClicked: () -> Unit,
+  navigateToClaimDetails: (NavBackStackEntry, claimId: String) -> Unit,
   navigateToPayinScreen: () -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
@@ -48,11 +48,11 @@ fun NavGraphBuilder.homeGraph(
         viewModel = viewModel,
         onStartChat = { onStartChat(backStackEntry) },
         onClaimDetailCardClicked = { claimId: String ->
-          with(navigator) { backStackEntry.navigate(HomeDestinations.ClaimDetailDestination(claimId)) }
+          navigateToClaimDetails(backStackEntry, claimId)
         },
         navigateToConnectPayment = navigateToPayinScreen,
         onStartClaim = { onStartClaim(backStackEntry) },
-        onStartMovingFlow = startMovingFlow,
+        onStartMovingFlow = { startMovingFlow(backStackEntry) },
         onGenerateTravelCertificateClicked = onGenerateTravelCertificateClicked,
         onOpenCommonClaim = { commonClaimsData ->
           with(navigator) { backStackEntry.navigate(HomeDestinations.CommonClaimDestination(commonClaimsData)) }
@@ -61,10 +61,6 @@ fun NavGraphBuilder.homeGraph(
         openAppSettings = openAppSettings,
       )
     }
-    claimDetailGraph(
-      navigateUp = navigator::navigateUp,
-      navigateToChat = onStartChat,
-    )
     commonClaimGraph(
       imageLoader = imageLoader,
       hAnalytics = hAnalytics,

@@ -1,0 +1,2 @@
+Accompanist WebView is deprecated https://medium.com/androiddevelopers/an-update-on-jetpack-compose-accompanist-libraries-august-2023-ac4cbbf059f1
+This is a fork of it so we can still use it as suggested in the article above

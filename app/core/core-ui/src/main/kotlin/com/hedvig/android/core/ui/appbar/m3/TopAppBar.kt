@@ -37,10 +37,7 @@ import com.hedvig.android.core.icons.hedvig.normal.X
  * simply place the actions in the right spot, without interfering in other ways like swallowing the touch events on it.
  */
 @Composable
-fun TopAppBarLayoutForActions(
-  modifier: Modifier = Modifier,
-  actions: @Composable RowScope.() -> Unit = {},
-) {
+fun TopAppBarLayoutForActions(modifier: Modifier = Modifier, actions: @Composable RowScope.() -> Unit = {}) {
   Row(
     horizontalArrangement = Arrangement.End,
     verticalAlignment = Alignment.CenterVertically,
@@ -105,7 +102,8 @@ fun TopAppBarWithClose(
 }
 
 enum class TopAppBarActionType {
-  BACK, CLOSE
+  BACK,
+  CLOSE,
 }
 
 @Composable
