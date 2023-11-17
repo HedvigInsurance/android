@@ -10,7 +10,6 @@ import com.hedvig.android.feature.insurances.data.CancelInsuranceData
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceViewModel
 import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailDestination
 import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailViewModel
-import com.hedvig.android.feature.insurances.navigation.InsurancesDestination
 import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContractsDestination
 import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContractsViewModel
 import com.hedvig.android.navigation.core.AppDestination
@@ -48,16 +47,16 @@ fun NavGraphBuilder.insuranceGraph(
       InsuranceDestination(
         viewModel = viewModel,
         onInsuranceCardClick = { contractId: String ->
-          with(navigator) { backStackEntry.navigate(InsurancesDestination.InsuranceContractDetail(contractId)) }
+          with(navigator) { backStackEntry.navigate(AppDestination.InsuranceContractDetail(contractId)) }
         },
         onCrossSellClick = { uri -> openWebsite(uri) },
         navigateToCancelledInsurances = {
-          with(navigator) { backStackEntry.navigate(InsurancesDestination.TerminatedInsurances) }
+          with(navigator) { backStackEntry.navigate(AppDestination.TerminatedInsurances) }
         },
         imageLoader = imageLoader,
       )
     }
-    composable<InsurancesDestination.InsuranceContractDetail> { backStackEntry ->
+    composable<AppDestination.InsuranceContractDetail> { backStackEntry ->
       val contractDetail = this
       val viewModel: ContractDetailViewModel = koinViewModel { parametersOf(contractDetail.contractId) }
       ContractDetailDestination(
@@ -78,12 +77,12 @@ fun NavGraphBuilder.insuranceGraph(
         imageLoader = imageLoader,
       )
     }
-    composable<InsurancesDestination.TerminatedInsurances> { backStackEntry ->
+    composable<AppDestination.TerminatedInsurances> { backStackEntry ->
       val viewModel: TerminatedContractsViewModel = koinViewModel()
       TerminatedContractsDestination(
         viewModel = viewModel,
         navigateToContractDetail = { contractId: String ->
-          with(navigator) { backStackEntry.navigate(InsurancesDestination.InsuranceContractDetail(contractId)) }
+          with(navigator) { backStackEntry.navigate(AppDestination.InsuranceContractDetail(contractId)) }
         },
         navigateUp = navigator::navigateUp,
         imageLoader = imageLoader,

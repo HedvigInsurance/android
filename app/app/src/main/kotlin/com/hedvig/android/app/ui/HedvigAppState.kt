@@ -16,7 +16,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import com.datadog.android.rum.GlobalRumMonitor
-import com.hedvig.android.feature.insurances.navigation.insurancesBottomNavPermittedDestinations
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.logger.logcat
@@ -244,7 +243,12 @@ private fun NavDestination?.toTopLevelAppDestination(): AppDestination.TopLevelD
  */
 private val bottomNavPermittedDestinations: List<String> = buildList {
   add(createRoutePattern<AppDestination.Eurobonus>())
-  addAll(insurancesBottomNavPermittedDestinations)
+  addAll(
+    listOf(
+      createRoutePattern<AppDestination.InsuranceContractDetail>(),
+      createRoutePattern<AppDestination.TerminatedInsurances>(),
+    ),
+  )
 }
 
 private fun NavDestination?.isInListOfNonTopLevelNavBarPermittedDestinations(): Boolean {

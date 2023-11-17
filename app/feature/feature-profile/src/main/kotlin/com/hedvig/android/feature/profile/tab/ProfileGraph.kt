@@ -61,6 +61,9 @@ fun NavGraphBuilder.profileGraph(
           navigateToPaymentInfo(backStackEntry)
         },
         navigateToConnectPayment = navigateToConnectPayment,
+        navigateToContractDetail = { contractId ->
+          with(navigator) { backStackEntry.navigate(AppDestination.InsuranceContractDetail(contractId)) }
+        },
         openAppSettings = openAppSettings,
         openUrl = openUrl,
         viewModel = viewModel,

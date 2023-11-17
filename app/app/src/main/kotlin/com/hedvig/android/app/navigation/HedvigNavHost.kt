@@ -124,6 +124,9 @@ internal fun HedvigNavHost(
         with(navigator) { backStackEntry.navigate(ClaimDetailsDestination(claimId)) }
       },
       navigateToPayinScreen = navigateToConnectPayment,
+      navigateToContractDetail = { contractId ->
+        hedvigAppState.navController.navigate(AppDestination.InsuranceContractDetail(contractId))
+      },
       openAppSettings = { activityNavigator.openAppSettings(context) },
       openUrl = ::openUrl,
       imageLoader = imageLoader,
