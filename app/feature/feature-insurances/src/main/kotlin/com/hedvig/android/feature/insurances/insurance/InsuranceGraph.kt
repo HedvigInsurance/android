@@ -30,6 +30,7 @@ fun NavGraphBuilder.insuranceGraph(
   openChat: (NavBackStackEntry) -> Unit,
   startMovingFlow: (NavBackStackEntry) -> Unit,
   startTerminationFlow: (backStackEntry: NavBackStackEntry, insuranceId: String, insuranceDisplayName: String) -> Unit,
+  startEditCoInsured: (backStackEntry: NavBackStackEntry, contractId: String) -> Unit,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   imageLoader: ImageLoader,
 ) {
@@ -62,7 +63,7 @@ fun NavGraphBuilder.insuranceGraph(
       val viewModel: ContractDetailViewModel = koinViewModel { parametersOf(contractDetail.contractId) }
       ContractDetailDestination(
         viewModel = viewModel,
-        onEditCoInsuredClick = { openChat(backStackEntry) },
+        onEditCoInsuredClick = { contractId: String -> startEditCoInsured(backStackEntry, contractId) },
         onChangeAddressClick = { startMovingFlow(backStackEntry) },
         onCancelInsuranceClick = { cancelInsuranceData: CancelInsuranceData ->
           // open termination flow

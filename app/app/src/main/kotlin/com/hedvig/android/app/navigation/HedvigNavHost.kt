@@ -30,6 +30,8 @@ import com.hedvig.android.feature.claimtriaging.ClaimTriagingDestination
 import com.hedvig.android.feature.claimtriaging.claimTriagingDestinations
 import com.hedvig.android.feature.connect.payment.adyen.connectAdyenPaymentGraph
 import com.hedvig.android.feature.connect.payment.connectPaymentGraph
+import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredDestination
+import com.hedvig.android.feature.editcoinsured.navigation.editCoInsuredGraph
 import com.hedvig.android.feature.forever.navigation.foreverGraph
 import com.hedvig.android.feature.home.home.navigation.homeGraph
 import com.hedvig.android.feature.insurances.insurance.insuranceGraph
@@ -164,6 +166,11 @@ internal fun HedvigNavHost(
       },
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       imageLoader = imageLoader,
+      startEditCoInsured = { backStackEntry: NavBackStackEntry, contractId: String ->
+        with(navigator) {
+          backStackEntry.navigate(EditCoInsuredDestination(contractId))
+        }
+      }
     )
     foreverGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
@@ -206,6 +213,9 @@ internal fun HedvigNavHost(
           },
         )
       },
+    )
+    editCoInsuredGraph(
+      navigateUp = navigator::navigateUp
     )
     connectAdyenPaymentGraph(navigator)
   }

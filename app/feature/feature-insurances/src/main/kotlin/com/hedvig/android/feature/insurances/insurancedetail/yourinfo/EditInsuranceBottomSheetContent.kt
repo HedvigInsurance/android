@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.insurances.insurancedetail.yourinfo
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,7 +28,6 @@ import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.SelectIndicationCircle
-import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import hedvig.resources.R
 
 @Composable
@@ -83,13 +81,6 @@ internal fun EditInsuranceBottomSheetContent(
           },
         )
       }
-    }
-    Spacer(modifier = Modifier.height(16.dp))
-    AnimatedVisibility(visible = selectedItemIndex == 1) {
-      VectorInfoCard(
-        text = stringResource(id = R.string.insurances_tab_contact_us_to_edit_co_insured),
-        modifier = Modifier.fillMaxWidth(),
-      )
     }
     Spacer(modifier = Modifier.height(16.dp))
     HedvigContainedButton(
