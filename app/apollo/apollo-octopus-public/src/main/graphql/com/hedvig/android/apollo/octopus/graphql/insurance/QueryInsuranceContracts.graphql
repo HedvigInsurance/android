@@ -1,5 +1,8 @@
 query InsuranceContracts {
   currentMember {
+    firstName
+    lastName
+    ssn
     terminatedContracts {
       ...ContractFragment
     }
@@ -28,6 +31,13 @@ fragment AgreementFragment on Agreement {
   activeFrom
   activeTo
   certificateUrl
+  coInsured {
+    firstName
+    lastName
+    ssn
+    birthdate
+    needsMissingInfo
+  }
   displayItems {
     ...AgreementDisplayItemFragment
   }

@@ -12,7 +12,10 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.productVariant.android.toProductVariant
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 import octopus.InsuranceContractsQuery
+import octopus.fragment.AgreementFragment
 import octopus.fragment.ContractFragment
 
 internal interface GetInsuranceContractsUseCase {
@@ -36,11 +39,14 @@ internal class GetInsuranceContractsUseCaseImpl(
         },
         { featureManager.isFeatureEnabled(Feature.NEW_MOVING_FLOW) },
       ) { insuranceQueryData, supportsAddressChange ->
+        val contractHolderDisplayName = insuranceQueryData.getContractHolderDisplayName()
+        val contractHolderSSN = insuranceQueryData.currentMember.ssn
+
         val terminatedContracts = insuranceQueryData.currentMember.terminatedContracts.map {
-          it.toContract(isTerminated = true, supportsAddressChange)
+          it.toContract(isTerminated = true, supportsAddressChange, contractHolderDisplayName, contractHolderSSN)
         }
         val activeContracts = insuranceQueryData.currentMember.activeContracts.map {
-          it.toContract(isTerminated = false, supportsAddressChange)
+          it.toContract(isTerminated = false, supportsAddressChange, contractHolderDisplayName, contractHolderSSN)
         }
         terminatedContracts + activeContracts
       }
@@ -48,10 +54,20 @@ internal class GetInsuranceContractsUseCaseImpl(
   }
 }
 
-private fun ContractFragment.toContract(isTerminated: Boolean, supportsAddressChange: Boolean): InsuranceContract {
+private fun InsuranceContractsQuery.Data.getContractHolderDisplayName(): String =
+  "${currentMember.firstName} ${currentMember.lastName}"
+
+private fun ContractFragment.toContract(
+  isTerminated: Boolean,
+  supportsAddressChange: Boolean,
+  contractHolderDisplayName: String,
+  contractHolderSSN: String?,
+): InsuranceContract {
   return InsuranceContract(
     id = id,
     displayName = currentAgreement.productVariant.displayName,
+    contractHolderDisplayName = contractHolderDisplayName,
+    contractHolderSSN = contractHolderSSN,
     exposureDisplayName = exposureDisplayName,
     inceptionDate = masterInceptionDate,
     renewalDate = upcomingChangedAgreement?.activeFrom,
@@ -67,6 +83,24 @@ private fun ContractFragment.toContract(isTerminated: Boolean, supportsAddressCh
       },
       productVariant = currentAgreement.productVariant.toProductVariant(),
       certificateUrl = currentAgreement.certificateUrl,
+      coInsured = buildList {
+        val currentCoInsured = currentAgreement.coInsured
+          ?.map { it.toCoInsured() }
+          ?: emptyList()
+
+        addAll(currentCoInsured)
+
+        // Get the co insured only present in upcoming agreement and set active from.
+        val upcomingCoInsured = upcomingChangedAgreement?.coInsured
+          ?.map { it.toCoInsured() }
+          ?.filter { it.activeFrom != null }
+          ?: emptyList()
+
+        val newCoInsured = upcomingCoInsured.subtract(currentCoInsured.toSet())
+          .map { it.copy(activeFrom = upcomingChangedAgreement?.activeFrom) }
+
+        addAll(newCoInsured)
+      }.toPersistentList(),
     ),
     upcomingInsuranceAgreement = upcomingChangedAgreement?.let {
       InsuranceAgreement(
@@ -80,9 +114,22 @@ private fun ContractFragment.toContract(isTerminated: Boolean, supportsAddressCh
         },
         productVariant = it.productVariant.toProductVariant(),
         certificateUrl = it.certificateUrl,
+        coInsured = it.coInsured?.map { it.toCoInsured() }?.toPersistentList() ?: persistentListOf(),
       )
     },
     supportsAddressChange = supportsAddressChange,
     isTerminated = isTerminated,
   )
 }
+
+fun AgreementFragment.CoInsured.toCoInsured(): InsuranceAgreement.CoInsured =
+  InsuranceAgreement.CoInsured(
+    firstName = firstName,
+    lastName = lastName,
+    ssn = ssn,
+    birthDate = birthdate,
+    activeFrom = null,
+    hasMissingInfo = needsMissingInfo,
+  )
+
+

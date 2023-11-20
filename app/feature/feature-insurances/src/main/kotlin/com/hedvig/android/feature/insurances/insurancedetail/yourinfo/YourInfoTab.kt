@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -16,6 +17,7 @@ import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
@@ -35,10 +37,21 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
+import com.hedvig.android.core.designsystem.component.information.Pill
+import com.hedvig.android.core.designsystem.material3.containedButtonContainer
+import com.hedvig.android.core.designsystem.material3.onContainedButtonContainer
+import com.hedvig.android.core.designsystem.material3.onWarningContainer
 import com.hedvig.android.core.designsystem.material3.squircleLargeTop
+import com.hedvig.android.core.designsystem.material3.warningContainer
+import com.hedvig.android.core.designsystem.material3.warningElement
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.icons.HedvigIcons
+import com.hedvig.android.core.icons.hedvig.normal.WarningFilled
+import com.hedvig.android.core.icons.hedvig.small.hedvig.Lock
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
+import com.hedvig.android.core.ui.infocard.VectorWarningCard
+import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
@@ -49,11 +62,13 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.toJavaLocalDate
 
 @ExperimentalMaterial3Api
 @Composable
 internal fun YourInfoTab(
   coverageItems: ImmutableList<Pair<String, String>>,
+  coInsured: ImmutableList<InsuranceAgreement.CoInsured>,
   allowChangeAddress: Boolean,
   allowEditCoInsured: Boolean,
   upcomingChangesInsuranceAgreement: InsuranceAgreement?,
@@ -63,7 +78,10 @@ internal fun YourInfoTab(
   onCancelInsuranceClick: () -> Unit,
   isTerminated: Boolean,
   modifier: Modifier = Modifier,
+  contractHolderDisplayName: String,
+  contractHolderSSN: String?,
 ) {
+  val dateTimeFormatter = rememberHedvigDateTimeFormatter()
   val coroutineScope = rememberCoroutineScope()
   var showEditYourInfoBottomSheet by rememberSaveable { mutableStateOf(false) }
   if (showEditYourInfoBottomSheet) {
@@ -159,8 +177,9 @@ internal fun YourInfoTab(
     if (upcomingChangesInsuranceAgreement != null) {
       VectorInfoCard(
         text = stringResource(
-          id = R.string.insurances_tab_your_insurance_will_be_updated,
-          upcomingChangesInsuranceAgreement.activeFrom,
+          id = R.string.CONTRACT_COINSURED_UPDATE_IN_FUTURE,
+          upcomingChangesInsuranceAgreement.coInsured.size,
+          dateTimeFormatter.format(upcomingChangesInsuranceAgreement.activeFrom.toJavaLocalDate()),
         ),
         modifier = Modifier
           .fillMaxWidth()
@@ -171,8 +190,8 @@ internal fun YourInfoTab(
             text = stringResource(id = R.string.insurances_tab_view_details),
             onClick = { showUpcomingChangesBottomSheet = true },
             colors = ButtonDefaults.buttonColors(
-              containerColor = MaterialTheme.colorScheme.background,
-              contentColor = MaterialTheme.colorScheme.onBackground,
+              containerColor = MaterialTheme.colorScheme.containedButtonContainer,
+              contentColor = MaterialTheme.colorScheme.onContainedButtonContainer,
             ),
             modifier = Modifier.fillMaxWidth(),
           )
@@ -181,6 +200,13 @@ internal fun YourInfoTab(
       Spacer(Modifier.height(8.dp))
     }
     CoverageRows(coverageItems, Modifier.padding(horizontal = 16.dp))
+    Spacer(Modifier.height(16.dp))
+    CoInsuredSection(
+      coInsuredList = coInsured,
+      contractHolderDisplayName = contractHolderDisplayName,
+      contractHolderSSN = contractHolderSSN,
+      modifier = Modifier.padding(horizontal = 16.dp),
+    )
     Spacer(Modifier.height(16.dp))
     if (!isTerminated) {
       if (allowChangeAddress || allowEditCoInsured) {
@@ -232,8 +258,160 @@ internal fun CoverageRows(coverageRowItems: ImmutableList<Pair<String, String>>,
         },
         spaceBetween = 8.dp,
       )
-      if (index != coverageRowItems.lastIndex) {
+      Divider()
+    }
+  }
+}
+
+@Composable
+internal fun CoInsuredSection(
+  coInsuredList: ImmutableList<InsuranceAgreement.CoInsured>,
+  contractHolderDisplayName: String,
+  contractHolderSSN: String?,
+  modifier: Modifier,
+) {
+  val dateTimeFormatter = rememberHedvigDateTimeFormatter()
+  Column(modifier = modifier) {
+    HorizontalItemsWithMaximumSpaceTaken(
+      startSlot = {
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+          modifier = Modifier.padding(vertical = 4.dp),
+        ) {
+          Text(stringResource(id = R.string.CHANGE_ADDRESS_CO_INSURED_LABEL))
+        }
+      },
+      endSlot = {
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+          horizontalArrangement = Arrangement.End,
+          modifier = Modifier.padding(vertical = 4.dp),
+        ) {
+          Text(
+            text = stringResource(id = R.string.CHANGE_ADDRESS_YOU_PLUS, coInsuredList.size),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.End,
+          )
+        }
+      },
+      spaceBetween = 8.dp,
+    )
+    Spacer(Modifier.height(16.dp))
+    Divider()
+    HorizontalItemsWithMaximumSpaceTaken(
+      startSlot = {
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+          modifier = Modifier.padding(vertical = 12.dp),
+        ) {
+          Column {
+            Text(contractHolderDisplayName)
+            if (contractHolderSSN != null) {
+              Text(
+                text = contractHolderSSN,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+              )
+            }
+          }
+        }
+      },
+      endSlot = {
+        Row(
+          horizontalArrangement = Arrangement.End,
+          modifier = Modifier.padding(vertical = 14.dp),
+        ) {
+          Icon(
+            imageVector = HedvigIcons.Lock,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            contentDescription = "Locked info",
+            modifier = Modifier.size(16.dp),
+          )
+        }
+      },
+      spaceBetween = 8.dp,
+    )
+    Divider()
+    coInsuredList.forEachIndexed { index, coInsured ->
+      HorizontalItemsWithMaximumSpaceTaken(
+        startSlot = {
+          Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(vertical = 12.dp),
+          ) {
+            Column {
+              val displayName = coInsured.getDisplayName()
+              if (displayName != null) {
+                Text(text = displayName)
+              } else {
+                Text(stringResource(id = R.string.CONTRACT_COINSURED))
+              }
+
+              val ssnOrBirthDate = coInsured.getSsnOrBirthDate(dateTimeFormatter)
+              if (ssnOrBirthDate != null) {
+                Text(
+                  text = ssnOrBirthDate,
+                  color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+              } else {
+                Text(
+                  text = stringResource(id = R.string.CONTRACT_NO_INFORMATION),
+                  color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+              }
+
+              if (coInsured.activeFrom != null) {
+                Spacer(Modifier.height(4.dp))
+                Pill(
+                  text = stringResource(
+                    id = R.string.CONTRACT_ADD_COINSURED_ACTIVE_FROM,
+                    dateTimeFormatter.format(coInsured.activeFrom.toJavaLocalDate()),
+                  ),
+                  contentColor = MaterialTheme.colorScheme.onWarningContainer,
+                  color = MaterialTheme.colorScheme.warningContainer,
+                )
+              }
+            }
+          }
+        },
+        endSlot = {
+          Row(
+            horizontalArrangement = Arrangement.End,
+            modifier = Modifier.padding(vertical = 14.dp),
+          ) {
+            if (coInsured.hasMissingInfo) {
+              Icon(
+                imageVector = HedvigIcons.WarningFilled,
+                tint = MaterialTheme.colorScheme.warningElement,
+                contentDescription = "Needs info",
+                modifier = Modifier.size(16.dp),
+              )
+            }
+          }
+        },
+        spaceBetween = 8.dp,
+      )
+
+      if (index < coInsuredList.size - 1) {
         Divider()
+      }
+    }
+
+    val hasMissingInfo = coInsuredList.any { it.hasMissingInfo }
+    if (hasMissingInfo) {
+      Spacer(Modifier.height(8.dp))
+      VectorWarningCard(
+        text = stringResource(id = R.string.CONTRACT_COINSURED_ADD_PERSONAL_INFO),
+      ) {
+        HedvigContainedSmallButton(
+          text = stringResource(id = R.string.CONTRACT_COINSURED_MISSING_ADD_INFO),
+          onClick = {},
+          colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.containedButtonContainer,
+            contentColor = MaterialTheme.colorScheme.onContainedButtonContainer,
+          ),
+          textStyle = MaterialTheme.typography.bodyMedium,
+          modifier = Modifier.fillMaxWidth(),
+        )
       }
     }
   }
@@ -250,14 +428,13 @@ private fun PreviewYourInfoTab() {
           "Postal code" to "118 47".repeat(6),
           "Type" to "Homeowner",
           "Size" to "56 m2",
-          "Co-insured".repeat(4) to "You +1".repeat(5),
+        ),
+        coInsured = persistentListOf(
+          InsuranceAgreement.CoInsured("199101131093", null, "Hugo", "Linder", LocalDate.fromEpochDays(300), false),
+          InsuranceAgreement.CoInsured(null, null, null, null, null, true),
         ),
         allowChangeAddress = true,
         allowEditCoInsured = true,
-        onEditCoInsuredClick = {},
-        onChangeAddressClick = {},
-        openChat = {},
-        onCancelInsuranceClick = {},
         upcomingChangesInsuranceAgreement = InsuranceAgreement(
           activeFrom = LocalDate.fromEpochDays(200),
           activeTo = LocalDate.fromEpochDays(300),
@@ -276,8 +453,18 @@ private fun PreviewYourInfoTab() {
             documents = persistentListOf(),
           ),
           certificateUrl = null,
+          coInsured = persistentListOf(
+            InsuranceAgreement.CoInsured("199101131093", null, "Hugo", "Linder", LocalDate.fromEpochDays(300), false),
+            InsuranceAgreement.CoInsured("1234020312", null, "Testersson", "Tester", null, false),
+          ),
         ),
+        onEditCoInsuredClick = {},
+        onChangeAddressClick = {},
+        openChat = {},
+        onCancelInsuranceClick = {},
         isTerminated = false,
+        contractHolderDisplayName = "Hugo Linder",
+        contractHolderSSN = "19910113-1093",
       )
     }
   }
