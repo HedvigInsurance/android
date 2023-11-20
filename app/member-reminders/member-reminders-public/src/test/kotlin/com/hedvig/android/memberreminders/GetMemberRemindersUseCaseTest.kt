@@ -24,10 +24,12 @@ class GetMemberRemindersUseCaseTest {
     val enableNotificationsReminderManager = TestEnableNotificationsReminderManager()
     val getConnectPaymentReminderUseCase = TestGetConnectPaymentReminderUseCase()
     val getUpcomingRenewalRemindersUseCase = TestGetUpcomingRenewalRemindersUseCase()
+    val getNeedsCoInsuredInfoRemindersUseCase = TestGetNeedsCoInsuredInfoRemindersUseCase()
     val getMemberRemindersUseCase = GetMemberRemindersUseCaseImpl(
       enableNotificationsReminderManager = enableNotificationsReminderManager,
       getConnectPaymentReminderUseCase = getConnectPaymentReminderUseCase,
       getUpcomingRenewalRemindersUseCase = getUpcomingRenewalRemindersUseCase,
+      getNeedsCoInsuredInfoRemindersUseCase = getNeedsCoInsuredInfoRemindersUseCase,
     )
 
     getMemberRemindersUseCase.invoke().test {
@@ -35,11 +37,13 @@ class GetMemberRemindersUseCaseTest {
       enableNotificationsReminderManager.showNotification.add(false)
       getConnectPaymentReminderUseCase.turbine.add(ConnectPaymentReminderError.AlreadySetup.left())
       getUpcomingRenewalRemindersUseCase.turbine.add(UpcomingRenewalReminderError.NoUpcomingRenewals.left())
+      getNeedsCoInsuredInfoRemindersUseCase.turbine.add(CoInsuredInfoReminderError.NoCoInsuredReminders.left())
       assertAll {
         with(awaitItem()) {
           assertThat(this.connectPayment).isNull()
           assertThat(this.enableNotifications).isNull()
           assertThat(this.upcomingRenewals).isNull()
+          assertThat(this.coInsuredInfo).isNull()
         }
       }
     }
@@ -50,10 +54,12 @@ class GetMemberRemindersUseCaseTest {
     val enableNotificationsReminderManager = TestEnableNotificationsReminderManager()
     val getConnectPaymentReminderUseCase = TestGetConnectPaymentReminderUseCase()
     val getUpcomingRenewalRemindersUseCase = TestGetUpcomingRenewalRemindersUseCase()
+    val getNeedsCoInsuredInfoRemindersUseCase = TestGetNeedsCoInsuredInfoRemindersUseCase()
     val getMemberRemindersUseCase = GetMemberRemindersUseCaseImpl(
       enableNotificationsReminderManager = enableNotificationsReminderManager,
       getConnectPaymentReminderUseCase = getConnectPaymentReminderUseCase,
       getUpcomingRenewalRemindersUseCase = getUpcomingRenewalRemindersUseCase,
+      getNeedsCoInsuredInfoRemindersUseCase = getNeedsCoInsuredInfoRemindersUseCase,
     )
 
     getMemberRemindersUseCase.invoke().test {
@@ -63,10 +69,14 @@ class GetMemberRemindersUseCaseTest {
       getUpcomingRenewalRemindersUseCase.turbine.add(
         nonEmptyListOf(UpcomingRenewal("", LocalDate.parse("2023-01-01"), "")).right(),
       )
+      getNeedsCoInsuredInfoRemindersUseCase.turbine.add(
+        nonEmptyListOf(CoInsuredReminderInfo("123")).right()
+      )
       assertAll {
         with(awaitItem()) {
           assertThat(this.connectPayment).isNotNull()
           assertThat(this.enableNotifications).isNotNull()
+          assertThat(this.coInsuredInfo).isNotNull()
           assertThat(this.upcomingRenewals)
             .isNotNull()
             .prop(MemberReminder.UpcomingRenewals::upcomingRenewals)
@@ -90,6 +100,13 @@ class GetMemberRemindersUseCaseTest {
     val turbine = Turbine<Either<UpcomingRenewalReminderError, NonEmptyList<UpcomingRenewal>>>()
 
     override suspend fun invoke(): Either<UpcomingRenewalReminderError, NonEmptyList<UpcomingRenewal>> {
+      return turbine.awaitItem()
+    }
+  }
+
+  class TestGetNeedsCoInsuredInfoRemindersUseCase : GetNeedsCoInsuredInfoRemindersUseCase {
+    val turbine = Turbine<Either<CoInsuredInfoReminderError, NonEmptyList<CoInsuredReminderInfo>>>()
+    override suspend fun invoke(): Either<CoInsuredInfoReminderError, NonEmptyList<CoInsuredReminderInfo>> {
       return turbine.awaitItem()
     }
   }

@@ -84,7 +84,7 @@ fun MemberReminderCards(
         navigateToContractDetail = {
           memberReminders.coInsuredInfo
             ?.coInsuredInfoList
-            ?.firstOrNull()
+            ?.head
             ?.contractId
             ?.let {
               navigateToContractDetail(it)

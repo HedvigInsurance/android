@@ -55,14 +55,6 @@ sealed interface AppDestination : Destination {
   ) : AppDestination
 
   @Serializable
-  data class InsuranceContractDetail(
-    val contractId: String,
-  ) : AppDestination
-
-  @Serializable
-  data object TerminatedInsurances : AppDestination
-
-  @Serializable
   object PaymentInfo : AppDestination
 
   @Serializable

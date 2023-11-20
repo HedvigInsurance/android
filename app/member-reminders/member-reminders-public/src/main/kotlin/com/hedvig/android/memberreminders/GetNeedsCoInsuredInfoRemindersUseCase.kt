@@ -36,8 +36,6 @@ internal class GetNeedsCoInsuredInfoRemindersUseCaseImpl(
       ensureNotNull(coInsuredReminderInfoList) {
         CoInsuredInfoReminderError.NoCoInsuredReminders
       }
-
-      coInsuredReminderInfoList
     }
   }
 

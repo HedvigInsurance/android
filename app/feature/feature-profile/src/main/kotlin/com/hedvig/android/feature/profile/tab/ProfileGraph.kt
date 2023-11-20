@@ -30,6 +30,7 @@ fun NavGraphBuilder.profileGraph(
   hedvigBuildConstants: HedvigBuildConstants,
   navigateToPaymentInfo: (NavBackStackEntry) -> Unit,
   navigateToConnectPayment: () -> Unit,
+  navigateToContractDetail: (contractId: String) -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
 ) {
@@ -62,7 +63,7 @@ fun NavGraphBuilder.profileGraph(
         },
         navigateToConnectPayment = navigateToConnectPayment,
         navigateToContractDetail = { contractId ->
-          with(navigator) { backStackEntry.navigate(AppDestination.InsuranceContractDetail(contractId)) }
+          navigateToContractDetail(contractId)
         },
         openAppSettings = openAppSettings,
         openUrl = openUrl,
