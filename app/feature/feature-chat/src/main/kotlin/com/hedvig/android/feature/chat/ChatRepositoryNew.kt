@@ -37,7 +37,7 @@ import octopus.type.ChatMessageFileInput
 import octopus.type.ChatMessageSender
 import octopus.type.ChatMessageTextInput
 
-internal interface ChatRepositoryNew {
+interface ChatRepositoryNew {
   suspend fun fetchMoreMessages(until: Instant): Either<ErrorMessage, ChatMessagesResult>
 
   suspend fun pollNewestMessages(): Either<ErrorMessage, ChatMessagesResult>

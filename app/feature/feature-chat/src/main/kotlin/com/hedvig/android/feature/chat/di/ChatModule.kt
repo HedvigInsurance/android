@@ -1,11 +1,8 @@
 package com.hedvig.android.feature.chat.di
 
 import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.apollo.giraffe.di.giraffeClient
-import com.hedvig.android.apollo.octopus.di.octopusClient
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.Provider
-import com.hedvig.android.feature.chat.ChatRepository
 import com.hedvig.android.feature.chat.ChatRepositoryNew
 import com.hedvig.android.feature.chat.ChatRepositoryNewImpl
 import com.hedvig.android.feature.chat.ChatViewModelNew
@@ -18,8 +15,6 @@ import org.koin.dsl.module
 
 val chatModule = module {
   single<ChatClosedEventStore> { ChatClosedEventDataStore(get()) }
-  single<ChatRepository> { ChatRepository(get<ApolloClient>(giraffeClient), get(), get()) }
-
   viewModel<ChatViewModelNew> {
     ChatViewModelNew(
       // todo fake provider
@@ -29,7 +24,7 @@ val chatModule = module {
       get<DemoManager>(),
     )
   }
-  single<ChatRepositoryNew> { ChatRepositoryNewImpl(get<ApolloClient>(octopusClient)) }
+  single<ChatRepositoryNew> { ChatRepositoryNewImpl(get<ApolloClient>()) }
 
   single<FileService> { FileService(get()) }
 }

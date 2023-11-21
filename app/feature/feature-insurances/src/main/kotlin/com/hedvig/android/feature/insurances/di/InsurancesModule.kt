@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.insurances.di
 
 import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.apollo.octopus.di.octopusClient
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCaseDemo
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCaseImpl
@@ -38,7 +37,7 @@ val insurancesModule = module {
 private fun Module.provideGetContractsUseCase() {
   single<GetInsuranceContractsUseCaseImpl> {
     GetInsuranceContractsUseCaseImpl(
-      get<ApolloClient>(octopusClient),
+      get<ApolloClient>(),
       get<FeatureManager>(),
     )
   }
@@ -58,7 +57,7 @@ private fun Module.provideGetContractsUseCase() {
 
 private fun Module.provideGetCrossSellsUseCase() {
   single<GetCrossSellsUseCaseImpl> {
-    GetCrossSellsUseCaseImpl(get<ApolloClient>(octopusClient))
+    GetCrossSellsUseCaseImpl(get<ApolloClient>())
   }
 
   single<GetCrossSellsUseCaseDemo> {

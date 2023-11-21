@@ -30,7 +30,6 @@ dependencies {
   implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)
-  implementation(projects.apolloGiraffePublic)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.coreDesignSystem)
   implementation(projects.coreResources)
