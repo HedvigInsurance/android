@@ -32,6 +32,7 @@ internal fun InsuredRow(
   displayName: String?,
   details: String?,
   hasMissingInfo: Boolean,
+  allowEdit: Boolean,
   isMember: Boolean,
   onRemove: () -> Unit,
   onEdit: () -> Unit,
@@ -90,7 +91,7 @@ internal fun InsuredRow(
             )
           }
 
-          hasMissingInfo -> {
+          allowEdit && hasMissingInfo -> {
             Text(stringResource(id = R.string.GENERAL_ADD_INFO_BUTTON))
             Spacer(modifier = Modifier.width(6.dp))
             Icon(
@@ -98,6 +99,10 @@ internal fun InsuredRow(
               contentDescription = "Add",
               modifier = Modifier.size(16.dp),
             )
+          }
+
+          allowEdit -> {
+            Text(stringResource(id = R.string.CONTRACT_EDIT_INFO))
           }
 
           else -> {
@@ -135,6 +140,7 @@ private fun InsuredRowPreviewEditable() {
         isMember = false,
         onRemove = {},
         onEdit = {},
+        allowEdit = true,
       )
     }
   }
@@ -152,6 +158,7 @@ private fun InsuredRowPreviewMissingInfo() {
         isMember = false,
         onRemove = {},
         onEdit = {},
+        allowEdit = false,
       )
     }
   }
@@ -169,6 +176,7 @@ private fun InsuredRowPreviewMember() {
         isMember = true,
         onRemove = {},
         onEdit = {},
+        allowEdit = false,
       )
     }
   }

@@ -23,6 +23,7 @@ import org.koin.core.parameter.parametersOf
 @Composable
 internal fun EditCoInsuredDestination(
   contractId: String,
+  allowEdit: Boolean,
   navigateUp: () -> Unit,
 ) {
   val viewModel: EditCoInsuredViewModel = koinViewModel { parametersOf(contractId) }
@@ -30,6 +31,7 @@ internal fun EditCoInsuredDestination(
 
   EditCoInsuredScreen(
     navigateUp,
+    allowEdit,
     uiState,
   )
 }
@@ -37,6 +39,7 @@ internal fun EditCoInsuredDestination(
 @Composable
 private fun EditCoInsuredScreen(
   navigateUp: () -> Unit,
+  allowEdit: Boolean,
   uiState: EditCoInsuredState,
 ) {
   Column(Modifier.fillMaxSize()) {
@@ -44,12 +47,12 @@ private fun EditCoInsuredScreen(
       title = stringResource(id = hedvig.resources.R.string.COINSURED_EDIT_TITLE),
       onClick = navigateUp,
     )
-    CoInsuredList(uiState)
+    CoInsuredList(uiState, allowEdit)
   }
 }
 
 @Composable
-private fun CoInsuredList(uiState: EditCoInsuredState) {
+private fun CoInsuredList(uiState: EditCoInsuredState, allowEdit: Boolean) {
   val dateTimeFormatter = rememberHedvigDateTimeFormatter()
   Column {
     uiState.member?.let {
@@ -57,6 +60,7 @@ private fun CoInsuredList(uiState: EditCoInsuredState) {
         displayName = it.displayName,
         details = it.ssn,
         hasMissingInfo = false,
+        allowEdit = false,
         isMember = true,
         onRemove = { },
         onEdit = { },
@@ -69,6 +73,7 @@ private fun CoInsuredList(uiState: EditCoInsuredState) {
         details = coInsured.details(dateTimeFormatter),
         hasMissingInfo = coInsured.hasMissingInfo,
         isMember = false,
+        allowEdit = allowEdit,
         onRemove = { },
         onEdit = { },
       )
@@ -81,11 +86,50 @@ private fun CoInsuredList(uiState: EditCoInsuredState) {
 
 @Composable
 @HedvigPreview
-private fun EditCoInsuredScreenPreview() {
+private fun EditCoInsuredScreenEditablePreview() {
   HedvigTheme {
     Surface {
       EditCoInsuredScreen(
         navigateUp = { },
+        allowEdit = true,
+        uiState = EditCoInsuredState(
+          isLoading = false,
+          errorMessage = null,
+          member = Member(
+            firstName = "Member",
+            lastName = "Membersson",
+            ssn = "197312331093",
+          ),
+          coInsured = persistentListOf(
+            CoInsured(
+              "Test",
+              "Testersson",
+              LocalDate.fromEpochDays(300),
+              "19910113-1093",
+              hasMissingInfo = false,
+            ),
+            CoInsured(
+              null,
+              null,
+              null,
+              null,
+              hasMissingInfo = true,
+            ),
+          ),
+        ),
+      )
+    }
+  }
+}
+
+@Composable
+@HedvigPreview
+private fun EditCoInsuredScreenNonEditablePreview() {
+  HedvigTheme {
+    Surface {
+      EditCoInsuredScreen(
+        navigateUp = { },
+        allowEdit = false,
         uiState = EditCoInsuredState(
           isLoading = false,
           errorMessage = null,
