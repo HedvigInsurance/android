@@ -3,7 +3,7 @@ package com.hedvig.android.feature.chat.navigation
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
-import com.hedvig.android.feature.chat.ChatViewModelNew
+import com.hedvig.android.feature.chat.ChatViewModel
 import com.hedvig.android.feature.chat.ui.ChatDestination
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
@@ -19,7 +19,7 @@ fun NavGraphBuilder.chatGraph(hedvigDeepLinkContainer: HedvigDeepLinkContainer, 
     enterTransition = { slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Up) },
     exitTransition = { slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Down) },
   ) {
-    val viewModel: ChatViewModelNew = koinViewModel()
+    val viewModel: ChatViewModel = koinViewModel()
     ChatDestination(viewModel = viewModel, navigator::navigateUp)
   }
 }

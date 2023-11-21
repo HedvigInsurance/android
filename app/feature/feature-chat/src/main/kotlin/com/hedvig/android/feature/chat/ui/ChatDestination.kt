@@ -39,7 +39,7 @@ import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.debugBorder
 import com.hedvig.android.feature.chat.ChatEventNew
 import com.hedvig.android.feature.chat.ChatUiState
-import com.hedvig.android.feature.chat.ChatViewModelNew
+import com.hedvig.android.feature.chat.ChatViewModel
 import com.hedvig.android.feature.chat.data.ChatMessage
 import com.hedvig.android.logger.logcat
 import hedvig.resources.R
@@ -50,7 +50,7 @@ import kotlinx.datetime.Clock
 import org.koin.compose.koinInject
 
 @Composable
-internal fun ChatDestination(viewModel: ChatViewModelNew, onNavigateUp: () -> Unit) {
+internal fun ChatDestination(viewModel: ChatViewModel, onNavigateUp: () -> Unit) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   ChatScreen(
     uiState = uiState,

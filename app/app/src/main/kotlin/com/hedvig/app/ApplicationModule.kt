@@ -40,7 +40,7 @@ import com.hedvig.android.datadog.core.addDatadogConfiguration
 import com.hedvig.android.datadog.core.di.datadogModule
 import com.hedvig.android.datadog.demo.tracking.di.datadogDemoTrackingModule
 import com.hedvig.android.feature.changeaddress.di.changeAddressModule
-import com.hedvig.android.feature.chat.ChatRepositoryNew
+import com.hedvig.android.feature.chat.ChatRepository
 import com.hedvig.android.feature.chat.closedevent.ChatClosedEventStore
 import com.hedvig.android.feature.chat.di.chatModule
 import com.hedvig.android.feature.claim.details.di.claimDetailsModule
@@ -297,7 +297,7 @@ private val workManagerModule = module {
     ReplyWorker(
       context = get<Context>(),
       params = get<WorkerParameters>(),
-      chatRepository = get<ChatRepositoryNew>(),
+      chatRepository = get<ChatRepository>(),
       chatNotificationSender = get<ChatNotificationSender>(),
     )
   }

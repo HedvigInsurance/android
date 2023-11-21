@@ -3,12 +3,12 @@ package com.hedvig.app.feature.chat.service
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.hedvig.android.feature.chat.ChatRepositoryNew
+import com.hedvig.android.feature.chat.ChatRepository
 
 class ReplyWorker(
   private val context: Context,
   params: WorkerParameters,
-  private val chatRepository: ChatRepositoryNew,
+  private val chatRepository: ChatRepository,
   private val chatNotificationSender: ChatNotificationSender,
 ) : CoroutineWorker(context, params) {
   override suspend fun doWork(): Result {

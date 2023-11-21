@@ -6,8 +6,8 @@ import com.hedvig.android.feature.chat.closedevent.ChatClosedEventStore
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.molecule.android.MoleculeViewModel
 
-internal class ChatViewModelNew(
-  chatRepository: Provider<ChatRepositoryNew>,
+internal class ChatViewModel(
+  chatRepository: Provider<ChatRepository>,
   chatClosedTracker: ChatClosedEventStore,
   featureManager: FeatureManager,
   demoManager: DemoManager,

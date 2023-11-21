@@ -37,7 +37,7 @@ import octopus.type.ChatMessageFileInput
 import octopus.type.ChatMessageSender
 import octopus.type.ChatMessageTextInput
 
-interface ChatRepositoryNew {
+interface ChatRepository {
   suspend fun fetchMoreMessages(until: Instant): Either<ErrorMessage, ChatMessagesResult>
 
   suspend fun pollNewestMessages(): Either<ErrorMessage, ChatMessagesResult>
@@ -49,9 +49,9 @@ interface ChatRepositoryNew {
   suspend fun sendMessage(text: String): Either<ErrorMessage, ChatMessage>
 }
 
-internal class ChatRepositoryNewImpl(
+internal class ChatRepositoryImpl(
   private val apolloClient: ApolloClient,
-) : ChatRepositoryNew {
+) : ChatRepository {
   var failNow = false
 
   override suspend fun fetchMoreMessages(until: Instant): Either<ErrorMessage, ChatMessagesResult> = either {

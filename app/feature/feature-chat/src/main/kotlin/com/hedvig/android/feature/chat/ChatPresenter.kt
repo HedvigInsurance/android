@@ -82,7 +82,7 @@ internal sealed interface ChatUiState {
 }
 
 internal class ChatPresenter(
-  private val chatRepository: Provider<ChatRepositoryNew>,
+  private val chatRepository: Provider<ChatRepository>,
   private val chatClosedTracker: ChatClosedEventStore,
   private val featureManager: FeatureManager,
   private val demoManager: DemoManager,
