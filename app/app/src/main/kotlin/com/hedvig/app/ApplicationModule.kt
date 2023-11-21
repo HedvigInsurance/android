@@ -52,6 +52,7 @@ import com.hedvig.android.feature.claim.details.di.claimDetailsModule
 import com.hedvig.android.feature.claimtriaging.di.claimTriagingModule
 import com.hedvig.android.feature.connect.payment.adyen.di.adyenFeatureModule
 import com.hedvig.android.feature.connect.payment.trustly.di.connectPaymentTrustlyModule
+import com.hedvig.android.feature.editcoinsured.di.editCoInsuredModule
 import com.hedvig.android.feature.forever.di.foreverModule
 import com.hedvig.android.feature.home.di.homeModule
 import com.hedvig.android.feature.insurances.di.insurancesModule
@@ -388,6 +389,7 @@ val applicationModule = module {
       useCaseModule,
       viewModelModule,
       workManagerModule,
+      editCoInsuredModule
     ),
   )
 }

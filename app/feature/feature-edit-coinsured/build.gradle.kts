@@ -13,6 +13,8 @@ dependencies {
   implementation(libs.apollo.normalizedCache)
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.lifecycle.compose)
+  implementation(libs.kotlinx.immutable.collections)
+  implementation(projects.coreDemoMode)
   implementation(libs.androidx.navigation.common)
   implementation(libs.androidx.navigation.runtime)
   implementation(libs.androidx.other.activityCompose)
