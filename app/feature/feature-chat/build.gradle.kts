@@ -2,6 +2,7 @@ plugins {
   id("hedvig.android.ktlint")
   id("hedvig.android.library")
   id("hedvig.android.library.compose")
+  alias(libs.plugins.apollo)
   alias(libs.plugins.squareSortDependencies)
 }
 
@@ -12,11 +13,11 @@ android {
 }
 
 dependencies {
+  apolloMetadata(projects.apolloOctopusPublic)
+
   implementation(libs.androidx.compose.uiViewBinding)
   implementation(libs.androidx.datastore.core)
   implementation(libs.androidx.datastore.preferencesCore)
-  implementation(libs.kotlinx.datetime)
-  implementation(libs.kotlinx.immutable.collections)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.androidx.navigation.common)
   implementation(libs.androidx.navigation.compose)
@@ -24,6 +25,8 @@ dependencies {
   implementation(libs.androidx.other.fragment)
   implementation(libs.androidx.other.recyclerView)
   implementation(libs.apollo.normalizedCache)
+  implementation(libs.arrow.core)
+  implementation(libs.arrow.fx)
   implementation(libs.coil.coil)
   implementation(libs.coroutines.core)
   implementation(libs.fragmentViewBindingDelegate)
@@ -31,12 +34,13 @@ dependencies {
   implementation(libs.kiwi.navigationCompose)
   implementation(libs.koin.compose)
   implementation(libs.koin.core)
+  implementation(libs.kotlinx.datetime)
+  implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.materialComponents)
   implementation(libs.reactiveX.android)
   implementation(libs.reactiveX.kotlin)
   implementation(projects.apolloCore)
-  implementation(projects.apolloGiraffePublic)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.authAndroid)
   implementation(projects.coreBuildConstants)
@@ -54,4 +58,12 @@ dependencies {
   implementation(projects.navigationActivity)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
+}
+
+apollo {
+  service("octopus") {
+    packageName.set("octopus")
+    generateDataBuilders.set(true)
+    generateOptionalOperationVariables.set(false)
+  }
 }

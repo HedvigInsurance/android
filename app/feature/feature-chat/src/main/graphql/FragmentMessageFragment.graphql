@@ -1,15 +1,12 @@
 fragment MessageFragment on ChatMessage {
+  id
+  sender
+  sentAt
   ... on ChatMessageFile {
-    id
-    sender
-    sentAt
     signedUrl
     mimeType
   }
   ... on ChatMessageText {
-    id
-    sender
-    sentAt
     text
   }
 }

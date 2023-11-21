@@ -8,20 +8,67 @@ import androidx.compose.animation.core.animateDecay
 import androidx.compose.animation.core.animateTo
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.rememberSplineBasedDecay
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.TopAppBarState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.Velocity
 import kotlin.math.abs
+import kotlin.math.roundToInt
+import kotlinx.coroutines.flow.collectLatest
+
+/**
+ * todo: Remove after bumping material 3 dependency which should then handle hiding the top app bar even when
+ *  window insets are involved.
+ */
+@Composable
+internal fun chatTopAppBarWindowInsets(
+  windowInsets: WindowInsets,
+  topAppBarScrollBehavior: TopAppBarScrollBehavior,
+): WindowInsets {
+  val density = LocalDensity.current
+  val layoutDirection = LocalLayoutDirection.current
+  var resultingInsets by remember { mutableStateOf(windowInsets) }
+  LaunchedEffect(topAppBarScrollBehavior.state, density, layoutDirection) {
+    snapshotFlow { topAppBarScrollBehavior.state.collapsedFraction }.collectLatest { collapsedFraction ->
+      resultingInsets = windowInsets.adaptToCollapsedFraction(collapsedFraction, density, layoutDirection)
+    }
+  }
+  return resultingInsets
+}
+
+private fun WindowInsets.adaptToCollapsedFraction(
+  collapsedFraction: Float,
+  density: Density,
+  layoutDirection: LayoutDirection,
+): WindowInsets {
+  val multiplyBy = 1 - collapsedFraction
+  return WindowInsets(
+    left = (getLeft(density, layoutDirection) * multiplyBy).roundToInt(),
+    right = (getRight(density, layoutDirection) * multiplyBy).roundToInt(),
+    top = (getTop(density) * multiplyBy).roundToInt(),
+    bottom = (getBottom(density) * multiplyBy).roundToInt(),
+  )
+}
 
 @Suppress("UnusedReceiverParameter")
 @Composable
-fun TopAppBarDefaults.chatScrollBehavior(
+internal fun TopAppBarDefaults.chatScrollBehavior(
   state: TopAppBarState = rememberTopAppBarState(),
   canScroll: () -> Boolean = { true },
   snapAnimationSpec: AnimationSpec<Float>? = spring(stiffness = Spring.StiffnessMediumLow),
@@ -43,28 +90,13 @@ private class ChatScrollBehavior(
   override var nestedScrollConnection = object : NestedScrollConnection {
     override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
       if (!canScroll()) return Offset.Zero
-      val prevHeightOffset = state.heightOffset
-      state.heightOffset = state.heightOffset + available.y
-      return if (prevHeightOffset != state.heightOffset) {
-        // We're in the middle of top app bar collapse or expand.
-        // Consume only the scroll on the Y axis.
-        available.copy(x = 0f)
-      } else {
-        Offset.Zero
-      }
+      state.heightOffset = state.heightOffset + (available.y / 3)
+      return Offset.Zero
     }
 
     override fun onPostScroll(consumed: Offset, available: Offset, source: NestedScrollSource): Offset {
       if (!canScroll()) return Offset.Zero
-      state.contentOffset += consumed.y
-      if (state.heightOffset == 0f || state.heightOffset == state.heightOffsetLimit) {
-        if (consumed.y == 0f && available.y > 0f) {
-          // Reset the total content offset to zero when scrolling all the way down.
-          // This will eliminate some float precision inaccuracies.
-          state.contentOffset = 0f
-        }
-      }
-      state.heightOffset = state.heightOffset + consumed.y
+      state.heightOffset = state.heightOffset + (consumed.y / 3)
       return Offset.Zero
     }
 

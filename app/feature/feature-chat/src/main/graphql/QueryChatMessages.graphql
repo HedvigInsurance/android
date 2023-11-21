@@ -1,5 +1,6 @@
 query ChatMessages($until: Instant) {
   chat(until: $until) {
+      id
     hasNext
     nextUntil
     messages {

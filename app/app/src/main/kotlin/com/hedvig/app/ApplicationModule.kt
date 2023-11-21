@@ -45,8 +45,8 @@ import com.hedvig.android.datadog.core.addDatadogConfiguration
 import com.hedvig.android.datadog.core.di.datadogModule
 import com.hedvig.android.datadog.demo.tracking.di.datadogDemoTrackingModule
 import com.hedvig.android.feature.changeaddress.di.changeAddressModule
-import com.hedvig.android.feature.chat.ChatEventStore
 import com.hedvig.android.feature.chat.ChatRepository
+import com.hedvig.android.feature.chat.closedevent.ChatClosedEventStore
 import com.hedvig.android.feature.chat.di.chatModule
 import com.hedvig.android.feature.claim.details.di.claimDetailsModule
 import com.hedvig.android.feature.claimtriaging.di.claimTriagingModule
@@ -282,7 +282,7 @@ private val useCaseModule = module {
   single<LogoutUseCase> {
     LogoutUseCaseImpl(
       get<AuthTokenService>(),
-      get<ChatEventStore>(),
+      get<ChatClosedEventStore>(),
       get<ApplicationScope>(),
       get<DemoManager>(),
     )

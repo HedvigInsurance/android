@@ -2,66 +2,68 @@ package com.hedvig.android.feature.chat.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
-import com.hedvig.android.core.designsystem.material3.squircleMedium
+import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.cache.normalized.apolloStore
+import com.hedvig.android.apollo.octopus.di.octopusClient
+import com.hedvig.android.core.common.safeCast
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.icons.HedvigIcons
-import com.hedvig.android.core.icons.hedvig.normal.ChevronUp
+import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
+import com.hedvig.android.core.ui.debugBorder
 import com.hedvig.android.feature.chat.ChatEventNew
 import com.hedvig.android.feature.chat.ChatUiState
 import com.hedvig.android.feature.chat.ChatViewModelNew
 import com.hedvig.android.feature.chat.data.ChatMessage
+import com.hedvig.android.logger.logcat
+import hedvig.resources.R
 import java.io.File
-import java.time.LocalDateTime
-import java.time.ZoneOffset
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.datetime.Instant
-import kotlinx.datetime.toKotlinInstant
+import kotlin.time.Duration.Companion.seconds
+import kotlinx.collections.immutable.toImmutableList
+import kotlinx.datetime.Clock
+import org.koin.compose.koinInject
 
 @Composable
-internal fun ChatDestination(
-  viewModel: ChatViewModelNew,
-) {
+internal fun ChatDestination(viewModel: ChatViewModelNew, onNavigateUp: () -> Unit) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   ChatScreen(
     uiState = uiState,
+    onNavigateUp = onNavigateUp,
     onSendMessage = { message: String ->
       viewModel.emit(ChatEventNew.SendTextMessage(message))
     },
     onSendFile = { file: File ->
       viewModel.emit(ChatEventNew.SendFileMessage(file))
     },
-    onFetchMessages = { until: Instant ->
-      viewModel.emit(ChatEventNew.FetchMessages(until))
+    onFetchMoreMessages = {
+      viewModel.emit(ChatEventNew.FetchMoreMessages)
     },
     onDismissError = {
       viewModel.emit(ChatEventNew.DismissError)
@@ -69,103 +71,96 @@ internal fun ChatDestination(
   )
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-internal fun ChatScreen(
+private fun ChatScreen(
   uiState: ChatUiState,
+  onNavigateUp: () -> Unit,
   onSendMessage: (String) -> Unit,
   onSendFile: (File) -> Unit,
-  onFetchMessages: (Instant) -> Unit,
+  onFetchMoreMessages: () -> Unit,
   onDismissError: () -> Unit,
 ) {
-  var message by remember { mutableStateOf("") }
-
-  Box(
-    Modifier
-      .windowInsetsPadding(WindowInsets.safeDrawing)
-      .fillMaxHeight(),
+  Surface(
+    color = MaterialTheme.colorScheme.background,
+    modifier = Modifier.fillMaxSize(),
   ) {
-    Column(
-      Modifier
-        .verticalScroll(rememberScrollState())
-        .fillMaxWidth()
-        .padding(bottom = 80.dp),
-    ) {
-      uiState.messages.forEach { message ->
-        Row(
-          modifier = Modifier.align(message.getMessageAlignment()),
-        ) {
-          MessageView(chatMessage = message)
+    val topAppBarScrollBehavior = TopAppBarDefaults.chatScrollBehavior()
+    Column {
+      val density = LocalDensity.current
+      var topAppBarHeight by remember { mutableStateOf(0.dp) }
+      ChatTopAppBar(
+        onNavigateUp = onNavigateUp,
+        topAppBarScrollBehavior = topAppBarScrollBehavior,
+        onHeightChanged = { height -> with(density) { topAppBarHeight = height.toDp() } },
+      )
+      Box(
+        modifier = Modifier
+          .fillMaxWidth()
+          .weight(1f)
+          .consumeWindowInsets(PaddingValues(top = topAppBarHeight)),
+        propagateMinConstraints = true,
+      ) {
+        when (uiState) {
+          ChatUiState.DemoMode -> {
+            Box(
+              Modifier
+                .fillMaxSize()
+                .debugBorder(),
+              contentAlignment = Alignment.Center,
+            ) {
+              Text("Demo mode")
+            }
+          }
+
+          ChatUiState.DisabledByFeatureFlag -> {
+            Box(
+              Modifier
+                .fillMaxSize()
+                .debugBorder(),
+              contentAlignment = Alignment.Center,
+            ) {
+              Text("Chat disabled by feature flag")
+            }
+          }
+
+          ChatUiState.Initializing -> {
+            HedvigFullScreenCenterAlignedProgress()
+          }
+
+          is ChatUiState.Loaded -> {
+            ChatLoadedScreen(
+              uiState,
+              topAppBarScrollBehavior,
+              onSendMessage,
+              onSendFile,
+              onFetchMoreMessages,
+              onDismissError,
+            )
+          }
         }
       }
     }
-
-    Row(
-      modifier = Modifier.padding(16.dp).align(Alignment.BottomStart),
-      verticalAlignment = Alignment.Bottom,
-    ) {
-      HedvigTextField(
-        value = message,
-        onValueChange = {
-          message = it
-        },
-        errorText = null,
-        trailingIcon = {
-          IconButton(
-            onClick = {
-              onSendMessage(message)
-              message = ""
-            },
-            modifier = Modifier.size(30.dp),
-          ) {
-            Icon(
-              imageVector = HedvigIcons.ChevronUp,
-              contentDescription = null,
-            )
-          }
-        },
-        modifier = Modifier.fillMaxWidth(),
-      )
-    }
   }
 }
 
 @Composable
-private fun MessageView(
-  chatMessage: ChatMessage,
+private fun ChatTopAppBar(
+  onNavigateUp: () -> Unit,
+  topAppBarScrollBehavior: TopAppBarScrollBehavior,
+  onHeightChanged: (Int) -> Unit,
 ) {
-  when (chatMessage) {
-    is ChatMessage.ChatMessageFile -> Text("file")
-    is ChatMessage.ChatMessageText -> TextMessage(chatMessage)
-  }
-}
-
-@Composable
-private fun TextMessage(
-  chatMessage: ChatMessage.ChatMessageText,
-) {
-  Column(
-    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-  ) {
-    Surface(
-      shape = MaterialTheme.shapes.squircleMedium,
-      color = chatMessage.getColor(),
-      modifier = Modifier.align(chatMessage.getMessageAlignment()),
-    ) {
-      Text(
-        text = chatMessage.text,
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-      )
-    }
-    Spacer(modifier = Modifier.height(4.dp))
-    Text(
-      text = chatMessage.formattedDateTime(),
-      style = MaterialTheme.typography.labelLarge,
-      color = MaterialTheme.colorScheme.onSurfaceVariant,
-      modifier = Modifier
-        .align(chatMessage.getMessageAlignment())
-        .padding(horizontal = 4.dp),
-    )
-  }
+  TopAppBarWithBack(
+    title = stringResource(R.string.CHAT_TITLE),
+    onClick = onNavigateUp,
+    scrollBehavior = topAppBarScrollBehavior,
+    windowInsets = chatTopAppBarWindowInsets(TopAppBarDefaults.windowInsets, topAppBarScrollBehavior),
+    modifier = Modifier
+      .fillMaxWidth()
+      .onSizeChanged {
+        onHeightChanged(it.height)
+      },
+  )
 }
 
 @HedvigPreview
@@ -176,15 +171,14 @@ private fun ChatScreenPreview(
   HedvigTheme {
     Surface(
       color = MaterialTheme.colorScheme.background,
-      modifier = Modifier
-        .fillMaxWidth()
-        .fillMaxHeight(),
+      modifier = Modifier.fillMaxSize(),
     ) {
       ChatScreen(
         uiState = chatUiState,
+        onNavigateUp = {},
         onSendMessage = {},
         onSendFile = {},
-        onFetchMessages = {},
+        onFetchMoreMessages = {},
         onDismissError = {},
       )
     }
@@ -193,37 +187,30 @@ private fun ChatScreenPreview(
 
 private class ChatUiStateProvider : CollectionPreviewParameterProvider<ChatUiState>(
   listOf(
-    ChatUiState(
-      isLoadingChat = false,
-      isLoadingNewMessages = false,
-      isSendingMessage = false,
-      messages = persistentListOf(
-        ChatMessage.ChatMessageText(
-          id = "1",
-          sender = ChatMessage.Sender.MEMBER,
-          sentAt = LocalDateTime.now().plusDays(4).toInstant(ZoneOffset.UTC).toKotlinInstant(),
-          text = "Hello",
-        ),
-        ChatMessage.ChatMessageText(
-          id = "2",
-          sender = ChatMessage.Sender.HEDVIG,
-          sentAt = LocalDateTime.now().plusDays(3).toInstant(ZoneOffset.UTC).toKotlinInstant(),
-          text = "Hello from Hedvig!",
-        ),
-        ChatMessage.ChatMessageText(
-          id = "3",
-          sender = ChatMessage.Sender.HEDVIG,
-          sentAt = LocalDateTime.now().plusMinutes(30).toInstant(ZoneOffset.UTC).toKotlinInstant(),
-          text = "Are you there?",
-        ),
-        ChatMessage.ChatMessageText(
-          id = "1",
-          sender = ChatMessage.Sender.MEMBER,
-          sentAt = LocalDateTime.now().toInstant(ZoneOffset.UTC).toKotlinInstant(),
-          text = "Yes I have a claim that I need help with. Could you please direct me to the correct flow in the app please?    Thank you",
-        ),
-      ),
-      errorMessage = "TestError",
+    ChatUiState.Initializing,
+    ChatUiState.DisabledByFeatureFlag,
+    ChatUiState.Loaded(
+      List(10) { index ->
+        UiChatMessage(
+          ChatMessage.ChatMessageText(
+            id = index.toString(),
+            sender = if (index % 2 == 0 || index > 7) ChatMessage.Sender.MEMBER else ChatMessage.Sender.HEDVIG,
+            sentAt = Clock.System.now().plus(index.seconds),
+            text = "Hello #$index" + if (index == 0) {
+              "long".repeat(15)
+            } else {
+              ""
+            },
+          ),
+          sentStatus = when (index) {
+            0 -> UiChatMessage.SentStatus.NotYetSent
+            1 -> UiChatMessage.SentStatus.FailedToBeSent
+            else -> UiChatMessage.SentStatus.Sent
+          },
+        )
+      }.toImmutableList(),
+      errorMessage = null,
+      fetchMoreMessagesUiState = ChatUiState.Loaded.FetchMoreMessagesUiState.FetchingMore,
     ),
   ),
 )
