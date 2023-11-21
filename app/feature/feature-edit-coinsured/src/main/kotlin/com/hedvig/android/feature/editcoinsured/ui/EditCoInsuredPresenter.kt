@@ -11,6 +11,7 @@ import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.data.CoInsuredError
 import com.hedvig.android.feature.editcoinsured.data.GetCoInsuredUseCase
+import com.hedvig.android.feature.editcoinsured.data.Member
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import kotlinx.collections.immutable.ImmutableList
@@ -25,6 +26,8 @@ internal class EditCoInsuredPresenter(
     var errorMessage by remember { mutableStateOf(lastState.errorMessage) }
     var isLoading by remember { mutableStateOf(lastState.isLoading) }
     var coInsured by remember { mutableStateOf(lastState.coInsured) }
+    var member by remember { mutableStateOf(lastState.member) }
+
     LaunchedEffect(Unit) {
       Snapshot.withMutableSnapshot {
         isLoading = true
@@ -44,6 +47,7 @@ internal class EditCoInsuredPresenter(
             errorMessage = null
             isLoading = false
             coInsured = it.coInsured
+            member = it.member
           }
         },
       )
@@ -52,6 +56,7 @@ internal class EditCoInsuredPresenter(
       isLoading = isLoading,
       errorMessage = errorMessage,
       coInsured = coInsured,
+      member = member
     )
   }
 }
@@ -64,4 +69,5 @@ internal data class EditCoInsuredState(
   val isLoading: Boolean = false,
   val errorMessage: String? = null,
   val coInsured: ImmutableList<CoInsured> = persistentListOf(),
+  val member: Member? = null,
 )
