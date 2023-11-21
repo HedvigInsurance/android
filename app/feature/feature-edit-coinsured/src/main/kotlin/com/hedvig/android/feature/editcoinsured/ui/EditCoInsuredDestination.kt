@@ -7,6 +7,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -40,7 +41,7 @@ private fun EditCoInsuredScreen(
 ) {
   Column(Modifier.fillMaxSize()) {
     TopAppBarWithBack(
-      title = "Insured people", // TODO
+      title = stringResource(id = hedvig.resources.R.string.COINSURED_EDIT_TITLE),
       onClick = navigateUp,
     )
     CoInsuredList(uiState)
