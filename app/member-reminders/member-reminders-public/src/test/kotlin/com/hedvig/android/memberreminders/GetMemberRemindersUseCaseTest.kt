@@ -70,7 +70,7 @@ class GetMemberRemindersUseCaseTest {
         nonEmptyListOf(UpcomingRenewal("", LocalDate.parse("2023-01-01"), "")).right(),
       )
       getNeedsCoInsuredInfoRemindersUseCase.turbine.add(
-        nonEmptyListOf(CoInsuredReminderInfo("123")).right()
+        nonEmptyListOf(CoInsuredReminderInfo("123")).right(),
       )
       assertAll {
         with(awaitItem()) {
@@ -106,6 +106,7 @@ class GetMemberRemindersUseCaseTest {
 
   class TestGetNeedsCoInsuredInfoRemindersUseCase : GetNeedsCoInsuredInfoRemindersUseCase {
     val turbine = Turbine<Either<CoInsuredInfoReminderError, NonEmptyList<CoInsuredReminderInfo>>>()
+
     override suspend fun invoke(): Either<CoInsuredInfoReminderError, NonEmptyList<CoInsuredReminderInfo>> {
       return turbine.awaitItem()
     }

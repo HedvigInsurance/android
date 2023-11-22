@@ -244,7 +244,8 @@ private fun NavDestination?.toTopLevelAppDestination(): AppDestination.TopLevelD
  */
 private val bottomNavPermittedDestinations: List<String> = buildList {
   add(createRoutePattern<AppDestination.Eurobonus>())
-  addAll(insurancesBottomNavPermittedDestinations)}
+  addAll(insurancesBottomNavPermittedDestinations)
+}
 
 private fun NavDestination?.isInListOfNonTopLevelNavBarPermittedDestinations(): Boolean {
   return this?.route in bottomNavPermittedDestinations

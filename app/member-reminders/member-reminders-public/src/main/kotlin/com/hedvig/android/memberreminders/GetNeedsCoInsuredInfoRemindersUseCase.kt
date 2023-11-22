@@ -40,9 +40,8 @@ internal class GetNeedsCoInsuredInfoRemindersUseCaseImpl(
   }
 
   private fun NeedsCoInsuredInfoReminderQuery.Data.CurrentMember.ActiveContract.hasMissingInfo() =
-    (currentAgreement.coInsured?.filter { it.needsMissingInfo }?.size ?: 0) > 0
-      || (upcomingChangedAgreement?.coInsured?.filter { it.needsMissingInfo }?.size ?: 0) > 0
-
+    (currentAgreement.coInsured?.filter { it.needsMissingInfo }?.size ?: 0) > 0 ||
+      (upcomingChangedAgreement?.coInsured?.filter { it.needsMissingInfo }?.size ?: 0) > 0
 }
 
 sealed interface CoInsuredInfoReminderError {
