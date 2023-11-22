@@ -14,10 +14,13 @@ import com.hedvig.android.placeholder.placeholder
 
 /**
  * Adjusts the composable's size to match the image's aspect ratio.
- * Does so by starting wiht a preferred height of [PreferredImageHeight] dp, and a max width of the max possible width
- * given to it from the parent, and a minimum width of that width, multiplied by [MinimumWidthTakenPercentage].
- *
- * Then it makes the image take as much space while respecting those bounds given to it.
+ * Does so by starting wiht a preferred height of [PreferredImageHeight] dp. Then it tries to adjust the width of the
+ * image acording to the w/h ratio while keeping that height.
+ * If the width then ends up being too little (by multiplying max width by [MinimumWidthTakenPercentage]), it will take
+ * the min width as a fact and adjust the height accordingly. If the width ends up being too much, it keeps the max
+ * width and adjusts the height to that width instead.
+ * With that size, it does the same check and contains the final size to ([MinimumImageHeight]..[MaximumImageHeight]),
+ * again adjusting the width to that new height.
  *
  * Shows a placeholder in case the image size is not yet decided.
  */
