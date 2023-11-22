@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.chat
 
+import android.util.Patterns
 import arrow.core.Either
 import arrow.core.raise.either
 import arrow.core.raise.ensure
@@ -222,29 +223,45 @@ internal class ChatRepositoryImpl(
 private fun MessageFragment.toChatMessage(): ChatMessage? = when (this) {
   is ChatMessageFileMessageFragment -> ChatMessage.ChatMessageFile(
     id = id,
-    sender = when (sender) {
-      ChatMessageSender.MEMBER -> ChatMessage.Sender.MEMBER
-      ChatMessageSender.HEDVIG -> ChatMessage.Sender.HEDVIG
-      ChatMessageSender.UNKNOWN__ -> ChatMessage.Sender.HEDVIG
-    },
+    sender = sender.toChatMessageSender(),
     sentAt = sentAt,
     url = signedUrl,
     mimeType = mimeType,
   )
 
-  is ChatMessageTextMessageFragment -> ChatMessage.ChatMessageText(
-    id = id,
-    sender = when (sender) {
-      ChatMessageSender.MEMBER -> ChatMessage.Sender.MEMBER
-      ChatMessageSender.HEDVIG -> ChatMessage.Sender.HEDVIG
-      ChatMessageSender.UNKNOWN__ -> ChatMessage.Sender.HEDVIG
-    },
-    sentAt = sentAt,
-    text = text,
-  )
+  is ChatMessageTextMessageFragment -> {
+    if (text.isGifUrl()) {
+      ChatMessage.ChatMessageGif(
+        id = id,
+        sender = sender.toChatMessageSender(),
+        sentAt = sentAt,
+        gifUrl = text,
+      )
+    } else {
+      ChatMessage.ChatMessageText(
+        id = id,
+        sender = sender.toChatMessageSender(),
+        sentAt = sentAt,
+        text = text,
+      )
+    }
+  }
 
   else -> {
     logcat(LogPriority.WARN) { "Got unknown message type, can not map message:$this" }
     null
   }
 }
+
+private fun ChatMessageSender.toChatMessageSender(): ChatMessage.Sender = when (this) {
+  ChatMessageSender.MEMBER -> ChatMessage.Sender.MEMBER
+  ChatMessageSender.HEDVIG -> ChatMessage.Sender.HEDVIG
+  ChatMessageSender.UNKNOWN__ -> ChatMessage.Sender.HEDVIG
+}
+
+private fun String.isGifUrl(): Boolean {
+  if (!endsWith(".gif")) return false
+  return webUrlLinkMatcher.matchEntire(this) != null
+}
+
+private val webUrlLinkMatcher: Regex = Patterns.WEB_URL.toRegex()

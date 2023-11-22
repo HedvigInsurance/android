@@ -29,6 +29,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.ImageLoader
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.cache.normalized.apolloStore
 import com.hedvig.android.core.common.safeCast
@@ -37,6 +38,7 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.debugBorder
+import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.feature.chat.ChatEventNew
 import com.hedvig.android.feature.chat.ChatUiState
 import com.hedvig.android.feature.chat.ChatViewModel
@@ -50,10 +52,11 @@ import kotlinx.datetime.Clock
 import org.koin.compose.koinInject
 
 @Composable
-internal fun ChatDestination(viewModel: ChatViewModel, onNavigateUp: () -> Unit) {
+internal fun ChatDestination(viewModel: ChatViewModel, imageLoader: ImageLoader, onNavigateUp: () -> Unit) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   ChatScreen(
     uiState = uiState,
+    imageLoader = imageLoader,
     onNavigateUp = onNavigateUp,
     onSendMessage = { message: String ->
       viewModel.emit(ChatEventNew.SendTextMessage(message))
@@ -74,6 +77,7 @@ internal fun ChatDestination(viewModel: ChatViewModel, onNavigateUp: () -> Unit)
 @Composable
 private fun ChatScreen(
   uiState: ChatUiState,
+  imageLoader: ImageLoader,
   onNavigateUp: () -> Unit,
   onSendMessage: (String) -> Unit,
   onSendFile: (File) -> Unit,
@@ -130,6 +134,7 @@ private fun ChatScreen(
           is ChatUiState.Loaded -> {
             ChatLoadedScreen(
               uiState,
+              imageLoader,
               topAppBarScrollBehavior,
               onSendMessage,
               onSendFile,
@@ -174,6 +179,7 @@ private fun ChatScreenPreview(
     ) {
       ChatScreen(
         uiState = chatUiState,
+        imageLoader = rememberPreviewImageLoader(),
         onNavigateUp = {},
         onSendMessage = {},
         onSendFile = {},

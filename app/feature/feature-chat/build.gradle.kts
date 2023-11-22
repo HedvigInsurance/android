@@ -28,6 +28,7 @@ dependencies {
   implementation(libs.arrow.core)
   implementation(libs.arrow.fx)
   implementation(libs.coil.coil)
+  implementation(libs.coil.compose)
   implementation(libs.coroutines.core)
   implementation(libs.fragmentViewBindingDelegate)
   implementation(libs.insetter)
@@ -51,13 +52,14 @@ dependencies {
   implementation(projects.coreIcons)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
-  implementation(projects.moleculeAndroid)
-  implementation(projects.moleculePublic)
   implementation(projects.hanalyticsFeatureFlagsPublic)
   implementation(projects.languageCore)
+  implementation(projects.moleculeAndroid)
+  implementation(projects.moleculePublic)
   implementation(projects.navigationActivity)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
+  implementation(projects.placeholder)
 }
 
 apollo {

@@ -14,6 +14,13 @@ sealed interface ChatMessage {
     val text: String,
   ) : ChatMessage
 
+  data class ChatMessageGif(
+    override val id: String,
+    override val sender: Sender,
+    override val sentAt: Instant,
+    val gifUrl: String,
+  ) : ChatMessage
+
   data class ChatMessageFile(
     override val id: String,
     override val sender: Sender,

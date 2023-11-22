@@ -36,14 +36,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import coil.ImageLoader
+import coil.compose.AsyncImage
+import coil.compose.AsyncImagePainter
+import coil.request.NullRequestDataException
 import com.hedvig.android.core.designsystem.animation.ThreeDotsLoading
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
+import com.hedvig.android.core.designsystem.material3.rememberShapedColorPainter
 import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.ui.clearFocusOnTap
-import com.hedvig.android.core.ui.debugBorder
 import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.feature.chat.ChatUiState
 import com.hedvig.android.feature.chat.data.ChatMessage
@@ -57,6 +64,7 @@ import kotlinx.coroutines.flow.filterNotNull
 @Composable
 internal fun ChatLoadedScreen(
   uiState: ChatUiState.Loaded,
+  imageLoader: ImageLoader,
   topAppBarScrollBehavior: TopAppBarScrollBehavior,
   onSendMessage: (String) -> Unit,
   onSendFile: (File) -> Unit,
@@ -80,18 +88,20 @@ internal fun ChatLoadedScreen(
       ChatLazyColumn(
         lazyListState = lazyListState,
         uiState = uiState,
+        imageLoader = imageLoader,
         onFetchMoreMessages = onFetchMoreMessages,
         modifier = Modifier
           .fillMaxWidth()
           .weight(1f)
           .clearFocusOnTap()
-          .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
-          .debugBorder(dp = 3.dp),
+          .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
       )
       Divider(Modifier.fillMaxWidth())
       Box(
         propagateMinConstraints = true,
-        modifier = Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)),
+        modifier = Modifier
+          .fillMaxWidth()
+          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)),
       ) {
         ChatTextInput(
           onSendMessage = { onSendMessage(it) },
@@ -163,6 +173,7 @@ private fun ScrollToBottomOnNewMessageReceivedWhenAlreadyAtBottomEffect(
 private fun ChatLazyColumn(
   lazyListState: LazyListState,
   uiState: ChatUiState.Loaded,
+  imageLoader: ImageLoader,
   onFetchMoreMessages: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -185,9 +196,10 @@ private fun ChatLazyColumn(
         }
       },
     ) { uiChatMessage: UiChatMessage ->
-      val alignment: Alignment.Horizontal = uiChatMessage.chatMessage.getMessageAlignment()
+      val alignment: Alignment.Horizontal = uiChatMessage.chatMessage.getMessageHorizontalAlignment()
       ChatBubble(
         chatMessage = uiChatMessage.chatMessage,
+        imageLoader = imageLoader,
         modifier = Modifier
           .fillParentMaxWidth()
           .padding(horizontal = 16.dp)
@@ -243,35 +255,106 @@ private fun ChatLazyColumn(
 }
 
 @Composable
-private fun ChatBubble(chatMessage: ChatMessage, modifier: Modifier = Modifier) {
+private fun ChatBubble(chatMessage: ChatMessage, imageLoader: ImageLoader, modifier: Modifier = Modifier) {
   when (chatMessage) {
     is ChatMessage.ChatMessageFile -> Text("file todo", modifier)
+    is ChatMessage.ChatMessageGif -> GifMessage(
+      gifMessage = chatMessage,
+      imageLoader = imageLoader,
+      modifier = modifier,
+    )
+
     is ChatMessage.ChatMessageText -> TextMessage(chatMessage, modifier)
   }
+}
+
+@Composable
+private fun GifMessage(
+  gifMessage: ChatMessage.ChatMessageGif,
+  imageLoader: ImageLoader,
+  modifier: Modifier = Modifier,
+) {
+  ChatMessageWithTimeSent(
+    messageSlot = {
+      val loadedImageIntrinsicSize = remember { mutableStateOf<IntSize?>(null) }
+      // todo chat: decide what to show when messages fail to load
+      val fallbackAndErrorPainter: Painter = rememberShapedColorPainter(MaterialTheme.colorScheme.errorContainer)
+      val placeholder: Painter = rememberShapedColorPainter(MaterialTheme.colorScheme.surface)
+      AsyncImage(
+        model = gifMessage.gifUrl,
+        contentDescription = null,
+        imageLoader = imageLoader,
+        transform = { state ->
+          when (state) {
+            is AsyncImagePainter.State.Loading -> {
+              state.copy(painter = placeholder)
+            }
+
+            is AsyncImagePainter.State.Error -> if (state.result.throwable is NullRequestDataException) {
+              // todo chat: fallback for gif which is unable to load here
+              state.copy(painter = fallbackAndErrorPainter)
+            } else {
+              // todo chat: painter to show when the network request of the gif failed here
+              state.copy(painter = fallbackAndErrorPainter)
+            }
+
+            AsyncImagePainter.State.Empty -> state
+            is AsyncImagePainter.State.Success -> {
+              loadedImageIntrinsicSize.value = IntSize(
+                state.result.drawable.intrinsicWidth,
+                state.result.drawable.intrinsicHeight,
+              )
+              state
+            }
+          }
+        },
+        modifier = Modifier
+          .adjustSizeToImageRatioOrShowPlaceholder(getImageSize = { loadedImageIntrinsicSize.value })
+          .clip(MaterialTheme.shapes.squircleMedium),
+      )
+    },
+    chatMessage = gifMessage,
+    modifier = modifier,
+  )
 }
 
 @OptIn(ExperimentalTextApi::class)
 @Composable
 private fun TextMessage(chatMessage: ChatMessage.ChatMessageText, modifier: Modifier = Modifier) {
-  val locale = getLocale()
+  ChatMessageWithTimeSent(
+    messageSlot = {
+      Surface(
+        shape = MaterialTheme.shapes.squircleMedium,
+        color = chatMessage.backgroundColor(),
+      ) {
+        TextWithClickableUrls(
+          text = chatMessage.text,
+          style = MaterialTheme.typography.bodyMedium,
+          modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+        )
+      }
+    },
+    chatMessage = chatMessage,
+    modifier = modifier,
+  )
+}
+
+@Composable
+internal fun ChatMessageWithTimeSent(
+  messageSlot: @Composable () -> Unit,
+  chatMessage: ChatMessage,
+  modifier: Modifier = Modifier,
+) {
   Column(modifier) {
-    Surface(
-      shape = MaterialTheme.shapes.squircleMedium,
-      color = chatMessage.backgroundColor(),
-    ) {
-      TextWithClickableUrls(
-        text = chatMessage.text,
-        style = MaterialTheme.typography.bodyMedium,
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-      )
-    }
+    messageSlot()
     Spacer(modifier = Modifier.height(4.dp))
+    val locale = getLocale()
     Text(
       text = chatMessage.formattedDateTime(locale),
       style = MaterialTheme.typography.bodySmall,
       color = MaterialTheme.colorScheme.onSurfaceVariant,
       modifier = Modifier
-        .align(chatMessage.getMessageAlignment())
+        .align(chatMessage.getMessageHorizontalAlignment())
         .padding(horizontal = 2.dp),
     )
   }

@@ -34,7 +34,7 @@ internal fun ChatMessage.backgroundColor(): Color = when (sender) {
 }
 
 @Composable
-internal fun ChatMessage.getMessageAlignment(): Alignment.Horizontal = when (sender) {
+internal fun ChatMessage.getMessageHorizontalAlignment(): Alignment.Horizontal = when (sender) {
   ChatMessage.Sender.HEDVIG -> Alignment.Start
   ChatMessage.Sender.MEMBER -> Alignment.End
 }

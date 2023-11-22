@@ -174,6 +174,7 @@ private fun HomeScreen(
               .windowInsetsPadding(WindowInsets.safeDrawing),
           )
         }
+
         is HomeUiState.Error -> {
           HedvigErrorSection(
             retry = reload,
@@ -182,6 +183,7 @@ private fun HomeScreen(
               .windowInsetsPadding(WindowInsets.safeDrawing),
           )
         }
+
         is HomeUiState.Success -> {
           HomeScreenSuccess(
             uiState = uiState,
@@ -426,6 +428,7 @@ private fun WelcomeMessage(homeText: HomeText, modifier: Modifier = Modifier) {
         formatter.format(homeText.inception.toJavaLocalDate()),
       )
     }
+
     is HomeText.Pending -> stringResource(R.string.home_tab_pending_unknown_title_without_name)
     is HomeText.Switching -> stringResource(R.string.home_tab_pending_switchable_welcome_title_without_name)
     is HomeText.Terminated -> stringResource(R.string.home_tab_terminated_welcome_title_without_name)
