@@ -6,11 +6,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,10 +20,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
+import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -36,6 +36,7 @@ internal fun AddCoInsuredBottomSheetContent(
   onFetchInfo: (ssn: String) -> Unit,
   onDismiss: () -> Unit,
   isLoading: Boolean,
+  errorMessage: String?,
   coInsured: CoInsured?,
 ) {
 
@@ -56,11 +57,15 @@ internal fun AddCoInsuredBottomSheetContent(
       onValueChange = { text: String ->
         ssn = text
       },
-      errorText = null,
+      errorText = errorMessage,
       keyboardOptions = KeyboardOptions(
-        capitalization = KeyboardCapitalization.Characters,
-        keyboardType = KeyboardType.Text,
+        keyboardType = KeyboardType.Number,
         imeAction = ImeAction.Done,
+      ),
+      keyboardActions = KeyboardActions(
+        onDone = {
+          onFetchInfo(ssn)
+        },
       ),
       withNewDesign = true,
       modifier = Modifier.fillMaxWidth(),
@@ -98,12 +103,11 @@ internal fun AddCoInsuredBottomSheetContent(
       isLoading = isLoading,
     )
     Spacer(Modifier.height(8.dp))
-    TextButton(
+    HedvigTextButton(
       onClick = onDismiss,
+      text = stringResource(id = R.string.general_cancel_button),
       modifier = Modifier.fillMaxWidth(),
-    ) {
-      Text(stringResource(id = R.string.general_cancel_button))
-    }
+    )
     Spacer(Modifier.height(32.dp))
   }
 }
@@ -119,6 +123,7 @@ private fun AddCoInsuredBottomSheetContentPreview() {
         onDismiss = {},
         isLoading = false,
         coInsured = null,
+        errorMessage = null,
       )
     }
   }
@@ -141,6 +146,7 @@ private fun AddCoInsuredBottomSheetContentWithCoInsuredPreview() {
           ssn = "144412022193",
           hasMissingInfo = false,
         ),
+        errorMessage = null,
       )
     }
   }

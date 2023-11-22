@@ -57,6 +57,9 @@ internal fun EditCoInsuredDestination(
     onFetchInfo = {
       viewModel.emit(EditCoInsuredEvent.FetchCoInsuredPersonalInformation(it))
     },
+    onRemoveCoInsuredFromSsn = {
+      viewModel.emit(EditCoInsuredEvent.RemoveCoInsuredFromSsn)
+    }
   )
 }
 
@@ -67,6 +70,7 @@ private fun EditCoInsuredScreen(
   uiState: EditCoInsuredState,
   onSave: (CoInsured) -> Unit,
   onFetchInfo: (ssn: String) -> Unit,
+  onRemoveCoInsuredFromSsn: () -> Unit,
 ) {
   val coroutineScope = rememberCoroutineScope()
   var showAddCoInsuredBottomSheet by rememberSaveable { mutableStateOf(false) }
@@ -90,10 +94,12 @@ private fun EditCoInsuredScreen(
             sheetState.hide()
           }.invokeOnCompletion {
             showAddCoInsuredBottomSheet = false
+            onRemoveCoInsuredFromSsn()
           }
         },
         isLoading = uiState.isLoadingPersonalInfo,
         coInsured = uiState.coInsuredFromSsn,
+        errorMessage = uiState.coInsuredFromSsnError
       )
     }
   }
@@ -187,6 +193,7 @@ private fun EditCoInsuredScreenEditablePreview() {
         ),
         onSave = {},
         onFetchInfo = {},
+        onRemoveCoInsuredFromSsn = {}
       )
     }
   }
@@ -229,6 +236,7 @@ private fun EditCoInsuredScreenNonEditablePreview() {
         ),
         onSave = {},
         onFetchInfo = {},
+        onRemoveCoInsuredFromSsn = {},
       )
     }
   }

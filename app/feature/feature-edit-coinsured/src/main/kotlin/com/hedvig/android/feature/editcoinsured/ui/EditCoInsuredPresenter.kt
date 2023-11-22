@@ -30,6 +30,7 @@ internal class EditCoInsuredPresenter(
     var isLoading by remember { mutableStateOf(lastState.isLoading) }
     var coInsured by remember { mutableStateOf(lastState.coInsured) }
     var coInsuredFromSsn by remember { mutableStateOf(lastState.coInsuredFromSsn) }
+    var coInsuredFromSsnError by remember { mutableStateOf(lastState.coInsuredFromSsnError) }
     var member by remember { mutableStateOf(lastState.member) }
 
     LaunchedEffect(Unit) {
@@ -59,19 +60,24 @@ internal class EditCoInsuredPresenter(
 
     CollectEvents { event ->
       when (event) {
-        is EditCoInsuredEvent.FetchCoInsuredPersonalInformation -> {
-          launch {
-            fetchCoInsuredPersonalInformationUseCaseProvider.provide()
-              .invoke(event.ssn)
-              .fold(
-                ifLeft = { errorMessage = it.message },
-                ifRight = { coInsuredFromSsn = it },
-              )
-          }
+        is EditCoInsuredEvent.FetchCoInsuredPersonalInformation -> launch {
+          fetchCoInsuredPersonalInformationUseCaseProvider.provide()
+            .invoke(event.ssn)
+            .fold(
+              ifLeft = { coInsuredFromSsnError = it.message },
+              ifRight = {
+                coInsuredFromSsn = it
+                coInsuredFromSsnError = null
+              },
+            )
         }
 
         is EditCoInsuredEvent.AddCoInsured -> {}
         is EditCoInsuredEvent.RemoveCoInsured -> {}
+        EditCoInsuredEvent.RemoveCoInsuredFromSsn -> {
+          coInsuredFromSsn = null
+          coInsuredFromSsnError = null
+        }
       }
     }
     return EditCoInsuredState(
@@ -79,6 +85,7 @@ internal class EditCoInsuredPresenter(
       errorMessage = errorMessage,
       coInsured = coInsured,
       coInsuredFromSsn = coInsuredFromSsn,
+      coInsuredFromSsnError = coInsuredFromSsnError,
       member = member,
     )
   }
@@ -88,6 +95,7 @@ internal sealed interface EditCoInsuredEvent {
   data class FetchCoInsuredPersonalInformation(val ssn: String) : EditCoInsuredEvent
   data class AddCoInsured(val coInsured: CoInsured) : EditCoInsuredEvent
   data class RemoveCoInsured(val coInsured: CoInsured) : EditCoInsuredEvent
+  data object RemoveCoInsuredFromSsn : EditCoInsuredEvent
 }
 
 internal data class EditCoInsuredState(
@@ -97,4 +105,5 @@ internal data class EditCoInsuredState(
   val member: Member? = null,
   val isLoadingPersonalInfo: Boolean = false,
   val coInsuredFromSsn: CoInsured? = null,
+  val coInsuredFromSsnError: String? = null,
 )
