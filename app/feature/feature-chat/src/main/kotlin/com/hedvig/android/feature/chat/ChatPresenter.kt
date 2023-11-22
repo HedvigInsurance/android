@@ -175,11 +175,13 @@ internal class ChatPresenter(
       }
     }
 
+    // todo remove this for production
     LaunchedEffect(messagesCurrentlyBeingSent.toList()) {
       messagesCurrentlyBeingSent.toList().also {
         logcat { "Stelios: messagesCurrentlyBeingSent:${messagesCurrentlyBeingSent.toList()}" }
       }
     }
+    // todo remove this for production
     LaunchedEffect(messagesFailedToBeSent.toList()) {
       messagesFailedToBeSent.toList().also {
         logcat { "Stelios: messagesFailedToBeSent:${messagesFailedToBeSent.toList()}" }

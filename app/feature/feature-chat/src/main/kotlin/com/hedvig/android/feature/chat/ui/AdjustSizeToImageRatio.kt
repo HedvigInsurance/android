@@ -14,11 +14,12 @@ import com.hedvig.android.placeholder.placeholder
 
 /**
  * Adjusts the composable's size to match the image's aspect ratio.
- * Does so by deciding on a preferred height of [PreferredImageHeight] dp, and a max size of the max possible size
+ * Does so by starting wiht a preferred height of [PreferredImageHeight] dp, and a max width of the max possible width
  * given to it from the parent, and a minimum width of that width, multiplied by [MinimumWidthTakenPercentage].
  *
+ * Then it makes the image take as much space while respecting those bounds given to it.
+ *
  * Shows a placeholder in case the image size is not yet decided.
- * Then
  */
 internal fun Modifier.adjustSizeToImageRatioOrShowPlaceholder(getImageSize: () -> IntSize?): Modifier = this.composed {
   when {
@@ -37,30 +38,38 @@ internal fun Modifier.adjustSizeToImageRatioOrShowPlaceholder(getImageSize: () -
         val maxPreferredWidth = constraints.maxWidth.toDp()
         val preferredHeight = PreferredImageHeight.dp
 
-        val potentialWidth = preferredHeight * widthToHeightRatio
-        val suggestedSize = when {
-          potentialWidth > maxPreferredWidth -> {
-            DpSize(maxPreferredWidth, maxPreferredWidth / widthToHeightRatio)
+        val ratioAdjustedWidth = preferredHeight * widthToHeightRatio
+        val widthBoundAdjustedSize = when {
+          ratioAdjustedWidth > maxPreferredWidth -> {
+            DpSize(width = maxPreferredWidth, height = maxPreferredWidth / widthToHeightRatio)
           }
 
-          potentialWidth < minPreferredWidth -> {
-            DpSize(minPreferredWidth, minPreferredWidth / widthToHeightRatio)
+          ratioAdjustedWidth < minPreferredWidth -> {
+            DpSize(width = minPreferredWidth, height = minPreferredWidth / widthToHeightRatio)
           }
 
-          else -> {
-            DpSize(potentialWidth, preferredHeight)
-          }
+          else -> DpSize(ratioAdjustedWidth, preferredHeight)
         }
 
         val minHeight = MinimumImageHeight.dp
-        val finalSize = if (suggestedSize.height < minHeight) {
-          suggestedSize.copy(height = minHeight, width = minHeight * widthToHeightRatio)
-        } else {
-          suggestedSize
+        val maxHeight = MaximumImageHeight.dp
+        val widthAndHeightAdjustedSize = when {
+          widthBoundAdjustedSize.height < minHeight -> {
+            widthBoundAdjustedSize.copy(width = minHeight * widthToHeightRatio, height = minHeight)
+          }
+
+          widthBoundAdjustedSize.height > maxHeight -> {
+            widthBoundAdjustedSize.copy(width = maxHeight * widthToHeightRatio, height = maxHeight)
+          }
+
+          else -> widthBoundAdjustedSize
         }
 
         val placeable = measurable.measure(
-          Constraints.fixed(finalSize.width.roundToPx(), finalSize.height.roundToPx()),
+          Constraints.fixed(
+            widthAndHeightAdjustedSize.width.roundToPx(),
+            widthAndHeightAdjustedSize.height.roundToPx(),
+          ),
         )
         layout(placeable.width, placeable.height) {
           placeable.placeRelative(0, 0)
@@ -70,6 +79,7 @@ internal fun Modifier.adjustSizeToImageRatioOrShowPlaceholder(getImageSize: () -
   }
 }
 
-private const val PreferredImageHeight = 300
+private const val MaximumImageHeight = 250
+private const val PreferredImageHeight = 180
 private const val MinimumImageHeight = 100
 private const val MinimumWidthTakenPercentage = 0.5f
