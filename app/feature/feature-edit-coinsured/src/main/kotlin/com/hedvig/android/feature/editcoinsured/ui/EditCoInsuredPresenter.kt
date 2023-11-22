@@ -99,7 +99,7 @@ internal sealed interface EditCoInsuredEvent {
 }
 
 internal data class EditCoInsuredState(
-  val isLoading: Boolean = false,
+  val isLoading: Boolean = true,
   val errorMessage: String? = null,
   val coInsured: ImmutableList<CoInsured> = persistentListOf(),
   val member: Member? = null,

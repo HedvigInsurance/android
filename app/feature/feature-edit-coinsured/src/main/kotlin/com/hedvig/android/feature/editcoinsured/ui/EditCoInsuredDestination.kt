@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.editcoinsured.ui
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -24,6 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.core.designsystem.material3.squircleLargeTop
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -109,16 +111,25 @@ private fun EditCoInsuredScreen(
       title = stringResource(id = R.string.COINSURED_EDIT_TITLE),
       onClick = navigateUp,
     )
-    CoInsuredList(uiState, allowEdit)
-    if (!allowEdit) {
-      Spacer(Modifier.height(8.dp))
-      HedvigContainedButton(
-        text = stringResource(id = R.string.CONTRACT_ADD_COINSURED),
-        onClick = {
-          showAddCoInsuredBottomSheet = true
-        },
-        modifier = Modifier.padding(horizontal = 16.dp),
-      )
+
+    Crossfade(targetState = uiState.isLoading, label = "content") { isLoading ->
+      if (isLoading) {
+        HedvigFullScreenCenterAlignedProgressDebounced()
+      } else {
+        Column {
+          CoInsuredList(uiState, allowEdit)
+          if (!allowEdit) {
+            Spacer(Modifier.height(8.dp))
+            HedvigContainedButton(
+              text = stringResource(id = R.string.CONTRACT_ADD_COINSURED),
+              onClick = {
+                showAddCoInsuredBottomSheet = true
+              },
+              modifier = Modifier.padding(horizontal = 16.dp),
+            )
+          }
+        }
+      }
     }
   }
 }
