@@ -42,15 +42,20 @@ data class InsuranceAgreement(
     val activeFrom: LocalDate?,
     val hasMissingInfo: Boolean,
   ) {
-    fun getDisplayName() = if (firstName != null && lastName != null) {
-      "$firstName $lastName"
-    } else {
-      null
+    fun getDisplayName() = buildString {
+      if (firstName != null) {
+        append(firstName)
+      }
+      if (firstName != null && lastName != null) {
+        append(" ")
+      }
+      if (lastName != null) {
+        append(lastName)
+      }
     }
 
     fun getSsnOrBirthDate(dateTimeFormatter: DateTimeFormatter) = ssn ?: birthDate
       ?.toJavaLocalDate()
       ?.let { dateTimeFormatter.format(it) }
-
   }
 }

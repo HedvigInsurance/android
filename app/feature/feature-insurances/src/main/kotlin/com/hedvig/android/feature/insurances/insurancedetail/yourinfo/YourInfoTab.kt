@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
-import com.hedvig.android.core.designsystem.component.information.Pill
+import com.hedvig.android.core.designsystem.component.information.HedvigPill
 import com.hedvig.android.core.designsystem.material3.containedButtonContainer
 import com.hedvig.android.core.designsystem.material3.onContainedButtonContainer
 import com.hedvig.android.core.designsystem.material3.onWarningContainer
@@ -330,8 +330,8 @@ internal fun CoInsuredSection(
       },
       spaceBetween = 8.dp,
     )
-    Divider()
     coInsuredList.forEachIndexed { index, coInsured ->
+      Divider()
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
           Row(
@@ -339,29 +339,17 @@ internal fun CoInsuredSection(
             modifier = Modifier.padding(vertical = 12.dp),
           ) {
             Column {
-              val displayName = coInsured.getDisplayName()
-              if (displayName != null) {
-                Text(text = displayName)
-              } else {
-                Text(stringResource(id = R.string.CONTRACT_COINSURED))
-              }
+              Text(coInsured.getDisplayName().ifBlank { stringResource(id = R.string.CONTRACT_COINSURED) })
 
-              val ssnOrBirthDate = coInsured.getSsnOrBirthDate(dateTimeFormatter)
-              if (ssnOrBirthDate != null) {
-                Text(
-                  text = ssnOrBirthDate,
-                  color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-              } else {
-                Text(
-                  text = stringResource(id = R.string.CONTRACT_NO_INFORMATION),
-                  color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-              }
+              Text(
+                text = coInsured.getSsnOrBirthDate(dateTimeFormatter)
+                  ?: stringResource(id = R.string.CONTRACT_NO_INFORMATION),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+              )
 
               if (coInsured.activeFrom != null) {
                 Spacer(Modifier.height(4.dp))
-                Pill(
+                HedvigPill(
                   text = stringResource(
                     id = R.string.CONTRACT_ADD_COINSURED_ACTIVE_FROM,
                     dateTimeFormatter.format(coInsured.activeFrom.toJavaLocalDate()),
@@ -374,11 +362,11 @@ internal fun CoInsuredSection(
           }
         },
         endSlot = {
-          Row(
-            horizontalArrangement = Arrangement.End,
-            modifier = Modifier.padding(vertical = 14.dp),
-          ) {
-            if (coInsured.hasMissingInfo) {
+          if (coInsured.hasMissingInfo) {
+            Row(
+              horizontalArrangement = Arrangement.End,
+              modifier = Modifier.padding(vertical = 14.dp),
+            ) {
               Icon(
                 imageVector = HedvigIcons.WarningFilled,
                 tint = MaterialTheme.colorScheme.warningElement,
@@ -390,10 +378,6 @@ internal fun CoInsuredSection(
         },
         spaceBetween = 8.dp,
       )
-
-      if (index < coInsuredList.size - 1) {
-        Divider()
-      }
     }
 
     val hasMissingInfo = coInsuredList.any { it.hasMissingInfo }

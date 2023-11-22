@@ -295,7 +295,7 @@ private fun PreviewContractDetailScreen() {
             supportsAddressChange = false,
             isTerminated = false,
             contractHolderDisplayName = "Hugo Linder",
-            contractHolderSSN = "199101131093"
+            contractHolderSSN = "199101131093",
           ),
         ),
         imageLoader = rememberPreviewImageLoader(),

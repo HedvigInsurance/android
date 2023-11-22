@@ -122,14 +122,11 @@ private fun ContractFragment.toContract(
   )
 }
 
-fun AgreementFragment.CoInsured.toCoInsured(): InsuranceAgreement.CoInsured =
-  InsuranceAgreement.CoInsured(
-    firstName = firstName,
-    lastName = lastName,
-    ssn = ssn,
-    birthDate = birthdate,
-    activeFrom = null,
-    hasMissingInfo = needsMissingInfo,
-  )
-
-
+private fun AgreementFragment.CoInsured.toCoInsured(): InsuranceAgreement.CoInsured = InsuranceAgreement.CoInsured(
+  firstName = firstName,
+  lastName = lastName,
+  ssn = ssn,
+  birthDate = birthdate,
+  activeFrom = null,
+  hasMissingInfo = needsMissingInfo,
+)

@@ -110,8 +110,7 @@ internal class InsurancePresenterTest {
         ),
         certificateUrl = null,
         coInsured = persistentListOf(),
-
-        ),
+      ),
       upcomingInsuranceAgreement = null,
       renewalDate = LocalDate.fromEpochDays(500),
       supportsAddressChange = false,

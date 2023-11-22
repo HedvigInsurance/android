@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.material3.squircleExtraSmall
 
 @Composable
-fun Pill(text: String, color: Color, contentColor: Color = contentColorFor(color)) {
+fun HedvigPill(text: String, color: Color, contentColor: Color = contentColorFor(color)) {
   Surface(
     shape = MaterialTheme.shapes.squircleExtraSmall,
     color = color,
@@ -39,4 +39,3 @@ fun Pill(text: String, color: Color, contentColor: Color = contentColorFor(color
     }
   }
 }
-

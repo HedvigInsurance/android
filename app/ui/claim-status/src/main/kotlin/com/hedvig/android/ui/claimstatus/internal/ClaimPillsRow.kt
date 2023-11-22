@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.component.information.Pill
+import com.hedvig.android.core.designsystem.component.information.HedvigPill
 import com.hedvig.android.core.designsystem.material3.infoContainer
 import com.hedvig.android.core.designsystem.material3.onInfoContainer
 import com.hedvig.android.core.designsystem.material3.onWarningContainer
@@ -60,7 +60,7 @@ private fun ClaimPill(type: ClaimPillType) {
     ClaimPillType.Reopened -> MaterialTheme.colorScheme.warningContainer to MaterialTheme.colorScheme.onWarningContainer
     ClaimPillType.Unknown -> MaterialTheme.colorScheme.outlineVariant to LocalContentColor.current
   }
-  Pill(text, color, contentColor)
+  HedvigPill(text, color, contentColor)
 }
 
 @HedvigPreview
