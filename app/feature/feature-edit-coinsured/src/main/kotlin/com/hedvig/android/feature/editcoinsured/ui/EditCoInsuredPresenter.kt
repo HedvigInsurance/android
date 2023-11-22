@@ -10,22 +10,26 @@ import androidx.compose.runtime.snapshots.Snapshot
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.data.CoInsuredError
+import com.hedvig.android.feature.editcoinsured.data.FetchCoInsuredPersonalInformationUseCase
 import com.hedvig.android.feature.editcoinsured.data.GetCoInsuredUseCase
 import com.hedvig.android.feature.editcoinsured.data.Member
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.launch
 
 internal class EditCoInsuredPresenter(
   private val contractId: String,
   private val getCoInsuredUseCaseProvider: Provider<GetCoInsuredUseCase>,
+  private val fetchCoInsuredPersonalInformationUseCaseProvider: Provider<FetchCoInsuredPersonalInformationUseCase>,
 ) : MoleculePresenter<EditCoInsuredEvent, EditCoInsuredState> {
   @Composable
   override fun MoleculePresenterScope<EditCoInsuredEvent>.present(lastState: EditCoInsuredState): EditCoInsuredState {
     var errorMessage by remember { mutableStateOf(lastState.errorMessage) }
     var isLoading by remember { mutableStateOf(lastState.isLoading) }
     var coInsured by remember { mutableStateOf(lastState.coInsured) }
+    var coInsuredFromSsn by remember { mutableStateOf(lastState.coInsuredFromSsn) }
     var member by remember { mutableStateOf(lastState.member) }
 
     LaunchedEffect(Unit) {
@@ -52,17 +56,38 @@ internal class EditCoInsuredPresenter(
         },
       )
     }
+
+    CollectEvents { event ->
+      when (event) {
+        is EditCoInsuredEvent.FetchCoInsuredPersonalInformation -> {
+          launch {
+            fetchCoInsuredPersonalInformationUseCaseProvider.provide()
+              .invoke(event.ssn)
+              .fold(
+                ifLeft = { errorMessage = it.message },
+                ifRight = { coInsuredFromSsn = it },
+              )
+          }
+        }
+
+        is EditCoInsuredEvent.AddCoInsured -> {}
+        is EditCoInsuredEvent.RemoveCoInsured -> {}
+      }
+    }
     return EditCoInsuredState(
       isLoading = isLoading,
       errorMessage = errorMessage,
       coInsured = coInsured,
-      member = member
+      coInsuredFromSsn = coInsuredFromSsn,
+      member = member,
     )
   }
 }
 
 internal sealed interface EditCoInsuredEvent {
-
+  data class FetchCoInsuredPersonalInformation(val ssn: String) : EditCoInsuredEvent
+  data class AddCoInsured(val coInsured: CoInsured) : EditCoInsuredEvent
+  data class RemoveCoInsured(val coInsured: CoInsured) : EditCoInsuredEvent
 }
 
 internal data class EditCoInsuredState(
@@ -70,4 +95,6 @@ internal data class EditCoInsuredState(
   val errorMessage: String? = null,
   val coInsured: ImmutableList<CoInsured> = persistentListOf(),
   val member: Member? = null,
+  val isLoadingPersonalInfo: Boolean = false,
+  val coInsuredFromSsn: CoInsured? = null,
 )
