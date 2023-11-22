@@ -3,6 +3,8 @@ package com.hedvig.android.feature.editcoinsured.di
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.octopus.di.octopusClient
 import com.hedvig.android.core.demomode.DemoManager
+import com.hedvig.android.feature.editcoinsured.data.CreateMidtermChangeUseCase
+import com.hedvig.android.feature.editcoinsured.data.CreateMidtermChangeUseCaseImpl
 import com.hedvig.android.feature.editcoinsured.data.FetchCoInsuredPersonalInformationUseCaseImpl
 import com.hedvig.android.feature.editcoinsured.data.GetCoInsuredUseCaseImpl
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredViewModel
@@ -21,6 +23,13 @@ val editCoInsuredModule = module {
       get<ApolloClient>(octopusClient),
     )
   }
+
+  single<CreateMidtermChangeUseCase> {
+    CreateMidtermChangeUseCaseImpl(
+      get<ApolloClient>(octopusClient),
+    )
+  }
+
 
   single<GetCoInsuredUseCaseProvider> {
     GetCoInsuredUseCaseProvider(
@@ -43,6 +52,7 @@ val editCoInsuredModule = module {
       contractId,
       get<GetCoInsuredUseCaseProvider>(),
       get<FetchCoInsuredPersonalInformationUseCaseProvider>(),
+      get<CreateMidtermChangeUseCase>(),
     )
   }
 

@@ -30,6 +30,7 @@ import com.hedvig.android.core.designsystem.material3.squircleLargeTop
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
+import com.hedvig.android.core.ui.dialog.ErrorDialog
 import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.data.Member
@@ -61,7 +62,10 @@ internal fun EditCoInsuredDestination(
     },
     onRemoveCoInsuredFromSsn = {
       viewModel.emit(EditCoInsuredEvent.RemoveCoInsuredFromSsn)
-    }
+    },
+    onDismissError = {
+      viewModel.emit(EditCoInsuredEvent.OnDismissError)
+    },
   )
 }
 
@@ -73,7 +77,16 @@ private fun EditCoInsuredScreen(
   onSave: (CoInsured) -> Unit,
   onFetchInfo: (ssn: String) -> Unit,
   onRemoveCoInsuredFromSsn: () -> Unit,
+  onDismissError: () -> Unit,
 ) {
+  if (uiState.errorMessage != null) {
+    ErrorDialog(
+      title = stringResource(id = R.string.general_error),
+      message = uiState.errorMessage,
+      onDismiss = onDismissError,
+    )
+  }
+
   val coroutineScope = rememberCoroutineScope()
   var showAddCoInsuredBottomSheet by rememberSaveable { mutableStateOf(false) }
   if (showAddCoInsuredBottomSheet) {
@@ -89,7 +102,15 @@ private fun EditCoInsuredScreen(
       windowInsets = BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top),
     ) {
       AddCoInsuredBottomSheetContent(
-        onSave = onSave,
+        onSave = { coInsured ->
+          coroutineScope.launch {
+            onSave(coInsured)
+            onRemoveCoInsuredFromSsn()
+            sheetState.hide()
+          }.invokeOnCompletion {
+            showAddCoInsuredBottomSheet = false
+          }
+        },
         onFetchInfo = onFetchInfo,
         onDismiss = {
           coroutineScope.launch {
@@ -101,7 +122,7 @@ private fun EditCoInsuredScreen(
         },
         isLoading = uiState.isLoadingPersonalInfo,
         coInsured = uiState.coInsuredFromSsn,
-        errorMessage = uiState.coInsuredFromSsnError
+        errorMessage = uiState.coInsuredFromSsnError,
       )
     }
   }
@@ -135,7 +156,10 @@ private fun EditCoInsuredScreen(
 }
 
 @Composable
-private fun CoInsuredList(uiState: EditCoInsuredState, allowEdit: Boolean) {
+private fun CoInsuredList(
+  uiState: EditCoInsuredState,
+  allowEdit: Boolean,
+) {
   val dateTimeFormatter = rememberHedvigDateTimeFormatter()
   Column {
     uiState.member?.let {
@@ -204,7 +228,8 @@ private fun EditCoInsuredScreenEditablePreview() {
         ),
         onSave = {},
         onFetchInfo = {},
-        onRemoveCoInsuredFromSsn = {}
+        onRemoveCoInsuredFromSsn = {},
+        onDismissError = {},
       )
     }
   }
@@ -248,6 +273,7 @@ private fun EditCoInsuredScreenNonEditablePreview() {
         onSave = {},
         onFetchInfo = {},
         onRemoveCoInsuredFromSsn = {},
+        onDismissError = {},
       )
     }
   }

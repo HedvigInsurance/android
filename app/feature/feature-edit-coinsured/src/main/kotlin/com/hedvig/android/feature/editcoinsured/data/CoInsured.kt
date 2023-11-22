@@ -11,6 +11,8 @@ data class CoInsured(
   val ssn: String?,
   val hasMissingInfo: Boolean,
 ) {
+  val id = "$firstName-$lastName-$birthDate-$ssn"
+
   val displayName: String? = if (firstName != null && lastName != null) {
     "$firstName $lastName"
   } else {
