@@ -181,5 +181,3 @@ private fun InsuredRowPreviewMember() {
     }
   }
 }
-
-

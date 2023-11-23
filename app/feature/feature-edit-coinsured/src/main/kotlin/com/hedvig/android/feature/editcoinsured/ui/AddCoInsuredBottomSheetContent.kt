@@ -39,7 +39,6 @@ internal fun AddCoInsuredBottomSheetContent(
   errorMessage: String?,
   coInsured: CoInsured?,
 ) {
-
   var ssn by remember { mutableStateOf("") }
 
   Column(
@@ -151,4 +150,3 @@ private fun AddCoInsuredBottomSheetContentWithCoInsuredPreview() {
     }
   }
 }
-

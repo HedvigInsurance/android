@@ -170,7 +170,7 @@ internal fun HedvigNavHost(
         with(navigator) {
           backStackEntry.navigate(EditCoInsuredDestination(contractId, allowEdit = false))
         }
-      }
+      },
     )
     foreverGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
@@ -215,7 +215,7 @@ internal fun HedvigNavHost(
       },
     )
     editCoInsuredGraph(
-      navigateUp = navigator::navigateUp
+      navigateUp = navigator::navigateUp,
     )
     connectAdyenPaymentGraph(navigator)
   }

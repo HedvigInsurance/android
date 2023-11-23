@@ -2,48 +2,32 @@ package com.hedvig.android.feature.editcoinsured.di
 
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.octopus.di.octopusClient
-import com.hedvig.android.core.demomode.DemoManager
+import com.hedvig.android.feature.editcoinsured.data.FetchCoInsuredPersonalInformationUseCase
 import com.hedvig.android.feature.editcoinsured.data.FetchCoInsuredPersonalInformationUseCaseImpl
+import com.hedvig.android.feature.editcoinsured.data.GetCoInsuredUseCase
 import com.hedvig.android.feature.editcoinsured.data.GetCoInsuredUseCaseImpl
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val editCoInsuredModule = module {
-  single<GetCoInsuredUseCaseImpl> {
+  single<GetCoInsuredUseCase> {
     GetCoInsuredUseCaseImpl(
       get<ApolloClient>(octopusClient),
     )
   }
 
-  single<FetchCoInsuredPersonalInformationUseCaseImpl> {
+  single<FetchCoInsuredPersonalInformationUseCase> {
     FetchCoInsuredPersonalInformationUseCaseImpl(
       get<ApolloClient>(octopusClient),
-    )
-  }
-
-  single<GetCoInsuredUseCaseProvider> {
-    GetCoInsuredUseCaseProvider(
-      demoManager = get<DemoManager>(),
-      prodImpl = get<GetCoInsuredUseCaseImpl>(),
-      demoImpl = get<GetCoInsuredUseCaseImpl>(),
-    )
-  }
-
-  single<FetchCoInsuredPersonalInformationUseCaseProvider> {
-    FetchCoInsuredPersonalInformationUseCaseProvider(
-      demoManager = get<DemoManager>(),
-      prodImpl = get<FetchCoInsuredPersonalInformationUseCaseImpl>(),
-      demoImpl = get<FetchCoInsuredPersonalInformationUseCaseImpl>(),
     )
   }
 
   viewModel<EditCoInsuredViewModel> { (contractId: String) ->
     EditCoInsuredViewModel(
       contractId,
-      get<GetCoInsuredUseCaseProvider>(),
-      get<FetchCoInsuredPersonalInformationUseCaseProvider>(),
+      get<GetCoInsuredUseCase>(),
+      get<FetchCoInsuredPersonalInformationUseCase>(),
     )
   }
-
 }

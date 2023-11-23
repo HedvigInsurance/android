@@ -4,7 +4,7 @@ import java.time.format.DateTimeFormatter
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
 
-data class CoInsured(
+internal data class CoInsured(
   val firstName: String?,
   val lastName: String?,
   val birthDate: LocalDate?,
@@ -19,4 +19,14 @@ data class CoInsured(
 
   fun details(dateTimeFormatter: DateTimeFormatter): String? =
     ssn ?: birthDate?.toJavaLocalDate()?.format(dateTimeFormatter)
+
+  companion object {
+    fun fromPersonalInformation(personalInformation: CoInsuredPersonalInformation, ssn: String): CoInsured = CoInsured(
+      firstName = personalInformation.firstName,
+      lastName = personalInformation.lastName,
+      birthDate = null,
+      ssn = ssn,
+      hasMissingInfo = false,
+    )
+  }
 }

@@ -9,14 +9,14 @@ import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import octopus.PersonalInformationQuery
 
-interface FetchCoInsuredPersonalInformationUseCase {
-  suspend fun invoke(ssn: String): Either<ErrorMessage, CoInsured>
+internal interface FetchCoInsuredPersonalInformationUseCase {
+  suspend fun invoke(ssn: String): Either<ErrorMessage, CoInsuredPersonalInformation>
 }
 
-class FetchCoInsuredPersonalInformationUseCaseImpl(
+internal class FetchCoInsuredPersonalInformationUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : FetchCoInsuredPersonalInformationUseCase {
-  override suspend fun invoke(ssn: String): Either<ErrorMessage, CoInsured> = either {
+  override suspend fun invoke(ssn: String): Either<ErrorMessage, CoInsuredPersonalInformation> = either {
     val result = apolloClient.query(PersonalInformationQuery(ssn))
       .safeExecute()
       .toEither(::ErrorMessage)
@@ -26,14 +26,14 @@ class FetchCoInsuredPersonalInformationUseCaseImpl(
       ErrorMessage("No personal information found")
     }
 
-    CoInsured(
+    CoInsuredPersonalInformation(
       firstName = result.personalInformation.firstName,
       lastName = result.personalInformation.lastName,
-      birthDate = null,
-      ssn = ssn,
-      hasMissingInfo = false,
     )
   }
 }
 
-data class CoInsuredPersonalInformationError(val message: String?)
+internal data class CoInsuredPersonalInformation(
+  val firstName: String,
+  val lastName: String,
+)
