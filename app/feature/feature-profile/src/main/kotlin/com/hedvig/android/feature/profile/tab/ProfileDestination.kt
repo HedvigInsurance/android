@@ -72,6 +72,7 @@ internal fun ProfileDestination(
   navigateToSettings: () -> Unit,
   navigateToPayment: () -> Unit,
   navigateToConnectPayment: () -> Unit,
+  navigateToContractDetail: (contractId: String) -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
   viewModel: ProfileViewModel,
@@ -86,6 +87,7 @@ internal fun ProfileDestination(
     navigateToSettings = navigateToSettings,
     navigateToPayment = navigateToPayment,
     navigateToConnectPayment = navigateToConnectPayment,
+    navigateToContractDetail = navigateToContractDetail,
     openAppSettings = openAppSettings,
     openUrl = openUrl,
     snoozeNotificationPermission = viewModel::snoozeNotificationPermission,
@@ -103,6 +105,7 @@ private fun ProfileScreen(
   navigateToSettings: () -> Unit,
   navigateToPayment: () -> Unit,
   navigateToConnectPayment: () -> Unit,
+  navigateToContractDetail: (contractId: String) -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
   snoozeNotificationPermission: () -> Unit,
@@ -166,6 +169,7 @@ private fun ProfileScreen(
       MemberReminderCards(
         memberReminders = memberReminders,
         navigateToConnectPayment = navigateToConnectPayment,
+        navigateToContractDetail = navigateToContractDetail,
         openUrl = openUrl,
         notificationPermissionState = notificationPermissionState,
         snoozeNotificationPermissionReminder = snoozeNotificationPermission,
@@ -279,6 +283,7 @@ private fun PreviewProfileSuccessScreen() {
         openUrl = {},
         snoozeNotificationPermission = {},
         onLogout = {},
+        navigateToContractDetail = {},
       )
     }
   }

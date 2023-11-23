@@ -29,5 +29,4 @@ val editCoInsuredModule = module {
       get<GetCoInsuredUseCaseProvider>(),
     )
   }
-
 }

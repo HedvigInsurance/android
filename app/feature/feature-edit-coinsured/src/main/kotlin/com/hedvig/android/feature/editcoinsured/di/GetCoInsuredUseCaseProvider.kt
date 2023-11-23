@@ -7,5 +7,5 @@ import com.hedvig.android.feature.editcoinsured.data.GetCoInsuredUseCase
 internal class GetCoInsuredUseCaseProvider(
   override val demoManager: DemoManager,
   override val demoImpl: GetCoInsuredUseCase,
-  override val prodImpl: GetCoInsuredUseCase
+  override val prodImpl: GetCoInsuredUseCase,
 ) : ProdOrDemoProvider<GetCoInsuredUseCase>

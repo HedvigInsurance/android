@@ -24,13 +24,14 @@ import org.koin.core.parameter.parametersOf
 
 @Composable
 internal fun EditCoInsuredDestination(
+  viewModel: EditCoInsuredViewModel,
   contractId: String,
   allowEdit: Boolean,
   navigateUp: () -> Unit,
 ) {
   val viewModel: EditCoInsuredViewModel = koinViewModel { parametersOf(contractId) }
-  val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+  val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   EditCoInsuredScreen(
     navigateUp,
     allowEdit,

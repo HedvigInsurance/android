@@ -43,6 +43,7 @@ import kotlinx.datetime.toLocalDateTime
 fun MemberReminderCards(
   memberReminders: ApplicableMemberReminders,
   navigateToConnectPayment: () -> Unit,
+  navigateToContractDetail: (contractId: String) -> Unit,
   openUrl: (String) -> Unit,
   notificationPermissionState: NotificationPermissionState,
   snoozeNotificationPermissionReminder: () -> Unit,
@@ -74,6 +75,24 @@ fun MemberReminderCards(
       )
     }
     AnimatedVisibility(
+      visible = memberReminders.coInsuredInfo != null,
+      enter = cardReminderEnterTransition,
+      exit = cardReminderExitTransition,
+      label = "coInsured animated visibility",
+    ) {
+      ReminderCoInsuredInfo(
+        navigateToContractDetail = {
+          memberReminders.coInsuredInfo
+            ?.coInsuredInfoList
+            ?.head
+            ?.contractId
+            ?.let {
+              navigateToContractDetail(it)
+            }
+        },
+      )
+    }
+    AnimatedVisibility(
       visible = memberReminders.upcomingRenewals != null,
       enter = cardReminderEnterTransition,
       exit = cardReminderExitTransition,
@@ -99,6 +118,7 @@ fun MemberReminderCards(
 fun MemberReminderCards(
   memberReminders: ApplicableMemberReminders,
   navigateToConnectPayment: () -> Unit,
+  navigateToContractDetail: (contractId: String) -> Unit,
   openUrl: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -114,6 +134,24 @@ fun MemberReminderCards(
     ) {
       ReminderCardConnectPayment(
         navigateToConnectPayment = navigateToConnectPayment,
+      )
+    }
+    AnimatedVisibility(
+      visible = memberReminders.coInsuredInfo != null,
+      enter = cardReminderEnterTransition,
+      exit = cardReminderExitTransition,
+      label = "coInsured animated visibility",
+    ) {
+      ReminderCoInsuredInfo(
+        navigateToContractDetail = {
+          memberReminders.coInsuredInfo
+            ?.coInsuredInfoList
+            ?.firstOrNull()
+            ?.contractId
+            ?.let {
+              navigateToContractDetail(it)
+            }
+        },
       )
     }
     AnimatedVisibility(
@@ -211,6 +249,20 @@ private fun ReminderCardUpcomingRenewals(
 }
 
 @Composable
+private fun ReminderCoInsuredInfo(navigateToContractDetail: () -> Unit, modifier: Modifier = Modifier) {
+  VectorWarningCard(
+    text = stringResource(R.string.CONTRACT_COINSURED_MISSING_INFO_TEXT),
+    modifier = modifier,
+  ) {
+    InfoCardTextButton(
+      onClick = navigateToContractDetail,
+      text = stringResource(R.string.CONTRACT_COINSURED_MISSING_ADD_INFO),
+      modifier = Modifier.fillMaxWidth(),
+    )
+  }
+}
+
+@Composable
 private fun InfoCardTextButton(onClick: () -> Unit, text: String, modifier: Modifier = Modifier) {
   HedvigContainedSmallButton(
     text = text,
@@ -250,6 +302,18 @@ private fun PreviewReminderCardUpcomingRenewals() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       ReminderCardUpcomingRenewals(UpcomingRenewal("contract name", LocalDate.parse("2024-03-05"), ""), {})
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewReminderCardCoInsuredInfo() {
+  HedvigTheme {
+    Surface(color = MaterialTheme.colorScheme.background) {
+      ReminderCoInsuredInfo(
+        {},
+      )
     }
   }
 }

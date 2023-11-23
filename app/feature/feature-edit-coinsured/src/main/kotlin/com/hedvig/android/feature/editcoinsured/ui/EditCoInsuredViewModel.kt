@@ -8,6 +8,6 @@ internal class EditCoInsuredViewModel(
   contractId: String,
   getCoInsuredUseCaseProvider: Provider<GetCoInsuredUseCase>,
 ) : MoleculeViewModel<EditCoInsuredEvent, EditCoInsuredState>(
-  EditCoInsuredState(),
-  EditCoInsuredPresenter(contractId, getCoInsuredUseCaseProvider),
-)
+    EditCoInsuredState(),
+    EditCoInsuredPresenter(contractId, getCoInsuredUseCaseProvider),
+  )
