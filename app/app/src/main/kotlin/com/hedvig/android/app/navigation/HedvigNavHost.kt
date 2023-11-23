@@ -33,6 +33,7 @@ import com.hedvig.android.feature.connect.payment.connectPaymentGraph
 import com.hedvig.android.feature.forever.navigation.foreverGraph
 import com.hedvig.android.feature.home.home.navigation.homeGraph
 import com.hedvig.android.feature.insurances.insurance.insuranceGraph
+import com.hedvig.android.feature.insurances.navigation.InsurancesDestination
 import com.hedvig.android.feature.odyssey.navigation.claimFlowGraph
 import com.hedvig.android.feature.odyssey.navigation.navigateToClaimFlowDestination
 import com.hedvig.android.feature.odyssey.navigation.terminalClaimFlowStepDestinations
@@ -124,6 +125,9 @@ internal fun HedvigNavHost(
         with(navigator) { backStackEntry.navigate(ClaimDetailsDestination(claimId)) }
       },
       navigateToPayinScreen = navigateToConnectPayment,
+      navigateToContractDetail = { contractId ->
+        hedvigAppState.navController.navigate(InsurancesDestination.InsuranceContractDetail(contractId))
+      },
       openAppSettings = { activityNavigator.openAppSettings(context) },
       openUrl = ::openUrl,
       imageLoader = imageLoader,
@@ -185,6 +189,9 @@ internal fun HedvigNavHost(
         with(navigator) { backStackEntry.navigate(AppDestination.PaymentInfo) }
       },
       navigateToConnectPayment = navigateToConnectPayment,
+      navigateToContractDetail = { contractId ->
+        hedvigAppState.navController.navigate(InsurancesDestination.InsuranceContractDetail(contractId))
+      },
       openAppSettings = { activityNavigator.openAppSettings(context) },
       openUrl = ::openUrl,
     )

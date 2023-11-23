@@ -28,6 +28,7 @@ fun NavGraphBuilder.homeGraph(
   onGenerateTravelCertificateClicked: () -> Unit,
   navigateToClaimDetails: (NavBackStackEntry, claimId: String) -> Unit,
   navigateToPayinScreen: () -> Unit,
+  navigateToContractDetail: (contractId: String) -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
   imageLoader: ImageLoader,
@@ -51,6 +52,7 @@ fun NavGraphBuilder.homeGraph(
           navigateToClaimDetails(backStackEntry, claimId)
         },
         navigateToConnectPayment = navigateToPayinScreen,
+        navigateToContractDetail = navigateToContractDetail,
         onStartClaim = { onStartClaim(backStackEntry) },
         onStartMovingFlow = { startMovingFlow(backStackEntry) },
         onGenerateTravelCertificateClicked = onGenerateTravelCertificateClicked,
