@@ -389,7 +389,7 @@ val applicationModule = module {
       useCaseModule,
       viewModelModule,
       workManagerModule,
-      editCoInsuredModule
+      editCoInsuredModule,
     ),
   )
 }

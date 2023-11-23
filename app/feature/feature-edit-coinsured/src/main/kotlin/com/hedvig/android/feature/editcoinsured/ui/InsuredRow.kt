@@ -29,8 +29,8 @@ import hedvig.resources.R
 
 @Composable
 internal fun InsuredRow(
-  displayName: String?,
-  details: String?,
+  displayName: String,
+  identifier: String,
   hasMissingInfo: Boolean,
   allowEdit: Boolean,
   isMember: Boolean,
@@ -44,34 +44,19 @@ internal fun InsuredRow(
         modifier = Modifier.padding(vertical = 16.dp),
       ) {
         Column {
-          if (displayName != null) {
-            Text(
-              text = displayName,
-              color = if (isMember) {
-                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-              } else {
-                Color.Unspecified
-              },
-            )
-          } else {
-            Text(stringResource(id = R.string.CONTRACT_COINSURED))
-          }
+          Text(
+            text = displayName,
+            color = if (isMember) {
+              MaterialTheme.colorScheme.onSurfaceVariant
+            } else {
+              Color.Unspecified
+            },
+          )
 
-          if (details != null) {
-            Text(
-              text = details,
-              color = if (isMember) {
-                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-              } else {
-                MaterialTheme.colorScheme.onSurfaceVariant
-              },
-            )
-          } else {
-            Text(
-              text = stringResource(id = R.string.CONTRACT_NO_INFORMATION),
-              color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-          }
+          Text(
+            text = identifier,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+          )
         }
       }
     },
@@ -86,7 +71,7 @@ internal fun InsuredRow(
             Icon(
               imageVector = HedvigIcons.Lock,
               contentDescription = "Locked",
-              tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+              tint = MaterialTheme.colorScheme.onSurfaceVariant,
               modifier = Modifier.size(16.dp),
             )
           }
@@ -135,7 +120,7 @@ private fun InsuredRowPreviewEditable() {
     Surface {
       InsuredRow(
         displayName = "Test testersson",
-        details = "182312041933",
+        identifier = "182312041933",
         hasMissingInfo = false,
         isMember = false,
         onRemove = {},
@@ -153,7 +138,7 @@ private fun InsuredRowPreviewMissingInfo() {
     Surface {
       InsuredRow(
         displayName = "Test testersson",
-        details = "182312041933",
+        identifier = "182312041933",
         hasMissingInfo = true,
         isMember = false,
         onRemove = {},
@@ -171,7 +156,7 @@ private fun InsuredRowPreviewMember() {
     Surface {
       InsuredRow(
         displayName = "Test testersson",
-        details = "182312041933",
+        identifier = "182312041933",
         hasMissingInfo = false,
         isMember = true,
         onRemove = {},
@@ -181,5 +166,3 @@ private fun InsuredRowPreviewMember() {
     }
   }
 }
-
-

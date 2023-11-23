@@ -25,6 +25,6 @@ fragment CoInsuredAgreementFragment on Agreement {
     lastName
     birthdate
     ssn
-    needsMissingInfo
+    hasMissingInfo
   }
 }

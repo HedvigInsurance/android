@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.editcoinsured.ui
 
-import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.feature.editcoinsured.data.CreateMidtermChangeUseCase
 import com.hedvig.android.feature.editcoinsured.data.FetchCoInsuredPersonalInformationUseCase
 import com.hedvig.android.feature.editcoinsured.data.GetCoInsuredUseCase
@@ -8,15 +7,15 @@ import com.hedvig.android.molecule.android.MoleculeViewModel
 
 internal class EditCoInsuredViewModel(
   contractId: String,
-  getCoInsuredUseCaseProvider: Provider<GetCoInsuredUseCase>,
-  fetchCoInsuredPersonalInformationUseCaseProvider: Provider<FetchCoInsuredPersonalInformationUseCase>,
+  getCoInsuredUseCaseProvider: GetCoInsuredUseCase,
+  fetchCoInsuredPersonalInformationUseCaseProvider: FetchCoInsuredPersonalInformationUseCase,
   createMidtermChangeUseCase: CreateMidtermChangeUseCase,
 ) : MoleculeViewModel<EditCoInsuredEvent, EditCoInsuredState>(
-  EditCoInsuredState(),
+  EditCoInsuredState.Loading,
   EditCoInsuredPresenter(
     contractId = contractId,
-    getCoInsuredUseCaseProvider = getCoInsuredUseCaseProvider,
-    fetchCoInsuredPersonalInformationUseCaseProvider = fetchCoInsuredPersonalInformationUseCaseProvider,
+    getCoInsuredUseCase = getCoInsuredUseCaseProvider,
+    fetchCoInsuredPersonalInformationUseCase = fetchCoInsuredPersonalInformationUseCaseProvider,
     createMidtermChangeUseCase = createMidtermChangeUseCase,
   ),
 )

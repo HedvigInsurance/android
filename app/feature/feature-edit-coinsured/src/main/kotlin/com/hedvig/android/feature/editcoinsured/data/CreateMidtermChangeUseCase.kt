@@ -60,9 +60,9 @@ internal class CreateMidtermChangeUseCaseImpl(
         currentPremium = UiMoney.fromMoneyFragment(it.currentPremium),
         newPremium = UiMoney.fromMoneyFragment(it.newPremium),
         activatedDate = it.activationDate,
+        coInsured = coInsured,
       )
     } ?: raise(ErrorMessage("No intent"))
-
   }
 }
 
@@ -71,4 +71,5 @@ internal data class CreateMidtermChangeResult(
   val currentPremium: UiMoney,
   val newPremium: UiMoney,
   val activatedDate: LocalDate,
+  val coInsured: ImmutableList<CoInsured>,
 )
