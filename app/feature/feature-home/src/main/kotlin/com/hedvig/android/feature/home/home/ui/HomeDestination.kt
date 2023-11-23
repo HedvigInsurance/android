@@ -109,6 +109,7 @@ internal fun HomeDestination(
   onStartChat: () -> Unit,
   onClaimDetailCardClicked: (String) -> Unit,
   navigateToConnectPayment: () -> Unit,
+  navigateToContractDetail: (contractId: String) -> Unit,
   onStartClaim: () -> Unit,
   onStartMovingFlow: () -> Unit,
   onGenerateTravelCertificateClicked: () -> Unit,
@@ -125,6 +126,7 @@ internal fun HomeDestination(
     onStartChat = onStartChat,
     onClaimDetailCardClicked = onClaimDetailCardClicked,
     navigateToConnectPayment = navigateToConnectPayment,
+    navigateToContractDetail = navigateToContractDetail,
     onStartClaim = onStartClaim,
     onStartMovingFlow = onStartMovingFlow,
     onGenerateTravelCertificateClicked = onGenerateTravelCertificateClicked,
@@ -142,6 +144,7 @@ private fun HomeScreen(
   onStartChat: () -> Unit,
   onClaimDetailCardClicked: (String) -> Unit,
   navigateToConnectPayment: () -> Unit,
+  navigateToContractDetail: (contractId: String) -> Unit,
   onStartClaim: () -> Unit,
   onStartMovingFlow: () -> Unit,
   onGenerateTravelCertificateClicked: () -> Unit,
@@ -191,6 +194,7 @@ private fun HomeScreen(
             onStartMovingFlow = onStartMovingFlow,
             onClaimDetailCardClicked = onClaimDetailCardClicked,
             navigateToConnectPayment = navigateToConnectPayment,
+            navigateToContractDetail = navigateToContractDetail,
             onEmergencyClaimClicked = { emergencyData ->
               context.startActivity(
                 EmergencyActivity.newInstance(
@@ -259,6 +263,7 @@ private fun HomeScreenSuccess(
   onStartMovingFlow: () -> Unit,
   onClaimDetailCardClicked: (claimId: String) -> Unit,
   navigateToConnectPayment: () -> Unit,
+  navigateToContractDetail: (contractId: String) -> Unit,
   onEmergencyClaimClicked: (EmergencyData) -> Unit,
   onGenerateTravelCertificateClicked: () -> Unit,
   onOpenCommonClaim: (CommonClaimsData) -> Unit,
@@ -346,6 +351,7 @@ private fun HomeScreenSuccess(
           MemberReminderCards(
             memberReminders = memberReminders,
             navigateToConnectPayment = navigateToConnectPayment,
+            navigateToContractDetail = navigateToContractDetail,
             openUrl = openUrl,
             modifier = Modifier
               .fillMaxWidth()
@@ -482,6 +488,7 @@ private fun PreviewHomeScreen() {
         onStartChat = {},
         onClaimDetailCardClicked = {},
         navigateToConnectPayment = {},
+        navigateToContractDetail = {},
         onStartClaim = {},
         onStartMovingFlow = {},
         onGenerateTravelCertificateClicked = {},

@@ -11,13 +11,19 @@ internal data class CoInsured(
   val ssn: String?,
   val hasMissingInfo: Boolean,
 ) {
-  val displayName: String? = if (firstName != null && lastName != null) {
-    "$firstName $lastName"
-  } else {
-    null
+  val displayName: String = buildString {
+    if (firstName != null) {
+      append(firstName)
+    }
+    if (firstName != null && lastName != null) {
+      append(" ")
+    }
+    if (lastName != null) {
+      append(lastName)
+    }
   }
 
-  fun details(dateTimeFormatter: DateTimeFormatter): String? =
+  fun identifier(dateTimeFormatter: DateTimeFormatter): String? =
     ssn ?: birthDate?.toJavaLocalDate()?.format(dateTimeFormatter)
 
   companion object {

@@ -113,6 +113,7 @@ internal fun HedvigUiKit() {
           MemberReminder.EnableNotifications,
         ),
         navigateToConnectPayment = {},
+        navigateToContractDetail = {},
         openUrl = {},
         notificationPermissionState = object : NotificationPermissionState {
           override val showDialog = false

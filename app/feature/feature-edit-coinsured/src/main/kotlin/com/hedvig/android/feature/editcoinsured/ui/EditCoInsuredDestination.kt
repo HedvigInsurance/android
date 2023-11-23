@@ -36,14 +36,14 @@ import hedvig.resources.R
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
-import org.koin.androidx.compose.koinViewModel
-import org.koin.core.parameter.parametersOf
 
 @Composable
-internal fun EditCoInsuredDestination(contractId: String, allowEdit: Boolean, navigateUp: () -> Unit) {
-  val viewModel: EditCoInsuredViewModel = koinViewModel { parametersOf(contractId) }
+internal fun EditCoInsuredDestination(
+  viewModel: EditCoInsuredViewModel,
+  allowEdit: Boolean,
+  navigateUp: () -> Unit,
+) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
   EditCoInsuredScreen(
     navigateUp = navigateUp,
     allowEdit = allowEdit,
@@ -138,7 +138,7 @@ private fun CoInsuredList(uiState: EditCoInsuredState.Loaded.CoInsuredListState,
     uiState.member?.let {
       InsuredRow(
         displayName = it.displayName,
-        details = it.ssn,
+        identifier = it.ssn ?: "",
         hasMissingInfo = false,
         allowEdit = false,
         isMember = true,
@@ -146,20 +146,21 @@ private fun CoInsuredList(uiState: EditCoInsuredState.Loaded.CoInsuredListState,
         onEdit = { },
       )
     }
-    Divider()
+    Divider(Modifier.padding(horizontal = 16.dp))
     uiState.coInsured.forEachIndexed { index, coInsured ->
+      if (index != 0) {
+        Divider()
+      }
+
       InsuredRow(
-        displayName = coInsured.displayName,
-        details = coInsured.details(dateTimeFormatter),
+        displayName = coInsured.displayName.ifBlank { stringResource(id = R.string.CONTRACT_COINSURED) },
+        identifier = coInsured.identifier(dateTimeFormatter) ?: stringResource(id = R.string.CONTRACT_NO_INFORMATION),
         hasMissingInfo = coInsured.hasMissingInfo,
         isMember = false,
         allowEdit = allowEdit,
         onRemove = { },
         onEdit = { },
       )
-      if (index < uiState.coInsured.size - 1) {
-        Divider()
-      }
     }
   }
 }

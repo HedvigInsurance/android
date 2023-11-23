@@ -1,0 +1,17 @@
+query NeedsCoInsuredInfoReminder {
+  currentMember {
+    activeContracts {
+      id
+      currentAgreement {
+        coInsured {
+          hasMissingInfo
+        }
+      }
+      upcomingChangedAgreement {
+        coInsured {
+          hasMissingInfo
+        }
+      }
+    }
+  }
+}
