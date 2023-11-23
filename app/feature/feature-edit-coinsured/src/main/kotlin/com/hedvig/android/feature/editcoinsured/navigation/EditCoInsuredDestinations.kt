@@ -4,4 +4,7 @@ import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class EditCoInsuredDestination(val contractId: String) : Destination
+data class EditCoInsuredDestination(
+  val contractId: String,
+  val allowEdit: Boolean,
+) : Destination

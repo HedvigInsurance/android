@@ -172,7 +172,7 @@ internal fun HedvigNavHost(
       imageLoader = imageLoader,
       startEditCoInsured = { backStackEntry: NavBackStackEntry, contractId: String ->
         with(navigator) {
-          backStackEntry.navigate(EditCoInsuredDestination(contractId))
+          backStackEntry.navigate(EditCoInsuredDestination(contractId, allowEdit = false))
         }
       },
     )

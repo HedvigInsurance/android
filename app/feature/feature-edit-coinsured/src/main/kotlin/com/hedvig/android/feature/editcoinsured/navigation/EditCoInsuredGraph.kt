@@ -11,6 +11,7 @@ fun NavGraphBuilder.editCoInsuredGraph(navigateUp: () -> Unit) {
     EditCoInsuredDestination(
       koinViewModel { parametersOf(contractId) },
       contractId,
+      allowEdit,
       navigateUp,
     )
   }
