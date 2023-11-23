@@ -31,11 +31,18 @@ internal class GetInsuranceContractsUseCaseDemo : GetInsuranceContractsUseCase {
               documents = persistentListOf(),
             ),
             certificateUrl = null,
+            coInsured = persistentListOf(
+              InsuranceAgreement.CoInsured("123", LocalDate.fromEpochDays(300), "Test", "Testersson", null, false),
+              InsuranceAgreement.CoInsured("123", LocalDate.fromEpochDays(600), "Test 1", "Testersson 2", null, false),
+              InsuranceAgreement.CoInsured(null, null, null, null, null, true),
+            ),
           ),
           upcomingInsuranceAgreement = null,
           renewalDate = LocalDate.fromEpochDays(500),
           supportsAddressChange = false,
           isTerminated = false,
+          contractHolderDisplayName = "Test Member",
+          contractHolderSSN = "1111111111-33322",
         ),
       )
     }

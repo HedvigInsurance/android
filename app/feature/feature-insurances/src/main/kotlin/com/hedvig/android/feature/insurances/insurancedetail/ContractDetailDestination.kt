@@ -168,8 +168,11 @@ private fun ContractDetailScreen(
                       coverageItems = state.insuranceContract.currentInsuranceAgreement.displayItems
                         .map { it.title to it.value }
                         .toImmutableList(),
+                      coInsured = state.insuranceContract.currentInsuranceAgreement.coInsured,
                       allowEditCoInsured = state.insuranceContract.currentInsuranceAgreement.productVariant.contractType
                         .canChangeCoInsured(),
+                      contractHolderDisplayName = state.insuranceContract.contractHolderDisplayName,
+                      contractHolderSSN = state.insuranceContract.contractHolderSSN,
                       allowChangeAddress = state.insuranceContract.supportsAddressChange,
                       onEditCoInsuredClick = onEditCoInsuredClick,
                       onChangeAddressClick = onChangeAddressClick,
@@ -285,11 +288,14 @@ private fun PreviewContractDetailScreen() {
                 documents = persistentListOf(),
               ),
               certificateUrl = null,
+              coInsured = persistentListOf(),
             ),
             upcomingInsuranceAgreement = null,
             renewalDate = LocalDate.fromEpochDays(500),
             supportsAddressChange = false,
             isTerminated = false,
+            contractHolderDisplayName = "Hugo Linder",
+            contractHolderSSN = "199101131093",
           ),
         ),
         imageLoader = rememberPreviewImageLoader(),
