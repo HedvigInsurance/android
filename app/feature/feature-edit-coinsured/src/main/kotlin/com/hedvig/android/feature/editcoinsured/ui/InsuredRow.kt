@@ -48,7 +48,7 @@ internal fun InsuredRow(
             Text(
               text = displayName,
               color = if (isMember) {
-                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                MaterialTheme.colorScheme.onSurfaceVariant
               } else {
                 Color.Unspecified
               },
@@ -61,7 +61,7 @@ internal fun InsuredRow(
             Text(
               text = details,
               color = if (isMember) {
-                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                MaterialTheme.colorScheme.onSurfaceVariant
               } else {
                 MaterialTheme.colorScheme.onSurfaceVariant
               },
@@ -86,7 +86,7 @@ internal fun InsuredRow(
             Icon(
               imageVector = HedvigIcons.Lock,
               contentDescription = "Locked",
-              tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+              tint = MaterialTheme.colorScheme.onSurfaceVariant,
               modifier = Modifier.size(16.dp),
             )
           }

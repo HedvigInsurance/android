@@ -2,12 +2,14 @@ package com.hedvig.android.feature.editcoinsured.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -66,20 +68,21 @@ private fun CoInsuredList(uiState: EditCoInsuredState, allowEdit: Boolean) {
         onEdit = { },
       )
     }
-    Divider()
+    Divider(Modifier.padding(horizontal = 16.dp))
     uiState.coInsured.forEachIndexed { index, coInsured ->
+      if (index != 0) {
+        Divider()
+      }
+
       InsuredRow(
         displayName = coInsured.displayName,
-        details = coInsured.details(dateTimeFormatter),
+        details = coInsured.identifier(dateTimeFormatter),
         hasMissingInfo = coInsured.hasMissingInfo,
         isMember = false,
         allowEdit = allowEdit,
         onRemove = { },
         onEdit = { },
       )
-      if (index < uiState.coInsured.size - 1) {
-        Divider()
-      }
     }
   }
 }
