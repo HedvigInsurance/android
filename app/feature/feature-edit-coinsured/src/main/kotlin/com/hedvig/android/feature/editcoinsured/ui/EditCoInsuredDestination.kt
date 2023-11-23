@@ -55,11 +55,20 @@ internal fun EditCoInsuredDestination(
     onDismissError = {
       viewModel.emit(EditCoInsuredEvent.OnDismissError)
     },
-    onResetBottomSheetState = {
-      viewModel.emit(EditCoInsuredEvent.ResetBottomSheetState)
+    onResetAddBottomSheetState = {
+      viewModel.emit(EditCoInsuredEvent.ResetAddBottomSheetState)
+    },
+    onResetRemoveBottomSheetState = {
+      viewModel.emit(EditCoInsuredEvent.ResetRemoveBottomSheetState)
     },
     onAddCoInsuredClicked = {
       viewModel.emit(EditCoInsuredEvent.OnAddCoInsuredClicked)
+    },
+    onRemoveCoInsuredClicked = {
+      viewModel.emit(EditCoInsuredEvent.OnRemoveCoInsuredClicked(it))
+    },
+    onRemoveCoInsured = {
+      viewModel.emit(EditCoInsuredEvent.RemoveCoInsured(it))
     },
   )
 }
@@ -70,10 +79,13 @@ private fun EditCoInsuredScreen(
   allowEdit: Boolean,
   uiState: EditCoInsuredState,
   onSave: (CoInsured) -> Unit,
+  onRemoveCoInsured: (CoInsured) -> Unit,
+  onRemoveCoInsuredClicked: (CoInsured) -> Unit,
   onAddCoInsuredClicked: () -> Unit,
   onFetchInfo: (ssn: String) -> Unit,
   onDismissError: () -> Unit,
-  onResetBottomSheetState: () -> Unit,
+  onResetAddBottomSheetState: () -> Unit,
+  onResetRemoveBottomSheetState: () -> Unit,
 ) {
   Column(Modifier.fillMaxSize()) {
     TopAppBarWithBack(
@@ -92,11 +104,11 @@ private fun EditCoInsuredScreen(
 
       is EditCoInsuredState.Loaded -> {
         val coroutineScope = rememberCoroutineScope()
-        if (uiState.bottomSheetState.show) {
+        if (uiState.addBottomSheetState.show) {
           val sheetState = rememberModalBottomSheetState(true)
           ModalBottomSheet(
             containerColor = MaterialTheme.colorScheme.background,
-            onDismissRequest = onResetBottomSheetState,
+            onDismissRequest = onResetAddBottomSheetState,
             shape = MaterialTheme.shapes.squircleLargeTop,
             sheetState = sheetState,
             tonalElevation = 0.dp,
@@ -109,18 +121,48 @@ private fun EditCoInsuredScreen(
                 coroutineScope.launch {
                   sheetState.hide()
                 }.invokeOnCompletion {
-                  onResetBottomSheetState()
+                  onResetAddBottomSheetState()
                 }
               },
-              isLoading = uiState.bottomSheetState.isLoadingPersonalInfo,
-              coInsured = uiState.bottomSheetState.coInsuredFromSsn,
-              errorMessage = uiState.bottomSheetState.coInsuredFromSsnError,
+              isLoading = uiState.addBottomSheetState.isLoading,
+              coInsured = uiState.addBottomSheetState.coInsured,
+              errorMessage = uiState.addBottomSheetState.errorMessage,
+            )
+          }
+        }
+
+        if (uiState.removeBottomSheetState.show && uiState.removeBottomSheetState.coInsured != null) {
+          val sheetState = rememberModalBottomSheetState(true)
+          ModalBottomSheet(
+            containerColor = MaterialTheme.colorScheme.background,
+            onDismissRequest = onResetRemoveBottomSheetState,
+            shape = MaterialTheme.shapes.squircleLargeTop,
+            sheetState = sheetState,
+            tonalElevation = 0.dp,
+            windowInsets = BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top),
+          ) {
+            RemoveCoInsuredBottomSheetContent(
+              onRemove = { onRemoveCoInsured(it) },
+              onDismiss = {
+                coroutineScope.launch {
+                  sheetState.hide()
+                }.invokeOnCompletion {
+                  onResetRemoveBottomSheetState()
+                }
+              },
+              isLoading = uiState.removeBottomSheetState.isLoading,
+              coInsured = uiState.removeBottomSheetState.coInsured,
+              errorMessage = uiState.removeBottomSheetState.errorMessage,
             )
           }
         }
 
         Column {
-          CoInsuredList(uiState.listState, allowEdit)
+          CoInsuredList(
+            uiState = uiState.listState,
+            onRemove = onRemoveCoInsuredClicked,
+            allowEdit = allowEdit,
+          )
           if (!allowEdit) {
             Spacer(Modifier.height(8.dp))
             HedvigContainedButton(
@@ -138,7 +180,11 @@ private fun EditCoInsuredScreen(
 }
 
 @Composable
-private fun CoInsuredList(uiState: EditCoInsuredState.Loaded.CoInsuredListState, allowEdit: Boolean) {
+private fun CoInsuredList(
+  uiState: EditCoInsuredState.Loaded.CoInsuredListState,
+  onRemove: (CoInsured) -> Unit,
+  allowEdit: Boolean,
+) {
   val dateTimeFormatter = rememberHedvigDateTimeFormatter()
   Column {
     uiState.member?.let {
@@ -148,8 +194,8 @@ private fun CoInsuredList(uiState: EditCoInsuredState.Loaded.CoInsuredListState,
         hasMissingInfo = false,
         allowEdit = false,
         isMember = true,
-        onRemove = { },
-        onEdit = { },
+        onRemove = {},
+        onEdit = {},
       )
     }
     Divider(Modifier.padding(horizontal = 16.dp))
@@ -164,7 +210,9 @@ private fun CoInsuredList(uiState: EditCoInsuredState.Loaded.CoInsuredListState,
         hasMissingInfo = coInsured.hasMissingInfo,
         isMember = false,
         allowEdit = allowEdit,
-        onRemove = { },
+        onRemove = {
+          onRemove(coInsured)
+        },
         onEdit = { },
       )
     }
@@ -203,16 +251,20 @@ private fun EditCoInsuredScreenEditablePreview() {
               ssn = "197312331093",
             ),
           ),
-          bottomSheetState = EditCoInsuredState.Loaded.BottomSheetState(
-            coInsuredFromSsn = null,
-            isLoadingPersonalInfo = false,
+          addBottomSheetState = EditCoInsuredState.Loaded.AddBottomSheetState(
+            coInsured = null,
+            isLoading = false,
           ),
+          removeBottomSheetState = EditCoInsuredState.Loaded.RemoveBottomSheetState(),
         ),
         onSave = {},
         onFetchInfo = {},
         onDismissError = {},
-        onResetBottomSheetState = {},
+        onResetAddBottomSheetState = {},
         onAddCoInsuredClicked = {},
+        onRemoveCoInsured = {},
+        onRemoveCoInsuredClicked = {},
+        onResetRemoveBottomSheetState = {},
       )
     }
   }
@@ -250,16 +302,20 @@ private fun EditCoInsuredScreenNonEditablePreview() {
               ssn = "197312331093",
             ),
           ),
-          bottomSheetState = EditCoInsuredState.Loaded.BottomSheetState(
-            coInsuredFromSsn = null,
-            isLoadingPersonalInfo = false,
+          addBottomSheetState = EditCoInsuredState.Loaded.AddBottomSheetState(
+            coInsured = null,
+            isLoading = false,
           ),
+          removeBottomSheetState = EditCoInsuredState.Loaded.RemoveBottomSheetState(),
         ),
         onSave = {},
         onFetchInfo = {},
         onDismissError = {},
-        onResetBottomSheetState = {},
+        onResetAddBottomSheetState = {},
         onAddCoInsuredClicked = {},
+        onRemoveCoInsured = {},
+        onRemoveCoInsuredClicked = {},
+        onResetRemoveBottomSheetState = {},
       )
     }
   }
