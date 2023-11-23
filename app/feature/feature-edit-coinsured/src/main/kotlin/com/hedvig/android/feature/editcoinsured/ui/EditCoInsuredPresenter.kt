@@ -26,9 +26,7 @@ internal class EditCoInsuredPresenter(
     var isLoading by remember { mutableStateOf(lastState.isLoading) }
     var coInsured by remember { mutableStateOf(lastState.coInsured) }
     LaunchedEffect(Unit) {
-      Snapshot.withMutableSnapshot {
-        isLoading = true
-      }
+      isLoading = true
       getCoInsuredUseCaseProvider.provide().invoke(contractId).fold(
         ifLeft = {
           Snapshot.withMutableSnapshot {
@@ -56,9 +54,7 @@ internal class EditCoInsuredPresenter(
   }
 }
 
-internal sealed interface EditCoInsuredEvent {
-
-}
+internal sealed interface EditCoInsuredEvent
 
 internal data class EditCoInsuredState(
   val isLoading: Boolean = false,

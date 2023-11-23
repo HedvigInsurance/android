@@ -32,16 +32,14 @@ internal class GetCoInsuredUseCaseImpl(
       CoInsuredError.ContractNotFound
     }
 
-    val currentCoInsured = contract.let {
-      it.currentAgreement.coInsured?.map {
-        CoInsured(
-          it.firstName,
-          it.lastName,
-          it.birthdate,
-          it.ssn,
-          it.needsMissingInfo,
-        )
-      }
+    val currentCoInsured = contract.currentAgreement.coInsured?.map {
+      CoInsured(
+        it.firstName,
+        it.lastName,
+        it.birthdate,
+        it.ssn,
+        it.needsMissingInfo,
+      )
     }
 
     CoInsuredResult(
@@ -57,6 +55,7 @@ internal class GetCoInsuredUseCaseImpl(
 
 internal sealed interface CoInsuredError {
   data class GenericError(val message: String?) : CoInsuredError
+
   data object ContractNotFound : CoInsuredError
 }
 
@@ -64,5 +63,3 @@ internal data class CoInsuredResult(
   val member: Member,
   val coInsured: ImmutableList<CoInsured>,
 )
-
-
