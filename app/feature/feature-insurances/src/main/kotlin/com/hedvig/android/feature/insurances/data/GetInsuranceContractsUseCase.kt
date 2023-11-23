@@ -128,5 +128,5 @@ private fun AgreementFragment.CoInsured.toCoInsured(): InsuranceAgreement.CoInsu
   ssn = ssn,
   birthDate = birthdate,
   activeFrom = null,
-  hasMissingInfo = needsMissingInfo,
+  hasMissingInfo = hasMissingInfo,
 )

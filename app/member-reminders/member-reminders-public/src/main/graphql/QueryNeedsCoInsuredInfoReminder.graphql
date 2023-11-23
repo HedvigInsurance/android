@@ -4,12 +4,12 @@ query NeedsCoInsuredInfoReminder {
       id
       currentAgreement {
         coInsured {
-          needsMissingInfo
+          hasMissingInfo
         }
       }
       upcomingChangedAgreement {
         coInsured {
-          needsMissingInfo
+          hasMissingInfo
         }
       }
     }

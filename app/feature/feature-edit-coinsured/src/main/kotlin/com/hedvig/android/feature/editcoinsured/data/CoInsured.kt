@@ -25,4 +25,14 @@ internal data class CoInsured(
 
   fun identifier(dateTimeFormatter: DateTimeFormatter): String? =
     ssn ?: birthDate?.toJavaLocalDate()?.format(dateTimeFormatter)
+
+  companion object {
+    fun fromPersonalInformation(personalInformation: CoInsuredPersonalInformation, ssn: String): CoInsured = CoInsured(
+      firstName = personalInformation.firstName,
+      lastName = personalInformation.lastName,
+      birthDate = null,
+      ssn = ssn,
+      hasMissingInfo = false,
+    )
+  }
 }

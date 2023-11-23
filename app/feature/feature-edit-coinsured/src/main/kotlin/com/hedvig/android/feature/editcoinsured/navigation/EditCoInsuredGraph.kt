@@ -10,7 +10,6 @@ fun NavGraphBuilder.editCoInsuredGraph(navigateUp: () -> Unit) {
   composable<EditCoInsuredDestination> { backStackEntry ->
     EditCoInsuredDestination(
       koinViewModel { parametersOf(contractId) },
-      contractId,
       allowEdit,
       navigateUp,
     )

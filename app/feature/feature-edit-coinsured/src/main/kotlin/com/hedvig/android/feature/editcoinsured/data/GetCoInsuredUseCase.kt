@@ -32,14 +32,16 @@ internal class GetCoInsuredUseCaseImpl(
       CoInsuredError.ContractNotFound
     }
 
-    val currentCoInsured = contract.currentAgreement.coInsured?.map {
-      CoInsured(
-        it.firstName,
-        it.lastName,
-        it.birthdate,
-        it.ssn,
-        it.needsMissingInfo,
-      )
+    val currentCoInsured = contract.let {
+      it.currentAgreement.coInsured?.map {
+        CoInsured(
+          it.firstName,
+          it.lastName,
+          it.birthdate,
+          it.ssn,
+          it.hasMissingInfo,
+        )
+      }
     }
 
     CoInsuredResult(
