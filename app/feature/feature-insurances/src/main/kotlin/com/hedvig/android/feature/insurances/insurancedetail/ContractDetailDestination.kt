@@ -70,7 +70,7 @@ import kotlinx.datetime.LocalDate
 @Composable
 internal fun ContractDetailDestination(
   viewModel: ContractDetailViewModel,
-  onEditCoInsuredClick: () -> Unit,
+  onEditCoInsuredClick: (String) -> Unit,
   onChangeAddressClick: () -> Unit,
   onCancelInsuranceClick: (cancelInsuranceData: CancelInsuranceData) -> Unit,
   openWebsite: (Uri) -> Unit,
@@ -98,7 +98,7 @@ private fun ContractDetailScreen(
   uiState: ContractDetailsUiState,
   imageLoader: ImageLoader,
   retry: () -> Unit,
-  onEditCoInsuredClick: () -> Unit,
+  onEditCoInsuredClick: (String) -> Unit,
   onChangeAddressClick: () -> Unit,
   onCancelInsuranceClick: (cancelInsuranceData: CancelInsuranceData) -> Unit,
   openWebsite: (Uri) -> Unit,
@@ -174,7 +174,9 @@ private fun ContractDetailScreen(
                       contractHolderDisplayName = state.insuranceContract.contractHolderDisplayName,
                       contractHolderSSN = state.insuranceContract.contractHolderSSN,
                       allowChangeAddress = state.insuranceContract.supportsAddressChange,
-                      onEditCoInsuredClick = onEditCoInsuredClick,
+                      onEditCoInsuredClick = {
+                        onEditCoInsuredClick(state.insuranceContract.id)
+                      },
                       onChangeAddressClick = onChangeAddressClick,
                       openChat = openChat,
                       onCancelInsuranceClick = {

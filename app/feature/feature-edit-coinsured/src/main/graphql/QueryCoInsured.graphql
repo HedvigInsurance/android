@@ -1,0 +1,30 @@
+query CoInsured {
+  currentMember {
+    firstName
+    lastName
+    ssn
+    activeContracts {
+      ...CoInsuredContractFragment
+    }
+  }
+}
+
+fragment CoInsuredContractFragment on Contract {
+  id
+  currentAgreement {
+    ...CoInsuredAgreementFragment
+  }
+  upcomingChangedAgreement {
+    ...CoInsuredAgreementFragment
+  }
+}
+
+fragment CoInsuredAgreementFragment on Agreement {
+  coInsured {
+    firstName
+    lastName
+    birthdate
+    ssn
+    needsMissingInfo
+  }
+}
