@@ -7,9 +7,7 @@ import androidx.compose.ui.Modifier
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 
 @Composable
-internal fun EditCoInsuredDestination(
-  navigateUp: () -> Unit,
-) {
+internal fun EditCoInsuredDestination(navigateUp: () -> Unit) {
   EditCoInsuredScreen(navigateUp)
 }
 
