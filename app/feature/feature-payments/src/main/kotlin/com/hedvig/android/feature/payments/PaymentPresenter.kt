@@ -11,7 +11,7 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.core.uidata.UiMoney
-import com.hedvig.android.data.contract.ContractType
+import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.feature.payments.data.CampaignCode
 import com.hedvig.android.feature.payments.data.PaymentData
 import com.hedvig.android.feature.payments.data.PaymentRepository
@@ -147,7 +147,7 @@ internal sealed interface PaymentUiState {
     data class InsuranceCost(
       val displayName: String,
       val cost: UiMoney,
-      val contractType: ContractType,
+      val contractGroup: ContractGroup,
     )
 
     data class ExistingDiscount(
@@ -205,7 +205,7 @@ private fun PaymentData.toUiState(): PaymentUiState.Content {
       PaymentUiState.Content.InsuranceCost(
         displayName = agreement.displayName,
         cost = agreement.grossCost,
-        contractType = agreement.contractType,
+        contractGroup = agreement.contractGroup,
       )
     }.toImmutableList(),
     campaignsStatus = if (redeemedCampaigns.isNotEmpty()) {

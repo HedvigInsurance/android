@@ -5,7 +5,7 @@ import arrow.core.raise.either
 import arrow.core.right
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiMoney
-import com.hedvig.android.data.contract.ContractType
+import com.hedvig.android.data.contract.ContractGroup
 import kotlin.time.Duration.Companion.days
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
@@ -34,7 +34,7 @@ internal class PaymentRepositoryDemo : PaymentRepository {
       monthlyCostDiscount = UiMoney(amount = 30.0, currencyCode = CurrencyCode.SEK),
       agreements = listOf(
         PaymentData.Agreement(
-          ContractType.HOUSE,
+          ContractGroup.HOUSE,
           "Home Insurance",
           UiMoney(amount = 99.0, currencyCode = CurrencyCode.SEK),
         ),

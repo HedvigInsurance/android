@@ -11,6 +11,7 @@ import assertk.assertions.isFalse
 import assertk.assertions.isTrue
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.demomode.Provider
+import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCase
@@ -45,7 +46,8 @@ internal class InsurancePresenterTest {
         displayItems = persistentListOf(),
         productVariant = ProductVariant(
           displayName = "Variant",
-          contractType = ContractType.RENTAL,
+          contractGroup = ContractGroup.RENTAL,
+          contractType = ContractType.SE_APARTMENT_RENT,
           partner = null,
           perils = persistentListOf(),
           insurableLimits = persistentListOf(),
@@ -70,7 +72,8 @@ internal class InsurancePresenterTest {
         displayItems = persistentListOf(),
         productVariant = ProductVariant(
           displayName = "Variant",
-          contractType = ContractType.RENTAL,
+          contractGroup = ContractGroup.RENTAL,
+          contractType = ContractType.SE_APARTMENT_RENT,
           partner = null,
           perils = persistentListOf(),
           insurableLimits = persistentListOf(),
@@ -97,7 +100,8 @@ internal class InsurancePresenterTest {
         displayItems = persistentListOf(),
         productVariant = ProductVariant(
           displayName = "Variant",
-          contractType = ContractType.RENTAL,
+          contractGroup = ContractGroup.RENTAL,
+          contractType = ContractType.SE_APARTMENT_RENT,
           partner = null,
           perils = persistentListOf(),
           insurableLimits = persistentListOf(),
@@ -122,7 +126,8 @@ internal class InsurancePresenterTest {
         displayItems = persistentListOf(),
         productVariant = ProductVariant(
           displayName = "Variant",
-          contractType = ContractType.RENTAL,
+          contractGroup = ContractGroup.RENTAL,
+          contractType = ContractType.SE_APARTMENT_RENT,
           partner = null,
           perils = persistentListOf(),
           insurableLimits = persistentListOf(),

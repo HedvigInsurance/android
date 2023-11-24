@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.changeaddress.data
 
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.InsurableLimit
 import com.hedvig.android.data.productvariant.ProductVariant
@@ -33,7 +34,8 @@ internal data class MoveQuote(
         isExpanded = index == 1,
         productVariant = ProductVariant(
           displayName = "Test",
-          contractType = ContractType.RENTAL,
+          contractGroup = ContractGroup.RENTAL,
+          contractType = ContractType.SE_APARTMENT_RENT,
           partner = "test",
           perils = persistentListOf(),
           insurableLimits = persistentListOf(

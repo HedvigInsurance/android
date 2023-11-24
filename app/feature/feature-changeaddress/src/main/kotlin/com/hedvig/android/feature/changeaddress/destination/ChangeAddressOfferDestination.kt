@@ -179,7 +179,7 @@ private fun ChangeAddressOfferScreen(
     )
     Spacer(Modifier.height(80.dp))
 
-    for (quote in uiState.quotes.distinctBy { it.productVariant.contractType }) {
+    for (quote in uiState.quotes.distinctBy { it.productVariant.contractGroup }) {
       QuoteDetailsAndPdfs(
         quote = quote,
         openUrl = openUrl,
