@@ -117,19 +117,25 @@ internal class EditCoInsuredPresenter(
     }
 
     LaunchedEffect(addedCoInsured) {
-      addedCoInsured?.let { addedCoInsured ->
+      addedCoInsured?.let { coInsured ->
         addBottomSheetState = addBottomSheetState.copy(isLoading = true)
-        val updatedCoInsured = (listState.coInsured + addedCoInsured).toImmutableList()
+        val updatedCoInsured = (listState.coInsured + coInsured).toImmutableList()
 
         createMidtermChangeUseCase
           .invoke(contractId, updatedCoInsured)
           .fold(
             ifLeft = {
-              addBottomSheetState = Loaded.AddBottomSheetState(errorMessage = it.message)
+              addBottomSheetState = addBottomSheetState.copy(
+                errorMessage = it.message,
+                coInsured = null,
+                isLoading = false,
+              )
+              addedCoInsured = null
             },
             ifRight = {
               Snapshot.withMutableSnapshot {
                 ssnQuery = null
+                addedCoInsured = null
                 listState = listState.copy(coInsured = it.coInsured)
                 addBottomSheetState = Loaded.AddBottomSheetState(show = false)
               }
@@ -139,18 +145,23 @@ internal class EditCoInsuredPresenter(
     }
 
     LaunchedEffect(removedCoInsured) {
-      removedCoInsured?.let { removedCoInsured ->
+      removedCoInsured?.let { coInsured ->
         removeBottomSheetState = removeBottomSheetState.copy(isLoading = true)
-        val updatedCoInsured = listState.coInsured.filterNot { it.id == removedCoInsured.id }.toImmutableList()
+        val updatedCoInsured = listState.coInsured.filterNot { it.id == coInsured.id }.toImmutableList()
 
         createMidtermChangeUseCase
           .invoke(contractId, updatedCoInsured)
           .fold(
             ifLeft = {
-              removeBottomSheetState = Loaded.RemoveBottomSheetState(errorMessage = it.message)
+              removeBottomSheetState = Loaded.RemoveBottomSheetState(
+                errorMessage = it.message,
+                isLoading = false,
+              )
+              removedCoInsured = null
             },
             ifRight = {
               listState = listState.copy(coInsured = it.coInsured)
+              removedCoInsured = null
               removeBottomSheetState = Loaded.RemoveBottomSheetState(show = false)
             },
           )
