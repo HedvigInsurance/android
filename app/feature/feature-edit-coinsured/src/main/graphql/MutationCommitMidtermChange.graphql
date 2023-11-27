@@ -1,0 +1,11 @@
+mutation CommitMidtermChange($intentId: ID!) {
+  midtermChangeIntentCommit(intentId: $intentId) {
+    intent {
+      state
+      activationDate
+    }
+    userError {
+      message
+    }
+  }
+}

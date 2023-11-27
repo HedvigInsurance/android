@@ -107,7 +107,7 @@ private fun AdyenScreen(
           )
           Spacer(Modifier.height(24.dp))
           HedvigContainedSmallButton(
-            text = stringResource(R.string.general_close_button),
+            text = stringResource(R.string.general_done_button),
             onClick = finishAdyenFlow,
           )
         }

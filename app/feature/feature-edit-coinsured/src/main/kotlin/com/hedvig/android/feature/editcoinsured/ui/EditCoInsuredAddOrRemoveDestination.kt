@@ -49,15 +49,15 @@ import kotlinx.datetime.toJavaLocalDate
 import octopus.type.CurrencyCode
 
 @Composable
-internal fun EditCoInsuredDestination(
+internal fun EditCoInsuredAddOrRemoveDestination(
   viewModel: EditCoInsuredViewModel,
-  allowEdit: Boolean,
+  navigateToSuccessScreen: (LocalDate) -> Unit,
   navigateUp: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
   EditCoInsuredScreen(
     navigateUp = navigateUp,
-    allowEdit = allowEdit,
     uiState = uiState,
     onSave = {
       viewModel.emit(EditCoInsuredEvent.AddCoInsured(it))
@@ -83,19 +83,26 @@ internal fun EditCoInsuredDestination(
     onRemoveCoInsured = {
       viewModel.emit(EditCoInsuredEvent.RemoveCoInsured(it))
     },
+    onCommitChanges = {
+      viewModel.emit(EditCoInsuredEvent.OnCommitChanges)
+    },
+    onCompleted = {
+      navigateToSuccessScreen(it)
+    },
   )
 }
 
 @Composable
 private fun EditCoInsuredScreen(
   navigateUp: () -> Unit,
-  allowEdit: Boolean,
   uiState: EditCoInsuredState,
   onSave: (CoInsured) -> Unit,
   onRemoveCoInsured: (CoInsured) -> Unit,
   onRemoveCoInsuredClicked: (CoInsured) -> Unit,
   onAddCoInsuredClicked: () -> Unit,
   onFetchInfo: (ssn: String) -> Unit,
+  onCommitChanges: () -> Unit,
+  onCompleted: (LocalDate) -> Unit,
   onDismissError: () -> Unit,
   onResetAddBottomSheetState: () -> Unit,
   onResetRemoveBottomSheetState: () -> Unit,
@@ -117,6 +124,11 @@ private fun EditCoInsuredScreen(
 
       is EditCoInsuredState.Loaded -> {
         val coroutineScope = rememberCoroutineScope()
+
+        if (uiState.contractUpdateDate != null) {
+          onCompleted(uiState.contractUpdateDate)
+        }
+
         if (uiState.addBottomSheetState.show) {
           val sheetState = rememberModalBottomSheetState(true)
           ModalBottomSheet(
@@ -172,23 +184,21 @@ private fun EditCoInsuredScreen(
 
         Column(
           modifier = Modifier
-              .weight(1f)
-              .verticalScroll(state = rememberScrollState()),
+            .weight(1f)
+            .verticalScroll(state = rememberScrollState()),
         ) {
           CoInsuredList(
             uiState = uiState.listState,
             onRemove = onRemoveCoInsuredClicked,
-            allowEdit = allowEdit,
+            allowEdit = false,
           )
 
-          if (!allowEdit) {
-            Spacer(Modifier.height(8.dp))
-            HedvigContainedButton(
-              text = stringResource(id = R.string.CONTRACT_ADD_COINSURED),
-              onClick = onAddCoInsuredClicked,
-              modifier = Modifier.padding(horizontal = 16.dp),
-            )
-          }
+          Spacer(Modifier.height(8.dp))
+          HedvigContainedButton(
+            text = stringResource(id = R.string.CONTRACT_ADD_COINSURED),
+            onClick = onAddCoInsuredClicked,
+            modifier = Modifier.padding(horizontal = 16.dp),
+          )
         }
 
         Column {
@@ -197,7 +207,8 @@ private fun EditCoInsuredScreen(
             PriceInfo(uiState.listState.priceInfo)
             HedvigContainedButton(
               text = stringResource(id = R.string.CONTRACT_ADD_COINSURED_CONFIRM_CHANGES),
-              onClick = {},
+              onClick = onCommitChanges,
+              isLoading = uiState.listState.isCommittingUpdate,
               modifier = Modifier.padding(horizontal = 16.dp),
             )
           }
@@ -223,8 +234,8 @@ private fun PriceInfo(priceInfo: EditCoInsuredState.Loaded.PriceInfo) {
 
   Column(
     modifier = Modifier
-        .padding(16.dp)
-        .fillMaxWidth(),
+      .padding(16.dp)
+      .fillMaxWidth(),
   ) {
     Row(
       horizontalArrangement = Arrangement.SpaceBetween,
@@ -305,7 +316,6 @@ private fun EditCoInsuredScreenEditablePreview() {
     Surface {
       EditCoInsuredScreen(
         navigateUp = { },
-        allowEdit = true,
         uiState = EditCoInsuredState.Loaded(
           listState = EditCoInsuredState.Loaded.CoInsuredListState(
             priceInfo = EditCoInsuredState.Loaded.PriceInfo(
@@ -372,6 +382,8 @@ private fun EditCoInsuredScreenEditablePreview() {
         onRemoveCoInsured = {},
         onRemoveCoInsuredClicked = {},
         onResetRemoveBottomSheetState = {},
+        onCommitChanges = {},
+        onCompleted = {},
       )
     }
   }
@@ -384,7 +396,6 @@ private fun EditCoInsuredScreenNonEditablePreview() {
     Surface {
       EditCoInsuredScreen(
         navigateUp = { },
-        allowEdit = false,
         uiState = EditCoInsuredState.Loaded(
           listState = EditCoInsuredState.Loaded.CoInsuredListState(
             originalCoInsured = persistentListOf(
@@ -423,6 +434,8 @@ private fun EditCoInsuredScreenNonEditablePreview() {
         onRemoveCoInsured = {},
         onRemoveCoInsuredClicked = {},
         onResetRemoveBottomSheetState = {},
+        onCommitChanges = {},
+        onCompleted = {},
       )
     }
   }

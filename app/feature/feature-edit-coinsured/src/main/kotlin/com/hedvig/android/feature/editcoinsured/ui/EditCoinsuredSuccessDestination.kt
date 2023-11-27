@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.changeaddress.destination
+package com.hedvig.android.feature.editcoinsured.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,15 +19,15 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
 
 @Composable
-internal fun ChangeAddressResultDestination(movingDate: LocalDate?, popBackstack: () -> Unit) {
+internal fun EditCoInsuredSuccessDestination(date: LocalDate?, popBackstack: () -> Unit) {
   Box(
     modifier = Modifier.fillMaxSize(),
   ) {
     HedvigSuccessSection(
-      title = stringResource(id = hedvig.resources.R.string.CHANGE_ADDRESS_SUCCESS_TITLE),
+      title = stringResource(id = hedvig.resources.R.string.CONTRACT_ADD_COINSURED_UPDATED_TITLE),
       subTitle = stringResource(
-        id = hedvig.resources.R.string.CHANGE_ADDRESS_SUCCESS_SUBTITLE,
-        movingDate?.toJavaLocalDate()?.format(hedvigDateTimeFormatter(getLocale())) ?: "-",
+        id = hedvig.resources.R.string.CONTRACT_ADD_COINSURED_UPDATED_LABEL,
+        date?.toJavaLocalDate()?.format(hedvigDateTimeFormatter(getLocale())) ?: "-",
       ),
       modifier = Modifier.align(Alignment.Center),
     )
@@ -46,7 +46,7 @@ internal fun ChangeAddressResultDestination(movingDate: LocalDate?, popBackstack
 private fun PreviewChangeAddressResultDestination() {
   HedvigTheme {
     Surface {
-      ChangeAddressResultDestination(movingDate = LocalDate.fromEpochDays(3000)) {}
+      EditCoInsuredSuccessDestination(date = LocalDate.fromEpochDays(3000)) {}
     }
   }
 }
