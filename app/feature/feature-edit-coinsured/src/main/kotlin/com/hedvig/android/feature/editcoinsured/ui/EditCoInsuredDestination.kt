@@ -1,26 +1,36 @@
 package com.hedvig.android.feature.editcoinsured.ui
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
+import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.core.designsystem.material3.squircleLargeTop
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
@@ -28,12 +38,15 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.dialog.ErrorDialog
 import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
+import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.data.Member
 import hedvig.resources.R
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.toJavaLocalDate
+import octopus.type.CurrencyCode
 
 @Composable
 internal fun EditCoInsuredDestination(
@@ -157,12 +170,17 @@ private fun EditCoInsuredScreen(
           }
         }
 
-        Column {
+        Column(
+          modifier = Modifier
+              .weight(1f)
+              .verticalScroll(state = rememberScrollState()),
+        ) {
           CoInsuredList(
             uiState = uiState.listState,
             onRemove = onRemoveCoInsuredClicked,
             allowEdit = allowEdit,
           )
+
           if (!allowEdit) {
             Spacer(Modifier.height(8.dp))
             HedvigContainedButton(
@@ -172,9 +190,69 @@ private fun EditCoInsuredScreen(
             )
           }
         }
+
+        Column {
+          if (uiState.listState.priceInfo != null && uiState.listState.shouldShowPriceInfo()) {
+            Spacer(Modifier.height(8.dp))
+            PriceInfo(uiState.listState.priceInfo)
+            HedvigContainedButton(
+              text = stringResource(id = R.string.CONTRACT_ADD_COINSURED_CONFIRM_CHANGES),
+              onClick = {},
+              modifier = Modifier.padding(horizontal = 16.dp),
+            )
+          }
+
+          Spacer(Modifier.height(8.dp))
+          HedvigTextButton(
+            onClick = navigateUp,
+            text = stringResource(id = R.string.general_cancel_button),
+            modifier = Modifier.fillMaxWidth(),
+          )
+          Spacer(Modifier.height(16.dp))
+        }
       }
 
       EditCoInsuredState.Loading -> HedvigFullScreenCenterAlignedProgressDebounced()
+    }
+  }
+}
+
+@Composable
+private fun PriceInfo(priceInfo: EditCoInsuredState.Loaded.PriceInfo) {
+  val dateTimeFormatter = rememberHedvigDateTimeFormatter()
+
+  Column(
+    modifier = Modifier
+        .padding(16.dp)
+        .fillMaxWidth(),
+  ) {
+    Row(
+      horizontalArrangement = Arrangement.SpaceBetween,
+      modifier = Modifier.fillMaxWidth(),
+    ) {
+      Text(text = stringResource(id = R.string.CONTRACT_ADD_COINSURED_TOTAL))
+      Row(horizontalArrangement = Arrangement.End) {
+        Text(
+          text = stringResource(id = R.string.CHANGE_ADDRESS_PRICE_PER_MONTH_LABEL, priceInfo.previousPrice.toString()),
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+          style = LocalTextStyle.current.copy(textDecoration = TextDecoration.LineThrough),
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(text = stringResource(id = R.string.CHANGE_ADDRESS_PRICE_PER_MONTH_LABEL, priceInfo.newPrice.toString()))
+      }
+    }
+    Row(
+      horizontalArrangement = Arrangement.End,
+      modifier = Modifier.fillMaxWidth(),
+    ) {
+      Text(
+        text = stringResource(
+          id = R.string.CONTRACT_ADD_COINSURED_STARTS_FROM,
+          dateTimeFormatter.format(priceInfo.validFrom.toJavaLocalDate()),
+        ),
+        style = MaterialTheme.typography.labelLarge,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+      )
     }
   }
 }
@@ -184,9 +262,10 @@ private fun CoInsuredList(
   uiState: EditCoInsuredState.Loaded.CoInsuredListState,
   onRemove: (CoInsured) -> Unit,
   allowEdit: Boolean,
+  modifier: Modifier = Modifier,
 ) {
   val dateTimeFormatter = rememberHedvigDateTimeFormatter()
-  Column {
+  Column(modifier = modifier) {
     uiState.member?.let {
       InsuredRow(
         displayName = it.displayName,
@@ -229,13 +308,41 @@ private fun EditCoInsuredScreenEditablePreview() {
         allowEdit = true,
         uiState = EditCoInsuredState.Loaded(
           listState = EditCoInsuredState.Loaded.CoInsuredListState(
-            coInsured = persistentListOf(
+            priceInfo = EditCoInsuredState.Loaded.PriceInfo(
+              previousPrice = UiMoney(100.0, CurrencyCode.SEK),
+              newPrice = UiMoney(200.0, CurrencyCode.SEK),
+              validFrom = LocalDate.fromEpochDays(400),
+            ),
+            originalCoInsured = persistentListOf(
               CoInsured(
                 "Test",
                 "Testersson",
                 LocalDate.fromEpochDays(300),
                 "19910113-1093",
                 hasMissingInfo = false,
+              ),
+              CoInsured(
+                null,
+                null,
+                null,
+                null,
+                hasMissingInfo = true,
+              ),
+            ),
+            updatedCoInsured = persistentListOf(
+              CoInsured(
+                "Test",
+                "Testersson",
+                LocalDate.fromEpochDays(300),
+                "19910113-1093",
+                hasMissingInfo = false,
+              ),
+              CoInsured(
+                null,
+                null,
+                null,
+                null,
+                hasMissingInfo = true,
               ),
               CoInsured(
                 null,
@@ -280,7 +387,7 @@ private fun EditCoInsuredScreenNonEditablePreview() {
         allowEdit = false,
         uiState = EditCoInsuredState.Loaded(
           listState = EditCoInsuredState.Loaded.CoInsuredListState(
-            coInsured = persistentListOf(
+            originalCoInsured = persistentListOf(
               CoInsured(
                 "Test",
                 "Testersson",
