@@ -260,7 +260,12 @@ private fun ChatLazyColumn(
 @Composable
 private fun ChatBubble(chatMessage: ChatMessage, imageLoader: ImageLoader, modifier: Modifier = Modifier) {
   when (chatMessage) {
-    is ChatMessage.ChatMessageFile -> Text("file todo", modifier)
+    is ChatMessage.ChatMessageFile -> FileMessage(
+      fileMessage = chatMessage,
+      imageLoader = imageLoader,
+      modifier = modifier,
+    )
+
     is ChatMessage.ChatMessageGif -> GifMessage(
       gifMessage = chatMessage,
       imageLoader = imageLoader,
@@ -272,6 +277,22 @@ private fun ChatBubble(chatMessage: ChatMessage, imageLoader: ImageLoader, modif
 }
 
 @Composable
+private fun FileMessage(
+  fileMessage: ChatMessage.ChatMessageFile,
+  imageLoader: ImageLoader,
+  modifier: Modifier = Modifier,
+) {
+  ChatMessageWithTimeSent(
+    messageSlot = {
+      // todo chat: handle other mime types
+      ChatAsyncImage(fileMessage.url, imageLoader)
+    },
+    chatMessage = fileMessage,
+    modifier = modifier,
+  )
+}
+
+@Composable
 private fun GifMessage(
   gifMessage: ChatMessage.ChatMessageGif,
   imageLoader: ImageLoader,
@@ -279,45 +300,50 @@ private fun GifMessage(
 ) {
   ChatMessageWithTimeSent(
     messageSlot = {
-      val loadedImageIntrinsicSize = remember { mutableStateOf<IntSize?>(null) }
-      // todo chat: decide what to show when messages fail to load
-      val fallbackAndErrorPainter: Painter = rememberShapedColorPainter(MaterialTheme.colorScheme.errorContainer)
-      val placeholder: Painter = rememberShapedColorPainter(MaterialTheme.colorScheme.surface)
-      AsyncImage(
-        model = gifMessage.gifUrl,
-        contentDescription = null,
-        imageLoader = imageLoader,
-        transform = { state ->
-          when (state) {
-            is AsyncImagePainter.State.Loading -> {
-              state.copy(painter = placeholder)
-            }
-
-            is AsyncImagePainter.State.Error -> if (state.result.throwable is NullRequestDataException) {
-              // todo chat: fallback for gif which is unable to load here
-              state.copy(painter = fallbackAndErrorPainter)
-            } else {
-              // todo chat: painter to show when the network request of the gif failed here
-              state.copy(painter = fallbackAndErrorPainter)
-            }
-
-            AsyncImagePainter.State.Empty -> state
-            is AsyncImagePainter.State.Success -> {
-              loadedImageIntrinsicSize.value = IntSize(
-                state.result.drawable.intrinsicWidth,
-                state.result.drawable.intrinsicHeight,
-              )
-              state
-            }
-          }
-        },
-        modifier = Modifier
-          .adjustSizeToImageRatioOrShowPlaceholder(getImageSize = { loadedImageIntrinsicSize.value })
-          .clip(MaterialTheme.shapes.squircleMedium),
-      )
+      ChatAsyncImage(gifMessage.gifUrl, imageLoader)
     },
     chatMessage = gifMessage,
     modifier = modifier,
+  )
+}
+
+@Composable
+private fun ChatAsyncImage(imageUrl: String, imageLoader: ImageLoader) {
+  val loadedImageIntrinsicSize = remember { mutableStateOf<IntSize?>(null) }
+  // todo chat: decide what to show when messages fail to load
+  val fallbackAndErrorPainter: Painter = rememberShapedColorPainter(MaterialTheme.colorScheme.errorContainer)
+  val placeholder: Painter = rememberShapedColorPainter(MaterialTheme.colorScheme.surface)
+  AsyncImage(
+    model = imageUrl,
+    contentDescription = null,
+    imageLoader = imageLoader,
+    transform = { state ->
+      when (state) {
+        is AsyncImagePainter.State.Loading -> {
+          state.copy(painter = placeholder)
+        }
+
+        is AsyncImagePainter.State.Error -> if (state.result.throwable is NullRequestDataException) {
+          // todo chat: fallback for image which is unable to load here
+          state.copy(painter = fallbackAndErrorPainter)
+        } else {
+          // todo chat: painter to show when the network request of the image failed here
+          state.copy(painter = fallbackAndErrorPainter)
+        }
+
+        AsyncImagePainter.State.Empty -> state
+        is AsyncImagePainter.State.Success -> {
+          loadedImageIntrinsicSize.value = IntSize(
+            state.result.drawable.intrinsicWidth,
+            state.result.drawable.intrinsicHeight,
+          )
+          state
+        }
+      }
+    },
+    modifier = Modifier
+      .adjustSizeToImageRatioOrShowPlaceholder(getImageSize = { loadedImageIntrinsicSize.value })
+      .clip(MaterialTheme.shapes.squircleMedium),
   )
 }
 
