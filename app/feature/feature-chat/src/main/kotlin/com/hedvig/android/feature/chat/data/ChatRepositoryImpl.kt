@@ -1,13 +1,16 @@
-package com.hedvig.android.feature.chat
+package com.hedvig.android.feature.chat.data
 
+import android.net.Uri
 import android.util.Patterns
+import androidx.core.net.toFile
 import arrow.core.Either
+import arrow.core.raise.Raise
 import arrow.core.raise.either
 import arrow.core.raise.ensure
 import arrow.core.raise.ensureNotNull
+import arrow.retrofit.adapter.either.networkhandling.CallError
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.ApolloResponse
-import com.apollographql.apollo3.api.toUpload
 import com.apollographql.apollo3.cache.normalized.FetchPolicy
 import com.apollographql.apollo3.cache.normalized.api.CacheHeaders
 import com.apollographql.apollo3.cache.normalized.apolloStore
@@ -19,11 +22,12 @@ import com.apollographql.apollo3.exception.CacheMissException
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.feature.chat.data.ChatMessage
-import com.hedvig.android.feature.chat.data.ChatMessagesResult
+import com.hedvig.android.core.retrofit.toErrorMessage
+import com.hedvig.android.feature.chat.FileService
+import com.hedvig.android.feature.chat.model.ChatMessage
+import com.hedvig.android.feature.chat.model.ChatMessagesResult
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import java.io.File
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.retryWhen
@@ -34,36 +38,17 @@ import octopus.ChatSendMessageMutation
 import octopus.fragment.ChatMessageFileMessageFragment
 import octopus.fragment.ChatMessageTextMessageFragment
 import octopus.fragment.MessageFragment
-import octopus.type.ChatMessageFileInput
 import octopus.type.ChatMessageSender
-import octopus.type.ChatMessageTextInput
-
-interface ChatRepository {
-  suspend fun fetchMoreMessages(until: Instant): Either<ErrorMessage, ChatMessagesResult>
-
-  suspend fun pollNewestMessages(): Either<ErrorMessage, ChatMessagesResult>
-
-  suspend fun watchMessages(): Flow<Either<ErrorMessage, List<ChatMessage>>>
-
-  suspend fun sendFile(file: File, contentType: String): Either<ErrorMessage, ChatMessage>
-
-  suspend fun sendMessage(text: String): Either<ErrorMessage, ChatMessage>
-}
+import okhttp3.MediaType.Companion.toMediaType
 
 internal class ChatRepositoryImpl(
   private val apolloClient: ApolloClient,
+  private val botServiceService: BotServiceService,
+  private val fileService: FileService,
 ) : ChatRepository {
-  var failNow = false
-
   override suspend fun fetchMoreMessages(until: Instant): Either<ErrorMessage, ChatMessagesResult> = either {
-    if (failNow) {
-      failNow = false
-      raise(ErrorMessage("Failing now"))
-    } else {
-      failNow = true
-      logcat { "Stelios: Fetching more messages until $until" }
-      return fetchChatMessagesQuery(until)
-    }
+    logcat { "Fetching more messages until:$until" }
+    return fetchChatMessagesQuery(until)
   }
 
   override suspend fun pollNewestMessages(): Either<ErrorMessage, ChatMessagesResult> {
@@ -82,7 +67,7 @@ internal class ChatRepositoryImpl(
       populateCacheWithNewMessageData(result)
 
       ChatMessagesResult(
-        messages = result.chat.messages.mapNotNull { it.toChatMessage() },
+        messages = result.chat.messages.mapNotNull { it.toUiChatMessage() },
         nextUntil = result.chat.nextUntil,
         hasNext = result.chat.hasNext,
       )
@@ -107,52 +92,69 @@ internal class ChatRepositoryImpl(
             ErrorMessage("No data")
           }
           val chat = data.chat
-          chat.messages.mapNotNull { it.toChatMessage() }
+          chat.messages.mapNotNull { it.toUiChatMessage() }
         }
           .onLeft { logcat(LogPriority.ERROR, it.throwable) { "Failed to fetch initial messages:${it.message}" } }
-          .onRight { logcat { "Stelios: Successfully sending #${it.count()} messages:${it.joinToString { it.id }}" } }
+          .onRight { logcat { "Watching #${it.count()} messages" } }
       }
   }
 
-  override suspend fun sendFile(file: File, contentType: String): Either<ErrorMessage, ChatMessage> = either {
-    val fileUpload = file.toUpload(contentType)
-//    val input = ChatMessageFileInput(fileUpload) // todo here upload file directly through HTTP instead
-    val input = ChatMessageFileInput("")
-    val mutation = ChatSendFileMutation(input)
-
-    val result = apolloClient.mutation(mutation)
+  override suspend fun sendFile(uri: Uri): Either<ErrorMessage, ChatMessage> = either<ErrorMessage, ChatMessage> {
+    logcat { "Chat uploading file with uri:$uri" }
+    val uploadToken = uploadFile(uri)
+    val result = apolloClient.mutation(ChatSendFileMutation(uploadToken))
       .safeExecute()
       .toEither(::ErrorMessage)
       .bind()
+      .chatSendFile
 
-    val error = result.chatSendFile.error
-    val message = result.chatSendFile.message
-    val status = result.chatSendFile.status
+    val error = result.error
+    val message = result.message
+    val status = result.status
 
-    ensure(error != null) {
-      ErrorMessage(error?.message)
+    ensure(error == null) {
+      ErrorMessage("Uploading file failed with error message:${error?.message}. Result:$result")
     }
     ensureNotNull(message) {
       ErrorMessage("No data")
     }
     if (status != null) {
-      logcat(LogPriority.ERROR) { "Status was: ${status.message}" }
+      logcat { "Status was: ${status.message}" }
     }
 
-    ensureNotNull(message.toChatMessage()) {
+    ensureNotNull(message.toUiChatMessage()) {
       ErrorMessage("Message was not of a known type")
+    }
+  }.onLeft {
+    logcat { "Stelios: error uploading file:$it" }
+  }
+
+  private suspend fun Raise<ErrorMessage>.uploadFile(uri: Uri): String {
+    val contentType = fileService.getMimeType(uri).toMediaType()
+    val file = uri.toFile()
+    val result = botServiceService.uploadFile(file, contentType)
+      .onLeft {
+        logcat(LogPriority.ERROR) { "Failed to upload file with path:${file.absolutePath}. Error:$it" }
+      }
+      .mapLeft(CallError::toErrorMessage)
+      .bind()
+    logcat { "Stelios: Uploaded file with path:${file.absolutePath}. Result:$result" }
+    val fileUploadResponse = result.firstOrNull() ?: raise(ErrorMessage("No file upload response"))
+    return ensureNotNull(fileUploadResponse.uploadToken) {
+      ErrorMessage("Backend responded with an empty list as a response$result")
     }
   }
 
   override suspend fun sendMessage(text: String): Either<ErrorMessage, ChatMessage> = either {
-    val result = apolloClient.mutation(ChatSendMessageMutation(ChatMessageTextInput(text)))
+    val result = apolloClient.mutation(ChatSendMessageMutation(text))
       .safeExecute()
       .toEither(::ErrorMessage)
       .bind()
+      .chatSendText
 
-    val error = result.chatSendText.error
-    val message = result.chatSendText.message
-    val status = result.chatSendText.status
+    val error = result.error
+    val message = result.message
+    val status = result.status
 
     ensure(error == null) {
       ErrorMessage("Failed with error response: ${error?.message}")
@@ -165,7 +167,7 @@ internal class ChatRepositoryImpl(
       logcat(LogPriority.WARN) { "Status was: ${status.message}" }
     }
 
-    val chatMessage = ensureNotNull(message.toChatMessage()) {
+    val chatMessage = ensureNotNull(message.toUiChatMessage()) {
       ErrorMessage("Message was not of a known type")
     }
     populateCacheWithNewMessage(
@@ -220,7 +222,7 @@ internal class ChatRepositoryImpl(
   }
 }
 
-private fun MessageFragment.toChatMessage(): ChatMessage? = when (this) {
+private fun MessageFragment.toUiChatMessage(): ChatMessage? = when (this) {
   is ChatMessageFileMessageFragment -> ChatMessage.ChatMessageFile(
     id = id,
     sender = sender.toChatMessageSender(),

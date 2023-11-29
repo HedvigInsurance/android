@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.chat.ui
 
+import android.net.Uri
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -39,36 +40,42 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.debugBorder
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
-import com.hedvig.android.feature.chat.ChatEventNew
+import com.hedvig.android.feature.chat.ChatEvent
 import com.hedvig.android.feature.chat.ChatUiState
 import com.hedvig.android.feature.chat.ChatViewModel
-import com.hedvig.android.feature.chat.data.ChatMessage
+import com.hedvig.android.feature.chat.model.ChatMessage
 import com.hedvig.android.logger.logcat
 import hedvig.resources.R
-import java.io.File
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.Clock
 import org.koin.compose.koinInject
 
 @Composable
-internal fun ChatDestination(viewModel: ChatViewModel, imageLoader: ImageLoader, onNavigateUp: () -> Unit) {
+internal fun ChatDestination(
+  viewModel: ChatViewModel,
+  imageLoader: ImageLoader,
+  appPackageId: String,
+  onNavigateUp: () -> Unit,
+) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   ChatScreen(
     uiState = uiState,
     imageLoader = imageLoader,
+    appPackageId = appPackageId,
     onNavigateUp = onNavigateUp,
     onSendMessage = { message: String ->
-      viewModel.emit(ChatEventNew.SendTextMessage(message))
+      viewModel.emit(ChatEvent.SendTextMessage(message))
     },
-    onSendFile = { file: File ->
-      viewModel.emit(ChatEventNew.SendFileMessage(file))
+    onSendFile = { uri: Uri ->
+      logcat { "viewModel.emit(ChatEventNew.SendFileMessage(uri)):${uri.path}" }
+      viewModel.emit(ChatEvent.SendFileMessage(uri))
     },
     onFetchMoreMessages = {
-      viewModel.emit(ChatEventNew.FetchMoreMessages)
+      viewModel.emit(ChatEvent.FetchMoreMessages)
     },
     onDismissError = {
-      viewModel.emit(ChatEventNew.DismissError)
+      viewModel.emit(ChatEvent.DismissError)
     },
   )
 }
@@ -78,9 +85,10 @@ internal fun ChatDestination(viewModel: ChatViewModel, imageLoader: ImageLoader,
 private fun ChatScreen(
   uiState: ChatUiState,
   imageLoader: ImageLoader,
+  appPackageId: String,
   onNavigateUp: () -> Unit,
   onSendMessage: (String) -> Unit,
-  onSendFile: (File) -> Unit,
+  onSendFile: (Uri) -> Unit,
   onFetchMoreMessages: () -> Unit,
   onDismissError: () -> Unit,
 ) {
@@ -107,9 +115,7 @@ private fun ChatScreen(
         when (uiState) {
           ChatUiState.DemoMode -> {
             Box(
-              Modifier
-                .fillMaxSize()
-                .debugBorder(),
+              modifier = Modifier.fillMaxSize().debugBorder(),
               contentAlignment = Alignment.Center,
             ) {
               Text("Demo mode")
@@ -133,13 +139,14 @@ private fun ChatScreen(
 
           is ChatUiState.Loaded -> {
             ChatLoadedScreen(
-              uiState,
-              imageLoader,
-              topAppBarScrollBehavior,
-              onSendMessage,
-              onSendFile,
-              onFetchMoreMessages,
-              onDismissError,
+              uiState = uiState,
+              imageLoader = imageLoader,
+              appPackageId = appPackageId,
+              topAppBarScrollBehavior = topAppBarScrollBehavior,
+              onSendMessage = onSendMessage,
+              onSendFile = onSendFile,
+              onFetchMoreMessages = onFetchMoreMessages,
+              onDismissError = onDismissError,
             )
           }
         }
@@ -180,6 +187,7 @@ private fun ChatScreenPreview(
       ChatScreen(
         uiState = chatUiState,
         imageLoader = rememberPreviewImageLoader(),
+        appPackageId = "com.hedvig",
         onNavigateUp = {},
         onSendMessage = {},
         onSendFile = {},

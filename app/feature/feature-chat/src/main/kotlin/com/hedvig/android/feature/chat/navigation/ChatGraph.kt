@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
 import coil.ImageLoader
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.feature.chat.ChatViewModel
 import com.hedvig.android.feature.chat.ui.ChatDestination
 import com.hedvig.android.navigation.core.AppDestination
@@ -14,6 +15,7 @@ import org.koin.androidx.compose.koinViewModel
 
 fun NavGraphBuilder.chatGraph(
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
+  hedvigBuildConstants: HedvigBuildConstants,
   navigator: Navigator,
   imageLoader: ImageLoader,
 ) {
@@ -25,6 +27,11 @@ fun NavGraphBuilder.chatGraph(
     exitTransition = { slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Down) },
   ) {
     val viewModel: ChatViewModel = koinViewModel()
-    ChatDestination(viewModel = viewModel, imageLoader = imageLoader, onNavigateUp = navigator::navigateUp)
+    ChatDestination(
+      viewModel = viewModel,
+      imageLoader = imageLoader,
+      appPackageId = hedvigBuildConstants.appId,
+      onNavigateUp = navigator::navigateUp,
+    )
   }
 }

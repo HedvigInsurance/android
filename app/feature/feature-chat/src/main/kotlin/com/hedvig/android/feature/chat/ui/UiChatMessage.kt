@@ -6,7 +6,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import com.hedvig.android.core.designsystem.material3.infoContainer
 import com.hedvig.android.core.ui.HedvigDateTimeFormatterDefaults
-import com.hedvig.android.feature.chat.data.ChatMessage
+import com.hedvig.android.feature.chat.model.ChatMessage
 import java.util.Locale
 import kotlin.time.Duration.Companion.days
 import kotlinx.datetime.Clock

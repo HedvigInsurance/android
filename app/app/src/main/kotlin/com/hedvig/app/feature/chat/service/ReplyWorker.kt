@@ -3,7 +3,7 @@ package com.hedvig.app.feature.chat.service
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.hedvig.android.feature.chat.ChatRepository
+import com.hedvig.android.feature.chat.data.ChatRepository
 
 class ReplyWorker(
   private val context: Context,

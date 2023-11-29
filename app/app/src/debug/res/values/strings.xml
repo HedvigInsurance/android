@@ -8,4 +8,5 @@
     <string name="WEB_BASE_URL" translatable="false">https://www.dev.hedvigit.com</string>
     <string name="HANALYTICS_URL" translatable="false">https://hanalytics.dev.hedvigit.com</string>
     <string name="ODYSSEY_URL" translatable="false">https://odyssey.dev.hedvigit.com</string>
+    <string name="BOT_SERVICE" translatable="false">https://gateway.dev.hedvigit.com/bot-service</string>
 </resources>

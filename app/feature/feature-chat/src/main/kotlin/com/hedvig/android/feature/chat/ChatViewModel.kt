@@ -3,6 +3,7 @@ package com.hedvig.android.feature.chat
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.feature.chat.closedevent.ChatClosedEventStore
+import com.hedvig.android.feature.chat.data.ChatRepository
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.molecule.android.MoleculeViewModel
 
@@ -11,7 +12,7 @@ internal class ChatViewModel(
   chatClosedTracker: ChatClosedEventStore,
   featureManager: FeatureManager,
   demoManager: DemoManager,
-) : MoleculeViewModel<ChatEventNew, ChatUiState>(
+) : MoleculeViewModel<ChatEvent, ChatUiState>(
     ChatUiState.Initializing,
     ChatPresenter(
       chatRepository = chatRepository,

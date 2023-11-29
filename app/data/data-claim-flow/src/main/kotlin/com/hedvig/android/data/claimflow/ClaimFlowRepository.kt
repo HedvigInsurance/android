@@ -9,9 +9,9 @@ import com.apollographql.apollo3.api.Optional
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.retrofit.toErrorMessage
 import com.hedvig.android.data.claimflow.model.AudioUrl
 import com.hedvig.android.data.claimflow.model.FlowId
-import com.hedvig.android.data.claimflow.retrofit.toErrorMessage
 import com.hedvig.android.data.claimtriaging.EntryPointId
 import com.hedvig.android.data.claimtriaging.EntryPointOptionId
 import com.hedvig.android.logger.LogPriority

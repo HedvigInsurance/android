@@ -1,9 +1,15 @@
 package com.hedvig.android.feature.chat.ui
 
+import android.net.Uri
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -15,18 +21,23 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -39,32 +50,47 @@ import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.hedvig.normal.Camera
 import com.hedvig.android.core.icons.hedvig.normal.ChevronUp
 import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
+import com.hedvig.android.feature.chat.chatfilestate.rememberChatFileState
+import com.hedvig.android.logger.logcat
 import hedvig.resources.R
 
 @Composable
-internal fun ChatTextInput(onSendMessage: (message: String) -> Unit, modifier: Modifier = Modifier) {
+internal fun ChatInput(
+  onSendMessage: (message: String) -> Unit,
+  onSendFile: (file: Uri) -> Unit,
+  appPackageId: String,
+  modifier: Modifier = Modifier,
+) {
+  val chatFileState = rememberChatFileState(appPackageId = appPackageId) { uri ->
+    logcat { "ChatFileState sending uri:$uri" }
+    onSendFile(uri)
+  }
   var text: String by rememberSaveable { mutableStateOf("") }
   val onSendMessageAndClearLocalText = { message: String ->
     onSendMessage(message)
     text = ""
   }
-  ChatTextInput(
+  ChatInput(
     text = text,
     setText = { text = it },
     onSendMessage = onSendMessageAndClearLocalText,
+    takePicture = { chatFileState.startTakePicture() },
     modifier = modifier,
   )
 }
 
 @Composable
-private fun ChatTextInput(
+private fun ChatInput(
   text: String,
   setText: (String) -> Unit,
   onSendMessage: (message: String) -> Unit,
+  takePicture: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val buttonSize = 40.dp
   Row(
     verticalAlignment = Alignment.Bottom,
     horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -72,20 +98,33 @@ private fun ChatTextInput(
   ) {
     val chatShape = MaterialTheme.shapes.squircleMedium
     val outlineColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.32f)
+    Box(
+      modifier = Modifier
+        .size(buttonSize)
+        .background(color = MaterialTheme.colorScheme.surface, shape = chatShape)
+        .chatInputOutline(chatShape, outlineColor)
+        .clip(chatShape)
+        .clickable(onClick = takePicture)
+        .wrapContentSize(unbounded = true)
+        .minimumInteractiveComponentSize(),
+      contentAlignment = Alignment.Center,
+    ) {
+      CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
+        Icon(
+          imageVector = Icons.Hedvig.Camera,
+          contentDescription = stringResource(R.string.CHAT_UPLOAD_PRESS_SEND_LABEL),
+          modifier = Modifier.size(16.dp),
+        )
+      }
+    }
     Surface(
       color = MaterialTheme.colorScheme.surface,
       shape = chatShape,
-      modifier = Modifier.weight(1f).drawWithCache {
-        val stroke = Stroke(Dp.Hairline.toPx())
-        val outline = chatShape.createOutline(size.copy(size.width, size.height), layoutDirection, this)
-        val path = (outline as Outline.Generic).path
-        onDrawWithContent {
-          drawContent()
-          drawPath(path, outlineColor, style = stroke)
-        }
-      },
+      modifier = Modifier
+        .heightIn(min = buttonSize)
+        .weight(1f)
+        .chatInputOutline(chatShape, outlineColor),
     ) {
-      val showPlaceholder: Boolean = text.isEmpty()
       BasicTextField(
         value = text,
         onValueChange = { setText(it) },
@@ -97,27 +136,19 @@ private fun ChatTextInput(
           onSend = { onSendMessage(text) },
         ),
         cursorBrush = SolidColor(LocalContentColor.current),
-        textStyle = MaterialTheme.typography.bodyMedium.copy(color = LocalContentColor.current),
-        modifier = Modifier
-          .padding(horizontal = 12.dp, vertical = 8.dp)
-          .graphicsLayer {
-            alpha = if (showPlaceholder) {
-              0.60f
-            } else {
-              1f
-            }
-          },
+        textStyle = MaterialTheme.typography.bodyLarge.copy(color = LocalContentColor.current),
+        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
       ) { innerTextField ->
-        if (showPlaceholder) {
+        if (text.isEmpty()) {
           Text(
             text = stringResource(R.string.CHAT_INPUT_PLACEHOLDER),
-            style = MaterialTheme.typography.bodyMedium.copy(color = LocalContentColor.current),
+            style = MaterialTheme.typography.bodyLarge.copy(color = LocalContentColor.current),
+            modifier = Modifier.alpha(0.60f),
           )
         }
         innerTextField()
       }
     }
-    val buttonSize = 34.dp
     IconButton(
       onClick = {
         onSendMessage(text)
@@ -140,6 +171,16 @@ private fun ChatTextInput(
   }
 }
 
+private fun Modifier.chatInputOutline(chatShape: Shape, outlineColor: Color): Modifier = drawWithCache {
+  val stroke = Stroke(Dp.Hairline.toPx())
+  val outline = chatShape.createOutline(size.copy(size.width, size.height), layoutDirection, this)
+  val path = (outline as Outline.Generic).path
+  onDrawWithContent {
+    drawContent()
+    drawPath(path, outlineColor, style = stroke)
+  }
+}
+
 @HedvigPreview
 @Composable
 private fun PreviewChatTextInput(
@@ -147,12 +188,13 @@ private fun PreviewChatTextInput(
 ) {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      ChatTextInput(
+      ChatInput(
         if (!hasLongText) {
           "Text"
         } else {
           "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed et congue lacus. Donec ac libero. ".repeat(5)
         },
+        {},
         {},
         {},
       )

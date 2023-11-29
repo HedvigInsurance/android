@@ -190,6 +190,7 @@ internal fun HedvigNavHost(
     )
     chatGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+      hedvigBuildConstants = hedvigBuildConstants,
       imageLoader = imageLoader,
       navigator = navigator,
     )

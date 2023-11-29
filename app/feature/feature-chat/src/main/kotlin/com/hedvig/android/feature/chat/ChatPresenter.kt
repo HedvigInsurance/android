@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.chat
 
+import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
@@ -19,7 +20,8 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.feature.chat.closedevent.ChatClosedEventStore
-import com.hedvig.android.feature.chat.data.ChatMessage
+import com.hedvig.android.feature.chat.data.ChatRepository
+import com.hedvig.android.feature.chat.model.ChatMessage
 import com.hedvig.android.feature.chat.ui.UiChatMessage
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
@@ -27,7 +29,6 @@ import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
-import java.io.File
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.collections.immutable.ImmutableList
@@ -39,18 +40,19 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.isActive
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 
-internal sealed interface ChatEventNew {
-  data object FetchMoreMessages : ChatEventNew
+internal sealed interface ChatEvent {
+  data object FetchMoreMessages : ChatEvent
 
-  data object DismissError : ChatEventNew
+  data object DismissError : ChatEvent
 
-  data class SendTextMessage(val message: String) : ChatEventNew
+  data class SendTextMessage(val message: String) : ChatEvent
 
-  data class SendFileMessage(val file: File) : ChatEventNew
+  data class SendFileMessage(val uri: Uri) : ChatEvent
 }
 
 @Immutable
@@ -86,9 +88,9 @@ internal class ChatPresenter(
   private val chatClosedTracker: ChatClosedEventStore,
   private val featureManager: FeatureManager,
   private val demoManager: DemoManager,
-) : MoleculePresenter<ChatEventNew, ChatUiState> {
+) : MoleculePresenter<ChatEvent, ChatUiState> {
   @Composable
-  override fun MoleculePresenterScope<ChatEventNew>.present(lastState: ChatUiState): ChatUiState {
+  override fun MoleculePresenterScope<ChatEvent>.present(lastState: ChatUiState): ChatUiState {
     // region early exits
     val isInDemoMode by produceState(false || lastState is ChatUiState.DemoMode) {
       demoManager.isDemoMode().collectLatest { isDemoMode ->
@@ -115,6 +117,10 @@ internal class ChatPresenter(
     var fetchMoreMessagesFetchIndex by remember { mutableIntStateOf(0) }
     var failedToFetchMoreMessages by remember { mutableStateOf(false) }
 
+    // Maybe merge the two text/uri queues together with a common type instead, to respect ordering them properly
+    val filesToSend = remember { Channel<Uri>(Channel.UNLIMITED) }
+    var filesCurrentlyBeingSent: SnapshotStateList<Uri> = remember { mutableStateListOf() }
+    var filesFailedToBeSent: SnapshotStateList<Uri> = remember { mutableStateListOf() }
     val messagesToSend = remember { Channel<String>(Channel.UNLIMITED) }
     var messagesCurrentlyBeingSent: SnapshotStateList<String> = remember { mutableStateListOf() }
     var messagesFailedToBeSent: SnapshotStateList<String> = remember { mutableStateListOf() }
@@ -140,6 +146,17 @@ internal class ChatPresenter(
       setFetchMoreState = { fetchMoreState = it },
       failedToFetchMoreMessages = { failedToFetchMoreMessages = true },
     )
+    LaunchNewFileSendingEffect(
+      filesToSend = filesToSend,
+      addFileCurrentlyBeingSent = { file -> filesCurrentlyBeingSent.add(file) },
+      removeFileCurrentlyBeingSent = { file -> filesCurrentlyBeingSent.remove(file) },
+      reportFileFailedToBeSent = { file ->
+        Snapshot.withMutableSnapshot {
+          filesCurrentlyBeingSent.remove(file)
+          filesFailedToBeSent.add(file)
+        }
+      },
+    )
     LaunchNewMessageSendingEffect(
       messagesToSend = messagesToSend,
       addMessageCurrentlyBeingSent = { message -> messagesCurrentlyBeingSent.add(message) },
@@ -153,9 +170,10 @@ internal class ChatPresenter(
     )
 
     CollectEvents { event ->
+      logcat { "ChatPresenter event:$event" }
       when (event) {
-        ChatEventNew.DismissError -> TODO()
-        ChatEventNew.FetchMoreMessages -> {
+        ChatEvent.DismissError -> TODO()
+        ChatEvent.FetchMoreMessages -> {
           if (failedToFetchMoreMessages) {
             Snapshot.withMutableSnapshot {
               failedToFetchMoreMessages = false
@@ -168,8 +186,12 @@ internal class ChatPresenter(
           fetchMoreState = FetchMoreState.FetchUntil(fetchMoreStateValue.fetchUntil)
         }
 
-        is ChatEventNew.SendFileMessage -> TODO()
-        is ChatEventNew.SendTextMessage -> {
+        is ChatEvent.SendFileMessage -> {
+          logcat { "Sending file ${event.uri.path}" }
+          filesToSend.trySend(event.uri)
+        }
+
+        is ChatEvent.SendTextMessage -> {
           messagesToSend.trySend(event.message)
         }
       }
@@ -188,30 +210,33 @@ internal class ChatPresenter(
       }
     }
 
+    // todo remove this for production
+    LaunchedEffect(filesCurrentlyBeingSent.toList()) {
+      filesCurrentlyBeingSent.toList().also {
+        logcat { "Stelios: filesCurrentlyBeingSent:${filesCurrentlyBeingSent.toList()}" }
+      }
+    }
+    // todo remove this for production
+    LaunchedEffect(filesFailedToBeSent.toList()) {
+      filesFailedToBeSent.toList().also {
+        logcat { "Stelios: filesFailedToBeSent:${filesFailedToBeSent.toList()}" }
+      }
+    }
+
     return if (isStillInitializing) {
       ChatUiState.Initializing
     } else {
       val uiChatMessagesBeingSent = messagesCurrentlyBeingSent.mapIndexed { index, text ->
-        UiChatMessage(
-          ChatMessage.ChatMessageText(
-            id = Uuid.randomUUID().toString(),
-            text = text,
-            sender = ChatMessage.Sender.MEMBER,
-            sentAt = Clock.System.now() - index.milliseconds,
-          ),
-          sentStatus = UiChatMessage.SentStatus.NotYetSent,
-        )
+        text.toUiChatMessage(index, UiChatMessage.SentStatus.NotYetSent)
       }
       val uiChatMessagesFailedToBeSent = messagesFailedToBeSent.mapIndexed { index, text ->
-        UiChatMessage(
-          ChatMessage.ChatMessageText(
-            id = Uuid.randomUUID().toString(),
-            text = text,
-            sender = ChatMessage.Sender.MEMBER,
-            sentAt = Clock.System.now() - index.milliseconds,
-          ),
-          sentStatus = UiChatMessage.SentStatus.FailedToBeSent,
-        )
+        text.toUiChatMessage(index, UiChatMessage.SentStatus.FailedToBeSent)
+      }
+      val uiChatFilesBeingSent = filesCurrentlyBeingSent.mapIndexed { index, file ->
+        file.toUiChatMessage(index, UiChatMessage.SentStatus.NotYetSent)
+      }
+      val uiChatFilesFailedToBeSent = filesFailedToBeSent.mapIndexed { index, file ->
+        file.toUiChatMessage(index, UiChatMessage.SentStatus.FailedToBeSent)
       }
       val sentUiChatMessages = messages.map { UiChatMessage(it, UiChatMessage.SentStatus.Sent) }
 
@@ -225,7 +250,10 @@ internal class ChatPresenter(
         }
       }
       ChatUiState.Loaded(
-        messages = (sentUiChatMessages + uiChatMessagesBeingSent + uiChatMessagesFailedToBeSent)
+        messages = (
+          sentUiChatMessages + uiChatMessagesBeingSent + uiChatMessagesFailedToBeSent + uiChatFilesBeingSent +
+            uiChatFilesFailedToBeSent
+        )
           .sortedByDescending { it.chatMessage.sentAt }
           .toPersistentList(),
         errorMessage = null,
@@ -304,6 +332,30 @@ internal class ChatPresenter(
   }
 
   @Composable
+  private fun LaunchNewFileSendingEffect(
+    filesToSend: Channel<Uri>,
+    addFileCurrentlyBeingSent: (Uri) -> Unit,
+    removeFileCurrentlyBeingSent: (Uri) -> Unit,
+    reportFileFailedToBeSent: (Uri) -> Unit,
+  ) {
+    LaunchedEffect(filesToSend) {
+      filesToSend.receiveAsFlow().parMap { uri: Uri ->
+        logcat { "Handling sending file with uri:${uri.path}" }
+        addFileCurrentlyBeingSent(uri)
+        chatRepository.provide().sendFile(uri).fold(
+          ifLeft = {
+            logcat(LogPriority.ERROR) { "Failed to send file:${uri.path} | $it" }
+            reportFileFailedToBeSent(uri)
+          },
+          ifRight = {
+            removeFileCurrentlyBeingSent(uri)
+          },
+        )
+      }.collect()
+    }
+  }
+
+  @Composable
   private fun LaunchNewMessageSendingEffect(
     messagesToSend: Channel<String>,
     addMessageCurrentlyBeingSent: (String) -> Unit,
@@ -325,6 +377,31 @@ internal class ChatPresenter(
           )
       }.collect()
     }
+  }
+
+  private fun String.toUiChatMessage(index: Int, sentStatus: UiChatMessage.SentStatus): UiChatMessage {
+    return UiChatMessage(
+      ChatMessage.ChatMessageText(
+        id = Uuid.randomUUID().toString(),
+        text = this,
+        sender = ChatMessage.Sender.MEMBER,
+        sentAt = Clock.System.now() - index.milliseconds,
+      ),
+      sentStatus = sentStatus,
+    )
+  }
+
+  private fun Uri.toUiChatMessage(index: Int, sentStatus: UiChatMessage.SentStatus): UiChatMessage {
+    return UiChatMessage(
+      ChatMessage.ChatMessageFile(
+        id = Uuid.randomUUID().toString(),
+        sender = ChatMessage.Sender.MEMBER,
+        sentAt = Clock.System.now() - index.milliseconds,
+        url = this.toString(),
+        mimeType = "",
+      ),
+      sentStatus = sentStatus,
+    )
   }
 }
 

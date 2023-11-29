@@ -40,8 +40,8 @@ import com.hedvig.android.datadog.core.addDatadogConfiguration
 import com.hedvig.android.datadog.core.di.datadogModule
 import com.hedvig.android.datadog.demo.tracking.di.datadogDemoTrackingModule
 import com.hedvig.android.feature.changeaddress.di.changeAddressModule
-import com.hedvig.android.feature.chat.ChatRepository
 import com.hedvig.android.feature.chat.closedevent.ChatClosedEventStore
+import com.hedvig.android.feature.chat.data.ChatRepository
 import com.hedvig.android.feature.chat.di.chatModule
 import com.hedvig.android.feature.claim.details.di.claimDetailsModule
 import com.hedvig.android.feature.claimtriaging.di.claimTriagingModule
@@ -217,6 +217,7 @@ private val buildConstantsModule = module {
       override val urlBaseWeb: String = context.getString(R.string.WEB_BASE_URL)
       override val urlHanalytics: String = context.getString(R.string.HANALYTICS_URL)
       override val urlOdyssey: String = context.getString(R.string.ODYSSEY_URL)
+      override val urlBotService: String = context.getString(R.string.BOT_SERVICE)
       override val deepLinkHost: String = context.getString(R.string.DEEP_LINK_DOMAIN_HOST)
 
       override val appVersionName: String = BuildConfig.VERSION_NAME

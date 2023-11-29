@@ -1,4 +1,4 @@
-package com.hedvig.android.data.claimflow.retrofit
+package com.hedvig.android.core.retrofit
 
 import arrow.retrofit.adapter.either.networkhandling.CallError
 import arrow.retrofit.adapter.either.networkhandling.HttpError
@@ -6,7 +6,7 @@ import arrow.retrofit.adapter.either.networkhandling.IOError
 import arrow.retrofit.adapter.either.networkhandling.UnexpectedCallError
 import com.hedvig.android.core.common.ErrorMessage
 
-internal fun CallError.toErrorMessage(): ErrorMessage {
+fun CallError.toErrorMessage(): ErrorMessage {
   val callError = this
   return ErrorMessage(
     message = when (callError) {

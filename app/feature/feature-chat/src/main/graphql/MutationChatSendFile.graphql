@@ -1,5 +1,5 @@
-mutation ChatSendFile($chatMessageFileInput: ChatMessageFileInput!) {
-  chatSendFile(input: $chatMessageFileInput) {
+mutation ChatSendFile($uploadToken: ID!) {
+  chatSendFile(input: { uploadToken: $uploadToken } ) {
     message {
       ...MessageFragment
     }

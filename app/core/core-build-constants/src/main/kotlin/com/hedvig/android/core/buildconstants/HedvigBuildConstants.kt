@@ -22,6 +22,11 @@ interface HedvigBuildConstants {
   val urlOdyssey: String
 
   /**
+   * The URL targeting bot service backend
+   */
+  val urlBotService: String
+
+  /**
    * The base host used for all deep links.
    */
   val deepLinkHost: String

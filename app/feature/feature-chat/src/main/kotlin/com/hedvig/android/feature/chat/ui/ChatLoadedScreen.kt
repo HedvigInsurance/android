@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.chat.ui
 
+import android.net.Uri
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -53,8 +54,7 @@ import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.feature.chat.ChatUiState
-import com.hedvig.android.feature.chat.data.ChatMessage
-import java.io.File
+import com.hedvig.android.feature.chat.model.ChatMessage
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -65,9 +65,10 @@ import kotlinx.coroutines.flow.filterNotNull
 internal fun ChatLoadedScreen(
   uiState: ChatUiState.Loaded,
   imageLoader: ImageLoader,
+  appPackageId: String,
   topAppBarScrollBehavior: TopAppBarScrollBehavior,
   onSendMessage: (String) -> Unit,
-  onSendFile: (File) -> Unit,
+  onSendFile: (Uri) -> Unit,
   onFetchMoreMessages: () -> Unit,
   onDismissError: () -> Unit,
 ) {
@@ -103,8 +104,10 @@ internal fun ChatLoadedScreen(
           .fillMaxWidth()
           .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)),
       ) {
-        ChatTextInput(
-          onSendMessage = { onSendMessage(it) },
+        ChatInput(
+          onSendMessage = onSendMessage,
+          onSendFile = onSendFile,
+          appPackageId = appPackageId,
           modifier = Modifier.padding(16.dp),
         )
       }
