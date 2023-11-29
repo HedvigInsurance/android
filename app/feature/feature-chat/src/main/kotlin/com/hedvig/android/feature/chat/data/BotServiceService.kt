@@ -17,17 +17,20 @@ internal interface BotServiceService {
   suspend fun uploadFile(
     @Part file: MultipartBody.Part,
   ): Either<CallError, List<FileUploadResponse>>
+}
 
-  suspend fun uploadFile(file: File, contentType: MediaType): Either<CallError, List<FileUploadResponse>> {
-    return uploadFile(
-      MultipartBody.Part.createFormData(
-        // https://github.com/HedvigInsurance/bot-service/blob/0320fa16ecce5dd2e71f97fff3d02793a6ae032f/src/main/kotlin/com/hedvig/botService/web/FileUploadController.kt#L36
-        name = "files",
-        filename = file.name,
-        body = file.asRequestBody(contentType),
-      ),
-    )
-  }
+internal suspend fun BotServiceService.uploadFile(
+  file: File,
+  contentType: MediaType,
+): Either<CallError, List<FileUploadResponse>> {
+  return uploadFile(
+    MultipartBody.Part.createFormData(
+      // https://github.com/HedvigInsurance/bot-service/blob/0320fa16ecce5dd2e71f97fff3d02793a6ae032f/src/main/kotlin/com/hedvig/botService/web/FileUploadController.kt#L36
+      name = "files",
+      filename = file.name,
+      body = file.asRequestBody(contentType),
+    ),
+  )
 }
 
 @Serializable
