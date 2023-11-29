@@ -9,6 +9,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import arrow.core.raise.either
 import com.hedvig.android.core.common.safeCast
+import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.data.CoInsuredError
 import com.hedvig.android.feature.editcoinsured.data.CreateMidtermChangeUseCase
@@ -31,6 +32,7 @@ import com.hedvig.android.molecule.public.MoleculePresenterScope
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.datetime.LocalDate
 
 internal class EditCoInsuredPresenter(
   private val contractId: String,
@@ -70,7 +72,7 @@ internal class EditCoInsuredPresenter(
           errorMessage = null
           isLoading = false
           listState = Loaded.CoInsuredListState(
-            coInsured = result.coInsured,
+            originalCoInsured = result.coInsured,
             member = result.member,
           )
         }
@@ -136,7 +138,14 @@ internal class EditCoInsuredPresenter(
               Snapshot.withMutableSnapshot {
                 ssnQuery = null
                 addedCoInsured = null
-                listState = listState.copy(coInsured = it.coInsured)
+                listState = listState.copy(
+                  updatedCoInsured = it.coInsured,
+                  priceInfo = Loaded.PriceInfo(
+                    previousPrice = it.currentPremium,
+                    newPrice = it.newPremium,
+                    validFrom = it.activatedDate,
+                  ),
+                )
                 addBottomSheetState = Loaded.AddBottomSheetState(show = false)
               }
             },
@@ -160,7 +169,14 @@ internal class EditCoInsuredPresenter(
               removedCoInsured = null
             },
             ifRight = {
-              listState = listState.copy(coInsured = it.coInsured)
+              listState = listState.copy(
+                updatedCoInsured = it.coInsured,
+                priceInfo = Loaded.PriceInfo(
+                  previousPrice = it.currentPremium,
+                  newPrice = it.newPremium,
+                  validFrom = it.activatedDate,
+                ),
+              )
               removedCoInsured = null
               removeBottomSheetState = Loaded.RemoveBottomSheetState(show = false)
             },
@@ -206,8 +222,23 @@ internal sealed interface EditCoInsuredState {
     val removeBottomSheetState: RemoveBottomSheetState,
   ) : EditCoInsuredState {
     data class CoInsuredListState(
-      val coInsured: ImmutableList<CoInsured> = persistentListOf(),
+      val originalCoInsured: ImmutableList<CoInsured>? = null,
+      val updatedCoInsured: ImmutableList<CoInsured>? = null,
       val member: Member? = null,
+      val priceInfo: PriceInfo? = null,
+    ) {
+      val coInsured = updatedCoInsured ?: originalCoInsured ?: persistentListOf()
+
+      fun shouldShowPriceInfo() = priceInfo != null
+        && originalCoInsured != null
+        && updatedCoInsured != null
+        && originalCoInsured != updatedCoInsured
+    }
+
+    data class PriceInfo(
+      val previousPrice: UiMoney,
+      val newPrice: UiMoney,
+      val validFrom: LocalDate,
     )
 
     data class AddBottomSheetState(
