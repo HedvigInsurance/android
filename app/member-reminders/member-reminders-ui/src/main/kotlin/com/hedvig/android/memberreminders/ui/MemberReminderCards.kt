@@ -118,9 +118,9 @@ fun MemberReminderCards(
 fun MemberReminderCards(
   memberReminders: ApplicableMemberReminders,
   navigateToConnectPayment: () -> Unit,
-  navigateToContractDetail: (contractId: String) -> Unit,
   openUrl: (String) -> Unit,
   modifier: Modifier = Modifier,
+  navigateToAddMissingInfo: (String) -> Unit,
 ) {
   Column(
     modifier = modifier,
@@ -149,7 +149,7 @@ fun MemberReminderCards(
             ?.firstOrNull()
             ?.contractId
             ?.let {
-              navigateToContractDetail(it)
+              navigateToAddMissingInfo(it)
             }
         },
       )

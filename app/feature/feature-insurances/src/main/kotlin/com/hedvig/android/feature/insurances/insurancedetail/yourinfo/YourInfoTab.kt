@@ -73,6 +73,7 @@ internal fun YourInfoTab(
   allowEditCoInsured: Boolean,
   upcomingChangesInsuranceAgreement: InsuranceAgreement?,
   onEditCoInsuredClick: () -> Unit,
+  onMissingInfoClick: () -> Unit,
   onChangeAddressClick: () -> Unit,
   openChat: () -> Unit,
   onCancelInsuranceClick: () -> Unit,
@@ -205,6 +206,7 @@ internal fun YourInfoTab(
       coInsuredList = coInsured,
       contractHolderDisplayName = contractHolderDisplayName,
       contractHolderSSN = contractHolderSSN,
+      onMissingInfoClick = onMissingInfoClick,
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(16.dp))
@@ -268,6 +270,7 @@ internal fun CoInsuredSection(
   coInsuredList: ImmutableList<InsuranceAgreement.CoInsured>,
   contractHolderDisplayName: String,
   contractHolderSSN: String?,
+  onMissingInfoClick: () -> Unit,
   modifier: Modifier,
 ) {
   val dateTimeFormatter = rememberHedvigDateTimeFormatter()
@@ -388,7 +391,7 @@ internal fun CoInsuredSection(
       ) {
         HedvigContainedSmallButton(
           text = stringResource(id = R.string.CONTRACT_COINSURED_MISSING_ADD_INFO),
-          onClick = {},
+          onClick = onMissingInfoClick,
           colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.containedButtonContainer,
             contentColor = MaterialTheme.colorScheme.onContainedButtonContainer,
@@ -449,6 +452,7 @@ private fun PreviewYourInfoTab() {
         isTerminated = false,
         contractHolderDisplayName = "Hugo Linder",
         contractHolderSSN = "19910113-1093",
+        onMissingInfoClick = {},
       )
     }
   }

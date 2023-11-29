@@ -31,6 +31,7 @@ fun NavGraphBuilder.insuranceGraph(
   startMovingFlow: (NavBackStackEntry) -> Unit,
   startTerminationFlow: (backStackEntry: NavBackStackEntry, insuranceId: String, insuranceDisplayName: String) -> Unit,
   startEditCoInsured: (backStackEntry: NavBackStackEntry, contractId: String) -> Unit,
+  startEditCoInsuredAddMissingInfo: (backStackEntry: NavBackStackEntry, contractId: String) -> Unit,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   imageLoader: ImageLoader,
 ) {
@@ -64,6 +65,7 @@ fun NavGraphBuilder.insuranceGraph(
       ContractDetailDestination(
         viewModel = viewModel,
         onEditCoInsuredClick = { contractId: String -> startEditCoInsured(backStackEntry, contractId) },
+        onMissingInfoClick = { contractId -> startEditCoInsuredAddMissingInfo(backStackEntry, contractId) },
         onChangeAddressClick = { startMovingFlow(backStackEntry) },
         onCancelInsuranceClick = { cancelInsuranceData: CancelInsuranceData ->
           // open termination flow

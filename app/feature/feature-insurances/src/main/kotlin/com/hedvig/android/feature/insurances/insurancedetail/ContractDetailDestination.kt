@@ -71,6 +71,7 @@ import kotlinx.datetime.LocalDate
 internal fun ContractDetailDestination(
   viewModel: ContractDetailViewModel,
   onEditCoInsuredClick: (String) -> Unit,
+  onMissingInfoClick: (String) -> Unit,
   onChangeAddressClick: () -> Unit,
   onCancelInsuranceClick: (cancelInsuranceData: CancelInsuranceData) -> Unit,
   openWebsite: (Uri) -> Unit,
@@ -84,6 +85,7 @@ internal fun ContractDetailDestination(
     imageLoader = imageLoader,
     retry = viewModel::retryLoadingContract,
     onEditCoInsuredClick = onEditCoInsuredClick,
+    onMissingInfoClick = onMissingInfoClick,
     onChangeAddressClick = onChangeAddressClick,
     onCancelInsuranceClick = onCancelInsuranceClick,
     openChat = openChat,
@@ -99,6 +101,7 @@ private fun ContractDetailScreen(
   imageLoader: ImageLoader,
   retry: () -> Unit,
   onEditCoInsuredClick: (String) -> Unit,
+  onMissingInfoClick: (String) -> Unit,
   onChangeAddressClick: () -> Unit,
   onCancelInsuranceClick: (cancelInsuranceData: CancelInsuranceData) -> Unit,
   openWebsite: (Uri) -> Unit,
@@ -176,6 +179,9 @@ private fun ContractDetailScreen(
                       allowChangeAddress = state.insuranceContract.supportsAddressChange,
                       onEditCoInsuredClick = {
                         onEditCoInsuredClick(state.insuranceContract.id)
+                      },
+                      onMissingInfoClick = {
+                        onMissingInfoClick(state.insuranceContract.id)
                       },
                       onChangeAddressClick = onChangeAddressClick,
                       openChat = openChat,
@@ -309,6 +315,7 @@ private fun PreviewContractDetailScreen() {
         openWebsite = {},
         navigateUp = {},
         openChat = {},
+        onMissingInfoClick = {},
       )
     }
   }

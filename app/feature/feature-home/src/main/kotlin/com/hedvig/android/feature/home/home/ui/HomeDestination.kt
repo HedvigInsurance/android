@@ -109,13 +109,13 @@ internal fun HomeDestination(
   onStartChat: () -> Unit,
   onClaimDetailCardClicked: (String) -> Unit,
   navigateToConnectPayment: () -> Unit,
-  navigateToContractDetail: (contractId: String) -> Unit,
   onStartClaim: () -> Unit,
   onStartMovingFlow: () -> Unit,
   onGenerateTravelCertificateClicked: () -> Unit,
   onOpenCommonClaim: (CommonClaimsData) -> Unit,
   openUrl: (String) -> Unit,
   openAppSettings: () -> Unit,
+  navigateToMissingInfo: (String) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val notificationPermissionState = rememberNotificationPermissionState()
@@ -126,13 +126,13 @@ internal fun HomeDestination(
     onStartChat = onStartChat,
     onClaimDetailCardClicked = onClaimDetailCardClicked,
     navigateToConnectPayment = navigateToConnectPayment,
-    navigateToContractDetail = navigateToContractDetail,
     onStartClaim = onStartClaim,
     onStartMovingFlow = onStartMovingFlow,
     onGenerateTravelCertificateClicked = onGenerateTravelCertificateClicked,
     onOpenCommonClaim = onOpenCommonClaim,
     openUrl = openUrl,
     openAppSettings = openAppSettings,
+    navigateToMissingInfo = navigateToMissingInfo,
   )
 }
 
@@ -144,13 +144,13 @@ private fun HomeScreen(
   onStartChat: () -> Unit,
   onClaimDetailCardClicked: (String) -> Unit,
   navigateToConnectPayment: () -> Unit,
-  navigateToContractDetail: (contractId: String) -> Unit,
   onStartClaim: () -> Unit,
   onStartMovingFlow: () -> Unit,
   onGenerateTravelCertificateClicked: () -> Unit,
   onOpenCommonClaim: (CommonClaimsData) -> Unit,
   openUrl: (String) -> Unit,
   openAppSettings: () -> Unit,
+  navigateToMissingInfo: (String) -> Unit,
 ) {
   val context = LocalContext.current
   val systemBarInsetTopDp = with(LocalDensity.current) {
@@ -194,7 +194,6 @@ private fun HomeScreen(
             onStartMovingFlow = onStartMovingFlow,
             onClaimDetailCardClicked = onClaimDetailCardClicked,
             navigateToConnectPayment = navigateToConnectPayment,
-            navigateToContractDetail = navigateToContractDetail,
             onEmergencyClaimClicked = { emergencyData ->
               context.startActivity(
                 EmergencyActivity.newInstance(
@@ -209,6 +208,7 @@ private fun HomeScreen(
             openAppSettings = openAppSettings,
             openChat = onStartChat,
             openUrl = openUrl,
+            navigateToMissingInfo = navigateToMissingInfo,
           )
         }
       }
@@ -229,7 +229,9 @@ private fun HomeScreen(
           tooltipShown = {
             context.setLastEpochDayWhenChatTooltipWasShown(java.time.LocalDate.now().toEpochDay())
           },
-          modifier = Modifier.align(Alignment.End).padding(horizontal = 16.dp),
+          modifier = Modifier
+            .align(Alignment.End)
+            .padding(horizontal = 16.dp),
         )
       }
     }
@@ -263,7 +265,6 @@ private fun HomeScreenSuccess(
   onStartMovingFlow: () -> Unit,
   onClaimDetailCardClicked: (claimId: String) -> Unit,
   navigateToConnectPayment: () -> Unit,
-  navigateToContractDetail: (contractId: String) -> Unit,
   onEmergencyClaimClicked: (EmergencyData) -> Unit,
   onGenerateTravelCertificateClicked: () -> Unit,
   onOpenCommonClaim: (CommonClaimsData) -> Unit,
@@ -271,6 +272,7 @@ private fun HomeScreenSuccess(
   openAppSettings: () -> Unit,
   openChat: () -> Unit,
   openUrl: (String) -> Unit,
+  navigateToMissingInfo: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val coroutineScope = rememberCoroutineScope()
@@ -351,7 +353,7 @@ private fun HomeScreenSuccess(
           MemberReminderCards(
             memberReminders = memberReminders,
             navigateToConnectPayment = navigateToConnectPayment,
-            navigateToContractDetail = navigateToContractDetail,
+            navigateToAddMissingInfo = navigateToMissingInfo,
             openUrl = openUrl,
             modifier = Modifier
               .fillMaxWidth()
@@ -379,11 +381,16 @@ private fun HomeScreenSuccess(
         },
         topSpacer = {
           Spacer(
-            Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top)).height(toolbarHeight),
+            Modifier
+              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top))
+              .height(toolbarHeight),
           )
         },
         bottomSpacer = {
-          Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)).height(16.dp))
+          Spacer(
+            Modifier
+              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom))
+              .height(16.dp))
         },
       )
     }
@@ -488,13 +495,13 @@ private fun PreviewHomeScreen() {
         onStartChat = {},
         onClaimDetailCardClicked = {},
         navigateToConnectPayment = {},
-        navigateToContractDetail = {},
         onStartClaim = {},
         onStartMovingFlow = {},
         onGenerateTravelCertificateClicked = {},
         onOpenCommonClaim = {},
         openUrl = {},
         openAppSettings = {},
+        navigateToMissingInfo = {},
       )
     }
   }

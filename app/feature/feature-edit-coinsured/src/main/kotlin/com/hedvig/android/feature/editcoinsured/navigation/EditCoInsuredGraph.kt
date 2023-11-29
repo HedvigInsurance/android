@@ -2,6 +2,7 @@ package com.hedvig.android.feature.editcoinsured.navigation
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredAddMissingInfoDestination
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredAddOrRemoveDestination
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredSuccessDestination
 import com.hedvig.android.navigation.core.AppDestination
@@ -17,6 +18,12 @@ fun NavGraphBuilder.editCoInsuredGraph(navigateUp: () -> Unit, navController: Na
   navigation<AppDestination.EditCoInsured>(
     startDestination = createRoutePattern<EditCoInsuredDestination.AddOrRemove>(),
   ) {
+    composable<EditCoInsuredDestination.AddInfo> {
+      EditCoInsuredAddMissingInfoDestination(
+        viewModel = koinViewModel { parametersOf(contractId) },
+        navigateUp = navigateUp,
+      )
+    }
     composable<EditCoInsuredDestination.AddOrRemove> {
       EditCoInsuredAddOrRemoveDestination(
         koinViewModel { parametersOf(contractId) },

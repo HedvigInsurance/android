@@ -127,8 +127,10 @@ internal fun HedvigNavHost(
         with(navigator) { backStackEntry.navigate(ClaimDetailsDestination(claimId)) }
       },
       navigateToPayinScreen = navigateToConnectPayment,
-      navigateToContractDetail = { contractId ->
-        hedvigAppState.navController.navigate(InsurancesDestination.InsuranceContractDetail(contractId))
+      navigateToMissingInfo = { backStackEntry: NavBackStackEntry, contractId: String ->
+        with(navigator) {
+          backStackEntry.navigate(EditCoInsuredDestination.AddInfo(contractId))
+        }
       },
       openAppSettings = { activityNavigator.openAppSettings(context) },
       openUrl = ::openUrl,
@@ -173,6 +175,11 @@ internal fun HedvigNavHost(
       startEditCoInsured = { backStackEntry: NavBackStackEntry, contractId: String ->
         with(navigator) {
           backStackEntry.navigate(EditCoInsuredDestination.AddOrRemove(contractId))
+        }
+      },
+      startEditCoInsuredAddMissingInfo = { backStackEntry: NavBackStackEntry, contractId: String ->
+        with(navigator) {
+          backStackEntry.navigate(EditCoInsuredDestination.AddInfo(contractId))
         }
       },
     )

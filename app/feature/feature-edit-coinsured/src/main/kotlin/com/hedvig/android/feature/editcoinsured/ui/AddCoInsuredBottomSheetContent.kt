@@ -12,10 +12,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -27,20 +23,22 @@ import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import hedvig.resources.R
+import kotlinx.datetime.LocalDate
 
 @Composable
 internal fun AddCoInsuredBottomSheetContent(
-  onSave: (CoInsured) -> Unit,
-  onFetchInfo: (ssn: String) -> Unit,
-  onDismiss: () -> Unit,
-  isLoading: Boolean,
+  firstName: String?,
+  lastName: String?,
+  ssn: String?,
+  birthDate: LocalDate?,
   errorMessage: String?,
-  coInsured: CoInsured?,
+  isLoading: Boolean,
+  onSsnChanged: (String) -> Unit,
+  onSave: () -> Unit,
+  onFetchInfo: () -> Unit,
+  onDismiss: () -> Unit,
 ) {
-  var ssn by remember { mutableStateOf("") }
-
   Column(
     horizontalAlignment = Alignment.CenterHorizontally,
     modifier = Modifier.padding(horizontal = 16.dp),
@@ -49,13 +47,11 @@ internal fun AddCoInsuredBottomSheetContent(
     Text(stringResource(id = R.string.CONTRACT_ADD_COINSURED))
     Spacer(Modifier.height(24.dp))
     HedvigTextField(
-      value = ssn,
+      value = ssn ?: "",
       label = {
         Text(stringResource(id = R.string.CONTRACT_PERSONAL_IDENTITY))
       },
-      onValueChange = { text: String ->
-        ssn = text
-      },
+      onValueChange = onSsnChanged,
       errorText = errorMessage,
       keyboardOptions = KeyboardOptions(
         keyboardType = KeyboardType.Number,
@@ -63,18 +59,18 @@ internal fun AddCoInsuredBottomSheetContent(
       ),
       keyboardActions = KeyboardActions(
         onDone = {
-          onFetchInfo(ssn)
+          onFetchInfo()
         },
       ),
       withNewDesign = true,
       modifier = Modifier.fillMaxWidth(),
     )
     AnimatedVisibility(
-      visible = coInsured != null,
+      visible = firstName?.isNotBlank() == true,
       modifier = Modifier.padding(top = 4.dp),
     ) {
       HedvigTextField(
-        value = coInsured?.displayName ?: "",
+        value = "$firstName $lastName",
         onValueChange = {},
         label = {
           Text(stringResource(id = R.string.FULL_NAME_TEXT))
@@ -86,17 +82,17 @@ internal fun AddCoInsuredBottomSheetContent(
     }
     Spacer(Modifier.height(16.dp))
     HedvigContainedButton(
-      text = if (coInsured != null) {
+      text = if (firstName != null && lastName != null) {
         stringResource(id = R.string.CONTRACT_ADD_COINSURED)
       } else {
         stringResource(id = R.string.CONTRACT_SSN_FETCH_INFO)
       },
-      enabled = ssn.isNotBlank(),
+      enabled = ssn != null,
       onClick = {
-        if (coInsured != null) {
-          onSave(coInsured)
+        if (firstName != null && lastName != null) {
+          onSave()
         } else {
-          onFetchInfo(ssn)
+          onFetchInfo()
         }
       },
       isLoading = isLoading,
@@ -117,12 +113,16 @@ private fun AddCoInsuredBottomSheetContentPreview() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       AddCoInsuredBottomSheetContent(
-        onFetchInfo = {},
         onSave = {},
+        onFetchInfo = {},
         onDismiss = {},
         isLoading = false,
-        coInsured = null,
         errorMessage = null,
+        firstName = "Test",
+        lastName = "Testersson",
+        ssn = "1234",
+        birthDate = null,
+        onSsnChanged = {},
       )
     }
   }
@@ -134,18 +134,16 @@ private fun AddCoInsuredBottomSheetContentWithCoInsuredPreview() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       AddCoInsuredBottomSheetContent(
-        onFetchInfo = {},
         onSave = {},
+        onFetchInfo = {},
         onDismiss = {},
         isLoading = false,
-        coInsured = CoInsured(
-          "Tester",
-          "Testersson",
-          birthDate = null,
-          ssn = "144412022193",
-          hasMissingInfo = false,
-        ),
         errorMessage = null,
+        firstName = "Test",
+        lastName = "Testersson",
+        ssn = "1234",
+        birthDate = null,
+        onSsnChanged = {},
       )
     }
   }
