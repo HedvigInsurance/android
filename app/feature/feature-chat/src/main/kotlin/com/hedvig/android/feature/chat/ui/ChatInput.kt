@@ -69,14 +69,13 @@ internal fun ChatInput(
     onSendFile(uri)
   }
   var text: String by rememberSaveable { mutableStateOf("") }
-  val onSendMessageAndClearLocalText = { message: String ->
-    onSendMessage(message)
-    text = ""
-  }
   ChatInput(
     text = text,
     setText = { text = it },
-    onSendMessage = onSendMessageAndClearLocalText,
+    onSendMessage = { message: String ->
+      onSendMessage(message)
+      text = ""
+    },
     takePicture = { chatFileState.startTakePicture() },
     modifier = modifier,
   )
