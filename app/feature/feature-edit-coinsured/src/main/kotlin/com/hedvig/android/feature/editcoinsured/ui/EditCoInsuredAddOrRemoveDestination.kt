@@ -27,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -39,6 +40,7 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.dialog.ErrorDialog
 import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
+import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.data.Member
@@ -240,34 +242,34 @@ private fun PriceInfo(priceInfo: EditCoInsuredState.Loaded.PriceInfo) {
       .padding(16.dp)
       .fillMaxWidth(),
   ) {
-    Row(
-      horizontalArrangement = Arrangement.SpaceBetween,
+    HorizontalItemsWithMaximumSpaceTaken(
+      startSlot = { Text(text = stringResource(id = R.string.CONTRACT_ADD_COINSURED_TOTAL)) },
+      endSlot = {
+        Row(horizontalArrangement = Arrangement.End) {
+          Text(
+            text = stringResource(
+              id = R.string.CHANGE_ADDRESS_PRICE_PER_MONTH_LABEL,
+              priceInfo.previousPrice.toString(),
+            ),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = LocalTextStyle.current.copy(textDecoration = TextDecoration.LineThrough),
+          )
+          Spacer(modifier = Modifier.width(8.dp))
+          Text(text = stringResource(id = R.string.CHANGE_ADDRESS_PRICE_PER_MONTH_LABEL, priceInfo.newPrice.toString()))
+        }
+      },
+      spaceBetween = 8.dp,
+    )
+    Text(
+      text = stringResource(
+        id = R.string.CONTRACT_ADD_COINSURED_STARTS_FROM,
+        dateTimeFormatter.format(priceInfo.validFrom.toJavaLocalDate()),
+      ),
+      style = MaterialTheme.typography.labelLarge,
+      color = MaterialTheme.colorScheme.onSurfaceVariant,
+      textAlign = TextAlign.End,
       modifier = Modifier.fillMaxWidth(),
-    ) {
-      Text(text = stringResource(id = R.string.CONTRACT_ADD_COINSURED_TOTAL))
-      Row(horizontalArrangement = Arrangement.End) {
-        Text(
-          text = stringResource(id = R.string.CHANGE_ADDRESS_PRICE_PER_MONTH_LABEL, priceInfo.previousPrice.toString()),
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
-          style = LocalTextStyle.current.copy(textDecoration = TextDecoration.LineThrough),
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(text = stringResource(id = R.string.CHANGE_ADDRESS_PRICE_PER_MONTH_LABEL, priceInfo.newPrice.toString()))
-      }
-    }
-    Row(
-      horizontalArrangement = Arrangement.End,
-      modifier = Modifier.fillMaxWidth(),
-    ) {
-      Text(
-        text = stringResource(
-          id = R.string.CONTRACT_ADD_COINSURED_STARTS_FROM,
-          dateTimeFormatter.format(priceInfo.validFrom.toJavaLocalDate()),
-        ),
-        style = MaterialTheme.typography.labelLarge,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-      )
-    }
+    )
   }
 }
 
