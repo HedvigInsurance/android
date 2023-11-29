@@ -17,6 +17,7 @@ import arrow.core.identity
 import arrow.fx.coroutines.parMap
 import com.benasher44.uuid.Uuid
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.feature.chat.closedevent.ChatClosedEventStore
@@ -108,7 +109,11 @@ internal class ChatPresenter(
     }
     // endregion
 
-    val messages: SnapshotStateList<ChatMessage> = remember { mutableStateListOf() }
+    val messages: SnapshotStateList<ChatMessage> = remember {
+      mutableStateListOf(
+        *(lastState.safeCast<ChatUiState.Loaded>()?.messages?.map { it.chatMessage } ?: emptyList()).toTypedArray(),
+      )
+    }
 
     // False if messages from cache were loaded or if the initial network request has finished
     var isStillInitializing by remember { mutableStateOf(lastState is ChatUiState.Initializing) }
@@ -127,8 +132,8 @@ internal class ChatPresenter(
 
     LaunchMessagesWatcher(
       onCachedMessagesReceived = { cachedMessages ->
-        isStillInitializing = false
         Snapshot.withMutableSnapshot {
+          isStillInitializing = false
           messages.clear()
           messages.addAll(cachedMessages)
         }
@@ -170,7 +175,7 @@ internal class ChatPresenter(
     )
 
     CollectEvents { event ->
-      logcat { "ChatPresenter event:$event" }
+      logcat { "ChatPresenter handling event:$event" }
       when (event) {
         ChatEvent.DismissError -> TODO()
         ChatEvent.FetchMoreMessages -> {
@@ -179,16 +184,19 @@ internal class ChatPresenter(
               failedToFetchMoreMessages = false
               fetchMoreMessagesFetchIndex++
             }
-            return@CollectEvents
+          } else {
+            val fetchMoreStateValue = fetchMoreState
+            if (fetchMoreStateValue is FetchMoreState.IdleWithKnownNextFetch) {
+              fetchMoreState = FetchMoreState.FetchUntil(fetchMoreStateValue.fetchUntil)
+            }
           }
-          val fetchMoreStateValue = fetchMoreState
-          if (fetchMoreStateValue !is FetchMoreState.IdleWithKnownNextFetch) return@CollectEvents
-          fetchMoreState = FetchMoreState.FetchUntil(fetchMoreStateValue.fetchUntil)
         }
 
         is ChatEvent.SendFileMessage -> {
           logcat { "Sending file ${event.uri.path}" }
-          filesToSend.trySend(event.uri)
+          filesToSend.trySend(event.uri).also {
+            logcat { "Stelios filesToSend.trySend result:$it" }
+          }
         }
 
         is ChatEvent.SendTextMessage -> {

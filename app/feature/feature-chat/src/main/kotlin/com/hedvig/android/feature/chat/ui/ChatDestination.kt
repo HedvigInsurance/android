@@ -68,7 +68,7 @@ internal fun ChatDestination(
       viewModel.emit(ChatEvent.SendTextMessage(message))
     },
     onSendFile = { uri: Uri ->
-      logcat { "viewModel.emit(ChatEventNew.SendFileMessage(uri)):${uri.path}" }
+      logcat { "viewModel.emit(ChatEventNew.SendFileMessage(uri)):${uri.path} to vm:${viewModel.hashCode()}" }
       viewModel.emit(ChatEvent.SendFileMessage(uri))
     },
     onFetchMoreMessages = {
