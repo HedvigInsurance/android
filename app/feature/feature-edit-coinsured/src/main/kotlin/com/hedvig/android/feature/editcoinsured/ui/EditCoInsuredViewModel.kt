@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.editcoinsured.ui
 
+import com.hedvig.android.feature.editcoinsured.data.CommitMidtermChangeUseCase
 import com.hedvig.android.feature.editcoinsured.data.CreateMidtermChangeUseCase
 import com.hedvig.android.feature.editcoinsured.data.FetchCoInsuredPersonalInformationUseCase
 import com.hedvig.android.feature.editcoinsured.data.GetCoInsuredUseCase
@@ -10,12 +11,14 @@ internal class EditCoInsuredViewModel(
   getCoInsuredUseCaseProvider: GetCoInsuredUseCase,
   fetchCoInsuredPersonalInformationUseCaseProvider: FetchCoInsuredPersonalInformationUseCase,
   createMidtermChangeUseCase: CreateMidtermChangeUseCase,
+  commitMidtermChangeUseCase: CommitMidtermChangeUseCase,
 ) : MoleculeViewModel<EditCoInsuredEvent, EditCoInsuredState>(
-  EditCoInsuredState.Loading,
-  EditCoInsuredPresenter(
-    contractId = contractId,
-    getCoInsuredUseCase = getCoInsuredUseCaseProvider,
-    fetchCoInsuredPersonalInformationUseCase = fetchCoInsuredPersonalInformationUseCaseProvider,
-    createMidtermChangeUseCase = createMidtermChangeUseCase,
-  ),
-)
+    EditCoInsuredState.Loading,
+    EditCoInsuredPresenter(
+      contractId = contractId,
+      getCoInsuredUseCase = getCoInsuredUseCaseProvider,
+      fetchCoInsuredPersonalInformationUseCase = fetchCoInsuredPersonalInformationUseCaseProvider,
+      createMidtermChangeUseCase = createMidtermChangeUseCase,
+      commitMidtermChangeUseCase = commitMidtermChangeUseCase,
+    ),
+  )

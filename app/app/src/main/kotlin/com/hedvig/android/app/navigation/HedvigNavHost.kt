@@ -172,7 +172,7 @@ internal fun HedvigNavHost(
       imageLoader = imageLoader,
       startEditCoInsured = { backStackEntry: NavBackStackEntry, contractId: String ->
         with(navigator) {
-          backStackEntry.navigate(EditCoInsuredDestination(contractId, allowEdit = false))
+          backStackEntry.navigate(EditCoInsuredDestination.AddOrRemove(contractId))
         }
       },
     )
@@ -223,6 +223,7 @@ internal fun HedvigNavHost(
     )
     editCoInsuredGraph(
       navigateUp = navigator::navigateUp,
+      navController = hedvigAppState.navController,
     )
     connectAdyenPaymentGraph(navigator)
   }
