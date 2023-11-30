@@ -5,6 +5,7 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isTrue
 import assertk.assertions.prop
+import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.editcoinsured.data.CoInsuredResult
 import com.hedvig.android.feature.editcoinsured.ui.data.TestCommitMidtermChangeUseCase
@@ -38,6 +39,10 @@ internal class EditCoInsuredPresenterTest {
       fetchCoInsuredPersonalInformationUseCase = testFetchCoInsuredPersonalInformationUseCase,
       createMidtermChangeUseCase = testCreateMidTermChangeUseCase,
       commitMidtermChangeUseCase = testCommitMidtermChangeUseCase,
+      networkCacheManager = object : NetworkCacheManager {
+        override fun clearCache() {
+        }
+      },
     )
   }
 
