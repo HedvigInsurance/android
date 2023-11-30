@@ -57,6 +57,7 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.Camera
 import com.hedvig.android.core.icons.hedvig.normal.ChevronUp
+import com.hedvig.android.core.icons.hedvig.normal.Document
 import com.hedvig.android.core.icons.hedvig.normal.Pictures
 import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.logger.logcat
@@ -70,6 +71,7 @@ internal fun ChatInput(
   appPackageId: String,
   modifier: Modifier = Modifier,
 ) {
+  var text: String by rememberSaveable { mutableStateOf("") }
   val photoCaptureState = rememberPhotoCaptureState(appPackageId = appPackageId) { uri ->
     logcat { "ChatFileState sending uri:$uri" }
     onSendPhoto(uri)
@@ -81,7 +83,13 @@ internal fun ChatInput(
       onSendMedia(resultingUri)
     }
   }
-  var text: String by rememberSaveable { mutableStateOf("") }
+  val filePicker = rememberLauncherForActivityResult(
+    contract = ActivityResultContracts.GetContent(),
+  ) { resultingUri: Uri? ->
+    if (resultingUri != null) {
+      onSendMedia(resultingUri)
+    }
+  }
   ChatInput(
     text = text,
     setText = { text = it },
@@ -90,9 +98,8 @@ internal fun ChatInput(
       text = ""
     },
     takePicture = { photoCaptureState.launchTakePhotoRequest() },
-    selectMedia = {
-      photoPicker.launch(PickVisualMediaRequest())
-    },
+    selectMedia = { photoPicker.launch(PickVisualMediaRequest()) },
+    selectFile = { filePicker.launch("*/*") },
     modifier = modifier,
   )
 }
@@ -104,6 +111,7 @@ private fun ChatInput(
   onSendMessage: (message: String) -> Unit,
   takePicture: () -> Unit,
   selectMedia: () -> Unit,
+  selectFile: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Row(
@@ -123,6 +131,13 @@ private fun ChatInput(
     ChatClickableSquare(
       onClick = selectMedia,
       imageVector = Icons.Hedvig.Pictures,
+      contentDescription = stringResource(R.string.KEY_GEAR_ADD_ITEM_ADD_PHOTO_BUTTON),
+      chatShape = chatShape,
+      outlineColor = outlineColor,
+    )
+    ChatClickableSquare(
+      onClick = selectFile,
+      imageVector = Icons.Hedvig.Document,
       contentDescription = stringResource(R.string.KEY_GEAR_ADD_ITEM_ADD_PHOTO_BUTTON),
       chatShape = chatShape,
       outlineColor = outlineColor,
@@ -235,6 +250,7 @@ private fun PreviewChatTextInput(
         } else {
           "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed et congue lacus. Donec ac libero. ".repeat(5)
         },
+        {},
         {},
         {},
         {},
