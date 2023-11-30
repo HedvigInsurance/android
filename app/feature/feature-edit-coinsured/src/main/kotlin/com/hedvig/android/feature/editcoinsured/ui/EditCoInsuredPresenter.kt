@@ -17,9 +17,7 @@ import com.hedvig.android.feature.editcoinsured.data.CreateMidtermChangeUseCase
 import com.hedvig.android.feature.editcoinsured.data.FetchCoInsuredPersonalInformationUseCase
 import com.hedvig.android.feature.editcoinsured.data.GetCoInsuredUseCase
 import com.hedvig.android.feature.editcoinsured.data.Member
-import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredEvent.FetchCoInsuredPersonalInformation
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredEvent.OnAddCoInsuredClicked
-import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredEvent.OnCoInsuredAddedFromBottomSheet
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredEvent.OnDismissError
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredEvent.OnRemoveCoInsuredClicked
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredEvent.RemoveCoInsured
@@ -94,28 +92,11 @@ internal class EditCoInsuredPresenter(
 
     CollectEvents { event ->
       when (event) {
-        is FetchCoInsuredPersonalInformation -> ssnQuery = addBottomSheetState.ssn
-        is OnCoInsuredAddedFromBottomSheet -> {
-          editedCoInsuredList = if (selectedCoInsuredId != null) {
-            val updatedCoInsured = CoInsured(
-              internalId = selectedCoInsuredId!!,
-              firstName = addBottomSheetState.firstName,
-              lastName = addBottomSheetState.lastName,
-              birthDate = addBottomSheetState.birthDate,
-              ssn = addBottomSheetState.ssn,
-              hasMissingInfo = true,
-            )
-            val old = listState.coInsured.first { it.internalId == selectedCoInsuredId }
-            listState.coInsured.updated(old, updatedCoInsured).toImmutableList()
+        EditCoInsuredEvent.OnBottomSheetContinue -> {
+          if (addBottomSheetState.shouldFetchInfo()) {
+            ssnQuery = addBottomSheetState.ssn
           } else {
-            val updatedCoInsured = CoInsured(
-              firstName = addBottomSheetState.firstName,
-              lastName = addBottomSheetState.lastName,
-              birthDate = addBottomSheetState.birthDate,
-              ssn = addBottomSheetState.ssn,
-              hasMissingInfo = true,
-            )
-            (listState.coInsured + updatedCoInsured).toImmutableList()
+            editedCoInsuredList = addCoInsuredFromBottomSheet(selectedCoInsuredId, addBottomSheetState, listState)
           }
         }
 
@@ -123,7 +104,27 @@ internal class EditCoInsuredPresenter(
           editedCoInsuredList = listState.coInsured.filterNot { it == event.coInsured }.toImmutableList()
         }
 
-        is EditCoInsuredEvent.OnSsnChanged -> addBottomSheetState = addBottomSheetState.copy(ssn = event.ssn)
+        is EditCoInsuredEvent.OnSsnChanged -> addBottomSheetState =
+          addBottomSheetState.copy(ssn = event.ssn, errorMessage = null)
+
+        is EditCoInsuredEvent.OnBirthDateChanged -> addBottomSheetState =
+          addBottomSheetState.copy(birthDate = event.birthDate, errorMessage = null)
+
+        is EditCoInsuredEvent.OnFirstNameChanged -> addBottomSheetState =
+          addBottomSheetState.copy(firstName = event.firstName, errorMessage = null)
+
+        is EditCoInsuredEvent.OnLastNameChanged -> addBottomSheetState =
+          addBottomSheetState.copy(lastName = event.lastName, errorMessage = null)
+
+        is EditCoInsuredEvent.OnManualInputSwitchChanged -> {
+          ssnQuery = null
+          addBottomSheetState =
+            Loaded.AddBottomSheetState(
+              showManualInput = event.show,
+              show = true,
+            )
+        }
+
         is EditCoInsuredEvent.OnEditCoInsuredClicked -> {
           selectedCoInsuredId = event.coInsured.internalId
           addBottomSheetState = Loaded.AddBottomSheetState(
@@ -141,7 +142,11 @@ internal class EditCoInsuredPresenter(
         )
 
         OnAddCoInsuredClicked -> addBottomSheetState = Loaded.AddBottomSheetState(show = true)
-        ResetAddBottomSheetState -> addBottomSheetState = Loaded.AddBottomSheetState()
+        ResetAddBottomSheetState -> {
+          addBottomSheetState = Loaded.AddBottomSheetState()
+          ssnQuery = null
+        }
+
         ResetRemoveBottomSheetState -> removeBottomSheetState = Loaded.RemoveBottomSheetState()
         OnDismissError -> errorMessage = null
         EditCoInsuredEvent.OnCommitChanges -> commit = true
@@ -149,6 +154,7 @@ internal class EditCoInsuredPresenter(
     }
 
     LaunchedEffect(ssnQuery) {
+      addBottomSheetState = addBottomSheetState.copy(errorMessage = null)
       ssnQuery?.let { ssnQuery ->
         either {
           val result = fetchCoInsuredPersonalInformationUseCase.invoke(ssnQuery).bind()
@@ -248,29 +254,48 @@ internal class EditCoInsuredPresenter(
       Error("Could not fetch member")
     }
   }
+
+  private fun addCoInsuredFromBottomSheet(
+    selectedCoInsuredId: String?,
+    addBottomSheetState: Loaded.AddBottomSheetState,
+    listState: Loaded.CoInsuredListState,
+  ) = if (selectedCoInsuredId != null) {
+    val updatedCoInsured = CoInsured(
+      internalId = selectedCoInsuredId,
+      firstName = addBottomSheetState.firstName,
+      lastName = addBottomSheetState.lastName,
+      birthDate = addBottomSheetState.birthDate,
+      ssn = addBottomSheetState.ssn,
+      hasMissingInfo = false,
+    )
+    val old = listState.coInsured.first { it.internalId == selectedCoInsuredId }
+    listState.coInsured.updated(old, updatedCoInsured).toImmutableList()
+  } else {
+    val updatedCoInsured = CoInsured(
+      firstName = addBottomSheetState.firstName,
+      lastName = addBottomSheetState.lastName,
+      birthDate = addBottomSheetState.birthDate,
+      ssn = addBottomSheetState.ssn,
+      hasMissingInfo = false,
+    )
+    (listState.coInsured + updatedCoInsured).toImmutableList()
+  }
 }
 
 internal sealed interface EditCoInsuredEvent {
-  data object FetchCoInsuredPersonalInformation : EditCoInsuredEvent
-
-  data object OnCoInsuredAddedFromBottomSheet : EditCoInsuredEvent
-
+  data object OnBottomSheetContinue : EditCoInsuredEvent
   data class RemoveCoInsured(val coInsured: CoInsured) : EditCoInsuredEvent
-
   data class OnEditCoInsuredClicked(val coInsured: CoInsured) : EditCoInsuredEvent
-
   data object OnDismissError : EditCoInsuredEvent
-
   data object OnAddCoInsuredClicked : EditCoInsuredEvent
-
   data object ResetAddBottomSheetState : EditCoInsuredEvent
-
   data object ResetRemoveBottomSheetState : EditCoInsuredEvent
-
   data class OnRemoveCoInsuredClicked(val coInsured: CoInsured) : EditCoInsuredEvent
-
   data object OnCommitChanges : EditCoInsuredEvent
-
+  data class OnFirstNameChanged(val firstName: String) : EditCoInsuredEvent
+  data class OnLastNameChanged(val lastName: String) : EditCoInsuredEvent
+  data class OnBirthDateChanged(val birthDate: LocalDate) : EditCoInsuredEvent
+  data class OnManualInputSwitchChanged(val show: Boolean) : EditCoInsuredEvent
   data class OnSsnChanged(val ssn: String) : EditCoInsuredEvent
 }
 
@@ -298,6 +323,8 @@ internal sealed interface EditCoInsuredState {
         originalCoInsured != null &&
         updatedCoInsured != null &&
         originalCoInsured != updatedCoInsured
+
+      fun noCoInsuredHaveMissingInfo() = coInsured.all { !it.hasMissingInfo }
     }
 
     data class PriceInfo(
@@ -311,10 +338,26 @@ internal sealed interface EditCoInsuredState {
       val lastName: String? = null,
       val ssn: String? = null,
       val birthDate: LocalDate? = null,
+      val showManualInput: Boolean = false,
       val errorMessage: String? = null,
       val isLoading: Boolean = false,
       val show: Boolean = false,
-    )
+    ) {
+      fun canContinue() = (showManualInput && firstName != null && lastName != null && birthDate != null)
+        || (!showManualInput && ssn != null)
+
+      fun shouldFetchInfo() = !showManualInput && ssn != null && firstName == null && lastName == null
+
+      fun getSaveLabel() = if (shouldFetchInfo()) {
+        SaveButtonLabel.FETCH_INFO
+      } else {
+        SaveButtonLabel.ADD
+      }
+
+      enum class SaveButtonLabel {
+        FETCH_INFO, ADD
+      }
+    }
 
     data class RemoveBottomSheetState(
       val coInsured: CoInsured? = null,

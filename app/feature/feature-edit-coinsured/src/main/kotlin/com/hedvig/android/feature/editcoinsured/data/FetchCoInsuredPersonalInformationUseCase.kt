@@ -4,6 +4,8 @@ import arrow.core.Either
 import arrow.core.raise.either
 import arrow.core.raise.ensureNotNull
 import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.cache.normalized.FetchPolicy
+import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
@@ -18,6 +20,7 @@ internal class FetchCoInsuredPersonalInformationUseCaseImpl(
 ) : FetchCoInsuredPersonalInformationUseCase {
   override suspend fun invoke(ssn: String): Either<ErrorMessage, CoInsuredPersonalInformation> = either {
     val result = apolloClient.query(PersonalInformationQuery(ssn))
+      .fetchPolicy(FetchPolicy.NetworkOnly)
       .safeExecute()
       .toEither(::ErrorMessage)
       .bind()

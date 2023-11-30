@@ -39,7 +39,8 @@ data class InsuranceAgreement(
     private val birthDate: LocalDate?,
     private val firstName: String?,
     private val lastName: String?,
-    val activeFrom: LocalDate?,
+    val activatesOn: LocalDate?,
+    val terminatesOn: LocalDate?,
     val hasMissingInfo: Boolean,
   ) {
     fun getDisplayName() = buildString {

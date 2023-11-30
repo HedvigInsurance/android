@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
+import com.hedvig.android.core.ui.rememberHedvigBirthDateDateTimeFormatter
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import hedvig.resources.R
 
@@ -19,7 +19,7 @@ internal fun CoInsuredList(
   allowEdit: Boolean,
   modifier: Modifier = Modifier,
 ) {
-  val dateTimeFormatter = rememberHedvigDateTimeFormatter()
+  val dateTimeFormatter = rememberHedvigBirthDateDateTimeFormatter()
   Column(modifier = modifier) {
     uiState.member?.let {
       InsuredRow(

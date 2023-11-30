@@ -51,6 +51,7 @@ import com.hedvig.android.core.icons.hedvig.normal.WarningFilled
 import com.hedvig.android.core.icons.hedvig.small.hedvig.Lock
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.infocard.VectorWarningCard
+import com.hedvig.android.core.ui.rememberHedvigBirthDateDateTimeFormatter
 import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.data.contract.ContractType
@@ -150,7 +151,7 @@ internal fun YourInfoTab(
       UpcomingChangesBottomSheetContent(
         infoText = stringResource(
           id = R.string.insurances_tab_your_insurance_will_be_updated_with_info,
-          upcomingChangesInsuranceAgreement.activeFrom,
+          dateTimeFormatter.format(upcomingChangesInsuranceAgreement.activeFrom.toJavaLocalDate()),
         ),
         sections = upcomingChangesInsuranceAgreement.displayItems
           .map { it.title to it.value }
@@ -274,6 +275,7 @@ internal fun CoInsuredSection(
   modifier: Modifier,
 ) {
   val dateTimeFormatter = rememberHedvigDateTimeFormatter()
+  val birthDateTimeFormatter = rememberHedvigBirthDateDateTimeFormatter()
   Column(modifier = modifier) {
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
@@ -345,20 +347,31 @@ internal fun CoInsuredSection(
               Text(coInsured.getDisplayName().ifBlank { stringResource(id = R.string.CONTRACT_COINSURED) })
 
               Text(
-                text = coInsured.getSsnOrBirthDate(dateTimeFormatter)
+                text = coInsured.getSsnOrBirthDate(birthDateTimeFormatter)
                   ?: stringResource(id = R.string.CONTRACT_NO_INFORMATION),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
               )
 
-              if (coInsured.activeFrom != null) {
+              if (coInsured.activatesOn != null) {
                 Spacer(Modifier.height(4.dp))
                 HedvigPill(
                   text = stringResource(
                     id = R.string.CONTRACT_ADD_COINSURED_ACTIVE_FROM,
-                    dateTimeFormatter.format(coInsured.activeFrom.toJavaLocalDate()),
+                    dateTimeFormatter.format(coInsured.activatesOn.toJavaLocalDate()),
                   ),
                   contentColor = MaterialTheme.colorScheme.onWarningContainer,
                   color = MaterialTheme.colorScheme.warningContainer,
+                )
+              }
+              if (coInsured.terminatesOn != null) {
+                Spacer(Modifier.height(4.dp))
+                HedvigPill(
+                  text = stringResource(
+                    id = R.string.CONTRACT_ADD_COINSURED_ACTIVE_UNTIL,
+                    dateTimeFormatter.format(coInsured.terminatesOn.toJavaLocalDate()),
+                  ),
+                  contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                  color = MaterialTheme.colorScheme.errorContainer,
                 )
               }
             }
@@ -417,8 +430,24 @@ private fun PreviewYourInfoTab() {
           "Size" to "56 m2",
         ),
         coInsured = persistentListOf(
-          InsuranceAgreement.CoInsured("199101131093", null, "Hugo", "Linder", LocalDate.fromEpochDays(300), false),
-          InsuranceAgreement.CoInsured(null, null, null, null, null, true),
+          InsuranceAgreement.CoInsured(
+            ssn = "199101131093",
+            birthDate = null,
+            firstName = "Hugo",
+            lastName = "Linder",
+            activatesOn = LocalDate.fromEpochDays(300),
+            terminatesOn = LocalDate.fromEpochDays(400),
+            hasMissingInfo = false,
+          ),
+          InsuranceAgreement.CoInsured(
+            ssn = null,
+            birthDate = null,
+            firstName = null,
+            lastName = null,
+            activatesOn = null,
+            terminatesOn = null,
+            hasMissingInfo = true,
+          ),
         ),
         allowChangeAddress = true,
         allowEditCoInsured = true,
@@ -441,8 +470,24 @@ private fun PreviewYourInfoTab() {
           ),
           certificateUrl = null,
           coInsured = persistentListOf(
-            InsuranceAgreement.CoInsured("199101131093", null, "Hugo", "Linder", LocalDate.fromEpochDays(300), false),
-            InsuranceAgreement.CoInsured("1234020312", null, "Testersson", "Tester", null, false),
+            InsuranceAgreement.CoInsured(
+              ssn = "199101131093",
+              birthDate = null,
+              firstName = "Hugo",
+              lastName = "Linder",
+              activatesOn = LocalDate.fromEpochDays(300),
+              terminatesOn = LocalDate.fromEpochDays(300),
+              hasMissingInfo = false,
+            ),
+            InsuranceAgreement.CoInsured(
+              ssn = "1234020312",
+              birthDate = null,
+              firstName = "Testersson",
+              lastName = "Tester",
+              activatesOn = null,
+              terminatesOn = null,
+              hasMissingInfo = false,
+            ),
           ),
         ),
         onEditCoInsuredClick = {},

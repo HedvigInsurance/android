@@ -15,7 +15,6 @@ import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import octopus.InsuranceContractsQuery
-import octopus.fragment.AgreementFragment
 import octopus.fragment.ContractFragment
 
 internal interface GetInsuranceContractsUseCase {
@@ -83,24 +82,7 @@ private fun ContractFragment.toContract(
       },
       productVariant = currentAgreement.productVariant.toProductVariant(),
       certificateUrl = currentAgreement.certificateUrl,
-      coInsured = buildList {
-        val currentCoInsured = currentAgreement.coInsured
-          ?.map { it.toCoInsured() }
-          ?: emptyList()
-
-        addAll(currentCoInsured)
-
-        // Get the co insured only present in upcoming agreement and set active from.
-        val upcomingCoInsured = upcomingChangedAgreement?.coInsured
-          ?.map { it.toCoInsured() }
-          ?.filter { it.activeFrom != null }
-          ?: emptyList()
-
-        val newCoInsured = upcomingCoInsured.subtract(currentCoInsured.toSet())
-          .map { it.copy(activeFrom = upcomingChangedAgreement?.activeFrom) }
-
-        addAll(newCoInsured)
-      }.toPersistentList(),
+      coInsured = coInsured?.map { it.toCoInsured() }?.toPersistentList() ?: persistentListOf(),
     ),
     upcomingInsuranceAgreement = upcomingChangedAgreement?.let {
       InsuranceAgreement(
@@ -114,7 +96,7 @@ private fun ContractFragment.toContract(
         },
         productVariant = it.productVariant.toProductVariant(),
         certificateUrl = it.certificateUrl,
-        coInsured = it.coInsured?.map { it.toCoInsured() }?.toPersistentList() ?: persistentListOf(),
+        coInsured = coInsured?.map { it.toCoInsured() }?.toPersistentList() ?: persistentListOf(),
       )
     },
     supportsAddressChange = supportsAddressChange,
@@ -122,11 +104,12 @@ private fun ContractFragment.toContract(
   )
 }
 
-private fun AgreementFragment.CoInsured.toCoInsured(): InsuranceAgreement.CoInsured = InsuranceAgreement.CoInsured(
+private fun ContractFragment.CoInsured.toCoInsured(): InsuranceAgreement.CoInsured = InsuranceAgreement.CoInsured(
   firstName = firstName,
   lastName = lastName,
   ssn = ssn,
   birthDate = birthdate,
-  activeFrom = null,
+  activatesOn = activatesOn,
+  terminatesOn = terminatesOn,
   hasMissingInfo = hasMissingInfo,
 )

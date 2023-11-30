@@ -19,6 +19,15 @@ fragment ContractFragment on Contract {
   terminationDate
   exposureDisplayName
   supportsMoving
+  coInsured {
+    firstName
+    lastName
+    ssn
+    birthdate
+    hasMissingInfo
+    activatesOn
+    terminatesOn
+  }
   currentAgreement {
     ...AgreementFragment
   }
@@ -31,13 +40,6 @@ fragment AgreementFragment on Agreement {
   activeFrom
   activeTo
   certificateUrl
-  coInsured {
-    firstName
-    lastName
-    ssn
-    birthdate
-    hasMissingInfo
-  }
   displayItems {
     ...AgreementDisplayItemFragment
   }

@@ -4,27 +4,17 @@ query CoInsured {
     lastName
     ssn
     activeContracts {
-      ...CoInsuredContractFragment
+      id
+      coInsured {
+        firstName
+        lastName
+        birthdate
+        ssn
+        hasMissingInfo
+        activatesOn
+        terminatesOn
+      }
     }
   }
 }
 
-fragment CoInsuredContractFragment on Contract {
-  id
-  currentAgreement {
-    ...CoInsuredAgreementFragment
-  }
-  upcomingChangedAgreement {
-    ...CoInsuredAgreementFragment
-  }
-}
-
-fragment CoInsuredAgreementFragment on Agreement {
-  coInsured {
-    firstName
-    lastName
-    birthdate
-    ssn
-    hasMissingInfo
-  }
-}
