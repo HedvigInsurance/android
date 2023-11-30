@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.chat.chatfilestate
+package com.hedvig.android.compose.photo.capture.state
 
 import android.app.Activity
 import android.content.Context
@@ -23,7 +23,7 @@ import com.hedvig.android.logger.logcat
 import java.io.File
 
 @Stable
-internal class PhotoCaptureState internal constructor(
+class PhotoCaptureState internal constructor(
   initialPhotoPath: String?,
   private val context: Context,
   private val externalPhotosDirectory: File?,
@@ -34,7 +34,7 @@ internal class PhotoCaptureState internal constructor(
 
   internal var launcher: ActivityResultLauncher<Uri>? = null
 
-  fun startTakePicture() {
+  fun launchTakePhotoRequest() {
     val newPhotoFile: File = createFileInExternalPhotosDirectory(
       "JPEG_${System.currentTimeMillis()}.jpg",
     ).apply {
@@ -65,7 +65,7 @@ internal class PhotoCaptureState internal constructor(
 }
 
 @Composable
-internal fun rememberPhotoCaptureState(appPackageId: String, onPhotoCaptured: (file: Uri) -> Unit): PhotoCaptureState {
+fun rememberPhotoCaptureState(appPackageId: String, onPhotoCaptured: (uri: Uri) -> Unit): PhotoCaptureState {
   val context = LocalContext.current
   val activity = context.findActivity()
   val externalPhotosDirectory = activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES)

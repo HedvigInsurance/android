@@ -44,6 +44,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.compose.photo.capture.state.rememberPhotoCaptureState
 import com.hedvig.android.core.designsystem.material3.infoElement
 import com.hedvig.android.core.designsystem.material3.onInfoElement
 import com.hedvig.android.core.designsystem.material3.squircleMedium
@@ -53,7 +54,6 @@ import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.Camera
 import com.hedvig.android.core.icons.hedvig.normal.ChevronUp
 import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
-import com.hedvig.android.feature.chat.chatfilestate.rememberPhotoCaptureState
 import com.hedvig.android.logger.logcat
 import hedvig.resources.R
 
@@ -64,7 +64,7 @@ internal fun ChatInput(
   appPackageId: String,
   modifier: Modifier = Modifier,
 ) {
-  val chatFileState = rememberPhotoCaptureState(appPackageId = appPackageId) { uri ->
+  val photoCaptureState = rememberPhotoCaptureState(appPackageId = appPackageId) { uri ->
     logcat { "ChatFileState sending uri:$uri" }
     onSendFile(uri)
   }
@@ -76,7 +76,7 @@ internal fun ChatInput(
       onSendMessage(message)
       text = ""
     },
-    takePicture = { chatFileState.startTakePicture() },
+    takePicture = { photoCaptureState.launchTakePhotoRequest() },
     modifier = modifier,
   )
 }
