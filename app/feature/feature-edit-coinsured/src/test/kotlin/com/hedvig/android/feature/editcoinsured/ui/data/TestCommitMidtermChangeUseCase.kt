@@ -8,7 +8,6 @@ import com.hedvig.android.feature.editcoinsured.data.CommitMidtermChangeSuccess
 import com.hedvig.android.feature.editcoinsured.data.CommitMidtermChangeUseCase
 
 internal class TestCommitMidtermChangeUseCase : CommitMidtermChangeUseCase {
-
   val errorMessages = Turbine<ErrorMessage>()
   val commitMidtermChangeResult = Turbine<CommitMidtermChangeSuccess>()
 

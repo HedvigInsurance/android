@@ -1,6 +1,8 @@
 package com.hedvig.android.feature.editcoinsured.ui
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,13 +10,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
@@ -34,22 +32,25 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.datepicker.HedvigDatePicker
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
-import com.hedvig.android.core.designsystem.material3.warningElement
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.hedvig.normal.WarningFilled
+import com.hedvig.android.core.ui.SelectableItem
 import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.core.ui.rememberHedvigBirthDateDateTimeFormatter
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.core.ui.text.WarningTextWithIconForInput
+import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.AddBottomSheetState
 import hedvig.resources.R
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -58,82 +59,92 @@ import kotlinx.datetime.toLocalDateTime
 
 @Composable
 internal fun AddCoInsuredBottomSheetContent(
-  firstName: String?,
-  lastName: String?,
-  birthDate: LocalDate?,
-  errorMessage: String?,
-  isLoading: Boolean,
-  enabled: Boolean,
-  showManualInput: Boolean,
+  bottomSheetState: AddBottomSheetState,
   onSsnChanged: (String) -> Unit,
-  onSaveLabel: AddBottomSheetState.SaveButtonLabel,
   onContinue: () -> Unit,
   onManualInputSwitchChanged: (Boolean) -> Unit,
   onDismiss: () -> Unit,
   onBirthDateChanged: (LocalDate) -> Unit,
   onFirstNameChanged: (String) -> Unit,
   onLastNameChanged: (String) -> Unit,
+  onAddNewCoInsured: () -> Unit,
+  onCoInsuredSelected: (CoInsured) -> Unit,
 ) {
   Column(
-    horizontalAlignment = Alignment.CenterHorizontally,
     modifier = Modifier.padding(horizontal = 16.dp),
   ) {
     Spacer(Modifier.height(16.dp))
-    Text(stringResource(id = R.string.CONTRACT_ADD_COINSURED))
+    Text(
+      text = stringResource(id = R.string.CONTRACT_ADD_COINSURED),
+      textAlign = TextAlign.Center,
+      modifier = Modifier.fillMaxWidth(),
+    )
     Spacer(Modifier.height(24.dp))
-    AnimatedVisibility(visible = showManualInput) {
-      ManualInputFields(
-        birthDate = birthDate,
-        errorMessage = errorMessage,
-        onBirthDateChanged = onBirthDateChanged,
-        onFirstNameChanged = onFirstNameChanged,
-        onLastNameChanged = onLastNameChanged,
+    if (bottomSheetState.canPickExistingCoInsured() && bottomSheetState.selectableCoInsured != null) {
+      SelectableCoInsuredList(
+        bottomSheetState.selectableCoInsured,
+        bottomSheetState.selectedCoInsured,
+        bottomSheetState.errorMessage,
+        onAddNewCoInsured,
+        onCoInsuredSelected,
       )
-    }
-    AnimatedVisibility(visible = !showManualInput) {
-      FetchFromSsnFields(
-        firstName = firstName,
-        lastName = lastName,
-        errorMessage = errorMessage,
-        onSsnChanged = onSsnChanged,
-        onContinue = onContinue,
-      )
-    }
-    Spacer(Modifier.height(4.dp))
-    HedvigCard(
-      Modifier
-        .fillMaxWidth()
-        .clickable {
-          onManualInputSwitchChanged(!showManualInput)
-        },
-    ) {
-      HorizontalItemsWithMaximumSpaceTaken(
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-        startSlot = {
-          Row(
-            verticalAlignment = Alignment.CenterVertically,
-          ) {
-            Text(
-              text = stringResource(id = R.string.CONTRACT_ADD_COINSURED_NO_SSN),
-              color = MaterialTheme.colorScheme.onSurfaceVariant,
+    } else {
+      AnimatedVisibility(visible = bottomSheetState.showManualInput) {
+        ManualInputFields(
+          birthDate = bottomSheetState.birthDate,
+          errorMessage = bottomSheetState.errorMessage,
+          onBirthDateChanged = onBirthDateChanged,
+          onFirstNameChanged = onFirstNameChanged,
+          onLastNameChanged = onLastNameChanged,
+        )
+      }
+      AnimatedVisibility(visible = !bottomSheetState.showManualInput) {
+        FetchFromSsnFields(
+          firstName = bottomSheetState.firstName,
+          lastName = bottomSheetState.lastName,
+          errorMessage = bottomSheetState.errorMessage,
+          onSsnChanged = onSsnChanged,
+          onContinue = onContinue,
+        )
+      }
+      Spacer(Modifier.height(4.dp))
+
+      HedvigCard(
+        Modifier
+          .fillMaxWidth()
+          .clickable {
+            onManualInputSwitchChanged(!bottomSheetState.showManualInput)
+          },
+      ) {
+        HorizontalItemsWithMaximumSpaceTaken(
+          modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+          startSlot = {
+            Row(
+              verticalAlignment = Alignment.CenterVertically,
+            ) {
+              Text(
+                text = stringResource(id = R.string.CONTRACT_ADD_COINSURED_NO_SSN),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+              )
+            }
+          },
+          endSlot = {
+            Switch(
+              checked = bottomSheetState.showManualInput,
+              onCheckedChange = onManualInputSwitchChanged,
             )
-          }
-        },
-        endSlot = {
-          Switch(
-            checked = showManualInput,
-            onCheckedChange = onManualInputSwitchChanged,
-          )
-        },
-        spaceBetween = 4.dp,
-      )
+          },
+          spaceBetween = 4.dp,
+        )
+      }
     }
+
     Spacer(Modifier.height(16.dp))
     HedvigContainedButton(
-      text = stringResource(id = onSaveLabel.stringRes()),
-      enabled = enabled,
+      text = stringResource(id = bottomSheetState.getSaveLabel().stringRes()),
+      enabled = bottomSheetState.canContinue(),
       onClick = onContinue,
-      isLoading = isLoading,
+      isLoading = bottomSheetState.isLoading,
     )
     Spacer(Modifier.height(8.dp))
     HedvigTextButton(
@@ -146,6 +157,31 @@ internal fun AddCoInsuredBottomSheetContent(
 }
 
 @Composable
+internal fun SelectableCoInsuredList(
+  selectableCoInsured: ImmutableList<CoInsured>,
+  selectedCoInsured: CoInsured?,
+  errorMessage: String?,
+  onAddNewCoInsured: () -> Unit,
+  onCoInsuredSelected: (CoInsured) -> Unit,
+) {
+  selectableCoInsured.forEach {
+    SelectableItem(
+      text = it.displayName,
+      isSelected = it == selectedCoInsured,
+      onClick = { onCoInsuredSelected(it) },
+    )
+    Spacer(Modifier.height(4.dp))
+  }
+  AnimatedVisibility(visible = errorMessage != null) {
+    WarningTextWithIconForInput(text = errorMessage ?: "")
+  }
+  HedvigTextButton(
+    text = stringResource(id = R.string.GENERAL_ADD_NEW),
+    onClick = { onAddNewCoInsured() },
+  )
+}
+
+@Composable
 fun FetchFromSsnFields(
   firstName: String?,
   lastName: String?,
@@ -153,7 +189,6 @@ fun FetchFromSsnFields(
   onSsnChanged: (String) -> Unit,
   onContinue: () -> Unit,
 ) {
-
   var ssnInput by remember { mutableStateOf("") }
 
   Column {
@@ -251,31 +286,18 @@ fun ManualInputFields(
       spaceBetween = 4.dp,
     )
     Spacer(Modifier.height(4.dp))
-    AnimatedVisibility(visible = errorMessage != null) {
-      Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(
-          imageVector = Icons.Hedvig.WarningFilled,
-          contentDescription = null,
-          tint = MaterialTheme.colorScheme.warningElement,
-          modifier = Modifier.size(14.dp),
-        )
-        Spacer(modifier = Modifier.width(6.dp))
-        Text(
-          text = errorMessage ?: "",
-          color = MaterialTheme.colorScheme.warningElement,
-          style = MaterialTheme.typography.labelMedium,
-        )
-      }
+    AnimatedVisibility(
+      visible = errorMessage != null,
+      enter = fadeIn(),
+      exit = fadeOut(),
+    ) {
+      WarningTextWithIconForInput(text = errorMessage ?: "")
     }
   }
 }
 
 @Composable
-fun DatePickerWithDialog(
-  modifier: Modifier = Modifier,
-  birthDate: LocalDate?,
-  onSave: (LocalDate) -> Unit,
-) {
+fun DatePickerWithDialog(modifier: Modifier = Modifier, birthDate: LocalDate?, onSave: (LocalDate) -> Unit) {
   val datePickerState = rememberDatePickerState()
 
   val selectedDateMillis: Long? = datePickerState.selectedDateMillis
@@ -353,13 +375,25 @@ private fun AddCoInsuredBottomSheetContentPreview() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       AddCoInsuredBottomSheetContent(
-        firstName = null,
-        lastName = "Testersson",
-        birthDate = LocalDate.fromEpochDays(500),
-        errorMessage = "Error",
-        isLoading = false,
-        showManualInput = true,
-        enabled = true,
+        bottomSheetState = AddBottomSheetState(
+          errorMessage = "Error",
+          selectableCoInsured = persistentListOf(
+            CoInsured(
+              "Test",
+              "Testersson",
+              LocalDate.fromEpochDays(300),
+              "1234",
+              false,
+            ),
+            CoInsured(
+              "Test",
+              "Testersson",
+              LocalDate.fromEpochDays(300),
+              "1234",
+              false,
+            ),
+          ),
+        ),
         onSsnChanged = {},
         onContinue = {},
         onManualInputSwitchChanged = {},
@@ -367,7 +401,8 @@ private fun AddCoInsuredBottomSheetContentPreview() {
         onBirthDateChanged = {},
         onFirstNameChanged = {},
         onLastNameChanged = {},
-        onSaveLabel = AddBottomSheetState.SaveButtonLabel.ADD,
+        onAddNewCoInsured = {},
+        onCoInsuredSelected = {},
       )
     }
   }
@@ -379,13 +414,7 @@ private fun AddCoInsuredBottomSheetContentWithCoInsuredPreview() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       AddCoInsuredBottomSheetContent(
-        firstName = "Test",
-        lastName = "Testersson",
-        birthDate = null,
-        errorMessage = "Error",
-        isLoading = false,
-        enabled = true,
-        showManualInput = false,
+        bottomSheetState = AddBottomSheetState(errorMessage = "text"),
         onSsnChanged = {},
         onContinue = {},
         onManualInputSwitchChanged = {},
@@ -393,7 +422,8 @@ private fun AddCoInsuredBottomSheetContentWithCoInsuredPreview() {
         onBirthDateChanged = {},
         onFirstNameChanged = {},
         onLastNameChanged = {},
-        onSaveLabel = AddBottomSheetState.SaveButtonLabel.ADD,
+        onAddNewCoInsured = {},
+        onCoInsuredSelected = {},
       )
     }
   }

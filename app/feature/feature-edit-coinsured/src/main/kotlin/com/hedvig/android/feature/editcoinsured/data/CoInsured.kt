@@ -11,7 +11,7 @@ internal data class CoInsured(
   val birthDate: LocalDate?,
   val ssn: String?,
   val hasMissingInfo: Boolean,
-  val internalId: String = UUID.randomUUID().toString()
+  val internalId: String = UUID.randomUUID().toString(),
 ) {
   val id = "$firstName-$lastName-$birthDate-$ssn"
 

@@ -378,7 +378,7 @@ internal fun CoInsuredSection(
           }
         },
         endSlot = {
-          if (coInsured.hasMissingInfo) {
+          if (coInsured.hasMissingInfo && coInsured.terminatesOn == null) {
             Row(
               horizontalArrangement = Arrangement.End,
               modifier = Modifier.padding(vertical = 14.dp),

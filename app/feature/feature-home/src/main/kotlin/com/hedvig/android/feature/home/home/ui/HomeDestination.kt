@@ -390,7 +390,8 @@ private fun HomeScreenSuccess(
           Spacer(
             Modifier
               .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom))
-              .height(16.dp))
+              .height(16.dp),
+          )
         },
       )
     }

@@ -15,6 +15,7 @@ import com.hedvig.android.feature.editcoinsured.ui.data.coInsuredTestList
 import com.hedvig.android.feature.editcoinsured.ui.data.testContractId
 import com.hedvig.android.feature.editcoinsured.ui.data.testMember
 import com.hedvig.android.molecule.test.test
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import octopus.type.CurrencyCode
@@ -22,7 +23,6 @@ import org.junit.Before
 import org.junit.Test
 
 internal class EditCoInsuredPresenterTest {
-
   private val testGetCoInsuredUseCase = TestGetCoInsuredUseCase()
   private val testFetchCoInsuredPersonalInformationUseCase = TestFetchCoInsuredPersonalInformationUseCase()
   private val testCreateMidTermChangeUseCase = TestCreateMidTermChangeUseCase()
@@ -49,7 +49,8 @@ internal class EditCoInsuredPresenterTest {
       testGetCoInsuredUseCase.coInsured.add(
         CoInsuredResult(
           member = testMember,
-          coInsured = coInsuredTestList,
+          coInsuredOnContract = coInsuredTestList,
+          allCoInsured = persistentListOf(),
         ),
       )
 
@@ -69,6 +70,7 @@ internal class EditCoInsuredPresenterTest {
         listState = EditCoInsuredState.Loaded.CoInsuredListState(
           originalCoInsured = coInsuredTestList,
           member = testMember,
+          allCoInsured = persistentListOf(),
         ),
         addBottomSheetState = EditCoInsuredState.Loaded.AddBottomSheetState(),
         removeBottomSheetState = EditCoInsuredState.Loaded.RemoveBottomSheetState(),
@@ -97,6 +99,7 @@ internal class EditCoInsuredPresenterTest {
         listState = EditCoInsuredState.Loaded.CoInsuredListState(
           originalCoInsured = coInsuredTestList,
           member = testMember,
+          allCoInsured = persistentListOf(),
         ),
         addBottomSheetState = EditCoInsuredState.Loaded.AddBottomSheetState(),
         removeBottomSheetState = EditCoInsuredState.Loaded.RemoveBottomSheetState(),
@@ -107,7 +110,7 @@ internal class EditCoInsuredPresenterTest {
       skipItems(1)
       sendEvent(EditCoInsuredEvent.OnSsnChanged("4321"))
       skipItems(1)
-      sendEvent(EditCoInsuredEvent.OnCoInsuredAddedFromBottomSheet)
+      sendEvent(EditCoInsuredEvent.OnBottomSheetContinue)
 
       val state = awaitItem()
       assertThat(state).isInstanceOf<EditCoInsuredState.Loaded>().run {
