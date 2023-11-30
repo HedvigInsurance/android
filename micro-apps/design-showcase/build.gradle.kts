@@ -40,6 +40,7 @@ android {
 }
 
 dependencies {
+  implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.foundationLayout)
   implementation(libs.androidx.compose.material3)
@@ -47,7 +48,6 @@ dependencies {
   implementation(libs.androidx.compose.materialIconsExtended)
   implementation(libs.androidx.compose.runtime)
   implementation(libs.androidx.graphicsShapes)
-  implementation(libs.androidx.other.activityCompose)
   implementation(libs.coil.coil)
   implementation(libs.kotlinx.immutable.collections)
   implementation(libs.zoomable)
