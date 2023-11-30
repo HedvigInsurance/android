@@ -23,16 +23,16 @@ import com.hedvig.android.logger.logcat
 import java.io.File
 
 @Stable
-internal class ChatFileState internal constructor(
+internal class PhotoCaptureState internal constructor(
   initialPhotoPath: String?,
   private val context: Context,
   private val externalPhotosDirectory: File?,
   private val authority: String,
 ) {
-  var currentPhotoPath by mutableStateOf<String?>(initialPhotoPath)
+  internal var currentPhotoPath by mutableStateOf<String?>(initialPhotoPath)
     private set
 
-  var launcher: ActivityResultLauncher<Uri>? = null
+  internal var launcher: ActivityResultLauncher<Uri>? = null
 
   fun startTakePicture() {
     val newPhotoFile: File = createFileInExternalPhotosDirectory(
@@ -40,20 +40,12 @@ internal class ChatFileState internal constructor(
     ).apply {
       currentPhotoPath = absolutePath
     }
-    val newPhotoUri: Uri = getUriForFile(newPhotoFile)
+    val newPhotoUri: Uri = FileProvider.getUriForFile(context, authority, newPhotoFile)
     launcher?.launch(newPhotoUri) ?: throw IllegalStateException("ActivityResultLauncher cannot be null")
   }
 
-  fun clearCurrentPhotoPath() {
+  internal fun clearCurrentPhotoPath() {
     currentPhotoPath = null
-  }
-
-  private fun getUriForFile(file: File): Uri {
-    return FileProvider.getUriForFile(
-      context,
-      authority,
-      file,
-    )
   }
 
   private fun createFileInExternalPhotosDirectory(fileName: String): File {
@@ -65,51 +57,53 @@ internal class ChatFileState internal constructor(
 
   companion object {
     @Suppress("ktlint:standard:function-naming")
-    fun Saver(context: Context, externalPhotosDirectory: File?, authority: String): Saver<ChatFileState, *> = Saver(
+    fun Saver(context: Context, externalPhotosDirectory: File?, authority: String): Saver<PhotoCaptureState, *> = Saver(
       save = { it.currentPhotoPath },
-      restore = { ChatFileState(it, context, externalPhotosDirectory, authority) },
+      restore = { PhotoCaptureState(it, context, externalPhotosDirectory, authority) },
     )
   }
 }
 
 @Composable
-internal fun rememberChatFileState(appPackageId: String, onSendFile: (file: Uri) -> Unit): ChatFileState {
+internal fun rememberPhotoCaptureState(appPackageId: String, onPhotoCaptured: (file: Uri) -> Unit): PhotoCaptureState {
   val context = LocalContext.current
   val activity = context.findActivity()
   val externalPhotosDirectory = activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
   val authority = "$appPackageId.provider"
-  val chatFileState = rememberSaveable(saver = ChatFileState.Saver(context, externalPhotosDirectory, authority)) {
-    ChatFileState(null, context, externalPhotosDirectory, authority)
+  val photoCaptureState = rememberSaveable(
+    saver = PhotoCaptureState.Saver(context, externalPhotosDirectory, authority),
+  ) {
+    PhotoCaptureState(null, context, externalPhotosDirectory, authority)
   }
 
   val takePictureLauncher: ActivityResultLauncher<Uri> = rememberLauncherForActivityResult(
     contract = ActivityResultContracts.TakePicture(),
   ) { didSucceed ->
     logcat {
-      "Take picture launcher result, didSucceed:$didSucceed, currentPhotoPath:${chatFileState.currentPhotoPath}"
+      "Take picture launcher result, didSucceed:$didSucceed, currentPhotoPath:${photoCaptureState.currentPhotoPath}"
     }
-    val tempFilePath = chatFileState.currentPhotoPath
+    val tempFilePath = photoCaptureState.currentPhotoPath
     if (tempFilePath == null) {
       logcat(LogPriority.ERROR) {
         "Finished taking picture, but currentPhotoPath was null. Failed to properly store the path to it."
       }
     } else if (didSucceed) {
       val fileUri = Uri.fromFile(File(tempFilePath))
-      logcat { "Sending file with fileUri:$fileUri" }
-      onSendFile(fileUri)
-      chatFileState.clearCurrentPhotoPath()
+      logcat { "Captured picture with fileUri:$fileUri" }
+      onPhotoCaptured(fileUri)
+      photoCaptureState.clearCurrentPhotoPath()
     } else {
       logcat(LogPriority.INFO) { "Did not finish taking a picture, cancelled request normally" }
     }
   }
-  DisposableEffect(chatFileState, takePictureLauncher) {
-    chatFileState.launcher = takePictureLauncher
+  DisposableEffect(photoCaptureState, takePictureLauncher) {
+    photoCaptureState.launcher = takePictureLauncher
     onDispose {
-      chatFileState.launcher = null
+      photoCaptureState.launcher = null
     }
   }
 
-  return chatFileState
+  return photoCaptureState
 }
 
 private fun Context.findActivity(): Activity {

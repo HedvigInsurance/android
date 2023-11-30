@@ -53,7 +53,7 @@ import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.Camera
 import com.hedvig.android.core.icons.hedvig.normal.ChevronUp
 import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
-import com.hedvig.android.feature.chat.chatfilestate.rememberChatFileState
+import com.hedvig.android.feature.chat.chatfilestate.rememberPhotoCaptureState
 import com.hedvig.android.logger.logcat
 import hedvig.resources.R
 
@@ -64,7 +64,7 @@ internal fun ChatInput(
   appPackageId: String,
   modifier: Modifier = Modifier,
 ) {
-  val chatFileState = rememberChatFileState(appPackageId = appPackageId) { uri ->
+  val chatFileState = rememberPhotoCaptureState(appPackageId = appPackageId) { uri ->
     logcat { "ChatFileState sending uri:$uri" }
     onSendFile(uri)
   }
