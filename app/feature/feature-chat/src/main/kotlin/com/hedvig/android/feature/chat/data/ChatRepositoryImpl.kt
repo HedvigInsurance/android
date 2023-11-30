@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.chat.data
 
+import android.content.ContentResolver
 import android.net.Uri
 import android.util.Patterns
 import androidx.core.net.toFile
@@ -39,12 +40,18 @@ import octopus.fragment.ChatMessageFileMessageFragment
 import octopus.fragment.ChatMessageTextMessageFragment
 import octopus.fragment.MessageFragment
 import octopus.type.ChatMessageSender
+import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okio.BufferedSink
+import okio.source
 
 internal class ChatRepositoryImpl(
   private val apolloClient: ApolloClient,
   private val botServiceService: BotServiceService,
   private val fileService: FileService,
+  private val contentResolver: ContentResolver,
 ) : ChatRepository {
   override suspend fun fetchMoreMessages(until: Instant): Either<ErrorMessage, ChatMessagesResult> = either {
     logcat { "Fetching more messages until:$until" }
@@ -99,8 +106,8 @@ internal class ChatRepositoryImpl(
       }
   }
 
-  override suspend fun sendFile(uri: Uri): Either<ErrorMessage, ChatMessage> = either<ErrorMessage, ChatMessage> {
-    logcat { "Chat uploading file with uri:$uri" }
+  override suspend fun sendPhoto(uri: Uri): Either<ErrorMessage, ChatMessage> = either<ErrorMessage, ChatMessage> {
+    logcat { "Chat uploading photo with uri:$uri" }
     val uploadToken = uploadFile(uri)
     val result = apolloClient.mutation(ChatSendFileMutation(uploadToken))
       .safeExecute()
@@ -143,6 +150,60 @@ internal class ChatRepositoryImpl(
     return ensureNotNull(fileUploadResponse.uploadToken) {
       ErrorMessage("Backend responded with an empty list as a response$result")
     }
+  }
+
+  override suspend fun sendMedia(uri: Uri): Either<ErrorMessage, ChatMessage> = either<ErrorMessage, ChatMessage> {
+    logcat { "Chat uploading media with uri:$uri" }
+    val uploadToken = uploadMedia(uri)
+    val result = apolloClient.mutation(ChatSendFileMutation(uploadToken))
+      .safeExecute()
+      .toEither(::ErrorMessage)
+      .bind()
+      .chatSendFile
+
+    val error = result.error
+    val message = result.message
+    val status = result.status
+
+    ensure(error == null) {
+      ErrorMessage("Uploading file failed with error message:${error?.message}. Result:$result")
+    }
+    ensureNotNull(message) {
+      ErrorMessage("No data")
+    }
+    if (status != null) {
+      logcat { "Status was: ${status.message}" }
+    }
+
+    ensureNotNull(message.toUiChatMessage()) {
+      ErrorMessage("Message was not of a known type")
+    }
+  }.onLeft {
+    logcat { "Stelios: error uploading file:$it" }
+  }
+
+  private suspend fun Raise<ErrorMessage>.uploadMedia(uri: Uri): String {
+    val response: List<FileUploadResponse> = botServiceService
+      .uploadFile(
+        MultipartBody.Part.createFormData(
+          name = "files",
+          filename = fileService.getFileName(uri) ?: "media",
+          body = object : RequestBody() {
+            override fun contentType(): MediaType? {
+              return fileService.getMimeType(uri).toMediaType()
+            }
+
+            override fun writeTo(sink: BufferedSink) {
+              contentResolver.openInputStream(uri)?.use { inputStream ->
+                sink.writeAll(inputStream.source())
+              } ?: error("Could not open input stream for uri:$uri")
+            }
+          },
+        ),
+      )
+      .mapLeft(CallError::toErrorMessage)
+      .bind()
+    return response.firstOrNull()?.uploadToken ?: raise(ErrorMessage("No upload token"))
   }
 
   override suspend fun sendMessage(text: String): Either<ErrorMessage, ChatMessage> = either {
@@ -231,6 +292,7 @@ private fun MessageFragment.toUiChatMessage(): ChatMessage? = when (this) {
     mimeType = when (mimeType) {
       "image/jpeg" -> ChatMessage.ChatMessageFile.MimeType.IMAGE
       "application/pdf" -> ChatMessage.ChatMessageFile.MimeType.PDF
+      "video/mp4" -> ChatMessage.ChatMessageFile.MimeType.MP4
       else -> ChatMessage.ChatMessageFile.MimeType.OTHER
     },
   )

@@ -1,6 +1,9 @@
 package com.hedvig.android.feature.chat.ui
 
 import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -38,6 +41,7 @@ import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -53,6 +57,7 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.Camera
 import com.hedvig.android.core.icons.hedvig.normal.ChevronUp
+import com.hedvig.android.core.icons.hedvig.normal.Pictures
 import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.logger.logcat
 import hedvig.resources.R
@@ -60,13 +65,21 @@ import hedvig.resources.R
 @Composable
 internal fun ChatInput(
   onSendMessage: (message: String) -> Unit,
-  onSendFile: (file: Uri) -> Unit,
+  onSendPhoto: (file: Uri) -> Unit,
+  onSendMedia: (file: Uri) -> Unit,
   appPackageId: String,
   modifier: Modifier = Modifier,
 ) {
   val photoCaptureState = rememberPhotoCaptureState(appPackageId = appPackageId) { uri ->
     logcat { "ChatFileState sending uri:$uri" }
-    onSendFile(uri)
+    onSendPhoto(uri)
+  }
+  val photoPicker = rememberLauncherForActivityResult(
+    contract = ActivityResultContracts.PickVisualMedia(),
+  ) { resultingUri: Uri? ->
+    if (resultingUri != null) {
+      onSendMedia(resultingUri)
+    }
   }
   var text: String by rememberSaveable { mutableStateOf("") }
   ChatInput(
@@ -77,6 +90,9 @@ internal fun ChatInput(
       text = ""
     },
     takePicture = { photoCaptureState.launchTakePhotoRequest() },
+    selectMedia = {
+      photoPicker.launch(PickVisualMediaRequest())
+    },
     modifier = modifier,
   )
 }
@@ -87,9 +103,9 @@ private fun ChatInput(
   setText: (String) -> Unit,
   onSendMessage: (message: String) -> Unit,
   takePicture: () -> Unit,
+  selectMedia: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val buttonSize = 40.dp
   Row(
     verticalAlignment = Alignment.Bottom,
     horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -97,28 +113,23 @@ private fun ChatInput(
   ) {
     val chatShape = MaterialTheme.shapes.squircleMedium
     val outlineColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.32f)
-    Box(
-      modifier = Modifier
-        .size(buttonSize)
-        .background(color = MaterialTheme.colorScheme.surface, shape = chatShape)
-        .chatInputOutline(chatShape, outlineColor)
-        .clip(chatShape)
-        .clickable(onClick = takePicture)
-        .wrapContentSize(unbounded = true)
-        .minimumInteractiveComponentSize(),
-      contentAlignment = Alignment.Center,
-    ) {
-      CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
-        Icon(
-          imageVector = Icons.Hedvig.Camera,
-          contentDescription = stringResource(R.string.CHAT_UPLOAD_PRESS_SEND_LABEL),
-          modifier = Modifier.size(16.dp),
-        )
-      }
-    }
+    ChatClickableSquare(
+      onClick = takePicture,
+      imageVector = Icons.Hedvig.Camera,
+      contentDescription = stringResource(R.string.KEY_GEAR_ADD_ITEM_ADD_PHOTO_BUTTON),
+      chatShape = chatShape,
+      outlineColor = outlineColor,
+    )
+    ChatClickableSquare(
+      onClick = selectMedia,
+      imageVector = Icons.Hedvig.Pictures,
+      contentDescription = stringResource(R.string.KEY_GEAR_ADD_ITEM_ADD_PHOTO_BUTTON),
+      chatShape = chatShape,
+      outlineColor = outlineColor,
+    )
     Surface(
       color = MaterialTheme.colorScheme.surface,
-      shape = chatShape,
+      shape = MaterialTheme.shapes.squircleMedium,
       modifier = Modifier
         .heightIn(min = buttonSize)
         .weight(1f)
@@ -170,6 +181,35 @@ private fun ChatInput(
   }
 }
 
+@Composable
+private fun ChatClickableSquare(
+  onClick: () -> Unit,
+  imageVector: ImageVector,
+  contentDescription: String,
+  chatShape: Shape,
+  outlineColor: Color,
+) {
+  Box(
+    modifier = Modifier
+      .size(buttonSize)
+      .background(color = MaterialTheme.colorScheme.surface, shape = chatShape)
+      .chatInputOutline(chatShape, outlineColor)
+      .clip(chatShape)
+      .clickable(onClick = onClick)
+      .wrapContentSize(unbounded = true)
+      .minimumInteractiveComponentSize(),
+    contentAlignment = Alignment.Center,
+  ) {
+    CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
+      Icon(
+        imageVector = imageVector,
+        contentDescription = contentDescription,
+        modifier = Modifier.size(16.dp),
+      )
+    }
+  }
+}
+
 private fun Modifier.chatInputOutline(chatShape: Shape, outlineColor: Color): Modifier = drawWithCache {
   val stroke = Stroke(Dp.Hairline.toPx())
   val outline = chatShape.createOutline(size.copy(size.width, size.height), layoutDirection, this)
@@ -179,6 +219,8 @@ private fun Modifier.chatInputOutline(chatShape: Shape, outlineColor: Color): Mo
     drawPath(path, outlineColor, style = stroke)
   }
 }
+
+private val buttonSize = 40.dp
 
 @HedvigPreview
 @Composable
@@ -193,6 +235,7 @@ private fun PreviewChatTextInput(
         } else {
           "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed et congue lacus. Donec ac libero. ".repeat(5)
         },
+        {},
         {},
         {},
         {},

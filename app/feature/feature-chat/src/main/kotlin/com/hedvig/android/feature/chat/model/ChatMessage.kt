@@ -30,6 +30,7 @@ sealed interface ChatMessage {
   ) : ChatMessage {
     enum class MimeType {
       IMAGE,
+      MP4,
       PDF,
       OTHER,
     }

@@ -26,18 +26,19 @@ val chatModule = module {
   single<ChatClosedEventStore> { ChatClosedEventDataStore(get()) }
   viewModel<ChatViewModel> {
     ChatViewModel(
-      // todo fake provider
-      Provider { get<ChatRepository>() },
-      get<ChatClosedEventStore>(),
-      get<FeatureManager>(),
-      get<DemoManager>(),
+      // todo chat: fake provider
+      chatRepository = Provider { get<ChatRepository>() },
+      chatClosedTracker = get<ChatClosedEventStore>(),
+      featureManager = get<FeatureManager>(),
+      demoManager = get<DemoManager>(),
     )
   }
   single<ChatRepository> {
     ChatRepositoryImpl(
-      get<ApolloClient>(),
-      get<BotServiceService>(),
-      get<FileService>(),
+      apolloClient = get<ApolloClient>(),
+      botServiceService = get<BotServiceService>(),
+      fileService = get<FileService>(),
+      contentResolver = get<Context>().contentResolver,
     )
   }
 

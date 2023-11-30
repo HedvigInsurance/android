@@ -82,7 +82,8 @@ internal fun ChatLoadedScreen(
   topAppBarScrollBehavior: TopAppBarScrollBehavior,
   openUrl: (String) -> Unit,
   onSendMessage: (String) -> Unit,
-  onSendFile: (Uri) -> Unit,
+  onSendPhoto: (Uri) -> Unit,
+  onSendMedia: (Uri) -> Unit,
   onFetchMoreMessages: () -> Unit,
   onDismissError: () -> Unit,
 ) {
@@ -121,7 +122,8 @@ internal fun ChatLoadedScreen(
       ) {
         ChatInput(
           onSendMessage = onSendMessage,
-          onSendFile = onSendFile,
+          onSendPhoto = onSendPhoto,
+          onSendMedia = onSendMedia,
           appPackageId = appPackageId,
           modifier = Modifier.padding(16.dp),
         )
@@ -290,7 +292,8 @@ private fun ChatBubble(
               ChatAsyncImage(chatMessage.url, imageLoader)
             }
 
-            ChatMessage.ChatMessageFile.MimeType.PDF, // todo chat: consider rendering PDFs inline if needed
+            ChatMessage.ChatMessageFile.MimeType.PDF, // todo chat: consider rendering PDFs inline in the chat
+            ChatMessage.ChatMessageFile.MimeType.MP4, // todo chat: consider rendering videos inline in the chat
             ChatMessage.ChatMessageFile.MimeType.OTHER,
             -> {
               FileMessage(chatMessage, openUrl)

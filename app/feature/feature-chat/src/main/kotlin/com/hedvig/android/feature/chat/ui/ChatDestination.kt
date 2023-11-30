@@ -69,9 +69,13 @@ internal fun ChatDestination(
     onSendMessage = { message: String ->
       viewModel.emit(ChatEvent.SendTextMessage(message))
     },
-    onSendFile = { uri: Uri ->
-      logcat { "viewModel.emit(ChatEventNew.SendFileMessage(uri)):${uri.path} to vm:${viewModel.hashCode()}" }
-      viewModel.emit(ChatEvent.SendFileMessage(uri))
+    onSendPhoto = { uri: Uri ->
+      logcat { "viewModel.emit(ChatEvent.SendPhotoMessage(uri)):${uri.path} to vm:${viewModel.hashCode()}" }
+      viewModel.emit(ChatEvent.SendPhotoMessage(uri))
+    },
+    onSendMedia = { uri: Uri ->
+      logcat { "viewModel.emit(ChatEvent.SendMediaMessage(uri)):${uri.path} to vm:${viewModel.hashCode()}" }
+      viewModel.emit(ChatEvent.SendMediaMessage(uri))
     },
     onFetchMoreMessages = {
       viewModel.emit(ChatEvent.FetchMoreMessages)
@@ -91,7 +95,8 @@ private fun ChatScreen(
   openUrl: (String) -> Unit,
   onNavigateUp: () -> Unit,
   onSendMessage: (String) -> Unit,
-  onSendFile: (Uri) -> Unit,
+  onSendPhoto: (Uri) -> Unit,
+  onSendMedia: (Uri) -> Unit,
   onFetchMoreMessages: () -> Unit,
   onDismissError: () -> Unit,
 ) {
@@ -148,7 +153,8 @@ private fun ChatScreen(
               topAppBarScrollBehavior = topAppBarScrollBehavior,
               openUrl = openUrl,
               onSendMessage = onSendMessage,
-              onSendFile = onSendFile,
+              onSendPhoto = onSendPhoto,
+              onSendMedia = onSendMedia,
               onFetchMoreMessages = onFetchMoreMessages,
               onDismissError = onDismissError,
             )
@@ -195,7 +201,8 @@ private fun ChatScreenPreview(
         openUrl = {},
         onNavigateUp = {},
         onSendMessage = {},
-        onSendFile = {},
+        onSendPhoto = {},
+        onSendMedia = {},
         onFetchMoreMessages = {},
         onDismissError = {},
       )
