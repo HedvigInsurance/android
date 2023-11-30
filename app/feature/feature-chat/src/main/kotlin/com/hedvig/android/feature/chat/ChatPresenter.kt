@@ -406,7 +406,7 @@ internal class ChatPresenter(
         sender = ChatMessage.Sender.MEMBER,
         sentAt = Clock.System.now() - index.milliseconds,
         url = this.toString(),
-        mimeType = "",
+        mimeType = ChatMessage.ChatMessageFile.MimeType.OTHER,
       ),
       sentStatus = sentStatus,
     )

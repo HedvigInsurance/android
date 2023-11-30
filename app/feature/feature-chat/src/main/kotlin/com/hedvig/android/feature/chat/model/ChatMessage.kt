@@ -26,8 +26,14 @@ sealed interface ChatMessage {
     override val sender: Sender,
     override val sentAt: Instant,
     val url: String,
-    val mimeType: String,
-  ) : ChatMessage
+    val mimeType: MimeType,
+  ) : ChatMessage {
+    enum class MimeType {
+      IMAGE,
+      PDF,
+      OTHER,
+    }
+  }
 
   enum class Sender {
     HEDVIG,

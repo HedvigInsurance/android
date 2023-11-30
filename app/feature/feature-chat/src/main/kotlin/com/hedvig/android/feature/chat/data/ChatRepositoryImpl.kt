@@ -228,7 +228,11 @@ private fun MessageFragment.toUiChatMessage(): ChatMessage? = when (this) {
     sender = sender.toChatMessageSender(),
     sentAt = sentAt,
     url = signedUrl,
-    mimeType = mimeType,
+    mimeType = when (mimeType) {
+      "image/jpeg" -> ChatMessage.ChatMessageFile.MimeType.IMAGE
+      "application/pdf" -> ChatMessage.ChatMessageFile.MimeType.PDF
+      else -> ChatMessage.ChatMessageFile.MimeType.OTHER
+    },
   )
 
   is ChatMessageTextMessageFragment -> {

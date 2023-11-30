@@ -19,7 +19,7 @@ import androidx.compose.ui.text.withAnnotation
 import androidx.compose.ui.text.withStyle
 import com.hedvig.android.core.designsystem.material3.infoElement
 
-@ExperimentalTextApi
+@OptIn(ExperimentalTextApi::class)
 @Composable
 fun TextWithClickableUrls(
   text: String,

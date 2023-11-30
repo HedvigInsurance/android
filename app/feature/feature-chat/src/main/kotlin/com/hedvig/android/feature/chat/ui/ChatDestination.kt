@@ -56,6 +56,7 @@ internal fun ChatDestination(
   viewModel: ChatViewModel,
   imageLoader: ImageLoader,
   appPackageId: String,
+  openUrl: (String) -> Unit,
   onNavigateUp: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -63,6 +64,7 @@ internal fun ChatDestination(
     uiState = uiState,
     imageLoader = imageLoader,
     appPackageId = appPackageId,
+    openUrl = openUrl,
     onNavigateUp = onNavigateUp,
     onSendMessage = { message: String ->
       viewModel.emit(ChatEvent.SendTextMessage(message))
@@ -86,6 +88,7 @@ private fun ChatScreen(
   uiState: ChatUiState,
   imageLoader: ImageLoader,
   appPackageId: String,
+  openUrl: (String) -> Unit,
   onNavigateUp: () -> Unit,
   onSendMessage: (String) -> Unit,
   onSendFile: (Uri) -> Unit,
@@ -143,6 +146,7 @@ private fun ChatScreen(
               imageLoader = imageLoader,
               appPackageId = appPackageId,
               topAppBarScrollBehavior = topAppBarScrollBehavior,
+              openUrl = openUrl,
               onSendMessage = onSendMessage,
               onSendFile = onSendFile,
               onFetchMoreMessages = onFetchMoreMessages,
@@ -188,6 +192,7 @@ private fun ChatScreenPreview(
         uiState = chatUiState,
         imageLoader = rememberPreviewImageLoader(),
         appPackageId = "com.hedvig",
+        openUrl = {},
         onNavigateUp = {},
         onSendMessage = {},
         onSendFile = {},

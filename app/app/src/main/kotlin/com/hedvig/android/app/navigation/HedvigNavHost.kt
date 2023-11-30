@@ -192,6 +192,7 @@ internal fun HedvigNavHost(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       hedvigBuildConstants = hedvigBuildConstants,
       imageLoader = imageLoader,
+      openUrl = ::openUrl,
       navigator = navigator,
     )
     connectPaymentGraph(

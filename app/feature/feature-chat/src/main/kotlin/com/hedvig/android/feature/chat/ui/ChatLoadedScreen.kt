@@ -1,10 +1,13 @@
 package com.hedvig.android.feature.chat.ui
 
 import android.net.Uri
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -15,6 +18,7 @@ import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -22,7 +26,10 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -38,9 +45,12 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import coil.ImageLoader
@@ -51,10 +61,13 @@ import com.hedvig.android.core.designsystem.animation.ThreeDotsLoading
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.material3.rememberShapedColorPainter
 import com.hedvig.android.core.designsystem.material3.squircleMedium
+import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.hedvig.normal.MultipleDocuments
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.feature.chat.ChatUiState
 import com.hedvig.android.feature.chat.model.ChatMessage
+import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -67,6 +80,7 @@ internal fun ChatLoadedScreen(
   imageLoader: ImageLoader,
   appPackageId: String,
   topAppBarScrollBehavior: TopAppBarScrollBehavior,
+  openUrl: (String) -> Unit,
   onSendMessage: (String) -> Unit,
   onSendFile: (Uri) -> Unit,
   onFetchMoreMessages: () -> Unit,
@@ -90,6 +104,7 @@ internal fun ChatLoadedScreen(
         lazyListState = lazyListState,
         uiState = uiState,
         imageLoader = imageLoader,
+        openUrl = openUrl,
         onFetchMoreMessages = onFetchMoreMessages,
         modifier = Modifier
           .fillMaxWidth()
@@ -177,6 +192,7 @@ private fun ChatLazyColumn(
   lazyListState: LazyListState,
   uiState: ChatUiState.Loaded,
   imageLoader: ImageLoader,
+  openUrl: (String) -> Unit,
   onFetchMoreMessages: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -203,6 +219,7 @@ private fun ChatLazyColumn(
       ChatBubble(
         chatMessage = uiChatMessage.chatMessage,
         imageLoader = imageLoader,
+        openUrl = openUrl,
         modifier = Modifier
           .fillParentMaxWidth()
           .padding(horizontal = 16.dp)
@@ -258,53 +275,79 @@ private fun ChatLazyColumn(
 }
 
 @Composable
-private fun ChatBubble(chatMessage: ChatMessage, imageLoader: ImageLoader, modifier: Modifier = Modifier) {
-  when (chatMessage) {
-    is ChatMessage.ChatMessageFile -> FileMessage(
-      fileMessage = chatMessage,
-      imageLoader = imageLoader,
-      modifier = modifier,
-    )
+private fun ChatBubble(
+  chatMessage: ChatMessage,
+  imageLoader: ImageLoader,
+  openUrl: (String) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  ChatMessageWithTimeSent(
+    messageSlot = {
+      when (chatMessage) {
+        is ChatMessage.ChatMessageFile -> {
+          when (chatMessage.mimeType) {
+            ChatMessage.ChatMessageFile.MimeType.IMAGE -> {
+              ChatAsyncImage(chatMessage.url, imageLoader)
+            }
 
-    is ChatMessage.ChatMessageGif -> GifMessage(
-      gifMessage = chatMessage,
-      imageLoader = imageLoader,
-      modifier = modifier,
-    )
+            ChatMessage.ChatMessageFile.MimeType.PDF, // todo chat: consider rendering PDFs inline if needed
+            ChatMessage.ChatMessageFile.MimeType.OTHER,
+            -> {
+              FileMessage(chatMessage, openUrl)
+            }
+          }
+        }
 
-    is ChatMessage.ChatMessageText -> TextMessage(chatMessage, modifier)
+        is ChatMessage.ChatMessageGif -> {
+          ChatAsyncImage(chatMessage.gifUrl, imageLoader)
+        }
+
+        is ChatMessage.ChatMessageText -> {
+          Surface(
+            shape = MaterialTheme.shapes.squircleMedium,
+            color = chatMessage.backgroundColor(),
+          ) {
+            TextWithClickableUrls(
+              text = chatMessage.text,
+              modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+            )
+          }
+        }
+      }
+    },
+    chatMessage = chatMessage,
+    modifier = modifier,
+  )
+}
+
+@Composable
+private fun FileMessage(chatMessage: ChatMessage.ChatMessageFile, openUri: (String) -> Unit) {
+  val shape = MaterialTheme.shapes.squircleMedium
+  val contentColor = LocalContentColor.current
+  Box(
+    Modifier
+      .drawWithCache {
+        val stroke = Stroke(1.dp.toPx())
+        val outline = shape.createOutline(size.copy(size.width, size.height), layoutDirection, this)
+        val path = (outline as Outline.Generic).path
+        onDrawWithContent {
+          drawContent()
+          drawPath(path, contentColor, style = stroke)
+        }
+      }
+      .clip(MaterialTheme.shapes.squircleMedium)
+      .clickable {
+        openUri(chatMessage.url)
+      },
+  ) {
+    Row(
+      horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+      modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+    ) {
+      Icon(imageVector = Icons.Hedvig.MultipleDocuments, contentDescription = null, modifier = Modifier.size(24.dp))
+      Text(text = stringResource(R.string.CHAT_FILE_DOWNLOAD))
+    }
   }
-}
-
-@Composable
-private fun FileMessage(
-  fileMessage: ChatMessage.ChatMessageFile,
-  imageLoader: ImageLoader,
-  modifier: Modifier = Modifier,
-) {
-  ChatMessageWithTimeSent(
-    messageSlot = {
-      // todo chat: handle other mime types
-      ChatAsyncImage(fileMessage.url, imageLoader)
-    },
-    chatMessage = fileMessage,
-    modifier = modifier,
-  )
-}
-
-@Composable
-private fun GifMessage(
-  gifMessage: ChatMessage.ChatMessageGif,
-  imageLoader: ImageLoader,
-  modifier: Modifier = Modifier,
-) {
-  ChatMessageWithTimeSent(
-    messageSlot = {
-      ChatAsyncImage(gifMessage.gifUrl, imageLoader)
-    },
-    chatMessage = gifMessage,
-    modifier = modifier,
-  )
 }
 
 @Composable
@@ -344,27 +387,6 @@ private fun ChatAsyncImage(imageUrl: String, imageLoader: ImageLoader) {
     modifier = Modifier
       .adjustSizeToImageRatioOrShowPlaceholder(getImageSize = { loadedImageIntrinsicSize.value })
       .clip(MaterialTheme.shapes.squircleMedium),
-  )
-}
-
-@OptIn(ExperimentalTextApi::class)
-@Composable
-private fun TextMessage(chatMessage: ChatMessage.ChatMessageText, modifier: Modifier = Modifier) {
-  ChatMessageWithTimeSent(
-    messageSlot = {
-      Surface(
-        shape = MaterialTheme.shapes.squircleMedium,
-        color = chatMessage.backgroundColor(),
-      ) {
-        TextWithClickableUrls(
-          text = chatMessage.text,
-          style = MaterialTheme.typography.bodyMedium,
-          modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-        )
-      }
-    },
-    chatMessage = chatMessage,
-    modifier = modifier,
   )
 }
 

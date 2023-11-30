@@ -16,8 +16,9 @@ import org.koin.androidx.compose.koinViewModel
 fun NavGraphBuilder.chatGraph(
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   hedvigBuildConstants: HedvigBuildConstants,
-  navigator: Navigator,
   imageLoader: ImageLoader,
+  openUrl: (String) -> Unit,
+  navigator: Navigator,
 ) {
   composable<AppDestination.Chat>(
     deepLinks = listOf(
@@ -31,6 +32,7 @@ fun NavGraphBuilder.chatGraph(
       viewModel = viewModel,
       imageLoader = imageLoader,
       appPackageId = hedvigBuildConstants.appId,
+      openUrl = openUrl,
       onNavigateUp = navigator::navigateUp,
     )
   }
