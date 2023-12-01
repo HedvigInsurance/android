@@ -3,6 +3,8 @@ package com.hedvig.android.language
 import androidx.annotation.MainThread
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import java.util.Locale
 
 interface LanguageService {
@@ -33,6 +35,7 @@ class AndroidLanguageService() : LanguageService {
   override fun getLocale(): Locale {
     val localeList = AppCompatDelegate.getApplicationLocales()
     if (localeList.isEmpty) {
+      logcat(LogPriority.ERROR) { "No locale set, defaulting to en_SE" }
       return Locale("en", "SE")
     }
     return localeList[0]!!
