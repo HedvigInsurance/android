@@ -168,7 +168,7 @@ private fun ChatInput(
           ),
           cursorBrush = SolidColor(LocalContentColor.current),
           textStyle = MaterialTheme.typography.bodyLarge.copy(color = LocalContentColor.current),
-          modifier = Modifier.weight(1f).padding(horizontal = 12.dp, vertical = 8.dp),
+          modifier = Modifier.weight(1f).padding(vertical = 8.dp).padding(start = 12.dp),
         ) { innerTextField ->
           if (text.isEmpty()) {
             Text(
