@@ -7,7 +7,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.SizeTransform
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.fadeIn
@@ -21,6 +20,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -34,7 +34,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -139,64 +138,15 @@ private fun ChatInput(
   ) {
     val chatShape = MaterialTheme.shapes.squircleMedium
     val outlineColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.32f)
-    val showExpandMoreTransition = updateTransition(targetState = areChatOptionsExpanded)
-    showExpandMoreTransition.AnimatedContent(
-      transitionSpec = {
-        val enter = fadeIn(animationSpec = tween(220, delayMillis = 90))
-        val exit = fadeOut(animationSpec = tween(90))
-        ContentTransform(
-          enter,
-          exit,
-          sizeTransform = SizeTransform(clip = false),
-        )
-      },
-      contentAlignment = Alignment.CenterStart,
-      modifier = Modifier.animateContentSize(),
-    ) { showExpandedOptions ->
-      if (showExpandedOptions) {
-        Row(
-          verticalAlignment = Alignment.Bottom,
-          horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-          ChatClickableSquare(
-            onClick = takePicture,
-            imageVector = Icons.Hedvig.Camera,
-            contentDescription = stringResource(R.string.KEY_GEAR_ADD_ITEM_ADD_PHOTO_BUTTON),
-            chatShape = chatShape,
-            outlineColor = outlineColor,
-          )
-          ChatClickableSquare(
-            onClick = selectMedia,
-            imageVector = Icons.Hedvig.Pictures,
-            contentDescription = stringResource(R.string.KEY_GEAR_ADD_ITEM_ADD_PHOTO_BUTTON),
-            chatShape = chatShape,
-            outlineColor = outlineColor,
-          )
-          ChatClickableSquare(
-            onClick = selectFile,
-            imageVector = Icons.Hedvig.Document,
-            contentDescription = stringResource(R.string.KEY_GEAR_ADD_ITEM_ADD_PHOTO_BUTTON),
-            chatShape = chatShape,
-            outlineColor = outlineColor,
-          )
-        }
-      } else {
-        IconButton(
-          onClick = expandChatOptions,
-          colors = IconButtonDefaults.iconButtonColors(
-            containerColor = Color.Transparent,
-            contentColor = LocalContentColor.current,
-          ),
-          modifier = Modifier.size(buttonSize),
-        ) {
-          Icon(
-            imageVector = Icons.Hedvig.ChevronRight,
-            contentDescription = null,
-            modifier = Modifier.size(24.dp),
-          )
-        }
-      }
-    }
+    ChatOptions(
+      areChatOptionsExpanded = areChatOptionsExpanded,
+      takePicture = takePicture,
+      shape = chatShape,
+      outlineColor = outlineColor,
+      selectMedia = selectMedia,
+      selectFile = selectFile,
+      expandChatOptions = expandChatOptions,
+    )
     Surface(
       color = MaterialTheme.colorScheme.surface,
       shape = MaterialTheme.shapes.squircleMedium,
@@ -205,48 +155,120 @@ private fun ChatInput(
         .weight(1f)
         .chatInputOutline(chatShape, outlineColor),
     ) {
-      BasicTextField(
-        value = text,
-        onValueChange = { setText(it) },
-        keyboardOptions = KeyboardOptions(
-          capitalization = KeyboardCapitalization.Sentences,
-          imeAction = ImeAction.Send,
-        ),
-        keyboardActions = KeyboardActions(
-          onSend = { onSendMessage(text) },
-        ),
-        cursorBrush = SolidColor(LocalContentColor.current),
-        textStyle = MaterialTheme.typography.bodyLarge.copy(color = LocalContentColor.current),
-        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-      ) { innerTextField ->
-        if (text.isEmpty()) {
-          Text(
-            text = stringResource(R.string.CHAT_INPUT_PLACEHOLDER),
-            style = MaterialTheme.typography.bodyLarge.copy(color = LocalContentColor.current),
-            modifier = Modifier.alpha(0.60f),
+      Row(verticalAlignment = Alignment.Bottom) {
+        BasicTextField(
+          value = text,
+          onValueChange = { setText(it) },
+          keyboardOptions = KeyboardOptions(
+            capitalization = KeyboardCapitalization.Sentences,
+            imeAction = ImeAction.Send,
+          ),
+          keyboardActions = KeyboardActions(
+            onSend = { onSendMessage(text) },
+          ),
+          cursorBrush = SolidColor(LocalContentColor.current),
+          textStyle = MaterialTheme.typography.bodyLarge.copy(color = LocalContentColor.current),
+          modifier = Modifier.weight(1f).padding(horizontal = 12.dp, vertical = 8.dp),
+        ) { innerTextField ->
+          if (text.isEmpty()) {
+            Text(
+              text = stringResource(R.string.CHAT_INPUT_PLACEHOLDER),
+              style = MaterialTheme.typography.bodyLarge.copy(color = LocalContentColor.current),
+              modifier = Modifier.alpha(0.60f),
+            )
+          }
+          innerTextField()
+        }
+        Box(
+          modifier = Modifier
+            .size(buttonSize)
+            .wrapContentSize()
+            .size(24.dp)
+            .background(color = MaterialTheme.colorScheme.infoElement, shape = chatShape)
+            .chatInputOutline(chatShape, outlineColor)
+            .clip(CircleShape)
+            .clickable { onSendMessage(text) }
+            .wrapContentSize(unbounded = true)
+            .minimumInteractiveComponentSize(),
+          contentAlignment = Alignment.Center,
+        ) {
+          Icon(
+            imageVector = Icons.Hedvig.ChevronUp,
+            contentDescription = stringResource(R.string.CHAT_UPLOAD_PRESS_SEND_LABEL),
+            tint = MaterialTheme.colorScheme.onInfoElement,
+            modifier = Modifier.size(12.dp),
           )
         }
-        innerTextField()
       }
     }
-    IconButton(
-      onClick = {
-        onSendMessage(text)
-      },
-      colors = IconButtonDefaults.iconButtonColors(
-        containerColor = MaterialTheme.colorScheme.infoElement,
-        disabledContainerColor = MaterialTheme.colorScheme.infoElement,
-        contentColor = MaterialTheme.colorScheme.onInfoElement,
-        disabledContentColor = MaterialTheme.colorScheme.onInfoElement,
-      ),
-      enabled = text.isNotBlank(),
-      modifier = Modifier.size(buttonSize),
-    ) {
-      Icon(
-        imageVector = Icons.Hedvig.ChevronUp,
-        contentDescription = stringResource(R.string.CHAT_UPLOAD_PRESS_SEND_LABEL),
-        modifier = Modifier.size(buttonSize / 2),
+  }
+}
+
+@Composable
+private fun ChatOptions(
+  areChatOptionsExpanded: Boolean,
+  takePicture: () -> Unit,
+  shape: Shape,
+  outlineColor: Color,
+  selectMedia: () -> Unit,
+  selectFile: () -> Unit,
+  expandChatOptions: () -> Unit,
+) {
+  val showExpandMoreTransition = updateTransition(targetState = areChatOptionsExpanded)
+  showExpandMoreTransition.AnimatedContent(
+    transitionSpec = {
+      val enter = fadeIn(animationSpec = tween(220, delayMillis = 90))
+      val exit = fadeOut(animationSpec = tween(90))
+      ContentTransform(
+        enter,
+        exit,
+        sizeTransform = SizeTransform(clip = false),
       )
+    },
+    contentAlignment = Alignment.CenterStart,
+  ) { showExpandedOptions ->
+    if (showExpandedOptions) {
+      Row(
+        verticalAlignment = Alignment.Bottom,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+      ) {
+        ChatClickableSquare(
+          onClick = takePicture,
+          imageVector = Icons.Hedvig.Camera,
+          contentDescription = stringResource(R.string.KEY_GEAR_ADD_ITEM_ADD_PHOTO_BUTTON),
+          chatShape = shape,
+          outlineColor = outlineColor,
+        )
+        ChatClickableSquare(
+          onClick = selectMedia,
+          imageVector = Icons.Hedvig.Pictures,
+          contentDescription = stringResource(R.string.KEY_GEAR_ADD_ITEM_ADD_PHOTO_BUTTON),
+          chatShape = shape,
+          outlineColor = outlineColor,
+        )
+        ChatClickableSquare(
+          onClick = selectFile,
+          imageVector = Icons.Hedvig.Document,
+          contentDescription = stringResource(R.string.KEY_GEAR_ADD_ITEM_ADD_PHOTO_BUTTON),
+          chatShape = shape,
+          outlineColor = outlineColor,
+        )
+      }
+    } else {
+      IconButton(
+        onClick = expandChatOptions,
+        colors = IconButtonDefaults.iconButtonColors(
+          containerColor = Color.Transparent,
+          contentColor = LocalContentColor.current,
+        ),
+        modifier = Modifier.size(buttonSize),
+      ) {
+        Icon(
+          imageVector = Icons.Hedvig.ChevronRight,
+          contentDescription = null,
+          modifier = Modifier.size(20.dp),
+        )
+      }
     }
   }
 }
@@ -255,12 +277,13 @@ private fun ChatInput(
 private fun ChatClickableSquare(
   onClick: () -> Unit,
   imageVector: ImageVector,
-  contentDescription: String,
+  contentDescription: String?,
   chatShape: Shape,
   outlineColor: Color,
+  modifier: Modifier = Modifier,
 ) {
   Box(
-    modifier = Modifier
+    modifier = modifier
       .size(buttonSize)
       .background(color = MaterialTheme.colorScheme.surface, shape = chatShape)
       .chatInputOutline(chatShape, outlineColor)
@@ -270,13 +293,12 @@ private fun ChatClickableSquare(
       .minimumInteractiveComponentSize(),
     contentAlignment = Alignment.Center,
   ) {
-    CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
-      Icon(
-        imageVector = imageVector,
-        contentDescription = contentDescription,
-        modifier = Modifier.size(16.dp),
-      )
-    }
+    Icon(
+      imageVector = imageVector,
+      contentDescription = contentDescription,
+      tint = MaterialTheme.colorScheme.onSurface,
+      modifier = Modifier.size(16.dp),
+    )
   }
 }
 
