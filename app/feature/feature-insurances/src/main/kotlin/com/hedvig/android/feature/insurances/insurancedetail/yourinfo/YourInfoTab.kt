@@ -420,8 +420,8 @@ internal fun CoInsuredSection(
       )
     }
 
-    val hasMissingInfo = coInsuredList.any { it.hasMissingInfo }
-    if (hasMissingInfo) {
+    val hasMissingInfoAndIsNotTerminating = coInsuredList.any { it.hasMissingInfo && it.terminatesOn == null }
+    if (hasMissingInfoAndIsNotTerminating) {
       Spacer(Modifier.height(8.dp))
       VectorWarningCard(
         text = stringResource(id = R.string.CONTRACT_COINSURED_ADD_PERSONAL_INFO),

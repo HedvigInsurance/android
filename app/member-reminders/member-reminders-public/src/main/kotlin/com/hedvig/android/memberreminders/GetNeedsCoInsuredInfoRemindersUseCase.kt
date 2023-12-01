@@ -12,13 +12,13 @@ import com.hedvig.android.core.common.ErrorMessage
 import octopus.NeedsCoInsuredInfoReminderQuery
 
 internal interface GetNeedsCoInsuredInfoRemindersUseCase {
-  suspend fun invoke(): Either<CoInsuredInfoReminderError, NonEmptyList<CoInsuredReminderInfo>>
+  suspend fun invoke(): Either<CoInsuredInfoReminderError, NonEmptyList<MemberReminder.CoInsuredInfo>>
 }
 
 internal class GetNeedsCoInsuredInfoRemindersUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : GetNeedsCoInsuredInfoRemindersUseCase {
-  override suspend fun invoke(): Either<CoInsuredInfoReminderError, NonEmptyList<CoInsuredReminderInfo>> {
+  override suspend fun invoke(): Either<CoInsuredInfoReminderError, NonEmptyList<MemberReminder.CoInsuredInfo>> {
     return either {
       val contracts = apolloClient.query(NeedsCoInsuredInfoReminderQuery())
         .safeExecute()
@@ -29,8 +29,8 @@ internal class GetNeedsCoInsuredInfoRemindersUseCaseImpl(
         .activeContracts
 
       val coInsuredReminderInfoList = contracts
-        .filter { it.hasMissingInfo() }
-        .map { CoInsuredReminderInfo(it.id) }
+        .filter { it.hasMissingInfoAndIsNotTerminating() }
+        .map { MemberReminder.CoInsuredInfo(it.id) }
         .toNonEmptyListOrNull()
 
       ensureNotNull(coInsuredReminderInfoList) {
@@ -39,8 +39,9 @@ internal class GetNeedsCoInsuredInfoRemindersUseCaseImpl(
     }
   }
 
-  private fun NeedsCoInsuredInfoReminderQuery.Data.CurrentMember.ActiveContract.hasMissingInfo() =
-    (coInsured?.filter { it.hasMissingInfo }?.size ?: 0) > 0 || (coInsured?.filter { it.hasMissingInfo }?.size ?: 0) > 0
+  private fun NeedsCoInsuredInfoReminderQuery.Data.CurrentMember.ActiveContract.hasMissingInfoAndIsNotTerminating() =
+    (coInsured?.filter { it.hasMissingInfo && it.terminatesOn == null }?.size ?: 0) > 0
+
 }
 
 sealed interface CoInsuredInfoReminderError {
@@ -48,7 +49,3 @@ sealed interface CoInsuredInfoReminderError {
 
   data class NetworkError(val errorMessage: ErrorMessage) : CoInsuredInfoReminderError, ErrorMessage by errorMessage
 }
-
-data class CoInsuredReminderInfo(
-  val contractId: String,
-)
