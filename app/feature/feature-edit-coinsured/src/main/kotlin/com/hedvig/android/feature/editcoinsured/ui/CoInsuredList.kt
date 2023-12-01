@@ -1,12 +1,10 @@
 package com.hedvig.android.feature.editcoinsured.ui
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.ui.rememberHedvigBirthDateDateTimeFormatter
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import hedvig.resources.R
@@ -32,11 +30,9 @@ internal fun CoInsuredList(
         onEdit = {},
       )
     }
-    Divider(Modifier.padding(horizontal = 16.dp))
-    uiState.coInsured.forEachIndexed { index, coInsured ->
-      if (index != 0) {
-        Divider()
-      }
+
+    uiState.coInsured.forEach { coInsured ->
+      Divider()
 
       InsuredRow(
         displayName = coInsured.displayName.ifBlank { stringResource(id = R.string.CONTRACT_COINSURED) },

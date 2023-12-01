@@ -31,6 +31,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
+import com.hedvig.android.core.designsystem.component.button.HedvigSecondaryContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.core.designsystem.material3.squircleLargeTop
@@ -228,7 +229,7 @@ private fun EditCoInsuredScreen(
 
           Spacer(Modifier.height(8.dp))
           if (uiState.listState.noCoInsuredHaveMissingInfo()) {
-            HedvigContainedButton(
+            HedvigSecondaryContainedButton(
               text = stringResource(id = R.string.CONTRACT_ADD_COINSURED),
               onClick = onAddCoInsuredClicked,
               modifier = Modifier.padding(horizontal = 16.dp),
@@ -335,20 +336,6 @@ private fun EditCoInsuredScreenEditablePreview() {
                 LocalDate.fromEpochDays(300),
                 "19910113-1093",
                 hasMissingInfo = false,
-              ),
-              CoInsured(
-                null,
-                null,
-                null,
-                null,
-                hasMissingInfo = true,
-              ),
-              CoInsured(
-                null,
-                null,
-                null,
-                null,
-                hasMissingInfo = true,
               ),
             ),
             member = Member(
