@@ -21,6 +21,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import octopus.GetUpcomingRenewalReminderQuery
+import octopus.type.AgreementCreationCause
 import octopus.type.buildAgreement
 import octopus.type.buildContract
 import octopus.type.buildMember
@@ -57,6 +58,7 @@ class GetUpcomingRenewalRemindersUseCaseTest {
               upcomingChangedAgreement = buildAgreement {
                 activeFrom = upcomingRenewalLocalDate
                 certificateUrl = "draftUrl"
+                creationCause = AgreementCreationCause.RENEWAL
               }
             },
           )
@@ -92,6 +94,7 @@ class GetUpcomingRenewalRemindersUseCaseTest {
               upcomingChangedAgreement = buildAgreement {
                 activeFrom = clock.now().plus((index + 1).days).toLocalDateTime(TimeZone.UTC).date
                 certificateUrl = "url#$index"
+                creationCause = AgreementCreationCause.RENEWAL
               }
             }
           }
@@ -207,6 +210,7 @@ class GetUpcomingRenewalRemindersUseCaseTest {
               upcomingChangedAgreement = buildAgreement {
                 activeFrom = (clock.now() + renewalOffsets[index]!!).toLocalDateTime(TimeZone.UTC).date
                 certificateUrl = "url#$index"
+                creationCause = AgreementCreationCause.RENEWAL
               }
             }
           }
@@ -220,6 +224,73 @@ class GetUpcomingRenewalRemindersUseCaseTest {
       UpcomingRenewal("#1", clock.now().plus(renewalOffsets[1]!!).toLocalDateTime(TimeZone.UTC).date, "url#1"),
       UpcomingRenewal("#3", clock.now().plus(renewalOffsets[3]!!).toLocalDateTime(TimeZone.UTC).date, "url#3"),
       UpcomingRenewal("#4", clock.now().plus(renewalOffsets[4]!!).toLocalDateTime(TimeZone.UTC).date, "url#4"),
+    )
+  }
+
+  @Test
+  fun `upcoming change needs correct creation cause in order to show reminder`() = runTest {
+    val clock = TestClock()
+    val getUpcomingRenewalRemindersUseCase = GetUpcomingRenewalRemindersUseCaseImpl(
+      apolloClient,
+      clock,
+    )
+
+    apolloClient.enqueueTestResponse(
+      GetUpcomingRenewalReminderQuery(),
+      GetUpcomingRenewalReminderQuery.Data(OctopusFakeResolver) {
+        currentMember = buildMember {
+          activeContracts = listOf(
+            buildContract {
+              currentAgreement = buildAgreement {
+                productVariant = buildProductVariant {
+                  displayName = "#1"
+                }
+              }
+              upcomingChangedAgreement = buildAgreement {
+                activeFrom = (clock.now().plus(1.days)).toLocalDateTime(TimeZone.UTC).date
+                certificateUrl = "url#1"
+                creationCause = AgreementCreationCause.MIDTERM_CHANGE
+              }
+            },
+          )
+        }
+      },
+    )
+
+    val result = getUpcomingRenewalRemindersUseCase.invoke()
+
+    assertThat(result).isLeft().isEqualTo(UpcomingRenewalReminderError.NoUpcomingRenewals)
+
+    apolloClient.enqueueTestResponse(
+      GetUpcomingRenewalReminderQuery(),
+      GetUpcomingRenewalReminderQuery.Data(OctopusFakeResolver) {
+        currentMember = buildMember {
+          activeContracts = listOf(
+            buildContract {
+              currentAgreement = buildAgreement {
+                productVariant = buildProductVariant {
+                  displayName = "#2"
+                }
+              }
+              upcomingChangedAgreement = buildAgreement {
+                activeFrom = (clock.now().plus(1.days)).toLocalDateTime(TimeZone.UTC).date
+                certificateUrl = "url#2"
+                creationCause = AgreementCreationCause.RENEWAL
+              }
+            },
+          )
+        }
+      },
+    )
+
+    val result2 = getUpcomingRenewalRemindersUseCase.invoke()
+
+    assertThat(result2).isRight().containsExactly(
+      UpcomingRenewal(
+        contractDisplayName = "#2",
+        renewalDate = clock.now().plus(1.days).toLocalDateTime(TimeZone.UTC).date,
+        draftCertificateUrl = "url#2",
+      ),
     )
   }
 

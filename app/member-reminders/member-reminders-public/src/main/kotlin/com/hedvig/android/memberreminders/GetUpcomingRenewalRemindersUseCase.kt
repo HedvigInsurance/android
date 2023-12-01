@@ -15,6 +15,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import octopus.GetUpcomingRenewalReminderQuery
+import octopus.type.AgreementCreationCause
 
 internal interface GetUpcomingRenewalRemindersUseCase {
   suspend fun invoke(): Either<UpcomingRenewalReminderError, NonEmptyList<UpcomingRenewal>>
@@ -35,6 +36,7 @@ internal class GetUpcomingRenewalRemindersUseCaseImpl(
         .activeContracts
 
       val upcomingRenewals: NonEmptyList<UpcomingRenewal>? = contracts
+        .filter { it.upcomingChangedAgreement?.creationCause == AgreementCreationCause.RENEWAL }
         .mapNotNull { contract ->
           val upcomingChangedAgreement = contract.upcomingChangedAgreement ?: return@mapNotNull null
           UpcomingRenewal(

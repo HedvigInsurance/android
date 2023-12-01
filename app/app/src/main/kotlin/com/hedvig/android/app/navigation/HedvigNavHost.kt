@@ -155,6 +155,9 @@ internal fun HedvigNavHost(
       openWebsite = { uri ->
         activityNavigator.openWebsite(context, uri)
       },
+      openUrl = {
+        openUrl(it)
+      },
       openChat = { backStackEntry ->
         with(navigator) {
           backStackEntry.navigate(AppDestination.Chat)

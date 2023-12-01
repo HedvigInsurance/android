@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -21,23 +20,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
-import com.hedvig.android.core.designsystem.material3.containedButtonContainer
-import com.hedvig.android.core.designsystem.material3.onContainedButtonContainer
+import com.hedvig.android.core.common.android.time.daysUntil
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.infocard.InfoCardTextButton
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.infocard.VectorWarningCard
 import com.hedvig.android.memberreminders.ApplicableMemberReminders
 import com.hedvig.android.memberreminders.UpcomingRenewal
 import com.hedvig.android.notification.permission.NotificationPermissionState
 import hedvig.resources.R
-import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atStartOfDayIn
-import kotlinx.datetime.daysUntil
-import kotlinx.datetime.toLocalDateTime
 
 @Composable
 fun MemberReminderCards(
@@ -229,10 +223,7 @@ private fun ReminderCardUpcomingRenewals(
   modifier: Modifier = Modifier,
 ) {
   val daysUntilRenewal = remember(TimeZone.currentSystemDefault(), upcomingRenewal.renewalDate) {
-    val timeZone = TimeZone.currentSystemDefault()
-    val startOfToday = Clock.System.now().toLocalDateTime(timeZone).date.atStartOfDayIn(timeZone)
-    val startOfDayOfRenewal = upcomingRenewal.renewalDate.atStartOfDayIn(timeZone)
-    startOfToday.daysUntil(startOfDayOfRenewal, timeZone)
+    daysUntil(upcomingRenewal.renewalDate)
   }
   VectorInfoCard(
     text = stringResource(R.string.DASHBOARD_RENEWAL_PROMPTER_BODY, daysUntilRenewal),
@@ -241,7 +232,7 @@ private fun ReminderCardUpcomingRenewals(
     upcomingRenewal.draftCertificateUrl?.let {
       InfoCardTextButton(
         onClick = { openUrl(it) },
-        text = stringResource(R.string.travel_certificate_download),
+        text = stringResource(R.string.CONTRACT_VIEW_CERTIFICATE_BUTTON),
         modifier = Modifier.fillMaxWidth(),
       )
     }
@@ -261,21 +252,6 @@ private fun ReminderCoInsuredInfo(navigateToContractDetail: () -> Unit, modifier
     )
   }
 }
-
-@Composable
-private fun InfoCardTextButton(onClick: () -> Unit, text: String, modifier: Modifier = Modifier) {
-  HedvigContainedSmallButton(
-    text = text,
-    onClick = onClick,
-    colors = ButtonDefaults.buttonColors(
-      containerColor = MaterialTheme.colorScheme.containedButtonContainer,
-      contentColor = MaterialTheme.colorScheme.onContainedButtonContainer,
-    ),
-    textStyle = MaterialTheme.typography.bodyMedium,
-    modifier = modifier,
-  )
-}
-
 @HedvigPreview
 @Composable
 private fun PreviewReminderCardEnableNotifications() {

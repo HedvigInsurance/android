@@ -31,6 +31,7 @@ internal class GetInsuranceContractsUseCaseDemo : GetInsuranceContractsUseCase {
               documents = persistentListOf(),
             ),
             certificateUrl = null,
+            creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
             coInsured = persistentListOf(
               InsuranceAgreement.CoInsured(
                 ssn = "123",
