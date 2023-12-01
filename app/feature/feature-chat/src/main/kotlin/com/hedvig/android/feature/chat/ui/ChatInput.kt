@@ -4,6 +4,14 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,6 +37,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -56,6 +65,7 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.Camera
+import com.hedvig.android.core.icons.hedvig.normal.ChevronRight
 import com.hedvig.android.core.icons.hedvig.normal.ChevronUp
 import com.hedvig.android.core.icons.hedvig.normal.Document
 import com.hedvig.android.core.icons.hedvig.normal.Pictures
@@ -71,6 +81,7 @@ internal fun ChatInput(
   appPackageId: String,
   modifier: Modifier = Modifier,
 ) {
+  var expandChatOptions by remember { mutableStateOf(false) }
   var text: String by rememberSaveable { mutableStateOf("") }
   val photoCaptureState = rememberPhotoCaptureState(appPackageId = appPackageId) { uri ->
     logcat { "ChatFileState sending uri:$uri" }
@@ -92,7 +103,12 @@ internal fun ChatInput(
   }
   ChatInput(
     text = text,
-    setText = { text = it },
+    setText = {
+      text = it
+      expandChatOptions = false
+    },
+    areChatOptionsExpanded = expandChatOptions,
+    expandChatOptions = { expandChatOptions = true },
     onSendMessage = { message: String ->
       onSendMessage(message)
       text = ""
@@ -108,6 +124,8 @@ internal fun ChatInput(
 private fun ChatInput(
   text: String,
   setText: (String) -> Unit,
+  areChatOptionsExpanded: Boolean,
+  expandChatOptions: () -> Unit,
   onSendMessage: (message: String) -> Unit,
   takePicture: () -> Unit,
   selectMedia: () -> Unit,
@@ -121,27 +139,64 @@ private fun ChatInput(
   ) {
     val chatShape = MaterialTheme.shapes.squircleMedium
     val outlineColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.32f)
-    ChatClickableSquare(
-      onClick = takePicture,
-      imageVector = Icons.Hedvig.Camera,
-      contentDescription = stringResource(R.string.KEY_GEAR_ADD_ITEM_ADD_PHOTO_BUTTON),
-      chatShape = chatShape,
-      outlineColor = outlineColor,
-    )
-    ChatClickableSquare(
-      onClick = selectMedia,
-      imageVector = Icons.Hedvig.Pictures,
-      contentDescription = stringResource(R.string.KEY_GEAR_ADD_ITEM_ADD_PHOTO_BUTTON),
-      chatShape = chatShape,
-      outlineColor = outlineColor,
-    )
-    ChatClickableSquare(
-      onClick = selectFile,
-      imageVector = Icons.Hedvig.Document,
-      contentDescription = stringResource(R.string.KEY_GEAR_ADD_ITEM_ADD_PHOTO_BUTTON),
-      chatShape = chatShape,
-      outlineColor = outlineColor,
-    )
+    val showExpandMoreTransition = updateTransition(targetState = areChatOptionsExpanded)
+    showExpandMoreTransition.AnimatedContent(
+      transitionSpec = {
+        val enter = fadeIn(animationSpec = tween(220, delayMillis = 90))
+        val exit = fadeOut(animationSpec = tween(90))
+        ContentTransform(
+          enter,
+          exit,
+          sizeTransform = SizeTransform(clip = false),
+        )
+      },
+      contentAlignment = Alignment.CenterStart,
+      modifier = Modifier.animateContentSize(),
+    ) { showExpandedOptions ->
+      if (showExpandedOptions) {
+        Row(
+          verticalAlignment = Alignment.Bottom,
+          horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+          ChatClickableSquare(
+            onClick = takePicture,
+            imageVector = Icons.Hedvig.Camera,
+            contentDescription = stringResource(R.string.KEY_GEAR_ADD_ITEM_ADD_PHOTO_BUTTON),
+            chatShape = chatShape,
+            outlineColor = outlineColor,
+          )
+          ChatClickableSquare(
+            onClick = selectMedia,
+            imageVector = Icons.Hedvig.Pictures,
+            contentDescription = stringResource(R.string.KEY_GEAR_ADD_ITEM_ADD_PHOTO_BUTTON),
+            chatShape = chatShape,
+            outlineColor = outlineColor,
+          )
+          ChatClickableSquare(
+            onClick = selectFile,
+            imageVector = Icons.Hedvig.Document,
+            contentDescription = stringResource(R.string.KEY_GEAR_ADD_ITEM_ADD_PHOTO_BUTTON),
+            chatShape = chatShape,
+            outlineColor = outlineColor,
+          )
+        }
+      } else {
+        IconButton(
+          onClick = expandChatOptions,
+          colors = IconButtonDefaults.iconButtonColors(
+            containerColor = Color.Transparent,
+            contentColor = LocalContentColor.current,
+          ),
+          modifier = Modifier.size(buttonSize),
+        ) {
+          Icon(
+            imageVector = Icons.Hedvig.ChevronRight,
+            contentDescription = null,
+            modifier = Modifier.size(24.dp),
+          )
+        }
+      }
+    }
     Surface(
       color = MaterialTheme.colorScheme.surface,
       shape = MaterialTheme.shapes.squircleMedium,
@@ -250,6 +305,8 @@ private fun PreviewChatTextInput(
         } else {
           "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed et congue lacus. Donec ac libero. ".repeat(5)
         },
+        {},
+        true,
         {},
         {},
         {},
