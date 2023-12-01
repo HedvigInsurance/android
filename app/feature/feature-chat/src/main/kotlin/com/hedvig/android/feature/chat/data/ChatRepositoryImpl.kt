@@ -291,6 +291,7 @@ private fun MessageFragment.toUiChatMessage(): ChatMessage? = when (this) {
     url = signedUrl,
     mimeType = when (mimeType) {
       "image/jpeg" -> ChatMessage.ChatMessageFile.MimeType.IMAGE
+      "image/png" -> ChatMessage.ChatMessageFile.MimeType.IMAGE
       "application/pdf" -> ChatMessage.ChatMessageFile.MimeType.PDF
       "video/mp4" -> ChatMessage.ChatMessageFile.MimeType.MP4
       else -> ChatMessage.ChatMessageFile.MimeType.OTHER
