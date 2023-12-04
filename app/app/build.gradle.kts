@@ -272,10 +272,6 @@ dependencies {
   testImplementation(projects.marketTest)
 }
 
-fun DependencyHandlerScope.stagingImplementation(dependencyNotation: Any) {
-  "stagingImplementation"(dependencyNotation)
-}
-
 easylauncher {
   buildTypes.register("staging") {
     setFilters(
