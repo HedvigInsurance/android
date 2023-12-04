@@ -187,7 +187,6 @@ private fun PreviewHedvigSecondaryContainedButton() {
   }
 }
 
-
 @HedvigPreview
 @Composable
 private fun PreviewLoadingHedvigContainedButton() {

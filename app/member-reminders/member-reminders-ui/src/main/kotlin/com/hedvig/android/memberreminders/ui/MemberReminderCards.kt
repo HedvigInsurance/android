@@ -165,7 +165,6 @@ private fun ColumnScope.MemberReminderCard(
         }
       }
     }
-
   }
 }
 
@@ -280,7 +279,10 @@ private fun PreviewReminderCardConnectPayment() {
 private fun PreviewReminderCardUpcomingRenewals() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      ReminderCardUpcomingRenewals(MemberReminder.UpcomingRenewal("contract name", LocalDate.parse("2024-03-05"), ""), {})
+      ReminderCardUpcomingRenewals(
+        MemberReminder.UpcomingRenewal("contract name", LocalDate.parse("2024-03-05"), ""),
+        {},
+      )
     }
   }
 }

@@ -44,7 +44,8 @@ import octopus.type.CurrencyCode
 internal fun EditCoInsuredAddMissingInfoDestination(
   viewModel: EditCoInsuredViewModel,
   navigateToSuccessScreen: (LocalDate) -> Unit,
-  navigateUp: () -> Unit) {
+  navigateUp: () -> Unit,
+) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
   EditCoInsuredScreen(

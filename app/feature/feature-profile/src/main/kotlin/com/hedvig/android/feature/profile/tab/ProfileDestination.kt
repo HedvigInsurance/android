@@ -145,7 +145,7 @@ private fun ProfileScreen(
         .matchParentSize()
         .pullRefresh(pullRefreshState)
         .verticalScroll(rememberScrollState())
-        .windowInsetsPadding(WindowInsets.safeDrawing)
+        .windowInsetsPadding(WindowInsets.safeDrawing),
     ) {
       Row(
         verticalAlignment = Alignment.CenterVertically,
