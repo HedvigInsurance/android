@@ -252,6 +252,7 @@ private fun ReminderCoInsuredInfo(navigateToContractDetail: () -> Unit, modifier
     )
   }
 }
+
 @HedvigPreview
 @Composable
 private fun PreviewReminderCardEnableNotifications() {
