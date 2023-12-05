@@ -30,7 +30,10 @@ val memberRemindersModule = module {
     GetUpcomingRenewalRemindersUseCaseImpl(get<ApolloClient>(octopusClient), get<Clock>())
   }
   single<GetNeedsCoInsuredInfoRemindersUseCase> {
-    GetNeedsCoInsuredInfoRemindersUseCaseImpl(get<ApolloClient>(octopusClient))
+    GetNeedsCoInsuredInfoRemindersUseCaseImpl(
+      get<ApolloClient>(octopusClient),
+      get<FeatureManager>(),
+    )
   }
   single<GetMemberRemindersUseCase> {
     GetMemberRemindersUseCaseImpl(

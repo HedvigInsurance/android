@@ -21,5 +21,6 @@ internal class HAnalyticsFeatureFlagProvider(
     Feature.UPDATE_NECESSARY -> hAnalytics.updateNecessary()
     Feature.NEW_MOVING_FLOW -> hAnalytics.movingFlowClient()
     Feature.TRAVEL_CERTIFICATE -> hAnalytics.travelInsurance()
+    Feature.EDIT_COINSURED -> hAnalytics.editCoinsured()
   }
 }

@@ -8,7 +8,11 @@ import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.data.contract.canChangeCoInsured
+import com.hedvig.android.data.contract.toContractType
 import com.hedvig.android.data.productVariant.android.toProductVariant
+import com.hedvig.android.hanalytics.featureflags.FeatureManager
+import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import octopus.InsuranceContractsQuery
@@ -21,6 +25,7 @@ internal interface GetInsuranceContractsUseCase {
 
 internal class GetInsuranceContractsUseCaseImpl(
   private val apolloClient: ApolloClient,
+  private val featureManager: FeatureManager,
 ) : GetInsuranceContractsUseCase {
   override suspend fun invoke(forceNetworkFetch: Boolean): Either<ErrorMessage, List<InsuranceContract>> {
     return either {
@@ -31,14 +36,26 @@ internal class GetInsuranceContractsUseCaseImpl(
         .toEither(::ErrorMessage)
         .bind()
 
+      val canChangeCoInsured = featureManager.isFeatureEnabled(Feature.EDIT_COINSURED)
+
       val contractHolderDisplayName = insuranceQueryData.getContractHolderDisplayName()
       val contractHolderSSN = insuranceQueryData.currentMember.ssn
 
       val terminatedContracts = insuranceQueryData.currentMember.terminatedContracts.map {
-        it.toContract(isTerminated = true, contractHolderDisplayName, contractHolderSSN)
+        it.toContract(
+          isTerminated = true,
+          contractHolderDisplayName = contractHolderDisplayName,
+          contractHolderSSN = contractHolderSSN,
+          canChangeCoInsured = canChangeCoInsured,
+        )
       }
       val activeContracts = insuranceQueryData.currentMember.activeContracts.map {
-        it.toContract(isTerminated = false, contractHolderDisplayName, contractHolderSSN)
+        it.toContract(
+          isTerminated = false,
+          contractHolderDisplayName = contractHolderDisplayName,
+          contractHolderSSN = contractHolderSSN,
+          canChangeCoInsured = canChangeCoInsured,
+        )
       }
       terminatedContracts + activeContracts
     }
@@ -52,6 +69,7 @@ private fun ContractFragment.toContract(
   isTerminated: Boolean,
   contractHolderDisplayName: String,
   contractHolderSSN: String?,
+  canChangeCoInsured: Boolean,
 ): InsuranceContract {
   return InsuranceContract(
     id = id,
@@ -93,6 +111,10 @@ private fun ContractFragment.toContract(
       )
     },
     supportsAddressChange = supportsMoving,
+    supportsEditCoInsured = currentAgreement.productVariant
+      .typeOfContract
+      .toContractType()
+      .canChangeCoInsured() && canChangeCoInsured,
     isTerminated = isTerminated,
   )
 }

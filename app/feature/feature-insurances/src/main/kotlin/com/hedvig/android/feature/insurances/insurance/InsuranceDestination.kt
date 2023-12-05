@@ -397,6 +397,7 @@ private fun PreviewInsuranceScreen() {
               upcomingInsuranceAgreement = null,
               renewalDate = LocalDate.fromEpochDays(500),
               supportsAddressChange = false,
+              supportsEditCoInsured = true,
               isTerminated = false,
               contractHolderDisplayName = "Hugo Linder",
               contractHolderSSN = "19910113-1093",

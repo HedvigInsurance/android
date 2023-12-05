@@ -153,6 +153,7 @@ private class PreviewTerminatedContractsUiStateProvider :
             upcomingInsuranceAgreement = null,
             renewalDate = LocalDate.fromEpochDays(500),
             supportsAddressChange = false,
+            supportsEditCoInsured = true,
             isTerminated = true,
             contractHolderDisplayName = "Hugo Linder",
             contractHolderSSN = "19910113-1093",

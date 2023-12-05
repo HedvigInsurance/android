@@ -10,6 +10,7 @@ import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCaseIm
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceViewModel
 import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailViewModel
 import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContractsViewModel
+import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.notification.badge.data.crosssell.CrossSellCardNotificationBadgeServiceProvider
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
@@ -38,6 +39,7 @@ private fun Module.provideGetContractsUseCase() {
   single<GetInsuranceContractsUseCaseImpl> {
     GetInsuranceContractsUseCaseImpl(
       get<ApolloClient>(octopusClient),
+      get<FeatureManager>(),
     )
   }
 
