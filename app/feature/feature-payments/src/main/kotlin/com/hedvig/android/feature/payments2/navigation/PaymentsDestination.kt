@@ -6,5 +6,4 @@ import kotlinx.serialization.Serializable
 internal sealed interface PaymentsDestinations2 : Destination {
   @Serializable
   data object Overview : PaymentsDestinations2
-
 }
