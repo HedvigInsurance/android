@@ -65,6 +65,7 @@ internal class GetInsuranceContractsUseCaseDemo : GetInsuranceContractsUseCase {
           upcomingInsuranceAgreement = null,
           renewalDate = LocalDate.fromEpochDays(500),
           supportsAddressChange = false,
+          supportsEditCoInsured = true,
           isTerminated = false,
           contractHolderDisplayName = "Test Member",
           contractHolderSSN = "1111111111-33322",

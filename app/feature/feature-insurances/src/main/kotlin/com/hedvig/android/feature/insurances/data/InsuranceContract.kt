@@ -18,6 +18,7 @@ data class InsuranceContract(
   val upcomingInsuranceAgreement: InsuranceAgreement?,
   val renewalDate: LocalDate?,
   val supportsAddressChange: Boolean,
+  val supportsEditCoInsured: Boolean,
   val isTerminated: Boolean,
 )
 

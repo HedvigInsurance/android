@@ -49,7 +49,6 @@ import com.hedvig.android.core.ui.card.InsuranceCard
 import com.hedvig.android.core.ui.plus
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.data.contract.ContractType
-import com.hedvig.android.data.contract.canChangeCoInsured
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
@@ -175,8 +174,7 @@ private fun ContractDetailScreen(
                         .map { it.title to it.value }
                         .toImmutableList(),
                       coInsured = state.insuranceContract.currentInsuranceAgreement.coInsured,
-                      allowEditCoInsured = state.insuranceContract.currentInsuranceAgreement.productVariant.contractType
-                        .canChangeCoInsured(),
+                      allowEditCoInsured = state.insuranceContract.supportsEditCoInsured,
                       contractHolderDisplayName = state.insuranceContract.contractHolderDisplayName,
                       contractHolderSSN = state.insuranceContract.contractHolderSSN,
                       allowChangeAddress = state.insuranceContract.supportsAddressChange,
@@ -306,6 +304,7 @@ private fun PreviewContractDetailScreen() {
             upcomingInsuranceAgreement = null,
             renewalDate = LocalDate.fromEpochDays(500),
             supportsAddressChange = false,
+            supportsEditCoInsured = true,
             isTerminated = false,
             contractHolderDisplayName = "Hugo Linder",
             contractHolderSSN = "199101131093",

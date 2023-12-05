@@ -9,6 +9,8 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.hanalytics.featureflags.FeatureManager
+import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import octopus.NeedsCoInsuredInfoReminderQuery
 
 internal interface GetNeedsCoInsuredInfoRemindersUseCase {
@@ -17,9 +19,15 @@ internal interface GetNeedsCoInsuredInfoRemindersUseCase {
 
 internal class GetNeedsCoInsuredInfoRemindersUseCaseImpl(
   private val apolloClient: ApolloClient,
+  private val featureManager: FeatureManager,
 ) : GetNeedsCoInsuredInfoRemindersUseCase {
   override suspend fun invoke(): Either<CoInsuredInfoReminderError, NonEmptyList<MemberReminder.CoInsuredInfo>> {
     return either {
+
+      if (!featureManager.isFeatureEnabled(Feature.EDIT_COINSURED)) {
+        raise(CoInsuredInfoReminderError.CoInsuredReminderNotEnabled)
+      }
+
       val contracts = apolloClient.query(NeedsCoInsuredInfoReminderQuery())
         .safeExecute()
         .toEither(::ErrorMessage)
@@ -46,6 +54,7 @@ internal class GetNeedsCoInsuredInfoRemindersUseCaseImpl(
 
 sealed interface CoInsuredInfoReminderError {
   data object NoCoInsuredReminders : CoInsuredInfoReminderError
+  data object CoInsuredReminderNotEnabled : CoInsuredInfoReminderError
 
   data class NetworkError(val errorMessage: ErrorMessage) : CoInsuredInfoReminderError, ErrorMessage by errorMessage
 }
