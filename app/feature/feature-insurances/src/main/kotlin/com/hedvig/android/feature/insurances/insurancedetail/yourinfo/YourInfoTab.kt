@@ -26,6 +26,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -34,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.common.android.time.daysUntil
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
@@ -49,8 +51,10 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.HedvigIcons
 import com.hedvig.android.core.icons.hedvig.normal.WarningFilled
 import com.hedvig.android.core.icons.hedvig.small.hedvig.Lock
+import com.hedvig.android.core.ui.infocard.InfoCardTextButton
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.infocard.VectorWarningCard
+import com.hedvig.android.core.ui.rememberHedvigBirthDateDateTimeFormatter
 import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.data.contract.ContractType
@@ -62,6 +66,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDate
 
 @ExperimentalMaterial3Api
@@ -73,8 +78,10 @@ internal fun YourInfoTab(
   allowEditCoInsured: Boolean,
   upcomingChangesInsuranceAgreement: InsuranceAgreement?,
   onEditCoInsuredClick: () -> Unit,
+  onMissingInfoClick: () -> Unit,
   onChangeAddressClick: () -> Unit,
   openChat: () -> Unit,
+  openUrl: (String) -> Unit,
   onCancelInsuranceClick: () -> Unit,
   isTerminated: Boolean,
   modifier: Modifier = Modifier,
@@ -149,7 +156,7 @@ internal fun YourInfoTab(
       UpcomingChangesBottomSheetContent(
         infoText = stringResource(
           id = R.string.insurances_tab_your_insurance_will_be_updated_with_info,
-          upcomingChangesInsuranceAgreement.activeFrom,
+          dateTimeFormatter.format(upcomingChangesInsuranceAgreement.activeFrom.toJavaLocalDate()),
         ),
         sections = upcomingChangesInsuranceAgreement.displayItems
           .map { it.title to it.value }
@@ -175,36 +182,56 @@ internal fun YourInfoTab(
   Column(modifier) {
     Spacer(Modifier.height(16.dp))
     if (upcomingChangesInsuranceAgreement != null) {
-      VectorInfoCard(
-        text = stringResource(
-          id = R.string.CONTRACT_COINSURED_UPDATE_IN_FUTURE,
-          upcomingChangesInsuranceAgreement.coInsured.size,
-          dateTimeFormatter.format(upcomingChangesInsuranceAgreement.activeFrom.toJavaLocalDate()),
-        ),
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
-      ) {
-        if (upcomingChangesInsuranceAgreement.displayItems.isNotEmpty()) {
-          HedvigContainedSmallButton(
-            text = stringResource(id = R.string.insurances_tab_view_details),
-            onClick = { showUpcomingChangesBottomSheet = true },
-            colors = ButtonDefaults.buttonColors(
-              containerColor = MaterialTheme.colorScheme.containedButtonContainer,
-              contentColor = MaterialTheme.colorScheme.onContainedButtonContainer,
-            ),
-            modifier = Modifier.fillMaxWidth(),
-          )
+      if (upcomingChangesInsuranceAgreement.creationCause == InsuranceAgreement.CreationCause.RENEWAL) {
+        val daysUntilRenewal = remember(TimeZone.currentSystemDefault(), upcomingChangesInsuranceAgreement.activeFrom) {
+          daysUntil(upcomingChangesInsuranceAgreement.activeFrom)
+        }
+        VectorInfoCard(
+          text = stringResource(R.string.DASHBOARD_RENEWAL_PROMPTER_BODY, daysUntilRenewal),
+          modifier = modifier,
+        ) {
+          upcomingChangesInsuranceAgreement.certificateUrl?.let {
+            InfoCardTextButton(
+              onClick = { openUrl(it) },
+              text = stringResource(R.string.CONTRACT_VIEW_CERTIFICATE_BUTTON),
+              modifier = Modifier.fillMaxWidth(),
+            )
+          }
+        }
+      } else {
+        VectorInfoCard(
+          text = stringResource(
+            id = R.string.CONTRACT_COINSURED_UPDATE_IN_FUTURE,
+            upcomingChangesInsuranceAgreement.coInsured.size,
+            dateTimeFormatter.format(upcomingChangesInsuranceAgreement.activeFrom.toJavaLocalDate()),
+          ),
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        ) {
+          if (upcomingChangesInsuranceAgreement.displayItems.isNotEmpty()) {
+            HedvigContainedSmallButton(
+              text = stringResource(id = R.string.insurances_tab_view_details),
+              onClick = { showUpcomingChangesBottomSheet = true },
+              colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.containedButtonContainer,
+                contentColor = MaterialTheme.colorScheme.onContainedButtonContainer,
+              ),
+              modifier = Modifier.fillMaxWidth(),
+            )
+          }
         }
       }
-      Spacer(Modifier.height(8.dp))
     }
+    Spacer(Modifier.height(8.dp))
+
     CoverageRows(coverageItems, Modifier.padding(horizontal = 16.dp))
     Spacer(Modifier.height(16.dp))
     CoInsuredSection(
       coInsuredList = coInsured,
       contractHolderDisplayName = contractHolderDisplayName,
       contractHolderSSN = contractHolderSSN,
+      onMissingInfoClick = onMissingInfoClick,
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(16.dp))
@@ -268,9 +295,11 @@ internal fun CoInsuredSection(
   coInsuredList: ImmutableList<InsuranceAgreement.CoInsured>,
   contractHolderDisplayName: String,
   contractHolderSSN: String?,
+  onMissingInfoClick: () -> Unit,
   modifier: Modifier,
 ) {
   val dateTimeFormatter = rememberHedvigDateTimeFormatter()
+  val birthDateTimeFormatter = rememberHedvigBirthDateDateTimeFormatter()
   Column(modifier = modifier) {
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
@@ -342,27 +371,38 @@ internal fun CoInsuredSection(
               Text(coInsured.getDisplayName().ifBlank { stringResource(id = R.string.CONTRACT_COINSURED) })
 
               Text(
-                text = coInsured.getSsnOrBirthDate(dateTimeFormatter)
+                text = coInsured.getSsnOrBirthDate(birthDateTimeFormatter)
                   ?: stringResource(id = R.string.CONTRACT_NO_INFORMATION),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
               )
 
-              if (coInsured.activeFrom != null) {
+              if (coInsured.activatesOn != null) {
                 Spacer(Modifier.height(4.dp))
                 HedvigPill(
                   text = stringResource(
                     id = R.string.CONTRACT_ADD_COINSURED_ACTIVE_FROM,
-                    dateTimeFormatter.format(coInsured.activeFrom.toJavaLocalDate()),
+                    dateTimeFormatter.format(coInsured.activatesOn.toJavaLocalDate()),
                   ),
                   contentColor = MaterialTheme.colorScheme.onWarningContainer,
                   color = MaterialTheme.colorScheme.warningContainer,
+                )
+              }
+              if (coInsured.terminatesOn != null) {
+                Spacer(Modifier.height(4.dp))
+                HedvigPill(
+                  text = stringResource(
+                    id = R.string.CONTRACT_ADD_COINSURED_ACTIVE_UNTIL,
+                    dateTimeFormatter.format(coInsured.terminatesOn.toJavaLocalDate()),
+                  ),
+                  contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                  color = MaterialTheme.colorScheme.errorContainer,
                 )
               }
             }
           }
         },
         endSlot = {
-          if (coInsured.hasMissingInfo) {
+          if (coInsured.hasMissingInfo && coInsured.terminatesOn == null) {
             Row(
               horizontalArrangement = Arrangement.End,
               modifier = Modifier.padding(vertical = 14.dp),
@@ -380,15 +420,15 @@ internal fun CoInsuredSection(
       )
     }
 
-    val hasMissingInfo = coInsuredList.any { it.hasMissingInfo }
-    if (hasMissingInfo) {
+    val hasMissingInfoAndIsNotTerminating = coInsuredList.any { it.hasMissingInfo && it.terminatesOn == null }
+    if (hasMissingInfoAndIsNotTerminating) {
       Spacer(Modifier.height(8.dp))
       VectorWarningCard(
         text = stringResource(id = R.string.CONTRACT_COINSURED_ADD_PERSONAL_INFO),
       ) {
         HedvigContainedSmallButton(
           text = stringResource(id = R.string.CONTRACT_COINSURED_MISSING_ADD_INFO),
-          onClick = {},
+          onClick = onMissingInfoClick,
           colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.containedButtonContainer,
             contentColor = MaterialTheme.colorScheme.onContainedButtonContainer,
@@ -414,8 +454,24 @@ private fun PreviewYourInfoTab() {
           "Size" to "56 m2",
         ),
         coInsured = persistentListOf(
-          InsuranceAgreement.CoInsured("199101131093", null, "Hugo", "Linder", LocalDate.fromEpochDays(300), false),
-          InsuranceAgreement.CoInsured(null, null, null, null, null, true),
+          InsuranceAgreement.CoInsured(
+            ssn = "199101131093",
+            birthDate = null,
+            firstName = "Hugo",
+            lastName = "Linder",
+            activatesOn = LocalDate.fromEpochDays(300),
+            terminatesOn = LocalDate.fromEpochDays(400),
+            hasMissingInfo = false,
+          ),
+          InsuranceAgreement.CoInsured(
+            ssn = null,
+            birthDate = null,
+            firstName = null,
+            lastName = null,
+            activatesOn = null,
+            terminatesOn = null,
+            hasMissingInfo = true,
+          ),
         ),
         allowChangeAddress = true,
         allowEditCoInsured = true,
@@ -438,9 +494,26 @@ private fun PreviewYourInfoTab() {
           ),
           certificateUrl = null,
           coInsured = persistentListOf(
-            InsuranceAgreement.CoInsured("199101131093", null, "Hugo", "Linder", LocalDate.fromEpochDays(300), false),
-            InsuranceAgreement.CoInsured("1234020312", null, "Testersson", "Tester", null, false),
+            InsuranceAgreement.CoInsured(
+              ssn = "199101131093",
+              birthDate = null,
+              firstName = "Hugo",
+              lastName = "Linder",
+              activatesOn = LocalDate.fromEpochDays(300),
+              terminatesOn = LocalDate.fromEpochDays(300),
+              hasMissingInfo = false,
+            ),
+            InsuranceAgreement.CoInsured(
+              ssn = "1234020312",
+              birthDate = null,
+              firstName = "Testersson",
+              lastName = "Tester",
+              activatesOn = null,
+              terminatesOn = null,
+              hasMissingInfo = false,
+            ),
           ),
+          creationCause = InsuranceAgreement.CreationCause.UNKNOWN,
         ),
         onEditCoInsuredClick = {},
         onChangeAddressClick = {},
@@ -449,6 +522,8 @@ private fun PreviewYourInfoTab() {
         isTerminated = false,
         contractHolderDisplayName = "Hugo Linder",
         contractHolderSSN = "19910113-1093",
+        onMissingInfoClick = {},
+        openUrl = {},
       )
     }
   }

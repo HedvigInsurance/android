@@ -1,0 +1,17 @@
+mutation CreateMidtermChange($contractId: ID!, $input: MidtermChangeIntentCreateInput!) {
+  midtermChangeIntentCreate(contractId: $contractId, input: $input) {
+    intent {
+      id
+      currentPremium {
+        ...MoneyFragment
+      }
+      newPremium {
+        ...MoneyFragment
+      }
+      activationDate
+    }
+    userError {
+      message
+    }
+  }
+}

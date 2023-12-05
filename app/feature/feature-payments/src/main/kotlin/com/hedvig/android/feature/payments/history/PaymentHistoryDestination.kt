@@ -43,7 +43,7 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBar
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarActionType
 import com.hedvig.android.core.ui.getLocale
-import com.hedvig.android.core.ui.hedvigSecondaryDateTimeFormatter
+import com.hedvig.android.core.ui.hedvigDateTimeFormatter
 import com.hedvig.android.core.ui.plus
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.payments.data.ChargeHistory
@@ -79,7 +79,7 @@ private fun PaymentHistoryScreen(
   onRetry: () -> Unit,
 ) {
   val locale = getLocale()
-  val dateTimeFormatter = remember(locale) { hedvigSecondaryDateTimeFormatter(locale) }
+  val dateTimeFormatter = remember(locale) { hedvigDateTimeFormatter(locale) }
   val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
   val topAppBarColors = TopAppBarDefaults.topAppBarColors(
     containerColor = MaterialTheme.colorScheme.background,

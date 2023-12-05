@@ -35,7 +35,6 @@ import androidx.compose.ui.util.fastSumBy
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.animation.animatePlacement
 import com.hedvig.android.core.ui.layout.FixedSizePlaceable
 import kotlin.math.max
 
@@ -54,8 +53,8 @@ internal fun HomeLayout(
 ) {
   Layout(
     content = {
-      Box(Modifier.layoutId(HomeLayoutContent.WelcomeMessage).animatePlacement()) { welcomeMessage() }
-      Box(Modifier.layoutId(HomeLayoutContent.ClaimStatusCards).animatePlacement()) { claimStatusCards() }
+      Box(Modifier.layoutId(HomeLayoutContent.WelcomeMessage)) { welcomeMessage() }
+      Box(Modifier.layoutId(HomeLayoutContent.ClaimStatusCards)) { claimStatusCards() }
       Box(Modifier.layoutId(HomeLayoutContent.VeryImportantMessages)) { veryImportantMessages() }
       Box(Modifier.layoutId(HomeLayoutContent.MemberReminderCards)) { memberReminderCards() }
       Box(Modifier.layoutId(HomeLayoutContent.StartClaimButton)) { startClaimButton() }

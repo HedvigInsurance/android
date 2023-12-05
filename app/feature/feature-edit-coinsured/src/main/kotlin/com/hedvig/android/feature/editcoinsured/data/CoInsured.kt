@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.editcoinsured.data
 
 import java.time.format.DateTimeFormatter
+import java.util.UUID
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
 
@@ -10,7 +11,10 @@ internal data class CoInsured(
   val birthDate: LocalDate?,
   val ssn: String?,
   val hasMissingInfo: Boolean,
+  val internalId: String = UUID.randomUUID().toString(),
 ) {
+  val id = "$firstName-$lastName-$birthDate-$ssn"
+
   val displayName: String = buildString {
     if (firstName != null) {
       append(firstName)
@@ -25,14 +29,4 @@ internal data class CoInsured(
 
   fun identifier(dateTimeFormatter: DateTimeFormatter): String? =
     ssn ?: birthDate?.toJavaLocalDate()?.format(dateTimeFormatter)
-
-  companion object {
-    fun fromPersonalInformation(personalInformation: CoInsuredPersonalInformation, ssn: String): CoInsured = CoInsured(
-      firstName = personalInformation.firstName,
-      lastName = personalInformation.lastName,
-      birthDate = null,
-      ssn = ssn,
-      hasMissingInfo = false,
-    )
-  }
 }

@@ -2,7 +2,6 @@ package com.hedvig.android.feature.home.home.data
 
 import arrow.core.NonEmptyList
 import arrow.core.left
-import arrow.core.nonEmptyListOf
 import arrow.core.right
 import assertk.Assert
 import assertk.assertThat
@@ -34,7 +33,6 @@ import com.hedvig.android.hanalytics.featureflags.test.FakeFeatureManager2
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminders
-import com.hedvig.android.memberreminders.UpcomingRenewal
 import com.hedvig.android.memberreminders.test.TestGetMemberRemindersUseCase
 import com.hedvig.android.test.clock.TestClock
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
@@ -154,12 +152,13 @@ internal class GetHomeUseCaseTest {
       TestClock(),
       TimeZone.UTC,
     )
+    val testId = "test"
 
     testGetMemberRemindersUseCase.memberReminders.add(
       MemberReminders(
-        MemberReminder.ConnectPayment,
-        MemberReminder.UpcomingRenewals(nonEmptyListOf(UpcomingRenewal("", LocalDate.parse("2023-01-01"), ""))),
-        MemberReminder.EnableNotifications,
+        MemberReminder.ConnectPayment(id = testId),
+        listOf(MemberReminder.UpcomingRenewal("", LocalDate.parse("2023-01-01"), "", testId)),
+        MemberReminder.EnableNotifications(id = testId),
       ),
     )
     val result = getHomeDataUseCase.invoke(true).first()
@@ -170,9 +169,9 @@ internal class GetHomeUseCaseTest {
       .prop(HomeData::memberReminders)
       .isEqualTo(
         MemberReminders(
-          MemberReminder.ConnectPayment,
-          MemberReminder.UpcomingRenewals(nonEmptyListOf(UpcomingRenewal("", LocalDate.parse("2023-01-01"), ""))),
-          MemberReminder.EnableNotifications,
+          MemberReminder.ConnectPayment(id = testId),
+          listOf(MemberReminder.UpcomingRenewal("", LocalDate.parse("2023-01-01"), "", testId)),
+          MemberReminder.EnableNotifications(id = testId),
         ),
       )
   }

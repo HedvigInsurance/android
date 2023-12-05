@@ -35,7 +35,6 @@ import com.hedvig.android.feature.editcoinsured.navigation.editCoInsuredGraph
 import com.hedvig.android.feature.forever.navigation.foreverGraph
 import com.hedvig.android.feature.home.home.navigation.homeGraph
 import com.hedvig.android.feature.insurances.insurance.insuranceGraph
-import com.hedvig.android.feature.insurances.navigation.InsurancesDestination
 import com.hedvig.android.feature.odyssey.navigation.claimFlowGraph
 import com.hedvig.android.feature.odyssey.navigation.navigateToClaimFlowDestination
 import com.hedvig.android.feature.odyssey.navigation.terminalClaimFlowStepDestinations
@@ -127,8 +126,10 @@ internal fun HedvigNavHost(
         with(navigator) { backStackEntry.navigate(ClaimDetailsDestination(claimId)) }
       },
       navigateToPayinScreen = navigateToConnectPayment,
-      navigateToContractDetail = { contractId ->
-        hedvigAppState.navController.navigate(InsurancesDestination.InsuranceContractDetail(contractId))
+      navigateToMissingInfo = { backStackEntry: NavBackStackEntry, contractId: String ->
+        with(navigator) {
+          backStackEntry.navigate(EditCoInsuredDestination.AddInfo(contractId))
+        }
       },
       openAppSettings = { activityNavigator.openAppSettings(context) },
       openUrl = ::openUrl,
@@ -153,6 +154,9 @@ internal fun HedvigNavHost(
       openWebsite = { uri ->
         activityNavigator.openWebsite(context, uri)
       },
+      openUrl = {
+        openUrl(it)
+      },
       openChat = { backStackEntry ->
         with(navigator) {
           backStackEntry.navigate(AppDestination.Chat)
@@ -172,7 +176,12 @@ internal fun HedvigNavHost(
       imageLoader = imageLoader,
       startEditCoInsured = { backStackEntry: NavBackStackEntry, contractId: String ->
         with(navigator) {
-          backStackEntry.navigate(EditCoInsuredDestination(contractId, allowEdit = false))
+          backStackEntry.navigate(EditCoInsuredDestination.AddOrRemove(contractId))
+        }
+      },
+      startEditCoInsuredAddMissingInfo = { backStackEntry: NavBackStackEntry, contractId: String ->
+        with(navigator) {
+          backStackEntry.navigate(EditCoInsuredDestination.AddInfo(contractId))
         }
       },
     )
@@ -196,8 +205,10 @@ internal fun HedvigNavHost(
         with(navigator) { backStackEntry.navigate(AppDestination.PaymentInfo) }
       },
       navigateToConnectPayment = navigateToConnectPayment,
-      navigateToContractDetail = { contractId ->
-        hedvigAppState.navController.navigate(InsurancesDestination.InsuranceContractDetail(contractId))
+      navigateToAddMissingInfo = { backStackEntry: NavBackStackEntry, contractId: String ->
+        with(navigator) {
+          backStackEntry.navigate(EditCoInsuredDestination.AddInfo(contractId))
+        }
       },
       openAppSettings = { activityNavigator.openAppSettings(context) },
       openUrl = ::openUrl,
@@ -223,6 +234,7 @@ internal fun HedvigNavHost(
     )
     editCoInsuredGraph(
       navigateUp = navigator::navigateUp,
+      navController = hedvigAppState.navController,
     )
     connectAdyenPaymentGraph(navigator)
   }
