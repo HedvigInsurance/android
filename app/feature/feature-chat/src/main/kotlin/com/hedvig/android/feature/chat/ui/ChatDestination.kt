@@ -77,6 +77,9 @@ internal fun ChatDestination(
       logcat { "viewModel.emit(ChatEvent.SendMediaMessage(uri)):${uri.path} to vm:${viewModel.hashCode()}" }
       viewModel.emit(ChatEvent.SendMediaMessage(uri))
     },
+    onRetrySendChatMessage = {
+      viewModel.emit(ChatEvent.RetrySend(it))
+    },
     onFetchMoreMessages = {
       viewModel.emit(ChatEvent.FetchMoreMessages)
     },
@@ -97,6 +100,7 @@ private fun ChatScreen(
   onSendMessage: (String) -> Unit,
   onSendPhoto: (Uri) -> Unit,
   onSendMedia: (Uri) -> Unit,
+  onRetrySendChatMessage: (messageId: String) -> Unit,
   onFetchMoreMessages: () -> Unit,
   onDismissError: () -> Unit,
 ) {
@@ -154,6 +158,7 @@ private fun ChatScreen(
               appPackageId = appPackageId,
               topAppBarScrollBehavior = topAppBarScrollBehavior,
               openUrl = openUrl,
+              onRetrySendChatMessage = onRetrySendChatMessage,
               onSendMessage = onSendMessage,
               onSendPhoto = onSendPhoto,
               onSendMedia = onSendMedia,
@@ -205,6 +210,7 @@ private fun ChatScreenPreview(
         onSendMessage = {},
         onSendPhoto = {},
         onSendMedia = {},
+        onRetrySendChatMessage = {},
         onFetchMoreMessages = {},
         onDismissError = {},
       )

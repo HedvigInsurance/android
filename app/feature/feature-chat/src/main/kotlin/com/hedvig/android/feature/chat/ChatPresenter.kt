@@ -54,6 +54,8 @@ internal sealed interface ChatEvent {
   data class SendPhotoMessage(val uri: Uri) : ChatEvent
 
   data class SendMediaMessage(val uri: Uri) : ChatEvent
+
+  data class RetrySend(val chatMessageId: String) : ChatEvent
 }
 
 @Immutable
@@ -123,7 +125,7 @@ internal class ChatPresenter(
     var fetchMoreMessagesFetchIndex by remember { mutableIntStateOf(0) }
     var failedToFetchMoreMessages by remember { mutableStateOf(false) }
 
-    // Maybe merge the two text/uri queues together with a common type instead, to respect ordering them properly
+    // todo chat: Maybe merge the text/uri queues together with a common type instead of having 3 separate queues?
     val photosToSend = remember { Channel<Uri>(Channel.UNLIMITED) }
     var photosFailedToBeSent: SnapshotStateList<FailedMessage.FailedUri> = remember { mutableStateListOf() }
     val mediaToSend = remember { Channel<Uri>(Channel.UNLIMITED) }
@@ -131,9 +133,8 @@ internal class ChatPresenter(
     val messagesToSend = remember { Channel<String>(Channel.UNLIMITED) }
     var messagesFailedToBeSent: SnapshotStateList<FailedMessage.FailedText> = remember { mutableStateListOf() }
 
-    LaunchMessagesWatcher(
+    LaunchMessagesWatchingEffect(
       onCachedMessagesReceived = { cachedMessages ->
-
         Snapshot.withMutableSnapshot {
           isStillInitializing = false
           messages.clear()
@@ -141,7 +142,7 @@ internal class ChatPresenter(
         }
       },
     )
-    LaunchPeriodicMessagePolls(
+    LaunchPeriodicMessagePollsEffect(
       isChatDisabled = isChatDisabled,
       getFetchMoreState = { fetchMoreState },
       setFetchMoreState = { fetchMoreState = it },
@@ -156,19 +157,19 @@ internal class ChatPresenter(
     LaunchNewPhotoSendingEffect(
       photosToSend = photosToSend,
       reportPhotoFailedToBeSent = { uri ->
-        photosFailedToBeSent.add(FailedMessage.FailedUri(uri, clock.now()))
+        photosFailedToBeSent.add(FailedMessage.FailedUri(Uuid.randomUUID().toString(), clock.now(), uri))
       },
     )
     LaunchNewMediaSendingEffect(
       mediaToSend = mediaToSend,
       reportMediaFailedToBeSent = { uri ->
-        mediaFailedToBeSent.add(FailedMessage.FailedUri(uri, clock.now()))
+        mediaFailedToBeSent.add(FailedMessage.FailedUri(Uuid.randomUUID().toString(), clock.now(), uri))
       },
     )
     LaunchNewMessageSendingEffect(
       messagesToSend = messagesToSend,
       reportMessageFailedToBeSent = { message ->
-        messagesFailedToBeSent.add(FailedMessage.FailedText(message, clock.now()))
+        messagesFailedToBeSent.add(FailedMessage.FailedText(Uuid.randomUUID().toString(), clock.now(), message))
       },
     )
 
@@ -207,20 +208,34 @@ internal class ChatPresenter(
         is ChatEvent.SendTextMessage -> {
           messagesToSend.trySend(event.message)
         }
-      }
-    }
 
-    // todo remove this for production
-    LaunchedEffect(messagesFailedToBeSent.toList()) {
-      messagesFailedToBeSent.toList().also {
-        logcat { "Stelios: messagesFailedToBeSent:${messagesFailedToBeSent.toList()}" }
-      }
-    }
+        is ChatEvent.RetrySend -> {
+          val failedMessage = messagesFailedToBeSent.find { it.id == event.chatMessageId }
+          val failedPhoto = photosFailedToBeSent.find { it.id == event.chatMessageId }
+          val failedMedia = mediaFailedToBeSent.find { it.id == event.chatMessageId }
+          when {
+            failedMessage != null -> {
+              messagesToSend.trySend(failedMessage.message)
+              messagesFailedToBeSent.removeIf { it.id == failedMessage.id }
+            }
 
-    // todo remove this for production
-    LaunchedEffect(photosFailedToBeSent.toList()) {
-      photosFailedToBeSent.toList().also {
-        logcat { "Stelios: filesFailedToBeSent:${photosFailedToBeSent.toList()}" }
+            failedPhoto != null -> {
+              photosToSend.trySend(failedPhoto.uri)
+              photosFailedToBeSent.removeIf { it.id == failedPhoto.id }
+            }
+
+            failedMedia != null -> {
+              mediaToSend.trySend(failedMedia.uri)
+              mediaFailedToBeSent.removeIf { it.id == failedMedia.id }
+            }
+
+            else -> {
+              logcat(LogPriority.WARN) {
+                "ChatPresenter: Tried to retry sending a message which was not found in any of the queues"
+              }
+            }
+          }
+        }
       }
     }
 
@@ -236,9 +251,8 @@ internal class ChatPresenter(
           is FetchMoreState.NothingMoreToFetch -> ChatUiState.Loaded.FetchMoreMessagesUiState.NothingMoreToFetch
         }
       }
-      val failedUiChatMessages = (messagesFailedToBeSent + photosFailedToBeSent + mediaFailedToBeSent).map {
-        it.toChatMessage()
-      }
+      val failedUiChatMessages = (messagesFailedToBeSent + photosFailedToBeSent + mediaFailedToBeSent)
+        .map(FailedMessage::toChatMessage)
       ChatUiState.Loaded(
         messages = (messages + failedUiChatMessages)
           .sortedByDescending(ChatMessage::sentAt)
@@ -250,7 +264,7 @@ internal class ChatPresenter(
   }
 
   @Composable
-  private fun LaunchPeriodicMessagePolls(
+  private fun LaunchPeriodicMessagePollsEffect(
     isChatDisabled: Boolean,
     getFetchMoreState: () -> FetchMoreState,
     setFetchMoreState: (FetchMoreState) -> Unit,
@@ -272,7 +286,7 @@ internal class ChatPresenter(
   }
 
   @Composable
-  private fun LaunchMessagesWatcher(onCachedMessagesReceived: (List<ChatMessage>) -> Unit) {
+  private fun LaunchMessagesWatchingEffect(onCachedMessagesReceived: (List<ChatMessage>) -> Unit) {
     LaunchedEffect(Unit) {
       chatRepository.provide().watchMessages()
         .map {
@@ -373,18 +387,27 @@ private sealed interface FetchMoreState {
 }
 
 private sealed interface FailedMessage {
+  val id: String
   val sentAt: Instant
 
-  data class FailedText(val message: String, override val sentAt: Instant) : FailedMessage
+  data class FailedText(
+    override val id: String,
+    override val sentAt: Instant,
+    val message: String,
+  ) : FailedMessage
 
-  data class FailedUri(val uri: Uri, override val sentAt: Instant) : FailedMessage
+  data class FailedUri(
+    override val id: String,
+    override val sentAt: Instant,
+    val uri: Uri,
+  ) : FailedMessage
 }
 
 private fun FailedMessage.toChatMessage(): ChatMessage {
   return when (this) {
     is FailedMessage.FailedText -> {
       ChatMessage.FailedToBeSent.ChatMessageText(
-        id = Uuid.randomUUID().toString(),
+        id = this.id,
         sentAt = this.sentAt,
         text = this.message,
       )
@@ -392,7 +415,7 @@ private fun FailedMessage.toChatMessage(): ChatMessage {
 
     is FailedMessage.FailedUri -> {
       ChatMessage.FailedToBeSent.ChatMessageUri(
-        id = Uuid.randomUUID().toString(),
+        id = this.id,
         sentAt = this.sentAt,
         uri = this.uri,
       )

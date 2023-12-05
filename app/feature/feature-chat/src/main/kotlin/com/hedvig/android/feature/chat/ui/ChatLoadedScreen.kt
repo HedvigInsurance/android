@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.chat.ui
 
 import android.net.Uri
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -30,7 +32,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -47,6 +48,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.painter.Painter
@@ -63,6 +65,7 @@ import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.material3.rememberShapedColorPainter
 import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.hedvig.normal.InfoFilled
 import com.hedvig.android.core.icons.hedvig.normal.MultipleDocuments
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.getLocale
@@ -82,6 +85,7 @@ internal fun ChatLoadedScreen(
   appPackageId: String,
   topAppBarScrollBehavior: TopAppBarScrollBehavior,
   openUrl: (String) -> Unit,
+  onRetrySendChatMessage: (messageId: String) -> Unit,
   onSendMessage: (String) -> Unit,
   onSendPhoto: (Uri) -> Unit,
   onSendMedia: (Uri) -> Unit,
@@ -107,6 +111,7 @@ internal fun ChatLoadedScreen(
         uiState = uiState,
         imageLoader = imageLoader,
         openUrl = openUrl,
+        onRetrySendChatMessage = onRetrySendChatMessage,
         onFetchMoreMessages = onFetchMoreMessages,
         modifier = Modifier
           .fillMaxWidth()
@@ -196,6 +201,7 @@ private fun ChatLazyColumn(
   uiState: ChatUiState.Loaded,
   imageLoader: ImageLoader,
   openUrl: (String) -> Unit,
+  onRetrySendChatMessage: (messageId: String) -> Unit,
   onFetchMoreMessages: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -223,6 +229,7 @@ private fun ChatLazyColumn(
         chatMessage = chatMessage,
         imageLoader = imageLoader,
         openUrl = openUrl,
+        onRetrySendChatMessage = onRetrySendChatMessage,
         modifier = Modifier
           .fillParentMaxWidth()
           .padding(horizontal = 16.dp)
@@ -282,9 +289,10 @@ private fun ChatBubble(
   chatMessage: ChatMessage,
   imageLoader: ImageLoader,
   openUrl: (String) -> Unit,
+  onRetrySendChatMessage: (messageId: String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  ChatMessageWithTimeSent(
+  ChatMessageWithTimeAndDeliveryStatus(
     messageSlot = {
       when (chatMessage) {
         is ChatMessage.ChatMessageFile -> {
@@ -323,9 +331,10 @@ private fun ChatBubble(
             is ChatMessage.FailedToBeSent.ChatMessageText -> {
               Surface(
                 shape = MaterialTheme.shapes.squircleMedium,
-                color = chatMessage.backgroundColor(),
+                color = MaterialTheme.colorScheme.errorContainer,
+                contentColor = LocalContentColor.current,
                 onClick = {
-                  // todo chat: retry sending text instead
+                  onRetrySendChatMessage(chatMessage.id)
                 },
               ) {
                 Text(
@@ -334,11 +343,14 @@ private fun ChatBubble(
                 )
               }
             }
+
             is ChatMessage.FailedToBeSent.ChatMessageUri -> {
               AttachedFileMessage(
                 onClick = {
-                  // todo chat: retry sending URI instead
+                  onRetrySendChatMessage(chatMessage.id)
                 },
+                containerColor = MaterialTheme.colorScheme.errorContainer,
+                borderColor = Color.Transparent,
               )
             }
           }
@@ -351,9 +363,12 @@ private fun ChatBubble(
 }
 
 @Composable
-private fun AttachedFileMessage(onClick: () -> Unit) {
+private fun AttachedFileMessage(
+  onClick: () -> Unit,
+  containerColor: Color = Color.Transparent,
+  borderColor: Color = LocalContentColor.current,
+) {
   val shape = MaterialTheme.shapes.squircleMedium
-  val contentColor = LocalContentColor.current
   Box(
     Modifier
       .drawWithCache {
@@ -362,10 +377,11 @@ private fun AttachedFileMessage(onClick: () -> Unit) {
         val path = (outline as Outline.Generic).path
         onDrawWithContent {
           drawContent()
-          drawPath(path, contentColor, style = stroke)
+          drawPath(path, borderColor, style = stroke)
         }
       }
       .clip(MaterialTheme.shapes.squircleMedium)
+      .background(containerColor)
       .clickable(onClick = onClick),
   ) {
     Row(
@@ -419,7 +435,7 @@ private fun ChatAsyncImage(imageUrl: String, imageLoader: ImageLoader) {
 }
 
 @Composable
-internal fun ChatMessageWithTimeSent(
+internal fun ChatMessageWithTimeAndDeliveryStatus(
   messageSlot: @Composable () -> Unit,
   chatMessage: ChatMessage,
   modifier: Modifier = Modifier,
@@ -428,10 +444,30 @@ internal fun ChatMessageWithTimeSent(
     horizontalAlignment = chatMessage.messageHorizontalAlignment(),
     modifier = modifier,
   ) {
-    messageSlot()
+    val failedToBeSent = chatMessage is ChatMessage.FailedToBeSent
+    Row(
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      messageSlot()
+      if (failedToBeSent) {
+        Spacer(Modifier.width(4.dp))
+        Icon(
+          imageVector = Icons.Hedvig.InfoFilled,
+          contentDescription = null,
+          tint = MaterialTheme.colorScheme.error,
+          modifier = Modifier.size(16.dp),
+        )
+      }
+    }
     Spacer(modifier = Modifier.height(4.dp))
     Text(
-      text = chatMessage.formattedDateTime(getLocale()),
+      text = buildString {
+        if (failedToBeSent) {
+          append("Failed to be sent") // todo chat: lokalization for failed to be sent messages
+          append(" • ")
+        }
+        append(chatMessage.formattedDateTime(getLocale()))
+      },
       style = MaterialTheme.typography.bodyMedium,
       color = MaterialTheme.colorScheme.onSurfaceVariant,
       modifier = Modifier
