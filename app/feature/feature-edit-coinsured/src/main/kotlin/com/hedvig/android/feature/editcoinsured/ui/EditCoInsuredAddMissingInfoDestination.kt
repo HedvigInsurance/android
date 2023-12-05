@@ -42,7 +42,11 @@ import kotlinx.datetime.LocalDate
 import octopus.type.CurrencyCode
 
 @Composable
-internal fun EditCoInsuredAddMissingInfoDestination(viewModel: EditCoInsuredViewModel, navigateUp: () -> Unit) {
+internal fun EditCoInsuredAddMissingInfoDestination(
+  viewModel: EditCoInsuredViewModel,
+  navigateToSuccessScreen: (LocalDate) -> Unit,
+  navigateUp: () -> Unit,
+) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
   EditCoInsuredScreen(
@@ -51,14 +55,17 @@ internal fun EditCoInsuredAddMissingInfoDestination(viewModel: EditCoInsuredView
     onCoInsuredClicked = {
       viewModel.emit(EditCoInsuredEvent.OnEditCoInsuredClicked(it))
     },
-    onSave = {
-      viewModel.emit(EditCoInsuredEvent.OnCoInsuredAddedFromBottomSheet)
-    },
     onSsnChanged = {
       viewModel.emit(EditCoInsuredEvent.OnSsnChanged(it))
     },
-    onFetchInfo = {
-      viewModel.emit(EditCoInsuredEvent.FetchCoInsuredPersonalInformation)
+    onBottomSheetContinue = {
+      viewModel.emit(EditCoInsuredEvent.OnBottomSheetContinue)
+    },
+    onCommitChanges = {
+      viewModel.emit(EditCoInsuredEvent.OnCommitChanges)
+    },
+    onCompleted = {
+      navigateToSuccessScreen(it)
     },
     onDismissError = {
       viewModel.emit(EditCoInsuredEvent.OnDismissError)
@@ -66,11 +73,23 @@ internal fun EditCoInsuredAddMissingInfoDestination(viewModel: EditCoInsuredView
     onResetAddBottomSheetState = {
       viewModel.emit(EditCoInsuredEvent.ResetAddBottomSheetState)
     },
-    onCommitChanges = {
-      viewModel.emit(EditCoInsuredEvent.OnCommitChanges)
+    onFirstNameChanged = {
+      viewModel.emit(EditCoInsuredEvent.OnFirstNameChanged(it))
     },
-    onCompleted = {
-      navigateUp()
+    onLastNameChanged = {
+      viewModel.emit(EditCoInsuredEvent.OnLastNameChanged(it))
+    },
+    onBirthDateChanged = {
+      viewModel.emit(EditCoInsuredEvent.OnBirthDateChanged(it))
+    },
+    onManualInputSwitchChanged = {
+      viewModel.emit(EditCoInsuredEvent.OnManualInputSwitchChanged(it))
+    },
+    onAddNewCoInsured = {
+      viewModel.emit(EditCoInsuredEvent.OnAddNewCoInsured)
+    },
+    onCoInsuredSelected = {
+      viewModel.emit(EditCoInsuredEvent.OnCoInsuredSelected(it))
     },
   )
 }
@@ -81,12 +100,17 @@ private fun EditCoInsuredScreen(
   uiState: EditCoInsuredState,
   onCoInsuredClicked: (CoInsured) -> Unit,
   onSsnChanged: (String) -> Unit,
-  onSave: () -> Unit,
-  onFetchInfo: () -> Unit,
+  onBottomSheetContinue: () -> Unit,
   onCommitChanges: () -> Unit,
   onCompleted: (LocalDate) -> Unit,
   onDismissError: () -> Unit,
   onResetAddBottomSheetState: () -> Unit,
+  onFirstNameChanged: (String) -> Unit,
+  onLastNameChanged: (String) -> Unit,
+  onBirthDateChanged: (LocalDate) -> Unit,
+  onManualInputSwitchChanged: (Boolean) -> Unit,
+  onAddNewCoInsured: () -> Unit,
+  onCoInsuredSelected: (CoInsured) -> Unit,
 ) {
   Column(Modifier.fillMaxSize()) {
     TopAppBarWithBack(
@@ -123,9 +147,15 @@ private fun EditCoInsuredScreen(
             windowInsets = BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top),
           ) {
             AddCoInsuredBottomSheetContent(
-              onSave = onSave,
-              onFetchInfo = onFetchInfo,
+              bottomSheetState = uiState.addBottomSheetState,
+              onContinue = onBottomSheetContinue,
               onSsnChanged = onSsnChanged,
+              onFirstNameChanged = onFirstNameChanged,
+              onLastNameChanged = onLastNameChanged,
+              onBirthDateChanged = onBirthDateChanged,
+              onManualInputSwitchChanged = onManualInputSwitchChanged,
+              onAddNewCoInsured = onAddNewCoInsured,
+              onCoInsuredSelected = onCoInsuredSelected,
               onDismiss = {
                 coroutineScope.launch {
                   sheetState.hide()
@@ -133,11 +163,6 @@ private fun EditCoInsuredScreen(
                   onResetAddBottomSheetState()
                 }
               },
-              displayName = uiState.addBottomSheetState.displayName,
-              ssn = uiState.addBottomSheetState.ssn,
-              birthDate = uiState.addBottomSheetState.birthDate,
-              isLoading = uiState.addBottomSheetState.isLoading,
-              errorMessage = uiState.addBottomSheetState.errorMessage,
             )
           }
         }
@@ -171,6 +196,7 @@ private fun EditCoInsuredScreen(
             HedvigContainedButton(
               text = stringResource(id = R.string.GENERAL_SAVE_CHANGES_BUTTON),
               onClick = onCommitChanges,
+              enabled = uiState.listState.noCoInsuredHaveMissingInfo(),
               isLoading = uiState.listState.isCommittingUpdate,
               modifier = Modifier.padding(horizontal = 16.dp),
             )
@@ -200,11 +226,6 @@ private fun EditCoInsuredScreenEditablePreview() {
         navigateUp = { },
         uiState = EditCoInsuredState.Loaded(
           listState = EditCoInsuredState.Loaded.CoInsuredListState(
-            priceInfo = EditCoInsuredState.Loaded.PriceInfo(
-              previousPrice = UiMoney(100.0, CurrencyCode.SEK),
-              newPrice = UiMoney(200.0, CurrencyCode.SEK),
-              validFrom = LocalDate.fromEpochDays(400),
-            ),
             originalCoInsured = persistentListOf(
               CoInsured(
                 "Test",
@@ -249,20 +270,31 @@ private fun EditCoInsuredScreenEditablePreview() {
               lastName = "Membersson",
               ssn = "197312331093",
             ),
+            priceInfo = EditCoInsuredState.Loaded.PriceInfo(
+              previousPrice = UiMoney(100.0, CurrencyCode.SEK),
+              newPrice = UiMoney(200.0, CurrencyCode.SEK),
+              validFrom = LocalDate.fromEpochDays(400),
+            ),
+            allCoInsured = persistentListOf(),
           ),
           addBottomSheetState = EditCoInsuredState.Loaded.AddBottomSheetState(
             isLoading = false,
           ),
           removeBottomSheetState = EditCoInsuredState.Loaded.RemoveBottomSheetState(),
         ),
-        onSave = {},
-        onFetchInfo = {},
-        onDismissError = {},
-        onResetAddBottomSheetState = {},
-        onCommitChanges = {},
-        onCompleted = {},
         onCoInsuredClicked = {},
         onSsnChanged = {},
+        onBottomSheetContinue = {},
+        onCommitChanges = {},
+        onCompleted = {},
+        onDismissError = {},
+        onResetAddBottomSheetState = {},
+        onFirstNameChanged = {},
+        onLastNameChanged = {},
+        onBirthDateChanged = {},
+        onManualInputSwitchChanged = {},
+        onAddNewCoInsured = {},
+        onCoInsuredSelected = {},
       )
     }
   }
@@ -298,20 +330,26 @@ private fun EditCoInsuredScreenNonEditablePreview() {
               lastName = "Membersson",
               ssn = "197312331093",
             ),
+            allCoInsured = persistentListOf(),
           ),
           addBottomSheetState = EditCoInsuredState.Loaded.AddBottomSheetState(
             isLoading = false,
           ),
           removeBottomSheetState = EditCoInsuredState.Loaded.RemoveBottomSheetState(),
         ),
-        onSave = {},
-        onFetchInfo = {},
-        onDismissError = {},
-        onResetAddBottomSheetState = {},
-        onCommitChanges = {},
-        onCompleted = {},
         onCoInsuredClicked = {},
         onSsnChanged = {},
+        onBottomSheetContinue = {},
+        onCommitChanges = {},
+        onCompleted = {},
+        onDismissError = {},
+        onResetAddBottomSheetState = {},
+        onFirstNameChanged = {},
+        onLastNameChanged = {},
+        onBirthDateChanged = {},
+        onManualInputSwitchChanged = {},
+        onAddNewCoInsured = {},
+        onCoInsuredSelected = {},
       )
     }
   }
