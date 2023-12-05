@@ -181,7 +181,7 @@ internal fun SelectableCoInsuredList(
 }
 
 @Composable
-fun FetchFromSsnFields(
+private fun FetchFromSsnFields(
   firstName: String?,
   lastName: String?,
   errorMessage: String?,
@@ -230,7 +230,7 @@ fun FetchFromSsnFields(
 }
 
 @Composable
-fun ManualInputFields(
+private fun ManualInputFields(
   birthDate: LocalDate?,
   onBirthDateChanged: (LocalDate) -> Unit,
   onFirstNameChanged: (String) -> Unit,
@@ -296,13 +296,13 @@ fun ManualInputFields(
 }
 
 @Composable
-internal fun DatePickerWithDialog(modifier: Modifier = Modifier, birthDate: LocalDate?, onSave: (LocalDate) -> Unit) {
+internal fun DatePickerWithDialog(birthDate: LocalDate?, onSave: (LocalDate) -> Unit, modifier: Modifier = Modifier) {
   val datePickerState = rememberDatePickerState()
 
   val selectedDateMillis: Long? = datePickerState.selectedDateMillis
   val locale = getLocale()
   val hedvigDateTimeFormatter = rememberHedvigBirthDateDateTimeFormatter()
-  val selectedDate = remember(locale, selectedDateMillis, hedvigDateTimeFormatter) {
+  val selectedDate = remember(locale, selectedDateMillis) {
     if (selectedDateMillis == null) {
       null
     } else {
@@ -343,7 +343,10 @@ internal fun DatePickerWithDialog(modifier: Modifier = Modifier, birthDate: Loca
       HedvigDatePicker(datePickerState = datePickerState)
     }
   }
-  HedvigCard(modifier.clickable { showDatePicker = true }) {
+  HedvigCard(
+    onClick = { showDatePicker = true },
+    modifier = modifier,
+  ) {
     Text(
       text = if (birthDate != null) {
         hedvigDateTimeFormatter.format(birthDate.toJavaLocalDate())

@@ -39,8 +39,9 @@ internal class GetNeedsCoInsuredInfoRemindersUseCaseImpl(
     }
   }
 
-  private fun NeedsCoInsuredInfoReminderQuery.Data.CurrentMember.ActiveContract.hasMissingInfoAndIsNotTerminating() =
-    (coInsured?.filter { it.hasMissingInfo && it.terminatesOn == null }?.size ?: 0) > 0
+  private fun NeedsCoInsuredInfoReminderQuery.Data.CurrentMember.ActiveContract.hasMissingInfo() =
+    coInsured?.any { it.hasMissingInfo && it.terminatesOn == null } == true
+
 }
 
 sealed interface CoInsuredInfoReminderError {
