@@ -1,10 +1,9 @@
 package com.hedvig.android.memberreminders
 
 import assertk.assertThat
-import assertk.assertions.containsExactly
-import assertk.assertions.containsSubList
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
+import assertk.assertions.isNotNull
 import assertk.assertions.prop
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.annotations.ApolloExperimental
@@ -13,7 +12,6 @@ import com.apollographql.apollo3.testing.enqueueTestResponse
 import com.hedvig.android.apollo.octopus.test.OctopusFakeResolver
 import com.hedvig.android.apollo.test.TestApolloClientRule
 import com.hedvig.android.core.common.test.isLeft
-import com.hedvig.android.core.common.test.isRight
 import com.hedvig.android.test.clock.TestClock
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
@@ -67,10 +65,14 @@ class GetUpcomingRenewalRemindersUseCaseTest {
     )
 
     val result = getUpcomingRenewalRemindersUseCase.invoke()
+    val list = result.getOrNull()
 
-    assertThat(result).isRight().containsExactly(
-      UpcomingRenewal("display name", upcomingRenewalLocalDate, "draftUrl"),
-    )
+    assertThat(list).isNotNull()
+    assertThat(list!!.size).isEqualTo(1)
+
+    assertThat(list[0].contractDisplayName).isEqualTo("display name")
+    assertThat(list[0].renewalDate).isEqualTo(upcomingRenewalLocalDate)
+    assertThat(list[0].draftCertificateUrl).isEqualTo("draftUrl")
   }
 
   @Test
@@ -104,15 +106,15 @@ class GetUpcomingRenewalRemindersUseCaseTest {
 
     val result = getUpcomingRenewalRemindersUseCase.invoke()
 
-    assertThat(result).isRight().containsSubList(
-      List(30) { index ->
-        UpcomingRenewal(
-          contractDisplayName = "#$index",
-          renewalDate = clock.now().plus((index + 1).days).toLocalDateTime(TimeZone.UTC).date,
-          draftCertificateUrl = "url#$index",
-        )
-      },
-    )
+    val list = result.getOrNull()
+    assertThat(list).isNotNull()
+    list!!.forEachIndexed { index, upcomingRenewal ->
+      assertThat(upcomingRenewal.renewalDate).isEqualTo(
+        clock.now().plus((index + 1).days).toLocalDateTime(TimeZone.UTC).date,
+      )
+      assertThat(upcomingRenewal.contractDisplayName).isEqualTo("#$index")
+      assertThat(upcomingRenewal.draftCertificateUrl).isEqualTo("url#$index")
+    }
   }
 
   @Test
@@ -220,11 +222,21 @@ class GetUpcomingRenewalRemindersUseCaseTest {
 
     val result = getUpcomingRenewalRemindersUseCase.invoke()
 
-    assertThat(result).isRight().containsExactly(
-      UpcomingRenewal("#1", clock.now().plus(renewalOffsets[1]!!).toLocalDateTime(TimeZone.UTC).date, "url#1"),
-      UpcomingRenewal("#3", clock.now().plus(renewalOffsets[3]!!).toLocalDateTime(TimeZone.UTC).date, "url#3"),
-      UpcomingRenewal("#4", clock.now().plus(renewalOffsets[4]!!).toLocalDateTime(TimeZone.UTC).date, "url#4"),
-    )
+    val list = result.getOrNull()
+    assertThat(list).isNotNull()
+    assertThat(list!!.size).isEqualTo(3)
+
+    assertThat(list[0].contractDisplayName).isEqualTo("#1")
+    assertThat(list[0].renewalDate).isEqualTo(clock.now().plus(renewalOffsets[1]!!).toLocalDateTime(TimeZone.UTC).date)
+    assertThat(list[0].draftCertificateUrl).isEqualTo("url#1")
+
+    assertThat(list[1].contractDisplayName).isEqualTo("#3")
+    assertThat(list[1].renewalDate).isEqualTo(clock.now().plus(renewalOffsets[3]!!).toLocalDateTime(TimeZone.UTC).date)
+    assertThat(list[1].draftCertificateUrl).isEqualTo("url#3")
+
+    assertThat(list[2].contractDisplayName).isEqualTo("#4")
+    assertThat(list[2].renewalDate).isEqualTo(clock.now().plus(renewalOffsets[4]!!).toLocalDateTime(TimeZone.UTC).date)
+    assertThat(list[2].draftCertificateUrl).isEqualTo("url#4")
   }
 
   @Test
@@ -284,14 +296,11 @@ class GetUpcomingRenewalRemindersUseCaseTest {
     )
 
     val result2 = getUpcomingRenewalRemindersUseCase.invoke()
-
-    assertThat(result2).isRight().containsExactly(
-      UpcomingRenewal(
-        contractDisplayName = "#2",
-        renewalDate = clock.now().plus(1.days).toLocalDateTime(TimeZone.UTC).date,
-        draftCertificateUrl = "url#2",
-      ),
-    )
+    val list = result2.getOrNull()
+    assertThat(list).isNotNull()
+    assertThat(list!!.size).isEqualTo(1)
+    assertThat(list.first().renewalDate).isEqualTo(clock.now().plus(1.days).toLocalDateTime(TimeZone.UTC).date)
+    assertThat(list.first().draftCertificateUrl).isEqualTo("url#2")
   }
 
   @Test

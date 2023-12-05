@@ -5,13 +5,19 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.systemGestureExclusion
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -20,147 +26,142 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.hedvig.android.core.common.android.time.daysUntil
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.infocard.InfoCardTextButton
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.infocard.VectorWarningCard
-import com.hedvig.android.memberreminders.ApplicableMemberReminders
-import com.hedvig.android.memberreminders.UpcomingRenewal
+import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.notification.permission.NotificationPermissionState
 import hedvig.resources.R
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 
 @Composable
-fun MemberReminderCards(
-  memberReminders: ApplicableMemberReminders,
+fun MemberReminderCardsWithoutNotification(
+  memberReminders: ImmutableList<MemberReminder>,
   navigateToConnectPayment: () -> Unit,
-  navigateToContractDetail: (contractId: String) -> Unit,
   openUrl: (String) -> Unit,
-  notificationPermissionState: NotificationPermissionState,
-  snoozeNotificationPermissionReminder: () -> Unit,
+  navigateToAddMissingInfo: (String) -> Unit,
+  contentPadding: PaddingValues,
   modifier: Modifier = Modifier,
 ) {
-  Column(
+  MemberReminderCards(
+    memberReminders = memberReminders,
+    navigateToConnectPayment = navigateToConnectPayment,
+    openUrl = openUrl,
+    navigateToAddMissingInfo = navigateToAddMissingInfo,
+    snoozeNotificationPermissionReminder = {},
+    notificationPermissionState = null,
+    contentPadding = contentPadding,
     modifier = modifier,
-    verticalArrangement = Arrangement.spacedBy(8.dp),
-  ) {
-    AnimatedVisibility(
-      visible = memberReminders.enableNotifications != null,
-      enter = cardReminderEnterTransition,
-      exit = cardReminderExitTransition,
-      label = "enableNotifications animated visibility",
-    ) {
-      ReminderCardEnableNotifications(
-        snoozeNotificationPermissionReminder = snoozeNotificationPermissionReminder,
-        requestNotificationPermission = notificationPermissionState::launchPermissionRequest,
-      )
-    }
-    AnimatedVisibility(
-      visible = memberReminders.connectPayment != null,
-      enter = cardReminderEnterTransition,
-      exit = cardReminderExitTransition,
-      label = "connectPayment animated visibility",
-    ) {
-      ReminderCardConnectPayment(
+  )
+}
+
+@Composable
+fun MemberReminderCards(
+  memberReminders: ImmutableList<MemberReminder>,
+  navigateToConnectPayment: () -> Unit,
+  openUrl: (String) -> Unit,
+  navigateToAddMissingInfo: (String) -> Unit,
+  snoozeNotificationPermissionReminder: () -> Unit,
+  notificationPermissionState: NotificationPermissionState?,
+  contentPadding: PaddingValues,
+  modifier: Modifier = Modifier,
+) {
+  Column(modifier) {
+    if (memberReminders.size == 1) {
+      MemberReminderCard(
+        memberReminder = memberReminders.first(),
+        navigateToAddMissingInfo = navigateToAddMissingInfo,
         navigateToConnectPayment = navigateToConnectPayment,
+        openUrl = openUrl,
+        snoozeNotificationPermissionReminder = snoozeNotificationPermissionReminder,
+        notificationPermissionState = notificationPermissionState,
+        modifier = modifier.padding(contentPadding),
       )
-    }
-    AnimatedVisibility(
-      visible = memberReminders.coInsuredInfo != null,
-      enter = cardReminderEnterTransition,
-      exit = cardReminderExitTransition,
-      label = "coInsured animated visibility",
-    ) {
-      ReminderCoInsuredInfo(
-        navigateToContractDetail = {
-          memberReminders.coInsuredInfo
-            ?.coInsuredInfoList
-            ?.head
-            ?.contractId
-            ?.let {
-              navigateToContractDetail(it)
-            }
-        },
-      )
-    }
-    AnimatedVisibility(
-      visible = memberReminders.upcomingRenewals != null,
-      enter = cardReminderEnterTransition,
-      exit = cardReminderExitTransition,
-      label = "upcomingRenewals animated visibility",
-    ) {
-      memberReminders.upcomingRenewals?.upcomingRenewals?.withIndex()?.forEach { (renewalsIndex, upcomingRenewal) ->
-        ReminderCardUpcomingRenewals(
-          upcomingRenewal = upcomingRenewal,
+    } else if (memberReminders.isNotEmpty()) {
+      val pagerState = rememberPagerState(pageCount = { memberReminders.size })
+      HorizontalPager(
+        state = pagerState,
+        contentPadding = contentPadding,
+        beyondBoundsPageCount = 1,
+        pageSpacing = 8.dp,
+        key = { index -> memberReminders[index].id },
+        modifier = Modifier
+          .fillMaxWidth()
+          .systemGestureExclusion(),
+      ) { page ->
+        MemberReminderCard(
+          memberReminder = memberReminders[page],
+          navigateToAddMissingInfo = navigateToAddMissingInfo,
+          navigateToConnectPayment = navigateToConnectPayment,
           openUrl = openUrl,
+          snoozeNotificationPermissionReminder = snoozeNotificationPermissionReminder,
+          notificationPermissionState = notificationPermissionState,
+          modifier = modifier.fillMaxWidth(),
         )
-        if (renewalsIndex != memberReminders.upcomingRenewals?.upcomingRenewals?.lastIndex) {
-          Spacer(Modifier.height(8.dp))
-        }
       }
+
+      Spacer(Modifier.height(16.dp))
+
+      HorizontalPagerIndicator(
+        pagerState = pagerState,
+        pageCount = memberReminders.size,
+        activeColor = LocalContentColor.current,
+        modifier = Modifier
+          .padding(contentPadding)
+          .align(Alignment.CenterHorizontally),
+      )
     }
   }
 }
 
-/**
- * Member reminder cards without the notification reminder
- */
 @Composable
-fun MemberReminderCards(
-  memberReminders: ApplicableMemberReminders,
+private fun ColumnScope.MemberReminderCard(
+  memberReminder: MemberReminder,
+  navigateToAddMissingInfo: (String) -> Unit,
   navigateToConnectPayment: () -> Unit,
   openUrl: (String) -> Unit,
+  snoozeNotificationPermissionReminder: () -> Unit,
+  notificationPermissionState: NotificationPermissionState?,
   modifier: Modifier = Modifier,
-  navigateToAddMissingInfo: (String) -> Unit,
 ) {
-  Column(
-    modifier = modifier,
-    verticalArrangement = Arrangement.spacedBy(8.dp),
-  ) {
-    AnimatedVisibility(
-      visible = memberReminders.connectPayment != null,
-      enter = cardReminderEnterTransition,
-      exit = cardReminderExitTransition,
-      label = "connectPayment animated visibility",
-    ) {
-      ReminderCardConnectPayment(
-        navigateToConnectPayment = navigateToConnectPayment,
-      )
-    }
-    AnimatedVisibility(
-      visible = memberReminders.coInsuredInfo != null,
-      enter = cardReminderEnterTransition,
-      exit = cardReminderExitTransition,
-      label = "coInsured animated visibility",
-    ) {
-      ReminderCoInsuredInfo(
-        navigateToContractDetail = {
-          memberReminders.coInsuredInfo
-            ?.coInsuredInfoList
-            ?.firstOrNull()
-            ?.contractId
-            ?.let {
-              navigateToAddMissingInfo(it)
-            }
-        },
-      )
-    }
-    AnimatedVisibility(
-      visible = memberReminders.upcomingRenewals != null,
-      enter = cardReminderEnterTransition,
-      exit = cardReminderExitTransition,
-      label = "upcomingRenewals animated visibility",
-    ) {
-      memberReminders.upcomingRenewals?.upcomingRenewals?.withIndex()?.forEach { (renewalsIndex, upcomingRenewal) ->
-        ReminderCardUpcomingRenewals(
-          upcomingRenewal = upcomingRenewal,
-          openUrl = openUrl,
-        )
-        if (renewalsIndex != memberReminders.upcomingRenewals?.upcomingRenewals?.lastIndex) {
-          Spacer(Modifier.height(8.dp))
+  when (memberReminder) {
+    is MemberReminder.CoInsuredInfo -> ReminderCoInsuredInfo(
+      navigateToContractDetail = {
+        navigateToAddMissingInfo(memberReminder.contractId)
+      },
+      modifier = modifier,
+    )
+
+    is MemberReminder.ConnectPayment -> ReminderCardConnectPayment(
+      navigateToConnectPayment = navigateToConnectPayment,
+      modifier = modifier,
+    )
+
+    is MemberReminder.UpcomingRenewal -> ReminderCardUpcomingRenewals(
+      upcomingRenewal = memberReminder,
+      openUrl = openUrl,
+      modifier = modifier,
+    )
+
+    is MemberReminder.EnableNotifications -> {
+      if (notificationPermissionState != null) {
+        AnimatedVisibility(
+          visible = true,
+          enter = cardReminderEnterTransition,
+          exit = cardReminderExitTransition,
+          label = "enableNotifications animated visibility",
+          modifier = modifier,
+        ) {
+          ReminderCardEnableNotifications(
+            snoozeNotificationPermissionReminder = snoozeNotificationPermissionReminder,
+            requestNotificationPermission = notificationPermissionState::launchPermissionRequest,
+          )
         }
       }
     }
@@ -218,7 +219,7 @@ private fun ReminderCardConnectPayment(navigateToConnectPayment: () -> Unit, mod
 
 @Composable
 private fun ReminderCardUpcomingRenewals(
-  upcomingRenewal: UpcomingRenewal,
+  upcomingRenewal: MemberReminder.UpcomingRenewal,
   openUrl: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -278,7 +279,10 @@ private fun PreviewReminderCardConnectPayment() {
 private fun PreviewReminderCardUpcomingRenewals() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      ReminderCardUpcomingRenewals(UpcomingRenewal("contract name", LocalDate.parse("2024-03-05"), ""), {})
+      ReminderCardUpcomingRenewals(
+        MemberReminder.UpcomingRenewal("contract name", LocalDate.parse("2024-03-05"), ""),
+        {},
+      )
     }
   }
 }

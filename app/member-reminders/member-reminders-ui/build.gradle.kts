@@ -11,6 +11,7 @@ dependencies {
   implementation(libs.accompanist.permissions)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.immutable.collections)
+  implementation(libs.accompanist.pagerIndicators)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreDesignSystem)
   implementation(projects.coreIcons)

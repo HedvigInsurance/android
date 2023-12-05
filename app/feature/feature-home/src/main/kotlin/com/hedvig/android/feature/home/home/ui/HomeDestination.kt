@@ -80,7 +80,7 @@ import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.otherservices.OtherServicesBottomSheet
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminders
-import com.hedvig.android.memberreminders.ui.MemberReminderCards
+import com.hedvig.android.memberreminders.ui.MemberReminderCardsWithoutNotification
 import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.NotificationPermissionState
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
@@ -177,6 +177,7 @@ private fun HomeScreen(
               .windowInsetsPadding(WindowInsets.safeDrawing),
           )
         }
+
         is HomeUiState.Error -> {
           HedvigErrorSection(
             retry = reload,
@@ -185,6 +186,7 @@ private fun HomeScreen(
               .windowInsetsPadding(WindowInsets.safeDrawing),
           )
         }
+
         is HomeUiState.Success -> {
           HomeScreenSuccess(
             uiState = uiState,
@@ -350,15 +352,18 @@ private fun HomeScreenSuccess(
         memberReminderCards = {
           val memberReminders =
             uiState.memberReminders.onlyApplicableReminders(notificationPermissionState.status.isGranted)
-          MemberReminderCards(
+          var consumedWindowInsets by remember { mutableStateOf(WindowInsets(0.dp)) }
+
+          MemberReminderCardsWithoutNotification(
             memberReminders = memberReminders,
             navigateToConnectPayment = navigateToConnectPayment,
             navigateToAddMissingInfo = navigateToMissingInfo,
             openUrl = openUrl,
-            modifier = Modifier
-              .fillMaxWidth()
-              .padding(horizontal = 16.dp)
-              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+            contentPadding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
+              .exclude(consumedWindowInsets)
+              .only(WindowInsetsSides.Horizontal)
+              .asPaddingValues(),
+            modifier = Modifier.onConsumedWindowInsetsChanged { consumedWindowInsets = it },
           )
         },
         startClaimButton = {
@@ -440,6 +445,7 @@ private fun WelcomeMessage(homeText: HomeText, modifier: Modifier = Modifier) {
         formatter.format(homeText.inception.toJavaLocalDate()),
       )
     }
+
     is HomeText.Pending -> stringResource(R.string.home_tab_pending_unknown_title_without_name)
     is HomeText.Switching -> stringResource(R.string.home_tab_pending_switchable_welcome_title_without_name)
     is HomeText.Terminated -> stringResource(R.string.home_tab_terminated_welcome_title_without_name)
@@ -483,7 +489,7 @@ private fun PreviewHomeScreen() {
           ),
           veryImportantMessages = persistentListOf(HomeData.VeryImportantMessage("id", "Beware of the earthquake", "")),
           memberReminders = MemberReminders(
-            connectPayment = MemberReminder.ConnectPayment,
+            connectPayment = MemberReminder.ConnectPayment(),
           ),
           allowAddressChange = true,
           allowGeneratingTravelCertificate = true,
