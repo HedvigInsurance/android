@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.editcoinsured.di
 
 import com.apollographql.apollo3.ApolloClient
+import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.octopus.di.octopusClient
 import com.hedvig.android.feature.editcoinsured.data.CommitMidtermChangeUseCase
 import com.hedvig.android.feature.editcoinsured.data.CommitMidtermChangeUseCaseImpl
@@ -36,6 +37,7 @@ val editCoInsuredModule = module {
   single<CommitMidtermChangeUseCase> {
     CommitMidtermChangeUseCaseImpl(
       get<ApolloClient>(octopusClient),
+      get<NetworkCacheManager>(),
     )
   }
 

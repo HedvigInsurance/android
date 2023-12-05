@@ -40,6 +40,7 @@ fragment AgreementFragment on Agreement {
   activeFrom
   activeTo
   certificateUrl
+  creationCause
   displayItems {
     ...AgreementDisplayItemFragment
   }

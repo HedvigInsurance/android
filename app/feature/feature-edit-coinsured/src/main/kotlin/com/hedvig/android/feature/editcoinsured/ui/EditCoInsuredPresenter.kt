@@ -75,7 +75,8 @@ internal class EditCoInsuredPresenter(
           errorMessage = null
           isLoading = false
           listState = Loaded.CoInsuredListState(
-            originalCoInsured = result.coInsured,
+            originalCoInsured = result.coInsuredOnContract,
+            allCoInsured = result.allCoInsured,
             member = result.member,
           )
         }
@@ -93,12 +94,22 @@ internal class EditCoInsuredPresenter(
     CollectEvents { event ->
       when (event) {
         EditCoInsuredEvent.OnBottomSheetContinue -> {
-          if (addBottomSheetState.shouldFetchInfo()) {
+          val selectedCoInsured = addBottomSheetState.selectedCoInsured
+          if (selectedCoInsured != null) {
+            editedCoInsuredList = addCoInsured(selectedCoInsuredId, selectedCoInsured, listState)
+          } else if (addBottomSheetState.shouldFetchInfo()) {
             ssnQuery = addBottomSheetState.ssn
           } else {
             editedCoInsuredList = addCoInsuredFromBottomSheet(selectedCoInsuredId, addBottomSheetState, listState)
           }
         }
+
+        is EditCoInsuredEvent.OnCoInsuredSelected ->
+          addBottomSheetState =
+            addBottomSheetState.copy(
+              selectedCoInsured = event.coInsured,
+              errorMessage = null,
+            )
 
         is RemoveCoInsured -> {
           editedCoInsuredList = listState.coInsured.filterNot { it == event.coInsured }.toImmutableList()
@@ -136,6 +147,7 @@ internal class EditCoInsuredPresenter(
             lastName = event.coInsured.lastName,
             ssn = event.coInsured.ssn,
             birthDate = event.coInsured.birthDate,
+            selectableCoInsured = listState.allCoInsured,
             show = true,
           )
         }
@@ -145,7 +157,19 @@ internal class EditCoInsuredPresenter(
           show = true,
         )
 
-        OnAddCoInsuredClicked -> addBottomSheetState = Loaded.AddBottomSheetState(show = true)
+        OnAddCoInsuredClicked -> addBottomSheetState = Loaded.AddBottomSheetState(
+          show = true,
+          selectableCoInsured = listState.allCoInsured,
+        )
+
+        EditCoInsuredEvent.OnAddNewCoInsured ->
+          addBottomSheetState =
+            addBottomSheetState.copy(
+              selectableCoInsured = null,
+              selectedCoInsured = null,
+              errorMessage = null,
+            )
+
         ResetAddBottomSheetState -> {
           addBottomSheetState = Loaded.AddBottomSheetState()
           ssnQuery = null
@@ -284,6 +308,14 @@ internal class EditCoInsuredPresenter(
     )
     (listState.coInsured + updatedCoInsured).toImmutableList()
   }
+
+  private fun addCoInsured(selectedCoInsuredId: String?, coInsured: CoInsured, listState: Loaded.CoInsuredListState) =
+    if (selectedCoInsuredId != null) {
+      val old = listState.coInsured.first { it.internalId == selectedCoInsuredId }
+      listState.coInsured.updated(old, coInsured).toImmutableList()
+    } else {
+      (listState.coInsured + coInsured).toImmutableList()
+    }
 }
 
 internal sealed interface EditCoInsuredEvent {
@@ -305,6 +337,8 @@ internal sealed interface EditCoInsuredEvent {
 
   data object OnCommitChanges : EditCoInsuredEvent
 
+  data object OnAddNewCoInsured : EditCoInsuredEvent
+
   data class OnFirstNameChanged(val firstName: String) : EditCoInsuredEvent
 
   data class OnLastNameChanged(val lastName: String) : EditCoInsuredEvent
@@ -312,6 +346,8 @@ internal sealed interface EditCoInsuredEvent {
   data class OnBirthDateChanged(val birthDate: LocalDate) : EditCoInsuredEvent
 
   data class OnManualInputSwitchChanged(val show: Boolean) : EditCoInsuredEvent
+
+  data class OnCoInsuredSelected(val coInsured: CoInsured) : EditCoInsuredEvent
 
   data class OnSsnChanged(val ssn: String) : EditCoInsuredEvent
 }
@@ -330,6 +366,7 @@ internal sealed interface EditCoInsuredState {
     data class CoInsuredListState(
       val originalCoInsured: ImmutableList<CoInsured>? = null,
       val updatedCoInsured: ImmutableList<CoInsured>? = null,
+      val allCoInsured: ImmutableList<CoInsured>? = null,
       val member: Member? = null,
       val priceInfo: PriceInfo? = null,
       val isCommittingUpdate: Boolean = false,
@@ -356,12 +393,19 @@ internal sealed interface EditCoInsuredState {
       val ssn: String? = null,
       val birthDate: LocalDate? = null,
       val showManualInput: Boolean = false,
+      val selectableCoInsured: ImmutableList<CoInsured>? = null,
+      val selectedCoInsured: CoInsured? = null,
       val errorMessage: String? = null,
       val isLoading: Boolean = false,
       val show: Boolean = false,
     ) {
+
+      fun canPickExistingCoInsured() = !selectableCoInsured.isNullOrEmpty()
+
       fun canContinue() = (showManualInput && firstName != null && lastName != null && birthDate != null) ||
-        (!showManualInput && ssn != null)
+        (!showManualInput && ssn != null) ||
+        (selectedCoInsured != null)
+
 
       fun shouldFetchInfo() = !showManualInput && ssn != null && firstName == null && lastName == null
 

@@ -32,19 +32,19 @@ internal class GetCoInsuredUseCaseImpl(
       CoInsuredError.ContractNotFound
     }
 
-    val currentCoInsured = contract.let {
+    val coInsuredOnContract = contract.let {
       it.coInsured
         ?.filter { it.terminatesOn == null }
-        ?.map {
-          CoInsured(
-            it.firstName,
-            it.lastName,
-            it.birthdate,
-            it.ssn,
-            it.hasMissingInfo,
-          )
-        }
+        ?.map { it.toCoInsured() }
+        ?.toImmutableList()
+        ?: persistentListOf()
     }
+
+    val allCoInsured = result.currentMember.activeContracts
+      .mapNotNull { it.coInsured?.map { it.toCoInsured() } }
+      .flatten()
+      .filterNot { coinsured -> coinsured.hasMissingInfo || coInsuredOnContract.any { it.id == coinsured.id } }
+      .toImmutableList()
 
     CoInsuredResult(
       member = Member(
@@ -52,9 +52,18 @@ internal class GetCoInsuredUseCaseImpl(
         lastName = result.currentMember.lastName,
         ssn = result.currentMember.ssn,
       ),
-      coInsured = currentCoInsured?.toImmutableList() ?: persistentListOf(),
+      coInsuredOnContract = coInsuredOnContract,
+      allCoInsured = allCoInsured,
     )
   }
+
+  private fun CoInsuredQuery.Data.CurrentMember.ActiveContract.CoInsured.toCoInsured() = CoInsured(
+    firstName = firstName,
+    lastName = lastName,
+    birthDate = birthdate,
+    ssn = ssn,
+    hasMissingInfo = hasMissingInfo,
+  )
 }
 
 internal sealed interface CoInsuredError {
@@ -65,5 +74,6 @@ internal sealed interface CoInsuredError {
 
 internal data class CoInsuredResult(
   val member: Member,
-  val coInsured: ImmutableList<CoInsured>,
+  val coInsuredOnContract: ImmutableList<CoInsured>,
+  val allCoInsured: ImmutableList<CoInsured>,
 )

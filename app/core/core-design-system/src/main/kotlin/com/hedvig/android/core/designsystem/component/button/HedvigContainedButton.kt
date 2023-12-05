@@ -23,6 +23,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.animation.ThreeDotsLoading
+import com.hedvig.android.core.designsystem.material3.onSecondaryContainedButtonContainer
+import com.hedvig.android.core.designsystem.material3.secondaryContainedButtonContainer
 import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -37,6 +39,31 @@ fun HedvigContainedButton(
   colors: ButtonColors = ButtonDefaults.buttonColors(
     containerColor = MaterialTheme.colorScheme.primary,
     contentColor = MaterialTheme.colorScheme.onPrimary,
+    disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+    disabledContentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.38f),
+  ),
+) {
+  HedvigContainedButton(
+    onClick = onClick,
+    enabled = enabled,
+    modifier = modifier,
+    contentPadding = contentPadding,
+    colors = colors,
+  ) {
+    ButtonText(text)
+  }
+}
+
+@Composable
+fun HedvigSecondaryContainedButton(
+  text: String,
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+  contentPadding: PaddingValues = PaddingValues(16.dp),
+  enabled: Boolean = true,
+  colors: ButtonColors = ButtonDefaults.buttonColors(
+    containerColor = MaterialTheme.colorScheme.secondaryContainedButtonContainer,
+    contentColor = MaterialTheme.colorScheme.onSecondaryContainedButtonContainer,
     disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
     disabledContentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.38f),
   ),
@@ -78,24 +105,29 @@ fun HedvigContainedButton(
     contentPadding = contentPadding,
     colors = colors,
   ) {
-    val loadingTransition = updateTransition(isLoading)
-    loadingTransition.AnimatedContent(
-      transitionSpec = {
-        fadeIn(tween(durationMillis = 220, delayMillis = 90)) togetherWith fadeOut(tween(90))
-      },
-      contentAlignment = Alignment.Center,
-    ) { isLoading ->
-      if (isLoading) {
-        Box(
-          contentAlignment = Alignment.Center,
-        ) {
-          // render the text too so that the same space is taken in all cases
-          ButtonText(text, Modifier.alpha(0f))
-          ThreeDotsLoading()
-        }
-      } else {
-        ButtonText(text)
+    LoadingButton(isLoading, text)
+  }
+}
+
+@Composable
+private fun LoadingButton(isLoading: Boolean, text: String) {
+  val loadingTransition = updateTransition(isLoading, label = "loading transition")
+  loadingTransition.AnimatedContent(
+    transitionSpec = {
+      fadeIn(tween(durationMillis = 220, delayMillis = 90)) togetherWith fadeOut(tween(90))
+    },
+    contentAlignment = Alignment.Center,
+  ) { isLoading ->
+    if (isLoading) {
+      Box(
+        contentAlignment = Alignment.Center,
+      ) {
+        // render the text too so that the same space is taken in all cases
+        ButtonText(text, Modifier.alpha(0f))
+        ThreeDotsLoading()
       }
+    } else {
+      ButtonText(text)
     }
   }
 }
@@ -141,6 +173,16 @@ private fun PreviewHedvigContainedButton() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       HedvigContainedButton("Hello there", {}, Modifier.padding(24.dp))
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewHedvigSecondaryContainedButton() {
+  HedvigTheme {
+    Surface(color = MaterialTheme.colorScheme.background) {
+      HedvigSecondaryContainedButton("Hello there", {}, Modifier.padding(24.dp))
     }
   }
 }

@@ -2,7 +2,6 @@ package com.hedvig.android.feature.insurances.data
 
 import arrow.core.Either
 import arrow.core.raise.either
-import arrow.fx.coroutines.parZip
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.cache.normalized.FetchPolicy
 import com.apollographql.apollo3.cache.normalized.fetchPolicy
@@ -10,12 +9,11 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.productVariant.android.toProductVariant
-import com.hedvig.android.hanalytics.featureflags.FeatureManager
-import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import octopus.InsuranceContractsQuery
 import octopus.fragment.ContractFragment
+import octopus.type.AgreementCreationCause
 
 internal interface GetInsuranceContractsUseCase {
   suspend fun invoke(forceNetworkFetch: Boolean): Either<ErrorMessage, List<InsuranceContract>>
@@ -23,32 +21,26 @@ internal interface GetInsuranceContractsUseCase {
 
 internal class GetInsuranceContractsUseCaseImpl(
   private val apolloClient: ApolloClient,
-  private val featureManager: FeatureManager,
 ) : GetInsuranceContractsUseCase {
   override suspend fun invoke(forceNetworkFetch: Boolean): Either<ErrorMessage, List<InsuranceContract>> {
     return either {
-      parZip(
-        {
-          apolloClient
-            .query(InsuranceContractsQuery())
-            .fetchPolicy(if (forceNetworkFetch) FetchPolicy.NetworkOnly else FetchPolicy.CacheFirst)
-            .safeExecute()
-            .toEither(::ErrorMessage)
-            .bind()
-        },
-        { featureManager.isFeatureEnabled(Feature.NEW_MOVING_FLOW) },
-      ) { insuranceQueryData, supportsAddressChange ->
-        val contractHolderDisplayName = insuranceQueryData.getContractHolderDisplayName()
-        val contractHolderSSN = insuranceQueryData.currentMember.ssn
+      val insuranceQueryData = apolloClient
+        .query(InsuranceContractsQuery())
+        .fetchPolicy(if (forceNetworkFetch) FetchPolicy.NetworkOnly else FetchPolicy.CacheFirst)
+        .safeExecute()
+        .toEither(::ErrorMessage)
+        .bind()
 
-        val terminatedContracts = insuranceQueryData.currentMember.terminatedContracts.map {
-          it.toContract(isTerminated = true, supportsAddressChange, contractHolderDisplayName, contractHolderSSN)
-        }
-        val activeContracts = insuranceQueryData.currentMember.activeContracts.map {
-          it.toContract(isTerminated = false, supportsAddressChange, contractHolderDisplayName, contractHolderSSN)
-        }
-        terminatedContracts + activeContracts
+      val contractHolderDisplayName = insuranceQueryData.getContractHolderDisplayName()
+      val contractHolderSSN = insuranceQueryData.currentMember.ssn
+
+      val terminatedContracts = insuranceQueryData.currentMember.terminatedContracts.map {
+        it.toContract(isTerminated = true, contractHolderDisplayName, contractHolderSSN)
       }
+      val activeContracts = insuranceQueryData.currentMember.activeContracts.map {
+        it.toContract(isTerminated = false, contractHolderDisplayName, contractHolderSSN)
+      }
+      terminatedContracts + activeContracts
     }
   }
 }
@@ -58,7 +50,6 @@ private fun InsuranceContractsQuery.Data.getContractHolderDisplayName(): String 
 
 private fun ContractFragment.toContract(
   isTerminated: Boolean,
-  supportsAddressChange: Boolean,
   contractHolderDisplayName: String,
   contractHolderSSN: String?,
 ): InsuranceContract {
@@ -83,6 +74,7 @@ private fun ContractFragment.toContract(
       productVariant = currentAgreement.productVariant.toProductVariant(),
       certificateUrl = currentAgreement.certificateUrl,
       coInsured = coInsured?.map { it.toCoInsured() }?.toPersistentList() ?: persistentListOf(),
+      creationCause = currentAgreement.creationCause.toCreationCause(),
     ),
     upcomingInsuranceAgreement = upcomingChangedAgreement?.let {
       InsuranceAgreement(
@@ -97,11 +89,21 @@ private fun ContractFragment.toContract(
         productVariant = it.productVariant.toProductVariant(),
         certificateUrl = it.certificateUrl,
         coInsured = coInsured?.map { it.toCoInsured() }?.toPersistentList() ?: persistentListOf(),
+        creationCause = it.creationCause.toCreationCause(),
       )
     },
-    supportsAddressChange = supportsAddressChange,
+    supportsAddressChange = supportsMoving,
     isTerminated = isTerminated,
   )
+}
+
+private fun AgreementCreationCause.toCreationCause() = when (this) {
+  AgreementCreationCause.NEW_CONTRACT -> InsuranceAgreement.CreationCause.NEW_CONTRACT
+  AgreementCreationCause.RENEWAL -> InsuranceAgreement.CreationCause.RENEWAL
+  AgreementCreationCause.MIDTERM_CHANGE -> InsuranceAgreement.CreationCause.MIDTERM_CHANGE
+  AgreementCreationCause.UNKNOWN,
+  AgreementCreationCause.UNKNOWN__,
+  -> InsuranceAgreement.CreationCause.UNKNOWN
 }
 
 private fun ContractFragment.CoInsured.toCoInsured(): InsuranceAgreement.CoInsured = InsuranceAgreement.CoInsured(

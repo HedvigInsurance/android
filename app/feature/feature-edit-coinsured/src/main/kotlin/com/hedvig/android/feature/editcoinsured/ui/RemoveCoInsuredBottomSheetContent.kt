@@ -34,10 +34,10 @@ internal fun RemoveCoInsuredBottomSheetContent(
     modifier = Modifier.padding(horizontal = 16.dp),
   ) {
     Spacer(Modifier.height(16.dp))
-    Text("Are you ure you want to remove co-insured?")
+    Text(stringResource(id = R.string.CONTRACT_REMOVE_COINSURED_CONFIRMATION))
     Spacer(Modifier.height(24.dp))
     HedvigContainedButton(
-      text = "Yes, remove",
+      text = stringResource(id = R.string.REMOVE_CONFIRMATION_BUTTON),
       colors = ButtonDefaults.buttonColors(
         containerColor = MaterialTheme.colorScheme.error,
         contentColor = MaterialTheme.colorScheme.onError,

@@ -76,6 +76,7 @@ internal fun ContractDetailDestination(
   onCancelInsuranceClick: (cancelInsuranceData: CancelInsuranceData) -> Unit,
   openWebsite: (Uri) -> Unit,
   openChat: () -> Unit,
+  openUrl: (String) -> Unit,
   navigateUp: () -> Unit,
   imageLoader: ImageLoader,
 ) {
@@ -89,6 +90,7 @@ internal fun ContractDetailDestination(
     onChangeAddressClick = onChangeAddressClick,
     onCancelInsuranceClick = onCancelInsuranceClick,
     openChat = openChat,
+    openUrl = openUrl,
     openWebsite = openWebsite,
     navigateUp = navigateUp,
   )
@@ -107,6 +109,7 @@ private fun ContractDetailScreen(
   openWebsite: (Uri) -> Unit,
   navigateUp: () -> Unit,
   openChat: () -> Unit,
+  openUrl: (String) -> Unit,
 ) {
   Column(Modifier.fillMaxSize()) {
     TopAppBarWithBack(
@@ -185,6 +188,7 @@ private fun ContractDetailScreen(
                       },
                       onChangeAddressClick = onChangeAddressClick,
                       openChat = openChat,
+                      openUrl = openUrl,
                       onCancelInsuranceClick = {
                         onCancelInsuranceClick(
                           CancelInsuranceData(
@@ -297,6 +301,7 @@ private fun PreviewContractDetailScreen() {
               ),
               certificateUrl = null,
               coInsured = persistentListOf(),
+              creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
             ),
             upcomingInsuranceAgreement = null,
             renewalDate = LocalDate.fromEpochDays(500),
@@ -316,6 +321,7 @@ private fun PreviewContractDetailScreen() {
         navigateUp = {},
         openChat = {},
         onMissingInfoClick = {},
+        openUrl = {},
       )
     }
   }
