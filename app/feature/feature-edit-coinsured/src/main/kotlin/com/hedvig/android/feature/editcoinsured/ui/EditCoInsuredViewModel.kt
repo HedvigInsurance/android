@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.editcoinsured.ui
 
-import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.feature.editcoinsured.data.CommitMidtermChangeUseCase
 import com.hedvig.android.feature.editcoinsured.data.CreateMidtermChangeUseCase
 import com.hedvig.android.feature.editcoinsured.data.FetchCoInsuredPersonalInformationUseCase
@@ -13,7 +12,6 @@ internal class EditCoInsuredViewModel(
   fetchCoInsuredPersonalInformationUseCaseProvider: FetchCoInsuredPersonalInformationUseCase,
   createMidtermChangeUseCase: CreateMidtermChangeUseCase,
   commitMidtermChangeUseCase: CommitMidtermChangeUseCase,
-  networkCacheManager: NetworkCacheManager,
 ) : MoleculeViewModel<EditCoInsuredEvent, EditCoInsuredState>(
     EditCoInsuredState.Loading,
     EditCoInsuredPresenter(
@@ -22,6 +20,5 @@ internal class EditCoInsuredViewModel(
       fetchCoInsuredPersonalInformationUseCase = fetchCoInsuredPersonalInformationUseCaseProvider,
       createMidtermChangeUseCase = createMidtermChangeUseCase,
       commitMidtermChangeUseCase = commitMidtermChangeUseCase,
-      networkCacheManager = networkCacheManager,
     ),
   )

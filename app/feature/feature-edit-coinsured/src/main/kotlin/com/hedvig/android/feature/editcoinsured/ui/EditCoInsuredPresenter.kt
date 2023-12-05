@@ -8,7 +8,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import arrow.core.raise.either
-import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
@@ -40,7 +39,6 @@ internal class EditCoInsuredPresenter(
   private val fetchCoInsuredPersonalInformationUseCase: FetchCoInsuredPersonalInformationUseCase,
   private val createMidtermChangeUseCase: CreateMidtermChangeUseCase,
   private val commitMidtermChangeUseCase: CommitMidtermChangeUseCase,
-  private val networkCacheManager: NetworkCacheManager,
 ) : MoleculePresenter<EditCoInsuredEvent, EditCoInsuredState> {
   @Composable
   override fun MoleculePresenterScope<EditCoInsuredEvent>.present(lastState: EditCoInsuredState): EditCoInsuredState {
@@ -260,7 +258,6 @@ internal class EditCoInsuredPresenter(
               },
               ifRight = {
                 Snapshot.withMutableSnapshot {
-                  networkCacheManager.clearCache()
                   listState = listState.copy(isCommittingUpdate = false)
                   contractUpdateDate = it.contractUpdateDate
                 }

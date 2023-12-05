@@ -3,6 +3,7 @@ package com.hedvig.android.feature.editcoinsured.data
 import arrow.core.Either
 import arrow.core.raise.either
 import com.apollographql.apollo3.ApolloClient
+import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
@@ -16,6 +17,7 @@ internal interface CommitMidtermChangeUseCase {
 
 internal class CommitMidtermChangeUseCaseImpl(
   private val apolloClient: ApolloClient,
+  private val networkCacheManager: NetworkCacheManager,
 ) : CommitMidtermChangeUseCase {
   override suspend fun invoke(intentId: String): Either<ErrorMessage, CommitMidtermChangeSuccess> = either {
     val mutation = CommitMidtermChangeMutation(intentId)
@@ -31,9 +33,12 @@ internal class CommitMidtermChangeUseCaseImpl(
     }
 
     when (val state = result.midtermChangeIntentCommit.intent?.state) {
-      MidtermChangeIntentState.COMPLETED -> CommitMidtermChangeSuccess(
-        result.midtermChangeIntentCommit.intent.activationDate,
-      )
+      MidtermChangeIntentState.COMPLETED -> {
+        networkCacheManager.clearCache()
+        CommitMidtermChangeSuccess(
+          result.midtermChangeIntentCommit.intent.activationDate,
+        )
+      }
       MidtermChangeIntentState.INITIATED,
       MidtermChangeIntentState.UNKNOWN__,
       null,

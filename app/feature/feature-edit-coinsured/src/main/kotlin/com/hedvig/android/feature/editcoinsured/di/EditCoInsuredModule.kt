@@ -37,6 +37,7 @@ val editCoInsuredModule = module {
   single<CommitMidtermChangeUseCase> {
     CommitMidtermChangeUseCaseImpl(
       get<ApolloClient>(octopusClient),
+      get<NetworkCacheManager>(),
     )
   }
 
@@ -47,7 +48,6 @@ val editCoInsuredModule = module {
       get<FetchCoInsuredPersonalInformationUseCase>(),
       get<CreateMidtermChangeUseCase>(),
       get<CommitMidtermChangeUseCase>(),
-      get<NetworkCacheManager>(),
     )
   }
 }
