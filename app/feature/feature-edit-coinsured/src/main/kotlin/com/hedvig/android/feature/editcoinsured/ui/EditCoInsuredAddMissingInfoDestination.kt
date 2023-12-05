@@ -41,10 +41,7 @@ import kotlinx.datetime.LocalDate
 import octopus.type.CurrencyCode
 
 @Composable
-internal fun EditCoInsuredAddMissingInfoDestination(
-  viewModel: EditCoInsuredViewModel,
-  navigateUp: () -> Unit,
-) {
+internal fun EditCoInsuredAddMissingInfoDestination(viewModel: EditCoInsuredViewModel, navigateUp: () -> Unit) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
   EditCoInsuredScreen(
@@ -76,11 +73,9 @@ internal fun EditCoInsuredAddMissingInfoDestination(
     },
     onLastNameChanged = {
       viewModel.emit(EditCoInsuredEvent.OnLastNameChanged(it))
-
     },
     onBirthDateChanged = {
       viewModel.emit(EditCoInsuredEvent.OnBirthDateChanged(it))
-
     },
     onManualInputSwitchChanged = {
       viewModel.emit(EditCoInsuredEvent.OnManualInputSwitchChanged(it))

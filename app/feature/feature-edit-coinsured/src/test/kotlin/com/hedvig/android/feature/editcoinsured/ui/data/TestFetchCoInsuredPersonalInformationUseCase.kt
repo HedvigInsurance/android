@@ -8,7 +8,6 @@ import com.hedvig.android.feature.editcoinsured.data.CoInsuredPersonalInformatio
 import com.hedvig.android.feature.editcoinsured.data.FetchCoInsuredPersonalInformationUseCase
 
 internal class TestFetchCoInsuredPersonalInformationUseCase : FetchCoInsuredPersonalInformationUseCase {
-
   val errorMessages = Turbine<ErrorMessage>()
   val coInsuredPersonalInformation = Turbine<CoInsuredPersonalInformation>()
 

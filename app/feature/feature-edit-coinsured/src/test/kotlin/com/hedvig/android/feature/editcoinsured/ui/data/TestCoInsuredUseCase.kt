@@ -8,7 +8,6 @@ import com.hedvig.android.feature.editcoinsured.data.CoInsuredResult
 import com.hedvig.android.feature.editcoinsured.data.GetCoInsuredUseCase
 
 internal class TestGetCoInsuredUseCase : GetCoInsuredUseCase {
-
   val errorMessages = Turbine<CoInsuredError>()
   val coInsured = Turbine<CoInsuredResult>()
 

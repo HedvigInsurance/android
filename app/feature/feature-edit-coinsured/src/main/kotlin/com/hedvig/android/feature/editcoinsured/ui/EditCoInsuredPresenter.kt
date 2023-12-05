@@ -104,17 +104,21 @@ internal class EditCoInsuredPresenter(
           editedCoInsuredList = listState.coInsured.filterNot { it == event.coInsured }.toImmutableList()
         }
 
-        is EditCoInsuredEvent.OnSsnChanged -> addBottomSheetState =
-          addBottomSheetState.copy(ssn = event.ssn, errorMessage = null)
+        is EditCoInsuredEvent.OnSsnChanged ->
+          addBottomSheetState =
+            addBottomSheetState.copy(ssn = event.ssn, errorMessage = null)
 
-        is EditCoInsuredEvent.OnBirthDateChanged -> addBottomSheetState =
-          addBottomSheetState.copy(birthDate = event.birthDate, errorMessage = null)
+        is EditCoInsuredEvent.OnBirthDateChanged ->
+          addBottomSheetState =
+            addBottomSheetState.copy(birthDate = event.birthDate, errorMessage = null)
 
-        is EditCoInsuredEvent.OnFirstNameChanged -> addBottomSheetState =
-          addBottomSheetState.copy(firstName = event.firstName, errorMessage = null)
+        is EditCoInsuredEvent.OnFirstNameChanged ->
+          addBottomSheetState =
+            addBottomSheetState.copy(firstName = event.firstName, errorMessage = null)
 
-        is EditCoInsuredEvent.OnLastNameChanged -> addBottomSheetState =
-          addBottomSheetState.copy(lastName = event.lastName, errorMessage = null)
+        is EditCoInsuredEvent.OnLastNameChanged ->
+          addBottomSheetState =
+            addBottomSheetState.copy(lastName = event.lastName, errorMessage = null)
 
         is EditCoInsuredEvent.OnManualInputSwitchChanged -> {
           ssnQuery = null
@@ -284,18 +288,31 @@ internal class EditCoInsuredPresenter(
 
 internal sealed interface EditCoInsuredEvent {
   data object OnBottomSheetContinue : EditCoInsuredEvent
+
   data class RemoveCoInsured(val coInsured: CoInsured) : EditCoInsuredEvent
+
   data class OnEditCoInsuredClicked(val coInsured: CoInsured) : EditCoInsuredEvent
+
   data object OnDismissError : EditCoInsuredEvent
+
   data object OnAddCoInsuredClicked : EditCoInsuredEvent
+
   data object ResetAddBottomSheetState : EditCoInsuredEvent
+
   data object ResetRemoveBottomSheetState : EditCoInsuredEvent
+
   data class OnRemoveCoInsuredClicked(val coInsured: CoInsured) : EditCoInsuredEvent
+
   data object OnCommitChanges : EditCoInsuredEvent
+
   data class OnFirstNameChanged(val firstName: String) : EditCoInsuredEvent
+
   data class OnLastNameChanged(val lastName: String) : EditCoInsuredEvent
+
   data class OnBirthDateChanged(val birthDate: LocalDate) : EditCoInsuredEvent
+
   data class OnManualInputSwitchChanged(val show: Boolean) : EditCoInsuredEvent
+
   data class OnSsnChanged(val ssn: String) : EditCoInsuredEvent
 }
 
@@ -343,8 +360,8 @@ internal sealed interface EditCoInsuredState {
       val isLoading: Boolean = false,
       val show: Boolean = false,
     ) {
-      fun canContinue() = (showManualInput && firstName != null && lastName != null && birthDate != null)
-        || (!showManualInput && ssn != null)
+      fun canContinue() = (showManualInput && firstName != null && lastName != null && birthDate != null) ||
+        (!showManualInput && ssn != null)
 
       fun shouldFetchInfo() = !showManualInput && ssn != null && firstName == null && lastName == null
 
@@ -355,7 +372,8 @@ internal sealed interface EditCoInsuredState {
       }
 
       enum class SaveButtonLabel {
-        FETCH_INFO, ADD
+        FETCH_INFO,
+        ADD,
       }
     }
 

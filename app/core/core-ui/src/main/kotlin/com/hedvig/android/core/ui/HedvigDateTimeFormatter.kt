@@ -13,13 +13,6 @@ fun hedvigDateTimeFormatter(locale: Locale): DateTimeFormatter {
 }
 
 /**
- * Example output: "May 26 2023"
- */
-fun hedvigSecondaryDateTimeFormatter(locale: Locale): DateTimeFormatter {
-  return DateTimeFormatter.ofPattern("MMMM d yyyy", locale)
-}
-
-/**
  * Example output: "910113"
  */
 fun hedvigSecondaryBirthDateDateTimeFormatter(locale: Locale): DateTimeFormatter {

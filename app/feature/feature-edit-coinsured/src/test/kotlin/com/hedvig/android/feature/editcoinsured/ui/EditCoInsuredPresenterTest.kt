@@ -22,7 +22,6 @@ import org.junit.Before
 import org.junit.Test
 
 internal class EditCoInsuredPresenterTest {
-
   private val testGetCoInsuredUseCase = TestGetCoInsuredUseCase()
   private val testFetchCoInsuredPersonalInformationUseCase = TestFetchCoInsuredPersonalInformationUseCase()
   private val testCreateMidTermChangeUseCase = TestCreateMidTermChangeUseCase()
@@ -107,7 +106,7 @@ internal class EditCoInsuredPresenterTest {
       skipItems(1)
       sendEvent(EditCoInsuredEvent.OnSsnChanged("4321"))
       skipItems(1)
-      sendEvent(EditCoInsuredEvent.OnCoInsuredAddedFromBottomSheet)
+      sendEvent(EditCoInsuredEvent.OnBottomSheetContinue)
 
       val state = awaitItem()
       assertThat(state).isInstanceOf<EditCoInsuredState.Loaded>().run {

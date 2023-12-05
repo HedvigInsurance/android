@@ -96,7 +96,6 @@ internal fun EditCoInsuredAddOrRemoveDestination(
     },
     onLastNameChanged = {
       viewModel.emit(EditCoInsuredEvent.OnLastNameChanged(it))
-
     },
     onBirthDateChanged = {
       viewModel.emit(EditCoInsuredEvent.OnBirthDateChanged(it))
