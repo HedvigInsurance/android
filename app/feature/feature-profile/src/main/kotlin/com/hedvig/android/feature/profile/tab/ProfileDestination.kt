@@ -10,12 +10,18 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.onConsumedWindowInsetsChanged
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
@@ -34,6 +40,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -55,6 +62,7 @@ import com.hedvig.android.core.icons.hedvig.normal.Info
 import com.hedvig.android.core.icons.hedvig.normal.Payments
 import com.hedvig.android.core.icons.hedvig.normal.Settings
 import com.hedvig.android.core.ui.dialog.HedvigAlertDialog
+import com.hedvig.android.core.ui.plus
 import com.hedvig.android.memberreminders.ui.MemberReminderCards
 import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
@@ -72,7 +80,7 @@ internal fun ProfileDestination(
   navigateToSettings: () -> Unit,
   navigateToPayment: () -> Unit,
   navigateToConnectPayment: () -> Unit,
-  navigateToContractDetail: (contractId: String) -> Unit,
+  navigateToAddMissingInfo: (contractId: String) -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
   viewModel: ProfileViewModel,
@@ -87,7 +95,7 @@ internal fun ProfileDestination(
     navigateToSettings = navigateToSettings,
     navigateToPayment = navigateToPayment,
     navigateToConnectPayment = navigateToConnectPayment,
-    navigateToContractDetail = navigateToContractDetail,
+    navigateToAddMissingInfo = navigateToAddMissingInfo,
     openAppSettings = openAppSettings,
     openUrl = openUrl,
     snoozeNotificationPermission = viewModel::snoozeNotificationPermission,
@@ -105,7 +113,7 @@ private fun ProfileScreen(
   navigateToSettings: () -> Unit,
   navigateToPayment: () -> Unit,
   navigateToConnectPayment: () -> Unit,
-  navigateToContractDetail: (contractId: String) -> Unit,
+  navigateToAddMissingInfo: (contractId: String) -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
   snoozeNotificationPermission: () -> Unit,
@@ -166,16 +174,22 @@ private fun ProfileScreen(
       val memberReminders =
         uiState.memberReminders.onlyApplicableReminders(notificationPermissionState.status.isGranted)
       NotificationPermissionDialog(notificationPermissionState, openAppSettings)
+      var consumedWindowInsets by remember { mutableStateOf(WindowInsets(0.dp)) }
+
       MemberReminderCards(
         memberReminders = memberReminders,
         navigateToConnectPayment = navigateToConnectPayment,
-        navigateToContractDetail = navigateToContractDetail,
+        navigateToAddMissingInfo = navigateToAddMissingInfo,
         openUrl = openUrl,
         notificationPermissionState = notificationPermissionState,
         snoozeNotificationPermissionReminder = snoozeNotificationPermission,
-        modifier = Modifier.padding(horizontal = 16.dp),
+        contentPadding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
+          .exclude(consumedWindowInsets)
+          .only(WindowInsetsSides.Horizontal)
+          .asPaddingValues(),
+        modifier = Modifier.onConsumedWindowInsetsChanged { consumedWindowInsets = it },
       )
-      if (memberReminders.hasAnyReminders) {
+      if (memberReminders.isNotEmpty()) {
         Spacer(Modifier.height(16.dp))
       }
       HedvigTextButton(
@@ -283,7 +297,7 @@ private fun PreviewProfileSuccessScreen() {
         openUrl = {},
         snoozeNotificationPermission = {},
         onLogout = {},
-        navigateToContractDetail = {},
+        navigateToAddMissingInfo = {},
       )
     }
   }

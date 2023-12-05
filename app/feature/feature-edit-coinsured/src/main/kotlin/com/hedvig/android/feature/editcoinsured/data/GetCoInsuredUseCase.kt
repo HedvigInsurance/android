@@ -58,11 +58,11 @@ internal class GetCoInsuredUseCaseImpl(
   }
 
   private fun CoInsuredQuery.Data.CurrentMember.ActiveContract.CoInsured.toCoInsured() = CoInsured(
-    firstName,
-    lastName,
-    birthdate,
-    ssn,
-    hasMissingInfo,
+    firstName = firstName,
+    lastName = lastName,
+    birthDate = birthdate,
+    ssn = ssn,
+    hasMissingInfo = hasMissingInfo,
   )
 }
 

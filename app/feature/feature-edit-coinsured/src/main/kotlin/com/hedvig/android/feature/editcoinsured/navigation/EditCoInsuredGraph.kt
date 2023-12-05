@@ -21,6 +21,13 @@ fun NavGraphBuilder.editCoInsuredGraph(navigateUp: () -> Unit, navController: Na
     composable<EditCoInsuredDestination.AddInfo> {
       EditCoInsuredAddMissingInfoDestination(
         viewModel = koinViewModel { parametersOf(contractId) },
+        navigateToSuccessScreen = {
+          navController.navigate(EditCoInsuredDestination.Success(it)) {
+            popUpTo<AppDestination.EditCoInsured> {
+              inclusive = true
+            }
+          }
+        },
         navigateUp = navigateUp,
       )
     }
@@ -34,7 +41,7 @@ fun NavGraphBuilder.editCoInsuredGraph(navigateUp: () -> Unit, navController: Na
             }
           }
         },
-        navigateUp,
+        navigateUp = navigateUp,
       )
     }
     composable<EditCoInsuredDestination.Success> {

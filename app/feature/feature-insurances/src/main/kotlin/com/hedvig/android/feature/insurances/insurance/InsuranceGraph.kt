@@ -28,6 +28,7 @@ fun NavGraphBuilder.insuranceGraph(
   navigator: Navigator,
   openWebsite: (Uri) -> Unit,
   openChat: (NavBackStackEntry) -> Unit,
+  openUrl: (String) -> Unit,
   startMovingFlow: (NavBackStackEntry) -> Unit,
   startTerminationFlow: (backStackEntry: NavBackStackEntry, insuranceId: String, insuranceDisplayName: String) -> Unit,
   startEditCoInsured: (backStackEntry: NavBackStackEntry, contractId: String) -> Unit,
@@ -77,6 +78,7 @@ fun NavGraphBuilder.insuranceGraph(
         },
         openWebsite = openWebsite,
         openChat = { openChat(backStackEntry) },
+        openUrl = openUrl,
         navigateUp = navigator::navigateUp,
         imageLoader = imageLoader,
       )
