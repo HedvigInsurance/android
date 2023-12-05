@@ -313,7 +313,6 @@ private fun ChatBubble(
           ) {
             TextWithClickableUrls(
               text = chatMessage.text,
-              style = LocalTextStyle.current,
               modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
             )
           }
@@ -331,7 +330,6 @@ private fun ChatBubble(
               ) {
                 Text(
                   text = chatMessage.text,
-                  style = LocalTextStyle.current,
                   modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
                 )
               }
