@@ -25,7 +25,7 @@ internal class GetNeedsCoInsuredInfoRemindersUseCaseImpl(
     return either {
 
       if (!featureManager.isFeatureEnabled(Feature.EDIT_COINSURED)) {
-        raise(CoInsuredInfoReminderError.NoCoInsuredReminders)
+        raise(CoInsuredInfoReminderError.CoInsuredReminderNotEnabled)
       }
 
       val contracts = apolloClient.query(NeedsCoInsuredInfoReminderQuery())
@@ -54,6 +54,7 @@ internal class GetNeedsCoInsuredInfoRemindersUseCaseImpl(
 
 sealed interface CoInsuredInfoReminderError {
   data object NoCoInsuredReminders : CoInsuredInfoReminderError
+  data object CoInsuredReminderNotEnabled : CoInsuredInfoReminderError
 
   data class NetworkError(val errorMessage: ErrorMessage) : CoInsuredInfoReminderError, ErrorMessage by errorMessage
 }
