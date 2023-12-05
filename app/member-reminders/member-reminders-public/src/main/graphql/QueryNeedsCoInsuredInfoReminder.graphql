@@ -4,6 +4,7 @@ query NeedsCoInsuredInfoReminder {
       id
       coInsured {
         hasMissingInfo
+        terminatesOn
       }
     }
   }
