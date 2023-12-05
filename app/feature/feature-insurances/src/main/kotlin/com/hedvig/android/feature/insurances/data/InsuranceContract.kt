@@ -28,6 +28,7 @@ data class InsuranceAgreement(
   val productVariant: ProductVariant,
   val certificateUrl: String?,
   val coInsured: ImmutableList<CoInsured>,
+  val creationCause: CreationCause,
 ) {
   data class DisplayItem(
     val title: String,
@@ -39,7 +40,8 @@ data class InsuranceAgreement(
     private val birthDate: LocalDate?,
     private val firstName: String?,
     private val lastName: String?,
-    val activeFrom: LocalDate?,
+    val activatesOn: LocalDate?,
+    val terminatesOn: LocalDate?,
     val hasMissingInfo: Boolean,
   ) {
     fun getDisplayName() = buildString {
@@ -57,5 +59,12 @@ data class InsuranceAgreement(
     fun getSsnOrBirthDate(dateTimeFormatter: DateTimeFormatter) = ssn ?: birthDate
       ?.toJavaLocalDate()
       ?.let { dateTimeFormatter.format(it) }
+  }
+
+  enum class CreationCause {
+    UNKNOWN,
+    NEW_CONTRACT,
+    RENEWAL,
+    MIDTERM_CHANGE,
   }
 }

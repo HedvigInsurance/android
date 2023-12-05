@@ -7,6 +7,10 @@ plugins {
   alias(libs.plugins.squareSortDependencies)
 }
 
+android {
+  testOptions.unitTests.isReturnDefaultValues = true
+}
+
 dependencies {
   apolloMetadata(projects.apolloOctopusPublic)
 
@@ -38,6 +42,27 @@ dependencies {
   implementation(projects.dataTravelCertificatePublic)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
+  implementation(libs.arrow.fx)
+  implementation(libs.arrow.core)
+
+
+  testImplementation(libs.apollo.testingSupport)
+  testImplementation(libs.assertK)
+  testImplementation(libs.coroutines.test)
+  testImplementation(libs.junit)
+  testImplementation(libs.assertK)
+  testImplementation(libs.testParameterInjector)
+  testImplementation(libs.turbine)
+  testImplementation(projects.apolloOctopusTest)
+  testImplementation(projects.apolloTest)
+  testImplementation(projects.coreCommonTest)
+  testImplementation(projects.dataTravelCertificateTest)
+  testImplementation(projects.hanalyticsFeatureFlagsTest)
+  testImplementation(projects.languageTest)
+  testImplementation(projects.loggingTest)
+  testImplementation(projects.memberRemindersTest)
+  testImplementation(projects.moleculeTest)
+  testImplementation(projects.testClock)
 }
 
 apollo {

@@ -4,10 +4,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -23,7 +21,6 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.HedvigIcons
 import com.hedvig.android.core.icons.hedvig.normal.X
 import com.hedvig.android.core.icons.hedvig.small.hedvig.Lock
-import com.hedvig.android.core.icons.hedvig.small.hedvig.Plus
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import hedvig.resources.R
 
@@ -77,33 +74,23 @@ internal fun InsuredRow(
           }
 
           allowEdit && hasMissingInfo -> {
-            Text(stringResource(id = R.string.GENERAL_ADD_INFO_BUTTON))
-            Spacer(modifier = Modifier.width(6.dp))
-            Icon(
-              imageVector = HedvigIcons.Plus,
-              contentDescription = "Add",
-              modifier = Modifier.size(16.dp),
-            )
-          }
-
-          allowEdit -> {
             Text(stringResource(id = R.string.CONTRACT_EDIT_INFO))
           }
 
-          else -> {
-            Icon(
-              imageVector = HedvigIcons.X,
-              contentDescription = "Remove",
-              modifier = Modifier.size(16.dp),
-            )
-          }
+          !allowEdit -> Icon(
+            imageVector = HedvigIcons.X,
+            contentDescription = "Remove",
+            modifier = Modifier.size(16.dp),
+          )
+
+          else -> {}
         }
       }
     },
     spaceBetween = 8.dp,
     modifier = Modifier
       .clickable(enabled = !isMember) {
-        if (hasMissingInfo) {
+        if (allowEdit && hasMissingInfo) {
           onEdit()
         } else {
           onRemove()

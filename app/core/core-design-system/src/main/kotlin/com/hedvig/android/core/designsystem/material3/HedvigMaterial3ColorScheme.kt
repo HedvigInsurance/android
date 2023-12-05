@@ -20,6 +20,8 @@ internal val LocalHedvigMaterial3ColorScheme = staticCompositionLocalOf<HedvigMa
 class HedvigMaterial3ColorScheme(
   val containedButtonContainer: Color,
   val onContainedButtonContainer: Color,
+  val secondaryContainedButtonContainer: Color,
+  val onSecondaryContainedButtonContainer: Color,
   val warningElement: Color,
   val onWarningElement: Color,
   val warningContainer: Color,
@@ -48,6 +50,16 @@ val ColorScheme.onContainedButtonContainer: Color
   @ReadOnlyComposable
   @Composable
   get() = LocalHedvigMaterial3ColorScheme.current.onContainedButtonContainer
+
+val ColorScheme.secondaryContainedButtonContainer: Color
+  @ReadOnlyComposable
+  @Composable
+  get() = LocalHedvigMaterial3ColorScheme.current.secondaryContainedButtonContainer
+
+val ColorScheme.onSecondaryContainedButtonContainer: Color
+  @ReadOnlyComposable
+  @Composable
+  get() = LocalHedvigMaterial3ColorScheme.current.onSecondaryContainedButtonContainer
 
 // region warning colors
 val ColorScheme.warningElement: Color

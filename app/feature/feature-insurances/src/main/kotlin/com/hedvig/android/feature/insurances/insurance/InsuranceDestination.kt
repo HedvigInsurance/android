@@ -392,6 +392,7 @@ private fun PreviewInsuranceScreen() {
                 ),
                 certificateUrl = null,
                 coInsured = persistentListOf(),
+                creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
               ),
               upcomingInsuranceAgreement = null,
               renewalDate = LocalDate.fromEpochDays(500),
