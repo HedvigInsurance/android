@@ -3,6 +3,7 @@ package com.hedvig.android.feature.insurances.data
 import arrow.core.Either
 import arrow.core.raise.either
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
 import kotlinx.collections.immutable.persistentListOf
@@ -24,7 +25,8 @@ internal class GetInsuranceContractsUseCaseDemo : GetInsuranceContractsUseCase {
             displayItems = persistentListOf(),
             productVariant = ProductVariant(
               displayName = "Variant",
-              contractType = ContractType.RENTAL,
+              contractGroup = ContractGroup.RENTAL,
+              contractType = ContractType.SE_APARTMENT_RENT,
               partner = null,
               perils = persistentListOf(),
               insurableLimits = persistentListOf(),

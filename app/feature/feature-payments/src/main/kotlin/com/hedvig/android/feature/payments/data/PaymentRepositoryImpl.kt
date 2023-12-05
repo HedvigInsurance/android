@@ -10,7 +10,7 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiMoney
-import com.hedvig.android.data.contract.toContractType
+import com.hedvig.android.data.contract.toContractGroup
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import octopus.PaymentDataQuery
@@ -68,7 +68,7 @@ internal class PaymentRepositoryImpl(
         agreements = data.upcomingCharge?.contractsChargeBreakdown?.map { contractChargeBreakdown ->
           val productVariant = contractChargeBreakdown.contract.currentAgreement.productVariant
           PaymentData.Agreement(
-            contractType = productVariant.typeOfContract.toContractType(),
+            contractGroup = productVariant.typeOfContract.toContractGroup(),
             displayName = productVariant.displayName,
             grossCost = UiMoney.fromMoneyFragment(contractChargeBreakdown.gross),
           )

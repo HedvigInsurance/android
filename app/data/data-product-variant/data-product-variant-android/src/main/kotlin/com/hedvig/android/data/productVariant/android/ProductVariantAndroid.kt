@@ -1,5 +1,6 @@
 package com.hedvig.android.data.productVariant.android
 
+import com.hedvig.android.data.contract.toContractGroup
 import com.hedvig.android.data.contract.toContractType
 import com.hedvig.android.data.productvariant.InsurableLimit
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
@@ -23,6 +24,7 @@ fun InsuranceVariantDocument.InsuranceDocumentType.getStringRes() = when (this) 
 
 fun ProductVariantFragment.toProductVariant() = ProductVariant(
   displayName = this.displayName,
+  contractGroup = this.typeOfContract.toContractGroup(),
   contractType = this.typeOfContract.toContractType(),
   partner = this.partner,
   perils = this.perils.map { peril ->

@@ -25,6 +25,7 @@ import com.hedvig.android.core.ui.card.InsuranceCard
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
+import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
@@ -140,7 +141,8 @@ private class PreviewTerminatedContractsUiStateProvider :
               displayItems = persistentListOf(),
               productVariant = ProductVariant(
                 displayName = "Variant",
-                contractType = ContractType.RENTAL,
+                contractGroup = ContractGroup.RENTAL,
+                contractType = ContractType.SE_APARTMENT_RENT,
                 partner = null,
                 perils = persistentListOf(),
                 insurableLimits = persistentListOf(),

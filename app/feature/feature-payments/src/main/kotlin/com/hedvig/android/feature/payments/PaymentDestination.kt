@@ -68,7 +68,7 @@ import com.hedvig.android.core.ui.preview.DoubleBooleanCollectionPreviewParamete
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.uidata.UiMoney
-import com.hedvig.android.data.contract.ContractType
+import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.android.toPillow
 import com.hedvig.android.feature.payments.data.CampaignCode
 import com.hedvig.android.placeholder.PlaceholderHighlight
@@ -285,7 +285,7 @@ private fun ColumnScope.InsuranceCosts(insuranceCosts: ImmutableList<PaymentUiSt
         modifier = Modifier.weight(1f),
       ) {
         Image(
-          painter = painterResource(insuranceCost.contractType.toPillow()),
+          painter = painterResource(insuranceCost.contractGroup.toPillow()),
           contentDescription = null,
           modifier = Modifier.size(32.dp),
         )
@@ -482,12 +482,12 @@ private fun PreviewPaymentScreen(
             PaymentUiState.Content.InsuranceCost(
               displayName = "Home Insurance",
               cost = UiMoney(amount = 149.0, currencyCode = CurrencyCode.SEK),
-              contractType = ContractType.HOUSE,
+              contractGroup = ContractGroup.HOUSE,
             ),
             PaymentUiState.Content.InsuranceCost(
               displayName = "Accident Insurance",
               cost = UiMoney(amount = 100.0, currencyCode = CurrencyCode.SEK),
-              contractType = ContractType.ACCIDENT,
+              contractGroup = ContractGroup.ACCIDENT,
             ),
           ).toImmutableList(),
           campaignsStatus = if (hasCampaigns) {

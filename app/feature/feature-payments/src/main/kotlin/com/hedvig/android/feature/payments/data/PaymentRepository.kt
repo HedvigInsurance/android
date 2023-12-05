@@ -3,7 +3,7 @@ package com.hedvig.android.feature.payments.data
 import arrow.core.Either
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiMoney
-import com.hedvig.android.data.contract.ContractType
+import com.hedvig.android.data.contract.ContractGroup
 import kotlinx.datetime.LocalDate
 
 internal interface PaymentRepository {
@@ -47,7 +47,7 @@ internal data class PaymentData(
   val redeemedCampaigns: List<RedeemedCampaign>,
 ) {
   data class Agreement(
-    val contractType: ContractType,
+    val contractGroup: ContractGroup,
     val displayName: String,
     val grossCost: UiMoney,
   )

@@ -84,7 +84,7 @@ internal fun QuoteCard(
 private fun PillAndBasicInfo(quote: MoveQuote, movingDate: LocalDate) {
   Row(verticalAlignment = Alignment.CenterVertically) {
     Image(
-      painter = painterResource(id = quote.productVariant.contractType.toPillow()),
+      painter = painterResource(id = quote.productVariant.contractGroup.toPillow()),
       contentDescription = null,
       modifier = Modifier.size(48.dp),
     )
