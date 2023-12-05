@@ -66,6 +66,7 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.card.InsuranceCard
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
+import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.feature.insurances.data.CrossSell
@@ -384,7 +385,8 @@ private fun PreviewInsuranceScreen() {
                 displayItems = persistentListOf(),
                 productVariant = ProductVariant(
                   displayName = "Variant",
-                  contractType = ContractType.RENTAL,
+                  contractGroup = ContractGroup.RENTAL,
+                  contractType = ContractType.SE_APARTMENT_RENT,
                   partner = null,
                   perils = persistentListOf(),
                   insurableLimits = persistentListOf(),

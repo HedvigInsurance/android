@@ -40,6 +40,7 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
@@ -269,7 +270,8 @@ private fun PreviewYourInfoTab() {
           ).toImmutableList(),
           productVariant = ProductVariant(
             displayName = "Variant",
-            contractType = ContractType.RENTAL,
+            contractGroup = ContractGroup.RENTAL,
+            contractType = ContractType.SE_APARTMENT_RENT,
             partner = null,
             perils = persistentListOf(),
             insurableLimits = persistentListOf(),

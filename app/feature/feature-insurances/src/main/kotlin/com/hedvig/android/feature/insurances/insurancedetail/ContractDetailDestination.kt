@@ -48,6 +48,7 @@ import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.card.InsuranceCard
 import com.hedvig.android.core.ui.plus
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
+import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.contract.canChangeCoInsured
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
@@ -168,7 +169,7 @@ private fun ContractDetailScreen(
                       coverageItems = state.insuranceContract.currentInsuranceAgreement.displayItems
                         .map { it.title to it.value }
                         .toImmutableList(),
-                      allowEditCoInsured = state.insuranceContract.currentInsuranceAgreement.productVariant.contractType
+                      allowEditCoInsured = state.insuranceContract.currentInsuranceAgreement.productVariant.contractGroup
                         .canChangeCoInsured(),
                       allowChangeAddress = state.insuranceContract.supportsAddressChange,
                       onEditCoInsuredClick = onEditCoInsuredClick,
@@ -278,7 +279,8 @@ private fun PreviewContractDetailScreen() {
               displayItems = persistentListOf(),
               productVariant = ProductVariant(
                 displayName = "Variant",
-                contractType = ContractType.RENTAL,
+                contractGroup = ContractGroup.RENTAL,
+                contractType = ContractType.SE_APARTMENT_RENT,
                 partner = null,
                 perils = persistentListOf(),
                 insurableLimits = persistentListOf(),

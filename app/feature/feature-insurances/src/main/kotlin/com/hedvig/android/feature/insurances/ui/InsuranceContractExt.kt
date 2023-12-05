@@ -7,6 +7,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.hedvig.android.data.contract.android.toDrawableRes
+import com.hedvig.android.data.contract.isTrialContract
 import com.hedvig.android.feature.insurances.data.InsuranceContract
 import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
@@ -21,11 +22,19 @@ internal fun InsuranceContract.createChips(): ImmutableList<String> {
   return listOfNotNull(
     terminationDate?.let { terminationDate ->
       if (terminationDate == today) {
-        stringResource(R.string.CONTRACT_STATUS_TERMINATED_TODAY)
+        if (currentInsuranceAgreement.productVariant.contractType.isTrialContract()) {
+          stringResource(R.string.CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE_TOMORROW)
+        } else {
+          stringResource(R.string.CONTRACT_STATUS_TERMINATED_TODAY)
+        }
       } else if (terminationDate < today) {
         stringResource(R.string.CONTRACT_STATUS_TERMINATED)
       } else {
-        stringResource(R.string.CONTRACT_STATUS_TO_BE_TERMINATED, terminationDate)
+        if (currentInsuranceAgreement.productVariant.contractType.isTrialContract()) {
+          stringResource(R.string.CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE, terminationDate)
+        } else {
+          stringResource(R.string.CONTRACT_STATUS_TO_BE_TERMINATED, terminationDate)
+        }
       }
     },
     upcomingInsuranceAgreement?.activeFrom?.let { activeFromDate ->
@@ -46,7 +55,7 @@ internal fun InsuranceContract.createPainter(): Painter {
   return if (isTerminated) {
     ColorPainter(Color.Black.copy(alpha = 0.7f))
   } else {
-    currentInsuranceAgreement.productVariant.contractType
+    currentInsuranceAgreement.productVariant.contractGroup
       .toDrawableRes()
       .let { drawableRes -> painterResource(id = drawableRes) }
   }
