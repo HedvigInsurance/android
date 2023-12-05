@@ -160,8 +160,7 @@ private fun EditCoInsuredScreen(
               },
               isLoading = uiState.addBottomSheetState.isLoading,
               errorMessage = uiState.addBottomSheetState.errorMessage,
-              firstName = uiState.addBottomSheetState.firstName,
-              lastName = uiState.addBottomSheetState.lastName,
+              displayName = uiState.addBottomSheetState.displayName,
               ssn = uiState.addBottomSheetState.ssn,
               birthDate = uiState.addBottomSheetState.birthDate,
             )

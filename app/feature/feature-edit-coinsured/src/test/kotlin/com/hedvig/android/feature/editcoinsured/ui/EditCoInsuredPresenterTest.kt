@@ -18,31 +18,24 @@ import com.hedvig.android.molecule.test.test
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import octopus.type.CurrencyCode
-import org.junit.Before
 import org.junit.Test
 
 internal class EditCoInsuredPresenterTest {
+  @Test
+  fun `when fetching initial co-insured, should show list and member`() = runTest {
+    val testGetCoInsuredUseCase = TestGetCoInsuredUseCase()
+    val testFetchCoInsuredPersonalInformationUseCase = TestFetchCoInsuredPersonalInformationUseCase()
+    val testCreateMidTermChangeUseCase = TestCreateMidTermChangeUseCase()
+    val testCommitMidtermChangeUseCase = TestCommitMidtermChangeUseCase()
 
-  private val testGetCoInsuredUseCase = TestGetCoInsuredUseCase()
-  private val testFetchCoInsuredPersonalInformationUseCase = TestFetchCoInsuredPersonalInformationUseCase()
-  private val testCreateMidTermChangeUseCase = TestCreateMidTermChangeUseCase()
-  private val testCommitMidtermChangeUseCase = TestCommitMidtermChangeUseCase()
-
-  private lateinit var presenter: EditCoInsuredPresenter
-
-  @Before
-  fun setup() {
-    presenter = EditCoInsuredPresenter(
+    val presenter = EditCoInsuredPresenter(
       contractId = testContractId,
       getCoInsuredUseCase = testGetCoInsuredUseCase,
       fetchCoInsuredPersonalInformationUseCase = testFetchCoInsuredPersonalInformationUseCase,
       createMidtermChangeUseCase = testCreateMidTermChangeUseCase,
       commitMidtermChangeUseCase = testCommitMidtermChangeUseCase,
     )
-  }
 
-  @Test
-  fun `when fetching initial co-insured, should show list and member`() = runTest {
     presenter.test(EditCoInsuredState.Loading) {
       skipItems(1)
 
@@ -64,6 +57,19 @@ internal class EditCoInsuredPresenterTest {
 
   @Test
   fun `should open bottom sheet with info from selected co-insured`() = runTest {
+    val testGetCoInsuredUseCase = TestGetCoInsuredUseCase()
+    val testFetchCoInsuredPersonalInformationUseCase = TestFetchCoInsuredPersonalInformationUseCase()
+    val testCreateMidTermChangeUseCase = TestCreateMidTermChangeUseCase()
+    val testCommitMidtermChangeUseCase = TestCommitMidtermChangeUseCase()
+
+    val presenter = EditCoInsuredPresenter(
+      contractId = testContractId,
+      getCoInsuredUseCase = testGetCoInsuredUseCase,
+      fetchCoInsuredPersonalInformationUseCase = testFetchCoInsuredPersonalInformationUseCase,
+      createMidtermChangeUseCase = testCreateMidTermChangeUseCase,
+      commitMidtermChangeUseCase = testCommitMidtermChangeUseCase,
+    )
+
     presenter.test(
       EditCoInsuredState.Loaded(
         listState = EditCoInsuredState.Loaded.CoInsuredListState(
@@ -92,6 +98,19 @@ internal class EditCoInsuredPresenterTest {
 
   @Test
   fun `should update co-insured when saving from bottom sheet`() = runTest {
+    val testGetCoInsuredUseCase = TestGetCoInsuredUseCase()
+    val testFetchCoInsuredPersonalInformationUseCase = TestFetchCoInsuredPersonalInformationUseCase()
+    val testCreateMidTermChangeUseCase = TestCreateMidTermChangeUseCase()
+    val testCommitMidtermChangeUseCase = TestCommitMidtermChangeUseCase()
+
+    val presenter = EditCoInsuredPresenter(
+      contractId = testContractId,
+      getCoInsuredUseCase = testGetCoInsuredUseCase,
+      fetchCoInsuredPersonalInformationUseCase = testFetchCoInsuredPersonalInformationUseCase,
+      createMidtermChangeUseCase = testCreateMidTermChangeUseCase,
+      commitMidtermChangeUseCase = testCommitMidtermChangeUseCase,
+    )
+
     presenter.test(
       initialState = EditCoInsuredState.Loaded(
         listState = EditCoInsuredState.Loaded.CoInsuredListState(

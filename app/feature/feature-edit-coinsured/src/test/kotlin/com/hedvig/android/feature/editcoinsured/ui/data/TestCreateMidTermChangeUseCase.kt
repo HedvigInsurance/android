@@ -13,7 +13,6 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate
 
 internal class TestCreateMidTermChangeUseCase : CreateMidtermChangeUseCase {
-
   val errorMessages = Turbine<ErrorMessage>()
   private val createMidtermChangeResult = Turbine<CreateMidtermChangeResult>()
 

@@ -28,8 +28,7 @@ import kotlinx.datetime.LocalDate
 
 @Composable
 internal fun AddCoInsuredBottomSheetContent(
-  firstName: String?,
-  lastName: String?,
+  displayName: String,
   ssn: String?,
   birthDate: LocalDate?,
   errorMessage: String?,
@@ -66,11 +65,11 @@ internal fun AddCoInsuredBottomSheetContent(
       modifier = Modifier.fillMaxWidth(),
     )
     AnimatedVisibility(
-      visible = firstName?.isNotBlank() == true,
+      visible = displayName?.isNotBlank() == true,
       modifier = Modifier.padding(top = 4.dp),
     ) {
       HedvigTextField(
-        value = "$firstName $lastName",
+        value = displayName,
         onValueChange = {},
         label = {
           Text(stringResource(id = R.string.FULL_NAME_TEXT))
@@ -82,14 +81,14 @@ internal fun AddCoInsuredBottomSheetContent(
     }
     Spacer(Modifier.height(16.dp))
     HedvigContainedButton(
-      text = if (firstName != null && lastName != null) {
+      text = if (displayName.isNotBlank()) {
         stringResource(id = R.string.CONTRACT_ADD_COINSURED)
       } else {
         stringResource(id = R.string.CONTRACT_SSN_FETCH_INFO)
       },
       enabled = ssn != null,
       onClick = {
-        if (firstName != null && lastName != null) {
+        if (displayName.isNotBlank()) {
           onSave()
         } else {
           onFetchInfo()
@@ -118,8 +117,7 @@ private fun AddCoInsuredBottomSheetContentPreview() {
         onDismiss = {},
         isLoading = false,
         errorMessage = null,
-        firstName = "Test",
-        lastName = "Testersson",
+        displayName = "Test Testersson",
         ssn = "1234",
         birthDate = null,
         onSsnChanged = {},
@@ -139,8 +137,7 @@ private fun AddCoInsuredBottomSheetContentWithCoInsuredPreview() {
         onDismiss = {},
         isLoading = false,
         errorMessage = null,
-        firstName = "Test",
-        lastName = "Testersson",
+        displayName = "Test Testersson",
         ssn = "1234",
         birthDate = null,
         onSsnChanged = {},

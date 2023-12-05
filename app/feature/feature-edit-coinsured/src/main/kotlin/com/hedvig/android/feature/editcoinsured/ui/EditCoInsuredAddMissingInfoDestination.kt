@@ -16,6 +16,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -41,10 +42,7 @@ import kotlinx.datetime.LocalDate
 import octopus.type.CurrencyCode
 
 @Composable
-internal fun EditCoInsuredAddMissingInfoDestination(
-  viewModel: EditCoInsuredViewModel,
-  navigateUp: () -> Unit,
-) {
+internal fun EditCoInsuredAddMissingInfoDestination(viewModel: EditCoInsuredViewModel, navigateUp: () -> Unit) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
   EditCoInsuredScreen(
@@ -108,8 +106,10 @@ private fun EditCoInsuredScreen(
       is EditCoInsuredState.Loaded -> {
         val coroutineScope = rememberCoroutineScope()
 
-        if (uiState.contractUpdateDate != null) {
-          onCompleted(uiState.contractUpdateDate)
+        LaunchedEffect(uiState.contractUpdateDate) {
+          if (uiState.contractUpdateDate != null) {
+            onCompleted(uiState.contractUpdateDate)
+          }
         }
 
         if (uiState.addBottomSheetState.show) {
@@ -133,8 +133,7 @@ private fun EditCoInsuredScreen(
                   onResetAddBottomSheetState()
                 }
               },
-              firstName = uiState.addBottomSheetState.firstName,
-              lastName = uiState.addBottomSheetState.lastName,
+              displayName = uiState.addBottomSheetState.displayName,
               ssn = uiState.addBottomSheetState.ssn,
               birthDate = uiState.addBottomSheetState.birthDate,
               isLoading = uiState.addBottomSheetState.isLoading,

@@ -314,7 +314,19 @@ internal sealed interface EditCoInsuredState {
       val errorMessage: String? = null,
       val isLoading: Boolean = false,
       val show: Boolean = false,
-    )
+    ) {
+      val displayName: String = buildString {
+        if (firstName != null) {
+          append(firstName)
+        }
+        if (firstName != null && lastName != null) {
+          append(" ")
+        }
+        if (lastName != null) {
+          append(lastName)
+        }
+      }
+    }
 
     data class RemoveBottomSheetState(
       val coInsured: CoInsured? = null,
@@ -325,4 +337,4 @@ internal sealed interface EditCoInsuredState {
   }
 }
 
-fun <T> Iterable<T>.updated(old: T, new: T): List<T> = map { if (it == old) new else it }
+private fun <T> Iterable<T>.updated(old: T, new: T): List<T> = map { if (it == old) new else it }

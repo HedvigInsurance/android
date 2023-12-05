@@ -77,15 +77,13 @@ internal fun InsuredRow(
             Text(stringResource(id = R.string.CONTRACT_EDIT_INFO))
           }
 
-          allowEdit -> {}
+          !allowEdit -> Icon(
+            imageVector = HedvigIcons.X,
+            contentDescription = "Remove",
+            modifier = Modifier.size(16.dp),
+          )
 
-          else -> {
-            Icon(
-              imageVector = HedvigIcons.X,
-              contentDescription = "Remove",
-              modifier = Modifier.size(16.dp),
-            )
-          }
+          else -> {}
         }
       }
     },
