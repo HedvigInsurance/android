@@ -213,11 +213,11 @@ private fun FetchFromSsnFields(
       modifier = Modifier.fillMaxWidth(),
     )
     AnimatedVisibility(
-      visible = firstName?.isNotBlank() == true,
+      visible = displayName?.isNotBlank() == true,
       modifier = Modifier.padding(top = 4.dp),
     ) {
       HedvigTextField(
-        value = "$firstName $lastName",
+        value = displayName,
         onValueChange = {},
         label = {
           Text(stringResource(id = R.string.FULL_NAME_TEXT))

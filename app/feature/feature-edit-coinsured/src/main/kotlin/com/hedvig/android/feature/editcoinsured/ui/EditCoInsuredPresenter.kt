@@ -418,6 +418,17 @@ internal sealed interface EditCoInsuredState {
       enum class SaveButtonLabel {
         FETCH_INFO,
         ADD,
+
+      val displayName: String = buildString {
+        if (firstName != null) {
+          append(firstName)
+        }
+        if (firstName != null && lastName != null) {
+          append(" ")
+        }
+        if (lastName != null) {
+          append(lastName)
+        }
       }
     }
 
@@ -430,4 +441,4 @@ internal sealed interface EditCoInsuredState {
   }
 }
 
-fun <T> Iterable<T>.updated(old: T, new: T): List<T> = map { if (it == old) new else it }
+private fun <T> Iterable<T>.updated(old: T, new: T): List<T> = map { if (it == old) new else it }
