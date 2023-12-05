@@ -123,7 +123,9 @@ private fun ChatScreen(
         when (uiState) {
           ChatUiState.DemoMode -> {
             Box(
-              modifier = Modifier.fillMaxSize().debugBorder(),
+              modifier = Modifier
+                .fillMaxSize()
+                .debugBorder(),
               contentAlignment = Alignment.Center,
             ) {
               Text("Demo mode")
@@ -216,24 +218,23 @@ private class ChatUiStateProvider : CollectionPreviewParameterProvider<ChatUiSta
     ChatUiState.DisabledByFeatureFlag,
     ChatUiState.Loaded(
       List(10) { index ->
-        UiChatMessage(
-          ChatMessage.ChatMessageText(
-            id = index.toString(),
-            sender = if (index % 2 == 0 || index > 7) ChatMessage.Sender.MEMBER else ChatMessage.Sender.HEDVIG,
-            sentAt = Clock.System.now().plus(index.seconds),
-            text = "Hello #$index" + if (index == 0) {
-              "long".repeat(15)
-            } else {
-              ""
-            },
-          ),
-          sentStatus = when (index) {
-            0 -> UiChatMessage.SentStatus.NotYetSent
-            1 -> UiChatMessage.SentStatus.FailedToBeSent
-            else -> UiChatMessage.SentStatus.Sent
+        ChatMessage.ChatMessageText(
+          id = index.toString(),
+          sender = if (index % 2 == 0 || index > 7) ChatMessage.Sender.MEMBER else ChatMessage.Sender.HEDVIG,
+          sentAt = Clock.System.now().plus(index.seconds),
+          text = "Hello #$index" + if (index == 0) {
+            "long".repeat(15)
+          } else {
+            ""
           },
         )
-      }.toImmutableList(),
+      }.plus(
+        ChatMessage.FailedToBeSent.ChatMessageText(
+          id = "failed",
+          sentAt = Clock.System.now(),
+          text = "Failed to be sent",
+        ),
+      ).toImmutableList(),
       errorMessage = null,
       fetchMoreMessagesUiState = ChatUiState.Loaded.FetchMoreMessagesUiState.FetchingMore,
     ),

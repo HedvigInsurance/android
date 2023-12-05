@@ -30,6 +30,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -146,7 +147,7 @@ private fun ScrollToBottomOnKeyboardShownEffect(lazyListState: LazyListState) {
 }
 
 @Composable
-private fun ScrollToBottomOnOwnMessageSentEffect(lazyListState: LazyListState, messages: ImmutableList<UiChatMessage>) {
+private fun ScrollToBottomOnOwnMessageSentEffect(lazyListState: LazyListState, messages: ImmutableList<ChatMessage>) {
   var currentLatestMessage by remember { mutableStateOf(messages.firstOrNull()) }
   LaunchedEffect(messages) {
     currentLatestMessage = messages.firstOrNull()
@@ -154,9 +155,9 @@ private fun ScrollToBottomOnOwnMessageSentEffect(lazyListState: LazyListState, m
   LaunchedEffect(lazyListState) {
     snapshotFlow { currentLatestMessage }
       .filterNotNull()
-      .distinctUntilChanged { old, new -> old.chatMessage.id == new.chatMessage.id }
+      .distinctUntilChanged { old, new -> old.id == new.id }
       .filter {
-        it.chatMessage.sender == ChatMessage.Sender.MEMBER
+        it.sender == ChatMessage.Sender.MEMBER
       }
       .collectLatest {
         lazyListState.scrollToItem(0)
@@ -167,7 +168,7 @@ private fun ScrollToBottomOnOwnMessageSentEffect(lazyListState: LazyListState, m
 @Composable
 private fun ScrollToBottomOnNewMessageReceivedWhenAlreadyAtBottomEffect(
   lazyListState: LazyListState,
-  messages: ImmutableList<UiChatMessage>,
+  messages: ImmutableList<ChatMessage>,
 ) {
   var currentLatestMessage by remember { mutableStateOf(messages.firstOrNull()) }
   LaunchedEffect(messages) {
@@ -176,9 +177,9 @@ private fun ScrollToBottomOnNewMessageReceivedWhenAlreadyAtBottomEffect(
   LaunchedEffect(lazyListState) {
     snapshotFlow { currentLatestMessage }
       .filterNotNull()
-      .distinctUntilChanged { old, new -> old.chatMessage.id == new.chatMessage.id }
+      .distinctUntilChanged { old, new -> old.id == new.id }
       .filter {
-        it.chatMessage.sender == ChatMessage.Sender.HEDVIG
+        it.sender == ChatMessage.Sender.HEDVIG
       }
       .collectLatest {
         val isAlreadyCloseToTheBottom = lazyListState.firstVisibleItemIndex <= 2
@@ -206,20 +207,20 @@ private fun ChatLazyColumn(
   ) {
     items(
       items = uiState.messages,
-      key = { it.chatMessage.id },
-      contentType = {
-        when {
-          it.sentStatus == UiChatMessage.SentStatus.NotYetSent -> "BeingSent"
-          it.sentStatus == UiChatMessage.SentStatus.FailedToBeSent -> "FailedToBeSent"
-          it.chatMessage.sender == ChatMessage.Sender.MEMBER -> "FromMember"
-          it.chatMessage.sender == ChatMessage.Sender.HEDVIG -> "FromHedvig"
-          else -> null
+      key = { it.id },
+      contentType = { chatMessage ->
+        when (chatMessage) {
+          is ChatMessage.ChatMessageFile -> "ChatMessageFile"
+          is ChatMessage.ChatMessageGif -> "ChatMessageGif"
+          is ChatMessage.ChatMessageText -> "ChatMessageText"
+          is ChatMessage.FailedToBeSent.ChatMessageText -> "FailedToBeSent.ChatMessageText"
+          is ChatMessage.FailedToBeSent.ChatMessageUri -> "FailedToBeSent.ChatMessageUri"
         }
       },
-    ) { uiChatMessage: UiChatMessage ->
-      val alignment: Alignment.Horizontal = uiChatMessage.chatMessage.getMessageHorizontalAlignment()
+    ) { chatMessage: ChatMessage ->
+      val alignment: Alignment.Horizontal = chatMessage.messageHorizontalAlignment()
       ChatBubble(
-        chatMessage = uiChatMessage.chatMessage,
+        chatMessage = chatMessage,
         imageLoader = imageLoader,
         openUrl = openUrl,
         modifier = Modifier
@@ -296,7 +297,7 @@ private fun ChatBubble(
             ChatMessage.ChatMessageFile.MimeType.MP4, // todo chat: consider rendering videos inline in the chat
             ChatMessage.ChatMessageFile.MimeType.OTHER,
             -> {
-              FileMessage(chatMessage, openUrl)
+              AttachedFileMessage(onClick = { openUrl(chatMessage.url) })
             }
           }
         }
@@ -312,8 +313,36 @@ private fun ChatBubble(
           ) {
             TextWithClickableUrls(
               text = chatMessage.text,
+              style = LocalTextStyle.current,
               modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
             )
+          }
+        }
+
+        is ChatMessage.FailedToBeSent -> {
+          when (chatMessage) {
+            is ChatMessage.FailedToBeSent.ChatMessageText -> {
+              Surface(
+                shape = MaterialTheme.shapes.squircleMedium,
+                color = chatMessage.backgroundColor(),
+                onClick = {
+                  // todo chat: retry sending text instead
+                },
+              ) {
+                Text(
+                  text = chatMessage.text,
+                  style = LocalTextStyle.current,
+                  modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                )
+              }
+            }
+            is ChatMessage.FailedToBeSent.ChatMessageUri -> {
+              AttachedFileMessage(
+                onClick = {
+                  // todo chat: retry sending URI instead
+                },
+              )
+            }
           }
         }
       }
@@ -324,7 +353,7 @@ private fun ChatBubble(
 }
 
 @Composable
-private fun FileMessage(chatMessage: ChatMessage.ChatMessageFile, openUri: (String) -> Unit) {
+private fun AttachedFileMessage(onClick: () -> Unit) {
   val shape = MaterialTheme.shapes.squircleMedium
   val contentColor = LocalContentColor.current
   Box(
@@ -339,9 +368,7 @@ private fun FileMessage(chatMessage: ChatMessage.ChatMessageFile, openUri: (Stri
         }
       }
       .clip(MaterialTheme.shapes.squircleMedium)
-      .clickable {
-        openUri(chatMessage.url)
-      },
+      .clickable(onClick = onClick),
   ) {
     Row(
       horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
@@ -399,16 +426,18 @@ internal fun ChatMessageWithTimeSent(
   chatMessage: ChatMessage,
   modifier: Modifier = Modifier,
 ) {
-  Column(modifier) {
+  Column(
+    horizontalAlignment = chatMessage.messageHorizontalAlignment(),
+    modifier = modifier,
+  ) {
     messageSlot()
     Spacer(modifier = Modifier.height(4.dp))
-    val locale = getLocale()
     Text(
-      text = chatMessage.formattedDateTime(locale),
-      style = MaterialTheme.typography.bodySmall,
+      text = chatMessage.formattedDateTime(getLocale()),
+      style = MaterialTheme.typography.bodyMedium,
       color = MaterialTheme.colorScheme.onSurfaceVariant,
       modifier = Modifier
-        .align(chatMessage.getMessageHorizontalAlignment())
+        .align(chatMessage.messageHorizontalAlignment())
         .padding(horizontal = 2.dp),
     )
   }

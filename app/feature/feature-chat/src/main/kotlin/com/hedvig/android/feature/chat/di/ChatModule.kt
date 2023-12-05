@@ -15,6 +15,7 @@ import com.hedvig.android.feature.chat.data.ChatRepository
 import com.hedvig.android.feature.chat.data.ChatRepositoryImpl
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import kotlinx.datetime.Clock
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -31,6 +32,7 @@ val chatModule = module {
       chatClosedTracker = get<ChatClosedEventStore>(),
       featureManager = get<FeatureManager>(),
       demoManager = get<DemoManager>(),
+      clock = get<Clock>(),
     )
   }
   single<ChatRepository> {

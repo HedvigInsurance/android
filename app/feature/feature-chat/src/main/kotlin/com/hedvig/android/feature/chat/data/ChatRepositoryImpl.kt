@@ -107,7 +107,7 @@ internal class ChatRepositoryImpl(
   }
 
   override suspend fun sendPhoto(uri: Uri): Either<ErrorMessage, ChatMessage> = either<ErrorMessage, ChatMessage> {
-    logcat { "Chat uploading photo with uri:$uri" }
+    logcat { "Chat sendPhoto uploading photo with uri:$uri" }
     val uploadToken = uploadFile(uri)
     val result = apolloClient.mutation(ChatSendFileMutation(uploadToken))
       .safeExecute()
@@ -129,11 +129,27 @@ internal class ChatRepositoryImpl(
       logcat { "Status was: ${status.message}" }
     }
 
-    ensureNotNull(message.toUiChatMessage()) {
+    val chatMessage: ChatMessage = ensureNotNull(message.toUiChatMessage()) {
       ErrorMessage("Message was not of a known type")
     }
+    val fileMessageFragment = ensureNotNull(message as? ChatMessageFileMessageFragment) {
+      ErrorMessage(
+        "Sending a photo file did not end up returning a ChatMessageFileMessageFragment. Instead was $chatMessage",
+      )
+    }
+    populateCacheWithNewFileMessage(
+      ChatMessagesQuery.Data.Chat.ChatMessageFileMessage(
+        __typename = octopus.type.ChatMessageFile.type.name,
+        id = fileMessageFragment.id,
+        sender = fileMessageFragment.sender,
+        sentAt = fileMessageFragment.sentAt,
+        signedUrl = fileMessageFragment.signedUrl,
+        mimeType = fileMessageFragment.mimeType,
+      ),
+    )
+    chatMessage
   }.onLeft {
-    logcat { "Stelios: error uploading file:$it" }
+    logcat { "Chat sendPhoto failed with error message:$it" }
   }
 
   private suspend fun Raise<ErrorMessage>.uploadFile(uri: Uri): String {
@@ -153,7 +169,7 @@ internal class ChatRepositoryImpl(
   }
 
   override suspend fun sendMedia(uri: Uri): Either<ErrorMessage, ChatMessage> = either<ErrorMessage, ChatMessage> {
-    logcat { "Chat uploading media with uri:$uri" }
+    logcat { "Chat sendMedia uploading media with uri:$uri" }
     val uploadToken = uploadMedia(uri)
     val result = apolloClient.mutation(ChatSendFileMutation(uploadToken))
       .safeExecute()
@@ -162,7 +178,7 @@ internal class ChatRepositoryImpl(
       .chatSendFile
 
     val error = result.error
-    val message = result.message
+    val message: ChatSendFileMutation.Data.ChatSendFile.Message? = result.message
     val status = result.status
 
     ensure(error == null) {
@@ -175,11 +191,27 @@ internal class ChatRepositoryImpl(
       logcat { "Status was: ${status.message}" }
     }
 
-    ensureNotNull(message.toUiChatMessage()) {
+    val chatMessage: ChatMessage = ensureNotNull(message.toUiChatMessage()) {
       ErrorMessage("Message was not of a known type")
     }
+    val fileMessageFragment = ensureNotNull(message as? ChatMessageFileMessageFragment) {
+      ErrorMessage(
+        "Sending a media file did not end up returning a ChatMessageFileMessageFragment. Instead was $chatMessage",
+      )
+    }
+    populateCacheWithNewFileMessage(
+      ChatMessagesQuery.Data.Chat.ChatMessageFileMessage(
+        __typename = octopus.type.ChatMessageFile.type.name,
+        id = fileMessageFragment.id,
+        sender = fileMessageFragment.sender,
+        sentAt = fileMessageFragment.sentAt,
+        signedUrl = fileMessageFragment.signedUrl,
+        mimeType = fileMessageFragment.mimeType,
+      ),
+    )
+    chatMessage
   }.onLeft {
-    logcat { "Stelios: error uploading file:$it" }
+    logcat { "Chat sendMedia failed with error message:$it" }
   }
 
   private suspend fun Raise<ErrorMessage>.uploadMedia(uri: Uri): String {
@@ -207,6 +239,7 @@ internal class ChatRepositoryImpl(
   }
 
   override suspend fun sendMessage(text: String): Either<ErrorMessage, ChatMessage> = either {
+    logcat { "Chat sendMessage uploading text:$text" }
     val result = apolloClient.mutation(ChatSendMessageMutation(text))
       .safeExecute()
       .toEither(::ErrorMessage)
@@ -214,7 +247,7 @@ internal class ChatRepositoryImpl(
       .chatSendText
 
     val error = result.error
-    val message = result.message
+    val message: ChatSendMessageMutation.Data.ChatSendText.Message? = result.message
     val status = result.status
 
     ensure(error == null) {
@@ -231,22 +264,37 @@ internal class ChatRepositoryImpl(
     val chatMessage = ensureNotNull(message.toUiChatMessage()) {
       ErrorMessage("Message was not of a known type")
     }
-    populateCacheWithNewMessage(
+    val textMessageFragment = ensureNotNull(message as? ChatMessageTextMessageFragment) {
+      ErrorMessage(
+        "Sending a text message did not end up returning a ChatMessageTextMessageFragment. Instead was $chatMessage",
+      )
+    }
+    populateCacheWithNewTextMessage(
       ChatMessagesQuery.Data.Chat.ChatMessageTextMessage(
         __typename = octopus.type.ChatMessageText.type.name,
-        id = chatMessage.id,
-        sender = when (chatMessage.sender) {
-          ChatMessage.Sender.MEMBER -> ChatMessageSender.MEMBER
-          ChatMessage.Sender.HEDVIG -> ChatMessageSender.HEDVIG
-        },
-        sentAt = chatMessage.sentAt,
-        text = (chatMessage as ChatMessage.ChatMessageText).text,
+        id = textMessageFragment.id,
+        sender = textMessageFragment.sender,
+        sentAt = textMessageFragment.sentAt,
+        text = textMessageFragment.text,
       ),
     )
     chatMessage
+  }.onLeft {
+    logcat { "Chat sendMessage failed with error message:$it" }
   }
 
-  private suspend fun populateCacheWithNewMessage(newMessage: ChatMessagesQuery.Data.Chat.ChatMessageTextMessage) {
+  private suspend fun populateCacheWithNewTextMessage(newMessage: ChatMessagesQuery.Data.Chat.ChatMessageTextMessage) {
+    val existingData: ChatMessagesQuery.Data = try {
+      apolloClient.apolloStore.readOperation(ChatMessagesQuery(null), apolloClient.customScalarAdapters)
+    } catch (e: CacheMissException) {
+      // If we have no data in the cache, we can just ignore eagerly populating our cache with the message which we've
+      // just sent
+      return
+    }
+    mergeAndWriteMessagesToCache(existingData, listOf(newMessage))
+  }
+
+  private suspend fun populateCacheWithNewFileMessage(newMessage: ChatMessagesQuery.Data.Chat.ChatMessageFileMessage) {
     val existingData: ChatMessagesQuery.Data = try {
       apolloClient.apolloStore.readOperation(ChatMessagesQuery(null), apolloClient.customScalarAdapters)
     } catch (e: CacheMissException) {

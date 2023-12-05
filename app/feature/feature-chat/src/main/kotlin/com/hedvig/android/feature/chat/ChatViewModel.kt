@@ -6,12 +6,14 @@ import com.hedvig.android.feature.chat.closedevent.ChatClosedEventStore
 import com.hedvig.android.feature.chat.data.ChatRepository
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.molecule.android.MoleculeViewModel
+import kotlinx.datetime.Clock
 
 internal class ChatViewModel(
   chatRepository: Provider<ChatRepository>,
   chatClosedTracker: ChatClosedEventStore,
   featureManager: FeatureManager,
   demoManager: DemoManager,
+  clock: Clock,
 ) : MoleculeViewModel<ChatEvent, ChatUiState>(
     ChatUiState.Initializing,
     ChatPresenter(
@@ -19,5 +21,6 @@ internal class ChatViewModel(
       chatClosedTracker = chatClosedTracker,
       featureManager = featureManager,
       demoManager = demoManager,
+      clock = clock,
     ),
   )

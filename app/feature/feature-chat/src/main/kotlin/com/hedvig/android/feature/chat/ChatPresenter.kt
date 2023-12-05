@@ -23,14 +23,12 @@ import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.feature.chat.closedevent.ChatClosedEventStore
 import com.hedvig.android.feature.chat.data.ChatRepository
 import com.hedvig.android.feature.chat.model.ChatMessage
-import com.hedvig.android.feature.chat.ui.UiChatMessage
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
-import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
@@ -70,7 +68,7 @@ internal sealed interface ChatUiState {
   @Immutable
   data class Loaded(
     // The list of messages, ordered from the newest one to the oldest one
-    val messages: ImmutableList<UiChatMessage>,
+    val messages: ImmutableList<ChatMessage>,
     val errorMessage: ErrorMessage?,
     val fetchMoreMessagesUiState: FetchMoreMessagesUiState,
   ) : ChatUiState {
@@ -91,11 +89,12 @@ internal class ChatPresenter(
   private val chatClosedTracker: ChatClosedEventStore,
   private val featureManager: FeatureManager,
   private val demoManager: DemoManager,
+  private val clock: Clock,
 ) : MoleculePresenter<ChatEvent, ChatUiState> {
   @Composable
   override fun MoleculePresenterScope<ChatEvent>.present(lastState: ChatUiState): ChatUiState {
     // region early exits
-    val isInDemoMode by produceState(false || lastState is ChatUiState.DemoMode) {
+    val isInDemoMode by produceState(lastState is ChatUiState.DemoMode) {
       demoManager.isDemoMode().collectLatest { isDemoMode ->
         value = isDemoMode
       }
@@ -113,7 +112,7 @@ internal class ChatPresenter(
 
     val messages: SnapshotStateList<ChatMessage> = remember {
       mutableStateListOf(
-        *(lastState.safeCast<ChatUiState.Loaded>()?.messages?.map { it.chatMessage } ?: emptyList()).toTypedArray(),
+        *(lastState.safeCast<ChatUiState.Loaded>()?.messages ?: emptyList()).toTypedArray(),
       )
     }
 
@@ -126,17 +125,15 @@ internal class ChatPresenter(
 
     // Maybe merge the two text/uri queues together with a common type instead, to respect ordering them properly
     val photosToSend = remember { Channel<Uri>(Channel.UNLIMITED) }
-    var photosCurrentlyBeingSent: SnapshotStateList<Uri> = remember { mutableStateListOf() }
-    var photosFailedToBeSent: SnapshotStateList<Uri> = remember { mutableStateListOf() }
+    var photosFailedToBeSent: SnapshotStateList<FailedMessage.FailedUri> = remember { mutableStateListOf() }
     val mediaToSend = remember { Channel<Uri>(Channel.UNLIMITED) }
-    var mediaCurrentlyBeingSent: SnapshotStateList<Uri> = remember { mutableStateListOf() }
-    var mediaFailedToBeSent: SnapshotStateList<Uri> = remember { mutableStateListOf() }
+    var mediaFailedToBeSent: SnapshotStateList<FailedMessage.FailedUri> = remember { mutableStateListOf() }
     val messagesToSend = remember { Channel<String>(Channel.UNLIMITED) }
-    var messagesCurrentlyBeingSent: SnapshotStateList<String> = remember { mutableStateListOf() }
-    var messagesFailedToBeSent: SnapshotStateList<String> = remember { mutableStateListOf() }
+    var messagesFailedToBeSent: SnapshotStateList<FailedMessage.FailedText> = remember { mutableStateListOf() }
 
     LaunchMessagesWatcher(
       onCachedMessagesReceived = { cachedMessages ->
+
         Snapshot.withMutableSnapshot {
           isStillInitializing = false
           messages.clear()
@@ -158,35 +155,20 @@ internal class ChatPresenter(
     )
     LaunchNewPhotoSendingEffect(
       photosToSend = photosToSend,
-      addPhotoCurrentlyBeingSent = { file -> photosCurrentlyBeingSent.add(file) },
-      removePhotoCurrentlyBeingSent = { file -> photosCurrentlyBeingSent.remove(file) },
-      reportPhotoFailedToBeSent = { file ->
-        Snapshot.withMutableSnapshot {
-          photosCurrentlyBeingSent.remove(file)
-          photosFailedToBeSent.add(file)
-        }
+      reportPhotoFailedToBeSent = { uri ->
+        photosFailedToBeSent.add(FailedMessage.FailedUri(uri, clock.now()))
       },
     )
     LaunchNewMediaSendingEffect(
       mediaToSend = mediaToSend,
-      addMediaCurrentlyBeingSent = { file -> mediaCurrentlyBeingSent.add(file) },
-      removeMediaCurrentlyBeingSent = { file -> mediaCurrentlyBeingSent.remove(file) },
-      reportMediaFailedToBeSent = { file ->
-        Snapshot.withMutableSnapshot {
-          mediaCurrentlyBeingSent.remove(file)
-          mediaFailedToBeSent.add(file)
-        }
+      reportMediaFailedToBeSent = { uri ->
+        mediaFailedToBeSent.add(FailedMessage.FailedUri(uri, clock.now()))
       },
     )
     LaunchNewMessageSendingEffect(
       messagesToSend = messagesToSend,
-      addMessageCurrentlyBeingSent = { message -> messagesCurrentlyBeingSent.add(message) },
-      removeMessageCurrentlyBeingSent = { message -> messagesCurrentlyBeingSent.remove(message) },
       reportMessageFailedToBeSent = { message ->
-        Snapshot.withMutableSnapshot {
-          messagesCurrentlyBeingSent.remove(message)
-          messagesFailedToBeSent.add(message)
-        }
+        messagesFailedToBeSent.add(FailedMessage.FailedText(message, clock.now()))
       },
     )
 
@@ -229,24 +211,12 @@ internal class ChatPresenter(
     }
 
     // todo remove this for production
-    LaunchedEffect(messagesCurrentlyBeingSent.toList()) {
-      messagesCurrentlyBeingSent.toList().also {
-        logcat { "Stelios: messagesCurrentlyBeingSent:${messagesCurrentlyBeingSent.toList()}" }
-      }
-    }
-    // todo remove this for production
     LaunchedEffect(messagesFailedToBeSent.toList()) {
       messagesFailedToBeSent.toList().also {
         logcat { "Stelios: messagesFailedToBeSent:${messagesFailedToBeSent.toList()}" }
       }
     }
 
-    // todo remove this for production
-    LaunchedEffect(photosCurrentlyBeingSent.toList()) {
-      photosCurrentlyBeingSent.toList().also {
-        logcat { "Stelios: filesCurrentlyBeingSent:${photosCurrentlyBeingSent.toList()}" }
-      }
-    }
     // todo remove this for production
     LaunchedEffect(photosFailedToBeSent.toList()) {
       photosFailedToBeSent.toList().also {
@@ -257,20 +227,6 @@ internal class ChatPresenter(
     return if (isStillInitializing) {
       ChatUiState.Initializing
     } else {
-      val uiChatMessagesBeingSent = messagesCurrentlyBeingSent.mapIndexed { index, text ->
-        text.toUiChatMessage(index, UiChatMessage.SentStatus.NotYetSent)
-      }
-      val uiChatMessagesFailedToBeSent = messagesFailedToBeSent.mapIndexed { index, text ->
-        text.toUiChatMessage(index, UiChatMessage.SentStatus.FailedToBeSent)
-      }
-      val uiChatFilesBeingSent = photosCurrentlyBeingSent.mapIndexed { index, file ->
-        file.toUiChatMessage(index, UiChatMessage.SentStatus.NotYetSent)
-      }
-      val uiChatFilesFailedToBeSent = photosFailedToBeSent.mapIndexed { index, file ->
-        file.toUiChatMessage(index, UiChatMessage.SentStatus.FailedToBeSent)
-      }
-      val sentUiChatMessages = messages.map { UiChatMessage(it, UiChatMessage.SentStatus.Sent) }
-
       val fetchMoreMessagesUiState = run {
         if (failedToFetchMoreMessages) return@run ChatUiState.Loaded.FetchMoreMessagesUiState.FailedToFetch
         when (fetchMoreState) {
@@ -280,12 +236,12 @@ internal class ChatPresenter(
           is FetchMoreState.NothingMoreToFetch -> ChatUiState.Loaded.FetchMoreMessagesUiState.NothingMoreToFetch
         }
       }
+      val failedUiChatMessages = (messagesFailedToBeSent + photosFailedToBeSent + mediaFailedToBeSent).map {
+        it.toChatMessage()
+      }
       ChatUiState.Loaded(
-        messages = (
-          sentUiChatMessages + uiChatMessagesBeingSent + uiChatMessagesFailedToBeSent + uiChatFilesBeingSent +
-            uiChatFilesFailedToBeSent
-        )
-          .sortedByDescending { it.chatMessage.sentAt }
+        messages = (messages + failedUiChatMessages)
+          .sortedByDescending(ChatMessage::sentAt)
           .toPersistentList(),
         errorMessage = null,
         fetchMoreMessagesUiState = fetchMoreMessagesUiState,
@@ -363,49 +319,27 @@ internal class ChatPresenter(
   }
 
   @Composable
-  private fun LaunchNewPhotoSendingEffect(
-    photosToSend: Channel<Uri>,
-    addPhotoCurrentlyBeingSent: (Uri) -> Unit,
-    removePhotoCurrentlyBeingSent: (Uri) -> Unit,
-    reportPhotoFailedToBeSent: (Uri) -> Unit,
-  ) {
+  private fun LaunchNewPhotoSendingEffect(photosToSend: Channel<Uri>, reportPhotoFailedToBeSent: (Uri) -> Unit) {
     LaunchedEffect(photosToSend) {
       photosToSend.receiveAsFlow().parMap { uri: Uri ->
-        logcat { "Handling sending file with uri:${uri.path}" }
-        addPhotoCurrentlyBeingSent(uri)
-        chatRepository.provide().sendPhoto(uri).fold(
-          ifLeft = {
-            logcat(LogPriority.ERROR) { "Failed to send photo:${uri.path} | $it" }
-            reportPhotoFailedToBeSent(uri)
-          },
-          ifRight = {
-            removePhotoCurrentlyBeingSent(uri)
-          },
-        )
+        logcat { "Handling sending photo with uri:${uri.path}" }
+        chatRepository.provide().sendPhoto(uri).onLeft {
+          logcat(LogPriority.WARN) { "Failed to send photo:${uri.path} | $it" }
+          reportPhotoFailedToBeSent(uri)
+        }
       }.collect()
     }
   }
 
   @Composable
-  private fun LaunchNewMediaSendingEffect(
-    mediaToSend: Channel<Uri>,
-    addMediaCurrentlyBeingSent: (Uri) -> Unit,
-    removeMediaCurrentlyBeingSent: (Uri) -> Unit,
-    reportMediaFailedToBeSent: (Uri) -> Unit,
-  ) {
+  private fun LaunchNewMediaSendingEffect(mediaToSend: Channel<Uri>, reportMediaFailedToBeSent: (Uri) -> Unit) {
     LaunchedEffect(mediaToSend) {
       mediaToSend.receiveAsFlow().parMap { uri: Uri ->
-        logcat { "Handling sending file with uri:${uri.path}" }
-        addMediaCurrentlyBeingSent(uri)
-        chatRepository.provide().sendMedia(uri).fold(
-          ifLeft = {
-            logcat(LogPriority.ERROR) { "Failed to send media:${uri.path} | $it" }
-            reportMediaFailedToBeSent(uri)
-          },
-          ifRight = {
-            removeMediaCurrentlyBeingSent(uri)
-          },
-        )
+        logcat { "Handling sending media with uri:${uri.path}" }
+        chatRepository.provide().sendMedia(uri).onLeft {
+          logcat(LogPriority.WARN) { "Failed to send media:${uri.path} | $it" }
+          reportMediaFailedToBeSent(uri)
+        }
       }.collect()
     }
   }
@@ -413,50 +347,17 @@ internal class ChatPresenter(
   @Composable
   private fun LaunchNewMessageSendingEffect(
     messagesToSend: Channel<String>,
-    addMessageCurrentlyBeingSent: (String) -> Unit,
-    removeMessageCurrentlyBeingSent: (String) -> Unit,
     reportMessageFailedToBeSent: (String) -> Unit,
   ) {
     LaunchedEffect(messagesToSend) {
       messagesToSend.consumeAsFlow().parMap { message: String ->
-        addMessageCurrentlyBeingSent(message)
-        chatRepository.provide().sendMessage(message)
-          .fold(
-            ifLeft = {
-              logcat(LogPriority.ERROR) { "Stelios: Failed to send message:$message | $it" }
-              reportMessageFailedToBeSent(message)
-            },
-            ifRight = { chatMessage ->
-              removeMessageCurrentlyBeingSent(message)
-            },
-          )
+        logcat { "Handling sending message with text:$message" }
+        chatRepository.provide().sendMessage(message).onLeft {
+          logcat(LogPriority.WARN) { "Failed to send message:$it" }
+          reportMessageFailedToBeSent(message)
+        }
       }.collect()
     }
-  }
-
-  private fun String.toUiChatMessage(index: Int, sentStatus: UiChatMessage.SentStatus): UiChatMessage {
-    return UiChatMessage(
-      ChatMessage.ChatMessageText(
-        id = Uuid.randomUUID().toString(),
-        text = this,
-        sender = ChatMessage.Sender.MEMBER,
-        sentAt = Clock.System.now() - index.milliseconds,
-      ),
-      sentStatus = sentStatus,
-    )
-  }
-
-  private fun Uri.toUiChatMessage(index: Int, sentStatus: UiChatMessage.SentStatus): UiChatMessage {
-    return UiChatMessage(
-      ChatMessage.ChatMessageFile(
-        id = Uuid.randomUUID().toString(),
-        sender = ChatMessage.Sender.MEMBER,
-        sentAt = Clock.System.now() - index.milliseconds,
-        url = this.toString(),
-        mimeType = ChatMessage.ChatMessageFile.MimeType.OTHER,
-      ),
-      sentStatus = sentStatus,
-    )
   }
 }
 
@@ -469,4 +370,32 @@ private sealed interface FetchMoreState {
   data class FetchUntil(val fetchUntil: Instant) : FetchMoreState
 
   data object NothingMoreToFetch : FetchMoreState
+}
+
+private sealed interface FailedMessage {
+  val sentAt: Instant
+
+  data class FailedText(val message: String, override val sentAt: Instant) : FailedMessage
+
+  data class FailedUri(val uri: Uri, override val sentAt: Instant) : FailedMessage
+}
+
+private fun FailedMessage.toChatMessage(): ChatMessage {
+  return when (this) {
+    is FailedMessage.FailedText -> {
+      ChatMessage.FailedToBeSent.ChatMessageText(
+        id = Uuid.randomUUID().toString(),
+        sentAt = this.sentAt,
+        text = this.message,
+      )
+    }
+
+    is FailedMessage.FailedUri -> {
+      ChatMessage.FailedToBeSent.ChatMessageUri(
+        id = Uuid.randomUUID().toString(),
+        sentAt = this.sentAt,
+        uri = this.uri,
+      )
+    }
+  }
 }
