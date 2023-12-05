@@ -418,6 +418,7 @@ internal sealed interface EditCoInsuredState {
       enum class SaveButtonLabel {
         FETCH_INFO,
         ADD,
+      }
 
       val displayName: String = buildString {
         if (firstName != null) {

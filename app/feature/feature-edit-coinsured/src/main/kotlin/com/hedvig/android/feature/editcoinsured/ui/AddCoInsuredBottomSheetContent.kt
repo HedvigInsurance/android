@@ -3,7 +3,6 @@ package com.hedvig.android.feature.editcoinsured.ui
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -100,8 +99,7 @@ internal fun AddCoInsuredBottomSheetContent(
       }
       AnimatedVisibility(visible = !bottomSheetState.showManualInput) {
         FetchFromSsnFields(
-          firstName = bottomSheetState.firstName,
-          lastName = bottomSheetState.lastName,
+          displayName = bottomSheetState.displayName,
           errorMessage = bottomSheetState.errorMessage,
           onSsnChanged = onSsnChanged,
           onContinue = onContinue,
@@ -182,8 +180,7 @@ internal fun SelectableCoInsuredList(
 
 @Composable
 private fun FetchFromSsnFields(
-  firstName: String?,
-  lastName: String?,
+  displayName: String,
   errorMessage: String?,
   onSsnChanged: (String) -> Unit,
   onContinue: () -> Unit,
@@ -213,7 +210,7 @@ private fun FetchFromSsnFields(
       modifier = Modifier.fillMaxWidth(),
     )
     AnimatedVisibility(
-      visible = displayName?.isNotBlank() == true,
+      visible = displayName.isNotBlank(),
       modifier = Modifier.padding(top = 4.dp),
     ) {
       HedvigTextField(
