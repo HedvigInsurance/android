@@ -41,7 +41,7 @@ import com.hedvig.android.core.designsystem.component.datepicker.HedvigDatePicke
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.SelectableItem
+import com.hedvig.android.core.ui.SelectableHedvigCard
 import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.core.ui.rememberHedvigBirthDateDateTimeFormatter
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
@@ -110,11 +110,10 @@ internal fun AddCoInsuredBottomSheetContent(
       Spacer(Modifier.height(4.dp))
 
       HedvigCard(
-        Modifier
-          .fillMaxWidth()
-          .clickable {
-            onManualInputSwitchChanged(!bottomSheetState.showManualInput)
-          },
+        onClick = {
+          onManualInputSwitchChanged(!bottomSheetState.showManualInput)
+        },
+        modifier = Modifier.fillMaxWidth(),
       ) {
         HorizontalItemsWithMaximumSpaceTaken(
           modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
@@ -165,7 +164,7 @@ internal fun SelectableCoInsuredList(
   onCoInsuredSelected: (CoInsured) -> Unit,
 ) {
   selectableCoInsured.forEach {
-    SelectableItem(
+    SelectableHedvigCard(
       text = it.displayName,
       isSelected = it == selectedCoInsured,
       onClick = { onCoInsuredSelected(it) },
@@ -297,7 +296,7 @@ fun ManualInputFields(
 }
 
 @Composable
-fun DatePickerWithDialog(modifier: Modifier = Modifier, birthDate: LocalDate?, onSave: (LocalDate) -> Unit) {
+internal fun DatePickerWithDialog(modifier: Modifier = Modifier, birthDate: LocalDate?, onSave: (LocalDate) -> Unit) {
   val datePickerState = rememberDatePickerState()
 
   val selectedDateMillis: Long? = datePickerState.selectedDateMillis

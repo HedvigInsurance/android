@@ -22,7 +22,7 @@ import com.hedvig.android.core.designsystem.component.button.HedvigContainedButt
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.SelectableItem
+import com.hedvig.android.core.ui.SelectableHedvigCard
 import hedvig.resources.R
 
 @Composable
@@ -51,7 +51,7 @@ internal fun EditInsuranceBottomSheetContent(
       verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
       if (allowChangeAddress) {
-        SelectableItem(
+        SelectableHedvigCard(
           text = stringResource(R.string.insurance_details_change_address_button),
           isSelected = selectedItemIndex == 0,
           onClick = {
@@ -64,7 +64,7 @@ internal fun EditInsuranceBottomSheetContent(
         )
       }
       if (allowEditCoInsured) {
-        SelectableItem(
+        SelectableHedvigCard(
           text = stringResource(R.string.CONTRACT_EDIT_COINSURED),
           isSelected = selectedItemIndex == 1,
           onClick = {

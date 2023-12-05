@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 
 @Composable
-fun SelectableItem(text: String, isSelected: Boolean, onClick: () -> Unit) {
+fun SelectableHedvigCard(text: String, isSelected: Boolean, onClick: () -> Unit) {
   HedvigCard(onClick = onClick) {
     Row(
       verticalAlignment = Alignment.CenterVertically,

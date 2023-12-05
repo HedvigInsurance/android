@@ -32,8 +32,11 @@ fun WarningTextWithIcon(text: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun WarningTextWithIconForInput(text: String) {
-  Row(verticalAlignment = Alignment.CenterVertically) {
+fun WarningTextWithIconForInput(text: String, modifier: Modifier = Modifier) {
+  Row(
+    verticalAlignment = Alignment.CenterVertically,
+    modifier = modifier,
+  ) {
     Icon(
       imageVector = Icons.Hedvig.WarningFilled,
       contentDescription = null,
