@@ -59,6 +59,7 @@ import com.hedvig.android.feature.insurances.di.insurancesModule
 import com.hedvig.android.feature.login.di.loginModule
 import com.hedvig.android.feature.odyssey.di.odysseyModule
 import com.hedvig.android.feature.payments.di.paymentsModule
+import com.hedvig.android.feature.payments2.di.payments2Module
 import com.hedvig.android.feature.profile.di.profileModule
 import com.hedvig.android.feature.terminateinsurance.di.terminateInsuranceModule
 import com.hedvig.android.feature.travelcertificate.di.travelCertificateModule
@@ -380,6 +381,7 @@ val applicationModule = module {
       notificationModule,
       odysseyModule,
       paymentsModule,
+      payments2Module,
       profileModule,
       settingsDatastoreModule,
       sharedPreferencesModule,
