@@ -210,10 +210,7 @@ private fun PaymentAmountCard(
       )
       val dateTimeFormatter = rememberHedvigDateTimeFormatter()
       Text(
-        text = stringResource(
-          id = R.string.GENERAL_DUE,
-          dateTimeFormatter.format(futureCharge.dueDate.toJavaLocalDate()),
-        ),
+        text = dateTimeFormatter.format(futureCharge.dueDate.toJavaLocalDate()),
         color = MaterialTheme.colorScheme.onSurfaceVariant,
       )
     }
