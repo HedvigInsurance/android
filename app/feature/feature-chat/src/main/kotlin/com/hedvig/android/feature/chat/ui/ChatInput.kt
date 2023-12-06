@@ -36,7 +36,6 @@ import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -80,7 +79,7 @@ internal fun ChatInput(
   appPackageId: String,
   modifier: Modifier = Modifier,
 ) {
-  var expandChatOptions by remember { mutableStateOf(false) }
+  var expandChatOptions by rememberSaveable { mutableStateOf(true) }
   var text: String by rememberSaveable { mutableStateOf("") }
   val photoCaptureState = rememberPhotoCaptureState(appPackageId = appPackageId) { uri ->
     logcat { "ChatFileState sending uri:$uri" }
