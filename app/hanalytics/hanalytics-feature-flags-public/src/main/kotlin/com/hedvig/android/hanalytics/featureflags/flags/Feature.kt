@@ -27,5 +27,5 @@ enum class Feature(
   ),
   NEW_MOVING_FLOW("Moving flow from octopus. New design."),
   TRAVEL_CERTIFICATE("Let member generate travel certificate in app."),
-  EDIT_COINSURED("Let member edit co insured")
+  EDIT_COINSURED("Let member edit co insured"),
 }

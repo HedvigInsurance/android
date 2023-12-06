@@ -10,22 +10,7 @@ enum class ContractGroup {
   CAT,
   DOG,
   STUDENT,
-  UNKNOWN;
-}
-
-fun ContractGroup.canChangeCoInsured() = when (this) {
-  ContractGroup.HOMEOWNER,
-  ContractGroup.RENTAL,
-  ContractGroup.ACCIDENT,
-  ContractGroup.HOUSE,
-  ContractGroup.STUDENT,
-  ContractGroup.TRAVEL,
-  -> true
-  ContractGroup.CAR,
-  ContractGroup.CAT,
-  ContractGroup.DOG,
-  ContractGroup.UNKNOWN,
-  -> false
+  UNKNOWN,
 }
 
 fun String.toContractGroup(): ContractGroup = when (this) {

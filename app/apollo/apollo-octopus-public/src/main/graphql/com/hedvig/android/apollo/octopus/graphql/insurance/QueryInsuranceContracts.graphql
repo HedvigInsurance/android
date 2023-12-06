@@ -19,6 +19,7 @@ fragment ContractFragment on Contract {
   terminationDate
   exposureDisplayName
   supportsMoving
+  supportsCoInsured
   coInsured {
     firstName
     lastName

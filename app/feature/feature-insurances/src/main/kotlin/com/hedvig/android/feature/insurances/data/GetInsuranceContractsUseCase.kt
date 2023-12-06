@@ -8,8 +8,6 @@ import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.data.contract.canChangeCoInsured
-import com.hedvig.android.data.contract.toContractType
 import com.hedvig.android.data.productVariant.android.toProductVariant
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
@@ -36,7 +34,7 @@ internal class GetInsuranceContractsUseCaseImpl(
         .toEither(::ErrorMessage)
         .bind()
 
-      val canChangeCoInsured = featureManager.isFeatureEnabled(Feature.EDIT_COINSURED)
+      val isEditCoInsuredEnabled = featureManager.isFeatureEnabled(Feature.EDIT_COINSURED)
 
       val contractHolderDisplayName = insuranceQueryData.getContractHolderDisplayName()
       val contractHolderSSN = insuranceQueryData.currentMember.ssn
@@ -46,7 +44,7 @@ internal class GetInsuranceContractsUseCaseImpl(
           isTerminated = true,
           contractHolderDisplayName = contractHolderDisplayName,
           contractHolderSSN = contractHolderSSN,
-          canChangeCoInsured = canChangeCoInsured,
+          isEditCoInsuredEnabled = isEditCoInsuredEnabled,
         )
       }
       val activeContracts = insuranceQueryData.currentMember.activeContracts.map {
@@ -54,7 +52,7 @@ internal class GetInsuranceContractsUseCaseImpl(
           isTerminated = false,
           contractHolderDisplayName = contractHolderDisplayName,
           contractHolderSSN = contractHolderSSN,
-          canChangeCoInsured = canChangeCoInsured,
+          isEditCoInsuredEnabled = isEditCoInsuredEnabled,
         )
       }
       terminatedContracts + activeContracts
@@ -69,7 +67,7 @@ private fun ContractFragment.toContract(
   isTerminated: Boolean,
   contractHolderDisplayName: String,
   contractHolderSSN: String?,
-  canChangeCoInsured: Boolean,
+  isEditCoInsuredEnabled: Boolean,
 ): InsuranceContract {
   return InsuranceContract(
     id = id,
@@ -111,10 +109,7 @@ private fun ContractFragment.toContract(
       )
     },
     supportsAddressChange = supportsMoving,
-    supportsEditCoInsured = currentAgreement.productVariant
-      .typeOfContract
-      .toContractType()
-      .canChangeCoInsured() && canChangeCoInsured,
+    supportsEditCoInsured = supportsCoInsured && isEditCoInsuredEnabled,
     isTerminated = isTerminated,
   )
 }

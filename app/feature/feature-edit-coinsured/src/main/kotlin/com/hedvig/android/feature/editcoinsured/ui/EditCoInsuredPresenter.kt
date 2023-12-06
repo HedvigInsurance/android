@@ -399,13 +399,11 @@ internal sealed interface EditCoInsuredState {
       val isLoading: Boolean = false,
       val show: Boolean = false,
     ) {
-
       fun canPickExistingCoInsured() = !selectableCoInsured.isNullOrEmpty()
 
       fun canContinue() = (showManualInput && firstName != null && lastName != null && birthDate != null) ||
         (!showManualInput && ssn != null) ||
         (selectedCoInsured != null)
-
 
       fun shouldFetchInfo() = !showManualInput && ssn != null && firstName == null && lastName == null
 

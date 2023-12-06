@@ -23,7 +23,6 @@ internal class GetNeedsCoInsuredInfoRemindersUseCaseImpl(
 ) : GetNeedsCoInsuredInfoRemindersUseCase {
   override suspend fun invoke(): Either<CoInsuredInfoReminderError, NonEmptyList<MemberReminder.CoInsuredInfo>> {
     return either {
-
       if (!featureManager.isFeatureEnabled(Feature.EDIT_COINSURED)) {
         raise(CoInsuredInfoReminderError.CoInsuredReminderNotEnabled)
       }
@@ -49,11 +48,11 @@ internal class GetNeedsCoInsuredInfoRemindersUseCaseImpl(
 
   private fun NeedsCoInsuredInfoReminderQuery.Data.CurrentMember.ActiveContract.hasMissingInfoAndIsNotTerminating() =
     coInsured?.any { it.hasMissingInfo && it.terminatesOn == null } == true
-
 }
 
 sealed interface CoInsuredInfoReminderError {
   data object NoCoInsuredReminders : CoInsuredInfoReminderError
+
   data object CoInsuredReminderNotEnabled : CoInsuredInfoReminderError
 
   data class NetworkError(val errorMessage: ErrorMessage) : CoInsuredInfoReminderError, ErrorMessage by errorMessage
