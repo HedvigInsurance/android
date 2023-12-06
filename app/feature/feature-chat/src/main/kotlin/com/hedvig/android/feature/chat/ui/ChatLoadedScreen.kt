@@ -37,6 +37,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,11 +49,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.RenderVectorGroup
+import androidx.compose.ui.graphics.vector.VectorConfig
+import androidx.compose.ui.graphics.vector.VectorProperty
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -67,10 +74,15 @@ import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.InfoFilled
 import com.hedvig.android.core.icons.hedvig.normal.MultipleDocuments
+import com.hedvig.android.core.icons.hedvig.normal.RestartOneArrow
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.feature.chat.ChatUiState
 import com.hedvig.android.feature.chat.model.ChatMessage
+import com.hedvig.android.logger.logcat
+import com.hedvig.android.placeholder.PlaceholderHighlight
+import com.hedvig.android.placeholder.fade
+import com.hedvig.android.placeholder.placeholder
 import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.collectLatest
@@ -253,6 +265,12 @@ private fun ChatLazyColumn(
         key = "FetchingState",
         contentType = "FetchingState",
       ) {
+        DisposableEffect(Unit) {
+          logcat { "Stelios: FetchingState item appeared" }
+          onDispose {
+            logcat { "Stelios: FetchingState item is disposed" }
+          }
+        }
         LaunchedEffect(Unit) {
           onFetchMoreMessages()
         }
@@ -345,12 +363,18 @@ private fun ChatBubble(
             }
 
             is ChatMessage.FailedToBeSent.ChatMessageUri -> {
-              AttachedFileMessage(
-                onClick = {
-                  onRetrySendChatMessage(chatMessage.id)
-                },
-                containerColor = MaterialTheme.colorScheme.errorContainer,
-                borderColor = Color.Transparent,
+              val errorColor = MaterialTheme.colorScheme.error
+              ChatAsyncImage(
+                model = chatMessage.uri,
+                imageLoader = imageLoader,
+                isRetryable = true,
+                modifier = Modifier
+                  .clip(MaterialTheme.shapes.squircleMedium)
+                  .clickable { onRetrySendChatMessage(chatMessage.id) }
+                  .drawWithContent {
+                    drawContent()
+                    drawRect(color = errorColor, alpha = 0.12f)
+                  },
               )
             }
           }
@@ -395,27 +419,69 @@ private fun AttachedFileMessage(
 }
 
 @Composable
-private fun ChatAsyncImage(imageUrl: String, imageLoader: ImageLoader) {
+private fun ChatAsyncImage(
+  model: Any,
+  imageLoader: ImageLoader,
+  modifier: Modifier = Modifier,
+  isRetryable: Boolean = false,
+) {
   val loadedImageIntrinsicSize = remember { mutableStateOf<IntSize?>(null) }
-  // todo chat: decide what to show when messages fail to load
-  val fallbackAndErrorPainter: Painter = rememberShapedColorPainter(MaterialTheme.colorScheme.errorContainer)
-  val placeholder: Painter = rememberShapedColorPainter(MaterialTheme.colorScheme.surface)
+  val placeholderPainter: Painter = rememberShapedColorPainter(MaterialTheme.colorScheme.surface)
+  val errorPainter: Painter = if (isRetryable) {
+    val density = LocalDensity.current
+    val errorImage = Icons.Hedvig.RestartOneArrow
+    val vectorSize = 50.dp
+    val vectorSizeInPx = with(density) { vectorSize.toPx() }
+    rememberVectorPainter(
+      defaultWidth = vectorSize,
+      defaultHeight = vectorSize,
+      viewportWidth = vectorSizeInPx,
+      viewportHeight = vectorSizeInPx,
+      name = errorImage.name,
+      tintColor = MaterialTheme.colorScheme.error,
+      tintBlendMode = errorImage.tintBlendMode,
+      autoMirror = errorImage.autoMirror,
+      content = { viewportWidth: Float, viewportHeight: Float ->
+        RenderVectorGroup(
+          group = errorImage.root,
+          configs = mapOf(
+            // "" is the default name for vectors, so this applies to the entirety of the [errorImage]
+            "" to object : VectorConfig {
+              override fun <T> getOrDefault(property: VectorProperty<T>, defaultValue: T): T {
+                @Suppress("UNCHECKED_CAST") // TranslateX and TranslateY both have `Float` as their `T`
+                return when (property) {
+                  // todo chat: vector is almost centered, not quite though, the top left is centered only
+                  //  -12.5f is an approximation for now
+                  VectorProperty.TranslateX -> ((viewportWidth / 2) - 12.5f) as T
+                  VectorProperty.TranslateY -> ((viewportHeight / 2) - 12.5f) as T
+                  else -> defaultValue
+                }
+              }
+            },
+          ),
+        )
+      },
+    )
+  } else {
+    rememberShapedColorPainter(MaterialTheme.colorScheme.errorContainer)
+  }
   AsyncImage(
-    model = imageUrl,
+    model = model,
     contentDescription = null,
     imageLoader = imageLoader,
     transform = { state ->
       when (state) {
         is AsyncImagePainter.State.Loading -> {
-          state.copy(painter = placeholder)
+          state.copy(painter = placeholderPainter)
         }
 
-        is AsyncImagePainter.State.Error -> if (state.result.throwable is NullRequestDataException) {
-          // todo chat: fallback for image which is unable to load here
-          state.copy(painter = fallbackAndErrorPainter)
-        } else {
-          // todo chat: painter to show when the network request of the image failed here
-          state.copy(painter = fallbackAndErrorPainter)
+        is AsyncImagePainter.State.Error -> {
+          loadedImageIntrinsicSize.value = IntSize(0, 0)
+          if (state.result.throwable is NullRequestDataException) {
+            state.copy(painter = errorPainter)
+          } else {
+            state.copy(painter = errorPainter)
+          }
         }
 
         AsyncImagePainter.State.Empty -> state
@@ -428,8 +494,15 @@ private fun ChatAsyncImage(imageUrl: String, imageLoader: ImageLoader) {
         }
       }
     },
-    modifier = Modifier
-      .adjustSizeToImageRatioOrShowPlaceholder(getImageSize = { loadedImageIntrinsicSize.value })
+    modifier = modifier
+      .adjustSizeToImageRatio(getImageSize = { loadedImageIntrinsicSize.value })
+      .then(
+        if (loadedImageIntrinsicSize.value == null) {
+          Modifier.placeholder(visible = true, highlight = PlaceholderHighlight.fade())
+        } else {
+          Modifier
+        },
+      )
       .clip(MaterialTheme.shapes.squircleMedium),
   )
 }

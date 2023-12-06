@@ -2,15 +2,11 @@ package com.hedvig.android.feature.chat.ui
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.placeholder.PlaceholderHighlight
-import com.hedvig.android.placeholder.fade
-import com.hedvig.android.placeholder.placeholder
 
 /**
  * Adjusts the composable's size to match the image's aspect ratio.
@@ -21,21 +17,18 @@ import com.hedvig.android.placeholder.placeholder
  * width and adjusts the height to that width instead.
  * With that size, it does the same check and contains the final size to ([MinimumImageHeight]..[MaximumImageHeight]),
  * again adjusting the width to that new height.
- *
- * Shows a placeholder in case the image size is not yet decided.
  */
-internal fun Modifier.adjustSizeToImageRatioOrShowPlaceholder(getImageSize: () -> IntSize?): Modifier = this.composed {
+internal fun Modifier.adjustSizeToImageRatio(getImageSize: () -> IntSize?): Modifier = this.then(
   when {
     getImageSize() == null -> {
-      Modifier
-        .size(100.dp)
-        .placeholder(visible = true, highlight = PlaceholderHighlight.fade())
+      Modifier.size(100.dp)
     }
 
     else -> {
       Modifier.layout { measurable, constraints ->
         val imageSize = getImageSize()
-        val widthToHeightRatio = imageSize?.width?.toFloat()?.div(imageSize.height) ?: 1f
+        val widthToHeightRatio =
+          imageSize?.width?.toFloat()?.div(imageSize.height).takeIf { it?.isNaN() == false } ?: 1f
 
         val minPreferredWidth = constraints.maxWidth.toDp() * MinimumWidthTakenPercentage
         val maxPreferredWidth = constraints.maxWidth.toDp()
@@ -79,8 +72,8 @@ internal fun Modifier.adjustSizeToImageRatioOrShowPlaceholder(getImageSize: () -
         }
       }
     }
-  }
-}
+  },
+)
 
 private const val MaximumImageHeight = 250
 private const val PreferredImageHeight = 180
