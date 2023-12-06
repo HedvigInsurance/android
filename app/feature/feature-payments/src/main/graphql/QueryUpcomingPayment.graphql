@@ -4,6 +4,11 @@ query UpcomingPayment {
       contractsChargeBreakdown {
         contract {
           exposureDisplayName
+          currentAgreement {
+            productVariant {
+              displayName
+            }
+          }
         }
         gross {
           ...MoneyFragment

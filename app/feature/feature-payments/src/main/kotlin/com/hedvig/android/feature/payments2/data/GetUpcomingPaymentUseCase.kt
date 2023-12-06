@@ -10,6 +10,7 @@ import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.payments2.data.PaymentOverview.PaymentConnection.PaymentConnectionStatus
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.datetime.LocalDate
 import octopus.UpcomingPaymentQuery
 import octopus.type.MemberChargeStatus
@@ -30,7 +31,21 @@ internal data class GetUpcomingPaymentUseCaseImpl(
 
     PaymentOverview(
       futureCharge = result.currentMember.futureCharge?.toFutureCharge(),
-      chargeBreakdowns = persistentListOf(),
+      chargeBreakdowns = result.currentMember.futureCharge?.contractsChargeBreakdown?.map {
+        PaymentOverview.ChargeBreakdown(
+          contractDisplayName = it.contract.currentAgreement.productVariant.displayName,
+          contractDetails = it.contract.exposureDisplayName,
+          grossAmount = UiMoney.fromMoneyFragment(it.gross),
+          periods = it.periods.map {
+            PaymentOverview.ChargeBreakdown.Period(
+              amount = UiMoney.fromMoneyFragment(it.amount),
+              fromDate = it.fromDate,
+              toDate = it.toDate,
+              isPreviouslyFailedCharge = it.isPreviouslyFailedCharge,
+            )
+          }.toPersistentList(),
+        )
+      }?.toPersistentList() ?: persistentListOf(),
       paymentConnection = PaymentOverview.PaymentConnection(
         connectionInfo = result.currentMember.paymentInformation.connection?.let {
           PaymentOverview.PaymentConnection.ConnectionInfo(
@@ -120,6 +135,7 @@ internal data class PaymentOverview(
 
   data class ChargeBreakdown(
     val contractDisplayName: String,
+    val contractDetails: String,
     val grossAmount: UiMoney,
     val periods: ImmutableList<Period>,
   ) {
