@@ -1,10 +1,9 @@
 package com.hedvig.android.feature.payments2
 
-import androidx.compose.foundation.*
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -190,10 +189,7 @@ private fun PaymentAmountCard(
 
 @Suppress("UnusedReceiverParameter")
 @Composable
-private fun ColumnScope.PaymentDetails(
-  displayName: String,
-  displayValue: String,
-) {
+private fun PaymentDetails(displayName: String, displayValue: String) {
   Row(
     modifier = Modifier
       .fillMaxWidth()
@@ -222,7 +218,7 @@ private fun ColumnScope.PaymentDetails(
 }
 
 @Composable
-fun Discounts(modifier: Modifier = Modifier) {
+private fun Discounts(modifier: Modifier = Modifier) {
   Row(
     modifier = modifier.fillMaxWidth(),
     verticalAlignment = Alignment.CenterVertically,
@@ -238,9 +234,8 @@ fun Discounts(modifier: Modifier = Modifier) {
   }
 }
 
-
 @Composable
-fun PaymentHistory(modifier: Modifier = Modifier) {
+private fun PaymentHistory(modifier: Modifier = Modifier) {
   Row(
     modifier = modifier.fillMaxWidth(),
     verticalAlignment = Alignment.CenterVertically,
@@ -263,7 +258,7 @@ private fun PreviewPaymentScreen(
   val hasPaymentConnected = input.first
   val hasCampaigns = input.second
   HedvigTheme {
-    Surface {
+    Surface(color = MaterialTheme.colorScheme.background) {
       PaymentOverviewScreen(
         uiState = OverViewUiState.Content(
           upcomingPayment = UiMoney(1534.0, CurrencyCode.SEK),

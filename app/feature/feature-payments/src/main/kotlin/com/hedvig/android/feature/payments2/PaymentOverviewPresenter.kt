@@ -36,7 +36,7 @@ internal class PaymentOverviewPresenter : MoleculePresenter<PaymentEvent, OverVi
       dueDate = LocalDate.fromEpochDays(400),
       connectedPaymentDisplayName = "Nordea",
       connectedPaymentValue = "31489*****",
-      hasConnectedPayment = true
+      hasConnectedPayment = true,
     )
   }
 }
@@ -45,8 +45,9 @@ internal sealed interface PaymentEvent {
   data object Retry : PaymentEvent
 }
 
-sealed interface OverViewUiState {
+internal sealed interface OverViewUiState {
   data object Loading : OverViewUiState
+
   data class Error(
     val errorMessage: String,
   ) : OverViewUiState

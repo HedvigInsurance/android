@@ -31,7 +31,7 @@ fun NavGraphBuilder.paymentsGraph(
         onPaymentHistoryClicked = { }, // TODO
         onChangeBankAccount = navigateToConnectPayment,
         onDiscountClicked = { }, // TODO
-        onUpcomingPaymentClicked = {} // TODO
+        onUpcomingPaymentClicked = {}, // TODO
       )
     }
   }
