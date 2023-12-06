@@ -32,7 +32,7 @@ internal fun ChangeAddressResultDestination(movingDate: LocalDate?, popBackstack
       modifier = Modifier.align(Alignment.Center),
     )
     HedvigTextButton(
-      text = stringResource(id = hedvig.resources.R.string.general_close_button),
+      text = stringResource(id = hedvig.resources.R.string.general_done_button),
       onClick = popBackstack,
       modifier = Modifier
         .align(Alignment.BottomStart)

@@ -63,7 +63,7 @@ import com.hedvig.android.core.icons.hedvig.normal.Payments
 import com.hedvig.android.core.icons.hedvig.normal.Waiting
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.getLocale
-import com.hedvig.android.core.ui.hedvigSecondaryDateTimeFormatter
+import com.hedvig.android.core.ui.hedvigDateTimeFormatter
 import com.hedvig.android.core.ui.preview.DoubleBooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
@@ -251,7 +251,7 @@ private fun PaymentAmountCard(uiState: PaymentUiState, modifier: Modifier = Modi
 @Composable
 private fun NextPayment(upcomingCharge: PaymentUiState.Content.NextChargeStatus.UpcomingCharge) {
   val locale = getLocale()
-  val dateTimeFormatter = remember(locale) { hedvigSecondaryDateTimeFormatter(locale) }
+  val dateTimeFormatter = remember(locale) { hedvigDateTimeFormatter(locale) }
   HorizontalItemsWithMaximumSpaceTaken(
     startSlot = {
       Text(stringResource(R.string.PAYMENTS_NEXT_PAYMENT_SECTION_TITLE))

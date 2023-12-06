@@ -227,6 +227,7 @@ dependencies {
   implementation(projects.featureProfile)
   implementation(projects.featureTerminateInsurance)
   implementation(projects.featureTravelCertificate)
+  implementation(projects.featureEditCoinsured)
   implementation(projects.hanalyticsAndroid)
   implementation(projects.hanalyticsCore)
   implementation(projects.hanalyticsFeatureFlagsPublic)

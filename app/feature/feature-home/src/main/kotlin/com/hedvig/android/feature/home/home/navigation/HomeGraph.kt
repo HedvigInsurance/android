@@ -28,6 +28,7 @@ fun NavGraphBuilder.homeGraph(
   onGenerateTravelCertificateClicked: () -> Unit,
   navigateToClaimDetails: (NavBackStackEntry, claimId: String) -> Unit,
   navigateToPayinScreen: () -> Unit,
+  navigateToMissingInfo: (NavBackStackEntry, String) -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
   imageLoader: ImageLoader,
@@ -54,6 +55,7 @@ fun NavGraphBuilder.homeGraph(
         onStartClaim = { onStartClaim(backStackEntry) },
         onStartMovingFlow = { startMovingFlow(backStackEntry) },
         onGenerateTravelCertificateClicked = onGenerateTravelCertificateClicked,
+        navigateToMissingInfo = { contractId -> navigateToMissingInfo(backStackEntry, contractId) },
         onOpenCommonClaim = { commonClaimsData ->
           with(navigator) { backStackEntry.navigate(HomeDestinations.CommonClaimDestination(commonClaimsData)) }
         },

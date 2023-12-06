@@ -87,8 +87,18 @@ fun HorizontalItemsWithMaximumSpaceTaken(
       first?.maxIntrinsicHeight(firstConstraints.maxWidth) ?: 0,
       second?.maxIntrinsicHeight(secondConstraints.maxWidth) ?: 0,
     )
-    val firstPlaceable = first?.measure(firstConstraints.copy(minHeight = maxCommonHeight))
-    val secondPlaceable = second?.measure(secondConstraints.copy(minHeight = maxCommonHeight))
+    val firstPlaceable = first?.measure(
+      firstConstraints.copy(
+        minHeight = maxCommonHeight,
+        maxHeight = maxCommonHeight,
+      ),
+    )
+    val secondPlaceable = second?.measure(
+      secondConstraints.copy(
+        minHeight = maxCommonHeight,
+        maxHeight = maxCommonHeight,
+      ),
+    )
     val layoutHeight = max(firstPlaceable?.height ?: 0, secondPlaceable?.height ?: 0)
     layout(constraints.maxWidth, layoutHeight) {
       firstPlaceable?.placeRelative(0, 0)

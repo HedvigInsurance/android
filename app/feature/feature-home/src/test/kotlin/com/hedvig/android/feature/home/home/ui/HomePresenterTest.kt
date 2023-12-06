@@ -133,7 +133,7 @@ internal class HomePresenterTest {
           contractStatus = HomeData.ContractStatus.Active,
           claimStatusCardsData = null,
           memberReminders = MemberReminders(
-            enableNotifications = MemberReminder.EnableNotifications,
+            enableNotifications = MemberReminder.EnableNotifications(),
           ),
           veryImportantMessages = persistentListOf(),
           allowAddressChange = true,
