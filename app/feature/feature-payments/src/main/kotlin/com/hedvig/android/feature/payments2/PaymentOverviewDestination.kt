@@ -49,7 +49,6 @@ import com.hedvig.android.core.ui.infocard.VectorErrorCard
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.infocard.VectorWarningCard
 import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
-import com.hedvig.android.core.ui.rememberHedvigNextPaymentDateTimeFormatter
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.uidata.UiMoney
@@ -201,7 +200,7 @@ private fun PaymentAmountCard(
   onUpcomingPaymentClicked: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val nextPaymentDateTimeFormatter = rememberHedvigNextPaymentDateTimeFormatter()
+  val dateTimeFormatter = rememberHedvigDateTimeFormatter()
 
   HedvigCard(
     onClick = onUpcomingPaymentClicked,
@@ -235,7 +234,7 @@ private fun PaymentAmountCard(
         },
       )
       Text(
-        text = nextPaymentDateTimeFormatter.format(futureCharge.dueDate.toJavaLocalDate()),
+        text = dateTimeFormatter.format(futureCharge.dueDate.toJavaLocalDate()),
         color = MaterialTheme.colorScheme.onSurfaceVariant,
       )
     }
