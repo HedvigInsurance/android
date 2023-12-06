@@ -166,7 +166,7 @@ private fun PaymentOverviewScreen(
         HedvigErrorSection(retry = onRetry)
       }
 
-      OverViewUiState.Loading -> HedvigFullScreenCenterAlignedProgressDebounced()
+      OverViewUiState.Loading -> HedvigFullScreenCenterAlignedProgressDebounced(Modifier.weight(1f))
     }
   }
 }
