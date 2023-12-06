@@ -112,7 +112,6 @@ private fun PaymentOverviewScreen(
 
           futureCharge.failedCharge?.let {
             Spacer(modifier = Modifier.height(8.dp))
-
             VectorErrorCard(
               text = stringResource(
                 id = R.string.PAYMENTS_MISSED_PAYMENT,

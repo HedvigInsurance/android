@@ -33,7 +33,7 @@ fun VectorErrorCard(
   icon: ImageVector = Icons.Hedvig.WarningFilled,
   iconColor: Color = MaterialTheme.colorScheme.error,
   colors: CardColors = CardDefaults.outlinedCardColors(
-    containerColor = Color(0xFFFDE8E5), // TODO
+    containerColor = MaterialTheme.colorScheme.errorContainer,
     contentColor = MaterialTheme.colorScheme.onErrorContainer,
   ),
 ) {
