@@ -48,8 +48,10 @@ internal fun PaymentHistoryDestination(
     }
 
     Column {
+      Spacer(Modifier.height(8.dp))
+
       val dateTimeFormatter = rememberHedvigMonthDateTimeFormatter()
-      val groupedHistory = paymentOverview.pastCharges.groupBy { it.dueDate.year }
+      val groupedHistory = paymentOverview.pastCharges.reversed().groupBy { it.dueDate.year }
       groupedHistory.forEach {
         val year = it.key
         val charges = it.value
