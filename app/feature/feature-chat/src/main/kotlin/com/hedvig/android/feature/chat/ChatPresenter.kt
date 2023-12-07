@@ -122,7 +122,6 @@ internal class ChatPresenter(
     var fetchMoreMessagesFetchIndex by remember { mutableIntStateOf(0) }
     var failedToFetchMoreMessages by remember { mutableStateOf(false) }
 
-    // todo chat: Maybe merge the text/uri queues together with a common type instead of having 3 separate queues?
     val photosToSend = remember { Channel<Uri>(Channel.UNLIMITED) }
     var photosFailedToBeSent: SnapshotStateList<FailedMessage.FailedUri> = remember { mutableStateListOf() }
     val mediaToSend = remember { Channel<Uri>(Channel.UNLIMITED) }
@@ -151,7 +150,10 @@ internal class ChatPresenter(
     LaunchFetchMoreMessagesEffect(
       fetchMoreMessagesFetchIndex = fetchMoreMessagesFetchIndex,
       fetchMoreState = fetchMoreState,
-      setFetchMoreState = { fetchMoreState = it },
+      reportNothingMoreToFetch = { fetchMoreState = FetchMoreState.NothingMoreToFetch },
+      succededInFetchingMoreMessages = { nextUntil ->
+        fetchMoreState = FetchMoreState.IdleWithKnownNextFetch(nextUntil)
+      },
       failedToFetchMoreMessages = { failedToFetchMoreMessages = true },
     )
     LaunchNewPhotoSendingEffect(
@@ -244,7 +246,9 @@ internal class ChatPresenter(
       val fetchMoreMessagesUiState = run {
         if (failedToFetchMoreMessages) return@run ChatUiState.Loaded.FetchMoreMessagesUiState.FailedToFetch
         when (fetchMoreState) {
-          is FetchMoreState.HaveNotReceivedInitialFetchUntil -> ChatUiState.Loaded.FetchMoreMessagesUiState.StillInitializing
+          is FetchMoreState.HaveNotReceivedInitialFetchUntil ->
+            ChatUiState.Loaded.FetchMoreMessagesUiState.StillInitializing
+
           is FetchMoreState.FetchUntil -> ChatUiState.Loaded.FetchMoreMessagesUiState.FetchingMore
           is FetchMoreState.IdleWithKnownNextFetch -> ChatUiState.Loaded.FetchMoreMessagesUiState.FetchingMore
           is FetchMoreState.NothingMoreToFetch -> ChatUiState.Loaded.FetchMoreMessagesUiState.NothingMoreToFetch
@@ -281,11 +285,12 @@ internal class ChatPresenter(
 
   @Composable
   private fun LaunchMessagesWatchingEffect(onCachedMessagesReceived: (List<ChatMessage>) -> Unit) {
+    val updatedOnCachedMessagesReceived by rememberUpdatedState(onCachedMessagesReceived)
     LaunchedEffect(Unit) {
       chatRepository.provide().watchMessages()
         .mapNotNull { it.getOrNull() }
         .collect { cachedMessages ->
-          onCachedMessagesReceived(cachedMessages)
+          updatedOnCachedMessagesReceived(cachedMessages)
         }
     }
   }
@@ -294,9 +299,13 @@ internal class ChatPresenter(
   private fun LaunchFetchMoreMessagesEffect(
     fetchMoreMessagesFetchIndex: Int,
     fetchMoreState: FetchMoreState,
-    setFetchMoreState: (FetchMoreState) -> Unit,
+    reportNothingMoreToFetch: () -> Unit,
+    succededInFetchingMoreMessages: (nextUntil: Instant) -> Unit,
     failedToFetchMoreMessages: () -> Unit,
   ) {
+    val updatedReportNothingMoreToFetch by rememberUpdatedState(reportNothingMoreToFetch)
+    val updatedSuccededInFetchingMoreMessages by rememberUpdatedState(succededInFetchingMoreMessages)
+    val updatedFailedToFetchMoreMessages by rememberUpdatedState(failedToFetchMoreMessages)
     LaunchedEffect(fetchMoreMessagesFetchIndex, fetchMoreState) {
       val fetchUntil = fetchMoreState as? FetchMoreState.FetchUntil ?: return@LaunchedEffect
       chatRepository.provide()
@@ -304,15 +313,15 @@ internal class ChatPresenter(
         .fold(
           ifLeft = {
             logcat { "Chat failed to fetch more messages:$it" }
-            failedToFetchMoreMessages()
+            updatedFailedToFetchMoreMessages()
           },
           ifRight = { chatMessagesResult ->
             if (!chatMessagesResult.hasNext) {
               logcat { "Chat has fetched new data, but has no more messages to fetch, reached the end" }
-              setFetchMoreState(FetchMoreState.NothingMoreToFetch)
+              updatedReportNothingMoreToFetch()
             } else {
               logcat { "Chat has fetched new data, and even more exist, next until:${chatMessagesResult.nextUntil}" }
-              setFetchMoreState(FetchMoreState.IdleWithKnownNextFetch(chatMessagesResult.nextUntil))
+              updatedSuccededInFetchingMoreMessages(chatMessagesResult.nextUntil)
             }
           },
         )
@@ -321,12 +330,13 @@ internal class ChatPresenter(
 
   @Composable
   private fun LaunchNewPhotoSendingEffect(photosToSend: Channel<Uri>, reportPhotoFailedToBeSent: (Uri) -> Unit) {
+    val updatedReportPhotoFailedToBeSent by rememberUpdatedState(reportPhotoFailedToBeSent)
     LaunchedEffect(photosToSend) {
       photosToSend.receiveAsFlow().parMap { uri: Uri ->
         logcat { "Handling sending photo with uri:${uri.path}" }
         chatRepository.provide().sendPhoto(uri).onLeft {
           logcat(LogPriority.WARN) { "Failed to send photo:${uri.path} | $it" }
-          reportPhotoFailedToBeSent(uri)
+          updatedReportPhotoFailedToBeSent(uri)
         }
       }.collect()
     }
@@ -334,12 +344,13 @@ internal class ChatPresenter(
 
   @Composable
   private fun LaunchNewMediaSendingEffect(mediaToSend: Channel<Uri>, reportMediaFailedToBeSent: (Uri) -> Unit) {
+    val updatedReportMediaFailedToBeSent by rememberUpdatedState(reportMediaFailedToBeSent)
     LaunchedEffect(mediaToSend) {
       mediaToSend.receiveAsFlow().parMap { uri: Uri ->
         logcat { "Handling sending media with uri:${uri.path}" }
         chatRepository.provide().sendMedia(uri).onLeft {
           logcat(LogPriority.WARN) { "Failed to send media:${uri.path} | $it" }
-          reportMediaFailedToBeSent(uri)
+          updatedReportMediaFailedToBeSent(uri)
         }
       }.collect()
     }
@@ -350,12 +361,13 @@ internal class ChatPresenter(
     messagesToSend: Channel<String>,
     reportMessageFailedToBeSent: (String) -> Unit,
   ) {
+    val updatedReportMessageFailedToBeSent by rememberUpdatedState(reportMessageFailedToBeSent)
     LaunchedEffect(messagesToSend) {
       messagesToSend.consumeAsFlow().parMap { message: String ->
         logcat { "Handling sending message with text:$message" }
         chatRepository.provide().sendMessage(message).onLeft {
           logcat(LogPriority.WARN) { "Failed to send message:$it" }
-          reportMessageFailedToBeSent(message)
+          updatedReportMessageFailedToBeSent(message)
         }
       }.collect()
     }

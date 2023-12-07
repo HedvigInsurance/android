@@ -79,6 +79,7 @@ import com.hedvig.android.placeholder.PlaceholderHighlight
 import com.hedvig.android.placeholder.fade
 import com.hedvig.android.placeholder.placeholder
 import hedvig.resources.R
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -267,7 +268,7 @@ private fun ChatLazyColumn(
         if (uiState.fetchMoreMessagesUiState is ChatUiState.Loaded.FetchMoreMessagesUiState.FailedToFetch) {
           LaunchedEffect(Unit) {
             while (isActive) {
-              delay(5_000)
+              delay(5.seconds)
               onFetchMoreMessages()
             }
           }
