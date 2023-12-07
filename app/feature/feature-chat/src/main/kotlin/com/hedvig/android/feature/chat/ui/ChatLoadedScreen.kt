@@ -57,12 +57,14 @@ import androidx.compose.ui.graphics.vector.VectorConfig
 import androidx.compose.ui.graphics.vector.VectorProperty
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
+import coil.request.ImageRequest
 import coil.request.NullRequestDataException
 import com.hedvig.android.core.designsystem.animation.ThreeDotsLoading
 import com.hedvig.android.core.designsystem.material3.rememberShapedColorPainter
@@ -298,7 +300,7 @@ private fun ChatBubble(
         is ChatMessage.ChatMessageFile -> {
           when (chatMessage.mimeType) {
             ChatMessage.ChatMessageFile.MimeType.IMAGE -> {
-              ChatAsyncImage(chatMessage.url, imageLoader)
+              ChatAsyncImage(model = chatMessage.url, imageLoader = imageLoader, cacheKey = chatMessage.id)
             }
 
             ChatMessage.ChatMessageFile.MimeType.PDF, // todo chat: consider rendering PDFs inline in the chat
@@ -311,7 +313,7 @@ private fun ChatBubble(
         }
 
         is ChatMessage.ChatMessageGif -> {
-          ChatAsyncImage(chatMessage.gifUrl, imageLoader)
+          ChatAsyncImage(model = chatMessage.gifUrl, imageLoader = imageLoader, cacheKey = chatMessage.id)
         }
 
         is ChatMessage.ChatMessageText -> {
@@ -406,6 +408,7 @@ private fun ChatAsyncImage(
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
   isRetryable: Boolean = false,
+  cacheKey: String? = null,
 ) {
   val loadedImageIntrinsicSize = remember { mutableStateOf<IntSize?>(null) }
   val placeholderPainter: Painter = rememberShapedColorPainter(MaterialTheme.colorScheme.surface)
@@ -444,7 +447,14 @@ private fun ChatAsyncImage(
     rememberShapedColorPainter(MaterialTheme.colorScheme.errorContainer)
   }
   AsyncImage(
-    model = model,
+    model = ImageRequest.Builder(LocalContext.current)
+      .data(model)
+      .apply {
+        if (cacheKey != null) {
+          diskCacheKey(cacheKey).memoryCacheKey(cacheKey)
+        }
+      }
+      .build(),
     contentDescription = null,
     imageLoader = imageLoader,
     transform = { state ->
