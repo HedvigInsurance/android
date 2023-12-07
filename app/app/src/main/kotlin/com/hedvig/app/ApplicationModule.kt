@@ -12,6 +12,8 @@ import coil.ImageLoader
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.decode.SvgDecoder
+import coil.disk.DiskCache
+import coil.memory.MemoryCache
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.cache.normalized.api.MemoryCacheFactory
 import com.apollographql.apollo3.cache.normalized.api.NormalizedCacheFactory
@@ -279,6 +281,7 @@ private val datastoreAndroidModule = module {
 
 private val coilModule = module {
   single<ImageLoader> {
+    val applicationContext = get<Context>().applicationContext
     ImageLoader.Builder(get())
       .okHttpClient(get<OkHttpClient.Builder>().build())
       .components {
@@ -288,6 +291,14 @@ private val coilModule = module {
         } else {
           add(GifDecoder.Factory())
         }
+      }
+      .memoryCache {
+        MemoryCache.Builder(applicationContext).build()
+      }
+      .diskCache {
+        DiskCache.Builder()
+          .directory(applicationContext.cacheDir.resolve("coil_image_cache"))
+          .build()
       }
       .build()
   }
