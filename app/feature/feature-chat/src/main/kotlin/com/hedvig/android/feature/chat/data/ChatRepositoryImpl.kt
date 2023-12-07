@@ -163,7 +163,7 @@ internal class ChatRepositoryImpl(
       }
       .mapLeft(CallError::toErrorMessage)
       .bind()
-    logcat { "Stelios: Uploaded file with path:${file.absolutePath}. Result:$result" }
+    logcat { "Uploaded file with path:${file.absolutePath}. Result:$result" }
     val fileUploadResponse = result.firstOrNull() ?: raise(ErrorMessage("No file upload response"))
     return ensureNotNull(fileUploadResponse.uploadToken) {
       ErrorMessage("Backend responded with an empty list as a response$result")

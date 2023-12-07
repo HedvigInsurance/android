@@ -193,17 +193,11 @@ internal class ChatPresenter(
         }
 
         is ChatEvent.SendPhotoMessage -> {
-          logcat { "Sending photo ${event.uri.path}" }
-          photosToSend.trySend(event.uri).also {
-            logcat { "Stelios photosToSend.trySend result:$it" }
-          }
+          photosToSend.trySend(event.uri)
         }
 
         is ChatEvent.SendMediaMessage -> {
-          logcat { "Sending media ${event.uri.path}" }
-          mediaToSend.trySend(event.uri).also {
-            logcat { "Stelios mediaToSend.trySend result:$it" }
-          }
+          mediaToSend.trySend(event.uri)
         }
 
         is ChatEvent.SendTextMessage -> {
