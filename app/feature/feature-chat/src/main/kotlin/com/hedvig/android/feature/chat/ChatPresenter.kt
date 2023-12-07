@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -117,7 +118,7 @@ internal class ChatPresenter(
     // We are considered to still be initializing before we get the first cache emission
     var isStillInitializing by remember { mutableStateOf(lastState is ChatUiState.Initializing) }
 
-    var fetchMoreState by remember { mutableStateOf<FetchMoreState>(FetchMoreState.Idle) }
+    var fetchMoreState by remember { mutableStateOf<FetchMoreState>(FetchMoreState.HaveNotReceivedInitialFetchUntil) }
     var fetchMoreMessagesFetchIndex by remember { mutableIntStateOf(0) }
     var failedToFetchMoreMessages by remember { mutableStateOf(false) }
 
@@ -140,8 +141,12 @@ internal class ChatPresenter(
     )
     LaunchPeriodicMessagePollsEffect(
       isChatDisabled = isChatDisabled,
-      getFetchMoreState = { fetchMoreState },
-      setFetchMoreState = { fetchMoreState = it },
+      reportNextUntilFromPolling = { nextUntil: Instant ->
+        // If we have not received a `nextUntil` value yet, we set the first value from the polling query
+        if (fetchMoreState is FetchMoreState.HaveNotReceivedInitialFetchUntil) {
+          fetchMoreState = FetchMoreState.IdleWithKnownNextFetch(nextUntil)
+        }
+      },
     )
     LaunchFetchMoreMessagesEffect(
       fetchMoreMessagesFetchIndex = fetchMoreMessagesFetchIndex,
@@ -239,7 +244,7 @@ internal class ChatPresenter(
       val fetchMoreMessagesUiState = run {
         if (failedToFetchMoreMessages) return@run ChatUiState.Loaded.FetchMoreMessagesUiState.FailedToFetch
         when (fetchMoreState) {
-          is FetchMoreState.Idle -> ChatUiState.Loaded.FetchMoreMessagesUiState.StillInitializing
+          is FetchMoreState.HaveNotReceivedInitialFetchUntil -> ChatUiState.Loaded.FetchMoreMessagesUiState.StillInitializing
           is FetchMoreState.FetchUntil -> ChatUiState.Loaded.FetchMoreMessagesUiState.FetchingMore
           is FetchMoreState.IdleWithKnownNextFetch -> ChatUiState.Loaded.FetchMoreMessagesUiState.FetchingMore
           is FetchMoreState.NothingMoreToFetch -> ChatUiState.Loaded.FetchMoreMessagesUiState.NothingMoreToFetch
@@ -260,19 +265,16 @@ internal class ChatPresenter(
   @Composable
   private fun LaunchPeriodicMessagePollsEffect(
     isChatDisabled: Boolean,
-    getFetchMoreState: () -> FetchMoreState,
-    setFetchMoreState: (FetchMoreState) -> Unit,
+    reportNextUntilFromPolling: (nextUntil: Instant) -> Unit,
   ) {
+    val updatedReportNextUntilFromPolling by rememberUpdatedState(reportNextUntilFromPolling)
     LaunchedEffect(isChatDisabled) {
       if (isChatDisabled) return@LaunchedEffect
       while (isActive) {
         chatRepository.provide().pollNewestMessages().onRight { result ->
-          val fetchMoreStateValue = getFetchMoreState()
-          if (fetchMoreStateValue is FetchMoreState.Idle) {
-            setFetchMoreState(FetchMoreState.IdleWithKnownNextFetch(result.nextUntil))
-          }
+          updatedReportNextUntilFromPolling(result.nextUntil)
         }
-        delay(5.seconds) // todo uncomment this
+        delay(5.seconds)
       }
     }
   }
@@ -362,7 +364,7 @@ internal class ChatPresenter(
 
 @Immutable
 private sealed interface FetchMoreState {
-  data object Idle : FetchMoreState
+  data object HaveNotReceivedInitialFetchUntil : FetchMoreState
 
   data class IdleWithKnownNextFetch(val fetchUntil: Instant) : FetchMoreState
 
