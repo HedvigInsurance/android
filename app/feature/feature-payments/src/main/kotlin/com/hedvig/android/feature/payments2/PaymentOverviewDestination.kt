@@ -345,6 +345,7 @@ private fun PreviewPaymentScreenNoPayment() {
               ),
               status = PaymentConnection.PaymentConnectionStatus.NEEDS_SETUP,
             ),
+            discounts = discountsPreviewData,
           ),
         ),
         {},

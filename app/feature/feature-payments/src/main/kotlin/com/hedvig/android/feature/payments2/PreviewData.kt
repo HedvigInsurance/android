@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.payments2
 
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.feature.payments2.data.Discount
 import com.hedvig.android.feature.payments2.data.MemberCharge
 import com.hedvig.android.feature.payments2.data.PaymentConnection
 import com.hedvig.android.feature.payments2.data.PaymentOverview
@@ -35,6 +36,42 @@ internal val periodsPreviewData = persistentListOf(
   ),
 )
 
+internal val discountsPreviewData = listOf(
+  Discount(
+    code = "CAR15",
+    displayName = "Test 1",
+    description = "Desc",
+    expiresAt = LocalDate(2022, 12, 14),
+    amount = UiMoney(20.0, CurrencyCode.SEK),
+    isReferral = false,
+  ),
+  Discount(
+    code = "RARING",
+    displayName = "Test 2",
+    description = "Desc",
+    expiresAt = LocalDate(2022, 12, 14),
+    amount = UiMoney(20.0, CurrencyCode.SEK),
+    isReferral = false,
+  ),
+  Discount(
+    code = "APAKATT",
+    displayName = "Test 3",
+    description = "Desc",
+    expiresAt = LocalDate(2024, 12, 14),
+    amount = UiMoney(20.0, CurrencyCode.SEK),
+    isReferral = true,
+  ),
+  Discount(
+    code = "HEJHEJ",
+    displayName = "Test 4",
+    description = "Desc",
+    expiresAt = LocalDate.fromEpochDays(300),
+    amount = UiMoney(20.0, CurrencyCode.SEK),
+    isReferral = false,
+  ),
+
+  )
+
 internal val chargeHistoryPreviewData = listOf(
   MemberCharge(
     grossAmount = UiMoney(130.0, CurrencyCode.SEK),
@@ -58,8 +95,9 @@ internal val chargeHistoryPreviewData = listOf(
         contractDetails = "Bellmansgatan 19A",
         grossAmount = UiMoney(300.0, CurrencyCode.SEK),
         periods = periodsPreviewData,
-      )
-    )
+      ),
+    ),
+    discounts = discountsPreviewData,
   ),
   MemberCharge(
     grossAmount = UiMoney(500.0, CurrencyCode.SEK),
@@ -83,8 +121,9 @@ internal val chargeHistoryPreviewData = listOf(
         contractDetails = "Bellmansgatan 19A",
         grossAmount = UiMoney(200.0, CurrencyCode.SEK),
         periods = periodsPreviewData,
-      )
-    )
+      ),
+    ),
+    discounts = discountsPreviewData,
   ),
   MemberCharge(
     grossAmount = UiMoney(200.0, CurrencyCode.SEK),
@@ -108,8 +147,9 @@ internal val chargeHistoryPreviewData = listOf(
         contractDetails = "Bellmansgatan 19A",
         grossAmount = UiMoney(200.0, CurrencyCode.SEK),
         periods = periodsPreviewData,
-      )
-    )
+      ),
+    ),
+    discounts = discountsPreviewData,
   ),
   MemberCharge(
     grossAmount = UiMoney(200.0, CurrencyCode.SEK),
@@ -133,8 +173,9 @@ internal val chargeHistoryPreviewData = listOf(
         contractDetails = "Bellmansgatan 19A",
         grossAmount = UiMoney(200.0, CurrencyCode.SEK),
         periods = periodsPreviewData,
-      )
-    )
+      ),
+    ),
+    discounts = discountsPreviewData,
   ),
   MemberCharge(
     grossAmount = UiMoney(200.0, CurrencyCode.SEK),
@@ -158,9 +199,10 @@ internal val chargeHistoryPreviewData = listOf(
         contractDetails = "Bellmansgatan 19A",
         grossAmount = UiMoney(200.0, CurrencyCode.SEK),
         periods = periodsPreviewData,
-      )
-    )
-  )
+      ),
+    ),
+    discounts = discountsPreviewData,
+  ),
 )
 
 internal val paymentOverViewPreviewData = PaymentOverview(
@@ -186,8 +228,9 @@ internal val paymentOverViewPreviewData = PaymentOverview(
         contractDetails = "Bellmansgatan 19A",
         grossAmount = UiMoney(200.0, CurrencyCode.SEK),
         periods = periodsPreviewData,
-      )
-    )
+      ),
+    ),
+    discounts = discountsPreviewData,
   ),
   pastCharges = chargeHistoryPreviewData,
   paymentConnection = PaymentConnection(
@@ -197,6 +240,7 @@ internal val paymentOverViewPreviewData = PaymentOverview(
     ),
     status = PaymentConnection.PaymentConnectionStatus.NEEDS_SETUP,
   ),
+  discounts = discountsPreviewData,
 )
 
 

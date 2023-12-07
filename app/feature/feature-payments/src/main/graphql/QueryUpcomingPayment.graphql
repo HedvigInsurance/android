@@ -7,14 +7,36 @@ query UpcomingPayment {
     }
     referralInformation {
       code
+      monthlyDiscountPerReferral {
+        amount
+        currencyCode
+      }
+      referrals {
+        name
+        status
+        activeDiscount {
+          amount
+          currencyCode
+        }
+      }
+      referredBy {
+        name
+        status
+        activeDiscount {
+          amount
+          currencyCode
+        }
+      }
     }
     redeemedCampaigns {
-      onlyApplicableToContracts {
-        exposureDisplayName
-      }
       code
       description
       expiresAt
+      id
+      onlyApplicableToContracts {
+        exposureDisplayName
+      }
+      type
     }
     paymentInformation {
       status

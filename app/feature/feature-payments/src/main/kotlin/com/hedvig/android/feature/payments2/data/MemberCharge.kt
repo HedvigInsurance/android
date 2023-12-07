@@ -13,6 +13,7 @@ internal data class MemberCharge(
   val dueDate: LocalDate,
   val failedCharge: FailedCharge?,
   val chargeBreakdowns: List<ChargeBreakdown>,
+  val discounts: List<Discount>,
 ) {
   @Serializable
   data class FailedCharge(

@@ -45,6 +45,7 @@ import com.hedvig.android.core.icons.hedvig.small.hedvig.Checkmark
 import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.feature.payments2.DiscountRow
 import com.hedvig.android.feature.payments2.data.MemberCharge
 import com.hedvig.android.feature.payments2.data.PaymentOverview
 import com.hedvig.android.feature.payments2.paymentOverViewPreviewData
@@ -104,6 +105,16 @@ internal fun MemberChargeDetailsScreen(
           onClick = { onCardClick(chargeBreakdown) },
         )
         Spacer(modifier = Modifier.height(8.dp))
+      }
+
+      if (memberCharge.discounts.isNotEmpty()) {
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(stringResource(id = R.string.PAYMENTS_DISCOUNTS_SECTION_TITLE))
+
+        memberCharge.discounts.forEach {
+          DiscountRow(it)
+          Divider()
+        }
       }
 
       HorizontalItemsWithMaximumSpaceTaken(
@@ -253,7 +264,7 @@ internal fun MemberChargeDetailsScreen(
         Divider()
 
         HorizontalItemsWithMaximumSpaceTaken(
-          startSlot = { Text(stringResource(id = R.string.PAYMENTS_DUE_LABEL)) },
+          startSlot = { Text(stringResource(id = R.string.PAYMENTS_BANK_LABEL)) },
           endSlot = {
             Text(
               text = it.displayName,
@@ -264,7 +275,6 @@ internal fun MemberChargeDetailsScreen(
           },
           modifier = Modifier.padding(vertical = 16.dp),
         )
-        Divider()
       }
     }
   }

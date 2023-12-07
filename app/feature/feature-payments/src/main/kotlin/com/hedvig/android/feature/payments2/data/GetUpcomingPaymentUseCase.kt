@@ -10,6 +10,7 @@ import com.hedvig.android.core.uidata.UiMoney
 import kotlinx.collections.immutable.toPersistentList
 import octopus.UpcomingPaymentQuery
 import octopus.fragment.MemberChargeFragment
+import octopus.type.CurrencyCode
 import octopus.type.MemberChargeStatus
 import octopus.type.MemberPaymentConnectionStatus
 
@@ -27,8 +28,16 @@ internal data class GetUpcomingPaymentUseCaseImpl(
       .bind()
 
     PaymentOverview(
-      memberCharge = result.currentMember.futureCharge?.toMemberCharge(),
-      pastCharges = result.currentMember.pastCharges.map { it.toMemberCharge() },
+      memberCharge = result.currentMember.futureCharge?.toMemberCharge(
+        result.currentMember.redeemedCampaigns,
+        result.currentMember.referralInformation,
+      ),
+      pastCharges = result.currentMember.pastCharges.map {
+        it.toMemberCharge(
+          result.currentMember.redeemedCampaigns,
+          result.currentMember.referralInformation,
+        )
+      },
       paymentConnection = PaymentConnection(
         connectionInfo = result.currentMember.paymentInformation.connection?.let {
           PaymentConnection.ConnectionInfo(
@@ -43,11 +52,24 @@ internal data class GetUpcomingPaymentUseCaseImpl(
           MemberPaymentConnectionStatus.UNKNOWN__ -> PaymentConnection.PaymentConnectionStatus.UNKNOWN
         },
       ),
+      discounts = result.currentMember.redeemedCampaigns.map {
+        Discount(
+          code = it.code,
+          displayName = it.onlyApplicableToContracts?.firstOrNull()?.exposureDisplayName,
+          description = it.description,
+          expiresAt = it.expiresAt,
+          amount = null,
+          isReferral = false,
+        )
+      } + listOfNotNull(discountFromReferral(result.currentMember.referralInformation)),
     )
   }
 }
 
-private fun MemberChargeFragment.toMemberCharge() = MemberCharge(
+private fun MemberChargeFragment.toMemberCharge(
+  redeemedCampaigns: List<UpcomingPaymentQuery.Data.CurrentMember.RedeemedCampaign>,
+  referralInformation: UpcomingPaymentQuery.Data.CurrentMember.ReferralInformation,
+) = MemberCharge(
   id = id ?: "",
   grossAmount = UiMoney.fromMoneyFragment(gross),
   netAmount = UiMoney.fromMoneyFragment(net),
@@ -75,6 +97,20 @@ private fun MemberChargeFragment.toMemberCharge() = MemberCharge(
       }.toPersistentList(),
     )
   }.toPersistentList(),
+  discounts = discountBreakdown.mapNotNull { discountBreakdown ->
+    if (discountBreakdown.isReferral) {
+      discountFromReferral(referralInformation)
+    } else {
+      Discount(
+        code = discountBreakdown.code ?: "-",
+        displayName = redeemedCampaigns.firstOrNull { it.code == discountBreakdown.code }?.onlyApplicableToContracts?.firstOrNull()?.exposureDisplayName,
+        description = redeemedCampaigns.firstOrNull { it.code == discountBreakdown.code }?.description,
+        expiresAt = redeemedCampaigns.firstOrNull { it.code == discountBreakdown.code }?.expiresAt,
+        amount = UiMoney(discountBreakdown.discount.amount.unaryMinus(), discountBreakdown.discount.currencyCode),
+        isReferral = false,
+      )
+    }
+  },
 )
 
 private fun MemberChargeFragment.toFailedCharge(): MemberCharge.FailedCharge? {
@@ -94,3 +130,21 @@ private fun MemberChargeFragment.toFailedCharge(): MemberCharge.FailedCharge? {
     null
   }
 }
+
+private fun discountFromReferral(referralInformation: UpcomingPaymentQuery.Data.CurrentMember.ReferralInformation): Discount? {
+  if (referralInformation.referrals.isEmpty()) {
+    return null
+  }
+  return Discount(
+    code = referralInformation.code,
+    displayName = null,
+    description = null,
+    expiresAt = null,
+    amount = UiMoney(
+      referralInformation.referrals.sumOf { it.activeDiscount?.amount?.unaryMinus() ?: 0.0 },
+      referralInformation.referrals.first().activeDiscount?.currencyCode ?: CurrencyCode.SEK,
+    ),
+    isReferral = true,
+  )
+}
+
