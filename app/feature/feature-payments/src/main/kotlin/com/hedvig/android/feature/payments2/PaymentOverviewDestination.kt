@@ -200,11 +200,7 @@ private fun PaymentOverviewScreen(
 }
 
 @Composable
-private fun PaymentAmountCard(
-  memberCharge: MemberCharge,
-  onCardClicked: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
+private fun PaymentAmountCard(memberCharge: MemberCharge, onCardClicked: () -> Unit, modifier: Modifier = Modifier) {
   val dateTimeFormatter = rememberHedvigDateTimeFormatter()
 
   HedvigCard(

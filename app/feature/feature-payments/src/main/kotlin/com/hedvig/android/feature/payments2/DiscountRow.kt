@@ -45,7 +45,6 @@ fun DiscountRow(discount: Discount) {
         textAlign = TextAlign.End,
         modifier = Modifier.fillMaxWidth(),
       )
-
     }
 
     Spacer(Modifier.height(8.dp))

@@ -94,7 +94,6 @@ internal fun MemberChargeDetailsScreen(
     topAppBarColors = memberCharge.topAppBarColors(),
   ) {
     Column(modifier = Modifier.padding(16.dp)) {
-
       memberCharge.chargeBreakdowns.forEach { chargeBreakdown ->
         PaymentDetailExpandableCard(
           displayName = chargeBreakdown.contractDisplayName,
@@ -306,7 +305,6 @@ private fun MemberCharge.topAppBarColors(): TopAppBarColors {
     )
   }
 }
-
 
 @Composable
 @HedvigPreview

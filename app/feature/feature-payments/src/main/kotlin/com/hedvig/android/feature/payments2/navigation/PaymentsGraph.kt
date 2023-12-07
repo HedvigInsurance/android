@@ -64,7 +64,9 @@ fun NavGraphBuilder.paymentsGraph(
     }
     composable<PaymentsDestinations2.History> {
       PaymentHistoryDestination(
-        paymentOverview = paymentOverview.copy(paymentConnection = null), // Payment connection is not valid for historic payments
+        paymentOverview = paymentOverview.copy(
+          paymentConnection = null,
+        ), // Payment connection is not valid for historic payments
         onChargeClicked = { memberCharge: MemberCharge, paymentOverview: PaymentOverview ->
           navigator.navigateUnsafe(
             PaymentsDestinations2.Details(

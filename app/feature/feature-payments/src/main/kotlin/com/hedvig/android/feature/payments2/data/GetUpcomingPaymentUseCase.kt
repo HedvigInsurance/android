@@ -103,7 +103,9 @@ private fun MemberChargeFragment.toMemberCharge(
     } else {
       Discount(
         code = discountBreakdown.code ?: "-",
-        displayName = redeemedCampaigns.firstOrNull { it.code == discountBreakdown.code }?.onlyApplicableToContracts?.firstOrNull()?.exposureDisplayName,
+        displayName = redeemedCampaigns.firstOrNull {
+          it.code == discountBreakdown.code
+        }?.onlyApplicableToContracts?.firstOrNull()?.exposureDisplayName,
         description = redeemedCampaigns.firstOrNull { it.code == discountBreakdown.code }?.description,
         expiresAt = redeemedCampaigns.firstOrNull { it.code == discountBreakdown.code }?.expiresAt,
         amount = UiMoney(discountBreakdown.discount.amount.unaryMinus(), discountBreakdown.discount.currencyCode),
@@ -131,7 +133,9 @@ private fun MemberChargeFragment.toFailedCharge(): MemberCharge.FailedCharge? {
   }
 }
 
-private fun discountFromReferral(referralInformation: UpcomingPaymentQuery.Data.CurrentMember.ReferralInformation): Discount? {
+private fun discountFromReferral(
+  referralInformation: UpcomingPaymentQuery.Data.CurrentMember.ReferralInformation,
+): Discount? {
   if (referralInformation.referrals.isEmpty()) {
     return null
   }
@@ -147,4 +151,3 @@ private fun discountFromReferral(referralInformation: UpcomingPaymentQuery.Data.
     isReferral = true,
   )
 }
-

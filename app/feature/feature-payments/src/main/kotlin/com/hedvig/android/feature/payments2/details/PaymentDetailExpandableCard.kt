@@ -157,7 +157,9 @@ internal fun PaymentDetailExpandableCard(
 }
 
 private fun MemberCharge.ChargeBreakdown.Period.toString(dateTimeFormatter: DateTimeFormatter): String {
-  return "${dateTimeFormatter.format(fromDate.toJavaLocalDate())} - ${dateTimeFormatter.format(toDate.toJavaLocalDate())}"
+  return "${dateTimeFormatter.format(
+    fromDate.toJavaLocalDate(),
+  )} - ${dateTimeFormatter.format(toDate.toJavaLocalDate())}"
 }
 
 @Composable
@@ -177,7 +179,6 @@ private fun MemberCharge.ChargeBreakdown.Period.toSubtitleColor(): Color {
     MaterialTheme.colorScheme.onSurfaceVariant
   }
 }
-
 
 @Composable
 @HedvigPreview
@@ -262,4 +263,3 @@ internal fun PaymentDetailExpandableCardExpandedPreview() {
     }
   }
 }
-

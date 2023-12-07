@@ -69,8 +69,7 @@ internal val discountsPreviewData = listOf(
     amount = UiMoney(20.0, CurrencyCode.SEK),
     isReferral = false,
   ),
-
-  )
+)
 
 internal val chargeHistoryPreviewData = listOf(
   MemberCharge(
@@ -242,5 +241,3 @@ internal val paymentOverViewPreviewData = PaymentOverview(
   ),
   discounts = discountsPreviewData,
 )
-
-

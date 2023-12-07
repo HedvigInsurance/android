@@ -19,7 +19,6 @@ fun hedvigMonthDateTimeFormatter(locale: Locale): DateTimeFormatter {
   return DateTimeFormatter.ofPattern("d MMM", locale)
 }
 
-
 /**
  * Example output: "910113"
  */
