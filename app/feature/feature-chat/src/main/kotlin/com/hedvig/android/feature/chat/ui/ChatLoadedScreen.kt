@@ -339,10 +339,19 @@ private fun ChatBubble(
                   onRetrySendChatMessage(chatMessage.id)
                 },
               ) {
-                Text(
-                  text = chatMessage.text,
+                Row(
+                  horizontalArrangement = Arrangement.spacedBy(8.dp),
+                  verticalAlignment = Alignment.CenterVertically,
                   modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-                )
+                ) {
+                  Icon(
+                    imageVector = Icons.Hedvig.RestartOneArrow,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.size(20.dp),
+                  )
+                  Text(text = chatMessage.text)
+                }
               }
             }
 
