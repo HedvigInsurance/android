@@ -558,7 +558,7 @@ internal fun ChatMessageWithTimeAndDeliveryStatus(
     Text(
       text = buildString {
         if (failedToBeSent) {
-          append("Failed to be sent") // todo chat: lokalization for failed to be sent messages
+          append(stringResource(R.string.CHAT_FAILED_TO_SEND))
           append(" • ")
         }
         append(chatMessage.formattedDateTime(getLocale()))
