@@ -51,6 +51,7 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.RenderVectorGroup
 import androidx.compose.ui.graphics.vector.VectorConfig
@@ -67,6 +68,7 @@ import coil.compose.AsyncImagePainter
 import coil.request.ImageRequest
 import coil.request.NullRequestDataException
 import com.hedvig.android.core.designsystem.animation.ThreeDotsLoading
+import com.hedvig.android.core.designsystem.material3.DisabledAlpha
 import com.hedvig.android.core.designsystem.material3.rememberShapedColorPainter
 import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.icons.Hedvig
@@ -356,7 +358,18 @@ private fun ChatBubble(
             }
 
             is ChatMessage.FailedToBeSent.ChatMessageUri -> {
-              val errorColor = MaterialTheme.colorScheme.error
+              val image = Icons.Hedvig.RestartOneArrow
+              val retryIconPainter = rememberVectorPainter(
+                defaultWidth = image.defaultWidth,
+                defaultHeight = image.defaultHeight,
+                viewportWidth = image.viewportWidth,
+                viewportHeight = image.viewportHeight,
+                name = image.name,
+                tintColor = Color.White,
+                tintBlendMode = image.tintBlendMode,
+                autoMirror = image.autoMirror,
+                content = { _, _ -> RenderVectorGroup(group = image.root) },
+              )
               ChatAsyncImage(
                 model = chatMessage.uri,
                 imageLoader = imageLoader,
@@ -366,7 +379,19 @@ private fun ChatBubble(
                   .clickable { onRetrySendChatMessage(chatMessage.id) }
                   .drawWithContent {
                     drawContent()
-                    drawRect(color = errorColor, alpha = 0.12f)
+                    drawRect(color = Color.Black, alpha = DisabledAlpha)
+                    withTransform(
+                      transformBlock = {
+                        translate(
+                          left = (size.width - retryIconPainter.intrinsicSize.width) / 2,
+                          top = (size.height - retryIconPainter.intrinsicSize.height) / 2,
+                        )
+                      },
+                    ) {
+                      with(retryIconPainter) {
+                        draw(retryIconPainter.intrinsicSize)
+                      }
+                    }
                   },
               )
             }
