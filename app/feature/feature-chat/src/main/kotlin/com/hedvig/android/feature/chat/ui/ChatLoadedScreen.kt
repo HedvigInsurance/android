@@ -59,7 +59,6 @@ import androidx.compose.ui.graphics.vector.VectorConfig
 import androidx.compose.ui.graphics.vector.VectorProperty
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -428,15 +427,11 @@ private fun ChatAsyncImage(
   val loadedImageIntrinsicSize = remember { mutableStateOf<IntSize?>(null) }
   val placeholderPainter: Painter = rememberShapedColorPainter(MaterialTheme.colorScheme.surface)
   val errorPainter: Painter = if (isRetryable) {
-    val density = LocalDensity.current
     val errorImage = Icons.Hedvig.RestartOneArrow
     val vectorSize = 50.dp
-    val vectorSizeInPx = with(density) { vectorSize.toPx() }
     rememberVectorPainter(
       defaultWidth = vectorSize,
       defaultHeight = vectorSize,
-      viewportWidth = vectorSizeInPx,
-      viewportHeight = vectorSizeInPx,
       name = errorImage.name,
       tintColor = MaterialTheme.colorScheme.error,
       tintBlendMode = errorImage.tintBlendMode,
