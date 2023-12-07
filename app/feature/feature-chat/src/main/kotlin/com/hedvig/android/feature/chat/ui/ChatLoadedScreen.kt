@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -37,7 +36,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -67,7 +65,6 @@ import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import coil.request.NullRequestDataException
 import com.hedvig.android.core.designsystem.animation.ThreeDotsLoading
-import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.material3.rememberShapedColorPainter
 import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.icons.Hedvig
@@ -78,16 +75,17 @@ import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.feature.chat.ChatUiState
 import com.hedvig.android.feature.chat.model.ChatMessage
-import com.hedvig.android.logger.logcat
 import com.hedvig.android.placeholder.PlaceholderHighlight
 import com.hedvig.android.placeholder.fade
 import com.hedvig.android.placeholder.placeholder
 import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.isActive
 
 @Composable
 internal fun ChatLoadedScreen(
@@ -101,7 +99,6 @@ internal fun ChatLoadedScreen(
   onSendPhoto: (Uri) -> Unit,
   onSendMedia: (Uri) -> Unit,
   onFetchMoreMessages: () -> Unit,
-  onDismissError: () -> Unit,
 ) {
   val lazyListState = rememberLazyListState()
 
@@ -227,11 +224,11 @@ private fun ChatLazyColumn(
       key = { it.id },
       contentType = { chatMessage ->
         when (chatMessage) {
-          is ChatMessage.ChatMessageFile -> "ChatMessageFile"
-          is ChatMessage.ChatMessageGif -> "ChatMessageGif"
-          is ChatMessage.ChatMessageText -> "ChatMessageText"
-          is ChatMessage.FailedToBeSent.ChatMessageText -> "FailedToBeSent.ChatMessageText"
-          is ChatMessage.FailedToBeSent.ChatMessageUri -> "FailedToBeSent.ChatMessageUri"
+          is ChatMessage.ChatMessageFile -> "ChatMessage.ChatMessageFile"
+          is ChatMessage.ChatMessageGif -> "ChatMessage.ChatMessageGif"
+          is ChatMessage.ChatMessageText -> "ChatMessage.ChatMessageText"
+          is ChatMessage.FailedToBeSent.ChatMessageText -> "ChatMessage.FailedToBeSent.ChatMessageText"
+          is ChatMessage.FailedToBeSent.ChatMessageUri -> "ChatMessage.FailedToBeSent.ChatMessageUri"
         }
       },
     ) { chatMessage: ChatMessage ->
@@ -264,38 +261,23 @@ private fun ChatLazyColumn(
         key = "FetchingState",
         contentType = "FetchingState",
       ) {
-        DisposableEffect(Unit) {
-          logcat { "Stelios: FetchingState item appeared" }
-          onDispose {
-            logcat { "Stelios: FetchingState item is disposed" }
-          }
-        }
         LaunchedEffect(Unit) {
           onFetchMoreMessages()
         }
-        when (uiState.fetchMoreMessagesUiState) {
-          ChatUiState.Loaded.FetchMoreMessagesUiState.FailedToFetch -> {
-            HedvigErrorSection(
-              title = "Failed to fetch more messages",
-              subTitle = null,
-              contentPadding = PaddingValues(0.dp),
-              withDefaultVerticalSpacing = false,
-              retry = { onFetchMoreMessages() },
-            )
+        if (uiState.fetchMoreMessagesUiState is ChatUiState.Loaded.FetchMoreMessagesUiState.FailedToFetch) {
+          LaunchedEffect(Unit) {
+            while (isActive) {
+              delay(5_000)
+              onFetchMoreMessages()
+            }
           }
-
-          ChatUiState.Loaded.FetchMoreMessagesUiState.FetchingMore -> {
-            ThreeDotsLoading(
-              Modifier
-                .padding(24.dp)
-                .fillParentMaxWidth()
-                .wrapContentWidth(Alignment.CenterHorizontally),
-            )
-          }
-
-          ChatUiState.Loaded.FetchMoreMessagesUiState.NothingMoreToFetch -> {}
-          ChatUiState.Loaded.FetchMoreMessagesUiState.StillInitializing -> {}
         }
+        ThreeDotsLoading(
+          Modifier
+            .padding(24.dp)
+            .fillParentMaxWidth()
+            .wrapContentWidth(Alignment.CenterHorizontally),
+        )
       }
     }
   }

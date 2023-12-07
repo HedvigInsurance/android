@@ -74,7 +74,7 @@ internal class ChatRepositoryImpl(
       populateCacheWithNewMessageData(result)
 
       ChatMessagesResult(
-        messages = result.chat.messages.mapNotNull { it.toUiChatMessage() },
+        messages = result.chat.messages.mapNotNull { it.toChatMessage() },
         nextUntil = result.chat.nextUntil,
         hasNext = result.chat.hasNext,
       )
@@ -92,17 +92,19 @@ internal class ChatRepositoryImpl(
       .map { apolloResponse: ApolloResponse<ChatMessagesQuery.Data> ->
         either {
           ensure(apolloResponse.errors.isNullOrEmpty()) {
-            ErrorMessage("Got errors from Apollo: ${apolloResponse.errors}")
+            ErrorMessage("watchMessages: Got errors from Apollo: ${apolloResponse.errors}")
           }
           val data: ChatMessagesQuery.Data? = apolloResponse.data
           ensureNotNull(data) {
-            ErrorMessage("No data")
+            ErrorMessage("watchMessages: No data")
           }
           val chat = data.chat
-          chat.messages.mapNotNull { it.toUiChatMessage() }
+          chat.messages.mapNotNull { it.toChatMessage() }
         }
-          .onLeft { logcat(LogPriority.ERROR, it.throwable) { "Failed to fetch initial messages:${it.message}" } }
-          .onRight { logcat { "Watching #${it.count()} messages" } }
+          .onLeft {
+            logcat(LogPriority.ERROR, it.throwable) { "watchMessages: Failed to fetch initial messages:${it.message}" }
+          }
+          .onRight { logcat { "watchMessages: Watching #${it.count()} messages" } }
       }
   }
 
@@ -129,7 +131,7 @@ internal class ChatRepositoryImpl(
       logcat { "Status was: ${status.message}" }
     }
 
-    val chatMessage: ChatMessage = ensureNotNull(message.toUiChatMessage()) {
+    val chatMessage: ChatMessage = ensureNotNull(message.toChatMessage()) {
       ErrorMessage("Message was not of a known type")
     }
     val fileMessageFragment = ensureNotNull(message as? ChatMessageFileMessageFragment) {
@@ -191,7 +193,7 @@ internal class ChatRepositoryImpl(
       logcat { "Status was: ${status.message}" }
     }
 
-    val chatMessage: ChatMessage = ensureNotNull(message.toUiChatMessage()) {
+    val chatMessage: ChatMessage = ensureNotNull(message.toChatMessage()) {
       ErrorMessage("Message was not of a known type")
     }
     val fileMessageFragment = ensureNotNull(message as? ChatMessageFileMessageFragment) {
@@ -261,7 +263,7 @@ internal class ChatRepositoryImpl(
       logcat(LogPriority.WARN) { "Status was: ${status.message}" }
     }
 
-    val chatMessage = ensureNotNull(message.toUiChatMessage()) {
+    val chatMessage = ensureNotNull(message.toChatMessage()) {
       ErrorMessage("Message was not of a known type")
     }
     val textMessageFragment = ensureNotNull(message as? ChatMessageTextMessageFragment) {
@@ -331,7 +333,7 @@ internal class ChatRepositoryImpl(
   }
 }
 
-private fun MessageFragment.toUiChatMessage(): ChatMessage? = when (this) {
+private fun MessageFragment.toChatMessage(): ChatMessage? = when (this) {
   is ChatMessageFileMessageFragment -> ChatMessage.ChatMessageFile(
     id = id,
     sender = sender.toChatMessageSender(),

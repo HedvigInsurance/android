@@ -13,7 +13,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import arrow.core.identity
 import arrow.fx.coroutines.parMap
 import com.benasher44.uuid.Uuid
 import com.hedvig.android.core.common.ErrorMessage
@@ -37,8 +36,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.consumeAsFlow
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.isActive
 import kotlinx.datetime.Clock
@@ -46,8 +44,6 @@ import kotlinx.datetime.Instant
 
 internal sealed interface ChatEvent {
   data object FetchMoreMessages : ChatEvent
-
-  data object DismissError : ChatEvent
 
   data class SendTextMessage(val message: String) : ChatEvent
 
@@ -118,7 +114,7 @@ internal class ChatPresenter(
       )
     }
 
-    // False if messages from cache were loaded or if the initial network request has finished
+    // We are considered to still be initializing before we get the first cache emission
     var isStillInitializing by remember { mutableStateOf(lastState is ChatUiState.Initializing) }
 
     var fetchMoreState by remember { mutableStateOf<FetchMoreState>(FetchMoreState.Idle) }
@@ -146,7 +142,6 @@ internal class ChatPresenter(
       isChatDisabled = isChatDisabled,
       getFetchMoreState = { fetchMoreState },
       setFetchMoreState = { fetchMoreState = it },
-      onFinishedInitializing = { isStillInitializing = false },
     )
     LaunchFetchMoreMessagesEffect(
       fetchMoreMessagesFetchIndex = fetchMoreMessagesFetchIndex,
@@ -176,7 +171,6 @@ internal class ChatPresenter(
     CollectEvents { event ->
       logcat { "ChatPresenter handling event:$event" }
       when (event) {
-        ChatEvent.DismissError -> TODO()
         ChatEvent.FetchMoreMessages -> {
           if (failedToFetchMoreMessages) {
             Snapshot.withMutableSnapshot {
@@ -251,10 +245,10 @@ internal class ChatPresenter(
           is FetchMoreState.NothingMoreToFetch -> ChatUiState.Loaded.FetchMoreMessagesUiState.NothingMoreToFetch
         }
       }
-      val failedUiChatMessages = (messagesFailedToBeSent + photosFailedToBeSent + mediaFailedToBeSent)
+      val failedChatMessages = (messagesFailedToBeSent + photosFailedToBeSent + mediaFailedToBeSent)
         .map(FailedMessage::toChatMessage)
       ChatUiState.Loaded(
-        messages = (messages + failedUiChatMessages)
+        messages = (messages + failedChatMessages)
           .sortedByDescending(ChatMessage::sentAt)
           .toPersistentList(),
         errorMessage = null,
@@ -268,7 +262,6 @@ internal class ChatPresenter(
     isChatDisabled: Boolean,
     getFetchMoreState: () -> FetchMoreState,
     setFetchMoreState: (FetchMoreState) -> Unit,
-    onFinishedInitializing: () -> Unit,
   ) {
     LaunchedEffect(isChatDisabled) {
       if (isChatDisabled) return@LaunchedEffect
@@ -279,7 +272,6 @@ internal class ChatPresenter(
             setFetchMoreState(FetchMoreState.IdleWithKnownNextFetch(result.nextUntil))
           }
         }
-        onFinishedInitializing()
         delay(5.seconds) // todo uncomment this
       }
     }
@@ -289,14 +281,7 @@ internal class ChatPresenter(
   private fun LaunchMessagesWatchingEffect(onCachedMessagesReceived: (List<ChatMessage>) -> Unit) {
     LaunchedEffect(Unit) {
       chatRepository.provide().watchMessages()
-        .map {
-          it.fold(
-            // todo consider errors here? Or just ignore if cache fails for whatever reason?
-            ifLeft = { emptyList() },
-            ifRight = ::identity,
-          )
-        }
-        .filter { it.isNotEmpty() }
+        .mapNotNull { it.getOrNull() }
         .collect { cachedMessages ->
           onCachedMessagesReceived(cachedMessages)
         }

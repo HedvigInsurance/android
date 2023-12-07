@@ -83,9 +83,6 @@ internal fun ChatDestination(
     onFetchMoreMessages = {
       viewModel.emit(ChatEvent.FetchMoreMessages)
     },
-    onDismissError = {
-      viewModel.emit(ChatEvent.DismissError)
-    },
   )
 }
 
@@ -102,7 +99,6 @@ private fun ChatScreen(
   onSendMedia: (Uri) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
   onFetchMoreMessages: () -> Unit,
-  onDismissError: () -> Unit,
 ) {
   Surface(
     color = MaterialTheme.colorScheme.background,
@@ -163,7 +159,6 @@ private fun ChatScreen(
               onSendPhoto = onSendPhoto,
               onSendMedia = onSendMedia,
               onFetchMoreMessages = onFetchMoreMessages,
-              onDismissError = onDismissError,
             )
           }
         }
@@ -212,7 +207,6 @@ private fun ChatScreenPreview(
         onSendMedia = {},
         onRetrySendChatMessage = {},
         onFetchMoreMessages = {},
-        onDismissError = {},
       )
     }
   }
