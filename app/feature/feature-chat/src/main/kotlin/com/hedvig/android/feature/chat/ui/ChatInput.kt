@@ -182,7 +182,7 @@ private fun ChatInput(
             .background(color = MaterialTheme.colorScheme.infoElement, shape = chatShape)
             .chatInputOutline(chatShape, outlineColor)
             .clip(CircleShape)
-            .clickable { onSendMessage(text) }
+            .clickable(enabled = text.isNotBlank()) { onSendMessage(text) }
             .wrapContentSize(unbounded = true)
             .minimumInteractiveComponentSize(),
           contentAlignment = Alignment.Center,
