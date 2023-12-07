@@ -55,14 +55,14 @@ internal class ChatRepositoryImpl(
 ) : ChatRepository {
   override suspend fun fetchMoreMessages(until: Instant): Either<ErrorMessage, ChatMessagesResult> = either {
     logcat { "Fetching more messages until:$until" }
-    return fetchChatMessagesQuery(until)
+    return fetchChatMessages(until)
   }
 
   override suspend fun pollNewestMessages(): Either<ErrorMessage, ChatMessagesResult> {
-    return fetchChatMessagesQuery(null)
+    return fetchChatMessages(null)
   }
 
-  private suspend fun fetchChatMessagesQuery(until: Instant?): Either<ErrorMessage, ChatMessagesResult> {
+  private suspend fun fetchChatMessages(until: Instant?): Either<ErrorMessage, ChatMessagesResult> {
     return either {
       val result = apolloClient.query(ChatMessagesQuery(until))
         .fetchPolicy(FetchPolicy.NetworkOnly)
