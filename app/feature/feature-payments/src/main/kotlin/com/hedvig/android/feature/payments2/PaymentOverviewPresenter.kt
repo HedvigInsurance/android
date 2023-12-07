@@ -60,8 +60,5 @@ internal sealed interface OverViewUiState {
 
   data class Content(
     val paymentOverview: PaymentOverview,
-  ) : OverViewUiState {
-    val hasConnectedPayment: Boolean =
-      paymentOverview.paymentConnection?.status == PaymentOverview.PaymentConnection.PaymentConnectionStatus.ACTIVE
-  }
+  ) : OverViewUiState
 }

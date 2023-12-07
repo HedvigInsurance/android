@@ -49,22 +49,19 @@ import com.hedvig.android.core.ui.infocard.VectorErrorCard
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.infocard.VectorWarningCard
 import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
-import com.hedvig.android.core.ui.rememberHedvigNextPaymentDateTimeFormatter
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
-import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.feature.payments2.data.MemberCharge
+import com.hedvig.android.feature.payments2.data.PaymentConnection
 import com.hedvig.android.feature.payments2.data.PaymentOverview
 import hedvig.resources.R
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
-import octopus.type.CurrencyCode
 
 @Composable
 internal fun PaymentOverviewDestination(
   viewModel: PaymentOverviewViewModel,
   onBackPressed: () -> Unit,
-  onUpcomingPaymentClicked: () -> Unit,
+  onUpcomingPaymentClicked: (MemberCharge, PaymentConnection?) -> Unit,
   onDiscountClicked: () -> Unit,
   onPaymentHistoryClicked: () -> Unit,
   onChangeBankAccount: () -> Unit,
@@ -85,7 +82,7 @@ internal fun PaymentOverviewDestination(
 private fun PaymentOverviewScreen(
   uiState: OverViewUiState,
   navigateUp: () -> Unit,
-  onUpcomingPaymentClicked: () -> Unit,
+  onUpcomingPaymentClicked: (MemberCharge, PaymentConnection?) -> Unit,
   onChangeBankAccount: () -> Unit,
   onDiscountClicked: () -> Unit,
   onPaymentHistoryClicked: () -> Unit,
@@ -99,17 +96,22 @@ private fun PaymentOverviewScreen(
   ) {
     when (uiState) {
       is OverViewUiState.Content -> Column {
-        val futureCharge = uiState.paymentOverview.futureCharge
-        if (futureCharge != null) {
+        val memberCharge = uiState.paymentOverview.memberCharge
+        if (memberCharge != null) {
           PaymentAmountCard(
-            futureCharge = futureCharge,
-            onUpcomingPaymentClicked = onUpcomingPaymentClicked,
+            memberCharge = memberCharge,
+            onCardClicked = {
+              onUpcomingPaymentClicked(
+                memberCharge,
+                uiState.paymentOverview.paymentConnection,
+              )
+            },
             modifier = Modifier
               .fillMaxWidth()
               .padding(horizontal = 16.dp, vertical = 8.dp)
               .animateContentHeight(),
           )
-          if (futureCharge.status == PaymentOverview.MemberChargeStatus.PENDING) {
+          if (memberCharge.status == MemberCharge.MemberChargeStatus.PENDING) {
             VectorInfoCard(
               text = stringResource(id = R.string.PAYMENTS_IN_PROGRESS),
               modifier = Modifier.padding(horizontal = 16.dp),
@@ -117,7 +119,7 @@ private fun PaymentOverviewScreen(
             Spacer(modifier = Modifier.height(8.dp))
           }
 
-          futureCharge.failedCharge?.let {
+          memberCharge.failedCharge?.let {
             VectorErrorCard(
               text = stringResource(
                 id = R.string.PAYMENTS_MISSED_PAYMENT,
@@ -131,11 +133,11 @@ private fun PaymentOverviewScreen(
         } else {
           HedvigInformationSection(title = stringResource(id = R.string.PAYMENTS_NO_PAYMENTS_IN_PROGRESS))
         }
-        if (!uiState.hasConnectedPayment) {
-          val text = if (futureCharge != null) {
+        if (uiState.paymentOverview.paymentConnection?.hasConnectedPayment == false) {
+          val text = if (memberCharge != null) {
             stringResource(
               id = R.string.info_card_missing_payment_body_with_date,
-              dateTimeFormatter.format(futureCharge.dueDate.toJavaLocalDate()),
+              dateTimeFormatter.format(memberCharge.dueDate.toJavaLocalDate()),
             )
           } else {
             stringResource(id = R.string.info_card_missing_payment_body)
@@ -176,7 +178,7 @@ private fun PaymentOverviewScreen(
           )
         }
         Spacer(Modifier.height(16.dp))
-        if (uiState.hasConnectedPayment) {
+        if (uiState.paymentOverview.paymentConnection?.hasConnectedPayment == true) {
           HedvigSecondaryContainedButton(
             text = stringResource(R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT),
             onClick = onChangeBankAccount,
@@ -197,14 +199,14 @@ private fun PaymentOverviewScreen(
 
 @Composable
 private fun PaymentAmountCard(
-  futureCharge: PaymentOverview.FutureCharge,
-  onUpcomingPaymentClicked: () -> Unit,
+  memberCharge: MemberCharge,
+  onCardClicked: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val nextPaymentDateTimeFormatter = rememberHedvigNextPaymentDateTimeFormatter()
+  val dateTimeFormatter = rememberHedvigDateTimeFormatter()
 
   HedvigCard(
-    onClick = onUpcomingPaymentClicked,
+    onClick = onCardClicked,
     modifier = modifier,
   ) {
     Column(
@@ -221,7 +223,7 @@ private fun PaymentAmountCard(
             verticalAlignment = Alignment.CenterVertically,
           ) {
             Text(
-              text = futureCharge.grossAmount.toString(),
+              text = memberCharge.grossAmount.toString(),
               textAlign = TextAlign.End,
             )
             Spacer(Modifier.width(4.dp))
@@ -235,7 +237,7 @@ private fun PaymentAmountCard(
         },
       )
       Text(
-        text = nextPaymentDateTimeFormatter.format(futureCharge.dueDate.toJavaLocalDate()),
+        text = dateTimeFormatter.format(memberCharge.dueDate.toJavaLocalDate()),
         color = MaterialTheme.colorScheme.onSurfaceVariant,
       )
     }
@@ -312,35 +314,14 @@ private fun PreviewPaymentScreen() {
     Surface(color = MaterialTheme.colorScheme.background) {
       PaymentOverviewScreen(
         uiState = OverViewUiState.Content(
-          paymentOverview = PaymentOverview(
-            chargeBreakdowns = persistentListOf(),
-            futureCharge = PaymentOverview.FutureCharge(
-              grossAmount = UiMoney(200.0, CurrencyCode.SEK),
-              netAmount = UiMoney(200.0, CurrencyCode.SEK),
-              id = "123",
-              status = PaymentOverview.MemberChargeStatus.PENDING,
-              dueDate = LocalDate.fromEpochDays(400),
-              failedCharge = PaymentOverview.FutureCharge.FailedCharge(
-                fromDate = LocalDate.fromEpochDays(200),
-                toDate = LocalDate.fromEpochDays(201),
-              ),
-            ),
-            paymentConnection = PaymentOverview.PaymentConnection(
-              connectionInfo = PaymentOverview.PaymentConnection.ConnectionInfo(
-                displayName = "Nordea",
-                displayValue = "31489*****",
-              ),
-              status = PaymentOverview.PaymentConnection.PaymentConnectionStatus.NEEDS_SETUP,
-            ),
-          ),
+          paymentOverview = paymentOverViewPreviewData,
         ),
         {},
+        { memberCharge: MemberCharge, paymentConnection: PaymentConnection? -> },
         {},
         {},
         {},
-        {},
-        {},
-      )
+      ) {}
     }
   }
 }
@@ -353,24 +334,22 @@ private fun PreviewPaymentScreenNoPayment() {
       PaymentOverviewScreen(
         uiState = OverViewUiState.Content(
           paymentOverview = PaymentOverview(
-            chargeBreakdowns = persistentListOf(),
-            futureCharge = null,
-            paymentConnection = PaymentOverview.PaymentConnection(
-              connectionInfo = PaymentOverview.PaymentConnection.ConnectionInfo(
+            memberCharge = null,
+            paymentConnection = PaymentConnection(
+              connectionInfo = PaymentConnection.ConnectionInfo(
                 displayName = "Nordea",
                 displayValue = "31489*****",
               ),
-              status = PaymentOverview.PaymentConnection.PaymentConnectionStatus.NEEDS_SETUP,
+              status = PaymentConnection.PaymentConnectionStatus.NEEDS_SETUP,
             ),
           ),
         ),
         {},
+        { memberCharge: MemberCharge, paymentConnection: PaymentConnection? -> },
         {},
         {},
         {},
-        {},
-        {},
-      )
+      ) {}
     }
   }
 }
