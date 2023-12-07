@@ -9,6 +9,7 @@ import arrow.core.raise.Raise
 import arrow.core.raise.either
 import arrow.core.raise.ensure
 import arrow.core.raise.ensureNotNull
+import arrow.core.right
 import arrow.retrofit.adapter.either.networkhandling.CallError
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.ApolloResponse
@@ -29,8 +30,11 @@ import com.hedvig.android.feature.chat.model.ChatMessage
 import com.hedvig.android.feature.chat.model.ChatMessagesResult
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.retryWhen
 import kotlinx.datetime.Instant
 import octopus.ChatMessagesQuery
@@ -81,14 +85,10 @@ internal class ChatRepositoryImpl(
     }
   }
 
-  override suspend fun watchMessages(): Flow<Either<ErrorMessage, List<ChatMessage>>> {
+  override fun watchMessages(): Flow<Either<ErrorMessage, List<ChatMessage>>> {
     return apolloClient.query(ChatMessagesQuery(null))
       .fetchPolicy(FetchPolicy.CacheOnly)
-      .watch()
-      .retryWhen { cause, _ ->
-        cause is CacheMissException ||
-          (cause is ApolloCompositeException && cause.suppressedExceptions.any { it is CacheMissException })
-      }
+      .watch(fetchThrows = true)
       .map { apolloResponse: ApolloResponse<ChatMessagesQuery.Data> ->
         either {
           ensure(apolloResponse.errors.isNullOrEmpty()) {
@@ -101,10 +101,23 @@ internal class ChatRepositoryImpl(
           val chat = data.chat
           chat.messages.mapNotNull { it.toChatMessage() }
         }
-          .onLeft {
+      }
+      .retryWhen { cause, _ ->
+        val shouldRetry = cause is CacheMissException ||
+          (cause is ApolloCompositeException && cause.suppressedExceptions.any { it is CacheMissException })
+        if (shouldRetry) {
+          emit(emptyList<ChatMessage>().right())
+          delay(1.seconds)
+        }
+        shouldRetry
+      }
+      .onEach {
+        it.fold(
+          ifLeft = {
             logcat(LogPriority.ERROR, it.throwable) { "watchMessages: Failed to fetch initial messages:${it.message}" }
-          }
-          .onRight { logcat { "watchMessages: Watching #${it.count()} messages" } }
+          },
+          ifRight = { logcat { "watchMessages: Emitting #${it.count()} messages" } },
+        )
       }
   }
 
