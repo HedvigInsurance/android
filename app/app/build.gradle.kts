@@ -151,7 +151,6 @@ dependencies {
   implementation(libs.androidx.other.workManager)
   implementation(libs.androidx.profileInstaller)
   implementation(libs.apollo.normalizedCache)
-  implementation(libs.apollo.normalizedSqlCache)
   implementation(libs.arrow.core)
   implementation(libs.arrow.fx)
   implementation(libs.coil.coil)
