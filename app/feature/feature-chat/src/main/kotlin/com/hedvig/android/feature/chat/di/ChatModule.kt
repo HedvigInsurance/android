@@ -26,9 +26,10 @@ import retrofit2.Retrofit
 val chatModule = module {
   single<ChatClosedEventStore> { ChatClosedEventDataStore(get()) }
   viewModel<ChatViewModel> {
+    val chatRepository = get<ChatRepository>()
     ChatViewModel(
       // todo chat: fake provider
-      chatRepository = Provider { get<ChatRepository>() },
+      chatRepository = Provider { chatRepository },
       chatClosedTracker = get<ChatClosedEventStore>(),
       featureManager = get<FeatureManager>(),
       demoManager = get<DemoManager>(),

@@ -13,7 +13,7 @@ interface ChatRepository {
 
   suspend fun pollNewestMessages(): Either<ErrorMessage, ChatMessagesResult>
 
-  suspend fun watchMessages(): Flow<Either<ErrorMessage, List<ChatMessage>>>
+  fun watchMessages(): Flow<Either<ErrorMessage, List<ChatMessage>>>
 
   /**
    * Photo URI received from using [com.hedvig.android.compose.photo.capture.state.PhotoCaptureState]
