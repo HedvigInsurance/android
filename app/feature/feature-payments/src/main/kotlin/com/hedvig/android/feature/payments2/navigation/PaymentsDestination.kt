@@ -1,7 +1,7 @@
 package com.hedvig.android.feature.payments2.navigation
 
 import com.hedvig.android.feature.payments2.data.MemberCharge
-import com.hedvig.android.feature.payments2.data.PaymentConnection
+import com.hedvig.android.feature.payments2.data.PaymentOverview
 import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.serialization.Serializable
 
@@ -11,7 +11,12 @@ internal sealed interface PaymentsDestinations2 : Destination {
 
   @Serializable
   data class Details(
-    val memberCharge: MemberCharge,
-    val paymentConnection: PaymentConnection?,
+    val selectedMemberCharge: MemberCharge,
+    val paymentOverview: PaymentOverview,
+  ) : PaymentsDestinations2
+
+  @Serializable
+  data class History(
+    val paymentOverview: PaymentOverview,
   ) : PaymentsDestinations2
 }

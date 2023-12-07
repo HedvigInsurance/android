@@ -61,9 +61,9 @@ import kotlinx.datetime.toJavaLocalDate
 internal fun PaymentOverviewDestination(
   viewModel: PaymentOverviewViewModel,
   onBackPressed: () -> Unit,
-  onUpcomingPaymentClicked: (MemberCharge, PaymentConnection?) -> Unit,
+  onUpcomingPaymentClicked: (MemberCharge, PaymentOverview) -> Unit,
   onDiscountClicked: () -> Unit,
-  onPaymentHistoryClicked: () -> Unit,
+  onPaymentHistoryClicked: (PaymentOverview) -> Unit,
   onChangeBankAccount: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -82,10 +82,10 @@ internal fun PaymentOverviewDestination(
 private fun PaymentOverviewScreen(
   uiState: OverViewUiState,
   navigateUp: () -> Unit,
-  onUpcomingPaymentClicked: (MemberCharge, PaymentConnection?) -> Unit,
+  onUpcomingPaymentClicked: (MemberCharge, PaymentOverview) -> Unit,
   onChangeBankAccount: () -> Unit,
   onDiscountClicked: () -> Unit,
-  onPaymentHistoryClicked: () -> Unit,
+  onPaymentHistoryClicked: (PaymentOverview) -> Unit,
   onRetry: () -> Unit,
 ) {
   val dateTimeFormatter = rememberHedvigDateTimeFormatter()
@@ -103,7 +103,7 @@ private fun PaymentOverviewScreen(
             onCardClicked = {
               onUpcomingPaymentClicked(
                 memberCharge,
-                uiState.paymentOverview.paymentConnection,
+                uiState.paymentOverview,
               )
             },
             modifier = Modifier
@@ -167,7 +167,9 @@ private fun PaymentOverviewScreen(
         Divider(modifier = Modifier.padding(horizontal = 16.dp))
         PaymentHistory(
           modifier = Modifier
-            .clickable { onPaymentHistoryClicked() }
+            .clickable {
+              onPaymentHistoryClicked(uiState.paymentOverview)
+            }
             .padding(16.dp),
         )
         uiState.paymentOverview.paymentConnection?.connectionInfo?.let {
@@ -317,10 +319,10 @@ private fun PreviewPaymentScreen() {
           paymentOverview = paymentOverViewPreviewData,
         ),
         {},
-        { memberCharge: MemberCharge, paymentConnection: PaymentConnection? -> },
+        { memberCharge: MemberCharge, paymentConnection: PaymentOverview -> },
         {},
         {},
-        {},
+        { PaymentOverview -> },
       ) {}
     }
   }
@@ -335,6 +337,7 @@ private fun PreviewPaymentScreenNoPayment() {
         uiState = OverViewUiState.Content(
           paymentOverview = PaymentOverview(
             memberCharge = null,
+            pastCharges = null,
             paymentConnection = PaymentConnection(
               connectionInfo = PaymentConnection.ConnectionInfo(
                 displayName = "Nordea",
@@ -345,10 +348,10 @@ private fun PreviewPaymentScreenNoPayment() {
           ),
         ),
         {},
-        { memberCharge: MemberCharge, paymentConnection: PaymentConnection? -> },
+        { memberCharge: MemberCharge, paymentConnection: PaymentOverview -> },
         {},
         {},
-        {},
+        { PaymentOverview -> },
       ) {}
     }
   }

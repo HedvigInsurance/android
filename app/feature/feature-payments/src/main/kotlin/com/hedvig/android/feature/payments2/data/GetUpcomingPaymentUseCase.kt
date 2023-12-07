@@ -9,6 +9,7 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiMoney
 import kotlinx.collections.immutable.toPersistentList
 import octopus.UpcomingPaymentQuery
+import octopus.fragment.MemberChargeFragment
 import octopus.type.MemberChargeStatus
 import octopus.type.MemberPaymentConnectionStatus
 
@@ -27,6 +28,7 @@ internal data class GetUpcomingPaymentUseCaseImpl(
 
     PaymentOverview(
       memberCharge = result.currentMember.futureCharge?.toMemberCharge(),
+      pastCharges = result.currentMember.pastCharges.map { it.toMemberCharge() },
       paymentConnection = PaymentConnection(
         connectionInfo = result.currentMember.paymentInformation.connection?.let {
           PaymentConnection.ConnectionInfo(
@@ -45,7 +47,7 @@ internal data class GetUpcomingPaymentUseCaseImpl(
   }
 }
 
-private fun UpcomingPaymentQuery.Data.CurrentMember.FutureCharge.toMemberCharge() = MemberCharge(
+private fun MemberChargeFragment.toMemberCharge() = MemberCharge(
   id = id ?: "",
   grossAmount = UiMoney.fromMoneyFragment(gross),
   netAmount = UiMoney.fromMoneyFragment(net),
@@ -75,7 +77,7 @@ private fun UpcomingPaymentQuery.Data.CurrentMember.FutureCharge.toMemberCharge(
   }.toPersistentList(),
 )
 
-private fun UpcomingPaymentQuery.Data.CurrentMember.FutureCharge.toFailedCharge(): MemberCharge.FailedCharge? {
+private fun MemberChargeFragment.toFailedCharge(): MemberCharge.FailedCharge? {
   val previousChargesPeriods = contractsChargeBreakdown
     .flatMap { it.periods }
     .filter { it.isPreviouslyFailedCharge }
@@ -92,8 +94,3 @@ private fun UpcomingPaymentQuery.Data.CurrentMember.FutureCharge.toFailedCharge(
     null
   }
 }
-
-internal data class PaymentOverview(
-  val memberCharge: MemberCharge?,
-  val paymentConnection: PaymentConnection?,
-)
