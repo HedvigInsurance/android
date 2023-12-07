@@ -28,7 +28,7 @@ internal data class GetUpcomingPaymentUseCaseImpl(
 
     PaymentOverview(
       memberCharge = result.currentMember.futureCharge?.toMemberCharge(),
-      pastCharges = result.currentMember.pastCharges.map { it.toMemberCharge() },
+      pastCharges = result.currentMember.pastCharges.map { it.toMemberCharge() }.reversed(),
       paymentConnection = PaymentConnection(
         connectionInfo = result.currentMember.paymentInformation.connection?.let {
           PaymentConnection.ConnectionInfo(
