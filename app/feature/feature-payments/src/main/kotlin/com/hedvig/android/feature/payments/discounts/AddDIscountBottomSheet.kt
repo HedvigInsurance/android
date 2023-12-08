@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.payments2.discounts
+package com.hedvig.android.feature.payments.discounts
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

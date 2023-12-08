@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.payments2.data
+package com.hedvig.android.feature.payments.data
 
 import kotlinx.serialization.Serializable
 

@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.payments2.details
+package com.hedvig.android.feature.payments.details
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -45,10 +45,10 @@ import com.hedvig.android.core.icons.hedvig.small.hedvig.Checkmark
 import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
-import com.hedvig.android.feature.payments2.DiscountRow
-import com.hedvig.android.feature.payments2.data.MemberCharge
-import com.hedvig.android.feature.payments2.data.PaymentOverview
-import com.hedvig.android.feature.payments2.paymentOverViewPreviewData
+import com.hedvig.android.feature.payments.discounts.DiscountRow
+import com.hedvig.android.feature.payments.data.MemberCharge
+import com.hedvig.android.feature.payments.data.PaymentOverview
+import com.hedvig.android.feature.payments.paymentOverViewPreviewData
 import hedvig.resources.R
 import kotlinx.datetime.toJavaLocalDate
 

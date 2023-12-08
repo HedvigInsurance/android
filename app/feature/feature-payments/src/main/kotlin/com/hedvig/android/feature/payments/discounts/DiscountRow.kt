@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.payments2
+package com.hedvig.android.feature.payments.discounts
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,7 +21,8 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
-import com.hedvig.android.feature.payments2.data.Discount
+import com.hedvig.android.feature.payments.data.Discount
+import com.hedvig.android.feature.payments.discountsPreviewData
 import hedvig.resources.R
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone

@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.payments2.details
+package com.hedvig.android.feature.payments.details
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

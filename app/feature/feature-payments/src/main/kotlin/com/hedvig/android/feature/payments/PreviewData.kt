@@ -1,10 +1,10 @@
-package com.hedvig.android.feature.payments2
+package com.hedvig.android.feature.payments
 
 import com.hedvig.android.core.uidata.UiMoney
-import com.hedvig.android.feature.payments2.data.Discount
-import com.hedvig.android.feature.payments2.data.MemberCharge
-import com.hedvig.android.feature.payments2.data.PaymentConnection
-import com.hedvig.android.feature.payments2.data.PaymentOverview
+import com.hedvig.android.feature.payments.data.Discount
+import com.hedvig.android.feature.payments.data.MemberCharge
+import com.hedvig.android.feature.payments.data.PaymentConnection
+import com.hedvig.android.feature.payments.data.PaymentOverview
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate
 import octopus.type.CurrencyCode

@@ -1,37 +1,32 @@
 package com.hedvig.android.feature.payments.di
 
 import com.apollographql.apollo3.ApolloClient
+import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.octopus.di.octopusClient
-import com.hedvig.android.core.demomode.DemoManager
-import com.hedvig.android.feature.payments.PaymentViewModel
-import com.hedvig.android.feature.payments.data.PaymentRepositoryDemo
-import com.hedvig.android.feature.payments.data.PaymentRepositoryImpl
-import com.hedvig.android.feature.payments.data.PaymentRepositoryProvider
-import com.hedvig.android.feature.payments.history.PaymentHistoryViewModel
+import com.hedvig.android.feature.payments.overview.PaymentOverviewViewModel
+import com.hedvig.android.feature.payments.data.AddDiscountUseCase
+import com.hedvig.android.feature.payments.data.AddDiscountUseCaseImpl
+import com.hedvig.android.feature.payments.data.GetUpcomingPaymentUseCase
+import com.hedvig.android.feature.payments.data.GetUpcomingPaymentUseCaseImpl
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
-val paymentsModule = module {
-  viewModel<PaymentViewModel> {
-    PaymentViewModel(get<PaymentRepositoryProvider>())
+val payments2Module = module {
+  single<GetUpcomingPaymentUseCase> {
+    GetUpcomingPaymentUseCaseImpl(get<ApolloClient>(octopusClient))
   }
-  viewModel<PaymentHistoryViewModel> {
-    PaymentHistoryViewModel(
-      get<PaymentRepositoryProvider>(),
+
+  single<AddDiscountUseCase> {
+    AddDiscountUseCaseImpl(
+      get<ApolloClient>(octopusClient),
+      get<NetworkCacheManager>(),
     )
   }
 
-  single<PaymentRepositoryImpl> {
-    PaymentRepositoryImpl(
-      apolloClient = get<ApolloClient>(octopusClient),
-    )
-  }
-  single<PaymentRepositoryDemo> { PaymentRepositoryDemo() }
-  single {
-    PaymentRepositoryProvider(
-      demoManager = get<DemoManager>(),
-      prodImpl = get<PaymentRepositoryImpl>(),
-      demoImpl = get<PaymentRepositoryDemo>(),
+  viewModel<PaymentOverviewViewModel> {
+    PaymentOverviewViewModel(
+      get<GetUpcomingPaymentUseCase>(),
+      get<AddDiscountUseCase>(),
     )
   }
 }
