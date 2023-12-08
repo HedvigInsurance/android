@@ -9,17 +9,10 @@ import java.time.temporal.ChronoField
 import java.util.Locale
 
 /**
- * A formatter which emulates the [DateTimeFormatter.ISO_LOCAL_DATE] but replaces the '-' dashes with '.' dots.
- * Example output: "2021.07.01"
+ * Example output: "16 Jan 2023"
  */
 fun hedvigDateTimeFormatter(locale: Locale): DateTimeFormatter {
-  return DateTimeFormatterBuilder()
-    .appendValue(ChronoField.YEAR, 4, 10, SignStyle.EXCEEDS_PAD)
-    .appendLiteral('.')
-    .appendValue(ChronoField.MONTH_OF_YEAR, 2)
-    .appendLiteral('.')
-    .appendValue(ChronoField.DAY_OF_MONTH, 2)
-    .toFormatter(locale)
+  return DateTimeFormatter.ofPattern("d MMM yyyy", locale)
 }
 
 /**
@@ -29,10 +22,23 @@ fun hedvigSecondaryDateTimeFormatter(locale: Locale): DateTimeFormatter {
   return DateTimeFormatter.ofPattern("MMMM d yyyy", locale)
 }
 
+/**
+ * Example output: "910113"
+ */
+fun hedvigSecondaryBirthDateDateTimeFormatter(locale: Locale): DateTimeFormatter {
+  return DateTimeFormatter.ofPattern("yyMMd", locale)
+}
+
 @Composable
 fun rememberHedvigDateTimeFormatter(): DateTimeFormatter {
   val locale = getLocale()
   return remember(locale) { hedvigDateTimeFormatter(locale) }
+}
+
+@Composable
+fun rememberHedvigBirthDateDateTimeFormatter(): DateTimeFormatter {
+  val locale = getLocale()
+  return remember(locale) { hedvigSecondaryBirthDateDateTimeFormatter(locale) }
 }
 
 // todo, migrate the above into [HedvigDateTimeFormatterDefaults]

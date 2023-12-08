@@ -63,12 +63,12 @@ import com.hedvig.android.core.icons.hedvig.normal.Payments
 import com.hedvig.android.core.icons.hedvig.normal.Waiting
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.getLocale
-import com.hedvig.android.core.ui.hedvigSecondaryDateTimeFormatter
+import com.hedvig.android.core.ui.hedvigDateTimeFormatter
 import com.hedvig.android.core.ui.preview.DoubleBooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.uidata.UiMoney
-import com.hedvig.android.data.contract.ContractType
+import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.android.toPillow
 import com.hedvig.android.feature.payments.data.CampaignCode
 import com.hedvig.android.placeholder.PlaceholderHighlight
@@ -251,7 +251,7 @@ private fun PaymentAmountCard(uiState: PaymentUiState, modifier: Modifier = Modi
 @Composable
 private fun NextPayment(upcomingCharge: PaymentUiState.Content.NextChargeStatus.UpcomingCharge) {
   val locale = getLocale()
-  val dateTimeFormatter = remember(locale) { hedvigSecondaryDateTimeFormatter(locale) }
+  val dateTimeFormatter = remember(locale) { hedvigDateTimeFormatter(locale) }
   HorizontalItemsWithMaximumSpaceTaken(
     startSlot = {
       Text(stringResource(R.string.PAYMENTS_NEXT_PAYMENT_SECTION_TITLE))
@@ -285,7 +285,7 @@ private fun ColumnScope.InsuranceCosts(insuranceCosts: ImmutableList<PaymentUiSt
         modifier = Modifier.weight(1f),
       ) {
         Image(
-          painter = painterResource(insuranceCost.contractType.toPillow()),
+          painter = painterResource(insuranceCost.contractGroup.toPillow()),
           contentDescription = null,
           modifier = Modifier.size(32.dp),
         )
@@ -482,12 +482,12 @@ private fun PreviewPaymentScreen(
             PaymentUiState.Content.InsuranceCost(
               displayName = "Home Insurance",
               cost = UiMoney(amount = 149.0, currencyCode = CurrencyCode.SEK),
-              contractType = ContractType.HOUSE,
+              contractGroup = ContractGroup.HOUSE,
             ),
             PaymentUiState.Content.InsuranceCost(
               displayName = "Accident Insurance",
               cost = UiMoney(amount = 100.0, currencyCode = CurrencyCode.SEK),
-              contractType = ContractType.ACCIDENT,
+              contractGroup = ContractGroup.ACCIDENT,
             ),
           ).toImmutableList(),
           campaignsStatus = if (hasCampaigns) {

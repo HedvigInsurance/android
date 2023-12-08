@@ -11,6 +11,8 @@ import com.hedvig.android.memberreminders.GetConnectPaymentReminderUseCase
 import com.hedvig.android.memberreminders.GetConnectPaymentReminderUseCaseImpl
 import com.hedvig.android.memberreminders.GetMemberRemindersUseCase
 import com.hedvig.android.memberreminders.GetMemberRemindersUseCaseImpl
+import com.hedvig.android.memberreminders.GetNeedsCoInsuredInfoRemindersUseCase
+import com.hedvig.android.memberreminders.GetNeedsCoInsuredInfoRemindersUseCaseImpl
 import com.hedvig.android.memberreminders.GetUpcomingRenewalRemindersUseCase
 import com.hedvig.android.memberreminders.GetUpcomingRenewalRemindersUseCaseImpl
 import kotlinx.datetime.Clock
@@ -26,11 +28,18 @@ val memberRemindersModule = module {
   single<GetUpcomingRenewalRemindersUseCase> {
     GetUpcomingRenewalRemindersUseCaseImpl(get<ApolloClient>(), get<Clock>())
   }
+  single<GetNeedsCoInsuredInfoRemindersUseCase> {
+    GetNeedsCoInsuredInfoRemindersUseCaseImpl(
+      get<ApolloClient>(octopusClient),
+      get<FeatureManager>(),
+    )
+  }
   single<GetMemberRemindersUseCase> {
     GetMemberRemindersUseCaseImpl(
       get<EnableNotificationsReminderManager>(),
       get<GetConnectPaymentReminderUseCase>(),
       get<GetUpcomingRenewalRemindersUseCase>(),
+      get<GetNeedsCoInsuredInfoRemindersUseCase>(),
     )
   }
 }

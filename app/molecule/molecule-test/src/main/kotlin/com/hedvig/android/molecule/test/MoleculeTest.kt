@@ -55,6 +55,16 @@ private class MoleculePresenterTestContextImpl<Event, State>(
     }
   }
 
+  override suspend fun skipItems(count: Int) {
+    while (true) {
+      val nextModel = turbineTestContext.awaitItem()
+      if (nextModel != lastModel) {
+        lastModel = nextModel
+        return
+      }
+    }
+  }
+
   override suspend fun awaitUnchanged() {
     val nextModel = turbineTestContext.awaitItem()
     check(nextModel == lastModel) {

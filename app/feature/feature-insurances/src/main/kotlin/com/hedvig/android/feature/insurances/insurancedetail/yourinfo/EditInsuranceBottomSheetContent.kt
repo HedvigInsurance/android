@@ -1,15 +1,11 @@
 package com.hedvig.android.feature.insurances.insurancedetail.yourinfo
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -18,18 +14,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
-import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.SelectIndicationCircle
-import com.hedvig.android.core.ui.infocard.VectorInfoCard
+import com.hedvig.android.core.ui.SelectableHedvigCard
 import hedvig.resources.R
 
 @Composable
@@ -58,7 +51,7 @@ internal fun EditInsuranceBottomSheetContent(
       verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
       if (allowChangeAddress) {
-        SelectableItem(
+        SelectableHedvigCard(
           text = stringResource(R.string.insurance_details_change_address_button),
           isSelected = selectedItemIndex == 0,
           onClick = {
@@ -71,7 +64,7 @@ internal fun EditInsuranceBottomSheetContent(
         )
       }
       if (allowEditCoInsured) {
-        SelectableItem(
+        SelectableHedvigCard(
           text = stringResource(R.string.CONTRACT_EDIT_COINSURED),
           isSelected = selectedItemIndex == 1,
           onClick = {
@@ -83,13 +76,6 @@ internal fun EditInsuranceBottomSheetContent(
           },
         )
       }
-    }
-    Spacer(modifier = Modifier.height(16.dp))
-    AnimatedVisibility(visible = selectedItemIndex == 1) {
-      VectorInfoCard(
-        text = stringResource(id = R.string.insurances_tab_contact_us_to_edit_co_insured),
-        modifier = Modifier.fillMaxWidth(),
-      )
     }
     Spacer(modifier = Modifier.height(16.dp))
     HedvigContainedButton(
@@ -109,27 +95,6 @@ internal fun EditInsuranceBottomSheetContent(
       onClick = onDismiss,
     )
     Spacer(modifier = Modifier.height(8.dp))
-  }
-}
-
-@Composable
-private fun SelectableItem(text: String, isSelected: Boolean, onClick: () -> Unit) {
-  HedvigCard(onClick = onClick) {
-    Row(
-      verticalAlignment = Alignment.CenterVertically,
-      modifier = Modifier
-        .heightIn(72.dp)
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp, vertical = 10.dp),
-    ) {
-      Text(
-        text = text,
-        style = MaterialTheme.typography.headlineSmall,
-        modifier = Modifier.weight(1f),
-      )
-      Spacer(Modifier.width(8.dp))
-      SelectIndicationCircle(isSelected)
-    }
   }
 }
 
