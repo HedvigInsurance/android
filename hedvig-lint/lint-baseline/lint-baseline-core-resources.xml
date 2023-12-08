@@ -1,0 +1,532 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="6" by="lint 8.1.4" type="baseline" client="gradle" dependencies="false" name="AGP (8.1.4)" variant="all" version="8.1.4">
+
+    <issue
+        id="WrongRegion"
+        message="Suspicious language and region combination en (English) with NO (Norway): language en is usually paired with: AI (Anguilla), AE (United Arab Emirates), AG (Antigua &amp; Barbuda), AS (American Samoa), AT (Austria), AU (Australia), BB (Barbados), BE (Belgium), BI (Burundi), BM (Bermuda), BS (Bahamas), BW (Botswana), BZ (Belize), CA (Canada), CC (Cocos (Keeling) Islands), CH (Switzerland), CK (Cook Islands), CM (Cameroon), CX (Christmas Island), CY (Cyprus), DE (Germany), DG (Diego Garcia), DK (Denmark), DM (Dominica), ER (Eritrea), FI (Finland), FJ (Fiji), FK (Falkland Islands), FM (Micronesia), GB (United Kingdom), GD (Grenada), GG (Guernsey), GH (Ghana), GI (Gibraltar), GM (Gambia), GU (Guam), GY (Guyana), HK (Hong Kong SAR China), IE (Ireland), IL (Israel), IM (Isle of Man), IN (India), IO (British Indian Ocean Territory), JE (Jersey), JM (Jamaica), KE (Kenya), KI (Kiribati), KN (St. Kitts &amp; Nevis), KY (Cayman Islands), LC (St. Lucia), LR (Liberia), LS (Lesotho), MG (Madagascar), MH (Marshall Islands), MO (Macao SAR China), MP (Northern Mariana Islands), MS (Montserrat), MT (Malta), MU (Mauritius), MV (Maldives), MW (Malawi), MY (Malaysia), NA (Namibia), NF (Norfolk Island), NG (Nigeria), NL (Netherlands), NR (Nauru), NU (Niue), NZ (New Zealand), PG (Papua New Guinea), PH (Philippines), PK (Pakistan), PN (Pitcairn Islands), PR (Puerto Rico), PW (Palau), RW (Rwanda), SB (Solomon Islands), SC (Seychelles), SD (Sudan), SE (Sweden), SG (Singapore), SH (St. Helena), SI (Slovenia), SL (Sierra Leone), SS (South Sudan), SX (Sint Maarten), SZ (Eswatini), TC (Turks &amp; Caicos Islands), TK (Tokelau), TO (Tonga), TT (Trinidad &amp; Tobago), TV (Tuvalu), TZ (Tanzania), UG (Uganda), UM (U.S. Outlying Islands), US (United States), VC (St. Vincent &amp; Grenadines), VG (British Virgin Islands), VI (U.S. Virgin Islands), VU (Vanuatu), WS (Samoa), ZA (South Africa), ZM (Zambia), ZW (Zimbabwe)">
+        <location
+            file="src/main/res/values-en-rNO"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;persons&quot;): This should probably be a plural rather than a string"
+        errorLine1="  &lt;string name=&quot;CHANGE_ADDRESS_TOTAL_PERSONS&quot;>%1$d persons&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en-rDK/strings.xml"
+            line="107"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;persons&quot;): This should probably be a plural rather than a string"
+        errorLine1="  &lt;string name=&quot;CHANGE_ADDRESS_TOTAL_PERSONS&quot;>%1$d persons&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en-rNO/strings.xml"
+            line="107"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;persons&quot;): This should probably be a plural rather than a string"
+        errorLine1="  &lt;string name=&quot;CHANGE_ADDRESS_TOTAL_PERSONS&quot;>%1$d persons&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en-rSE/strings.xml"
+            line="107"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;persons&quot;): This should probably be a plural rather than a string"
+        errorLine1="  &lt;string name=&quot;CHANGE_ADDRESS_TOTAL_PERSONS&quot;>%1$d persons&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="107"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;characters&quot;): This should probably be a plural rather than a string"
+        errorLine1="  &lt;string name=&quot;CLAIMS_TEXT_INPUT_MIN_CHARACTERS_ERROR&quot;>Input text needs to have more then %1$d characters.&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en-rDK/strings.xml"
+            line="173"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;characters&quot;): This should probably be a plural rather than a string"
+        errorLine1="  &lt;string name=&quot;CLAIMS_TEXT_INPUT_MIN_CHARACTERS_ERROR&quot;>Input text needs to have more then %1$d characters.&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en-rNO/strings.xml"
+            line="173"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;characters&quot;): This should probably be a plural rather than a string"
+        errorLine1="  &lt;string name=&quot;CLAIMS_TEXT_INPUT_MIN_CHARACTERS_ERROR&quot;>Input text needs to have more then %1$d characters.&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en-rSE/strings.xml"
+            line="173"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;characters&quot;): This should probably be a plural rather than a string"
+        errorLine1="  &lt;string name=&quot;CLAIMS_TEXT_INPUT_MIN_CHARACTERS_ERROR&quot;>Input text needs to have more then %1$d characters.&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="173"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;people&quot;): This should probably be a plural rather than a string"
+        errorLine1="  &lt;string name=&quot;CONTRACT_COINSURED_UPDATE_IN_FUTURE&quot;>Your insurance will be updated and cover you +%1$d people starting from %2$s&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en-rDK/strings.xml"
+            line="217"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;people&quot;): This should probably be a plural rather than a string"
+        errorLine1="  &lt;string name=&quot;CONTRACT_COINSURED_UPDATE_IN_FUTURE&quot;>Your insurance will be updated and cover you +%1$d people starting from %2$s&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en-rNO/strings.xml"
+            line="217"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;people&quot;): This should probably be a plural rather than a string"
+        errorLine1="  &lt;string name=&quot;CONTRACT_COINSURED_UPDATE_IN_FUTURE&quot;>Your insurance will be updated and cover you +%1$d people starting from %2$s&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en-rSE/strings.xml"
+            line="217"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;people&quot;): This should probably be a plural rather than a string"
+        errorLine1="  &lt;string name=&quot;CONTRACT_COINSURED_UPDATE_IN_FUTURE&quot;>Your insurance will be updated and cover you +%1$d people starting from %2$s&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="217"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;days&quot;): This should probably be a plural rather than a string"
+        errorLine1="  &lt;string name=&quot;DASHBOARD_RENEWAL_PROMPTER_BODY&quot;>In %1$d days your insurance will be renewed. Read your updated insurance certificate here.&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en-rDK/strings.xml"
+            line="272"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;days&quot;): This should probably be a plural rather than a string"
+        errorLine1="  &lt;string name=&quot;DASHBOARD_RENEWAL_PROMPTER_BODY&quot;>In %1$d days your insurance will be renewed. Read your updated insurance certificate here.&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en-rNO/strings.xml"
+            line="272"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;days&quot;): This should probably be a plural rather than a string"
+        errorLine1="  &lt;string name=&quot;DASHBOARD_RENEWAL_PROMPTER_BODY&quot;>In %1$d days your insurance will be renewed. Read your updated insurance certificate here.&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en-rSE/strings.xml"
+            line="272"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;days&quot;): This should probably be a plural rather than a string"
+        errorLine1="  &lt;string name=&quot;DASHBOARD_RENEWAL_PROMPTER_BODY&quot;>In %1$d days your insurance will be renewed. Read your updated insurance certificate here.&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="272"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;months&quot;): This should probably be a plural rather than a string"
+        errorLine1="  &lt;string name=&quot;PAYMENTS_LATE_PAYMENTS_MESSAGE&quot;>You\&apos;re %1$d months late with your payments. Your next payment will be higher than your ordinary monthly payment. We will charge you %2$s&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en-rDK/strings.xml"
+            line="544"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;months&quot;): This should probably be a plural rather than a string"
+        errorLine1="  &lt;string name=&quot;PAYMENTS_LATE_PAYMENTS_MESSAGE&quot;>You\&apos;re %1$d months late with your payments. Your next payment will be higher than your ordinary monthly payment. We will charge you %2$s&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en-rNO/strings.xml"
+            line="544"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;months&quot;): This should probably be a plural rather than a string"
+        errorLine1="  &lt;string name=&quot;PAYMENTS_LATE_PAYMENTS_MESSAGE&quot;>You\&apos;re %1$d months late with your payments. Your next payment will be higher than your ordinary monthly payment. We will charge you %2$s&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en-rSE/strings.xml"
+            line="544"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;months&quot;): This should probably be a plural rather than a string"
+        errorLine1="  &lt;string name=&quot;PAYMENTS_LATE_PAYMENTS_MESSAGE&quot;>You\&apos;re %1$d months late with your payments. Your next payment will be higher than your ordinary monthly payment. We will charge you %2$s&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="544"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;off&quot;): This should probably be a plural rather than a string"
+        errorLine1="  &lt;string name=&quot;REFERRAL_STARTSCREEN_HEADLINE&quot;>You have been invited by a friend and will get %1$d off your monthly payment&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en-rDK/strings.xml"
+            line="646"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;off&quot;): This should probably be a plural rather than a string"
+        errorLine1="  &lt;string name=&quot;REFERRAL_STARTSCREEN_HEADLINE&quot;>You have been invited by a friend and will get %1$d off your monthly payment&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en-rNO/strings.xml"
+            line="646"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;off&quot;): This should probably be a plural rather than a string"
+        errorLine1="  &lt;string name=&quot;REFERRAL_STARTSCREEN_HEADLINE&quot;>You have been invited by a friend and will get %1$d off your monthly payment&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en-rSE/strings.xml"
+            line="646"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;off&quot;): This should probably be a plural rather than a string"
+        errorLine1="  &lt;string name=&quot;REFERRAL_STARTSCREEN_HEADLINE&quot;>You have been invited by a friend and will get %1$d off your monthly payment&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="646"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;times&quot;): This should probably be a plural rather than a string"
+        errorLine1="  &lt;string name=&quot;referrals_change.code.sheet.error.change.limit.reached&quot;>You can at most change your code %1d times&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en-rDK/strings.xml"
+            line="1207"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;times&quot;): This should probably be a plural rather than a string"
+        errorLine1="  &lt;string name=&quot;referrals_change.code.sheet.error.change.limit.reached&quot;>You can at most change your code %1d times&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en-rNO/strings.xml"
+            line="1207"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;times&quot;): This should probably be a plural rather than a string"
+        errorLine1="  &lt;string name=&quot;referrals_change.code.sheet.error.change.limit.reached&quot;>You can at most change your code %1d times&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en-rSE/strings.xml"
+            line="1207"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;times&quot;): This should probably be a plural rather than a string"
+        errorLine1="  &lt;string name=&quot;referrals_change.code.sheet.error.change.limit.reached&quot;>You can at most change your code %1d times&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="1207"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;travelers&quot;): This should probably be a plural rather than a string"
+        errorLine1="  &lt;string name=&quot;travel_certificate.max_coinsured_error_label&quot;>Can not add more than %d travelers&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="1286"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;travellers&quot;): This should probably be a plural rather than a string"
+        errorLine1="  &lt;string name=&quot;travel_certificate.max_coinsured_error_label&quot;>Can not add more than %d travellers&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en-rDK/strings.xml"
+            line="1286"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;travellers&quot;): This should probably be a plural rather than a string"
+        errorLine1="  &lt;string name=&quot;travel_certificate.max_coinsured_error_label&quot;>Can not add more than %d travellers&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en-rNO/strings.xml"
+            line="1286"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;travellers&quot;): This should probably be a plural rather than a string"
+        errorLine1="  &lt;string name=&quot;travel_certificate.max_coinsured_error_label&quot;>Can not add more than %d travellers&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en-rSE/strings.xml"
+            line="1286"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;days&quot;): This should probably be a plural rather than a string"
+        errorLine1="  &lt;string name=&quot;travel_certificate.start_date_info&quot;>The certificate is valid for up to %1$d days when travelling to countries that are not prohibited by the Swedish Department of Foreign Affairs&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en-rDK/strings.xml"
+            line="1295"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;days&quot;): This should probably be a plural rather than a string"
+        errorLine1="  &lt;string name=&quot;travel_certificate.start_date_info&quot;>The certificate is valid for up to %1$d days when travelling to countries that are not prohibited by the Swedish Department of Foreign Affairs&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en-rNO/strings.xml"
+            line="1295"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;days&quot;): This should probably be a plural rather than a string"
+        errorLine1="  &lt;string name=&quot;travel_certificate.start_date_info&quot;>The certificate is valid for up to %1$d days when travelling to countries that are not prohibited by the Swedish Department of Foreign Affairs&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en-rSE/strings.xml"
+            line="1295"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;days&quot;): This should probably be a plural rather than a string"
+        errorLine1="  &lt;string name=&quot;travel_certificate.start_date_info&quot;>The certificate is valid for up to %1$d days when travelling to countries that are not prohibited by the Swedish Department of Foreign Affairs&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="1295"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="StringFormatCount"
+        message="Inconsistent number of arguments in formatting string `GENERAL.DUE`; found both 1 here and 0 in values-da-rDK/strings.xml"
+        errorLine1="  &lt;string name=&quot;GENERAL.DUE&quot;>Due %1$s&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="338"
+            column="3"/>
+        <location
+            file="src/main/res/values-da-rDK/strings.xml"
+            line="338"
+            column="3"
+            message="Conflicting number of arguments (0) here"/>
+    </issue>
+
+    <issue
+        id="StringFormatCount"
+        message="Formatting string &apos;`TERMINATION_CONTRACT_DELETION_ACTIVE_IN_FUTURE_DISCLAIMER`&apos; is not referencing numbered arguments [1]"
+        errorLine1="  &lt;string name=&quot;TERMINATION_CONTRACT_DELETION_ACTIVE_IN_FUTURE_DISCLAIMER&quot;>Din forsikring vil blive slettet, hvilket betyder at den ikke vil blive aktiveret den %2$s.&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-da-rDK/strings.xml"
+            line="741"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="StringFormatCount"
+        message="Formatting string &apos;`TERMINATION_CONTRACT_DELETION_ACTIVE_IN_FUTURE_DISCLAIMER`&apos; is not referencing numbered arguments [1]"
+        errorLine1="  &lt;string name=&quot;TERMINATION_CONTRACT_DELETION_ACTIVE_IN_FUTURE_DISCLAIMER&quot;>Your insurance will be deleted which means it will not be activated on %2$s.&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en-rDK/strings.xml"
+            line="741"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="StringFormatCount"
+        message="Formatting string &apos;`TERMINATION_CONTRACT_DELETION_ACTIVE_IN_FUTURE_DISCLAIMER`&apos; is not referencing numbered arguments [1]"
+        errorLine1="  &lt;string name=&quot;TERMINATION_CONTRACT_DELETION_ACTIVE_IN_FUTURE_DISCLAIMER&quot;>Your insurance will be deleted which means it will not be activated on %2$s.&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en-rNO/strings.xml"
+            line="741"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="StringFormatCount"
+        message="Formatting string &apos;`TERMINATION_CONTRACT_DELETION_ACTIVE_IN_FUTURE_DISCLAIMER`&apos; is not referencing numbered arguments [1]"
+        errorLine1="  &lt;string name=&quot;TERMINATION_CONTRACT_DELETION_ACTIVE_IN_FUTURE_DISCLAIMER&quot;>Your insurance will be deleted which means it will not be activated on %2$s.&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en-rSE/strings.xml"
+            line="741"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="StringFormatCount"
+        message="Formatting string &apos;`TERMINATION_CONTRACT_DELETION_ACTIVE_IN_FUTURE_DISCLAIMER`&apos; is not referencing numbered arguments [1]"
+        errorLine1="  &lt;string name=&quot;TERMINATION_CONTRACT_DELETION_ACTIVE_IN_FUTURE_DISCLAIMER&quot;>Forsikringen din vil bli slettet, noe som betyr at den ikke vil bli aktivert på %2$s.&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-nb-rNO/strings.xml"
+            line="741"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="StringFormatCount"
+        message="Formatting string &apos;`TERMINATION_CONTRACT_DELETION_ACTIVE_IN_FUTURE_DISCLAIMER`&apos; is not referencing numbered arguments [1]"
+        errorLine1="  &lt;string name=&quot;TERMINATION_CONTRACT_DELETION_ACTIVE_IN_FUTURE_DISCLAIMER&quot;>Din försäkring kommer att raderas vilket betyder att den inte kommer att aktiveras den %2$s.&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-sv-rSE/strings.xml"
+            line="741"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="StringFormatCount"
+        message="Formatting string &apos;`TERMINATION_CONTRACT_DELETION_ACTIVE_IN_FUTURE_DISCLAIMER`&apos; is not referencing numbered arguments [1]"
+        errorLine1="  &lt;string name=&quot;TERMINATION_CONTRACT_DELETION_ACTIVE_IN_FUTURE_DISCLAIMER&quot;>Your insurance will be deleted which means it will not be activated on %2$s.&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="741"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="StringFormatCount"
+        message="Inconsistent number of arguments in formatting string `home.claim.multiple.title`; found both 1 here and 0 in values-da-rDK/strings.xml"
+        errorLine1="  &lt;string name=&quot;home.claim.multiple.title&quot;>Hi %1$s, here’s your recent claims.&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="916"
+            column="3"/>
+        <location
+            file="src/main/res/values-da-rDK/strings.xml"
+            line="916"
+            column="3"
+            message="Conflicting number of arguments (0) here"/>
+    </issue>
+
+    <issue
+        id="StringFormatCount"
+        message="Inconsistent number of arguments in formatting string `info_card_missing_payment.body_with_date`; found both 1 here and 0 in values-sv-rSE/strings.xml"
+        errorLine1="  &lt;string name=&quot;info_card_missing_payment.body_with_date&quot;>For your insurance to stay active, you need to connect a payment method. Make sure you connect before %1$s.&lt;/string>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="962"
+            column="3"/>
+        <location
+            file="src/main/res/values-sv-rSE/strings.xml"
+            line="962"
+            column="3"
+            message="Conflicting number of arguments (0) here"/>
+    </issue>
+
+</issues>
