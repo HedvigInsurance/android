@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.connect.payment.trustly.di
 
 import com.apollographql.apollo3.ApolloClient
+import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.octopus.di.octopusClient
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.feature.connect.payment.trustly.StartTrustlySessionUseCase
@@ -21,6 +22,7 @@ val connectPaymentTrustlyModule = module {
       market = market,
       trustlyCallback = get<TrustlyCallback>(),
       startTrustlySessionUseCase = get<StartTrustlySessionUseCase>(),
+      networkCacheManager = get<NetworkCacheManager>(),
     )
   }
 }

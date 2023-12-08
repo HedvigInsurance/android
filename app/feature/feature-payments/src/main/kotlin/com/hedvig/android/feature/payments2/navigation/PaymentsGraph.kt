@@ -82,8 +82,10 @@ fun NavGraphBuilder.paymentsGraph(
       )
     }
     composable<PaymentsDestinations2.Discounts> {
+      val viewModel: PaymentOverviewViewModel = koinViewModel()
+
       DiscountsDestination(
-        discounts = discounts,
+        viewModel = viewModel,
         navigateUp = navigator::navigateUp,
       )
     }
