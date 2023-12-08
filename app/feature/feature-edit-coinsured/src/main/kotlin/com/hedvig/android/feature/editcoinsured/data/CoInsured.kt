@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.editcoinsured.data
 
+import com.hedvig.android.feature.editcoinsured.ui.formatSsn
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 import kotlinx.datetime.LocalDate
@@ -27,6 +28,11 @@ internal data class CoInsured(
     }
   }
 
-  fun identifier(dateTimeFormatter: DateTimeFormatter): String? =
-    ssn ?: birthDate?.toJavaLocalDate()?.format(dateTimeFormatter)
+  fun identifier(dateTimeFormatter: DateTimeFormatter): String? {
+    return if (ssn != null) {
+      formatSsn(ssn)
+    } else {
+      birthDate?.toJavaLocalDate()?.format(dateTimeFormatter)
+    }
+  }
 }
