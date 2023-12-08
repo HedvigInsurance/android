@@ -2,22 +2,6 @@ package com.hedvig.android.core.buildconstants
 
 interface HedvigBuildConstants {
   /**
-   * Base URL for giraffe backend
-   */
-  val urlGiraffeBaseApi: String
-
-  /**
-   * Same as [urlGiraffeBaseApi] with /graphql suffix to it
-   */
-  val urlGiraffeGraphql: String
-
-  /**
-   * Same as [urlGiraffeBaseApi] but for subscriptions, which means it has `wss` instead of `https` and ends with a
-   * `/subscriptions` suffix
-   */
-  val urlGiraffeGraphqlSubscription: String
-
-  /**
    * Base URL for octupus backend
    */
   val urlGraphqlOctopus: String
@@ -36,6 +20,11 @@ interface HedvigBuildConstants {
    * The URL targeting odyssey backend
    */
   val urlOdyssey: String
+
+  /**
+   * The URL targeting bot service backend
+   */
+  val urlBotService: String
 
   /**
    * The base host used for all deep links.

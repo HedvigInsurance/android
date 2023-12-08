@@ -5,8 +5,6 @@ plugins {
 }
 
 dependencies {
-  api(projects.apolloGiraffePublic)
-
   implementation(libs.androidx.other.appCompat)
   implementation(libs.androidx.other.preference)
   implementation(libs.koin.core)

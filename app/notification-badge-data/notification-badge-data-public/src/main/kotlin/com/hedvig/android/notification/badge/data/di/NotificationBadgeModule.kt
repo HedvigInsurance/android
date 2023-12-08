@@ -1,7 +1,6 @@
 package com.hedvig.android.notification.badge.data.di
 
 import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.apollo.octopus.di.octopusClient
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.notification.badge.data.crosssell.CrossSellCardNotificationBadgeServiceProvider
 import com.hedvig.android.notification.badge.data.crosssell.CrossSellNotificationBadgeService
@@ -21,7 +20,7 @@ val notificationBadgeModule = module {
   single<CrossSellBottomNavNotificationBadgeService> { CrossSellBottomNavNotificationBadgeService(get()) }
   single<CrossSellNotificationBadgeService> { CrossSellNotificationBadgeService(get(), get()) }
   single<GetCrossSellIdentifiersUseCase> {
-    GetCrossSellIdentifiersUseCaseImpl(get<ApolloClient>(octopusClient))
+    GetCrossSellIdentifiersUseCaseImpl(get<ApolloClient>())
   }
   single<NotificationBadgeStorage> { DatastoreNotificationBadgeStorage(get()) }
   single<ReferralsNotificationBadgeService> { ReferralsNotificationBadgeService(get(), get()) }

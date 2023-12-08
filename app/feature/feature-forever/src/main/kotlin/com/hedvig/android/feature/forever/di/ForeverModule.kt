@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.forever.di
 
 import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.apollo.octopus.di.octopusClient
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.feature.forever.ForeverViewModel
 import com.hedvig.android.feature.forever.data.ForeverRepositoryDemo
@@ -17,7 +16,7 @@ val foreverModule = module {
     )
   }
   single<ForeverRepositoryImpl> {
-    ForeverRepositoryImpl(apolloClient = get<ApolloClient>(octopusClient))
+    ForeverRepositoryImpl(apolloClient = get<ApolloClient>())
   }
   single<ForeverRepositoryDemo> {
     ForeverRepositoryDemo()

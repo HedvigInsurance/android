@@ -1,5 +1,3 @@
-@file:Suppress("MISSING_DEPENDENCY_CLASS", "MISSING_DEPENDENCY_SUPERCLASS")
-
 package com.hedvig.android.lokalise
 
 import com.hedvig.android.lokalise.extension.LokalisePluginExtension

@@ -26,6 +26,8 @@ squareSortDependencies = "0.4"
 
 # Other versions sorted alphabetically
 accompanist = "0.32.0"
+androidx-activity-compose = "1.8.1"
+androidx-activity-core = "1.8.1"
 androidx-annotation = "1.7.0"
 androidx-arch-testing = "2.2.0"
 androidx-composeBom = "2023.10.01"
@@ -33,7 +35,6 @@ androidx-composeCompiler = "1.5.4"
 androidx-datastore = "1.0.0"
 androidx-lifecycle = "2.6.2"
 androidx-navigation = "2.7.5"
-androidx-other-activityCompose = "1.8.1"
 androidx-other-appCompat = "1.6.1"
 androidx-other-browser = "1.7.0"
 androidx-other-constraintLayout = "2.1.4"
@@ -100,6 +101,8 @@ accompanist-pagerIndicators = { module = "com.google.accompanist:accompanist-pag
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
 accompanist-systemUiController = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 accompanist-webview = { module = "com.google.accompanist:accompanist-webview", version.ref = "accompanist" }
+androidx-activity-core = { module = "androidx.activity:activity", version.ref = "androidx-activity-core" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity-compose" }
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
 androidx-arch-testing = { module = "androidx.arch.core:core-testing", version.ref = "androidx-arch-testing" }
 androidx-compose-animation = { module = "androidx.compose.animation:animation-core" }
@@ -133,7 +136,6 @@ androidx-lifecycle-viewmodelCompose = { module = "androidx.lifecycle:lifecycle-v
 androidx-navigation-common = { module = "androidx.navigation:navigation-common", version.ref = "androidx-navigation" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "androidx-navigation" }
 androidx-navigation-runtime = { module = "androidx.navigation:navigation-runtime", version.ref = "androidx-navigation" }
-androidx-other-activityCompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-other-activityCompose" }
 androidx-other-appCompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-other-appCompat" }
 androidx-other-browser = { module = "androidx.browser:browser", version.ref = "androidx-other-browser" }
 androidx-other-constraintLayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "androidx-other-constraintLayout" }

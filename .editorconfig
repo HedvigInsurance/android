@@ -62,6 +62,9 @@ ktlint_standard_multiline-expression-wrapping=disabled
 # https://pinterest.github.io/ktlint/1.0.1/rules/standard/#string-template-indent
 ktlint_standard_string-template-indent=disabled
 
+[*.xml]
+indent_size=2
+
 [*.graphql]
 indent_size=2
 end_of_line=lf
