@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 
+// todo: consider removing this entirely and decide when to show the review sheet in other scenarios
 interface ChatClosedEventStore {
   suspend fun increaseChatClosedCounter()
 

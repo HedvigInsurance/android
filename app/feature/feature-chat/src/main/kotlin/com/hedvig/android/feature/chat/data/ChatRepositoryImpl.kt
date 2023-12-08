@@ -271,7 +271,7 @@ internal class ChatRepositoryImpl(
     ensureNotNull(message) {
       ErrorMessage("No data")
     }
-    // todo check what status should be used for. Now it prints stuff like "Chat is closed, we'll answer asap"
+    // todo chat: Consider using status which prints stuff like "Chat is closed, we'll answer asap" in the UI somehow
     if (status != null) {
       logcat(LogPriority.WARN) { "Status was: ${status.message}" }
     }

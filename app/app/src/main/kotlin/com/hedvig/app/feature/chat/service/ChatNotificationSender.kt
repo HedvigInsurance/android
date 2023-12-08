@@ -36,7 +36,7 @@ class ChatNotificationSender(
   }
 
   override fun sendNotification(type: String, remoteMessage: RemoteMessage) {
-    // todo still don't show when chat is foregrounded
+    // todo chat: Consider still not showing the notification when chat is on the foreground
 //    if (context.getStoredBoolean(ChatFragment.ACTIVITY_IS_IN_FOREGROUND)) {
 //      logcat(LogPriority.INFO) { "ChatNotificationSender ignoring notification since chat is open" }
 //      return
