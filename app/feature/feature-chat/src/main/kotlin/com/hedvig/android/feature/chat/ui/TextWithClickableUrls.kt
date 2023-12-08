@@ -4,7 +4,6 @@ import android.content.Intent
 import android.net.Uri
 import android.util.Patterns
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -25,7 +24,7 @@ import com.hedvig.android.core.designsystem.material3.infoElement
 fun TextWithClickableUrls(
   text: String,
   modifier: Modifier = Modifier,
-  style: TextStyle = LocalTextStyle.current,
+  style: TextStyle = TextStyle.Default,
   softWrap: Boolean = true,
   overflow: TextOverflow = TextOverflow.Clip,
   maxLines: Int = Int.MAX_VALUE,

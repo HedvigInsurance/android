@@ -31,6 +31,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -322,9 +323,11 @@ private fun ChatBubble(
           Surface(
             shape = MaterialTheme.shapes.squircleMedium,
             color = chatMessage.backgroundColor(),
+            contentColor = chatMessage.onBackgroundColor(),
           ) {
             TextWithClickableUrls(
               text = chatMessage.text,
+              style = LocalTextStyle.current.copy(color = LocalContentColor.current),
               modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
             )
           }

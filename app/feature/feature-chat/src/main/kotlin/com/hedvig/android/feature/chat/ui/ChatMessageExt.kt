@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import com.hedvig.android.core.designsystem.material3.infoContainer
+import com.hedvig.android.core.designsystem.material3.onInfoContainer
 import com.hedvig.android.core.ui.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.feature.chat.model.ChatMessage
 import java.time.temporal.TemporalAdjusters
@@ -23,6 +24,12 @@ import kotlinx.datetime.toLocalDateTime
 internal fun ChatMessage.backgroundColor(): Color = when (sender) {
   ChatMessage.Sender.HEDVIG -> MaterialTheme.colorScheme.surface
   ChatMessage.Sender.MEMBER -> MaterialTheme.colorScheme.infoContainer
+}
+
+@Composable
+internal fun ChatMessage.onBackgroundColor(): Color = when (sender) {
+  ChatMessage.Sender.HEDVIG -> MaterialTheme.colorScheme.onSurface
+  ChatMessage.Sender.MEMBER -> MaterialTheme.colorScheme.onInfoContainer
 }
 
 internal fun ChatMessage.messageHorizontalAlignment(): Alignment.Horizontal = when (sender) {
