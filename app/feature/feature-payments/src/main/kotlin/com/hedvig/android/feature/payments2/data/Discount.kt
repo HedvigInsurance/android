@@ -13,5 +13,5 @@ data class Discount(
   val amount: UiMoney?,
   val isReferral: Boolean,
 ) {
-  fun isExpired(now: LocalDate) = expiresAt?.let { it > now } ?: true
+  fun isExpired(now: LocalDate) = expiresAt?.let { it < now } ?: true
 }
