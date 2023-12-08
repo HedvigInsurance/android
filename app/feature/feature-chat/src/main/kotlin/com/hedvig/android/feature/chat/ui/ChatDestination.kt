@@ -117,17 +117,6 @@ private fun ChatScreen(
         propagateMinConstraints = true,
       ) {
         when (uiState) {
-          ChatUiState.DemoMode -> {
-            Box(
-              modifier = Modifier
-                .fillMaxSize()
-                .debugBorder(),
-              contentAlignment = Alignment.Center,
-            ) {
-              Text("Demo mode")
-            }
-          }
-
           ChatUiState.DisabledByFeatureFlag -> {
             Box(
               Modifier

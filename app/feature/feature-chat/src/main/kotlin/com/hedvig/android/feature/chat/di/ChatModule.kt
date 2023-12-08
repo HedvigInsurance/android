@@ -5,14 +5,14 @@ import arrow.retrofit.adapter.either.EitherCallAdapterFactory
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
-import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.feature.chat.ChatViewModel
 import com.hedvig.android.feature.chat.FileService
 import com.hedvig.android.feature.chat.closedevent.ChatClosedEventDataStore
 import com.hedvig.android.feature.chat.closedevent.ChatClosedEventStore
 import com.hedvig.android.feature.chat.data.BotServiceService
-import com.hedvig.android.feature.chat.data.ChatRepository
+import com.hedvig.android.feature.chat.data.ChatRepositoryDemo
 import com.hedvig.android.feature.chat.data.ChatRepositoryImpl
+import com.hedvig.android.feature.chat.data.GetChatRepositoryProvider
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.datetime.Clock
@@ -26,22 +26,28 @@ import retrofit2.Retrofit
 val chatModule = module {
   single<ChatClosedEventStore> { ChatClosedEventDataStore(get()) }
   viewModel<ChatViewModel> {
-    val chatRepository = get<ChatRepository>()
     ChatViewModel(
-      // todo chat: fake provider
-      chatRepository = Provider { chatRepository },
-      chatClosedTracker = get<ChatClosedEventStore>(),
+      chatRepository = get<GetChatRepositoryProvider>(),
       featureManager = get<FeatureManager>(),
-      demoManager = get<DemoManager>(),
       clock = get<Clock>(),
     )
   }
-  single<ChatRepository> {
+  single<ChatRepositoryImpl> {
     ChatRepositoryImpl(
       apolloClient = get<ApolloClient>(),
       botServiceService = get<BotServiceService>(),
       fileService = get<FileService>(),
       contentResolver = get<Context>().contentResolver,
+    )
+  }
+  single<ChatRepositoryDemo> {
+    ChatRepositoryDemo(get<Clock>())
+  }
+  single<GetChatRepositoryProvider> {
+    GetChatRepositoryProvider(
+      demoManager = get<DemoManager>(),
+      demoImpl = get<ChatRepositoryDemo>(),
+      prodImpl = get<ChatRepositoryImpl>(),
     )
   }
 

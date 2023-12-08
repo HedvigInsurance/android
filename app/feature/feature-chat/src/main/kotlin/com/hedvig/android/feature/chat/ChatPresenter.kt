@@ -18,9 +18,7 @@ import arrow.fx.coroutines.parMap
 import com.benasher44.uuid.Uuid
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.safeCast
-import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.Provider
-import com.hedvig.android.feature.chat.closedevent.ChatClosedEventStore
 import com.hedvig.android.feature.chat.data.ChatRepository
 import com.hedvig.android.feature.chat.model.ChatMessage
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
@@ -35,7 +33,6 @@ import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -58,9 +55,6 @@ internal sealed interface ChatEvent {
 @Immutable
 internal sealed interface ChatUiState {
   data object Initializing : ChatUiState
-
-  // TODO remove demo mode from here, just fake the dependencies instead?
-  data object DemoMode : ChatUiState
 
   data object DisabledByFeatureFlag : ChatUiState
 
@@ -85,29 +79,17 @@ internal sealed interface ChatUiState {
 
 internal class ChatPresenter(
   private val chatRepository: Provider<ChatRepository>,
-  private val chatClosedTracker: ChatClosedEventStore,
   private val featureManager: FeatureManager,
-  private val demoManager: DemoManager,
   private val clock: Clock,
 ) : MoleculePresenter<ChatEvent, ChatUiState> {
   @Composable
   override fun MoleculePresenterScope<ChatEvent>.present(lastState: ChatUiState): ChatUiState {
-    // region early exits
-    val isInDemoMode by produceState(lastState is ChatUiState.DemoMode) {
-      demoManager.isDemoMode().collectLatest { isDemoMode ->
-        value = isDemoMode
-      }
-    }
-    if (isInDemoMode) {
-      return ChatUiState.DemoMode
-    }
     val isChatDisabled by produceState(false || lastState is ChatUiState.DisabledByFeatureFlag) {
       value = featureManager.isFeatureEnabled(Feature.DISABLE_CHAT)
     }
     if (isChatDisabled) {
       return ChatUiState.DisabledByFeatureFlag
     }
-    // endregion
 
     val messages: SnapshotStateList<ChatMessage> = remember {
       mutableStateListOf(
