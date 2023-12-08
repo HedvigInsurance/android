@@ -30,7 +30,7 @@ val memberRemindersModule = module {
   }
   single<GetNeedsCoInsuredInfoRemindersUseCase> {
     GetNeedsCoInsuredInfoRemindersUseCaseImpl(
-      get<ApolloClient>(octopusClient),
+      get<ApolloClient>(),
       get<FeatureManager>(),
     )
   }

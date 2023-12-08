@@ -21,7 +21,7 @@ dependencies {
   implementation(projects.coreDemoMode)
   implementation(libs.androidx.navigation.common)
   implementation(libs.androidx.navigation.runtime)
-  implementation(libs.androidx.other.activityCompose)
+  implementation(libs.androidx.activity.compose)
   implementation(libs.arrow.core)
   implementation(libs.coroutines.core)
   implementation(libs.kotlinx.serialization.core)
