@@ -31,7 +31,6 @@ data class AddDiscountUseCaseImpl(
 
     DiscountSuccess
   }
-
 }
 
 data object DiscountSuccess

@@ -95,8 +95,11 @@ internal class PaymentOverviewPresenter(
 
 internal sealed interface PaymentEvent {
   data object Retry : PaymentEvent
+
   data object DismissBottomSheet : PaymentEvent
+
   data object ShowBottomSheet : PaymentEvent
+
   data class OnSubmitDiscountCode(val code: String) : PaymentEvent
 }
 

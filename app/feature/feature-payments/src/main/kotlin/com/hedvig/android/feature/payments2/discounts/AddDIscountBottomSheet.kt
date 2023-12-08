@@ -24,11 +24,7 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import hedvig.resources.R
 
 @Composable
-fun AddDiscountBottomSheet(
-  isLoading: Boolean,
-  errorMessage: String?,
-  onAddDiscount: (String) -> Unit,
-) {
+fun AddDiscountBottomSheet(isLoading: Boolean, errorMessage: String?, onAddDiscount: (String) -> Unit) {
   var discountCodeInput by remember { mutableStateOf("") }
   Column(
     modifier = Modifier.padding(horizontal = 16.dp),

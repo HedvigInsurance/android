@@ -32,10 +32,7 @@ import com.hedvig.android.feature.payments2.paymentOverViewPreviewData
 import hedvig.resources.R
 
 @Composable
-internal fun DiscountsDestination(
-  viewModel: PaymentOverviewViewModel,
-  navigateUp: () -> Unit,
-) {
+internal fun DiscountsDestination(viewModel: PaymentOverviewViewModel, navigateUp: () -> Unit) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   DiscountsScreen(
     uiState = uiState,
@@ -130,5 +127,3 @@ internal fun PaymentDetailsScreenPreview() {
     }
   }
 }
-
-

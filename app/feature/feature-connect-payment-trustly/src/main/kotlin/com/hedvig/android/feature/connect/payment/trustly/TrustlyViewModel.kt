@@ -16,6 +16,6 @@ internal class TrustlyViewModel(
       trustlyCallback,
       startTrustlySessionUseCase,
       market,
-      networkCacheManager
+      networkCacheManager,
     ),
   )
