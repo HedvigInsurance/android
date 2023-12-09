@@ -33,7 +33,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -46,6 +45,9 @@ import com.hedvig.android.core.designsystem.material3.onWarningContainer
 import com.hedvig.android.core.designsystem.material3.warningElement
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.hedvig.normal.ChevronDown
+import com.hedvig.android.core.icons.hedvig.small.hedvig.Checkmark
 import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.dialog.ErrorDialog
@@ -151,9 +153,9 @@ internal fun GenerateTravelCertificateInput(
           Text(stringResource(id = R.string.travel_certificate_me))
           if (uiState.includeMember) {
             Icon(
-              painter = painterResource(com.hedvig.android.core.design.system.R.drawable.ic_checkmark),
+              imageVector = Icons.Hedvig.Checkmark,
               tint = MaterialTheme.colorScheme.onSurface,
-              contentDescription = "include me",
+              contentDescription = null,
               modifier = Modifier.size(18.dp),
             )
           }
@@ -320,9 +322,7 @@ private fun MovingDateButton(
         }
         Spacer(Modifier.width(16.dp))
         Icon(
-          painter = painterResource(
-            id = com.hedvig.android.core.design.system.R.drawable.ic_drop_down_indicator,
-          ),
+          imageVector = Icons.Hedvig.ChevronDown,
           tint = MaterialTheme.colorScheme.onInfoElement,
           contentDescription = null,
           modifier = Modifier.size(16.dp),

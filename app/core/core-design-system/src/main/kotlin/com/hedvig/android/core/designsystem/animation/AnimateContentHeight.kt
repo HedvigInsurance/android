@@ -72,10 +72,7 @@ private class HeightAnimationModifier(
 
   var animData: AnimData? by mutableStateOf(null)
 
-  override fun MeasureScope.measure(
-    measurable: Measurable,
-    constraints: Constraints,
-  ): MeasureResult {
+  override fun MeasureScope.measure(measurable: Measurable, constraints: Constraints): MeasureResult {
     val placeable = measurable.measure(constraints)
 
     val measuredSize = IntSize(placeable.width, placeable.height)
@@ -112,23 +109,15 @@ private class HeightAnimationModifier(
 }
 
 private abstract class LayoutModifierWithPassThroughIntrinsics : LayoutModifier {
-  final override fun IntrinsicMeasureScope.minIntrinsicWidth(
-    measurable: IntrinsicMeasurable,
-    height: Int,
-  ) = measurable.minIntrinsicWidth(height)
+  final override fun IntrinsicMeasureScope.minIntrinsicWidth(measurable: IntrinsicMeasurable, height: Int) =
+    measurable.minIntrinsicWidth(height)
 
-  final override fun IntrinsicMeasureScope.minIntrinsicHeight(
-    measurable: IntrinsicMeasurable,
-    width: Int,
-  ) = measurable.minIntrinsicHeight(width)
+  final override fun IntrinsicMeasureScope.minIntrinsicHeight(measurable: IntrinsicMeasurable, width: Int) =
+    measurable.minIntrinsicHeight(width)
 
-  final override fun IntrinsicMeasureScope.maxIntrinsicWidth(
-    measurable: IntrinsicMeasurable,
-    height: Int,
-  ) = measurable.maxIntrinsicWidth(height)
+  final override fun IntrinsicMeasureScope.maxIntrinsicWidth(measurable: IntrinsicMeasurable, height: Int) =
+    measurable.maxIntrinsicWidth(height)
 
-  final override fun IntrinsicMeasureScope.maxIntrinsicHeight(
-    measurable: IntrinsicMeasurable,
-    width: Int,
-  ) = measurable.maxIntrinsicHeight(width)
+  final override fun IntrinsicMeasureScope.maxIntrinsicHeight(measurable: IntrinsicMeasurable, width: Int) =
+    measurable.maxIntrinsicHeight(width)
 }

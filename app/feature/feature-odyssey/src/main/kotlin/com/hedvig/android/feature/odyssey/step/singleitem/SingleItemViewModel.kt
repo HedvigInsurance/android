@@ -15,6 +15,7 @@ import com.hedvig.android.data.claimflow.ItemBrand
 import com.hedvig.android.data.claimflow.ItemModel
 import com.hedvig.android.data.claimflow.ItemProblem
 import com.hedvig.android.feature.odyssey.ui.DatePickerUiState
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -30,14 +31,12 @@ import kotlinx.datetime.toLocalDateTime
 import octopus.type.CurrencyCode
 import octopus.type.FlowClaimItemBrandInput
 import octopus.type.FlowClaimItemModelInput
-import kotlin.time.Duration.Companion.seconds
 
 internal class SingleItemViewModel(
   singleItem: ClaimFlowDestination.SingleItem,
   private val claimFlowRepository: ClaimFlowRepository,
   clock: Clock = Clock.System,
 ) : ViewModel() {
-
   private val itemBrandsUiState: MutableStateFlow<ItemBrandsUiState> =
     MutableStateFlow(ItemBrandsUiState.fromSingleItem(singleItem))
   private val itemModelsUiState: MutableStateFlow<ItemModelsUiState> =
@@ -227,10 +226,7 @@ internal data class PartialSingleItemUiState(
   val nextStep: ClaimFlowStep? = null,
 ) {
   companion object {
-    fun fromSingleItem(
-      singleItem: ClaimFlowDestination.SingleItem,
-      clock: Clock,
-    ): PartialSingleItemUiState {
+    fun fromSingleItem(singleItem: ClaimFlowDestination.SingleItem, clock: Clock): PartialSingleItemUiState {
       return PartialSingleItemUiState(
         datePickerUiState = DatePickerUiState(
           initiallySelectedDate = singleItem.purchaseDate,
@@ -257,10 +253,7 @@ internal data class SingleItemUiState(
     get() = !isLoading && !hasError && nextStep == null
 
   companion object {
-    fun fromInitialSingleItem(
-      singleItem: ClaimFlowDestination.SingleItem,
-      clock: Clock,
-    ): SingleItemUiState {
+    fun fromInitialSingleItem(singleItem: ClaimFlowDestination.SingleItem, clock: Clock): SingleItemUiState {
       return SingleItemUiState(
         datePickerUiState = DatePickerUiState(
           initiallySelectedDate = singleItem.purchaseDate,

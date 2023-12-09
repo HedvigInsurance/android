@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface CrossSellCardNotificationBadgeService {
   fun showNotification(): Flow<Boolean>
+
   suspend fun markAsSeen()
 }
 

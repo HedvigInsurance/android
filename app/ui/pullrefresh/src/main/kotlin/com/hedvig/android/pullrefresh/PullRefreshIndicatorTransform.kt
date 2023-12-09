@@ -17,10 +17,7 @@ import androidx.compose.ui.platform.inspectable
  * @param state The [PullRefreshState] which determines the position of the indicator.
  * @param scale A boolean controlling whether the indicator's size scales with pull progress or not.
  */
-fun Modifier.pullRefreshIndicatorTransform(
-  state: PullRefreshState,
-  scale: Boolean = false,
-) = inspectable(
+fun Modifier.pullRefreshIndicatorTransform(state: PullRefreshState, scale: Boolean = false) = inspectable(
   inspectorInfo = debugInspectorInfo {
     name = "pullRefreshIndicatorTransform"
     properties["state"] = state

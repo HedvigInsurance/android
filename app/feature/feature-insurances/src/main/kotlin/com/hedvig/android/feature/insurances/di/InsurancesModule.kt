@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.insurances.di
 
 import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.apollo.octopus.di.octopusClient
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCaseDemo
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCaseImpl
@@ -10,7 +9,8 @@ import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCaseIm
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceViewModel
 import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailViewModel
 import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContractsViewModel
-import com.hedvig.android.notification.badge.data.crosssell.card.CrossSellCardNotificationBadgeService
+import com.hedvig.android.hanalytics.featureflags.FeatureManager
+import com.hedvig.android.notification.badge.data.crosssell.CrossSellCardNotificationBadgeServiceProvider
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
 import org.koin.dsl.module
@@ -20,7 +20,7 @@ val insurancesModule = module {
     InsuranceViewModel(
       get<GetInsuranceContractsUseCaseProvider>(),
       get<GetCrossSellsUseCaseProvider>(),
-      get<CrossSellCardNotificationBadgeService>(),
+      get<CrossSellCardNotificationBadgeServiceProvider>(),
     )
   }
   viewModel<TerminatedContractsViewModel> {
@@ -37,7 +37,8 @@ val insurancesModule = module {
 private fun Module.provideGetContractsUseCase() {
   single<GetInsuranceContractsUseCaseImpl> {
     GetInsuranceContractsUseCaseImpl(
-      get<ApolloClient>(octopusClient),
+      get<ApolloClient>(),
+      get<FeatureManager>(),
     )
   }
 
@@ -56,7 +57,7 @@ private fun Module.provideGetContractsUseCase() {
 
 private fun Module.provideGetCrossSellsUseCase() {
   single<GetCrossSellsUseCaseImpl> {
-    GetCrossSellsUseCaseImpl(get<ApolloClient>(octopusClient))
+    GetCrossSellsUseCaseImpl(get<ApolloClient>())
   }
 
   single<GetCrossSellsUseCaseDemo> {

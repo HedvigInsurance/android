@@ -14,7 +14,6 @@ class ActivityNavigator(
   private val application: Application,
   private val loggedOutActivityClass: Class<*>,
   private val buildConfigApplicationId: String,
-  private val navigateToEmbark: Context.(storyName: String, storyTitle: String) -> Unit,
   private val navigateToLoggedInActivity: Context.(clearBackstack: Boolean) -> Unit,
 ) {
   @SuppressLint("IntentWithNullActionLaunch")
@@ -39,18 +38,7 @@ class ActivityNavigator(
     context.startActivity(Intent(Intent(Settings.ACTION_SETTINGS)))
   }
 
-  fun navigateToEmbark(
-    context: Context,
-    storyName: String,
-    storyTitle: String,
-  ) {
-    context.navigateToEmbark(storyName, storyTitle)
-  }
-
-  fun navigateToLoggedInScreen(
-    context: Context,
-    clearBackstack: Boolean = true,
-  ) {
+  fun navigateToLoggedInScreen(context: Context, clearBackstack: Boolean = true) {
     context.navigateToLoggedInActivity(clearBackstack)
   }
 
@@ -65,7 +53,7 @@ class ActivityNavigator(
     if (browserIntent.resolveActivity(context.packageManager) != null) {
       context.startActivity(browserIntent)
     } else {
-      logcat(LogPriority.WARN) { "Tried to launch $uri but the phone has nothing to support such an intent." }
+      logcat(LogPriority.ERROR) { "Tried to launch $uri but the phone has nothing to support such an intent." }
     }
   }
 }

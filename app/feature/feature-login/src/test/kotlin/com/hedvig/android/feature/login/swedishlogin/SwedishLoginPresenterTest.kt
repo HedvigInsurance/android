@@ -1,23 +1,13 @@
 package com.hedvig.android.feature.login.swedishlogin
 
-import app.cash.turbine.awaitItem
-import app.cash.turbine.expectNoEvents
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
-import assertk.assertions.isNotNull
-import assertk.assertions.isNull
 import assertk.assertions.prop
 import com.hedvig.android.auth.AuthTokenService
-import com.hedvig.android.auth.AuthTokenServiceImpl
-import com.hedvig.android.auth.FakeAuthRepository
 import com.hedvig.android.auth.event.AuthEvent
-import com.hedvig.android.auth.event.AuthEventStorage
-import com.hedvig.android.auth.storage.AuthTokenStorage
-import com.hedvig.android.auth.token.AuthTokens
-import com.hedvig.android.auth.token.LocalAccessToken
-import com.hedvig.android.auth.token.LocalRefreshToken
-import com.hedvig.android.core.datastore.TestPreferencesDataStore
+import com.hedvig.android.auth.test.FakeAuthRepository
+import com.hedvig.android.auth.test.TestAuthTokenService
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
@@ -31,16 +21,11 @@ import com.hedvig.authlib.RefreshToken
 import com.hedvig.authlib.StatusUrl
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
-import org.junit.rules.TemporaryFolder
 
 class SwedishLoginPresenterTest {
-  @get:Rule
-  val testFolder = TemporaryFolder()
-
   @get:Rule
   val testLogcatLogger = TestLogcatLoggingRule()
 
@@ -58,7 +43,7 @@ class SwedishLoginPresenterTest {
 
   @Test
   fun `auth repository responding successfully to the exchange, results in a login`() = runTest {
-    val authTokenService = testAuthTokenService()
+    val authTokenService = TestAuthTokenService()
     val authRepository = FakeAuthRepository()
     val presenter: SwedishLoginPresenter = testSwedishLoginPresenter(authRepository, authTokenService)
 
@@ -101,10 +86,10 @@ class SwedishLoginPresenterTest {
           true,
         ),
       )
-      val resultingTokens = authTokenService.getTokens()
-      assertThat(resultingTokens).isNotNull().apply {
-        prop(AuthTokens::accessToken).prop(LocalAccessToken::token).isEqualTo("123")
-        prop(AuthTokens::refreshToken).prop(LocalRefreshToken::token).isEqualTo("456")
+      val resultingTokens: AuthEvent = authTokenService.authEventTurbine.awaitItem()
+      assertThat(resultingTokens).isInstanceOf<AuthEvent.LoggedIn>().apply {
+        prop(AuthEvent.LoggedIn::accessToken).isEqualTo("123")
+        prop(AuthEvent.LoggedIn::refreshToken).isEqualTo("456")
       }
 
       sendEvent(SwedishLoginEvent.DidNavigateToLoginScreen)
@@ -121,7 +106,7 @@ class SwedishLoginPresenterTest {
 
   @Test
   fun `auth repository failing the exchange, results in an error`() = runTest {
-    val authTokenService = testAuthTokenService()
+    val authTokenService = TestAuthTokenService()
     val authRepository = FakeAuthRepository()
     val presenter: SwedishLoginPresenter = testSwedishLoginPresenter(authRepository, authTokenService)
 
@@ -138,13 +123,13 @@ class SwedishLoginPresenterTest {
       // Exchange fails
       authRepository.exchangeResponse.add(AuthTokenResult.Error("failed"))
       assertThat(awaitItem()).isEqualTo(SwedishLoginUiState.BankIdError("failed"))
-      assertThat(authTokenService.getTokens()).isNull()
+      authTokenService.authEventTurbine.expectNoEvents()
     }
   }
 
   @Test
   fun `login status result failing, results in an error with the returned message`() = runTest {
-    val authTokenService = testAuthTokenService()
+    val authTokenService = TestAuthTokenService()
     val authRepository = FakeAuthRepository()
     val presenter: SwedishLoginPresenter = testSwedishLoginPresenter(authRepository, authTokenService)
 
@@ -158,14 +143,13 @@ class SwedishLoginPresenterTest {
         .isEqualTo(LoginStatusResult.Pending("pending"))
       authRepository.loginStatusResponse.add(LoginStatusResult.Failed("failed"))
       assertThat(awaitItem()).isEqualTo(SwedishLoginUiState.BankIdError("failed"))
-      assertThat(authTokenService.getTokens()).isNull()
+      authTokenService.authEventTurbine.expectNoEvents()
     }
   }
 
   @Test
   fun `login status result succeeding, sends a loggedIn event`() = runTest {
-    val authEventBroadcaster = AuthEventStorage()
-    val authTokenService = testAuthTokenService(authEventBroadcaster)
+    val authTokenService = TestAuthTokenService()
     val authRepository = FakeAuthRepository()
     val presenter: SwedishLoginPresenter = testSwedishLoginPresenter(authRepository, authTokenService)
 
@@ -175,41 +159,26 @@ class SwedishLoginPresenterTest {
       )
       authRepository.loginStatusResponse.add(LoginStatusResult.Completed(AuthorizationCodeGrant("grant")))
       authRepository.exchangeResponse.add(AuthTokenResult.Success(AccessToken("123", 90), RefreshToken("456", 90)))
-      val accessToken = (authEventBroadcaster.authEvents.awaitItem() as AuthEvent.LoggedIn).accessToken
+      val accessToken = (authTokenService.authEventTurbine.awaitItem() as AuthEvent.LoggedIn).accessToken
       assertThat(accessToken).isEqualTo("123")
-      authEventBroadcaster.authEvents.expectNoEvents()
+      authTokenService.authEventTurbine.expectNoEvents()
       cancelAndIgnoreRemainingEvents()
     }
   }
 
-  private fun TestScope.testSwedishLoginPresenter(
+  private fun testSwedishLoginPresenter(
     authRepository: AuthRepository,
-    authTokenService: AuthTokenService = testAuthTokenService(),
+    authTokenService: AuthTokenService = TestAuthTokenService(),
   ): SwedishLoginPresenter {
     @Suppress("RemoveExplicitTypeArguments")
     return SwedishLoginPresenter(
       authTokenService,
       authRepository,
       object : DemoManager {
-        override suspend fun isDemoMode(): Flow<Boolean> = flowOf(false)
+        override fun isDemoMode(): Flow<Boolean> = flowOf(false)
+
         override suspend fun setDemoMode(demoMode: Boolean) {}
       },
-    )
-  }
-
-  private fun TestScope.testAuthTokenService(
-    authEventStorage: AuthEventStorage = AuthEventStorage(),
-  ): AuthTokenService {
-    return AuthTokenServiceImpl(
-      AuthTokenStorage(
-        dataStore = TestPreferencesDataStore(
-          datastoreTestFileDirectory = testFolder.newFolder("datastoreTempFolder"),
-          coroutineScope = backgroundScope,
-        ),
-      ),
-      FakeAuthRepository(),
-      authEventStorage,
-      backgroundScope,
     )
   }
 }

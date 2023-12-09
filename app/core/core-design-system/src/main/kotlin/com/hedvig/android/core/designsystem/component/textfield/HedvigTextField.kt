@@ -74,7 +74,8 @@ fun HedvigTextField(
   errorText: String?,
   modifier: Modifier = Modifier,
   isError: Boolean = errorText != null,
-  withNewDesign: Boolean = false, // Adapts the TextField to have the big card size and the bigger text size.
+  // Adapts the TextField to have the big card size and the bigger text size.
+  withNewDesign: Boolean = false,
   enabled: Boolean = true,
   readOnly: Boolean = false,
   textStyle: TextStyle = LocalTextStyle.current,
@@ -129,7 +130,8 @@ fun HedvigTextField(
   value: String,
   onValueChange: (String) -> Unit,
   modifier: Modifier = Modifier,
-  withNewDesign: Boolean = false, // Adapts the TextField to have the big card size and the bigger text size.
+  // Adapts the TextField to have the big card size and the bigger text size.
+  withNewDesign: Boolean = false,
   enabled: Boolean = true,
   readOnly: Boolean = false,
   textStyle: TextStyle = LocalTextStyle.current,
@@ -212,7 +214,8 @@ fun HedvigTextField(
   value: TextFieldValue,
   onValueChange: (TextFieldValue) -> Unit,
   modifier: Modifier = Modifier,
-  withNewDesign: Boolean = false, // Adapts the TextField to have the big card size and the bigger text size.
+  // Adapts the TextField to have the big card size and the bigger text size.
+  withNewDesign: Boolean = false,
   enabled: Boolean = true,
   readOnly: Boolean = false,
   textStyle: TextStyle = LocalTextStyle.current,
@@ -296,7 +299,8 @@ fun HedvigTextField(
   onValueChange: (TextFieldValue) -> Unit,
   errorText: String?,
   modifier: Modifier = Modifier,
-  withNewDesign: Boolean = false, // Adapts the TextField to have the big card size and the bigger text size.
+  // Adapts the TextField to have the big card size and the bigger text size.
+  withNewDesign: Boolean = false,
   enabled: Boolean = true,
   readOnly: Boolean = false,
   textStyle: TextStyle = LocalTextStyle.current,
@@ -359,11 +363,7 @@ private fun ErrorRow(text: String) {
 }
 
 @Composable
-private fun getMergedTextStyle(
-  withNewDesign: Boolean,
-  textStyle: TextStyle,
-  textColor: Color,
-) = if (withNewDesign) {
+private fun getMergedTextStyle(withNewDesign: Boolean, textStyle: TextStyle, textColor: Color) = if (withNewDesign) {
   textStyle.merge(MaterialTheme.typography.headlineSmall.copy(color = textColor))
 } else {
   textStyle.merge(MaterialTheme.typography.bodyLarge.copy(color = textColor))
@@ -529,10 +529,7 @@ private class TextFieldMeasurePolicy(
   private val animationProgress: Float,
   private val paddingValues: PaddingValues,
 ) : MeasurePolicy {
-  override fun MeasureScope.measure(
-    measurables: List<Measurable>,
-    constraints: Constraints,
-  ): MeasureResult {
+  override fun MeasureScope.measure(measurables: List<Measurable>, constraints: Constraints): MeasureResult {
     val topPaddingValue = paddingValues.calculateTopPadding().roundToPx()
     val bottomPaddingValue = paddingValues.calculateBottomPadding().roundToPx()
 
@@ -682,37 +679,25 @@ private class TextFieldMeasurePolicy(
     }
   }
 
-  override fun IntrinsicMeasureScope.maxIntrinsicHeight(
-    measurables: List<IntrinsicMeasurable>,
-    width: Int,
-  ): Int {
+  override fun IntrinsicMeasureScope.maxIntrinsicHeight(measurables: List<IntrinsicMeasurable>, width: Int): Int {
     return intrinsicHeight(measurables, width) { intrinsicMeasurable, w ->
       intrinsicMeasurable.maxIntrinsicHeight(w)
     }
   }
 
-  override fun IntrinsicMeasureScope.minIntrinsicHeight(
-    measurables: List<IntrinsicMeasurable>,
-    width: Int,
-  ): Int {
+  override fun IntrinsicMeasureScope.minIntrinsicHeight(measurables: List<IntrinsicMeasurable>, width: Int): Int {
     return intrinsicHeight(measurables, width) { intrinsicMeasurable, w ->
       intrinsicMeasurable.minIntrinsicHeight(w)
     }
   }
 
-  override fun IntrinsicMeasureScope.maxIntrinsicWidth(
-    measurables: List<IntrinsicMeasurable>,
-    height: Int,
-  ): Int {
+  override fun IntrinsicMeasureScope.maxIntrinsicWidth(measurables: List<IntrinsicMeasurable>, height: Int): Int {
     return intrinsicWidth(measurables, height) { intrinsicMeasurable, h ->
       intrinsicMeasurable.maxIntrinsicWidth(h)
     }
   }
 
-  override fun IntrinsicMeasureScope.minIntrinsicWidth(
-    measurables: List<IntrinsicMeasurable>,
-    height: Int,
-  ): Int {
+  override fun IntrinsicMeasureScope.minIntrinsicWidth(measurables: List<IntrinsicMeasurable>, height: Int): Int {
     return intrinsicWidth(measurables, height) { intrinsicMeasurable, h ->
       intrinsicMeasurable.minIntrinsicWidth(h)
     }
@@ -1024,5 +1009,4 @@ internal fun Modifier.drawBorderLine(indicatorBorder: BorderStroke, shape: Shape
 }
 
 /** Padding from text field top to label top, and from input field bottom to text field bottom */
-/*@VisibleForTesting*/
 internal val TextFieldWithLabelVerticalPadding = 8.dp

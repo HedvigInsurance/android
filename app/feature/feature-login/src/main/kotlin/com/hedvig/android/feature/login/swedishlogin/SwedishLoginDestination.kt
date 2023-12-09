@@ -205,10 +205,7 @@ private fun SwedishLoginScreen(
 }
 
 @Composable
-internal fun QRCode(
-  autoStartToken: SwedishLoginUiState.HandlingBankId.AutoStartToken,
-  modifier: Modifier = Modifier,
-) {
+internal fun QRCode(autoStartToken: SwedishLoginUiState.HandlingBankId.AutoStartToken, modifier: Modifier = Modifier) {
   var intSize: IntSize? by remember { mutableStateOf(null) }
   val painter by produceState<Painter>(ColorPainter(Color.Transparent), intSize, autoStartToken) {
     val size = intSize
@@ -218,10 +215,10 @@ internal fun QRCode(
     }
     val bitmapPainter: BitmapPainter = withContext(Dispatchers.Default) {
       val bitMatrix: BitMatrix = QRCodeWriter().encode(
-        /* contents = */ autoStartToken.autoStartUrl,
-        /* format = */ BarcodeFormat.QR_CODE,
-        /* width = */ size.width,
-        /* height = */ size.height,
+        autoStartToken.autoStartUrl,
+        BarcodeFormat.QR_CODE,
+        size.width,
+        size.height,
       )
       val bitmap = Bitmap.createBitmap(size.width, size.height, Bitmap.Config.RGB_565)
       for (x in 0 until size.width) {
@@ -242,9 +239,7 @@ internal fun QRCode(
 }
 
 @Composable
-private fun rememberBankIdState(
-  autoStartToken: SwedishLoginUiState.HandlingBankId.AutoStartToken,
-): BankIdState {
+private fun rememberBankIdState(autoStartToken: SwedishLoginUiState.HandlingBankId.AutoStartToken): BankIdState {
   val context = LocalContext.current
   return remember(context, autoStartToken) {
     BankIdStateImpl(autoStartToken, context).also {
@@ -256,6 +251,7 @@ private fun rememberBankIdState(
 @Stable
 private interface BankIdState {
   val canOpenBankId: Boolean
+
   fun tryOpenBankId()
 }
 

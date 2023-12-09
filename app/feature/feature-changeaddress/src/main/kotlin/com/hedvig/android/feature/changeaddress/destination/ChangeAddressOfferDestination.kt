@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
@@ -34,7 +35,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.layout.positionInParent
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -52,12 +52,15 @@ import com.hedvig.android.core.designsystem.component.card.HedvigInfoCard
 import com.hedvig.android.core.designsystem.material3.squircleExtraSmall
 import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.hedvig.small.hedvig.ArrowNorthEast
 import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.core.ui.dialog.ErrorDialog
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.productVariant.android.getStringRes
 import com.hedvig.android.feature.changeaddress.ChangeAddressUiState
 import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
 import com.hedvig.android.feature.changeaddress.data.MoveIntentId
@@ -176,7 +179,7 @@ private fun ChangeAddressOfferScreen(
     )
     Spacer(Modifier.height(80.dp))
 
-    for (quote in uiState.quotes.distinctBy { it.productVariant.contractType }) {
+    for (quote in uiState.quotes.distinctBy { it.productVariant.contractGroup }) {
       QuoteDetailsAndPdfs(
         quote = quote,
         openUrl = openUrl,
@@ -232,10 +235,7 @@ private fun ChangeAddressOfferScreen(
 }
 
 @Composable
-private fun QuotesPriceSum(
-  quotes: List<MoveQuote>,
-  modifier: Modifier = Modifier,
-) {
+private fun QuotesPriceSum(quotes: List<MoveQuote>, modifier: Modifier = Modifier) {
   HorizontalItemsWithMaximumSpaceTaken(
     startSlot = {
       Text(
@@ -256,11 +256,7 @@ private fun QuotesPriceSum(
 }
 
 @Composable
-private fun QuoteDetailsAndPdfs(
-  quote: MoveQuote,
-  openUrl: (String) -> Unit,
-  modifier: Modifier = Modifier,
-) {
+private fun QuoteDetailsAndPdfs(quote: MoveQuote, openUrl: (String) -> Unit, modifier: Modifier = Modifier) {
   Column(modifier) {
     HedvigInfoCard(
       contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
@@ -311,10 +307,7 @@ private fun ColumnScope.InsurableLimits(quote: MoveQuote) {
 }
 
 @Composable
-private fun Documents(
-  quote: MoveQuote,
-  openUrl: (String) -> Unit,
-) {
+private fun Documents(quote: MoveQuote, openUrl: (String) -> Unit) {
   quote.productVariant.documents.mapIndexed { index, document ->
     if (index > 0) {
       Spacer(Modifier.height(8.dp))
@@ -350,7 +343,7 @@ private fun Documents(
         }
         Spacer(Modifier.width(8.dp))
         Icon(
-          painter = painterResource(R.drawable.ic_north_east),
+          imageVector = Icons.Hedvig.ArrowNorthEast,
           contentDescription = null,
           modifier = Modifier.size(16.dp),
         )

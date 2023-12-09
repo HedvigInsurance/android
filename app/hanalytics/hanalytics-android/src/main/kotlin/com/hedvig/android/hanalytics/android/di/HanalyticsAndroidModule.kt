@@ -1,7 +1,7 @@
 package com.hedvig.android.hanalytics.android.di
 
 import android.content.Context
-import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.datastore.DeviceIdDataStore
 import com.hedvig.android.hanalytics.AndroidHAnalyticsService
 import com.hedvig.android.hanalytics.HAnalyticsService

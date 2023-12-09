@@ -11,8 +11,8 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.logger.logcat
-import giraffe.GetPayinMethodStatusQuery
-import giraffe.type.PayinMethodStatus
+import octopus.GetPayinMethodStatusQuery
+import octopus.type.MemberPaymentConnectionStatus
 
 internal interface GetConnectPaymentReminderUseCase {
   suspend fun invoke(): Either<ConnectPaymentReminderError, ShowConnectPaymentReminder>
@@ -33,13 +33,13 @@ internal class GetConnectPaymentReminderUseCaseImpl(
             .bind()
         },
         {
-          featureManager.isFeatureEnabled(Feature.CONNECT_PAYIN_REMINDER) // Consider deleting this flag completely?
+          featureManager.isFeatureEnabled(Feature.CONNECT_PAYIN_REMINDER)
         },
       ) { payinStatus, isPayinFeatureEnabled ->
         ensure(isPayinFeatureEnabled) {
           ConnectPaymentReminderError.FeatureFlagNotEnabled
         }
-        ensure(payinStatus.payinMethodStatus == PayinMethodStatus.NEEDS_SETUP) {
+        ensure(payinStatus.currentMember.paymentInformation.status == MemberPaymentConnectionStatus.NEEDS_SETUP) {
           ConnectPaymentReminderError.AlreadySetup
         }
         ShowConnectPaymentReminder
@@ -52,7 +52,9 @@ internal class GetConnectPaymentReminderUseCaseImpl(
 
 sealed interface ConnectPaymentReminderError {
   data object FeatureFlagNotEnabled : ConnectPaymentReminderError
+
   data object AlreadySetup : ConnectPaymentReminderError
+
   data class NetworkError(val errorMessage: ErrorMessage) : ConnectPaymentReminderError, ErrorMessage by errorMessage
 }
 

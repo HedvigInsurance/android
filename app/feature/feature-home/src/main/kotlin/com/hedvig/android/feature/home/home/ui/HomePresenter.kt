@@ -120,6 +120,7 @@ internal sealed interface HomeUiState {
   ) : HomeUiState
 
   data class Error(val message: String?) : HomeUiState
+
   object Loading : HomeUiState
 }
 
@@ -151,15 +152,14 @@ private data class SuccessData(
     fun fromHomeData(homeData: HomeData): SuccessData {
       return SuccessData(
         homeText = when (homeData.contractStatus) {
-          HomeData.ContractStatus.Active -> HomeText.Active(homeData.memberName)
+          HomeData.ContractStatus.Active -> HomeText.Active
           is HomeData.ContractStatus.ActiveInFuture -> HomeText.ActiveInFuture(
-            homeData.memberName,
             homeData.contractStatus.futureInceptionDate,
           )
-          HomeData.ContractStatus.Terminated -> HomeText.Terminated(homeData.memberName)
-          HomeData.ContractStatus.Pending -> HomeText.Pending(homeData.memberName)
-          HomeData.ContractStatus.Switching -> HomeText.Switching(homeData.memberName)
-          HomeData.ContractStatus.Unknown -> HomeText.Active(homeData.memberName)
+          HomeData.ContractStatus.Terminated -> HomeText.Terminated
+          HomeData.ContractStatus.Pending -> HomeText.Pending
+          HomeData.ContractStatus.Switching -> HomeText.Switching
+          HomeData.ContractStatus.Unknown -> HomeText.Active
         },
         claimStatusCardsData = homeData.claimStatusCardsData,
         memberReminders = homeData.memberReminders.copy(enableNotifications = null),
@@ -174,11 +174,13 @@ private data class SuccessData(
 }
 
 sealed interface HomeText {
-  val name: String?
+  data object Active : HomeText
 
-  data class Active(override val name: String?) : HomeText
-  data class Terminated(override val name: String?) : HomeText
-  data class ActiveInFuture(override val name: String?, val inception: LocalDate) : HomeText
-  data class Pending(override val name: String?) : HomeText
-  data class Switching(override val name: String?) : HomeText
+  data object Terminated : HomeText
+
+  data class ActiveInFuture(val inception: LocalDate) : HomeText
+
+  data object Pending : HomeText
+
+  data object Switching : HomeText
 }

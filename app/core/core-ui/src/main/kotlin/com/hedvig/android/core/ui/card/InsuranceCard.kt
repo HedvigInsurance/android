@@ -99,10 +99,7 @@ fun InsuranceCard(
 }
 
 @Composable
-private fun Chip(
-  text: String,
-  modifier: Modifier = Modifier,
-) {
+private fun Chip(text: String, modifier: Modifier = Modifier) {
   Box(
     modifier.clip(shape = MaterialTheme.shapes.squircleExtraSmall),
   ) {

@@ -10,7 +10,6 @@ import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.Market
-import com.hedvig.app.feature.marketing.data.UploadMarketAndLanguagePreferencesUseCase
 import com.hedvig.app.util.LiveEvent
 import com.hedvig.authlib.AuthAttemptResult
 import com.hedvig.authlib.AuthRepository
@@ -27,7 +26,6 @@ import kotlinx.coroutines.launch
 class SimpleSignAuthenticationViewModel(
   private val data: SimpleSignAuthenticationData,
   private val hAnalytics: HAnalytics,
-  private val uploadMarketAndLanguagePreferencesUseCase: UploadMarketAndLanguagePreferencesUseCase,
   private val authRepository: AuthRepository,
   private val authTokenService: AuthTokenService,
 ) : ViewModel() {
@@ -135,7 +133,6 @@ class SimpleSignAuthenticationViewModel(
         logcat { "Login exchange success:$result" }
         hAnalytics.loggedIn()
         authTokenService.loginWithTokens(result.accessToken, result.refreshToken)
-        uploadMarketAndLanguagePreferencesUseCase.invoke()
       }
     }
   }

@@ -56,7 +56,7 @@ import kotlinx.coroutines.isActive
 @Composable
 fun OtpInputScreen(
   onInputChanged: (String) -> Unit,
-  onOpenExternalApp: () -> Unit,
+  onOpenEmailApp: () -> Unit,
   onSubmitCode: (String) -> Unit,
   onResendCode: () -> Unit,
   onBackPressed: () -> Unit,
@@ -91,7 +91,7 @@ fun OtpInputScreen(
           networkErrorMessage,
           onResendCode,
           loadingResend,
-          onOpenExternalApp,
+          onOpenEmailApp,
           Modifier.padding(paddingValues),
         )
       }
@@ -109,7 +109,7 @@ private fun OtpInputScreenContents(
   otpErrorMessage: String?,
   onResendCode: () -> Unit,
   loadingResend: Boolean,
-  onOpenExternalApp: () -> Unit,
+  onOpenEmailApp: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val keyboardController = LocalSoftwareKeyboardController.current
@@ -132,14 +132,15 @@ private fun OtpInputScreenContents(
     Spacer(Modifier.height(40.dp))
     SixDigitCodeInputField(inputValue, onInputChanged, keyboardController, onSubmitCode, otpErrorMessage)
     Spacer(
-      Modifier.height((20 - 6).dp), // 20 from design, 6 to account for TextButton extra space taken
+      // 20 from design, 6 to account for TextButton extra space taken
+      Modifier.height((20 - 6).dp),
     )
     ResendCodeItem(onResendCode, keyboardController, loadingResend, Modifier.align(Alignment.CenterHorizontally))
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(16.dp))
     HedvigContainedButton(
       text = stringResource(hedvig.resources.R.string.login_open_email_app_button),
-      onClick = onOpenExternalApp,
+      onClick = onOpenEmailApp,
     )
     Spacer(Modifier.height(16.dp))
   }
@@ -253,7 +254,7 @@ private fun PreviewOtpInputScreenValid() {
     Surface(color = MaterialTheme.colorScheme.background) {
       OtpInputScreen(
         onInputChanged = {},
-        onOpenExternalApp = {},
+        onOpenEmailApp = {},
         onSubmitCode = {},
         onResendCode = {},
         onBackPressed = {},

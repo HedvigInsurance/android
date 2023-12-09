@@ -2,6 +2,7 @@ plugins {
   id("hedvig.android.library")
   id("hedvig.android.library.compose")
   id("hedvig.android.ktlint")
+  alias(libs.plugins.apollo)
   alias(libs.plugins.squareSortDependencies)
 }
 
@@ -10,12 +11,14 @@ android {
 }
 
 dependencies {
+  apolloMetadata(projects.apolloOctopusPublic)
+
   implementation(libs.accompanist.permissions)
   implementation(libs.accompanist.webview)
+  implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.compose.material3.windowSizeClass)
   implementation(libs.androidx.compose.runtime)
   implementation(libs.androidx.lifecycle.compose)
-  implementation(libs.androidx.other.activityCompose)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
@@ -25,9 +28,8 @@ dependencies {
   implementation(libs.kotlinx.immutable.collections)
   implementation(libs.moneta)
   implementation(projects.apolloCore)
-  implementation(projects.apolloGiraffePublic)
   implementation(projects.apolloOctopusPublic)
-  implementation(projects.authCore)
+  implementation(projects.authCorePublic)
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
@@ -37,11 +39,12 @@ dependencies {
   implementation(projects.coreIcons)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
-  implementation(projects.dataForever)
+  implementation(projects.coreUiData)
   implementation(projects.dataSettingsDatastorePublic)
   implementation(projects.hanalyticsCore)
   implementation(projects.hanalyticsFeatureFlagsPublic)
   implementation(projects.languageCore)
+  implementation(projects.languageData)
   implementation(projects.marketCore)
   implementation(projects.memberRemindersPublic)
   implementation(projects.memberRemindersUi)
@@ -50,7 +53,6 @@ dependencies {
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
   implementation(projects.notificationPermission)
-  implementation(projects.payment)
   implementation(projects.placeholder)
   implementation(projects.pullrefresh)
   implementation(projects.theme)
@@ -67,4 +69,10 @@ dependencies {
   testImplementation(projects.marketTest)
   testImplementation(projects.memberRemindersTest)
   testImplementation(projects.moleculeTest)
+}
+
+apollo {
+  service("octopus") {
+    packageName.set("octopus")
+  }
 }

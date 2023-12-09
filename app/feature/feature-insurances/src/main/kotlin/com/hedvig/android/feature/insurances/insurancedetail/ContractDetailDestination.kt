@@ -46,14 +46,14 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.card.InsuranceCard
-import com.hedvig.android.core.ui.insurance.ContractType
-import com.hedvig.android.core.ui.insurance.Document
-import com.hedvig.android.core.ui.insurance.ProductVariant
-import com.hedvig.android.core.ui.insurance.canChangeCoInsured
 import com.hedvig.android.core.ui.plus
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
-import com.hedvig.android.feature.insurances.data.Agreement
+import com.hedvig.android.data.contract.ContractGroup
+import com.hedvig.android.data.contract.ContractType
+import com.hedvig.android.data.productvariant.InsuranceVariantDocument
+import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
+import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceContract
 import com.hedvig.android.feature.insurances.insurancedetail.coverage.CoverageTab
 import com.hedvig.android.feature.insurances.insurancedetail.documents.DocumentsTab
@@ -61,6 +61,7 @@ import com.hedvig.android.feature.insurances.insurancedetail.yourinfo.YourInfoTa
 import com.hedvig.android.feature.insurances.ui.createChips
 import com.hedvig.android.feature.insurances.ui.createPainter
 import hedvig.resources.R
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
@@ -69,11 +70,13 @@ import kotlinx.datetime.LocalDate
 @Composable
 internal fun ContractDetailDestination(
   viewModel: ContractDetailViewModel,
-  onEditCoInsuredClick: () -> Unit,
+  onEditCoInsuredClick: (String) -> Unit,
+  onMissingInfoClick: (String) -> Unit,
   onChangeAddressClick: () -> Unit,
   onCancelInsuranceClick: (cancelInsuranceData: CancelInsuranceData) -> Unit,
   openWebsite: (Uri) -> Unit,
   openChat: () -> Unit,
+  openUrl: (String) -> Unit,
   navigateUp: () -> Unit,
   imageLoader: ImageLoader,
 ) {
@@ -83,9 +86,11 @@ internal fun ContractDetailDestination(
     imageLoader = imageLoader,
     retry = viewModel::retryLoadingContract,
     onEditCoInsuredClick = onEditCoInsuredClick,
+    onMissingInfoClick = onMissingInfoClick,
     onChangeAddressClick = onChangeAddressClick,
     onCancelInsuranceClick = onCancelInsuranceClick,
     openChat = openChat,
+    openUrl = openUrl,
     openWebsite = openWebsite,
     navigateUp = navigateUp,
   )
@@ -97,12 +102,14 @@ private fun ContractDetailScreen(
   uiState: ContractDetailsUiState,
   imageLoader: ImageLoader,
   retry: () -> Unit,
-  onEditCoInsuredClick: () -> Unit,
+  onEditCoInsuredClick: (String) -> Unit,
+  onMissingInfoClick: (String) -> Unit,
   onChangeAddressClick: () -> Unit,
   onCancelInsuranceClick: (cancelInsuranceData: CancelInsuranceData) -> Unit,
   openWebsite: (Uri) -> Unit,
   navigateUp: () -> Unit,
   openChat: () -> Unit,
+  openUrl: (String) -> Unit,
 ) {
   Column(Modifier.fillMaxSize()) {
     TopAppBarWithBack(
@@ -142,7 +149,7 @@ private fun ContractDetailScreen(
               val contract = state.insuranceContract
               InsuranceCard(
                 chips = contract.createChips(),
-                topText = contract.currentAgreement.productVariant.displayName,
+                topText = contract.currentInsuranceAgreement.productVariant.displayName,
                 bottomText = contract.exposureDisplayName,
                 imageLoader = imageLoader,
                 modifier = Modifier.padding(horizontal = 16.dp),
@@ -164,32 +171,40 @@ private fun ContractDetailScreen(
                 when (pageIndex) {
                   0 -> {
                     YourInfoTab(
-                      coverageItems = state.insuranceContract.currentAgreement.displayItems
+                      coverageItems = state.insuranceContract.currentInsuranceAgreement.displayItems
                         .map { it.title to it.value }
                         .toImmutableList(),
-                      allowEditCoInsured = state.insuranceContract.currentAgreement.productVariant.contractType
-                        .canChangeCoInsured(),
+                      coInsured = state.insuranceContract.currentInsuranceAgreement.coInsured,
+                      allowEditCoInsured = state.insuranceContract.supportsEditCoInsured,
+                      contractHolderDisplayName = state.insuranceContract.contractHolderDisplayName,
+                      contractHolderSSN = state.insuranceContract.contractHolderSSN,
                       allowChangeAddress = state.insuranceContract.supportsAddressChange,
-                      onEditCoInsuredClick = onEditCoInsuredClick,
+                      onEditCoInsuredClick = {
+                        onEditCoInsuredClick(state.insuranceContract.id)
+                      },
+                      onMissingInfoClick = {
+                        onMissingInfoClick(state.insuranceContract.id)
+                      },
                       onChangeAddressClick = onChangeAddressClick,
                       openChat = openChat,
+                      openUrl = openUrl,
                       onCancelInsuranceClick = {
                         onCancelInsuranceClick(
                           CancelInsuranceData(
                             state.insuranceContract.id,
-                            state.insuranceContract.currentAgreement.productVariant.displayName,
+                            state.insuranceContract.currentInsuranceAgreement.productVariant.displayName,
                           ),
                         )
                       },
-                      upcomingChangesAgreement = state.insuranceContract.upcomingAgreement,
+                      upcomingChangesInsuranceAgreement = state.insuranceContract.upcomingInsuranceAgreement,
                       isTerminated = state.insuranceContract.isTerminated,
                     )
                   }
 
                   1 -> {
                     CoverageTab(
-                      state.insuranceContract.currentAgreement.productVariant.insurableLimits,
-                      state.insuranceContract.currentAgreement.productVariant.perils,
+                      state.insuranceContract.currentInsuranceAgreement.productVariant.insurableLimits,
+                      state.insuranceContract.currentInsuranceAgreement.productVariant.perils,
                     )
                   }
 
@@ -212,13 +227,13 @@ private fun ContractDetailScreen(
 }
 
 @Composable
-private fun InsuranceContract.getAllDocuments() = buildList {
-  addAll(currentAgreement.productVariant.documents)
-  if (currentAgreement.certificateUrl != null) {
-    val certificate = Document(
+private fun InsuranceContract.getAllDocuments(): ImmutableList<InsuranceVariantDocument> = buildList {
+  addAll(currentInsuranceAgreement.productVariant.documents)
+  if (currentInsuranceAgreement.certificateUrl != null) {
+    val certificate = InsuranceVariantDocument(
       stringResource(id = R.string.MY_DOCUMENTS_INSURANCE_CERTIFICATE),
-      url = currentAgreement.certificateUrl,
-      type = Document.InsuranceDocumentType.PRE_SALE_INFO_EU_STANDARD,
+      url = currentInsuranceAgreement.certificateUrl,
+      type = InsuranceVariantDocument.InsuranceDocumentType.PRE_SALE_INFO_EU_STANDARD,
     )
     add(certificate)
   }
@@ -271,25 +286,30 @@ private fun PreviewContractDetailScreen() {
             exposureDisplayName = "Test exposure",
             inceptionDate = LocalDate.fromEpochDays(200),
             terminationDate = LocalDate.fromEpochDays(400),
-            currentAgreement = Agreement(
+            currentInsuranceAgreement = InsuranceAgreement(
               activeFrom = LocalDate.fromEpochDays(240),
               activeTo = LocalDate.fromEpochDays(340),
               displayItems = persistentListOf(),
               productVariant = ProductVariant(
                 displayName = "Variant",
-                contractType = ContractType.RENTAL,
+                contractGroup = ContractGroup.RENTAL,
+                contractType = ContractType.SE_APARTMENT_RENT,
                 partner = null,
                 perils = persistentListOf(),
                 insurableLimits = persistentListOf(),
                 documents = persistentListOf(),
               ),
               certificateUrl = null,
+              coInsured = persistentListOf(),
+              creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
             ),
-
-            upcomingAgreement = null,
+            upcomingInsuranceAgreement = null,
             renewalDate = LocalDate.fromEpochDays(500),
             supportsAddressChange = false,
+            supportsEditCoInsured = true,
             isTerminated = false,
+            contractHolderDisplayName = "Hugo Linder",
+            contractHolderSSN = "199101131093",
           ),
         ),
         imageLoader = rememberPreviewImageLoader(),
@@ -301,6 +321,8 @@ private fun PreviewContractDetailScreen() {
         openWebsite = {},
         navigateUp = {},
         openChat = {},
+        onMissingInfoClick = {},
+        openUrl = {},
       )
     }
   }

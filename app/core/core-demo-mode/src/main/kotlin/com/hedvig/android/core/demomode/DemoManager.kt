@@ -8,15 +8,15 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 interface DemoManager {
-  suspend fun isDemoMode(): Flow<Boolean>
+  fun isDemoMode(): Flow<Boolean>
+
   suspend fun setDemoMode(demoMode: Boolean)
 }
 
 internal class DataStoreDemoManager(
   private val dataStore: DataStore<Preferences>,
 ) : DemoManager {
-
-  override suspend fun isDemoMode(): Flow<Boolean> {
+  override fun isDemoMode(): Flow<Boolean> {
     return dataStore.data.map {
       it[demoModeKey] ?: false
     }

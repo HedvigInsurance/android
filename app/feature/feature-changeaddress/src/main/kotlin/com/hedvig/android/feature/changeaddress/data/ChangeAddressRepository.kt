@@ -7,8 +7,8 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.core.ui.insurance.toProductVariant
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.productVariant.android.toProductVariant
 import com.hedvig.android.logger.logcat
 import kotlinx.collections.immutable.toImmutableList
 import octopus.MoveIntentCommitMutation
@@ -17,7 +17,9 @@ import octopus.MoveIntentRequestMutation
 
 internal interface ChangeAddressRepository {
   suspend fun createMoveIntent(): Either<ErrorMessage, MoveIntent>
+
   suspend fun createQuotes(input: QuoteInput): Either<ErrorMessage, List<MoveQuote>>
+
   suspend fun commitMove(id: MoveIntentId): Either<ErrorMessage, SuccessfulMove>
 }
 
@@ -100,7 +102,8 @@ private fun MoveIntentCreateMutation.Data.MoveIntentCreate.MoveIntent.toMoveInte
     )
   },
   movingDateRange = minMovingDate..maxMovingDate,
-  suggestedNumberInsured = suggestedNumberCoInsured.plus(1), // numberInsured = numberCoInsured + member,
+  // numberInsured = numberCoInsured + member,
+  suggestedNumberInsured = suggestedNumberCoInsured.plus(1),
   isApartmentAvailableforStudent = isApartmentAvailableforStudent,
   maxApartmentSquareMeters = maxApartmentSquareMeters,
   maxHouseSquareMeters = maxHouseSquareMeters,

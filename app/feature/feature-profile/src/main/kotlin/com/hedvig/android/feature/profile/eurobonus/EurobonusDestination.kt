@@ -40,10 +40,7 @@ import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 
 @Composable
-internal fun EurobonusDestination(
-  viewModel: EurobonusViewModel,
-  navigateUp: () -> Unit,
-) {
+internal fun EurobonusDestination(viewModel: EurobonusViewModel, navigateUp: () -> Unit) {
   val eurobonusText = viewModel.eurobonusText
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val isEligibleForEurobonus by viewModel.isEligibleForEurobonus.collectAsStateWithLifecycle()

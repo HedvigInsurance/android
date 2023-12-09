@@ -6,18 +6,17 @@ plugins {
 }
 
 dependencies {
+  api(libs.apollo.adapters)
   api(libs.apollo.api)
   api(libs.kotlinx.datetime)
 
-  implementation(libs.apollo.adapters)
   implementation(libs.apollo.runtime)
   implementation(libs.koin.core)
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)
 }
 
-apollo {
-  generateSourcesDuringGradleSync.set(false)
+apollo { // Octopus client
   service("octopus") {
     introspection {
       endpointUrl.set("https://apollo-router.dev.hedvigit.com")
@@ -29,12 +28,16 @@ apollo {
     packageName.set("octopus")
     codegenModels.set(com.apollographql.apollo3.compiler.MODELS_RESPONSE_BASED)
 
+    generateApolloMetadata.set(true)
     generateDataBuilders.set(true)
+    // https://slack-chats.kotlinlang.org/t/16051277/so-speaking-of-more-multi-module-stuff-i-got-a-query-like-th#976bd846-3cb0-4815-80a1-f73a853fe962
+    alwaysGenerateTypesMatching.set(listOf("CrossSell", "CrossSellType", "MemberMutationOutput"))
 
     // https://www.apollographql.com/docs/android/advanced/operation-variables/#make-nullable-variables-non-optional
     generateOptionalOperationVariables.set(false)
 
     mapScalar("Date", "kotlinx.datetime.LocalDate", "com.apollographql.apollo3.adapter.KotlinxLocalDateAdapter")
+    mapScalar("DateTime", "kotlinx.datetime.LocalDate", "com.apollographql.apollo3.adapter.KotlinxLocalDateTimeAdapter")
     mapScalar("Instant", "kotlinx.datetime.Instant", "com.apollographql.apollo3.adapter.KotlinxInstantAdapter")
     mapScalarToUpload("Upload")
     mapScalarToKotlinString("UUID")

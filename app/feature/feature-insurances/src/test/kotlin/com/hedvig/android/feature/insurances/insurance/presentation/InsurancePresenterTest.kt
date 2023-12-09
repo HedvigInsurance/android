@@ -10,11 +10,12 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isTrue
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.core.ui.insurance.ContractType
-import com.hedvig.android.core.ui.insurance.ProductVariant
-import com.hedvig.android.feature.insurances.data.Agreement
+import com.hedvig.android.data.contract.ContractGroup
+import com.hedvig.android.data.contract.ContractType
+import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCase
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
+import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceContract
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
@@ -22,13 +23,12 @@ import com.hedvig.android.notification.badge.data.crosssell.card.FakeCrossSellCa
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
-import octopus.CrossSalesQuery
+import octopus.CrossSellsQuery
 import octopus.type.CrossSellType
 import org.junit.Rule
 import org.junit.Test
 
 internal class InsurancePresenterTest {
-
   @get:Rule
   val testLogcatLogger = TestLogcatLoggingRule()
 
@@ -39,24 +39,30 @@ internal class InsurancePresenterTest {
       exposureDisplayName = "Test exposure",
       inceptionDate = LocalDate.fromEpochDays(200),
       terminationDate = LocalDate.fromEpochDays(400),
-      currentAgreement = Agreement(
+      currentInsuranceAgreement = InsuranceAgreement(
         activeFrom = LocalDate.fromEpochDays(240),
         activeTo = LocalDate.fromEpochDays(340),
         displayItems = persistentListOf(),
         productVariant = ProductVariant(
           displayName = "Variant",
-          contractType = ContractType.RENTAL,
+          contractGroup = ContractGroup.RENTAL,
+          contractType = ContractType.SE_APARTMENT_RENT,
           partner = null,
           perils = persistentListOf(),
           insurableLimits = persistentListOf(),
           documents = persistentListOf(),
         ),
         certificateUrl = null,
+        coInsured = persistentListOf(),
+        creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
       ),
-      upcomingAgreement = null,
+      upcomingInsuranceAgreement = null,
       renewalDate = LocalDate.fromEpochDays(500),
       supportsAddressChange = false,
+      supportsEditCoInsured = true,
       isTerminated = false,
+      contractHolderSSN = "",
+      contractHolderDisplayName = "",
     ),
     InsuranceContract(
       id = "contractId#2",
@@ -64,24 +70,30 @@ internal class InsurancePresenterTest {
       exposureDisplayName = "Test exposure",
       inceptionDate = LocalDate.fromEpochDays(200),
       terminationDate = LocalDate.fromEpochDays(400),
-      currentAgreement = Agreement(
+      currentInsuranceAgreement = InsuranceAgreement(
         activeFrom = LocalDate.fromEpochDays(240),
         activeTo = LocalDate.fromEpochDays(340),
         displayItems = persistentListOf(),
         productVariant = ProductVariant(
           displayName = "Variant",
-          contractType = ContractType.RENTAL,
+          contractGroup = ContractGroup.RENTAL,
+          contractType = ContractType.SE_APARTMENT_RENT,
           partner = null,
           perils = persistentListOf(),
           insurableLimits = persistentListOf(),
           documents = persistentListOf(),
         ),
         certificateUrl = null,
+        coInsured = persistentListOf(),
+        creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
       ),
-      upcomingAgreement = null,
+      upcomingInsuranceAgreement = null,
       renewalDate = LocalDate.fromEpochDays(500),
       supportsAddressChange = false,
+      supportsEditCoInsured = true,
       isTerminated = false,
+      contractHolderSSN = "",
+      contractHolderDisplayName = "",
     ),
   )
   private val terminatedContracts: List<InsuranceContract> = listOf(
@@ -91,24 +103,30 @@ internal class InsurancePresenterTest {
       exposureDisplayName = "Test exposure",
       inceptionDate = LocalDate.fromEpochDays(200),
       terminationDate = LocalDate.fromEpochDays(400),
-      currentAgreement = Agreement(
+      currentInsuranceAgreement = InsuranceAgreement(
         activeFrom = LocalDate.fromEpochDays(240),
         activeTo = LocalDate.fromEpochDays(340),
         displayItems = persistentListOf(),
         productVariant = ProductVariant(
           displayName = "Variant",
-          contractType = ContractType.RENTAL,
+          contractGroup = ContractGroup.RENTAL,
+          contractType = ContractType.SE_APARTMENT_RENT,
           partner = null,
           perils = persistentListOf(),
           insurableLimits = persistentListOf(),
           documents = persistentListOf(),
         ),
         certificateUrl = null,
+        coInsured = persistentListOf(),
+        creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
       ),
-      upcomingAgreement = null,
+      upcomingInsuranceAgreement = null,
       renewalDate = LocalDate.fromEpochDays(500),
       supportsAddressChange = false,
+      supportsEditCoInsured = true,
       isTerminated = true,
+      contractHolderSSN = "",
+      contractHolderDisplayName = "",
     ),
     InsuranceContract(
       id = "contractId#4",
@@ -116,28 +134,34 @@ internal class InsurancePresenterTest {
       exposureDisplayName = "Test exposure",
       inceptionDate = LocalDate.fromEpochDays(200),
       terminationDate = LocalDate.fromEpochDays(400),
-      currentAgreement = Agreement(
+      currentInsuranceAgreement = InsuranceAgreement(
         activeFrom = LocalDate.fromEpochDays(240),
         activeTo = LocalDate.fromEpochDays(340),
         displayItems = persistentListOf(),
         productVariant = ProductVariant(
           displayName = "Variant",
-          contractType = ContractType.RENTAL,
+          contractGroup = ContractGroup.RENTAL,
+          contractType = ContractType.SE_APARTMENT_RENT,
           partner = null,
           perils = persistentListOf(),
           insurableLimits = persistentListOf(),
           documents = persistentListOf(),
         ),
         certificateUrl = null,
+        coInsured = persistentListOf(),
+        creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
       ),
-      upcomingAgreement = null,
+      upcomingInsuranceAgreement = null,
       renewalDate = LocalDate.fromEpochDays(500),
       supportsAddressChange = false,
+      supportsEditCoInsured = true,
       isTerminated = true,
+      contractHolderSSN = "",
+      contractHolderDisplayName = "",
     ),
   )
-  private val validCrossSells: List<CrossSalesQuery.Data.CurrentMember.CrossSell> = listOf(
-    CrossSalesQuery.Data.CurrentMember.CrossSell(
+  private val validCrossSells: List<CrossSellsQuery.Data.CurrentMember.CrossSell> = listOf(
+    CrossSellsQuery.Data.CurrentMember.CrossSell(
       id = "crossSellId",
       title = "crossSellTitle",
       description = "crossSellDescription",
@@ -153,7 +177,7 @@ internal class InsurancePresenterTest {
     val presenter = InsurancePresenter(
       { getInsuranceContractsUseCase },
       { getCrossSellsUseCase },
-      FakeCrossSellCardNotificationBadgeService(),
+      { FakeCrossSellCardNotificationBadgeService() },
     )
     presenter.test(InsuranceUiState.initialState) {
       awaitItem().also { uiState ->
@@ -186,7 +210,7 @@ internal class InsurancePresenterTest {
     val presenter = InsurancePresenter(
       { getInsuranceContractsUseCase },
       { getCrossSellsUseCase },
-      FakeCrossSellCardNotificationBadgeService(),
+      { FakeCrossSellCardNotificationBadgeService() },
     )
     presenter.test(InsuranceUiState.initialState) {
       skipItems(1)
@@ -209,7 +233,7 @@ internal class InsurancePresenterTest {
     val presenter = InsurancePresenter(
       { getInsuranceContractsUseCase },
       { getCrossSellsUseCase },
-      FakeCrossSellCardNotificationBadgeService(),
+      { FakeCrossSellCardNotificationBadgeService() },
     )
     presenter.test(InsuranceUiState.initialState) {
       skipItems(1)
@@ -232,7 +256,7 @@ internal class InsurancePresenterTest {
     val presenter = InsurancePresenter(
       { getInsuranceContractsUseCase },
       { getCrossSellsUseCase },
-      FakeCrossSellCardNotificationBadgeService(),
+      { FakeCrossSellCardNotificationBadgeService() },
     )
     presenter.test(InsuranceUiState.initialState) {
       skipItems(1)
@@ -273,7 +297,7 @@ internal class InsurancePresenterTest {
     val presenter = InsurancePresenter(
       { getInsuranceContractsUseCase },
       { getCrossSellsUseCase },
-      FakeCrossSellCardNotificationBadgeService(),
+      { FakeCrossSellCardNotificationBadgeService() },
     )
     val allContracts = validContracts + terminatedContracts
     presenter.test(InsuranceUiState.initialState) {
@@ -300,7 +324,7 @@ internal class InsurancePresenterTest {
     val presenter = InsurancePresenter(
       { getInsuranceContractsUseCase },
       { getCrossSellsUseCase },
-      crossSellCardNotificationBadgeService,
+      { crossSellCardNotificationBadgeService },
     )
     presenter.test(InsuranceUiState.initialState) {
       assertThat(awaitItem().showNotificationBadge).isEqualTo(InsuranceUiState.initialState.showNotificationBadge)
@@ -325,7 +349,7 @@ internal class InsurancePresenterTest {
     val presenter = InsurancePresenter(
       { getInsuranceContractsUseCase },
       { getCrossSellsUseCase },
-      crossSellCardNotificationBadgeService,
+      { crossSellCardNotificationBadgeService },
     )
     val initialState = InsuranceUiState(
       contracts = persistentListOf(),
@@ -364,9 +388,9 @@ internal class InsurancePresenterTest {
 
   private class FakeGetCrossSellsUseCase : GetCrossSellsUseCase {
     val errorMessages = Turbine<ErrorMessage>()
-    val crossSells = Turbine<List<CrossSalesQuery.Data.CurrentMember.CrossSell>>()
+    val crossSells = Turbine<List<CrossSellsQuery.Data.CurrentMember.CrossSell>>()
 
-    override suspend fun invoke(): Either<ErrorMessage, List<CrossSalesQuery.Data.CurrentMember.CrossSell>> {
+    override suspend fun invoke(): Either<ErrorMessage, List<CrossSellsQuery.Data.CurrentMember.CrossSell>> {
       return raceN(
         { errorMessages.awaitItem() },
         { crossSells.awaitItem() },

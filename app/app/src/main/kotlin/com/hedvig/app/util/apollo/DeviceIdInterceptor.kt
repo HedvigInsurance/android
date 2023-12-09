@@ -13,7 +13,6 @@ class DeviceIdInterceptor(
   private val deviceIdDataStore: DeviceIdDataStore,
   applicationScope: ApplicationScope,
 ) : Interceptor {
-
   private var deviceId: String? = null
 
   init {

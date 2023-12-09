@@ -15,7 +15,6 @@ internal val hedvigTonalPalette: HedvigTonalPalette = HedvigTonalPaletteImpl(
   greyscale800 = Color(0xFF505050),
   greyscale900 = Color(0xFF303030),
   greyscale1000 = Color(0xFF121212),
-
   green100 = Color(0xFFE2F6C6),
   green300 = Color(0xFFD1E4B6),
   green500 = Color(0xFFB8D194),
@@ -23,7 +22,6 @@ internal val hedvigTonalPalette: HedvigTonalPalette = HedvigTonalPaletteImpl(
   green700 = Color(0xFF20B652),
   green800 = Color(0xFF4C6440),
   green900 = Color(0xFF33432B),
-
   amber100 = Color(0xFFFBEDC5),
   amber300 = Color(0xFFF5E0A3),
   amber500 = Color(0xFFEED077),
@@ -31,7 +29,6 @@ internal val hedvigTonalPalette: HedvigTonalPalette = HedvigTonalPaletteImpl(
   amber700 = Color(0xFFE5AC00),
   amber800 = Color(0xFF8A4C0F),
   amber900 = Color(0xFF6B3806),
-
   red100 = Color(0xFFFDE8E5),
   red300 = Color(0xFFF2CFCA),
   red500 = Color(0xFFE8ACA4),
@@ -39,7 +36,6 @@ internal val hedvigTonalPalette: HedvigTonalPalette = HedvigTonalPaletteImpl(
   red700 = Color(0xFFFF391F),
   red800 = Color(0xFFAC2F1E),
   red900 = Color(0xFF6E180C),
-
   blue100 = Color(0xFFE0F0F9),
   blue300 = Color(0xFFBDDBED),
   blue500 = Color(0xFF98C2DA),
@@ -47,7 +43,6 @@ internal val hedvigTonalPalette: HedvigTonalPalette = HedvigTonalPaletteImpl(
   blue700 = Color(0xFF3EB5F9),
   blue800 = Color(0xFF30577E),
   blue900 = Color(0xFF1F3D5C),
-
   lavender300 = Color(0xFFC9ABF5),
   lavender400 = Color(0xFFBE9BF3),
 )

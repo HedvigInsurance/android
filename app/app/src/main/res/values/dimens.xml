@@ -1,20 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <dimen name="background_rounded_corners_radius">20dp</dimen>
 
     <dimen name="loading_spinner_width">32dp</dimen>
-    <dimen name="loading_spinner_height">32dp</dimen>
 
-    <dimen name="dashboard_need_set_up_background_radius">5dp</dimen>
-
-    <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="chat_top_bar_button_size">32dp</dimen>
-
-    <dimen name="background_rounded_corner_radius">8dp</dimen>
-    <dimen name="referral_receiver_continue_button_height">48dp</dimen>
-    <dimen name="referral_receiver_continue_button_padding_edge">32dp</dimen>
-    <dimen name="referral_receiver_continue_without_button_padding_edge">24dp</dimen>
 
     <dimen name="chat_attach_icon_size">48dp</dimen>
     <dimen name="chat_background_edit_text_rounded_corner_radius">8dp</dimen>
@@ -24,17 +14,4 @@
     <dimen name="bottom_sheet_handle_width">32dp</dimen>
     <dimen name="bottom_sheet_handle_corner_radius">20dp</dimen>
     <dimen name="chat_image_size">240dp</dimen>
-    <dimen name="pick_date_button_corner_radius">6dp</dimen>
-    <dimen name="premium_box_campaign_header_height">30dp</dimen>
-    <dimen name="connect_payment_result_icon_size">56dp</dimen>
-    <dimen name="referral_icon_placeholder_size">16dp</dimen>
-    <dimen name="small_component_corner_radius">4dp</dimen>
-    <dimen name="contract_document_card">80dp</dimen>
-    <dimen name="peril_card_size">56dp</dimen>
-    <dimen name="logged_in_card_elevation">1dp</dimen>
-    <dimen name="peril_bottom_sheet_close_icon_size">24dp</dimen>
-    <dimen name="embark_chat_bubble_max_width">250dp</dimen>
-    <dimen name="more_options_list_item_height">48dp</dimen>
-    <dimen name="member_id_min_length">80dp</dimen>
-    <dimen name="insurer_logo_width">28dp</dimen>
 </resources>

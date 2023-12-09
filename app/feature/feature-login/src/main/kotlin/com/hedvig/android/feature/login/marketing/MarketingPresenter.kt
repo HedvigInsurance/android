@@ -59,6 +59,7 @@ internal class MarketingPresenter(
 
 internal sealed interface MarketingUiState {
   data object Loading : MarketingUiState
+
   data class Success(
     val market: Market,
     val language: Language,
@@ -67,5 +68,6 @@ internal sealed interface MarketingUiState {
 
 internal sealed interface MarketingEvent {
   data class SelectMarket(val market: Market) : MarketingEvent
+
   data class SelectLanguage(val language: Language) : MarketingEvent
 }

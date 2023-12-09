@@ -44,10 +44,10 @@ import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.uidata.UiMoney
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import octopus.type.CurrencyCode
-import kotlin.time.Duration.Companion.seconds
 
 @Composable
 internal fun SingleItemPayoutDestination(
@@ -239,11 +239,7 @@ private fun BoxScope.PaidOutContent(
  * And scale the content up and fade it out as it exits the UI
  */
 @Composable
-private fun PoppingContent(
-  show: Boolean,
-  modifier: Modifier = Modifier,
-  content: @Composable () -> Unit,
-) {
+private fun PoppingContent(show: Boolean, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
   AnimatedVisibility(
     visible = show,
     enter = fadeIn(tween(300, 300, FastOutSlowInEasing))

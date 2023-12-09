@@ -19,14 +19,13 @@ import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.memberreminders.test.TestEnableNotificationsReminderManager
 import com.hedvig.android.memberreminders.test.TestGetMemberRemindersUseCase
+import kotlin.random.Random
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
-import kotlin.random.Random
 
 class ProfileViewModelTest {
-
   @get:Rule
   val mainCoroutineRule = MainCoroutineRule()
 
@@ -182,7 +181,7 @@ class ProfileViewModelTest {
       assertThat(viewModel.data.value.memberReminders.upcomingRenewals).isNull()
       assertThat(viewModel.data.value.memberReminders.enableNotifications).isNull()
 
-      getMemberRemindersUseCase.memberReminders.add(MemberReminders(connectPayment = MemberReminder.ConnectPayment))
+      getMemberRemindersUseCase.memberReminders.add(MemberReminders(connectPayment = MemberReminder.ConnectPayment()))
       runCurrent()
       assertThat(viewModel.data.value.memberReminders.connectPayment).isNotNull()
       assertThat(viewModel.data.value.memberReminders.upcomingRenewals).isNull()
@@ -234,8 +233,8 @@ class ProfileViewModelTest {
 
       getMemberRemindersUseCase.memberReminders.add(
         MemberReminders(
-          connectPayment = MemberReminder.ConnectPayment,
-          enableNotifications = MemberReminder.EnableNotifications,
+          connectPayment = MemberReminder.ConnectPayment(),
+          enableNotifications = MemberReminder.EnableNotifications(),
         ),
       )
       runCurrent()
@@ -259,6 +258,7 @@ class ProfileViewModelTest {
       featureManager,
       noopLogoutUseCase,
     )
+    val testId = "test"
 
     viewModel.data.test {
       assertThat(viewModel.data.value).isEqualTo(ProfileUiState())
@@ -281,13 +281,15 @@ class ProfileViewModelTest {
       runCurrent()
       getEurobonusStatusUseCase.turbine.add(EuroBonus("abc").right())
       featureManager.featureTurbine.add(Feature.PAYMENT_SCREEN to true)
-      getMemberRemindersUseCase.memberReminders.add(MemberReminders(connectPayment = MemberReminder.ConnectPayment))
+      getMemberRemindersUseCase.memberReminders.add(
+        MemberReminders(connectPayment = MemberReminder.ConnectPayment(id = testId)),
+      )
       runCurrent()
       assertThat(viewModel.data.value).isEqualTo(
         ProfileUiState(
           euroBonus = EuroBonus("abc"),
           showPaymentScreen = true,
-          memberReminders = MemberReminders(connectPayment = MemberReminder.ConnectPayment),
+          memberReminders = MemberReminders(connectPayment = MemberReminder.ConnectPayment(id = testId)),
           isLoading = false,
         ),
       )

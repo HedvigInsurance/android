@@ -21,8 +21,7 @@ public val HedvigIcons.CircleWithOutline: ImageVector
     _circleWithOutline = Builder(
       name = "Circle with outline",
       defaultWidth = 16.0.dp,
-      defaultHeight =
-      16.0.dp,
+      defaultHeight = 16.0.dp,
       viewportWidth = 16.0f,
       viewportHeight = 16.0f,
     ).apply {

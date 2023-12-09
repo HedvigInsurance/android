@@ -1,6 +1,4 @@
 <resources>
-    <string name="dummy_string" translatable="false" />
-
     <string name="swedish" translatable="false">Svenska</string>
     <string name="english_swedish" translatable="false">English</string>
     <string name="norwegian" translatable="false">Norsk</string>

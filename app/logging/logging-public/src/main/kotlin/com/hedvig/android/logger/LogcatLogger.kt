@@ -8,11 +8,7 @@ interface LogcatLogger {
   /**
    * Write a log to its destination. Called by [logcat].
    */
-  fun log(
-    priority: LogPriority,
-    throwable: Throwable?,
-    message: () -> String,
-  )
+  fun log(priority: LogPriority, throwable: Throwable?, message: () -> String)
 
   companion object {
     @Volatile
@@ -59,10 +55,7 @@ interface LogcatLogger {
    * If this fails a test, consider adding [com.hedvig.android.logger.TestLogcatLoggingRule] test rule to your test.
    */
   private object NoLog : LogcatLogger {
-    override fun log(
-      priority: LogPriority,
-      throwable: Throwable?,
-      message: () -> String,
-    ) = error("Should never receive any log")
+    override fun log(priority: LogPriority, throwable: Throwable?, message: () -> String) =
+      error("Should never receive any log")
   }
 }

@@ -11,20 +11,20 @@ import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import octopus.GetUpcomingRenewalReminderQuery
+import octopus.type.AgreementCreationCause
 
 internal interface GetUpcomingRenewalRemindersUseCase {
-  suspend fun invoke(): Either<UpcomingRenewalReminderError, NonEmptyList<UpcomingRenewal>>
+  suspend fun invoke(): Either<UpcomingRenewalReminderError, NonEmptyList<MemberReminder.UpcomingRenewal>>
 }
 
 internal class GetUpcomingRenewalRemindersUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val clock: Clock,
 ) : GetUpcomingRenewalRemindersUseCase {
-  override suspend fun invoke(): Either<UpcomingRenewalReminderError, NonEmptyList<UpcomingRenewal>> {
+  override suspend fun invoke(): Either<UpcomingRenewalReminderError, NonEmptyList<MemberReminder.UpcomingRenewal>> {
     return either {
       val contracts = apolloClient.query(GetUpcomingRenewalReminderQuery())
         .safeExecute()
@@ -34,10 +34,11 @@ internal class GetUpcomingRenewalRemindersUseCaseImpl(
         .currentMember
         .activeContracts
 
-      val upcomingRenewals: NonEmptyList<UpcomingRenewal>? = contracts
+      val upcomingRenewals: NonEmptyList<MemberReminder.UpcomingRenewal>? = contracts
+        .filter { it.upcomingChangedAgreement?.creationCause == AgreementCreationCause.RENEWAL }
         .mapNotNull { contract ->
           val upcomingChangedAgreement = contract.upcomingChangedAgreement ?: return@mapNotNull null
-          UpcomingRenewal(
+          MemberReminder.UpcomingRenewal(
             contract.currentAgreement.productVariant.displayName,
             upcomingChangedAgreement.activeFrom,
             upcomingChangedAgreement.certificateUrl,
@@ -60,11 +61,6 @@ internal class GetUpcomingRenewalRemindersUseCaseImpl(
 
 sealed interface UpcomingRenewalReminderError {
   data object NoUpcomingRenewals : UpcomingRenewalReminderError
+
   data class NetworkError(val errorMessage: ErrorMessage) : UpcomingRenewalReminderError, ErrorMessage by errorMessage
 }
-
-data class UpcomingRenewal(
-  val contractDisplayName: String,
-  val renewalDate: LocalDate,
-  val draftCertificateUrl: String?,
-)

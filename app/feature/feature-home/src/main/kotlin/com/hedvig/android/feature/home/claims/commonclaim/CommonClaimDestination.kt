@@ -31,7 +31,6 @@ import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import com.kiwi.navigationcompose.typed.composable
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.koinViewModel
 
 fun NavGraphBuilder.commonClaimGraph(
   imageLoader: ImageLoader,
@@ -40,8 +39,6 @@ fun NavGraphBuilder.commonClaimGraph(
   startClaimsFlow: (NavBackStackEntry) -> Unit,
 ) {
   composable<HomeDestinations.CommonClaimDestination> { backStackEntry ->
-    @Suppress("UNUSED_VARIABLE")
-    val viewModel = koinViewModel<CommonClaimViewModel>()
     CommonClaimDestination(
       commonClaimsData = claimsData,
       imageLoader = imageLoader,

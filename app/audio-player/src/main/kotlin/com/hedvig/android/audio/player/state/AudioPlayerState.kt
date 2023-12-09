@@ -4,16 +4,22 @@ import com.hedvig.android.core.common.android.ProgressPercentage
 
 sealed interface AudioPlayerState {
   object Preparing : AudioPlayerState
+
   object Failed : AudioPlayerState
+
   data class Ready(
     val readyState: ReadyState,
     val progressPercentage: ProgressPercentage = ProgressPercentage(0f),
   ) : AudioPlayerState {
     sealed interface ReadyState {
       object NotStarted : ReadyState
+
       object Done : ReadyState
+
       object Paused : ReadyState
+
       object Playing : ReadyState
+
       object Seeking : ReadyState
 
       val shouldContinuouslyUpdateProgress: Boolean
@@ -28,6 +34,7 @@ sealed interface AudioPlayerState {
 
     companion object {
       fun notStarted(): Ready = Ready(ReadyState.NotStarted, ProgressPercentage(0f))
+
       fun done(): Ready = Ready(ReadyState.Done, ProgressPercentage(1f))
     }
   }

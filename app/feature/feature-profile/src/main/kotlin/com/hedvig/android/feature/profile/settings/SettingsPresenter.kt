@@ -6,6 +6,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.hedvig.android.apollo.NetworkCacheManager
+import com.hedvig.android.apollo.auth.listeners.UploadLanguagePreferenceToBackendUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.language.Language
 import com.hedvig.android.language.LanguageService
@@ -16,10 +18,11 @@ import com.hedvig.android.theme.Theme
 import kotlinx.coroutines.launch
 
 internal class SettingsPresenter(
-  private val notifyBackendAboutLanguageChangeUseCase: NotifyBackendAboutLanguageChangeUseCase,
   private val languageService: LanguageService,
   private val settingsDataStore: SettingsDataStore,
   private val enableNotificationsReminderManager: EnableNotificationsReminderManager,
+  private val cacheManager: NetworkCacheManager,
+  private val uploadLanguagePreferenceToBackendUseCase: UploadLanguagePreferenceToBackendUseCase,
 ) : MoleculePresenter<SettingsEvent, SettingsUiState> {
   @Composable
   override fun MoleculePresenterScope<SettingsEvent>.present(lastState: SettingsUiState): SettingsUiState {
@@ -35,7 +38,8 @@ internal class SettingsPresenter(
         is SettingsEvent.ChangeLanguage -> {
           selectedLanguage = event.language
           languageService.setLanguage(event.language)
-          launch { notifyBackendAboutLanguageChangeUseCase.invoke(event.language) }
+          cacheManager.clearCache()
+          launch { uploadLanguagePreferenceToBackendUseCase.invoke() }
         }
         is SettingsEvent.ChangeTheme -> {
           launch { settingsDataStore.setTheme(event.theme) }
@@ -86,6 +90,8 @@ sealed interface SettingsUiState {
 
 sealed interface SettingsEvent {
   data class ChangeLanguage(val language: Language) : SettingsEvent
+
   data class ChangeTheme(val theme: Theme) : SettingsEvent
+
   object SnoozeNotificationPermissionReminder : SettingsEvent
 }

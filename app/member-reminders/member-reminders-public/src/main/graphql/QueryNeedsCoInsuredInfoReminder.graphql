@@ -1,0 +1,11 @@
+query NeedsCoInsuredInfoReminder {
+  currentMember {
+    activeContracts {
+      id
+      coInsured {
+        hasMissingInfo
+        terminatesOn
+      }
+    }
+  }
+}

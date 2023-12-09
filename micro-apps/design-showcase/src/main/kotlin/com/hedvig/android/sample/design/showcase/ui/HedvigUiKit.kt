@@ -3,6 +3,7 @@ package com.hedvig.android.sample.design.showcase.ui
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,7 +27,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import arrow.core.nonEmptyListOf
 import com.google.accompanist.permissions.PermissionStatus
 import com.hedvig.android.audio.player.HedvigAudioPlayer
 import com.hedvig.android.audio.player.SignedAudioUrl
@@ -51,9 +51,7 @@ import com.hedvig.android.core.ui.dialog.HedvigAlertDialog
 import com.hedvig.android.core.ui.dialog.SingleSelectDialog
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
-import com.hedvig.android.memberreminders.ApplicableMemberReminders
 import com.hedvig.android.memberreminders.MemberReminder
-import com.hedvig.android.memberreminders.UpcomingRenewal
 import com.hedvig.android.memberreminders.ui.MemberReminderCards
 import com.hedvig.android.notification.permission.NotificationPermissionState
 import com.hedvig.android.sample.design.showcase.ui.hedviguikit.HedvigIcons
@@ -99,31 +97,32 @@ internal fun HedvigUiKit() {
     }
     lightAndDarkItem {
       MemberReminderCards(
-        memberReminders = ApplicableMemberReminders(
-          MemberReminder.ConnectPayment,
-          MemberReminder.UpcomingRenewals(
-            nonEmptyListOf(
-              UpcomingRenewal(
-                contractDisplayName = "ContractDisplayName",
-                renewalDate = Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
-                draftCertificateUrl = "",
-              ),
-            ),
+        memberReminders = persistentListOf(
+          MemberReminder.ConnectPayment(),
+          MemberReminder.UpcomingRenewal(
+            contractDisplayName = "ContractDisplayName",
+            renewalDate = Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
+            draftCertificateUrl = "",
           ),
-          MemberReminder.EnableNotifications,
+          MemberReminder.EnableNotifications(),
         ),
         navigateToConnectPayment = {},
         openUrl = {},
         notificationPermissionState = object : NotificationPermissionState {
           override val showDialog = false
+
           override fun dismissDialog() {}
+
           override fun launchPermissionRequest() {}
+
           override val permission: String
             get() = ""
           override val status: PermissionStatus
             get() = PermissionStatus.Granted
         },
         snoozeNotificationPermissionReminder = {},
+        navigateToAddMissingInfo = {},
+        contentPadding = PaddingValues(16.dp),
       )
     }
     lightAndDarkItem {
@@ -244,9 +243,7 @@ internal fun HedvigUiKit() {
   }
 }
 
-private fun LazyListScope.lightAndDarkItem(
-  content: @Composable LazyItemScope.() -> Unit,
-) {
+private fun LazyListScope.lightAndDarkItem(content: @Composable LazyItemScope.() -> Unit) {
   item {
     LADCOntainer { content() }
   }

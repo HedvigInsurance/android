@@ -1,21 +1,75 @@
+root=true
+
 # noinspection EditorConfigKeyCorrectness
 [*.{kt,kts}]
-indent_size = 2
-insert_final_newline = true
-max_line_length = 120
-end_of_line = lf
+# https://pinterest.github.io/ktlint/1.0.1/rules/code-styles/
+ktlint_code_style=ktlint_official
+# Enable all rules from the `standard` rule set provided by KtLint
+ktlint_standard=enabled
+# Disable all `experimental` rules from all rule sets provided by KtLint or other rule providers
+ktlint_experimental=disable
 
-ij_kotlin_allow_trailing_comma = true
-ij_kotlin_allow_trailing_comma_on_call_site = true
+end_of_line=lf
+# https://pinterest.github.io/ktlint/1.0.1/rules/configuration-ktlint/#indent-size-style
+indent_size=2
+ij_continuation_indent_size=2
+# https://pinterest.github.io/ktlint/1.0.1/rules/configuration-ktlint/#max-line-length
+max_line_length=120
+# https://pinterest.github.io/ktlint/1.0.1/rules/configuration-ktlint/#final-newline
+insert_final_newline=true
 
-ktlint_disabled_rules = filename
-ktlint_filename = disabled
+# https://pinterest.github.io/ktlint/1.0.1/rules/configuration-ktlint/#wrapping-the-expression-body-of-a-function
+ktlint_function_signature_body_expression_wrapping=default
+# https://pinterest.github.io/ktlint/1.0.1/rules/configuration-ktlint/#ignore-identifiers-enclosed-in-backticks
+ktlint_ignore_back_ticked_identifier=true
+
+# https://pinterest.github.io/ktlint/1.0.1/rules/configuration-ktlint/#trailing-comma-on-declaration-site
+ij_kotlin_allow_trailing_comma=true
+# https://pinterest.github.io/ktlint/1.0.1/rules/configuration-ktlint/#trailing-comma-on-declaration-site
+trailing-comma-on-declaration-site=true
+# https://pinterest.github.io/ktlint/1.0.1/rules/configuration-ktlint/#trailing-comma-on-call-site
+ij_kotlin_allow_trailing_comma_on_call_site=true
+# https://pinterest.github.io/ktlint/1.0.1/rules/standard/#no-wildcard-imports
+ij_kotlin_packages_to_use_import_on_demand=unset
+
+# https://pinterest.github.io/ktlint/1.0.1/rules/configuration-ktlint/#import-layouts
+no-wildcard-imports=true
+ij_kotlin_imports_layout=*
+
+# https://pinterest.github.io/ktlint/1.0.1/rules/standard/#function-signature
+ktlint_function_signature_rule_force_multiline_when_parameter_count_greater_or_equal_than=10
+# https://pinterest.github.io/ktlint/1.0.1/rules/standard/#function-naming
+ktlint_function_naming_ignore_when_annotated_with=Composable
+
+# **Enable** specific rules: https://pinterest.github.io/ktlint/1.0.1/rules/configuration-ktlint/#disabled-rules
+# https://pinterest.github.io/ktlint/1.0.1/rules/experimental/#function-type-modifier-spacing
+ktlint_experimental_function-type-modifier-spacing=enabled
+
+# **Disable** specific rules: https://pinterest.github.io/ktlint/1.0.1/rules/configuration-ktlint/#disabled-rules
+# https://github.com/pinterest/ktlint/issues/2138#issuecomment-1680901126
+ktlint_standard_annotation=disabled
+# https://pinterest.github.io/ktlint/1.0.1/rules/standard/#file-name
+ktlint_standard_filename=disabled
+# https://pinterest.github.io/ktlint/1.0.1/rules/standard/#property-naming
+ktlint_standard_property-naming=disabled
+# https://pinterest.github.io/ktlint/1.0.1/rules/standard/#parameter-wrapping
+ktlint_standard_parameter-wrapping=disabled
+# https://pinterest.github.io/ktlint/1.0.1/rules/standard/#property-wrapping
+ktlint_standard_property-wrapping=disabled
+# https://pinterest.github.io/ktlint/1.0.1/rules/standard/#multiline-expression-wrapping
+ktlint_standard_multiline-expression-wrapping=disabled
+# These also need to be disabled due to the ones above beeing disabled + explaination here https://github.com/pinterest/ktlint/issues/2338#issuecomment-1787229643
+# https://pinterest.github.io/ktlint/1.0.1/rules/standard/#string-template-indent
+ktlint_standard_string-template-indent=disabled
+
+[*.xml]
+indent_size=2
 
 [*.graphql]
-indent_size = 2
-end_of_line = lf
-insert_final_newline = true
+indent_size=2
+end_of_line=lf
+insert_final_newline=true
 
 [*.md]
-indent_size = 2
+indent_size=2
 

@@ -1,7 +1,6 @@
 package com.hedvig.android.core.common.android
 
 import org.json.JSONArray
-import org.json.JSONException
 import org.json.JSONObject
 
 fun jsonObjectOf(vararg properties: Pair<String, Any?>) = JSONObject().apply {
@@ -54,25 +53,6 @@ fun jsonArrayOf(vararg items: Any) = JSONArray().apply {
 fun jsonObjectOfNotNull(vararg properties: Pair<String, Any>?) =
   jsonObjectOf(*(properties.filterNotNull().toTypedArray()))
 
-fun List<Pair<String, Any>>.toJsonObject() = JSONObject().apply {
-  forEach { put(it.first, it.second) }
-}
-
-fun JSONObject.getWithDotNotation(accessor: String): Any? {
-  return try {
-    if (accessor.contains('.')) {
-      val firstAccessor = accessor.substringBefore('.')
-      val nextAccessor = accessor.substringAfter('.')
-
-      getJSONObject(firstAccessor).getWithDotNotation(nextAccessor)
-    } else {
-      get(accessor)
-    }
-  } catch (e: JSONException) {
-    null
-  }
-}
-
 fun Collection<*>.toJsonArray() = JSONArray(this)
 
 fun JSONObject.entriesIterable() = object : Iterable<Pair<String, Any?>> {
@@ -87,6 +67,7 @@ class JSONObjectEntryIterator(
   private val innerIter = jsonObject.keys()
 
   override fun hasNext() = innerIter.hasNext()
+
   override fun next(): Pair<String, Any?> {
     val key = innerIter.next()
     return Pair(key, jsonObject.get(key))
@@ -101,10 +82,6 @@ operator fun JSONObject.plus(other: JSONObject): JSONObject {
   return clone
 }
 
-fun JSONArray.toStringArray(): List<String> {
-  return this.values().map(Any::toString)
-}
-
 fun JSONArray.values() = object : Iterable<Any> {
   override fun iterator() = JSONArrayEntryIterator(this@values)
 }
@@ -112,7 +89,6 @@ fun JSONArray.values() = object : Iterable<Any> {
 class JSONArrayEntryIterator(
   private val jsonArray: JSONArray,
 ) : Iterator<Any> {
-
   private var current = 0
   private var size = jsonArray.length()
 
@@ -125,39 +101,5 @@ class JSONArrayEntryIterator(
     val json = jsonArray[current]
     current += 1
     return json
-  }
-}
-
-fun JSONObject.createAndAddWithLodashNotation(value: Any?, key: String, currentKey: String): JSONObject {
-  fun String.isArray() = contains("[") && contains("]")
-  fun String.getArrayField() = substringBefore("[")
-  fun String.getField() = if (isArray()) getArrayField() else substringBefore(".")
-  fun String.getIndex() = substringAfter("[").substringBefore("]").toInt()
-  fun String.tail(current: String) = substringAfter(current).substringAfter(".").substringBefore(".")
-  fun String.hasNext() = substringAfter(currentKey).contains(".")
-
-  val field = currentKey.getField()
-
-  return if (key.hasNext()) {
-    val innerJson = if (currentKey.isArray()) {
-      if (!has(field)) {
-        put(field, JSONArray())
-      }
-      try {
-        getJSONArray(field).getJSONObject(currentKey.getIndex())
-      } catch (throwable: JSONException) {
-        getJSONArray(field).put(currentKey.getIndex(), JSONObject())
-        getJSONArray(field).getJSONObject(currentKey.getIndex())
-      }
-    } else {
-      if (!has(field)) {
-        put(field, JSONObject())
-      }
-      getJSONObject(field)
-    }
-    innerJson.createAndAddWithLodashNotation(value, key, key.tail(currentKey))
-  } else {
-    put(field, value)
-    this
   }
 }

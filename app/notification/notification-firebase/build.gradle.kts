@@ -15,7 +15,7 @@ dependencies {
   implementation(libs.koin.workManager)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
-  implementation(projects.authCore)
+  implementation(projects.authCorePublic)
   implementation(projects.authEventCore)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDemoMode)

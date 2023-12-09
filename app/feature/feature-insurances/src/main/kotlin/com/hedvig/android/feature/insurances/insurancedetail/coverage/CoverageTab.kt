@@ -34,7 +34,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -50,9 +52,9 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.InfoFilled
 import com.hedvig.android.core.ui.card.ExpandablePlusCard
-import com.hedvig.android.core.ui.insurance.InsurableLimit
-import com.hedvig.android.core.ui.insurance.Peril
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.data.productvariant.InsurableLimit
+import com.hedvig.android.data.productvariant.ProductVariantPeril
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
@@ -63,12 +65,12 @@ import kotlinx.coroutines.launch
 @Composable
 internal fun CoverageTab(
   insurableLimits: ImmutableList<InsurableLimit>,
-  perils: ImmutableList<Peril>,
+  perils: ImmutableList<ProductVariantPeril>,
   modifier: Modifier = Modifier,
 ) {
   val coroutineScope = rememberCoroutineScope()
   val sheetState = rememberModalBottomSheetState(true)
-  var selectedInsurableLimit by rememberSaveable(stateSaver = InsurableLimit.Saver) { mutableStateOf(null) }
+  var selectedInsurableLimit: InsurableLimit? by remember { mutableStateOf(null) }
   val selectedInsurableLimitValue = selectedInsurableLimit
 
   if (selectedInsurableLimitValue != null) {
@@ -126,10 +128,8 @@ internal fun CoverageTab(
 
 @Suppress("UnusedReceiverParameter")
 @Composable
-private fun ColumnScope.PerilSection(
-  perilItems: ImmutableList<Peril>,
-) {
-  var expandedItemIndex by rememberSaveable { mutableStateOf(-1) }
+private fun ColumnScope.PerilSection(perilItems: ImmutableList<ProductVariantPeril>) {
+  var expandedItemIndex by rememberSaveable { mutableIntStateOf(-1) }
   for ((index, perilItem) in perilItems.withIndex()) {
     ExpandableCoverageCard(
       isExpanded = expandedItemIndex == index,
@@ -316,8 +316,8 @@ private fun PreviewPerilSection() {
   }
 }
 
-private val previewPerils: PersistentList<Peril> = List(4) { index ->
-  Peril(
+private val previewPerils: PersistentList<ProductVariantPeril> = List(4) { index ->
+  ProductVariantPeril(
     id = index.toString(),
     title = "Eldsvåda",
     description = "description$index",

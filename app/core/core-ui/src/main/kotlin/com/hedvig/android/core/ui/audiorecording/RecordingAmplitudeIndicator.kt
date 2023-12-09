@@ -26,10 +26,7 @@ import kotlin.math.sqrt
  *  and can peak to ~20000. Gets transformed to a more reasonable value of 0-1000 for the circle radius.
  */
 @Composable
-fun RecordingAmplitudeIndicator(
-  amplitude: Int,
-  modifier: Modifier = Modifier,
-) {
+fun RecordingAmplitudeIndicator(amplitude: Int, modifier: Modifier = Modifier) {
   val color = LocalContentColor.current.copy(alpha = 0.12f)
   val animated by animateIntAsState(
     targetValue = (sqrt(amplitude.toDouble()).toInt() * 10).coerceAtMost(1000),

@@ -1,9 +1,10 @@
 package com.hedvig.android.feature.changeaddress.data
 
-import com.hedvig.android.core.ui.insurance.ContractType
-import com.hedvig.android.core.ui.insurance.InsurableLimit
-import com.hedvig.android.core.ui.insurance.ProductVariant
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.contract.ContractGroup
+import com.hedvig.android.data.contract.ContractType
+import com.hedvig.android.data.productvariant.InsurableLimit
+import com.hedvig.android.data.productvariant.ProductVariant
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate
@@ -19,8 +20,8 @@ internal data class MoveQuote(
   val isExpanded: Boolean = false,
   val displayItems: ImmutableList<Pair<String, String>>,
 ) {
-
   companion object {
+    @Suppress("ktlint:standard:function-naming")
     fun PreviewData(index: Int = 0): MoveQuote {
       @Suppress("NAME_SHADOWING")
       val index = index + 1
@@ -33,7 +34,8 @@ internal data class MoveQuote(
         isExpanded = index == 1,
         productVariant = ProductVariant(
           displayName = "Test",
-          contractType = ContractType.RENTAL,
+          contractGroup = ContractGroup.RENTAL,
+          contractType = ContractType.SE_APARTMENT_RENT,
           partner = "test",
           perils = persistentListOf(),
           insurableLimits = persistentListOf(

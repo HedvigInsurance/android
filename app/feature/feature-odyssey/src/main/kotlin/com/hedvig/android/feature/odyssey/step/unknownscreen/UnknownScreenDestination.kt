@@ -32,18 +32,12 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import hedvig.resources.R
 
 @Composable
-internal fun UnknownScreenDestination(
-  openPlayStore: () -> Unit,
-  closeUnknownScreenDestination: () -> Unit,
-) {
+internal fun UnknownScreenDestination(openPlayStore: () -> Unit, closeUnknownScreenDestination: () -> Unit) {
   UnknownScreenScreen(openPlayStore, closeUnknownScreenDestination)
 }
 
 @Composable
-private fun UnknownScreenScreen(
-  openPlayStore: () -> Unit,
-  closeUnknownScreenDestination: () -> Unit,
-) {
+private fun UnknownScreenScreen(openPlayStore: () -> Unit, closeUnknownScreenDestination: () -> Unit) {
   HedvigTheme {
     Surface(
       color = MaterialTheme.colorScheme.background,

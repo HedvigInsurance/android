@@ -41,21 +41,17 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import kotlin.math.roundToInt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlin.math.roundToInt
 
 private val circleDiameter: Dp = 62.dp
 
 @Composable
-internal fun PledgeAcceptingSlider(
-  onAccepted: () -> Unit,
-  text: String,
-  modifier: Modifier = Modifier,
-) {
+internal fun PledgeAcceptingSlider(onAccepted: () -> Unit, text: String, modifier: Modifier = Modifier) {
   val offsetX: Animatable<Float, AnimationVector1D> = remember { Animatable(0f) }
   Box(
     modifier

@@ -21,7 +21,7 @@ public val HedvigIcons.ProfileFilled: ImageVector
       name = "Profile tab selected",
       defaultWidth = 24.0.dp,
       defaultHeight =
-      24.0.dp,
+        24.0.dp,
       viewportWidth = 24.0f,
       viewportHeight = 24.0f,
     ).apply {

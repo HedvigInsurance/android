@@ -27,9 +27,7 @@ object SharedAxisDefaults {
     easing = MotionTokens.EasingStandardCubicBezier,
   )
 
-  internal fun sharedXAxisEnterTransition(
-    initialOffsetX: Int,
-  ): EnterTransition {
+  internal fun sharedXAxisEnterTransition(initialOffsetX: Int): EnterTransition {
     val slide = slideInHorizontally(
       animationSpec = sharedAxisSlideAnimationSpec,
       initialOffsetX = { initialOffsetX },
@@ -44,9 +42,7 @@ object SharedAxisDefaults {
     return slide + fade
   }
 
-  internal fun sharedXAxisExitTransition(
-    targetOffsetX: Int,
-  ): ExitTransition {
+  internal fun sharedXAxisExitTransition(targetOffsetX: Int): ExitTransition {
     val slide = slideOutHorizontally(
       animationSpec = sharedAxisSlideAnimationSpec,
       targetOffsetX = { targetOffsetX },

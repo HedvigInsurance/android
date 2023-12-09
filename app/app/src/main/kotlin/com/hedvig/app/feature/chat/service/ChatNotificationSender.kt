@@ -15,14 +15,11 @@ import androidx.core.content.getSystemService
 import androidx.core.graphics.drawable.IconCompat
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.core.common.android.notification.setupNotificationChannel
-import com.hedvig.android.feature.chat.legacy.getStoredBoolean
-import com.hedvig.android.feature.chat.ui.ChatFragment
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
-import com.hedvig.app.feature.tracking.NotificationOpenedTrackingActivity
 import com.hedvig.app.service.push.getMutablePendingIntentFlags
 
 class ChatNotificationSender(
@@ -39,10 +36,11 @@ class ChatNotificationSender(
   }
 
   override fun sendNotification(type: String, remoteMessage: RemoteMessage) {
-    if (context.getStoredBoolean(ChatFragment.ACTIVITY_IS_IN_FOREGROUND)) {
-      logcat(LogPriority.INFO) { "ChatNotificationSender ignoring notification since chat is open" }
-      return
-    }
+    // todo chat: Consider still not showing the notification when chat is on the foreground
+//    if (context.getStoredBoolean(ChatFragment.ACTIVITY_IS_IN_FOREGROUND)) {
+//      logcat(LogPriority.INFO) { "ChatNotificationSender ignoring notification since chat is open" }
+//      return
+//    }
 
     val hedvigPerson = hedvigPerson.toBuilder()
       .also { person ->
@@ -89,9 +87,8 @@ class ChatNotificationSender(
 
   override fun handlesNotificationType(notificationType: String) = notificationType == NOTIFICATION_TYPE_NEW_MESSAGE
 
-  private fun defaultMessagingStyle(
-    message: NotificationCompat.MessagingStyle.Message,
-  ) = NotificationCompat.MessagingStyle(youPerson).addMessage(message)
+  private fun defaultMessagingStyle(message: NotificationCompat.MessagingStyle.Message) =
+    NotificationCompat.MessagingStyle(youPerson).addMessage(message)
 
   private fun sendChatNotificationInner(
     context: Context,
@@ -104,13 +101,8 @@ class ChatNotificationSender(
 
     val pendingIntent: PendingIntent? = TaskStackBuilder
       .create(context)
-      .run {
-        addNextIntentWithParentStack(chatIntent)
-        addNextIntentWithParentStack(
-          NotificationOpenedTrackingActivity.newInstance(context, NOTIFICATION_TYPE_NEW_MESSAGE),
-        )
-        getPendingIntent(0, flags)
-      }
+      .addNextIntent(chatIntent)
+      .getPendingIntent(0, flags)
     val replyRemoteInput = RemoteInput.Builder(CHAT_REPLY_KEY)
       .setLabel(context.getString(hedvig.resources.R.string.notifications_chat_reply_action))
       .build()
@@ -161,11 +153,7 @@ class ChatNotificationSender(
   }
 
   @RequiresApi(Build.VERSION_CODES.N)
-  fun addReplyToExistingChatNotification(
-    context: Context,
-    notificationId: Int,
-    replyText: CharSequence,
-  ) {
+  fun addReplyToExistingChatNotification(context: Context, notificationId: Int, replyText: CharSequence) {
     val notificationManager = context.getSystemService<NotificationManager>() ?: return
 
     val existingChatNotification = notificationManager

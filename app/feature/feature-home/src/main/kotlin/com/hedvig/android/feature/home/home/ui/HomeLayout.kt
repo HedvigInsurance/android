@@ -35,27 +35,26 @@ import androidx.compose.ui.util.fastSumBy
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.animation.animatePlacement
 import com.hedvig.android.core.ui.layout.FixedSizePlaceable
 import kotlin.math.max
 
 @Composable
 internal fun HomeLayout(
   fullScreenSize: IntSize,
-  welcomeMessage: @Composable @UiComposable () -> Unit, // ktlint-disable no-multi-spaces
-  claimStatusCards: @Composable @UiComposable () -> Unit, // ktlint-disable no-multi-spaces
-  veryImportantMessages: @Composable @UiComposable () -> Unit, // ktlint-disable no-multi-spaces
-  memberReminderCards: @Composable @UiComposable () -> Unit, // ktlint-disable no-multi-spaces
-  startClaimButton: @Composable @UiComposable () -> Unit, // ktlint-disable no-multi-spaces
-  otherServicesButton: @Composable @UiComposable () -> Unit, // ktlint-disable no-multi-spaces
-  topSpacer: @Composable @UiComposable () -> Unit, // ktlint-disable no-multi-spaces
-  bottomSpacer: @Composable @UiComposable () -> Unit, // ktlint-disable no-multi-spaces
+  welcomeMessage: @Composable @UiComposable () -> Unit,
+  claimStatusCards: @Composable @UiComposable () -> Unit,
+  veryImportantMessages: @Composable @UiComposable () -> Unit,
+  memberReminderCards: @Composable @UiComposable () -> Unit,
+  startClaimButton: @Composable @UiComposable () -> Unit,
+  otherServicesButton: @Composable @UiComposable () -> Unit,
+  topSpacer: @Composable @UiComposable () -> Unit,
+  bottomSpacer: @Composable @UiComposable () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Layout(
     content = {
-      Box(Modifier.layoutId(HomeLayoutContent.WelcomeMessage).animatePlacement()) { welcomeMessage() }
-      Box(Modifier.layoutId(HomeLayoutContent.ClaimStatusCards).animatePlacement()) { claimStatusCards() }
+      Box(Modifier.layoutId(HomeLayoutContent.WelcomeMessage)) { welcomeMessage() }
+      Box(Modifier.layoutId(HomeLayoutContent.ClaimStatusCards)) { claimStatusCards() }
       Box(Modifier.layoutId(HomeLayoutContent.VeryImportantMessages)) { veryImportantMessages() }
       Box(Modifier.layoutId(HomeLayoutContent.MemberReminderCards)) { memberReminderCards() }
       Box(Modifier.layoutId(HomeLayoutContent.StartClaimButton)) { startClaimButton() }
@@ -172,8 +171,14 @@ private fun Placeable.PlacementScope.placeAsColumn(
 }
 
 private enum class HomeLayoutContent {
-  WelcomeMessage, ClaimStatusCards, MemberReminderCards, StartClaimButton, OtherServicesButton, VeryImportantMessages,
-  TopSpacer, BottomSpacer
+  WelcomeMessage,
+  ClaimStatusCards,
+  MemberReminderCards,
+  StartClaimButton,
+  OtherServicesButton,
+  VeryImportantMessages,
+  TopSpacer,
+  BottomSpacer,
 }
 
 // region previews
@@ -188,7 +193,7 @@ private fun PreviewHomeLayoutCenteredContent() {
           maxHeight = constraints.maxHeight,
           claimStatusCards = {
             Column(Modifier.padding(horizontal = 16.dp), Arrangement.spacedBy(8.dp)) {
-              PreviewBox() { Text("claim status card") }
+              PreviewBox { Text("claim status card") }
             }
           },
         )
@@ -257,7 +262,7 @@ private fun PreviewHomeLayoutScrollingContent() {
           maxHeight = constraints.maxHeight,
           claimStatusCards = {
             Column(Modifier.padding(horizontal = 16.dp), Arrangement.spacedBy(8.dp)) {
-              PreviewBox() { Text("claim status card") }
+              PreviewBox { Text("claim status card") }
             }
           },
           memberReminderCards = {
@@ -278,9 +283,9 @@ private fun PreviewHomeLayout(
   maxWidth: Int,
   maxHeight: Int,
   modifier: Modifier = Modifier,
-  claimStatusCards: @Composable @UiComposable () -> Unit = {}, // ktlint-disable no-multi-spaces
-  veryImportantMessages: @Composable @UiComposable () -> Unit = {}, // ktlint-disable no-multi-spaces
-  memberReminderCards: @Composable @UiComposable () -> Unit = {}, // ktlint-disable no-multi-spaces
+  claimStatusCards: @Composable @UiComposable () -> Unit = {},
+  veryImportantMessages: @Composable @UiComposable () -> Unit = {},
+  memberReminderCards: @Composable @UiComposable () -> Unit = {},
 ) {
   HomeLayout(
     fullScreenSize = IntSize(maxWidth, maxHeight),

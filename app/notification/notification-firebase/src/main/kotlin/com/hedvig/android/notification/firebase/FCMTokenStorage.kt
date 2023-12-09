@@ -9,7 +9,9 @@ import kotlinx.coroutines.flow.map
 
 internal interface FCMTokenStorage {
   fun getToken(): Flow<String?>
+
   suspend fun saveToken(token: String)
+
   suspend fun clearToken()
 }
 

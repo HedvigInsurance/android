@@ -29,7 +29,6 @@ import octopus.UpdateEurobonusNumberMutation
 internal class EurobonusViewModel(
   private val apolloClient: ApolloClient,
 ) : ViewModel() {
-
   var eurobonusText: String by mutableStateOf("")
     private set
 

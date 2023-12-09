@@ -16,8 +16,8 @@ import com.hedvig.android.core.designsystem.material3.onTypeContainer
 import com.hedvig.android.core.designsystem.material3.typeContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import kotlinx.datetime.Clock
 import kotlin.time.Duration.Companion.days
+import kotlinx.datetime.Clock
 
 /**
  * Renders the M3 DatePicker but after cutting a bit from the top and the bottom to match our design. Particularly, we

@@ -3,7 +3,6 @@ package com.hedvig.android.language
 import androidx.annotation.StringRes
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import giraffe.type.Locale
 
 enum class Language {
   SV_SE,
@@ -25,22 +24,23 @@ enum class Language {
       EN_DK -> hedvig.resources.R.string.english_danish
     }
 
-  override fun toString() = when (this) {
-    SV_SE -> SETTING_SV_SE
-    EN_SE -> SETTING_EN_SE
-    NB_NO -> SETTING_NB_NO
-    EN_NO -> SETTING_EN_NO
-    DA_DK -> SETTING_DA_DK
-    EN_DK -> SETTING_EN_DK
+  fun toBcp47Format(): String {
+    return when (this) {
+      SV_SE -> BCP_47_SV_SE
+      EN_SE -> BCP_47_EN_SE
+      NB_NO -> BCP_47_NB_NO
+      EN_NO -> BCP_47_EN_NO
+      DA_DK -> BCP_47_DA_DK
+      EN_DK -> BCP_47_EN_DK
+    }
   }
 
-  fun toLocale() = when (this) {
-    SV_SE -> Locale.sv_SE
-    EN_SE -> Locale.en_SE
-    NB_NO -> Locale.nb_NO
-    EN_NO -> Locale.en_NO
-    DA_DK -> Locale.da_DK
-    EN_DK -> Locale.en_DK
+  /**
+   * Returns the language string, in BCP-47 format.
+   * See [RFC-5646](https://www.rfc-editor.org/info/rfc5646) for more information
+   */
+  override fun toString(): String {
+    return toBcp47Format()
   }
 
   fun webPath() = when (this) {
@@ -53,12 +53,12 @@ enum class Language {
   }
 
   companion object {
-    const val SETTING_SV_SE = "sv-SE"
-    const val SETTING_EN_SE = "en-SE"
-    const val SETTING_NB_NO = "nb-NO"
-    const val SETTING_EN_NO = "en-NO"
-    const val SETTING_DA_DK = "da-DK"
-    const val SETTING_EN_DK = "en-DK"
+    const val BCP_47_SV_SE = "sv-SE"
+    const val BCP_47_EN_SE = "en-SE"
+    const val BCP_47_NB_NO = "nb-NO"
+    const val BCP_47_EN_NO = "en-NO"
+    const val BCP_47_DA_DK = "da-DK"
+    const val BCP_47_EN_DK = "en-DK"
 
     /**
      * Parses the language tag, in BCP-47 format, to [Language]
@@ -66,12 +66,12 @@ enum class Language {
      * @param value: A language tag in BCP-47 format
      */
     fun from(value: String): Language = when (value) {
-      SETTING_SV_SE -> SV_SE
-      SETTING_EN_SE -> EN_SE
-      SETTING_NB_NO -> NB_NO
-      SETTING_EN_NO -> EN_NO
-      SETTING_DA_DK -> DA_DK
-      SETTING_EN_DK -> EN_DK
+      BCP_47_SV_SE -> SV_SE
+      BCP_47_EN_SE -> EN_SE
+      BCP_47_NB_NO -> NB_NO
+      BCP_47_EN_NO -> EN_NO
+      BCP_47_DA_DK -> DA_DK
+      BCP_47_EN_DK -> EN_DK
       else -> EN_SE.also { logcat(LogPriority.WARN) { "Defaulting to EN_SE for language tag: $value" } }
     }
   }

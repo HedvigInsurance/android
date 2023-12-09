@@ -34,11 +34,12 @@ import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.hedvig.normal.ChevronDown
 import com.hedvig.android.core.icons.hedvig.normal.InfoFilled
 import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.core.ui.hedvigDateTimeFormatter
-import com.hedvig.android.core.ui.insurance.toPillow
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.data.contract.android.toPillow
 import com.hedvig.android.feature.changeaddress.data.MoveQuote
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
@@ -83,7 +84,7 @@ internal fun QuoteCard(
 private fun PillAndBasicInfo(quote: MoveQuote, movingDate: LocalDate) {
   Row(verticalAlignment = Alignment.CenterVertically) {
     Image(
-      painter = painterResource(id = quote.productVariant.contractType.toPillow()),
+      painter = painterResource(id = quote.productVariant.contractGroup.toPillow()),
       contentDescription = null,
       modifier = Modifier.size(48.dp),
     )
@@ -115,10 +116,7 @@ private fun PillAndBasicInfo(quote: MoveQuote, movingDate: LocalDate) {
 }
 
 @Composable
-private fun QuoteDetailsAndPrice(
-  isExpanded: Boolean,
-  quote: MoveQuote,
-) {
+private fun QuoteDetailsAndPrice(isExpanded: Boolean, quote: MoveQuote) {
   HorizontalItemsWithMaximumSpaceTaken(
     startSlot = {
       Row(verticalAlignment = Alignment.CenterVertically) {
@@ -136,7 +134,7 @@ private fun QuoteDetailsAndPrice(
           label = "",
         )
         Icon(
-          painter = painterResource(com.hedvig.android.core.design.system.R.drawable.ic_drop_down_indicator),
+          imageVector = Icons.Hedvig.ChevronDown,
           contentDescription = null,
           tint = MaterialTheme.colorScheme.onSurfaceVariant,
           modifier = Modifier
@@ -161,9 +159,7 @@ private fun QuoteDetailsAndPrice(
 }
 
 @Composable
-private fun ExpandedInformation(
-  quote: MoveQuote,
-) {
+private fun ExpandedInformation(quote: MoveQuote) {
   Column {
     quote.displayItems.forEach {
       HorizontalItemsWithMaximumSpaceTaken(

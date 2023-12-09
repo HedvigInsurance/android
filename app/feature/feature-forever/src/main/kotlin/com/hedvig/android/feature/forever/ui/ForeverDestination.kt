@@ -49,7 +49,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
@@ -59,8 +58,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.apollo.toWebLocaleTag
-import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
@@ -70,6 +68,7 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.Copy
+import com.hedvig.android.core.icons.hedvig.normal.Info
 import com.hedvig.android.core.ui.snackbar.HedvigSnackbar
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.forever.ForeverEvent
@@ -158,7 +157,7 @@ private fun ForeverScreen(
                   buildString {
                     append(hedvigBuildConstants.urlBaseWeb)
                     append("/")
-                    append(languageService.getGraphQLLocale().toWebLocaleTag())
+                    append(languageService.getLanguage().webPath())
                     append("/forever/")
                     append(Uri.encode(code))
                   },
@@ -299,7 +298,7 @@ internal fun ForeverContent(
             modifier = Modifier.size(40.dp),
           ) {
             Icon(
-              painter = painterResource(R.drawable.ic_info_toolbar),
+              imageVector = Icons.Hedvig.Info,
               contentDescription = stringResource(R.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
               modifier = Modifier.size(24.dp),
             )
@@ -415,10 +414,7 @@ internal fun ForeverContent(
 }
 
 @Composable
-internal fun ReferralCodeCard(
-  campaignCode: String,
-  modifier: Modifier = Modifier,
-) {
+internal fun ReferralCodeCard(campaignCode: String, modifier: Modifier = Modifier) {
   val context = LocalContext.current
   HedvigBigCard(
     onClick = {

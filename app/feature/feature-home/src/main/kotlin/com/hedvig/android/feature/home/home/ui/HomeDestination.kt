@@ -33,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
@@ -71,20 +72,15 @@ import com.hedvig.android.core.ui.appbar.m3.ToolbarChatIcon
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarLayoutForActions
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.plus
-import com.hedvig.android.feature.home.claimdetail.ui.previewList
 import com.hedvig.android.feature.home.claims.commonclaim.CommonClaimsData
 import com.hedvig.android.feature.home.claims.commonclaim.EmergencyActivity
 import com.hedvig.android.feature.home.claims.commonclaim.EmergencyData
-import com.hedvig.android.feature.home.claimstatus.ClaimStatusCards
-import com.hedvig.android.feature.home.claimstatus.claimprogress.ClaimProgressUiState
-import com.hedvig.android.feature.home.claimstatus.data.ClaimStatusCardUiState
-import com.hedvig.android.feature.home.claimstatus.data.PillUiState
 import com.hedvig.android.feature.home.home.ChatTooltip
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.otherservices.OtherServicesBottomSheet
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminders
-import com.hedvig.android.memberreminders.ui.MemberReminderCards
+import com.hedvig.android.memberreminders.ui.MemberReminderCardsWithoutNotification
 import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.NotificationPermissionState
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
@@ -94,14 +90,18 @@ import com.hedvig.android.pullrefresh.PullRefreshIndicator
 import com.hedvig.android.pullrefresh.PullRefreshState
 import com.hedvig.android.pullrefresh.pullRefresh
 import com.hedvig.android.pullrefresh.rememberPullRefreshState
+import com.hedvig.android.ui.claimstatus.ClaimStatusCards
+import com.hedvig.android.ui.claimstatus.model.ClaimPillType
+import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment
+import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import hedvig.resources.R
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.toJavaLocalDate
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
 
 @Composable
 internal fun HomeDestination(
@@ -115,6 +115,7 @@ internal fun HomeDestination(
   onOpenCommonClaim: (CommonClaimsData) -> Unit,
   openUrl: (String) -> Unit,
   openAppSettings: () -> Unit,
+  navigateToMissingInfo: (String) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val notificationPermissionState = rememberNotificationPermissionState()
@@ -131,6 +132,7 @@ internal fun HomeDestination(
     onOpenCommonClaim = onOpenCommonClaim,
     openUrl = openUrl,
     openAppSettings = openAppSettings,
+    navigateToMissingInfo = navigateToMissingInfo,
   )
 }
 
@@ -148,6 +150,7 @@ private fun HomeScreen(
   onOpenCommonClaim: (CommonClaimsData) -> Unit,
   openUrl: (String) -> Unit,
   openAppSettings: () -> Unit,
+  navigateToMissingInfo: (String) -> Unit,
 ) {
   val context = LocalContext.current
   val systemBarInsetTopDp = with(LocalDensity.current) {
@@ -174,6 +177,7 @@ private fun HomeScreen(
               .windowInsetsPadding(WindowInsets.safeDrawing),
           )
         }
+
         is HomeUiState.Error -> {
           HedvigErrorSection(
             retry = reload,
@@ -182,6 +186,7 @@ private fun HomeScreen(
               .windowInsetsPadding(WindowInsets.safeDrawing),
           )
         }
+
         is HomeUiState.Success -> {
           HomeScreenSuccess(
             uiState = uiState,
@@ -205,6 +210,7 @@ private fun HomeScreen(
             openAppSettings = openAppSettings,
             openChat = onStartChat,
             openUrl = openUrl,
+            navigateToMissingInfo = navigateToMissingInfo,
           )
         }
       }
@@ -225,7 +231,9 @@ private fun HomeScreen(
           tooltipShown = {
             context.setLastEpochDayWhenChatTooltipWasShown(java.time.LocalDate.now().toEpochDay())
           },
-          modifier = Modifier.align(Alignment.End).padding(horizontal = 16.dp),
+          modifier = Modifier
+            .align(Alignment.End)
+            .padding(horizontal = 16.dp),
         )
       }
     }
@@ -266,6 +274,7 @@ private fun HomeScreenSuccess(
   openAppSettings: () -> Unit,
   openChat: () -> Unit,
   openUrl: (String) -> Unit,
+  navigateToMissingInfo: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val coroutineScope = rememberCoroutineScope()
@@ -291,8 +300,8 @@ private fun HomeScreenSuccess(
     )
   }
 
-  var fullScreenSize: IntSize by remember { mutableStateOf(IntSize(0, 0)) }
-  Column(
+  var fullScreenSize: IntSize? by remember { mutableStateOf(null) }
+  Box(
     modifier = modifier
       .fillMaxSize()
       .onSizeChanged { fullScreenSize = it }
@@ -300,82 +309,97 @@ private fun HomeScreenSuccess(
       .verticalScroll(rememberScrollState()),
   ) {
     NotificationPermissionDialog(notificationPermissionState, openAppSettings)
-    HomeLayout(
-      welcomeMessage = {
-        WelcomeMessage(
-          homeText = uiState.homeText,
-          modifier = Modifier
-            .padding(horizontal = 24.dp)
-            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
-            .testTag("welcome_message"),
-        )
-      },
-      claimStatusCards = {
-        if (uiState.claimStatusCardsData != null) {
+    val fullScreenSizeValue = fullScreenSize
+    if (fullScreenSizeValue != null) {
+      HomeLayout(
+        fullScreenSize = fullScreenSizeValue,
+        welcomeMessage = {
+          WelcomeMessage(
+            homeText = uiState.homeText,
+            modifier = Modifier
+              .padding(horizontal = 24.dp)
+              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+              .testTag("welcome_message"),
+          )
+        },
+        claimStatusCards = {
+          if (uiState.claimStatusCardsData != null) {
+            var consumedWindowInsets by remember { mutableStateOf(WindowInsets(0.dp)) }
+            ClaimStatusCards(
+              onClick = onClaimDetailCardClicked,
+              claimStatusCardsUiState = uiState.claimStatusCardsData.claimStatusCardsUiState,
+              contentPadding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
+                .exclude(consumedWindowInsets)
+                .only(WindowInsetsSides.Horizontal)
+                .asPaddingValues(),
+              modifier = Modifier.onConsumedWindowInsetsChanged { consumedWindowInsets = it },
+            )
+          }
+        },
+        veryImportantMessages = {
+          Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(horizontal = 16.dp)
+              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+          ) {
+            for (veryImportantMessage in uiState.veryImportantMessages) {
+              VeryImportantMessageCard(openUrl, veryImportantMessage)
+            }
+          }
+        },
+        memberReminderCards = {
+          val memberReminders =
+            uiState.memberReminders.onlyApplicableReminders(notificationPermissionState.status.isGranted)
           var consumedWindowInsets by remember { mutableStateOf(WindowInsets(0.dp)) }
-          ClaimStatusCards(
-            goToDetailScreen = onClaimDetailCardClicked,
-            claimStatusCardsData = uiState.claimStatusCardsData,
+
+          MemberReminderCardsWithoutNotification(
+            memberReminders = memberReminders,
+            navigateToConnectPayment = navigateToConnectPayment,
+            navigateToAddMissingInfo = navigateToMissingInfo,
+            openUrl = openUrl,
             contentPadding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
               .exclude(consumedWindowInsets)
               .only(WindowInsetsSides.Horizontal)
               .asPaddingValues(),
             modifier = Modifier.onConsumedWindowInsetsChanged { consumedWindowInsets = it },
           )
-        }
-      },
-      veryImportantMessages = {
-        Column(
-          verticalArrangement = Arrangement.spacedBy(8.dp),
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-        ) {
-          for (veryImportantMessage in uiState.veryImportantMessages) {
-            VeryImportantMessageCard(openUrl, veryImportantMessage)
-          }
-        }
-      },
-      memberReminderCards = {
-        val memberReminders =
-          uiState.memberReminders.onlyApplicableReminders(notificationPermissionState.status.isGranted)
-        MemberReminderCards(
-          memberReminders = memberReminders,
-          navigateToConnectPayment = navigateToConnectPayment,
-          openUrl = openUrl,
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-        )
-      },
-      startClaimButton = {
-        HedvigContainedButton(
-          text = stringResource(R.string.home_tab_claim_button_text),
-          onClick = onStartClaimClicked,
-          modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-        )
-      },
-      otherServicesButton = {
-        HedvigTextButton(
-          text = stringResource(R.string.home_tab_other_services),
-          onClick = { showEditYourInfoBottomSheet = true },
-          modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-        )
-      },
-      topSpacer = {
-        Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top)).height(toolbarHeight))
-      },
-      bottomSpacer = {
-        Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)).height(16.dp))
-      },
-      fullScreenSize = fullScreenSize,
-    )
+        },
+        startClaimButton = {
+          HedvigContainedButton(
+            text = stringResource(R.string.home_tab_claim_button_text),
+            onClick = onStartClaimClicked,
+            modifier = Modifier
+              .padding(horizontal = 16.dp)
+              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+          )
+        },
+        otherServicesButton = {
+          HedvigTextButton(
+            text = stringResource(R.string.home_tab_other_services),
+            onClick = { showEditYourInfoBottomSheet = true },
+            modifier = Modifier
+              .padding(horizontal = 16.dp)
+              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+          )
+        },
+        topSpacer = {
+          Spacer(
+            Modifier
+              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top))
+              .height(toolbarHeight),
+          )
+        },
+        bottomSpacer = {
+          Spacer(
+            Modifier
+              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom))
+              .height(16.dp),
+          )
+        },
+      )
+    }
   }
 }
 
@@ -385,69 +409,46 @@ private fun VeryImportantMessageCard(
   veryImportantMessage: HomeData.VeryImportantMessage,
   modifier: Modifier = Modifier,
 ) {
-  VectorInfoCard(
-    text = veryImportantMessage.message,
-    icon = Icons.Hedvig.WarningFilled,
-    iconColor = MaterialTheme.colorScheme.warningElement,
-    colors = CardDefaults.outlinedCardColors(
-      containerColor = MaterialTheme.colorScheme.warningContainer,
-      contentColor = MaterialTheme.colorScheme.onWarningContainer,
-    ),
-    modifier = modifier,
-  ) {
-    HedvigContainedSmallButton(
-      text = stringResource(R.string.important_message_read_more),
-      onClick = { openUrl(veryImportantMessage.link) },
-      colors = ButtonDefaults.buttonColors(
-        containerColor = MaterialTheme.colorScheme.containedButtonContainer,
-        contentColor = MaterialTheme.colorScheme.onContainedButtonContainer,
+  key(veryImportantMessage.id) {
+    VectorInfoCard(
+      text = veryImportantMessage.message,
+      icon = Icons.Hedvig.WarningFilled,
+      iconColor = MaterialTheme.colorScheme.warningElement,
+      colors = CardDefaults.outlinedCardColors(
+        containerColor = MaterialTheme.colorScheme.warningContainer,
+        contentColor = MaterialTheme.colorScheme.onWarningContainer,
       ),
-      textStyle = MaterialTheme.typography.bodyMedium,
-      modifier = Modifier.fillMaxWidth(),
-    )
+      modifier = modifier,
+    ) {
+      HedvigContainedSmallButton(
+        text = stringResource(R.string.important_message_read_more),
+        onClick = { openUrl(veryImportantMessage.link) },
+        colors = ButtonDefaults.buttonColors(
+          containerColor = MaterialTheme.colorScheme.containedButtonContainer,
+          contentColor = MaterialTheme.colorScheme.onContainedButtonContainer,
+        ),
+        textStyle = MaterialTheme.typography.bodyMedium,
+        modifier = Modifier.fillMaxWidth(),
+      )
+    }
   }
 }
 
 @Composable
-private fun WelcomeMessage(
-  homeText: HomeText,
-  modifier: Modifier = Modifier,
-) {
+private fun WelcomeMessage(homeText: HomeText, modifier: Modifier = Modifier) {
   val formatter = remember { DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG) }
-  val firstName = homeText.name
   val headlineText = when (homeText) {
-    is HomeText.Active -> if (firstName != null) {
-      stringResource(R.string.home_tab_welcome_title, firstName)
-    } else {
-      stringResource(R.string.home_tab_welcome_title_without_name)
-    }
-    is HomeText.ActiveInFuture -> if (firstName != null) {
-      stringResource(
-        R.string.home_tab_active_in_future_welcome_title,
-        firstName,
-        formatter.format(homeText.inception.toJavaLocalDate()),
-      )
-    } else {
+    is HomeText.Active -> stringResource(R.string.home_tab_welcome_title_without_name)
+    is HomeText.ActiveInFuture -> {
       stringResource(
         R.string.home_tab_active_in_future_welcome_title_without_name,
         formatter.format(homeText.inception.toJavaLocalDate()),
       )
     }
-    is HomeText.Pending -> if (firstName != null) {
-      stringResource(R.string.home_tab_pending_unknown_title, firstName)
-    } else {
-      stringResource(R.string.home_tab_pending_unknown_title_without_name)
-    }
-    is HomeText.Switching -> if (firstName != null) {
-      stringResource(R.string.home_tab_pending_switchable_welcome_title, firstName)
-    } else {
-      stringResource(R.string.home_tab_pending_switchable_welcome_title_without_name)
-    }
-    is HomeText.Terminated -> if (firstName != null) {
-      stringResource(R.string.home_tab_terminated_welcome_title, firstName)
-    } else {
-      stringResource(R.string.home_tab_terminated_welcome_title_without_name)
-    }
+
+    is HomeText.Pending -> stringResource(R.string.home_tab_pending_unknown_title_without_name)
+    is HomeText.Switching -> stringResource(R.string.home_tab_pending_switchable_welcome_title_without_name)
+    is HomeText.Terminated -> stringResource(R.string.home_tab_terminated_welcome_title_without_name)
   }
   Text(
     text = headlineText,
@@ -464,8 +465,7 @@ private fun Context.setLastEpochDayWhenChatTooltipWasShown(epochDay: Long) =
 private fun Context.getLastEpochDayWhenChatTooltipWasShown() =
   getSharedPreferences().getLong(SHARED_PREFERENCE_LAST_OPEN, 0)
 
-private fun Context.getSharedPreferences() =
-  this.getSharedPreferences(SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE)
+private fun Context.getSharedPreferences() = this.getSharedPreferences(SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE)
 
 @HedvigPreview
 @Composable
@@ -475,21 +475,21 @@ private fun PreviewHomeScreen() {
       HomeScreen(
         uiState = HomeUiState.Success(
           isReloading = false,
-          homeText = HomeText.Active("John"),
+          homeText = HomeText.Active,
           claimStatusCardsData = HomeData.ClaimStatusCardsData(
             nonEmptyListOf(
               ClaimStatusCardUiState(
                 id = "id",
-                pillsUiState = PillUiState.previewList(),
-                title = "Insurance Case",
-                subtitle = "Home Insurance renter",
-                claimProgressItemsUiState = ClaimProgressUiState.previewList(),
+                pillTypes = listOf(ClaimPillType.Open, ClaimPillType.Closed.NotCompensated),
+                claimProgressItemsUiState = listOf(
+                  ClaimProgressSegment(ClaimProgressSegment.SegmentText.Closed, ClaimProgressSegment.SegmentType.PAID),
+                ),
               ),
             ),
           ),
-          veryImportantMessages = persistentListOf(HomeData.VeryImportantMessage("Beware of the earthquake", "")),
+          veryImportantMessages = persistentListOf(HomeData.VeryImportantMessage("id", "Beware of the earthquake", "")),
           memberReminders = MemberReminders(
-            connectPayment = MemberReminder.ConnectPayment,
+            connectPayment = MemberReminder.ConnectPayment(),
           ),
           allowAddressChange = true,
           allowGeneratingTravelCertificate = true,
@@ -508,6 +508,7 @@ private fun PreviewHomeScreen() {
         onOpenCommonClaim = {},
         openUrl = {},
         openAppSettings = {},
+        navigateToMissingInfo = {},
       )
     }
   }

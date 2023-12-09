@@ -20,6 +20,7 @@ class ImmutableListSerializer<T>(private val dataSerializer: KSerializer<T>) : K
   }
 
   override val descriptor: SerialDescriptor = PersistentListDescriptor()
+
   override fun serialize(encoder: Encoder, value: ImmutableList<T>) {
     return ListSerializer(dataSerializer).serialize(encoder, value.toList())
   }

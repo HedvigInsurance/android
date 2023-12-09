@@ -8,13 +8,13 @@ import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
-import giraffe.MemberIdQuery
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
-import kotlin.time.Duration.Companion.seconds
+import octopus.MemberIdQuery
 
 internal class AboutAppViewModel(
   hAnalytics: HAnalytics,
@@ -30,7 +30,7 @@ internal class AboutAppViewModel(
       .safeExecute()
       .toEither(::ErrorMessage)
       .getOrNull()
-      ?.member
+      ?.currentMember
       ?.id
     emit(AboutAppUiState(memberId))
   }.stateIn(

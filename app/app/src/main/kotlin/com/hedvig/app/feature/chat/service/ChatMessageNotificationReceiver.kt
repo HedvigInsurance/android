@@ -13,7 +13,6 @@ import com.hedvig.app.feature.chat.service.ChatNotificationSender.Companion.CHAT
 import java.util.concurrent.TimeUnit
 
 class ChatMessageNotificationReceiver : BroadcastReceiver() {
-
   override fun onReceive(context: Context, intent: Intent) {
     val replyText: CharSequence = RemoteInput.getResultsFromIntent(intent)?.getCharSequence(CHAT_REPLY_KEY) ?: return
     val notificationId: Int = intent.getIntExtra(CHAT_REPLY_DATA_NOTIFICATION_ID, 0)

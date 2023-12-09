@@ -82,7 +82,8 @@ internal fun FakeWaveAudioPlayerContent(
 
 @Composable
 private fun AudioPlayerActionOrLoadingIcon(
-  audioPlayerState: AudioPlayerState, // AudioPlayerState.Preparing | AudioPlayerState.Ready
+  // AudioPlayerState.Preparing | AudioPlayerState.Ready
+  audioPlayerState: AudioPlayerState,
   startPlaying: () -> Unit,
   pause: () -> Unit,
   modifier: Modifier = Modifier,

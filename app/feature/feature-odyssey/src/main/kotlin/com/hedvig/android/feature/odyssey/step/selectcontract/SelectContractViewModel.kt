@@ -16,7 +16,6 @@ internal class SelectContractViewModel(
   private val selectContract: ClaimFlowDestination.SelectContract,
   private val claimFlowRepository: ClaimFlowRepository,
 ) : ViewModel() {
-
   private val _uiState = MutableStateFlow(SelectContractUiState.fromInitialSelection(selectContract.options))
   val uiState: StateFlow<SelectContractUiState> = _uiState.asStateFlow()
 
@@ -68,9 +67,7 @@ internal data class SelectContractUiState(
   val canSubmit: Boolean = !isLoading && !error && nextStep == null
 
   companion object {
-    fun fromInitialSelection(
-      locationOptions: List<LocalContractContractOption>,
-    ): SelectContractUiState {
+    fun fromInitialSelection(locationOptions: List<LocalContractContractOption>): SelectContractUiState {
       return SelectContractUiState(
         contractOptions = locationOptions,
         selectedContract = locationOptions.first(),

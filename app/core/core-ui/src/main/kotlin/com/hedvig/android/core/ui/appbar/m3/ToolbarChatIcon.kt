@@ -20,10 +20,7 @@ import com.hedvig.android.core.icons.hedvig.colored.hedvig.Chat
 import hedvig.resources.R
 
 @Composable
-fun ToolbarChatIcon(
-  onClick: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
+fun ToolbarChatIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
   Image(
     imageVector = Icons.Hedvig.Chat,
     contentDescription = stringResource(R.string.DASHBOARD_OPEN_CHAT),

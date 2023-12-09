@@ -7,12 +7,12 @@ plugins {
 }
 
 dependencies {
+  implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.compose.material3.windowSizeClass)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.androidx.navigation.common)
   implementation(libs.androidx.navigation.compose)
-  implementation(libs.androidx.other.activityCompose)
   implementation(libs.arrow.core)
   implementation(libs.coil.coil)
   implementation(libs.coil.compose)
@@ -32,6 +32,10 @@ dependencies {
   implementation(projects.coreResources)
   implementation(projects.coreUi)
   implementation(projects.coreUiData)
+  implementation(projects.dataContractAndroid)
+  implementation(projects.dataContractPublic)
+  implementation(projects.dataProductVariantAndroid)
+  implementation(projects.dataProductVariantPublic)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
 }

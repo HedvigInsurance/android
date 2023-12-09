@@ -9,12 +9,12 @@ import com.hedvig.android.notification.badge.data.crosssell.card.CrossSellCardNo
 internal class InsuranceViewModel(
   getInsuranceContractsUseCaseProvider: Provider<GetInsuranceContractsUseCase>,
   getCrossSellsUseCaseProvider: Provider<GetCrossSellsUseCase>,
-  crossSellCardNotificationBadgeService: CrossSellCardNotificationBadgeService,
+  crossSellCardNotificationBadgeServiceProvider: Provider<CrossSellCardNotificationBadgeService>,
 ) : MoleculeViewModel<InsuranceScreenEvent, InsuranceUiState>(
-  initialState = InsuranceUiState.initialState,
-  presenter = InsurancePresenter(
-    getInsuranceContractsUseCaseProvider = getInsuranceContractsUseCaseProvider,
-    getCrossSellsUseCaseProvider = getCrossSellsUseCaseProvider,
-    crossSellCardNotificationBadgeService = crossSellCardNotificationBadgeService,
-  ),
-)
+    initialState = InsuranceUiState.initialState,
+    presenter = InsurancePresenter(
+      getInsuranceContractsUseCaseProvider = getInsuranceContractsUseCaseProvider,
+      getCrossSellsUseCaseProvider = getCrossSellsUseCaseProvider,
+      crossSellCardNotificationBadgeServiceProvider = crossSellCardNotificationBadgeServiceProvider,
+    ),
+  )

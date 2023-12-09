@@ -21,7 +21,6 @@ import dev.chrisbanes.insetter.applyInsetter
 import org.koin.android.ext.android.inject
 
 class EmergencyActivity : AppCompatActivity(R.layout.activity_emergency) {
-
   private val hedvigDeepLinkContainer: HedvigDeepLinkContainer by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,10 +73,9 @@ class EmergencyActivity : AppCompatActivity(R.layout.activity_emergency) {
   companion object {
     private const val EMERGENCY_DATA = "emergency_data"
 
-    fun newInstance(context: Context, data: EmergencyData) =
-      Intent(context, EmergencyActivity::class.java).apply {
-        putExtra(EMERGENCY_DATA, data)
-      }
+    fun newInstance(context: Context, data: EmergencyData) = Intent(context, EmergencyActivity::class.java).apply {
+      putExtra(EMERGENCY_DATA, data)
+    }
   }
 }
 

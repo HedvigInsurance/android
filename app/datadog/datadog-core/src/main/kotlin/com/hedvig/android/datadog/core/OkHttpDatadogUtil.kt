@@ -4,16 +4,11 @@ import com.datadog.android.core.sampling.RateBasedSampler
 import com.datadog.android.okhttp.DatadogEventListener
 import com.datadog.android.okhttp.DatadogInterceptor
 import com.datadog.android.okhttp.trace.TracingInterceptor
-import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import okhttp3.OkHttpClient
 
-fun OkHttpClient.Builder.addDatadogConfiguration(
-  hedvigBuildConstants: HedvigBuildConstants,
-): OkHttpClient.Builder {
-  val tracedHosts = listOf(
-    hedvigBuildConstants.urlGiraffeGraphql.removePrefix("https://"),
-    hedvigBuildConstants.urlGraphqlOctopus.removePrefix("https://"),
-  )
+fun OkHttpClient.Builder.addDatadogConfiguration(hedvigBuildConstants: HedvigBuildConstants): OkHttpClient.Builder {
+  val tracedHosts = listOf(hedvigBuildConstants.urlGraphqlOctopus.removePrefix("https://"))
   return this
     .eventListenerFactory(DatadogEventListener.Factory())
     .addInterceptor(

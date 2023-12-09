@@ -11,14 +11,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.navigation.core.TopLevelGraph
+import com.hedvig.android.navigation.core.selectedIcon
+import com.hedvig.android.navigation.core.titleTextId
+import com.hedvig.android.navigation.core.unselectedIcon
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
@@ -75,24 +76,20 @@ private fun HedvigBottomBar(
         onClick = { onNavigateToDestination(destination) },
         icon = {
           Icon(
-            painter = painterResource(
-              if (selected) {
-                destination.selectedIcon
-              } else {
-                destination.icon
-              },
-            ),
+            imageVector = if (selected) {
+              destination.selectedIcon()
+            } else {
+              destination.unselectedIcon()
+            },
             contentDescription = null,
-            // Color is defined in the drawables themselves.
-            tint = Color.Unspecified,
             modifier = if (hasNotification) Modifier.notificationDot() else Modifier,
           )
         },
-        label = { Text(stringResource(destination.titleTextId)) },
+        label = { Text(stringResource(destination.titleTextId())) },
         colors = NavigationBarItemDefaults.colors(
           indicatorColor = MaterialTheme.colorScheme.surface,
           selectedIconColor = MaterialTheme.colorScheme.onSurface,
-          unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+          unselectedIconColor = MaterialTheme.colorScheme.onSurface,
         ),
         modifier = Modifier.testTag(destination.toName()),
       )

@@ -6,47 +6,50 @@ import kotlinx.serialization.Serializable
 sealed interface AppDestination : Destination {
   sealed interface TopLevelDestination : AppDestination {
     @Serializable
-    object Home : TopLevelDestination
+    data object Home : TopLevelDestination
 
     @Serializable
-    object Insurance : TopLevelDestination
+    data object Insurance : TopLevelDestination
 
     @Serializable
-    object Profile : TopLevelDestination
+    data object Profile : TopLevelDestination
 
     @Serializable
-    object Forever : TopLevelDestination
+    data object Forever : TopLevelDestination
   }
 
   @Serializable
-  object Login : AppDestination
+  data object Login : AppDestination
 
   @Serializable
-  object Chat : AppDestination
+  data object Chat : AppDestination
 
   @Serializable
-  object ChangeAddress : AppDestination
+  data object ChangeAddress : AppDestination
 
   @Serializable
-  object GenerateTravelCertificate : AppDestination
+  data object EditCoInsured : AppDestination
 
   @Serializable
-  object Eurobonus : AppDestination
+  data object GenerateTravelCertificate : AppDestination
 
   @Serializable
-  object ClaimsFlow : AppDestination
+  data object Eurobonus : AppDestination
 
   @Serializable
-  object MyInfo : AppDestination
+  data object ClaimsFlow : AppDestination
 
   @Serializable
-  object AboutApp : AppDestination
+  data object MyInfo : AppDestination
 
   @Serializable
-  object Licenses : AppDestination
+  data object AboutApp : AppDestination
 
   @Serializable
-  object Settings : AppDestination
+  data object Licenses : AppDestination
+
+  @Serializable
+  data object Settings : AppDestination
 
   @Serializable
   data class TerminateInsurance(
@@ -55,10 +58,13 @@ sealed interface AppDestination : Destination {
   ) : AppDestination
 
   @Serializable
-  object PaymentInfo : AppDestination
+  data object PaymentInfo : AppDestination
 
+  // Handles connecting payment with Trustly. Auto-navigates to Adyen for NO/DK
   @Serializable
-  object PaymentHistory : AppDestination
-//  @Serializable
-//  object LegacyClaimsTriaging : AppDestination
+  data object ConnectPayment : AppDestination
+
+  // To be deprecated as soon as Adyen support is dropped
+  @Serializable
+  data object ConnectPaymentAdyen : AppDestination
 }

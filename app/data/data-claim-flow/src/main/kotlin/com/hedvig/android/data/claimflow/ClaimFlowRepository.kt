@@ -9,13 +9,14 @@ import com.apollographql.apollo3.api.Optional
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.retrofit.toErrorMessage
 import com.hedvig.android.data.claimflow.model.AudioUrl
 import com.hedvig.android.data.claimflow.model.FlowId
-import com.hedvig.android.data.claimflow.retrofit.toErrorMessage
 import com.hedvig.android.data.claimtriaging.EntryPointId
 import com.hedvig.android.data.claimtriaging.EntryPointOptionId
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import java.io.File
 import kotlinx.datetime.LocalDate
 import octopus.FlowClaimAudioRecordingNextMutation
 import octopus.FlowClaimConfirmEmergencyMutation
@@ -35,7 +36,6 @@ import octopus.type.FlowClaimSummaryInput
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import java.io.File
 
 interface ClaimFlowRepository {
   suspend fun startClaimFlow(
@@ -49,16 +49,20 @@ interface ClaimFlowRepository {
    * Used when we already got an audio Url ready, and we haven't made a new audio recording
    */
   suspend fun submitAudioUrl(flowId: FlowId, audioUrl: AudioUrl): Either<ErrorMessage, ClaimFlowStep>
+
   suspend fun submitDateOfOccurrence(dateOfOccurrence: LocalDate?): Either<ErrorMessage, ClaimFlowStep>
+
   suspend fun submitLocation(location: String?): Either<ErrorMessage, ClaimFlowStep>
 
   suspend fun submitContract(contract: String?): Either<ErrorMessage, ClaimFlowStep>
+
   suspend fun submitDateOfOccurrenceAndLocation(
     dateOfOccurrence: LocalDate?,
     location: String?,
   ): Either<ErrorMessage, ClaimFlowStep>
 
   suspend fun submitPhoneNumber(phoneNumber: String): Either<ErrorMessage, ClaimFlowStep>
+
   suspend fun submitSingleItem(
     itemBrandInput: FlowClaimItemBrandInput?,
     itemModelInput: FlowClaimItemModelInput?,
@@ -118,9 +122,7 @@ internal class ClaimFlowRepositoryImpl(
     }
   }
 
-  override suspend fun submitDateOfOccurrence(
-    dateOfOccurrence: LocalDate?,
-  ): Either<ErrorMessage, ClaimFlowStep> {
+  override suspend fun submitDateOfOccurrence(dateOfOccurrence: LocalDate?): Either<ErrorMessage, ClaimFlowStep> {
     return either {
       val result = apolloClient
         .mutation(FlowClaimDateOfOccurrenceNextMutation(dateOfOccurrence, claimFlowContextStorage.getContext()))
@@ -133,9 +135,7 @@ internal class ClaimFlowRepositoryImpl(
     }
   }
 
-  override suspend fun submitLocation(
-    location: String?,
-  ): Either<ErrorMessage, ClaimFlowStep> {
+  override suspend fun submitLocation(location: String?): Either<ErrorMessage, ClaimFlowStep> {
     return either {
       val result = apolloClient
         .mutation(FlowClaimLocationNextMutation(location, claimFlowContextStorage.getContext()))
@@ -148,9 +148,7 @@ internal class ClaimFlowRepositoryImpl(
     }
   }
 
-  override suspend fun submitContract(
-    contract: String?,
-  ): Either<ErrorMessage, ClaimFlowStep> {
+  override suspend fun submitContract(contract: String?): Either<ErrorMessage, ClaimFlowStep> {
     return either {
       val result = apolloClient
         .mutation(FlowClaimContractNextMutation(contract, claimFlowContextStorage.getContext()))
@@ -185,9 +183,7 @@ internal class ClaimFlowRepositoryImpl(
     }
   }
 
-  override suspend fun submitPhoneNumber(
-    phoneNumber: String,
-  ): Either<ErrorMessage, ClaimFlowStep> {
+  override suspend fun submitPhoneNumber(phoneNumber: String): Either<ErrorMessage, ClaimFlowStep> {
     return either {
       val result = apolloClient
         .mutation(FlowClaimPhoneNumberNextMutation(phoneNumber, claimFlowContextStorage.getContext()))
@@ -212,7 +208,8 @@ internal class ClaimFlowRepositoryImpl(
         .mutation(
           FlowClaimSingleItemNextMutation(
             FlowClaimSingleItemInput(
-              customName = Optional.absent(), // Will be used when entering a free form text is supported
+              // Will be used when entering a free form text is supported
+              customName = Optional.absent(),
               itemBrandInput = Optional.presentIfNotNull(itemBrandInput),
               itemModelInput = Optional.presentIfNotNull(itemModelInput),
               itemProblemIds = Optional.presentIfNotNull(itemProblemIds),
@@ -231,9 +228,7 @@ internal class ClaimFlowRepositoryImpl(
     }
   }
 
-  override suspend fun submitSingleItemCheckout(
-    amount: Double,
-  ): Either<ErrorMessage, Unit> {
+  override suspend fun submitSingleItemCheckout(amount: Double): Either<ErrorMessage, Unit> {
     return either {
       val result = apolloClient
         .mutation(
@@ -289,7 +284,10 @@ internal class ClaimFlowRepositoryImpl(
     return either {
       val result = apolloClient
         .mutation(
-          FlowClaimConfirmEmergencyMutation(isUrgentEmergency = isUrgentEmergency, claimFlowContextStorage.getContext()),
+          FlowClaimConfirmEmergencyMutation(
+            isUrgentEmergency = isUrgentEmergency,
+            claimFlowContextStorage.getContext(),
+          ),
         )
         .safeExecute()
         .toEither(::ErrorMessage)

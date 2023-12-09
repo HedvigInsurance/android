@@ -293,54 +293,53 @@ object HedvigTextFieldDefaults {
     disabledSuffixColor: Color = HedvigTextFieldTokens.InputSuffixColor.toColor()
       .copy(alpha = HedvigTextFieldTokens.DisabledInputOpacity),
     errorSuffixColor: Color = HedvigTextFieldTokens.InputSuffixColor.toColor(),
-  ): HedvigTextFieldColors =
-    HedvigTextFieldColors(
-      focusedTextColor = focusedTextColor,
-      unfocusedTextColor = unfocusedTextColor,
-      disabledTextColor = disabledTextColor,
-      errorTextColor = errorTextColor,
-      focusedContainerColor = focusedContainerColor,
-      unfocusedContainerColor = unfocusedContainerColor,
-      disabledContainerColor = disabledContainerColor,
-      errorContainerColor = errorContainerColor,
-      typingHighlightColor = typingHighlightColor,
-      errorTypingHighlightColor = errorTypingHighlightColor,
-      cursorColor = cursorColor,
-      errorCursorColor = errorCursorColor,
-      textSelectionColors = selectionColors,
-      focusedIndicatorColor = focusedIndicatorColor,
-      unfocusedIndicatorColor = unfocusedIndicatorColor,
-      disabledIndicatorColor = disabledIndicatorColor,
-      errorIndicatorColor = errorIndicatorColor,
-      focusedLeadingIconColor = focusedLeadingIconColor,
-      unfocusedLeadingIconColor = unfocusedLeadingIconColor,
-      disabledLeadingIconColor = disabledLeadingIconColor,
-      errorLeadingIconColor = errorLeadingIconColor,
-      focusedTrailingIconColor = focusedTrailingIconColor,
-      unfocusedTrailingIconColor = unfocusedTrailingIconColor,
-      disabledTrailingIconColor = disabledTrailingIconColor,
-      errorTrailingIconColor = errorTrailingIconColor,
-      focusedLabelColor = focusedLabelColor,
-      unfocusedLabelColor = unfocusedLabelColor,
-      disabledLabelColor = disabledLabelColor,
-      errorLabelColor = errorLabelColor,
-      focusedPlaceholderColor = focusedPlaceholderColor,
-      unfocusedPlaceholderColor = unfocusedPlaceholderColor,
-      disabledPlaceholderColor = disabledPlaceholderColor,
-      errorPlaceholderColor = errorPlaceholderColor,
-      focusedSupportingTextColor = focusedSupportingTextColor,
-      unfocusedSupportingTextColor = unfocusedSupportingTextColor,
-      disabledSupportingTextColor = disabledSupportingTextColor,
-      errorSupportingTextColor = errorSupportingTextColor,
-      focusedPrefixColor = focusedPrefixColor,
-      unfocusedPrefixColor = unfocusedPrefixColor,
-      disabledPrefixColor = disabledPrefixColor,
-      errorPrefixColor = errorPrefixColor,
-      focusedSuffixColor = focusedSuffixColor,
-      unfocusedSuffixColor = unfocusedSuffixColor,
-      disabledSuffixColor = disabledSuffixColor,
-      errorSuffixColor = errorSuffixColor,
-    )
+  ): HedvigTextFieldColors = HedvigTextFieldColors(
+    focusedTextColor = focusedTextColor,
+    unfocusedTextColor = unfocusedTextColor,
+    disabledTextColor = disabledTextColor,
+    errorTextColor = errorTextColor,
+    focusedContainerColor = focusedContainerColor,
+    unfocusedContainerColor = unfocusedContainerColor,
+    disabledContainerColor = disabledContainerColor,
+    errorContainerColor = errorContainerColor,
+    typingHighlightColor = typingHighlightColor,
+    errorTypingHighlightColor = errorTypingHighlightColor,
+    cursorColor = cursorColor,
+    errorCursorColor = errorCursorColor,
+    textSelectionColors = selectionColors,
+    focusedIndicatorColor = focusedIndicatorColor,
+    unfocusedIndicatorColor = unfocusedIndicatorColor,
+    disabledIndicatorColor = disabledIndicatorColor,
+    errorIndicatorColor = errorIndicatorColor,
+    focusedLeadingIconColor = focusedLeadingIconColor,
+    unfocusedLeadingIconColor = unfocusedLeadingIconColor,
+    disabledLeadingIconColor = disabledLeadingIconColor,
+    errorLeadingIconColor = errorLeadingIconColor,
+    focusedTrailingIconColor = focusedTrailingIconColor,
+    unfocusedTrailingIconColor = unfocusedTrailingIconColor,
+    disabledTrailingIconColor = disabledTrailingIconColor,
+    errorTrailingIconColor = errorTrailingIconColor,
+    focusedLabelColor = focusedLabelColor,
+    unfocusedLabelColor = unfocusedLabelColor,
+    disabledLabelColor = disabledLabelColor,
+    errorLabelColor = errorLabelColor,
+    focusedPlaceholderColor = focusedPlaceholderColor,
+    unfocusedPlaceholderColor = unfocusedPlaceholderColor,
+    disabledPlaceholderColor = disabledPlaceholderColor,
+    errorPlaceholderColor = errorPlaceholderColor,
+    focusedSupportingTextColor = focusedSupportingTextColor,
+    unfocusedSupportingTextColor = unfocusedSupportingTextColor,
+    disabledSupportingTextColor = disabledSupportingTextColor,
+    errorSupportingTextColor = errorSupportingTextColor,
+    focusedPrefixColor = focusedPrefixColor,
+    unfocusedPrefixColor = unfocusedPrefixColor,
+    disabledPrefixColor = disabledPrefixColor,
+    errorPrefixColor = errorPrefixColor,
+    focusedSuffixColor = focusedSuffixColor,
+    unfocusedSuffixColor = unfocusedSuffixColor,
+    disabledSuffixColor = disabledSuffixColor,
+    errorSuffixColor = errorSuffixColor,
+  )
 
   /**
    * A decoration box which helps creating custom text fields based on
@@ -412,7 +411,8 @@ object HedvigTextFieldDefaults {
     singleLine: Boolean,
     visualTransformation: VisualTransformation,
     interactionSource: InteractionSource,
-    withNewDesign: Boolean = false, // Adapts the TextField to have the big card size and the bigger text size.
+    // Adapts the TextField to have the big card size and the bigger text size.
+    withNewDesign: Boolean = false,
     isError: Boolean = false,
     label: @Composable (() -> Unit)? = null,
     placeholder: @Composable (() -> Unit)? = null,
@@ -473,8 +473,10 @@ class HedvigTextFieldColors internal constructor(
   private val unfocusedContainerColor: Color,
   private val disabledContainerColor: Color,
   private val errorContainerColor: Color,
-  private val typingHighlightColor: Color, // The pulsating color that the container will temporarily have on new text.
-  private val errorTypingHighlightColor: Color, // The pulsating color when there's an error too
+  // The pulsating color that the container will temporarily have on new text.
+  private val typingHighlightColor: Color,
+  // The pulsating color when there's an error too
+  private val errorTypingHighlightColor: Color,
   private val cursorColor: Color,
   private val errorCursorColor: Color,
   private val textSelectionColors: TextSelectionColors,
@@ -572,11 +574,7 @@ class HedvigTextFieldColors internal constructor(
    * the text field is in focus or not
    */
   @Composable
-  internal fun indicatorColor(
-    enabled: Boolean,
-    isError: Boolean,
-    interactionSource: InteractionSource,
-  ): State<Color> {
+  internal fun indicatorColor(enabled: Boolean, isError: Boolean, interactionSource: InteractionSource): State<Color> {
     val focused by interactionSource.collectIsFocusedAsState()
 
     val targetValue = when {
@@ -671,11 +669,7 @@ class HedvigTextFieldColors internal constructor(
    * the text field is in focus or not
    */
   @Composable
-  internal fun labelColor(
-    enabled: Boolean,
-    isError: Boolean,
-    interactionSource: InteractionSource,
-  ): State<Color> {
+  internal fun labelColor(enabled: Boolean, isError: Boolean, interactionSource: InteractionSource): State<Color> {
     val focused by interactionSource.collectIsFocusedAsState()
 
     val targetValue = when {
@@ -696,11 +690,7 @@ class HedvigTextFieldColors internal constructor(
    * the text field is in focus or not
    */
   @Composable
-  internal fun textColor(
-    enabled: Boolean,
-    isError: Boolean,
-    interactionSource: InteractionSource,
-  ): State<Color> {
+  internal fun textColor(enabled: Boolean, isError: Boolean, interactionSource: InteractionSource): State<Color> {
     val focused by interactionSource.collectIsFocusedAsState()
 
     val targetValue = when {
@@ -739,11 +729,7 @@ class HedvigTextFieldColors internal constructor(
    * the text field is in focus or not
    */
   @Composable
-  internal fun prefixColor(
-    enabled: Boolean,
-    isError: Boolean,
-    interactionSource: InteractionSource,
-  ): State<Color> {
+  internal fun prefixColor(enabled: Boolean, isError: Boolean, interactionSource: InteractionSource): State<Color> {
     val focused by interactionSource.collectIsFocusedAsState()
 
     val targetValue = when {
@@ -764,11 +750,7 @@ class HedvigTextFieldColors internal constructor(
    * the text field is in focus or not
    */
   @Composable
-  internal fun suffixColor(
-    enabled: Boolean,
-    isError: Boolean,
-    interactionSource: InteractionSource,
-  ): State<Color> {
+  internal fun suffixColor(enabled: Boolean, isError: Boolean, interactionSource: InteractionSource): State<Color> {
     val focused by interactionSource.collectIsFocusedAsState()
 
     val targetValue = when {

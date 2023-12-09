@@ -7,7 +7,6 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.travelcertificate.CoInsured
-import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -42,7 +41,11 @@ internal class CreateTravelCertificateUseCase(
         .mutation(query)
         .safeExecute()
         .toEither(::ErrorMessage)
-        .onLeft { logcat(LogPriority.ERROR, it.throwable) { it.message ?: "Could not create travel certificate" } }
+        .onLeft {
+          logcat(throwable = it.throwable) {
+            "CreateTravelCertificateUseCase: ${it.message ?: "Could not create travel certificate"}"
+          }
+        }
         .bind()
         .travelCertificateCreate
         .signedUrl

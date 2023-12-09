@@ -3,16 +3,13 @@ package com.hedvig.app
 import android.app.Application
 import android.content.Context
 import androidx.work.WorkerParameters
-import com.hedvig.android.core.common.android.QuoteCartId
-import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionParams
-import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetData
+import java.net.URI
 import kotlinx.coroutines.CoroutineScope
 import org.junit.Ignore
 import org.junit.Test
 import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.test.KoinTest
 import org.koin.test.verify.verify
-import java.net.URI
 
 class KoinCheckModulesTest : KoinTest {
   @OptIn(KoinExperimentalAPI::class)
@@ -30,9 +27,6 @@ class KoinCheckModulesTest : KoinTest {
         Context::class,
         WorkerParameters::class,
         // Provided classes on a per-call-site basis, using parametersOf()
-        ChangeDateBottomSheetData::class,
-        QuoteCartId::class,
-        NumberActionParams::class,
 //        com.hedvig.android.odyssey.model.FlowId::class,
 //        com.hedvig.android.odyssey.navigation.AudioContent::class,
         // Types that don't exist because they're set as default parameters anwyay

@@ -16,7 +16,7 @@ import com.datadog.android.rum.tracking.ActivityViewTrackingStrategy
 import com.datadog.android.trace.AndroidTracer
 import com.datadog.android.trace.Trace
 import com.datadog.android.trace.TraceConfiguration
-import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.datastore.DeviceIdDataStore
 import com.hedvig.android.datadog.core.attributestracking.DatadogAttributesManager
@@ -31,7 +31,6 @@ import timber.log.Timber
 
 // Used in /app/src/main/AndroidManifest.xml
 abstract class DatadogInitializer : Initializer<Unit>, KoinComponent {
-
   private val hedvigBuildConstants by inject<HedvigBuildConstants>()
   private val deviceIdDataStore by inject<DeviceIdDataStore>()
   private val applicationScope by inject<ApplicationScope>()
@@ -50,12 +49,7 @@ abstract class DatadogInitializer : Initializer<Unit>, KoinComponent {
         service = "android",
       )
       .useSite(DatadogSite.EU1)
-      .setFirstPartyHosts(
-        listOf(
-          hedvigBuildConstants.urlGiraffeGraphql.removePrefix("https://"),
-          hedvigBuildConstants.urlGraphqlOctopus.removePrefix("https://"),
-        ),
-      )
+      .setFirstPartyHosts(listOf(hedvigBuildConstants.urlGraphqlOctopus.removePrefix("https://")))
       .build()
     val sdkCore = Datadog.initialize(context, configuration, TrackingConsent.GRANTED)
     if (sdkCore == null) {

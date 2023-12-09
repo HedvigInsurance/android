@@ -38,10 +38,10 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.feature.home.claims.commonclaim.CommonClaimsData
 import com.hedvig.android.feature.home.claims.commonclaim.EmergencyData
 import com.hedvig.android.feature.home.home.ui.HomeUiState
-import giraffe.type.HedvigColor
 import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import octopus.type.HedvigColor
 
 @Composable
 internal fun OtherServicesBottomSheet(

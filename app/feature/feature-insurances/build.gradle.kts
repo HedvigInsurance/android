@@ -2,6 +2,7 @@ plugins {
   id("hedvig.android.ktlint")
   id("hedvig.android.library")
   id("hedvig.android.library.compose")
+  alias(libs.plugins.apollo)
   alias(libs.plugins.serialization)
   alias(libs.plugins.squareSortDependencies)
 }
@@ -11,6 +12,8 @@ android {
 }
 
 dependencies {
+  apolloMetadata(projects.apolloOctopusPublic)
+
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.apollo.normalizedCache)
@@ -26,7 +29,6 @@ dependencies {
   implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.apolloCore)
-  implementation(projects.apolloGiraffePublic)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
@@ -35,6 +37,10 @@ dependencies {
   implementation(projects.coreIcons)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
+  implementation(projects.dataContractAndroid)
+  implementation(projects.dataContractPublic)
+  implementation(projects.dataProductVariantAndroid)
+  implementation(projects.dataProductVariantPublic)
   implementation(projects.hanalyticsCore)
   implementation(projects.hanalyticsFeatureFlagsPublic)
   implementation(projects.languageCore)
@@ -50,7 +56,6 @@ dependencies {
   testImplementation(libs.junit)
   testImplementation(libs.testParameterInjector)
   testImplementation(libs.turbine)
-  testImplementation(projects.apolloGiraffeTest)
   testImplementation(projects.apolloTest)
   testImplementation(projects.coreCommonTest)
   testImplementation(projects.hanalyticsFeatureFlagsTest)
@@ -58,4 +63,10 @@ dependencies {
   testImplementation(projects.loggingTest)
   testImplementation(projects.moleculeTest)
   testImplementation(projects.notificationBadgeDataFake)
+}
+
+apollo {
+  service("octopus") {
+    packageName.set("octopus")
+  }
 }

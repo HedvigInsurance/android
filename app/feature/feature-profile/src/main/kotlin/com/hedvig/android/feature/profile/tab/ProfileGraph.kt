@@ -1,8 +1,9 @@
 package com.hedvig.android.feature.profile.tab
 
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
-import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.feature.profile.aboutapp.AboutAppDestination
 import com.hedvig.android.feature.profile.aboutapp.AboutAppViewModel
@@ -11,13 +12,8 @@ import com.hedvig.android.feature.profile.eurobonus.EurobonusDestination
 import com.hedvig.android.feature.profile.eurobonus.EurobonusViewModel
 import com.hedvig.android.feature.profile.myinfo.MyInfoDestination
 import com.hedvig.android.feature.profile.myinfo.MyInfoViewModel
-import com.hedvig.android.feature.profile.payment.PaymentDestination
-import com.hedvig.android.feature.profile.payment.PaymentViewModel
-import com.hedvig.android.feature.profile.payment.history.PaymentHistoryDestination
-import com.hedvig.android.feature.profile.payment.history.PaymentHistoryViewModel
 import com.hedvig.android.feature.profile.settings.SettingsDestination
 import com.hedvig.android.feature.profile.settings.SettingsViewModel
-import com.hedvig.android.market.Market
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
@@ -32,11 +28,11 @@ fun NavGraphBuilder.profileGraph(
   navigator: Navigator,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   hedvigBuildConstants: HedvigBuildConstants,
-  navigateToPayoutScreen: () -> Unit,
-  navigateToPayinScreen: () -> Unit,
+  navigateToPaymentInfo: (NavBackStackEntry) -> Unit,
+  navigateToConnectPayment: () -> Unit,
+  navigateToAddMissingInfo: (navBackStackEntry: NavBackStackEntry, contractId: String) -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
-  market: Market,
 ) {
   navigation<TopLevelGraph.PROFILE>(
     startDestination = createRoutePattern<AppDestination.TopLevelDestination.Profile>(),
@@ -63,9 +59,12 @@ fun NavGraphBuilder.profileGraph(
           with(navigator) { backStackEntry.navigate(AppDestination.Settings) }
         },
         navigateToPayment = {
-          with(navigator) { backStackEntry.navigate(AppDestination.PaymentInfo) }
+          navigateToPaymentInfo(backStackEntry)
         },
-        navigateToConnectPayment = navigateToPayinScreen,
+        navigateToConnectPayment = navigateToConnectPayment,
+        navigateToAddMissingInfo = { contractId ->
+          navigateToAddMissingInfo(backStackEntry, contractId)
+        },
         openAppSettings = openAppSettings,
         openUrl = openUrl,
         viewModel = viewModel,
@@ -111,26 +110,6 @@ fun NavGraphBuilder.profileGraph(
         viewModel = viewModel,
         openAppSettings = openAppSettings,
         navigateUp = navigator::navigateUp,
-      )
-    }
-    composable<AppDestination.PaymentInfo> { backStackEntry ->
-      val viewModel: PaymentViewModel = koinViewModel()
-      PaymentDestination(
-        viewModel = viewModel,
-        onBackPressed = navigator::navigateUp,
-        onPaymentHistoryClicked = {
-          with(navigator) { backStackEntry.navigate(AppDestination.PaymentHistory) }
-        },
-        onConnectPayoutMethod = navigateToPayoutScreen,
-        onChangeBankAccount = navigateToPayinScreen,
-        market = market,
-      )
-    }
-    composable<AppDestination.PaymentHistory> {
-      val viewModel: PaymentHistoryViewModel = koinViewModel()
-      PaymentHistoryDestination(
-        viewModel = viewModel,
-        onBackPressed = navigator::navigateUp,
       )
     }
     nestedGraphs()

@@ -39,9 +39,7 @@ import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
 
 @Composable
-fun HedvigShapes(
-  modifier: Modifier = Modifier,
-) {
+fun HedvigShapes(modifier: Modifier = Modifier) {
   Box(
     modifier = modifier.fillMaxSize().zoomable(rememberZoomState(20f)),
     contentAlignment = Alignment.Center,

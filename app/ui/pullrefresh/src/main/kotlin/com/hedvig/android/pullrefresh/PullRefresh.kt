@@ -22,10 +22,7 @@ import androidx.compose.ui.unit.Velocity
  * The state will be updated by this modifier.
  * @param enabled If not enabled, all scroll delta and fling velocity will be ignored.
  */
-fun Modifier.pullRefresh(
-  state: PullRefreshState,
-  enabled: Boolean = true,
-) = inspectable(
+fun Modifier.pullRefresh(state: PullRefreshState, enabled: Boolean = true) = inspectable(
   inspectorInfo = debugInspectorInfo {
     name = "pullRefresh"
     properties["state"] = state
@@ -77,21 +74,13 @@ private class PullRefreshNestedScrollConnection(
   private val onRelease: suspend (flingVelocity: Float) -> Float,
   private val enabled: Boolean,
 ) : NestedScrollConnection {
-
-  override fun onPreScroll(
-    available: Offset,
-    source: NestedScrollSource,
-  ): Offset = when {
+  override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset = when {
     !enabled -> Offset.Zero
     source == Drag && available.y < 0 -> Offset(0f, onPull(available.y)) // Swiping up
     else -> Offset.Zero
   }
 
-  override fun onPostScroll(
-    consumed: Offset,
-    available: Offset,
-    source: NestedScrollSource,
-  ): Offset = when {
+  override fun onPostScroll(consumed: Offset, available: Offset, source: NestedScrollSource): Offset = when {
     !enabled -> Offset.Zero
     source == Drag && available.y > 0 -> Offset(0f, onPull(available.y)) // Pulling down
     else -> Offset.Zero

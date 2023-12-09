@@ -9,6 +9,6 @@ internal class HomeViewModel(
   getHomeDataUseCaseProvider: Provider<GetHomeDataUseCase>,
   featureManager: FeatureManager,
 ) : MoleculeViewModel<HomeEvent, HomeUiState>(
-  HomeUiState.Loading,
-  HomePresenter(getHomeDataUseCaseProvider, featureManager),
-)
+    HomeUiState.Loading,
+    HomePresenter(getHomeDataUseCaseProvider, featureManager),
+  )

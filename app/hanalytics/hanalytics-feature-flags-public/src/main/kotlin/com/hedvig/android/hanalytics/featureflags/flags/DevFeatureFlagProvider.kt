@@ -6,7 +6,6 @@ import com.hedvig.android.market.MarketManager
 internal class DevFeatureFlagProvider(
   private val marketManager: MarketManager,
 ) : FeatureFlagProvider {
-
   override suspend fun isFeatureEnabled(feature: Feature): Boolean {
     val isQasaMember = false
     return when (feature) {
@@ -23,10 +22,9 @@ internal class DevFeatureFlagProvider(
       Feature.SHOW_BUSINESS_MODEL -> !isQasaMember
       Feature.TERMINATION_FLOW -> true
       Feature.UPDATE_NECESSARY -> false
-      Feature.USE_NATIVE_CLAIMS_FLOW -> true
       Feature.NEW_MOVING_FLOW -> true
-      Feature.CLAIMS_TRIAGING -> true
       Feature.TRAVEL_CERTIFICATE -> true
+      Feature.EDIT_COINSURED -> true
     }
   }
 }

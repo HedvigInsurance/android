@@ -21,7 +21,6 @@ import kotlinx.datetime.LocalDate
 internal class ChangeAddressViewModel(
   private val changeAddressRepository: ChangeAddressRepository,
 ) : ViewModel() {
-
   private val _uiState: MutableStateFlow<ChangeAddressUiState> = MutableStateFlow(ChangeAddressUiState())
   val uiState: StateFlow<ChangeAddressUiState> = _uiState.asStateFlow()
 

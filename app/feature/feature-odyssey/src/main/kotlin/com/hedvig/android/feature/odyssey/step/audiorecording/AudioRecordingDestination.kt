@@ -41,8 +41,8 @@ import com.hedvig.android.data.claimflow.model.AudioUrl
 import com.hedvig.android.feature.odyssey.step.audiorecording.ui.AudioRecorder
 import com.hedvig.android.feature.odyssey.ui.ClaimFlowScaffold
 import hedvig.resources.R
-import kotlinx.datetime.Clock
 import java.io.File
+import kotlinx.datetime.Clock
 
 @Composable
 internal fun AudioRecordingDestination(
@@ -156,6 +156,7 @@ private fun AudioRecordingSection(
     object : PermissionState {
       override val permission: String = ""
       override val status: PermissionStatus = PermissionStatus.Granted
+
       override fun launchPermissionRequest() {}
     }
   } else {

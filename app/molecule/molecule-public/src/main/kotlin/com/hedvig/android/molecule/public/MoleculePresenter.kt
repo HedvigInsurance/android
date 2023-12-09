@@ -15,7 +15,7 @@ class MoleculePresenterScope<Event>(
 ) {
   @Composable
   fun CollectEvents(block: CoroutineScope.(Event) -> Unit) {
-    LaunchedEffect(Unit) {
+    LaunchedEffect(events) {
       events.collect { event: Event ->
         block(event)
       }

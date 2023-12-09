@@ -12,7 +12,6 @@ import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.feature.tracking.NotificationOpenedTrackingActivity
 import com.hedvig.app.service.push.DATA_MESSAGE_BODY
 import com.hedvig.app.service.push.DATA_MESSAGE_TITLE
 import com.hedvig.app.service.push.getImmutablePendingIntentFlags
@@ -65,10 +64,7 @@ class CrossSellNotificationSender(
       initialTab = TopLevelGraph.INSURANCE,
       withoutHistory = true,
     )
-    builder.addNextIntentWithParentStack(intent)
-    builder.addNextIntentWithParentStack(
-      NotificationOpenedTrackingActivity.newInstance(context, NOTIFICATION_CROSS_SELL),
-    )
+    builder.addNextIntent(intent)
     return builder.getPendingIntent(0, getImmutablePendingIntentFlags())
   }
 

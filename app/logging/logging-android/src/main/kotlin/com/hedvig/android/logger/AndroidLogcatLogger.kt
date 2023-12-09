@@ -6,11 +6,7 @@ package com.hedvig.android.logger
  * The implementation is based on [square logcat](https://github.com/square/logcat).
  */
 class AndroidLogcatLogger : LogcatLogger {
-  override fun log(
-    priority: LogPriority,
-    throwable: Throwable?,
-    message: () -> String,
-  ) {
+  override fun log(priority: LogPriority, throwable: Throwable?, message: () -> String) {
     when (priority) {
       LogPriority.VERBOSE -> v(throwable, message)
       LogPriority.DEBUG -> d(throwable, message)
