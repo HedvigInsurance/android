@@ -8,6 +8,8 @@ import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.formatName
+import com.hedvig.android.core.common.formatSsn
 import com.hedvig.android.data.productVariant.android.toProductVariant
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
@@ -37,7 +39,7 @@ internal class GetInsuranceContractsUseCaseImpl(
       val isEditCoInsuredEnabled = featureManager.isFeatureEnabled(Feature.EDIT_COINSURED)
 
       val contractHolderDisplayName = insuranceQueryData.getContractHolderDisplayName()
-      val contractHolderSSN = insuranceQueryData.currentMember.ssn
+      val contractHolderSSN = insuranceQueryData.currentMember.ssn?.let { formatSsn(it) }
 
       val terminatedContracts = insuranceQueryData.currentMember.terminatedContracts.map {
         it.toContract(
@@ -60,8 +62,7 @@ internal class GetInsuranceContractsUseCaseImpl(
   }
 }
 
-private fun InsuranceContractsQuery.Data.getContractHolderDisplayName(): String =
-  "${currentMember.firstName} ${currentMember.lastName}"
+private fun InsuranceContractsQuery.Data.getContractHolderDisplayName(): String = formatName(currentMember.firstName, currentMember.lastName)
 
 private fun ContractFragment.toContract(
   isTerminated: Boolean,

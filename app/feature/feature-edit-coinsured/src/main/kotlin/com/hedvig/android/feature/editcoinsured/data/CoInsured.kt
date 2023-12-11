@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.editcoinsured.data
 
-import com.hedvig.android.feature.editcoinsured.ui.formatSsn
+import com.hedvig.android.core.common.formatName
+import com.hedvig.android.core.common.formatSsn
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 import kotlinx.datetime.LocalDate
@@ -16,17 +17,7 @@ internal data class CoInsured(
 ) {
   val id = "$firstName-$lastName-$birthDate-$ssn"
 
-  val displayName: String = buildString {
-    if (firstName != null) {
-      append(firstName)
-    }
-    if (firstName != null && lastName != null) {
-      append(" ")
-    }
-    if (lastName != null) {
-      append(lastName)
-    }
-  }
+  val displayName: String = formatName(firstName, lastName)
 
   fun identifier(dateTimeFormatter: DateTimeFormatter): String? {
     return if (ssn != null) {
