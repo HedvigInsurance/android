@@ -22,7 +22,7 @@ import com.hedvig.android.feature.payments2.discountsPreviewData
 import hedvig.resources.R
 
 @Composable
-fun DiscountsDestination(
+internal fun DiscountsDestination(
   discounts: List<Discount>,
   navigateUp: () -> Unit,
 ) {
@@ -51,7 +51,7 @@ fun DiscountsDestination(
 
 @Composable
 @HedvigPreview
-internal fun PaymentDetailsScreenPreview() {
+private fun PaymentDetailsScreenPreview() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       DiscountsDestination(

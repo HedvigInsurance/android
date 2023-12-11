@@ -34,49 +34,55 @@ fun NavGraphBuilder.paymentsGraph(
         viewModel = viewModel,
         onBackPressed = navigator::navigateUp,
         onPaymentHistoryClicked = { paymentOverview ->
-          navigator.navigateUnsafe(PaymentsDestinations2.History(paymentOverview))
+          with(navigator) { backStackEntry.navigate(PaymentsDestinations2.History(paymentOverview)) }
         },
         onChangeBankAccount = navigateToConnectPayment,
         onDiscountClicked = { discounts ->
-          navigator.navigateUnsafe(PaymentsDestinations2.Discounts(discounts))
+          with(navigator) { backStackEntry.navigate(PaymentsDestinations2.Discounts(discounts)) }
         },
         onUpcomingPaymentClicked = { memberCharge: MemberCharge, paymentOverview: PaymentOverview ->
-          navigator.navigateUnsafe(
-            PaymentsDestinations2.Details(
-              selectedMemberCharge = memberCharge,
-              paymentOverview = paymentOverview,
-            ),
-          )
+          with(navigator) {
+            backStackEntry.navigate(
+              PaymentsDestinations2.Details(
+                selectedMemberCharge = memberCharge,
+                paymentOverview = paymentOverview,
+              ),
+            )
+          }
         },
       )
     }
-    composable<PaymentsDestinations2.Details> {
+    composable<PaymentsDestinations2.Details> { backStackEntry ->
       PaymentDetailsDestination(
         memberCharge = selectedMemberCharge,
         paymentOverview = paymentOverview,
         onFailedChargeClick = { memberCharge: MemberCharge, paymentOverview: PaymentOverview ->
-          navigator.navigateUnsafe(
-            PaymentsDestinations2.Details(
-              selectedMemberCharge = memberCharge,
-              paymentOverview = paymentOverview,
-            ),
-          )
+          with(navigator) {
+            backStackEntry.navigate(
+              PaymentsDestinations2.Details(
+                selectedMemberCharge = memberCharge,
+                paymentOverview = paymentOverview,
+              ),
+            )
+          }
         },
         navigateUp = navigator::navigateUp,
       )
     }
-    composable<PaymentsDestinations2.History> {
+    composable<PaymentsDestinations2.History> { backStackEntry ->
       PaymentHistoryDestination(
         paymentOverview = paymentOverview.copy(
           paymentConnection = null, // Payment connection is not valid for historic payments
         ),
         onChargeClicked = { memberCharge: MemberCharge, paymentOverview: PaymentOverview ->
-          navigator.navigateUnsafe(
-            PaymentsDestinations2.Details(
-              selectedMemberCharge = memberCharge,
-              paymentOverview = paymentOverview,
-            ),
-          )
+          with(navigator) {
+            backStackEntry.navigate(
+              PaymentsDestinations2.Details(
+                selectedMemberCharge = memberCharge,
+                paymentOverview = paymentOverview,
+              ),
+            )
+          }
         },
         navigateUp = navigator::navigateUp,
       )
