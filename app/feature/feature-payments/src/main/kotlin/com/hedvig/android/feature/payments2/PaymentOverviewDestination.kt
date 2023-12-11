@@ -95,9 +95,15 @@ private fun PaymentOverviewScreen(
     navigateUp = navigateUp,
     modifier = Modifier.clearFocusOnTap(),
   ) {
-    when (uiState) {
-      is OverViewUiState.Content -> Column {
-        val memberCharge = uiState.paymentOverview.memberCharge
+    Column {
+      if (uiState.error != null) {
+        Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
+          HedvigErrorSection(retry = onRetry)
+        }
+      } else if (uiState.isLoadingPaymentOverView) {
+        HedvigFullScreenCenterAlignedProgressDebounced(Modifier.weight(1f))
+      } else {
+        val memberCharge = uiState.paymentOverview?.memberCharge
         if (memberCharge != null) {
           PaymentAmountCard(
             memberCharge = memberCharge,
@@ -134,7 +140,7 @@ private fun PaymentOverviewScreen(
         } else {
           HedvigInformationSection(title = stringResource(id = R.string.PAYMENTS_NO_PAYMENTS_IN_PROGRESS))
         }
-        if (uiState.paymentOverview.paymentConnection?.hasConnectedPayment == false) {
+        if (uiState.paymentOverview?.paymentConnection?.hasConnectedPayment == false) {
           val text = if (memberCharge != null) {
             stringResource(
               id = R.string.info_card_missing_payment_body_with_date,
@@ -160,20 +166,24 @@ private fun PaymentOverviewScreen(
           }
           Spacer(modifier = Modifier.height(8.dp))
         }
-        Discounts(
-          modifier = Modifier
-            .clickable { onDiscountClicked(uiState.paymentOverview.discounts) }
-            .padding(16.dp),
-        )
-        Divider(modifier = Modifier.padding(horizontal = 16.dp))
-        PaymentHistory(
-          modifier = Modifier
-            .clickable {
-              onPaymentHistoryClicked(uiState.paymentOverview)
-            }
-            .padding(16.dp),
-        )
-        uiState.paymentOverview.paymentConnection?.connectionInfo?.let {
+        uiState.paymentOverview?.let {
+          Discounts(
+            modifier = Modifier
+              .clickable {
+                onDiscountClicked(it.discounts)
+              }
+              .padding(16.dp),
+          )
+          Divider(modifier = Modifier.padding(horizontal = 16.dp))
+          PaymentHistory(
+            modifier = Modifier
+              .clickable {
+                onPaymentHistoryClicked(it)
+              }
+              .padding(16.dp),
+          )
+        }
+        uiState.paymentOverview?.paymentConnection?.connectionInfo?.let {
           Divider(modifier = Modifier.padding(horizontal = 16.dp))
           PaymentDetails(
             displayName = it.displayName,
@@ -181,7 +191,7 @@ private fun PaymentOverviewScreen(
           )
         }
         Spacer(Modifier.height(16.dp))
-        if (uiState.paymentOverview.paymentConnection?.hasConnectedPayment == true) {
+        if (uiState.paymentOverview?.paymentConnection?.hasConnectedPayment == true) {
           HedvigSecondaryContainedButton(
             text = stringResource(R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT),
             onClick = onChangeBankAccount,
@@ -190,12 +200,6 @@ private fun PaymentOverviewScreen(
         }
         Spacer(Modifier.height(16.dp))
       }
-
-      is OverViewUiState.Error -> Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
-        HedvigErrorSection(retry = onRetry)
-      }
-
-      OverViewUiState.Loading -> HedvigFullScreenCenterAlignedProgressDebounced(Modifier.weight(1f))
     }
   }
 }
@@ -312,14 +316,14 @@ private fun PreviewPaymentScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       PaymentOverviewScreen(
-        uiState = OverViewUiState.Content(
+        uiState = OverViewUiState(
           paymentOverview = paymentOverViewPreviewData,
         ),
         {},
         { memberCharge: MemberCharge, paymentConnection: PaymentOverview -> },
         {},
         {},
-        { PaymentOverview -> },
+        {},
       ) {}
     }
   }
@@ -331,7 +335,7 @@ private fun PreviewPaymentScreenNoPayment() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       PaymentOverviewScreen(
-        uiState = OverViewUiState.Content(
+        uiState = OverViewUiState(
           paymentOverview = PaymentOverview(
             memberCharge = null,
             pastCharges = null,
@@ -349,7 +353,7 @@ private fun PreviewPaymentScreenNoPayment() {
         { memberCharge: MemberCharge, paymentConnection: PaymentOverview -> },
         {},
         {},
-        { PaymentOverview -> },
+        {},
       ) {}
     }
   }

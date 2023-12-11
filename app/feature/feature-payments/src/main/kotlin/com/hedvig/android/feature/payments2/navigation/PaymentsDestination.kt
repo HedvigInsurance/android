@@ -23,6 +23,6 @@ internal sealed interface PaymentsDestinations2 : Destination {
 
   @Serializable
   data class Discounts(
-    val discounts: List<Discount>
+    val discounts: List<Discount>,
   ) : PaymentsDestinations2
 }
