@@ -38,13 +38,14 @@ fun DiscountRow(discount: Discount) {
         color = MaterialTheme.colorScheme.secondaryContainedButtonContainer,
         contentColor = MaterialTheme.colorScheme.onSecondaryContainedButtonContainer,
       )
-
-      Text(
-        text = discount.amount.toString(),
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        textAlign = TextAlign.End,
-        modifier = Modifier.fillMaxWidth(),
-      )
+      discount.amount?.let {
+        Text(
+          text = discount.amount.toString(),
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+          textAlign = TextAlign.End,
+          modifier = Modifier.fillMaxWidth(),
+        )
+      }
     }
 
     Spacer(Modifier.height(8.dp))

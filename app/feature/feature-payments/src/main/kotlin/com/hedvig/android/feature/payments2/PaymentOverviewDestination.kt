@@ -51,6 +51,7 @@ import com.hedvig.android.core.ui.infocard.VectorWarningCard
 import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.feature.payments2.data.Discount
 import com.hedvig.android.feature.payments2.data.MemberCharge
 import com.hedvig.android.feature.payments2.data.PaymentConnection
 import com.hedvig.android.feature.payments2.data.PaymentOverview
@@ -62,7 +63,7 @@ internal fun PaymentOverviewDestination(
   viewModel: PaymentOverviewViewModel,
   onBackPressed: () -> Unit,
   onUpcomingPaymentClicked: (MemberCharge, PaymentOverview) -> Unit,
-  onDiscountClicked: () -> Unit,
+  onDiscountClicked: (List<Discount>) -> Unit,
   onPaymentHistoryClicked: (PaymentOverview) -> Unit,
   onChangeBankAccount: () -> Unit,
 ) {
@@ -84,7 +85,7 @@ private fun PaymentOverviewScreen(
   navigateUp: () -> Unit,
   onUpcomingPaymentClicked: (MemberCharge, PaymentOverview) -> Unit,
   onChangeBankAccount: () -> Unit,
-  onDiscountClicked: () -> Unit,
+  onDiscountClicked: (List<Discount>) -> Unit,
   onPaymentHistoryClicked: (PaymentOverview) -> Unit,
   onRetry: () -> Unit,
 ) {
@@ -161,7 +162,7 @@ private fun PaymentOverviewScreen(
         }
         Discounts(
           modifier = Modifier
-            .clickable { onDiscountClicked() }
+            .clickable { onDiscountClicked(uiState.paymentOverview.discounts) }
             .padding(16.dp),
         )
         Divider(modifier = Modifier.padding(horizontal = 16.dp))
