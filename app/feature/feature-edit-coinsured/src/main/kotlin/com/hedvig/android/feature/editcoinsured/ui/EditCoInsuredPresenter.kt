@@ -9,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import arrow.core.raise.either
+import com.hedvig.android.core.common.formatShortSsn
 import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
@@ -187,7 +188,7 @@ internal class EditCoInsuredPresenter(
       addBottomSheetState = addBottomSheetState.copy(errorMessage = null)
       val ssn = addBottomSheetState.ssn
       if (ssn != null) {
-        val paddedSsn = getPaddedSsn(ssn)
+        val paddedSsn = formatShortSsn(ssn)
         either {
           val result = fetchCoInsuredPersonalInformationUseCase.invoke(paddedSsn).bind()
           addBottomSheetState = addBottomSheetState.copy(
@@ -319,12 +320,6 @@ internal class EditCoInsuredPresenter(
     } else {
       (listState.coInsured + coInsured).toImmutableList()
     }
-
-  private fun getPaddedSsn(ssn: String) = if (ssn.length == 10) {
-    "19$ssn" // Need to add century if not included in SSN
-  } else {
-    ssn
-  }
 }
 
 internal sealed interface EditCoInsuredEvent {
