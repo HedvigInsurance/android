@@ -5,7 +5,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class MemberCharge(
+internal data class MemberCharge(
   val grossAmount: UiMoney,
   val netAmount: UiMoney,
   val id: String,
@@ -20,7 +20,7 @@ data class MemberCharge(
     val toDate: LocalDate,
   )
 
-  enum class MemberChargeStatus {
+  internal enum class MemberChargeStatus {
     UPCOMING,
     SUCCESS,
     PENDING,
