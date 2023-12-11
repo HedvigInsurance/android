@@ -13,6 +13,7 @@ internal sealed interface PaymentsDestinations2 : Destination {
   @Serializable
   data class Details(
     val selectedMemberCharge: MemberCharge,
+    val paymentOverview: PaymentOverview,
   ) : PaymentsDestinations2
 
   @Serializable

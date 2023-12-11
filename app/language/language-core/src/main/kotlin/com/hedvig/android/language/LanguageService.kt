@@ -13,7 +13,7 @@ interface LanguageService {
 
   fun getLanguage(): Language
 
-  fun getLocale(): java.util.Locale
+  fun getLocale(): Locale
 
   fun performOnLaunchLanguageCheck()
 }
@@ -35,7 +35,7 @@ class AndroidLanguageService() : LanguageService {
   override fun getLocale(): Locale {
     val localeList = AppCompatDelegate.getApplicationLocales()
     if (localeList.isEmpty) {
-      logcat(LogPriority.ERROR) { "No locale set, defaulting to en_SE" }
+      logcat(LogPriority.WARN) { "No locale set, defaulting to en_SE" }
       return Locale("en", "SE")
     }
     return localeList[0]!!

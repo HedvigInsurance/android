@@ -64,7 +64,7 @@ import kotlinx.datetime.toJavaLocalDate
 internal fun PaymentOverviewDestination(
   viewModel: PaymentOverviewViewModel,
   onBackPressed: () -> Unit,
-  onUpcomingPaymentClicked: (MemberCharge) -> Unit,
+  onUpcomingPaymentClicked: (MemberCharge, PaymentOverview) -> Unit,
   onDiscountClicked: (List<Discount>) -> Unit,
   onPaymentHistoryClicked: (PaymentOverview) -> Unit,
   onChangeBankAccount: () -> Unit,
@@ -85,7 +85,7 @@ internal fun PaymentOverviewDestination(
 private fun PaymentOverviewScreen(
   uiState: OverViewUiState,
   navigateUp: () -> Unit,
-  onUpcomingPaymentClicked: (MemberCharge) -> Unit,
+  onUpcomingPaymentClicked: (MemberCharge, PaymentOverview) -> Unit,
   onChangeBankAccount: () -> Unit,
   onDiscountClicked: (List<Discount>) -> Unit,
   onPaymentHistoryClicked: (PaymentOverview) -> Unit,
@@ -109,7 +109,7 @@ private fun PaymentOverviewScreen(
         PaymentAmountCard(
           memberCharge = memberCharge,
           onCardClicked = {
-            onUpcomingPaymentClicked(memberCharge)
+            onUpcomingPaymentClicked(memberCharge, uiState.paymentOverview)
           },
           modifier = Modifier
             .fillMaxWidth()
@@ -318,7 +318,7 @@ private fun PreviewPaymentScreen() {
           isLoadingPaymentOverView = true,
         ),
         {},
-        { memberCharge: MemberCharge -> },
+        { memberCharge: MemberCharge, paymentOverview -> },
         {},
         {},
         {},
@@ -348,7 +348,7 @@ private fun PreviewPaymentScreenNoPayment() {
           ),
         ),
         {},
-        { memberCharge: MemberCharge -> },
+        { memberCharge: MemberCharge, paymentOverview -> },
         {},
         {},
         {},

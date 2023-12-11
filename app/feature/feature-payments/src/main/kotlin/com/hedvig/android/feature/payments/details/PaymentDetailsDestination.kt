@@ -197,7 +197,9 @@ private fun MemberChargeDetailsScreen(
         MemberCharge.MemberChargeStatus.FAILED -> PaymentStatusCard(
           text = stringResource(
             id = R.string.PAYMENTS_PAYMENT_FAILED,
-            dateTimeFormatter.format(getNextCharge(memberCharge, paymentOverview)?.dueDate?.toJavaLocalDate()),
+            paymentOverview?.getNextCharge(memberCharge)?.let {
+              dateTimeFormatter.format(it.dueDate.toJavaLocalDate())
+            } ?: "-",
           ),
           icon = Icons.Hedvig.WarningFilled,
           iconColor = MaterialTheme.colorScheme.error,
@@ -209,7 +211,7 @@ private fun MemberChargeDetailsScreen(
             HedvigContainedSmallButton(
               text = stringResource(R.string.PAYMENTS_VIEW_PAYMENT),
               onClick = {
-                val nextCharge = getNextCharge(memberCharge, paymentOverview)
+                val nextCharge = paymentOverview?.getNextCharge(memberCharge)
                 if (nextCharge != null) {
                   onFailedChargeClick(nextCharge)
                 }
@@ -275,17 +277,6 @@ private fun MemberChargeDetailsScreen(
         )
       }
     }
-  }
-}
-
-internal fun getNextCharge(memberCharge: MemberCharge, paymentOverview: PaymentOverview?): MemberCharge? {
-  val index = (paymentOverview?.pastCharges?.indexOf(memberCharge) ?: 0) - 1
-  return if (index < 0 && paymentOverview?.memberCharge != null) {
-    paymentOverview.memberCharge
-  } else if (index >= 0) {
-    paymentOverview?.pastCharges?.get(index)
-  } else {
-    null
   }
 }
 
