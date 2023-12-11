@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.payments.di
 
 import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.apollo.octopus.di.octopusClient
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.feature.payments.PaymentViewModel
 import com.hedvig.android.feature.payments.data.PaymentRepositoryDemo
@@ -23,7 +22,7 @@ val paymentsModule = module {
 
   single<PaymentRepositoryImpl> {
     PaymentRepositoryImpl(
-      apolloClient = get<ApolloClient>(octopusClient),
+      apolloClient = get<ApolloClient>(),
     )
   }
   single<PaymentRepositoryDemo> { PaymentRepositoryDemo() }

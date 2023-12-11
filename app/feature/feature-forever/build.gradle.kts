@@ -29,7 +29,6 @@ dependencies {
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.moneta)
   implementation(projects.apolloCore)
-  implementation(projects.apolloGiraffePublic)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonAndroidPublic)

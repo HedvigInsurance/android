@@ -8,7 +8,7 @@ plugins {
 dependencies {
   api(libs.accompanist.permissions)
 
-  implementation(libs.androidx.other.activityCompose)
+  implementation(libs.androidx.activity.compose)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
 }

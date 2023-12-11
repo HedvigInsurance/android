@@ -12,21 +12,18 @@ import coil.ImageLoader
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.decode.SvgDecoder
+import coil.disk.DiskCache
+import coil.memory.MemoryCache
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.cache.normalized.api.MemoryCacheFactory
 import com.apollographql.apollo3.cache.normalized.api.NormalizedCacheFactory
 import com.apollographql.apollo3.cache.normalized.normalizedCache
 import com.apollographql.apollo3.interceptor.ApolloInterceptor
 import com.apollographql.apollo3.network.okHttpClient
-import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
 import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.auth.listeners.di.apolloAuthListenersModule
 import com.hedvig.android.apollo.auth.listeners.di.languageAuthListenersModule
-import com.hedvig.android.apollo.auth.listeners.subscription.ReopenSubscriptionException
-import com.hedvig.android.apollo.di.apolloClientModule
-import com.hedvig.android.apollo.giraffe.di.giraffeClient
 import com.hedvig.android.app.di.appModule
-import com.hedvig.android.auth.AccessTokenProvider
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.auth.di.authModule
@@ -45,8 +42,8 @@ import com.hedvig.android.datadog.core.addDatadogConfiguration
 import com.hedvig.android.datadog.core.di.datadogModule
 import com.hedvig.android.datadog.demo.tracking.di.datadogDemoTrackingModule
 import com.hedvig.android.feature.changeaddress.di.changeAddressModule
-import com.hedvig.android.feature.chat.ChatEventStore
-import com.hedvig.android.feature.chat.ChatRepository
+import com.hedvig.android.feature.chat.closedevent.ChatClosedEventStore
+import com.hedvig.android.feature.chat.data.ChatRepository
 import com.hedvig.android.feature.chat.di.chatModule
 import com.hedvig.android.feature.claim.details.di.claimDetailsModule
 import com.hedvig.android.feature.claimtriaging.di.claimTriagingModule
@@ -68,7 +65,6 @@ import com.hedvig.android.hanalytics.di.hAnalyticsModule
 import com.hedvig.android.hanalytics.featureflags.di.featureManagerModule
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.language.di.languageModule
-import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.di.marketManagerModule
 import com.hedvig.android.memberreminders.di.memberRemindersModule
 import com.hedvig.android.navigation.activity.ActivityNavigator
@@ -95,11 +91,8 @@ import com.hedvig.app.util.apollo.NetworkCacheManagerImpl
 import com.hedvig.app.util.apollo.SunsettingInterceptor
 import java.io.File
 import java.util.Locale
-import kotlin.math.pow
-import kotlinx.coroutines.delay
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.androidx.workmanager.dsl.worker
 import org.koin.core.qualifier.named
@@ -108,7 +101,6 @@ import org.koin.dsl.module
 import timber.log.Timber
 
 private val networkModule = module {
-  single { androidApplication() as HedvigApplication }
   single<NormalizedCacheFactory> {
     MemoryCacheFactory(maxSizeBytes = 10 * 1024 * 1024)
   }
@@ -158,35 +150,15 @@ private val networkModule = module {
   single<SunsettingInterceptor> { SunsettingInterceptor(get()) } bind ApolloInterceptor::class
   single<ApolloClient.Builder> {
     val interceptors = getAll<ApolloInterceptor>().distinct()
-    val accessTokenProvider = get<AccessTokenProvider>()
     ApolloClient.Builder()
       .okHttpClient(get<OkHttpClient>())
-      .webSocketReopenWhen { throwable, reconnectAttempt ->
-        if (throwable is ReopenSubscriptionException) {
-          return@webSocketReopenWhen true
-        }
-        if (reconnectAttempt < 5) {
-          delay(2.0.pow(reconnectAttempt.toDouble()).toLong()) // Retry after 1 - 2 - 4 - 9 - 16 seconds
-          return@webSocketReopenWhen true
-        }
-        false
-      }
-      .wsProtocol(
-        SubscriptionWsProtocol.Factory(
-          connectionPayload = {
-            val accessToken = accessTokenProvider.provide()
-            logcat { "Apollo-kotlin: Subscription acquired auth token: $accessToken" }
-            val authorizationHeaderValue = if (accessToken != null) {
-              "Bearer $accessToken"
-            } else {
-              null
-            }
-            mapOf("Authorization" to authorizationHeaderValue)
-          },
-        ),
-      )
       .normalizedCache(get<NormalizedCacheFactory>())
       .addInterceptors(interceptors)
+  }
+  single<ApolloClient> {
+    get<ApolloClient.Builder>().copy()
+      .httpServerUrl(get<HedvigBuildConstants>().urlGraphqlOctopus)
+      .build()
   }
 }
 
@@ -245,13 +217,11 @@ private val buildConstantsModule = module {
   single<HedvigBuildConstants> {
     val context = get<Context>()
     object : HedvigBuildConstants {
-      override val urlGiraffeBaseApi: String = context.getString(R.string.BASE_URL)
-      override val urlGiraffeGraphql: String = context.getString(R.string.GRAPHQL_URL)
-      override val urlGiraffeGraphqlSubscription: String = context.getString(R.string.WS_GRAPHQL_URL)
       override val urlGraphqlOctopus: String = context.getString(R.string.OCTOPUS_GRAPHQL_URL)
       override val urlBaseWeb: String = context.getString(R.string.WEB_BASE_URL)
       override val urlHanalytics: String = context.getString(R.string.HANALYTICS_URL)
       override val urlOdyssey: String = context.getString(R.string.ODYSSEY_URL)
+      override val urlBotService: String = context.getString(R.string.BOT_SERVICE)
       override val deepLinkHost: String = context.getString(R.string.DEEP_LINK_DOMAIN_HOST)
 
       override val appVersionName: String = BuildConfig.VERSION_NAME
@@ -284,7 +254,7 @@ private val useCaseModule = module {
   single<LogoutUseCase> {
     LogoutUseCaseImpl(
       get<AuthTokenService>(),
-      get<ChatEventStore>(),
+      get<ChatClosedEventStore>(),
       get<ApplicationScope>(),
       get<DemoManager>(),
     )
@@ -292,7 +262,7 @@ private val useCaseModule = module {
 }
 
 private val cacheManagerModule = module {
-  single<NetworkCacheManager> { NetworkCacheManagerImpl(get<ApolloClient>(giraffeClient)) }
+  single<NetworkCacheManager> { NetworkCacheManagerImpl(get<ApolloClient>()) }
 }
 
 private val sharedPreferencesModule = module {
@@ -313,6 +283,7 @@ private val datastoreAndroidModule = module {
 
 private val coilModule = module {
   single<ImageLoader> {
+    val applicationContext = get<Context>().applicationContext
     ImageLoader.Builder(get())
       .okHttpClient(get<OkHttpClient.Builder>().build())
       .components {
@@ -322,6 +293,14 @@ private val coilModule = module {
         } else {
           add(GifDecoder.Factory())
         }
+      }
+      .memoryCache {
+        MemoryCache.Builder(applicationContext).build()
+      }
+      .diskCache {
+        DiskCache.Builder()
+          .directory(applicationContext.cacheDir.resolve("coil_image_cache"))
+          .build()
       }
       .build()
   }
@@ -344,7 +323,6 @@ val applicationModule = module {
       activityNavigatorModule,
       adyenFeatureModule,
       apolloAuthListenersModule,
-      apolloClientModule,
       appModule,
       authModule,
       buildConstantsModule,

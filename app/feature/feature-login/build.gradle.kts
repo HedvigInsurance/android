@@ -20,7 +20,6 @@ dependencies {
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.zXing)
   implementation(projects.apolloCore)
-  implementation(projects.apolloGiraffePublic)
   implementation(projects.authCorePublic)
   implementation(projects.authCoreTest)
   implementation(projects.coreCommonPublic)

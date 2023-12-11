@@ -8,9 +8,7 @@ import org.gradle.kotlin.dsl.the
 /**
  * Configure Compose-specific options
  */
-internal fun Project.configureAndroidCompose(
-  commonExtension: AndroidCommonExtension,
-) {
+internal fun Project.configureAndroidCompose(commonExtension: AndroidCommonExtension) {
   val libs = the<LibrariesForLibs>()
 
   commonExtension.apply {
