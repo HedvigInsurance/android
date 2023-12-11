@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.payments2.details
+package com.hedvig.android.feature.payments.details
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -34,7 +34,7 @@ import com.hedvig.android.core.icons.hedvig.normal.ChevronDown
 import com.hedvig.android.core.ui.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.uidata.UiMoney
-import com.hedvig.android.feature.payments2.data.MemberCharge
+import com.hedvig.android.feature.payments.data.MemberCharge
 import hedvig.resources.R
 import java.time.format.DateTimeFormatter
 import kotlinx.collections.immutable.persistentListOf

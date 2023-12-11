@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.payments2
+package com.hedvig.android.feature.payments.overview
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -7,9 +7,9 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.hedvig.android.feature.payments2.data.AddDiscountUseCase
-import com.hedvig.android.feature.payments2.data.GetUpcomingPaymentUseCase
-import com.hedvig.android.feature.payments2.data.PaymentOverview
+import com.hedvig.android.feature.payments.data.AddDiscountUseCase
+import com.hedvig.android.feature.payments.data.GetUpcomingPaymentUseCase
+import com.hedvig.android.feature.payments.data.PaymentOverview
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 

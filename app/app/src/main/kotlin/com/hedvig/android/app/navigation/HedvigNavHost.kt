@@ -38,7 +38,7 @@ import com.hedvig.android.feature.insurances.insurance.insuranceGraph
 import com.hedvig.android.feature.odyssey.navigation.claimFlowGraph
 import com.hedvig.android.feature.odyssey.navigation.navigateToClaimFlowDestination
 import com.hedvig.android.feature.odyssey.navigation.terminalClaimFlowStepDestinations
-import com.hedvig.android.feature.payments2.navigation.paymentsGraph
+import com.hedvig.android.feature.payments.navigation.paymentsGraph
 import com.hedvig.android.feature.profile.tab.profileGraph
 import com.hedvig.android.feature.terminateinsurance.navigation.terminateInsuranceGraph
 import com.hedvig.android.feature.travelcertificate.navigation.generateTravelCertificateGraph

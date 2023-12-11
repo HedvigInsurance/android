@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.payments2.data
+package com.hedvig.android.feature.payments.data
 
 import com.hedvig.android.core.uidata.UiMoney
 import kotlinx.datetime.LocalDate

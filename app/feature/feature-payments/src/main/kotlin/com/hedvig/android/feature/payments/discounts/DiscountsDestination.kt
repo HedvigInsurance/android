@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.payments2.discounts
+package com.hedvig.android.feature.payments.discounts
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -24,11 +24,10 @@ import com.hedvig.android.core.designsystem.material3.squircleLargeTop
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
-import com.hedvig.android.feature.payments2.DiscountRow
-import com.hedvig.android.feature.payments2.OverViewUiState
-import com.hedvig.android.feature.payments2.PaymentEvent
-import com.hedvig.android.feature.payments2.PaymentOverviewViewModel
-import com.hedvig.android.feature.payments2.paymentOverViewPreviewData
+import com.hedvig.android.feature.payments.overview.OverViewUiState
+import com.hedvig.android.feature.payments.overview.PaymentEvent
+import com.hedvig.android.feature.payments.overview.PaymentOverviewViewModel
+import com.hedvig.android.feature.payments.paymentOverViewPreviewData
 import hedvig.resources.R
 
 @Composable
