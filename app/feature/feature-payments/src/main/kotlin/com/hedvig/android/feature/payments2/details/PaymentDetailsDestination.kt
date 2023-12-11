@@ -9,11 +9,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,8 +28,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
+import com.hedvig.android.core.designsystem.material3.containedButtonContainer
 import com.hedvig.android.core.designsystem.material3.infoContainer
 import com.hedvig.android.core.designsystem.material3.infoElement
+import com.hedvig.android.core.designsystem.material3.onContainedButtonContainer
 import com.hedvig.android.core.designsystem.material3.onInfoContainer
 import com.hedvig.android.core.designsystem.material3.onTypeContainer
 import com.hedvig.android.core.designsystem.material3.typeContainer
@@ -40,7 +46,7 @@ import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.feature.payments2.data.MemberCharge
-import com.hedvig.android.feature.payments2.data.PaymentConnection
+import com.hedvig.android.feature.payments2.data.PaymentOverview
 import com.hedvig.android.feature.payments2.paymentOverViewPreviewData
 import hedvig.resources.R
 import kotlinx.datetime.toJavaLocalDate
@@ -48,14 +54,15 @@ import kotlinx.datetime.toJavaLocalDate
 @Composable
 internal fun PaymentDetailsDestination(
   memberCharge: MemberCharge,
-  paymentConnection: PaymentConnection?,
+  paymentOverview: PaymentOverview,
+  onFailedChargeClick: (MemberCharge, PaymentOverview) -> Unit,
   navigateUp: () -> Unit,
 ) {
   var selectedCharge by remember { mutableStateOf<MemberCharge.ChargeBreakdown?>(null) }
 
   MemberChargeDetailsScreen(
     memberCharge = memberCharge,
-    paymentConnection = paymentConnection,
+    paymentOverview = paymentOverview,
     navigateUp = navigateUp,
     selectedCharge = selectedCharge,
     onCardClick = { clickedCharge ->
@@ -65,22 +72,25 @@ internal fun PaymentDetailsDestination(
         clickedCharge
       }
     },
+    onFailedChargeClick = onFailedChargeClick,
   )
 }
 
 @Composable
 private fun MemberChargeDetailsScreen(
   memberCharge: MemberCharge,
-  paymentConnection: PaymentConnection?,
+  paymentOverview: PaymentOverview,
   selectedCharge: MemberCharge.ChargeBreakdown?,
   onCardClick: (MemberCharge.ChargeBreakdown) -> Unit,
+  onFailedChargeClick: (MemberCharge, PaymentOverview) -> Unit,
   navigateUp: () -> Unit,
 ) {
   val dateTimeFormatter = rememberHedvigDateTimeFormatter()
 
   HedvigScaffold(
-    topAppBarText = stringResource(R.string.PAYMENTS_UPCOMING_PAYMENT),
+    topAppBarText = dateTimeFormatter.format(memberCharge.dueDate.toJavaLocalDate()),
     navigateUp = navigateUp,
+    topAppBarColors = memberCharge.topAppBarColors(),
   ) {
     Column(modifier = Modifier.padding(16.dp)) {
 
@@ -176,7 +186,8 @@ private fun MemberChargeDetailsScreen(
 
         MemberCharge.MemberChargeStatus.FAILED -> PaymentStatusCard(
           text = stringResource(
-            id = R.string.PAYMENTS_PAYMENT_FAILED, "-",
+            id = R.string.PAYMENTS_PAYMENT_FAILED,
+            dateTimeFormatter.format(getNextCharge(memberCharge, paymentOverview)?.dueDate?.toJavaLocalDate()),
           ),
           icon = Icons.Hedvig.WarningFilled,
           iconColor = MaterialTheme.colorScheme.error,
@@ -184,14 +195,29 @@ private fun MemberChargeDetailsScreen(
             containerColor = MaterialTheme.colorScheme.errorContainer,
             contentColor = MaterialTheme.colorScheme.onErrorContainer,
           ),
-          underTextContent = null,
+          underTextContent = {
+            HedvigContainedSmallButton(
+              text = stringResource(R.string.PAYMENTS_VIEW_PAYMENT),
+              onClick = {
+                val nextCharge = getNextCharge(memberCharge, paymentOverview)
+                if (nextCharge != null) {
+                  onFailedChargeClick(nextCharge, paymentOverview)
+                }
+              },
+              colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.containedButtonContainer,
+                contentColor = MaterialTheme.colorScheme.onContainedButtonContainer,
+              ),
+              textStyle = MaterialTheme.typography.bodyMedium,
+              modifier = Modifier.fillMaxWidth(),
+            )
+          },
         )
 
         MemberCharge.MemberChargeStatus.UNKNOWN -> {}
       }
 
-
-      paymentConnection?.connectionInfo?.let {
+      paymentOverview.paymentConnection?.connectionInfo?.let {
         Spacer(Modifier.height(32.dp))
         HorizontalItemsWithMaximumSpaceTaken(
           startSlot = {
@@ -243,6 +269,34 @@ private fun MemberChargeDetailsScreen(
   }
 }
 
+internal fun getNextCharge(memberCharge: MemberCharge, paymentOverview: PaymentOverview): MemberCharge? {
+  val index = (paymentOverview.pastCharges?.indexOf(memberCharge) ?: 0) - 1
+  return if (index < 0 && paymentOverview.memberCharge != null) {
+    paymentOverview.memberCharge
+  } else if (index >= 0) {
+    paymentOverview.pastCharges?.get(index)
+  } else {
+    null
+  }
+}
+
+@Composable
+private fun MemberCharge.topAppBarColors(): TopAppBarColors {
+  return if (this.status == MemberCharge.MemberChargeStatus.FAILED) {
+    TopAppBarDefaults.topAppBarColors(
+      titleContentColor = MaterialTheme.colorScheme.error,
+      containerColor = MaterialTheme.colorScheme.background,
+      scrolledContainerColor = MaterialTheme.colorScheme.surface,
+    )
+  } else {
+    TopAppBarDefaults.topAppBarColors(
+      containerColor = MaterialTheme.colorScheme.background,
+      scrolledContainerColor = MaterialTheme.colorScheme.surface,
+    )
+  }
+}
+
+
 @Composable
 @HedvigPreview
 private fun PaymentDetailsScreenPreview() {
@@ -250,10 +304,11 @@ private fun PaymentDetailsScreenPreview() {
     Surface(color = MaterialTheme.colorScheme.background) {
       MemberChargeDetailsScreen(
         memberCharge = paymentOverViewPreviewData.memberCharge!!,
-        paymentConnection = paymentOverViewPreviewData.paymentConnection!!,
+        paymentOverview = paymentOverViewPreviewData,
         selectedCharge = null,
         onCardClick = {},
         navigateUp = {},
+        onFailedChargeClick = { memberCharge: MemberCharge, paymentOverview: PaymentOverview -> },
       )
     }
   }

@@ -31,7 +31,7 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.ChevronDown
-import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
+import com.hedvig.android.core.ui.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.payments2.data.MemberCharge
@@ -52,7 +52,7 @@ internal fun PaymentDetailExpandableCard(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val dateTimeFormatter = rememberHedvigDateTimeFormatter()
+  val dateTimeFormatter = rememberHedvigMonthDateTimeFormatter()
   HedvigCard(
     onClick = onClick,
     modifier = modifier,
@@ -149,7 +149,7 @@ internal fun PaymentDetailExpandableCard(
               },
             )
           }
-          Spacer(Modifier.height(16.dp))
+          Spacer(Modifier.height(8.dp))
         }
       }
     }

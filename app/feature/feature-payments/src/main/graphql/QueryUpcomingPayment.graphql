@@ -1,47 +1,9 @@
 query UpcomingPayment {
   currentMember {
     futureCharge {
-      contractsChargeBreakdown {
-        contract {
-          exposureDisplayName
-          currentAgreement {
-            productVariant {
-              displayName
-            }
-          }
-        }
-        gross {
-          ...MoneyFragment
-        }
-        periods {
-          amount {
-            ...MoneyFragment
-          }
-          fromDate
-          isPreviouslyFailedCharge
-          toDate
-        }
-      }
-      date
-      discount {
-        ...MoneyFragment
-      }
-      discountBreakdown {
-        code
-        isReferral
-        discount {
-          ...MoneyFragment
-        }
-      }
-      gross {
-        ...MoneyFragment
-      }
-      id
-      net {
-        ...MoneyFragment
-      }
-      pastFailedChargeIds
-      status
+      ...MemberChargeFragment
+    }    pastCharges {
+      ...MemberChargeFragment
     }
     referralInformation {
       code
@@ -62,4 +24,49 @@ query UpcomingPayment {
       }
     }
   }
+}
+
+fragment MemberChargeFragment on MemberCharge {
+  contractsChargeBreakdown {
+    contract {
+      exposureDisplayName
+      currentAgreement {
+        productVariant {
+          displayName
+        }
+      }
+    }
+    gross {
+      ...MoneyFragment
+    }
+    periods {
+      amount {
+        ...MoneyFragment
+      }
+      fromDate
+      isPreviouslyFailedCharge
+      toDate
+    }
+  }
+  date
+  discount {
+    ...MoneyFragment
+  }
+  discountBreakdown {
+    code
+    isReferral
+    discount {
+      ...MoneyFragment
+    }
+  }
+  gross {
+    ...MoneyFragment
+  }
+  id
+  net {
+    ...MoneyFragment
+  }
+  pastFailedChargeIds
+  status
+
 }
