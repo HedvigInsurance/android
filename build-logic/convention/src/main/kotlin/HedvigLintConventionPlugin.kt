@@ -1,12 +1,12 @@
 import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.LibraryExtension
 import com.android.build.api.dsl.Lint
+import java.io.File
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.the
-import java.io.File
 
 class HedvigLintConventionPlugin : Plugin<Project> {
   override fun apply(target: Project) {
@@ -22,9 +22,11 @@ class HedvigLintConventionPlugin : Plugin<Project> {
         pluginManager.hasPlugin(libs.plugins.androidApplication.get().pluginId) -> {
           configure<ApplicationExtension> { lint { configure(lintXmlPath, lintBaselineFile) } }
         }
+
         pluginManager.hasPlugin(libs.plugins.androidLibrary.get().pluginId) -> {
           configure<LibraryExtension> { lint { configure(lintXmlPath, lintBaselineFile) } }
         }
+
         else -> {
           pluginManager.apply(libs.plugins.lintGradlePlugin.get().pluginId)
           configure<Lint> { configure(lintXmlPath, lintBaselineFile) }
@@ -34,10 +36,7 @@ class HedvigLintConventionPlugin : Plugin<Project> {
   }
 }
 
-private fun Lint.configure(
-  lintXmlFile: File,
-  lintBaselineFile: File,
-) {
+private fun Lint.configure(lintXmlFile: File, lintBaselineFile: File) {
   baseline = lintBaselineFile
   lintConfig = lintXmlFile
   xmlReport = true

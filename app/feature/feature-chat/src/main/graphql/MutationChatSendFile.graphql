@@ -1,0 +1,13 @@
+mutation ChatSendFile($uploadToken: ID!) {
+  chatSendFile(input: { uploadToken: $uploadToken } ) {
+    message {
+      ...MessageFragment
+    }
+    status {
+      message
+    }
+    error {
+      message
+    }
+  }
+}

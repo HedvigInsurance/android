@@ -5,16 +5,13 @@ import com.apollographql.apollo3.cache.normalized.apolloStore
 import com.hedvig.android.auth.event.AuthEventListener
 
 internal class ApolloNormalizedCacheAuthEventListener(
-  private val giraffeApolloClient: ApolloClient,
-  private val octopusApolloClient: ApolloClient,
+  private val apolloClient: ApolloClient,
 ) : AuthEventListener {
   override suspend fun loggedIn(accessToken: String) {
-    giraffeApolloClient.apolloStore.clearAll()
-    octopusApolloClient.apolloStore.clearAll()
+    apolloClient.apolloStore.clearAll()
   }
 
   override suspend fun loggedOut() {
-    giraffeApolloClient.apolloStore.clearAll()
-    octopusApolloClient.apolloStore.clearAll()
+    apolloClient.apolloStore.clearAll()
   }
 }

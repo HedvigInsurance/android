@@ -15,8 +15,6 @@ import androidx.core.content.getSystemService
 import androidx.core.graphics.drawable.IconCompat
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.core.common.android.notification.setupNotificationChannel
-import com.hedvig.android.feature.chat.legacy.getStoredBoolean
-import com.hedvig.android.feature.chat.ui.ChatFragment
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
@@ -38,10 +36,11 @@ class ChatNotificationSender(
   }
 
   override fun sendNotification(type: String, remoteMessage: RemoteMessage) {
-    if (context.getStoredBoolean(ChatFragment.ACTIVITY_IS_IN_FOREGROUND)) {
-      logcat(LogPriority.INFO) { "ChatNotificationSender ignoring notification since chat is open" }
-      return
-    }
+    // todo chat: Consider still not showing the notification when chat is on the foreground
+//    if (context.getStoredBoolean(ChatFragment.ACTIVITY_IS_IN_FOREGROUND)) {
+//      logcat(LogPriority.INFO) { "ChatNotificationSender ignoring notification since chat is open" }
+//      return
+//    }
 
     val hedvigPerson = hedvigPerson.toBuilder()
       .also { person ->

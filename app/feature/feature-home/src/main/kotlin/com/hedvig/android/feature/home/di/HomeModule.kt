@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.home.di
 
 import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.apollo.octopus.di.octopusClient
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.data.travelcertificate.GetTravelCertificateSpecificationsUseCase
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCaseDemo
@@ -17,7 +16,7 @@ import org.koin.dsl.module
 val homeModule = module {
   single<GetHomeDataUseCaseImpl> {
     GetHomeDataUseCaseImpl(
-      get<ApolloClient>(octopusClient),
+      get<ApolloClient>(),
       get<GetMemberRemindersUseCase>(),
       get<GetTravelCertificateSpecificationsUseCase>(),
       get<FeatureManager>(),

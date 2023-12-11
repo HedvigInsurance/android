@@ -1,12 +1,10 @@
-@file:Suppress("MISSING_DEPENDENCY_CLASS")
-
 package com.hedvig.android.lokalise.extension
 
 import com.hedvig.android.lokalise.config.DownloadConfig
+import javax.inject.Inject
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
-import javax.inject.Inject
 
 abstract class LokalisePluginExtension @Inject constructor(
   objectFactory: ObjectFactory,
