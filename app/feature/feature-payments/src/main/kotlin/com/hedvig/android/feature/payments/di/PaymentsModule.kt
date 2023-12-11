@@ -2,7 +2,6 @@ package com.hedvig.android.feature.payments.di
 
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.NetworkCacheManager
-import com.hedvig.android.apollo.octopus.di.octopusClient
 import com.hedvig.android.feature.payments.overview.PaymentOverviewViewModel
 import com.hedvig.android.feature.payments.data.AddDiscountUseCase
 import com.hedvig.android.feature.payments.data.AddDiscountUseCaseImpl
@@ -13,12 +12,12 @@ import org.koin.dsl.module
 
 val payments2Module = module {
   single<GetUpcomingPaymentUseCase> {
-    GetUpcomingPaymentUseCaseImpl(get<ApolloClient>(octopusClient))
+    GetUpcomingPaymentUseCaseImpl(get<ApolloClient>())
   }
 
   single<AddDiscountUseCase> {
     AddDiscountUseCaseImpl(
-      get<ApolloClient>(octopusClient),
+      get<ApolloClient>(),
       get<NetworkCacheManager>(),
     )
   }

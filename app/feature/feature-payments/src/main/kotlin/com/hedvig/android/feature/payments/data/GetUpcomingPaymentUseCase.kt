@@ -27,9 +27,14 @@ internal data class GetUpcomingPaymentUseCaseImpl(
       .toEither(::ErrorMessage)
       .bind()
 
+    val redeemedCampaigns = result.currentMember.redeemedCampaigns
+    val referralInformation = result.currentMember.referralInformation
+
     PaymentOverview(
-      memberCharge = result.currentMember.futureCharge?.toMemberCharge(),
-      pastCharges = result.currentMember.pastCharges.map { it.toMemberCharge() }.reversed(),
+      memberCharge = result.currentMember.futureCharge?.toMemberCharge(redeemedCampaigns, referralInformation),
+      pastCharges = result.currentMember.pastCharges
+        .map { it.toMemberCharge(redeemedCampaigns, referralInformation) }
+        .reversed(),
       paymentConnection = PaymentConnection(
         connectionInfo = result.currentMember.paymentInformation.connection?.let {
           PaymentConnection.ConnectionInfo(
