@@ -7,11 +7,9 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiMoney
-import com.hedvig.android.feature.payments2.data.PaymentOverview.PaymentConnection.PaymentConnectionStatus
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.datetime.LocalDate
+import kotlinx.collections.immutable.toPersistentList
 import octopus.UpcomingPaymentQuery
+import octopus.fragment.MemberChargeFragment
 import octopus.type.MemberChargeStatus
 import octopus.type.MemberPaymentConnectionStatus
 
@@ -29,42 +27,57 @@ internal data class GetUpcomingPaymentUseCaseImpl(
       .bind()
 
     PaymentOverview(
-      futureCharge = result.currentMember.futureCharge?.toFutureCharge(),
-      chargeBreakdowns = persistentListOf(),
-      paymentConnection = PaymentOverview.PaymentConnection(
+      memberCharge = result.currentMember.futureCharge?.toMemberCharge(),
+      pastCharges = result.currentMember.pastCharges.map { it.toMemberCharge() }.reversed(),
+      paymentConnection = PaymentConnection(
         connectionInfo = result.currentMember.paymentInformation.connection?.let {
-          PaymentOverview.PaymentConnection.ConnectionInfo(
+          PaymentConnection.ConnectionInfo(
             displayName = it.displayName,
             displayValue = it.descriptor,
           )
         },
         status = when (result.currentMember.paymentInformation.status) {
-          MemberPaymentConnectionStatus.ACTIVE -> PaymentConnectionStatus.ACTIVE
-          MemberPaymentConnectionStatus.PENDING -> PaymentConnectionStatus.PENDING
-          MemberPaymentConnectionStatus.NEEDS_SETUP -> PaymentConnectionStatus.NEEDS_SETUP
-          MemberPaymentConnectionStatus.UNKNOWN__ -> PaymentConnectionStatus.UNKNOWN
+          MemberPaymentConnectionStatus.ACTIVE -> PaymentConnection.PaymentConnectionStatus.ACTIVE
+          MemberPaymentConnectionStatus.PENDING -> PaymentConnection.PaymentConnectionStatus.PENDING
+          MemberPaymentConnectionStatus.NEEDS_SETUP -> PaymentConnection.PaymentConnectionStatus.NEEDS_SETUP
+          MemberPaymentConnectionStatus.UNKNOWN__ -> PaymentConnection.PaymentConnectionStatus.UNKNOWN
         },
       ),
     )
   }
 }
 
-private fun UpcomingPaymentQuery.Data.CurrentMember.FutureCharge.toFutureCharge() = PaymentOverview.FutureCharge(
+private fun MemberChargeFragment.toMemberCharge() = MemberCharge(
   id = id ?: "",
   grossAmount = UiMoney.fromMoneyFragment(gross),
   netAmount = UiMoney.fromMoneyFragment(net),
   status = when (status) {
-    MemberChargeStatus.UPCOMING -> PaymentOverview.MemberChargeStatus.UPCOMING
-    MemberChargeStatus.SUCCESS -> PaymentOverview.MemberChargeStatus.SUCCESS
-    MemberChargeStatus.PENDING -> PaymentOverview.MemberChargeStatus.PENDING
-    MemberChargeStatus.FAILED -> PaymentOverview.MemberChargeStatus.FAILED
-    MemberChargeStatus.UNKNOWN__ -> PaymentOverview.MemberChargeStatus.UNKNOWN
+    MemberChargeStatus.UPCOMING -> MemberCharge.MemberChargeStatus.UPCOMING
+    MemberChargeStatus.SUCCESS -> MemberCharge.MemberChargeStatus.SUCCESS
+    MemberChargeStatus.PENDING -> MemberCharge.MemberChargeStatus.PENDING
+    MemberChargeStatus.FAILED -> MemberCharge.MemberChargeStatus.FAILED
+    MemberChargeStatus.UNKNOWN__ -> MemberCharge.MemberChargeStatus.UNKNOWN
   },
   dueDate = date,
   failedCharge = toFailedCharge(),
+  chargeBreakdowns = contractsChargeBreakdown.map {
+    MemberCharge.ChargeBreakdown(
+      contractDisplayName = it.contract.currentAgreement.productVariant.displayName,
+      contractDetails = it.contract.exposureDisplayName,
+      grossAmount = UiMoney.fromMoneyFragment(it.gross),
+      periods = it.periods.map {
+        MemberCharge.ChargeBreakdown.Period(
+          amount = UiMoney.fromMoneyFragment(it.amount),
+          fromDate = it.fromDate,
+          toDate = it.toDate,
+          isPreviouslyFailedCharge = it.isPreviouslyFailedCharge,
+        )
+      }.toPersistentList(),
+    )
+  }.toPersistentList(),
 )
 
-private fun UpcomingPaymentQuery.Data.CurrentMember.FutureCharge.toFailedCharge(): PaymentOverview.FutureCharge.FailedCharge? {
+private fun MemberChargeFragment.toFailedCharge(): MemberCharge.FailedCharge? {
   val previousChargesPeriods = contractsChargeBreakdown
     .flatMap { it.periods }
     .filter { it.isPreviouslyFailedCharge }
@@ -73,69 +86,11 @@ private fun UpcomingPaymentQuery.Data.CurrentMember.FutureCharge.toFailedCharge(
   val to = previousChargesPeriods.maxOfOrNull { it.toDate }
 
   return if (from != null && to != null) {
-    PaymentOverview.FutureCharge.FailedCharge(
+    MemberCharge.FailedCharge(
       from,
       to,
     )
   } else {
     null
-  }
-}
-
-internal data class PaymentOverview(
-  val futureCharge: FutureCharge?,
-  val paymentConnection: PaymentConnection?,
-  val chargeBreakdowns: ImmutableList<ChargeBreakdown>,
-) {
-  data class FutureCharge(
-    val grossAmount: UiMoney,
-    val netAmount: UiMoney,
-    val id: String,
-    val status: MemberChargeStatus,
-    val dueDate: LocalDate,
-    val failedCharge: FailedCharge?,
-  ) {
-    data class FailedCharge(
-      val fromDate: LocalDate,
-      val toDate: LocalDate,
-    )
-  }
-
-  data class PaymentConnection(
-    val connectionInfo: ConnectionInfo?,
-    val status: PaymentConnectionStatus,
-  ) {
-    data class ConnectionInfo(
-      val displayName: String,
-      val displayValue: String,
-    )
-
-    enum class PaymentConnectionStatus {
-      ACTIVE,
-      PENDING,
-      NEEDS_SETUP,
-      UNKNOWN,
-    }
-  }
-
-  data class ChargeBreakdown(
-    val contractDisplayName: String,
-    val grossAmount: UiMoney,
-    val periods: ImmutableList<Period>,
-  ) {
-    data class Period(
-      val amount: UiMoney,
-      val fromDate: LocalDate,
-      val toDate: LocalDate,
-      val isPreviouslyFailedCharge: Boolean,
-    )
-  }
-
-  enum class MemberChargeStatus {
-    UPCOMING,
-    SUCCESS,
-    PENDING,
-    FAILED,
-    UNKNOWN,
   }
 }

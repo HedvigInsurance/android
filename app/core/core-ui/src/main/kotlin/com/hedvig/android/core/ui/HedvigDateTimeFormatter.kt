@@ -22,6 +22,10 @@ fun hedvigSecondaryDateTimeFormatter(locale: Locale): DateTimeFormatter {
   return DateTimeFormatter.ofPattern("MMMM d yyyy", locale)
 }
 
+fun hedvigMonthDateTimeFormatter(locale: Locale): DateTimeFormatter {
+  return DateTimeFormatter.ofPattern("d MMM", locale)
+}
+
 /**
  * Example output: "910113"
  */
@@ -33,6 +37,12 @@ fun hedvigSecondaryBirthDateDateTimeFormatter(locale: Locale): DateTimeFormatter
 fun rememberHedvigDateTimeFormatter(): DateTimeFormatter {
   val locale = getLocale()
   return remember(locale) { hedvigDateTimeFormatter(locale) }
+}
+
+@Composable
+fun rememberHedvigMonthDateTimeFormatter(): DateTimeFormatter {
+  val locale = getLocale()
+  return remember(locale) { hedvigMonthDateTimeFormatter(locale) }
 }
 
 @Composable
