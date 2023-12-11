@@ -107,7 +107,7 @@ internal fun DiscountRow(discount: Discount) {
 
 @Composable
 @HedvigPreview
-fun DiscountRowPreview() {
+private fun DiscountRowPreview() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       Column {

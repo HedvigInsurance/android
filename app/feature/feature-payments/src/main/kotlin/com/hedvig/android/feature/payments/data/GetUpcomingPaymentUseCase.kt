@@ -13,6 +13,7 @@ import octopus.fragment.MemberChargeFragment
 import octopus.type.CurrencyCode
 import octopus.type.MemberChargeStatus
 import octopus.type.MemberPaymentConnectionStatus
+import octopus.type.RedeemedCampaignType
 
 internal interface GetUpcomingPaymentUseCase {
   suspend fun invoke(): Either<ErrorMessage, PaymentOverview>
@@ -49,16 +50,18 @@ internal data class GetUpcomingPaymentUseCaseImpl(
           MemberPaymentConnectionStatus.UNKNOWN__ -> PaymentConnection.PaymentConnectionStatus.UNKNOWN
         },
       ),
-      discounts = result.currentMember.redeemedCampaigns.map {
-        Discount(
-          code = it.code,
-          displayName = it.onlyApplicableToContracts?.firstOrNull()?.exposureDisplayName,
-          description = it.description,
-          expiresAt = it.expiresAt,
-          amount = null,
-          isReferral = false,
-        )
-      } + listOfNotNull(discountFromReferral(result.currentMember.referralInformation)),
+      discounts = result.currentMember.redeemedCampaigns
+        .filter { it.type == RedeemedCampaignType.VOUCHER }
+        .map {
+          Discount(
+            code = it.code,
+            displayName = it.onlyApplicableToContracts?.firstOrNull()?.exposureDisplayName,
+            description = it.description,
+            expiresAt = it.expiresAt,
+            amount = null,
+            isReferral = false,
+          )
+        } + listOfNotNull(discountFromReferral(result.currentMember.referralInformation)),
     )
   }
 }
@@ -94,21 +97,25 @@ private fun MemberChargeFragment.toMemberCharge(
       }.toPersistentList(),
     )
   }.toPersistentList(),
-  discounts = discountBreakdown.mapNotNull { discountBreakdown ->
-    if (discountBreakdown.isReferral) {
-      discountFromReferral(referralInformation)
+  discounts = discountBreakdown.map { discountBreakdown ->
+    val code = if (discountBreakdown.isReferral) {
+      referralInformation.code
+    } else if (discountBreakdown.code != null) {
+      discountBreakdown.code!!
     } else {
-      Discount(
-        code = discountBreakdown.code ?: "-",
-        displayName = redeemedCampaigns.firstOrNull {
-          it.code == discountBreakdown.code
-        }?.onlyApplicableToContracts?.firstOrNull()?.exposureDisplayName,
-        description = redeemedCampaigns.firstOrNull { it.code == discountBreakdown.code }?.description,
-        expiresAt = redeemedCampaigns.firstOrNull { it.code == discountBreakdown.code }?.expiresAt,
-        amount = UiMoney(discountBreakdown.discount.amount.unaryMinus(), discountBreakdown.discount.currencyCode),
-        isReferral = false,
-      )
+      "-"
     }
+
+    Discount(
+      code = code,
+      displayName = redeemedCampaigns.firstOrNull {
+        it.code == discountBreakdown.code
+      }?.onlyApplicableToContracts?.firstOrNull()?.exposureDisplayName,
+      description = redeemedCampaigns.firstOrNull { it.code == discountBreakdown.code }?.description,
+      expiresAt = redeemedCampaigns.firstOrNull { it.code == discountBreakdown.code }?.expiresAt,
+      amount = UiMoney(discountBreakdown.discount.amount.unaryMinus(), discountBreakdown.discount.currencyCode),
+      isReferral = discountBreakdown.isReferral,
+    )
   },
 )
 

@@ -1,6 +1,6 @@
 package com.hedvig.android.feature.payments.overview
 
-import androidx.compose.foundation.*
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -64,7 +64,7 @@ import kotlinx.datetime.toJavaLocalDate
 internal fun PaymentOverviewDestination(
   viewModel: PaymentOverviewViewModel,
   onBackPressed: () -> Unit,
-  onUpcomingPaymentClicked: (MemberCharge, PaymentOverview) -> Unit,
+  onUpcomingPaymentClicked: (MemberCharge) -> Unit,
   onDiscountClicked: (List<Discount>) -> Unit,
   onPaymentHistoryClicked: (PaymentOverview) -> Unit,
   onChangeBankAccount: () -> Unit,
@@ -85,7 +85,7 @@ internal fun PaymentOverviewDestination(
 private fun PaymentOverviewScreen(
   uiState: OverViewUiState,
   navigateUp: () -> Unit,
-  onUpcomingPaymentClicked: (MemberCharge, PaymentOverview) -> Unit,
+  onUpcomingPaymentClicked: (MemberCharge) -> Unit,
   onChangeBankAccount: () -> Unit,
   onDiscountClicked: (List<Discount>) -> Unit,
   onPaymentHistoryClicked: (PaymentOverview) -> Unit,
@@ -97,111 +97,106 @@ private fun PaymentOverviewScreen(
     navigateUp = navigateUp,
     modifier = Modifier.clearFocusOnTap(),
   ) {
-    Column {
-      if (uiState.error != null) {
-        Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
-          HedvigErrorSection(retry = onRetry)
-        }
-      } else if (uiState.isLoadingPaymentOverView) {
-        HedvigFullScreenCenterAlignedProgressDebounced(Modifier.weight(1f))
-      } else {
-        val memberCharge = uiState.paymentOverview?.memberCharge
-        if (memberCharge != null) {
-          PaymentAmountCard(
-            memberCharge = memberCharge,
-            onCardClicked = {
-              onUpcomingPaymentClicked(
-                memberCharge,
-                uiState.paymentOverview,
-              )
-            },
-            modifier = Modifier
-              .fillMaxWidth()
-              .padding(horizontal = 16.dp, vertical = 8.dp)
-              .animateContentHeight(),
-          )
-          if (memberCharge.status == MemberCharge.MemberChargeStatus.PENDING) {
-            VectorInfoCard(
-              text = stringResource(id = R.string.PAYMENTS_IN_PROGRESS),
-              modifier = Modifier.padding(horizontal = 16.dp),
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-          }
-
-          memberCharge.failedCharge?.let {
-            VectorErrorCard(
-              text = stringResource(
-                id = R.string.PAYMENTS_MISSED_PAYMENT,
-                dateTimeFormatter.format(it.fromDate.toJavaLocalDate()),
-                dateTimeFormatter.format(it.toDate.toJavaLocalDate()),
-              ),
-              modifier = Modifier.padding(horizontal = 16.dp),
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-          }
-        } else {
-          HedvigInformationSection(title = stringResource(id = R.string.PAYMENTS_NO_PAYMENTS_IN_PROGRESS))
-        }
-        if (uiState.paymentOverview?.paymentConnection?.hasConnectedPayment == false) {
-          val text = if (memberCharge != null) {
-            stringResource(
-              id = R.string.info_card_missing_payment_body_with_date,
-              dateTimeFormatter.format(memberCharge.dueDate.toJavaLocalDate()),
-            )
-          } else {
-            stringResource(id = R.string.info_card_missing_payment_body)
-          }
-          VectorWarningCard(
-            text = text,
+    if (uiState.error != null) {
+      Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
+        HedvigErrorSection(retry = onRetry)
+      }
+    } else if (uiState.isLoadingPaymentOverView) {
+      HedvigFullScreenCenterAlignedProgressDebounced(Modifier.weight(1f))
+    } else {
+      val memberCharge = uiState.paymentOverview?.memberCharge
+      if (memberCharge != null) {
+        PaymentAmountCard(
+          memberCharge = memberCharge,
+          onCardClicked = {
+            onUpcomingPaymentClicked(memberCharge)
+          },
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .animateContentHeight(),
+        )
+        if (memberCharge.status == MemberCharge.MemberChargeStatus.PENDING) {
+          VectorInfoCard(
+            text = stringResource(id = R.string.PAYMENTS_IN_PROGRESS),
             modifier = Modifier.padding(horizontal = 16.dp),
-          ) {
-            HedvigContainedSmallButton(
-              text = stringResource(id = R.string.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_TITLE),
-              onClick = onChangeBankAccount,
-              colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.containedButtonContainer,
-                contentColor = MaterialTheme.colorScheme.onContainedButtonContainer,
-              ),
-              textStyle = MaterialTheme.typography.bodyMedium,
-              modifier = Modifier.fillMaxWidth(),
-            )
-          }
+          )
           Spacer(modifier = Modifier.height(8.dp))
         }
-        uiState.paymentOverview?.let {
-          Discounts(
-            modifier = Modifier
-              .clickable {
-                onDiscountClicked(it.discounts)
-              }
-              .padding(16.dp),
-          )
-          Divider(modifier = Modifier.padding(horizontal = 16.dp))
-          PaymentHistory(
-            modifier = Modifier
-              .clickable {
-                onPaymentHistoryClicked(it)
-              }
-              .padding(16.dp),
-          )
-        }
-        uiState.paymentOverview?.paymentConnection?.connectionInfo?.let {
-          Divider(modifier = Modifier.padding(horizontal = 16.dp))
-          PaymentDetails(
-            displayName = it.displayName,
-            displayValue = it.displayValue,
-          )
-        }
-        Spacer(Modifier.height(16.dp))
-        if (uiState.paymentOverview?.paymentConnection?.hasConnectedPayment == true) {
-          HedvigSecondaryContainedButton(
-            text = stringResource(R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT),
-            onClick = onChangeBankAccount,
+
+        memberCharge.failedCharge?.let {
+          VectorErrorCard(
+            text = stringResource(
+              id = R.string.PAYMENTS_MISSED_PAYMENT,
+              dateTimeFormatter.format(it.fromDate.toJavaLocalDate()),
+              dateTimeFormatter.format(it.toDate.toJavaLocalDate()),
+            ),
             modifier = Modifier.padding(horizontal = 16.dp),
           )
+          Spacer(modifier = Modifier.height(8.dp))
         }
-        Spacer(Modifier.height(16.dp))
+      } else {
+        HedvigInformationSection(title = stringResource(id = R.string.PAYMENTS_NO_PAYMENTS_IN_PROGRESS))
       }
+      if (uiState.paymentOverview?.paymentConnection?.hasConnectedPayment == false) {
+        val text = if (memberCharge != null) {
+          stringResource(
+            id = R.string.info_card_missing_payment_body_with_date,
+            dateTimeFormatter.format(memberCharge.dueDate.toJavaLocalDate()),
+          )
+        } else {
+          stringResource(id = R.string.info_card_missing_payment_body)
+        }
+        VectorWarningCard(
+          text = text,
+          modifier = Modifier.padding(horizontal = 16.dp),
+        ) {
+          HedvigContainedSmallButton(
+            text = stringResource(id = R.string.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_TITLE),
+            onClick = onChangeBankAccount,
+            colors = ButtonDefaults.buttonColors(
+              containerColor = MaterialTheme.colorScheme.containedButtonContainer,
+              contentColor = MaterialTheme.colorScheme.onContainedButtonContainer,
+            ),
+            textStyle = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.fillMaxWidth(),
+          )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+      }
+      uiState.paymentOverview?.let {
+        Discounts(
+          modifier = Modifier
+            .clickable {
+              onDiscountClicked(it.discounts)
+            }
+            .padding(16.dp),
+        )
+        Divider(modifier = Modifier.padding(horizontal = 16.dp))
+        PaymentHistory(
+          modifier = Modifier
+            .clickable {
+              onPaymentHistoryClicked(it)
+            }
+            .padding(16.dp),
+        )
+      }
+      uiState.paymentOverview?.paymentConnection?.connectionInfo?.let {
+        Divider(modifier = Modifier.padding(horizontal = 16.dp))
+        PaymentDetails(
+          displayName = it.displayName,
+          displayValue = it.displayValue,
+        )
+      }
+      Spacer(Modifier.height(16.dp))
+      if (uiState.paymentOverview?.paymentConnection?.hasConnectedPayment == true) {
+        HedvigSecondaryContainedButton(
+          text = stringResource(R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT),
+          onClick = onChangeBankAccount,
+          modifier = Modifier.padding(horizontal = 16.dp),
+        )
+      }
+      Spacer(Modifier.height(16.dp))
     }
   }
 }
@@ -320,9 +315,10 @@ private fun PreviewPaymentScreen() {
       PaymentOverviewScreen(
         uiState = OverViewUiState(
           paymentOverview = paymentOverViewPreviewData,
+          isLoadingPaymentOverView = true,
         ),
         {},
-        { memberCharge: MemberCharge, paymentConnection: PaymentOverview -> },
+        { memberCharge: MemberCharge -> },
         {},
         {},
         {},
@@ -352,7 +348,7 @@ private fun PreviewPaymentScreenNoPayment() {
           ),
         ),
         {},
-        { memberCharge: MemberCharge, paymentConnection: PaymentOverview -> },
+        { memberCharge: MemberCharge -> },
         {},
         {},
         {},

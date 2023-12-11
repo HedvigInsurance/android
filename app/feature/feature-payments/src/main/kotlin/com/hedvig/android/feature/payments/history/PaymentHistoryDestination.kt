@@ -24,22 +24,21 @@ import com.hedvig.android.core.ui.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.feature.payments.data.MemberCharge
-import com.hedvig.android.feature.payments.data.PaymentOverview
 import com.hedvig.android.feature.payments.paymentOverViewPreviewData
 import hedvig.resources.R
 import kotlinx.datetime.toJavaLocalDate
 
 @Composable
 internal fun PaymentHistoryDestination(
-  paymentOverview: PaymentOverview,
-  onChargeClicked: (memberCharge: MemberCharge, paymentOverview: PaymentOverview) -> Unit,
+  pastCharges: List<MemberCharge>?,
+  onChargeClicked: (memberCharge: MemberCharge) -> Unit,
   navigateUp: () -> Unit,
 ) {
   HedvigScaffold(
     topAppBarText = stringResource(R.string.PAYMENT_HISTORY_TITLE),
     navigateUp = navigateUp,
   ) {
-    if (paymentOverview.pastCharges.isNullOrEmpty()) {
+    if (pastCharges.isNullOrEmpty()) {
       HedvigInformationSection(
         title = stringResource(id = R.string.PAYMENTS_NO_HISTORY_DATA),
         withDefaultVerticalSpacing = true,
@@ -51,7 +50,7 @@ internal fun PaymentHistoryDestination(
       Spacer(Modifier.height(8.dp))
 
       val dateTimeFormatter = rememberHedvigMonthDateTimeFormatter()
-      val groupedHistory = paymentOverview.pastCharges.reversed().groupBy { it.dueDate.year }
+      val groupedHistory = pastCharges.reversed().groupBy { it.dueDate.year }
       groupedHistory.forEach {
         val year = it.key
         val charges = it.value
@@ -77,7 +76,7 @@ internal fun PaymentHistoryDestination(
             },
             modifier = Modifier
               .clickable {
-                onChargeClicked(charge, paymentOverview)
+                onChargeClicked(charge)
               }
               .padding(16.dp),
           )
@@ -113,8 +112,8 @@ internal fun PaymentHistoryScreenPreview() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       PaymentHistoryDestination(
-        paymentOverview = paymentOverViewPreviewData,
-        onChargeClicked = { memberCharge: MemberCharge, paymentOverview: PaymentOverview -> },
+        pastCharges = paymentOverViewPreviewData.pastCharges,
+        onChargeClicked = { memberCharge: MemberCharge -> },
         navigateUp = {},
       )
     }
@@ -127,8 +126,8 @@ internal fun PaymentHistoryScreenNoDataPreview() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       PaymentHistoryDestination(
-        paymentOverview = paymentOverViewPreviewData.copy(pastCharges = emptyList()),
-        onChargeClicked = { memberCharge: MemberCharge, paymentOverview: PaymentOverview -> },
+        pastCharges = emptyList(),
+        onChargeClicked = { memberCharge: MemberCharge -> },
         navigateUp = {},
       )
     }

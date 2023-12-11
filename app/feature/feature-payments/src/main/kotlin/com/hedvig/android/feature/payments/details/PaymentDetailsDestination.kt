@@ -55,8 +55,8 @@ import kotlinx.datetime.toJavaLocalDate
 @Composable
 internal fun PaymentDetailsDestination(
   memberCharge: MemberCharge,
-  paymentOverview: PaymentOverview,
-  onFailedChargeClick: (MemberCharge, PaymentOverview) -> Unit,
+  paymentOverview: PaymentOverview?,
+  onFailedChargeClick: (MemberCharge) -> Unit,
   navigateUp: () -> Unit,
 ) {
   var selectedCharge by remember { mutableStateOf<MemberCharge.ChargeBreakdown?>(null) }
@@ -80,10 +80,10 @@ internal fun PaymentDetailsDestination(
 @Composable
 private fun MemberChargeDetailsScreen(
   memberCharge: MemberCharge,
-  paymentOverview: PaymentOverview,
+  paymentOverview: PaymentOverview?,
   selectedCharge: MemberCharge.ChargeBreakdown?,
   onCardClick: (MemberCharge.ChargeBreakdown) -> Unit,
-  onFailedChargeClick: (MemberCharge, PaymentOverview) -> Unit,
+  onFailedChargeClick: (MemberCharge) -> Unit,
   navigateUp: () -> Unit,
 ) {
   val dateTimeFormatter = rememberHedvigDateTimeFormatter()
@@ -211,7 +211,7 @@ private fun MemberChargeDetailsScreen(
               onClick = {
                 val nextCharge = getNextCharge(memberCharge, paymentOverview)
                 if (nextCharge != null) {
-                  onFailedChargeClick(nextCharge, paymentOverview)
+                  onFailedChargeClick(nextCharge)
                 }
               },
               colors = ButtonDefaults.buttonColors(
@@ -227,7 +227,7 @@ private fun MemberChargeDetailsScreen(
         MemberCharge.MemberChargeStatus.UNKNOWN -> {}
       }
 
-      paymentOverview.paymentConnection?.connectionInfo?.let {
+      paymentOverview?.paymentConnection?.connectionInfo?.let {
         Spacer(Modifier.height(32.dp))
         HorizontalItemsWithMaximumSpaceTaken(
           startSlot = {
@@ -278,12 +278,12 @@ private fun MemberChargeDetailsScreen(
   }
 }
 
-internal fun getNextCharge(memberCharge: MemberCharge, paymentOverview: PaymentOverview): MemberCharge? {
-  val index = (paymentOverview.pastCharges?.indexOf(memberCharge) ?: 0) - 1
-  return if (index < 0 && paymentOverview.memberCharge != null) {
+internal fun getNextCharge(memberCharge: MemberCharge, paymentOverview: PaymentOverview?): MemberCharge? {
+  val index = (paymentOverview?.pastCharges?.indexOf(memberCharge) ?: 0) - 1
+  return if (index < 0 && paymentOverview?.memberCharge != null) {
     paymentOverview.memberCharge
   } else if (index >= 0) {
-    paymentOverview.pastCharges?.get(index)
+    paymentOverview?.pastCharges?.get(index)
   } else {
     null
   }
@@ -316,7 +316,7 @@ private fun PaymentDetailsScreenPreview() {
         selectedCharge = null,
         onCardClick = {},
         navigateUp = {},
-        onFailedChargeClick = { memberCharge: MemberCharge, paymentOverview: PaymentOverview -> },
+        onFailedChargeClick = { memberCharge: MemberCharge -> },
       )
     }
   }

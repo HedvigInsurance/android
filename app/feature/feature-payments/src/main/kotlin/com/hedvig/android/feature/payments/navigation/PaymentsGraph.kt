@@ -1,9 +1,10 @@
 package com.hedvig.android.feature.payments.navigation
 
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
 import com.hedvig.android.feature.payments.data.MemberCharge
-import com.hedvig.android.feature.payments.data.PaymentOverview
 import com.hedvig.android.feature.payments.details.PaymentDetailsDestination
 import com.hedvig.android.feature.payments.discounts.DiscountsDestination
 import com.hedvig.android.feature.payments.history.PaymentHistoryDestination
@@ -40,49 +41,32 @@ fun NavGraphBuilder.paymentsGraph(
         onDiscountClicked = { discounts ->
           with(navigator) { backStackEntry.navigate(PaymentsDestinations2.Discounts(discounts)) }
         },
-        onUpcomingPaymentClicked = { memberCharge: MemberCharge, paymentOverview: PaymentOverview ->
-          with(navigator) {
-            backStackEntry.navigate(
-              PaymentsDestinations2.Details(
-                selectedMemberCharge = memberCharge,
-                paymentOverview = paymentOverview,
-              ),
-            )
-          }
+        onUpcomingPaymentClicked = { memberCharge: MemberCharge ->
+          with(navigator) { backStackEntry.navigate(PaymentsDestinations2.Details(selectedMemberCharge = memberCharge)) }
         },
       )
     }
     composable<PaymentsDestinations2.Details> { backStackEntry ->
+      val viewModel: PaymentOverviewViewModel = koinViewModel()
+      val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
       PaymentDetailsDestination(
         memberCharge = selectedMemberCharge,
-        paymentOverview = paymentOverview,
-        onFailedChargeClick = { memberCharge: MemberCharge, paymentOverview: PaymentOverview ->
-          with(navigator) {
-            backStackEntry.navigate(
-              PaymentsDestinations2.Details(
-                selectedMemberCharge = memberCharge,
-                paymentOverview = paymentOverview,
-              ),
-            )
-          }
+        paymentOverview = uiState.paymentOverview,
+        onFailedChargeClick = { memberCharge: MemberCharge ->
+          with(navigator) { backStackEntry.navigate(PaymentsDestinations2.Details(selectedMemberCharge = memberCharge)) }
         },
         navigateUp = navigator::navigateUp,
       )
     }
     composable<PaymentsDestinations2.History> { backStackEntry ->
+      val viewModel: PaymentOverviewViewModel = koinViewModel()
+      val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
       PaymentHistoryDestination(
-        paymentOverview = paymentOverview.copy(
-          paymentConnection = null, // Payment connection is not valid for historic payments
-        ),
-        onChargeClicked = { memberCharge: MemberCharge, paymentOverview: PaymentOverview ->
-          with(navigator) {
-            backStackEntry.navigate(
-              PaymentsDestinations2.Details(
-                selectedMemberCharge = memberCharge,
-                paymentOverview = paymentOverview,
-              ),
-            )
-          }
+        pastCharges = uiState.paymentOverview?.pastCharges,
+        onChargeClicked = { memberCharge: MemberCharge ->
+          with(navigator) { backStackEntry.navigate(PaymentsDestinations2.Details(selectedMemberCharge = memberCharge)) }
         },
         navigateUp = navigator::navigateUp,
       )
