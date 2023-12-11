@@ -26,7 +26,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "12.2.3"
+    versionName = "12.3.1"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -111,6 +111,7 @@ dependencies {
   implementation(libs.accompanist.insetsUi)
   implementation(libs.accompanist.pagerIndicators)
   implementation(libs.accompanist.systemUiController)
+  implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.compose.animation)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material)
@@ -134,7 +135,6 @@ dependencies {
   implementation(libs.androidx.lifecycle.viewmodelCompose)
   implementation(libs.androidx.navigation.common)
   implementation(libs.androidx.navigation.compose)
-  implementation(libs.androidx.other.activityCompose)
   implementation(libs.androidx.other.appCompat)
   implementation(libs.androidx.other.browser)
   implementation(libs.androidx.other.constraintLayout)
@@ -190,8 +190,6 @@ dependencies {
   implementation(libs.timber)
   implementation(projects.apolloAuthListeners)
   implementation(projects.apolloCore)
-  implementation(projects.apolloDi)
-  implementation(projects.apolloGiraffePublic)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.audioPlayer)
   implementation(projects.authAndroid)
@@ -218,6 +216,7 @@ dependencies {
   implementation(projects.featureClaimTriaging)
   implementation(projects.featureConnectPaymentAdyen)
   implementation(projects.featureConnectPaymentTrustly)
+  implementation(projects.featureEditCoinsured)
   implementation(projects.featureForever)
   implementation(projects.featureHome)
   implementation(projects.featureInsurances)
@@ -227,7 +226,6 @@ dependencies {
   implementation(projects.featureProfile)
   implementation(projects.featureTerminateInsurance)
   implementation(projects.featureTravelCertificate)
-  implementation(projects.featureEditCoinsured)
   implementation(projects.hanalyticsAndroid)
   implementation(projects.hanalyticsCore)
   implementation(projects.hanalyticsFeatureFlagsPublic)
@@ -238,9 +236,12 @@ dependencies {
   implementation(projects.loggingPublic)
   implementation(projects.marketCore)
   implementation(projects.memberRemindersPublic)
+  implementation(projects.moleculeAndroid)
+  implementation(projects.moleculePublic)
   implementation(projects.navigationActivity)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
+  implementation(projects.navigationUi)
   implementation(projects.notificationBadgeDataPublic)
   implementation(projects.notificationCore)
   implementation(projects.notificationFirebase)
@@ -269,10 +270,6 @@ dependencies {
   testImplementation(projects.languageTest)
   testImplementation(projects.loggingTest)
   testImplementation(projects.marketTest)
-}
-
-fun DependencyHandlerScope.stagingImplementation(dependencyNotation: Any) {
-  "stagingImplementation"(dependencyNotation)
 }
 
 easylauncher {

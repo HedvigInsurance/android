@@ -3,7 +3,7 @@ package com.hedvig.android.feature.payments2.data
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class PaymentConnection(
+internal data class PaymentConnection(
   val connectionInfo: ConnectionInfo?,
   val status: PaymentConnectionStatus,
 ) {

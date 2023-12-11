@@ -85,9 +85,9 @@ internal fun YourInfoTab(
   openUrl: (String) -> Unit,
   onCancelInsuranceClick: () -> Unit,
   isTerminated: Boolean,
-  modifier: Modifier = Modifier,
   contractHolderDisplayName: String,
   contractHolderSSN: String?,
+  modifier: Modifier = Modifier,
 ) {
   val dateTimeFormatter = rememberHedvigDateTimeFormatter()
   val coroutineScope = rememberCoroutineScope()
@@ -232,6 +232,7 @@ internal fun YourInfoTab(
       coInsuredList = coInsured,
       contractHolderDisplayName = contractHolderDisplayName,
       contractHolderSSN = contractHolderSSN,
+      allowEditCoInsured = allowEditCoInsured,
       onMissingInfoClick = onMissingInfoClick,
       modifier = Modifier.padding(horizontal = 16.dp),
     )
@@ -296,6 +297,7 @@ internal fun CoInsuredSection(
   coInsuredList: ImmutableList<InsuranceAgreement.CoInsured>,
   contractHolderDisplayName: String,
   contractHolderSSN: String?,
+  allowEditCoInsured: Boolean,
   onMissingInfoClick: () -> Unit,
   modifier: Modifier,
 ) {
@@ -422,7 +424,7 @@ internal fun CoInsuredSection(
     }
 
     val hasMissingInfoAndIsNotTerminating = coInsuredList.any { it.hasMissingInfo && it.terminatesOn == null }
-    if (hasMissingInfoAndIsNotTerminating) {
+    if (hasMissingInfoAndIsNotTerminating && allowEditCoInsured) {
       Spacer(Modifier.height(8.dp))
       VectorWarningCard(
         text = stringResource(id = R.string.CONTRACT_COINSURED_ADD_PERSONAL_INFO),

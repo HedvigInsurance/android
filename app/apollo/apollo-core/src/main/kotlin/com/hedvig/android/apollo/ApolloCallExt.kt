@@ -4,8 +4,6 @@ import arrow.core.Either
 import com.apollographql.apollo3.ApolloCall
 import com.apollographql.apollo3.api.ApolloResponse
 import com.apollographql.apollo3.api.Operation
-import com.apollographql.apollo3.api.Query
-import com.apollographql.apollo3.cache.normalized.watch
 import com.apollographql.apollo3.exception.ApolloException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
@@ -38,27 +36,6 @@ fun <D : Operation.Data, ErrorType> ApolloCall<D>.safeFlow(
       }
     }
     .map { it.toEither(ifEmpty) }
-}
-
-/**
- * First tries to fetch the data from the network, and from then on looks into changes of the cache.
- * If the first query from the internet fails, an exception is thrown internally and ends this flow by sending a last
- * value of QueryResult.Error for the consumers to react appropriately.
- * To then retry watching the query, this needs to be started and collected again. This can be done using
- * [com.hedvig.android.core.common.RetryChannel] for example.
- * If any subsequent cache reads fail simply nothing is emitted and the flow continues reading the cache. That is
- * because at that point we do have data to work with so there's no need for the error to propagate.
- */
-fun <D : Query.Data> ApolloCall<D>.safeWatch(): Flow<OperationResult<D>> {
-  return watch(fetchThrows = true)
-    .map(ApolloResponse<D>::toOperationResult)
-    .catch { exception ->
-      if (exception is ApolloException) {
-        emit(OperationResult.Error.NetworkError(exception))
-      } else {
-        emit(OperationResult.Error.GeneralError(exception))
-      }
-    }
 }
 
 private fun <D : Operation.Data> ApolloResponse<D>.toOperationResult(): OperationResult<D> {

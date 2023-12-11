@@ -3,7 +3,6 @@ package com.hedvig.android.feature.profile.di
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.auth.listeners.UploadLanguagePreferenceToBackendUseCase
-import com.hedvig.android.apollo.octopus.di.octopusClient
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
@@ -25,7 +24,7 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val profileModule = module {
-  single<GetEurobonusStatusUseCase> { NetworkGetEurobonusStatusUseCase(get<ApolloClient>(octopusClient)) }
+  single<GetEurobonusStatusUseCase> { NetworkGetEurobonusStatusUseCase(get<ApolloClient>()) }
   viewModel<ProfileViewModel> {
     ProfileViewModel(
       get<GetEurobonusStatusUseCase>(),
@@ -35,11 +34,11 @@ val profileModule = module {
       get<LogoutUseCase>(),
     )
   }
-  viewModel<EurobonusViewModel> { EurobonusViewModel(get<ApolloClient>(octopusClient)) }
+  viewModel<EurobonusViewModel> { EurobonusViewModel(get<ApolloClient>()) }
 
   single<ProfileRepositoryImpl> {
     ProfileRepositoryImpl(
-      apolloClient = get<ApolloClient>(octopusClient),
+      apolloClient = get<ApolloClient>(),
       networkCacheManager = get<NetworkCacheManager>(),
     )
   }
@@ -68,5 +67,5 @@ val profileModule = module {
   viewModel<MyInfoViewModel> {
     MyInfoViewModel(get<ProfileRepositoryProvider>())
   }
-  viewModel<AboutAppViewModel> { AboutAppViewModel(get(), get<ApolloClient>(octopusClient)) }
+  viewModel<AboutAppViewModel> { AboutAppViewModel(get(), get<ApolloClient>()) }
 }

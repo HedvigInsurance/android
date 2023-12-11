@@ -182,7 +182,7 @@ private fun MemberCharge.ChargeBreakdown.Period.toSubtitleColor(): Color {
 
 @Composable
 @HedvigPreview
-internal fun PaymentDetailExpandableCardPreview() {
+private fun PaymentDetailExpandableCardPreview() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       PaymentDetailExpandableCard(
@@ -224,7 +224,7 @@ internal fun PaymentDetailExpandableCardPreview() {
 
 @Composable
 @HedvigPreview
-internal fun PaymentDetailExpandableCardExpandedPreview() {
+private fun PaymentDetailExpandableCardExpandedPreview() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       PaymentDetailExpandableCard(

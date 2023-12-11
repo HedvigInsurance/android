@@ -17,7 +17,6 @@ dependencies {
 }
 
 apollo { // Octopus client
-  generateSourcesDuringGradleSync.set(false)
   service("octopus") {
     introspection {
       endpointUrl.set("https://apollo-router.dev.hedvigit.com")

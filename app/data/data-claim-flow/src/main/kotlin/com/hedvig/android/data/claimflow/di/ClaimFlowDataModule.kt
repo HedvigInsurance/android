@@ -4,7 +4,6 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import arrow.retrofit.adapter.either.EitherCallAdapterFactory
 import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.apollo.octopus.di.octopusClient
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.data.claimflow.ClaimFlowContextStorage
 import com.hedvig.android.data.claimflow.ClaimFlowRepository
@@ -19,7 +18,7 @@ import retrofit2.Retrofit
 
 val claimFlowDataModule = module {
   single<ClaimFlowRepository> {
-    ClaimFlowRepositoryImpl(get<ApolloClient>(octopusClient), get<OdysseyService>(), get<ClaimFlowContextStorage>())
+    ClaimFlowRepositoryImpl(get<ApolloClient>(), get<OdysseyService>(), get<ClaimFlowContextStorage>())
   }
   single<ClaimFlowContextStorage> { ClaimFlowContextStorage(get<DataStore<Preferences>>()) }
 

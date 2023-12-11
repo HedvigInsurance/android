@@ -215,6 +215,9 @@ internal fun HedvigNavHost(
     )
     chatGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+      hedvigBuildConstants = hedvigBuildConstants,
+      imageLoader = imageLoader,
+      openUrl = ::openUrl,
       navigator = navigator,
     )
     connectPaymentGraph(

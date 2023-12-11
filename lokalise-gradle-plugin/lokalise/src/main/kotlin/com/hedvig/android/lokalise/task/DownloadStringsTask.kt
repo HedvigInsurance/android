@@ -1,6 +1,9 @@
 package com.hedvig.android.lokalise.task
 
 import com.hedvig.android.lokalise.config.DownloadConfig
+import java.io.File
+import java.net.URL
+import javax.inject.Inject
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
@@ -26,9 +29,6 @@ import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
-import java.io.File
-import java.net.URL
-import javax.inject.Inject
 
 abstract class DownloadStringsTask @Inject constructor(
   private val fileSystemOperations: FileSystemOperations,
