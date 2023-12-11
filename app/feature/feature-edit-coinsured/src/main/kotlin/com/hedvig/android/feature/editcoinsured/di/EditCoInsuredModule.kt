@@ -2,7 +2,6 @@ package com.hedvig.android.feature.editcoinsured.di
 
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.NetworkCacheManager
-import com.hedvig.android.apollo.octopus.di.octopusClient
 import com.hedvig.android.feature.editcoinsured.data.CommitMidtermChangeUseCase
 import com.hedvig.android.feature.editcoinsured.data.CommitMidtermChangeUseCaseImpl
 import com.hedvig.android.feature.editcoinsured.data.CreateMidtermChangeUseCase
@@ -18,25 +17,25 @@ import org.koin.dsl.module
 val editCoInsuredModule = module {
   single<GetCoInsuredUseCase> {
     GetCoInsuredUseCaseImpl(
-      get<ApolloClient>(octopusClient),
+      get<ApolloClient>(),
     )
   }
 
   single<FetchCoInsuredPersonalInformationUseCase> {
     FetchCoInsuredPersonalInformationUseCaseImpl(
-      get<ApolloClient>(octopusClient),
+      get<ApolloClient>(),
     )
   }
 
   single<CreateMidtermChangeUseCase> {
     CreateMidtermChangeUseCaseImpl(
-      get<ApolloClient>(octopusClient),
+      get<ApolloClient>(),
     )
   }
 
   single<CommitMidtermChangeUseCase> {
     CommitMidtermChangeUseCaseImpl(
-      get<ApolloClient>(octopusClient),
+      get<ApolloClient>(),
       get<NetworkCacheManager>(),
     )
   }

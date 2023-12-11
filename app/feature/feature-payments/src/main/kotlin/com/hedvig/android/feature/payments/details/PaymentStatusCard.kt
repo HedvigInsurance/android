@@ -30,7 +30,7 @@ import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.WarningFilled
 
 @Composable
-fun PaymentStatusCard(
+internal fun PaymentStatusCard(
   text: String,
   modifier: Modifier = Modifier,
   icon: ImageVector = Icons.Hedvig.WarningFilled,

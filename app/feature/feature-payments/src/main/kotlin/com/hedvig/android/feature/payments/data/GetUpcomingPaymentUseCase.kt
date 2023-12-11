@@ -28,16 +28,8 @@ internal data class GetUpcomingPaymentUseCaseImpl(
       .bind()
 
     PaymentOverview(
-      memberCharge = result.currentMember.futureCharge?.toMemberCharge(
-        result.currentMember.redeemedCampaigns,
-        result.currentMember.referralInformation,
-      ),
-      pastCharges = result.currentMember.pastCharges.map {
-        it.toMemberCharge(
-          result.currentMember.redeemedCampaigns,
-          result.currentMember.referralInformation,
-        )
-      },
+      memberCharge = result.currentMember.futureCharge?.toMemberCharge(),
+      pastCharges = result.currentMember.pastCharges.map { it.toMemberCharge() }.reversed(),
       paymentConnection = PaymentConnection(
         connectionInfo = result.currentMember.paymentInformation.connection?.let {
           PaymentConnection.ConnectionInfo(

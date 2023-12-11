@@ -41,7 +41,7 @@ class GetUpcomingRenewalRemindersUseCaseTest {
       apolloClient,
       clock,
     )
-    val upcomingRenewalLocalDate = clock.now().plus(1.days).toLocalDateTime(TimeZone.UTC).date
+    val upcomingRenewalLocalDate = clock.now().plus(1.days).toLocalDateTime(TimeZone.currentSystemDefault()).date
     apolloClient.enqueueTestResponse(
       GetUpcomingRenewalReminderQuery(),
       GetUpcomingRenewalReminderQuery.Data(OctopusFakeResolver) {
@@ -94,7 +94,7 @@ class GetUpcomingRenewalRemindersUseCaseTest {
                 }
               }
               upcomingChangedAgreement = buildAgreement {
-                activeFrom = clock.now().plus((index + 1).days).toLocalDateTime(TimeZone.UTC).date
+                activeFrom = clock.now().plus((index + 1).days).toLocalDateTime(TimeZone.currentSystemDefault()).date
                 certificateUrl = "url#$index"
                 creationCause = AgreementCreationCause.RENEWAL
               }
@@ -110,7 +110,7 @@ class GetUpcomingRenewalRemindersUseCaseTest {
     assertThat(list).isNotNull()
     list!!.forEachIndexed { index, upcomingRenewal ->
       assertThat(upcomingRenewal.renewalDate).isEqualTo(
-        clock.now().plus((index + 1).days).toLocalDateTime(TimeZone.UTC).date,
+        clock.now().plus((index + 1).days).toLocalDateTime(TimeZone.currentSystemDefault()).date,
       )
       assertThat(upcomingRenewal.contractDisplayName).isEqualTo("#$index")
       assertThat(upcomingRenewal.draftCertificateUrl).isEqualTo("url#$index")
@@ -124,7 +124,7 @@ class GetUpcomingRenewalRemindersUseCaseTest {
       apolloClient,
       clock,
     )
-    val upcomingRenewalLocalDate = clock.now().minus(1.days).toLocalDateTime(TimeZone.UTC).date
+    val upcomingRenewalLocalDate = clock.now().minus(1.days).toLocalDateTime(TimeZone.currentSystemDefault()).date
     apolloClient.enqueueTestResponse(
       GetUpcomingRenewalReminderQuery(),
       GetUpcomingRenewalReminderQuery.Data(OctopusFakeResolver) {
@@ -170,7 +170,7 @@ class GetUpcomingRenewalRemindersUseCaseTest {
                 }
               }
               upcomingChangedAgreement = buildAgreement {
-                activeFrom = clock.now().minus(index.days).toLocalDateTime(TimeZone.UTC).date
+                activeFrom = clock.now().minus(index.days).toLocalDateTime(TimeZone.currentSystemDefault()).date
                 certificateUrl = "url#$index"
               }
             }
@@ -210,7 +210,8 @@ class GetUpcomingRenewalRemindersUseCaseTest {
                 }
               }
               upcomingChangedAgreement = buildAgreement {
-                activeFrom = (clock.now() + renewalOffsets[index]!!).toLocalDateTime(TimeZone.UTC).date
+                activeFrom =
+                  (clock.now() + renewalOffsets[index]!!).toLocalDateTime(TimeZone.currentSystemDefault()).date
                 certificateUrl = "url#$index"
                 creationCause = AgreementCreationCause.RENEWAL
               }
@@ -227,15 +228,21 @@ class GetUpcomingRenewalRemindersUseCaseTest {
     assertThat(list!!.size).isEqualTo(3)
 
     assertThat(list[0].contractDisplayName).isEqualTo("#1")
-    assertThat(list[0].renewalDate).isEqualTo(clock.now().plus(renewalOffsets[1]!!).toLocalDateTime(TimeZone.UTC).date)
+    assertThat(list[0].renewalDate).isEqualTo(
+      clock.now().plus(renewalOffsets[1]!!).toLocalDateTime(TimeZone.currentSystemDefault()).date,
+    )
     assertThat(list[0].draftCertificateUrl).isEqualTo("url#1")
 
     assertThat(list[1].contractDisplayName).isEqualTo("#3")
-    assertThat(list[1].renewalDate).isEqualTo(clock.now().plus(renewalOffsets[3]!!).toLocalDateTime(TimeZone.UTC).date)
+    assertThat(list[1].renewalDate).isEqualTo(
+      clock.now().plus(renewalOffsets[3]!!).toLocalDateTime(TimeZone.currentSystemDefault()).date,
+    )
     assertThat(list[1].draftCertificateUrl).isEqualTo("url#3")
 
     assertThat(list[2].contractDisplayName).isEqualTo("#4")
-    assertThat(list[2].renewalDate).isEqualTo(clock.now().plus(renewalOffsets[4]!!).toLocalDateTime(TimeZone.UTC).date)
+    assertThat(list[2].renewalDate).isEqualTo(
+      clock.now().plus(renewalOffsets[4]!!).toLocalDateTime(TimeZone.currentSystemDefault()).date,
+    )
     assertThat(list[2].draftCertificateUrl).isEqualTo("url#4")
   }
 
@@ -259,7 +266,7 @@ class GetUpcomingRenewalRemindersUseCaseTest {
                 }
               }
               upcomingChangedAgreement = buildAgreement {
-                activeFrom = (clock.now().plus(1.days)).toLocalDateTime(TimeZone.UTC).date
+                activeFrom = (clock.now().plus(1.days)).toLocalDateTime(TimeZone.currentSystemDefault()).date
                 certificateUrl = "url#1"
                 creationCause = AgreementCreationCause.MIDTERM_CHANGE
               }
@@ -285,7 +292,7 @@ class GetUpcomingRenewalRemindersUseCaseTest {
                 }
               }
               upcomingChangedAgreement = buildAgreement {
-                activeFrom = (clock.now().plus(1.days)).toLocalDateTime(TimeZone.UTC).date
+                activeFrom = (clock.now().plus(1.days)).toLocalDateTime(TimeZone.currentSystemDefault()).date
                 certificateUrl = "url#2"
                 creationCause = AgreementCreationCause.RENEWAL
               }
@@ -299,7 +306,9 @@ class GetUpcomingRenewalRemindersUseCaseTest {
     val list = result2.getOrNull()
     assertThat(list).isNotNull()
     assertThat(list!!.size).isEqualTo(1)
-    assertThat(list.first().renewalDate).isEqualTo(clock.now().plus(1.days).toLocalDateTime(TimeZone.UTC).date)
+    assertThat(list.first().renewalDate).isEqualTo(
+      clock.now().plus(1.days).toLocalDateTime(TimeZone.currentSystemDefault()).date,
+    )
     assertThat(list.first().draftCertificateUrl).isEqualTo("url#2")
   }
 

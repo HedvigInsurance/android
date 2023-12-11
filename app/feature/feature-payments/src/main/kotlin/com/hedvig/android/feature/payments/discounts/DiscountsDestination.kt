@@ -111,7 +111,7 @@ internal fun DiscountsScreen(
 
 @Composable
 @HedvigPreview
-internal fun PaymentDetailsScreenPreview() {
+private fun PaymentDetailsScreenPreview() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       DiscountsScreen(

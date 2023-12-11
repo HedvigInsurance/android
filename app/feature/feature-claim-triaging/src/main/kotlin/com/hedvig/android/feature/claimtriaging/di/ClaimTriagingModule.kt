@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.claimtriaging.di
 
 import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.apollo.octopus.di.octopusClient
 import com.hedvig.android.data.claimflow.ClaimFlowRepository
 import com.hedvig.android.data.claimtriaging.EntryPoint
 import com.hedvig.android.data.claimtriaging.EntryPointId
@@ -27,5 +26,5 @@ val claimTriagingModule = module {
     val entryPointOptions: ImmutableList<EntryPointOption> = parametersHolder.get()
     ClaimEntryPointOptionsViewModel(entryPointId, entryPointOptions, get<ClaimFlowRepository>())
   }
-  single<GetEntryPointGroupsUseCase> { GetEntryPointGroupsUseCase(get<ApolloClient>(octopusClient)) }
+  single<GetEntryPointGroupsUseCase> { GetEntryPointGroupsUseCase(get<ApolloClient>()) }
 }

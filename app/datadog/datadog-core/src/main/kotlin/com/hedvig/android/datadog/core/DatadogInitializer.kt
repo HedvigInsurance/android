@@ -49,12 +49,7 @@ abstract class DatadogInitializer : Initializer<Unit>, KoinComponent {
         service = "android",
       )
       .useSite(DatadogSite.EU1)
-      .setFirstPartyHosts(
-        listOf(
-          hedvigBuildConstants.urlGiraffeGraphql.removePrefix("https://").removeSuffix("/graphql"),
-          hedvigBuildConstants.urlGraphqlOctopus.removePrefix("https://"),
-        ),
-      )
+      .setFirstPartyHosts(listOf(hedvigBuildConstants.urlGraphqlOctopus.removePrefix("https://")))
       .build()
     val sdkCore = Datadog.initialize(context, configuration, TrackingConsent.GRANTED)
     if (sdkCore == null) {
