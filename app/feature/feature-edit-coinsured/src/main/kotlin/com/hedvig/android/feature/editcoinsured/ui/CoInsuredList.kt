@@ -22,7 +22,7 @@ internal fun CoInsuredList(
     uiState.member?.let {
       InsuredRow(
         displayName = it.displayName,
-        identifier = it.ssn ?: "",
+        identifier = it.identifier() ?: "",
         hasMissingInfo = false,
         allowEdit = false,
         isMember = true,
