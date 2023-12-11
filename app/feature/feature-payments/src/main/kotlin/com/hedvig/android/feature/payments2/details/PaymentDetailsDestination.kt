@@ -77,7 +77,7 @@ internal fun PaymentDetailsDestination(
 }
 
 @Composable
-internal fun MemberChargeDetailsScreen(
+private fun MemberChargeDetailsScreen(
   memberCharge: MemberCharge,
   paymentOverview: PaymentOverview,
   selectedCharge: MemberCharge.ChargeBreakdown?,
@@ -217,9 +217,8 @@ internal fun MemberChargeDetailsScreen(
         MemberCharge.MemberChargeStatus.UNKNOWN -> {}
       }
 
-      Spacer(Modifier.height(32.dp))
-
       paymentOverview.paymentConnection?.connectionInfo?.let {
+        Spacer(Modifier.height(32.dp))
         HorizontalItemsWithMaximumSpaceTaken(
           startSlot = {
             Text(stringResource(id = R.string.PAYMENTS_PAYMENT_METHOD))
@@ -300,7 +299,7 @@ private fun MemberCharge.topAppBarColors(): TopAppBarColors {
 
 @Composable
 @HedvigPreview
-internal fun PaymentDetailsScreenPreview() {
+private fun PaymentDetailsScreenPreview() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       MemberChargeDetailsScreen(

@@ -20,7 +20,7 @@ internal data class MemberCharge(
     val toDate: LocalDate,
   )
 
-  enum class MemberChargeStatus {
+  internal enum class MemberChargeStatus {
     UPCOMING,
     SUCCESS,
     PENDING,
