@@ -70,7 +70,9 @@ internal class TrustlyPresenter(
     }
 
     if (succeededInConnectingCard) {
-      cacheManager.clearCache()
+      LaunchedEffect(Unit) {
+        cacheManager.clearCache()
+      }
       return TrustlyUiState.SucceededInConnectingCard
     }
     if (connectingCardFailed) {

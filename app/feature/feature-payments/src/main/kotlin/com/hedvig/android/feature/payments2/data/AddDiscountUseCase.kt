@@ -9,11 +9,11 @@ import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import octopus.AddDiscountMutation
 
-interface AddDiscountUseCase {
+internal interface AddDiscountUseCase {
   suspend fun invoke(code: String): Either<ErrorMessage, DiscountSuccess>
 }
 
-data class AddDiscountUseCaseImpl(
+internal data class AddDiscountUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val cacheManager: NetworkCacheManager,
 ) : AddDiscountUseCase {
@@ -33,4 +33,4 @@ data class AddDiscountUseCaseImpl(
   }
 }
 
-data object DiscountSuccess
+internal data object DiscountSuccess
