@@ -1,0 +1,60 @@
+query UpcomingPayment {
+  currentMember {
+    futureCharge {
+      contractsChargeBreakdown {
+        contract {
+          exposureDisplayName
+        }
+        gross {
+          ...MoneyFragment
+        }
+        periods {
+          amount {
+            ...MoneyFragment
+          }
+          fromDate
+          isPreviouslyFailedCharge
+          toDate
+        }
+      }
+      date
+      discount {
+        ...MoneyFragment
+      }
+      discountBreakdown {
+        code
+        isReferral
+        discount {
+          ...MoneyFragment
+        }
+      }
+      gross {
+        ...MoneyFragment
+      }
+      id
+      net {
+        ...MoneyFragment
+      }
+      pastFailedChargeIds
+      status
+    }
+    referralInformation {
+      code
+    }
+    redeemedCampaigns {
+      onlyApplicableToContracts {
+        exposureDisplayName
+      }
+      code
+      description
+      expiresAt
+    }
+    paymentInformation {
+      status
+      connection {
+        displayName
+        descriptor
+      }
+    }
+  }
+}

@@ -1,9 +1,10 @@
 package com.hedvig.android.feature.payments2
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -23,14 +25,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.animation.animateContentHeight
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
+import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
+import com.hedvig.android.core.designsystem.component.button.HedvigSecondaryContainedButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
+import com.hedvig.android.core.designsystem.component.information.HedvigInformationSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.core.designsystem.material3.containedButtonContainer
+import com.hedvig.android.core.designsystem.material3.onContainedButtonContainer
 import com.hedvig.android.core.designsystem.material3.typeElement
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -40,12 +45,16 @@ import com.hedvig.android.core.icons.hedvig.normal.Payments
 import com.hedvig.android.core.icons.hedvig.normal.Waiting
 import com.hedvig.android.core.icons.hedvig.small.hedvig.Campaign
 import com.hedvig.android.core.ui.clearFocusOnTap
-import com.hedvig.android.core.ui.preview.DoubleBooleanCollectionPreviewParameterProvider
+import com.hedvig.android.core.ui.infocard.VectorErrorCard
+import com.hedvig.android.core.ui.infocard.VectorInfoCard
+import com.hedvig.android.core.ui.infocard.VectorWarningCard
 import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.feature.payments2.data.PaymentOverview
 import hedvig.resources.R
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
 import octopus.type.CurrencyCode
@@ -81,6 +90,7 @@ private fun PaymentOverviewScreen(
   onPaymentHistoryClicked: () -> Unit,
   onRetry: () -> Unit,
 ) {
+  val dateTimeFormatter = rememberHedvigDateTimeFormatter()
   HedvigScaffold(
     topAppBarText = stringResource(R.string.PROFILE_PAYMENT_TITLE),
     navigateUp = navigateUp,
@@ -88,14 +98,64 @@ private fun PaymentOverviewScreen(
   ) {
     when (uiState) {
       is OverViewUiState.Content -> Column {
-        PaymentAmountCard(
-          uiState = uiState,
-          onUpcomingPaymentClicked = onUpcomingPaymentClicked,
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .animateContentHeight(),
-        )
+        val futureCharge = uiState.paymentOverview.futureCharge
+        if (futureCharge != null) {
+          PaymentAmountCard(
+            futureCharge = futureCharge,
+            onUpcomingPaymentClicked = onUpcomingPaymentClicked,
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(horizontal = 16.dp, vertical = 8.dp)
+              .animateContentHeight(),
+          )
+          if (futureCharge.status == PaymentOverview.MemberChargeStatus.PENDING) {
+            VectorInfoCard(
+              text = stringResource(id = R.string.PAYMENTS_IN_PROGRESS),
+              modifier = Modifier.padding(horizontal = 16.dp),
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+          }
+
+          futureCharge.failedCharge?.let {
+            VectorErrorCard(
+              text = stringResource(
+                id = R.string.PAYMENTS_MISSED_PAYMENT,
+                dateTimeFormatter.format(it.fromDate.toJavaLocalDate()),
+                dateTimeFormatter.format(it.toDate.toJavaLocalDate()),
+              ),
+              modifier = Modifier.padding(horizontal = 16.dp),
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+          }
+        } else {
+          HedvigInformationSection(title = stringResource(id = R.string.PAYMENTS_NO_PAYMENTS_IN_PROGRESS))
+        }
+        if (!uiState.hasConnectedPayment) {
+          val text = if (futureCharge != null) {
+            stringResource(
+              id = R.string.info_card_missing_payment_body_with_date,
+              dateTimeFormatter.format(futureCharge.dueDate.toJavaLocalDate()),
+            )
+          } else {
+            stringResource(id = R.string.info_card_missing_payment_body)
+          }
+          VectorWarningCard(
+            text = text,
+            modifier = Modifier.padding(horizontal = 16.dp),
+          ) {
+            HedvigContainedSmallButton(
+              text = stringResource(id = R.string.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_TITLE),
+              onClick = onChangeBankAccount,
+              colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.containedButtonContainer,
+                contentColor = MaterialTheme.colorScheme.onContainedButtonContainer,
+              ),
+              textStyle = MaterialTheme.typography.bodyMedium,
+              modifier = Modifier.fillMaxWidth(),
+            )
+          }
+          Spacer(modifier = Modifier.height(8.dp))
+        }
         Discounts(
           modifier = Modifier
             .clickable { onDiscountClicked() }
@@ -107,21 +167,17 @@ private fun PaymentOverviewScreen(
             .clickable { onPaymentHistoryClicked() }
             .padding(16.dp),
         )
-        Divider(modifier = Modifier.padding(horizontal = 16.dp))
-        PaymentDetails(
-          displayName = uiState.connectedPaymentDisplayName,
-          displayValue = uiState.connectedPaymentValue,
-        )
+        uiState.paymentOverview.paymentConnection?.connectionInfo?.let {
+          Divider(modifier = Modifier.padding(horizontal = 16.dp))
+          PaymentDetails(
+            displayName = it.displayName,
+            displayValue = it.displayValue,
+          )
+        }
         Spacer(Modifier.height(16.dp))
         if (uiState.hasConnectedPayment) {
-          HedvigContainedButton(
+          HedvigSecondaryContainedButton(
             text = stringResource(R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT),
-            onClick = onChangeBankAccount,
-            modifier = Modifier.padding(horizontal = 16.dp),
-          )
-        } else {
-          HedvigContainedButton(
-            text = stringResource(R.string.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON),
             onClick = onChangeBankAccount,
             modifier = Modifier.padding(horizontal = 16.dp),
           )
@@ -133,17 +189,19 @@ private fun PaymentOverviewScreen(
         HedvigErrorSection(retry = onRetry)
       }
 
-      OverViewUiState.Loading -> HedvigFullScreenCenterAlignedProgressDebounced()
+      OverViewUiState.Loading -> HedvigFullScreenCenterAlignedProgressDebounced(Modifier.weight(1f))
     }
   }
 }
 
 @Composable
 private fun PaymentAmountCard(
-  uiState: OverViewUiState.Content,
+  futureCharge: PaymentOverview.FutureCharge,
   onUpcomingPaymentClicked: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val dateTimeFormatter = rememberHedvigDateTimeFormatter()
+
   HedvigCard(
     onClick = onUpcomingPaymentClicked,
     modifier = modifier,
@@ -162,7 +220,7 @@ private fun PaymentAmountCard(
             verticalAlignment = Alignment.CenterVertically,
           ) {
             Text(
-              text = uiState.upcomingPayment.toString(),
+              text = futureCharge.grossAmount.toString(),
               textAlign = TextAlign.End,
             )
             Spacer(Modifier.width(4.dp))
@@ -175,12 +233,8 @@ private fun PaymentAmountCard(
           }
         },
       )
-      val dateTimeFormatter = rememberHedvigDateTimeFormatter()
       Text(
-        text = stringResource(
-          id = R.string.GENERAL_DUE,
-          dateTimeFormatter.format(uiState.dueDate.toJavaLocalDate()),
-        ),
+        text = dateTimeFormatter.format(futureCharge.dueDate.toJavaLocalDate()),
         color = MaterialTheme.colorScheme.onSurfaceVariant,
       )
     }
@@ -189,7 +243,7 @@ private fun PaymentAmountCard(
 
 @Suppress("UnusedReceiverParameter")
 @Composable
-private fun PaymentDetails(displayName: String, displayValue: String) {
+private fun ColumnScope.PaymentDetails(displayName: String, displayValue: String) {
   Row(
     modifier = Modifier
       .fillMaxWidth()
@@ -218,7 +272,7 @@ private fun PaymentDetails(displayName: String, displayValue: String) {
 }
 
 @Composable
-private fun Discounts(modifier: Modifier = Modifier) {
+fun Discounts(modifier: Modifier = Modifier) {
   Row(
     modifier = modifier.fillMaxWidth(),
     verticalAlignment = Alignment.CenterVertically,
@@ -235,7 +289,7 @@ private fun Discounts(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun PaymentHistory(modifier: Modifier = Modifier) {
+fun PaymentHistory(modifier: Modifier = Modifier) {
   Row(
     modifier = modifier.fillMaxWidth(),
     verticalAlignment = Alignment.CenterVertically,
@@ -252,20 +306,62 @@ private fun PaymentHistory(modifier: Modifier = Modifier) {
 
 @Composable
 @HedvigPreview
-private fun PreviewPaymentScreen(
-  @PreviewParameter(DoubleBooleanCollectionPreviewParameterProvider::class) input: Pair<Boolean, Boolean>,
-) {
-  val hasPaymentConnected = input.first
-  val hasCampaigns = input.second
+private fun PreviewPaymentScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       PaymentOverviewScreen(
         uiState = OverViewUiState.Content(
-          upcomingPayment = UiMoney(1534.0, CurrencyCode.SEK),
-          dueDate = LocalDate.fromEpochDays(400),
-          connectedPaymentDisplayName = "Nordea",
-          connectedPaymentValue = "31489*****",
-          hasConnectedPayment = hasPaymentConnected,
+          paymentOverview = PaymentOverview(
+            chargeBreakdowns = persistentListOf(),
+            futureCharge = PaymentOverview.FutureCharge(
+              grossAmount = UiMoney(200.0, CurrencyCode.SEK),
+              netAmount = UiMoney(200.0, CurrencyCode.SEK),
+              id = "123",
+              status = PaymentOverview.MemberChargeStatus.PENDING,
+              dueDate = LocalDate.fromEpochDays(400),
+              failedCharge = PaymentOverview.FutureCharge.FailedCharge(
+                fromDate = LocalDate.fromEpochDays(200),
+                toDate = LocalDate.fromEpochDays(201),
+              ),
+            ),
+            paymentConnection = PaymentOverview.PaymentConnection(
+              connectionInfo = PaymentOverview.PaymentConnection.ConnectionInfo(
+                displayName = "Nordea",
+                displayValue = "31489*****",
+              ),
+              status = PaymentOverview.PaymentConnection.PaymentConnectionStatus.NEEDS_SETUP,
+            ),
+          ),
+        ),
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+      )
+    }
+  }
+}
+
+@Composable
+@HedvigPreview
+private fun PreviewPaymentScreenNoPayment() {
+  HedvigTheme {
+    Surface(color = MaterialTheme.colorScheme.background) {
+      PaymentOverviewScreen(
+        uiState = OverViewUiState.Content(
+          paymentOverview = PaymentOverview(
+            chargeBreakdowns = persistentListOf(),
+            futureCharge = null,
+            paymentConnection = PaymentOverview.PaymentConnection(
+              connectionInfo = PaymentOverview.PaymentConnection.ConnectionInfo(
+                displayName = "Nordea",
+                displayValue = "31489*****",
+              ),
+              status = PaymentOverview.PaymentConnection.PaymentConnectionStatus.NEEDS_SETUP,
+            ),
+          ),
         ),
         {},
         {},
