@@ -30,7 +30,7 @@ import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toLocalDateTime
 
 @Composable
-fun DiscountRow(discount: Discount) {
+internal fun DiscountRow(discount: Discount) {
   val dateTimeFormatter = rememberHedvigDateTimeFormatter()
   Column(modifier = Modifier.padding(vertical = 16.dp)) {
     Row {

@@ -5,7 +5,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Discount(
+internal data class Discount(
   val code: String,
   val displayName: String?,
   val description: String?,

@@ -15,13 +15,6 @@ fun hedvigDateTimeFormatter(locale: Locale): DateTimeFormatter {
   return DateTimeFormatter.ofPattern("d MMM yyyy", locale)
 }
 
-/**
- * Example output: "May 26 2023"
- */
-fun hedvigSecondaryDateTimeFormatter(locale: Locale): DateTimeFormatter {
-  return DateTimeFormatter.ofPattern("MMMM d yyyy", locale)
-}
-
 fun hedvigMonthDateTimeFormatter(locale: Locale): DateTimeFormatter {
   return DateTimeFormatter.ofPattern("d MMM", locale)
 }

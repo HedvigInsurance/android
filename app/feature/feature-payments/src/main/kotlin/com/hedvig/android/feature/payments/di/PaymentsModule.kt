@@ -10,7 +10,7 @@ import com.hedvig.android.feature.payments.overview.PaymentOverviewViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
-val payments2Module = module {
+val paymentsModule = module {
   single<GetUpcomingPaymentUseCase> {
     GetUpcomingPaymentUseCaseImpl(get<ApolloClient>())
   }
