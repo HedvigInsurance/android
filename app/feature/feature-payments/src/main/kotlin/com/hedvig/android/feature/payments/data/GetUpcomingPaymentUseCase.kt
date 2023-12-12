@@ -3,6 +3,8 @@ package com.hedvig.android.feature.payments.data
 import arrow.core.Either
 import arrow.core.raise.either
 import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.cache.normalized.FetchPolicy
+import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
@@ -24,6 +26,7 @@ internal data class GetUpcomingPaymentUseCaseImpl(
 ) : GetUpcomingPaymentUseCase {
   override suspend fun invoke(): Either<ErrorMessage, PaymentOverview> = either {
     val result = apolloClient.query(UpcomingPaymentQuery())
+      .fetchPolicy(FetchPolicy.NetworkFirst)
       .safeExecute()
       .toEither(::ErrorMessage)
       .bind()
