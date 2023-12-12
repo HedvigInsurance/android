@@ -188,6 +188,14 @@ private fun PaymentOverviewScreen(
           displayValue = it.displayValue,
         )
       }
+
+      if (uiState.paymentOverview?.paymentConnection?.status == PaymentConnection.PaymentConnectionStatus.PENDING) {
+        VectorInfoCard(
+          text = stringResource(id = R.string.MY_PAYMENT_UPDATING_MESSAGE),
+          modifier = Modifier.padding(horizontal = 16.dp),
+        )
+      }
+
       Spacer(Modifier.height(16.dp))
       if (uiState.paymentOverview?.paymentConnection?.hasConnectedPayment == true) {
         HedvigSecondaryContainedButton(
