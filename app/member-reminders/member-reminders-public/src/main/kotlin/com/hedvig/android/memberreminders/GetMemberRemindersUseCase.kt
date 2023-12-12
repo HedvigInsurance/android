@@ -75,7 +75,7 @@ data class MemberReminders(
       coInsuredInfo?.let {
         addAll(coInsuredInfo)
       }
-      if (alreadyHasNotificationPermission) {
+      if (!alreadyHasNotificationPermission) {
         enableNotifications?.let {
           add(enableNotifications)
         }
