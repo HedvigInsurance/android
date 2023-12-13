@@ -79,7 +79,6 @@ import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
 import com.hedvig.android.theme.Theme
 import com.hedvig.app.feature.sunsetting.ForceUpgradeActivity
-import com.hedvig.hanalytics.HAnalytics
 import com.kiwi.navigationcompose.typed.navigate
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -100,7 +99,6 @@ class LoggedInActivity : AppCompatActivity() {
   private val marketManager: MarketManager by inject()
   private val imageLoader: ImageLoader by inject()
   private val featureManager: FeatureManager by inject()
-  private val hAnalytics: HAnalytics by inject()
   private val languageService: LanguageService by inject()
   private val hedvigDeepLinkContainer: HedvigDeepLinkContainer by inject()
   private val hedvigBuildConstants: HedvigBuildConstants by inject()
@@ -191,7 +189,6 @@ class LoggedInActivity : AppCompatActivity() {
             windowSizeClass = windowSizeClass,
             tabNotificationBadgeService = tabNotificationBadgeService,
             featureManager = featureManager,
-            hAnalytics = hAnalytics,
           ),
           hedvigDeepLinkContainer = hedvigDeepLinkContainer,
           activityNavigator = activityNavigator,
@@ -206,7 +203,6 @@ class LoggedInActivity : AppCompatActivity() {
           shouldShowRequestPermissionRationale = ::shouldShowRequestPermissionRationale,
           market = market,
           imageLoader = imageLoader,
-          hAnalytics = hAnalytics,
           languageService = languageService,
           hedvigBuildConstants = hedvigBuildConstants,
         )
@@ -260,7 +256,6 @@ private fun HedvigApp(
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   market: Market,
   imageLoader: ImageLoader,
-  hAnalytics: HAnalytics,
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
 ) {
@@ -299,7 +294,6 @@ private fun HedvigApp(
           shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
           imageLoader = imageLoader,
           market = market,
-          hAnalytics = hAnalytics,
           languageService = languageService,
           hedvigBuildConstants = hedvigBuildConstants,
           modifier = Modifier

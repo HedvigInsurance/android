@@ -2,27 +2,18 @@ package com.hedvig.android.hanalytics.android.tracking
 
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import com.hedvig.hanalytics.HAnalytics
+import com.hedvig.android.logger.logcat
 
-class ApplicationLifecycleTracker(
-  private val hAnalytics: HAnalytics,
-  private val isProduction: Boolean,
-) : DefaultLifecycleObserver {
+class ApplicationLifecycleTracker() : DefaultLifecycleObserver {
   override fun onCreate(owner: LifecycleOwner) {
-    if (isProduction) {
-      hAnalytics.appStarted()
-    }
+    logcat { "ApplicationLifecycleTracker: onCreate" }
   }
 
   override fun onStart(owner: LifecycleOwner) {
-    if (isProduction) {
-      hAnalytics.appResumed()
-    }
+    logcat { "ApplicationLifecycleTracker: onStart" }
   }
 
   override fun onStop(owner: LifecycleOwner) {
-    if (isProduction) {
-      hAnalytics.appBackground()
-    }
+    logcat { "ApplicationLifecycleTracker: onStop" }
   }
 }
