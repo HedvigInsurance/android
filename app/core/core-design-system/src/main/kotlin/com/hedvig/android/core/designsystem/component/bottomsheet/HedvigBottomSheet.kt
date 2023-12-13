@@ -24,25 +24,8 @@ import hedvig.resources.R
 import kotlinx.coroutines.launch
 
 @Composable
-fun HedvigBottomSheet(
-  onDismissRequest: () -> Unit,
-  sheetState: SheetState = rememberModalBottomSheetState(true),
-  content: @Composable () -> Unit,
-) {
-  ModalBottomSheet(
-    onDismissRequest = onDismissRequest,
-    sheetState = sheetState,
-    tonalElevation = 0.dp,
-    shape = MaterialTheme.shapes.squircleLargeTop,
-    windowInsets = BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top),
-  ) {
-    content()
-  }
-}
-
-@Composable
 fun HedvigInfoBottomSheet(
-  onDismissRequest: () -> Unit,
+  onDismissed: () -> Unit,
   sheetState: SheetState = rememberModalBottomSheetState(true),
   title: String,
   body: String,
@@ -50,7 +33,7 @@ fun HedvigInfoBottomSheet(
   val scope = rememberCoroutineScope()
 
   ModalBottomSheet(
-    onDismissRequest = onDismissRequest,
+    onDismissRequest = onDismissed,
     sheetState = sheetState,
     tonalElevation = 0.dp,
     shape = MaterialTheme.shapes.squircleLargeTop,
@@ -78,7 +61,7 @@ fun HedvigInfoBottomSheet(
         scope.launch {
           sheetState.hide()
         }.invokeOnCompletion {
-          onDismissRequest()
+          onDismissed()
         }
       },
       modifier = Modifier.padding(start = 24.dp, end = 24.dp, bottom = 16.dp),

@@ -80,7 +80,7 @@ internal fun DiscountsScreen(
     var showInfoBottomSheet by remember { mutableStateOf(false) }
     if (showInfoBottomSheet) {
       HedvigInfoBottomSheet(
-        onDismissRequest = { showInfoBottomSheet = false },
+        onDismissed = { showInfoBottomSheet = false },
         title = stringResource(id = R.string.PAYMENTS_CAMPAIGNS_INFO_TITLE),
         body = stringResource(id = R.string.PAYMENTS_CAMPAIGNS_INFO_DESCRIPTION),
       )

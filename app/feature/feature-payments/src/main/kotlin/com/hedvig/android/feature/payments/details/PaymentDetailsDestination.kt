@@ -106,7 +106,7 @@ private fun MemberChargeDetailsScreen(
       var showBottomSheet by remember { mutableStateOf(false) }
       if (showBottomSheet) {
         HedvigInfoBottomSheet(
-          onDismissRequest = { showBottomSheet = false },
+          onDismissed = { showBottomSheet = false },
           title = stringResource(id = R.string.PAYMENTS_PAYMENT_DETAILS_INFO_TITLE),
           body = stringResource(id = R.string.PAYMENTS_PAYMENT_DETAILS_INFO_DESCRIPTION),
         )
