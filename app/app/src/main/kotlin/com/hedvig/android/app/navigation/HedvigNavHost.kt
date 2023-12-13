@@ -50,7 +50,6 @@ import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.app.BuildConfig
-import com.hedvig.hanalytics.HAnalytics
 import com.kiwi.navigationcompose.typed.Destination
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigate
@@ -66,7 +65,6 @@ internal fun HedvigNavHost(
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   imageLoader: ImageLoader,
   market: Market,
-  hAnalytics: HAnalytics,
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
   modifier: Modifier = Modifier,
@@ -133,8 +131,6 @@ internal fun HedvigNavHost(
       },
       openAppSettings = { activityNavigator.openAppSettings(context) },
       openUrl = ::openUrl,
-      imageLoader = imageLoader,
-      hAnalytics = hAnalytics,
     )
     insuranceGraph(
       nestedGraphs = {

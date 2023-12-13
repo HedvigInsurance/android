@@ -61,6 +61,7 @@ dependencies {
   implementation(projects.memberRemindersUi)
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
+  implementation(projects.uiEmergency)
   implementation(projects.navigationActivity)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
