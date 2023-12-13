@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.material3.squircleMedium
@@ -66,21 +67,15 @@ internal fun CommonClaimDestination(
             Text(text = bulletPoint.description, color = MaterialTheme.colorScheme.onSurfaceVariant)
             if (isFirstVet) {
               Spacer(modifier = Modifier.height(16.dp))
-              Button(
+              HedvigContainedSmallButton(
+                text = stringResource(R.string.SUBMIT_CLAIM_GLASS_DAMAGE_ONLINE_BOOKING_BUTTON),
                 onClick = {
                   context.startActivity(
                     Intent(Intent.ACTION_VIEW, Uri.parse("https://app.adjust.com/11u5tuxu")),
                   )
                 },
                 modifier = Modifier.fillMaxWidth(),
-                shape = MaterialTheme.shapes.squircleMedium,
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-              ) {
-                Text(
-                  text = stringResource(R.string.SUBMIT_CLAIM_GLASS_DAMAGE_ONLINE_BOOKING_BUTTON),
-                  style = MaterialTheme.typography.bodyLarge,
-                )
-              }
+              )
             }
           }
         }

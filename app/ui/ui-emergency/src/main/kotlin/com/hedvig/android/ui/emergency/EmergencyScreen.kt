@@ -29,6 +29,7 @@ import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
+import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.material3.alwaysBlackContainer
 import com.hedvig.android.core.designsystem.material3.onAlwaysBlackContainer
@@ -75,12 +76,13 @@ fun EmergencyScreen(title: String?, emergencyNumber: String?, navigateUp: () -> 
               .fillMaxWidth()
               .height(80.dp),
           )
-          Spacer(Modifier.height(8.dp))
+          Spacer(Modifier.height(24.dp))
           Text(
             text = stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_GLOBAL_ASSISTANCE_TITLE),
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth(),
           )
+          Spacer(Modifier.height(2.dp))
           Text(
             text = stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_GLOBAL_ASSISTANCE_LABEL),
             textAlign = TextAlign.Center,
@@ -93,7 +95,7 @@ fun EmergencyScreen(title: String?, emergencyNumber: String?, navigateUp: () -> 
           if (emergencyNumber != null) {
             Spacer(Modifier.height(24.dp))
             val context = LocalContext.current
-            HedvigContainedButton(
+            HedvigContainedSmallButton(
               text = stringResource(R.string.SUBMIT_CLAIM_GLOBAL_ASSISTANCE_CALL_LABEL, emergencyNumber),
               onClick = {
                 try {
