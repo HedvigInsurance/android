@@ -45,6 +45,7 @@ import com.hedvig.android.audio.player.SignedAudioUrl
 import com.hedvig.android.audio.player.state.AudioPlayerState
 import com.hedvig.android.audio.player.state.PlayableAudioSource
 import com.hedvig.android.audio.player.state.rememberAudioPlayer
+import com.hedvig.android.core.designsystem.animation.animateContentHeight
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
@@ -182,7 +183,8 @@ private fun ClaimDetailScreen(
           )
           .clickable {
             openUrl(it.url)
-          },
+          }
+          .animateContentHeight(),
         contentAlignment = Alignment.Center,
       ) {
         if (it.mimeType.contains("image")) {
