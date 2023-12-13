@@ -4,7 +4,7 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
-import com.hedvig.android.feature.home.claims.commonclaim.CommonClaimDestination
+import com.hedvig.android.feature.home.commonclaim.CommonClaimDestination
 import com.hedvig.android.feature.home.emergency.EmergencyDestination
 import com.hedvig.android.feature.home.home.ui.HomeDestination
 import com.hedvig.android.feature.home.home.ui.HomeViewModel

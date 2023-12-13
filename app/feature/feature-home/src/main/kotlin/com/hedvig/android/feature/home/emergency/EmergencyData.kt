@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.home.claims.commonclaim
+package com.hedvig.android.feature.home.emergency
 
 import kotlinx.serialization.Serializable
 

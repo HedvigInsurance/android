@@ -34,8 +34,8 @@ import com.hedvig.android.core.designsystem.material3.squircleLargeTop
 import com.hedvig.android.core.designsystem.material3.warningContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.feature.home.claims.commonclaim.CommonClaimsData
-import com.hedvig.android.feature.home.claims.commonclaim.EmergencyData
+import com.hedvig.android.feature.home.commonclaim.CommonClaimsData
+import com.hedvig.android.feature.home.emergency.EmergencyData
 import com.hedvig.android.feature.home.home.ui.HomeUiState
 import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList

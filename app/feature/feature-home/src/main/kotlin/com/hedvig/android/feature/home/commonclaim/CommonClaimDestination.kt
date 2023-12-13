@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.home.claims.commonclaim
+package com.hedvig.android.feature.home.commonclaim
 
 import android.content.Intent
 import android.net.Uri

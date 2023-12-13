@@ -1,7 +1,7 @@
 package com.hedvig.android.feature.home.home.navigation
 
-import com.hedvig.android.feature.home.claims.commonclaim.CommonClaimsData
-import com.hedvig.android.feature.home.claims.commonclaim.EmergencyData
+import com.hedvig.android.feature.home.commonclaim.CommonClaimsData
+import com.hedvig.android.feature.home.emergency.EmergencyData
 import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.serialization.Serializable
 

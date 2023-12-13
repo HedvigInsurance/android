@@ -72,8 +72,8 @@ import com.hedvig.android.core.ui.appbar.m3.ToolbarChatIcon
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarLayoutForActions
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.plus
-import com.hedvig.android.feature.home.claims.commonclaim.CommonClaimsData
-import com.hedvig.android.feature.home.claims.commonclaim.EmergencyData
+import com.hedvig.android.feature.home.commonclaim.CommonClaimsData
+import com.hedvig.android.feature.home.emergency.EmergencyData
 import com.hedvig.android.feature.home.home.ChatTooltip
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.otherservices.OtherServicesBottomSheet

@@ -3,7 +3,6 @@ package com.hedvig.android.feature.home.emergency
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.hedvig.android.feature.home.claims.commonclaim.EmergencyData
 import com.hedvig.android.ui.emergency.EmergencyScreen
 
 @Composable
