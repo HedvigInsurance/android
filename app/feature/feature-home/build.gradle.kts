@@ -61,12 +61,12 @@ dependencies {
   implementation(projects.memberRemindersUi)
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
-  implementation(projects.uiEmergency)
   implementation(projects.navigationActivity)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
   implementation(projects.notificationPermission)
   implementation(projects.pullrefresh)
+  implementation(projects.uiEmergency)
 
   testImplementation(libs.apollo.testingSupport)
   testImplementation(libs.assertK)
