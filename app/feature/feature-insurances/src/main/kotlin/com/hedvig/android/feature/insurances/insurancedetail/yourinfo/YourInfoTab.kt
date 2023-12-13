@@ -224,18 +224,21 @@ internal fun YourInfoTab(
         }
       }
     }
-    Spacer(Modifier.height(8.dp))
 
+    Spacer(Modifier.height(8.dp))
     CoverageRows(coverageItems, Modifier.padding(horizontal = 16.dp))
-    Spacer(Modifier.height(16.dp))
-    CoInsuredSection(
-      coInsuredList = coInsured,
-      contractHolderDisplayName = contractHolderDisplayName,
-      contractHolderSSN = contractHolderSSN,
-      allowEditCoInsured = allowEditCoInsured,
-      onMissingInfoClick = onMissingInfoClick,
-      modifier = Modifier.padding(horizontal = 16.dp),
-    )
+
+    if (allowEditCoInsured) {
+      Divider(Modifier.padding(horizontal = 16.dp))
+      Spacer(Modifier.height(16.dp))
+      CoInsuredSection(
+        coInsuredList = coInsured,
+        contractHolderDisplayName = contractHolderDisplayName,
+        contractHolderSSN = contractHolderSSN,
+        onMissingInfoClick = onMissingInfoClick,
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
+    }
     Spacer(Modifier.height(16.dp))
     if (!isTerminated) {
       if (allowChangeAddress || allowEditCoInsured) {
@@ -287,7 +290,9 @@ internal fun CoverageRows(coverageRowItems: ImmutableList<Pair<String, String>>,
         },
         spaceBetween = 8.dp,
       )
-      Divider()
+      if (index != coverageRowItems.size - 1) {
+        Divider()
+      }
     }
   }
 }
@@ -297,7 +302,6 @@ internal fun CoInsuredSection(
   coInsuredList: ImmutableList<InsuranceAgreement.CoInsured>,
   contractHolderDisplayName: String,
   contractHolderSSN: String?,
-  allowEditCoInsured: Boolean,
   onMissingInfoClick: () -> Unit,
   modifier: Modifier,
 ) {
@@ -319,8 +323,13 @@ internal fun CoInsuredSection(
           horizontalArrangement = Arrangement.End,
           modifier = Modifier.padding(vertical = 4.dp),
         ) {
+          val text = if (coInsuredList.size == 0) {
+            stringResource(id = R.string.CHANGE_ADDRESS_ONLY_YOU)
+          } else {
+            stringResource(id = R.string.CHANGE_ADDRESS_YOU_PLUS, coInsuredList.size)
+          }
           Text(
-            text = stringResource(id = R.string.CHANGE_ADDRESS_YOU_PLUS, coInsuredList.size),
+            text = text,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.End,
           )
@@ -424,7 +433,7 @@ internal fun CoInsuredSection(
     }
 
     val hasMissingInfoAndIsNotTerminating = coInsuredList.any { it.hasMissingInfo && it.terminatesOn == null }
-    if (hasMissingInfoAndIsNotTerminating && allowEditCoInsured) {
+    if (hasMissingInfoAndIsNotTerminating) {
       Spacer(Modifier.height(8.dp))
       VectorWarningCard(
         text = stringResource(id = R.string.CONTRACT_COINSURED_ADD_PERSONAL_INFO),
