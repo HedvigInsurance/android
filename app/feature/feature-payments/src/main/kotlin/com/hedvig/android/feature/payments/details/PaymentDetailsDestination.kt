@@ -1,17 +1,22 @@
 package com.hedvig.android.feature.payments.details
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -24,10 +29,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.component.bottomsheet.HedvigInfoBottomSheet
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.material3.containedButtonContainer
 import com.hedvig.android.core.designsystem.material3.infoContainer
@@ -35,10 +42,12 @@ import com.hedvig.android.core.designsystem.material3.infoElement
 import com.hedvig.android.core.designsystem.material3.onContainedButtonContainer
 import com.hedvig.android.core.designsystem.material3.onInfoContainer
 import com.hedvig.android.core.designsystem.material3.onTypeContainer
+import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.material3.typeContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.HedvigIcons
 import com.hedvig.android.core.icons.hedvig.normal.InfoFilled
 import com.hedvig.android.core.icons.hedvig.normal.WarningFilled
 import com.hedvig.android.core.icons.hedvig.small.hedvig.Checkmark
@@ -94,6 +103,14 @@ private fun MemberChargeDetailsScreen(
     topAppBarColors = memberCharge.topAppBarColors(),
   ) {
     Column(modifier = Modifier.padding(16.dp)) {
+      var showBottomSheet by remember { mutableStateOf(false) }
+      if (showBottomSheet) {
+        HedvigInfoBottomSheet(
+          onDismissed = { showBottomSheet = false },
+          title = stringResource(id = R.string.PAYMENTS_PAYMENT_DETAILS_INFO_TITLE),
+          body = stringResource(id = R.string.PAYMENTS_PAYMENT_DETAILS_INFO_DESCRIPTION),
+        )
+      }
       memberCharge.chargeBreakdowns.forEach { chargeBreakdown ->
         PaymentDetailExpandableCard(
           displayName = chargeBreakdown.contractDisplayName,
@@ -161,17 +178,7 @@ private fun MemberChargeDetailsScreen(
       )
 
       when (memberCharge.status) {
-        MemberCharge.MemberChargeStatus.UPCOMING -> PaymentStatusCard(
-          text = stringResource(id = R.string.PAYMENTS_UPCOMING_PAYMENT),
-          icon = Icons.Hedvig.InfoFilled,
-          iconColor = MaterialTheme.colorScheme.infoElement,
-          colors = CardDefaults.outlinedCardColors(
-            containerColor = MaterialTheme.colorScheme.infoContainer,
-            contentColor = MaterialTheme.colorScheme.onInfoContainer,
-          ),
-          underTextContent = null,
-        )
-
+        MemberCharge.MemberChargeStatus.UPCOMING -> {}
         MemberCharge.MemberChargeStatus.SUCCESS -> PaymentStatusCard(
           text = stringResource(id = R.string.PAYMENTS_PAYMENT_SUCCESSFUL),
           icon = Icons.Hedvig.Checkmark,
@@ -231,6 +238,37 @@ private fun MemberChargeDetailsScreen(
 
       paymentOverview?.paymentConnection?.connectionInfo?.let {
         Spacer(Modifier.height(32.dp))
+        HorizontalItemsWithMaximumSpaceTaken(
+          startSlot = {
+            Text(stringResource(id = R.string.PAYMENTS_PAYMENT_DETAILS_INFO_TITLE))
+          },
+          endSlot = {
+            Box(
+              contentAlignment = Alignment.CenterEnd,
+              modifier = Modifier
+                .fillMaxWidth(),
+            ) {
+              Box(
+                modifier = Modifier
+                  .fillMaxHeight()
+                  .width(32.dp)
+                  .clip(MaterialTheme.shapes.squircleMedium)
+                  .clickable { showBottomSheet = true },
+                contentAlignment = Alignment.Center,
+              ) {
+                Icon(
+                  imageVector = HedvigIcons.InfoFilled,
+                  tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                  contentDescription = "Info icon",
+                  modifier = Modifier.size(16.dp),
+                )
+              }
+            }
+          },
+          modifier = Modifier.padding(vertical = 16.dp),
+        )
+        Divider()
+
         HorizontalItemsWithMaximumSpaceTaken(
           startSlot = {
             Text(stringResource(id = R.string.PAYMENTS_PAYMENT_METHOD))
@@ -302,7 +340,7 @@ private fun PaymentDetailsScreenPreview() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       MemberChargeDetailsScreen(
-        memberCharge = paymentOverViewPreviewData.memberCharge!!,
+        memberCharge = paymentOverViewPreviewData.memberCharge!!.copy(discounts = emptyList()),
         paymentOverview = paymentOverViewPreviewData,
         selectedCharge = null,
         onCardClick = {},

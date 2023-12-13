@@ -44,13 +44,18 @@ internal class PaymentOverviewPresenter(
     }
 
     LaunchedEffect(loadIteration) {
-      paymentUiState = paymentUiState.copy(isLoadingPaymentOverView = true)
+      paymentUiState = if (loadIteration != 0) {
+        paymentUiState.copy(isRetrying = true)
+      } else {
+        paymentUiState.copy(isLoadingPaymentOverView = true)
+      }
 
       getUpcomingPaymentUseCase.invoke().fold(
         ifLeft = {
           paymentUiState = paymentUiState.copy(
             error = it.message,
             isLoadingPaymentOverView = false,
+            isRetrying = false,
           )
         },
         ifRight = {
@@ -58,6 +63,7 @@ internal class PaymentOverviewPresenter(
             paymentOverview = it,
             error = null,
             isLoadingPaymentOverView = false,
+            isRetrying = false,
           )
         },
       )
@@ -109,5 +115,6 @@ internal data class OverViewUiState(
   val error: String? = null,
   val showAddDiscountBottomSheet: Boolean = false,
   val isLoadingPaymentOverView: Boolean = true,
+  val isRetrying: Boolean = false,
   val isAddingDiscount: Boolean = false,
 )
