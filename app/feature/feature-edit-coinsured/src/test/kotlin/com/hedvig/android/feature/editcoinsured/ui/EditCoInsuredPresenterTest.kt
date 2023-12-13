@@ -128,6 +128,8 @@ internal class EditCoInsuredPresenterTest {
       skipItems(1)
       sendEvent(EditCoInsuredEvent.OnEditCoInsuredClicked(coInsuredTestList[2]))
       skipItems(1)
+      sendEvent(EditCoInsuredEvent.OnManualInputSwitchChanged(show = true))
+      skipItems(1)
       sendEvent(EditCoInsuredEvent.OnSsnChanged("4321"))
       skipItems(1)
       sendEvent(EditCoInsuredEvent.OnBottomSheetContinue)
