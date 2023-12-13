@@ -15,25 +15,30 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.material3.infoElement
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.InfoFilled
+import hedvig.resources.R
 
 @Composable
 fun HedvigInformationSection(
   title: String,
-  buttonText: String,
-  onButtonClick: () -> Unit,
   modifier: Modifier = Modifier,
+  buttonText: String = stringResource(id = R.string.ALERT_OK),
+  onButtonClick: (() -> Unit)? = null,
   subTitle: String? = null,
   contentPadding: PaddingValues = WindowInsets.safeDrawing.asPaddingValues(),
   withDefaultVerticalSpacing: Boolean = true,
@@ -73,12 +78,28 @@ fun HedvigInformationSection(
       }
     }
     Spacer(Modifier.height(24.dp))
-    HedvigContainedSmallButton(
-      text = buttonText,
-      onClick = onButtonClick,
-    )
+    if (onButtonClick != null) {
+      HedvigContainedSmallButton(
+        text = buttonText,
+        onClick = onButtonClick,
+      )
+    }
     if (withDefaultVerticalSpacing) {
       Spacer(Modifier.height(32.dp))
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+fun HedvigInformationSectionPreview() {
+  HedvigTheme {
+    Surface {
+      HedvigInformationSection(
+        title = "Test",
+        buttonText = "Click",
+        onButtonClick = { /*TODO*/ },
+      )
     }
   }
 }

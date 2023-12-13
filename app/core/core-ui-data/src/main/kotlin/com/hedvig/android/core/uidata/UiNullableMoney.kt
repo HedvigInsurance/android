@@ -11,7 +11,7 @@ import octopus.type.CurrencyCode
 @Serializable
 data class UiNullableMoney(val amount: Double?, val currencyCode: CurrencyCode) {
   @Transient
-  val decimalFormatter: DecimalFormat = DecimalFormat("#")
+  val decimalFormatter: DecimalFormat = DecimalFormat("")
 
   override fun toString(): String {
     return buildString {

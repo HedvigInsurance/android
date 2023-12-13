@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.feature.connect.payment.trustly.data.TrustlyCallback
@@ -18,6 +19,7 @@ internal class TrustlyPresenter(
   private val trustlyCallback: TrustlyCallback,
   private val startTrustlySessionUseCase: StartTrustlySessionUseCase,
   private val market: Market,
+  private val cacheManager: NetworkCacheManager,
 ) : MoleculePresenter<TrustlyEvent, TrustlyUiState> {
   @Composable
   override fun MoleculePresenterScope<TrustlyEvent>.present(lastState: TrustlyUiState): TrustlyUiState {
@@ -68,6 +70,9 @@ internal class TrustlyPresenter(
     }
 
     if (succeededInConnectingCard) {
+      LaunchedEffect(Unit) {
+        cacheManager.clearCache()
+      }
       return TrustlyUiState.SucceededInConnectingCard
     }
     if (connectingCardFailed) {

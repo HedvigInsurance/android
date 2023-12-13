@@ -78,6 +78,7 @@ import com.hedvig.android.core.icons.hedvig.normal.MultipleDocuments
 import com.hedvig.android.core.icons.hedvig.normal.RestartOneArrow
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.getLocale
+import com.hedvig.android.core.ui.layout.adjustSizeToImageRatio
 import com.hedvig.android.feature.chat.ChatUiState
 import com.hedvig.android.feature.chat.model.ChatMessage
 import com.hedvig.android.placeholder.PlaceholderHighlight
