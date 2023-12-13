@@ -21,10 +21,10 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
+import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
@@ -130,15 +130,15 @@ private fun ClaimDetailScreen(
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
 ) {
-  LazyVerticalGrid(
-    columns = GridCells.Fixed(3),
-    verticalArrangement = Arrangement.spacedBy(8.dp),
+  LazyVerticalStaggeredGrid(
+    columns = StaggeredGridCells.Fixed(3),
     horizontalArrangement = Arrangement.spacedBy(8.dp),
+    verticalItemSpacing = 8.dp,
     modifier = modifier
       .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom))
       .padding(horizontal = 16.dp),
   ) {
-    item(span = { GridItemSpan(3) }) {
+    item(span = StaggeredGridItemSpan.FullLine) {
       Column {
         Spacer(Modifier.height(8.dp))
         ClaimStatusCard(
