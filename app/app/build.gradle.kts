@@ -19,7 +19,6 @@ android {
 
   buildFeatures {
     buildConfig = true
-    viewBinding = true
   }
 
   defaultConfig {
@@ -123,7 +122,6 @@ dependencies {
   implementation(libs.androidx.compose.uiCore)
   implementation(libs.androidx.compose.uiToolingPreview)
   implementation(libs.androidx.compose.uiUnit)
-  implementation(libs.androidx.compose.uiViewBinding)
   implementation(libs.androidx.datastore.core)
   implementation(libs.androidx.datastore.preferencesCore)
   implementation(libs.androidx.lifecycle.common)
@@ -140,9 +138,7 @@ dependencies {
   implementation(libs.androidx.other.constraintLayout)
   implementation(libs.androidx.other.core)
   implementation(libs.androidx.other.dynamicAnimation)
-  implementation(libs.androidx.other.fragment)
   implementation(libs.androidx.other.preference)
-  implementation(libs.androidx.other.recyclerView)
   implementation(libs.androidx.other.splashscreen)
   implementation(libs.androidx.other.startup)
   implementation(libs.androidx.other.swipeRefreshLayout)
@@ -168,7 +164,6 @@ dependencies {
   implementation(libs.firebase.messaging)
   implementation(libs.firebase.playServicesBase)
   implementation(libs.flexbox)
-  implementation(libs.fragmentViewBindingDelegate)
   implementation(libs.insetter)
   implementation(libs.koin.android)
   implementation(libs.koin.compose)
