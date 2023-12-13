@@ -93,5 +93,5 @@ sealed interface SettingsEvent {
 
   data class ChangeTheme(val theme: Theme) : SettingsEvent
 
-  object SnoozeNotificationPermissionReminder : SettingsEvent
+  data object SnoozeNotificationPermissionReminder : SettingsEvent
 }

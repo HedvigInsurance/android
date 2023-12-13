@@ -62,7 +62,10 @@ internal class GetInsuranceContractsUseCaseImpl(
   }
 }
 
-private fun InsuranceContractsQuery.Data.getContractHolderDisplayName(): String = formatName(currentMember.firstName, currentMember.lastName)
+private fun InsuranceContractsQuery.Data.getContractHolderDisplayName(): String = formatName(
+  currentMember.firstName,
+  currentMember.lastName,
+)
 
 private fun ContractFragment.toContract(
   isTerminated: Boolean,
