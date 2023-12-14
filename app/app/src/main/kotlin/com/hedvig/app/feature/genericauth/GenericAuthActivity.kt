@@ -3,8 +3,8 @@ package com.hedvig.app.feature.genericauth
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -19,7 +19,7 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.feature.genericauth.otpinput.OtpInputActivity
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 
-class GenericAuthActivity : AppCompatActivity() {
+class GenericAuthActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
