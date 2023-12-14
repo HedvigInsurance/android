@@ -134,7 +134,6 @@ dependencies {
   implementation(libs.androidx.other.browser)
   implementation(libs.androidx.other.constraintLayout)
   implementation(libs.androidx.other.core)
-  implementation(libs.androidx.other.dynamicAnimation)
   implementation(libs.androidx.other.preference)
   implementation(libs.androidx.other.splashscreen)
   implementation(libs.androidx.other.startup)
