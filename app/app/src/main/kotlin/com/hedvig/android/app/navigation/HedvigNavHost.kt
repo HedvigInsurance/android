@@ -97,6 +97,7 @@ internal fun HedvigNavHost(
         nestedHomeGraphs(
           density = density,
           hedvigAppState = hedvigAppState,
+          hedvigBuildConstants = hedvigBuildConstants,
           context = context,
           navigator = navigator,
           shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
@@ -247,6 +248,7 @@ internal fun HedvigNavHost(
 private fun NavGraphBuilder.nestedHomeGraphs(
   density: Density,
   hedvigAppState: HedvigAppState,
+  hedvigBuildConstants: HedvigBuildConstants,
   context: Context,
   navigator: Navigator,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
@@ -256,13 +258,14 @@ private fun NavGraphBuilder.nestedHomeGraphs(
 ) {
   claimDetailsGraph(
     imageLoader = imageLoader,
+    openUrl = openUrl,
     navigateUp = navigator::navigateUp,
+    appPackageId = hedvigBuildConstants.appId,
     openChat = { backStackEntry ->
       with(navigator) {
         backStackEntry.navigate(AppDestination.Chat)
       }
     },
-    openUrl = openUrl,
   )
   changeAddressGraph(
     navController = hedvigAppState.navController,

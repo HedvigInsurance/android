@@ -11,6 +11,7 @@ import org.koin.core.parameter.parametersOf
 
 fun NavGraphBuilder.claimDetailsGraph(
   imageLoader: ImageLoader,
+  appPackageId: String,
   openUrl: (String) -> Unit,
   navigateUp: () -> Unit,
   openChat: (NavBackStackEntry) -> Unit,
@@ -20,9 +21,12 @@ fun NavGraphBuilder.claimDetailsGraph(
     com.hedvig.android.feature.claim.details.ui.ClaimDetailsDestination(
       viewModel = viewModel,
       imageLoader = imageLoader,
+      appPackageId = appPackageId,
       navigateUp = navigateUp,
       onChatClick = { openChat(backStackEntry) },
-      onAddFilesClick = {  },
+      onSendFile = {
+
+      },
       openUrl = openUrl,
     )
   }

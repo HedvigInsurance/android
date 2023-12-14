@@ -47,6 +47,7 @@ dependencies {
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
   implementation(projects.navigationCore)
+  implementation(projects.composePhotoCaptureState)
 }
 
 apollo {
