@@ -107,7 +107,6 @@ android {
 
 dependencies {
   implementation(platform(libs.firebase.bom))
-  implementation(libs.accompanist.systemUiController)
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.compose.animation)
   implementation(libs.androidx.compose.foundation)

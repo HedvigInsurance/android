@@ -2,9 +2,13 @@ package com.hedvig.app.feature.loggedin.ui
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.AnimatedVisibility
@@ -109,6 +113,11 @@ class LoggedInActivity : AppCompatActivity() {
   // Shows the splash screen as long as the auth status is still undetermined, that's the only condition.
   private val showSplash = MutableStateFlow(true)
 
+  override fun onConfigurationChanged(newConfig: Configuration) {
+    enableEdgeToEdge(navigationBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT))
+    super.onConfigurationChanged(newConfig)
+  }
+
   override fun onCreate(savedInstanceState: Bundle?) {
     installSplashScreen().apply {
       setKeepOnScreenCondition { showSplash.value == true }
@@ -117,6 +126,7 @@ class LoggedInActivity : AppCompatActivity() {
         it.remove()
       }
     }
+    enableEdgeToEdge(navigationBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT))
     super.onCreate(savedInstanceState)
     WindowCompat.setDecorFitsSystemWindows(window, false)
 
