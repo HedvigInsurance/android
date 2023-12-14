@@ -22,7 +22,6 @@ dependencies {
   implementation(libs.coil.coil)
   implementation(libs.coil.compose)
   implementation(libs.coroutines.core)
-  implementation(libs.insetter)
   implementation(libs.kiwi.navigationCompose)
   implementation(libs.koin.compose)
   implementation(libs.koin.core)

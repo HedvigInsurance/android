@@ -151,7 +151,6 @@ dependencies {
   implementation(libs.firebase.dynamicLinks)
   implementation(libs.firebase.messaging)
   implementation(libs.firebase.playServicesBase)
-  implementation(libs.insetter)
   implementation(libs.koin.android)
   implementation(libs.koin.compose)
   implementation(libs.koin.workManager)
