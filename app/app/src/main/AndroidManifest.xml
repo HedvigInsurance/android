@@ -55,12 +55,6 @@
       </intent-filter>
     </activity>
     <activity
-      android:name="com.hedvig.android.feature.home.claims.commonclaim.EmergencyActivity"
-      android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-      android:launchMode="singleTask"
-      android:screenOrientation="portrait"
-      android:windowSoftInputMode="adjustResize" />
-    <activity
       android:name=".feature.zignsec.SimpleSignAuthenticationActivity"
       android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
       android:windowSoftInputMode="adjustResize" />

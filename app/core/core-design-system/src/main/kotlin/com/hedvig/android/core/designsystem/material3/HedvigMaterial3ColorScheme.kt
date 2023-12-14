@@ -22,6 +22,8 @@ class HedvigMaterial3ColorScheme(
   val onContainedButtonContainer: Color,
   val secondaryContainedButtonContainer: Color,
   val onSecondaryContainedButtonContainer: Color,
+  val alwaysBlackContainer: Color,
+  val onAlwaysBlackContainer: Color,
   val warningElement: Color,
   val onWarningElement: Color,
   val warningContainer: Color,
@@ -60,6 +62,16 @@ val ColorScheme.onSecondaryContainedButtonContainer: Color
   @ReadOnlyComposable
   @Composable
   get() = LocalHedvigMaterial3ColorScheme.current.onSecondaryContainedButtonContainer
+
+val ColorScheme.alwaysBlackContainer: Color
+  @ReadOnlyComposable
+  @Composable
+  get() = LocalHedvigMaterial3ColorScheme.current.alwaysBlackContainer
+
+val ColorScheme.onAlwaysBlackContainer: Color
+  @ReadOnlyComposable
+  @Composable
+  get() = LocalHedvigMaterial3ColorScheme.current.onAlwaysBlackContainer
 
 // region warning colors
 val ColorScheme.warningElement: Color

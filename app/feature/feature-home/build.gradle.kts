@@ -66,6 +66,7 @@ dependencies {
   implementation(projects.navigationCore)
   implementation(projects.notificationPermission)
   implementation(projects.pullrefresh)
+  implementation(projects.uiEmergency)
 
   testImplementation(libs.apollo.testingSupport)
   testImplementation(libs.assertK)

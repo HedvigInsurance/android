@@ -24,8 +24,6 @@ import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.notification.badge.data.tab.BottomNavTab
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
-import com.hedvig.hanalytics.AppScreen
-import com.hedvig.hanalytics.HAnalytics
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigate
 import kotlin.time.Duration.Companion.seconds
@@ -47,12 +45,11 @@ internal fun rememberHedvigAppState(
   windowSizeClass: WindowSizeClass,
   tabNotificationBadgeService: TabNotificationBadgeService,
   featureManager: FeatureManager,
-  hAnalytics: HAnalytics,
   coroutineScope: CoroutineScope = rememberCoroutineScope(),
   navController: NavHostController = rememberNavController(),
 ): HedvigAppState {
   NavigationTrackingSideEffect(navController)
-  TopLevelDestinationNavigationSideEffect(navController, hAnalytics, tabNotificationBadgeService, coroutineScope)
+  TopLevelDestinationNavigationSideEffect(navController, tabNotificationBadgeService, coroutineScope)
   return remember(
     navController,
     coroutineScope,
@@ -185,29 +182,28 @@ private fun NavigationTrackingSideEffect(navController: NavController) {
 @Composable
 private fun TopLevelDestinationNavigationSideEffect(
   navController: NavController,
-  hAnalytics: HAnalytics,
   tabNotificationBadgeService: TabNotificationBadgeService,
   coroutineScope: CoroutineScope,
 ) {
-  DisposableEffect(navController, hAnalytics, tabNotificationBadgeService, coroutineScope) {
+  DisposableEffect(navController, tabNotificationBadgeService, coroutineScope) {
     val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
       val topLevelDestination = destination.toTopLevelAppDestination() ?: return@OnDestinationChangedListener
       coroutineScope.launch {
         when (topLevelDestination) {
           AppDestination.TopLevelDestination.Home -> {
-            hAnalytics.screenView(AppScreen.HOME)
+            logcat { "Navigated to top level screen: HOME" }
             tabNotificationBadgeService.visitTab(BottomNavTab.HOME)
           }
           AppDestination.TopLevelDestination.Insurance -> {
-            hAnalytics.screenView(AppScreen.INSURANCES)
+            logcat { "Navigated to top level screen: INSURANCES" }
             tabNotificationBadgeService.visitTab(BottomNavTab.INSURANCE)
           }
           AppDestination.TopLevelDestination.Forever -> {
-            hAnalytics.screenView(AppScreen.FOREVER)
+            logcat { "Navigated to top level screen: FOREVER" }
             tabNotificationBadgeService.visitTab(BottomNavTab.REFERRALS)
           }
           AppDestination.TopLevelDestination.Profile -> {
-            hAnalytics.screenView(AppScreen.PROFILE)
+            logcat { "Navigated to top level screen: PROFILE" }
             tabNotificationBadgeService.visitTab(BottomNavTab.PROFILE)
           }
         }

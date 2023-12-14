@@ -72,9 +72,8 @@ import com.hedvig.android.core.ui.appbar.m3.ToolbarChatIcon
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarLayoutForActions
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.plus
-import com.hedvig.android.feature.home.claims.commonclaim.CommonClaimsData
-import com.hedvig.android.feature.home.claims.commonclaim.EmergencyActivity
-import com.hedvig.android.feature.home.claims.commonclaim.EmergencyData
+import com.hedvig.android.feature.home.commonclaim.CommonClaimsData
+import com.hedvig.android.feature.home.emergency.EmergencyData
 import com.hedvig.android.feature.home.home.ChatTooltip
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.otherservices.OtherServicesBottomSheet
@@ -113,6 +112,7 @@ internal fun HomeDestination(
   onStartMovingFlow: () -> Unit,
   onGenerateTravelCertificateClicked: () -> Unit,
   onOpenCommonClaim: (CommonClaimsData) -> Unit,
+  onOpenEmergencyScreen: (EmergencyData) -> Unit,
   openUrl: (String) -> Unit,
   openAppSettings: () -> Unit,
   navigateToMissingInfo: (String) -> Unit,
@@ -130,6 +130,7 @@ internal fun HomeDestination(
     onStartMovingFlow = onStartMovingFlow,
     onGenerateTravelCertificateClicked = onGenerateTravelCertificateClicked,
     onOpenCommonClaim = onOpenCommonClaim,
+    onOpenEmergencyScreen = onOpenEmergencyScreen,
     openUrl = openUrl,
     openAppSettings = openAppSettings,
     navigateToMissingInfo = navigateToMissingInfo,
@@ -148,6 +149,7 @@ private fun HomeScreen(
   onStartMovingFlow: () -> Unit,
   onGenerateTravelCertificateClicked: () -> Unit,
   onOpenCommonClaim: (CommonClaimsData) -> Unit,
+  onOpenEmergencyScreen: (EmergencyData) -> Unit,
   openUrl: (String) -> Unit,
   openAppSettings: () -> Unit,
   navigateToMissingInfo: (String) -> Unit,
@@ -196,13 +198,8 @@ private fun HomeScreen(
             onStartMovingFlow = onStartMovingFlow,
             onClaimDetailCardClicked = onClaimDetailCardClicked,
             navigateToConnectPayment = navigateToConnectPayment,
-            onEmergencyClaimClicked = { emergencyData ->
-              context.startActivity(
-                EmergencyActivity.newInstance(
-                  context = context,
-                  data = emergencyData,
-                ),
-              )
+            onEmergencyClicked = { emergencyData ->
+              onOpenEmergencyScreen(emergencyData)
             },
             onGenerateTravelCertificateClicked = onGenerateTravelCertificateClicked,
             onOpenCommonClaim = onOpenCommonClaim,
@@ -267,7 +264,7 @@ private fun HomeScreenSuccess(
   onStartMovingFlow: () -> Unit,
   onClaimDetailCardClicked: (claimId: String) -> Unit,
   navigateToConnectPayment: () -> Unit,
-  onEmergencyClaimClicked: (EmergencyData) -> Unit,
+  onEmergencyClicked: (EmergencyData) -> Unit,
   onGenerateTravelCertificateClicked: () -> Unit,
   onOpenCommonClaim: (CommonClaimsData) -> Unit,
   onStartClaimClicked: () -> Unit,
@@ -293,7 +290,7 @@ private fun HomeScreenSuccess(
       dismissBottomSheet = dismissOtherServicesBottomSheet,
       onChatClicked = openChat,
       onStartMovingFlow = onStartMovingFlow,
-      onEmergencyClaimClicked = onEmergencyClaimClicked,
+      onEmergencyClicked = onEmergencyClicked,
       onGenerateTravelCertificateClicked = onGenerateTravelCertificateClicked,
       onOpenCommonClaim = onOpenCommonClaim,
       sheetState = sheetState,
@@ -506,6 +503,7 @@ private fun PreviewHomeScreen() {
         onStartMovingFlow = {},
         onGenerateTravelCertificateClicked = {},
         onOpenCommonClaim = {},
+        onOpenEmergencyScreen = {},
         openUrl = {},
         openAppSettings = {},
         navigateToMissingInfo = {},

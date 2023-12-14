@@ -182,7 +182,7 @@ fun makeUserAgent(locale: Locale): String = buildString {
 
 private val viewModelModule = module {
   viewModel<SimpleSignAuthenticationViewModel> { params ->
-    SimpleSignAuthenticationViewModel(params.get(), get(), get(), get())
+    SimpleSignAuthenticationViewModel(params.get(), get(), get())
   }
   viewModel<GenericAuthViewModel> { GenericAuthViewModel(get(), get()) }
   viewModel<OtpInputViewModel> { (verifyUrl: String, resendUrl: String, credential: String) ->
