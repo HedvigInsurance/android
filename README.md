@@ -10,7 +10,7 @@
     - `~/.gradle/gradle.properties`
    Look inside [ci-github-packages-properties](scripts/ci-github-packages-properties.sh) for inspiration.
 3. Download the schema (required to consume any changes in schema as well):
-    `./gradlew downloadApolloSchemasFromIntrospection`
+    `./gradlew downloadOctopusApolloSchemaFromIntrospection`
 4. Download lokalise translations (required to consume latest translations as well):
     `./gradlew downloadStrings`
 5. Build and install via Android Studio
