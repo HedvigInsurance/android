@@ -226,10 +226,6 @@ dependencies {
   debugImplementation(libs.androidx.compose.uiTooling)
   debugImplementation(libs.leakCanary)
 
-  testImplementation(libs.androidx.arch.testing)
-  testImplementation(libs.androidx.test.junit)
-  testImplementation(libs.apollo.mockServer)
-  testImplementation(libs.apollo.testingSupport)
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
   testImplementation(libs.jsonTest)
