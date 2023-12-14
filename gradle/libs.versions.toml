@@ -39,7 +39,6 @@ androidx-other-appCompat = "1.6.1"
 androidx-other-browser = "1.7.0"
 androidx-other-constraintLayout = "2.1.4"
 androidx-other-core = "1.12.0"
-androidx-other-preference = "1.2.1"
 androidx-other-splashscreen = "1.0.1"
 androidx-other-startup = "1.1.1"
 androidx-other-swipeRefreshLayout = "1.1.0"
@@ -133,7 +132,6 @@ androidx-other-appCompat = { module = "androidx.appcompat:appcompat", version.re
 androidx-other-browser = { module = "androidx.browser:browser", version.ref = "androidx-other-browser" }
 androidx-other-constraintLayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "androidx-other-constraintLayout" }
 androidx-other-core = { module = "androidx.core:core-ktx", version.ref = "androidx-other-core" }
-androidx-other-preference = { module = "androidx.preference:preference-ktx", version.ref = "androidx-other-preference" }
 androidx-other-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "androidx-other-splashscreen" }
 androidx-other-startup = { module = "androidx.startup:startup-runtime", version.ref = "androidx-other-startup" }
 androidx-other-swipeRefreshLayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "androidx-other-swipeRefreshLayout" }
