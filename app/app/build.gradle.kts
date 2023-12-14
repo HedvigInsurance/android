@@ -224,8 +224,6 @@ dependencies {
   testImplementation(libs.turbine)
   testImplementation(projects.authCoreTest)
   testImplementation(projects.coreCommonTest)
-  testImplementation(projects.hanalyticsTest)
-  testImplementation(projects.languageTest)
   testImplementation(projects.loggingTest)
   testImplementation(projects.marketTest)
 }
