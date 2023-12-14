@@ -1,11 +1,14 @@
 package com.hedvig.android.app.ui
 
 import android.os.Bundle
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavController
@@ -16,6 +19,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import com.datadog.android.rum.GlobalRumMonitor
+import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.feature.insurances.navigation.insurancesBottomNavPermittedDestinations
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
@@ -24,6 +28,7 @@ import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.notification.badge.data.tab.BottomNavTab
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
+import com.hedvig.android.theme.Theme
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigate
 import kotlin.time.Duration.Companion.seconds
@@ -44,6 +49,7 @@ import kotlinx.coroutines.launch
 internal fun rememberHedvigAppState(
   windowSizeClass: WindowSizeClass,
   tabNotificationBadgeService: TabNotificationBadgeService,
+  settingsDataStore: SettingsDataStore,
   featureManager: FeatureManager,
   coroutineScope: CoroutineScope = rememberCoroutineScope(),
   navController: NavHostController = rememberNavController(),
@@ -55,6 +61,7 @@ internal fun rememberHedvigAppState(
     coroutineScope,
     tabNotificationBadgeService,
     featureManager,
+    settingsDataStore,
     windowSizeClass,
   ) {
     HedvigAppState(
@@ -62,6 +69,7 @@ internal fun rememberHedvigAppState(
       windowSizeClass,
       coroutineScope,
       tabNotificationBadgeService,
+      settingsDataStore,
       featureManager,
     )
   }
@@ -73,6 +81,7 @@ internal class HedvigAppState(
   val windowSizeClass: WindowSizeClass,
   coroutineScope: CoroutineScope,
   tabNotificationBadgeService: TabNotificationBadgeService,
+  private val settingsDataStore: SettingsDataStore,
   private val featureManager: FeatureManager,
 ) {
   val currentDestination: NavDestination?
@@ -152,6 +161,17 @@ internal class HedvigAppState(
       TopLevelGraph.FOREVER -> navController.navigate(TopLevelGraph.FOREVER, topLevelNavOptions)
     }
   }
+
+  val darkTheme: Boolean
+    @Composable
+    get() {
+      val selectedTheme by settingsDataStore.observeTheme().collectAsState(initial = null)
+      return when (selectedTheme) {
+        Theme.LIGHT -> false
+        Theme.DARK -> true
+        else -> isSystemInDarkTheme()
+      }
+    }
 }
 
 @Composable
