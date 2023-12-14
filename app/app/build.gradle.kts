@@ -133,7 +133,6 @@ dependencies {
   implementation(libs.androidx.other.core)
   implementation(libs.androidx.other.splashscreen)
   implementation(libs.androidx.other.startup)
-  implementation(libs.androidx.other.transition)
   implementation(libs.androidx.other.viewPager2)
   implementation(libs.androidx.other.workManager)
   implementation(libs.androidx.profileInstaller)
