@@ -162,8 +162,6 @@ dependencies {
   implementation(libs.okhttp.core)
   implementation(libs.okhttp.loggingInterceptor)
   implementation(libs.playReview)
-  implementation(libs.reactiveX.android)
-  implementation(libs.reactiveX.kotlin)
   implementation(libs.shimmer)
   implementation(libs.timber)
   implementation(projects.apolloAuthListeners)

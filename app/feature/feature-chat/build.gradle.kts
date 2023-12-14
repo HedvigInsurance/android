@@ -30,8 +30,6 @@ dependencies {
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)
   implementation(libs.materialComponents)
-  implementation(libs.reactiveX.android)
-  implementation(libs.reactiveX.kotlin)
   implementation(libs.retrofit)
   implementation(libs.retrofitArrow)
   implementation(libs.retrofitKotlinxSerializationConverter)
