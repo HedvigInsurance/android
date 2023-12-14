@@ -73,7 +73,6 @@ playReview = "2.0.1"
 retrofit = "2.9.0"
 retrofitArrow = "1.2.1"
 retrofitKotlinxSerializationConverter = "1.0.0"
-shimmer = "0.5.0"
 slimber = "2.0.0"
 testParameterInjector = "1.14"
 timber = "5.0.1"
@@ -188,7 +187,6 @@ playReview = { module = "com.google.android.play:review-ktx", version.ref = "pla
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofitArrow = { module = "io.arrow-kt:arrow-core-retrofit", version.ref = "retrofitArrow" }
 retrofitKotlinxSerializationConverter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofitKotlinxSerializationConverter" }
-shimmer = { module = "com.facebook.shimmer:shimmer", version.ref = "shimmer" }
 slimber = { module = "com.github.PaulWoitaschek:Slimber", version.ref = "slimber" }
 testParameterInjector = { module = "com.google.testparameterinjector:test-parameter-injector", version.ref = "testParameterInjector" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }

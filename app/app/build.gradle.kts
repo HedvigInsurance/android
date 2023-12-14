@@ -162,7 +162,6 @@ dependencies {
   implementation(libs.okhttp.core)
   implementation(libs.okhttp.loggingInterceptor)
   implementation(libs.playReview)
-  implementation(libs.shimmer)
   implementation(libs.timber)
   implementation(projects.apolloAuthListeners)
   implementation(projects.apolloCore)
