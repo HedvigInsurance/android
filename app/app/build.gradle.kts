@@ -107,13 +107,10 @@ android {
 
 dependencies {
   implementation(platform(libs.firebase.bom))
-  implementation(libs.accompanist.insetsUi)
-  implementation(libs.accompanist.pagerIndicators)
   implementation(libs.accompanist.systemUiController)
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.compose.animation)
   implementation(libs.androidx.compose.foundation)
-  implementation(libs.androidx.compose.material)
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.compose.material3.windowSizeClass)
   implementation(libs.androidx.compose.materialIconsExtended)
