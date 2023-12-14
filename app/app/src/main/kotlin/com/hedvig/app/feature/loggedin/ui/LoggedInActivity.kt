@@ -2,14 +2,13 @@ package com.hedvig.app.feature.loggedin.ui
 
 import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.AnimationVector4D
@@ -39,8 +38,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -48,7 +49,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.core.view.WindowCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -84,17 +84,20 @@ import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeServic
 import com.hedvig.android.theme.Theme
 import com.hedvig.app.feature.sunsetting.ForceUpgradeActivity
 import com.kiwi.navigationcompose.typed.navigate
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class LoggedInActivity : AppCompatActivity() {
+class LoggedInActivity : ComponentActivity() {
   private val reviewDialogViewModel: ReviewDialogViewModel by viewModel()
 
   private val authTokenService: AuthTokenService by inject()
@@ -110,13 +113,17 @@ class LoggedInActivity : AppCompatActivity() {
 
   private val activityNavigator: ActivityNavigator by inject()
 
-  // Shows the splash screen as long as the auth status is still undetermined, that's the only condition.
+  // Shows the splash screen as long as the auth status or the demo mode status is still undetermined
   private val showSplash = MutableStateFlow(true)
 
-  override fun onConfigurationChanged(newConfig: Configuration) {
-    enableEdgeToEdge(navigationBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT))
-    super.onConfigurationChanged(newConfig)
-  }
+  /**
+   * A channel to report whenever the splash screen has stopped showing. This is used to let `enableEdgeToEdge` be run
+   * again, this time properly taking into account the current background color, and not whatever might have been
+   * showing in the splash screen itself. Without this, `enableEdgeToEdge` might try to compensate for the background
+   * color if it turns out to be different from what the app background color is, since the night/day theme may have
+   * been overwritten from the in-app settings.
+   */
+  private val splashIsRemovedSignal = Channel<Unit>(Channel.UNLIMITED)
 
   override fun onCreate(savedInstanceState: Bundle?) {
     installSplashScreen().apply {
@@ -124,11 +131,11 @@ class LoggedInActivity : AppCompatActivity() {
       setOnExitAnimationListener {
         logcat(LogPriority.INFO) { "Splash screen will be removed" }
         it.remove()
+        splashIsRemovedSignal.trySend(Unit)
       }
     }
     enableEdgeToEdge(navigationBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT))
     super.onCreate(savedInstanceState)
-    WindowCompat.setDecorFitsSystemWindows(window, false)
 
     val intent: Intent = intent
     lifecycleScope.launch {
@@ -138,7 +145,7 @@ class LoggedInActivity : AppCompatActivity() {
         return@launch
       }
       launch {
-        settingsDataStore.observeTheme().first()?.apply()
+        settingsDataStore.observeTheme().collectLatest { it?.apply() }
       }
       launch {
         lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
@@ -192,14 +199,18 @@ class LoggedInActivity : AppCompatActivity() {
 
     setContent {
       val market by marketManager.market.collectAsStateWithLifecycle()
-      HedvigTheme {
-        val windowSizeClass = calculateWindowSizeClass(this)
+      val windowSizeClass = calculateWindowSizeClass(this)
+      val hedvigAppState = rememberHedvigAppState(
+        windowSizeClass = windowSizeClass,
+        tabNotificationBadgeService = tabNotificationBadgeService,
+        featureManager = featureManager,
+        settingsDataStore = settingsDataStore,
+      )
+      val darkTheme = hedvigAppState.darkTheme
+      EnableEdgeToEdgeSideEffect(darkTheme)
+      HedvigTheme(darkTheme = darkTheme) {
         HedvigApp(
-          hedvigAppState = rememberHedvigAppState(
-            windowSizeClass = windowSizeClass,
-            tabNotificationBadgeService = tabNotificationBadgeService,
-            featureManager = featureManager,
-          ),
+          hedvigAppState = hedvigAppState,
           hedvigDeepLinkContainer = hedvigDeepLinkContainer,
           activityNavigator = activityNavigator,
           getInitialTab = {
@@ -217,6 +228,20 @@ class LoggedInActivity : AppCompatActivity() {
           hedvigBuildConstants = hedvigBuildConstants,
         )
       }
+    }
+  }
+
+  @Composable
+  private fun EnableEdgeToEdgeSideEffect(darkTheme: Boolean) {
+    val splashIsRemovedIndex by produceState(0) {
+      splashIsRemovedSignal.receiveAsFlow().collectLatest { value = value + 1 }
+    }
+    DisposableEffect(darkTheme, splashIsRemovedIndex) {
+      enableEdgeToEdge(
+        statusBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT) { darkTheme },
+        navigationBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT) { darkTheme },
+      )
+      onDispose {}
     }
   }
 
@@ -379,10 +404,6 @@ private fun Modifier.animatedNavigationBarInsetsConsumption(hedvigAppState: Hedv
   consumeWindowInsets(animatedInsetsToConsume)
 }
 
-/**
- * Move just to the settings place where this is edited after we remove the dark_mode feature flag
- * We do not need to set this on every app launch from that point on.
- */
 private fun Theme.apply() = when (this) {
   Theme.LIGHT -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
   Theme.DARK -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
