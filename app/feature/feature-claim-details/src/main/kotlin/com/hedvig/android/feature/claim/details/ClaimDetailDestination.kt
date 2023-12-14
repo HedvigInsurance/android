@@ -22,6 +22,7 @@ fun NavGraphBuilder.claimDetailsGraph(
       imageLoader = imageLoader,
       navigateUp = navigateUp,
       onChatClick = { openChat(backStackEntry) },
+      onAddFilesClick = {  },
       openUrl = openUrl,
     )
   }

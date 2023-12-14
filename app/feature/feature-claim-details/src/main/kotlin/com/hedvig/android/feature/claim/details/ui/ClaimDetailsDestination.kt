@@ -46,6 +46,7 @@ import com.hedvig.android.audio.player.state.AudioPlayerState
 import com.hedvig.android.audio.player.state.PlayableAudioSource
 import com.hedvig.android.audio.player.state.rememberAudioPlayer
 import com.hedvig.android.core.designsystem.animation.animateContentHeight
+import com.hedvig.android.core.designsystem.component.button.HedvigSecondaryContainedButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
@@ -74,6 +75,7 @@ internal fun ClaimDetailsDestination(
   imageLoader: ImageLoader,
   navigateUp: () -> Unit,
   onChatClick: () -> Unit,
+  onAddFilesClick: () -> Unit,
   openUrl: (String) -> Unit,
 ) {
   val viewState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -84,6 +86,7 @@ internal fun ClaimDetailsDestination(
     navigateUp = navigateUp,
     openUrl = openUrl,
     onChatClick = onChatClick,
+    onAddFilesClick = onAddFilesClick
   )
 }
 
@@ -95,6 +98,7 @@ private fun ClaimDetailScreen(
   retry: () -> Unit,
   navigateUp: () -> Unit,
   onChatClick: () -> Unit,
+  onAddFilesClick: () -> Unit,
 ) {
   Surface(
     color = MaterialTheme.colorScheme.background,
@@ -113,6 +117,7 @@ private fun ClaimDetailScreen(
           uiState = uiState,
           openUrl = openUrl,
           onChatClick = onChatClick,
+          onAddFilesClick = onAddFilesClick,
           imageLoader = imageLoader,
         )
 
@@ -127,6 +132,7 @@ private fun ClaimDetailScreen(
 private fun ClaimDetailScreen(
   uiState: ClaimDetailUiState.Content,
   onChatClick: () -> Unit,
+  onAddFilesClick: () -> Unit,
   openUrl: (String) -> Unit,
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
@@ -170,7 +176,6 @@ private fun ClaimDetailScreen(
 
           else -> {}
         }
-        Spacer(Modifier.height(16.dp))
       }
     }
 
@@ -210,6 +215,22 @@ private fun ClaimDetailScreen(
             )
           }
         }
+      }
+    }
+
+    item(span = StaggeredGridItemSpan.FullLine) {
+      Column {
+        Spacer(Modifier.height(8.dp))
+
+        val text = if (uiState.files.isNotEmpty()) {
+          stringResource(id = R.string.claim_status_detail_add_more_files)
+        } else {
+          stringResource(id = R.string.claim_status_detail_add_files)
+        }
+        HedvigSecondaryContainedButton(
+          text = text,
+          onClick = { onAddFilesClick() },
+        )
       }
     }
   }
@@ -390,18 +411,12 @@ private fun PreviewClaimDetailScreen() {
               url = "",
               thumbnailUrl = "1",
             ),
-            ClaimDetailUiState.Content.ClaimFile(
-              id = "7",
-              name = "test7",
-              mimeType = "",
-              url = "1",
-              thumbnailUrl = "1",
-            ),
           ),
         ),
         onChatClick = {},
         imageLoader = rememberPreviewImageLoader(),
         openUrl = {},
+        onAddFilesClick = {},
       )
     }
   }
