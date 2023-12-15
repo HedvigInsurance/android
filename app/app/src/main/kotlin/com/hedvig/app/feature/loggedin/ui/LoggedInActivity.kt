@@ -1,5 +1,7 @@
 package com.hedvig.app.feature.loggedin.ui
 
+import android.app.UiModeManager
+import android.app.UiModeManager.MODE_NIGHT_CUSTOM
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -10,63 +12,26 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.AnimationVector4D
-import androidx.compose.animation.core.TwoWayConverter
-import androidx.compose.animation.core.animateValueAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandHorizontally
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.shrinkHorizontally
-import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.displayCutout
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.union
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.LayoutDirection
-import androidx.compose.ui.unit.dp
+import androidx.core.content.getSystemService
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.NavController
 import arrow.fx.coroutines.raceN
 import coil.ImageLoader
 import com.google.android.play.core.review.ReviewManagerFactory
-import com.hedvig.android.app.navigation.HedvigNavHost
-import com.hedvig.android.app.ui.HedvigAppState
-import com.hedvig.android.app.ui.HedvigBottomBar
-import com.hedvig.android.app.ui.HedvigNavRail
+import com.hedvig.android.app.ui.HedvigApp
 import com.hedvig.android.app.ui.rememberHedvigAppState
 import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
-import com.hedvig.android.core.designsystem.material3.motion.MotionTokens
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
@@ -74,16 +39,13 @@ import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.navigation.activity.ActivityNavigator
-import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
 import com.hedvig.android.theme.Theme
 import com.hedvig.app.feature.sunsetting.ForceUpgradeActivity
-import com.kiwi.navigationcompose.typed.navigate
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -134,8 +96,12 @@ class LoggedInActivity : ComponentActivity() {
         splashIsRemovedSignal.trySend(Unit)
       }
     }
-    enableEdgeToEdge(navigationBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT))
+    enableEdgeToEdge(
+      statusBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT),
+      navigationBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT),
+    )
     super.onCreate(savedInstanceState)
+    val uiModeManager = getSystemService<UiModeManager>()
 
     val intent: Intent = intent
     lifecycleScope.launch {
@@ -145,7 +111,9 @@ class LoggedInActivity : ComponentActivity() {
         return@launch
       }
       launch {
-        settingsDataStore.observeTheme().collectLatest { it?.apply() }
+        settingsDataStore.observeTheme().collectLatest { theme ->
+          applyTheme(theme, uiModeManager)
+        }
       }
       launch {
         lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
@@ -281,146 +249,36 @@ class LoggedInActivity : ComponentActivity() {
   }
 }
 
-@Composable
-private fun HedvigApp(
-  hedvigAppState: HedvigAppState,
-  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
-  activityNavigator: ActivityNavigator,
-  getInitialTab: () -> TopLevelGraph?,
-  clearInitialTab: () -> Unit,
-  shouldShowRequestPermissionRationale: (String) -> Boolean,
-  market: Market,
-  imageLoader: ImageLoader,
-  languageService: LanguageService,
-  hedvigBuildConstants: HedvigBuildConstants,
-) {
-  LaunchedEffect(getInitialTab, clearInitialTab, hedvigAppState) {
-    val initialTab: TopLevelGraph = getInitialTab() ?: return@LaunchedEffect
-    clearInitialTab()
-    hedvigAppState.navigateToTopLevelGraph(initialTab)
-  }
-  Surface(
-    color = MaterialTheme.colorScheme.background,
-    contentColor = MaterialTheme.colorScheme.onBackground,
-    modifier = Modifier.fillMaxSize(),
-  ) {
-    Column {
-      Row(Modifier.weight(1f).fillMaxWidth()) {
-        AnimatedVisibility(
-          visible = hedvigAppState.shouldShowNavRail,
-          enter = expandHorizontally(expandFrom = Alignment.End),
-          exit = shrinkHorizontally(shrinkTowards = Alignment.End),
-        ) {
-          val topLevelGraphs by hedvigAppState.topLevelGraphs.collectAsStateWithLifecycle()
-          val destinationsWithNotifications by hedvigAppState
-            .topLevelGraphsWithNotifications.collectAsStateWithLifecycle()
-          HedvigNavRail(
-            destinations = topLevelGraphs,
-            destinationsWithNotifications = destinationsWithNotifications,
-            onNavigateToDestination = hedvigAppState::navigateToTopLevelGraph,
-            currentDestination = hedvigAppState.currentDestination,
-          )
-        }
-        HedvigNavHost(
-          hedvigAppState = hedvigAppState,
-          hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-          activityNavigator = activityNavigator,
-          navigateToConnectPayment = { navigateToConnectPayment(hedvigAppState.navController, market) },
-          shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-          imageLoader = imageLoader,
-          market = market,
-          languageService = languageService,
-          hedvigBuildConstants = hedvigBuildConstants,
-          modifier = Modifier
-            .fillMaxHeight()
-            .weight(1f)
-            .animatedNavigationBarInsetsConsumption(hedvigAppState),
-        )
-      }
-      AnimatedVisibility(
-        visible = hedvigAppState.shouldShowBottomBar,
-        enter = expandVertically(expandFrom = Alignment.Top),
-        exit = shrinkVertically(shrinkTowards = Alignment.Top),
-      ) {
-        val topLevelGraphs by hedvigAppState.topLevelGraphs.collectAsStateWithLifecycle()
-        val destinationsWithNotifications by hedvigAppState
-          .topLevelGraphsWithNotifications.collectAsStateWithLifecycle()
-        HedvigBottomBar(
-          destinations = topLevelGraphs,
-          destinationsWithNotifications = destinationsWithNotifications,
-          onNavigateToDestination = hedvigAppState::navigateToTopLevelGraph,
-          currentDestination = hedvigAppState.currentDestination,
-        )
-      }
-    }
-  }
-}
-
 /**
- * Animates how we consume the insets, so that when we leave a screen which does not consume any insets, and we enter a
- * screen which does (by showing the bottom nav for example) then we don't want the outgoing screen to have its
- * contents snap to the bounds of the new insets immediately. This animation makes this visual effect look much more
- * fluid.
+ * Applies the theme in two ways:
+ * 1. Uses UiModeManager to persist the last theme selected so that on new launches the splash screen matches the theme
+ * 2. Uses AppCompatDelegate to set the underlying Configuration.uiMode to the theme selected
  */
-@OptIn(ExperimentalLayoutApi::class)
-private fun Modifier.animatedNavigationBarInsetsConsumption(hedvigAppState: HedvigAppState) = composed {
-  val density = LocalDensity.current
-  val insetsToConsume = if (hedvigAppState.shouldShowBottomBar) {
-    WindowInsets.systemBars.only(WindowInsetsSides.Bottom).asPaddingValues(density)
-  } else if (hedvigAppState.shouldShowNavRail) {
-    WindowInsets.systemBars.union(WindowInsets.displayCutout).only(WindowInsetsSides.Left).asPaddingValues(density)
-  } else {
-    PaddingValues(0.dp)
-  }
-
-  val paddingValuesVectorConverter: TwoWayConverter<PaddingValues, AnimationVector4D> = TwoWayConverter(
-    convertToVector = { paddingValues ->
-      AnimationVector4D(
-        paddingValues.calculateLeftPadding(LayoutDirection.Ltr).value,
-        paddingValues.calculateRightPadding(LayoutDirection.Ltr).value,
-        paddingValues.calculateTopPadding().value,
-        paddingValues.calculateBottomPadding().value,
-      )
-    },
-    convertFromVector = { animationVector4d ->
-      val leftPadding = animationVector4d.v1
-      val rightPadding = animationVector4d.v2
-      val topPadding = animationVector4d.v3
-      val bottomPadding = animationVector4d.v4
-      PaddingValues(
-        start = leftPadding.dp,
-        end = rightPadding.dp,
-        top = topPadding.dp,
-        bottom = bottomPadding.dp,
-      )
-    },
-  )
-  val animatedInsetsToConsume: PaddingValues by animateValueAsState(
-    targetValue = insetsToConsume,
-    typeConverter = paddingValuesVectorConverter,
-    animationSpec = tween(MotionTokens.DurationMedium1.toInt()),
-    label = "Padding values inset animation",
-  )
-  consumeWindowInsets(animatedInsetsToConsume)
-}
-
-private fun Theme.apply() = when (this) {
-  Theme.LIGHT -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-  Theme.DARK -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-  Theme.SYSTEM_DEFAULT -> {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-      AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-    } else {
-      AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY)
+private fun applyTheme(theme: Theme?, uiModeManager: UiModeManager?) {
+  when (theme) {
+    Theme.LIGHT -> {
+      AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        uiModeManager?.setApplicationNightMode(UiModeManager.MODE_NIGHT_NO)
+      }
     }
-  }
-}
 
-private fun navigateToConnectPayment(navController: NavController, market: Market) {
-  when (market) {
-    Market.SE -> navController.navigate(AppDestination.ConnectPayment)
-    Market.NO,
-    Market.DK,
-    -> navController.navigate(AppDestination.ConnectPaymentAdyen)
+    Theme.DARK -> {
+      AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        uiModeManager?.setApplicationNightMode(UiModeManager.MODE_NIGHT_YES)
+      }
+    }
+
+    else -> {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+      } else {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY)
+      }
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        uiModeManager?.setApplicationNightMode(MODE_NIGHT_CUSTOM)
+      }
+    }
   }
 }
