@@ -28,7 +28,6 @@ dependencies {
   implementation(libs.arrow.core)
   implementation(libs.arrow.fx)
   implementation(libs.coil.compose)
-  implementation(libs.insetter)
   implementation(libs.koin.compose)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.immutable.collections)

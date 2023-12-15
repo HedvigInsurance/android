@@ -8,7 +8,6 @@ plugins {
 dependencies {
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.lifecycle.compose)
-  implementation(libs.androidx.other.dynamicAnimation)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.arrow.core)
   implementation(libs.arrow.fx)
