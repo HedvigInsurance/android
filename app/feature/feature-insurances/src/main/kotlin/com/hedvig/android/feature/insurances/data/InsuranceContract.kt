@@ -1,5 +1,7 @@
 package com.hedvig.android.feature.insurances.data
 
+import com.hedvig.android.core.common.formatName
+import com.hedvig.android.core.common.formatSsn
 import com.hedvig.android.data.productvariant.ProductVariant
 import java.time.format.DateTimeFormatter
 import kotlinx.collections.immutable.ImmutableList
@@ -45,21 +47,15 @@ data class InsuranceAgreement(
     val terminatesOn: LocalDate?,
     val hasMissingInfo: Boolean,
   ) {
-    fun getDisplayName() = buildString {
-      if (firstName != null) {
-        append(firstName)
-      }
-      if (firstName != null && lastName != null) {
-        append(" ")
-      }
-      if (lastName != null) {
-        append(lastName)
-      }
-    }
+    fun getDisplayName() = formatName(firstName, lastName)
 
-    fun getSsnOrBirthDate(dateTimeFormatter: DateTimeFormatter) = ssn ?: birthDate
-      ?.toJavaLocalDate()
-      ?.let { dateTimeFormatter.format(it) }
+    fun getSsnOrBirthDate(dateTimeFormatter: DateTimeFormatter) = if (ssn != null) {
+      formatSsn(ssn)
+    } else {
+      birthDate
+        ?.toJavaLocalDate()
+        ?.let { dateTimeFormatter.format(it) }
+    }
   }
 
   enum class CreationCause {

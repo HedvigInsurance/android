@@ -8,4 +8,11 @@ fragment ClaimFragment on Claim {
   associatedTypeOfContract
   audioUrl
   memberFreeText
+  files {
+    id
+    name
+    mimeType
+    url
+    thumbnailUrl
+  }
 }

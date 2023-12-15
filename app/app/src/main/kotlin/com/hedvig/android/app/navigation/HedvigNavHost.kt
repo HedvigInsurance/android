@@ -100,6 +100,7 @@ internal fun HedvigNavHost(
           shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
           activityNavigator = activityNavigator,
           imageLoader = imageLoader,
+          openUrl = ::openUrl,
         )
       },
       navigator = navigator,
@@ -247,14 +248,17 @@ private fun NavGraphBuilder.nestedHomeGraphs(
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   activityNavigator: ActivityNavigator,
   imageLoader: ImageLoader,
+  openUrl: (String) -> Unit,
 ) {
   claimDetailsGraph(
+    imageLoader = imageLoader,
     navigateUp = navigator::navigateUp,
     openChat = { backStackEntry ->
       with(navigator) {
         backStackEntry.navigate(AppDestination.Chat)
       }
     },
+    openUrl = openUrl,
   )
   changeAddressGraph(
     navController = hedvigAppState.navController,

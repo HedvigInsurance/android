@@ -1,0 +1,7 @@
+mutation AddDiscount($code: String!) {
+  memberCampaignsRedeem(code: $code) {
+    userError {
+      message
+    }
+  }
+}
