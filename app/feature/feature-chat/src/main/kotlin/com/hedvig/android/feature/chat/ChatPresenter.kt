@@ -61,10 +61,15 @@ internal sealed interface ChatUiState {
   @Immutable
   data class Loaded(
     // The list of messages, ordered from the newest one to the oldest one
-    val messages: ImmutableList<ChatMessage>,
+    val messages: ImmutableList<UiChatMessage>,
     val errorMessage: ErrorMessage?,
     val fetchMoreMessagesUiState: FetchMoreMessagesUiState,
   ) : ChatUiState {
+    data class UiChatMessage(
+      val chatMessage: ChatMessage,
+      val isLastDeliveredMessage: Boolean,
+    )
+
     sealed interface FetchMoreMessagesUiState {
       object FailedToFetch : FetchMoreMessagesUiState
 
@@ -93,7 +98,7 @@ internal class ChatPresenter(
 
     val messages: SnapshotStateList<ChatMessage> = remember {
       mutableStateListOf(
-        *(lastState.safeCast<ChatUiState.Loaded>()?.messages ?: emptyList()).toTypedArray(),
+        *(lastState.safeCast<ChatUiState.Loaded>()?.messages?.map { it.chatMessage } ?: emptyList()).toTypedArray(),
       )
     }
 
@@ -231,10 +236,17 @@ internal class ChatPresenter(
         }
       }
       val failedChatMessages = (messagesFailedToBeSent + photosFailedToBeSent + mediaFailedToBeSent)
-        .map(FailedMessage::toChatMessage)
+        .map(FailedMessage::toUiChatMessage)
+      val uiChatMessages = messages
+        .mapIndexed { index, chatMessage ->
+          ChatUiState.Loaded.UiChatMessage(
+            chatMessage = chatMessage,
+            isLastDeliveredMessage = index == 0 && chatMessage.sender == ChatMessage.Sender.MEMBER,
+          )
+        }
       ChatUiState.Loaded(
-        messages = (messages + failedChatMessages)
-          .sortedByDescending(ChatMessage::sentAt)
+        messages = (uiChatMessages + failedChatMessages)
+          .sortedByDescending { it.chatMessage.sentAt }
           .toPersistentList(),
         errorMessage = null,
         fetchMoreMessagesUiState = fetchMoreMessagesUiState,
@@ -378,21 +390,27 @@ private sealed interface FailedMessage {
   ) : FailedMessage
 }
 
-private fun FailedMessage.toChatMessage(): ChatMessage {
+private fun FailedMessage.toUiChatMessage(): ChatUiState.Loaded.UiChatMessage {
   return when (this) {
     is FailedMessage.FailedText -> {
-      ChatMessage.FailedToBeSent.ChatMessageText(
-        id = this.id,
-        sentAt = this.sentAt,
-        text = this.message,
+      ChatUiState.Loaded.UiChatMessage(
+        chatMessage = ChatMessage.FailedToBeSent.ChatMessageText(
+          id = this.id,
+          sentAt = this.sentAt,
+          text = this.message,
+        ),
+        isLastDeliveredMessage = false,
       )
     }
 
     is FailedMessage.FailedUri -> {
-      ChatMessage.FailedToBeSent.ChatMessageUri(
-        id = this.id,
-        sentAt = this.sentAt,
-        uri = this.uri,
+      ChatUiState.Loaded.UiChatMessage(
+        chatMessage = ChatMessage.FailedToBeSent.ChatMessageUri(
+          id = this.id,
+          sentAt = this.sentAt,
+          uri = this.uri,
+        ),
+        isLastDeliveredMessage = false,
       )
     }
   }

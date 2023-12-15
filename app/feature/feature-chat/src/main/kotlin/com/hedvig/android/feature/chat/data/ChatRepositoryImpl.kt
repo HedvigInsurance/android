@@ -99,7 +99,7 @@ internal class ChatRepositoryImpl(
             ErrorMessage("watchMessages: No data")
           }
           val chat = data.chat
-          chat.messages.mapNotNull { it.toChatMessage() }
+          chat.messages.mapNotNull { it.toChatMessage() }.sortedByDescending { it.sentAt }
         }
       }
       .retryWhen { cause, _ ->

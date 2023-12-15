@@ -210,13 +210,18 @@ private class ChatUiStateProvider : CollectionPreviewParameterProvider<ChatUiSta
             ""
           },
         )
-      }.plus(
-        ChatMessage.FailedToBeSent.ChatMessageText(
-          id = "failed",
-          sentAt = Clock.System.now(),
-          text = "Failed to be sent",
-        ),
-      ).toImmutableList(),
+      }
+        .plus(
+          ChatMessage.FailedToBeSent.ChatMessageText(
+            id = "failed",
+            sentAt = Clock.System.now(),
+            text = "Failed to be sent",
+          ),
+        )
+        .map {
+          ChatUiState.Loaded.UiChatMessage(it, false)
+        }
+        .toImmutableList(),
       errorMessage = null,
       fetchMoreMessagesUiState = ChatUiState.Loaded.FetchMoreMessagesUiState.FetchingMore,
     ),
