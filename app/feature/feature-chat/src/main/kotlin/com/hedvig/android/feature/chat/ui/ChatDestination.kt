@@ -222,7 +222,6 @@ private class ChatUiStateProvider : CollectionPreviewParameterProvider<ChatUiSta
           ChatUiState.Loaded.UiChatMessage(it, false)
         }
         .toImmutableList(),
-      errorMessage = null,
       fetchMoreMessagesUiState = ChatUiState.Loaded.FetchMoreMessagesUiState.FetchingMore,
     ),
   ),
