@@ -172,6 +172,7 @@ dependencies {
   implementation(projects.coreDatastorePublic)
   implementation(projects.coreDemoMode)
   implementation(projects.coreDesignSystem)
+  implementation(projects.coreIcons)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
   implementation(projects.dataClaimFlow)
