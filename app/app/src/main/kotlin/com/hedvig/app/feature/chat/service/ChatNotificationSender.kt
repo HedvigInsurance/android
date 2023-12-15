@@ -21,6 +21,7 @@ import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
 import com.hedvig.app.service.push.getMutablePendingIntentFlags
+import kotlinx.datetime.Instant
 
 class ChatNotificationSender(
   private val context: Context,
@@ -153,7 +154,12 @@ class ChatNotificationSender(
   }
 
   @RequiresApi(Build.VERSION_CODES.N)
-  fun addReplyToExistingChatNotification(context: Context, notificationId: Int, replyText: CharSequence) {
+  fun addReplyToExistingChatNotification(
+    context: Context,
+    notificationId: Int,
+    replyText: String,
+    replyTimestamp: Instant,
+  ) {
     val notificationManager = context.getSystemService<NotificationManager>() ?: return
 
     val existingChatNotification = notificationManager
@@ -164,7 +170,7 @@ class ChatNotificationSender(
     val style = NotificationCompat.MessagingStyle.extractMessagingStyleFromNotification(
       existingChatNotification,
     ) ?: return
-    style.addMessage(replyText, System.currentTimeMillis(), style.user)
+    style.addMessage(replyText, replyTimestamp.toEpochMilliseconds(), style.user)
 
     sendChatNotificationInner(
       context,

@@ -5,6 +5,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import androidx.work.BackoffPolicy
+import androidx.work.Constraints
+import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
@@ -18,7 +20,8 @@ class ChatMessageNotificationReceiver : BroadcastReceiver() {
     val notificationId: Int = intent.getIntExtra(CHAT_REPLY_DATA_NOTIFICATION_ID, 0)
 
     val work = OneTimeWorkRequestBuilder<ReplyWorker>()
-      .setBackoffCriteria(BackoffPolicy.LINEAR, 1, TimeUnit.SECONDS)
+      .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 1, TimeUnit.SECONDS)
+      .setConstraints(Constraints(requiredNetworkType = NetworkType.CONNECTED))
       .setInputData(
         workDataOf(
           REPLY_TEXT to replyText.toString(),
