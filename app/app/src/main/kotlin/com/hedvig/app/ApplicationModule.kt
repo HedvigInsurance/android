@@ -341,6 +341,7 @@ val applicationModule = module {
       datastoreAndroidModule,
       deepLinkModule,
       demoModule,
+      editCoInsuredModule,
       featureManagerModule,
       firebaseNotificationModule,
       foreverModule,
@@ -367,7 +368,6 @@ val applicationModule = module {
       useCaseModule,
       viewModelModule,
       workManagerModule,
-      editCoInsuredModule,
     ),
   )
 }
