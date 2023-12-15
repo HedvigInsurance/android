@@ -32,7 +32,6 @@ dependencies {
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
-  implementation(libs.materialComponents)
   implementation(libs.moneta)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
