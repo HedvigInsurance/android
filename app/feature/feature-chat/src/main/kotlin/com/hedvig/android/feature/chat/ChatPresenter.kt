@@ -8,7 +8,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
@@ -20,8 +19,6 @@ import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.feature.chat.data.ChatRepository
 import com.hedvig.android.feature.chat.model.ChatMessage
-import com.hedvig.android.hanalytics.featureflags.FeatureManager
-import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -55,8 +52,6 @@ internal sealed interface ChatEvent {
 internal sealed interface ChatUiState {
   data object Initializing : ChatUiState
 
-  data object DisabledByFeatureFlag : ChatUiState
-
   @Immutable
   data class Loaded(
     // The list of messages, ordered from the newest one to the oldest one
@@ -82,18 +77,10 @@ internal sealed interface ChatUiState {
 
 internal class ChatPresenter(
   private val chatRepository: Provider<ChatRepository>,
-  private val featureManager: FeatureManager,
   private val clock: Clock,
 ) : MoleculePresenter<ChatEvent, ChatUiState> {
   @Composable
   override fun MoleculePresenterScope<ChatEvent>.present(lastState: ChatUiState): ChatUiState {
-    val isChatDisabled by produceState(false || lastState is ChatUiState.DisabledByFeatureFlag) {
-      value = featureManager.isFeatureEnabled(Feature.DISABLE_CHAT)
-    }
-    if (isChatDisabled) {
-      return ChatUiState.DisabledByFeatureFlag
-    }
-
     val messages: SnapshotStateList<ChatMessage> = remember {
       mutableStateListOf(
         *(lastState.safeCast<ChatUiState.Loaded>()?.messages?.map { it.chatMessage } ?: emptyList()).toTypedArray(),
@@ -124,7 +111,6 @@ internal class ChatPresenter(
       },
     )
     LaunchPeriodicMessagePollsEffect(
-      isChatDisabled = isChatDisabled,
       reportNextUntilFromPolling = { nextUntil: Instant ->
         // If we have not received a `nextUntil` value yet, we set the first value from the polling query
         if (fetchMoreState is FetchMoreState.HaveNotReceivedInitialFetchUntil) {
@@ -252,13 +238,9 @@ internal class ChatPresenter(
   }
 
   @Composable
-  private fun LaunchPeriodicMessagePollsEffect(
-    isChatDisabled: Boolean,
-    reportNextUntilFromPolling: (nextUntil: Instant) -> Unit,
-  ) {
+  private fun LaunchPeriodicMessagePollsEffect(reportNextUntilFromPolling: (nextUntil: Instant) -> Unit) {
     val updatedReportNextUntilFromPolling by rememberUpdatedState(reportNextUntilFromPolling)
-    LaunchedEffect(isChatDisabled) {
-      if (isChatDisabled) return@LaunchedEffect
+    LaunchedEffect(Unit) {
       while (isActive) {
         chatRepository.provide().pollNewestMessages().onRight { result ->
           updatedReportNextUntilFromPolling(result.nextUntil)
