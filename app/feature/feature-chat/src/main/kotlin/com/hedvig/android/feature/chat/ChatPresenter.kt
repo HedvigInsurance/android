@@ -16,7 +16,6 @@ import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import arrow.fx.coroutines.parMap
 import com.benasher44.uuid.Uuid
-import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.feature.chat.data.ChatRepository
@@ -62,7 +61,6 @@ internal sealed interface ChatUiState {
   data class Loaded(
     // The list of messages, ordered from the newest one to the oldest one
     val messages: ImmutableList<UiChatMessage>,
-    val errorMessage: ErrorMessage?,
     val fetchMoreMessagesUiState: FetchMoreMessagesUiState,
   ) : ChatUiState {
     data class UiChatMessage(
@@ -248,7 +246,6 @@ internal class ChatPresenter(
         messages = (uiChatMessages + failedChatMessages)
           .sortedByDescending { it.chatMessage.sentAt }
           .toPersistentList(),
-        errorMessage = null,
         fetchMoreMessagesUiState = fetchMoreMessagesUiState,
       )
     }
