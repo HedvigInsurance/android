@@ -22,15 +22,6 @@ class ApolloConventionPlugin : Plugin<Project> {
           schemaFile.writeText(convertedSchema)
         }
       }
-
-      tasks.register("downloadApolloSchemasFromIntrospection") {
-        tasks.findByName("downloadGiraffeApolloSchemaFromIntrospection")?.let { downloadTask ->
-          dependsOn(downloadTask)
-        }
-        tasks.findByName("downloadOctopusApolloSchemaFromIntrospection")?.let { downloadTask ->
-          dependsOn(downloadTask)
-        }
-      }
     }
   }
 }

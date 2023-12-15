@@ -70,6 +70,15 @@ internal class GetClaimDetailUiStateUseCase(
         memberFreeText != null -> ClaimDetailUiState.Content.SubmittedContent.FreeText(memberFreeText)
         else -> null
       },
+      files = claim.files.map {
+        ClaimDetailUiState.Content.ClaimFile(
+          id = it.id,
+          name = it.name,
+          mimeType = it.mimeType,
+          url = it.url,
+          thumbnailUrl = it.thumbnailUrl,
+        )
+      },
       claimStatusCardUiState = ClaimStatusCardUiState.fromClaimStatusCardsQuery(claim),
       claimStatus = when (claim.status) {
         ClaimStatus.CREATED -> ClaimDetailUiState.Content.ClaimStatus.CREATED

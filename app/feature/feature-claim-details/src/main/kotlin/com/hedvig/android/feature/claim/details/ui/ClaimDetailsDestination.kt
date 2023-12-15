@@ -2,13 +2,15 @@ package com.hedvig.android.feature.claim.details.ui
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,10 +20,13 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
+import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -33,19 +38,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.ImageLoader
 import com.hedvig.android.audio.player.HedvigAudioPlayer
 import com.hedvig.android.audio.player.SignedAudioUrl
 import com.hedvig.android.audio.player.state.AudioPlayerState
 import com.hedvig.android.audio.player.state.PlayableAudioSource
 import com.hedvig.android.audio.player.state.rememberAudioPlayer
+import com.hedvig.android.core.designsystem.animation.animateContentHeight
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.HedvigIcons
 import com.hedvig.android.core.icons.hedvig.colored.hedvig.Chat
+import com.hedvig.android.core.icons.hedvig.normal.Document
+import com.hedvig.android.core.icons.hedvig.normal.Pictures
+import com.hedvig.android.core.icons.hedvig.normal.Play
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
+import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.ui.claimstatus.ClaimStatusCard
 import com.hedvig.android.ui.claimstatus.model.ClaimPillType
@@ -57,14 +70,18 @@ import octopus.type.CurrencyCode
 @Composable
 internal fun ClaimDetailsDestination(
   viewModel: ClaimDetailsViewModel,
+  imageLoader: ImageLoader,
   navigateUp: () -> Unit,
   onChatClick: () -> Unit,
+  openUrl: (String) -> Unit,
 ) {
   val viewState by viewModel.uiState.collectAsStateWithLifecycle()
   ClaimDetailScreen(
     uiState = viewState,
+    imageLoader = imageLoader,
     retry = { viewModel.emit(ClaimDetailsEvent.Retry) },
     navigateUp = navigateUp,
+    openUrl = openUrl,
     onChatClick = onChatClick,
   )
 }
@@ -72,6 +89,8 @@ internal fun ClaimDetailsDestination(
 @Composable
 private fun ClaimDetailScreen(
   uiState: ClaimDetailUiState,
+  imageLoader: ImageLoader,
+  openUrl: (String) -> Unit,
   retry: () -> Unit,
   navigateUp: () -> Unit,
   onChatClick: () -> Unit,
@@ -83,16 +102,16 @@ private fun ClaimDetailScreen(
     Column(Modifier.fillMaxSize()) {
       TopAppBarWithBack(
         onClick = navigateUp,
-        title = stringResource(hedvig.resources.R.string.CLAIMS_YOUR_CLAIM),
-        contentPadding = WindowInsets.safeDrawing
-          .only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal)
-          .asPaddingValues(),
+        title = stringResource(R.string.CLAIMS_YOUR_CLAIM),
       )
       when (uiState) {
         is ClaimDetailUiState.Content -> ClaimDetailScreen(
           uiState = uiState,
+          openUrl = openUrl,
           onChatClick = onChatClick,
+          imageLoader = imageLoader,
         )
+
         ClaimDetailUiState.Error -> HedvigErrorSection(retry = retry)
         ClaimDetailUiState.Loading -> HedvigFullScreenCenterAlignedProgressDebounced()
       }
@@ -104,44 +123,99 @@ private fun ClaimDetailScreen(
 private fun ClaimDetailScreen(
   uiState: ClaimDetailUiState.Content,
   onChatClick: () -> Unit,
+  openUrl: (String) -> Unit,
+  imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
 ) {
-  Column(
+  LazyVerticalStaggeredGrid(
+    columns = StaggeredGridCells.Fixed(3),
+    horizontalArrangement = Arrangement.spacedBy(8.dp),
+    verticalItemSpacing = 8.dp,
     modifier = modifier
-      .verticalScroll(rememberScrollState())
       .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom))
       .padding(horizontal = 16.dp),
   ) {
-    Spacer(Modifier.height(8.dp))
-    ClaimStatusCard(
-      uiState = uiState.claimStatusCardUiState,
-      onClick = null,
-    )
-    Spacer(Modifier.height(8.dp))
-    ClaimInfoCard(uiState.claimStatus, uiState.claimOutcome, onChatClick)
-    when (uiState.submittedContent) {
-      is ClaimDetailUiState.Content.SubmittedContent.Audio -> {
-        Spacer(Modifier.height(40.dp))
-        ClaimDetailHedvigAudioPlayerItem(uiState.submittedContent.signedAudioURL)
-      }
-      is ClaimDetailUiState.Content.SubmittedContent.FreeText -> {
+    item(span = StaggeredGridItemSpan.FullLine) {
+      Column {
+        Spacer(Modifier.height(8.dp))
+        ClaimStatusCard(
+          uiState = uiState.claimStatusCardUiState,
+          onClick = null,
+        )
+        Spacer(Modifier.height(8.dp))
+        ClaimInfoCard(uiState.claimStatus, uiState.claimOutcome, onChatClick)
         Spacer(Modifier.height(40.dp))
         Text(
-          stringResource(R.string.claim_status_detail_submitted_message),
+          stringResource(R.string.claim_status_detail_uploaded_files_info_title),
           Modifier.padding(horizontal = 2.dp),
         )
         Spacer(Modifier.height(8.dp))
-        HedvigCard(Modifier.fillMaxWidth()) {
-          Text(
-            uiState.submittedContent.text,
-            Modifier.padding(16.dp),
+        when (uiState.submittedContent) {
+          is ClaimDetailUiState.Content.SubmittedContent.Audio -> {
+            ClaimDetailHedvigAudioPlayerItem(uiState.submittedContent.signedAudioURL)
+          }
+
+          is ClaimDetailUiState.Content.SubmittedContent.FreeText -> {
+            HedvigCard(Modifier.fillMaxWidth()) {
+              Text(
+                uiState.submittedContent.text,
+                Modifier.padding(16.dp),
+              )
+            }
+          }
+
+          else -> {}
+        }
+        Spacer(Modifier.height(16.dp))
+      }
+    }
+
+    items(uiState.files) {
+      Box(
+        Modifier
+          .background(
+            shape = MaterialTheme.shapes.squircleMedium,
+            color = MaterialTheme.colorScheme.surface,
           )
+          .clickable {
+            openUrl(it.url)
+          }
+          .animateContentHeight(),
+        contentAlignment = Alignment.Center,
+      ) {
+        if (it.mimeType.contains("image")) {
+          ClaimAsyncImage(
+            model = it.url,
+            imageLoader = imageLoader,
+            cacheKey = it.id,
+          )
+        } else {
+          Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(16.dp),
+          ) {
+            Icon(
+              imageVector = getIconFromMimeType(it.mimeType),
+              tint = MaterialTheme.colorScheme.onSurfaceVariant,
+              contentDescription = "content icon",
+            )
+            Text(
+              text = it.name,
+              color = MaterialTheme.colorScheme.onSurfaceVariant,
+              style = MaterialTheme.typography.labelMedium,
+            )
+          }
         }
       }
-      else -> {}
     }
-    Spacer(Modifier.height(16.dp))
   }
+}
+
+private fun getIconFromMimeType(mimeType: String) = when (mimeType) {
+  "image/jpg" -> HedvigIcons.Pictures
+  "video/quicktime" -> HedvigIcons.Play
+  "application/pdf" -> HedvigIcons.Document
+  else -> HedvigIcons.Document
 }
 
 @Composable
@@ -207,14 +281,18 @@ private fun statusParagraphText(
     ClaimDetailUiState.Content.ClaimOutcome.NOT_COMPENSATED -> {
       stringResource(R.string.claim_status_not_compensated_support_text)
     }
+
     ClaimDetailUiState.Content.ClaimOutcome.NOT_COVERED -> {
       stringResource(R.string.claim_status_not_covered_support_text)
     }
+
     ClaimDetailUiState.Content.ClaimOutcome.UNKNOWN -> ""
   }
+
   ClaimDetailUiState.Content.ClaimStatus.REOPENED -> {
     stringResource(R.string.claim_status_being_handled_reopened_support_text)
   }
+
   ClaimDetailUiState.Content.ClaimStatus.UNKNOWN -> stringResource(R.string.claim_status_being_handled_support_text)
 }
 
@@ -265,8 +343,61 @@ private fun PreviewClaimDetailScreen() {
           ),
           claimStatus = ClaimDetailUiState.Content.ClaimStatus.CLOSED,
           claimOutcome = ClaimDetailUiState.Content.ClaimOutcome.PAID,
+          files = listOf(
+            ClaimDetailUiState.Content.ClaimFile(
+              id = "1",
+              name = "test",
+              mimeType = "",
+              url = "1",
+              thumbnailUrl = "1",
+            ),
+            ClaimDetailUiState.Content.ClaimFile(
+              id = "2",
+              name = "test".repeat(10),
+              mimeType = "",
+              url = "1",
+              thumbnailUrl = "1",
+            ),
+            ClaimDetailUiState.Content.ClaimFile(
+              id = "3",
+              name = "test",
+              mimeType = "",
+              url = "1",
+              thumbnailUrl = "1",
+            ),
+            ClaimDetailUiState.Content.ClaimFile(
+              id = "4",
+              name = "test4",
+              mimeType = "",
+              url = "1",
+              thumbnailUrl = "1",
+            ),
+            ClaimDetailUiState.Content.ClaimFile(
+              id = "5",
+              name = "test5",
+              mimeType = "",
+              url = "1",
+              thumbnailUrl = "1",
+            ),
+            ClaimDetailUiState.Content.ClaimFile(
+              id = "6",
+              name = "test6",
+              mimeType = "",
+              url = "",
+              thumbnailUrl = "1",
+            ),
+            ClaimDetailUiState.Content.ClaimFile(
+              id = "7",
+              name = "test7",
+              mimeType = "",
+              url = "1",
+              thumbnailUrl = "1",
+            ),
+          ),
         ),
         onChatClick = {},
+        imageLoader = rememberPreviewImageLoader(),
+        openUrl = {},
       )
     }
   }

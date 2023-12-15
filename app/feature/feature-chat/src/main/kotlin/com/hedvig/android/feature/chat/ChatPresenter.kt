@@ -8,7 +8,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
@@ -16,13 +15,10 @@ import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import arrow.fx.coroutines.parMap
 import com.benasher44.uuid.Uuid
-import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.feature.chat.data.ChatRepository
 import com.hedvig.android.feature.chat.model.ChatMessage
-import com.hedvig.android.hanalytics.featureflags.FeatureManager
-import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -56,15 +52,17 @@ internal sealed interface ChatEvent {
 internal sealed interface ChatUiState {
   data object Initializing : ChatUiState
 
-  data object DisabledByFeatureFlag : ChatUiState
-
   @Immutable
   data class Loaded(
     // The list of messages, ordered from the newest one to the oldest one
-    val messages: ImmutableList<ChatMessage>,
-    val errorMessage: ErrorMessage?,
+    val messages: ImmutableList<UiChatMessage>,
     val fetchMoreMessagesUiState: FetchMoreMessagesUiState,
   ) : ChatUiState {
+    data class UiChatMessage(
+      val chatMessage: ChatMessage,
+      val isLastDeliveredMessage: Boolean,
+    )
+
     sealed interface FetchMoreMessagesUiState {
       object FailedToFetch : FetchMoreMessagesUiState
 
@@ -79,21 +77,13 @@ internal sealed interface ChatUiState {
 
 internal class ChatPresenter(
   private val chatRepository: Provider<ChatRepository>,
-  private val featureManager: FeatureManager,
   private val clock: Clock,
 ) : MoleculePresenter<ChatEvent, ChatUiState> {
   @Composable
   override fun MoleculePresenterScope<ChatEvent>.present(lastState: ChatUiState): ChatUiState {
-    val isChatDisabled by produceState(false || lastState is ChatUiState.DisabledByFeatureFlag) {
-      value = featureManager.isFeatureEnabled(Feature.DISABLE_CHAT)
-    }
-    if (isChatDisabled) {
-      return ChatUiState.DisabledByFeatureFlag
-    }
-
     val messages: SnapshotStateList<ChatMessage> = remember {
       mutableStateListOf(
-        *(lastState.safeCast<ChatUiState.Loaded>()?.messages ?: emptyList()).toTypedArray(),
+        *(lastState.safeCast<ChatUiState.Loaded>()?.messages?.map { it.chatMessage } ?: emptyList()).toTypedArray(),
       )
     }
 
@@ -121,7 +111,6 @@ internal class ChatPresenter(
       },
     )
     LaunchPeriodicMessagePollsEffect(
-      isChatDisabled = isChatDisabled,
       reportNextUntilFromPolling = { nextUntil: Instant ->
         // If we have not received a `nextUntil` value yet, we set the first value from the polling query
         if (fetchMoreState is FetchMoreState.HaveNotReceivedInitialFetchUntil) {
@@ -231,25 +220,27 @@ internal class ChatPresenter(
         }
       }
       val failedChatMessages = (messagesFailedToBeSent + photosFailedToBeSent + mediaFailedToBeSent)
-        .map(FailedMessage::toChatMessage)
+        .map(FailedMessage::toUiChatMessage)
+      val uiChatMessages = messages
+        .mapIndexed { index, chatMessage ->
+          ChatUiState.Loaded.UiChatMessage(
+            chatMessage = chatMessage,
+            isLastDeliveredMessage = index == 0 && chatMessage.sender == ChatMessage.Sender.MEMBER,
+          )
+        }
       ChatUiState.Loaded(
-        messages = (messages + failedChatMessages)
-          .sortedByDescending(ChatMessage::sentAt)
+        messages = (uiChatMessages + failedChatMessages)
+          .sortedByDescending { it.chatMessage.sentAt }
           .toPersistentList(),
-        errorMessage = null,
         fetchMoreMessagesUiState = fetchMoreMessagesUiState,
       )
     }
   }
 
   @Composable
-  private fun LaunchPeriodicMessagePollsEffect(
-    isChatDisabled: Boolean,
-    reportNextUntilFromPolling: (nextUntil: Instant) -> Unit,
-  ) {
+  private fun LaunchPeriodicMessagePollsEffect(reportNextUntilFromPolling: (nextUntil: Instant) -> Unit) {
     val updatedReportNextUntilFromPolling by rememberUpdatedState(reportNextUntilFromPolling)
-    LaunchedEffect(isChatDisabled) {
-      if (isChatDisabled) return@LaunchedEffect
+    LaunchedEffect(Unit) {
       while (isActive) {
         chatRepository.provide().pollNewestMessages().onRight { result ->
           updatedReportNextUntilFromPolling(result.nextUntil)
@@ -378,21 +369,27 @@ private sealed interface FailedMessage {
   ) : FailedMessage
 }
 
-private fun FailedMessage.toChatMessage(): ChatMessage {
+private fun FailedMessage.toUiChatMessage(): ChatUiState.Loaded.UiChatMessage {
   return when (this) {
     is FailedMessage.FailedText -> {
-      ChatMessage.FailedToBeSent.ChatMessageText(
-        id = this.id,
-        sentAt = this.sentAt,
-        text = this.message,
+      ChatUiState.Loaded.UiChatMessage(
+        chatMessage = ChatMessage.FailedToBeSent.ChatMessageText(
+          id = this.id,
+          sentAt = this.sentAt,
+          text = this.message,
+        ),
+        isLastDeliveredMessage = false,
       )
     }
 
     is FailedMessage.FailedUri -> {
-      ChatMessage.FailedToBeSent.ChatMessageUri(
-        id = this.id,
-        sentAt = this.sentAt,
-        uri = this.uri,
+      ChatUiState.Loaded.UiChatMessage(
+        chatMessage = ChatMessage.FailedToBeSent.ChatMessageUri(
+          id = this.id,
+          sentAt = this.sentAt,
+          uri = this.uri,
+        ),
+        isLastDeliveredMessage = false,
       )
     }
   }

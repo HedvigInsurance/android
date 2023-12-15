@@ -13,7 +13,6 @@ import com.hedvig.android.feature.chat.data.BotServiceService
 import com.hedvig.android.feature.chat.data.ChatRepositoryDemo
 import com.hedvig.android.feature.chat.data.ChatRepositoryImpl
 import com.hedvig.android.feature.chat.data.GetChatRepositoryProvider
-import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.datetime.Clock
 import kotlinx.serialization.json.Json
@@ -28,7 +27,6 @@ val chatModule = module {
   viewModel<ChatViewModel> {
     ChatViewModel(
       chatRepository = get<GetChatRepositoryProvider>(),
-      featureManager = get<FeatureManager>(),
       clock = get<Clock>(),
     )
   }

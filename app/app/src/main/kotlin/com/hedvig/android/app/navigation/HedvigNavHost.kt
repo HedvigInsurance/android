@@ -50,7 +50,6 @@ import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.app.BuildConfig
-import com.hedvig.hanalytics.HAnalytics
 import com.kiwi.navigationcompose.typed.Destination
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigate
@@ -66,7 +65,6 @@ internal fun HedvigNavHost(
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   imageLoader: ImageLoader,
   market: Market,
-  hAnalytics: HAnalytics,
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
   modifier: Modifier = Modifier,
@@ -102,6 +100,7 @@ internal fun HedvigNavHost(
           shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
           activityNavigator = activityNavigator,
           imageLoader = imageLoader,
+          openUrl = ::openUrl,
         )
       },
       navigator = navigator,
@@ -133,8 +132,6 @@ internal fun HedvigNavHost(
       },
       openAppSettings = { activityNavigator.openAppSettings(context) },
       openUrl = ::openUrl,
-      imageLoader = imageLoader,
-      hAnalytics = hAnalytics,
     )
     insuranceGraph(
       nestedGraphs = {
@@ -251,14 +248,17 @@ private fun NavGraphBuilder.nestedHomeGraphs(
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   activityNavigator: ActivityNavigator,
   imageLoader: ImageLoader,
+  openUrl: (String) -> Unit,
 ) {
   claimDetailsGraph(
+    imageLoader = imageLoader,
     navigateUp = navigator::navigateUp,
     openChat = { backStackEntry ->
       with(navigator) {
         backStackEntry.navigate(AppDestination.Chat)
       }
     },
+    openUrl = openUrl,
   )
   changeAddressGraph(
     navController = hedvigAppState.navController,

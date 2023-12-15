@@ -2,9 +2,13 @@ package com.hedvig.app.feature.loggedin.ui
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.AnimatedVisibility
@@ -79,7 +83,6 @@ import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
 import com.hedvig.android.theme.Theme
 import com.hedvig.app.feature.sunsetting.ForceUpgradeActivity
-import com.hedvig.hanalytics.HAnalytics
 import com.kiwi.navigationcompose.typed.navigate
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -100,7 +103,6 @@ class LoggedInActivity : AppCompatActivity() {
   private val marketManager: MarketManager by inject()
   private val imageLoader: ImageLoader by inject()
   private val featureManager: FeatureManager by inject()
-  private val hAnalytics: HAnalytics by inject()
   private val languageService: LanguageService by inject()
   private val hedvigDeepLinkContainer: HedvigDeepLinkContainer by inject()
   private val hedvigBuildConstants: HedvigBuildConstants by inject()
@@ -111,6 +113,11 @@ class LoggedInActivity : AppCompatActivity() {
   // Shows the splash screen as long as the auth status is still undetermined, that's the only condition.
   private val showSplash = MutableStateFlow(true)
 
+  override fun onConfigurationChanged(newConfig: Configuration) {
+    enableEdgeToEdge(navigationBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT))
+    super.onConfigurationChanged(newConfig)
+  }
+
   override fun onCreate(savedInstanceState: Bundle?) {
     installSplashScreen().apply {
       setKeepOnScreenCondition { showSplash.value == true }
@@ -119,6 +126,7 @@ class LoggedInActivity : AppCompatActivity() {
         it.remove()
       }
     }
+    enableEdgeToEdge(navigationBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT))
     super.onCreate(savedInstanceState)
     WindowCompat.setDecorFitsSystemWindows(window, false)
 
@@ -191,7 +199,6 @@ class LoggedInActivity : AppCompatActivity() {
             windowSizeClass = windowSizeClass,
             tabNotificationBadgeService = tabNotificationBadgeService,
             featureManager = featureManager,
-            hAnalytics = hAnalytics,
           ),
           hedvigDeepLinkContainer = hedvigDeepLinkContainer,
           activityNavigator = activityNavigator,
@@ -206,7 +213,6 @@ class LoggedInActivity : AppCompatActivity() {
           shouldShowRequestPermissionRationale = ::shouldShowRequestPermissionRationale,
           market = market,
           imageLoader = imageLoader,
-          hAnalytics = hAnalytics,
           languageService = languageService,
           hedvigBuildConstants = hedvigBuildConstants,
         )
@@ -260,7 +266,6 @@ private fun HedvigApp(
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   market: Market,
   imageLoader: ImageLoader,
-  hAnalytics: HAnalytics,
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
 ) {
@@ -299,7 +304,6 @@ private fun HedvigApp(
           shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
           imageLoader = imageLoader,
           market = market,
-          hAnalytics = hAnalytics,
           languageService = languageService,
           hedvigBuildConstants = hedvigBuildConstants,
           modifier = Modifier

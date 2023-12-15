@@ -10,8 +10,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import com.hedvig.android.core.demomode.Provider
-import com.hedvig.android.feature.home.claims.commonclaim.CommonClaimsData
-import com.hedvig.android.feature.home.claims.commonclaim.EmergencyData
+import com.hedvig.android.feature.home.commonclaim.CommonClaimsData
+import com.hedvig.android.feature.home.emergency.EmergencyData
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
@@ -156,6 +156,7 @@ private data class SuccessData(
           is HomeData.ContractStatus.ActiveInFuture -> HomeText.ActiveInFuture(
             homeData.contractStatus.futureInceptionDate,
           )
+
           HomeData.ContractStatus.Terminated -> HomeText.Terminated
           HomeData.ContractStatus.Pending -> HomeText.Pending
           HomeData.ContractStatus.Switching -> HomeText.Switching

@@ -3,11 +3,13 @@ package com.hedvig.android.feature.editcoinsured.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import arrow.core.raise.either
+import com.hedvig.android.core.common.formatShortSsn
 import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
@@ -57,7 +59,7 @@ internal class EditCoInsuredPresenter(
 
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var isLoading by remember { mutableStateOf(true) }
-    var ssnQuery by remember { mutableStateOf<String?>(null) }
+    var fetchInfoFromSsn by remember { mutableIntStateOf(0) }
     var intentId by remember { mutableStateOf<String?>(null) }
     var selectedCoInsuredId by remember { mutableStateOf<String?>(null) }
     var commit by remember { mutableStateOf(false) }
@@ -98,26 +100,29 @@ internal class EditCoInsuredPresenter(
           if (selectedCoInsured != null) {
             editedCoInsuredList = addCoInsured(selectedCoInsuredId, selectedCoInsured, listState)
           } else if (addBottomSheetState.shouldFetchInfo()) {
-            ssnQuery = addBottomSheetState.ssn
+            fetchInfoFromSsn++
           } else {
             editedCoInsuredList = addCoInsuredFromBottomSheet(selectedCoInsuredId, addBottomSheetState, listState)
           }
         }
 
         is EditCoInsuredEvent.OnCoInsuredSelected ->
-          addBottomSheetState =
-            addBottomSheetState.copy(
-              selectedCoInsured = event.coInsured,
-              errorMessage = null,
-            )
+          addBottomSheetState = addBottomSheetState.copy(
+            selectedCoInsured = event.coInsured,
+            errorMessage = null,
+          )
 
         is RemoveCoInsured -> {
           editedCoInsuredList = listState.coInsured.filterNot { it == event.coInsured }.toImmutableList()
         }
 
         is EditCoInsuredEvent.OnSsnChanged ->
-          addBottomSheetState =
-            addBottomSheetState.copy(ssn = event.ssn, errorMessage = null)
+          addBottomSheetState = addBottomSheetState.copy(
+            ssn = event.ssn,
+            errorMessage = null,
+            firstName = null,
+            lastName = null,
+          )
 
         is EditCoInsuredEvent.OnBirthDateChanged ->
           addBottomSheetState =
@@ -132,7 +137,6 @@ internal class EditCoInsuredPresenter(
             addBottomSheetState.copy(lastName = event.lastName, errorMessage = null)
 
         is EditCoInsuredEvent.OnManualInputSwitchChanged -> {
-          ssnQuery = null
           addBottomSheetState =
             Loaded.AddBottomSheetState(
               showManualInput = event.show,
@@ -172,7 +176,6 @@ internal class EditCoInsuredPresenter(
 
         ResetAddBottomSheetState -> {
           addBottomSheetState = Loaded.AddBottomSheetState()
-          ssnQuery = null
         }
 
         ResetRemoveBottomSheetState -> removeBottomSheetState = Loaded.RemoveBottomSheetState()
@@ -181,15 +184,17 @@ internal class EditCoInsuredPresenter(
       }
     }
 
-    LaunchedEffect(ssnQuery) {
+    LaunchedEffect(fetchInfoFromSsn) {
       addBottomSheetState = addBottomSheetState.copy(errorMessage = null)
-      ssnQuery?.let { ssnQuery ->
+      val ssn = addBottomSheetState.ssn
+      if (ssn != null) {
+        val paddedSsn = formatShortSsn(ssn)
         either {
-          val result = fetchCoInsuredPersonalInformationUseCase.invoke(ssnQuery).bind()
+          val result = fetchCoInsuredPersonalInformationUseCase.invoke(paddedSsn).bind()
           addBottomSheetState = addBottomSheetState.copy(
             firstName = result.firstName,
             lastName = result.lastName,
-            ssn = ssnQuery,
+            ssn = paddedSsn,
             errorMessage = null,
           )
         }.onLeft {
@@ -232,7 +237,6 @@ internal class EditCoInsuredPresenter(
                   ),
                 )
                 selectedCoInsuredId = null
-                ssnQuery = null
                 addBottomSheetState = Loaded.AddBottomSheetState(show = false)
                 removeBottomSheetState = Loaded.RemoveBottomSheetState(show = false)
                 editedCoInsuredList = null
@@ -243,7 +247,7 @@ internal class EditCoInsuredPresenter(
     }
 
     if (commit) {
-      LaunchedEffect(commit) {
+      LaunchedEffect(Unit) {
         intentId?.let {
           listState = listState.copy(isCommittingUpdate = true)
           commitMidtermChangeUseCase

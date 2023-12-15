@@ -1,6 +1,6 @@
 package com.hedvig.android.core.ui.appbar
 
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
@@ -8,27 +8,27 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import com.google.accompanist.insets.ui.TopAppBar
 
 @Composable
 fun TopAppBarWithBack(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
   title: String? = null,
-  backgroundColor: Color = MaterialTheme.colorScheme.background,
-  contentPadding: PaddingValues = PaddingValues(0.dp),
+  containerColor: Color = MaterialTheme.colorScheme.background,
+  windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
 ) {
   TopAppBar(
     onClick,
     TopAppBarActionType.BACK,
     modifier,
     title,
-    backgroundColor,
-    contentPadding,
+    containerColor,
+    windowInsets,
   )
 }
 
@@ -43,8 +43,8 @@ private inline fun TopAppBar(
   actionType: TopAppBarActionType,
   modifier: Modifier = Modifier,
   title: String? = null,
-  backgroundColor: Color = MaterialTheme.colorScheme.background,
-  contentPadding: PaddingValues = PaddingValues(0.dp),
+  containerColor: Color = MaterialTheme.colorScheme.background,
+  windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
 ) {
   TopAppBar(
     modifier = modifier,
@@ -56,7 +56,7 @@ private inline fun TopAppBar(
         )
       }
     },
-    contentPadding = contentPadding,
+    windowInsets = windowInsets,
     navigationIcon = {
       IconButton(
         onClick = { onClick() },
@@ -71,7 +71,6 @@ private inline fun TopAppBar(
         },
       )
     },
-    backgroundColor = backgroundColor,
-    elevation = 0.dp,
+    colors = TopAppBarDefaults.topAppBarColors(containerColor = containerColor),
   )
 }

@@ -8,9 +8,6 @@ plugins {
 }
 
 android {
-  buildFeatures {
-    viewBinding = true
-  }
   testOptions.unitTests.isReturnDefaultValues = true
 }
 
@@ -31,7 +28,10 @@ dependencies {
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
+  implementation(libs.coil.coil)
+  implementation(libs.coil.compose)
   implementation(projects.apolloCore)
+  implementation(projects.placeholder)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.audioPlayer)
   implementation(projects.claimStatus)
