@@ -628,7 +628,6 @@ private fun PreviewChatLazyColumn() {
               isLastDeliveredMessage = index == 0,
             )
           }.toPersistentList(),
-          null,
           ChatUiState.Loaded.FetchMoreMessagesUiState.NothingMoreToFetch,
         ),
         imageLoader = rememberPreviewImageLoader(),
