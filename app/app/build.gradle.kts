@@ -157,7 +157,6 @@ dependencies {
   implementation(libs.kotlin.reflect)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.immutable.collections)
-  implementation(libs.materialComponents)
   implementation(libs.moneta)
   implementation(libs.okhttp.core)
   implementation(libs.okhttp.loggingInterceptor)
