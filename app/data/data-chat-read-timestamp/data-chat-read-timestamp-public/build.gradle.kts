@@ -10,6 +10,7 @@ dependencies {
 
   implementation(libs.androidx.datastore.core)
   implementation(libs.androidx.datastore.preferencesCore)
+  implementation(libs.apollo.normalizedCache)
   implementation(libs.arrow.core)
   implementation(libs.coroutines.core)
   implementation(libs.koin.core)

@@ -2,6 +2,8 @@ package com.hedvig.android.data.chat.read.timestamp
 
 import arrow.core.toNonEmptyListOrNull
 import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.cache.normalized.FetchPolicy
+import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import kotlinx.datetime.Instant
@@ -35,8 +37,9 @@ internal class ChatLastMessageReadRepositoryImpl(
   override suspend fun isNewestMessageNewerThanLastReadTimestamp(): Boolean {
     val lastReadMessageTimestamp: Instant? = chatMessageTimestampStorage.getLatestReadTimestamp()
     val messages = apolloClient.query(ChatLatestMessageTimestampsQuery())
+      .fetchPolicy(FetchPolicy.NetworkFirst)
       .safeExecute()
-      .toEither(Unit)
+      .toEither()
       .getOrNull()
       ?.chat
       ?.messages
