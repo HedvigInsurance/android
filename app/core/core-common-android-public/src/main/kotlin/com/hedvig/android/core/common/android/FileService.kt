@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.chat
+package com.hedvig.android.core.common.android
 
 import android.content.ContentResolver
 import android.net.Uri
@@ -6,7 +6,7 @@ import android.provider.OpenableColumns
 import android.webkit.MimeTypeMap
 import java.util.Locale
 
-internal class FileService(
+class FileService(
   private val contentResolver: ContentResolver,
 ) {
   fun getFileName(uri: Uri): String? {
@@ -43,12 +43,12 @@ internal class FileService(
     return getMimeType(uri.toString())
   }
 
-  fun getMimeType(path: String): String {
+  private fun getMimeType(path: String): String {
     val fileExtension = getFileExtension(path)
     return MimeTypeMap.getSingleton()
       .getMimeTypeFromExtension(fileExtension.lowercase(Locale.getDefault()))
       ?: ""
   }
 
-  fun getFileExtension(path: String): String = MimeTypeMap.getFileExtensionFromUrl(path)
+  private fun getFileExtension(path: String): String = MimeTypeMap.getFileExtensionFromUrl(path)
 }

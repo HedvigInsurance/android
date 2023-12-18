@@ -24,8 +24,8 @@ import com.apollographql.apollo3.exception.CacheMissException
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.android.FileService
 import com.hedvig.android.core.retrofit.toErrorMessage
-import com.hedvig.android.feature.chat.FileService
 import com.hedvig.android.feature.chat.model.ChatMessage
 import com.hedvig.android.feature.chat.model.ChatMessagesResult
 import com.hedvig.android.logger.LogPriority
@@ -236,7 +236,7 @@ internal class ChatRepositoryImpl(
           name = "files",
           filename = fileService.getFileName(uri) ?: "media",
           body = object : RequestBody() {
-            override fun contentType(): MediaType? {
+            override fun contentType(): MediaType {
               return fileService.getMimeType(uri).toMediaType()
             }
 

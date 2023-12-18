@@ -4,9 +4,9 @@ import android.content.Context
 import arrow.retrofit.adapter.either.EitherCallAdapterFactory
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.core.common.android.FileService
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.feature.chat.ChatViewModel
-import com.hedvig.android.feature.chat.FileService
 import com.hedvig.android.feature.chat.closedevent.ChatClosedEventDataStore
 import com.hedvig.android.feature.chat.closedevent.ChatClosedEventStore
 import com.hedvig.android.feature.chat.data.BotServiceService

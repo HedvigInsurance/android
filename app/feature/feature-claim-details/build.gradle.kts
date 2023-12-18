@@ -17,6 +17,10 @@ android {
 dependencies {
   apolloMetadata(projects.apolloOctopusPublic)
 
+  implementation(projects.coreCommonAndroidPublic)
+  implementation(projects.coreBuildConstants)
+  implementation(projects.coreRetrofit)
+  implementation(libs.arrow.fx)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.lifecycle.compose)
@@ -31,8 +35,12 @@ dependencies {
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
+  implementation(libs.kotlinx.serialization.json)
   implementation(libs.coil.coil)
+  implementation(libs.retrofitKotlinxSerializationConverter)
   implementation(libs.coil.compose)
+  implementation(libs.retrofit)
+  implementation(libs.retrofitArrow)
   implementation(projects.apolloCore)
   implementation(projects.placeholder)
   implementation(projects.apolloOctopusPublic)

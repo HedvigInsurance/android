@@ -4,6 +4,7 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import coil.ImageLoader
 import com.hedvig.android.feature.claim.details.navigation.ClaimDetailsDestination
+import com.hedvig.android.feature.claim.details.ui.ClaimDetailsEvent
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailsViewModel
 import com.kiwi.navigationcompose.typed.composable
 import org.koin.androidx.compose.koinViewModel
@@ -24,9 +25,7 @@ fun NavGraphBuilder.claimDetailsGraph(
       appPackageId = appPackageId,
       navigateUp = navigateUp,
       onChatClick = { openChat(backStackEntry) },
-      onSendFile = {
-
-      },
+      onSendFile = { viewModel.emit(ClaimDetailsEvent.UploadFile(it)) },
       openUrl = openUrl,
     )
   }

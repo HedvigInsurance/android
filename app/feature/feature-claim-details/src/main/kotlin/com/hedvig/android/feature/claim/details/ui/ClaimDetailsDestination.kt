@@ -48,6 +48,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
@@ -73,6 +74,7 @@ import com.hedvig.android.core.icons.hedvig.normal.Document
 import com.hedvig.android.core.icons.hedvig.normal.Pictures
 import com.hedvig.android.core.icons.hedvig.normal.Play
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
+import com.hedvig.android.core.ui.dialog.ErrorDialog
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.logger.logcat
@@ -99,6 +101,7 @@ internal fun ClaimDetailsDestination(
     imageLoader = imageLoader,
     appPackageId = appPackageId,
     openUrl = openUrl,
+    onDismissUploadError = { viewModel.emit(ClaimDetailsEvent.DismissUploadError) },
     retry = { viewModel.emit(ClaimDetailsEvent.Retry) },
     navigateUp = navigateUp,
     onChatClick = onChatClick,
@@ -112,6 +115,7 @@ private fun ClaimDetailScreen(
   imageLoader: ImageLoader,
   appPackageId: String,
   openUrl: (String) -> Unit,
+  onDismissUploadError: () -> Unit,
   retry: () -> Unit,
   navigateUp: () -> Unit,
   onChatClick: () -> Unit,
@@ -134,9 +138,10 @@ private fun ClaimDetailScreen(
           uiState = uiState,
           onChatClick = onChatClick,
           onSendFile = onSendFile,
+          onDismissUploadError = onDismissUploadError,
           openUrl = openUrl,
           imageLoader = imageLoader,
-          appPackageId = appPackageId
+          appPackageId = appPackageId,
         )
 
         ClaimDetailUiState.Error -> HedvigErrorSection(retry = retry)
@@ -152,6 +157,7 @@ private fun ClaimDetailScreen(
   onChatClick: () -> Unit,
   onSendFile: (Uri) -> Unit,
   openUrl: (String) -> Unit,
+  onDismissUploadError: () -> Unit,
   imageLoader: ImageLoader,
   appPackageId: String,
   modifier: Modifier = Modifier,
@@ -178,7 +184,6 @@ private fun ClaimDetailScreen(
     }
   }
 
-
   if (showFileTypeSelectBottomSheet) {
     HedvigBottomSheet(
       onDismissed = { showFileTypeSelectBottomSheet = false },
@@ -186,7 +191,10 @@ private fun ClaimDetailScreen(
       content = {
         Column {
           TextButton(
-            onClick = { photoPicker.launch(PickVisualMediaRequest()) },
+            onClick = {
+              photoPicker.launch(PickVisualMediaRequest())
+              showFileTypeSelectBottomSheet = false
+            },
             modifier = modifier
               .fillMaxWidth()
               .padding(horizontal = 16.dp),
@@ -206,7 +214,10 @@ private fun ClaimDetailScreen(
           }
           Spacer(modifier = Modifier.height(4.dp))
           TextButton(
-            onClick = { photoCaptureState.launchTakePhotoRequest() },
+            onClick = {
+              photoCaptureState.launchTakePhotoRequest()
+              showFileTypeSelectBottomSheet = false
+            },
             modifier = modifier
               .fillMaxWidth()
               .padding(horizontal = 16.dp),
@@ -226,7 +237,10 @@ private fun ClaimDetailScreen(
           }
           Spacer(modifier = Modifier.height(4.dp))
           TextButton(
-            onClick = { filePicker.launch("*/*") },
+            onClick = {
+              filePicker.launch("*/*")
+              showFileTypeSelectBottomSheet = false
+            },
             modifier = modifier
               .fillMaxWidth()
               .padding(horizontal = 16.dp),
@@ -324,6 +338,8 @@ private fun ClaimDetailScreen(
             Text(
               text = it.name,
               textAlign = TextAlign.Center,
+              maxLines = 3,
+              overflow = TextOverflow.Ellipsis,
               color = MaterialTheme.colorScheme.onSurfaceVariant,
               style = MaterialTheme.typography.labelMedium,
             )
@@ -344,7 +360,15 @@ private fun ClaimDetailScreen(
         HedvigSecondaryContainedButton(
           text = text,
           onClick = { showFileTypeSelectBottomSheet = true },
+          isLoading = uiState.isUploadingFile,
         )
+
+        if (uiState.uploadError != null) {
+          ErrorDialog(
+            message = uiState.uploadError,
+            onDismiss = { onDismissUploadError() },
+          )
+        }
         Spacer(Modifier.height(32.dp))
       }
     }
@@ -527,12 +551,16 @@ private fun PreviewClaimDetailScreen() {
               thumbnailUrl = "1",
             ),
           ),
+          isUploadingFile = false,
+          uploadUri = "",
+          uploadError = null,
         ),
         onChatClick = {},
         onSendFile = {},
         openUrl = {},
         imageLoader = rememberPreviewImageLoader(),
         appPackageId = "",
+        onDismissUploadError = {},
       )
     }
   }

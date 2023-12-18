@@ -8,6 +8,7 @@ fragment ClaimFragment on Claim {
   associatedTypeOfContract
   audioUrl
   memberFreeText
+  targetFileUploadUri
   files {
     id
     name
