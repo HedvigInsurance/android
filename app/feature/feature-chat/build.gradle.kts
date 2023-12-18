@@ -45,6 +45,7 @@ dependencies {
   implementation(projects.coreResources)
   implementation(projects.coreRetrofit)
   implementation(projects.coreUi)
+  implementation(projects.dataChatReadTimestamp)
   implementation(projects.hanalyticsFeatureFlagsPublic)
   implementation(projects.languageCore)
   implementation(projects.moleculeAndroid)
