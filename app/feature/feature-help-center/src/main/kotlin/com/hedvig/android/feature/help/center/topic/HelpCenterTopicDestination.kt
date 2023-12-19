@@ -118,7 +118,7 @@ private fun HelpCenterTopicScreen(
               title = "Common questions",
               chipContainerColor = MaterialTheme.colorScheme.infoContainer,
               contentColor = MaterialTheme.colorScheme.onInfoContainer,
-              items = allQuestions,
+              items = commonQuestions,
               itemText = { resources.getString(it.questionRes) },
               onClickItem = { onNavigateToQuestion(it.questionId) },
             )
@@ -126,7 +126,7 @@ private fun HelpCenterTopicScreen(
           if (commonQuestions.isNotEmpty() && allQuestions.isNotEmpty()) {
             Spacer(Modifier.height(40.dp))
           }
-          if (commonQuestions.isNotEmpty()) {
+          if (allQuestions.isNotEmpty()) {
             HelpCenterSectionWithClickableRows(
               title = "All questions",
               chipContainerColor = MaterialTheme.colorScheme.purpleContainer,
