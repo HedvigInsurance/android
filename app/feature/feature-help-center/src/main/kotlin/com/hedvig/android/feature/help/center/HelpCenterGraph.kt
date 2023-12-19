@@ -1,10 +1,12 @@
 package com.hedvig.android.feature.help.center
 
-import androidx.compose.material3.Text
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
+import com.hedvig.android.feature.help.center.home.HelpCenterHomeDestination
 import com.hedvig.android.feature.help.center.navigation.HelpCenterDestination
 import com.hedvig.android.feature.help.center.navigation.HelpCenterDestinations
+import com.hedvig.android.feature.help.center.question.HelpCenterQuestionDestination
+import com.hedvig.android.feature.help.center.topic.HelpCenterTopicDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
 import com.kiwi.navigationcompose.typed.composable
@@ -19,21 +21,38 @@ fun NavGraphBuilder.helpCenterGraph(navigator: Navigator, hedvigDeepLinkContaine
     ),
   ) {
     composable<HelpCenterDestinations.HelpCenter> { backStackEntry ->
-      Text("HelpCenterDestinations.HelpCenter")
+      HelpCenterHomeDestination(
+        onNavigateToTopic = { topicId ->
+          with(navigator) { backStackEntry.navigate(HelpCenterDestinations.Topic(topicId)) }
+        },
+        onNavigateToQuestion = { questionId ->
+          with(navigator) { backStackEntry.navigate(HelpCenterDestinations.Question(questionId)) }
+        },
+      )
     }
     composable<HelpCenterDestinations.Topic>(
       deepLinks = listOf(
         navDeepLink { uriPattern = hedvigDeepLinkContainer.helpCenterCommonTopic },
       ),
     ) { backStackEntry ->
-      Text("HelpCenterDestinations.Topic:$id")
+      HelpCenterTopicDestination(
+        topicId = id,
+        onNavigateToQuestion = { questionId ->
+          with(navigator) { backStackEntry.navigate(HelpCenterDestinations.Question(questionId)) }
+        },
+      )
     }
     composable<HelpCenterDestinations.Question>(
       deepLinks = listOf(
         navDeepLink { uriPattern = hedvigDeepLinkContainer.helpCenterQuestion },
       ),
     ) { backStackEntry ->
-      Text("HelpCenterDestinations.Question:$id")
+      HelpCenterQuestionDestination(
+        questionId = id,
+        onNavigateToQuestion = { questionId ->
+          with(navigator) { backStackEntry.navigate(HelpCenterDestinations.Question(questionId)) }
+        },
+      )
     }
   }
 }
