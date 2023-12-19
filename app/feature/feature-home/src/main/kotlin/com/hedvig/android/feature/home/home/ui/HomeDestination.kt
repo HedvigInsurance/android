@@ -493,6 +493,7 @@ private fun PreviewHomeScreen() {
           emergencyData = null,
           commonClaimsData = persistentListOf(),
           showChatIcon = true,
+          hasUnseenChatMessages = false,
         ),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
         reload = {},
