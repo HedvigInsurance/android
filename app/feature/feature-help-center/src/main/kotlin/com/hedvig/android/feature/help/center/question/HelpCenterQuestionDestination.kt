@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.material3.infoContainer
@@ -31,6 +32,7 @@ import com.hedvig.android.core.designsystem.material3.typeContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
+import com.hedvig.android.core.ui.preview.DoubleBooleanCollectionPreviewParameterProvider
 import com.hedvig.android.feature.help.center.model.Question
 import com.hedvig.android.feature.help.center.ui.HelpCenterSection
 import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
@@ -156,16 +158,24 @@ private fun HelpCenterQuestionScreen(
 
 @HedvigPreview
 @Composable
-private fun PreviewHelpCenterQuestionScreen() {
+private fun PreviewHelpCenterQuestionScreen(
+  @PreviewParameter(DoubleBooleanCollectionPreviewParameterProvider::class) input: Pair<Boolean, Boolean>,
+) {
+  val hasQuestion = input.first
+  val hasRelatedQuestions = input.second
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       HelpCenterQuestionScreen(
-        Question.WhenIsInsuranceCharged,
-        persistentListOf(
-          Question.WhenIsInsuranceCharged,
-          Question.WhenIsInsuranceActivated,
-          Question.HowToMakeClaim,
-        ),
+        Question.WhenIsInsuranceCharged.takeIf { hasQuestion },
+        if (hasRelatedQuestions) {
+          persistentListOf(
+            Question.WhenIsInsuranceCharged,
+            Question.WhenIsInsuranceActivated,
+            Question.HowToMakeClaim,
+          )
+        } else {
+          persistentListOf()
+        },
         {},
         {},
         {},
