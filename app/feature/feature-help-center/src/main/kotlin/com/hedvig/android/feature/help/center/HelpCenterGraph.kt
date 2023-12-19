@@ -55,6 +55,8 @@ fun NavGraphBuilder.helpCenterGraph(navigator: Navigator, hedvigDeepLinkContaine
         onNavigateToQuestion = { questionId ->
           with(navigator) { backStackEntry.navigate(HelpCenterDestinations.Question(questionId)) }
         },
+        onNavigateUp = navigator::navigateUp,
+        onNavigateBack = navigator::popBackStack,
       )
     }
   }

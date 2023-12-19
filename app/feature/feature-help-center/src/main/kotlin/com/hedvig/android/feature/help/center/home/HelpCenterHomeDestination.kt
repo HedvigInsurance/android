@@ -100,8 +100,7 @@ private fun HelpCenterHomeScreen(
           // todo help-center: localize
           Text("Need help?")
           Text(
-            text = "There is a lot you can do directly here in the app." +
-              " Select a topic to resolve your issue quickly, or chat with us if you need.",
+            text = "There is a lot you can do directly here in the app. Select a topic to resolve your issue quickly",
             color = MaterialTheme.colorScheme.onSurfaceVariant,
           )
         }

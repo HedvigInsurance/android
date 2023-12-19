@@ -6,31 +6,95 @@ import kotlinx.collections.immutable.persistentListOf
 
 enum class Question(
   val questionId: String,
+  val relatedQuestionIds: List<String>,
   @StringRes val questionRes: Int,
+  @StringRes val answerRes: Int,
 ) {
-  // todo help-center: correct string resource
-  WhenIsInsuranceCharged("whenIsInsuranceCharged", R.string.intro_more_info_whats_insured_people_button),
-  WhenIsInsuranceActivated("whenIsInsuranceActivated", R.string.intro_more_info_whats_insured_people_button),
-  HowToMakeClaim("howToMakeClaim", R.string.intro_more_info_whats_insured_people_button),
-  HowViewPaymentHistory("howViewPaymentHistory", R.string.intro_more_info_whats_insured_people_button),
-  WhatShouldDoWhenPaymentFails("whatShouldDoWhenPaymentFails", R.string.intro_more_info_whats_insured_people_button),
+  // todo help-center: correct string resource for all Res entries
+  WhenIsInsuranceCharged(
+    WhenIsInsuranceChargedId,
+    persistentListOf(
+      WhenIsInsuranceChargedId,
+      WhenIsInsuranceActivatedId,
+      HowToMakeClaimId,
+    ),
+    R.string.intro_more_info_whats_insured_people_button,
+    R.string.intro_title_edit_insured_people,
+  ),
+  WhenIsInsuranceActivated(
+    WhenIsInsuranceActivatedId,
+    persistentListOf(),
+    R.string.intro_more_info_whats_insured_people_button,
+    R.string.intro_title_edit_insured_people,
+  ),
+  HowToMakeClaim(
+    HowToMakeClaimId,
+    persistentListOf(),
+    R.string.intro_more_info_whats_insured_people_button,
+    R.string.intro_title_edit_insured_people,
+  ),
+  HowViewPaymentHistory(
+    HowViewPaymentHistoryId,
+    persistentListOf(),
+    R.string.intro_more_info_whats_insured_people_button,
+    R.string.intro_title_edit_insured_people,
+  ),
+  WhatShouldDoWhenPaymentFails(
+    WhatShouldDoWhenPaymentFailsId,
+    persistentListOf(),
+    R.string.intro_more_info_whats_insured_people_button,
+    R.string.intro_title_edit_insured_people,
+  ),
 
   IsItSafeToEnterMyCreditCardInformation(
-    "isItSafeToEnterMyCreditCardInformation",
+    IsItSafeToEnterMyCreditCardInformationId,
+    persistentListOf(),
     R.string.intro_more_info_whats_insured_people_button,
+    R.string.intro_title_edit_insured_people,
   ),
   AreThereFeesWhenPayingWithCard(
-    "areThereFeesWhenPayingWithCard",
+    AreThereFeesWhenPayingWithCardId,
+    persistentListOf(),
     R.string.intro_more_info_whats_insured_people_button,
+    R.string.intro_title_edit_insured_people,
   ),
-  CanIGetRefundForInAppPurchase("canIGetRefundForInAppPurchase", R.string.intro_more_info_whats_insured_people_button),
-  HowToChangePaymentMethod("howToChangePaymentMethod", R.string.intro_more_info_whats_insured_people_button),
+  CanIGetRefundForInAppPurchase(
+    CanIGetRefundForInAppPurchaseId,
+    persistentListOf(),
+    R.string.intro_more_info_whats_insured_people_button,
+    R.string.intro_title_edit_insured_people,
+  ),
+  HowToChangePaymentMethod(
+    HowToChangePaymentMethodId,
+    persistentListOf(),
+    R.string.intro_more_info_whats_insured_people_button,
+    R.string.intro_title_edit_insured_people,
+  ),
   WhatHappensWhenPaymentIsDeclined(
-    "whatHappensWhenPaymentIsDeclined",
+    WhatHappensWhenPaymentIsDeclinedId,
+    persistentListOf(),
     R.string.intro_more_info_whats_insured_people_button,
+    R.string.intro_title_edit_insured_people,
   ),
-  HowToCancelInsurance("howToCancelInsurance", R.string.intro_more_info_whats_insured_people_button),
+  HowToCancelInsurance(
+    HowToCancelInsuranceId,
+    persistentListOf(),
+    R.string.intro_more_info_whats_insured_people_button,
+    R.string.intro_title_edit_insured_people,
+  ),
 }
+
+const val WhenIsInsuranceChargedId = "whenIsInsuranceCharged"
+const val WhenIsInsuranceActivatedId = "whenIsInsuranceActivated"
+const val HowToMakeClaimId = "howToMakeClaim"
+const val HowViewPaymentHistoryId = "howViewPaymentHistory"
+const val WhatShouldDoWhenPaymentFailsId = "whatShouldDoWhenPaymentFails"
+const val IsItSafeToEnterMyCreditCardInformationId = "isItSafeToEnterMyCreditCardInformation"
+const val AreThereFeesWhenPayingWithCardId = "areThereFeesWhenPayingWithCard"
+const val CanIGetRefundForInAppPurchaseId = "canIGetRefundForInAppPurchase"
+const val HowToChangePaymentMethodId = "howToChangePaymentMethod"
+const val WhatHappensWhenPaymentIsDeclinedId = "whatHappensWhenPaymentIsDeclined"
+const val HowToCancelInsuranceId = "howToCancelInsurance"
 
 internal val commonQuestions = persistentListOf(
   Question.WhenIsInsuranceCharged,
