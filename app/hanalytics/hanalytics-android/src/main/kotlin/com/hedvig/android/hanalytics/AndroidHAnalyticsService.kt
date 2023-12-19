@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Build
 import com.hedvig.android.core.common.await
 import com.hedvig.android.core.datastore.DeviceIdDataStore
-import com.hedvig.android.logger.logcat
 import com.hedvig.hanalytics.HAnalytics
 import java.util.Locale
 import java.util.TimeZone
@@ -46,7 +45,6 @@ internal class AndroidHAnalyticsService(
       .header("Content-Type", "application/json")
       .post(requestJsonObject.toString().toRequestBody())
       .build()
-    logcat { "Stelios:requestJsonObject$requestJsonObject" }
     return withContext(Dispatchers.IO) {
       try {
         val response = okHttpClient.newCall(experimentRequest).await()
