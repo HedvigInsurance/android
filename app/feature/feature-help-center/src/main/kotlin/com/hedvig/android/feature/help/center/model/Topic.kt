@@ -7,12 +7,17 @@ import kotlinx.collections.immutable.persistentListOf
 internal enum class Topic(
   val topicId: String,
   @StringRes val titleRes: Int,
-  val linkedQuestionIds: List<String>,
+  val commonQuestionIds: List<String>,
+  val allQuestionIds: List<String>,
 ) {
   Payments(
     "payments",
     // todo help-center: correct string resource
     R.string.PROFILE_PAYMENT_TITLE,
+    listOf(
+      Question.WhenIsInsuranceCharged.questionId,
+      Question.WhenIsInsuranceActivated.questionId,
+    ),
     listOf(
       Question.IsItSafeToEnterMyCreditCardInformation.questionId,
       Question.AreThereFeesWhenPayingWithCard.questionId,
@@ -22,11 +27,11 @@ internal enum class Topic(
       Question.HowToCancelInsurance.questionId,
     ),
   ),
-  Claims("claims", R.string.PROFILE_PAYMENT_TITLE, emptyList()),
-  MyInsurance("myInsurance", R.string.PROFILE_PAYMENT_TITLE, emptyList()),
-  CoInsured("coInsured", R.string.PROFILE_PAYMENT_TITLE, emptyList()),
-  FirstVet("firstVet", R.string.PROFILE_PAYMENT_TITLE, emptyList()),
-  Campaigns("campaigns", R.string.PROFILE_PAYMENT_TITLE, emptyList()),
+  Claims("claims", R.string.PROFILE_PAYMENT_TITLE, emptyList(), emptyList()),
+  MyInsurance("myInsurance", R.string.PROFILE_PAYMENT_TITLE, emptyList(), emptyList()),
+  CoInsured("coInsured", R.string.PROFILE_PAYMENT_TITLE, emptyList(), emptyList()),
+  FirstVet("firstVet", R.string.PROFILE_PAYMENT_TITLE, emptyList(), emptyList()),
+  Campaigns("campaigns", R.string.PROFILE_PAYMENT_TITLE, emptyList(), emptyList()),
 }
 
 internal val commonTopics = persistentListOf(

@@ -1,9 +1,160 @@
 package com.hedvig.android.feature.help.center.topic
 
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
+import com.hedvig.android.core.designsystem.material3.infoContainer
+import com.hedvig.android.core.designsystem.material3.onInfoContainer
+import com.hedvig.android.core.designsystem.material3.onPurpleContainer
+import com.hedvig.android.core.designsystem.material3.purpleContainer
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
+import com.hedvig.android.feature.help.center.model.Question
+import com.hedvig.android.feature.help.center.model.Topic
+import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
+import hedvig.resources.R
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 
 @Composable
-internal fun HelpCenterTopicDestination(topicId: String, onNavigateToQuestion: (questionId: String) -> Unit) {
-  Text("HelpCenterDestinations.Topic:$topicId")
+internal fun HelpCenterTopicDestination(
+  topicId: String,
+  onNavigateToQuestion: (questionId: String) -> Unit,
+  onNavigateUp: () -> Unit,
+  onNavigateBack: () -> Unit,
+) {
+  val topic = Topic.entries.find { it.topicId == topicId }
+  val commonQuestions = topic
+    ?.commonQuestionIds
+    ?.mapNotNull { questionId ->
+      Question.entries.find { it.questionId == questionId }
+    }
+    ?.toPersistentList() ?: persistentListOf()
+  val allQuestions = topic
+    ?.allQuestionIds
+    ?.mapNotNull { questionId ->
+      Question.entries.find { it.questionId == questionId }
+    }
+    ?.toPersistentList() ?: persistentListOf()
+  HelpCenterTopicScreen(topic, commonQuestions, allQuestions, onNavigateToQuestion, onNavigateUp, onNavigateBack)
+}
+
+@Composable
+private fun HelpCenterTopicScreen(
+  topic: Topic?,
+  commonQuestions: ImmutableList<Question>,
+  allQuestions: ImmutableList<Question>,
+  onNavigateToQuestion: (questionId: String) -> Unit,
+  onNavigateUp: () -> Unit,
+  onNavigateBack: () -> Unit,
+) {
+  Surface(color = MaterialTheme.colorScheme.background) {
+    Column(Modifier.fillMaxSize()) {
+      TopAppBarWithBack(
+        title = topic?.titleRes?.let { stringResource(it) } ?: "",
+        onClick = onNavigateUp,
+      )
+      if (topic == null) {
+        // todo help-center: Add some sort of fallback screen to explain that this topic is not found
+        HedvigErrorSection(
+          retry = onNavigateBack,
+          // todo help-center: localize
+          title = "Topic not found",
+          subTitle = null,
+          buttonText = stringResource(R.string.general_back_button),
+          modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .windowInsetsPadding(
+              WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
+            ),
+        )
+      } else if (commonQuestions.isEmpty() && allQuestions.isEmpty()) {
+        HedvigErrorSection(
+          retry = onNavigateBack,
+          title = "This topic has no questions",
+          subTitle = null,
+          buttonText = stringResource(R.string.general_back_button),
+          modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .windowInsetsPadding(
+              WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
+            ),
+        )
+      } else {
+        LocalConfiguration.current
+        val resources = LocalContext.current.resources
+        Column(
+          modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
+        ) {
+          Spacer(Modifier.height(16.dp))
+          if (commonQuestions.isNotEmpty()) {
+            HelpCenterSectionWithClickableRows(
+              title = "Common questions",
+              chipContainerColor = MaterialTheme.colorScheme.infoContainer,
+              contentColor = MaterialTheme.colorScheme.onInfoContainer,
+              items = allQuestions,
+              itemText = { resources.getString(it.questionRes) },
+              onClickItem = { onNavigateToQuestion(it.questionId) },
+            )
+          }
+          if (commonQuestions.isNotEmpty() && allQuestions.isNotEmpty()) {
+            Spacer(Modifier.height(40.dp))
+          }
+          if (commonQuestions.isNotEmpty()) {
+            HelpCenterSectionWithClickableRows(
+              title = "All questions",
+              chipContainerColor = MaterialTheme.colorScheme.purpleContainer,
+              contentColor = MaterialTheme.colorScheme.onPurpleContainer,
+              items = allQuestions,
+              itemText = { resources.getString(it.questionRes) },
+              onClickItem = { onNavigateToQuestion(it.questionId) },
+            )
+          }
+          Spacer(Modifier.height(24.dp))
+          Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
+        }
+      }
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewHelpCenterTopicScreen() {
+  HedvigTheme {
+    Surface(color = MaterialTheme.colorScheme.background) {
+      HelpCenterTopicScreen(
+        Topic.Payments,
+        persistentListOf(Question.WhenIsInsuranceCharged, Question.WhenIsInsuranceCharged),
+        persistentListOf(Question.WhenIsInsuranceCharged, Question.WhenIsInsuranceCharged),
+        {},
+        {},
+        {},
+      )
+    }
+  }
 }

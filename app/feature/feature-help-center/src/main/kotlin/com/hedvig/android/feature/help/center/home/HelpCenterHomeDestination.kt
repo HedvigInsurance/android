@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.help.center.home
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -25,6 +23,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
@@ -42,6 +42,7 @@ import com.hedvig.android.feature.help.center.model.Topic
 import com.hedvig.android.feature.help.center.model.commonQuestions
 import com.hedvig.android.feature.help.center.model.commonTopics
 import com.hedvig.android.feature.help.center.ui.HelpCenterSection
+import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
@@ -126,31 +127,15 @@ private fun HelpCenterHomeScreen(
           },
         )
         Spacer(Modifier.height(56.dp))
-        HelpCenterSection(
+        LocalConfiguration.current
+        val resources = LocalContext.current.resources
+        HelpCenterSectionWithClickableRows(
           title = "Common questions",
           chipContainerColor = MaterialTheme.colorScheme.infoContainer,
           contentColor = MaterialTheme.colorScheme.onInfoContainer,
-          content = {
-            Column {
-              for ((index, question) in questions.withIndex()) {
-                if (index > 0) {
-                  Divider(
-                    Modifier
-                      .padding(horizontal = 16.dp)
-                      .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-                  )
-                }
-                Text(
-                  text = stringResource(question.questionRes),
-                  modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onNavigateToQuestion(question.questionId) }
-                    .padding(vertical = 16.dp, horizontal = 18.dp)
-                    .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-                )
-              }
-            }
-          },
+          items = questions,
+          itemText = { resources.getString(it.questionRes) },
+          onClickItem = { onNavigateToQuestion(it.questionId) },
         )
         Spacer(Modifier.height(24.dp))
         Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
