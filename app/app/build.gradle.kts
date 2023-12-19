@@ -174,6 +174,7 @@ dependencies {
   implementation(projects.coreIcons)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
+  implementation(projects.dataChatReadTimestampPublic)
   implementation(projects.dataClaimFlow)
   implementation(projects.dataSettingsDatastorePublic)
   implementation(projects.dataTravelCertificatePublic)
