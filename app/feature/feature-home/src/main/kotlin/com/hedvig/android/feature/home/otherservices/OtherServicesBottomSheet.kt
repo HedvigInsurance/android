@@ -119,7 +119,7 @@ private fun OtherServicesBottomSheetContent(
       verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
       if (isHelpCenterEnabled) {
-        ClickableOption("Help center", navigateToHelpCenter) // todo help-center: string resources
+        ClickableOption("Help center", navigateToHelpCenter) // todo help-center: localize
       }
       if (showMovingFlow) {
         ClickableOption(stringResource(R.string.insurance_details_change_address_button), onStartMovingFlow)
