@@ -125,6 +125,12 @@ internal fun darkHedvigColorScheme(hedvigTonalPalette: HedvigTonalPalette) = Hed
   infoContainer = hedvigTonalPalette.blue300,
   onInfoContainer = hedvigTonalPalette.blue900,
   infoHighlight = hedvigTonalPalette.blue500,
+  yellowContainer = hedvigTonalPalette.yellow300,
+  onYellowContainer = hedvigTonalPalette.yellow900,
+  pinkContainer = hedvigTonalPalette.pink300,
+  onPinkContainer = hedvigTonalPalette.pink900,
+  purpleContainer = hedvigTonalPalette.purple300,
+  onPurpleContainer = hedvigTonalPalette.purple900,
 )
 
 internal fun lightHedvigColorScheme(hedvigTonalPalette: HedvigTonalPalette) = HedvigMaterial3ColorScheme(
@@ -149,4 +155,10 @@ internal fun lightHedvigColorScheme(hedvigTonalPalette: HedvigTonalPalette) = He
   infoContainer = hedvigTonalPalette.blue100,
   onInfoContainer = hedvigTonalPalette.blue900,
   infoHighlight = hedvigTonalPalette.blue300,
+  yellowContainer = hedvigTonalPalette.yellow100,
+  onYellowContainer = hedvigTonalPalette.yellow900,
+  pinkContainer = hedvigTonalPalette.pink100,
+  onPinkContainer = hedvigTonalPalette.pink900,
+  purpleContainer = hedvigTonalPalette.purple100,
+  onPurpleContainer = hedvigTonalPalette.purple900,
 )
