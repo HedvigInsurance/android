@@ -43,6 +43,10 @@ internal class HomePresenter(
       val showChatIcon = !featureManager.isFeatureEnabled(Feature.DISABLE_CHAT)
       value = showChatIcon
     }
+    val isHelpCenterEnabled by produceState(lastState.isHelpCenterEnabled) {
+      val isHelpCenterEnabled = featureManager.isFeatureEnabled(Feature.HELP_CENTER)
+      value = isHelpCenterEnabled
+    }
     val hasUnseenChatMessages by produceState(
       lastState.safeCast<HomeUiState.Success>()?.hasUnseenChatMessages ?: false,
     ) {
@@ -83,8 +87,6 @@ internal class HomePresenter(
         )
       }
     }
-    LaunchedEffect(showChatIcon) {
-    }
 
     return if (hasError) {
       HomeUiState.Error(null)
@@ -101,6 +103,7 @@ internal class HomePresenter(
           memberReminders = successData.memberReminders,
           veryImportantMessages = successData.veryImportantMessages,
           allowAddressChange = successData.allowAddressChange,
+          isHelpCenterEnabled = isHelpCenterEnabled,
           allowGeneratingTravelCertificate = successData.allowGeneratingTravelCertificate,
           emergencyData = successData.emergencyData,
           commonClaimsData = successData.commonClaimsData,
@@ -123,6 +126,9 @@ internal sealed interface HomeUiState {
   val showChatIcon: Boolean
     get() = false
 
+  val isHelpCenterEnabled: Boolean
+    get() = false
+
   val hasUnseenChatMessages: Boolean
     get() = false
 
@@ -136,6 +142,7 @@ internal sealed interface HomeUiState {
     val allowGeneratingTravelCertificate: Boolean,
     val emergencyData: EmergencyData?,
     val commonClaimsData: ImmutableList<CommonClaimsData>,
+    override val isHelpCenterEnabled: Boolean,
     override val showChatIcon: Boolean,
     override val hasUnseenChatMessages: Boolean,
   ) : HomeUiState

@@ -28,6 +28,7 @@ fun NavGraphBuilder.homeGraph(
   navigateToClaimDetails: (NavBackStackEntry, claimId: String) -> Unit,
   navigateToPayinScreen: () -> Unit,
   navigateToMissingInfo: (NavBackStackEntry, String) -> Unit,
+  navigateToHelpCenter: (NavBackStackEntry) -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
 ) {
@@ -61,6 +62,7 @@ fun NavGraphBuilder.homeGraph(
             backStackEntry.navigate(HomeDestinations.EmergencyDestination(emergencyData))
           }
         },
+        navigateToHelpCenter = { navigateToHelpCenter(backStackEntry) },
         openUrl = openUrl,
         openAppSettings = openAppSettings,
       )
