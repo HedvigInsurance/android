@@ -25,7 +25,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "12.3.3"
+    versionName = "12.3.4"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -157,7 +157,6 @@ dependencies {
   implementation(libs.kotlin.reflect)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.immutable.collections)
-  implementation(libs.materialComponents)
   implementation(libs.moneta)
   implementation(libs.okhttp.core)
   implementation(libs.okhttp.loggingInterceptor)
@@ -175,6 +174,7 @@ dependencies {
   implementation(projects.coreIcons)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
+  implementation(projects.dataChatReadTimestampPublic)
   implementation(projects.dataClaimFlow)
   implementation(projects.dataSettingsDatastorePublic)
   implementation(projects.dataTravelCertificatePublic)

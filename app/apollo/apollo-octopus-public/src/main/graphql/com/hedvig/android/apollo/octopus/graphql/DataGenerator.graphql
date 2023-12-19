@@ -3,6 +3,11 @@
 # https://slack-chats.kotlinlang.org/t/16041367/using-3-8-2-i-got-a-root-apollo-module-with-packagename-set-#f3a9d2d9-d717-43d5-89df-3acd0fb05609
 # https://www.apollographql.com/docs/kotlin/v4/advanced/multi-modules/#auto-detection-of-used-types
 query Ignore {
+  chat(until: null) {
+    messages {
+      sentAt
+    }
+  }
   currentMember {
     paymentInformation {
       status

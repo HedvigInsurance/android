@@ -5,11 +5,13 @@ import arrow.retrofit.adapter.either.EitherCallAdapterFactory
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
+import com.hedvig.android.data.chat.read.timestamp.ChatLastMessageReadRepository
 import com.hedvig.android.feature.chat.ChatViewModel
 import com.hedvig.android.feature.chat.FileService
 import com.hedvig.android.feature.chat.closedevent.ChatClosedEventDataStore
 import com.hedvig.android.feature.chat.closedevent.ChatClosedEventStore
 import com.hedvig.android.feature.chat.data.BotServiceService
+import com.hedvig.android.feature.chat.data.ChatRepository
 import com.hedvig.android.feature.chat.data.ChatRepositoryDemo
 import com.hedvig.android.feature.chat.data.ChatRepositoryImpl
 import com.hedvig.android.feature.chat.data.GetChatRepositoryProvider
@@ -36,6 +38,7 @@ val chatModule = module {
       botServiceService = get<BotServiceService>(),
       fileService = get<FileService>(),
       contentResolver = get<Context>().contentResolver,
+      chatLastMessageReadRepository = get<ChatLastMessageReadRepository>(),
     )
   }
   single<ChatRepositoryDemo> {
@@ -59,5 +62,14 @@ val chatModule = module {
       .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
       .build()
     retrofit.create(BotServiceService::class.java)
+  }
+
+  /**
+   * [com.hedvig.app.feature.chat.service.ReplyWorker] also needs an instance of ChatRepository itself, without
+   * necessarily caring about demo mode or not. If there is a notification arriving, even if they are in demo mode
+   * somehow, the real chat repository should be used.
+   */
+  single<ChatRepository> {
+    get<ChatRepositoryImpl>()
   }
 }

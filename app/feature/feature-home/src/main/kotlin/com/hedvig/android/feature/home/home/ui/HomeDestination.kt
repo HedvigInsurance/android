@@ -47,6 +47,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -67,11 +68,13 @@ import com.hedvig.android.core.designsystem.material3.warningElement
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.hedvig.compose.notificationCircle
 import com.hedvig.android.core.icons.hedvig.normal.WarningFilled
 import com.hedvig.android.core.ui.appbar.m3.ToolbarChatIcon
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarLayoutForActions
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.plus
+import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.feature.home.commonclaim.CommonClaimsData
 import com.hedvig.android.feature.home.emergency.EmergencyData
 import com.hedvig.android.feature.home.home.ChatTooltip
@@ -217,6 +220,7 @@ private fun HomeScreen(
         TopAppBarLayoutForActions {
           ToolbarChatIcon(
             onClick = onStartChat,
+            modifier = Modifier.notificationCircle(uiState.hasUnseenChatMessages),
           )
         }
         val shouldShowTooltip by produceState(false) {
@@ -466,7 +470,9 @@ private fun Context.getSharedPreferences() = this.getSharedPreferences(SHARED_PR
 
 @HedvigPreview
 @Composable
-private fun PreviewHomeScreen() {
+private fun PreviewHomeScreen(
+  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) hasUnseenChatMessages: Boolean,
+) {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       HomeScreen(
@@ -493,6 +499,7 @@ private fun PreviewHomeScreen() {
           emergencyData = null,
           commonClaimsData = persistentListOf(),
           showChatIcon = true,
+          hasUnseenChatMessages = hasUnseenChatMessages,
         ),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
         reload = {},
