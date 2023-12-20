@@ -1,7 +1,0 @@
-<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="48dp" android:height="48dp" android:viewportWidth="48" android:viewportHeight="48">
-    <path android:pathData="M48 24c0 13.255-10.745 24-24 24S0 37.255 0 24 10.745 0 24 0s24 10.745 24 24" android:strokeWidth="1" android:fillColor="#FF8A80" android:fillType="evenOdd"/>
-    <path android:pathData="M30.686 21.424h-1v-4.713c0-3.136-2.551-5.686-5.686-5.686h-0.5v-1H24c3.687 0 6.686 2.998 6.686 6.685v4.714zm-13.371 0h1V16.21h-1zM33.34 36.42H14.66v-1h17.68V20.46h1z" android:strokeWidth="1" android:fillColor="#FFFFFF" android:fillType="evenOdd"/>
-    <path android:pathData="M15.66 36.42h-1V20.46h18.68v1H15.66z" android:strokeWidth="1" android:fillColor="#FFFFFF" android:fillType="evenOdd"/>
-    <path android:pathData="M32.34 36.419h1V20.46h-1zm-8.84-3.823h1v-2.782h-1z" android:strokeWidth="1" android:fillColor="#FFFFFF" android:fillType="evenOdd"/>
-    <path android:pathData="M24 25.175c-1.088 0-1.973 0.885-1.973 1.973s0.885 1.973 1.973 1.973 1.973-0.885 1.973-1.973-0.885-1.973-1.973-1.973m0 4.946c-1.639 0-2.973-1.334-2.973-2.973 0-1.64 1.334-2.973 2.973-2.973 1.64 0 2.973 1.333 2.973 2.973 0 1.639-1.334 2.973-2.973 2.973m-6.64-18.834l-1.402-1.13 0.628-0.78 1.402 1.132z" android:strokeWidth="1" android:fillColor="#FFFFFF" android:fillType="evenOdd"/>
-</vector>

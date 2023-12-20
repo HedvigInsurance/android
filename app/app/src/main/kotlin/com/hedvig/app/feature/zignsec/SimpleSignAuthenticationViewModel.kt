@@ -17,7 +17,6 @@ import com.hedvig.authlib.AuthTokenResult
 import com.hedvig.authlib.LoginMethod
 import com.hedvig.authlib.LoginStatusResult
 import com.hedvig.authlib.StatusUrl
-import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.onCompletion
@@ -25,7 +24,6 @@ import kotlinx.coroutines.launch
 
 class SimpleSignAuthenticationViewModel(
   private val data: SimpleSignAuthenticationData,
-  private val hAnalytics: HAnalytics,
   private val authRepository: AuthRepository,
   private val authTokenService: AuthTokenService,
 ) : ViewModel() {
@@ -131,7 +129,6 @@ class SimpleSignAuthenticationViewModel(
 
       is AuthTokenResult.Success -> {
         logcat { "Login exchange success:$result" }
-        hAnalytics.loggedIn()
         authTokenService.loginWithTokens(result.accessToken, result.refreshToken)
       }
     }

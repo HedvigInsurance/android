@@ -249,16 +249,10 @@ fun NavGraphBuilder.claimFlowGraph(
         imageLoader = imageLoader,
       )
     }
-    composable<ClaimFlowDestination.DeflectEmergency> { navBackStackEntry ->
+    composable<ClaimFlowDestination.DeflectEmergency> {
       DeflectEmergencyDestination(
         deflectEmergency = this,
-        openChat = {
-          openChat(navBackStackEntry)
-        },
         navigateUp = navigator::navigateUp,
-        windowSizeClass = windowSizeClass,
-        closeClaimFlow = closeClaimFlow,
-        imageLoader = imageLoader,
       )
     }
     composable<ClaimFlowDestination.DeflectPests> { navBackStackEntry ->

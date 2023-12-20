@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <integer name="slide_in_animation_duration">225</integer>
-    <integer name="fade_in_animation_duration">225</integer>
-</resources>

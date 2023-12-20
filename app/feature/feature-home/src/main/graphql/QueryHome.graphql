@@ -3,7 +3,6 @@ query Home {
     claims {
       ...ClaimFragment
     }
-    isEligibleToMakeClaim
     terminatedContracts {
       id
     }
@@ -18,27 +17,17 @@ query Home {
       link
     }
     activeContracts {
-      id
       masterInceptionDate
       currentAgreement {
         productVariant {
-          displayName
           commonClaimDescriptions {
             id
-            icon {
-              ...IconsFragment
-            }
             title
             layout {
               ... on CommonClaimLayoutEmergency {
-                title
-                color
                 emergencyNumber
               }
               ... on CommonClaimLayoutTitleAndBulletPoints {
-                title
-                color
-                buttonTitle
                 bulletPoints {
                   title
                   description
