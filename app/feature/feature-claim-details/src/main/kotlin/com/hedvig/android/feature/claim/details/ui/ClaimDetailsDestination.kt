@@ -11,6 +11,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -24,7 +25,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -34,10 +34,8 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -59,6 +57,7 @@ import com.hedvig.android.audio.player.state.PlayableAudioSource
 import com.hedvig.android.audio.player.state.rememberAudioPlayer
 import com.hedvig.android.compose.photo.capture.state.rememberPhotoCaptureState
 import com.hedvig.android.core.designsystem.component.bottomsheet.HedvigBottomSheet
+import com.hedvig.android.core.designsystem.component.button.ClickableOption
 import com.hedvig.android.core.designsystem.component.button.HedvigSecondaryContainedButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
@@ -75,6 +74,7 @@ import com.hedvig.android.core.icons.hedvig.normal.Pictures
 import com.hedvig.android.core.icons.hedvig.normal.Play
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
 import com.hedvig.android.core.ui.dialog.ErrorDialog
+import com.hedvig.android.core.ui.plus
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.logger.logcat
@@ -160,7 +160,6 @@ private fun ClaimDetailScreen(
   onDismissUploadError: () -> Unit,
   imageLoader: ImageLoader,
   appPackageId: String,
-  modifier: Modifier = Modifier,
 ) {
   var showFileTypeSelectBottomSheet by remember { mutableStateOf(false) }
   val sheetState = rememberModalBottomSheetState()
@@ -189,75 +188,34 @@ private fun ClaimDetailScreen(
       onDismissed = { showFileTypeSelectBottomSheet = false },
       sheetState = sheetState,
       content = {
-        Column {
-          TextButton(
+        Column(
+          modifier = Modifier.padding(horizontal = 16.dp),
+          verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+          ClickableOption(
+            text = stringResource(id = R.string.file_upload_photo_library),
+            icon = HedvigIcons.Pictures,
             onClick = {
               photoPicker.launch(PickVisualMediaRequest())
               showFileTypeSelectBottomSheet = false
             },
-            modifier = modifier
-              .fillMaxWidth()
-              .padding(horizontal = 16.dp),
-            shape = MaterialTheme.shapes.squircleMedium,
-          ) {
-            Row(
-              horizontalArrangement = Arrangement.SpaceBetween,
-              modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            ) {
-              ProvideTextStyle(MaterialTheme.typography.bodyLarge) {
-                Text(text = stringResource(id = R.string.file_upload_photo_library))
-              }
-              Icon(imageVector = HedvigIcons.Pictures, contentDescription = "library icon")
-            }
-          }
-          Spacer(modifier = Modifier.height(4.dp))
-          TextButton(
+          )
+          ClickableOption(
+            text = stringResource(id = R.string.file_upload_take_photo),
+            icon = HedvigIcons.Camera,
             onClick = {
               photoCaptureState.launchTakePhotoRequest()
               showFileTypeSelectBottomSheet = false
             },
-            modifier = modifier
-              .fillMaxWidth()
-              .padding(horizontal = 16.dp),
-            shape = MaterialTheme.shapes.squircleMedium,
-          ) {
-            Row(
-              horizontalArrangement = Arrangement.SpaceBetween,
-              modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            ) {
-              ProvideTextStyle(MaterialTheme.typography.bodyLarge) {
-                Text(text = stringResource(id = R.string.file_upload_take_photo))
-              }
-              Icon(imageVector = HedvigIcons.Camera, contentDescription = "photo icon")
-            }
-          }
-          Spacer(modifier = Modifier.height(4.dp))
-          TextButton(
+          )
+          ClickableOption(
+            text = stringResource(id = R.string.file_upload_choose_files),
+            icon = HedvigIcons.Document,
             onClick = {
               filePicker.launch("*/*")
               showFileTypeSelectBottomSheet = false
             },
-            modifier = modifier
-              .fillMaxWidth()
-              .padding(horizontal = 16.dp),
-            shape = MaterialTheme.shapes.squircleMedium,
-          ) {
-            Row(
-              horizontalArrangement = Arrangement.SpaceBetween,
-              modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            ) {
-              ProvideTextStyle(MaterialTheme.typography.bodyLarge) {
-                Text(text = stringResource(id = R.string.file_upload_choose_files))
-              }
-              Icon(imageVector = HedvigIcons.Document, contentDescription = "files icon")
-            }
-          }
+          )
         }
       },
     )
@@ -267,9 +225,9 @@ private fun ClaimDetailScreen(
     columns = GridCells.Fixed(3),
     horizontalArrangement = Arrangement.spacedBy(8.dp),
     verticalArrangement = Arrangement.spacedBy(8.dp),
-    modifier = modifier
-      .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom))
-      .padding(horizontal = 16.dp),
+    contentPadding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
+      .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
+      .asPaddingValues(),
   ) {
     item(span = { GridItemSpan(3) }) {
       Column {

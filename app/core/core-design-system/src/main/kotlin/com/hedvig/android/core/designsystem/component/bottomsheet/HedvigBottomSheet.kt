@@ -62,6 +62,7 @@ fun HedvigBottomSheet(
   val scope = rememberCoroutineScope()
 
   ModalBottomSheet(
+    containerColor = MaterialTheme.colorScheme.background,
     onDismissRequest = onDismissed,
     sheetState = sheetState,
     tonalElevation = 0.dp,

@@ -12,12 +12,7 @@ import com.hedvig.android.core.retrofit.toErrorMessage
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import kotlinx.serialization.Serializable
-import okhttp3.MediaType
-import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import okio.BufferedSink
-import okio.source
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
@@ -36,21 +31,7 @@ internal data class UploadFileUseCaseImpl(
     val claimId = Uri.parse(url).getQueryParameter("claimId") ?: raise(ErrorMessage("No claim id found in url"))
     val result = uploadFileService.uploadFile(
       claimId = claimId,
-      file = MultipartBody.Part.createFormData(
-        name = "files",
-        filename = fileService.getFileName(uri) ?: "media",
-        body = object : RequestBody() {
-          override fun contentType(): MediaType? {
-            return fileService.getMimeType(uri).toMediaType()
-          }
-
-          override fun writeTo(sink: BufferedSink) {
-            contentResolver.openInputStream(uri)?.use { inputStream ->
-              sink.writeAll(inputStream.source())
-            } ?: error("Could not open input stream for uri:$uri")
-          }
-        },
-      ),
+      file = fileService.createFormData(uri),
     )
       .onLeft {
         logcat(LogPriority.ERROR) { "Failed to upload file. Error:$it" }

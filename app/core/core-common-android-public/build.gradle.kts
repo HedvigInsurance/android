@@ -14,6 +14,7 @@ dependencies {
   implementation(libs.androidx.other.core)
   implementation(libs.androidx.other.recyclerView)
   implementation(libs.kotlinx.serialization.core)
+  implementation(libs.okhttp.core)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.coreResources)
 

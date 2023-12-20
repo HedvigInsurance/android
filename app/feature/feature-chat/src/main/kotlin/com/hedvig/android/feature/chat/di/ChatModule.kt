@@ -37,7 +37,6 @@ val chatModule = module {
       apolloClient = get<ApolloClient>(),
       botServiceService = get<BotServiceService>(),
       fileService = get<FileService>(),
-      contentResolver = get<Context>().contentResolver,
     )
   }
   single<ChatRepositoryDemo> {
