@@ -3,16 +3,15 @@ package com.hedvig.android.feature.home.home.navigation
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
-import coil.ImageLoader
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
-import com.hedvig.android.feature.home.claims.commonclaim.commonClaimGraph
+import com.hedvig.android.feature.home.commonclaim.CommonClaimDestination
+import com.hedvig.android.feature.home.emergency.EmergencyDestination
 import com.hedvig.android.feature.home.home.ui.HomeDestination
 import com.hedvig.android.feature.home.home.ui.HomeViewModel
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
 import com.hedvig.android.navigation.core.TopLevelGraph
-import com.hedvig.hanalytics.HAnalytics
 import com.kiwi.navigationcompose.typed.composable
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigation
@@ -31,8 +30,6 @@ fun NavGraphBuilder.homeGraph(
   navigateToMissingInfo: (NavBackStackEntry, String) -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
-  imageLoader: ImageLoader,
-  hAnalytics: HAnalytics,
 ) {
   navigation<TopLevelGraph.HOME>(
     startDestination = createRoutePattern<AppDestination.TopLevelDestination.Home>(),
@@ -59,16 +56,28 @@ fun NavGraphBuilder.homeGraph(
         onOpenCommonClaim = { commonClaimsData ->
           with(navigator) { backStackEntry.navigate(HomeDestinations.CommonClaimDestination(commonClaimsData)) }
         },
+        onOpenEmergencyScreen = { emergencyData ->
+          with(navigator) {
+            backStackEntry.navigate(HomeDestinations.EmergencyDestination(emergencyData))
+          }
+        },
         openUrl = openUrl,
         openAppSettings = openAppSettings,
       )
     }
-    commonClaimGraph(
-      imageLoader = imageLoader,
-      hAnalytics = hAnalytics,
-      navigateUp = navigator::navigateUp,
-      startClaimsFlow = onStartClaim,
-    )
+    composable<HomeDestinations.CommonClaimDestination> {
+      CommonClaimDestination(
+        commonClaimsData = claimsData,
+        navigateUp = navigator::navigateUp,
+        navigateBack = navigator::popBackStack,
+      )
+    }
+    composable<HomeDestinations.EmergencyDestination> {
+      EmergencyDestination(
+        emergencyData = this.emergencyData,
+        navigateUp = navigator::navigateUp,
+      )
+    }
     nestedGraphs()
   }
 }

@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
@@ -18,7 +17,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
@@ -32,7 +30,6 @@ import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenC
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
-import com.hedvig.android.core.ui.debugBorder
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.feature.chat.ChatEvent
 import com.hedvig.android.feature.chat.ChatUiState
@@ -114,17 +111,6 @@ private fun ChatScreen(
         propagateMinConstraints = true,
       ) {
         when (uiState) {
-          ChatUiState.DisabledByFeatureFlag -> {
-            Box(
-              Modifier
-                .fillMaxSize()
-                .debugBorder(),
-              contentAlignment = Alignment.Center,
-            ) {
-              Text("Chat disabled by feature flag")
-            }
-          }
-
           ChatUiState.Initializing -> {
             HedvigFullScreenCenterAlignedProgress()
           }
@@ -197,7 +183,6 @@ private fun ChatScreenPreview(
 private class ChatUiStateProvider : CollectionPreviewParameterProvider<ChatUiState>(
   listOf(
     ChatUiState.Initializing,
-    ChatUiState.DisabledByFeatureFlag,
     ChatUiState.Loaded(
       List(10) { index ->
         ChatMessage.ChatMessageText(
@@ -210,14 +195,18 @@ private class ChatUiStateProvider : CollectionPreviewParameterProvider<ChatUiSta
             ""
           },
         )
-      }.plus(
-        ChatMessage.FailedToBeSent.ChatMessageText(
-          id = "failed",
-          sentAt = Clock.System.now(),
-          text = "Failed to be sent",
-        ),
-      ).toImmutableList(),
-      errorMessage = null,
+      }
+        .plus(
+          ChatMessage.FailedToBeSent.ChatMessageText(
+            id = "failed",
+            sentAt = Clock.System.now(),
+            text = "Failed to be sent",
+          ),
+        )
+        .map {
+          ChatUiState.Loaded.UiChatMessage(it, false)
+        }
+        .toImmutableList(),
       fetchMoreMessagesUiState = ChatUiState.Loaded.FetchMoreMessagesUiState.FetchingMore,
     ),
   ),

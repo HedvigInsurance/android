@@ -12,12 +12,7 @@ dependencies {
   implementation(libs.androidx.compose.uiUnit)
   implementation(libs.androidx.other.appCompat)
   implementation(libs.androidx.other.core)
-  implementation(libs.androidx.other.recyclerView)
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.coreResources)
-
-  testImplementation(libs.assertK)
-  testImplementation(libs.jsonTest)
-  testImplementation(libs.junit)
 }

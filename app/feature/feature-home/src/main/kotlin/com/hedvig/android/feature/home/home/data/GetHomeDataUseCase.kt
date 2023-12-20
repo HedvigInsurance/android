@@ -11,10 +11,9 @@ import com.apollographql.apollo3.cache.normalized.FetchPolicy
 import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.core.common.android.ThemedIconUrls
 import com.hedvig.android.data.travelcertificate.GetTravelCertificateSpecificationsUseCase
-import com.hedvig.android.feature.home.claims.commonclaim.CommonClaimsData
-import com.hedvig.android.feature.home.claims.commonclaim.EmergencyData
+import com.hedvig.android.feature.home.commonclaim.CommonClaimsData
+import com.hedvig.android.feature.home.emergency.EmergencyData
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
@@ -73,11 +72,13 @@ internal class GetHomeDataUseCaseImpl(
               when (commonClaimDescription.layout) {
                 is CommonClaimDescription.CommonClaimLayoutEmergencyLayout -> null
                 is CommonClaimDescription.CommonClaimLayoutTitleAndBulletPointsLayout -> {
-                  CommonClaimsData.from(commonClaimDescription, homeQueryData.currentMember.isEligibleToMakeClaim)
+                  CommonClaimsData.from(commonClaimDescription)
                 }
 
                 is CommonClaimDescription.OtherLayout -> {
-                  logcat { "common claim descriptor with other layout" }
+                  logcat(LogPriority.ERROR) {
+                    "Backend error: common claim descriptor with other layout:${commonClaimDescription.layout}"
+                  }
                   null
                 }
               }
@@ -87,10 +88,7 @@ internal class GetHomeDataUseCaseImpl(
           activeContract.currentAgreement.productVariant.commonClaimDescriptions.mapNotNull { commonClaimDescription ->
             val emergencyLayout = commonClaimDescription.layout.asCommonClaimLayoutEmergency() ?: return@mapNotNull null
             EmergencyData(
-              iconUrls = ThemedIconUrls.from(commonClaimDescription.icon),
-              color = emergencyLayout.color,
-              title = emergencyLayout.title,
-              eligibleToClaim = homeQueryData.currentMember.isEligibleToMakeClaim,
+              title = commonClaimDescription.title,
               emergencyNumber = emergencyLayout.emergencyNumber,
             )
           }

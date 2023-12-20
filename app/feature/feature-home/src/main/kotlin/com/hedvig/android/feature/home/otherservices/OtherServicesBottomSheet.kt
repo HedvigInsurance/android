@@ -27,7 +27,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.common.android.ThemedIconUrls
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.material3.onWarningContainer
@@ -35,13 +34,12 @@ import com.hedvig.android.core.designsystem.material3.squircleLargeTop
 import com.hedvig.android.core.designsystem.material3.warningContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.feature.home.claims.commonclaim.CommonClaimsData
-import com.hedvig.android.feature.home.claims.commonclaim.EmergencyData
+import com.hedvig.android.feature.home.commonclaim.CommonClaimsData
+import com.hedvig.android.feature.home.emergency.EmergencyData
 import com.hedvig.android.feature.home.home.ui.HomeUiState
 import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import octopus.type.HedvigColor
 
 @Composable
 internal fun OtherServicesBottomSheet(
@@ -49,7 +47,7 @@ internal fun OtherServicesBottomSheet(
   dismissBottomSheet: () -> Unit,
   onChatClicked: () -> Unit,
   onStartMovingFlow: () -> Unit,
-  onEmergencyClaimClicked: (EmergencyData) -> Unit,
+  onEmergencyClicked: (EmergencyData) -> Unit,
   onGenerateTravelCertificateClicked: () -> Unit,
   onOpenCommonClaim: (CommonClaimsData) -> Unit,
   sheetState: SheetState,
@@ -78,9 +76,9 @@ internal fun OtherServicesBottomSheet(
         onGenerateTravelCertificateClicked()
       },
       emergencyData = uiState.emergencyData,
-      onEmergencyClaimClicked = { it: EmergencyData ->
+      onEmergencyClicked = { it: EmergencyData ->
         dismissBottomSheet()
-        onEmergencyClaimClicked(it)
+        onEmergencyClicked(it)
       },
       commonClaims = uiState.commonClaimsData,
       onOpenCommonClaim = onOpenCommonClaim,
@@ -97,7 +95,7 @@ private fun OtherServicesBottomSheetContent(
   showGenerateTravelcertificate: Boolean,
   onGenerateTravelCertificateClicked: () -> Unit,
   emergencyData: EmergencyData?,
-  onEmergencyClaimClicked: (EmergencyData) -> Unit,
+  onEmergencyClicked: (EmergencyData) -> Unit,
   commonClaims: ImmutableList<CommonClaimsData>,
   onOpenCommonClaim: (CommonClaimsData) -> Unit,
   dismissBottomSheet: () -> Unit,
@@ -127,8 +125,8 @@ private fun OtherServicesBottomSheetContent(
       }
       if (emergencyData != null) {
         ClickableOption(
-          text = emergencyData.title,
-          onClick = { onEmergencyClaimClicked(emergencyData) },
+          text = stringResource(R.string.COMMON_CLAIM_EMERGENCY_TITLE),
+          onClick = { onEmergencyClicked(emergencyData) },
           cardColors = CardDefaults.outlinedCardColors(
             containerColor = MaterialTheme.colorScheme.warningContainer,
             contentColor = MaterialTheme.colorScheme.onWarningContainer,
@@ -182,17 +180,12 @@ private fun PreviewOtherServicesBottomSheetContent() {
         onStartMovingFlow = {},
         showGenerateTravelcertificate = true,
         onGenerateTravelCertificateClicked = {},
-        emergencyData = EmergencyData(ThemedIconUrls("", ""), HedvigColor.UNKNOWN__, "Sick abroad", true, ""),
-        onEmergencyClaimClicked = {},
+        emergencyData = EmergencyData("Sick abroad", "+46123456789"),
+        onEmergencyClicked = {},
         commonClaims = persistentListOf(
           CommonClaimsData(
             id = "",
-            iconUrls = ThemedIconUrls("", ""),
             title = "Contact FirstVet",
-            color = HedvigColor.DarkPurple,
-            layoutTitle = "",
-            buttonText = "",
-            eligibleToClaim = true,
             bulletPoints = emptyList(),
           ),
         ),

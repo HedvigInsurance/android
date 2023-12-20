@@ -35,6 +35,7 @@ import com.hedvig.android.core.common.di.datastoreFileQualifier
 import com.hedvig.android.core.datastore.di.dataStoreModule
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.di.demoModule
+import com.hedvig.android.data.chat.read.timestamp.di.chatReadTimestampModule
 import com.hedvig.android.data.settings.datastore.di.settingsDatastoreModule
 import com.hedvig.android.data.travelcertificate.di.claimFlowDataModule
 import com.hedvig.android.data.travelcertificate.di.travelCertificateDataModule
@@ -182,7 +183,7 @@ fun makeUserAgent(locale: Locale): String = buildString {
 
 private val viewModelModule = module {
   viewModel<SimpleSignAuthenticationViewModel> { params ->
-    SimpleSignAuthenticationViewModel(params.get(), get(), get(), get())
+    SimpleSignAuthenticationViewModel(params.get(), get(), get())
   }
   viewModel<GenericAuthViewModel> { GenericAuthViewModel(get(), get()) }
   viewModel<OtpInputViewModel> { (verifyUrl: String, resendUrl: String, credential: String) ->
@@ -329,6 +330,7 @@ val applicationModule = module {
       cacheManagerModule,
       changeAddressModule,
       chatModule,
+      chatReadTimestampModule,
       claimDetailsModule,
       claimFlowDataModule,
       claimTriagingModule,
@@ -342,6 +344,7 @@ val applicationModule = module {
       datastoreAndroidModule,
       deepLinkModule,
       demoModule,
+      editCoInsuredModule,
       featureManagerModule,
       firebaseNotificationModule,
       foreverModule,
@@ -368,7 +371,6 @@ val applicationModule = module {
       useCaseModule,
       viewModelModule,
       workManagerModule,
-      editCoInsuredModule,
     ),
   )
 }

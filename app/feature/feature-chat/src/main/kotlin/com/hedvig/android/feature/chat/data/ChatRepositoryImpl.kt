@@ -26,6 +26,8 @@ import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.android.FileService
 import com.hedvig.android.core.retrofit.toErrorMessage
+import com.hedvig.android.data.chat.read.timestamp.ChatLastMessageReadRepository
+import com.hedvig.android.feature.chat.FileService
 import com.hedvig.android.feature.chat.model.ChatMessage
 import com.hedvig.android.feature.chat.model.ChatMessagesResult
 import com.hedvig.android.logger.LogPriority
@@ -56,6 +58,7 @@ internal class ChatRepositoryImpl(
   private val botServiceService: BotServiceService,
   private val fileService: FileService,
   private val contentResolver: ContentResolver,
+  private val chatLastMessageReadRepository: ChatLastMessageReadRepository,
 ) : ChatRepository {
   override suspend fun fetchMoreMessages(until: Instant): Either<ErrorMessage, ChatMessagesResult> = either {
     logcat { "Fetching more messages until:$until" }
@@ -99,7 +102,11 @@ internal class ChatRepositoryImpl(
             ErrorMessage("watchMessages: No data")
           }
           val chat = data.chat
-          chat.messages.mapNotNull { it.toChatMessage() }
+          val messages = chat.messages.mapNotNull { it.toChatMessage() }.sortedByDescending { it.sentAt }
+          messages.firstOrNull()?.let {
+            chatLastMessageReadRepository.storeLatestReadTimestamp(it.sentAt)
+          }
+          messages
         }
       }
       .retryWhen { cause, _ ->

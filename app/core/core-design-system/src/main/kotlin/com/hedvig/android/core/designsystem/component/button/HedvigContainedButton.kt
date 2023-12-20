@@ -113,6 +113,7 @@ fun HedvigContainedButton(
 @Composable
 private fun LoadingButton(isLoading: Boolean, text: String) {
   val loadingTransition = updateTransition(isLoading, label = "loading transition")
+  @Suppress("NAME_SHADOWING")
   loadingTransition.AnimatedContent(
     transitionSpec = {
       fadeIn(tween(durationMillis = 220, delayMillis = 90)) togetherWith fadeOut(tween(90))

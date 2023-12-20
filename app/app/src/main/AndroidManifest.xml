@@ -55,27 +55,23 @@
       </intent-filter>
     </activity>
     <activity
-      android:name="com.hedvig.android.feature.home.claims.commonclaim.EmergencyActivity"
-      android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-      android:launchMode="singleTask"
-      android:screenOrientation="portrait"
-      android:windowSoftInputMode="adjustResize" />
-    <activity
       android:name=".feature.zignsec.SimpleSignAuthenticationActivity"
       android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
       android:windowSoftInputMode="adjustResize" />
     <activity android:name=".feature.sunsetting.ForceUpgradeActivity" />
     <activity
       android:name=".feature.genericauth.GenericAuthActivity"
+      android:theme="@style/Hedvig.Theme"
       android:windowSoftInputMode="adjustResize" />
     <activity
       android:name=".feature.genericauth.otpinput.OtpInputActivity"
       android:exported="true"
+      android:theme="@style/Hedvig.Theme"
       android:windowSoftInputMode="adjustResize" />
     <activity
       android:name=".feature.marketing.MarketingActivity"
       android:configChanges="keyboard|keyboardHidden|orientation|screenSize|locale|layoutDirection"
-      android:theme="@style/Hedvig.Theme.Marketing"
+      android:theme="@style/Hedvig.Theme"
       android:windowSoftInputMode="adjustResize" />
 
     <meta-data

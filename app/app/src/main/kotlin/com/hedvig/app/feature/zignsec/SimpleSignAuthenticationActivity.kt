@@ -2,12 +2,15 @@ package com.hedvig.app.feature.zignsec
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.addCallback
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContract
-import androidx.appcompat.app.AppCompatActivity
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,13 +18,11 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
@@ -44,7 +45,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.core.view.WindowCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -67,7 +67,7 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class SimpleSignAuthenticationActivity : AppCompatActivity() {
+class SimpleSignAuthenticationActivity : ComponentActivity() {
   private val viewModel: SimpleSignAuthenticationViewModel by viewModel { parametersOf(data) }
   private val authTokenService: AuthTokenService by inject()
 
@@ -104,8 +104,8 @@ class SimpleSignAuthenticationActivity : AppCompatActivity() {
 
   @OptIn(ExperimentalLayoutApi::class, ExperimentalComposeUiApi::class)
   override fun onCreate(savedInstanceState: Bundle?) {
+    enableEdgeToEdge(navigationBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT))
     super.onCreate(savedInstanceState)
-    WindowCompat.setDecorFitsSystemWindows(window, false)
     logcat { "SimpleSignAuthenticationActivity with market:$zignSecMarket" }
 
     onBackPressedDispatcher.addCallback(this) {
@@ -169,9 +169,6 @@ class SimpleSignAuthenticationActivity : AppCompatActivity() {
               TopAppBarWithBack(
                 onClick = { onBackPressedDispatcher.onBackPressed() },
                 title = stringResource(R.string.zignsec_login_screen_title),
-                contentPadding = WindowInsets.systemBars
-                  .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
-                  .asPaddingValues(),
               )
               if (hasErrored) {
                 HedvigErrorSection(retry = { finish() })

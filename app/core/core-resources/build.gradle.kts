@@ -7,10 +7,6 @@ plugins {
   alias(libs.plugins.squareSortDependencies)
 }
 
-dependencies {
-  implementation(libs.materialComponents)
-}
-
 val lokaliseProperties = Properties()
 lokaliseProperties.load(FileInputStream(rootProject.file("lokalise.properties")))
 

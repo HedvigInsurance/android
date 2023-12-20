@@ -3,8 +3,8 @@ package com.hedvig.app.feature.sunsetting
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -25,7 +25,7 @@ import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmal
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 
-class ForceUpgradeActivity : AppCompatActivity() {
+class ForceUpgradeActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
@@ -45,7 +45,7 @@ class ForceUpgradeActivity : AppCompatActivity() {
 }
 
 @Composable
-fun UpgradeApp(goToPlayStore: () -> Unit) {
+private fun UpgradeApp(goToPlayStore: () -> Unit) {
   Column(
     verticalArrangement = Arrangement.Center,
     horizontalAlignment = Alignment.CenterHorizontally,
