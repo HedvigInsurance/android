@@ -26,7 +26,6 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.android.FileService
 import com.hedvig.android.core.retrofit.toErrorMessage
 import com.hedvig.android.data.chat.read.timestamp.ChatLastMessageReadRepository
-import com.hedvig.android.feature.chat.FileService
 import com.hedvig.android.feature.chat.model.ChatMessage
 import com.hedvig.android.feature.chat.model.ChatMessagesResult
 import com.hedvig.android.logger.LogPriority

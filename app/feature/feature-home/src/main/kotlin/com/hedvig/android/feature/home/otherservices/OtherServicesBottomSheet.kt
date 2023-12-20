@@ -23,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.common.android.ThemedIconUrls
 import com.hedvig.android.core.designsystem.component.button.ClickableOption
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.material3.onWarningContainer
