@@ -27,6 +27,11 @@ interface HedvigBuildConstants {
   val urlBotService: String
 
   /**
+   * The URL targeting claims service backend
+   */
+  val urlClaimsService: String
+
+  /**
    * The base host used for all deep links.
    */
   val deepLinkHost: String

@@ -2,19 +2,16 @@ package com.hedvig.android.feature.home.otherservices
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.material3.BottomSheetDefaults
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -22,13 +19,12 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.component.button.ClickableOption
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
-import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.material3.onWarningContainer
 import com.hedvig.android.core.designsystem.material3.squircleLargeTop
 import com.hedvig.android.core.designsystem.material3.warningContainer
@@ -141,31 +137,6 @@ private fun OtherServicesBottomSheetContent(
     )
     Spacer(Modifier.height(16.dp))
     Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
-  }
-}
-
-@Composable
-private fun ClickableOption(
-  text: String,
-  onClick: () -> Unit,
-  cardColors: CardColors = CardDefaults.outlinedCardColors(),
-) {
-  HedvigCard(
-    onClick = onClick,
-    colors = cardColors,
-  ) {
-    Row(
-      verticalAlignment = Alignment.CenterVertically,
-      modifier = Modifier
-        .heightIn(56.dp)
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp, vertical = 10.dp),
-    ) {
-      Text(
-        text = text,
-        style = MaterialTheme.typography.headlineSmall,
-      )
-    }
   }
 }
 

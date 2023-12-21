@@ -222,6 +222,7 @@ private val buildConstantsModule = module {
       override val urlHanalytics: String = context.getString(R.string.HANALYTICS_URL)
       override val urlOdyssey: String = context.getString(R.string.ODYSSEY_URL)
       override val urlBotService: String = context.getString(R.string.BOT_SERVICE)
+      override val urlClaimsService: String = context.getString(R.string.CLAIMS_SERVICE)
       override val deepLinkHost: String = context.getString(R.string.DEEP_LINK_DOMAIN_HOST)
 
       override val appVersionName: String = BuildConfig.VERSION_NAME

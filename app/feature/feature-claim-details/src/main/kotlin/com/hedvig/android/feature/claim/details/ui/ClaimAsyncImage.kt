@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.claim.details.ui
 
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -9,6 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -42,6 +42,7 @@ internal fun ClaimAsyncImage(
       .build(),
     contentDescription = null,
     imageLoader = imageLoader,
+    contentScale = ContentScale.Crop,
     transform = { state ->
       when (state) {
         is AsyncImagePainter.State.Loading -> {
@@ -63,13 +64,7 @@ internal fun ClaimAsyncImage(
       }
     },
     modifier = modifier
-      .then(
-        if (loadedImageIntrinsicSize.value == null) {
-          Modifier.height(150.dp)
-        } else {
-          Modifier.fillMaxHeight()
-        },
-      )
+      .height(109.dp)
       .placeholder(visible = loadedImageIntrinsicSize.value == null, highlight = PlaceholderHighlight.fade())
       .clip(MaterialTheme.shapes.squircleMedium),
   )

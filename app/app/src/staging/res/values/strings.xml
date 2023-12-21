@@ -10,4 +10,5 @@
     <string name="ODYSSEY_URL" translatable="false">https://odyssey.dev.hedvigit.com</string>
     <string name="BOT_SERVICE" translatable="false">https://gateway.dev.hedvigit.com/bot-service</string>
     <string name="AUTH_URL" translatable="false">"https://auth.dev.hedvigit.com"</string>
+    <string name="CLAIMS_SERVICE" translatable="false">https://gateway.dev.hedvigit.com/claims</string>
 </resources>
