@@ -188,6 +188,7 @@ dependencies {
   implementation(projects.featureConnectPaymentTrustly)
   implementation(projects.featureEditCoinsured)
   implementation(projects.featureForever)
+  implementation(projects.featureHelpCenter)
   implementation(projects.featureHome)
   implementation(projects.featureInsurances)
   implementation(projects.featureLogin)

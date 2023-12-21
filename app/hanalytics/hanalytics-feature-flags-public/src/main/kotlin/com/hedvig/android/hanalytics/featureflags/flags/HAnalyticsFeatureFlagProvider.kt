@@ -22,5 +22,6 @@ internal class HAnalyticsFeatureFlagProvider(
     Feature.NEW_MOVING_FLOW -> hAnalytics.movingFlowClient()
     Feature.TRAVEL_CERTIFICATE -> hAnalytics.travelInsurance()
     Feature.EDIT_COINSURED -> hAnalytics.editCoinsured()
+    Feature.HELP_CENTER -> false // todo help-center: consider feature flagging if we want to make a release in-between
   }
 }
