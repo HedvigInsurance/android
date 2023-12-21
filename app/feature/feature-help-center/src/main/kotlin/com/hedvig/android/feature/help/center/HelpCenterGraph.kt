@@ -28,6 +28,7 @@ fun NavGraphBuilder.helpCenterGraph(navigator: Navigator, hedvigDeepLinkContaine
         onNavigateToQuestion = { questionId ->
           with(navigator) { backStackEntry.navigate(HelpCenterDestinations.Question(questionId)) }
         },
+        onNavigateUp = navigator::navigateUp,
       )
     }
     composable<HelpCenterDestinations.Topic>(
@@ -40,6 +41,8 @@ fun NavGraphBuilder.helpCenterGraph(navigator: Navigator, hedvigDeepLinkContaine
         onNavigateToQuestion = { questionId ->
           with(navigator) { backStackEntry.navigate(HelpCenterDestinations.Question(questionId)) }
         },
+        onNavigateUp = navigator::navigateUp,
+        onNavigateBack = navigator::popBackStack,
       )
     }
     composable<HelpCenterDestinations.Question>(
@@ -52,6 +55,8 @@ fun NavGraphBuilder.helpCenterGraph(navigator: Navigator, hedvigDeepLinkContaine
         onNavigateToQuestion = { questionId ->
           with(navigator) { backStackEntry.navigate(HelpCenterDestinations.Question(questionId)) }
         },
+        onNavigateUp = navigator::navigateUp,
+        onNavigateBack = navigator::popBackStack,
       )
     }
   }
