@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.help.center
 
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
 import com.hedvig.android.feature.help.center.home.HelpCenterHomeDestination
@@ -13,7 +14,11 @@ import com.kiwi.navigationcompose.typed.composable
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigation
 
-fun NavGraphBuilder.helpCenterGraph(navigator: Navigator, hedvigDeepLinkContainer: HedvigDeepLinkContainer) {
+fun NavGraphBuilder.helpCenterGraph(
+  navigator: Navigator,
+  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
+  openChat: (NavBackStackEntry) -> Unit,
+) {
   navigation<HelpCenterDestination>(
     startDestination = createRoutePattern<HelpCenterDestinations.HelpCenter>(),
     deepLinks = listOf(
@@ -43,6 +48,9 @@ fun NavGraphBuilder.helpCenterGraph(navigator: Navigator, hedvigDeepLinkContaine
         },
         onNavigateUp = navigator::navigateUp,
         onNavigateBack = navigator::popBackStack,
+        openChat = {
+          openChat(backStackEntry)
+        },
       )
     }
     composable<HelpCenterDestinations.Question>(
@@ -57,6 +65,9 @@ fun NavGraphBuilder.helpCenterGraph(navigator: Navigator, hedvigDeepLinkContaine
         },
         onNavigateUp = navigator::navigateUp,
         onNavigateBack = navigator::popBackStack,
+        openChat = {
+          openChat(backStackEntry)
+        },
       )
     }
   }

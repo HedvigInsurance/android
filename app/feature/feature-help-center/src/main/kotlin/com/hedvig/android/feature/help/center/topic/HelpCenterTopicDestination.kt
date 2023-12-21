@@ -33,6 +33,7 @@ import com.hedvig.android.core.ui.preview.DoubleBooleanCollectionPreviewParamete
 import com.hedvig.android.feature.help.center.model.Question
 import com.hedvig.android.feature.help.center.model.Topic
 import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
+import com.hedvig.android.feature.help.center.ui.StillNeedHelpSection
 import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -44,6 +45,7 @@ internal fun HelpCenterTopicDestination(
   onNavigateToQuestion: (questionId: String) -> Unit,
   onNavigateUp: () -> Unit,
   onNavigateBack: () -> Unit,
+  openChat: () -> Unit,
 ) {
   val topic = Topic.entries.find { it.topicId == topicId }
   val commonQuestions = topic
@@ -58,7 +60,15 @@ internal fun HelpCenterTopicDestination(
       Question.entries.find { it.questionId == questionId }
     }
     ?.toPersistentList() ?: persistentListOf()
-  HelpCenterTopicScreen(topic, commonQuestions, allQuestions, onNavigateToQuestion, onNavigateUp, onNavigateBack)
+  HelpCenterTopicScreen(
+    topic = topic,
+    commonQuestions = commonQuestions,
+    allQuestions = allQuestions,
+    onNavigateToQuestion = onNavigateToQuestion,
+    onNavigateUp = onNavigateUp,
+    onNavigateBack = onNavigateBack,
+    openChat = openChat
+  )
 }
 
 @Composable
@@ -69,6 +79,7 @@ private fun HelpCenterTopicScreen(
   onNavigateToQuestion: (questionId: String) -> Unit,
   onNavigateUp: () -> Unit,
   onNavigateBack: () -> Unit,
+  openChat: () -> Unit,
 ) {
   Surface(color = MaterialTheme.colorScheme.background) {
     Column(Modifier.fillMaxSize()) {
@@ -136,7 +147,10 @@ private fun HelpCenterTopicScreen(
               onClickItem = { onNavigateToQuestion(it.questionId) },
             )
           }
-          Spacer(Modifier.height(24.dp))
+          Spacer(Modifier.weight(1f))
+          Spacer(Modifier.height(16.dp))
+          StillNeedHelpSection(openChat)
+          Spacer(Modifier.height(56.dp))
           Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
         }
       }
@@ -165,6 +179,7 @@ private fun PreviewHelpCenterTopicScreen(
         } else {
           persistentListOf()
         },
+        {},
         {},
         {},
         {},

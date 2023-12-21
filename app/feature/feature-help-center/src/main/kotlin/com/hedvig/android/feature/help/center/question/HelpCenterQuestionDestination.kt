@@ -36,6 +36,7 @@ import com.hedvig.android.core.ui.preview.DoubleBooleanCollectionPreviewParamete
 import com.hedvig.android.feature.help.center.model.Question
 import com.hedvig.android.feature.help.center.ui.HelpCenterSection
 import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
+import com.hedvig.android.feature.help.center.ui.StillNeedHelpSection
 import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -47,6 +48,7 @@ internal fun HelpCenterQuestionDestination(
   onNavigateToQuestion: (questionId: String) -> Unit,
   onNavigateUp: () -> Unit,
   onNavigateBack: () -> Unit,
+  openChat: () -> Unit,
 ) {
   Text("HelpCenterDestinations.Question:$questionId")
   val question = Question.entries.find { it.questionId == questionId }
@@ -62,6 +64,7 @@ internal fun HelpCenterQuestionDestination(
     onNavigateToQuestion = onNavigateToQuestion,
     onNavigateUp = onNavigateUp,
     onNavigateBack = onNavigateBack,
+    openChat = openChat,
   )
 }
 
@@ -72,6 +75,7 @@ private fun HelpCenterQuestionScreen(
   onNavigateToQuestion: (questionId: String) -> Unit,
   onNavigateUp: () -> Unit,
   onNavigateBack: () -> Unit,
+  openChat: () -> Unit,
 ) {
   Surface(color = MaterialTheme.colorScheme.background) {
     Column(Modifier.fillMaxSize()) {
@@ -148,7 +152,10 @@ private fun HelpCenterQuestionScreen(
               onClickItem = { onNavigateToQuestion(it.questionId) },
             )
           }
-          Spacer(Modifier.height(24.dp))
+          Spacer(Modifier.weight(1f))
+          Spacer(Modifier.height(16.dp))
+          StillNeedHelpSection(openChat)
+          Spacer(Modifier.height(56.dp))
           Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
         }
       }
@@ -176,6 +183,7 @@ private fun PreviewHelpCenterQuestionScreen(
         } else {
           persistentListOf()
         },
+        {},
         {},
         {},
         {},
