@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.help.center.home
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -15,8 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -25,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
@@ -34,8 +34,6 @@ import com.hedvig.android.core.designsystem.material3.onYellowContainer
 import com.hedvig.android.core.designsystem.material3.yellowContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.hedvig.normal.Hedvig
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.feature.help.center.model.Question
 import com.hedvig.android.feature.help.center.model.Topic
@@ -82,8 +80,8 @@ private fun HelpCenterHomeScreen(
           .verticalScroll(rememberScrollState()),
       ) {
         Spacer(Modifier.height(50.dp))
-        Icon(
-          imageVector = Icons.Hedvig.Hedvig,
+        Image(
+          painter = painterResource(id = hedvig.resources.R.drawable.pillow_hedvig),
           contentDescription = null,
           modifier = Modifier
             .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
