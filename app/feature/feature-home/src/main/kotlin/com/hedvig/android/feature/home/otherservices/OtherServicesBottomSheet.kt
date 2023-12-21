@@ -19,6 +19,7 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -36,6 +37,10 @@ import com.hedvig.android.feature.home.home.ui.HomeUiState
 import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+
+private const val BOTTOMSHEET_DISMISS_DELAY = 200L
 
 @Composable
 internal fun OtherServicesBottomSheet(
@@ -48,6 +53,8 @@ internal fun OtherServicesBottomSheet(
   navigateToHelpCenter: () -> Unit,
   sheetState: SheetState,
 ) {
+  val coroutineScope = rememberCoroutineScope()
+
   ModalBottomSheet(
     containerColor = MaterialTheme.colorScheme.background,
     onDismissRequest = dismissBottomSheet,
@@ -60,27 +67,42 @@ internal fun OtherServicesBottomSheet(
       showMovingFlow = uiState.allowAddressChange,
       isHelpCenterEnabled = uiState.isHelpCenterEnabled,
       onStartMovingFlow = {
-        dismissBottomSheet()
-        onStartMovingFlow()
+        coroutineScope.launch {
+          dismissBottomSheet()
+          delay(BOTTOMSHEET_DISMISS_DELAY)
+          onStartMovingFlow()
+        }
       },
       showGenerateTravelcertificate = uiState.allowGeneratingTravelCertificate,
       onGenerateTravelCertificateClicked = {
-        dismissBottomSheet()
-        onGenerateTravelCertificateClicked()
+        coroutineScope.launch {
+          dismissBottomSheet()
+          delay(BOTTOMSHEET_DISMISS_DELAY)
+          onGenerateTravelCertificateClicked()
+        }
       },
       emergencyData = uiState.emergencyData,
       onEmergencyClicked = { it: EmergencyData ->
-        dismissBottomSheet()
-        onEmergencyClicked(it)
+        coroutineScope.launch {
+          dismissBottomSheet()
+          delay(BOTTOMSHEET_DISMISS_DELAY)
+          onEmergencyClicked(it)
+        }
       },
       commonClaims = uiState.commonClaimsData,
       onOpenCommonClaim = {
-        dismissBottomSheet()
-        onOpenCommonClaim(it)
+        coroutineScope.launch {
+          dismissBottomSheet()
+          delay(BOTTOMSHEET_DISMISS_DELAY)
+          onOpenCommonClaim(it)
+        }
       },
       navigateToHelpCenter = {
-        dismissBottomSheet()
-        navigateToHelpCenter()
+        coroutineScope.launch {
+          dismissBottomSheet()
+          delay(BOTTOMSHEET_DISMISS_DELAY)
+          navigateToHelpCenter()
+        }
       },
       dismissBottomSheet = dismissBottomSheet,
     )
