@@ -41,11 +41,11 @@ import kotlinx.collections.immutable.persistentListOf
 internal fun OtherServicesBottomSheet(
   uiState: HomeUiState.Success,
   dismissBottomSheet: () -> Unit,
-  onChatClicked: () -> Unit,
   onStartMovingFlow: () -> Unit,
   onEmergencyClicked: (EmergencyData) -> Unit,
   onGenerateTravelCertificateClicked: () -> Unit,
   onOpenCommonClaim: (CommonClaimsData) -> Unit,
+  navigateToHelpCenter: () -> Unit,
   sheetState: SheetState,
 ) {
   ModalBottomSheet(
@@ -57,11 +57,8 @@ internal fun OtherServicesBottomSheet(
     windowInsets = BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top),
   ) {
     OtherServicesBottomSheetContent(
-      onChatClicked = {
-        dismissBottomSheet()
-        onChatClicked()
-      },
       showMovingFlow = uiState.allowAddressChange,
+      isHelpCenterEnabled = uiState.isHelpCenterEnabled,
       onStartMovingFlow = {
         dismissBottomSheet()
         onStartMovingFlow()
@@ -77,7 +74,14 @@ internal fun OtherServicesBottomSheet(
         onEmergencyClicked(it)
       },
       commonClaims = uiState.commonClaimsData,
-      onOpenCommonClaim = onOpenCommonClaim,
+      onOpenCommonClaim = {
+        dismissBottomSheet()
+        onOpenCommonClaim(it)
+      },
+      navigateToHelpCenter = {
+        dismissBottomSheet()
+        navigateToHelpCenter()
+      },
       dismissBottomSheet = dismissBottomSheet,
     )
   }
@@ -85,8 +89,8 @@ internal fun OtherServicesBottomSheet(
 
 @Composable
 private fun OtherServicesBottomSheetContent(
-  onChatClicked: () -> Unit,
   showMovingFlow: Boolean,
+  isHelpCenterEnabled: Boolean,
   onStartMovingFlow: () -> Unit,
   showGenerateTravelcertificate: Boolean,
   onGenerateTravelCertificateClicked: () -> Unit,
@@ -94,6 +98,7 @@ private fun OtherServicesBottomSheetContent(
   onEmergencyClicked: (EmergencyData) -> Unit,
   commonClaims: ImmutableList<CommonClaimsData>,
   onOpenCommonClaim: (CommonClaimsData) -> Unit,
+  navigateToHelpCenter: () -> Unit,
   dismissBottomSheet: () -> Unit,
 ) {
   Column(Modifier.padding(horizontal = 16.dp)) {
@@ -109,7 +114,9 @@ private fun OtherServicesBottomSheetContent(
     Column(
       verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-      ClickableOption(stringResource(R.string.CHAT_TITLE), onChatClicked)
+      if (isHelpCenterEnabled) {
+        ClickableOption("Help center", navigateToHelpCenter) // todo help-center: string resources
+      }
       if (showMovingFlow) {
         ClickableOption(stringResource(R.string.insurance_details_change_address_button), onStartMovingFlow)
       }
@@ -146,8 +153,8 @@ private fun PreviewOtherServicesBottomSheetContent() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       OtherServicesBottomSheetContent(
-        onChatClicked = {},
         showMovingFlow = true,
+        isHelpCenterEnabled = true,
         onStartMovingFlow = {},
         showGenerateTravelcertificate = true,
         onGenerateTravelCertificateClicked = {},
@@ -161,6 +168,7 @@ private fun PreviewOtherServicesBottomSheetContent() {
           ),
         ),
         onOpenCommonClaim = {},
+        navigateToHelpCenter = {},
         dismissBottomSheet = {},
       )
     }
