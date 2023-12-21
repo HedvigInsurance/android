@@ -241,7 +241,7 @@ internal fun HedvigNavHost(
       navController = hedvigAppState.navController,
     )
     connectAdyenPaymentGraph(navigator)
-    helpCenterGraph(navigator)
+    helpCenterGraph(navigator, hedvigDeepLinkContainer)
   }
 }
 

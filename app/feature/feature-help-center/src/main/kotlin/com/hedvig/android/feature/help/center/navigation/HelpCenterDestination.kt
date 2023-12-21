@@ -11,8 +11,8 @@ internal sealed interface HelpCenterDestinations : Destination {
   data object HelpCenter : HelpCenterDestinations
 
   @Serializable
-  data class Topic(val topicId: String) : HelpCenterDestinations
+  data class Topic(val id: String) : HelpCenterDestinations
 
   @Serializable
-  data class Question(val questionId: String) : HelpCenterDestinations
+  data class Question(val id: String) : HelpCenterDestinations
 }
