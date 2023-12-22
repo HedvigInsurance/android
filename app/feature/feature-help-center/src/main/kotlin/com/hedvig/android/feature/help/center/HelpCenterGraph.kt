@@ -33,6 +33,9 @@ fun NavGraphBuilder.helpCenterGraph(
         onNavigateToQuestion = { questionId ->
           with(navigator) { backStackEntry.navigate(HelpCenterDestinations.Question(questionId)) }
         },
+        onNavigateToQuickLink = { destination ->
+          with(navigator) { backStackEntry.navigate(destination) }
+        },
         onNavigateUp = navigator::navigateUp,
       )
     }

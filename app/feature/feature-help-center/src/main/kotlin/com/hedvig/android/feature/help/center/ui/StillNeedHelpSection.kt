@@ -19,9 +19,7 @@ import com.hedvig.android.core.designsystem.material3.squircleMedium
 import hedvig.resources.R
 
 @Composable
-fun StillNeedHelpSection(
-  openChat: () -> Unit,
-) {
+fun StillNeedHelpSection(openChat: () -> Unit) {
   Column(modifier = Modifier.padding(horizontal = 16.dp)) {
     Column(
       horizontalAlignment = Alignment.CenterHorizontally,
@@ -45,5 +43,4 @@ fun StillNeedHelpSection(
       Spacer(modifier = Modifier.height(32.dp))
     }
   }
-
 }

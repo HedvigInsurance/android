@@ -4,7 +4,7 @@ import androidx.annotation.StringRes
 import hedvig.resources.R
 import kotlinx.collections.immutable.persistentListOf
 
-enum class Question(
+internal enum class Question(
   val questionId: String,
   val relatedQuestionIds: List<String>,
   @StringRes val titleRes: Int,
