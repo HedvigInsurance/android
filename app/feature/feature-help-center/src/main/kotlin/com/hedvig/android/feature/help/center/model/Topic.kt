@@ -27,10 +27,10 @@ internal enum class Topic(
       Question.HowToCancelInsurance.questionId,
     ),
   ),
-  Claims("claims", R.string.PROFILE_PAYMENT_TITLE, emptyList(), emptyList()),
-  MyInsurance("myInsurance", R.string.PROFILE_PAYMENT_TITLE, emptyList(), emptyList()),
-  CoInsured("coInsured", R.string.PROFILE_PAYMENT_TITLE, emptyList(), emptyList()),
-  FirstVet("firstVet", R.string.PROFILE_PAYMENT_TITLE, emptyList(), emptyList()),
+  Claims("claims", R.string.CLAIMS_CASE, emptyList(), emptyList()),
+  MyInsurance("myInsurance", R.string.CONTRACT_CHANGE_INFORMATION_TITLE, emptyList(), emptyList()),
+  CoInsured("coInsured", R.string.COINSURED_EDIT_TITLE, emptyList(), emptyList()),
+  FirstVet("firstVet", R.string.CROSS_SELL_PET_TITLE, emptyList(), emptyList()),
   Campaigns("campaigns", R.string.PROFILE_PAYMENT_TITLE, emptyList(), emptyList()),
 }
 

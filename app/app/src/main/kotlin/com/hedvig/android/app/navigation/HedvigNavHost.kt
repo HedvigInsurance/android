@@ -212,6 +212,9 @@ internal fun HedvigNavHost(
         }
       },
       openAppSettings = { activityNavigator.openAppSettings(context) },
+      navigateToHelpCenter = { backStackEntry ->
+        with(navigator) { backStackEntry.navigate(HelpCenterDestination) }
+      },
       openUrl = ::openUrl,
     )
     chatGraph(

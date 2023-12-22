@@ -80,7 +80,7 @@ private fun HelpCenterQuestionScreen(
   Surface(color = MaterialTheme.colorScheme.background) {
     Column(Modifier.fillMaxSize()) {
       TopAppBarWithBack(
-        title = "",
+        title = question?.let { stringResource(id = question.titleRes) } ?: "",
         onClick = onNavigateUp,
       )
       if (question == null) {
