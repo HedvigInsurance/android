@@ -80,15 +80,13 @@ private fun HelpCenterQuestionScreen(
   Surface(color = MaterialTheme.colorScheme.background) {
     Column(Modifier.fillMaxSize()) {
       TopAppBarWithBack(
-        title = question?.let { stringResource(id = question.titleRes) } ?: "",
+        title = question?.let { stringResource(id = question.titleRes) } ?: stringResource(R.string.HC_TITLE),
         onClick = onNavigateUp,
       )
       if (question == null) {
-        // todo help-center: Add some sort of fallback screen to explain that this question is not found
         HedvigErrorSection(
           retry = onNavigateBack,
-          // todo help-center: localize
-          title = "Question not found",
+          title = stringResource(R.string.HC_QUESTION_NOT_FOUND),
           subTitle = null,
           buttonText = stringResource(R.string.general_back_button),
           modifier = Modifier
@@ -108,8 +106,7 @@ private fun HelpCenterQuestionScreen(
         ) {
           Spacer(Modifier.height(16.dp))
           HelpCenterSection(
-            // todo help-center: localize
-            title = "Question",
+            title = stringResource(id = R.string.HC_QUESTION_TITLE),
             chipContainerColor = MaterialTheme.colorScheme.infoContainer,
             contentColor = MaterialTheme.colorScheme.onInfoContainer,
             content = {
@@ -124,8 +121,7 @@ private fun HelpCenterQuestionScreen(
           )
           Spacer(Modifier.height(32.dp))
           HelpCenterSection(
-            // todo help-center: localize
-            title = "Answer",
+            title = stringResource(R.string.HC_ANSWER_TITLE),
             chipContainerColor = MaterialTheme.colorScheme.typeContainer,
             contentColor = MaterialTheme.colorScheme.onTypeContainer,
             content = {

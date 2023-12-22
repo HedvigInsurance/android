@@ -266,7 +266,6 @@ private fun ColumnScope.ProfileItemRows(
     icon = Icons.Hedvig.Hedvig,
     onClick = navigateToHelpCenter,
   )
-
 }
 
 @Composable

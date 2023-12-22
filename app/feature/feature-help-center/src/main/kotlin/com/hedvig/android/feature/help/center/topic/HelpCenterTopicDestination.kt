@@ -67,7 +67,7 @@ internal fun HelpCenterTopicDestination(
     onNavigateToQuestion = onNavigateToQuestion,
     onNavigateUp = onNavigateUp,
     onNavigateBack = onNavigateBack,
-    openChat = openChat
+    openChat = openChat,
   )
 }
 
@@ -84,15 +84,13 @@ private fun HelpCenterTopicScreen(
   Surface(color = MaterialTheme.colorScheme.background) {
     Column(Modifier.fillMaxSize()) {
       TopAppBarWithBack(
-        title = topic?.titleRes?.let { stringResource(it) } ?: "",
+        title = topic?.titleRes?.let { stringResource(it) } ?: stringResource(id = R.string.HC_TITLE),
         onClick = onNavigateUp,
       )
       if (topic == null) {
-        // todo help-center: Add some sort of fallback screen to explain that this topic is not found
         HedvigErrorSection(
           retry = onNavigateBack,
-          // todo help-center: localize
-          title = "Topic not found",
+          title = stringResource(id = R.string.HC_TOPIC_NOT_FOUND),
           subTitle = null,
           buttonText = stringResource(R.string.general_back_button),
           modifier = Modifier
@@ -105,7 +103,7 @@ private fun HelpCenterTopicScreen(
       } else if (commonQuestions.isEmpty() && allQuestions.isEmpty()) {
         HedvigErrorSection(
           retry = onNavigateBack,
-          title = "This topic has no questions",
+          title = stringResource(id = R.string.HC_TOPIC_NO_QUESTIONS),
           subTitle = null,
           buttonText = stringResource(R.string.general_back_button),
           modifier = Modifier
@@ -126,7 +124,7 @@ private fun HelpCenterTopicScreen(
           Spacer(Modifier.height(16.dp))
           if (commonQuestions.isNotEmpty()) {
             HelpCenterSectionWithClickableRows(
-              title = "Common questions",
+              title = stringResource(id = R.string.HC_COMMON_QUESTIONS_TITLE),
               chipContainerColor = MaterialTheme.colorScheme.infoContainer,
               contentColor = MaterialTheme.colorScheme.onInfoContainer,
               items = commonQuestions,
@@ -139,7 +137,7 @@ private fun HelpCenterTopicScreen(
           }
           if (allQuestions.isNotEmpty()) {
             HelpCenterSectionWithClickableRows(
-              title = "All questions",
+              title = stringResource(id = R.string.HC_ALL_QUESTION_TITLE),
               chipContainerColor = MaterialTheme.colorScheme.purpleContainer,
               contentColor = MaterialTheme.colorScheme.onPurpleContainer,
               items = allQuestions,

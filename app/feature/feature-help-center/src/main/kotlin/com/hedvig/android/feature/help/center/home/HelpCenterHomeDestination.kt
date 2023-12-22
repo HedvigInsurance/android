@@ -41,6 +41,7 @@ import com.hedvig.android.feature.help.center.model.commonQuestions
 import com.hedvig.android.feature.help.center.model.commonTopics
 import com.hedvig.android.feature.help.center.ui.HelpCenterSection
 import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
+import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
@@ -70,8 +71,7 @@ private fun HelpCenterHomeScreen(
   Surface(color = MaterialTheme.colorScheme.background) {
     Column(Modifier.fillMaxSize()) {
       TopAppBarWithBack(
-        // todo help-center: localize
-        title = "Help center",
+        title = stringResource(id = R.string.HC_TITLE),
         onClick = onNavigateUp,
       )
       Column(
@@ -81,7 +81,7 @@ private fun HelpCenterHomeScreen(
       ) {
         Spacer(Modifier.height(50.dp))
         Image(
-          painter = painterResource(id = hedvig.resources.R.drawable.pillow_hedvig),
+          painter = painterResource(id = R.drawable.pillow_hedvig),
           contentDescription = null,
           modifier = Modifier
             .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
@@ -95,10 +95,9 @@ private fun HelpCenterHomeScreen(
             .padding(horizontal = 20.dp)
             .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
         ) {
-          // todo help-center: localize
-          Text("Need help?")
+          Text(stringResource(id = R.string.HC_HOME_VIEW_QUESTION))
           Text(
-            text = "There is a lot you can do directly here in the app. Select a topic to resolve your issue quickly",
+            text = stringResource(id = R.string.HC_HOME_VIEW_ANSWER),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
           )
         }

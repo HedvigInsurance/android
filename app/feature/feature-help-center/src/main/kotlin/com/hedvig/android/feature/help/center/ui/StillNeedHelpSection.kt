@@ -11,10 +11,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.material3.squircleMedium
+import hedvig.resources.R
 
 @Composable
 fun StillNeedHelpSection(
@@ -32,14 +34,14 @@ fun StillNeedHelpSection(
         .padding(horizontal = 16.dp),
     ) {
       Spacer(modifier = Modifier.height(32.dp))
-      Text(text = "Still need help?")
+      Text(text = stringResource(id = R.string.HC_CHAT_QUESTION))
       Text(
-        text = "We’re here Mon-Fri 08-16\nSat-Sun 08-14",
+        text = stringResource(id = R.string.HC_CHAT_ANSWER),
         textAlign = TextAlign.Center,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
       )
       Spacer(modifier = Modifier.height(16.dp))
-      HedvigContainedSmallButton(text = "Chat with us", onClick = openChat)
+      HedvigContainedSmallButton(text = stringResource(id = R.string.HC_CHAT_BUTTON), onClick = openChat)
       Spacer(modifier = Modifier.height(32.dp))
     }
   }
