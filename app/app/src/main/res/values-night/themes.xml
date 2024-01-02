@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-  <style name="NightAdjusted.Hedvig.Theme" parent="android:Theme.Material.NoActionBar" />
+  <style name="NightAdjusted.Hedvig.Theme" parent="Theme.AppCompat.NoActionBar" />
 
   <style name="NightAdjusted.Hedvig.Theme.Splash" parent="Theme.SplashScreen">
     <item name="android:windowLightStatusBar">false</item>

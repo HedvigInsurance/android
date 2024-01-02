@@ -134,6 +134,7 @@ internal class HomePresenterTest {
           allowGeneratingTravelCertificate = false,
           emergencyData = null,
           commonClaimsData = persistentListOf(),
+          isHelpCenterEnabled = false,
           showChatIcon = false,
           hasUnseenChatMessages = false,
         ),
@@ -180,6 +181,7 @@ internal class HomePresenterTest {
           allowGeneratingTravelCertificate = false,
           emergencyData = null,
           commonClaimsData = persistentListOf(),
+          isHelpCenterEnabled = false,
           showChatIcon = false,
           hasUnseenChatMessages = false,
         ),
@@ -227,6 +229,7 @@ internal class HomePresenterTest {
         false,
         null,
         persistentListOf(),
+        isHelpCenterEnabled = false,
         showChatIcon = false,
         hasUnseenChatMessages = false,
       ),
@@ -238,7 +241,7 @@ internal class HomePresenterTest {
 
   @Test
   fun `when the disable chat feature flag is false, the chat icon should now show`() = runTest {
-    val featureManager = FakeFeatureManager2()
+    val featureManager = FakeFeatureManager2(mapOf(Feature.HELP_CENTER to false))
     val homePresenter = HomePresenter(
       Provider { TestGetHomeDataUseCase() },
       FakeChatLastMessageReadRepository(),
@@ -256,13 +259,45 @@ internal class HomePresenterTest {
         false,
         null,
         persistentListOf(),
+        isHelpCenterEnabled = false,
         showChatIcon = false,
-        hasUnseenChatMessages = false,
+        false,
       ),
     ) {
       assertThat(awaitItem().showChatIcon).isFalse()
       featureManager.featureTurbine.add(Feature.DISABLE_CHAT to false)
       assertThat(awaitItem().showChatIcon).isTrue()
+    }
+  }
+
+  @Test
+  fun `when the disable help center feature flag is true it should show`() = runTest {
+    val featureManager = FakeFeatureManager2(mapOf(Feature.DISABLE_CHAT to true))
+    val homePresenter = HomePresenter(
+      Provider { TestGetHomeDataUseCase() },
+      FakeChatLastMessageReadRepository(),
+      featureManager,
+    )
+
+    homePresenter.test(
+      HomeUiState.Success(
+        isReloading = true,
+        HomeText.Active,
+        null,
+        persistentListOf(),
+        MemberReminders(),
+        false,
+        false,
+        null,
+        persistentListOf(),
+        isHelpCenterEnabled = false,
+        showChatIcon = false,
+        false,
+      ),
+    ) {
+      assertThat(awaitItem().isHelpCenterEnabled).isFalse()
+      featureManager.featureTurbine.add(Feature.HELP_CENTER to true)
+      assertThat(awaitItem().isHelpCenterEnabled).isTrue()
     }
   }
 

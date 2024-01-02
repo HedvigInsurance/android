@@ -25,6 +25,7 @@ internal class DevFeatureFlagProvider(
       Feature.NEW_MOVING_FLOW -> true
       Feature.TRAVEL_CERTIFICATE -> true
       Feature.EDIT_COINSURED -> true
+      Feature.HELP_CENTER -> true
     }
   }
 }

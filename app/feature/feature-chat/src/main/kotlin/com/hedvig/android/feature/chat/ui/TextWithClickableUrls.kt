@@ -21,7 +21,7 @@ import com.hedvig.android.core.designsystem.material3.infoElement
 
 @OptIn(ExperimentalTextApi::class)
 @Composable
-fun TextWithClickableUrls(
+internal fun TextWithClickableUrls(
   text: String,
   modifier: Modifier = Modifier,
   style: TextStyle = TextStyle.Default,

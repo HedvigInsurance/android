@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-  <style name="NightAdjusted.Hedvig.Theme" parent="android:Theme.Material.Light.NoActionBar" />
+  <style name="NightAdjusted.Hedvig.Theme" parent="Theme.AppCompat.Light.NoActionBar" />
 
   <!-- The final Theme -->
   <style name="Hedvig.Theme" parent="NightAdjusted.Hedvig.Theme" />

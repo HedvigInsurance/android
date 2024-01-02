@@ -33,6 +33,8 @@ import com.hedvig.android.feature.connect.payment.connectPaymentGraph
 import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredDestination
 import com.hedvig.android.feature.editcoinsured.navigation.editCoInsuredGraph
 import com.hedvig.android.feature.forever.navigation.foreverGraph
+import com.hedvig.android.feature.help.center.helpCenterGraph
+import com.hedvig.android.feature.help.center.navigation.HelpCenterDestination
 import com.hedvig.android.feature.home.home.navigation.homeGraph
 import com.hedvig.android.feature.insurances.insurance.insuranceGraph
 import com.hedvig.android.feature.odyssey.navigation.claimFlowGraph
@@ -95,6 +97,7 @@ internal fun HedvigNavHost(
         nestedHomeGraphs(
           density = density,
           hedvigAppState = hedvigAppState,
+          hedvigBuildConstants = hedvigBuildConstants,
           context = context,
           navigator = navigator,
           shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
@@ -126,9 +129,10 @@ internal fun HedvigNavHost(
       },
       navigateToPayinScreen = navigateToConnectPayment,
       navigateToMissingInfo = { backStackEntry: NavBackStackEntry, contractId: String ->
-        with(navigator) {
-          backStackEntry.navigate(EditCoInsuredDestination.AddInfo(contractId))
-        }
+        with(navigator) { backStackEntry.navigate(EditCoInsuredDestination.AddInfo(contractId)) }
+      },
+      navigateToHelpCenter = { backStackEntry ->
+        with(navigator) { backStackEntry.navigate(HelpCenterDestination) }
       },
       openAppSettings = { activityNavigator.openAppSettings(context) },
       openUrl = ::openUrl,
@@ -208,6 +212,9 @@ internal fun HedvigNavHost(
         }
       },
       openAppSettings = { activityNavigator.openAppSettings(context) },
+      navigateToHelpCenter = { backStackEntry ->
+        with(navigator) { backStackEntry.navigate(HelpCenterDestination) }
+      },
       openUrl = ::openUrl,
     )
     chatGraph(
@@ -237,12 +244,22 @@ internal fun HedvigNavHost(
       navController = hedvigAppState.navController,
     )
     connectAdyenPaymentGraph(navigator)
+    helpCenterGraph(
+      navigator = navigator,
+      hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+      openChat = { backStackEntry ->
+        with(navigator) {
+          backStackEntry.navigate(AppDestination.Chat)
+        }
+      },
+    )
   }
 }
 
 private fun NavGraphBuilder.nestedHomeGraphs(
   density: Density,
   hedvigAppState: HedvigAppState,
+  hedvigBuildConstants: HedvigBuildConstants,
   context: Context,
   navigator: Navigator,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
@@ -252,13 +269,14 @@ private fun NavGraphBuilder.nestedHomeGraphs(
 ) {
   claimDetailsGraph(
     imageLoader = imageLoader,
+    openUrl = openUrl,
     navigateUp = navigator::navigateUp,
+    appPackageId = hedvigBuildConstants.appId,
     openChat = { backStackEntry ->
       with(navigator) {
         backStackEntry.navigate(AppDestination.Chat)
       }
     },
-    openUrl = openUrl,
   )
   changeAddressGraph(
     navController = hedvigAppState.navController,

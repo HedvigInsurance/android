@@ -58,6 +58,7 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.ContactInformation
 import com.hedvig.android.core.icons.hedvig.normal.Eurobonus
+import com.hedvig.android.core.icons.hedvig.normal.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.Info
 import com.hedvig.android.core.icons.hedvig.normal.Payments
 import com.hedvig.android.core.icons.hedvig.normal.Settings
@@ -81,6 +82,7 @@ internal fun ProfileDestination(
   navigateToPayment: () -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToAddMissingInfo: (contractId: String) -> Unit,
+  navigateToHelpCenter: () -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
   viewModel: ProfileViewModel,
@@ -96,6 +98,7 @@ internal fun ProfileDestination(
     navigateToPayment = navigateToPayment,
     navigateToConnectPayment = navigateToConnectPayment,
     navigateToAddMissingInfo = navigateToAddMissingInfo,
+    navigateToHelpCenter = navigateToHelpCenter,
     openAppSettings = openAppSettings,
     openUrl = openUrl,
     snoozeNotificationPermission = viewModel::snoozeNotificationPermission,
@@ -114,6 +117,7 @@ private fun ProfileScreen(
   navigateToPayment: () -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToAddMissingInfo: (contractId: String) -> Unit,
+  navigateToHelpCenter: () -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
   snoozeNotificationPermission: () -> Unit,
@@ -167,6 +171,7 @@ private fun ProfileScreen(
         showSettings = navigateToSettings,
         showAboutApp = navigateToAboutApp,
         navigateToEurobonus = navigateToEurobonus,
+        navigateToHelpCenter = navigateToHelpCenter,
       )
       Spacer(Modifier.height(16.dp))
       Spacer(Modifier.weight(1f))
@@ -222,6 +227,7 @@ private fun ColumnScope.ProfileItemRows(
   showSettings: () -> Unit,
   showAboutApp: () -> Unit,
   navigateToEurobonus: () -> Unit,
+  navigateToHelpCenter: () -> Unit,
 ) {
   ProfileRow(
     title = stringResource(R.string.PROFILE_MY_INFO_ROW_TITLE),
@@ -254,6 +260,11 @@ private fun ColumnScope.ProfileItemRows(
     title = stringResource(R.string.profile_appSettingsSection_row_headline),
     icon = Icons.Hedvig.Settings,
     onClick = showSettings,
+  )
+  ProfileRow(
+    title = stringResource(R.string.HC_TITLE),
+    icon = Icons.Hedvig.Hedvig,
+    onClick = navigateToHelpCenter,
   )
 }
 
@@ -293,11 +304,12 @@ private fun PreviewProfileSuccessScreen() {
         navigateToSettings = {},
         navigateToPayment = {},
         navigateToConnectPayment = {},
+        navigateToAddMissingInfo = {},
         openAppSettings = {},
         openUrl = {},
         snoozeNotificationPermission = {},
         onLogout = {},
-        navigateToAddMissingInfo = {},
+        navigateToHelpCenter = {},
       )
     }
   }

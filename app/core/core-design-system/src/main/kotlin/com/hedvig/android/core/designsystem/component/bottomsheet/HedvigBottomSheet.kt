@@ -30,30 +30,46 @@ fun HedvigInfoBottomSheet(
   title: String,
   body: String,
 ) {
+  HedvigBottomSheet(
+    onDismissed = onDismissed,
+    sheetState = sheetState,
+    content = {
+      Text(
+        text = title,
+        textAlign = TextAlign.Center,
+        style = MaterialTheme.typography.titleLarge,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 24.dp),
+      )
+      Spacer(Modifier.height(16.dp))
+      Text(
+        text = body,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 24.dp),
+      )
+    },
+  )
+}
+
+@Composable
+fun HedvigBottomSheet(
+  onDismissed: () -> Unit,
+  content: @Composable () -> Unit,
+  sheetState: SheetState = rememberModalBottomSheetState(true),
+) {
   val scope = rememberCoroutineScope()
 
   ModalBottomSheet(
+    containerColor = MaterialTheme.colorScheme.background,
     onDismissRequest = onDismissed,
     sheetState = sheetState,
     tonalElevation = 0.dp,
     shape = MaterialTheme.shapes.squircleLargeTop,
     windowInsets = BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top),
   ) {
-    Text(
-      text = title,
-      textAlign = TextAlign.Center,
-      style = MaterialTheme.typography.titleLarge,
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 24.dp),
-    )
-    Spacer(Modifier.height(16.dp))
-    Text(
-      text = body,
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 24.dp),
-    )
+    content()
     Spacer(Modifier.height(16.dp))
     HedvigTextButton(
       text = stringResource(id = R.string.general_close_button),
