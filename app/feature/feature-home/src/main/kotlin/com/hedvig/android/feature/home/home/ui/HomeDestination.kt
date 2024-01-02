@@ -47,6 +47,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -67,14 +68,15 @@ import com.hedvig.android.core.designsystem.material3.warningElement
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.hedvig.compose.notificationCircle
 import com.hedvig.android.core.icons.hedvig.normal.WarningFilled
 import com.hedvig.android.core.ui.appbar.m3.ToolbarChatIcon
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarLayoutForActions
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.plus
-import com.hedvig.android.feature.home.claims.commonclaim.CommonClaimsData
-import com.hedvig.android.feature.home.claims.commonclaim.EmergencyActivity
-import com.hedvig.android.feature.home.claims.commonclaim.EmergencyData
+import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
+import com.hedvig.android.feature.home.commonclaim.CommonClaimsData
+import com.hedvig.android.feature.home.emergency.EmergencyData
 import com.hedvig.android.feature.home.home.ChatTooltip
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.otherservices.OtherServicesBottomSheet
@@ -113,6 +115,8 @@ internal fun HomeDestination(
   onStartMovingFlow: () -> Unit,
   onGenerateTravelCertificateClicked: () -> Unit,
   onOpenCommonClaim: (CommonClaimsData) -> Unit,
+  onOpenEmergencyScreen: (EmergencyData) -> Unit,
+  navigateToHelpCenter: () -> Unit,
   openUrl: (String) -> Unit,
   openAppSettings: () -> Unit,
   navigateToMissingInfo: (String) -> Unit,
@@ -130,6 +134,8 @@ internal fun HomeDestination(
     onStartMovingFlow = onStartMovingFlow,
     onGenerateTravelCertificateClicked = onGenerateTravelCertificateClicked,
     onOpenCommonClaim = onOpenCommonClaim,
+    onOpenEmergencyScreen = onOpenEmergencyScreen,
+    navigateToHelpCenter = navigateToHelpCenter,
     openUrl = openUrl,
     openAppSettings = openAppSettings,
     navigateToMissingInfo = navigateToMissingInfo,
@@ -148,6 +154,8 @@ private fun HomeScreen(
   onStartMovingFlow: () -> Unit,
   onGenerateTravelCertificateClicked: () -> Unit,
   onOpenCommonClaim: (CommonClaimsData) -> Unit,
+  onOpenEmergencyScreen: (EmergencyData) -> Unit,
+  navigateToHelpCenter: () -> Unit,
   openUrl: (String) -> Unit,
   openAppSettings: () -> Unit,
   navigateToMissingInfo: (String) -> Unit,
@@ -196,19 +204,14 @@ private fun HomeScreen(
             onStartMovingFlow = onStartMovingFlow,
             onClaimDetailCardClicked = onClaimDetailCardClicked,
             navigateToConnectPayment = navigateToConnectPayment,
-            onEmergencyClaimClicked = { emergencyData ->
-              context.startActivity(
-                EmergencyActivity.newInstance(
-                  context = context,
-                  data = emergencyData,
-                ),
-              )
+            onEmergencyClicked = { emergencyData ->
+              onOpenEmergencyScreen(emergencyData)
             },
             onGenerateTravelCertificateClicked = onGenerateTravelCertificateClicked,
             onOpenCommonClaim = onOpenCommonClaim,
+            navigateToHelpCenter = navigateToHelpCenter,
             onStartClaimClicked = onStartClaim,
             openAppSettings = openAppSettings,
-            openChat = onStartChat,
             openUrl = openUrl,
             navigateToMissingInfo = navigateToMissingInfo,
           )
@@ -220,6 +223,7 @@ private fun HomeScreen(
         TopAppBarLayoutForActions {
           ToolbarChatIcon(
             onClick = onStartChat,
+            modifier = Modifier.notificationCircle(uiState.hasUnseenChatMessages),
           )
         }
         val shouldShowTooltip by produceState(false) {
@@ -267,12 +271,12 @@ private fun HomeScreenSuccess(
   onStartMovingFlow: () -> Unit,
   onClaimDetailCardClicked: (claimId: String) -> Unit,
   navigateToConnectPayment: () -> Unit,
-  onEmergencyClaimClicked: (EmergencyData) -> Unit,
+  onEmergencyClicked: (EmergencyData) -> Unit,
   onGenerateTravelCertificateClicked: () -> Unit,
   onOpenCommonClaim: (CommonClaimsData) -> Unit,
+  navigateToHelpCenter: () -> Unit,
   onStartClaimClicked: () -> Unit,
   openAppSettings: () -> Unit,
-  openChat: () -> Unit,
   openUrl: (String) -> Unit,
   navigateToMissingInfo: (String) -> Unit,
   modifier: Modifier = Modifier,
@@ -291,11 +295,11 @@ private fun HomeScreenSuccess(
     OtherServicesBottomSheet(
       uiState = uiState,
       dismissBottomSheet = dismissOtherServicesBottomSheet,
-      onChatClicked = openChat,
       onStartMovingFlow = onStartMovingFlow,
-      onEmergencyClaimClicked = onEmergencyClaimClicked,
+      onEmergencyClicked = onEmergencyClicked,
       onGenerateTravelCertificateClicked = onGenerateTravelCertificateClicked,
       onOpenCommonClaim = onOpenCommonClaim,
+      navigateToHelpCenter = navigateToHelpCenter,
       sheetState = sheetState,
     )
   }
@@ -469,7 +473,9 @@ private fun Context.getSharedPreferences() = this.getSharedPreferences(SHARED_PR
 
 @HedvigPreview
 @Composable
-private fun PreviewHomeScreen() {
+private fun PreviewHomeScreen(
+  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) hasUnseenChatMessages: Boolean,
+) {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       HomeScreen(
@@ -492,10 +498,12 @@ private fun PreviewHomeScreen() {
             connectPayment = MemberReminder.ConnectPayment(),
           ),
           allowAddressChange = true,
+          isHelpCenterEnabled = true,
           allowGeneratingTravelCertificate = true,
           emergencyData = null,
           commonClaimsData = persistentListOf(),
           showChatIcon = true,
+          hasUnseenChatMessages = hasUnseenChatMessages,
         ),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
         reload = {},
@@ -506,6 +514,8 @@ private fun PreviewHomeScreen() {
         onStartMovingFlow = {},
         onGenerateTravelCertificateClicked = {},
         onOpenCommonClaim = {},
+        onOpenEmergencyScreen = {},
+        navigateToHelpCenter = {},
         openUrl = {},
         openAppSettings = {},
         navigateToMissingInfo = {},

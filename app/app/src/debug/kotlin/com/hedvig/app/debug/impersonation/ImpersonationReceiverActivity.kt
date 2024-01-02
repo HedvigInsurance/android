@@ -1,8 +1,8 @@
 package com.hedvig.app.debug.impersonation
 
 import android.os.Bundle
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -39,7 +39,7 @@ import org.koin.core.context.unloadKoinModules
 import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
 
-class ImpersonationReceiverActivity : AppCompatActivity() {
+class ImpersonationReceiverActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     loadKoinModules(module)

@@ -4,10 +4,21 @@ import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
+import org.gradle.api.plugins.JavaPluginExtension
+import org.gradle.api.tasks.compile.JavaCompile
+import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.the
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerOptions
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
+import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 
 /**
  * Configure base Kotlin with Android options
@@ -28,6 +39,9 @@ internal fun Project.configureKotlinAndroid(commonExtension: AndroidCommonExtens
       targetCompatibility = JavaVersion.VERSION_17
     }
 
+    fun AndroidCommonExtension.kotlinOptions(block: KotlinJvmOptions.() -> Unit) {
+      (this as ExtensionAware).extensions.configure("kotlinOptions", block)
+    }
     kotlinOptions {
       configureKotlinOptions(this@configureKotlinAndroid)
     }
@@ -50,9 +64,16 @@ internal fun Project.configureKotlinAndroid(commonExtension: AndroidCommonExtens
 /**
  * Configure base Kotlin without Android options
  */
-internal fun Project.configureKotlin(kotlinCompile: KotlinCompile) {
-  kotlinCompile.kotlinOptions {
-    this.configureKotlinOptions(this@configureKotlin)
+internal fun Project.configureJavaAndKotlin() {
+  kotlinExtension.forEachCompilerOptions {
+    configureKotlinOptions(this@configureJavaAndKotlin)
+  }
+
+  project.extensions.getByType(JavaPluginExtension::class.java).apply {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+  }
+  project.tasks.withType(JavaCompile::class.java).configureEach {
+    options.release.set(17)
   }
 }
 
@@ -73,41 +94,77 @@ private fun Project.configureAutomaticNamespace(commonExtension: AndroidCommonEx
   }
 }
 
-private fun KotlinJvmOptions.configureKotlinOptions(project: Project) {
-  // Treat all Kotlin warnings as errors (disabled by default)
-  allWarningsAsErrors = project.properties["warningsAsErrors"] as? Boolean ?: false
+private fun KotlinProjectExtension.forEachCompilerOptions(block: KotlinCommonCompilerOptions.() -> Unit) {
+  when (this) {
+    is KotlinJvmProjectExtension -> compilerOptions.block()
+    is KotlinAndroidProjectExtension -> compilerOptions.block()
+    is KotlinMultiplatformExtension -> {
+      targets.all {
+        compilations.all {
+          compilerOptions.configure {
+            block()
+          }
+        }
+      }
+    }
 
-  freeCompilerArgs = freeCompilerArgs + listOf(
-    "-opt-in=androidx.compose.animation.ExperimentalAnimationApi",
-    "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi",
-    "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
-    "-opt-in=androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi",
-    "-opt-in=com.google.accompanist.permissions.ExperimentalPermissionsApi",
-    "-opt-in=kotlin.Experimental",
-    "-opt-in=kotlin.RequiresOptIn",
-    "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
-    "-opt-in=kotlinx.coroutines.FlowPreview",
-    "-opt-in=kotlinx.serialization.ExperimentalSerializationApi",
-  )
-
-  // Get compose metrics with `./gradlew :app:assembleRelease -Pcom.hedvig.app.enableComposeCompilerReports=true`
-  if (project.findProperty("com.hedvig.app.enableComposeCompilerReports") == "true") {
-    freeCompilerArgs = freeCompilerArgs + listOf(
-      "-P",
-      "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=" +
-        // try that project.layout.buildDirectory.asFile.get() maybe works
-        project.buildDir.absolutePath + "/compose_metrics",
-    )
-    freeCompilerArgs = freeCompilerArgs + listOf(
-      "-P",
-      "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=" +
-        project.buildDir.absolutePath + "/compose_metrics",
-    )
+    else -> error("Unknown kotlin extension $this")
   }
+}
+
+/**
+ * Same as [configureKotlinOptions] but for the JVM library convention plugin.
+ * There is no common interface for these two to apply them together. https://youtrack.jetbrains.com/issue/KT-58956
+ */
+private fun KotlinCommonCompilerOptions.configureKotlinOptions(project: Project) {
+  freeCompilerArgs.addAll(project.commonFreeCompilerArgs())
+
+  apiVersion.set(KotlinVersion.KOTLIN_1_9)
+  languageVersion.set(KotlinVersion.KOTLIN_1_9)
+
+  when (this) {
+    is KotlinJvmCompilerOptions -> {
+      freeCompilerArgs.add("-Xjvm-default=all")
+      jvmTarget.set(JvmTarget.JVM_17)
+    }
+  }
+}
+
+private fun KotlinJvmOptions.configureKotlinOptions(project: Project) {
+  freeCompilerArgs = freeCompilerArgs + project.commonFreeCompilerArgs()
 
   jvmTarget = JavaVersion.VERSION_17.toString()
 }
 
-private fun AndroidCommonExtension.kotlinOptions(block: KotlinJvmOptions.() -> Unit) {
-  (this as ExtensionAware).extensions.configure("kotlinOptions", block)
+private fun Project.commonFreeCompilerArgs(): List<String> {
+  return buildList {
+    addAll(
+      listOf(
+        "-opt-in=androidx.compose.animation.ExperimentalAnimationApi",
+        "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi",
+        "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
+        "-opt-in=androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi",
+        "-opt-in=com.google.accompanist.permissions.ExperimentalPermissionsApi",
+        "-opt-in=kotlin.Experimental",
+        "-opt-in=kotlin.RequiresOptIn",
+        "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+        "-opt-in=kotlinx.coroutines.FlowPreview",
+        "-opt-in=kotlinx.serialization.ExperimentalSerializationApi",
+      ),
+    )
+
+    // Get compose metrics with `./gradlew :app:assembleRelease -Pcom.hedvig.app.enableComposeCompilerReports=true`
+    if (project.findProperty("com.hedvig.app.enableComposeCompilerReports") == "true") {
+      addAll(
+        listOf(
+          "-P",
+          "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=" +
+            project.layout.buildDirectory.asFile.get().absolutePath + "/compose_metrics",
+          "-P",
+          "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=" +
+            project.layout.buildDirectory.asFile.get().absolutePath + "/compose_metrics",
+        ),
+      )
+    }
+  }
 }

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="splash_background" type="color">@color/hedvig_black</item>
+    <item name="splash_foreground" type="color">@color/hedvig_white</item>
+</resources>

@@ -1,22 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="splash_background" type="color">@color/hedvig_white</item>
-    <item name="splash_foreground" type="color">@color/hedvig_black</item>
+  <color name="hedvig_black">#121212</color>
+  <color name="hedvig_white">#ffffff</color>
 
-    <color name="off_white">#f9fafc</color>
-    <color name="off_black">#414150</color>
-    <color name="transparent">#00FFFFFF</color>
+  <color name="ic_launcher_background_tint">@color/hedvig_black</color>
+  <color name="ic_launcher_foreground_tint">@color/hedvig_white</color>
 
-    <color name="hedvig_black">#121212</color>
-    <color name="hedvig_off_white">#fafafa</color>
-    <color name="hedvig_white">#ffffff</color>
-    <color name="hedvig_dark_gray">#505050</color>
-
-    <color name="lavender_300">#C9ABF5</color>
-    <color name="lavender_400">#BE9BF3</color>
-    <color name="lavender_600">#875EC5</color>
-
-
-    <color name="text_color_primary_light">#AB121212</color>
-
+  <item name="splash_background" type="color">@color/hedvig_white</item>
+  <item name="splash_foreground" type="color">@color/hedvig_black</item>
 </resources>

@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
+import androidx.core.app.PendingIntentCompat
 import androidx.core.app.Person
 import androidx.core.app.RemoteInput
 import androidx.core.app.TaskStackBuilder
@@ -21,6 +22,8 @@ import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
 import com.hedvig.app.service.push.getMutablePendingIntentFlags
+import hedvig.resources.R
+import kotlinx.datetime.Instant
 
 class ChatNotificationSender(
   private val context: Context,
@@ -97,17 +100,12 @@ class ChatNotificationSender(
   ) {
     val chatIntent = Intent(Intent.ACTION_VIEW, Uri.parse(hedvigDeepLinkContainer.chat))
 
-    val flags = getMutablePendingIntentFlags()
-
     val pendingIntent: PendingIntent? = TaskStackBuilder
       .create(context)
       .addNextIntent(chatIntent)
-      .getPendingIntent(0, flags)
-    val replyRemoteInput = RemoteInput.Builder(CHAT_REPLY_KEY)
-      .setLabel(context.getString(hedvig.resources.R.string.notifications_chat_reply_action))
-      .build()
+      .getPendingIntent(0, getMutablePendingIntentFlags())
 
-    val replyPendingIntent = PendingIntent.getBroadcast(
+    val replyPendingIntent = PendingIntentCompat.getBroadcast(
       context,
       CHAT_REPLY_REQUEST_CODE,
       Intent(context, ChatMessageNotificationReceiver::class.java).apply {
@@ -116,7 +114,8 @@ class ChatNotificationSender(
           CHAT_NOTIFICATION_ID,
         )
       },
-      flags,
+      PendingIntent.FLAG_UPDATE_CURRENT,
+      true,
     )
 
     val replyAction = NotificationCompat.Action.Builder(
@@ -124,7 +123,11 @@ class ChatNotificationSender(
       context.getString(hedvig.resources.R.string.notifications_chat_reply_action),
       replyPendingIntent,
     )
-      .addRemoteInput(replyRemoteInput)
+      .addRemoteInput(
+        RemoteInput.Builder(CHAT_REPLY_KEY)
+          .setLabel(context.getString(R.string.notifications_chat_reply_action))
+          .build(),
+      )
       .build()
 
     val notification = NotificationCompat
@@ -153,7 +156,12 @@ class ChatNotificationSender(
   }
 
   @RequiresApi(Build.VERSION_CODES.N)
-  fun addReplyToExistingChatNotification(context: Context, notificationId: Int, replyText: CharSequence) {
+  fun addReplyToExistingChatNotification(
+    context: Context,
+    notificationId: Int,
+    replyText: String,
+    replyTimestamp: Instant,
+  ) {
     val notificationManager = context.getSystemService<NotificationManager>() ?: return
 
     val existingChatNotification = notificationManager
@@ -164,7 +172,7 @@ class ChatNotificationSender(
     val style = NotificationCompat.MessagingStyle.extractMessagingStyleFromNotification(
       existingChatNotification,
     ) ?: return
-    style.addMessage(replyText, System.currentTimeMillis(), style.user)
+    style.addMessage(replyText, replyTimestamp.toEpochMilliseconds(), style.user)
 
     sendChatNotificationInner(
       context,

@@ -61,6 +61,7 @@ fun HedvigSecondaryContainedButton(
   modifier: Modifier = Modifier,
   contentPadding: PaddingValues = PaddingValues(16.dp),
   enabled: Boolean = true,
+  isLoading: Boolean = false,
   colors: ButtonColors = ButtonDefaults.buttonColors(
     containerColor = MaterialTheme.colorScheme.secondaryContainedButtonContainer,
     contentColor = MaterialTheme.colorScheme.onSecondaryContainedButtonContainer,
@@ -69,14 +70,14 @@ fun HedvigSecondaryContainedButton(
   ),
 ) {
   HedvigContainedButton(
+    text = text,
     onClick = onClick,
     enabled = enabled,
+    isLoading = isLoading,
     modifier = modifier,
     contentPadding = contentPadding,
     colors = colors,
-  ) {
-    ButtonText(text)
-  }
+  )
 }
 
 @Composable
@@ -112,13 +113,14 @@ fun HedvigContainedButton(
 @Composable
 private fun LoadingButton(isLoading: Boolean, text: String) {
   val loadingTransition = updateTransition(isLoading, label = "loading transition")
+  @Suppress("NAME_SHADOWING")
   loadingTransition.AnimatedContent(
     transitionSpec = {
       fadeIn(tween(durationMillis = 220, delayMillis = 90)) togetherWith fadeOut(tween(90))
     },
     contentAlignment = Alignment.Center,
-  ) { isLoading ->
-    if (isLoading) {
+  ) { loading ->
+    if (loading) {
       Box(
         contentAlignment = Alignment.Center,
       ) {

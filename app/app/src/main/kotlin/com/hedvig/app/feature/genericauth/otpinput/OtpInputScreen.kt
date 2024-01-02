@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
@@ -35,7 +36,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.SoftwareKeyboardController
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -49,8 +49,9 @@ import com.hedvig.android.core.designsystem.component.button.HedvigContainedButt
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.hedvig.normal.RestartTwoArrows
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
-import com.hedvig.app.R
 import kotlinx.coroutines.isActive
 
 @Composable
@@ -241,8 +242,8 @@ private fun RotatingIcon(isLoading: Boolean) {
     }
   }
   Icon(
+    imageVector = Icons.Hedvig.RestartTwoArrows,
     modifier = Modifier.graphicsLayer { rotationZ = angle.value },
-    painter = painterResource(id = R.drawable.ic_refresh),
     contentDescription = stringResource(hedvig.resources.R.string.login_smedium_button_active_resend_code),
   )
 }

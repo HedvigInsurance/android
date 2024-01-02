@@ -70,15 +70,20 @@ import coil.request.ImageRequest
 import coil.request.NullRequestDataException
 import com.hedvig.android.core.designsystem.animation.ThreeDotsLoading
 import com.hedvig.android.core.designsystem.material3.DisabledAlpha
+import com.hedvig.android.core.designsystem.material3.infoElement
 import com.hedvig.android.core.designsystem.material3.rememberShapedColorPainter
 import com.hedvig.android.core.designsystem.material3.squircleMedium
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.hedvig.normal.CircleWithCheckmarkFilled
 import com.hedvig.android.core.icons.hedvig.normal.InfoFilled
 import com.hedvig.android.core.icons.hedvig.normal.MultipleDocuments
 import com.hedvig.android.core.icons.hedvig.normal.RestartOneArrow
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.core.ui.layout.adjustSizeToImageRatio
+import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.feature.chat.ChatUiState
 import com.hedvig.android.feature.chat.model.ChatMessage
 import com.hedvig.android.placeholder.PlaceholderHighlight
@@ -87,12 +92,15 @@ import com.hedvig.android.placeholder.placeholder
 import hedvig.resources.R
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.isActive
+import kotlinx.datetime.Clock
 
 @Composable
 internal fun ChatLoadedScreen(
@@ -167,7 +175,10 @@ private fun ScrollToBottomOnKeyboardShownEffect(lazyListState: LazyListState) {
 }
 
 @Composable
-private fun ScrollToBottomOnOwnMessageSentEffect(lazyListState: LazyListState, messages: ImmutableList<ChatMessage>) {
+private fun ScrollToBottomOnOwnMessageSentEffect(
+  lazyListState: LazyListState,
+  messages: ImmutableList<ChatUiState.Loaded.UiChatMessage>,
+) {
   var currentLatestMessage by remember { mutableStateOf(messages.firstOrNull()) }
   LaunchedEffect(messages) {
     currentLatestMessage = messages.firstOrNull()
@@ -175,6 +186,7 @@ private fun ScrollToBottomOnOwnMessageSentEffect(lazyListState: LazyListState, m
   LaunchedEffect(lazyListState) {
     snapshotFlow { currentLatestMessage }
       .filterNotNull()
+      .map { it.chatMessage }
       .distinctUntilChanged { old, new -> old.id == new.id }
       .filter {
         it.sender == ChatMessage.Sender.MEMBER
@@ -188,7 +200,7 @@ private fun ScrollToBottomOnOwnMessageSentEffect(lazyListState: LazyListState, m
 @Composable
 private fun ScrollToBottomOnNewMessageReceivedWhenAlreadyAtBottomEffect(
   lazyListState: LazyListState,
-  messages: ImmutableList<ChatMessage>,
+  messages: ImmutableList<ChatUiState.Loaded.UiChatMessage>,
 ) {
   var currentLatestMessage by remember { mutableStateOf(messages.firstOrNull()) }
   LaunchedEffect(messages) {
@@ -197,6 +209,7 @@ private fun ScrollToBottomOnNewMessageReceivedWhenAlreadyAtBottomEffect(
   LaunchedEffect(lazyListState) {
     snapshotFlow { currentLatestMessage }
       .filterNotNull()
+      .map { it.chatMessage }
       .distinctUntilChanged { old, new -> old.id == new.id }
       .filter {
         it.sender == ChatMessage.Sender.HEDVIG
@@ -228,9 +241,9 @@ private fun ChatLazyColumn(
   ) {
     items(
       items = uiState.messages,
-      key = { it.id },
-      contentType = { chatMessage ->
-        when (chatMessage) {
+      key = { it.chatMessage.id },
+      contentType = { uiChatMessage ->
+        when (uiChatMessage.chatMessage) {
           is ChatMessage.ChatMessageFile -> "ChatMessage.ChatMessageFile"
           is ChatMessage.ChatMessageGif -> "ChatMessage.ChatMessageGif"
           is ChatMessage.ChatMessageText -> "ChatMessage.ChatMessageText"
@@ -238,10 +251,10 @@ private fun ChatLazyColumn(
           is ChatMessage.FailedToBeSent.ChatMessageUri -> "ChatMessage.FailedToBeSent.ChatMessageUri"
         }
       },
-    ) { chatMessage: ChatMessage ->
-      val alignment: Alignment.Horizontal = chatMessage.messageHorizontalAlignment()
+    ) { uiChatMessage: ChatUiState.Loaded.UiChatMessage ->
+      val alignment: Alignment.Horizontal = uiChatMessage.chatMessage.messageHorizontalAlignment()
       ChatBubble(
-        chatMessage = chatMessage,
+        uiChatMessage = uiChatMessage,
         imageLoader = imageLoader,
         openUrl = openUrl,
         onRetrySendChatMessage = onRetrySendChatMessage,
@@ -292,7 +305,7 @@ private fun ChatLazyColumn(
 
 @Composable
 private fun ChatBubble(
-  chatMessage: ChatMessage,
+  uiChatMessage: ChatUiState.Loaded.UiChatMessage,
   imageLoader: ImageLoader,
   openUrl: (String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
@@ -300,6 +313,7 @@ private fun ChatBubble(
 ) {
   ChatMessageWithTimeAndDeliveryStatus(
     messageSlot = {
+      val chatMessage = uiChatMessage.chatMessage
       when (chatMessage) {
         is ChatMessage.ChatMessageFile -> {
           when (chatMessage.mimeType) {
@@ -340,7 +354,7 @@ private fun ChatBubble(
               Surface(
                 shape = MaterialTheme.shapes.squircleMedium,
                 color = MaterialTheme.colorScheme.errorContainer,
-                contentColor = LocalContentColor.current,
+                contentColor = MaterialTheme.colorScheme.onErrorContainer,
                 onClick = {
                   onRetrySendChatMessage(chatMessage.id)
                 },
@@ -403,7 +417,7 @@ private fun ChatBubble(
         }
       }
     },
-    chatMessage = chatMessage,
+    uiChatMessage = uiChatMessage,
     modifier = modifier,
   )
 }
@@ -536,14 +550,14 @@ private fun ChatAsyncImage(
 @Composable
 internal fun ChatMessageWithTimeAndDeliveryStatus(
   messageSlot: @Composable () -> Unit,
-  chatMessage: ChatMessage,
+  uiChatMessage: ChatUiState.Loaded.UiChatMessage,
   modifier: Modifier = Modifier,
 ) {
   Column(
-    horizontalAlignment = chatMessage.messageHorizontalAlignment(),
+    horizontalAlignment = uiChatMessage.chatMessage.messageHorizontalAlignment(),
     modifier = modifier,
   ) {
-    val failedToBeSent = chatMessage is ChatMessage.FailedToBeSent
+    val failedToBeSent = uiChatMessage.chatMessage is ChatMessage.FailedToBeSent
     Row(
       verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -559,19 +573,68 @@ internal fun ChatMessageWithTimeAndDeliveryStatus(
       }
     }
     Spacer(modifier = Modifier.height(4.dp))
-    Text(
-      text = buildString {
-        if (failedToBeSent) {
-          append(stringResource(R.string.CHAT_FAILED_TO_SEND))
-          append(" • ")
-        }
-        append(chatMessage.formattedDateTime(getLocale()))
-      },
-      style = MaterialTheme.typography.bodyMedium,
-      color = MaterialTheme.colorScheme.onSurfaceVariant,
-      modifier = Modifier
-        .align(chatMessage.messageHorizontalAlignment())
-        .padding(horizontal = 2.dp),
-    )
+    Row(
+      verticalAlignment = Alignment.CenterVertically,
+      modifier = Modifier.align(uiChatMessage.chatMessage.messageHorizontalAlignment()).padding(horizontal = 2.dp),
+    ) {
+      Text(
+        text = buildString {
+          if (failedToBeSent) {
+            append(stringResource(R.string.CHAT_FAILED_TO_SEND))
+            append(" • ")
+          }
+          append(uiChatMessage.chatMessage.formattedDateTime(getLocale()))
+          if (uiChatMessage.isLastDeliveredMessage) {
+            append(" • ")
+            append(stringResource(R.string.CHAT_DELIVERED_MESSAGE))
+          }
+        },
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+      )
+      if (uiChatMessage.isLastDeliveredMessage) {
+        Spacer(Modifier.width(4.dp))
+        Icon(
+          Icons.Hedvig.CircleWithCheckmarkFilled,
+          null,
+          Modifier.size(16.dp),
+          tint = MaterialTheme.colorScheme.infoElement,
+        )
+      }
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewChatLazyColumn() {
+  HedvigTheme {
+    Surface(color = MaterialTheme.colorScheme.background) {
+      val listSize = 10
+      ChatLazyColumn(
+        lazyListState = rememberLazyListState(),
+        uiState = ChatUiState.Loaded(
+          List(listSize) { index ->
+            ChatUiState.Loaded.UiChatMessage(
+              chatMessage = ChatMessage.ChatMessageText(
+                index.toString(),
+                when (index % 2 == 0) {
+                  true -> ChatMessage.Sender.MEMBER
+                  false -> ChatMessage.Sender.HEDVIG
+                },
+                Clock.System.now(),
+                "Hello #$index",
+              ),
+              isLastDeliveredMessage = index == 0,
+            )
+          }.toPersistentList(),
+          ChatUiState.Loaded.FetchMoreMessagesUiState.NothingMoreToFetch,
+        ),
+        imageLoader = rememberPreviewImageLoader(),
+        openUrl = {},
+        onRetrySendChatMessage = {},
+        onFetchMoreMessages = {},
+      )
+    }
   }
 }

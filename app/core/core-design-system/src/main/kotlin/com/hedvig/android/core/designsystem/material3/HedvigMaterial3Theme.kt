@@ -107,6 +107,8 @@ internal fun darkHedvigColorScheme(hedvigTonalPalette: HedvigTonalPalette) = Hed
   onContainedButtonContainer = hedvigTonalPalette.greyscale1000,
   secondaryContainedButtonContainer = hedvigTonalPalette.greyscale800,
   onSecondaryContainedButtonContainer = hedvigTonalPalette.greyscale100,
+  alwaysBlackContainer = hedvigTonalPalette.greyscale700,
+  onAlwaysBlackContainer = hedvigTonalPalette.greyscale25,
   // In the comments are the light mode colors, showing the equivalent and how it was chosen
   warningElement = hedvigTonalPalette.amber700,
   onWarningElement = hedvigTonalPalette.greyscale25,
@@ -123,6 +125,12 @@ internal fun darkHedvigColorScheme(hedvigTonalPalette: HedvigTonalPalette) = Hed
   infoContainer = hedvigTonalPalette.blue300,
   onInfoContainer = hedvigTonalPalette.blue900,
   infoHighlight = hedvigTonalPalette.blue500,
+  yellowContainer = hedvigTonalPalette.yellow300,
+  onYellowContainer = hedvigTonalPalette.yellow900,
+  pinkContainer = hedvigTonalPalette.pink300,
+  onPinkContainer = hedvigTonalPalette.pink900,
+  purpleContainer = hedvigTonalPalette.purple300,
+  onPurpleContainer = hedvigTonalPalette.purple900,
 )
 
 internal fun lightHedvigColorScheme(hedvigTonalPalette: HedvigTonalPalette) = HedvigMaterial3ColorScheme(
@@ -130,6 +138,8 @@ internal fun lightHedvigColorScheme(hedvigTonalPalette: HedvigTonalPalette) = He
   onContainedButtonContainer = hedvigTonalPalette.greyscale1000,
   secondaryContainedButtonContainer = hedvigTonalPalette.greyscale100,
   onSecondaryContainedButtonContainer = hedvigTonalPalette.greyscale1000,
+  alwaysBlackContainer = hedvigTonalPalette.greyscale1000,
+  onAlwaysBlackContainer = hedvigTonalPalette.greyscale25,
   warningElement = hedvigTonalPalette.amber600,
   onWarningElement = hedvigTonalPalette.greyscale1000,
   warningContainer = hedvigTonalPalette.amber100,
@@ -145,4 +155,10 @@ internal fun lightHedvigColorScheme(hedvigTonalPalette: HedvigTonalPalette) = He
   infoContainer = hedvigTonalPalette.blue100,
   onInfoContainer = hedvigTonalPalette.blue900,
   infoHighlight = hedvigTonalPalette.blue300,
+  yellowContainer = hedvigTonalPalette.yellow100,
+  onYellowContainer = hedvigTonalPalette.yellow900,
+  pinkContainer = hedvigTonalPalette.pink100,
+  onPinkContainer = hedvigTonalPalette.pink900,
+  purpleContainer = hedvigTonalPalette.purple100,
+  onPurpleContainer = hedvigTonalPalette.purple900,
 )

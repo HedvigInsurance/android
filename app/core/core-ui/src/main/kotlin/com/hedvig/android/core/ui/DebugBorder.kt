@@ -7,4 +7,4 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Suppress("unused") // Used when quickly prototyping something and want to see how it renders
-fun Modifier.debugBorder(color: Color = Color.Red, dp: Dp = 1.dp): Modifier = border(dp, color)
+fun Modifier.debugBorder(color: Color = Color.Red, dp: Dp = 1.dp): Modifier = this.border(dp, color)

@@ -22,6 +22,8 @@ class HedvigMaterial3ColorScheme(
   val onContainedButtonContainer: Color,
   val secondaryContainedButtonContainer: Color,
   val onSecondaryContainedButtonContainer: Color,
+  val alwaysBlackContainer: Color,
+  val onAlwaysBlackContainer: Color,
   val warningElement: Color,
   val onWarningElement: Color,
   val warningContainer: Color,
@@ -39,6 +41,13 @@ class HedvigMaterial3ColorScheme(
   val infoContainer: Color,
   val onInfoContainer: Color,
   val infoHighlight: Color,
+  // Help-center
+  val yellowContainer: Color,
+  val onYellowContainer: Color,
+  val pinkContainer: Color,
+  val onPinkContainer: Color,
+  val purpleContainer: Color,
+  val onPurpleContainer: Color,
 )
 
 val ColorScheme.containedButtonContainer: Color
@@ -60,6 +69,16 @@ val ColorScheme.onSecondaryContainedButtonContainer: Color
   @ReadOnlyComposable
   @Composable
   get() = LocalHedvigMaterial3ColorScheme.current.onSecondaryContainedButtonContainer
+
+val ColorScheme.alwaysBlackContainer: Color
+  @ReadOnlyComposable
+  @Composable
+  get() = LocalHedvigMaterial3ColorScheme.current.alwaysBlackContainer
+
+val ColorScheme.onAlwaysBlackContainer: Color
+  @ReadOnlyComposable
+  @Composable
+  get() = LocalHedvigMaterial3ColorScheme.current.onAlwaysBlackContainer
 
 // region warning colors
 val ColorScheme.warningElement: Color
@@ -140,6 +159,38 @@ val ColorScheme.infoHighlight: Color
   @ReadOnlyComposable
   @Composable
   get() = LocalHedvigMaterial3ColorScheme.current.infoHighlight
+// endregion
+
+// region help-center colors
+val ColorScheme.yellowContainer: Color
+  @ReadOnlyComposable
+  @Composable
+  get() = LocalHedvigMaterial3ColorScheme.current.yellowContainer
+
+val ColorScheme.onYellowContainer: Color
+  @ReadOnlyComposable
+  @Composable
+  get() = LocalHedvigMaterial3ColorScheme.current.onYellowContainer
+
+val ColorScheme.purpleContainer: Color
+  @ReadOnlyComposable
+  @Composable
+  get() = LocalHedvigMaterial3ColorScheme.current.purpleContainer
+
+val ColorScheme.onPurpleContainer: Color
+  @ReadOnlyComposable
+  @Composable
+  get() = LocalHedvigMaterial3ColorScheme.current.onPurpleContainer
+
+val ColorScheme.pinkContainer: Color
+  @ReadOnlyComposable
+  @Composable
+  get() = LocalHedvigMaterial3ColorScheme.current.pinkContainer
+
+val ColorScheme.onPinkContainer: Color
+  @ReadOnlyComposable
+  @Composable
+  get() = LocalHedvigMaterial3ColorScheme.current.onPinkContainer
 // endregion
 
 /**

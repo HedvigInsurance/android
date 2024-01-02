@@ -6,5 +6,5 @@ id=${LOKALISE_ID}
 token=${LOKALISE_TOKEN}
 EOT
 
-./gradlew downloadApolloSchemasFromIntrospection
+./gradlew downloadOctopusApolloSchemaFromIntrospection
 ./gradlew downloadStrings

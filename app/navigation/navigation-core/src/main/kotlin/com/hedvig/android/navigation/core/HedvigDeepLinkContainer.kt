@@ -12,6 +12,9 @@ interface HedvigDeepLinkContainer {
   val connectPayment: String // Screen where the member can connect their payment method to Hedvig to pay for insurance
   val directDebit: String // Same as connectPayment but to support an old link to it
   val payments: String // The payments screen, showing the payments history and the upcoming payment information
+  val helpCenter: String // The help center root screen
+  val helpCenterCommonTopic: String // A common topic inside the help center
+  val helpCenterQuestion: String // A specific question inside the help center
 }
 
 internal class HedvigDeepLinkContainerImpl(
@@ -29,4 +32,11 @@ internal class HedvigDeepLinkContainerImpl(
   override val connectPayment: String = "$baseDeepLinkDomain/connect-payment"
   override val directDebit: String = "$baseDeepLinkDomain/direct-debit"
   override val payments: String = "$baseDeepLinkDomain/payments"
+  override val helpCenter: String = "$baseDeepLinkDomain/help-center"
+
+  // Sample url: https://hedvigdevelop.page.link/help-center/topic?id=1
+  override val helpCenterCommonTopic: String = "$baseDeepLinkDomain/help-center/topic&id={id}"
+
+  // Sample url: https://hedvigdevelop.page.link/help-center/question?id=2
+  override val helpCenterQuestion: String = "$baseDeepLinkDomain/help-center/question&id={id}"
 }

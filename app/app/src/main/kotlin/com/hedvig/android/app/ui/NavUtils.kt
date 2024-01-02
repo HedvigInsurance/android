@@ -11,7 +11,7 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.kiwi.navigationcompose.typed.createRoutePattern
 
-internal fun Modifier.notificationDot(): Modifier = composed {
+internal fun Modifier.notificationDot(): Modifier = this.composed {
   val notificationColor = MaterialTheme.colorScheme.error
   Modifier.drawWithContent {
     drawContent()

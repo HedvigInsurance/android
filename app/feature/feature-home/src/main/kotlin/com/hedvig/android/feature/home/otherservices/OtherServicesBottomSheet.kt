@@ -2,19 +2,16 @@ package com.hedvig.android.feature.home.otherservices
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.material3.BottomSheetDefaults
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -22,38 +19,42 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.common.android.ThemedIconUrls
+import com.hedvig.android.core.designsystem.component.button.ClickableOption
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
-import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.material3.onWarningContainer
 import com.hedvig.android.core.designsystem.material3.squircleLargeTop
 import com.hedvig.android.core.designsystem.material3.warningContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.feature.home.claims.commonclaim.CommonClaimsData
-import com.hedvig.android.feature.home.claims.commonclaim.EmergencyData
+import com.hedvig.android.feature.home.commonclaim.CommonClaimsData
+import com.hedvig.android.feature.home.emergency.EmergencyData
 import com.hedvig.android.feature.home.home.ui.HomeUiState
 import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import octopus.type.HedvigColor
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+
+private const val BOTTOMSHEET_DISMISS_DELAY = 200L
 
 @Composable
 internal fun OtherServicesBottomSheet(
   uiState: HomeUiState.Success,
   dismissBottomSheet: () -> Unit,
-  onChatClicked: () -> Unit,
   onStartMovingFlow: () -> Unit,
-  onEmergencyClaimClicked: (EmergencyData) -> Unit,
+  onEmergencyClicked: (EmergencyData) -> Unit,
   onGenerateTravelCertificateClicked: () -> Unit,
   onOpenCommonClaim: (CommonClaimsData) -> Unit,
+  navigateToHelpCenter: () -> Unit,
   sheetState: SheetState,
 ) {
+  val coroutineScope = rememberCoroutineScope()
+
   ModalBottomSheet(
     containerColor = MaterialTheme.colorScheme.background,
     onDismissRequest = dismissBottomSheet,
@@ -63,27 +64,46 @@ internal fun OtherServicesBottomSheet(
     windowInsets = BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top),
   ) {
     OtherServicesBottomSheetContent(
-      onChatClicked = {
-        dismissBottomSheet()
-        onChatClicked()
-      },
       showMovingFlow = uiState.allowAddressChange,
+      isHelpCenterEnabled = uiState.isHelpCenterEnabled,
       onStartMovingFlow = {
-        dismissBottomSheet()
-        onStartMovingFlow()
+        coroutineScope.launch {
+          dismissBottomSheet()
+          delay(BOTTOMSHEET_DISMISS_DELAY)
+          onStartMovingFlow()
+        }
       },
       showGenerateTravelcertificate = uiState.allowGeneratingTravelCertificate,
       onGenerateTravelCertificateClicked = {
-        dismissBottomSheet()
-        onGenerateTravelCertificateClicked()
+        coroutineScope.launch {
+          dismissBottomSheet()
+          delay(BOTTOMSHEET_DISMISS_DELAY)
+          onGenerateTravelCertificateClicked()
+        }
       },
       emergencyData = uiState.emergencyData,
-      onEmergencyClaimClicked = { it: EmergencyData ->
-        dismissBottomSheet()
-        onEmergencyClaimClicked(it)
+      onEmergencyClicked = { it: EmergencyData ->
+        coroutineScope.launch {
+          dismissBottomSheet()
+          delay(BOTTOMSHEET_DISMISS_DELAY)
+          onEmergencyClicked(it)
+        }
       },
       commonClaims = uiState.commonClaimsData,
-      onOpenCommonClaim = onOpenCommonClaim,
+      onOpenCommonClaim = {
+        coroutineScope.launch {
+          dismissBottomSheet()
+          delay(BOTTOMSHEET_DISMISS_DELAY)
+          onOpenCommonClaim(it)
+        }
+      },
+      navigateToHelpCenter = {
+        coroutineScope.launch {
+          dismissBottomSheet()
+          delay(BOTTOMSHEET_DISMISS_DELAY)
+          navigateToHelpCenter()
+        }
+      },
       dismissBottomSheet = dismissBottomSheet,
     )
   }
@@ -91,15 +111,16 @@ internal fun OtherServicesBottomSheet(
 
 @Composable
 private fun OtherServicesBottomSheetContent(
-  onChatClicked: () -> Unit,
   showMovingFlow: Boolean,
+  isHelpCenterEnabled: Boolean,
   onStartMovingFlow: () -> Unit,
   showGenerateTravelcertificate: Boolean,
   onGenerateTravelCertificateClicked: () -> Unit,
   emergencyData: EmergencyData?,
-  onEmergencyClaimClicked: (EmergencyData) -> Unit,
+  onEmergencyClicked: (EmergencyData) -> Unit,
   commonClaims: ImmutableList<CommonClaimsData>,
   onOpenCommonClaim: (CommonClaimsData) -> Unit,
+  navigateToHelpCenter: () -> Unit,
   dismissBottomSheet: () -> Unit,
 ) {
   Column(Modifier.padding(horizontal = 16.dp)) {
@@ -115,7 +136,9 @@ private fun OtherServicesBottomSheetContent(
     Column(
       verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-      ClickableOption(stringResource(R.string.CHAT_TITLE), onChatClicked)
+      if (isHelpCenterEnabled) {
+        ClickableOption(stringResource(id = R.string.HC_TITLE), navigateToHelpCenter)
+      }
       if (showMovingFlow) {
         ClickableOption(stringResource(R.string.insurance_details_change_address_button), onStartMovingFlow)
       }
@@ -127,8 +150,8 @@ private fun OtherServicesBottomSheetContent(
       }
       if (emergencyData != null) {
         ClickableOption(
-          text = emergencyData.title,
-          onClick = { onEmergencyClaimClicked(emergencyData) },
+          text = stringResource(R.string.COMMON_CLAIM_EMERGENCY_TITLE),
+          onClick = { onEmergencyClicked(emergencyData) },
           cardColors = CardDefaults.outlinedCardColors(
             containerColor = MaterialTheme.colorScheme.warningContainer,
             contentColor = MaterialTheme.colorScheme.onWarningContainer,
@@ -147,56 +170,27 @@ private fun OtherServicesBottomSheetContent(
 }
 
 @Composable
-private fun ClickableOption(
-  text: String,
-  onClick: () -> Unit,
-  cardColors: CardColors = CardDefaults.outlinedCardColors(),
-) {
-  HedvigCard(
-    onClick = onClick,
-    colors = cardColors,
-  ) {
-    Row(
-      verticalAlignment = Alignment.CenterVertically,
-      modifier = Modifier
-        .heightIn(56.dp)
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp, vertical = 10.dp),
-    ) {
-      Text(
-        text = text,
-        style = MaterialTheme.typography.headlineSmall,
-      )
-    }
-  }
-}
-
-@Composable
 @HedvigPreview
 private fun PreviewOtherServicesBottomSheetContent() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       OtherServicesBottomSheetContent(
-        onChatClicked = {},
         showMovingFlow = true,
+        isHelpCenterEnabled = true,
         onStartMovingFlow = {},
         showGenerateTravelcertificate = true,
         onGenerateTravelCertificateClicked = {},
-        emergencyData = EmergencyData(ThemedIconUrls("", ""), HedvigColor.UNKNOWN__, "Sick abroad", true, ""),
-        onEmergencyClaimClicked = {},
+        emergencyData = EmergencyData("Sick abroad", "+46123456789"),
+        onEmergencyClicked = {},
         commonClaims = persistentListOf(
           CommonClaimsData(
             id = "",
-            iconUrls = ThemedIconUrls("", ""),
             title = "Contact FirstVet",
-            color = HedvigColor.DarkPurple,
-            layoutTitle = "",
-            buttonText = "",
-            eligibleToClaim = true,
             bulletPoints = emptyList(),
           ),
         ),
         onOpenCommonClaim = {},
+        navigateToHelpCenter = {},
         dismissBottomSheet = {},
       )
     }

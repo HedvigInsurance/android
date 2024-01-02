@@ -10,8 +10,12 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isTrue
+import assertk.assertions.prop
+import com.google.testing.junit.testparameterinjector.TestParameter
+import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.demomode.Provider
+import com.hedvig.android.data.chat.read.timestamp.FakeChatLastMessageReadRepository
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
@@ -25,12 +29,20 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
+import org.junit.runner.RunWith
 
+@RunWith(TestParameterInjector::class)
 internal class HomePresenterTest {
   @Test
   fun `asking to refresh successfully asks for a fetch from the network`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
-    val homePresenter = HomePresenter(Provider { getHomeDataUseCase }, FakeFeatureManager2())
+    val homePresenter = HomePresenter(
+      Provider {
+        getHomeDataUseCase
+      },
+      FakeChatLastMessageReadRepository(),
+      FakeFeatureManager2(),
+    )
 
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -51,7 +63,11 @@ internal class HomePresenterTest {
   @Test
   fun `getting a failed response and retrying, should result in a successful state`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
-    val homePresenter = HomePresenter(Provider { getHomeDataUseCase }, FakeFeatureManager2())
+    val homePresenter = HomePresenter(
+      Provider { getHomeDataUseCase },
+      FakeChatLastMessageReadRepository(),
+      FakeFeatureManager2(),
+    )
 
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -70,7 +86,11 @@ internal class HomePresenterTest {
   @Test
   fun `a successful response, properly propagates the info to the UI State`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
-    val homePresenter = HomePresenter(Provider { getHomeDataUseCase }, FakeFeatureManager2())
+    val homePresenter = HomePresenter(
+      Provider { getHomeDataUseCase },
+      FakeChatLastMessageReadRepository(),
+      FakeFeatureManager2(),
+    )
 
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -114,7 +134,9 @@ internal class HomePresenterTest {
           allowGeneratingTravelCertificate = false,
           emergencyData = null,
           commonClaimsData = persistentListOf(),
+          isHelpCenterEnabled = false,
           showChatIcon = false,
+          hasUnseenChatMessages = false,
         ),
       )
     }
@@ -123,7 +145,11 @@ internal class HomePresenterTest {
   @Test
   fun `the notification member reminder must not show for the home presenter`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
-    val homePresenter = HomePresenter(Provider { getHomeDataUseCase }, FakeFeatureManager2())
+    val homePresenter = HomePresenter(
+      Provider { getHomeDataUseCase },
+      FakeChatLastMessageReadRepository(),
+      FakeFeatureManager2(),
+    )
 
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -155,7 +181,9 @@ internal class HomePresenterTest {
           allowGeneratingTravelCertificate = false,
           emergencyData = null,
           commonClaimsData = persistentListOf(),
+          isHelpCenterEnabled = false,
           showChatIcon = false,
+          hasUnseenChatMessages = false,
         ),
       )
     }
@@ -164,7 +192,11 @@ internal class HomePresenterTest {
   @Test
   fun `receiving a failed state and then a successful one propagates the success without having to retry`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
-    val homePresenter = HomePresenter(Provider { getHomeDataUseCase }, FakeFeatureManager2())
+    val homePresenter = HomePresenter(
+      Provider { getHomeDataUseCase },
+      FakeChatLastMessageReadRepository(),
+      FakeFeatureManager2(),
+    )
 
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -182,6 +214,7 @@ internal class HomePresenterTest {
     val featureManager = FakeFeatureManager2()
     val homePresenter = HomePresenter(
       Provider { TestGetHomeDataUseCase() },
+      FakeChatLastMessageReadRepository(),
       featureManager,
     )
 
@@ -196,7 +229,9 @@ internal class HomePresenterTest {
         false,
         null,
         persistentListOf(),
+        isHelpCenterEnabled = false,
         showChatIcon = false,
+        hasUnseenChatMessages = false,
       ),
     ) {
       assertThat(awaitItem().showChatIcon).isFalse()
@@ -206,9 +241,10 @@ internal class HomePresenterTest {
 
   @Test
   fun `when the disable chat feature flag is false, the chat icon should now show`() = runTest {
-    val featureManager = FakeFeatureManager2()
+    val featureManager = FakeFeatureManager2(mapOf(Feature.HELP_CENTER to false))
     val homePresenter = HomePresenter(
       Provider { TestGetHomeDataUseCase() },
+      FakeChatLastMessageReadRepository(),
       featureManager,
     )
 
@@ -223,12 +259,81 @@ internal class HomePresenterTest {
         false,
         null,
         persistentListOf(),
+        isHelpCenterEnabled = false,
         showChatIcon = false,
+        false,
       ),
     ) {
       assertThat(awaitItem().showChatIcon).isFalse()
       featureManager.featureTurbine.add(Feature.DISABLE_CHAT to false)
       assertThat(awaitItem().showChatIcon).isTrue()
+    }
+  }
+
+  @Test
+  fun `when the disable help center feature flag is true it should show`() = runTest {
+    val featureManager = FakeFeatureManager2(mapOf(Feature.DISABLE_CHAT to true))
+    val homePresenter = HomePresenter(
+      Provider { TestGetHomeDataUseCase() },
+      FakeChatLastMessageReadRepository(),
+      featureManager,
+    )
+
+    homePresenter.test(
+      HomeUiState.Success(
+        isReloading = true,
+        HomeText.Active,
+        null,
+        persistentListOf(),
+        MemberReminders(),
+        false,
+        false,
+        null,
+        persistentListOf(),
+        isHelpCenterEnabled = false,
+        showChatIcon = false,
+        false,
+      ),
+    ) {
+      assertThat(awaitItem().isHelpCenterEnabled).isFalse()
+      featureManager.featureTurbine.add(Feature.HELP_CENTER to true)
+      assertThat(awaitItem().isHelpCenterEnabled).isTrue()
+    }
+  }
+
+  @Test
+  fun `with a successfull response, the unread chat state is set according to the ChatLastMessageReadRepository`(
+    @TestParameter hasNotification: Boolean,
+  ) = runTest {
+    val getHomeDataUseCase = TestGetHomeDataUseCase()
+    val chatLastMessageReadRepository = FakeChatLastMessageReadRepository()
+    val homePresenter = HomePresenter(
+      Provider { getHomeDataUseCase },
+      chatLastMessageReadRepository,
+      FakeFeatureManager2(),
+    )
+
+    homePresenter.test(HomeUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
+
+      chatLastMessageReadRepository.isNewestMessageNewerThanLastReadTimestamp.add(hasNotification)
+      getHomeDataUseCase.responseTurbine.add(
+        HomeData(
+          contractStatus = HomeData.ContractStatus.Active,
+          claimStatusCardsData = null,
+          memberReminders = MemberReminders(
+            enableNotifications = MemberReminder.EnableNotifications(),
+          ),
+          veryImportantMessages = persistentListOf(),
+          allowAddressChange = true,
+          allowGeneratingTravelCertificate = false,
+          emergencyData = null,
+          commonClaimsData = persistentListOf(),
+        ).right(),
+      )
+      assertThat(awaitItem())
+        .isInstanceOf<HomeUiState.Success>().prop(HomeUiState.Success::hasUnseenChatMessages)
+        .isEqualTo(hasNotification)
     }
   }
 

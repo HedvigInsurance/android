@@ -2,7 +2,6 @@
 
 package com.hedvig.android.core.designsystem.material3
 
-import android.graphics.PointF
 import androidx.annotation.FloatRange
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,6 +22,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.graphics.shapes.CornerRounding
 import androidx.graphics.shapes.RoundedPolygon
+import androidx.graphics.shapes.toPath
 import com.hedvig.android.core.designsystem.component.tokens.HedvigShapeKeyTokens
 
 // Take shapes from existing theme setup
@@ -45,12 +45,13 @@ private fun RoundedPolygon.Companion.squircle(
   if (width == 0f || height == 0f) {
     return android.graphics.Path()
   }
+  @Suppress("ktlint:standard:argument-list-wrapping")
   return RoundedPolygon(
-    vertices = listOf(
-      PointF(0f, 0f),
-      PointF(width, 0f),
-      PointF(width, height),
-      PointF(0f, height),
+    vertices = floatArrayOf(
+      0f, 0f,
+      width, 0f,
+      width, height,
+      0f, height,
     ),
     rounding = CornerRounding(cornerRadius, smoothing),
   ).toPath()

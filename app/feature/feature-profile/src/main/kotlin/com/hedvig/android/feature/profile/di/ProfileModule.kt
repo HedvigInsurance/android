@@ -67,5 +67,5 @@ val profileModule = module {
   viewModel<MyInfoViewModel> {
     MyInfoViewModel(get<ProfileRepositoryProvider>())
   }
-  viewModel<AboutAppViewModel> { AboutAppViewModel(get(), get<ApolloClient>()) }
+  viewModel<AboutAppViewModel> { AboutAppViewModel(get<ApolloClient>()) }
 }

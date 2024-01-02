@@ -19,6 +19,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -59,6 +61,7 @@ fun ExpandablePlusCard(
           targetValue = if (isExpanded) 0f else -180f,
           animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
         )
+        Spacer(Modifier.width(8.dp))
         Box {
           val iconModifier = Modifier.size(16.dp)
           Icon(
@@ -91,4 +94,35 @@ fun ExpandablePlusCard(
       }
     }
   }
+}
+
+/**
+ * A simpler version of [ExpandablePlusCard] which only accepts two strings for the title and for the expanded content.
+ */
+@Composable
+fun ExpandablePlusCard(
+  isExpanded: Boolean,
+  onClick: () -> Unit,
+  titleText: String,
+  expandedText: String,
+  modifier: Modifier = Modifier,
+) {
+  ExpandablePlusCard(
+    isExpanded = isExpanded,
+    onClick = onClick,
+    content = {
+      Text(
+        text = titleText,
+        modifier = Modifier.weight(1f, true),
+      )
+    },
+    expandedContent = {
+      Text(
+        text = expandedText,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(start = 12.dp, end = 32.dp),
+      )
+    },
+    modifier = modifier,
+  )
 }

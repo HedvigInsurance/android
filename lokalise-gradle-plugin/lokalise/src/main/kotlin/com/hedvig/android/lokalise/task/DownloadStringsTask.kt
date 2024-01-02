@@ -2,7 +2,7 @@ package com.hedvig.android.lokalise.task
 
 import com.hedvig.android.lokalise.config.DownloadConfig
 import java.io.File
-import java.net.URL
+import java.net.URI
 import javax.inject.Inject
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
@@ -133,7 +133,7 @@ abstract class DownloadStringsTask @Inject constructor(
   }
 
   private fun File.fillContentsByDownloadingFromUrl(bucketUrl: String) {
-    URL(bucketUrl).openStream().source().buffer().use { zipSource ->
+    URI.create(bucketUrl).toURL().openStream().source().buffer().use { zipSource ->
       this.sink().buffer().use { localFileSink ->
         localFileSink.writeAll(zipSource)
       }

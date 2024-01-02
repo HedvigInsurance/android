@@ -8,6 +8,7 @@ import com.benasher44.uuid.Uuid
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.chat.model.ChatMessage
 import com.hedvig.android.feature.chat.model.ChatMessagesResult
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
@@ -24,7 +25,7 @@ internal class ChatRepositoryDemo(
         id = Uuid.randomUUID().toString(),
         text = "Hello, this is not a real chat, you are in demo mode.",
         sender = ChatMessage.Sender.HEDVIG,
-        sentAt = clock.now(),
+        sentAt = clock.now() - 1.seconds,
       ),
       ChatMessage.ChatMessageText(
         id = Uuid.randomUUID().toString(),

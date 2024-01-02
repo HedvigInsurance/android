@@ -6,10 +6,9 @@ plugins {
 }
 
 dependencies {
-  api(libs.hAnalytics)
-
   implementation(libs.androidx.lifecycle.common)
   implementation(libs.coroutines.core)
+  implementation(libs.hAnalytics)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.json)
   implementation(libs.okhttp.core)

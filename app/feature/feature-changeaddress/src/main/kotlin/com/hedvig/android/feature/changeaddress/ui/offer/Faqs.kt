@@ -3,7 +3,6 @@ package com.hedvig.android.feature.changeaddress.ui.offer
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -52,25 +51,12 @@ internal fun Faqs(faqItems: List<Pair<String, String>>, modifier: Modifier = Mod
 }
 
 @Composable
-private fun FaqItem(faqDisplayName: String, faqText: String?, onClick: () -> Unit, isExpanded: Boolean) {
+private fun FaqItem(faqDisplayName: String, faqText: String, onClick: () -> Unit, isExpanded: Boolean) {
   ExpandablePlusCard(
     isExpanded = isExpanded,
     onClick = onClick,
-    content = {
-      Text(
-        text = faqDisplayName,
-        modifier = Modifier.weight(1f, true),
-      )
-    },
-    expandedContent = {
-      faqText?.let {
-        Text(
-          text = it,
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
-          modifier = Modifier.padding(start = 12.dp, end = 32.dp),
-        )
-      }
-    },
+    titleText = faqDisplayName,
+    expandedText = faqText,
   )
 }
 

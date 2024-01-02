@@ -9,9 +9,6 @@ plugins {
 }
 
 android {
-  buildFeatures {
-    viewBinding = true
-  }
   testOptions.unitTests.isReturnDefaultValues = true
 }
 
@@ -22,7 +19,6 @@ dependencies {
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.compose.uiUtil)
-  implementation(libs.androidx.compose.uiViewBinding)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.androidx.lifecycle.runtime)
   implementation(libs.androidx.navigation.common)
@@ -32,13 +28,10 @@ dependencies {
   implementation(libs.arrow.core)
   implementation(libs.arrow.fx)
   implementation(libs.coil.compose)
-  implementation(libs.fragmentViewBindingDelegate)
-  implementation(libs.insetter)
   implementation(libs.koin.compose)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
-  implementation(libs.materialComponents)
   implementation(libs.moneta)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
@@ -52,6 +45,7 @@ dependencies {
   implementation(projects.coreIcons)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
+  implementation(projects.dataChatReadTimestampPublic)
   implementation(projects.dataTravelCertificatePublic)
   implementation(projects.hanalyticsCore)
   implementation(projects.hanalyticsFeatureFlagsPublic)
@@ -66,6 +60,7 @@ dependencies {
   implementation(projects.navigationCore)
   implementation(projects.notificationPermission)
   implementation(projects.pullrefresh)
+  implementation(projects.uiEmergency)
 
   testImplementation(libs.apollo.testingSupport)
   testImplementation(libs.assertK)
@@ -76,6 +71,7 @@ dependencies {
   testImplementation(projects.apolloOctopusTest)
   testImplementation(projects.apolloTest)
   testImplementation(projects.coreCommonTest)
+  testImplementation(projects.dataChatReadTimestampTest)
   testImplementation(projects.dataTravelCertificateTest)
   testImplementation(projects.hanalyticsFeatureFlagsTest)
   testImplementation(projects.languageTest)

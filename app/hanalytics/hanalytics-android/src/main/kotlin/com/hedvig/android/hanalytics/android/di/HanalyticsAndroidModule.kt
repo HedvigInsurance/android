@@ -6,7 +6,6 @@ import com.hedvig.android.core.datastore.DeviceIdDataStore
 import com.hedvig.android.hanalytics.AndroidHAnalyticsService
 import com.hedvig.android.hanalytics.HAnalyticsService
 import com.hedvig.android.hanalytics.android.tracking.ApplicationLifecycleTracker
-import com.hedvig.hanalytics.HAnalytics
 import okhttp3.OkHttpClient
 import org.koin.dsl.module
 
@@ -24,10 +23,5 @@ val hAnalyticsAndroidModule = module {
       appId = hedvingBuildConstants.appId,
     )
   }
-  single<ApplicationLifecycleTracker> {
-    ApplicationLifecycleTracker(
-      hAnalytics = get<HAnalytics>(),
-      isProduction = get<HedvigBuildConstants>().isProduction,
-    )
-  }
+  single<ApplicationLifecycleTracker> { ApplicationLifecycleTracker() }
 }

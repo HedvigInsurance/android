@@ -9,9 +9,11 @@ import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
+import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.core.demomode.Provider
-import com.hedvig.android.feature.home.claims.commonclaim.CommonClaimsData
-import com.hedvig.android.feature.home.claims.commonclaim.EmergencyData
+import com.hedvig.android.data.chat.read.timestamp.ChatLastMessageReadRepository
+import com.hedvig.android.feature.home.commonclaim.CommonClaimsData
+import com.hedvig.android.feature.home.emergency.EmergencyData
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
@@ -19,12 +21,16 @@ import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.isActive
 import kotlinx.datetime.LocalDate
 
 internal class HomePresenter(
   private val getHomeDataUseCaseProvider: Provider<GetHomeDataUseCase>,
+  private val chatLastMessageReadRepository: ChatLastMessageReadRepository,
   private val featureManager: FeatureManager,
 ) : MoleculePresenter<HomeEvent, HomeUiState> {
   @Composable
@@ -36,6 +42,18 @@ internal class HomePresenter(
     val showChatIcon by produceState(lastState.showChatIcon) {
       val showChatIcon = !featureManager.isFeatureEnabled(Feature.DISABLE_CHAT)
       value = showChatIcon
+    }
+    val isHelpCenterEnabled by produceState(lastState.isHelpCenterEnabled) {
+      val isHelpCenterEnabled = featureManager.isFeatureEnabled(Feature.HELP_CENTER)
+      value = isHelpCenterEnabled
+    }
+    val hasUnseenChatMessages by produceState(
+      lastState.safeCast<HomeUiState.Success>()?.hasUnseenChatMessages ?: false,
+    ) {
+      while (isActive) {
+        value = chatLastMessageReadRepository.isNewestMessageNewerThanLastReadTimestamp()
+        delay(10.seconds)
+      }
     }
 
     CollectEvents { homeEvent: HomeEvent ->
@@ -85,10 +103,12 @@ internal class HomePresenter(
           memberReminders = successData.memberReminders,
           veryImportantMessages = successData.veryImportantMessages,
           allowAddressChange = successData.allowAddressChange,
+          isHelpCenterEnabled = isHelpCenterEnabled,
           allowGeneratingTravelCertificate = successData.allowGeneratingTravelCertificate,
           emergencyData = successData.emergencyData,
           commonClaimsData = successData.commonClaimsData,
           showChatIcon = showChatIcon,
+          hasUnseenChatMessages = hasUnseenChatMessages,
         )
       }
     }
@@ -106,6 +126,12 @@ internal sealed interface HomeUiState {
   val showChatIcon: Boolean
     get() = false
 
+  val isHelpCenterEnabled: Boolean
+    get() = false
+
+  val hasUnseenChatMessages: Boolean
+    get() = false
+
   data class Success(
     override val isReloading: Boolean = false,
     val homeText: HomeText,
@@ -116,7 +142,9 @@ internal sealed interface HomeUiState {
     val allowGeneratingTravelCertificate: Boolean,
     val emergencyData: EmergencyData?,
     val commonClaimsData: ImmutableList<CommonClaimsData>,
+    override val isHelpCenterEnabled: Boolean,
     override val showChatIcon: Boolean,
+    override val hasUnseenChatMessages: Boolean,
   ) : HomeUiState
 
   data class Error(val message: String?) : HomeUiState
@@ -156,6 +184,7 @@ private data class SuccessData(
           is HomeData.ContractStatus.ActiveInFuture -> HomeText.ActiveInFuture(
             homeData.contractStatus.futureInceptionDate,
           )
+
           HomeData.ContractStatus.Terminated -> HomeText.Terminated
           HomeData.ContractStatus.Pending -> HomeText.Pending
           HomeData.ContractStatus.Switching -> HomeText.Switching

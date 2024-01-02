@@ -35,6 +35,7 @@ import com.hedvig.android.core.common.di.datastoreFileQualifier
 import com.hedvig.android.core.datastore.di.dataStoreModule
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.di.demoModule
+import com.hedvig.android.data.chat.read.timestamp.di.chatReadTimestampModule
 import com.hedvig.android.data.settings.datastore.di.settingsDatastoreModule
 import com.hedvig.android.data.travelcertificate.di.claimFlowDataModule
 import com.hedvig.android.data.travelcertificate.di.travelCertificateDataModule
@@ -182,7 +183,7 @@ fun makeUserAgent(locale: Locale): String = buildString {
 
 private val viewModelModule = module {
   viewModel<SimpleSignAuthenticationViewModel> { params ->
-    SimpleSignAuthenticationViewModel(params.get(), get(), get(), get())
+    SimpleSignAuthenticationViewModel(params.get(), get(), get())
   }
   viewModel<GenericAuthViewModel> { GenericAuthViewModel(get(), get()) }
   viewModel<OtpInputViewModel> { (verifyUrl: String, resendUrl: String, credential: String) ->
@@ -221,6 +222,7 @@ private val buildConstantsModule = module {
       override val urlHanalytics: String = context.getString(R.string.HANALYTICS_URL)
       override val urlOdyssey: String = context.getString(R.string.ODYSSEY_URL)
       override val urlBotService: String = context.getString(R.string.BOT_SERVICE)
+      override val urlClaimsService: String = context.getString(R.string.CLAIMS_SERVICE)
       override val deepLinkHost: String = context.getString(R.string.DEEP_LINK_DOMAIN_HOST)
 
       override val appVersionName: String = BuildConfig.VERSION_NAME
@@ -328,6 +330,7 @@ val applicationModule = module {
       cacheManagerModule,
       changeAddressModule,
       chatModule,
+      chatReadTimestampModule,
       claimDetailsModule,
       claimFlowDataModule,
       claimTriagingModule,
@@ -341,6 +344,7 @@ val applicationModule = module {
       datastoreAndroidModule,
       deepLinkModule,
       demoModule,
+      editCoInsuredModule,
       featureManagerModule,
       firebaseNotificationModule,
       foreverModule,
@@ -367,7 +371,6 @@ val applicationModule = module {
       useCaseModule,
       viewModelModule,
       workManagerModule,
-      editCoInsuredModule,
     ),
   )
 }

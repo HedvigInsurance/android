@@ -7,19 +7,12 @@ plugins {
   alias(libs.plugins.squareSortDependencies)
 }
 
-android {
-  buildFeatures {
-    viewBinding = true
-  }
-}
-
 dependencies {
   api(libs.androidx.compose.foundation)
   api(libs.androidx.compose.material3)
   api(libs.arrow.core)
   api(projects.coreIcons)
 
-  implementation(libs.accompanist.insetsUi)
   implementation(libs.androidx.compose.material3.windowSizeClass)
   implementation(libs.androidx.compose.materialIconsExtended)
   implementation(libs.androidx.compose.uiUtil)

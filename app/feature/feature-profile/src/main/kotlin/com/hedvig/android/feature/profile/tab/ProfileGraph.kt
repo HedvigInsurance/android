@@ -33,6 +33,7 @@ fun NavGraphBuilder.profileGraph(
   navigateToAddMissingInfo: (navBackStackEntry: NavBackStackEntry, contractId: String) -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
+  navigateToHelpCenter: (navBackStackEntry: NavBackStackEntry) -> Unit,
 ) {
   navigation<TopLevelGraph.PROFILE>(
     startDestination = createRoutePattern<AppDestination.TopLevelDestination.Profile>(),
@@ -64,6 +65,9 @@ fun NavGraphBuilder.profileGraph(
         navigateToConnectPayment = navigateToConnectPayment,
         navigateToAddMissingInfo = { contractId ->
           navigateToAddMissingInfo(backStackEntry, contractId)
+        },
+        navigateToHelpCenter = {
+          navigateToHelpCenter(backStackEntry)
         },
         openAppSettings = openAppSettings,
         openUrl = openUrl,

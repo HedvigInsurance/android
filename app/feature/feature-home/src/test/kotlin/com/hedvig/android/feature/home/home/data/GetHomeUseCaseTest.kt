@@ -26,7 +26,7 @@ import com.hedvig.android.core.common.test.isRight
 import com.hedvig.android.data.travelcertificate.TestGetTravelCertificateSpecificationsUseCase
 import com.hedvig.android.data.travelcertificate.TravelCertificateData
 import com.hedvig.android.data.travelcertificate.TravelCertificateError
-import com.hedvig.android.feature.home.claims.commonclaim.EmergencyData
+import com.hedvig.android.feature.home.emergency.EmergencyData
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.hanalytics.featureflags.test.FakeFeatureManager2

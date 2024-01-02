@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <style name="NightAdjusted.Hedvig.Theme" parent="Theme.AppCompat.Light.NoActionBar" />
+
+  <!-- The final Theme -->
+  <style name="Hedvig.Theme" parent="NightAdjusted.Hedvig.Theme" />
+
+  <style name="NightAdjusted.Hedvig.Theme.Splash" parent="Theme.SplashScreen">
+    <item name="android:windowLightStatusBar">true</item>
+    <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
+  </style>
+
+  <style name="Hedvig.Theme.Splash" parent="NightAdjusted.Hedvig.Theme.Splash">
+    <item name="postSplashScreenTheme">@style/Hedvig.Theme</item>
+    <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash</item>
+    <item name="windowSplashScreenAnimationDuration">0</item>
+    <item name="windowSplashScreenBackground">@color/splash_background</item>
+  </style>
+</resources>

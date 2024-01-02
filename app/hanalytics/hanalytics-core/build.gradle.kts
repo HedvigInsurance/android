@@ -6,9 +6,8 @@ plugins {
 }
 
 dependencies {
-  api(libs.hAnalytics)
-
   implementation(libs.coroutines.core)
+  implementation(libs.hAnalytics)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.coreCommonPublic)
