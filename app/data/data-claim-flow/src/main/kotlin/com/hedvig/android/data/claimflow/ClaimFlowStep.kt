@@ -7,6 +7,7 @@ import octopus.fragment.CheckoutMethodFragment
 import octopus.fragment.ClaimFlowStepFragment
 import octopus.fragment.FlowClaimContractSelectStepFragment
 import octopus.fragment.FlowClaimDeflectPartnerFragment
+import octopus.fragment.FlowClaimFileUploadFragment
 import octopus.fragment.FlowClaimLocationStepFragment
 import octopus.fragment.FlowClaimSingleItemStepFragment
 import octopus.fragment.MoneyFragment
@@ -116,6 +117,13 @@ sealed interface ClaimFlowStep {
     val partners: List<FlowClaimDeflectPartnerFragment>,
   ) : ClaimFlowStep
 
+  data class ClaimFileUploadStep(
+    override val flowId: FlowId,
+    val title: String,
+    val targetUploadUrl: String,
+    val uploads: List<FlowClaimFileUploadFragment.Upload>,
+  ) : ClaimFlowStep
+
   data class ClaimFailedStep(override val flowId: FlowId) : ClaimFlowStep
 
   data class ClaimSuccessStep(override val flowId: FlowId) : ClaimFlowStep
@@ -216,6 +224,12 @@ internal fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(flowId: FlowId): 
     is ClaimFlowStepFragment.FlowClaimDeflectPestsStepCurrentStep -> ClaimFlowStep.ClaimDeflectPestsStep(
       flowId,
       partners,
+    )
+    is ClaimFlowStepFragment.FlowClaimFileUploadStepCurrentStep -> ClaimFlowStep.ClaimFileUploadStep(
+      flowId,
+      title,
+      targetUploadUrl,
+      uploads,
     )
     else -> ClaimFlowStep.UnknownStep(flowId)
   }

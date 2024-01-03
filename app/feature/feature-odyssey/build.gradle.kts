@@ -32,6 +32,7 @@ dependencies {
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDatastorePublic)
   implementation(projects.coreDesignSystem)
+  implementation(projects.coreFileUpload)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
   implementation(projects.coreUiData)

@@ -1,4 +1,4 @@
-package com.hedvig.android.data.travelcertificate.di
+package com.hedvig.android.data.claimflow.di
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences

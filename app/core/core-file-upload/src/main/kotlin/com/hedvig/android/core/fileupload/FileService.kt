@@ -1,4 +1,4 @@
-package com.hedvig.android.core.common.android
+package com.hedvig.android.core.fileupload
 
 import android.content.ContentResolver
 import android.net.Uri

@@ -10,6 +10,7 @@ import octopus.fragment.CheckoutMethodFragment
 import octopus.fragment.ClaimFlowStepFragment
 import octopus.fragment.FlowClaimContractSelectStepFragment
 import octopus.fragment.FlowClaimDeflectPartnerFragment
+import octopus.fragment.FlowClaimFileUploadFragment
 import octopus.fragment.FlowClaimLocationStepFragment
 import octopus.fragment.FlowClaimSingleItemStepFragment
 
@@ -107,6 +108,12 @@ fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
     is ClaimFlowStep.ClaimDeflectPestsStep -> ClaimFlowDestination.DeflectPests(
       partners.map { it.toLocalPartner() }.toPersistentList(),
     )
+
+    is ClaimFlowStep.ClaimFileUploadStep -> ClaimFlowDestination.FileUpload(
+      title,
+      targetUploadUrl,
+      uploads.map { it.toLocalUpload() }.toPersistentList(),
+    )
   }
 }
 
@@ -157,5 +164,12 @@ private fun ClaimFlowStepFragment.FlowClaimConfirmEmergencyStepCurrentStep.Optio
   return EmergencyOption(
     displayName = displayName,
     value = displayValue,
+  )
+}
+
+private fun FlowClaimFileUploadFragment.Upload.toLocalUpload(): Upload {
+  return Upload(
+    fileId,
+    signedUrl,
   )
 }
