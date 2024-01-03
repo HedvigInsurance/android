@@ -23,12 +23,14 @@ import octopus.FlowClaimConfirmEmergencyMutation
 import octopus.FlowClaimContractNextMutation
 import octopus.FlowClaimDateOfOccurrenceNextMutation
 import octopus.FlowClaimDateOfOccurrencePlusLocationNextMutation
+import octopus.FlowClaimFileUploadNextMutation
 import octopus.FlowClaimLocationNextMutation
 import octopus.FlowClaimPhoneNumberNextMutation
 import octopus.FlowClaimSingleItemCheckoutNextMutation
 import octopus.FlowClaimSingleItemNextMutation
 import octopus.FlowClaimStartMutation
 import octopus.FlowClaimSummaryNextMutation
+import octopus.type.FlowClaimFileUploadInput
 import octopus.type.FlowClaimItemBrandInput
 import octopus.type.FlowClaimItemModelInput
 import octopus.type.FlowClaimSingleItemInput
@@ -84,6 +86,8 @@ interface ClaimFlowRepository {
   ): Either<ErrorMessage, ClaimFlowStep>
 
   suspend fun submitUrgentEmergency(isUrgentEmergency: Boolean): Either<ErrorMessage, ClaimFlowStep>
+
+  suspend fun submitFiles(fileIds: List<String>): Either<ErrorMessage, ClaimFlowStep>
 }
 
 internal class ClaimFlowRepositoryImpl(
@@ -293,6 +297,25 @@ internal class ClaimFlowRepositoryImpl(
         .toEither(::ErrorMessage)
         .bind()
         .flowClaimConfirmEmergencyNext
+
+      claimFlowContextStorage.saveContext(result.context)
+      result.currentStep.toClaimFlowStep(FlowId(result.id))
+    }
+  }
+
+  override suspend fun submitFiles(fileIds: List<String>): Either<ErrorMessage, ClaimFlowStep> {
+    return either {
+      val result = apolloClient
+        .mutation(
+          FlowClaimFileUploadNextMutation(
+            input = FlowClaimFileUploadInput(fileIds),
+            context = claimFlowContextStorage.getContext(),
+          ),
+        )
+        .safeExecute()
+        .toEither(::ErrorMessage)
+        .bind()
+        .flowClaimFileUploadNext
 
       claimFlowContextStorage.saveContext(result.context)
       result.currentStep.toClaimFlowStep(FlowId(result.id))

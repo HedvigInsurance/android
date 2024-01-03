@@ -44,6 +44,7 @@ dependencies {
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreDemoMode)
   implementation(projects.coreDesignSystem)
+  implementation(projects.coreFileUpload)
   implementation(projects.coreIcons)
   implementation(projects.coreResources)
   implementation(projects.coreRetrofit)

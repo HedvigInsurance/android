@@ -16,6 +16,7 @@ fragment ClaimFlowStepFragment on Flow {
     ...FlowClaimConfirmEmergencyStepFragment
     ...FlowClaimDeflectEmergencyStepFragment
     ...FlowClaimDeflectPestsStepFragment
+    ...FlowClaimFileUploadFragment
   }
 }
 
@@ -170,4 +171,14 @@ fragment FlowClaimDeflectPartnerFragment on FlowClaimDeflectPartner {
   imageUrl
   url
   phoneNumber
+}
+
+fragment FlowClaimFileUploadFragment on FlowClaimFileUploadStep {
+  id
+  title
+  targetUploadUrl
+  uploads { #already added files - if we go back and get upload step again
+    fileId
+    signedUrl
+  }
 }

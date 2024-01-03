@@ -261,11 +261,13 @@ private fun ColumnScope.ProfileItemRows(
     icon = Icons.Hedvig.Settings,
     onClick = showSettings,
   )
-  ProfileRow(
-    title = stringResource(R.string.HC_TITLE),
-    icon = Icons.Hedvig.Hedvig,
-    onClick = navigateToHelpCenter,
-  )
+  if (profileUiState.showHelpCenter) {
+    ProfileRow(
+      title = stringResource(R.string.HC_TITLE),
+      icon = Icons.Hedvig.Hedvig,
+      onClick = navigateToHelpCenter,
+    )
+  }
 }
 
 @Composable

@@ -10,8 +10,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import arrow.fx.coroutines.parMap
 import com.hedvig.android.audio.player.SignedAudioUrl
+import com.hedvig.android.core.fileupload.UploadFileUseCase
 import com.hedvig.android.feature.claim.details.data.GetClaimDetailUiStateUseCase
-import com.hedvig.android.feature.claim.details.data.UploadFileUseCase
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
