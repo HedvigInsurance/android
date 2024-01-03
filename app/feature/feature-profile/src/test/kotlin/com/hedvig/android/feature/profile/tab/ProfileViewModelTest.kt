@@ -270,10 +270,10 @@ class ProfileViewModelTest {
       runCurrent()
       assertThat(viewModel.data.value).isEqualTo(
         ProfileUiState(
-          euroBonus = null,
-          showPaymentScreen = false,
-          memberReminders = MemberReminders(),
-          isLoading = false,
+            euroBonus = null,
+            showPaymentScreen = false,
+            memberReminders = MemberReminders(),
+            isLoading = false,
         ),
       )
 
@@ -287,10 +287,10 @@ class ProfileViewModelTest {
       runCurrent()
       assertThat(viewModel.data.value).isEqualTo(
         ProfileUiState(
-          euroBonus = EuroBonus("abc"),
-          showPaymentScreen = true,
-          memberReminders = MemberReminders(connectPayment = MemberReminder.ConnectPayment(id = testId)),
-          isLoading = false,
+            euroBonus = EuroBonus("abc"),
+            showPaymentScreen = true,
+            memberReminders = MemberReminders(connectPayment = MemberReminder.ConnectPayment(id = testId)),
+            isLoading = false,
         ),
       )
 
