@@ -64,8 +64,8 @@ fun HedvigAlertDialog(
       TextButton(
         shape = MaterialTheme.shapes.squircleMedium,
         onClick = {
-          onDismissRequest()
           onConfirmClick()
+          onDismissRequest()
         },
         modifier = Modifier.testTag("positive_button"),
       ) {

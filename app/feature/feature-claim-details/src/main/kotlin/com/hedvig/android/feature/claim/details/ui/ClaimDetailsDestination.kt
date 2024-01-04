@@ -36,7 +36,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -56,8 +55,6 @@ import com.hedvig.android.audio.player.state.AudioPlayerState
 import com.hedvig.android.audio.player.state.PlayableAudioSource
 import com.hedvig.android.audio.player.state.rememberAudioPlayer
 import com.hedvig.android.compose.photo.capture.state.rememberPhotoCaptureState
-import com.hedvig.android.core.designsystem.component.bottomsheet.HedvigBottomSheet
-import com.hedvig.android.core.designsystem.component.button.ClickableOption
 import com.hedvig.android.core.designsystem.component.button.HedvigSecondaryContainedButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
@@ -65,13 +62,14 @@ import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenC
 import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.fileupload.ui.FilePickerBottomSheet
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.HedvigIcons
 import com.hedvig.android.core.icons.hedvig.colored.hedvig.Chat
-import com.hedvig.android.core.icons.hedvig.normal.Camera
 import com.hedvig.android.core.icons.hedvig.normal.Document
 import com.hedvig.android.core.icons.hedvig.normal.Pictures
 import com.hedvig.android.core.icons.hedvig.normal.Play
+import com.hedvig.android.core.ui.FileContainer
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
 import com.hedvig.android.core.ui.dialog.ErrorDialog
 import com.hedvig.android.core.ui.plus
@@ -159,7 +157,6 @@ private fun ClaimDetailScreen(
   appPackageId: String,
 ) {
   var showFileTypeSelectBottomSheet by remember { mutableStateOf(false) }
-  val sheetState = rememberModalBottomSheetState()
 
   val photoCaptureState = rememberPhotoCaptureState(appPackageId = appPackageId) { uri ->
     logcat { "ChatFileState sending uri:$uri" }
@@ -181,39 +178,21 @@ private fun ClaimDetailScreen(
   }
 
   if (showFileTypeSelectBottomSheet) {
-    HedvigBottomSheet(
-      onDismissed = { showFileTypeSelectBottomSheet = false },
-      sheetState = sheetState,
-      content = {
-        Column(
-          modifier = Modifier.padding(horizontal = 16.dp),
-          verticalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
-          ClickableOption(
-            text = stringResource(id = R.string.file_upload_photo_library),
-            icon = HedvigIcons.Pictures,
-            onClick = {
-              photoPicker.launch(PickVisualMediaRequest())
-              showFileTypeSelectBottomSheet = false
-            },
-          )
-          ClickableOption(
-            text = stringResource(id = R.string.file_upload_take_photo),
-            icon = HedvigIcons.Camera,
-            onClick = {
-              photoCaptureState.launchTakePhotoRequest()
-              showFileTypeSelectBottomSheet = false
-            },
-          )
-          ClickableOption(
-            text = stringResource(id = R.string.file_upload_choose_files),
-            icon = HedvigIcons.Document,
-            onClick = {
-              filePicker.launch("*/*")
-              showFileTypeSelectBottomSheet = false
-            },
-          )
-        }
+    FilePickerBottomSheet(
+      onPickPhoto = {
+        photoPicker.launch(PickVisualMediaRequest())
+        showFileTypeSelectBottomSheet = false
+      },
+      onPickFile = {
+        filePicker.launch("*/*")
+        showFileTypeSelectBottomSheet = false
+      },
+      onTakePhoto = {
+        photoCaptureState.launchTakePhotoRequest()
+        showFileTypeSelectBottomSheet = false
+      },
+      onDismiss = {
+        showFileTypeSelectBottomSheet = false
       },
     )
   }
@@ -275,7 +254,7 @@ private fun ClaimDetailScreen(
         contentAlignment = Alignment.Center,
       ) {
         if (it.mimeType.contains("image")) {
-          ClaimAsyncImage(
+          FileContainer(
             model = it.url,
             imageLoader = imageLoader,
             cacheKey = it.id,

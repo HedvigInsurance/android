@@ -26,4 +26,5 @@ dependencies {
   implementation(projects.apolloOctopusPublic)
   implementation(projects.coreDesignSystem)
   implementation(projects.coreResources)
+  implementation(projects.placeholder)
 }

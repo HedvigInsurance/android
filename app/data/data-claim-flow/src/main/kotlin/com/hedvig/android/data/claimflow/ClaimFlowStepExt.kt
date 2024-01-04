@@ -167,9 +167,11 @@ private fun ClaimFlowStepFragment.FlowClaimConfirmEmergencyStepCurrentStep.Optio
   )
 }
 
-private fun FlowClaimFileUploadFragment.Upload.toLocalUpload(): Upload {
-  return Upload(
-    fileId,
-    signedUrl,
+private fun FlowClaimFileUploadFragment.Upload.toLocalUpload(): UploadedFile {
+  return UploadedFile(
+    id = fileId,
+    name = name,
+    mimeType = mimeType,
+    path = signedUrl,
   )
 }

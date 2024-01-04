@@ -53,6 +53,7 @@ import org.koin.core.parameter.parametersOf
 fun NavGraphBuilder.claimFlowGraph(
   windowSizeClass: WindowSizeClass,
   navigator: Navigator,
+  appPackageId: String,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   navigateToTriaging: () -> Unit,
   openAppSettings: () -> Unit,
@@ -274,11 +275,7 @@ fun NavGraphBuilder.claimFlowGraph(
       val viewModel: FileUploadViewModel = koinViewModel { parametersOf(this) }
       FileUploadDestination(
         viewModel = viewModel,
-        openChat = {
-          openChat(backStackEntry)
-        },
         navigateUp = navigator::navigateUp,
-        openUrl = openUrl,
         windowSizeClass = windowSizeClass,
         closeClaimFlow = closeClaimFlow,
         imageLoader = imageLoader,
@@ -286,6 +283,7 @@ fun NavGraphBuilder.claimFlowGraph(
           viewModel.handledNextStepNavigation()
           navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())
         },
+        appPackageId = appPackageId
       )
     }
   }

@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.claim.details.ui
+package com.hedvig.android.core.ui
 
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.MaterialTheme
@@ -23,7 +23,7 @@ import com.hedvig.android.placeholder.fade
 import com.hedvig.android.placeholder.placeholder
 
 @Composable
-internal fun ClaimAsyncImage(
+fun FileContainer(
   model: Any,
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,

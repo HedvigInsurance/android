@@ -129,7 +129,7 @@ sealed interface ClaimFlowDestination : Destination {
   data class FileUpload(
     val title: String,
     val targetUploadUrl: String,
-    val uploads: SerializableImmutableList<Upload>,
+    val uploads: SerializableImmutableList<UploadedFile>,
   ) : ClaimFlowDestination
 
   @Serializable
@@ -255,4 +255,17 @@ data class DeflectPartner(
 data class EmergencyOption(val displayName: String, val value: Boolean)
 
 @Serializable
-data class Upload(val fileId: String, val signedUrl: String)
+data class UploadedFile(
+  val name: String,
+  val path: String,
+  val mimeType: String,
+  val id: String,
+)
+
+@Serializable
+data class LocalFile(
+  val path: String,
+  val mimeType: String,
+  val id: String,
+)
+
