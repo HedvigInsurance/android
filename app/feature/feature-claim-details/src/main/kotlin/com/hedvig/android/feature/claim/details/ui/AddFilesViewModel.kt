@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.claim.details.ui
 
 import android.net.Uri
-import androidx.core.net.toFile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.raise.either
@@ -58,14 +57,19 @@ internal class AddFilesViewModel(
 
   fun addLocalFile(uri: Uri) {
     _uiState.update {
-      val mimeType = fileService.getMimeType(uri)
-      val localFile = UiFile(
-        path = uri.toString(),
-        mimeType = mimeType,
-        id = uri.toString(),
-        name = uri.toFile().name,
-      )
-      it.copy(localFiles = it.localFiles + localFile)
+      try {
+        val mimeType = fileService.getMimeType(uri)
+        val name = fileService.getFileName(uri) ?: uri.toString()
+        val localFile = UiFile(
+          name = name,
+          path = uri.toString(),
+          mimeType = mimeType,
+          id = uri.toString(),
+        )
+        it.copy(localFiles = it.localFiles + localFile)
+      } catch (e: Exception) {
+        it.copy(errorMessage = e.message)
+      }
     }
   }
 
