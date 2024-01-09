@@ -51,6 +51,7 @@ import com.hedvig.android.core.icons.HedvigIcons
 import com.hedvig.android.core.icons.hedvig.normal.InfoFilled
 import com.hedvig.android.core.icons.hedvig.normal.WarningFilled
 import com.hedvig.android.core.icons.hedvig.small.hedvig.Checkmark
+import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
@@ -121,6 +122,34 @@ private fun MemberChargeDetailsScreen(
           onClick = { onCardClick(chargeBreakdown) },
         )
         Spacer(modifier = Modifier.height(8.dp))
+      }
+
+      memberCharge.carriedAdjustmentIfAboveZero()?.let {
+        Spacer(modifier = Modifier.height(16.dp))
+        Row(
+          modifier = Modifier.fillMaxWidth(),
+          horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+          Text(text = stringResource(id = R.string.payments_carried_adjustment))
+          Text(text = it.toString())
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        VectorInfoCard(text = stringResource(id = R.string.payments_carried_adjustment_info))
+        Spacer(modifier = Modifier.height(16.dp))
+      }
+
+      memberCharge.settlementAdjustmentIfAboveZero()?.let {
+        Spacer(modifier = Modifier.height(16.dp))
+        Row(
+          modifier = Modifier.fillMaxWidth(),
+          horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+          Text(text = stringResource(id = R.string.payments_settlement_adjustment))
+          Text(text = it.toString())
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        VectorInfoCard(text = stringResource(id = R.string.payments_settlement_adjustment_info))
+        Spacer(modifier = Modifier.height(16.dp))
       }
 
       if (memberCharge.discounts.isNotEmpty()) {

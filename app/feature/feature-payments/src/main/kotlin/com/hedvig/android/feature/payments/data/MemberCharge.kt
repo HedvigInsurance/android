@@ -14,7 +14,22 @@ internal data class MemberCharge(
   val failedCharge: FailedCharge?,
   val chargeBreakdowns: List<ChargeBreakdown>,
   val discounts: List<Discount>,
+  private val carriedAdjustment: UiMoney?,
+  private val settlementAdjustment: UiMoney?,
 ) {
+  fun carriedAdjustmentIfAboveZero(): UiMoney? = if (carriedAdjustment != null && carriedAdjustment.amount > 0) {
+    carriedAdjustment
+  } else {
+    null
+  }
+
+  fun settlementAdjustmentIfAboveZero(): UiMoney? =
+    if (settlementAdjustment != null && settlementAdjustment.amount > 0) {
+      settlementAdjustment
+    } else {
+      null
+    }
+
   @Serializable
   data class FailedCharge(
     val fromDate: LocalDate,

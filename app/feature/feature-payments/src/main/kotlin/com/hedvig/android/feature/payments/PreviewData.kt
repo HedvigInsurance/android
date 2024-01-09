@@ -97,6 +97,8 @@ private val chargeHistoryPreviewData = listOf(
       ),
     ),
     discounts = discountsPreviewData,
+    carriedAdjustment = UiMoney(200.0, CurrencyCode.SEK),
+    settlementAdjustment = UiMoney(200.0, CurrencyCode.SEK),
   ),
   MemberCharge(
     grossAmount = UiMoney(500.0, CurrencyCode.SEK),
@@ -123,6 +125,8 @@ private val chargeHistoryPreviewData = listOf(
       ),
     ),
     discounts = discountsPreviewData,
+    carriedAdjustment = UiMoney(200.0, CurrencyCode.SEK),
+    settlementAdjustment = UiMoney(200.0, CurrencyCode.SEK),
   ),
   MemberCharge(
     grossAmount = UiMoney(200.0, CurrencyCode.SEK),
@@ -149,6 +153,8 @@ private val chargeHistoryPreviewData = listOf(
       ),
     ),
     discounts = discountsPreviewData,
+    carriedAdjustment = UiMoney(200.0, CurrencyCode.SEK),
+    settlementAdjustment = UiMoney(200.0, CurrencyCode.SEK),
   ),
   MemberCharge(
     grossAmount = UiMoney(200.0, CurrencyCode.SEK),
@@ -175,6 +181,8 @@ private val chargeHistoryPreviewData = listOf(
       ),
     ),
     discounts = discountsPreviewData,
+    carriedAdjustment = UiMoney(200.0, CurrencyCode.SEK),
+    settlementAdjustment = null,
   ),
   MemberCharge(
     grossAmount = UiMoney(200.0, CurrencyCode.SEK),
@@ -201,6 +209,8 @@ private val chargeHistoryPreviewData = listOf(
       ),
     ),
     discounts = discountsPreviewData,
+    carriedAdjustment = UiMoney(200.0, CurrencyCode.SEK),
+    settlementAdjustment = UiMoney(200.0, CurrencyCode.SEK),
   ),
 )
 
@@ -230,6 +240,8 @@ internal val paymentOverViewPreviewData = PaymentOverview(
       ),
     ),
     discounts = discountsPreviewData,
+    carriedAdjustment = UiMoney(200.0, CurrencyCode.SEK),
+    settlementAdjustment = UiMoney(200.0, CurrencyCode.SEK),
   ),
   pastCharges = chargeHistoryPreviewData.sortedBy { it.dueDate },
   paymentConnection = PaymentConnection(
