@@ -90,7 +90,7 @@ internal fun ClaimDetailsDestination(
   appPackageId: String,
   navigateUp: () -> Unit,
   onChatClick: () -> Unit,
-  onSendFile: (Uri) -> Unit,
+  onUri: (Uri, targetUploadUrl: String) -> Unit,
   openUrl: (String) -> Unit,
 ) {
   val viewState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -103,7 +103,7 @@ internal fun ClaimDetailsDestination(
     retry = { viewModel.emit(ClaimDetailsEvent.Retry) },
     navigateUp = navigateUp,
     onChatClick = onChatClick,
-    onSendFile = onSendFile,
+    onUri = onUri,
   )
 }
 
@@ -117,7 +117,7 @@ private fun ClaimDetailScreen(
   retry: () -> Unit,
   navigateUp: () -> Unit,
   onChatClick: () -> Unit,
-  onSendFile: (Uri) -> Unit,
+  onUri: (file: Uri, uploadUri: String) -> Unit,
 ) {
   Surface(
     color = MaterialTheme.colorScheme.background,
@@ -132,7 +132,7 @@ private fun ClaimDetailScreen(
         is ClaimDetailUiState.Content -> ClaimDetailScreen(
           uiState = uiState,
           onChatClick = onChatClick,
-          onSendFile = onSendFile,
+          onUri = onUri,
           onDismissUploadError = onDismissUploadError,
           openUrl = openUrl,
           imageLoader = imageLoader,
@@ -150,7 +150,7 @@ private fun ClaimDetailScreen(
 private fun ClaimDetailScreen(
   uiState: ClaimDetailUiState.Content,
   onChatClick: () -> Unit,
-  onSendFile: (Uri) -> Unit,
+  onUri: (file: Uri, uploadUri: String) -> Unit,
   openUrl: (String) -> Unit,
   onDismissUploadError: () -> Unit,
   imageLoader: ImageLoader,
@@ -160,20 +160,20 @@ private fun ClaimDetailScreen(
 
   val photoCaptureState = rememberPhotoCaptureState(appPackageId = appPackageId) { uri ->
     logcat { "ChatFileState sending uri:$uri" }
-    onSendFile(uri)
+    onUri(uri, uiState.uploadUri)
   }
   val photoPicker = rememberLauncherForActivityResult(
     contract = ActivityResultContracts.PickVisualMedia(),
   ) { resultingUri: Uri? ->
     if (resultingUri != null) {
-      onSendFile(resultingUri)
+      onUri(resultingUri, uiState.uploadUri)
     }
   }
   val filePicker = rememberLauncherForActivityResult(
     contract = ActivityResultContracts.GetContent(),
   ) { resultingUri: Uri? ->
     if (resultingUri != null) {
-      onSendFile(resultingUri)
+      onUri(resultingUri, uiState.uploadUri)
     }
   }
 
@@ -490,7 +490,7 @@ private fun PreviewClaimDetailScreen() {
           uploadError = null,
         ),
         onChatClick = {},
-        onSendFile = {},
+        onUri = { uri: Uri, s: String -> },
         openUrl = {},
         imageLoader = rememberPreviewImageLoader(),
         appPackageId = "",

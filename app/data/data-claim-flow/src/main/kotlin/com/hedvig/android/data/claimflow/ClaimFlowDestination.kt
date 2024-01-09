@@ -3,6 +3,7 @@ package com.hedvig.android.data.claimflow
 import android.content.res.Resources
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Immutable
+import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.core.uidata.UiNullableMoney
 import com.hedvig.android.data.claimflow.ItemBrand.Unknown.displayName
@@ -129,7 +130,7 @@ sealed interface ClaimFlowDestination : Destination {
   data class FileUpload(
     val title: String,
     val targetUploadUrl: String,
-    val uploads: SerializableImmutableList<UploadedFile>,
+    val uploads: SerializableImmutableList<UiFile>,
   ) : ClaimFlowDestination
 
   @Serializable
@@ -253,19 +254,3 @@ data class DeflectPartner(
 
 @Serializable
 data class EmergencyOption(val displayName: String, val value: Boolean)
-
-@Serializable
-data class UploadedFile(
-  val name: String,
-  val path: String,
-  val mimeType: String,
-  val id: String,
-)
-
-@Serializable
-data class LocalFile(
-  val path: String,
-  val mimeType: String,
-  val id: String,
-)
-

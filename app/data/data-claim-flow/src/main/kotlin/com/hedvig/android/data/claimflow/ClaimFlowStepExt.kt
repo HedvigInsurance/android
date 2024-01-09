@@ -1,5 +1,6 @@
 package com.hedvig.android.data.claimflow
 
+import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.core.uidata.UiNullableMoney
 import com.hedvig.android.data.claimflow.model.AudioUrl
@@ -167,8 +168,8 @@ private fun ClaimFlowStepFragment.FlowClaimConfirmEmergencyStepCurrentStep.Optio
   )
 }
 
-private fun FlowClaimFileUploadFragment.Upload.toLocalUpload(): UploadedFile {
-  return UploadedFile(
+private fun FlowClaimFileUploadFragment.Upload.toLocalUpload(): UiFile {
+  return UiFile(
     id = fileId,
     name = name,
     mimeType = mimeType,

@@ -22,7 +22,6 @@ import com.hedvig.android.feature.odyssey.step.summary.ClaimSummaryViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
-@Suppress("RemoveExplicitTypeArguments")
 val odysseyModule = module {
   viewModel<AudioRecordingViewModel> { (flowId: FlowId, audioContent: AudioContent?) ->
     AudioRecordingViewModel(
@@ -70,11 +69,11 @@ val odysseyModule = module {
   }
   viewModel<FileUploadViewModel> { (fileUpload: ClaimFlowDestination.FileUpload) ->
     FileUploadViewModel(
-      get<ClaimFlowRepository>(),
-      get<UploadFileUseCase>(),
-      get<FileService>(),
-      fileUpload.targetUploadUrl,
-      fileUpload.uploads,
+      uploadFileUseCase = get<UploadFileUseCase>(),
+      fileService = get<FileService>(),
+      targetUploadUrl = fileUpload.targetUploadUrl,
+      files = fileUpload.uploads,
+      claimFlowRepository = get<ClaimFlowRepository>(),
     )
   }
 }
