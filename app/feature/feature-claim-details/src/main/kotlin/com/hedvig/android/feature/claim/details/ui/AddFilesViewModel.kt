@@ -94,4 +94,3 @@ internal data class FileUploadUiState(
   val localFiles: List<UiFile> = emptyList(),
   val uploadedFileIds: List<String> = emptyList(),
 )
-

@@ -283,7 +283,7 @@ fun NavGraphBuilder.claimFlowGraph(
           viewModel.handledNextStepNavigation()
           navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())
         },
-        appPackageId = appPackageId
+        appPackageId = appPackageId,
       )
     }
   }

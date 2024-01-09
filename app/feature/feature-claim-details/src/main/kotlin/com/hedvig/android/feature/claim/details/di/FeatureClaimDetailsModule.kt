@@ -23,7 +23,7 @@ val claimDetailsModule = module {
     ClaimDetailsViewModel(
       claimId = claimId,
       getClaimDetailUiStateUseCase = get<GetClaimDetailUiStateUseCase>(),
-      uploadFileUseCase = get<UploadFileUseCase>()
+      uploadFileUseCase = get<UploadFileUseCase>(),
     )
   }
 }

@@ -10,6 +10,6 @@ sealed interface ClaimDetailDestinations : Destination {
   @Serializable
   data class AddFilesDestination(
     val targetUploadUrl: String,
-    val initialFileUri: String
+    val initialFileUri: String,
   ) : ClaimDetailDestinations
 }

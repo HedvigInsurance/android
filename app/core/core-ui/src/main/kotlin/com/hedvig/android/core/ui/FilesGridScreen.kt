@@ -167,5 +167,3 @@ private fun getIconFromMimeType(mimeType: String) = when (mimeType) {
   "application/pdf" -> HedvigIcons.Document
   else -> HedvigIcons.Document
 }
-
-

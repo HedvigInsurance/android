@@ -323,7 +323,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
       }
     },
     imageLoader = imageLoader,
-    appPackageId = hedvigBuildConstants.appId
+    appPackageId = hedvigBuildConstants.appId,
   )
   terminalClaimFlowStepDestinations(
     navigator = navigator,

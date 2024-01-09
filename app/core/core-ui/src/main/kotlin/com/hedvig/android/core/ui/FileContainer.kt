@@ -23,12 +23,7 @@ import com.hedvig.android.placeholder.fade
 import com.hedvig.android.placeholder.placeholder
 
 @Composable
-fun FileContainer(
-  model: Any,
-  imageLoader: ImageLoader,
-  modifier: Modifier = Modifier,
-  cacheKey: String? = null,
-) {
+fun FileContainer(model: Any, imageLoader: ImageLoader, modifier: Modifier = Modifier, cacheKey: String? = null) {
   val loadedImageIntrinsicSize = remember { mutableStateOf<IntSize?>(null) }
   val placeholderPainter: Painter = rememberShapedColorPainter(MaterialTheme.colorScheme.onSurfaceVariant)
   AsyncImage(

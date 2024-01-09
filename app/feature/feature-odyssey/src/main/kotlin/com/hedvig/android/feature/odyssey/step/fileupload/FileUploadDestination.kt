@@ -123,4 +123,3 @@ internal fun FileUploadDestination(
     )
   }
 }
-

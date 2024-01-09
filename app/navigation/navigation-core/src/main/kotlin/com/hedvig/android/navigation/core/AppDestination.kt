@@ -70,6 +70,6 @@ sealed interface AppDestination : Destination {
 
   @Serializable
   data class ClaimDetails(
-    val claimId: String
+    val claimId: String,
   ) : AppDestination
 }

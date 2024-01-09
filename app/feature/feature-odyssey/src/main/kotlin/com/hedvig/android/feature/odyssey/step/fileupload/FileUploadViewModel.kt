@@ -119,4 +119,3 @@ internal data class FileUploadUiState(
 ) {
   val hasFiles = localFiles.isNotEmpty() || uploadedFiles.isNotEmpty()
 }
-

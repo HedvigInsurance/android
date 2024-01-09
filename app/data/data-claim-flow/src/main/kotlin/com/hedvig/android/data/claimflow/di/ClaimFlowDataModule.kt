@@ -19,7 +19,12 @@ import retrofit2.Retrofit
 
 val claimFlowDataModule = module {
   single<ClaimFlowRepository> {
-    ClaimFlowRepositoryImpl(get<ApolloClient>(), get<OdysseyService>(), get<ClaimFlowContextStorage>(), get<NetworkCacheManager>())
+    ClaimFlowRepositoryImpl(
+      get<ApolloClient>(),
+      get<OdysseyService>(),
+      get<ClaimFlowContextStorage>(),
+      get<NetworkCacheManager>(),
+    )
   }
   single<ClaimFlowContextStorage> { ClaimFlowContextStorage(get<DataStore<Preferences>>()) }
 
