@@ -53,8 +53,8 @@ internal class GetHomeDataUseCaseImpl(
         .safeFlow(::ErrorMessage),
       getMemberRemindersUseCase.invoke(),
       flow { emit(getTravelCertificateSpecificationsUseCase.invoke().getOrNull()) },
-      flow { emit(featureManager.isFeatureEnabled(Feature.NEW_MOVING_FLOW)) },
-    ) { homeQueryDataResult, memberReminders, travelCertificateData, isNewMovingFlowEnabled ->
+      flow { emit(featureManager.isFeatureEnabled(Feature.MOVING_FLOW)) },
+    ) { homeQueryDataResult, memberReminders, travelCertificateData, isMovingFlowEnabled ->
       either {
         val homeQueryData: HomeQuery.Data = homeQueryDataResult.bind()
         val contractStatus = homeQueryData.currentMember.toContractStatus()
@@ -98,7 +98,7 @@ internal class GetHomeDataUseCaseImpl(
           claimStatusCardsData = homeQueryData.claimStatusCards(),
           veryImportantMessages = veryImportantMessages.toPersistentList(),
           memberReminders = memberReminders,
-          allowAddressChange = contractStatus is HomeData.ContractStatus.Active && isNewMovingFlowEnabled,
+          allowAddressChange = isMovingFlowEnabled,
           allowGeneratingTravelCertificate = travelCertificateData != null,
           emergencyData = emergencyData,
           commonClaimsData = commonClaimsData.toPersistentList(),

@@ -171,7 +171,6 @@ class LoggedInActivity : AppCompatActivity() {
       val hedvigAppState = rememberHedvigAppState(
         windowSizeClass = windowSizeClass,
         tabNotificationBadgeService = tabNotificationBadgeService,
-        featureManager = featureManager,
         settingsDataStore = settingsDataStore,
       )
       val darkTheme = hedvigAppState.darkTheme

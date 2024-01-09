@@ -21,8 +21,6 @@ import androidx.navigation.navOptions
 import com.datadog.android.rum.GlobalRumMonitor
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.feature.insurances.navigation.insurancesBottomNavPermittedDestinations
-import com.hedvig.android.hanalytics.featureflags.FeatureManager
-import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.TopLevelGraph
@@ -50,7 +48,6 @@ internal fun rememberHedvigAppState(
   windowSizeClass: WindowSizeClass,
   tabNotificationBadgeService: TabNotificationBadgeService,
   settingsDataStore: SettingsDataStore,
-  featureManager: FeatureManager,
   coroutineScope: CoroutineScope = rememberCoroutineScope(),
   navController: NavHostController = rememberNavController(),
 ): HedvigAppState {
@@ -60,7 +57,6 @@ internal fun rememberHedvigAppState(
     navController,
     coroutineScope,
     tabNotificationBadgeService,
-    featureManager,
     settingsDataStore,
     windowSizeClass,
   ) {
@@ -70,7 +66,6 @@ internal fun rememberHedvigAppState(
       coroutineScope,
       tabNotificationBadgeService,
       settingsDataStore,
-      featureManager,
     )
   }
 }
@@ -82,7 +77,6 @@ internal class HedvigAppState(
   coroutineScope: CoroutineScope,
   tabNotificationBadgeService: TabNotificationBadgeService,
   private val settingsDataStore: SettingsDataStore,
-  private val featureManager: FeatureManager,
 ) {
   val currentDestination: NavDestination?
     @Composable get() = navController.currentBackStackEntryAsState().value?.destination
@@ -111,12 +105,11 @@ internal class HedvigAppState(
     }
 
   val topLevelGraphs: StateFlow<ImmutableSet<TopLevelGraph>> = flow {
-    val isForeverEnabled = featureManager.isFeatureEnabled(Feature.FOREVER)
     emit(
       listOfNotNull(
         TopLevelGraph.HOME,
         TopLevelGraph.INSURANCE,
-        TopLevelGraph.FOREVER.takeIf { isForeverEnabled },
+        TopLevelGraph.FOREVER,
         TopLevelGraph.PROFILE,
       ).toPersistentSet(),
     )

@@ -23,7 +23,7 @@ val memberRemindersModule = module {
     EnableNotificationsReminderManagerImpl(get<DataStore<Preferences>>(), get<Clock>(), get<HedvigBuildConstants>())
   }
   single<GetConnectPaymentReminderUseCase> {
-    GetConnectPaymentReminderUseCaseImpl(get<ApolloClient>(), get<FeatureManager>())
+    GetConnectPaymentReminderUseCaseImpl(get<ApolloClient>())
   }
   single<GetUpcomingRenewalRemindersUseCase> {
     GetUpcomingRenewalRemindersUseCaseImpl(get<ApolloClient>(), get<Clock>())
