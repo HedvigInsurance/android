@@ -13,6 +13,10 @@
 # `Either` class needs to exist after minification for Retrofit to know how to adapt the response to it
 -keep,allowobfuscation,allowshrinking class arrow.core.Either
 
+# Unleash
+-keep public class io.getunleash.** {*;}
+-keep class com.fasterxml.** {*;}
+
 # Crashlytics
 -keep class com.crashlytics.** { *; }
 -dontwarn com.crashlytics.**
