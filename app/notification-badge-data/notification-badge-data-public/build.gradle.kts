@@ -16,14 +16,14 @@ dependencies {
   implementation(projects.apolloOctopusPublic)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreDemoMode)
-  implementation(projects.hanalyticsFeatureFlagsPublic)
+  implementation(projects.featureFlagsPublic)
   implementation(projects.languageCore)
 
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)
   testImplementation(libs.turbine)
-  testImplementation(projects.hanalyticsFeatureFlagsTest)
+  testImplementation(projects.featureFlagsTest)
 }
 
 apollo {

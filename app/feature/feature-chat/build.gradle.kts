@@ -47,7 +47,7 @@ dependencies {
   implementation(projects.coreRetrofit)
   implementation(projects.coreUi)
   implementation(projects.dataChatReadTimestampPublic)
-  implementation(projects.hanalyticsFeatureFlagsPublic)
+  implementation(projects.featureFlagsPublic)
   implementation(projects.languageCore)
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)

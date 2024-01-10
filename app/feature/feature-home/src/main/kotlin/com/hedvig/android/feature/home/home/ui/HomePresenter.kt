@@ -16,8 +16,8 @@ import com.hedvig.android.feature.home.commonclaim.CommonClaimsData
 import com.hedvig.android.feature.home.emergency.EmergencyData
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
-import com.hedvig.android.hanalytics.featureflags.FeatureManager
-import com.hedvig.android.hanalytics.featureflags.flags.Feature
+import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -29,9 +29,9 @@ import kotlinx.coroutines.isActive
 import kotlinx.datetime.LocalDate
 
 internal class HomePresenter(
-  private val getHomeDataUseCaseProvider: Provider<GetHomeDataUseCase>,
-  private val chatLastMessageReadRepository: ChatLastMessageReadRepository,
-  private val featureManager: FeatureManager,
+    private val getHomeDataUseCaseProvider: Provider<GetHomeDataUseCase>,
+    private val chatLastMessageReadRepository: ChatLastMessageReadRepository,
+    private val featureManager: FeatureManager,
 ) : MoleculePresenter<HomeEvent, HomeUiState> {
   @Composable
   override fun MoleculePresenterScope<HomeEvent>.present(lastState: HomeUiState): HomeUiState {

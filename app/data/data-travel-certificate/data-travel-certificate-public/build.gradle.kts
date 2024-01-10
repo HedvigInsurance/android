@@ -11,7 +11,7 @@ dependencies {
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.coreCommonPublic)
-  implementation(projects.hanalyticsFeatureFlagsPublic)
+  implementation(projects.featureFlagsPublic)
 
   testImplementation(libs.apollo.testingSupport)
   testImplementation(libs.assertK)
@@ -21,6 +21,6 @@ dependencies {
   testImplementation(projects.apolloOctopusTest)
   testImplementation(projects.apolloTest)
   testImplementation(projects.coreCommonTest)
-  testImplementation(projects.hanalyticsFeatureFlagsTest)
+  testImplementation(projects.featureFlagsTest)
   testImplementation(projects.loggingTest)
 }

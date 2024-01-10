@@ -12,11 +12,6 @@ interface HedvigBuildConstants {
   val urlBaseWeb: String
 
   /**
-   * The URL targeting Hanalytics backend
-   */
-  val urlHanalytics: String
-
-  /**
    * The URL targeting odyssey backend
    */
   val urlOdyssey: String

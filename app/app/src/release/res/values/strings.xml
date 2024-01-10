@@ -6,7 +6,6 @@
 
     <string name="OCTOPUS_GRAPHQL_URL" translatable="false">https://apollo-router.prod.hedvigit.com</string>
     <string name="WEB_BASE_URL" translatable="false">https://www.hedvig.com</string>
-    <string name="HANALYTICS_URL" translatable="false">https://hanalytics.prod.hedvigit.com</string>
     <string name="ODYSSEY_URL" translatable="false">https://odyssey.prod.hedvigit.com</string>
     <string name="BOT_SERVICE" translatable="false">https://gateway.hedvig.com/bot-service</string>
     <string name="AUTH_URL" translatable="false">"https://auth.prod.hedvigit.com"</string>
