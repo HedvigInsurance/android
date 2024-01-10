@@ -65,7 +65,3 @@
 -keepclassmembers class * extends androidx.datastore.preferences.protobuf.GeneratedMessageLite {
     <fields>;
 }
-
-# Unleash sdk
--keep public class io.getunleash.** {*;}
--keep class com.fasterxml.** { *; }
