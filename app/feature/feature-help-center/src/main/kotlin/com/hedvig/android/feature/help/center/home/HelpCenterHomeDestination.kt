@@ -55,8 +55,8 @@ import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 internal fun HelpCenterHomeDestination(
-  onNavigateToTopic: (topicId: String) -> Unit,
-  onNavigateToQuestion: (questionId: String) -> Unit,
+  onNavigateToTopic: (topic: Topic) -> Unit,
+  onNavigateToQuestion: (question: Question) -> Unit,
   onNavigateToQuickLink: (AppDestination) -> Unit,
   onNavigateUp: () -> Unit,
 ) {
@@ -76,8 +76,8 @@ private fun HelpCenterHomeScreen(
   topics: ImmutableList<Topic>,
   questions: ImmutableList<Question>,
   quickLinks: ImmutableList<QuickLink>,
-  onNavigateToTopic: (topicId: String) -> Unit,
-  onNavigateToQuestion: (questionId: String) -> Unit,
+  onNavigateToTopic: (topic: Topic) -> Unit,
+  onNavigateToQuestion: (question: Question) -> Unit,
   onNavigateToQuickLink: (AppDestination) -> Unit,
   onNavigateUp: () -> Unit,
 ) {
@@ -149,7 +149,7 @@ private fun HelpCenterHomeScreen(
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
               for (topic in topics) {
                 HedvigCard(
-                  onClick = { onNavigateToTopic(topic.topicId) },
+                  onClick = { onNavigateToTopic(topic) },
                   modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
@@ -170,7 +170,7 @@ private fun HelpCenterHomeScreen(
           contentColor = MaterialTheme.colorScheme.onInfoContainer,
           items = questions,
           itemText = { resources.getString(it.questionRes) },
-          onClickItem = { onNavigateToQuestion(it.questionId) },
+          onClickItem = { onNavigateToQuestion(it) },
         )
         Spacer(Modifier.height(24.dp))
         Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
@@ -185,8 +185,8 @@ private fun PreviewHelpCenterHomeScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       HelpCenterHomeScreen(
-        persistentListOf(Topic.Payments, Topic.Payments),
-        persistentListOf(Question.WhenIsInsuranceCharged, Question.WhenIsInsuranceCharged),
+        persistentListOf(Topic.PAYMENTS, Topic.PAYMENTS),
+        persistentListOf(Question.CLAIMS_Q1, Question.CLAIMS_Q1),
         persistentListOf(QuickLink.UpdateAddress, QuickLink.ChangeBank, QuickLink.ChangeBank),
         {},
         {},

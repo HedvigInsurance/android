@@ -5,113 +5,335 @@ import hedvig.resources.R
 import kotlinx.collections.immutable.persistentListOf
 
 internal enum class Question(
-  val questionId: String,
-  val relatedQuestionIds: List<String>,
   @StringRes val titleRes: Int,
   @StringRes val questionRes: Int,
   @StringRes val answerRes: Int,
+  val relatedQuestionIds: List<Question> = persistentListOf(),
 ) {
-  // todo help-center: correct string resource for all Res entries
-  WhenIsInsuranceCharged(
-    WhenIsInsuranceChargedId,
-    persistentListOf(
-      WhenIsInsuranceChargedId,
-      WhenIsInsuranceActivatedId,
-      HowToMakeClaimId,
-    ),
-    R.string.PROFILE_PAYMENT_TITLE,
-    R.string.intro_more_info_whats_insured_people_button,
-    R.string.intro_body_edit_insured_people,
+  // CLAIMS
+  CLAIMS_Q1(
+    R.string.HC_CLAIMS_TITLE,
+    R.string.HC_CLAIMS_Q_01,
+    R.string.HC_CLAIMS_A_01,
   ),
-  WhenIsInsuranceActivated(
-    WhenIsInsuranceActivatedId,
-    persistentListOf(),
-    R.string.PROFILE_PAYMENT_TITLE,
-    R.string.intro_more_info_whats_insured_people_button,
-    R.string.intro_body_edit_insured_people,
+  CLAIMS_Q2(
+    R.string.HC_CLAIMS_TITLE,
+    R.string.HC_CLAIMS_Q_02,
+    R.string.HC_CLAIMS_A_02,
   ),
-  HowToMakeClaim(
-    HowToMakeClaimId,
-    persistentListOf(),
-    R.string.PROFILE_PAYMENT_TITLE,
-    R.string.intro_more_info_whats_insured_people_button,
-    R.string.intro_body_edit_insured_people,
+  CLAIMS_Q3(
+    R.string.HC_CLAIMS_TITLE,
+    R.string.HC_CLAIMS_Q_03,
+    R.string.HC_CLAIMS_A_03,
   ),
-  HowViewPaymentHistory(
-    HowViewPaymentHistoryId,
-    persistentListOf(),
-    R.string.PROFILE_PAYMENT_TITLE,
-    R.string.intro_more_info_whats_insured_people_button,
-    R.string.intro_body_edit_insured_people,
+  CLAIMS_Q4(
+    R.string.HC_CLAIMS_TITLE,
+    R.string.HC_CLAIMS_Q_04,
+    R.string.HC_CLAIMS_A_04,
   ),
-  WhatShouldDoWhenPaymentFails(
-    WhatShouldDoWhenPaymentFailsId,
-    persistentListOf(),
-    R.string.PROFILE_PAYMENT_TITLE,
-    R.string.intro_more_info_whats_insured_people_button,
-    R.string.intro_body_edit_insured_people,
+  CLAIMS_Q5(
+    R.string.HC_CLAIMS_TITLE,
+    R.string.HC_CLAIMS_Q_05,
+    R.string.HC_CLAIMS_A_05,
+  ),
+  CLAIMS_Q6(
+    R.string.HC_CLAIMS_TITLE,
+    R.string.HC_CLAIMS_Q_06,
+    R.string.HC_CLAIMS_A_06,
+  ),
+  CLAIMS_Q7(
+    R.string.HC_CLAIMS_TITLE,
+    R.string.HC_CLAIMS_Q_07,
+    R.string.HC_CLAIMS_A_07,
+  ),
+  CLAIMS_Q8(
+    R.string.HC_CLAIMS_TITLE,
+    R.string.HC_CLAIMS_Q_08,
+    R.string.HC_CLAIMS_A_08,
+  ),
+  CLAIMS_Q9(
+    R.string.HC_CLAIMS_TITLE,
+    R.string.HC_CLAIMS_Q_09,
+    R.string.HC_CLAIMS_A_09,
+  ),
+  CLAIMS_Q10(
+    R.string.HC_CLAIMS_TITLE,
+    R.string.HC_CLAIMS_Q_10,
+    R.string.HC_CLAIMS_A_10,
+  ),
+  CLAIMS_Q11(
+    R.string.HC_CLAIMS_TITLE,
+    R.string.HC_CLAIMS_Q_11,
+    R.string.HC_CLAIMS_A_11,
+  ),
+  CLAIMS_Q12(
+    R.string.HC_CLAIMS_TITLE,
+    R.string.HC_CLAIMS_Q_12,
+    R.string.HC_CLAIMS_A_12,
   ),
 
-  IsItSafeToEnterMyCreditCardInformation(
-    IsItSafeToEnterMyCreditCardInformationId,
-    persistentListOf(),
-    R.string.PROFILE_PAYMENT_TITLE,
-    R.string.intro_more_info_whats_insured_people_button,
-    R.string.intro_body_edit_insured_people,
+  // COVERAGE
+  COVERAGE_Q1(
+    R.string.HC_COVERAGE_TITLE,
+    R.string.HC_COVERAGE_Q_01,
+    R.string.HC_COVERAGE_A_01,
   ),
-  AreThereFeesWhenPayingWithCard(
-    AreThereFeesWhenPayingWithCardId,
-    persistentListOf(),
-    R.string.PROFILE_PAYMENT_TITLE,
-    R.string.intro_more_info_whats_insured_people_button,
-    R.string.intro_body_edit_insured_people,
+  COVERAGE_Q2(
+    R.string.HC_COVERAGE_TITLE,
+    R.string.HC_COVERAGE_Q_02,
+    R.string.HC_COVERAGE_A_02,
   ),
-  CanIGetRefundForInAppPurchase(
-    CanIGetRefundForInAppPurchaseId,
-    persistentListOf(),
-    R.string.PROFILE_PAYMENT_TITLE,
-    R.string.intro_more_info_whats_insured_people_button,
-    R.string.intro_body_edit_insured_people,
+  COVERAGE_Q3(
+    R.string.HC_COVERAGE_TITLE,
+    R.string.HC_COVERAGE_Q_03,
+    R.string.HC_COVERAGE_A_03,
   ),
-  HowToChangePaymentMethod(
-    HowToChangePaymentMethodId,
-    persistentListOf(),
-    R.string.PROFILE_PAYMENT_TITLE,
-    R.string.intro_more_info_whats_insured_people_button,
-    R.string.intro_body_edit_insured_people,
+  COVERAGE_Q4(
+    R.string.HC_COVERAGE_TITLE,
+    R.string.HC_COVERAGE_Q_04,
+    R.string.HC_COVERAGE_A_04,
   ),
-  WhatHappensWhenPaymentIsDeclined(
-    WhatHappensWhenPaymentIsDeclinedId,
-    persistentListOf(),
-    R.string.PROFILE_PAYMENT_TITLE,
-    R.string.intro_more_info_whats_insured_people_button,
-    R.string.intro_body_edit_insured_people,
+  COVERAGE_Q5(
+    R.string.HC_COVERAGE_TITLE,
+    R.string.HC_COVERAGE_Q_05,
+    R.string.HC_COVERAGE_A_05,
   ),
-  HowToCancelInsurance(
-    HowToCancelInsuranceId,
-    persistentListOf(),
-    R.string.PROFILE_PAYMENT_TITLE,
-    R.string.intro_more_info_whats_insured_people_button,
-    R.string.intro_body_edit_insured_people,
+  COVERAGE_Q6(
+    R.string.HC_COVERAGE_TITLE,
+    R.string.HC_COVERAGE_Q_06,
+    R.string.HC_COVERAGE_A_06,
+  ),
+  COVERAGE_Q7(
+    R.string.HC_COVERAGE_TITLE,
+    R.string.HC_COVERAGE_Q_07,
+    R.string.HC_COVERAGE_A_07,
+  ),
+  COVERAGE_Q8(
+    R.string.HC_COVERAGE_TITLE,
+    R.string.HC_COVERAGE_Q_08,
+    R.string.HC_COVERAGE_A_08,
+  ),
+  COVERAGE_Q9(
+    R.string.HC_COVERAGE_TITLE,
+    R.string.HC_COVERAGE_Q_09,
+    R.string.HC_COVERAGE_A_09,
+  ),
+  COVERAGE_Q10(
+    R.string.HC_COVERAGE_TITLE,
+    R.string.HC_COVERAGE_Q_10,
+    R.string.HC_COVERAGE_A_10,
+  ),
+  COVERAGE_Q11(
+    R.string.HC_COVERAGE_TITLE,
+    R.string.HC_COVERAGE_Q_11,
+    R.string.HC_COVERAGE_A_11,
+  ),
+  COVERAGE_Q12(
+    R.string.HC_COVERAGE_TITLE,
+    R.string.HC_COVERAGE_Q_12,
+    R.string.HC_COVERAGE_A_12,
+  ),
+  COVERAGE_Q13(
+    R.string.HC_COVERAGE_TITLE,
+    R.string.HC_COVERAGE_Q_13,
+    R.string.HC_COVERAGE_A_13,
+  ),
+  COVERAGE_Q14(
+    R.string.HC_COVERAGE_TITLE,
+    R.string.HC_COVERAGE_Q_14,
+    R.string.HC_COVERAGE_A_14,
+  ),
+  COVERAGE_Q15(
+    R.string.HC_COVERAGE_TITLE,
+    R.string.HC_COVERAGE_Q_15,
+    R.string.HC_COVERAGE_A_15,
+  ),
+  COVERAGE_Q16(
+    R.string.HC_COVERAGE_TITLE,
+    R.string.HC_COVERAGE_Q_16,
+    R.string.HC_COVERAGE_A_16,
+  ),
+  COVERAGE_Q17(
+    R.string.HC_COVERAGE_TITLE,
+    R.string.HC_COVERAGE_Q_17,
+    R.string.HC_COVERAGE_A_17,
+  ),
+  COVERAGE_Q18(
+    R.string.HC_COVERAGE_TITLE,
+    R.string.HC_COVERAGE_Q_18,
+    R.string.HC_COVERAGE_A_18,
+  ),
+  COVERAGE_Q19(
+    R.string.HC_COVERAGE_TITLE,
+    R.string.HC_COVERAGE_Q_19,
+    R.string.HC_COVERAGE_A_19,
+  ),
+  COVERAGE_Q20(
+    R.string.HC_COVERAGE_TITLE,
+    R.string.HC_COVERAGE_Q_20,
+    R.string.HC_COVERAGE_A_20,
+  ),
+  COVERAGE_Q21(
+    R.string.HC_COVERAGE_TITLE,
+    R.string.HC_COVERAGE_Q_21,
+    R.string.HC_COVERAGE_A_21,
+  ),
+  COVERAGE_Q22(
+    R.string.HC_COVERAGE_TITLE,
+    R.string.HC_COVERAGE_Q_22,
+    R.string.HC_COVERAGE_A_22,
+  ),
+
+  // INSURANCE
+  INSURANCE_Q1(
+    R.string.HC_INSURANCES_TITLE,
+    R.string.HC_INSURANCE_Q_01,
+    R.string.HC_INSURANCE_A_01,
+  ),
+  INSURANCE_Q2(
+    R.string.HC_INSURANCES_TITLE,
+    R.string.HC_INSURANCE_Q_02,
+    R.string.HC_INSURANCE_A_02,
+  ),
+  INSURANCE_Q3(
+    R.string.HC_INSURANCES_TITLE,
+    R.string.HC_INSURANCE_Q_03,
+    R.string.HC_INSURANCE_A_03,
+  ),
+  INSURANCE_Q4(
+    R.string.HC_INSURANCES_TITLE,
+    R.string.HC_INSURANCE_Q_04,
+    R.string.HC_INSURANCE_A_04,
+  ),
+  INSURANCE_Q5(
+    R.string.HC_INSURANCES_TITLE,
+    R.string.HC_INSURANCE_Q_05,
+    R.string.HC_INSURANCE_A_05,
+  ),
+  INSURANCE_Q6(
+    R.string.HC_INSURANCES_TITLE,
+    R.string.HC_INSURANCE_Q_06,
+    R.string.HC_INSURANCE_A_06,
+  ),
+  INSURANCE_Q7(
+    R.string.HC_INSURANCES_TITLE,
+    R.string.HC_INSURANCE_Q_07,
+    R.string.HC_INSURANCE_A_07,
+  ),
+  INSURANCE_Q8(
+    R.string.HC_INSURANCES_TITLE,
+    R.string.HC_INSURANCE_Q_08,
+    R.string.HC_INSURANCE_A_08,
+  ),
+  INSURANCE_Q9(
+    R.string.HC_INSURANCES_TITLE,
+    R.string.HC_INSURANCE_Q_09,
+    R.string.HC_INSURANCE_A_09,
+  ),
+  INSURANCE_Q10(
+    R.string.HC_INSURANCES_TITLE,
+    R.string.HC_INSURANCE_Q_10,
+    R.string.HC_INSURANCE_A_10,
+  ),
+
+  // OTHER
+  OTHER_Q1(
+    R.string.HC_INSURANCES_TITLE,
+    R.string.HC_OTHER_Q_01,
+    R.string.HC_OTHER_A_01,
+  ),
+  OTHER_Q2(
+    R.string.HC_INSURANCES_TITLE,
+    R.string.HC_OTHER_Q_02,
+    R.string.HC_OTHER_A_02,
+  ),
+  OTHER_Q3(
+    R.string.HC_INSURANCES_TITLE,
+    R.string.HC_OTHER_Q_03,
+    R.string.HC_OTHER_A_03,
+  ),
+  OTHER_Q4(
+    R.string.HC_INSURANCES_TITLE,
+    R.string.HC_OTHER_Q_04,
+    R.string.HC_OTHER_A_04,
+  ),
+
+  // PAYMENTS
+  PAYMENTS_Q1(
+    R.string.HC_PAYMENTS_TITLE,
+    R.string.HC_PAYMENTS_Q_01,
+    R.string.HC_PAYMENTS_A_01,
+  ),
+  PAYMENTS_Q2(
+    R.string.HC_PAYMENTS_TITLE,
+    R.string.HC_PAYMENTS_Q_02,
+    R.string.HC_PAYMENTS_A_02,
+  ),
+  PAYMENTS_Q3(
+    R.string.HC_PAYMENTS_TITLE,
+    R.string.HC_PAYMENTS_Q_03,
+    R.string.HC_PAYMENTS_A_03,
+  ),
+  PAYMENTS_Q4(
+    R.string.HC_PAYMENTS_TITLE,
+    R.string.HC_PAYMENTS_Q_04,
+    R.string.HC_PAYMENTS_A_04,
+  ),
+  PAYMENTS_Q5(
+    R.string.HC_PAYMENTS_TITLE,
+    R.string.HC_PAYMENTS_Q_05,
+    R.string.HC_PAYMENTS_A_05,
+  ),
+  PAYMENTS_Q6(
+    R.string.HC_PAYMENTS_TITLE,
+    R.string.HC_PAYMENTS_Q_06,
+    R.string.HC_PAYMENTS_A_06,
+  ),
+  PAYMENTS_Q7(
+    R.string.HC_PAYMENTS_TITLE,
+    R.string.HC_PAYMENTS_Q_07,
+    R.string.HC_PAYMENTS_A_07,
+  ),
+  PAYMENTS_Q8(
+    R.string.HC_PAYMENTS_TITLE,
+    R.string.HC_PAYMENTS_Q_08,
+    R.string.HC_PAYMENTS_A_08,
+  ),
+  PAYMENTS_Q9(
+    R.string.HC_PAYMENTS_TITLE,
+    R.string.HC_PAYMENTS_Q_09,
+    R.string.HC_PAYMENTS_A_09,
+  ),
+  PAYMENTS_Q10(
+    R.string.HC_PAYMENTS_TITLE,
+    R.string.HC_PAYMENTS_Q_10,
+    R.string.HC_PAYMENTS_A_10,
+  ),
+  PAYMENTS_Q11(
+    R.string.HC_PAYMENTS_TITLE,
+    R.string.HC_PAYMENTS_Q_11,
+    R.string.HC_PAYMENTS_A_11,
+  ),
+  PAYMENTS_Q12(
+    R.string.HC_PAYMENTS_TITLE,
+    R.string.HC_PAYMENTS_Q_12,
+    R.string.HC_PAYMENTS_A_12,
+  ),
+  PAYMENTS_Q13(
+    R.string.HC_PAYMENTS_TITLE,
+    R.string.HC_PAYMENTS_Q_13,
+    R.string.HC_PAYMENTS_A_13,
+  ),
+  PAYMENTS_Q14(
+    R.string.HC_PAYMENTS_TITLE,
+    R.string.HC_PAYMENTS_Q_14,
+    R.string.HC_PAYMENTS_A_14,
   ),
 }
-
-const val WhenIsInsuranceChargedId = "whenIsInsuranceCharged"
-const val WhenIsInsuranceActivatedId = "whenIsInsuranceActivated"
-const val HowToMakeClaimId = "howToMakeClaim"
-const val HowViewPaymentHistoryId = "howViewPaymentHistory"
-const val WhatShouldDoWhenPaymentFailsId = "whatShouldDoWhenPaymentFails"
-const val IsItSafeToEnterMyCreditCardInformationId = "isItSafeToEnterMyCreditCardInformation"
-const val AreThereFeesWhenPayingWithCardId = "areThereFeesWhenPayingWithCard"
-const val CanIGetRefundForInAppPurchaseId = "canIGetRefundForInAppPurchase"
-const val HowToChangePaymentMethodId = "howToChangePaymentMethod"
-const val WhatHappensWhenPaymentIsDeclinedId = "whatHappensWhenPaymentIsDeclined"
-const val HowToCancelInsuranceId = "howToCancelInsurance"
-
 internal val commonQuestions = persistentListOf(
-  Question.WhenIsInsuranceCharged,
-  Question.WhenIsInsuranceActivated,
-  Question.HowToMakeClaim,
-  Question.HowViewPaymentHistory,
-  Question.WhatShouldDoWhenPaymentFails,
+  Question.CLAIMS_Q1,
+  Question.INSURANCE_Q5,
+  Question.PAYMENTS_Q1,
+  Question.INSURANCE_Q3,
+  Question.INSURANCE_Q1,
 )
