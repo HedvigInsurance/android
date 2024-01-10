@@ -8,6 +8,7 @@ dependencies {
   implementation(libs.coroutines.core)
   implementation(libs.hAnalytics)
   implementation(libs.koin.core)
+  implementation(libs.unleash)
   implementation(projects.authEventCore)
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)

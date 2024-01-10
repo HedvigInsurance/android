@@ -220,7 +220,7 @@ internal class GetHomeUseCaseTest {
         }
       },
     )
-    featureManager.featureTurbine.add(Feature.NEW_MOVING_FLOW to isMovingFlowFlagEnabled)
+    featureManager.featureTurbine.add(Feature.MOVING_FLOW to isMovingFlowFlagEnabled)
     val result = getHomeDataUseCase.invoke(true).first()
 
     assertThat(result)
@@ -231,9 +231,7 @@ internal class GetHomeUseCaseTest {
   }
 
   @Test
-  fun `when the contract is considered inactive, we do not allow address changes regardless of feature flag status`(
-    @TestParameter isMovingFlowFlagEnabled: Boolean,
-  ) = runTest {
+  fun `when the contract is considered inactive, we do not allow address changes regardless of feature flag status`() = runTest {
     val featureManager = FakeFeatureManager2()
     val getHomeDataUseCase = testUseCaseWithoutRemindersAndNoTravelCertificate(featureManager)
 
@@ -245,7 +243,7 @@ internal class GetHomeUseCaseTest {
         }
       },
     )
-    featureManager.featureTurbine.add(Feature.NEW_MOVING_FLOW to isMovingFlowFlagEnabled)
+    featureManager.featureTurbine.add(Feature.MOVING_FLOW to false)
     val result = getHomeDataUseCase.invoke(true).first()
 
     assertThat(result)

@@ -37,6 +37,7 @@ internal class GetInsuranceContractsUseCaseImpl(
         .bind()
 
       val isEditCoInsuredEnabled = featureManager.isFeatureEnabled(Feature.EDIT_COINSURED)
+      val isMovingFlowEnabled = featureManager.isFeatureEnabled(Feature.MOVING_FLOW)
 
       val contractHolderDisplayName = insuranceQueryData.getContractHolderDisplayName()
       val contractHolderSSN = insuranceQueryData.currentMember.ssn?.let { formatSsn(it) }
@@ -47,6 +48,7 @@ internal class GetInsuranceContractsUseCaseImpl(
           contractHolderDisplayName = contractHolderDisplayName,
           contractHolderSSN = contractHolderSSN,
           isEditCoInsuredEnabled = isEditCoInsuredEnabled,
+          isMovingFlowEnabled = isMovingFlowEnabled,
         )
       }
       val activeContracts = insuranceQueryData.currentMember.activeContracts.map {
@@ -55,6 +57,7 @@ internal class GetInsuranceContractsUseCaseImpl(
           contractHolderDisplayName = contractHolderDisplayName,
           contractHolderSSN = contractHolderSSN,
           isEditCoInsuredEnabled = isEditCoInsuredEnabled,
+          isMovingFlowEnabled = isMovingFlowEnabled,
         )
       }
       terminatedContracts + activeContracts
@@ -72,6 +75,7 @@ private fun ContractFragment.toContract(
   contractHolderDisplayName: String,
   contractHolderSSN: String?,
   isEditCoInsuredEnabled: Boolean,
+  isMovingFlowEnabled: Boolean,
 ): InsuranceContract {
   return InsuranceContract(
     id = id,
@@ -112,7 +116,7 @@ private fun ContractFragment.toContract(
         creationCause = it.creationCause.toCreationCause(),
       )
     },
-    supportsAddressChange = supportsMoving,
+    supportsAddressChange = supportsMoving && isMovingFlowEnabled,
     supportsEditCoInsured = supportsCoInsured && isEditCoInsuredEnabled,
     isTerminated = isTerminated,
   )

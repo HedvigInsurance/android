@@ -2,14 +2,11 @@ package com.hedvig.android.data.travelcertificate
 
 import arrow.core.Either
 import arrow.core.raise.either
-import arrow.core.raise.ensure
 import arrow.core.raise.ensureNotNull
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.hanalytics.featureflags.FeatureManager
-import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.logger.logcat
 import kotlinx.datetime.LocalDate
 import octopus.TravelCertificateSpecificationsQuery
@@ -20,13 +17,9 @@ interface GetTravelCertificateSpecificationsUseCase {
 
 internal class GetTravelCertificateSpecificationsUseCaseImpl(
   private val apolloClient: ApolloClient,
-  private val featureManager: FeatureManager,
 ) : GetTravelCertificateSpecificationsUseCase {
   override suspend fun invoke(): Either<TravelCertificateError, TravelCertificateData> {
     return either {
-      ensure(featureManager.isFeatureEnabled(Feature.TRAVEL_CERTIFICATE)) {
-        TravelCertificateError.NotEligible
-      }
       val member = apolloClient
         .query(TravelCertificateSpecificationsQuery())
         .safeExecute()
