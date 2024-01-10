@@ -12,6 +12,6 @@ internal class UnleashFeatureFlagProvider(
     Feature.TERMINATION_FLOW -> unleashClient.isEnabled("termination_flow", false)
     Feature.UPDATE_NECESSARY -> unleashClient.isEnabled("update_necessary", false)
     Feature.EDIT_COINSURED -> unleashClient.isEnabled("edit_coinsured", false)
-    Feature.HELP_CENTER -> false // todo help-center: consider feature flagging if we want to make a release in-between
+    Feature.HELP_CENTER -> unleashClient.isEnabled("help_center", false)
   }
 }

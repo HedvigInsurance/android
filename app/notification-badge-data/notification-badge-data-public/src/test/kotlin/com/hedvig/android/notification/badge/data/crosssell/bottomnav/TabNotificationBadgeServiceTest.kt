@@ -3,8 +3,6 @@ package com.hedvig.android.notification.badge.data.crosssell.bottomnav
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import com.hedvig.android.hanalytics.featureflags.flags.Feature
-import com.hedvig.android.hanalytics.featureflags.test.FakeFeatureManager
 import com.hedvig.android.notification.badge.data.crosssell.CrossSellIdentifier
 import com.hedvig.android.notification.badge.data.crosssell.CrossSellNotificationBadgeService
 import com.hedvig.android.notification.badge.data.crosssell.FakeNotificationBadgeStorage
@@ -23,7 +21,6 @@ class TabNotificationBadgeServiceTest {
   private fun tabNotificationBadgeService(
     notificationBadgeStorage: NotificationBadgeStorage,
     getCrossSellIdentifiersUseCase: GetCrossSellIdentifiersUseCase,
-    isReferralCampaignOn: Boolean,
   ): TabNotificationBadgeService {
     return TabNotificationBadgeService(
       CrossSellBottomNavNotificationBadgeService(
@@ -34,7 +31,6 @@ class TabNotificationBadgeServiceTest {
       ),
       ReferralsNotificationBadgeService(
         notificationBadgeStorage,
-        FakeFeatureManager({ mapOf(Feature.REFERRAL_CAMPAIGN to isReferralCampaignOn) }),
       ),
     )
   }
@@ -46,12 +42,11 @@ class TabNotificationBadgeServiceTest {
     val service = tabNotificationBadgeService(
       notificationBadgeStorage = notificationBadgeService,
       getCrossSellIdentifiersUseCase = getCrossSellsContractTypeIdentifiersUseCase,
-      isReferralCampaignOn = false,
     )
 
     val unseenBadges = service.unseenTabNotificationBadges().first()
 
-    assertThat(unseenBadges).isEqualTo(emptySet())
+    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.REFERRALS))
   }
 
   @Test
@@ -61,7 +56,6 @@ class TabNotificationBadgeServiceTest {
     val service = tabNotificationBadgeService(
       notificationBadgeStorage = notificationBadgeService,
       getCrossSellIdentifiersUseCase = getCrossSellsContractTypeIdentifiersUseCase,
-      isReferralCampaignOn = true,
     )
 
     val unseenBadges = service.unseenTabNotificationBadges().first()
@@ -79,12 +73,11 @@ class TabNotificationBadgeServiceTest {
     val service = tabNotificationBadgeService(
       notificationBadgeStorage = notificationBadgeService,
       getCrossSellIdentifiersUseCase = getCrossSellsContractTypesUseCase,
-      isReferralCampaignOn = false,
     )
 
     val unseenBadges = service.unseenTabNotificationBadges().first()
 
-    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.INSURANCE))
+    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.INSURANCE, BottomNavTab.REFERRALS))
   }
 
   @Test
@@ -102,12 +95,11 @@ class TabNotificationBadgeServiceTest {
     val service = tabNotificationBadgeService(
       notificationBadgeStorage = notificationBadgeService,
       getCrossSellIdentifiersUseCase = getCrossSellsContractTypesUseCase,
-      isReferralCampaignOn = false,
     )
 
     val unseenBadges = service.unseenTabNotificationBadges().first()
 
-    assertThat(unseenBadges).isEqualTo(emptySet())
+    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.REFERRALS))
   }
 
   @Test
@@ -129,12 +121,11 @@ class TabNotificationBadgeServiceTest {
     val service = tabNotificationBadgeService(
       notificationBadgeStorage = notificationBadgeService,
       getCrossSellIdentifiersUseCase = getCrossSellsContractTypesUseCase,
-      isReferralCampaignOn = false,
     )
 
     val unseenBadges = service.unseenTabNotificationBadges().first()
 
-    assertThat(unseenBadges).isEqualTo(emptySet())
+    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.REFERRALS))
   }
 
   @Test
@@ -153,12 +144,11 @@ class TabNotificationBadgeServiceTest {
     val service = tabNotificationBadgeService(
       notificationBadgeStorage = notificationBadgeService,
       getCrossSellIdentifiersUseCase = getCrossSellsContractTypesUseCase,
-      isReferralCampaignOn = false,
     )
 
     val unseenBadges = service.unseenTabNotificationBadges().first()
 
-    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.INSURANCE))
+    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.INSURANCE, BottomNavTab.REFERRALS))
   }
 
   @Test
@@ -185,12 +175,11 @@ class TabNotificationBadgeServiceTest {
     val service = tabNotificationBadgeService(
       notificationBadgeStorage = notificationBadgeService,
       getCrossSellIdentifiersUseCase = getCrossSellsContractTypesUseCase,
-      isReferralCampaignOn = false,
     )
 
     val unseenBadges = service.unseenTabNotificationBadges().first()
 
-    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.INSURANCE))
+    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.INSURANCE, BottomNavTab.REFERRALS))
   }
 
   @Test
@@ -203,12 +192,11 @@ class TabNotificationBadgeServiceTest {
     val service = tabNotificationBadgeService(
       notificationBadgeStorage = notificationBadgeService,
       getCrossSellIdentifiersUseCase = getCrossSellsContractTypesUseCase,
-      isReferralCampaignOn = false,
     )
     service.unseenTabNotificationBadges().test {
-      assertThat(awaitItem()).isEqualTo(setOf(BottomNavTab.INSURANCE))
+      assertThat(awaitItem()).isEqualTo(setOf(BottomNavTab.INSURANCE, BottomNavTab.REFERRALS))
       service.visitTab(BottomNavTab.INSURANCE)
-      assertThat(awaitItem()).isEqualTo(emptySet())
+      assertThat(awaitItem()).isEqualTo(setOf(BottomNavTab.REFERRALS))
       ensureAllEventsConsumed()
     }
   }
@@ -223,7 +211,6 @@ class TabNotificationBadgeServiceTest {
     val service = tabNotificationBadgeService(
       notificationBadgeStorage = notificationBadgeService,
       getCrossSellIdentifiersUseCase = getCrossSellsContractTypesUseCase,
-      isReferralCampaignOn = true,
     )
 
     service.unseenTabNotificationBadges().test {

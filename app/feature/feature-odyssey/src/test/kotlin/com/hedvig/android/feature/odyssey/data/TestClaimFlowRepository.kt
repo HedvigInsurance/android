@@ -90,4 +90,8 @@ internal class TestClaimFlowRepository : ClaimFlowRepository {
   override suspend fun submitUrgentEmergency(isUrgentEmergency: Boolean): Either<ErrorMessage, ClaimFlowStep> {
     error("Not implemented")
   }
+
+  override suspend fun submitFiles(fileIds: List<String>): Either<ErrorMessage, ClaimFlowStep> {
+    error("Not implemented")
+  }
 }
