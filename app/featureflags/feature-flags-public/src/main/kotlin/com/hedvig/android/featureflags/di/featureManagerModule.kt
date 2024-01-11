@@ -16,10 +16,10 @@ val featureManagerModule = module {
   }
 
   single<FeatureManager> {
-    val featureFlagProvider: FeatureFlagProvider = if (get<HedvigBuildConstants>().isDebug) {
-      DevFeatureFlagProvider()
-    } else {
+    val featureFlagProvider: FeatureFlagProvider = if (get<HedvigBuildConstants>().isProduction) {
       UnleashFeatureFlagProvider(get<UnleashClient>())
+    } else {
+      DevFeatureFlagProvider()
     }
 
     FeatureManagerImpl(
