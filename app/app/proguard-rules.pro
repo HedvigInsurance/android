@@ -16,6 +16,8 @@
 # Unleash
 -keep public class io.getunleash.** {*;}
 -keep class com.fasterxml.** {*;}
+-dontwarn java.beans.ConstructorProperties
+-dontwarn java.beans.Transient
 
 # Crashlytics
 -keep class com.crashlytics.** { *; }

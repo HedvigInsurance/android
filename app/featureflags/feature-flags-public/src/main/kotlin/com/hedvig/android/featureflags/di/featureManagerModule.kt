@@ -12,7 +12,7 @@ import org.koin.dsl.module
 
 val featureManagerModule = module {
   single<UnleashClient> {
-    UnleashClientBuilder(get<HedvigBuildConstants>().isDebug).client
+    UnleashClientBuilder(get<HedvigBuildConstants>().isProduction).client
   }
 
   single<FeatureManager> {
