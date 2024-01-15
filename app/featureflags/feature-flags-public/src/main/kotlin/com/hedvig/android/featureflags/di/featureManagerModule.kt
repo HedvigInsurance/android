@@ -1,29 +1,28 @@
 package com.hedvig.android.featureflags.di
 
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.featureflags.FeatureManager
-import com.hedvig.android.featureflags.FeatureManagerImpl
-import com.hedvig.android.featureflags.UnleashClientBuilder
-import com.hedvig.android.featureflags.flags.DevFeatureFlagProvider
-import com.hedvig.android.featureflags.flags.FeatureFlagProvider
+import com.hedvig.android.featureflags.UnleashClientProvider
 import com.hedvig.android.featureflags.flags.UnleashFeatureFlagProvider
-import io.getunleash.UnleashClient
+import com.hedvig.android.market.MarketManager
 import org.koin.dsl.module
 
 val featureManagerModule = module {
-  single<UnleashClient> {
-    UnleashClientBuilder(get<HedvigBuildConstants>().isProduction).client
+  single<UnleashClientProvider> {
+    UnleashClientProvider(
+      isProduction = get<HedvigBuildConstants>().isProduction,
+      appVersionName = get<HedvigBuildConstants>().appVersionName,
+      marketManager = get<MarketManager>(),
+      coroutineScope = get<ApplicationScope>(),
+    )
   }
 
   single<FeatureManager> {
-    val featureFlagProvider: FeatureFlagProvider = if (get<HedvigBuildConstants>().isProduction) {
-      UnleashFeatureFlagProvider(get<UnleashClient>())
+    if (get<HedvigBuildConstants>().isProduction) {
+      UnleashFeatureFlagProvider(get<UnleashClientProvider>())
     } else {
-      DevFeatureFlagProvider()
+      UnleashFeatureFlagProvider(get<UnleashClientProvider>())
     }
-
-    FeatureManagerImpl(
-      featureFlagProvider,
-    )
   }
 }
