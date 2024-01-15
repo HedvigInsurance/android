@@ -183,7 +183,9 @@ internal fun YourInfoTab(
   Column(modifier) {
     Spacer(Modifier.height(16.dp))
     if (upcomingChangesInsuranceAgreement != null) {
-      if (upcomingChangesInsuranceAgreement.creationCause == InsuranceAgreement.CreationCause.RENEWAL) {
+      if (upcomingChangesInsuranceAgreement.creationCause == InsuranceAgreement.CreationCause.RENEWAL
+        && upcomingChangesInsuranceAgreement.certificateUrl != null
+      ) {
         val daysUntilRenewal = remember(TimeZone.currentSystemDefault(), upcomingChangesInsuranceAgreement.activeFrom) {
           daysUntil(upcomingChangesInsuranceAgreement.activeFrom)
         }
@@ -191,13 +193,11 @@ internal fun YourInfoTab(
           text = stringResource(R.string.DASHBOARD_RENEWAL_PROMPTER_BODY, daysUntilRenewal),
           modifier = modifier,
         ) {
-          upcomingChangesInsuranceAgreement.certificateUrl?.let {
-            InfoCardTextButton(
-              onClick = { openUrl(it) },
-              text = stringResource(R.string.CONTRACT_VIEW_CERTIFICATE_BUTTON),
-              modifier = Modifier.fillMaxWidth(),
-            )
-          }
+          InfoCardTextButton(
+            onClick = { openUrl(upcomingChangesInsuranceAgreement.certificateUrl) },
+            text = stringResource(R.string.CONTRACT_VIEW_CERTIFICATE_BUTTON),
+            modifier = Modifier.fillMaxWidth(),
+          )
         }
       } else {
         VectorInfoCard(
