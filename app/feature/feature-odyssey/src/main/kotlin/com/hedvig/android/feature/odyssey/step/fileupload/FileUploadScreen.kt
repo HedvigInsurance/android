@@ -55,7 +55,7 @@ internal fun FileUploadScreen(
     )
     Spacer(Modifier.height(8.dp))
     HedvigContainedButton(
-      text = stringResource(R.string.general_continue_button),
+      text = stringResource(R.string.file_upload_upload_files),
       onClick = submitFiles,
       isLoading = uiState.isLoading,
       modifier = sideSpacingModifier,
