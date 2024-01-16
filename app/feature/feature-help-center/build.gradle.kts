@@ -25,6 +25,7 @@ dependencies {
   implementation(projects.coreIcons)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
+  implementation(projects.featureFlagsPublic)
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
   implementation(projects.navigationComposeTyped)

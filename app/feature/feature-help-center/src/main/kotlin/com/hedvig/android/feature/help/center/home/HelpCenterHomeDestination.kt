@@ -20,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -28,6 +29,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.material3.infoContainer
 import com.hedvig.android.core.designsystem.material3.onInfoContainer
@@ -40,12 +42,10 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.grid.HedvigGrid
 import com.hedvig.android.core.ui.grid.InsideGridSpace
+import com.hedvig.android.feature.help.center.HelpCenterViewModel
 import com.hedvig.android.feature.help.center.model.Question
 import com.hedvig.android.feature.help.center.model.QuickLink
 import com.hedvig.android.feature.help.center.model.Topic
-import com.hedvig.android.feature.help.center.model.commonQuestions
-import com.hedvig.android.feature.help.center.model.commonTopics
-import com.hedvig.android.feature.help.center.model.quickLinks
 import com.hedvig.android.feature.help.center.ui.HelpCenterSection
 import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
 import com.hedvig.android.navigation.core.AppDestination
@@ -55,15 +55,18 @@ import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 internal fun HelpCenterHomeDestination(
+  viewModel: HelpCenterViewModel,
   onNavigateToTopic: (topic: Topic) -> Unit,
   onNavigateToQuestion: (question: Question) -> Unit,
   onNavigateToQuickLink: (AppDestination) -> Unit,
   onNavigateUp: () -> Unit,
 ) {
+  val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
   HelpCenterHomeScreen(
-    topics = commonTopics,
-    questions = commonQuestions,
-    quickLinks = quickLinks,
+    topics = uiState.topics,
+    questions = uiState.questions,
+    quickLinks = uiState.quickLinks,
     onNavigateToTopic = onNavigateToTopic,
     onNavigateToQuestion = onNavigateToQuestion,
     onNavigateToQuickLink = onNavigateToQuickLink,

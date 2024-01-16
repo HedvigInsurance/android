@@ -53,6 +53,7 @@ import com.hedvig.android.feature.connect.payment.adyen.di.adyenFeatureModule
 import com.hedvig.android.feature.connect.payment.trustly.di.connectPaymentTrustlyModule
 import com.hedvig.android.feature.editcoinsured.di.editCoInsuredModule
 import com.hedvig.android.feature.forever.di.foreverModule
+import com.hedvig.android.feature.help.center.di.helpCenterModule
 import com.hedvig.android.feature.home.di.homeModule
 import com.hedvig.android.feature.insurances.di.insurancesModule
 import com.hedvig.android.feature.login.di.loginModule
@@ -368,6 +369,7 @@ val applicationModule = module {
       viewModelModule,
       workManagerModule,
       fileUploadModule,
+      helpCenterModule,
     ),
   )
 }

@@ -12,6 +12,7 @@ import com.hedvig.android.navigation.core.Navigator
 import com.kiwi.navigationcompose.typed.composable
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigation
+import org.koin.androidx.compose.koinViewModel
 
 fun NavGraphBuilder.helpCenterGraph(
   navigator: Navigator,
@@ -22,7 +23,9 @@ fun NavGraphBuilder.helpCenterGraph(
     startDestination = createRoutePattern<HelpCenterDestinations.HelpCenter>()
   ) {
     composable<HelpCenterDestinations.HelpCenter> { backStackEntry ->
+      val viewModel = koinViewModel<HelpCenterViewModel>()
       HelpCenterHomeDestination(
+        viewModel = viewModel,
         onNavigateToTopic = { topicId ->
           with(navigator) { backStackEntry.navigate(HelpCenterDestinations.Topic(topicId)) }
         },
