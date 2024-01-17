@@ -31,13 +31,11 @@ internal class ProfileViewModel(
     combine(
       getMemberRemindersUseCase.invoke(),
       flow { emit(featureManager.isFeatureEnabled(Feature.PAYMENT_SCREEN)) },
-      flow { emit(featureManager.isFeatureEnabled(Feature.HELP_CENTER)) },
       flow { emit(getEuroBonusStatusUseCase.invoke()) },
-    ) { memberReminders, isPaymentScreenFeatureEnabled, isHelpCenterFeatureEnabled, eurobonusResponse ->
+    ) { memberReminders, isPaymentScreenFeatureEnabled, eurobonusResponse ->
       ProfileUiState(
         euroBonus = eurobonusResponse.getOrNull(),
         showPaymentScreen = isPaymentScreenFeatureEnabled,
-        showHelpCenter = isHelpCenterFeatureEnabled,
         memberReminders = memberReminders,
         isLoading = false,
       )
@@ -66,7 +64,6 @@ internal class ProfileViewModel(
 internal data class ProfileUiState(
   val euroBonus: EuroBonus? = null,
   val showPaymentScreen: Boolean = false,
-  val showHelpCenter: Boolean = false,
   val memberReminders: MemberReminders = MemberReminders(),
   val isLoading: Boolean = true,
 )

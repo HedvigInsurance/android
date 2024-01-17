@@ -33,7 +33,6 @@ fun NavGraphBuilder.profileGraph(
   navigateToAddMissingInfo: (navBackStackEntry: NavBackStackEntry, contractId: String) -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
-  navigateToHelpCenter: (navBackStackEntry: NavBackStackEntry) -> Unit,
 ) {
   navigation<TopLevelGraph.PROFILE>(
     startDestination = createRoutePattern<AppDestination.TopLevelDestination.Profile>(),
@@ -47,31 +46,28 @@ fun NavGraphBuilder.profileGraph(
     ) { backStackEntry ->
       val viewModel: ProfileViewModel = koinViewModel()
       ProfileDestination(
-        navigateToEurobonus = {
-          with(navigator) { backStackEntry.navigate(AppDestination.Eurobonus) }
-        },
-        navigateToMyInfo = {
-          with(navigator) { backStackEntry.navigate(AppDestination.MyInfo) }
-        },
-        navigateToAboutApp = {
-          with(navigator) { backStackEntry.navigate(AppDestination.AboutApp) }
-        },
-        navigateToSettings = {
-          with(navigator) { backStackEntry.navigate(AppDestination.Settings) }
-        },
-        navigateToPayment = {
-          navigateToPaymentInfo(backStackEntry)
-        },
-        navigateToConnectPayment = navigateToConnectPayment,
-        navigateToAddMissingInfo = { contractId ->
-          navigateToAddMissingInfo(backStackEntry, contractId)
-        },
-        navigateToHelpCenter = {
-          navigateToHelpCenter(backStackEntry)
-        },
-        openAppSettings = openAppSettings,
-        openUrl = openUrl,
-        viewModel = viewModel,
+          navigateToEurobonus = {
+            with(navigator) { backStackEntry.navigate(AppDestination.Eurobonus) }
+          },
+          navigateToMyInfo = {
+            with(navigator) { backStackEntry.navigate(AppDestination.MyInfo) }
+          },
+          navigateToAboutApp = {
+            with(navigator) { backStackEntry.navigate(AppDestination.AboutApp) }
+          },
+          navigateToSettings = {
+            with(navigator) { backStackEntry.navigate(AppDestination.Settings) }
+          },
+          navigateToPayment = {
+            navigateToPaymentInfo(backStackEntry)
+          },
+          navigateToConnectPayment = navigateToConnectPayment,
+          navigateToAddMissingInfo = { contractId ->
+            navigateToAddMissingInfo(backStackEntry, contractId)
+          },
+          openAppSettings = openAppSettings,
+          openUrl = openUrl,
+          viewModel = viewModel,
       )
     }
     composable<AppDestination.Eurobonus>(

@@ -1,18 +1,20 @@
 package com.hedvig.android.feature.help.center.model
 
-import androidx.annotation.StringRes
 import com.hedvig.android.navigation.core.AppDestination
-import hedvig.resources.R
 
-internal enum class QuickLink(
-  val destination: AppDestination,
-  @StringRes val titleRes: Int,
-) {
-  ChangeBank(AppDestination.ConnectPayment, R.string.HC_QUICK_ACTIONS_CHANGE_BANK),
-  UpdateAddress(AppDestination.ChangeAddress, R.string.HC_QUICK_ACTIONS_UPDATE_ADDRESS),
-  EditCoInsured(
-    AppDestination.TopLevelDestination.Insurance,
-    R.string.HC_QUICK_ACTIONS_EDIT_COINSURED,
-  ), // TODO go to specific contract id and start add or edit co-insured
-  TravelCertificate(AppDestination.GenerateTravelCertificate, R.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE),
+sealed interface QuickAction {
+
+  val titleRes: Int
+
+  data class MultiSelectQuickLink(
+    override val titleRes: Int,
+    val links: List<QuickLink>,
+  ) : QuickAction
+
+  data class QuickLink(
+    override val titleRes: Int,
+    val displayName: String,
+    val destination: AppDestination,
+  ) : QuickAction
+
 }

@@ -16,9 +16,9 @@ import org.koin.core.parameter.parametersOf
 
 fun NavGraphBuilder.editCoInsuredGraph(navigateUp: () -> Unit, navController: NavHostController) {
   navigation<AppDestination.EditCoInsured>(
-    startDestination = createRoutePattern<EditCoInsuredDestination.AddOrRemove>(),
+    startDestination = createRoutePattern<AppDestination.CoInsuredAddOrRemove>(),
   ) {
-    composable<EditCoInsuredDestination.AddInfo> {
+    composable<AppDestination.CoInsuredAddInfo> {
       EditCoInsuredAddMissingInfoDestination(
         viewModel = koinViewModel { parametersOf(contractId) },
         navigateToSuccessScreen = {
@@ -31,7 +31,7 @@ fun NavGraphBuilder.editCoInsuredGraph(navigateUp: () -> Unit, navController: Na
         navigateUp = navigateUp,
       )
     }
-    composable<EditCoInsuredDestination.AddOrRemove> {
+    composable<AppDestination.CoInsuredAddOrRemove> {
       EditCoInsuredAddOrRemoveDestination(
         koinViewModel { parametersOf(contractId) },
         navigateToSuccessScreen = {

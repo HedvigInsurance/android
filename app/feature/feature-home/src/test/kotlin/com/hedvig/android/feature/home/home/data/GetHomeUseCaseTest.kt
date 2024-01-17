@@ -2,17 +2,14 @@ package com.hedvig.android.feature.home.home.data
 
 import arrow.core.NonEmptyList
 import arrow.core.left
-import arrow.core.right
 import assertk.Assert
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.hasSize
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
-import assertk.assertions.isFalse
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
-import assertk.assertions.isTrue
 import assertk.assertions.prop
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.annotations.ApolloExperimental
@@ -24,11 +21,8 @@ import com.hedvig.android.apollo.octopus.test.OctopusFakeResolverWithFilledLists
 import com.hedvig.android.apollo.test.TestApolloClientRule
 import com.hedvig.android.core.common.test.isRight
 import com.hedvig.android.data.travelcertificate.TestGetTravelCertificateSpecificationsUseCase
-import com.hedvig.android.data.travelcertificate.TravelCertificateData
 import com.hedvig.android.data.travelcertificate.TravelCertificateError
-import com.hedvig.android.feature.home.emergency.EmergencyData
 import com.hedvig.android.featureflags.FeatureManager
-import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.featureflags.test.FakeFeatureManager2
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.memberreminders.MemberReminder
@@ -43,17 +37,11 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import octopus.HomeQuery
-import octopus.type.HedvigColor
-import octopus.type.buildAgreement
 import octopus.type.buildClaim
-import octopus.type.buildCommonClaimDescription
-import octopus.type.buildCommonClaimLayoutEmergency
-import octopus.type.buildCommonClaimLayoutTitleAndBulletPoints
 import octopus.type.buildContract
 import octopus.type.buildMember
 import octopus.type.buildMemberImportantMessage
 import octopus.type.buildPendingContract
-import octopus.type.buildProductVariant
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -68,71 +56,6 @@ internal class GetHomeUseCaseTest {
   val testApolloClientRule = TestApolloClientRule()
   val apolloClient: ApolloClient
     get() = testApolloClientRule.apolloClient
-
-  @Test
-  fun `when we get no travel certificate data, return not allowed to generate travel certificate`() = runTest {
-    val getTravelCertificateSpecificationsUseCase = TestGetTravelCertificateSpecificationsUseCase()
-    val getHomeDataUseCase = GetHomeDataUseCaseImpl(
-      apolloClient.apply {
-        enqueueTestResponse(
-          HomeQuery(),
-          HomeQuery.Data(OctopusFakeResolver),
-        )
-      },
-      TestGetMemberRemindersUseCase().apply { memberReminders.add(MemberReminders()) },
-      getTravelCertificateSpecificationsUseCase,
-      FakeFeatureManager2(true),
-      TestClock(),
-      TimeZone.UTC,
-    )
-
-    getTravelCertificateSpecificationsUseCase.turbine.add(TravelCertificateError.NotEligible.left())
-    val result = getHomeDataUseCase.invoke(true).first()
-
-    assertThat(result)
-      .isNotNull()
-      .isRight()
-      .prop(HomeData::allowGeneratingTravelCertificate)
-      .isFalse()
-  }
-
-  @Test
-  fun `when we get travel certificate data, return allowed to generate travel certificate`() = runTest {
-    val getTravelCertificateSpecificationsUseCase = TestGetTravelCertificateSpecificationsUseCase()
-    val getHomeDataUseCase = GetHomeDataUseCaseImpl(
-      apolloClient.apply {
-        enqueueTestResponse(
-          HomeQuery(),
-          HomeQuery.Data(OctopusFakeResolver),
-        )
-      },
-      TestGetMemberRemindersUseCase().apply { memberReminders.add(MemberReminders()) },
-      getTravelCertificateSpecificationsUseCase,
-      FakeFeatureManager2(true),
-      TestClock(),
-      TimeZone.UTC,
-    )
-
-    getTravelCertificateSpecificationsUseCase.turbine.add(
-      TravelCertificateData(
-        travelCertificateSpecification = TravelCertificateData.TravelCertificateSpecification(
-          contractId = "",
-          email = "",
-          maxDurationDays = 0,
-          dateRange = LocalDate.parse("2023-01-01")..LocalDate.parse("2023-01-01"),
-          numberOfCoInsured = 0,
-        ),
-        infoSections = listOf(),
-      ).right(),
-    )
-    val result = getHomeDataUseCase.invoke(true).first()
-
-    assertThat(result)
-      .isNotNull()
-      .isRight()
-      .prop(HomeData::allowGeneratingTravelCertificate)
-      .isTrue()
-  }
 
   @Test
   fun `when reminders are present, return the MemberReminders`() = runTest {
@@ -203,126 +126,6 @@ internal class GetHomeUseCaseTest {
       .isRight()
       .prop(HomeData::memberReminders)
       .isEqualTo(MemberReminders(null, null, null))
-  }
-
-  @Test
-  fun `when the contract is considered active, we allow address changes if the feature flag allows it`(
-    @TestParameter isMovingFlowFlagEnabled: Boolean,
-  ) = runTest {
-    val featureManager = FakeFeatureManager2()
-    val getHomeDataUseCase = testUseCaseWithoutRemindersAndNoTravelCertificate(featureManager)
-
-    apolloClient.enqueueTestResponse(
-      HomeQuery(),
-      HomeQuery.Data(OctopusFakeResolver) {
-        currentMember = buildMember {
-          activeContracts = listOf(buildContract { })
-        }
-      },
-    )
-    featureManager.featureTurbine.add(Feature.MOVING_FLOW to isMovingFlowFlagEnabled)
-    val result = getHomeDataUseCase.invoke(true).first()
-
-    assertThat(result)
-      .isNotNull()
-      .isRight()
-      .prop(HomeData::allowAddressChange)
-      .isEqualTo(isMovingFlowFlagEnabled)
-  }
-
-  @Test
-  fun `when the contract is considered inactive, we do not allow address changes regardless of feature flag status`() = runTest {
-    val featureManager = FakeFeatureManager2()
-    val getHomeDataUseCase = testUseCaseWithoutRemindersAndNoTravelCertificate(featureManager)
-
-    apolloClient.enqueueTestResponse(
-      HomeQuery(),
-      HomeQuery.Data(OctopusFakeResolver) {
-        currentMember = buildMember {
-          activeContracts = emptyList()
-        }
-      },
-    )
-    featureManager.featureTurbine.add(Feature.MOVING_FLOW to false)
-    val result = getHomeDataUseCase.invoke(true).first()
-
-    assertThat(result)
-      .isNotNull()
-      .isRight()
-      .prop(HomeData::allowAddressChange)
-      .isFalse()
-  }
-
-  @Test
-  fun `when there's emergency data, show it`() = runTest {
-    val getHomeDataUseCase = testUseCaseWithoutRemindersAndNoTravelCertificate()
-
-    apolloClient.enqueueTestResponse(
-      HomeQuery(),
-      HomeQuery.Data(OctopusFakeResolver) {
-        currentMember = buildMember {
-          activeContracts = listOf(
-            buildContract {
-              currentAgreement = buildAgreement {
-                productVariant = buildProductVariant {
-                  commonClaimDescriptions = listOf(
-                    buildCommonClaimDescription {
-                      layout = buildCommonClaimLayoutEmergency {
-                        title = ""
-                        color = HedvigColor.Black
-                        emergencyNumber = "123"
-                      }
-                    },
-                  )
-                }
-              }
-            },
-          )
-        }
-      },
-    )
-    val result = getHomeDataUseCase.invoke(true).first()
-
-    assertThat(result)
-      .isNotNull()
-      .isRight()
-      .prop(HomeData::emergencyData)
-      .isNotNull()
-      .prop(EmergencyData::emergencyNumber)
-      .isEqualTo("123")
-  }
-
-  @Test
-  fun `when there's no emergency data, don't show it`() = runTest {
-    val getHomeDataUseCase = testUseCaseWithoutRemindersAndNoTravelCertificate()
-
-    apolloClient.enqueueTestResponse(
-      HomeQuery(),
-      HomeQuery.Data(OctopusFakeResolver) {
-        currentMember = buildMember {
-          activeContracts = listOf(
-            buildContract {
-              currentAgreement = buildAgreement {
-                productVariant = buildProductVariant {
-                  commonClaimDescriptions = listOf(
-                    buildCommonClaimDescription {
-                      layout = buildCommonClaimLayoutTitleAndBulletPoints {}
-                    },
-                  )
-                }
-              }
-            },
-          )
-        }
-      },
-    )
-    val result = getHomeDataUseCase.invoke(true).first()
-
-    assertThat(result)
-      .isNotNull()
-      .isRight()
-      .prop(HomeData::emergencyData)
-      .isNull()
   }
 
   @Test

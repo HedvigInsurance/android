@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.home.commonclaim
+package com.hedvig.android.feature.help.center.commonclaim
 
 import android.content.Intent
 import android.net.Uri
@@ -35,13 +35,13 @@ import hedvig.resources.R
 
 @Composable
 internal fun CommonClaimDestination(
-  commonClaimsData: CommonClaimsData,
+  commonClaim: CommonClaim.Generic,
   navigateUp: () -> Unit,
   navigateBack: () -> Unit,
 ) {
   val context = LocalContext.current
   HedvigScaffold(
-    topAppBarText = commonClaimsData.title,
+    topAppBarText = commonClaim.title,
     navigateUp = navigateUp,
   ) {
     Spacer(modifier = Modifier.height(8.dp))
@@ -49,8 +49,8 @@ internal fun CommonClaimDestination(
       verticalArrangement = Arrangement.spacedBy(8.dp),
       modifier = Modifier.padding(horizontal = 16.dp),
     ) {
-      for (bulletPoint in commonClaimsData.bulletPoints) {
-        val isFirstVet = commonClaimsData.isFirstVet
+      for (bulletPoint in commonClaim.bulletPoints) {
+        val isFirstVet = commonClaim.isFirstVet
         HedvigCard(Modifier.fillMaxWidth()) {
           Column(Modifier.padding(16.dp)) {
             Row(
@@ -99,12 +99,12 @@ private fun PreviewCommonClaimDestination(
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       CommonClaimDestination(
-        CommonClaimsData(
+        CommonClaim.Generic(
           if (isManyPets) "30" else "29",
           "Title",
           listOf(
-            BulletPoint("Title", "Description"),
-            BulletPoint("Title#2", "Description#2"),
+            CommonClaim.Generic.BulletPoint("Title", "Description"),
+            CommonClaim.Generic.BulletPoint("Title#2", "Description#2"),
           ),
         ),
         {},

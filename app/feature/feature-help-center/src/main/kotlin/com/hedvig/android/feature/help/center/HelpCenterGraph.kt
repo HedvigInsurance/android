@@ -2,6 +2,9 @@ package com.hedvig.android.feature.help.center
 
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
+import com.hedvig.android.feature.help.center.commonclaim.CommonClaim
+import com.hedvig.android.feature.help.center.commonclaim.CommonClaimDestination
+import com.hedvig.android.feature.help.center.commonclaim.emergency.EmergencyDestination
 import com.hedvig.android.feature.help.center.home.HelpCenterHomeDestination
 import com.hedvig.android.feature.help.center.navigation.HelpCenterDestination
 import com.hedvig.android.feature.help.center.navigation.HelpCenterDestinations
@@ -20,7 +23,7 @@ fun NavGraphBuilder.helpCenterGraph(
   openChat: (NavBackStackEntry) -> Unit,
 ) {
   navigation<HelpCenterDestination>(
-    startDestination = createRoutePattern<HelpCenterDestinations.HelpCenter>()
+    startDestination = createRoutePattern<HelpCenterDestinations.HelpCenter>(),
   ) {
     composable<HelpCenterDestinations.HelpCenter> { backStackEntry ->
       val viewModel = koinViewModel<HelpCenterViewModel>()
@@ -34,6 +37,17 @@ fun NavGraphBuilder.helpCenterGraph(
         },
         onNavigateToQuickLink = { destination ->
           with(navigator) { backStackEntry.navigate(destination) }
+        },
+        onNavigateToCommonClaim = { commonClaim ->
+          when (commonClaim) {
+            is CommonClaim.Emergency -> {
+              with(navigator) { backStackEntry.navigate(HelpCenterDestinations.Emergency(commonClaim)) }
+            }
+
+            is CommonClaim.Generic -> {
+              with(navigator) { backStackEntry.navigate(HelpCenterDestinations.CommonClaim(commonClaim)) }
+            }
+          }
         },
         onNavigateUp = navigator::navigateUp,
       )
@@ -63,6 +77,19 @@ fun NavGraphBuilder.helpCenterGraph(
         openChat = {
           openChat(backStackEntry)
         },
+      )
+    }
+    composable<HelpCenterDestinations.CommonClaim> {
+      CommonClaimDestination(
+        commonClaim = commonClaim,
+        navigateUp = navigator::navigateUp,
+        navigateBack = navigator::popBackStack,
+      )
+    }
+    composable<HelpCenterDestinations.Emergency> {
+      EmergencyDestination(
+        emergencyData = emergency,
+        navigateUp = navigator::navigateUp,
       )
     }
   }

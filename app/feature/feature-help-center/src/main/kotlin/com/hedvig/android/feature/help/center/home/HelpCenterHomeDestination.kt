@@ -40,11 +40,14 @@ import com.hedvig.android.core.designsystem.material3.yellowContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
+import com.hedvig.android.core.ui.dialog.MultiSelectDialog
 import com.hedvig.android.core.ui.grid.HedvigGrid
 import com.hedvig.android.core.ui.grid.InsideGridSpace
+import com.hedvig.android.feature.help.center.HelpCenterEvent
 import com.hedvig.android.feature.help.center.HelpCenterViewModel
+import com.hedvig.android.feature.help.center.commonclaim.CommonClaim
 import com.hedvig.android.feature.help.center.model.Question
-import com.hedvig.android.feature.help.center.model.QuickLink
+import com.hedvig.android.feature.help.center.model.QuickAction
 import com.hedvig.android.feature.help.center.model.Topic
 import com.hedvig.android.feature.help.center.ui.HelpCenterSection
 import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
@@ -59,6 +62,7 @@ internal fun HelpCenterHomeDestination(
   onNavigateToTopic: (topic: Topic) -> Unit,
   onNavigateToQuestion: (question: Question) -> Unit,
   onNavigateToQuickLink: (AppDestination) -> Unit,
+  onNavigateToCommonClaim: (CommonClaim) -> Unit,
   onNavigateUp: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -66,10 +70,19 @@ internal fun HelpCenterHomeDestination(
   HelpCenterHomeScreen(
     topics = uiState.topics,
     questions = uiState.questions,
-    quickLinks = uiState.quickLinks,
+    quickActions = uiState.quickLinks,
+    commonClaims = uiState.commonClaims,
+    selectedQuickAction = uiState.selectedQuickAction,
     onNavigateToTopic = onNavigateToTopic,
     onNavigateToQuestion = onNavigateToQuestion,
     onNavigateToQuickLink = onNavigateToQuickLink,
+    onNavigateToCommonClaim = onNavigateToCommonClaim,
+    onQuickActionsSelected = {
+      viewModel.emit(HelpCenterEvent.OnQuickActionSelected(it))
+    },
+    onDismissQuickActionDialog = {
+      viewModel.emit(HelpCenterEvent.OnDismissQuickActionDialog)
+    },
     onNavigateUp = onNavigateUp,
   )
 }
@@ -78,12 +91,39 @@ internal fun HelpCenterHomeDestination(
 private fun HelpCenterHomeScreen(
   topics: ImmutableList<Topic>,
   questions: ImmutableList<Question>,
-  quickLinks: ImmutableList<QuickLink>,
+  quickActions: ImmutableList<QuickAction>,
+  commonClaims: ImmutableList<CommonClaim>,
+  selectedQuickAction: QuickAction?,
   onNavigateToTopic: (topic: Topic) -> Unit,
   onNavigateToQuestion: (question: Question) -> Unit,
   onNavigateToQuickLink: (AppDestination) -> Unit,
+  onQuickActionsSelected: (QuickAction) -> Unit,
+  onNavigateToCommonClaim: (CommonClaim) -> Unit,
+  onDismissQuickActionDialog: () -> Unit,
   onNavigateUp: () -> Unit,
 ) {
+  when (selectedQuickAction) {
+    is QuickAction.MultiSelectQuickLink -> MultiSelectDialog(
+      onDismissRequest = onDismissQuickActionDialog,
+      title = stringResource(id = selectedQuickAction.titleRes),
+      optionsList = selectedQuickAction.links,
+      onSelected = {
+        onDismissQuickActionDialog()
+        onNavigateToQuickLink(it.destination)
+      },
+      getDisplayText = { it.displayName },
+      getIsSelected = null,
+      getId = { it.hashCode().toString() },
+    )
+
+    is QuickAction.QuickLink -> {
+      onDismissQuickActionDialog()
+      onNavigateToQuickLink(selectedQuickAction.destination)
+    }
+
+    null -> {}
+  }
+
   Surface(color = MaterialTheme.colorScheme.background) {
     Column(Modifier.fillMaxSize()) {
       TopAppBarWithBack(
@@ -127,19 +167,39 @@ private fun HelpCenterHomeScreen(
               insideGridSpace = InsideGridSpace.Companion.invoke(8.dp),
               modifier = Modifier.padding(horizontal = 16.dp),
             ) {
-              for (quickLink in quickLinks)
+              for (quickAction in quickActions) {
                 HedvigCard(
-                  onClick = { onNavigateToQuickLink(quickLink.destination) },
+                  onClick = {
+                    onQuickActionsSelected(quickAction)
+                  },
                   modifier = Modifier
                     .fillMaxWidth()
                     .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
                 ) {
                   Text(
-                    text = stringResource(quickLink.titleRes),
+                    text = stringResource(quickAction.titleRes),
                     Modifier.padding(16.dp),
                     textAlign = TextAlign.Center,
                   )
                 }
+              }
+
+              for (commonClaim in commonClaims) {
+                HedvigCard(
+                  onClick = {
+                    onNavigateToCommonClaim(commonClaim)
+                  },
+                  modifier = Modifier
+                    .fillMaxWidth()
+                    .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+                ) {
+                  Text(
+                    text = commonClaim.title,
+                    Modifier.padding(16.dp),
+                    textAlign = TextAlign.Center,
+                  )
+                }
+              }
             }
           },
         )
@@ -188,13 +248,18 @@ private fun PreviewHelpCenterHomeScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       HelpCenterHomeScreen(
-        persistentListOf(Topic.PAYMENTS, Topic.PAYMENTS),
-        persistentListOf(Question.CLAIMS_Q1, Question.CLAIMS_Q1),
-        persistentListOf(QuickLink.UpdateAddress, QuickLink.ChangeBank, QuickLink.ChangeBank),
-        {},
-        {},
-        {},
-        {},
+        topics = persistentListOf(Topic.PAYMENTS, Topic.PAYMENTS),
+        questions = persistentListOf(Question.CLAIMS_Q1, Question.CLAIMS_Q1),
+        quickActions = persistentListOf(),
+        commonClaims = persistentListOf(),
+        selectedQuickAction = null,
+        onNavigateToTopic = {},
+        onNavigateToQuestion = {},
+        onNavigateToQuickLink = {},
+        onQuickActionsSelected = {},
+        onNavigateToCommonClaim = {},
+        onDismissQuickActionDialog = {},
+        onNavigateUp = {},
       )
     }
   }
