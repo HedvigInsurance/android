@@ -51,7 +51,7 @@ import com.hedvig.android.feature.help.center.model.QuickAction
 import com.hedvig.android.feature.help.center.model.Topic
 import com.hedvig.android.feature.help.center.ui.HelpCenterSection
 import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
-import com.hedvig.android.navigation.core.AppDestination
+import com.kiwi.navigationcompose.typed.Destination
 import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -61,7 +61,7 @@ internal fun HelpCenterHomeDestination(
   viewModel: HelpCenterViewModel,
   onNavigateToTopic: (topic: Topic) -> Unit,
   onNavigateToQuestion: (question: Question) -> Unit,
-  onNavigateToQuickLink: (AppDestination) -> Unit,
+  onNavigateToQuickLink: (Destination) -> Unit,
   onNavigateToCommonClaim: (CommonClaim) -> Unit,
   onNavigateUp: () -> Unit,
 ) {
@@ -96,7 +96,7 @@ private fun HelpCenterHomeScreen(
   selectedQuickAction: QuickAction?,
   onNavigateToTopic: (topic: Topic) -> Unit,
   onNavigateToQuestion: (question: Question) -> Unit,
-  onNavigateToQuickLink: (AppDestination) -> Unit,
+  onNavigateToQuickLink: (Destination) -> Unit,
   onQuickActionsSelected: (QuickAction) -> Unit,
   onNavigateToCommonClaim: (CommonClaim) -> Unit,
   onDismissQuickActionDialog: () -> Unit,
@@ -111,7 +111,7 @@ private fun HelpCenterHomeScreen(
         onDismissQuickActionDialog()
         onNavigateToQuickLink(it.destination)
       },
-      getDisplayText = { it.displayName },
+      getDisplayText = { it.displayName ?: "" },
       getIsSelected = null,
       getId = { it.hashCode().toString() },
     )

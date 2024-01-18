@@ -1,6 +1,6 @@
 package com.hedvig.android.feature.help.center.model
 
-import com.hedvig.android.navigation.core.AppDestination
+import com.kiwi.navigationcompose.typed.Destination
 
 sealed interface QuickAction {
   val titleRes: Int
@@ -12,7 +12,7 @@ sealed interface QuickAction {
 
   data class QuickLink(
     override val titleRes: Int,
-    val displayName: String,
-    val destination: AppDestination,
+    val displayName: String?,
+    val destination: Destination,
   ) : QuickAction
 }

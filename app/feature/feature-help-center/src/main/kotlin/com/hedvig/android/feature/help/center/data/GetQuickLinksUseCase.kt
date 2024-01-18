@@ -91,7 +91,7 @@ internal class GetQuickLinksUseCase(
             QuickAction.QuickLink(
               destination = AppDestination.ChangeAddress,
               titleRes = R.string.HC_QUICK_ACTIONS_UPDATE_ADDRESS,
-              displayName = "",
+              displayName = null,
             ),
           )
         }
@@ -104,7 +104,7 @@ internal class GetQuickLinksUseCase(
             QuickAction.QuickLink(
               destination = AppDestination.GenerateTravelCertificate,
               titleRes = R.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE,
-              displayName = "",
+              displayName = null,
             ),
           )
         }
@@ -114,7 +114,7 @@ internal class GetQuickLinksUseCase(
           QuickAction.QuickLink(
             destination = AppDestination.ConnectPayment,
             titleRes = R.string.HC_QUICK_ACTIONS_CHANGE_BANK,
-            displayName = "",
+            displayName = null,
           ),
         )
       }
