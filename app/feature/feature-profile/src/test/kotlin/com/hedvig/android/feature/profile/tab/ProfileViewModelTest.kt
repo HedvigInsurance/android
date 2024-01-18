@@ -96,7 +96,7 @@ class ProfileViewModelTest {
         featureMap = {
           mapOf(
             Feature.PAYMENT_SCREEN to true,
-            Feature.HELP_CENTER to true
+            Feature.HELP_CENTER to true,
           )
         },
       ),
@@ -266,7 +266,6 @@ class ProfileViewModelTest {
       getMemberRemindersUseCase.memberReminders.add(MemberReminders())
       getEurobonusStatusUseCase.turbine.add(GetEurobonusError.Error(ErrorMessage()).left())
       featureManager.featureTurbine.add(Feature.PAYMENT_SCREEN to false)
-      featureManager.featureTurbine.add(Feature.HELP_CENTER to false)
       runCurrent()
       assertThat(viewModel.data.value).isEqualTo(
         ProfileUiState(
@@ -281,7 +280,6 @@ class ProfileViewModelTest {
       runCurrent()
       getEurobonusStatusUseCase.turbine.add(EuroBonus("abc").right())
       featureManager.featureTurbine.add(Feature.PAYMENT_SCREEN to true)
-      featureManager.featureTurbine.add(Feature.HELP_CENTER to true)
       getMemberRemindersUseCase.memberReminders.add(
         MemberReminders(connectPayment = MemberReminder.ConnectPayment(id = testId)),
       )
@@ -290,7 +288,6 @@ class ProfileViewModelTest {
         ProfileUiState(
           euroBonus = EuroBonus("abc"),
           showPaymentScreen = true,
-          showHelpCenter = true,
           memberReminders = MemberReminders(connectPayment = MemberReminder.ConnectPayment(id = testId)),
           isLoading = false,
         ),

@@ -1,6 +1,5 @@
 package com.hedvig.android.app.ui
 
-import android.os.Bundle
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -18,7 +17,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
-import com.datadog.android.rum.GlobalRumMonitor
+import com.datadog.android.compose.ExperimentalTrackingApi
+import com.datadog.android.compose.NavigationViewTrackingEffect
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.feature.insurances.navigation.insurancesBottomNavPermittedDestinations
 import com.hedvig.android.logger.logcat
@@ -43,6 +43,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalTrackingApi::class)
 @Composable
 internal fun rememberHedvigAppState(
   windowSizeClass: WindowSizeClass,
@@ -51,7 +52,7 @@ internal fun rememberHedvigAppState(
   coroutineScope: CoroutineScope = rememberCoroutineScope(),
   navController: NavHostController = rememberNavController(),
 ): HedvigAppState {
-  NavigationTrackingSideEffect(navController)
+  NavigationViewTrackingEffect(navController = navController)
   TopLevelDestinationNavigationSideEffect(navController, tabNotificationBadgeService, coroutineScope)
   return remember(
     navController,
@@ -168,31 +169,6 @@ internal class HedvigAppState(
 }
 
 @Composable
-private fun NavigationTrackingSideEffect(navController: NavController) {
-  DisposableEffect(navController) {
-    val listener = NavController.OnDestinationChangedListener { _, destination: NavDestination, bundle: Bundle? ->
-      logcat {
-        buildString {
-          append("Navigated to route:${destination.route}")
-          if (bundle != null) {
-            append(" | ")
-            append("With bundle:$bundle")
-          }
-        }
-      }
-      GlobalRumMonitor.get().startView(
-        key = destination,
-        name = destination.route ?: "Unknown route",
-      )
-    }
-    navController.addOnDestinationChangedListener(listener)
-    onDispose {
-      navController.removeOnDestinationChangedListener(listener)
-    }
-  }
-}
-
-@Composable
 private fun TopLevelDestinationNavigationSideEffect(
   navController: NavController,
   tabNotificationBadgeService: TabNotificationBadgeService,
@@ -207,14 +183,17 @@ private fun TopLevelDestinationNavigationSideEffect(
             logcat { "Navigated to top level screen: HOME" }
             tabNotificationBadgeService.visitTab(BottomNavTab.HOME)
           }
+
           AppDestination.TopLevelDestination.Insurance -> {
             logcat { "Navigated to top level screen: INSURANCES" }
             tabNotificationBadgeService.visitTab(BottomNavTab.INSURANCE)
           }
+
           AppDestination.TopLevelDestination.Forever -> {
             logcat { "Navigated to top level screen: FOREVER" }
             tabNotificationBadgeService.visitTab(BottomNavTab.REFERRALS)
           }
+
           AppDestination.TopLevelDestination.Profile -> {
             logcat { "Navigated to top level screen: PROFILE" }
             tabNotificationBadgeService.visitTab(BottomNavTab.PROFILE)

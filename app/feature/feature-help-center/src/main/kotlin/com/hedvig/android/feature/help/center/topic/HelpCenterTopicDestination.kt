@@ -42,7 +42,7 @@ import kotlinx.collections.immutable.toPersistentList
 @Composable
 internal fun HelpCenterTopicDestination(
   topic: Topic,
-  onNavigateToQuestion: (questionId: Question) -> Unit,
+  onNavigateToQuestion: (question: Question) -> Unit,
   onNavigateUp: () -> Unit,
   onNavigateBack: () -> Unit,
   openChat: () -> Unit,

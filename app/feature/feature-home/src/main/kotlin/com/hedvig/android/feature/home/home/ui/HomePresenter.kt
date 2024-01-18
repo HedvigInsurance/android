@@ -12,8 +12,6 @@ import androidx.compose.runtime.snapshots.Snapshot
 import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.chat.read.timestamp.ChatLastMessageReadRepository
-import com.hedvig.android.feature.home.commonclaim.CommonClaimsData
-import com.hedvig.android.feature.home.emergency.EmergencyData
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.featureflags.FeatureManager
@@ -29,9 +27,9 @@ import kotlinx.coroutines.isActive
 import kotlinx.datetime.LocalDate
 
 internal class HomePresenter(
-    private val getHomeDataUseCaseProvider: Provider<GetHomeDataUseCase>,
-    private val chatLastMessageReadRepository: ChatLastMessageReadRepository,
-    private val featureManager: FeatureManager,
+  private val getHomeDataUseCaseProvider: Provider<GetHomeDataUseCase>,
+  private val chatLastMessageReadRepository: ChatLastMessageReadRepository,
+  private val featureManager: FeatureManager,
 ) : MoleculePresenter<HomeEvent, HomeUiState> {
   @Composable
   override fun MoleculePresenterScope<HomeEvent>.present(lastState: HomeUiState): HomeUiState {
@@ -102,11 +100,7 @@ internal class HomePresenter(
           claimStatusCardsData = successData.claimStatusCardsData,
           memberReminders = successData.memberReminders,
           veryImportantMessages = successData.veryImportantMessages,
-          allowAddressChange = successData.allowAddressChange,
           isHelpCenterEnabled = isHelpCenterEnabled,
-          allowGeneratingTravelCertificate = successData.allowGeneratingTravelCertificate,
-          emergencyData = successData.emergencyData,
-          commonClaimsData = successData.commonClaimsData,
           showChatIcon = showChatIcon,
           hasUnseenChatMessages = hasUnseenChatMessages,
         )
@@ -138,10 +132,6 @@ internal sealed interface HomeUiState {
     val claimStatusCardsData: HomeData.ClaimStatusCardsData?,
     val veryImportantMessages: ImmutableList<HomeData.VeryImportantMessage>,
     val memberReminders: MemberReminders,
-    val allowAddressChange: Boolean,
-    val allowGeneratingTravelCertificate: Boolean,
-    val emergencyData: EmergencyData?,
-    val commonClaimsData: ImmutableList<CommonClaimsData>,
     override val isHelpCenterEnabled: Boolean,
     override val showChatIcon: Boolean,
     override val hasUnseenChatMessages: Boolean,
@@ -157,10 +147,6 @@ private data class SuccessData(
   val claimStatusCardsData: HomeData.ClaimStatusCardsData?,
   val veryImportantMessages: ImmutableList<HomeData.VeryImportantMessage>,
   val memberReminders: MemberReminders,
-  val allowAddressChange: Boolean,
-  val allowGeneratingTravelCertificate: Boolean,
-  val emergencyData: EmergencyData?,
-  val commonClaimsData: ImmutableList<CommonClaimsData>,
 ) {
   companion object {
     fun fromLastState(lastState: HomeUiState): SuccessData? {
@@ -170,10 +156,6 @@ private data class SuccessData(
         claimStatusCardsData = lastState.claimStatusCardsData,
         veryImportantMessages = lastState.veryImportantMessages,
         memberReminders = lastState.memberReminders,
-        allowAddressChange = lastState.allowAddressChange,
-        allowGeneratingTravelCertificate = lastState.allowGeneratingTravelCertificate,
-        emergencyData = lastState.emergencyData,
-        commonClaimsData = lastState.commonClaimsData,
       )
     }
 
@@ -193,10 +175,6 @@ private data class SuccessData(
         claimStatusCardsData = homeData.claimStatusCardsData,
         memberReminders = homeData.memberReminders.copy(enableNotifications = null),
         veryImportantMessages = homeData.veryImportantMessages,
-        allowAddressChange = homeData.allowAddressChange,
-        allowGeneratingTravelCertificate = homeData.allowGeneratingTravelCertificate,
-        emergencyData = homeData.emergencyData,
-        commonClaimsData = homeData.commonClaimsData,
       )
     }
   }

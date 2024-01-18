@@ -1,5 +1,8 @@
 package com.hedvig.android.feature.help.center.home
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -28,6 +32,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.material3.infoContainer
 import com.hedvig.android.core.designsystem.material3.onInfoContainer
@@ -38,35 +43,49 @@ import com.hedvig.android.core.designsystem.material3.yellowContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
+import com.hedvig.android.core.ui.dialog.MultiSelectDialog
 import com.hedvig.android.core.ui.grid.HedvigGrid
 import com.hedvig.android.core.ui.grid.InsideGridSpace
+import com.hedvig.android.feature.help.center.HelpCenterEvent
+import com.hedvig.android.feature.help.center.HelpCenterViewModel
+import com.hedvig.android.feature.help.center.commonclaim.CommonClaim
 import com.hedvig.android.feature.help.center.model.Question
-import com.hedvig.android.feature.help.center.model.QuickLink
+import com.hedvig.android.feature.help.center.model.QuickAction
 import com.hedvig.android.feature.help.center.model.Topic
-import com.hedvig.android.feature.help.center.model.commonQuestions
-import com.hedvig.android.feature.help.center.model.commonTopics
-import com.hedvig.android.feature.help.center.model.quickLinks
 import com.hedvig.android.feature.help.center.ui.HelpCenterSection
 import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
-import com.hedvig.android.navigation.core.AppDestination
+import com.kiwi.navigationcompose.typed.Destination
 import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 internal fun HelpCenterHomeDestination(
+  viewModel: HelpCenterViewModel,
   onNavigateToTopic: (topic: Topic) -> Unit,
   onNavigateToQuestion: (question: Question) -> Unit,
-  onNavigateToQuickLink: (AppDestination) -> Unit,
+  onNavigateToQuickLink: (Destination) -> Unit,
+  onNavigateToCommonClaim: (CommonClaim) -> Unit,
   onNavigateUp: () -> Unit,
 ) {
+  val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
   HelpCenterHomeScreen(
-    topics = commonTopics,
-    questions = commonQuestions,
-    quickLinks = quickLinks,
+    topics = uiState.topics,
+    questions = uiState.questions,
+    quickActions = uiState.quickLinks,
+    commonClaims = uiState.commonClaims,
+    selectedQuickAction = uiState.selectedQuickAction,
     onNavigateToTopic = onNavigateToTopic,
     onNavigateToQuestion = onNavigateToQuestion,
     onNavigateToQuickLink = onNavigateToQuickLink,
+    onNavigateToCommonClaim = onNavigateToCommonClaim,
+    onQuickActionsSelected = {
+      viewModel.emit(HelpCenterEvent.OnQuickActionSelected(it))
+    },
+    onDismissQuickActionDialog = {
+      viewModel.emit(HelpCenterEvent.OnDismissQuickActionDialog)
+    },
     onNavigateUp = onNavigateUp,
   )
 }
@@ -75,12 +94,39 @@ internal fun HelpCenterHomeDestination(
 private fun HelpCenterHomeScreen(
   topics: ImmutableList<Topic>,
   questions: ImmutableList<Question>,
-  quickLinks: ImmutableList<QuickLink>,
+  quickActions: ImmutableList<QuickAction>,
+  commonClaims: ImmutableList<CommonClaim>,
+  selectedQuickAction: QuickAction?,
   onNavigateToTopic: (topic: Topic) -> Unit,
   onNavigateToQuestion: (question: Question) -> Unit,
-  onNavigateToQuickLink: (AppDestination) -> Unit,
+  onNavigateToQuickLink: (Destination) -> Unit,
+  onQuickActionsSelected: (QuickAction) -> Unit,
+  onNavigateToCommonClaim: (CommonClaim) -> Unit,
+  onDismissQuickActionDialog: () -> Unit,
   onNavigateUp: () -> Unit,
 ) {
+  when (selectedQuickAction) {
+    is QuickAction.MultiSelectQuickLink -> MultiSelectDialog(
+      onDismissRequest = onDismissQuickActionDialog,
+      title = stringResource(id = selectedQuickAction.titleRes),
+      optionsList = selectedQuickAction.links,
+      onSelected = {
+        onDismissQuickActionDialog()
+        onNavigateToQuickLink(it.destination)
+      },
+      getDisplayText = { it.displayName ?: "" },
+      getIsSelected = null,
+      getId = { it.hashCode().toString() },
+    )
+
+    is QuickAction.QuickLink -> {
+      onDismissQuickActionDialog()
+      onNavigateToQuickLink(selectedQuickAction.destination)
+    }
+
+    null -> {}
+  }
+
   Surface(color = MaterialTheme.colorScheme.background) {
     Column(Modifier.fillMaxSize()) {
       TopAppBarWithBack(
@@ -120,23 +166,59 @@ private fun HelpCenterHomeScreen(
           chipContainerColor = MaterialTheme.colorScheme.typeContainer,
           contentColor = MaterialTheme.colorScheme.onTypeContainer,
           content = {
-            HedvigGrid(
-              insideGridSpace = InsideGridSpace.Companion.invoke(8.dp),
-              modifier = Modifier.padding(horizontal = 16.dp),
+            AnimatedVisibility(
+              visible = quickActions.isNotEmpty(),
+              enter = fadeIn(),
+              exit = fadeOut(),
             ) {
-              for (quickLink in quickLinks)
-                HedvigCard(
-                  onClick = { onNavigateToQuickLink(quickLink.destination) },
-                  modifier = Modifier
-                    .fillMaxWidth()
-                    .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-                ) {
-                  Text(
-                    text = stringResource(quickLink.titleRes),
-                    Modifier.padding(16.dp),
-                    textAlign = TextAlign.Center,
-                  )
+              HedvigGrid(
+                insideGridSpace = InsideGridSpace.Companion.invoke(8.dp),
+                modifier = Modifier.padding(horizontal = 16.dp),
+              ) {
+                for (quickAction in quickActions) {
+                  HedvigCard(
+                    onClick = {
+                      onQuickActionsSelected(quickAction)
+                    },
+                    modifier = Modifier
+                      .fillMaxWidth()
+                      .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+                  ) {
+                    Text(
+                      text = stringResource(quickAction.titleRes),
+                      Modifier.padding(16.dp),
+                      textAlign = TextAlign.Center,
+                    )
+                  }
                 }
+              }
+            }
+            AnimatedVisibility(
+              visible = commonClaims.isNotEmpty(),
+              enter = fadeIn(),
+              exit = fadeOut(),
+            ) {
+              HedvigGrid(
+                insideGridSpace = InsideGridSpace.Companion.invoke(8.dp),
+                modifier = Modifier.padding(horizontal = 16.dp),
+              ) {
+                for (commonClaim in commonClaims) {
+                  HedvigCard(
+                    onClick = {
+                      onNavigateToCommonClaim(commonClaim)
+                    },
+                    modifier = Modifier
+                      .fillMaxWidth()
+                      .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+                  ) {
+                    Text(
+                      text = commonClaim.title,
+                      Modifier.padding(16.dp),
+                      textAlign = TextAlign.Center,
+                    )
+                  }
+                }
+              }
             }
           },
         )
@@ -185,13 +267,18 @@ private fun PreviewHelpCenterHomeScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       HelpCenterHomeScreen(
-        persistentListOf(Topic.PAYMENTS, Topic.PAYMENTS),
-        persistentListOf(Question.CLAIMS_Q1, Question.CLAIMS_Q1),
-        persistentListOf(QuickLink.UpdateAddress, QuickLink.ChangeBank, QuickLink.ChangeBank),
-        {},
-        {},
-        {},
-        {},
+        topics = persistentListOf(Topic.PAYMENTS, Topic.PAYMENTS),
+        questions = persistentListOf(Question.CLAIMS_Q1, Question.CLAIMS_Q1),
+        quickActions = persistentListOf(),
+        commonClaims = persistentListOf(),
+        selectedQuickAction = null,
+        onNavigateToTopic = {},
+        onNavigateToQuestion = {},
+        onNavigateToQuickLink = {},
+        onQuickActionsSelected = {},
+        onNavigateToCommonClaim = {},
+        onDismissQuickActionDialog = {},
+        onNavigateUp = {},
       )
     }
   }

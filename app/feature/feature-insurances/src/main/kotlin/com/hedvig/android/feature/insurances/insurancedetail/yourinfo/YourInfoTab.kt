@@ -183,8 +183,8 @@ internal fun YourInfoTab(
   Column(modifier) {
     Spacer(Modifier.height(16.dp))
     if (upcomingChangesInsuranceAgreement != null) {
-      if (upcomingChangesInsuranceAgreement.creationCause == InsuranceAgreement.CreationCause.RENEWAL
-        && upcomingChangesInsuranceAgreement.certificateUrl != null
+      if (upcomingChangesInsuranceAgreement.creationCause == InsuranceAgreement.CreationCause.RENEWAL &&
+        upcomingChangesInsuranceAgreement.certificateUrl != null
       ) {
         val daysUntilRenewal = remember(TimeZone.currentSystemDefault(), upcomingChangesInsuranceAgreement.activeFrom) {
           daysUntil(upcomingChangesInsuranceAgreement.activeFrom)

@@ -5,9 +5,8 @@ import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 
 class FakeFeatureManager(
-    private val featureMap: (() -> Map<Feature, Boolean>)? = null,
+  private val featureMap: (() -> Map<Feature, Boolean>)? = null,
 ) : FeatureManager {
-
   override suspend fun isFeatureEnabled(feature: Feature): Boolean {
     val featureMap = featureMap?.invoke() ?: error("Set the featureMap returned from FakeFeatureManager")
     return featureMap[feature] ?: error("Set a return value for feature:$feature on FakeFeatureManager")
@@ -35,7 +34,7 @@ class FakeFeatureManager(
  * Should probably delete `FakeFeatureManager` asap in favor of this, while keeping same API maybe.
  */
 class FakeFeatureManager2(
-    private val fixedMap: Map<Feature, Boolean> = emptyMap(),
+  private val fixedMap: Map<Feature, Boolean> = emptyMap(),
 ) : FeatureManager {
   /**
    * Allow the feature manager to return [fixedReturnForAll] for all features
