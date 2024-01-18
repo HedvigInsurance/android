@@ -100,7 +100,7 @@ internal enum class Topic(
       Question.OTHER_Q3,
       Question.OTHER_Q4,
     ),
-  )
+  ),
 }
 
 internal val commonTopics = persistentListOf(

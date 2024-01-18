@@ -4,7 +4,6 @@ import kotlinx.serialization.Serializable
 import octopus.CommonClaimsQuery
 
 internal sealed interface CommonClaim {
-
   val title: String
 
   @Serializable
@@ -29,7 +28,6 @@ internal sealed interface CommonClaim {
     override val title: String,
     val bulletPoints: List<BulletPoint>,
   ) : CommonClaim {
-
     @Serializable
     data class BulletPoint(
       val title: String,

@@ -22,7 +22,6 @@ class UnleashClientProvider(
   marketManager: MarketManager,
   coroutineScope: CoroutineScope,
 ) {
-
   private var client = createClient(marketManager.market.value)
 
   init {
@@ -63,10 +62,7 @@ class UnleashClientProvider(
       .build()
   }
 
-  private fun createContext(
-    market: String,
-    appVersion: String,
-  ) = UnleashContext.newBuilder()
+  private fun createContext(market: String, appVersion: String) = UnleashContext.newBuilder()
     .properties(
       mutableMapOf(
         "appVersion" to appVersion,

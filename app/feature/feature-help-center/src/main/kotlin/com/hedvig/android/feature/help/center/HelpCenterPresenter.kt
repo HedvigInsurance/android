@@ -21,6 +21,7 @@ import kotlinx.collections.immutable.persistentListOf
 
 internal sealed interface HelpCenterEvent {
   data class OnQuickActionSelected(val quickAction: QuickAction) : HelpCenterEvent
+
   data object OnDismissQuickActionDialog : HelpCenterEvent
 }
 

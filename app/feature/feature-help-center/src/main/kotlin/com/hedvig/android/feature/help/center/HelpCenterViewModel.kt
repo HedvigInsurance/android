@@ -11,15 +11,15 @@ internal class HelpCenterViewModel(
   getCommonClaimsUseCase: GetCommonClaimsUseCase,
   getQuickLinksUseCase: GetQuickLinksUseCase,
 ) : MoleculeViewModel<HelpCenterEvent, HelpCenterUiState>(
-  initialState = HelpCenterUiState(
-    topics = commonTopics,
-    questions = commonQuestions,
-    quickLinks = persistentListOf(),
-    commonClaims = persistentListOf(),
-    selectedQuickAction = null,
-  ),
-  presenter = HelpCenterPresenter(
-    getCommonClaimsUseCase = getCommonClaimsUseCase,
-    getQuickLinksUseCase = getQuickLinksUseCase,
-  ),
-)
+    initialState = HelpCenterUiState(
+      topics = commonTopics,
+      questions = commonQuestions,
+      quickLinks = persistentListOf(),
+      commonClaims = persistentListOf(),
+      selectedQuickAction = null,
+    ),
+    presenter = HelpCenterPresenter(
+      getCommonClaimsUseCase = getCommonClaimsUseCase,
+      getQuickLinksUseCase = getQuickLinksUseCase,
+    ),
+  )

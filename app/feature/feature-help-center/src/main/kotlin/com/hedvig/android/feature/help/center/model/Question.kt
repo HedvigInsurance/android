@@ -330,6 +330,7 @@ internal enum class Question(
     R.string.HC_PAYMENTS_A_14,
   ),
 }
+
 internal val commonQuestions = persistentListOf(
   Question.CLAIMS_Q1,
   Question.INSURANCE_Q5,

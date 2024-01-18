@@ -210,7 +210,7 @@ internal class HomePresenterTest {
         memberReminders = MemberReminders(),
         isHelpCenterEnabled = false,
         showChatIcon = false,
-        hasUnseenChatMessages = false
+        hasUnseenChatMessages = false,
       ),
     ) {
       assertThat(awaitItem().showChatIcon).isFalse()
@@ -236,7 +236,7 @@ internal class HomePresenterTest {
         memberReminders = MemberReminders(),
         isHelpCenterEnabled = false,
         showChatIcon = false,
-        hasUnseenChatMessages = false
+        hasUnseenChatMessages = false,
       ),
     ) {
       assertThat(awaitItem().showChatIcon).isFalse()
@@ -263,7 +263,7 @@ internal class HomePresenterTest {
         memberReminders = MemberReminders(),
         isHelpCenterEnabled = false,
         showChatIcon = false,
-        hasUnseenChatMessages = false
+        hasUnseenChatMessages = false,
       ),
     ) {
       assertThat(awaitItem().isHelpCenterEnabled).isFalse()

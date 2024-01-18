@@ -181,27 +181,27 @@ internal fun HedvigNavHost(
       hedvigBuildConstants = hedvigBuildConstants,
     )
     profileGraph(
-        nestedGraphs = {
-          paymentsGraph(
-            navigator = navigator,
-            hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-            navigateToConnectPayment = navigateToConnectPayment,
-          )
-        },
-        navigator = navigator,
-        hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-        hedvigBuildConstants = hedvigBuildConstants,
-        navigateToPaymentInfo = { backStackEntry ->
-          with(navigator) { backStackEntry.navigate(AppDestination.PaymentInfo) }
-        },
-        navigateToConnectPayment = navigateToConnectPayment,
-        navigateToAddMissingInfo = { backStackEntry: NavBackStackEntry, contractId: String ->
-          with(navigator) {
-            backStackEntry.navigate(AppDestination.CoInsuredAddInfo(contractId))
-          }
-        },
-        openAppSettings = { activityNavigator.openAppSettings(context) },
-        openUrl = ::openUrl,
+      nestedGraphs = {
+        paymentsGraph(
+          navigator = navigator,
+          hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+          navigateToConnectPayment = navigateToConnectPayment,
+        )
+      },
+      navigator = navigator,
+      hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+      hedvigBuildConstants = hedvigBuildConstants,
+      navigateToPaymentInfo = { backStackEntry ->
+        with(navigator) { backStackEntry.navigate(AppDestination.PaymentInfo) }
+      },
+      navigateToConnectPayment = navigateToConnectPayment,
+      navigateToAddMissingInfo = { backStackEntry: NavBackStackEntry, contractId: String ->
+        with(navigator) {
+          backStackEntry.navigate(AppDestination.CoInsuredAddInfo(contractId))
+        }
+      },
+      openAppSettings = { activityNavigator.openAppSettings(context) },
+      openUrl = ::openUrl,
     )
     chatGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,

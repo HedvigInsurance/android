@@ -19,11 +19,11 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 internal class ProfileViewModel(
-    private val getEuroBonusStatusUseCase: GetEurobonusStatusUseCase,
-    private val getMemberRemindersUseCase: GetMemberRemindersUseCase,
-    private val enableNotificationsReminderManager: EnableNotificationsReminderManager,
-    private val featureManager: FeatureManager,
-    private val logoutUseCase: LogoutUseCase,
+  private val getEuroBonusStatusUseCase: GetEurobonusStatusUseCase,
+  private val getMemberRemindersUseCase: GetMemberRemindersUseCase,
+  private val enableNotificationsReminderManager: EnableNotificationsReminderManager,
+  private val featureManager: FeatureManager,
+  private val logoutUseCase: LogoutUseCase,
 ) : ViewModel() {
   private val retryChannel = RetryChannel()
 

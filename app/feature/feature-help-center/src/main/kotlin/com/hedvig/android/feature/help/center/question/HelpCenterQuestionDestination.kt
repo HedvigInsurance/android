@@ -179,7 +179,7 @@ private fun PreviewHelpCenterQuestionScreen(
         } else {
           persistentListOf()
         },
-        toDeepLink = { _ -> ""},
+        toDeepLink = { _ -> "" },
         onNavigateBack = {},
         onNavigateToQuestion = {},
         onNavigateUp = {},

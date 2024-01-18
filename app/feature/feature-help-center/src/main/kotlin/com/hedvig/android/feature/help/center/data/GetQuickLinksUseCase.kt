@@ -23,7 +23,6 @@ internal class GetQuickLinksUseCase(
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,
 ) {
-
   suspend fun invoke(): Either<ErrorMessage, PersistentList<QuickAction>> = either {
     val contracts = apolloClient.query(AvailableSelfServiceOnContractsQuery())
       .safeExecute()
@@ -108,7 +107,6 @@ internal class GetQuickLinksUseCase(
               displayName = "",
             ),
           )
-
         }
 
       if (featureManager.isFeatureEnabled(Feature.PAYMENT_SCREEN)) {

@@ -35,12 +35,12 @@ internal interface GetHomeDataUseCase {
 }
 
 internal class GetHomeDataUseCaseImpl(
-    private val apolloClient: ApolloClient,
-    private val getMemberRemindersUseCase: GetMemberRemindersUseCase,
-    private val getTravelCertificateSpecificationsUseCase: GetTravelCertificateSpecificationsUseCase,
-    private val featureManager: FeatureManager,
-    private val clock: Clock,
-    private val timeZone: TimeZone,
+  private val apolloClient: ApolloClient,
+  private val getMemberRemindersUseCase: GetMemberRemindersUseCase,
+  private val getTravelCertificateSpecificationsUseCase: GetTravelCertificateSpecificationsUseCase,
+  private val featureManager: FeatureManager,
+  private val clock: Clock,
+  private val timeZone: TimeZone,
 ) : GetHomeDataUseCase {
   override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, HomeData>> {
     return combine(

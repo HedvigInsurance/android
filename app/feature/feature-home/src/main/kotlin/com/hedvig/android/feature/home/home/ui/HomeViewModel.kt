@@ -7,9 +7,9 @@ import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.molecule.android.MoleculeViewModel
 
 internal class HomeViewModel(
-    getHomeDataUseCaseProvider: Provider<GetHomeDataUseCase>,
-    chatLastMessageReadRepository: ChatLastMessageReadRepository,
-    featureManager: FeatureManager,
+  getHomeDataUseCaseProvider: Provider<GetHomeDataUseCase>,
+  chatLastMessageReadRepository: ChatLastMessageReadRepository,
+  featureManager: FeatureManager,
 ) : MoleculeViewModel<HomeEvent, HomeUiState>(
     HomeUiState.Loading,
     HomePresenter(getHomeDataUseCaseProvider, chatLastMessageReadRepository, featureManager),
