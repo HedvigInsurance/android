@@ -1,5 +1,8 @@
 package com.hedvig.android.feature.help.center.home
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -163,41 +166,57 @@ private fun HelpCenterHomeScreen(
           chipContainerColor = MaterialTheme.colorScheme.typeContainer,
           contentColor = MaterialTheme.colorScheme.onTypeContainer,
           content = {
-            HedvigGrid(
-              insideGridSpace = InsideGridSpace.Companion.invoke(8.dp),
-              modifier = Modifier.padding(horizontal = 16.dp),
+            AnimatedVisibility(
+              visible = quickActions.isNotEmpty(),
+              enter = fadeIn(),
+              exit = fadeOut(),
             ) {
-              for (quickAction in quickActions) {
-                HedvigCard(
-                  onClick = {
-                    onQuickActionsSelected(quickAction)
-                  },
-                  modifier = Modifier
-                    .fillMaxWidth()
-                    .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-                ) {
-                  Text(
-                    text = stringResource(quickAction.titleRes),
-                    Modifier.padding(16.dp),
-                    textAlign = TextAlign.Center,
-                  )
+              HedvigGrid(
+                insideGridSpace = InsideGridSpace.Companion.invoke(8.dp),
+                modifier = Modifier.padding(horizontal = 16.dp),
+              ) {
+                for (quickAction in quickActions) {
+                  HedvigCard(
+                    onClick = {
+                      onQuickActionsSelected(quickAction)
+                    },
+                    modifier = Modifier
+                      .fillMaxWidth()
+                      .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+                  ) {
+                    Text(
+                      text = stringResource(quickAction.titleRes),
+                      Modifier.padding(16.dp),
+                      textAlign = TextAlign.Center,
+                    )
+                  }
                 }
               }
-
-              for (commonClaim in commonClaims) {
-                HedvigCard(
-                  onClick = {
-                    onNavigateToCommonClaim(commonClaim)
-                  },
-                  modifier = Modifier
-                    .fillMaxWidth()
-                    .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-                ) {
-                  Text(
-                    text = commonClaim.title,
-                    Modifier.padding(16.dp),
-                    textAlign = TextAlign.Center,
-                  )
+            }
+            AnimatedVisibility(
+              visible = commonClaims.isNotEmpty(),
+              enter = fadeIn(),
+              exit = fadeOut(),
+            ) {
+              HedvigGrid(
+                insideGridSpace = InsideGridSpace.Companion.invoke(8.dp),
+                modifier = Modifier.padding(horizontal = 16.dp),
+              ) {
+                for (commonClaim in commonClaims) {
+                  HedvigCard(
+                    onClick = {
+                      onNavigateToCommonClaim(commonClaim)
+                    },
+                    modifier = Modifier
+                      .fillMaxWidth()
+                      .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+                  ) {
+                    Text(
+                      text = commonClaim.title,
+                      Modifier.padding(16.dp),
+                      textAlign = TextAlign.Center,
+                    )
+                  }
                 }
               }
             }
