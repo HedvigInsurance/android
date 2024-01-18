@@ -67,4 +67,9 @@ sealed interface AppDestination : Destination {
   // To be deprecated as soon as Adyen support is dropped
   @Serializable
   data object ConnectPaymentAdyen : AppDestination
+
+  @Serializable
+  data class ClaimDetails(
+    val claimId: String,
+  ) : AppDestination
 }

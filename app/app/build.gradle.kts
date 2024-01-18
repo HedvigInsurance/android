@@ -25,7 +25,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "12.3.7"
+    versionName = "12.3.8"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -43,14 +43,12 @@ android {
   }
 
   buildTypes {
-    @Suppress("UNUSED_VARIABLE")
     val debug by getting {
       applicationIdSuffix = ".dev.app"
       manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = false
       isDebuggable = true
     }
 
-    @Suppress("UNUSED_VARIABLE")
     val release by getting {
 //      signingConfig = debug.signingConfig // uncomment to run release build locally
       applicationIdSuffix = ".app"
@@ -66,7 +64,6 @@ android {
       )
     }
 
-    @Suppress("UNUSED_VARIABLE")
     val staging by creating {
       applicationIdSuffix = ".test.app"
       matchingFallbacks.add("release")
@@ -198,9 +195,7 @@ dependencies {
   implementation(projects.featureProfile)
   implementation(projects.featureTerminateInsurance)
   implementation(projects.featureTravelCertificate)
-  implementation(projects.hanalyticsAndroid)
-  implementation(projects.hanalyticsCore)
-  implementation(projects.hanalyticsFeatureFlagsPublic)
+  implementation(projects.featureFlagsPublic)
   implementation(projects.initializable)
   implementation(projects.languageCore)
   implementation(projects.languageData)

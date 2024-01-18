@@ -14,8 +14,8 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.travelcertificate.GetTravelCertificateSpecificationsUseCase
 import com.hedvig.android.feature.home.commonclaim.CommonClaimsData
 import com.hedvig.android.feature.home.emergency.EmergencyData
-import com.hedvig.android.hanalytics.featureflags.FeatureManager
-import com.hedvig.android.hanalytics.featureflags.flags.Feature
+import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.memberreminders.GetMemberRemindersUseCase
@@ -39,12 +39,12 @@ internal interface GetHomeDataUseCase {
 }
 
 internal class GetHomeDataUseCaseImpl(
-  private val apolloClient: ApolloClient,
-  private val getMemberRemindersUseCase: GetMemberRemindersUseCase,
-  private val getTravelCertificateSpecificationsUseCase: GetTravelCertificateSpecificationsUseCase,
-  private val featureManager: FeatureManager,
-  private val clock: Clock,
-  private val timeZone: TimeZone,
+    private val apolloClient: ApolloClient,
+    private val getMemberRemindersUseCase: GetMemberRemindersUseCase,
+    private val getTravelCertificateSpecificationsUseCase: GetTravelCertificateSpecificationsUseCase,
+    private val featureManager: FeatureManager,
+    private val clock: Clock,
+    private val timeZone: TimeZone,
 ) : GetHomeDataUseCase {
   override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, HomeData>> {
     return combine(
@@ -53,8 +53,8 @@ internal class GetHomeDataUseCaseImpl(
         .safeFlow(::ErrorMessage),
       getMemberRemindersUseCase.invoke(),
       flow { emit(getTravelCertificateSpecificationsUseCase.invoke().getOrNull()) },
-      flow { emit(featureManager.isFeatureEnabled(Feature.NEW_MOVING_FLOW)) },
-    ) { homeQueryDataResult, memberReminders, travelCertificateData, isNewMovingFlowEnabled ->
+      flow { emit(featureManager.isFeatureEnabled(Feature.MOVING_FLOW)) },
+    ) { homeQueryDataResult, memberReminders, travelCertificateData, isMovingFlowEnabled ->
       either {
         val homeQueryData: HomeQuery.Data = homeQueryDataResult.bind()
         val contractStatus = homeQueryData.currentMember.toContractStatus()
@@ -98,7 +98,7 @@ internal class GetHomeDataUseCaseImpl(
           claimStatusCardsData = homeQueryData.claimStatusCards(),
           veryImportantMessages = veryImportantMessages.toPersistentList(),
           memberReminders = memberReminders,
-          allowAddressChange = contractStatus is HomeData.ContractStatus.Active && isNewMovingFlowEnabled,
+          allowAddressChange = isMovingFlowEnabled,
           allowGeneratingTravelCertificate = travelCertificateData != null,
           emergencyData = emergencyData,
           commonClaimsData = commonClaimsData.toPersistentList(),

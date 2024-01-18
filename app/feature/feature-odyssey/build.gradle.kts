@@ -31,6 +31,7 @@ dependencies {
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDatastorePublic)
+  implementation(projects.composePhotoCaptureState)
   implementation(projects.coreDesignSystem)
   implementation(projects.coreFileUpload)
   implementation(projects.coreResources)

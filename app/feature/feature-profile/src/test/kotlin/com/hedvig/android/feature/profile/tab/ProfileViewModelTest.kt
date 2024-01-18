@@ -12,14 +12,13 @@ import assertk.assertions.isNull
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.test.MainCoroutineRule
-import com.hedvig.android.hanalytics.featureflags.flags.Feature
-import com.hedvig.android.hanalytics.featureflags.test.FakeFeatureManager
-import com.hedvig.android.hanalytics.featureflags.test.FakeFeatureManager2
+import com.hedvig.android.featureflags.flags.Feature
+import com.hedvig.android.featureflags.test.FakeFeatureManager
+import com.hedvig.android.featureflags.test.FakeFeatureManager2
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.memberreminders.test.TestEnableNotificationsReminderManager
 import com.hedvig.android.memberreminders.test.TestGetMemberRemindersUseCase
-import kotlin.random.Random
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
@@ -45,7 +44,7 @@ class ProfileViewModelTest {
         featureMap = {
           mapOf(
             Feature.PAYMENT_SCREEN to false,
-            Feature.SHOW_BUSINESS_MODEL to Random.nextBoolean(),
+            Feature.HELP_CENTER to true,
           )
         },
       ),
@@ -71,7 +70,7 @@ class ProfileViewModelTest {
         featureMap = {
           mapOf(
             Feature.PAYMENT_SCREEN to true,
-            Feature.SHOW_BUSINESS_MODEL to Random.nextBoolean(),
+            Feature.HELP_CENTER to true,
           )
         },
       ),
@@ -97,7 +96,7 @@ class ProfileViewModelTest {
         featureMap = {
           mapOf(
             Feature.PAYMENT_SCREEN to true,
-            Feature.SHOW_BUSINESS_MODEL to Random.nextBoolean(),
+            Feature.HELP_CENTER to true
           )
         },
       ),
@@ -154,7 +153,7 @@ class ProfileViewModelTest {
   @Test
   fun `Initially all optional items are off, and as they come in, they show one by one`() = runTest {
     val featureManager = FakeFeatureManager2(
-      fixedMap = mapOf(Feature.PAYMENT_SCREEN to true, Feature.SHOW_BUSINESS_MODEL to true),
+      fixedMap = mapOf(Feature.PAYMENT_SCREEN to true, Feature.HELP_CENTER to true),
     )
     val euroBonusStatusUseCase = FakeGetEurobonusStatusUseCase()
     val getMemberRemindersUseCase = TestGetMemberRemindersUseCase()
@@ -198,7 +197,7 @@ class ProfileViewModelTest {
       FakeGetEurobonusStatusUseCase().apply { turbine.add(GetEurobonusError.EurobonusNotApplicable.left()) },
       getMemberRemindersUseCase,
       TestEnableNotificationsReminderManager(),
-      FakeFeatureManager2(mapOf(Feature.PAYMENT_SCREEN to false)),
+      FakeFeatureManager2(mapOf(Feature.PAYMENT_SCREEN to false, Feature.HELP_CENTER to true)),
       noopLogoutUseCase,
     )
 
@@ -223,7 +222,7 @@ class ProfileViewModelTest {
       FakeGetEurobonusStatusUseCase().apply { turbine.add(GetEurobonusError.EurobonusNotApplicable.left()) },
       getMemberRemindersUseCase,
       TestEnableNotificationsReminderManager(),
-      FakeFeatureManager2(mapOf(Feature.PAYMENT_SCREEN to false)),
+      FakeFeatureManager2(mapOf(Feature.PAYMENT_SCREEN to false, Feature.HELP_CENTER to true)),
       noopLogoutUseCase,
     )
 
@@ -267,13 +266,14 @@ class ProfileViewModelTest {
       getMemberRemindersUseCase.memberReminders.add(MemberReminders())
       getEurobonusStatusUseCase.turbine.add(GetEurobonusError.Error(ErrorMessage()).left())
       featureManager.featureTurbine.add(Feature.PAYMENT_SCREEN to false)
+      featureManager.featureTurbine.add(Feature.HELP_CENTER to false)
       runCurrent()
       assertThat(viewModel.data.value).isEqualTo(
         ProfileUiState(
-            euroBonus = null,
-            showPaymentScreen = false,
-            memberReminders = MemberReminders(),
-            isLoading = false,
+          euroBonus = null,
+          showPaymentScreen = false,
+          memberReminders = MemberReminders(),
+          isLoading = false,
         ),
       )
 
@@ -281,16 +281,18 @@ class ProfileViewModelTest {
       runCurrent()
       getEurobonusStatusUseCase.turbine.add(EuroBonus("abc").right())
       featureManager.featureTurbine.add(Feature.PAYMENT_SCREEN to true)
+      featureManager.featureTurbine.add(Feature.HELP_CENTER to true)
       getMemberRemindersUseCase.memberReminders.add(
         MemberReminders(connectPayment = MemberReminder.ConnectPayment(id = testId)),
       )
       runCurrent()
       assertThat(viewModel.data.value).isEqualTo(
         ProfileUiState(
-            euroBonus = EuroBonus("abc"),
-            showPaymentScreen = true,
-            memberReminders = MemberReminders(connectPayment = MemberReminder.ConnectPayment(id = testId)),
-            isLoading = false,
+          euroBonus = EuroBonus("abc"),
+          showPaymentScreen = true,
+          showHelpCenter = true,
+          memberReminders = MemberReminders(connectPayment = MemberReminder.ConnectPayment(id = testId)),
+          isLoading = false,
         ),
       )
 

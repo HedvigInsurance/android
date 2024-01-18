@@ -27,9 +27,9 @@ import com.hedvig.android.data.travelcertificate.TestGetTravelCertificateSpecifi
 import com.hedvig.android.data.travelcertificate.TravelCertificateData
 import com.hedvig.android.data.travelcertificate.TravelCertificateError
 import com.hedvig.android.feature.home.emergency.EmergencyData
-import com.hedvig.android.hanalytics.featureflags.FeatureManager
-import com.hedvig.android.hanalytics.featureflags.flags.Feature
-import com.hedvig.android.hanalytics.featureflags.test.FakeFeatureManager2
+import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.featureflags.flags.Feature
+import com.hedvig.android.featureflags.test.FakeFeatureManager2
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminders
@@ -220,7 +220,7 @@ internal class GetHomeUseCaseTest {
         }
       },
     )
-    featureManager.featureTurbine.add(Feature.NEW_MOVING_FLOW to isMovingFlowFlagEnabled)
+    featureManager.featureTurbine.add(Feature.MOVING_FLOW to isMovingFlowFlagEnabled)
     val result = getHomeDataUseCase.invoke(true).first()
 
     assertThat(result)
@@ -231,9 +231,7 @@ internal class GetHomeUseCaseTest {
   }
 
   @Test
-  fun `when the contract is considered inactive, we do not allow address changes regardless of feature flag status`(
-    @TestParameter isMovingFlowFlagEnabled: Boolean,
-  ) = runTest {
+  fun `when the contract is considered inactive, we do not allow address changes regardless of feature flag status`() = runTest {
     val featureManager = FakeFeatureManager2()
     val getHomeDataUseCase = testUseCaseWithoutRemindersAndNoTravelCertificate(featureManager)
 
@@ -245,7 +243,7 @@ internal class GetHomeUseCaseTest {
         }
       },
     )
-    featureManager.featureTurbine.add(Feature.NEW_MOVING_FLOW to isMovingFlowFlagEnabled)
+    featureManager.featureTurbine.add(Feature.MOVING_FLOW to false)
     val result = getHomeDataUseCase.invoke(true).first()
 
     assertThat(result)

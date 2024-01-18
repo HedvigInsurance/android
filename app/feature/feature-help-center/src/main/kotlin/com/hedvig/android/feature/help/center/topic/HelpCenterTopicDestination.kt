@@ -41,25 +41,24 @@ import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 internal fun HelpCenterTopicDestination(
-  topicId: String,
-  onNavigateToQuestion: (questionId: String) -> Unit,
+  topic: Topic,
+  onNavigateToQuestion: (questionId: Question) -> Unit,
   onNavigateUp: () -> Unit,
   onNavigateBack: () -> Unit,
   openChat: () -> Unit,
 ) {
-  val topic = Topic.entries.find { it.topicId == topicId }
   val commonQuestions = topic
-    ?.commonQuestionIds
-    ?.mapNotNull { questionId ->
-      Question.entries.find { it.questionId == questionId }
+    .commonQuestionIds
+    .mapNotNull { questionId ->
+      Question.entries.find { it == questionId }
     }
-    ?.toPersistentList() ?: persistentListOf()
+    .toPersistentList()
   val allQuestions = topic
-    ?.allQuestionIds
-    ?.mapNotNull { questionId ->
-      Question.entries.find { it.questionId == questionId }
+    .allQuestionIds
+    .mapNotNull { questionId ->
+      Question.entries.find { it == questionId }
     }
-    ?.toPersistentList() ?: persistentListOf()
+    .toPersistentList()
   HelpCenterTopicScreen(
     topic = topic,
     commonQuestions = commonQuestions,
@@ -76,7 +75,7 @@ private fun HelpCenterTopicScreen(
   topic: Topic?,
   commonQuestions: ImmutableList<Question>,
   allQuestions: ImmutableList<Question>,
-  onNavigateToQuestion: (questionId: String) -> Unit,
+  onNavigateToQuestion: (questionId: Question) -> Unit,
   onNavigateUp: () -> Unit,
   onNavigateBack: () -> Unit,
   openChat: () -> Unit,
@@ -129,7 +128,7 @@ private fun HelpCenterTopicScreen(
               contentColor = MaterialTheme.colorScheme.onInfoContainer,
               items = commonQuestions,
               itemText = { resources.getString(it.questionRes) },
-              onClickItem = { onNavigateToQuestion(it.questionId) },
+              onClickItem = { onNavigateToQuestion(it) },
             )
           }
           if (commonQuestions.isNotEmpty() && allQuestions.isNotEmpty()) {
@@ -142,7 +141,7 @@ private fun HelpCenterTopicScreen(
               contentColor = MaterialTheme.colorScheme.onPurpleContainer,
               items = allQuestions,
               itemText = { resources.getString(it.questionRes) },
-              onClickItem = { onNavigateToQuestion(it.questionId) },
+              onClickItem = { onNavigateToQuestion(it) },
             )
           }
           Spacer(Modifier.weight(1f))
@@ -166,14 +165,14 @@ private fun PreviewHelpCenterTopicScreen(
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       HelpCenterTopicScreen(
-        Topic.Payments.takeIf { hasTopic },
+        Topic.PAYMENTS.takeIf { hasTopic },
         if (hasQuestions) {
-          persistentListOf(Question.WhenIsInsuranceCharged, Question.WhenIsInsuranceCharged)
+          persistentListOf(Question.CLAIMS_Q1, Question.CLAIMS_Q1)
         } else {
           persistentListOf()
         },
         if (hasQuestions) {
-          persistentListOf(Question.WhenIsInsuranceCharged, Question.WhenIsInsuranceCharged)
+          persistentListOf(Question.CLAIMS_Q1, Question.CLAIMS_Q1)
         } else {
           persistentListOf()
         },

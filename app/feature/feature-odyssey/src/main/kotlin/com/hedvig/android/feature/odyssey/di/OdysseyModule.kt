@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.odyssey.di
 
+import com.hedvig.android.core.fileupload.FileService
 import com.hedvig.android.core.fileupload.UploadFileUseCase
 import com.hedvig.android.data.claimflow.AudioContent
 import com.hedvig.android.data.claimflow.ClaimFlowDestination
@@ -21,7 +22,6 @@ import com.hedvig.android.feature.odyssey.step.summary.ClaimSummaryViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
-@Suppress("RemoveExplicitTypeArguments")
 val odysseyModule = module {
   viewModel<AudioRecordingViewModel> { (flowId: FlowId, audioContent: AudioContent?) ->
     AudioRecordingViewModel(
@@ -69,11 +69,11 @@ val odysseyModule = module {
   }
   viewModel<FileUploadViewModel> { (fileUpload: ClaimFlowDestination.FileUpload) ->
     FileUploadViewModel(
-      get<ClaimFlowRepository>(),
-      get<UploadFileUseCase>(),
-      fileUpload.targetUploadUrl,
-      fileUpload.uploads,
-      fileUpload.title,
+      uploadFileUseCase = get<UploadFileUseCase>(),
+      fileService = get<FileService>(),
+      targetUploadUrl = fileUpload.targetUploadUrl,
+      files = fileUpload.uploads,
+      claimFlowRepository = get<ClaimFlowRepository>(),
     )
   }
 }

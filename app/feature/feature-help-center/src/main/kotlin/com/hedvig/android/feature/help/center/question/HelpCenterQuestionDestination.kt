@@ -37,6 +37,7 @@ import com.hedvig.android.feature.help.center.model.Question
 import com.hedvig.android.feature.help.center.ui.HelpCenterSection
 import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
 import com.hedvig.android.feature.help.center.ui.StillNeedHelpSection
+import com.hedvig.android.feature.help.center.ui.TextWithClickableDeepLink
 import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -44,23 +45,25 @@ import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 internal fun HelpCenterQuestionDestination(
-  questionId: String,
-  onNavigateToQuestion: (questionId: String) -> Unit,
+  questionId: Question,
+  toDeepLink: (String) -> String,
+  onNavigateToQuestion: (questionId: Question) -> Unit,
   onNavigateUp: () -> Unit,
   onNavigateBack: () -> Unit,
   openChat: () -> Unit,
 ) {
   Text("HelpCenterDestinations.Question:$questionId")
-  val question = Question.entries.find { it.questionId == questionId }
+  val question = Question.entries.find { it == questionId }
   val relatedQuestions = question
     ?.relatedQuestionIds
     ?.mapNotNull { id ->
-      Question.entries.find { it.questionId == id }
+      Question.entries.find { it == id }
     }
     ?.toPersistentList() ?: persistentListOf()
   HelpCenterQuestionScreen(
     question = question,
     relatedQuestions = relatedQuestions,
+    toDeepLink = toDeepLink,
     onNavigateToQuestion = onNavigateToQuestion,
     onNavigateUp = onNavigateUp,
     onNavigateBack = onNavigateBack,
@@ -72,7 +75,8 @@ internal fun HelpCenterQuestionDestination(
 private fun HelpCenterQuestionScreen(
   question: Question?,
   relatedQuestions: ImmutableList<Question>,
-  onNavigateToQuestion: (questionId: String) -> Unit,
+  toDeepLink: (String) -> String,
+  onNavigateToQuestion: (questionId: Question) -> Unit,
   onNavigateUp: () -> Unit,
   onNavigateBack: () -> Unit,
   openChat: () -> Unit,
@@ -125,12 +129,10 @@ private fun HelpCenterQuestionScreen(
             chipContainerColor = MaterialTheme.colorScheme.typeContainer,
             contentColor = MaterialTheme.colorScheme.onTypeContainer,
             content = {
-              Text(
-                // todo help-center: here do some shenanigans for clickable links. This can be used for inspiration:
-                //  https://github.com/HedvigInsurance/android/blob/5156dbc7f62f0d807402113c749ff3d378dfbd5e/app/feature/feature-chat/src/main/kotlin/com/hedvig/android/feature/chat/ui/TextWithClickableUrls.kt#L24
+              TextWithClickableDeepLink(
                 text = stringResource(question.answerRes),
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.headlineSmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
+                toDeepLink = toDeepLink,
                 modifier = Modifier
                   .padding(horizontal = 16.dp)
                   .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
@@ -145,11 +147,11 @@ private fun HelpCenterQuestionScreen(
               contentColor = MaterialTheme.colorScheme.onPinkContainer,
               items = relatedQuestions,
               itemText = { resources.getString(it.questionRes) },
-              onClickItem = { onNavigateToQuestion(it.questionId) },
+              onClickItem = { onNavigateToQuestion(it) },
             )
           }
           Spacer(Modifier.weight(1f))
-          Spacer(Modifier.height(16.dp))
+          Spacer(Modifier.height(96.dp))
           StillNeedHelpSection(openChat)
           Spacer(Modifier.height(56.dp))
           Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
@@ -169,20 +171,19 @@ private fun PreviewHelpCenterQuestionScreen(
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       HelpCenterQuestionScreen(
-        Question.WhenIsInsuranceCharged.takeIf { hasQuestion },
-        if (hasRelatedQuestions) {
+        question = Question.CLAIMS_Q1.takeIf { hasQuestion },
+        relatedQuestions = if (hasRelatedQuestions) {
           persistentListOf(
-            Question.WhenIsInsuranceCharged,
-            Question.WhenIsInsuranceActivated,
-            Question.HowToMakeClaim,
+            Question.CLAIMS_Q1,
           )
         } else {
           persistentListOf()
         },
-        {},
-        {},
-        {},
-        {},
+        toDeepLink = { _ -> ""},
+        onNavigateBack = {},
+        onNavigateToQuestion = {},
+        onNavigateUp = {},
+        openChat = {},
       )
     }
   }

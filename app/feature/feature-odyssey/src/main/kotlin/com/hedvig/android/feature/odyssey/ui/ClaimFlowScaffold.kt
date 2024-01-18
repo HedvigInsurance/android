@@ -49,6 +49,7 @@ internal fun ClaimFlowScaffold(
   topAppBarText: String? = null,
   errorSnackbarState: ErrorSnackbarState? = null,
   itemsColumnHorizontalAlignment: Alignment.Horizontal = Alignment.Start,
+  scrollable: Boolean = true,
   content: @Composable (ColumnScope.(sideSpacingModifier: Modifier) -> Unit),
 ) {
   HedvigTheme {
@@ -79,8 +80,12 @@ internal fun ClaimFlowScaffold(
             horizontalAlignment = itemsColumnHorizontalAlignment,
             modifier = Modifier
               .fillMaxSize()
-              .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
-              .verticalScroll(rememberScrollState())
+              .apply {
+                if (scrollable) {
+                  nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
+                  verticalScroll(rememberScrollState())
+                }
+              }
               .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
           ) {
             val sideSpacingModifier = if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded) {

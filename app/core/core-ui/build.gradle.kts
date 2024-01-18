@@ -25,5 +25,7 @@ dependencies {
   implementation(libs.kotlinx.serialization.json)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.coreDesignSystem)
+  implementation(projects.coreUiData)
   implementation(projects.coreResources)
+  implementation(projects.placeholder)
 }

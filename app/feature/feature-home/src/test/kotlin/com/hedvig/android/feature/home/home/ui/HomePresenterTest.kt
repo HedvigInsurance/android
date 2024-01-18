@@ -14,12 +14,11 @@ import assertk.assertions.prop
 import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.chat.read.timestamp.FakeChatLastMessageReadRepository
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
-import com.hedvig.android.hanalytics.featureflags.flags.Feature
-import com.hedvig.android.hanalytics.featureflags.test.FakeFeatureManager2
+import com.hedvig.android.featureflags.flags.Feature
+import com.hedvig.android.featureflags.test.FakeFeatureManager2
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.test.test
@@ -37,7 +36,7 @@ internal class HomePresenterTest {
   fun `asking to refresh successfully asks for a fetch from the network`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
     val homePresenter = HomePresenter(
-      Provider {
+      {
         getHomeDataUseCase
       },
       FakeChatLastMessageReadRepository(),
@@ -64,7 +63,7 @@ internal class HomePresenterTest {
   fun `getting a failed response and retrying, should result in a successful state`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
     val homePresenter = HomePresenter(
-      Provider { getHomeDataUseCase },
+      { getHomeDataUseCase },
       FakeChatLastMessageReadRepository(),
       FakeFeatureManager2(),
     )
@@ -87,7 +86,7 @@ internal class HomePresenterTest {
   fun `a successful response, properly propagates the info to the UI State`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
     val homePresenter = HomePresenter(
-      Provider { getHomeDataUseCase },
+      { getHomeDataUseCase },
       FakeChatLastMessageReadRepository(),
       FakeFeatureManager2(),
     )
@@ -146,7 +145,7 @@ internal class HomePresenterTest {
   fun `the notification member reminder must not show for the home presenter`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
     val homePresenter = HomePresenter(
-      Provider { getHomeDataUseCase },
+      { getHomeDataUseCase },
       FakeChatLastMessageReadRepository(),
       FakeFeatureManager2(),
     )
@@ -193,7 +192,7 @@ internal class HomePresenterTest {
   fun `receiving a failed state and then a successful one propagates the success without having to retry`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
     val homePresenter = HomePresenter(
-      Provider { getHomeDataUseCase },
+      { getHomeDataUseCase },
       FakeChatLastMessageReadRepository(),
       FakeFeatureManager2(),
     )
@@ -213,7 +212,7 @@ internal class HomePresenterTest {
   fun `when the disable chat feature flag is true, the chat icon should remain hidden`() = runTest {
     val featureManager = FakeFeatureManager2()
     val homePresenter = HomePresenter(
-      Provider { TestGetHomeDataUseCase() },
+      { TestGetHomeDataUseCase() },
       FakeChatLastMessageReadRepository(),
       featureManager,
     )
@@ -243,7 +242,7 @@ internal class HomePresenterTest {
   fun `when the disable chat feature flag is false, the chat icon should now show`() = runTest {
     val featureManager = FakeFeatureManager2(mapOf(Feature.HELP_CENTER to false))
     val homePresenter = HomePresenter(
-      Provider { TestGetHomeDataUseCase() },
+      { TestGetHomeDataUseCase() },
       FakeChatLastMessageReadRepository(),
       featureManager,
     )
@@ -274,7 +273,7 @@ internal class HomePresenterTest {
   fun `when the disable help center feature flag is true it should show`() = runTest {
     val featureManager = FakeFeatureManager2(mapOf(Feature.DISABLE_CHAT to true))
     val homePresenter = HomePresenter(
-      Provider { TestGetHomeDataUseCase() },
+      { TestGetHomeDataUseCase() },
       FakeChatLastMessageReadRepository(),
       featureManager,
     )
@@ -308,7 +307,7 @@ internal class HomePresenterTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
     val chatLastMessageReadRepository = FakeChatLastMessageReadRepository()
     val homePresenter = HomePresenter(
-      Provider { getHomeDataUseCase },
+      { getHomeDataUseCase },
       chatLastMessageReadRepository,
       FakeFeatureManager2(),
     )

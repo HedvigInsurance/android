@@ -61,9 +61,7 @@ import com.hedvig.android.feature.payments.di.paymentsModule
 import com.hedvig.android.feature.profile.di.profileModule
 import com.hedvig.android.feature.terminateinsurance.di.terminateInsuranceModule
 import com.hedvig.android.feature.travelcertificate.di.travelCertificateModule
-import com.hedvig.android.hanalytics.android.di.hAnalyticsAndroidModule
-import com.hedvig.android.hanalytics.di.hAnalyticsModule
-import com.hedvig.android.hanalytics.featureflags.di.featureManagerModule
+import com.hedvig.android.featureflags.di.featureManagerModule
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.language.di.languageModule
 import com.hedvig.android.market.di.marketManagerModule
@@ -220,7 +218,6 @@ private val buildConstantsModule = module {
     object : HedvigBuildConstants {
       override val urlGraphqlOctopus: String = context.getString(R.string.OCTOPUS_GRAPHQL_URL)
       override val urlBaseWeb: String = context.getString(R.string.WEB_BASE_URL)
-      override val urlHanalytics: String = context.getString(R.string.HANALYTICS_URL)
       override val urlOdyssey: String = context.getString(R.string.ODYSSEY_URL)
       override val urlBotService: String = context.getString(R.string.BOT_SERVICE)
       override val urlClaimsService: String = context.getString(R.string.CLAIMS_SERVICE)
@@ -349,8 +346,6 @@ val applicationModule = module {
       featureManagerModule,
       firebaseNotificationModule,
       foreverModule,
-      hAnalyticsAndroidModule,
-      hAnalyticsModule,
       homeModule,
       insurancesModule,
       languageAuthListenersModule,

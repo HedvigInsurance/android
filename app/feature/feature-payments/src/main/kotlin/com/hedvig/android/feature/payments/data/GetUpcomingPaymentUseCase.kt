@@ -120,6 +120,8 @@ private fun MemberChargeFragment.toMemberCharge(
       isReferral = discountBreakdown.isReferral,
     )
   },
+  settlementAdjustment = settlementAdjustment?.let(UiMoney::fromMoneyFragment),
+  carriedAdjustment = carriedAdjustment?.let(UiMoney::fromMoneyFragment),
 )
 
 private fun MemberChargeFragment.toFailedCharge(): MemberCharge.FailedCharge? {

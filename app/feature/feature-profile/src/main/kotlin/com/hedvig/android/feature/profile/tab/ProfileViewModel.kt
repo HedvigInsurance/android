@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.core.common.RetryChannel
-import com.hedvig.android.hanalytics.featureflags.FeatureManager
-import com.hedvig.android.hanalytics.featureflags.flags.Feature
+import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.memberreminders.EnableNotificationsReminderManager
 import com.hedvig.android.memberreminders.GetMemberRemindersUseCase
 import com.hedvig.android.memberreminders.MemberReminders
@@ -19,11 +19,11 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 internal class ProfileViewModel(
-  private val getEuroBonusStatusUseCase: GetEurobonusStatusUseCase,
-  private val getMemberRemindersUseCase: GetMemberRemindersUseCase,
-  private val enableNotificationsReminderManager: EnableNotificationsReminderManager,
-  private val featureManager: FeatureManager,
-  private val logoutUseCase: LogoutUseCase,
+    private val getEuroBonusStatusUseCase: GetEurobonusStatusUseCase,
+    private val getMemberRemindersUseCase: GetMemberRemindersUseCase,
+    private val enableNotificationsReminderManager: EnableNotificationsReminderManager,
+    private val featureManager: FeatureManager,
+    private val logoutUseCase: LogoutUseCase,
 ) : ViewModel() {
   private val retryChannel = RetryChannel()
 

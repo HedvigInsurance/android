@@ -122,7 +122,6 @@ class EnableNotificationsReminderManagerTest {
 private val TestHedvigBuildConstants = object : HedvigBuildConstants {
   override val urlGraphqlOctopus: String = ""
   override val urlBaseWeb: String = ""
-  override val urlHanalytics: String = ""
   override val urlOdyssey: String = ""
   override val urlBotService: String = ""
   override val urlClaimsService: String = ""

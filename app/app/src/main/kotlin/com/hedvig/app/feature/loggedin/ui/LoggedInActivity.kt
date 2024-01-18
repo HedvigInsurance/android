@@ -34,8 +34,8 @@ import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
-import com.hedvig.android.hanalytics.featureflags.FeatureManager
-import com.hedvig.android.hanalytics.featureflags.flags.Feature
+import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
@@ -171,7 +171,6 @@ class LoggedInActivity : AppCompatActivity() {
       val hedvigAppState = rememberHedvigAppState(
         windowSizeClass = windowSizeClass,
         tabNotificationBadgeService = tabNotificationBadgeService,
-        featureManager = featureManager,
         settingsDataStore = settingsDataStore,
       )
       val darkTheme = hedvigAppState.darkTheme

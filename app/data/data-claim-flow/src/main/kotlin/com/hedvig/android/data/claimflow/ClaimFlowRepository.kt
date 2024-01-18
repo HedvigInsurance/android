@@ -6,6 +6,7 @@ import arrow.core.raise.either
 import arrow.retrofit.adapter.either.networkhandling.CallError
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.Optional
+import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
@@ -94,6 +95,7 @@ internal class ClaimFlowRepositoryImpl(
   private val apolloClient: ApolloClient,
   private val odysseyService: OdysseyService,
   private val claimFlowContextStorage: ClaimFlowContextStorage,
+  private val networkCacheManager: NetworkCacheManager,
 ) : ClaimFlowRepository {
   override suspend fun startClaimFlow(
     entryPointId: EntryPointId?,
@@ -280,6 +282,7 @@ internal class ClaimFlowRepositoryImpl(
         .bind()
         .flowClaimSummaryNext
       claimFlowContextStorage.saveContext(result.context)
+      networkCacheManager.clearCache()
       result.currentStep.toClaimFlowStep(FlowId(result.id))
     }
   }

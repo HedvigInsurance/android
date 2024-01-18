@@ -23,7 +23,7 @@ val notificationBadgeModule = module {
     GetCrossSellIdentifiersUseCaseImpl(get<ApolloClient>())
   }
   single<NotificationBadgeStorage> { DatastoreNotificationBadgeStorage(get()) }
-  single<ReferralsNotificationBadgeService> { ReferralsNotificationBadgeService(get(), get()) }
+  single<ReferralsNotificationBadgeService> { ReferralsNotificationBadgeService(get()) }
   single<TabNotificationBadgeService> { TabNotificationBadgeService(get(), get()) }
 
   single<CrossSellCardNotificationBadgeServiceProvider> {

@@ -11,8 +11,8 @@ internal sealed interface HelpCenterDestinations : Destination {
   data object HelpCenter : HelpCenterDestinations
 
   @Serializable
-  data class Topic(val id: String) : HelpCenterDestinations
+  data class Topic(val topic: com.hedvig.android.feature.help.center.model.Topic) : HelpCenterDestinations
 
   @Serializable
-  data class Question(val id: String) : HelpCenterDestinations
+  data class Question(val id: com.hedvig.android.feature.help.center.model.Question) : HelpCenterDestinations
 }

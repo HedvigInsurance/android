@@ -9,8 +9,8 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.hanalytics.featureflags.FeatureManager
-import com.hedvig.android.hanalytics.featureflags.flags.Feature
+import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.featureflags.flags.Feature
 import octopus.NeedsCoInsuredInfoReminderQuery
 
 internal interface GetNeedsCoInsuredInfoRemindersUseCase {
@@ -18,8 +18,8 @@ internal interface GetNeedsCoInsuredInfoRemindersUseCase {
 }
 
 internal class GetNeedsCoInsuredInfoRemindersUseCaseImpl(
-  private val apolloClient: ApolloClient,
-  private val featureManager: FeatureManager,
+    private val apolloClient: ApolloClient,
+    private val featureManager: FeatureManager,
 ) : GetNeedsCoInsuredInfoRemindersUseCase {
   override suspend fun invoke(): Either<CoInsuredInfoReminderError, NonEmptyList<MemberReminder.CoInsuredInfo>> {
     return either {
