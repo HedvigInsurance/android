@@ -62,7 +62,7 @@ internal data class PhoneNumberUiState(
   val status: Status = Status.IDLE,
   val nextStep: ClaimFlowStep? = null,
 ) {
-  val canSubmit: Boolean = status == Status.IDLE && nextStep == null
+  val canSubmit: Boolean = status != Status.ERROR && nextStep == null
 
   enum class Status {
     IDLE,

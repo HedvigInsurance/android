@@ -116,7 +116,7 @@ internal data class ClaimSummaryStatusUiState(
   val nextStep: ClaimFlowStep? = null,
 ) {
   val canSubmit: Boolean
-    get() = !isLoading && !hasError && nextStep == null
+    get() = !hasError && nextStep == null
 }
 
 internal data class ClaimSummaryInfoUiState(

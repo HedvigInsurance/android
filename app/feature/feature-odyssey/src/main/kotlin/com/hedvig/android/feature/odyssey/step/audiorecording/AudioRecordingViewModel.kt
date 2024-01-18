@@ -204,7 +204,7 @@ internal class AudioRecordingViewModel(
 internal sealed interface AudioRecordingUiState {
   val canSubmit: Boolean
     get() {
-      val playbackCanSubmit = this is Playback && !isPlaying && nextStep == null && !isLoading && !hasError
+      val playbackCanSubmit = this is Playback && !isPlaying && nextStep == null && !hasError
       val prerecordedCanSubmit = this is PrerecordedWithAudioContent && nextStep == null && !isLoading && !hasError
       return playbackCanSubmit || prerecordedCanSubmit
     }

@@ -80,5 +80,5 @@ internal data class ConfirmEmergencyUiState(
   val error: Boolean = false,
   val nextStep: ClaimFlowStep? = null,
 ) {
-  val canSubmit: Boolean = !isLoading && !error && nextStep == null
+  val canSubmit: Boolean = !error && nextStep == null
 }

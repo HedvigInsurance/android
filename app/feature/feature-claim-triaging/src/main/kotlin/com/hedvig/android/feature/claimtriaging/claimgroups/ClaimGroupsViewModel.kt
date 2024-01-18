@@ -104,8 +104,7 @@ internal data class ClaimGroupsUiState(
   val nextStep: ClaimFlowStep? = null,
 ) {
   val canContinue: Boolean
-    get() = isLoading == false &&
-      chipLoadingErrorMessage == null &&
+    get() = chipLoadingErrorMessage == null &&
       startClaimErrorMessage == null &&
       nextStep == null
 }

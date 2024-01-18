@@ -71,7 +71,7 @@ internal data class LocationUiState(
   val error: Boolean = false,
   val nextStep: ClaimFlowStep? = null,
 ) {
-  val canSubmit: Boolean = selectedLocation != null && !isLoading && !error && nextStep == null
+  val canSubmit: Boolean = selectedLocation != null && !error && nextStep == null
 
   companion object {
     fun fromInitialSelection(
