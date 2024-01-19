@@ -1,7 +1,5 @@
 package com.hedvig.app.feature.genericauth
 
-import android.view.KeyEvent
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,41 +7,33 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.outlined.ErrorOutline
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.input.key.onKeyEvent
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
+import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
+import com.hedvig.android.market.Market
+import hedvig.resources.R
 
 @Composable
-fun EmailInputScreen(
+fun SSNInputScreen(
+  market: Market,
   onUpClick: () -> Unit,
   onInputChanged: (String) -> Unit,
   onSubmitEmail: () -> Unit,
-  onClear: () -> Unit,
   emailInput: String,
   error: String?,
   loading: Boolean,
@@ -55,7 +45,7 @@ fun EmailInputScreen(
   ) {
     TopAppBarWithBack(
       onClick = onUpClick,
-      title = stringResource(hedvig.resources.R.string.login_navigation_bar_center_element_title),
+      title = stringResource(R.string.zignsec_login_screen_title),
     )
     Column(
       modifier = Modifier
@@ -65,16 +55,23 @@ fun EmailInputScreen(
     ) {
       Spacer(Modifier.height(60.dp))
       Text(
-        text = stringResource(hedvig.resources.R.string.login_enter_your_email_address),
+        text = stringResource(R.string.zignsec_login_screen_title),
         style = MaterialTheme.typography.headlineMedium,
       )
-      Spacer(Modifier.height(40.dp))
-      SSNTextField(emailInput, onInputChanged, onSubmitEmail, error, loading, onClear)
+      Spacer(Modifier.height(20.dp))
+      SSNTextField(
+        input = emailInput,
+        market = market,
+        onInputChanged = onInputChanged,
+        onSubmit = onSubmitEmail,
+        error = error,
+      )
       Spacer(Modifier.weight(1f))
       Spacer(Modifier.height(16.dp))
       HedvigContainedButton(
         text = stringResource(hedvig.resources.R.string.login_continue_button),
         onClick = onSubmitEmail,
+        isLoading = loading,
       )
       Spacer(Modifier.height(16.dp))
     }
@@ -83,29 +80,55 @@ fun EmailInputScreen(
 
 @Composable
 private fun SSNTextField(
-  emailInput: String,
+  input: String,
+  market: Market,
   onInputChanged: (String) -> Unit,
-  onSubmitEmail: () -> Unit,
+  onSubmit: () -> Unit,
   error: String?,
-  loading: Boolean,
-  onClear: () -> Unit,
 ) {
-  OutlinedTextField(
-    value = emailInput,
-    onValueChange = onInputChanged,
-    modifier = Modifier
-      .fillMaxWidth()
-      .submitOnEnter(onSubmitEmail),
-    label = { Text(stringResource(hedvig.resources.R.string.login_text_input_email_address)) },
-    trailingIcon = {
-      TrailingIcon(error, loading, emailInput, onClear)
+  HedvigTextField(
+    value = input,
+    onValueChange = { newInput ->
+      val maxLengthAllowed = when (market) {
+        Market.NO -> 11
+        Market.DK -> 10
+        Market.SE -> 10
+      }
+      if (newInput.length > maxLengthAllowed) {
+        return@HedvigTextField
+      }
+      onInputChanged(newInput)
     },
-    isError = error != null,
+    label = {
+      Text(
+        stringResource(
+          when (market) {
+            Market.NO -> R.string.simple_sign_login_text_field_label
+            Market.DK -> R.string.simple_sign_login_text_field_label_dk
+            Market.SE -> R.string.simple_sign_login_text_field_label
+          },
+        ),
+      )
+    },
+    supportingText = {
+      Text(
+        stringResource(
+          when (market) {
+            Market.NO -> R.string.simple_sign_login_text_field_helper_text
+            Market.DK -> R.string.simple_sign_login_text_field_helper_text_dk
+            Market.SE -> R.string.simple_sign_login_text_field_label
+          },
+        ),
+      )
+    },
     keyboardOptions = KeyboardOptions(
-      imeAction = ImeAction.Done,
+      keyboardType = KeyboardType.Number,
+      imeAction = ImeAction.Next,
     ),
-    keyboardActions = KeyboardActions(onDone = { onSubmitEmail() }),
-    singleLine = true,
+    keyboardActions = KeyboardActions(
+      onNext = { onSubmit() },
+    ),
+    modifier = Modifier.fillMaxWidth(),
   )
   if (error != null) {
     Text(
@@ -116,55 +139,19 @@ private fun SSNTextField(
   }
 }
 
-@Composable
-private fun TrailingIcon(error: String?, loading: Boolean, emailInput: String, onClear: () -> Unit) {
-  if (error != null) {
-    Image(
-      imageVector = Icons.Outlined.ErrorOutline,
-      contentDescription = null,
-      colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.error),
-    )
-  } else if (loading) {
-    CircularProgressIndicator(modifier = Modifier.size(24.dp))
-  } else if (emailInput.isNotBlank()) {
-    IconButton(onClick = onClear) {
-      Image(
-        imageVector = Icons.Filled.Clear,
-        contentDescription = stringResource(
-          hedvig.resources.R.string.login_text_input_email_address_icon_description_clear_all,
-        ),
-      )
-    }
-  }
-}
-
-@OptIn(ExperimentalComposeUiApi::class)
-private fun Modifier.submitOnEnter(action: () -> Unit) = composed {
-  val keyboardController = LocalSoftwareKeyboardController.current
-  onKeyEvent { keyEvent ->
-    if (keyEvent.nativeKeyEvent.keyCode == KeyEvent.KEYCODE_ENTER) {
-      keyboardController?.hide()
-      action()
-      true
-    } else {
-      false
-    }
-  }
-}
-
 @HedvigPreview
 @Composable
 private fun PreviewEmailInputScreenValid() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      EmailInputScreen(
+      SSNInputScreen(
         onUpClick = {},
         onInputChanged = {},
         onSubmitEmail = {},
-        onClear = {},
         emailInput = "example@example.com",
         error = null,
         loading = false,
+        market = Market.DK
       )
     }
   }
@@ -175,14 +162,14 @@ private fun PreviewEmailInputScreenValid() {
 private fun PreviewEmailInputScreenInvalid() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      EmailInputScreen(
+      SSNInputScreen(
         onUpClick = {},
         onInputChanged = {},
         onSubmitEmail = {},
-        onClear = {},
         emailInput = "example.com",
         error = "Invalid email",
         loading = false,
+        market = Market.DK
       )
     }
   }

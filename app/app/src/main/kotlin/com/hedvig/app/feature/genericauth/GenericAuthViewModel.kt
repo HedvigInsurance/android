@@ -13,13 +13,13 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class GenericAuthViewModel(
+  val marketManager: MarketManager,
   private val authRepository: AuthRepository,
-  private val marketManager: MarketManager,
 ) : ViewModel() {
   private val _viewState = MutableStateFlow(GenericAuthViewState())
   val viewState = _viewState.asStateFlow()
 
-  fun setInput(value: String) {
+  fun setEmailInput(value: String) {
     _viewState.update {
       it.copy(
         emailInput = value,
@@ -27,6 +27,16 @@ class GenericAuthViewModel(
       )
     }
   }
+
+  fun setSSNInput(value: String) {
+    _viewState.update {
+      it.copy(
+        ssnInput = value,
+        error = null,
+      )
+    }
+  }
+
 
   fun clear() {
     _viewState.update { GenericAuthViewState() }
@@ -36,10 +46,35 @@ class GenericAuthViewModel(
     val emailInput = _viewState.value.emailInputWithoutWhitespaces
     if (emailInput.isValid) {
       viewModelScope.launch {
-        createStateFromOtpAttempt(emailInput)
+        createStateFromOtpAttempt(
+          createLoginAttempt = {
+            authRepository.startLoginAttempt(
+              loginMethod = LoginMethod.OTP,
+              market = marketManager.market.value.name,
+              personalNumber = null,
+              email = emailInput.value,
+            )
+          }
+        )
       }
     } else {
       _viewState.update { it.copy(error = validate(emailInput)) }
+    }
+  }
+
+  fun submitSSN() {
+    val ssnInput = _viewState.value.ssnInput
+    viewModelScope.launch {
+      createStateFromOtpAttempt(
+        createLoginAttempt = {
+          authRepository.startLoginAttempt(
+            loginMethod = LoginMethod.OTP,
+            market = marketManager.market.value.name,
+            personalNumber = ssnInput,
+            email = null,
+          )
+        },
+      )
     }
   }
 
@@ -47,15 +82,11 @@ class GenericAuthViewModel(
     _viewState.update { it.copy(verifyUrl = null) }
   }
 
-  private suspend fun createStateFromOtpAttempt(email: EmailAddressWithTrimmedWhitespaces) {
+  private suspend fun createStateFromOtpAttempt(
+    createLoginAttempt: suspend () -> AuthAttemptResult,
+  ) {
     _viewState.update { it.copy(loading = true) }
-    val startLoginResult = authRepository.startLoginAttempt(
-      loginMethod = LoginMethod.OTP,
-      market = marketManager.market.value.name,
-      personalNumber = null,
-      email = email.value,
-    )
-    val newState = when (startLoginResult) {
+    val newState = when (val startLoginResult = createLoginAttempt()) {
       is AuthAttemptResult.BankIdProperties,
       is AuthAttemptResult.ZignSecProperties,
       is AuthAttemptResult.Error,
@@ -63,6 +94,7 @@ class GenericAuthViewModel(
         error = GenericAuthViewState.TextFieldError.NETWORK_ERROR,
         loading = false,
       )
+
       is AuthAttemptResult.OtpProperties -> _viewState.value.copy(
         verifyUrl = startLoginResult.verifyUrl,
         resendUrl = startLoginResult.resendUrl,
@@ -88,6 +120,7 @@ class GenericAuthViewModel(
 
 data class GenericAuthViewState(
   val emailInput: String = "",
+  val ssnInput: String = "",
   val error: TextFieldError? = null,
   val verifyUrl: String? = null,
   val resendUrl: String? = null,
