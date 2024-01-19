@@ -69,7 +69,7 @@ fun EmailInputScreen(
         style = MaterialTheme.typography.headlineMedium,
       )
       Spacer(Modifier.height(40.dp))
-      SSNTextField(emailInput, onInputChanged, onSubmitEmail, error, loading, onClear)
+      EmailTextField(emailInput, onInputChanged, onSubmitEmail, error, loading, onClear)
       Spacer(Modifier.weight(1f))
       Spacer(Modifier.height(16.dp))
       HedvigContainedButton(
@@ -82,7 +82,7 @@ fun EmailInputScreen(
 }
 
 @Composable
-private fun SSNTextField(
+private fun EmailTextField(
   emailInput: String,
   onInputChanged: (String) -> Unit,
   onSubmitEmail: () -> Unit,
