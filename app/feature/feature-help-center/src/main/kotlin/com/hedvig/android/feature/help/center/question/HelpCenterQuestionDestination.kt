@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,6 +23,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import com.halilibo.richtext.markdown.Markdown
+import com.halilibo.richtext.ui.material3.RichText
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.material3.infoContainer
 import com.hedvig.android.core.designsystem.material3.onInfoContainer
@@ -37,7 +40,6 @@ import com.hedvig.android.feature.help.center.model.Question
 import com.hedvig.android.feature.help.center.ui.HelpCenterSection
 import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
 import com.hedvig.android.feature.help.center.ui.StillNeedHelpSection
-import com.hedvig.android.feature.help.center.ui.TextWithClickableDeepLink
 import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -46,7 +48,6 @@ import kotlinx.collections.immutable.toPersistentList
 @Composable
 internal fun HelpCenterQuestionDestination(
   questionId: Question,
-  toDeepLink: (String) -> String,
   onNavigateToQuestion: (questionId: Question) -> Unit,
   onNavigateUp: () -> Unit,
   onNavigateBack: () -> Unit,
@@ -63,7 +64,6 @@ internal fun HelpCenterQuestionDestination(
   HelpCenterQuestionScreen(
     question = question,
     relatedQuestions = relatedQuestions,
-    toDeepLink = toDeepLink,
     onNavigateToQuestion = onNavigateToQuestion,
     onNavigateUp = onNavigateUp,
     onNavigateBack = onNavigateBack,
@@ -75,7 +75,6 @@ internal fun HelpCenterQuestionDestination(
 private fun HelpCenterQuestionScreen(
   question: Question?,
   relatedQuestions: ImmutableList<Question>,
-  toDeepLink: (String) -> String,
   onNavigateToQuestion: (questionId: Question) -> Unit,
   onNavigateUp: () -> Unit,
   onNavigateBack: () -> Unit,
@@ -129,14 +128,17 @@ private fun HelpCenterQuestionScreen(
             chipContainerColor = MaterialTheme.colorScheme.typeContainer,
             contentColor = MaterialTheme.colorScheme.onTypeContainer,
             content = {
-              TextWithClickableDeepLink(
-                text = stringResource(question.answerRes),
-                style = MaterialTheme.typography.headlineSmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
-                toDeepLink = toDeepLink,
-                modifier = Modifier
-                  .padding(horizontal = 16.dp)
-                  .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-              )
+              ProvideTextStyle(MaterialTheme.typography.headlineSmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)) {
+                RichText(
+                  modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+                ) {
+                  Markdown(
+                    content = stringResource(id = question.answerRes),
+                  )
+                }
+              }
             },
           )
           if (relatedQuestions.isNotEmpty()) {
@@ -151,9 +153,8 @@ private fun HelpCenterQuestionScreen(
             )
           }
           Spacer(Modifier.weight(1f))
-          Spacer(Modifier.height(96.dp))
-          StillNeedHelpSection(openChat)
           Spacer(Modifier.height(56.dp))
+          StillNeedHelpSection(openChat)
           Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
         }
       }
@@ -179,12 +180,10 @@ private fun PreviewHelpCenterQuestionScreen(
         } else {
           persistentListOf()
         },
-        toDeepLink = { _ -> "" },
-        onNavigateBack = {},
         onNavigateToQuestion = {},
         onNavigateUp = {},
-        openChat = {},
-      )
+        onNavigateBack = {},
+      ) {}
     }
   }
 }

@@ -15,24 +15,6 @@ interface HedvigDeepLinkContainer {
   val helpCenter: String // The help center root screen
   val helpCenterCommonTopic: String // A common topic inside the help center
   val helpCenterQuestion: String // A specific question inside the help center
-
-  fun toDeepLink(url: String) = if (url.contains("link")) {
-    when {
-      url.contains("home") -> home
-      url.contains("insurances") -> insurances
-      url.contains("forever") -> forever
-      url.contains("profile") -> profile
-      url.contains("eurobonus") -> eurobonus
-      url.contains("chat") -> chat
-      url.contains("connectPayment") -> connectPayment
-      url.contains("directDebit") -> directDebit
-      url.contains("payments") -> payments
-      url.contains("helpCenter") -> helpCenter
-      else -> home
-    }
-  } else {
-    url
-  }
 }
 
 internal class HedvigDeepLinkContainerImpl(

@@ -232,13 +232,11 @@ internal fun HedvigNavHost(
     connectAdyenPaymentGraph(navigator)
     helpCenterGraph(
       navigator = navigator,
-      hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-      openChat = { backStackEntry ->
-        with(navigator) {
-          backStackEntry.navigate(AppDestination.Chat)
-        }
-      },
-    )
+    ) { backStackEntry ->
+      with(navigator) {
+        backStackEntry.navigate(AppDestination.Chat)
+      }
+    }
   }
 }
 
