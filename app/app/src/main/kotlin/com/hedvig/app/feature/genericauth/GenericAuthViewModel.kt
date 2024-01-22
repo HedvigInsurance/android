@@ -37,7 +37,6 @@ class GenericAuthViewModel(
     }
   }
 
-
   fun clear() {
     _viewState.update { GenericAuthViewState() }
   }
@@ -54,7 +53,7 @@ class GenericAuthViewModel(
               personalNumber = null,
               email = emailInput.value,
             )
-          }
+          },
         )
       }
     } else {
@@ -82,9 +81,7 @@ class GenericAuthViewModel(
     _viewState.update { it.copy(verifyUrl = null) }
   }
 
-  private suspend fun createStateFromOtpAttempt(
-    createLoginAttempt: suspend () -> AuthAttemptResult,
-  ) {
+  private suspend fun createStateFromOtpAttempt(createLoginAttempt: suspend () -> AuthAttemptResult) {
     _viewState.update { it.copy(loading = true) }
     val newState = when (val startLoginResult = createLoginAttempt()) {
       is AuthAttemptResult.BankIdProperties,

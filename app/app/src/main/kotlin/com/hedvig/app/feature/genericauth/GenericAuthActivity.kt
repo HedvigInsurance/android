@@ -64,7 +64,7 @@ class GenericAuthActivity : ComponentActivity() {
               market = market,
               onUpClick = ::finish,
               onInputChanged = viewModel::setSSNInput,
-              onSubmitEmail = viewModel::submitSSN,
+              onSubmitSSN = viewModel::submitSSN,
               emailInput = viewState.ssnInput,
               error = viewState.error?.let { errorMessage(it) },
               loading = viewState.loading,

@@ -33,7 +33,7 @@ fun SSNInputScreen(
   market: Market,
   onUpClick: () -> Unit,
   onInputChanged: (String) -> Unit,
-  onSubmitEmail: () -> Unit,
+  onSubmitSSN: () -> Unit,
   emailInput: String,
   error: String?,
   loading: Boolean,
@@ -63,14 +63,14 @@ fun SSNInputScreen(
         input = emailInput,
         market = market,
         onInputChanged = onInputChanged,
-        onSubmit = onSubmitEmail,
+        onSubmit = onSubmitSSN,
         error = error,
       )
       Spacer(Modifier.weight(1f))
       Spacer(Modifier.height(16.dp))
       HedvigContainedButton(
-        text = stringResource(hedvig.resources.R.string.login_continue_button),
-        onClick = onSubmitEmail,
+        text = stringResource(R.string.login_continue_button),
+        onClick = onSubmitSSN,
         isLoading = loading,
       )
       Spacer(Modifier.height(16.dp))
@@ -92,7 +92,7 @@ private fun SSNTextField(
       val maxLengthAllowed = when (market) {
         Market.NO -> 11
         Market.DK -> 10
-        Market.SE -> 10
+        Market.SE -> error("Should not be able to login with SSN in SE")
       }
       if (newInput.length > maxLengthAllowed) {
         return@HedvigTextField
@@ -105,7 +105,7 @@ private fun SSNTextField(
           when (market) {
             Market.NO -> R.string.simple_sign_login_text_field_label
             Market.DK -> R.string.simple_sign_login_text_field_label_dk
-            Market.SE -> R.string.simple_sign_login_text_field_label
+            Market.SE -> error("Should not be able to login with SSN in SE")
           },
         ),
       )
@@ -116,7 +116,7 @@ private fun SSNTextField(
           when (market) {
             Market.NO -> R.string.simple_sign_login_text_field_helper_text
             Market.DK -> R.string.simple_sign_login_text_field_helper_text_dk
-            Market.SE -> R.string.simple_sign_login_text_field_label
+            Market.SE -> error("Should not be able to login with SSN in SE")
           },
         ),
       )
@@ -147,11 +147,11 @@ private fun PreviewEmailInputScreenValid() {
       SSNInputScreen(
         onUpClick = {},
         onInputChanged = {},
-        onSubmitEmail = {},
+        onSubmitSSN = {},
         emailInput = "example@example.com",
         error = null,
         loading = false,
-        market = Market.DK
+        market = Market.DK,
       )
     }
   }
@@ -165,11 +165,11 @@ private fun PreviewEmailInputScreenInvalid() {
       SSNInputScreen(
         onUpClick = {},
         onInputChanged = {},
-        onSubmitEmail = {},
+        onSubmitSSN = {},
         emailInput = "example.com",
         error = "Invalid email",
         loading = false,
-        market = Market.DK
+        market = Market.DK,
       )
     }
   }
