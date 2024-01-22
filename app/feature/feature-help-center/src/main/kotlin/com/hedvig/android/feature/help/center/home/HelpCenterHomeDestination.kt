@@ -271,9 +271,7 @@ private fun HelpCenterHomeScreen(
         )
         Spacer(Modifier.weight(1f))
         Spacer(Modifier.height(56.dp))
-        StillNeedHelpSection(openChat = {
-          openChat()
-        })
+        StillNeedHelpSection(openChat = openChat)
         Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
       }
     }

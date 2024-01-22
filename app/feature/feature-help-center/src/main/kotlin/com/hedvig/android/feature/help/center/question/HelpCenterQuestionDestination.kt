@@ -130,7 +130,9 @@ private fun HelpCenterQuestionScreen(
             content = {
               ProvideTextStyle(MaterialTheme.typography.headlineSmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)) {
                 RichText(
-                  modifier = Modifier.padding(16.dp),
+                  modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
                 ) {
                   Markdown(
                     content = stringResource(id = question.answerRes),
