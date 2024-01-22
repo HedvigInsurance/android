@@ -7,7 +7,6 @@ import com.hedvig.android.market.set.SetMarketUseCase
 import com.hedvig.android.market.set.SetMarketUseCaseImpl
 import org.koin.dsl.module
 
-
 @OptIn(InternalHedvigMarketApi::class)
 val setMarketModule = module {
   single<SetMarketUseCase> { SetMarketUseCaseImpl(get<InternalSetMarketUseCase>(), get<LanguageService>()) }
