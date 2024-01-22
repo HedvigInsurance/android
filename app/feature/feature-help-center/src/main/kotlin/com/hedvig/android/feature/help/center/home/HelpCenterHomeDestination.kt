@@ -55,6 +55,7 @@ import com.hedvig.android.feature.help.center.model.Topic
 import com.hedvig.android.feature.help.center.ui.HelpCenterSection
 import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
 import com.hedvig.android.feature.help.center.ui.StillNeedHelpSection
+import com.hedvig.android.navigation.core.AppDestination
 import com.kiwi.navigationcompose.typed.Destination
 import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
@@ -188,11 +189,16 @@ private fun HelpCenterHomeScreen(
                       .fillMaxWidth()
                       .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
                   ) {
-                    Text(
-                      text = stringResource(quickAction.titleRes),
-                      Modifier.padding(16.dp),
-                      textAlign = TextAlign.Center,
-                    )
+                    Column(
+                      verticalArrangement = Arrangement.Center,
+                      horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                      Text(
+                        text = stringResource(quickAction.titleRes),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(16.dp),
+                      )
+                    }
                   }
                 }
               }
@@ -215,11 +221,16 @@ private fun HelpCenterHomeScreen(
                       .fillMaxWidth()
                       .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
                   ) {
-                    Text(
-                      text = commonClaim.title,
-                      Modifier.padding(16.dp),
-                      textAlign = TextAlign.Center,
-                    )
+                    Column(
+                      verticalArrangement = Arrangement.Center,
+                      horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                      Text(
+                        text = commonClaim.title,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(16.dp),
+                      )
+                    }
                   }
                 }
               }
@@ -277,7 +288,14 @@ private fun PreviewHelpCenterHomeScreen() {
       HelpCenterHomeScreen(
         topics = persistentListOf(Topic.PAYMENTS, Topic.PAYMENTS),
         questions = persistentListOf(Question.CLAIMS_Q1, Question.CLAIMS_Q1),
-        quickActions = persistentListOf(),
+        quickActions = persistentListOf(
+          QuickAction.QuickLink(0, "Long displayName 1234567", AppDestination.EditCoInsured),
+          QuickAction.QuickLink(
+            R.string.HC_QUICK_ACTIONS_UPDATE_ADDRESS,
+            "Long displayName 1234567",
+            AppDestination.EditCoInsured,
+          ),
+        ),
         commonClaims = persistentListOf(),
         selectedQuickAction = null,
         onNavigateToTopic = {},
