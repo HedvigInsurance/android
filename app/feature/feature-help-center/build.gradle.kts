@@ -15,6 +15,8 @@ dependencies {
   implementation(libs.arrow.core)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.apollo.runtime)
+  implementation(libs.compose.richtext)
+  implementation(libs.compose.richtextUi)
   implementation(libs.coil.coil)
   implementation(libs.coil.compose)
   implementation(libs.coroutines.android)

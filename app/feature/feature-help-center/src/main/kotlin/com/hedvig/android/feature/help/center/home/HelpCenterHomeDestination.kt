@@ -54,6 +54,7 @@ import com.hedvig.android.feature.help.center.model.QuickAction
 import com.hedvig.android.feature.help.center.model.Topic
 import com.hedvig.android.feature.help.center.ui.HelpCenterSection
 import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
+import com.hedvig.android.feature.help.center.ui.StillNeedHelpSection
 import com.kiwi.navigationcompose.typed.Destination
 import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
@@ -67,6 +68,7 @@ internal fun HelpCenterHomeDestination(
   onNavigateToQuickLink: (Destination) -> Unit,
   onNavigateToCommonClaim: (CommonClaim) -> Unit,
   onNavigateUp: () -> Unit,
+  openChat: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -86,6 +88,7 @@ internal fun HelpCenterHomeDestination(
     onDismissQuickActionDialog = {
       viewModel.emit(HelpCenterEvent.OnDismissQuickActionDialog)
     },
+    openChat = openChat,
     onNavigateUp = onNavigateUp,
   )
 }
@@ -103,6 +106,7 @@ private fun HelpCenterHomeScreen(
   onQuickActionsSelected: (QuickAction) -> Unit,
   onNavigateToCommonClaim: (CommonClaim) -> Unit,
   onDismissQuickActionDialog: () -> Unit,
+  openChat: () -> Unit,
   onNavigateUp: () -> Unit,
 ) {
   when (selectedQuickAction) {
@@ -224,7 +228,7 @@ private fun HelpCenterHomeScreen(
         )
         Spacer(Modifier.height(56.dp))
         HelpCenterSection(
-          title = "Common topics",
+          title = stringResource(id = R.string.HC_COMMON_TOPICS_TITLE),
           chipContainerColor = MaterialTheme.colorScheme.yellowContainer,
           contentColor = MaterialTheme.colorScheme.onYellowContainer,
           content = {
@@ -247,14 +251,18 @@ private fun HelpCenterHomeScreen(
         LocalConfiguration.current
         val resources = LocalContext.current.resources
         HelpCenterSectionWithClickableRows(
-          title = "Common questions",
+          title = stringResource(id = R.string.HC_COMMON_QUESTIONS_TITLE),
           chipContainerColor = MaterialTheme.colorScheme.infoContainer,
           contentColor = MaterialTheme.colorScheme.onInfoContainer,
           items = questions,
           itemText = { resources.getString(it.questionRes) },
           onClickItem = { onNavigateToQuestion(it) },
         )
-        Spacer(Modifier.height(24.dp))
+        Spacer(Modifier.weight(1f))
+        Spacer(Modifier.height(56.dp))
+        StillNeedHelpSection(openChat = {
+          openChat()
+        })
         Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
       }
     }
@@ -278,6 +286,7 @@ private fun PreviewHelpCenterHomeScreen() {
         onQuickActionsSelected = {},
         onNavigateToCommonClaim = {},
         onDismissQuickActionDialog = {},
+        openChat = {},
         onNavigateUp = {},
       )
     }
