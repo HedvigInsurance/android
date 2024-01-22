@@ -82,7 +82,6 @@ internal enum class Topic(
       Question.COVERAGE_Q13,
       Question.COVERAGE_Q14,
       Question.COVERAGE_Q15,
-      Question.COVERAGE_Q16,
       Question.COVERAGE_Q17,
       Question.COVERAGE_Q18,
       Question.COVERAGE_Q19,
