@@ -11,4 +11,8 @@ class FakeMarketManager(
 ) : MarketManager {
   val _market: MutableStateFlow<Market> = MutableStateFlow(initialMarket)
   override val market: StateFlow<Market> = _market.asStateFlow()
+
+  override suspend fun market(): Market? {
+    error("Not yet implemented")
+  }
 }

@@ -11,41 +11,43 @@ interface LanguageService {
   @MainThread
   fun setLanguage(language: Language)
 
+  /**
+   * Returns the language that was selected by the user, or null if no language was manually selected.
+   */
+  fun getSelectedLanguage(): Language?
+
   fun getLanguage(): Language
-
-  fun getLocale(): Locale
-
-  fun performOnLaunchLanguageCheck()
 }
 
-class AndroidLanguageService() : LanguageService {
+internal class AndroidLanguageService() : LanguageService {
   /**
    * Sets the language, and as a side effect, restarts all running activities.
    * Only safe to call from the Main Thread.
    */
   @MainThread
   override fun setLanguage(language: Language) {
+    logcat { "LanguageService: setLanguage: $language" }
     AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(language.toString()))
   }
 
+  override fun getSelectedLanguage(): Language? {
+    val locale = getLocaleFromAppCompat() ?: return null
+    return Language.from(locale.toLanguageTag())
+  }
+
   override fun getLanguage(): Language {
-    return Language.from(getLocale().toLanguageTag())
-  }
-
-  override fun getLocale(): Locale {
-    val localeList = AppCompatDelegate.getApplicationLocales()
-    if (localeList.isEmpty) {
-      logcat(LogPriority.WARN) { "No locale set, defaulting to en_SE" }
-      return Locale("en", "SE")
+    return getSelectedLanguage() ?: let {
+      logcat(LogPriority.WARN) { "LanguageService: getLocale: No locale set, defaulting to en_SE" }
+      Language.EN_SE
     }
-    return localeList[0]!!
   }
 
-  override fun performOnLaunchLanguageCheck() {
-    val currentLanguage = AppCompatDelegate.getApplicationLocales()
-    // Always default to English, Sweden, if nothing else is set
-    if (currentLanguage.isEmpty) {
-      setLanguage(Language.EN_SE)
+  private fun getLocaleFromAppCompat(): Locale? {
+    val localeList = AppCompatDelegate.getApplicationLocales()
+    return if (localeList.isEmpty) {
+      null
+    } else {
+      localeList[0]!!
     }
   }
 }

@@ -9,15 +9,11 @@ class FakeLanguageService : LanguageService {
     error("Not implemented")
   }
 
-  override fun getLanguage(): Language {
+  override fun getSelectedLanguage(): Language? {
     error("Not implemented")
   }
 
-  override fun getLocale(): Locale {
-    return Locale.ENGLISH
-  }
-
-  override fun performOnLaunchLanguageCheck() {
+  override fun getLanguage(): Language {
     error("Not implemented")
   }
 }

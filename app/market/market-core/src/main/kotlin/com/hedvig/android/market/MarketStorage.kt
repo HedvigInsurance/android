@@ -11,14 +11,14 @@ import kotlinx.coroutines.flow.map
 internal class MarketStorage(
   private val datastore: DataStore<Preferences>,
 ) {
-  val market: Flow<Market> = datastore.data
+  val market: Flow<Market?> = datastore.data
     .map { preferences ->
       val storedMarket: Market? = preferences[marketPreferencesKey]?.let { Market.valueOf(it) }
       if (storedMarket != null) {
         return@map storedMarket
       } else {
         logcat { "No market stored in datastore, falling back to SE" }
-        return@map Market.SE
+        return@map null
       }
     }
 
