@@ -81,7 +81,6 @@ import com.hedvig.app.feature.genericauth.otpinput.OtpInputViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.ReviewDialogViewModel
 import com.hedvig.app.feature.marketing.MarketingActivity
-import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationViewModel
 import com.hedvig.app.service.push.senders.CrossSellNotificationSender
 import com.hedvig.app.service.push.senders.GenericNotificationSender
 import com.hedvig.app.service.push.senders.PaymentNotificationSender
@@ -182,9 +181,6 @@ fun makeUserAgent(locale: Locale): String = buildString {
 }
 
 private val viewModelModule = module {
-  viewModel<SimpleSignAuthenticationViewModel> { params ->
-    SimpleSignAuthenticationViewModel(params.get(), get(), get())
-  }
   viewModel<GenericAuthViewModel> { GenericAuthViewModel(get(), get()) }
   viewModel<OtpInputViewModel> { (verifyUrl: String, resendUrl: String, credential: String) ->
     OtpInputViewModel(

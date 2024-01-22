@@ -79,20 +79,20 @@ class GenericAuthViewModelTest {
 
   @Test
   fun `set input should be set to view state`() = runTest {
-    viewModel.setInput("test")
+    viewModel.setEmailInput("test")
     assertThat(viewModel.viewState.value.emailInput).isEqualTo("test")
   }
 
   @Test
   fun `otp id should be present when successfully submitting valid email`() = runTest {
-    viewModel.setInput("invalid email..")
+    viewModel.setEmailInput("invalid email..")
     viewModel.submitEmail()
     advanceUntilIdle()
     assertThat(viewModel.viewState.value.emailInput).isEqualTo("invalid email..")
     assertThat(viewModel.viewState.value.error).isEqualTo(GenericAuthViewState.TextFieldError.INVALID_EMAIL)
     assertThat(viewModel.viewState.value.verifyUrl).isEqualTo(null)
 
-    viewModel.setInput("valid@email.com")
+    viewModel.setEmailInput("valid@email.com")
     viewModel.submitEmail()
     advanceUntilIdle()
     assertThat(viewModel.viewState.value.emailInput).isEqualTo("valid@email.com")
@@ -102,7 +102,7 @@ class GenericAuthViewModelTest {
 
   @Test
   fun `clear should remove input and error state`() = runTest {
-    viewModel.setInput("invalid email.. ")
+    viewModel.setEmailInput("invalid email.. ")
     viewModel.submitEmail()
     advanceUntilIdle()
     assertThat(viewModel.viewState.value.emailInput).isEqualTo("invalid email.. ")
@@ -115,7 +115,7 @@ class GenericAuthViewModelTest {
 
   @Test
   fun `should load when submitting valid email`() = runTest {
-    viewModel.setInput("valid@email.com")
+    viewModel.setEmailInput("valid@email.com")
     assertThat(viewModel.viewState.value.loading).isEqualTo(false)
     viewModel.submitEmail()
     runCurrent()
@@ -129,7 +129,7 @@ class GenericAuthViewModelTest {
   @Test
   fun `should consider an email with trailing or leading whitespaces as valid`() = runTest {
     val input = " valid@email.com "
-    viewModel.setInput(input)
+    viewModel.setEmailInput(input)
     viewModel.submitEmail()
     runCurrent()
     assertThat(viewModel.viewState.value.emailInput).isEqualTo(input)
