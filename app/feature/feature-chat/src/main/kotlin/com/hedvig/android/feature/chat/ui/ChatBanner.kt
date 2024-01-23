@@ -25,7 +25,7 @@ import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.InfoFilled
 
 @Composable
-fun ChatBanner(text: String, modifier: Modifier = Modifier) {
+internal fun ChatBanner(text: String, modifier: Modifier = Modifier) {
   HedvigInfoCard(
     modifier = modifier,
     contentPadding = PaddingValues(
