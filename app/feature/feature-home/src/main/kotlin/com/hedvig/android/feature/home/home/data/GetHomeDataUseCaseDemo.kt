@@ -19,10 +19,6 @@ internal class GetHomeDataUseCaseDemo : GetHomeDataUseCase {
         upcomingRenewals = null,
         enableNotifications = null,
       ),
-      allowAddressChange = false,
-      allowGeneratingTravelCertificate = false,
-      emergencyData = null,
-      commonClaimsData = persistentListOf(),
     ).right(),
   )
 }

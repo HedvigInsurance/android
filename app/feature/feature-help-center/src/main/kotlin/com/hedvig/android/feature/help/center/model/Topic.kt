@@ -82,7 +82,6 @@ internal enum class Topic(
       Question.COVERAGE_Q13,
       Question.COVERAGE_Q14,
       Question.COVERAGE_Q15,
-      Question.COVERAGE_Q16,
       Question.COVERAGE_Q17,
       Question.COVERAGE_Q18,
       Question.COVERAGE_Q19,
@@ -100,7 +99,7 @@ internal enum class Topic(
       Question.OTHER_Q3,
       Question.OTHER_Q4,
     ),
-  )
+  ),
 }
 
 internal val commonTopics = persistentListOf(

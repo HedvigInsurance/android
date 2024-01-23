@@ -18,8 +18,8 @@ internal interface GetNeedsCoInsuredInfoRemindersUseCase {
 }
 
 internal class GetNeedsCoInsuredInfoRemindersUseCaseImpl(
-    private val apolloClient: ApolloClient,
-    private val featureManager: FeatureManager,
+  private val apolloClient: ApolloClient,
+  private val featureManager: FeatureManager,
 ) : GetNeedsCoInsuredInfoRemindersUseCase {
   override suspend fun invoke(): Either<CoInsuredInfoReminderError, NonEmptyList<MemberReminder.CoInsuredInfo>> {
     return either {

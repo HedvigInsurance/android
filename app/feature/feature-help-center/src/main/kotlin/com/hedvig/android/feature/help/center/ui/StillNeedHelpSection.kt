@@ -15,17 +15,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
-import com.hedvig.android.core.designsystem.material3.squircleMedium
 import hedvig.resources.R
 
 @Composable
 fun StillNeedHelpSection(openChat: () -> Unit) {
-  Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+  Column(modifier = Modifier.padding(top = 16.dp)) {
     Column(
       horizontalAlignment = Alignment.CenterHorizontally,
       modifier = Modifier
         .background(
-          shape = MaterialTheme.shapes.squircleMedium,
           color = MaterialTheme.colorScheme.surface,
         )
         .fillMaxWidth()

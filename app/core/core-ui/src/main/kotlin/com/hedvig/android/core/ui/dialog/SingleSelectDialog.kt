@@ -74,7 +74,7 @@ fun <T> MultiSelectDialog(
   optionsList: List<T>,
   onSelected: (T) -> Unit,
   getDisplayText: (T) -> String,
-  getIsSelected: (T) -> Boolean,
+  getIsSelected: ((T) -> Boolean)?,
   getId: (T) -> String,
   onDismissRequest: () -> Unit,
 ) {

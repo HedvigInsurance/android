@@ -42,7 +42,7 @@ import kotlinx.collections.immutable.toPersistentList
 @Composable
 internal fun HelpCenterTopicDestination(
   topic: Topic,
-  onNavigateToQuestion: (questionId: Question) -> Unit,
+  onNavigateToQuestion: (question: Question) -> Unit,
   onNavigateUp: () -> Unit,
   onNavigateBack: () -> Unit,
   openChat: () -> Unit,
@@ -147,7 +147,6 @@ private fun HelpCenterTopicScreen(
           Spacer(Modifier.weight(1f))
           Spacer(Modifier.height(16.dp))
           StillNeedHelpSection(openChat)
-          Spacer(Modifier.height(56.dp))
           Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
         }
       }

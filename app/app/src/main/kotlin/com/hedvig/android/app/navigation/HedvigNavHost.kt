@@ -29,7 +29,6 @@ import com.hedvig.android.feature.claimtriaging.ClaimTriagingDestination
 import com.hedvig.android.feature.claimtriaging.claimTriagingDestinations
 import com.hedvig.android.feature.connect.payment.adyen.connectAdyenPaymentGraph
 import com.hedvig.android.feature.connect.payment.connectPaymentGraph
-import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredDestination
 import com.hedvig.android.feature.editcoinsured.navigation.editCoInsuredGraph
 import com.hedvig.android.feature.forever.navigation.foreverGraph
 import com.hedvig.android.feature.help.center.helpCenterGraph
@@ -105,7 +104,6 @@ internal fun HedvigNavHost(
           openUrl = ::openUrl,
         )
       },
-      navigator = navigator,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       onStartChat = { backStackEntry ->
         with(navigator) {
@@ -115,20 +113,12 @@ internal fun HedvigNavHost(
       onStartClaim = { backStackEntry ->
         with(navigator) { backStackEntry.navigate(AppDestination.ClaimsFlow) }
       },
-      startMovingFlow = { backStackEntry ->
-        with(navigator) {
-          backStackEntry.navigate(AppDestination.ChangeAddress)
-        }
-      },
-      onGenerateTravelCertificateClicked = {
-        hedvigAppState.navController.navigate(AppDestination.GenerateTravelCertificate)
-      },
       navigateToClaimDetails = { backStackEntry, claimId ->
         with(navigator) { backStackEntry.navigate(AppDestination.ClaimDetails(claimId)) }
       },
       navigateToPayinScreen = navigateToConnectPayment,
       navigateToMissingInfo = { backStackEntry: NavBackStackEntry, contractId: String ->
-        with(navigator) { backStackEntry.navigate(EditCoInsuredDestination.AddInfo(contractId)) }
+        with(navigator) { backStackEntry.navigate(AppDestination.CoInsuredAddInfo(contractId)) }
       },
       navigateToHelpCenter = { backStackEntry ->
         with(navigator) { backStackEntry.navigate(HelpCenterDestination) }
@@ -176,12 +166,12 @@ internal fun HedvigNavHost(
       imageLoader = imageLoader,
       startEditCoInsured = { backStackEntry: NavBackStackEntry, contractId: String ->
         with(navigator) {
-          backStackEntry.navigate(EditCoInsuredDestination.AddOrRemove(contractId))
+          backStackEntry.navigate(AppDestination.CoInsuredAddInfo(contractId))
         }
       },
       startEditCoInsuredAddMissingInfo = { backStackEntry: NavBackStackEntry, contractId: String ->
         with(navigator) {
-          backStackEntry.navigate(EditCoInsuredDestination.AddInfo(contractId))
+          backStackEntry.navigate(AppDestination.CoInsuredAddOrRemove(contractId))
         }
       },
     )
@@ -207,13 +197,10 @@ internal fun HedvigNavHost(
       navigateToConnectPayment = navigateToConnectPayment,
       navigateToAddMissingInfo = { backStackEntry: NavBackStackEntry, contractId: String ->
         with(navigator) {
-          backStackEntry.navigate(EditCoInsuredDestination.AddInfo(contractId))
+          backStackEntry.navigate(AppDestination.CoInsuredAddInfo(contractId))
         }
       },
       openAppSettings = { activityNavigator.openAppSettings(context) },
-      navigateToHelpCenter = { backStackEntry ->
-        with(navigator) { backStackEntry.navigate(HelpCenterDestination) }
-      },
       openUrl = ::openUrl,
     )
     chatGraph(
@@ -245,13 +232,11 @@ internal fun HedvigNavHost(
     connectAdyenPaymentGraph(navigator)
     helpCenterGraph(
       navigator = navigator,
-      hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-      openChat = { backStackEntry ->
-        with(navigator) {
-          backStackEntry.navigate(AppDestination.Chat)
-        }
-      },
-    )
+    ) { backStackEntry ->
+      with(navigator) {
+        backStackEntry.navigate(AppDestination.Chat)
+      }
+    }
   }
 }
 

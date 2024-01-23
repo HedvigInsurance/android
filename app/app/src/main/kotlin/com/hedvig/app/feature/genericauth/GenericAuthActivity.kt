@@ -16,6 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.market.Market
 import com.hedvig.app.feature.genericauth.otpinput.OtpInputActivity
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 
@@ -26,6 +27,8 @@ class GenericAuthActivity : ComponentActivity() {
     WindowCompat.setDecorFitsSystemWindows(window, false)
 
     val viewModel: GenericAuthViewModel = getViewModel()
+    val market = viewModel.marketManager.market.value
+
     setContent {
       val viewState by viewModel.viewState.collectAsStateWithLifecycle()
 
@@ -45,15 +48,28 @@ class GenericAuthActivity : ComponentActivity() {
           color = MaterialTheme.colorScheme.background,
           modifier = Modifier.fillMaxSize(),
         ) {
-          EmailInputScreen(
-            onUpClick = ::finish,
-            onInputChanged = viewModel::setInput,
-            onSubmitEmail = viewModel::submitEmail,
-            onClear = viewModel::clear,
-            emailInput = viewState.emailInput,
-            error = viewState.error?.let { errorMessage(it) },
-            loading = viewState.loading,
-          )
+          when (market) {
+            Market.SE -> EmailInputScreen(
+              onUpClick = ::finish,
+              onInputChanged = viewModel::setEmailInput,
+              onSubmitEmail = viewModel::submitEmail,
+              onClear = viewModel::clear,
+              emailInput = viewState.emailInput,
+              error = viewState.error?.let { errorMessage(it) },
+              loading = viewState.loading,
+            )
+            Market.NO,
+            Market.DK,
+            -> SSNInputScreen(
+              market = market,
+              onUpClick = ::finish,
+              onInputChanged = viewModel::setSSNInput,
+              onSubmitSSN = viewModel::submitSSN,
+              emailInput = viewState.ssnInput,
+              error = viewState.error?.let { errorMessage(it) },
+              loading = viewState.loading,
+            )
+          }
         }
       }
     }
@@ -64,8 +80,10 @@ class GenericAuthActivity : ComponentActivity() {
     when (error) {
       GenericAuthViewState.TextFieldError.EMPTY ->
         hedvig.resources.R.string.login_text_input_email_error_enter_email
+
       GenericAuthViewState.TextFieldError.INVALID_EMAIL ->
         hedvig.resources.R.string.login_text_input_email_error_not_valid
+
       GenericAuthViewState.TextFieldError.NETWORK_ERROR ->
         hedvig.resources.R.string.NETWORK_ERROR_ALERT_MESSAGE
     },

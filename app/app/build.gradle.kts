@@ -25,7 +25,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "12.3.8"
+    versionName = "12.4.0"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -141,6 +141,7 @@ dependencies {
   implementation(libs.coroutines.android)
   implementation(libs.coroutines.core)
   implementation(libs.datadog.sdk.core)
+  implementation(libs.datadog.sdk.compose)
   implementation(libs.datadog.sdk.rum)
   implementation(libs.firebase.analytics)
   implementation(libs.firebase.crashlytics)

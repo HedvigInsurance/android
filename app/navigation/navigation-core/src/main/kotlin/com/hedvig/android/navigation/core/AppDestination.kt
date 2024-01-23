@@ -72,4 +72,14 @@ sealed interface AppDestination : Destination {
   data class ClaimDetails(
     val claimId: String,
   ) : AppDestination
+
+  @Serializable
+  data class CoInsuredAddInfo(
+    val contractId: String,
+  ) : AppDestination
+
+  @Serializable
+  data class CoInsuredAddOrRemove(
+    val contractId: String,
+  ) : AppDestination
 }

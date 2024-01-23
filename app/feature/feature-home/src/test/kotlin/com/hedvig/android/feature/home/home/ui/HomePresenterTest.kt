@@ -108,10 +108,6 @@ internal class HomePresenterTest {
           ),
           memberReminders = MemberReminders(),
           veryImportantMessages = persistentListOf(),
-          allowAddressChange = true,
-          allowGeneratingTravelCertificate = false,
-          emergencyData = null,
-          commonClaimsData = persistentListOf(),
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -129,10 +125,6 @@ internal class HomePresenterTest {
           ),
           veryImportantMessages = persistentListOf(),
           memberReminders = MemberReminders(),
-          allowAddressChange = true,
-          allowGeneratingTravelCertificate = false,
-          emergencyData = null,
-          commonClaimsData = persistentListOf(),
           isHelpCenterEnabled = false,
           showChatIcon = false,
           hasUnseenChatMessages = false,
@@ -161,10 +153,6 @@ internal class HomePresenterTest {
             enableNotifications = MemberReminder.EnableNotifications(),
           ),
           veryImportantMessages = persistentListOf(),
-          allowAddressChange = true,
-          allowGeneratingTravelCertificate = false,
-          emergencyData = null,
-          commonClaimsData = persistentListOf(),
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -176,10 +164,6 @@ internal class HomePresenterTest {
           memberReminders = MemberReminders(
             connectPayment = null,
           ),
-          allowAddressChange = true,
-          allowGeneratingTravelCertificate = false,
-          emergencyData = null,
-          commonClaimsData = persistentListOf(),
           isHelpCenterEnabled = false,
           showChatIcon = false,
           hasUnseenChatMessages = false,
@@ -218,16 +202,12 @@ internal class HomePresenterTest {
     )
 
     homePresenter.test(
-      HomeUiState.Success(
+      initialState = HomeUiState.Success(
         isReloading = true,
-        HomeText.Active,
-        null,
-        persistentListOf(),
-        MemberReminders(),
-        false,
-        false,
-        null,
-        persistentListOf(),
+        homeText = HomeText.Active,
+        claimStatusCardsData = null,
+        veryImportantMessages = persistentListOf(),
+        memberReminders = MemberReminders(),
         isHelpCenterEnabled = false,
         showChatIcon = false,
         hasUnseenChatMessages = false,
@@ -250,17 +230,13 @@ internal class HomePresenterTest {
     homePresenter.test(
       HomeUiState.Success(
         isReloading = true,
-        HomeText.Active,
-        null,
-        persistentListOf(),
-        MemberReminders(),
-        false,
-        false,
-        null,
-        persistentListOf(),
+        homeText = HomeText.Active,
+        claimStatusCardsData = null,
+        veryImportantMessages = persistentListOf(),
+        memberReminders = MemberReminders(),
         isHelpCenterEnabled = false,
         showChatIcon = false,
-        false,
+        hasUnseenChatMessages = false,
       ),
     ) {
       assertThat(awaitItem().showChatIcon).isFalse()
@@ -281,17 +257,13 @@ internal class HomePresenterTest {
     homePresenter.test(
       HomeUiState.Success(
         isReloading = true,
-        HomeText.Active,
-        null,
-        persistentListOf(),
-        MemberReminders(),
-        false,
-        false,
-        null,
-        persistentListOf(),
+        homeText = HomeText.Active,
+        claimStatusCardsData = null,
+        veryImportantMessages = persistentListOf(),
+        memberReminders = MemberReminders(),
         isHelpCenterEnabled = false,
         showChatIcon = false,
-        false,
+        hasUnseenChatMessages = false,
       ),
     ) {
       assertThat(awaitItem().isHelpCenterEnabled).isFalse()
@@ -324,10 +296,6 @@ internal class HomePresenterTest {
             enableNotifications = MemberReminder.EnableNotifications(),
           ),
           veryImportantMessages = persistentListOf(),
-          allowAddressChange = true,
-          allowGeneratingTravelCertificate = false,
-          emergencyData = null,
-          commonClaimsData = persistentListOf(),
         ).right(),
       )
       assertThat(awaitItem())
@@ -351,9 +319,5 @@ internal class HomePresenterTest {
     claimStatusCardsData = null,
     veryImportantMessages = persistentListOf(),
     memberReminders = MemberReminders(),
-    allowAddressChange = true,
-    allowGeneratingTravelCertificate = false,
-    emergencyData = null,
-    commonClaimsData = persistentListOf(),
   )
 }

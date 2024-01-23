@@ -148,11 +148,6 @@ internal enum class Question(
     R.string.HC_COVERAGE_Q_15,
     R.string.HC_COVERAGE_A_15,
   ),
-  COVERAGE_Q16(
-    R.string.HC_COVERAGE_TITLE,
-    R.string.HC_COVERAGE_Q_16,
-    R.string.HC_COVERAGE_A_16,
-  ),
   COVERAGE_Q17(
     R.string.HC_COVERAGE_TITLE,
     R.string.HC_COVERAGE_Q_17,
@@ -330,6 +325,7 @@ internal enum class Question(
     R.string.HC_PAYMENTS_A_14,
   ),
 }
+
 internal val commonQuestions = persistentListOf(
   Question.CLAIMS_Q1,
   Question.INSURANCE_Q5,
