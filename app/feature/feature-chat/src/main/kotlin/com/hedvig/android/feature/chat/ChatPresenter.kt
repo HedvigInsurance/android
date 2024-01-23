@@ -24,6 +24,7 @@ import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import com.hedvig.android.navigation.core.AppDestination
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
@@ -80,6 +81,7 @@ internal sealed interface ChatUiState {
 internal class ChatPresenter(
   private val chatRepository: Provider<ChatRepository>,
   private val clock: Clock,
+  private val chatContext: AppDestination.Chat.ChatContext?,
 ) : MoleculePresenter<ChatEvent, ChatUiState> {
   @Composable
   override fun MoleculePresenterScope<ChatEvent>.present(lastState: ChatUiState): ChatUiState {
@@ -307,7 +309,10 @@ internal class ChatPresenter(
     LaunchedEffect(photosToSend) {
       photosToSend.receiveAsFlow().parMap { uri: Uri ->
         logcat { "Handling sending photo with uri:${uri.path}" }
-        chatRepository.provide().sendPhoto(uri).onLeft {
+        chatRepository.provide().sendPhoto(
+          uri = uri,
+          context = chatContext,
+        ).onLeft {
           logcat(LogPriority.WARN) { "Failed to send photo:${uri.path} | $it" }
           updatedReportPhotoFailedToBeSent(uri)
         }
@@ -321,7 +326,10 @@ internal class ChatPresenter(
     LaunchedEffect(mediaToSend) {
       mediaToSend.receiveAsFlow().parMap { uri: Uri ->
         logcat { "Handling sending media with uri:${uri.path}" }
-        chatRepository.provide().sendMedia(uri).onLeft {
+        chatRepository.provide().sendMedia(
+          uri = uri,
+          context = chatContext,
+        ).onLeft {
           logcat(LogPriority.WARN) { "Failed to send media:${uri.path} | $it" }
           updatedReportMediaFailedToBeSent(uri)
         }
@@ -338,7 +346,10 @@ internal class ChatPresenter(
     LaunchedEffect(messagesToSend) {
       messagesToSend.consumeAsFlow().parMap { message: String ->
         logcat { "Handling sending message with text:$message" }
-        chatRepository.provide().sendMessage(message).onLeft {
+        chatRepository.provide().sendMessage(
+          text = message,
+          context = chatContext,
+        ).onLeft {
           logcat(LogPriority.WARN) { "Failed to send message:$it" }
           updatedReportMessageFailedToBeSent(message)
         }
