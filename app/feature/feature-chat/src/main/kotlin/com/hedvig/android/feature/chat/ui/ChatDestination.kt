@@ -101,7 +101,9 @@ private fun ChatScreen(
       ChatTopAppBar(
         onNavigateUp = onNavigateUp,
         topAppBarScrollBehavior = topAppBarScrollBehavior,
-        onHeightChanged = { height -> with(density) { topAppBarHeight = height.toDp() } },
+        modifier = Modifier.onSizeChanged {
+          with(density) { topAppBarHeight = it.height.toDp() }
+        },
       )
       Box(
         modifier = Modifier
@@ -139,18 +141,14 @@ private fun ChatScreen(
 private fun ChatTopAppBar(
   onNavigateUp: () -> Unit,
   topAppBarScrollBehavior: TopAppBarScrollBehavior,
-  onHeightChanged: (Int) -> Unit,
+  modifier: Modifier = Modifier,
 ) {
   TopAppBarWithBack(
     title = stringResource(R.string.CHAT_TITLE),
     onClick = onNavigateUp,
     scrollBehavior = topAppBarScrollBehavior,
     windowInsets = chatTopAppBarWindowInsets(TopAppBarDefaults.windowInsets, topAppBarScrollBehavior),
-    modifier = Modifier
-      .fillMaxWidth()
-      .onSizeChanged {
-        onHeightChanged(it.height)
-      },
+    modifier = modifier.fillMaxWidth(),
   )
 }
 
