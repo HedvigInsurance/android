@@ -14,6 +14,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -112,9 +113,10 @@ private fun ChatScreen(
           .consumeWindowInsets(PaddingValues(top = topAppBarHeight)),
         propagateMinConstraints = true,
       ) {
+        val loadingIndicator = remember { movableContentOf { HedvigFullScreenCenterAlignedProgress() } }
         when (uiState) {
           ChatUiState.Initializing -> {
-            HedvigFullScreenCenterAlignedProgress()
+            loadingIndicator()
           }
 
           is ChatUiState.Loaded -> {
@@ -130,6 +132,12 @@ private fun ChatScreen(
               onSendMedia = onSendMedia,
               onFetchMoreMessages = onFetchMoreMessages,
             )
+            val stillLoadingInitialMessages = uiState.messages.isEmpty() &&
+              (uiState.fetchMoreMessagesUiState is ChatUiState.Loaded.FetchMoreMessagesUiState.StillInitializing ||
+                uiState.fetchMoreMessagesUiState is ChatUiState.Loaded.FetchMoreMessagesUiState.FetchingMore)
+            if (stillLoadingInitialMessages) {
+              loadingIndicator()
+            }
           }
         }
       }

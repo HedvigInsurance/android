@@ -267,37 +267,41 @@ private fun ChatLazyColumn(
           .padding(bottom = 8.dp),
       )
     }
-    item(
-      key = "Space",
-      contentType = "Space",
-    ) {
-      Spacer(modifier = Modifier.height(8.dp))
-    }
-    if (
-      uiState.fetchMoreMessagesUiState is ChatUiState.Loaded.FetchMoreMessagesUiState.FailedToFetch ||
-      uiState.fetchMoreMessagesUiState is ChatUiState.Loaded.FetchMoreMessagesUiState.FetchingMore
-    ) {
+    // We want to show other items only when there are already some chat messages, to have first messages appear at the
+    // bottom of the UI when the screen is first opened
+    if (uiState.messages.isNotEmpty()) {
       item(
-        key = "FetchingState",
-        contentType = "FetchingState",
+        key = "Space",
+        contentType = "Space",
       ) {
-        LaunchedEffect(Unit) {
-          onFetchMoreMessages()
-        }
-        if (uiState.fetchMoreMessagesUiState is ChatUiState.Loaded.FetchMoreMessagesUiState.FailedToFetch) {
+        Spacer(modifier = Modifier.height(8.dp))
+      }
+      if (
+        uiState.fetchMoreMessagesUiState is ChatUiState.Loaded.FetchMoreMessagesUiState.FailedToFetch ||
+        uiState.fetchMoreMessagesUiState is ChatUiState.Loaded.FetchMoreMessagesUiState.FetchingMore
+      ) {
+        item(
+          key = "FetchingState",
+          contentType = "FetchingState",
+        ) {
           LaunchedEffect(Unit) {
-            while (isActive) {
-              delay(5.seconds)
-              onFetchMoreMessages()
+            onFetchMoreMessages()
+          }
+          if (uiState.fetchMoreMessagesUiState is ChatUiState.Loaded.FetchMoreMessagesUiState.FailedToFetch) {
+            LaunchedEffect(Unit) {
+              while (isActive) {
+                delay(5.seconds)
+                onFetchMoreMessages()
+              }
             }
           }
+          ThreeDotsLoading(
+            Modifier
+              .padding(24.dp)
+              .fillParentMaxWidth()
+              .wrapContentWidth(Alignment.CenterHorizontally),
+          )
         }
-        ThreeDotsLoading(
-          Modifier
-            .padding(24.dp)
-            .fillParentMaxWidth()
-            .wrapContentWidth(Alignment.CenterHorizontally),
-        )
       }
     }
   }
