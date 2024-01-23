@@ -207,6 +207,7 @@ private class ChatUiStateProvider : CollectionPreviewParameterProvider<ChatUiSta
           ChatUiState.Loaded.UiChatMessage(it, false)
         }
         .toImmutableList(),
+      bannerText = "Test",
       fetchMoreMessagesUiState = ChatUiState.Loaded.FetchMoreMessagesUiState.FetchingMore,
     ),
   ),

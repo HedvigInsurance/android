@@ -142,6 +142,13 @@ internal fun ChatLoadedScreen(
           .clearFocusOnTap()
           .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
       )
+      uiState.bannerText?.let {
+        Divider(Modifier.fillMaxWidth())
+        ChatBanner(
+          text = it,
+          modifier = Modifier.fillMaxWidth(),
+        )
+      }
       Divider(Modifier.fillMaxWidth())
       Box(
         propagateMinConstraints = true,
@@ -575,7 +582,9 @@ internal fun ChatMessageWithTimeAndDeliveryStatus(
     Spacer(modifier = Modifier.height(4.dp))
     Row(
       verticalAlignment = Alignment.CenterVertically,
-      modifier = Modifier.align(uiChatMessage.chatMessage.messageHorizontalAlignment()).padding(horizontal = 2.dp),
+      modifier = Modifier
+        .align(uiChatMessage.chatMessage.messageHorizontalAlignment())
+        .padding(horizontal = 2.dp),
     ) {
       Text(
         text = buildString {
@@ -614,7 +623,7 @@ private fun PreviewChatLazyColumn() {
       ChatLazyColumn(
         lazyListState = rememberLazyListState(),
         uiState = ChatUiState.Loaded(
-          List(listSize) { index ->
+          messages = List(listSize) { index ->
             ChatUiState.Loaded.UiChatMessage(
               chatMessage = ChatMessage.ChatMessageText(
                 index.toString(),
@@ -628,7 +637,8 @@ private fun PreviewChatLazyColumn() {
               isLastDeliveredMessage = index == 0,
             )
           }.toPersistentList(),
-          ChatUiState.Loaded.FetchMoreMessagesUiState.NothingMoreToFetch,
+          bannerText = null,
+          fetchMoreMessagesUiState = ChatUiState.Loaded.FetchMoreMessagesUiState.NothingMoreToFetch,
         ),
         imageLoader = rememberPreviewImageLoader(),
         openUrl = {},
