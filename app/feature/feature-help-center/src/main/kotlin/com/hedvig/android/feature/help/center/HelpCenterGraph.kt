@@ -20,10 +20,7 @@ import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigation
 import org.koin.androidx.compose.koinViewModel
 
-fun NavGraphBuilder.helpCenterGraph(
-  navigator: Navigator,
-  openChat: (NavBackStackEntry) -> Unit,
-) {
+fun NavGraphBuilder.helpCenterGraph(navigator: Navigator, openChat: (NavBackStackEntry) -> Unit) {
   navigation<HelpCenterDestination>(
     startDestination = createRoutePattern<HelpCenterDestinations.HelpCenter>(),
   ) {

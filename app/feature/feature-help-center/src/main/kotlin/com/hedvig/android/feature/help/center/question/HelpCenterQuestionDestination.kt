@@ -128,7 +128,9 @@ private fun HelpCenterQuestionScreen(
             chipContainerColor = MaterialTheme.colorScheme.typeContainer,
             contentColor = MaterialTheme.colorScheme.onTypeContainer,
             content = {
-              ProvideTextStyle(MaterialTheme.typography.headlineSmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)) {
+              ProvideTextStyle(
+                MaterialTheme.typography.headlineSmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
+              ) {
                 RichText(
                   modifier = Modifier
                     .padding(horizontal = 16.dp)
