@@ -1,7 +1,11 @@
-package com.hedvig.android.market
+package com.hedvig.android.market.set
 
 import com.hedvig.android.language.Language
 import com.hedvig.android.language.LanguageService
+import com.hedvig.android.logger.logcat
+import com.hedvig.android.market.InternalHedvigMarketApi
+import com.hedvig.android.market.InternalSetMarketUseCase
+import com.hedvig.android.market.Market
 
 /**
  * Sets the market, and ensures that the language chosen from [LanguageService] is also a valid one for that market.
@@ -12,22 +16,26 @@ interface SetMarketUseCase {
   suspend fun setMarket(market: Market)
 }
 
+@OptIn(InternalHedvigMarketApi::class)
 internal class SetMarketUseCaseImpl(
-  private val marketStorage: MarketStorage,
+  private val internalSetMarketUseCase: InternalSetMarketUseCase,
   private val languageService: LanguageService,
 ) : SetMarketUseCase {
   override suspend fun setMarket(market: Market) {
-    val existingLanguage = languageService.getLanguage()
+    val existingLanguage = languageService.getSelectedLanguage()
+    logcat { "SetMarketUseCase setting market to $market, existing language is $existingLanguage" }
     if (existingLanguage !in market.availableLanguages) {
       languageService.setLanguage(
-        if (existingLanguage.isEnglishLanguage()) {
-          market.englishLanguage()
-        } else {
-          market.localLanguage()
+        when {
+          existingLanguage == null -> market.localLanguage()
+          existingLanguage.isEnglishLanguage() -> market.englishLanguage()
+          else -> market.localLanguage()
+        }.also {
+          logcat { "SetMarketUseCase setting language to $it" }
         },
       )
     }
-    marketStorage.setMarket(market)
+    internalSetMarketUseCase.setMarket(market)
   }
 }
 

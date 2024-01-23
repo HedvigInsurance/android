@@ -13,7 +13,7 @@ import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
-import com.hedvig.android.market.SetMarketUseCase
+import com.hedvig.android.market.set.SetMarketUseCase
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import kotlinx.coroutines.launch

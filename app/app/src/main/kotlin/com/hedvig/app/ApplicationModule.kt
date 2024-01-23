@@ -64,8 +64,10 @@ import com.hedvig.android.feature.terminateinsurance.di.terminateInsuranceModule
 import com.hedvig.android.feature.travelcertificate.di.travelCertificateModule
 import com.hedvig.android.featureflags.di.featureManagerModule
 import com.hedvig.android.language.LanguageService
+import com.hedvig.android.language.di.languageMigrationModule
 import com.hedvig.android.language.di.languageModule
 import com.hedvig.android.market.di.marketManagerModule
+import com.hedvig.android.market.di.setMarketModule
 import com.hedvig.android.memberreminders.di.memberRemindersModule
 import com.hedvig.android.navigation.activity.ActivityNavigator
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
@@ -89,7 +91,6 @@ import com.hedvig.app.util.apollo.DeviceIdInterceptor
 import com.hedvig.app.util.apollo.NetworkCacheManagerImpl
 import com.hedvig.app.util.apollo.SunsettingInterceptor
 import java.io.File
-import java.util.Locale
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -112,9 +113,9 @@ private val networkModule = module {
           chain
             .request()
             .newBuilder()
-            .header("User-Agent", makeUserAgent(languageService.getLocale()))
-            .header("Accept-Language", languageService.getLocale().toLanguageTag())
-            .header("hedvig-language", languageService.getLocale().toLanguageTag())
+            .header("User-Agent", makeUserAgent(languageService.getLanguage().toBcp47Format()))
+            .header("Accept-Language", languageService.getLanguage().toBcp47Format())
+            .header("hedvig-language", languageService.getLanguage().toBcp47Format())
             .header("apollographql-client-name", BuildConfig.APPLICATION_ID)
             .header("apollographql-client-version", BuildConfig.VERSION_NAME)
             .header("X-Build-Version", BuildConfig.VERSION_CODE.toString())
@@ -161,7 +162,7 @@ private val networkModule = module {
   }
 }
 
-fun makeUserAgent(locale: Locale): String = buildString {
+fun makeUserAgent(languageBCP47: String): String = buildString {
   append(BuildConfig.APPLICATION_ID)
   append(" ")
   append(BuildConfig.VERSION_NAME)
@@ -176,7 +177,7 @@ fun makeUserAgent(locale: Locale): String = buildString {
   append("; ")
   append(Build.DEVICE)
   append("; ")
-  append(locale.language)
+  append(languageBCP47)
   append(")")
 }
 
@@ -346,6 +347,7 @@ val applicationModule = module {
       homeModule,
       insurancesModule,
       languageAuthListenersModule,
+      languageMigrationModule,
       languageModule,
       loginModule,
       marketManagerModule,
@@ -356,6 +358,7 @@ val applicationModule = module {
       odysseyModule,
       paymentsModule,
       profileModule,
+      setMarketModule,
       settingsDatastoreModule,
       sharedPreferencesModule,
       terminateInsuranceModule,
