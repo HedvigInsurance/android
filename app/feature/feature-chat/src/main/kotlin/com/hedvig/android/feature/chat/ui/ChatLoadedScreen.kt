@@ -144,7 +144,10 @@ internal fun ChatLoadedScreen(
       )
       uiState.bannerText?.let {
         Divider(Modifier.fillMaxWidth())
-        ChatBanner(text = it)
+        ChatBanner(
+          text = it,
+          modifier = Modifier.fillMaxWidth(),
+        )
       }
       Divider(Modifier.fillMaxWidth())
       Box(
