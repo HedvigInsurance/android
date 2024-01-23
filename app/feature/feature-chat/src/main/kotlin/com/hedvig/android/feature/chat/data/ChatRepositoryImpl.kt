@@ -76,6 +76,7 @@ internal class ChatRepositoryImpl(
         messages = result.chat.messages.mapNotNull { it.toChatMessage() },
         nextUntil = result.chat.nextUntil,
         hasNext = result.chat.hasNext,
+        informationMessage = null // TODO query from schema
       )
     }
   }

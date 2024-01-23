@@ -19,6 +19,7 @@ import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.feature.chat.data.ChatRepository
 import com.hedvig.android.feature.chat.model.ChatMessage
+import com.hedvig.android.feature.chat.model.ChatMessagesResult
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -56,6 +57,7 @@ internal sealed interface ChatUiState {
   data class Loaded(
     // The list of messages, ordered from the newest one to the oldest one
     val messages: ImmutableList<UiChatMessage>,
+    val bannerText: String?,
     val fetchMoreMessagesUiState: FetchMoreMessagesUiState,
   ) : ChatUiState {
     data class UiChatMessage(
@@ -87,6 +89,8 @@ internal class ChatPresenter(
       )
     }
 
+    var bannerText: String? by remember { mutableStateOf(null) }
+
     // We are considered to still be initializing before we get the first cache emission
     var isStillInitializing by remember { mutableStateOf(lastState is ChatUiState.Initializing) }
 
@@ -111,11 +115,12 @@ internal class ChatPresenter(
       },
     )
     LaunchPeriodicMessagePollsEffect(
-      reportNextUntilFromPolling = { nextUntil: Instant ->
+      reportNextUntilFromPolling = { result: ChatMessagesResult ->
         // If we have not received a `nextUntil` value yet, we set the first value from the polling query
         if (fetchMoreState is FetchMoreState.HaveNotReceivedInitialFetchUntil) {
-          fetchMoreState = FetchMoreState.IdleWithKnownNextFetch(nextUntil)
+          fetchMoreState = FetchMoreState.IdleWithKnownNextFetch(result.nextUntil)
         }
+        bannerText = result.informationMessage
       },
     )
     LaunchFetchMoreMessagesEffect(
@@ -232,18 +237,19 @@ internal class ChatPresenter(
         messages = (uiChatMessages + failedChatMessages)
           .sortedByDescending { it.chatMessage.sentAt }
           .toPersistentList(),
+        bannerText = bannerText,
         fetchMoreMessagesUiState = fetchMoreMessagesUiState,
       )
     }
   }
 
   @Composable
-  private fun LaunchPeriodicMessagePollsEffect(reportNextUntilFromPolling: (nextUntil: Instant) -> Unit) {
+  private fun LaunchPeriodicMessagePollsEffect(reportNextUntilFromPolling: (nextUntil: ChatMessagesResult) -> Unit) {
     val updatedReportNextUntilFromPolling by rememberUpdatedState(reportNextUntilFromPolling)
     LaunchedEffect(Unit) {
       while (isActive) {
         chatRepository.provide().pollNewestMessages().onRight { result ->
-          updatedReportNextUntilFromPolling(result.nextUntil)
+          updatedReportNextUntilFromPolling(result)
         }
         delay(5.seconds)
       }
