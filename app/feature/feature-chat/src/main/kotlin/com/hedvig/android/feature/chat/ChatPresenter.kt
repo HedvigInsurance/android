@@ -117,7 +117,7 @@ internal class ChatPresenter(
       },
     )
     LaunchPeriodicMessagePollsEffect(
-      reportNextUntilFromPolling = { result: ChatMessagesResult ->
+      reportChatMessagesResultFromPolling = { result: ChatMessagesResult ->
         // If we have not received a `nextUntil` value yet, we set the first value from the polling query
         if (fetchMoreState is FetchMoreState.HaveNotReceivedInitialFetchUntil) {
           fetchMoreState = FetchMoreState.IdleWithKnownNextFetch(result.nextUntil)
@@ -246,8 +246,8 @@ internal class ChatPresenter(
   }
 
   @Composable
-  private fun LaunchPeriodicMessagePollsEffect(reportNextUntilFromPolling: (nextUntil: ChatMessagesResult) -> Unit) {
-    val updatedReportNextUntilFromPolling by rememberUpdatedState(reportNextUntilFromPolling)
+  private fun LaunchPeriodicMessagePollsEffect(reportChatMessagesResultFromPolling: (nextUntil: ChatMessagesResult) -> Unit) {
+    val updatedReportNextUntilFromPolling by rememberUpdatedState(reportChatMessagesResultFromPolling)
     LaunchedEffect(Unit) {
       while (isActive) {
         chatRepository.provide().pollNewestMessages().onRight { result ->

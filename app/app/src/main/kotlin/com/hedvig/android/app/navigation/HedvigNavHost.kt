@@ -166,12 +166,12 @@ internal fun HedvigNavHost(
       imageLoader = imageLoader,
       startEditCoInsured = { backStackEntry: NavBackStackEntry, contractId: String ->
         with(navigator) {
-          backStackEntry.navigate(AppDestination.CoInsuredAddInfo(contractId))
+          backStackEntry.navigate(AppDestination.CoInsuredAddOrRemove(contractId))
         }
       },
       startEditCoInsuredAddMissingInfo = { backStackEntry: NavBackStackEntry, contractId: String ->
         with(navigator) {
-          backStackEntry.navigate(AppDestination.CoInsuredAddOrRemove(contractId))
+          backStackEntry.navigate(AppDestination.CoInsuredAddInfo(contractId))
         }
       },
     )
