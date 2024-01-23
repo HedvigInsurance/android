@@ -18,7 +18,10 @@ class ReplyWorker(
 ) : CoroutineWorker(context, params) {
   override suspend fun doWork(): Result {
     val replyText = inputData.getString(ChatMessageNotificationReceiver.REPLY_TEXT) ?: return Result.failure()
-    val sendChatMessageResponse = chatRepository.sendMessage(replyText)
+    val sendChatMessageResponse = chatRepository.sendMessage(
+      text = replyText,
+      context = null,
+    )
 
     when (sendChatMessageResponse) {
       is Either.Left -> {
