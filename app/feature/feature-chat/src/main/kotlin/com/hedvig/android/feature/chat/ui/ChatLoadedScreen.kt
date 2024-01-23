@@ -575,7 +575,9 @@ internal fun ChatMessageWithTimeAndDeliveryStatus(
     Spacer(modifier = Modifier.height(4.dp))
     Row(
       verticalAlignment = Alignment.CenterVertically,
-      modifier = Modifier.align(uiChatMessage.chatMessage.messageHorizontalAlignment()).padding(horizontal = 2.dp),
+      modifier = Modifier
+        .align(uiChatMessage.chatMessage.messageHorizontalAlignment())
+        .padding(horizontal = 2.dp),
     ) {
       Text(
         text = buildString {
