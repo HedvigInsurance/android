@@ -101,7 +101,7 @@ fun HedvigContainedButton(
         onClick()
       }
     },
-    enabled = enabled,
+    enabled = enabled || isLoading,
     modifier = modifier,
     contentPadding = contentPadding,
     colors = colors,
