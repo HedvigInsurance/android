@@ -250,7 +250,7 @@ internal data class SingleItemUiState(
   val nextStep: ClaimFlowStep? = null,
 ) {
   val canSubmit: Boolean
-    get() = !hasError && nextStep == null
+    get() = !isLoading && !hasError && nextStep == null
 
   companion object {
     fun fromInitialSingleItem(singleItem: ClaimFlowDestination.SingleItem, clock: Clock): SingleItemUiState {

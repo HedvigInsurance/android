@@ -89,10 +89,12 @@ internal data class DateOfOccurrenceUiState(
     get() = remember(
       dateSubmissionError,
       nextStep,
+      isLoading,
     ) { canSubmitSelectedDate() }
 }
 
 private fun DateOfOccurrenceUiState.canSubmitSelectedDate(): Boolean {
   return !dateSubmissionError &&
-    nextStep == null
+    nextStep == null &&
+    !isLoading
 }

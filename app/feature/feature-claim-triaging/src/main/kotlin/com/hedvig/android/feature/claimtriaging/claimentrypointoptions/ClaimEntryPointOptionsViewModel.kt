@@ -69,6 +69,7 @@ internal data class ClaimEntryPointOptionsUiState(
   val nextStep: ClaimFlowStep? = null,
 ) {
   val canContinue: Boolean
-    get() = startClaimErrorMessage == null &&
+    get() = isLoading == false &&
+      startClaimErrorMessage == null &&
       nextStep == null
 }

@@ -13,13 +13,13 @@ internal sealed interface HelpCenterDestinations : Destination {
   @Serializable
   data class Topic(
     val displayName: String,
-    val topic: com.hedvig.android.feature.help.center.model.Topic,
+    val topic: com.hedvig.android.feature.help.center.model.Topic
   ) : HelpCenterDestinations
 
   @Serializable
   data class Question(
     val displayName: String,
-    val question: com.hedvig.android.feature.help.center.model.Question,
+    val question: com.hedvig.android.feature.help.center.model.Question
   ) : HelpCenterDestinations
 
   @Serializable
