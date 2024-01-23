@@ -17,7 +17,7 @@ internal class MarketStorage(
       if (storedMarket != null) {
         return@map storedMarket
       } else {
-        logcat { "No market stored in datastore, falling back to SE" }
+        logcat { "No market stored in datastore" }
         return@map null
       }
     }
