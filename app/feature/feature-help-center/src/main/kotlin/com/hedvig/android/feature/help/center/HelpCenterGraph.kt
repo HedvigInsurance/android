@@ -14,6 +14,7 @@ import com.hedvig.android.feature.help.center.navigation.HelpCenterDestination
 import com.hedvig.android.feature.help.center.navigation.HelpCenterDestinations
 import com.hedvig.android.feature.help.center.question.HelpCenterQuestionDestination
 import com.hedvig.android.feature.help.center.topic.HelpCenterTopicDestination
+import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.Navigator
 import com.kiwi.navigationcompose.typed.composable
 import com.kiwi.navigationcompose.typed.createRoutePattern
@@ -22,7 +23,7 @@ import org.koin.androidx.compose.koinViewModel
 
 fun NavGraphBuilder.helpCenterGraph(
   navigator: Navigator,
-  openChat: (NavBackStackEntry) -> Unit,
+  openChat: (NavBackStackEntry, AppDestination.Chat.ChatContext?) -> Unit,
 ) {
   navigation<HelpCenterDestination>(
     startDestination = createRoutePattern<HelpCenterDestinations.HelpCenter>(),
@@ -53,7 +54,7 @@ fun NavGraphBuilder.helpCenterGraph(
           }
         },
         openChat = {
-          openChat(backStackEntry)
+          openChat(backStackEntry, null)
         },
         onNavigateUp = navigator::navigateUp,
       )
@@ -68,7 +69,7 @@ fun NavGraphBuilder.helpCenterGraph(
         onNavigateUp = navigator::navigateUp,
         onNavigateBack = navigator::popBackStack,
         openChat = {
-          openChat(backStackEntry)
+          openChat(backStackEntry, topic.chatContext)
         },
       )
     }
@@ -81,9 +82,10 @@ fun NavGraphBuilder.helpCenterGraph(
         },
         onNavigateUp = navigator::navigateUp,
         onNavigateBack = navigator::popBackStack,
-      ) {
-        openChat(backStackEntry)
-      }
+        openChat = {
+          openChat(backStackEntry, question.chatContext)
+        },
+      )
     }
     composable<HelpCenterDestinations.CommonClaim> {
       CommonClaimDestination(

@@ -14,6 +14,7 @@ import com.hedvig.android.feature.chat.data.ChatRepository
 import com.hedvig.android.feature.chat.data.ChatRepositoryDemo
 import com.hedvig.android.feature.chat.data.ChatRepositoryImpl
 import com.hedvig.android.feature.chat.data.GetChatRepositoryProvider
+import com.hedvig.android.navigation.core.AppDestination
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.datetime.Clock
 import kotlinx.serialization.json.Json
@@ -25,10 +26,12 @@ import retrofit2.Retrofit
 
 val chatModule = module {
   single<ChatClosedEventStore> { ChatClosedEventDataStore(get()) }
-  viewModel<ChatViewModel> {
+  viewModel<ChatViewModel> { parametersHolder ->
+    val chatContext = parametersHolder.getOrNull<AppDestination.Chat.ChatContext>()
     ChatViewModel(
       chatRepository = get<GetChatRepositoryProvider>(),
       clock = get<Clock>(),
+      chatContext = chatContext,
     )
   }
   single<ChatRepositoryImpl> {

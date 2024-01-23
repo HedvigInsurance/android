@@ -107,7 +107,7 @@ internal fun HedvigNavHost(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       onStartChat = { backStackEntry ->
         with(navigator) {
-          backStackEntry.navigate(AppDestination.Chat)
+          backStackEntry.navigate(AppDestination.Chat())
         }
       },
       onStartClaim = { backStackEntry ->
@@ -134,7 +134,7 @@ internal fun HedvigNavHost(
           navController = hedvigAppState.navController,
           openChat = { backStackEntry ->
             with(navigator) {
-              backStackEntry.navigate(AppDestination.Chat)
+              backStackEntry.navigate(AppDestination.Chat())
             }
           },
           openPlayStore = { activityNavigator.tryOpenPlayStore(context) },
@@ -149,7 +149,7 @@ internal fun HedvigNavHost(
       },
       openChat = { backStackEntry ->
         with(navigator) {
-          backStackEntry.navigate(AppDestination.Chat)
+          backStackEntry.navigate(AppDestination.Chat())
         }
       },
       startMovingFlow = { backStackEntry ->
@@ -232,9 +232,9 @@ internal fun HedvigNavHost(
     connectAdyenPaymentGraph(navigator)
     helpCenterGraph(
       navigator = navigator,
-    ) { backStackEntry ->
+    ) { backStackEntry, chatContext ->
       with(navigator) {
-        backStackEntry.navigate(AppDestination.Chat)
+        backStackEntry.navigate(AppDestination.Chat(chatContext))
       }
     }
   }
@@ -259,7 +259,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     appPackageId = hedvigBuildConstants.appId,
     openChat = { backStackEntry ->
       with(navigator) {
-        backStackEntry.navigate(AppDestination.Chat)
+        backStackEntry.navigate(AppDestination.Chat())
       }
     },
   )
@@ -267,7 +267,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     navController = hedvigAppState.navController,
     openChat = { backStackEntry ->
       with(navigator) {
-        backStackEntry.navigate(AppDestination.Chat)
+        backStackEntry.navigate(AppDestination.Chat())
       }
     },
     openUrl = { activityNavigator.openWebsite(context, Uri.parse(it)) },
@@ -304,7 +304,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     openUrl = { activityNavigator.openWebsite(context, Uri.parse(it)) },
     openChat = { backStackEntry ->
       with(navigator) {
-        backStackEntry.navigate(AppDestination.Chat)
+        backStackEntry.navigate(AppDestination.Chat())
       }
     },
     imageLoader = imageLoader,
@@ -318,7 +318,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     },
     openChat = { backStackEntry ->
       with(navigator) {
-        backStackEntry.navigate(destination = AppDestination.Chat) {
+        backStackEntry.navigate(destination = AppDestination.Chat()) {
           popUpTo<AppDestination.TopLevelDestination.Home>()
         }
       }
