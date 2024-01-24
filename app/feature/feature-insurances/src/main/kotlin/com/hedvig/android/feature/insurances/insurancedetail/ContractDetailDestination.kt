@@ -41,7 +41,7 @@ import coil.ImageLoader
 import com.hedvig.android.core.designsystem.animation.FadeAnimatedContent
 import com.hedvig.android.core.designsystem.animation.animateContentHeight
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedLoadingIndicatorDebounced
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
@@ -124,7 +124,7 @@ private fun ContractDetailScreen(
     ) { state ->
       when (state) {
         ContractDetailsUiState.Error -> HedvigErrorSection(retry = retry, modifier = Modifier.fillMaxSize())
-        ContractDetailsUiState.Loading -> HedvigFullScreenCenterAlignedProgressDebounced(
+        ContractDetailsUiState.Loading -> HedvigFullScreenCenterAlignedLoadingIndicatorDebounced(
           show = uiState is ContractDetailsUiState.Loading,
           modifier = Modifier.fillMaxSize(),
         )

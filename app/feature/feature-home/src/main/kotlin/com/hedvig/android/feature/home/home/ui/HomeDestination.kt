@@ -56,7 +56,7 @@ import com.hedvig.android.core.designsystem.component.button.HedvigContainedButt
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.button.HedvigSecondaryContainedButton
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedLoadingIndicatorDebounced
 import com.hedvig.android.core.designsystem.material3.containedButtonContainer
 import com.hedvig.android.core.designsystem.material3.onContainedButtonContainer
 import com.hedvig.android.core.designsystem.material3.onWarningContainer
@@ -160,7 +160,7 @@ private fun HomeScreen(
     ) { uiState ->
       when (uiState) {
         HomeUiState.Loading -> {
-          HedvigFullScreenCenterAlignedProgressDebounced(
+          HedvigFullScreenCenterAlignedLoadingIndicatorDebounced(
             modifier = Modifier
               .fillMaxSize()
               .windowInsetsPadding(WindowInsets.safeDrawing),

@@ -11,7 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedLoadingIndicatorDebounced
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
@@ -39,7 +39,7 @@ private fun TerminationStartScreen(uiState: TerminationFlowUiState, retryLoad: (
       TerminationFlowUiState.Error -> HedvigErrorSection(retry = retryLoad)
       TerminationFlowUiState.Loading,
       is TerminationFlowUiState.Success,
-      -> HedvigFullScreenCenterAlignedProgressDebounced()
+      -> HedvigFullScreenCenterAlignedLoadingIndicatorDebounced()
     }
   }
 }

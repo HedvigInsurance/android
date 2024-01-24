@@ -165,10 +165,8 @@ fun NavGraphBuilder.terminateInsuranceGraph(
         viewModel = viewModel,
         imageLoader = imageLoader,
         navigateToNextStep = { terminationStep ->
-          viewModel.handledNextStepNavigation()
-          navigator.navigateToTerminateFlowDestination(
-            destination = terminationStep.toTerminateInsuranceDestination(),
-          )
+          navigator.navigateToTerminateFlowDestination(destination = terminationStep.toTerminateInsuranceDestination())
+          viewModel.resetState()
         },
         navigateBack = navigator::navigateUp,
       )

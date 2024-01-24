@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.core.designsystem.component.card.HedvigBigCard
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedLoadingIndicatorDebounced
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.clearFocusOnTap
@@ -74,7 +74,7 @@ private fun SettingsScreen(
   ) {
     when (uiState) {
       is SettingsUiState.Loading -> {
-        HedvigFullScreenCenterAlignedProgressDebounced()
+        HedvigFullScreenCenterAlignedLoadingIndicatorDebounced()
       }
       is SettingsUiState.Loaded -> {
         Spacer(Modifier.height(8.dp))

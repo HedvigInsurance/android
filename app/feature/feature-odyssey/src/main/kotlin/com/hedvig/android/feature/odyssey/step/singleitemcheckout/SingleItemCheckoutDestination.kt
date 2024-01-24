@@ -37,7 +37,7 @@ import arrow.core.NonEmptyList
 import arrow.core.toNonEmptyListOrNull
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedLoadingIndicator
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.SelectIndicationCircle
@@ -65,7 +65,7 @@ internal fun SingleItemCheckoutDestination(
       LaunchedEffect(state) {
         navigateToAppUpdateStep()
       }
-      HedvigFullScreenCenterAlignedProgress()
+      HedvigFullScreenCenterAlignedLoadingIndicator()
     }
     is SingleItemCheckoutUiState.Content -> {
       SingleItemCheckoutScreen(

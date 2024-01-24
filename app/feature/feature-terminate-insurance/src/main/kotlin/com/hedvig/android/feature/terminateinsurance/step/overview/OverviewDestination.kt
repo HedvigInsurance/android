@@ -35,6 +35,7 @@ import com.halilibo.richtext.markdown.Markdown
 import com.halilibo.richtext.ui.material3.RichText
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
+import com.hedvig.android.core.designsystem.component.progress.HedvigFakeProgressIndicator
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
@@ -63,14 +64,20 @@ internal fun OverviewDestination(
     if (nextStep == null) return@LaunchedEffect
     navigateToNextStep(nextStep)
   }
-  OverviewScreen(
-    uiState = uiState,
-    onConfirm = {
-      viewModel.submitSelectedDate()
-    },
-    navigateBack = navigateBack,
-    imageLoader = imageLoader,
-  )
+
+  if (uiState.isLoading) {
+    HedvigFakeProgressIndicator(
+      title = stringResource(id = R.string.TERMINATE_CONTRACT_TERMINATING_PROGRESS),
+      onComplete = viewModel::submitSelectedDate,
+    )
+  } else {
+    OverviewScreen(
+      uiState = uiState,
+      onConfirm = viewModel::onSetLoading,
+      navigateBack = navigateBack,
+      imageLoader = imageLoader,
+    )
+  }
 }
 
 @Composable

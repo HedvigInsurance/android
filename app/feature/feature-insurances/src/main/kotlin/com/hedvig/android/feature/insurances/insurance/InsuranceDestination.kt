@@ -57,7 +57,7 @@ import coil.ImageLoader
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedLoadingIndicatorDebounced
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.core.designsystem.material3.onTypeContainer
 import com.hedvig.android.core.designsystem.material3.squircleMedium
@@ -152,7 +152,7 @@ private fun InsuranceScreen(
       modifier = Modifier.fillMaxSize(),
     ) { isLoading ->
       when (isLoading) {
-        true -> HedvigFullScreenCenterAlignedProgressDebounced(Modifier.fillMaxSize())
+        true -> HedvigFullScreenCenterAlignedLoadingIndicatorDebounced(Modifier.fillMaxSize())
         false -> {
           Column(
             Modifier

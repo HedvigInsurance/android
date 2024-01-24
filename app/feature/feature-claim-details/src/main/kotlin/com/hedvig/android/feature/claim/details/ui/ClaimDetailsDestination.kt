@@ -58,7 +58,7 @@ import com.hedvig.android.compose.photo.capture.state.rememberPhotoCaptureState
 import com.hedvig.android.core.designsystem.component.button.HedvigSecondaryContainedButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedLoadingIndicatorDebounced
 import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -140,7 +140,7 @@ private fun ClaimDetailScreen(
         )
 
         ClaimDetailUiState.Error -> HedvigErrorSection(retry = retry)
-        ClaimDetailUiState.Loading -> HedvigFullScreenCenterAlignedProgressDebounced()
+        ClaimDetailUiState.Loading -> HedvigFullScreenCenterAlignedLoadingIndicatorDebounced()
       }
     }
   }

@@ -38,26 +38,24 @@ internal class OverviewViewModel(
       terminateInsuranceRepository.setTerminationDate(selectedDate).fold(
         ifLeft = { errorMessage ->
           _uiState.update {
-            it.copy(
-              errorMessage = errorMessage.message,
-              isLoading = false,
-            )
+            it.copy(errorMessage = errorMessage.message)
           }
         },
         ifRight = { terminateInsuranceStep: TerminateInsuranceStep ->
           _uiState.update {
-            it.copy(
-              nextStep = terminateInsuranceStep,
-              isLoading = false,
-            )
+            it.copy(nextStep = terminateInsuranceStep)
           }
         },
       )
     }
   }
 
-  fun handledNextStepNavigation() {
-    _uiState.update { it.copy(nextStep = null) }
+  fun resetState() {
+    _uiState.update { it.copy(nextStep = null, isLoading = false) }
+  }
+
+  fun onSetLoading() {
+    _uiState.update { it.copy(isLoading = true) }
   }
 }
 

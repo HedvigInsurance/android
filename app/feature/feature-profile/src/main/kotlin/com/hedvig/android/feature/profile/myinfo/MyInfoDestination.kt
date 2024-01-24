@@ -29,7 +29,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.animation.FadeAnimatedContent
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedLoadingIndicatorDebounced
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -78,7 +78,7 @@ private fun MyInfoScreen(
         Column(Modifier.fillMaxSize()) {
           when {
             uiState.isLoading -> {
-              HedvigFullScreenCenterAlignedProgressDebounced()
+              HedvigFullScreenCenterAlignedLoadingIndicatorDebounced()
             }
             uiState.errorMessage != null -> {
               Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {

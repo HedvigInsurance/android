@@ -38,7 +38,7 @@ import com.hedvig.android.core.designsystem.component.button.HedvigContainedButt
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.card.HedvigCardElevation
 import com.hedvig.android.core.designsystem.component.datepicker.HedvigDatePicker
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedLoadingIndicatorDebounced
 import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
@@ -132,7 +132,7 @@ private fun TerminationDateScreen(
         )
       }
     }
-    HedvigFullScreenCenterAlignedProgressDebounced(show = uiState.isLoading)
+    HedvigFullScreenCenterAlignedLoadingIndicatorDebounced(show = uiState.isLoading)
     ErrorSnackbar(
       hasError = uiState.dateSubmissionError,
       showedError = showedError,

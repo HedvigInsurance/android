@@ -50,7 +50,7 @@ import com.google.zxing.qrcode.QRCodeWriter
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedLoadingIndicator
 import com.hedvig.android.core.ui.dialog.HedvigAlertDialog
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.logger.LogPriority
@@ -144,7 +144,7 @@ private fun SwedishLoginScreen(
         }
       }
       SwedishLoginUiState.Loading -> {
-        HedvigFullScreenCenterAlignedProgress(Modifier.weight(1f).fillMaxWidth())
+        HedvigFullScreenCenterAlignedLoadingIndicator(Modifier.weight(1f).fillMaxWidth())
       }
       is SwedishLoginUiState.HandlingBankId -> {
         val navigateToLoginScreen = uiState.navigateToLoginScreen

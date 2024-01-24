@@ -21,7 +21,7 @@ import kotlinx.coroutines.delay
 private const val DEBOUNCE_MILLIS = 200L
 
 @Composable
-fun HedvigFullScreenCenterAlignedProgressDebounced(
+fun HedvigFullScreenCenterAlignedLoadingIndicatorDebounced(
   modifier: Modifier = Modifier,
   show: Boolean = true,
   debounceMillis: Long = DEBOUNCE_MILLIS,
@@ -33,14 +33,14 @@ fun HedvigFullScreenCenterAlignedProgressDebounced(
     debounce = true
   }
 
-  HedvigFullScreenCenterAlignedProgress(
+  HedvigFullScreenCenterAlignedLoadingIndicator(
     modifier = modifier,
     show = show && debounce,
   )
 }
 
 @Composable
-fun HedvigFullScreenCenterAlignedProgress(modifier: Modifier = Modifier, show: Boolean = true) {
+fun HedvigFullScreenCenterAlignedLoadingIndicator(modifier: Modifier = Modifier, show: Boolean = true) {
   Box(modifier) {
     AnimatedVisibility(
       visible = show,
@@ -58,8 +58,8 @@ fun HedvigFullScreenCenterAlignedProgress(modifier: Modifier = Modifier, show: B
 
 @HedvigPreview
 @Composable
-private fun PreviewHedvigFullScreenCenterAlignedProgress() {
+private fun PreviewHedvigFullScreenCenterAlignedLoadingIndicator() {
   HedvigTheme {
-    HedvigFullScreenCenterAlignedProgress()
+    HedvigFullScreenCenterAlignedLoadingIndicator()
   }
 }

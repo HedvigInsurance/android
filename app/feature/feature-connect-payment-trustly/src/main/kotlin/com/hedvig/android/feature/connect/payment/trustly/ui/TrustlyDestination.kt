@@ -39,7 +39,7 @@ import com.hedvig.android.composewebview.rememberSaveableWebViewState
 import com.hedvig.android.composewebview.rememberWebViewNavigator
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedLoadingIndicator
 import com.hedvig.android.core.designsystem.component.success.HedvigSuccessSection
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.feature.connect.payment.trustly.TrustlyEvent
@@ -77,7 +77,7 @@ private fun TrustlyScreen(
   ) {
     when (uiState) {
       TrustlyUiState.Loading -> {
-        HedvigFullScreenCenterAlignedProgress()
+        HedvigFullScreenCenterAlignedLoadingIndicator()
       }
       is TrustlyUiState.Browsing -> {
         TrustlyBrowser(

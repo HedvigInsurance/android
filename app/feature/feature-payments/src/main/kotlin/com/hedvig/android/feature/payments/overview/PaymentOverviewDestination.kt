@@ -37,7 +37,7 @@ import com.hedvig.android.core.designsystem.component.button.HedvigSecondaryCont
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.information.HedvigInformationSection
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedLoadingIndicatorDebounced
 import com.hedvig.android.core.designsystem.material3.containedButtonContainer
 import com.hedvig.android.core.designsystem.material3.onContainedButtonContainer
 import com.hedvig.android.core.designsystem.material3.typeElement
@@ -122,7 +122,7 @@ private fun PaymentOverviewScreen(
           HedvigErrorSection(retry = onRetry)
         }
       } else if (uiState.isLoadingPaymentOverView) {
-        HedvigFullScreenCenterAlignedProgressDebounced(Modifier.weight(1f))
+        HedvigFullScreenCenterAlignedLoadingIndicatorDebounced(Modifier.weight(1f))
       } else {
         val memberCharge = uiState.paymentOverview?.memberCharge
         if (memberCharge != null) {

@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedLoadingIndicator
 import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -70,7 +70,7 @@ private fun TerminatedContractsScreen(
         HedvigErrorSection(retry)
       }
       TerminatedContractsUiState.Loading -> {
-        HedvigFullScreenCenterAlignedProgress()
+        HedvigFullScreenCenterAlignedLoadingIndicator()
       }
       TerminatedContractsUiState.NoTerminatedInsurances -> {
         HedvigErrorSection(
