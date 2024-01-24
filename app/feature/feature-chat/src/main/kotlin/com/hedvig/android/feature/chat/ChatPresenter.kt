@@ -246,7 +246,9 @@ internal class ChatPresenter(
   }
 
   @Composable
-  private fun LaunchPeriodicMessagePollsEffect(reportChatMessagesResultFromPolling: (nextUntil: ChatMessagesResult) -> Unit) {
+  private fun LaunchPeriodicMessagePollsEffect(
+    reportChatMessagesResultFromPolling: (nextUntil: ChatMessagesResult) -> Unit,
+  ) {
     val updatedReportNextUntilFromPolling by rememberUpdatedState(reportChatMessagesResultFromPolling)
     LaunchedEffect(Unit) {
       while (isActive) {

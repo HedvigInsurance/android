@@ -28,7 +28,6 @@ fun NavGraphBuilder.chatGraph(
     enterTransition = { slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Up) },
     exitTransition = { slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Down) },
   ) {
-
     val viewModel: ChatViewModel = koinViewModel { parametersOf(chatContext) }
     ChatDestination(
       viewModel = viewModel,

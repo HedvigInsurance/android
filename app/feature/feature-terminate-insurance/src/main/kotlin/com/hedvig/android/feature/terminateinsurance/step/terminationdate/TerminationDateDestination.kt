@@ -33,6 +33,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.core.common.android.time.fromMilliseconds
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.card.HedvigCardElevation
@@ -44,12 +45,14 @@ import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbar
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
+import kotlinx.datetime.LocalDate
 
 @Composable
 internal fun TerminationDateDestination(
   viewModel: TerminationDateViewModel,
   windowSizeClass: WindowSizeClass,
   navigateToNextStep: (TerminateInsuranceStep) -> Unit,
+  onContinue: (LocalDate) -> Unit,
   navigateBack: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -62,7 +65,12 @@ internal fun TerminationDateDestination(
     uiState = uiState,
     windowSizeClass = windowSizeClass,
     dateValidator = viewModel.dateValidator,
-    submit = viewModel::submitSelectedDate,
+    submit = {
+      uiState.datePickerState.selectedDateMillis?.let {
+        val date = fromMilliseconds(it)
+        onContinue(date)
+      }
+    },
     showedError = viewModel::showedError,
     navigateBack = navigateBack,
   )
