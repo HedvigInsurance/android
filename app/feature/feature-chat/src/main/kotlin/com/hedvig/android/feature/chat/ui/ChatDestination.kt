@@ -14,6 +14,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -101,7 +102,9 @@ private fun ChatScreen(
       ChatTopAppBar(
         onNavigateUp = onNavigateUp,
         topAppBarScrollBehavior = topAppBarScrollBehavior,
-        onHeightChanged = { height -> with(density) { topAppBarHeight = height.toDp() } },
+        modifier = Modifier.onSizeChanged {
+          with(density) { topAppBarHeight = it.height.toDp() }
+        },
       )
       Box(
         modifier = Modifier
@@ -110,9 +113,10 @@ private fun ChatScreen(
           .consumeWindowInsets(PaddingValues(top = topAppBarHeight)),
         propagateMinConstraints = true,
       ) {
+        val loadingIndicator = remember { movableContentOf { HedvigFullScreenCenterAlignedProgress() } }
         when (uiState) {
           ChatUiState.Initializing -> {
-            HedvigFullScreenCenterAlignedProgress()
+            loadingIndicator()
           }
 
           is ChatUiState.Loaded -> {
@@ -128,6 +132,12 @@ private fun ChatScreen(
               onSendMedia = onSendMedia,
               onFetchMoreMessages = onFetchMoreMessages,
             )
+            val stillLoadingInitialMessages = uiState.messages.isEmpty() &&
+              (uiState.fetchMoreMessagesUiState is ChatUiState.Loaded.FetchMoreMessagesUiState.StillInitializing ||
+                uiState.fetchMoreMessagesUiState is ChatUiState.Loaded.FetchMoreMessagesUiState.FetchingMore)
+            if (stillLoadingInitialMessages) {
+              loadingIndicator()
+            }
           }
         }
       }
@@ -139,18 +149,14 @@ private fun ChatScreen(
 private fun ChatTopAppBar(
   onNavigateUp: () -> Unit,
   topAppBarScrollBehavior: TopAppBarScrollBehavior,
-  onHeightChanged: (Int) -> Unit,
+  modifier: Modifier = Modifier,
 ) {
   TopAppBarWithBack(
     title = stringResource(R.string.CHAT_TITLE),
     onClick = onNavigateUp,
     scrollBehavior = topAppBarScrollBehavior,
     windowInsets = chatTopAppBarWindowInsets(TopAppBarDefaults.windowInsets, topAppBarScrollBehavior),
-    modifier = Modifier
-      .fillMaxWidth()
-      .onSizeChanged {
-        onHeightChanged(it.height)
-      },
+    modifier = modifier.fillMaxWidth(),
   )
 }
 
