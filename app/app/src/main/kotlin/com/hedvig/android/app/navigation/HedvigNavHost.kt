@@ -239,6 +239,7 @@ internal fun HedvigNavHost(
     )
     connectAdyenPaymentGraph(navigator)
     helpCenterGraph(
+      hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       navigator = navigator,
     ) { backStackEntry, chatContext ->
       with(navigator) {
