@@ -74,7 +74,7 @@ internal fun OverviewDestination(
 }
 
 @Composable
-internal fun OverviewScreen(
+private fun OverviewScreen(
   uiState: OverviewUiState,
   onConfirm: () -> Unit,
   navigateBack: () -> Unit,
@@ -196,12 +196,12 @@ private fun CommonQuestion(question: String, answer: String, isExpanded: Boolean
 private fun terminationDateText(terminationDate: LocalDate): String {
   val formatter = rememberHedvigDateTimeFormatter()
   val formattedDate = formatter.format(terminationDate.toJavaLocalDate())
-  return "Terminates on $formattedDate"
+  return stringResource(id = R.string.CONTRACT_STATUS_TO_BE_TERMINATED, formattedDate)
 }
 
 @HedvigPreview
 @Composable
-internal fun OverviewScreenPreview() {
+private fun OverviewScreenPreview() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       OverviewScreen(

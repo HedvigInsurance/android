@@ -33,7 +33,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.core.common.android.time.fromMilliseconds
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.card.HedvigCardElevation
@@ -45,7 +44,10 @@ import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbar
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
+import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 @Composable
 internal fun TerminationDateDestination(
@@ -67,7 +69,7 @@ internal fun TerminationDateDestination(
     dateValidator = viewModel.dateValidator,
     submit = {
       uiState.datePickerState.selectedDateMillis?.let {
-        val date = fromMilliseconds(it)
+        val date = Instant.fromEpochMilliseconds(it).toLocalDateTime(TimeZone.UTC).date
         onContinue(date)
       }
     },

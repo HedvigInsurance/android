@@ -1,7 +1,5 @@
 package com.hedvig.android.feature.terminateinsurance.step.overview
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.data.contract.ContractGroup
@@ -69,15 +67,4 @@ internal data class OverviewUiState(
   val isLoading: Boolean,
   val exposureName: String,
   val contractGroup: ContractGroup,
-) {
-  val canSubmit: Boolean
-    @Composable
-    get() = remember(
-      nextStep,
-      isLoading,
-    ) { canSubmitSelectedDate() }
-}
-
-private fun OverviewUiState.canSubmitSelectedDate(): Boolean {
-  return nextStep == null && !isLoading
-}
+)
