@@ -6,6 +6,7 @@ import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 import com.hedvig.android.navigation.core.AppDestination
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -32,7 +33,9 @@ internal class OverviewViewModel(
   val uiState: StateFlow<OverviewUiState> = _uiState.asStateFlow()
 
   fun submitSelectedDate() {
+    _uiState.update { it.copy(isLoading = true) }
     viewModelScope.launch {
+      delay(3000)
       terminateInsuranceRepository.setTerminationDate(selectedDate).fold(
         ifLeft = { errorMessage ->
           _uiState.update {
@@ -47,6 +50,31 @@ internal class OverviewViewModel(
             it.copy(
               nextStep = terminateInsuranceStep,
               isLoading = false,
+            )
+          }
+        },
+      )
+    }
+  }
+
+  fun confirmDeletion() {
+    _uiState.update { it.copy(isLoading = true) }
+    viewModelScope.launch {
+      delay(3000)
+      terminateInsuranceRepository.confirmDeletion().fold(
+        ifLeft = { errorMessage ->
+          _uiState.update {
+            it.copy(
+              isLoading = false,
+              errorMessage = errorMessage.message,
+            )
+          }
+        },
+        ifRight = { terminateInsuranceFlowStep ->
+          _uiState.update {
+            it.copy(
+              isLoading = false,
+              nextStep = terminateInsuranceFlowStep,
             )
           }
         },

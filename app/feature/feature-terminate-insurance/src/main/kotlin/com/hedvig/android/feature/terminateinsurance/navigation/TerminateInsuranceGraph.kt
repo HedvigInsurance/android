@@ -13,7 +13,6 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.terminateinsurance.InsuranceId
 import com.hedvig.android.feature.terminateinsurance.data.toTerminateInsuranceDestination
 import com.hedvig.android.feature.terminateinsurance.step.deletion.InsuranceDeletionDestination
-import com.hedvig.android.feature.terminateinsurance.step.deletion.InsuranceDeletionViewModel
 import com.hedvig.android.feature.terminateinsurance.step.overview.OverviewDestination
 import com.hedvig.android.feature.terminateinsurance.step.overview.OverviewViewModel
 import com.hedvig.android.feature.terminateinsurance.step.start.TerminationStartDestination
@@ -32,6 +31,7 @@ import com.kiwi.navigationcompose.typed.navigate
 import com.kiwi.navigationcompose.typed.navigation
 import com.kiwi.navigationcompose.typed.popBackStack
 import com.kiwi.navigationcompose.typed.popUpTo
+import kotlinx.datetime.toKotlinLocalDate
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -50,21 +50,29 @@ fun NavGraphBuilder.terminateInsuranceGraph(
   navController: NavController,
   imageLoader: ImageLoader,
   openChat: (NavBackStackEntry) -> Unit,
+  openUrl: (String) -> Unit,
   openPlayStore: () -> Unit,
 ) {
-  composable<TerminateInsuranceDestination.TerminationSuccess> {
+  composable<TerminateInsuranceDestination.TerminationSuccess> { backStackEntry ->
+    val terminateInsurance = getTerminateInsuranceDataFromParentBackstack(navController, backStackEntry)
+
+    BackHandler {
+      finishTerminationFlow(navController)
+    }
+
     TerminationSuccessDestination(
-      terminationDate = this.terminationDate,
-      surveyUrl = this.surveyUrl,
-      windowSizeClass = windowSizeClass,
-      navigateUp = navigator::navigateUp,
-      navigateBack = navigator::popBackStack,
+      selectedDate = terminationDate,
+      insuranceDisplayName = terminateInsurance.insuranceDisplayName,
+      exposureName = terminateInsurance.exposureName,
+      imageLoader = imageLoader,
+      onSurveyClicked = { openUrl(surveyUrl) },
+      finish = { finishTerminationFlow(navController) },
     )
   }
   composable<TerminateInsuranceDestination.TerminationFailure> { backStackEntry ->
     TerminationFailureDestination(
       windowSizeClass = windowSizeClass,
-      errorMessage = ErrorMessage(this.message),
+      errorMessage = ErrorMessage(message),
       openChat = { openChat(backStackEntry) },
       navigateUp = navigator::navigateUp,
       navigateBack = navigator::popBackStack,
@@ -96,7 +104,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
         },
       )
     }
-    composable<TerminateInsuranceDestination.TerminationDate> { backStackEntry ->
+    composable<TerminateInsuranceDestination.TerminationDate> {
       val shouldFinishFlowOnBack = run {
         val previousBackstackEntryRoute = navController.previousBackStackEntry?.destination?.route
         previousBackstackEntryRoute == createRoutePattern<TerminateInsuranceDestination.StartStep>()
@@ -104,16 +112,10 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       BackHandler(shouldFinishFlowOnBack) {
         finishTerminationFlow(navController)
       }
-      val viewModel: TerminationDateViewModel = koinViewModel { parametersOf(this.minDate, this.maxDate) }
+      val viewModel: TerminationDateViewModel = koinViewModel { parametersOf(minDate, maxDate) }
       TerminationDateDestination(
         viewModel = viewModel,
         windowSizeClass = windowSizeClass,
-        navigateToNextStep = { terminationStep ->
-          viewModel.handledNextStepNavigation()
-          navigator.navigateToTerminateFlowDestination(
-            destination = terminationStep.toTerminateInsuranceDestination(),
-          )
-        },
         onContinue = {
           navController.navigate(TerminateInsuranceDestination.TerminationOverview(it))
         },
@@ -125,7 +127,6 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       )
     }
     composable<TerminateInsuranceDestination.InsuranceDeletion> { backStackEntry ->
-      val terminateInsurance = getTerminateInsuranceDataFromParentBackstack(navController, backStackEntry)
       val shouldFinishFlowOnBack = run {
         val previousBackstackEntryRoute = navController.previousBackStackEntry?.destination?.route
         previousBackstackEntryRoute == createRoutePattern<TerminateInsuranceDestination.StartStep>()
@@ -133,22 +134,21 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       BackHandler(shouldFinishFlowOnBack) {
         finishTerminationFlow(navController)
       }
-      val viewModel: InsuranceDeletionViewModel = koinViewModel { parametersOf(this) }
+      val terminateInsurance = getTerminateInsuranceDataFromParentBackstack(navController, backStackEntry)
+
       InsuranceDeletionDestination(
-        viewModel = viewModel,
-        insuranceDisplayName = terminateInsurance.insuranceDisplayName,
-        windowSizeClass = windowSizeClass,
-        navigateToNextStep = { terminationStep ->
-          viewModel.handledNextStepNavigation()
-          navigator.navigateToTerminateFlowDestination(
-            destination = terminationStep.toTerminateInsuranceDestination(),
+        activeFrom = terminateInsurance.activeFrom,
+        onContinue = {
+          navController.navigate(
+            TerminateInsuranceDestination.TerminationOverview(
+              terminationDate = java.time.LocalDate.now().toKotlinLocalDate(),
+              isDeletion = true,
+            ),
           )
         },
         navigateBack = {
           if (shouldFinishFlowOnBack) {
             finishTerminationFlow(navController)
-          } else {
-            navigator.navigateUp()
           }
         },
       )
@@ -157,13 +157,20 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       val terminateInsurance = getTerminateInsuranceDataFromParentBackstack(navController, backStackEntry)
       val viewModel: OverviewViewModel = koinViewModel {
         parametersOf(
-          this.terminationDate,
+          terminationDate,
           terminateInsurance,
         )
       }
       OverviewDestination(
         viewModel = viewModel,
         imageLoader = imageLoader,
+        onContinue = {
+          if (isDeletion) {
+            viewModel.confirmDeletion()
+          } else {
+            viewModel.submitSelectedDate()
+          }
+        },
         navigateToNextStep = { terminationStep ->
           viewModel.handledNextStepNavigation()
           navigator.navigateToTerminateFlowDestination(
@@ -195,7 +202,6 @@ private fun getTerminateInsuranceDataFromParentBackstack(
 private fun <T : TerminateInsuranceDestination> Navigator.navigateToTerminateFlowDestination(destination: T) {
   val navOptions = navOptions {
     when (destination) {
-      is TerminateInsuranceDestination.TerminationSuccess,
       is TerminateInsuranceDestination.TerminationFailure,
       is TerminateInsuranceDestination.UnknownScreen,
       -> {

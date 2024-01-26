@@ -195,6 +195,7 @@ private fun ContractDetailScreen(
                             contractDisplayName = state.insuranceContract.currentInsuranceAgreement.productVariant.displayName,
                             contractExposure = state.insuranceContract.exposureDisplayName,
                             contractGroup = state.insuranceContract.currentInsuranceAgreement.productVariant.contractGroup,
+                            activateFrom = state.insuranceContract.currentInsuranceAgreement.activeFrom,
                           ),
                         )
                       },

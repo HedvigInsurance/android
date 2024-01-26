@@ -8,9 +8,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
@@ -48,10 +46,9 @@ private fun TerminationFailureScreen(
 ) {
   TerminationInfoScreen(
     windowSizeClass = windowSizeClass,
-    title = "",
+    title = stringResource(id = R.string.general_error),
     headerText = stringResource(R.string.TERMINATION_NOT_SUCCESSFUL_TITLE),
     bodyText = errorMessage.message ?: stringResource(R.string.something_went_wrong),
-    icon = ImageVector.vectorResource(com.hedvig.android.core.design.system.R.drawable.ic_warning_triangle),
     navigateUp = navigateUp,
   ) {
     Column {

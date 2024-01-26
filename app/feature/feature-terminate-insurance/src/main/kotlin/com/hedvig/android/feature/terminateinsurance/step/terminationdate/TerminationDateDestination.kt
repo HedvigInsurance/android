@@ -25,7 +25,6 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,8 +41,6 @@ import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.preview.calculateForPreview
-import com.hedvig.android.core.ui.snackbar.ErrorSnackbar
-import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -53,16 +50,10 @@ import kotlinx.datetime.toLocalDateTime
 internal fun TerminationDateDestination(
   viewModel: TerminationDateViewModel,
   windowSizeClass: WindowSizeClass,
-  navigateToNextStep: (TerminateInsuranceStep) -> Unit,
   onContinue: (LocalDate) -> Unit,
   navigateBack: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  val nextStep = uiState.nextStep
-  LaunchedEffect(nextStep) {
-    if (nextStep == null) return@LaunchedEffect
-    navigateToNextStep(nextStep)
-  }
   TerminationDateScreen(
     uiState = uiState,
     windowSizeClass = windowSizeClass,
@@ -73,7 +64,6 @@ internal fun TerminationDateDestination(
         onContinue(date)
       }
     },
-    showedError = viewModel::showedError,
     navigateBack = navigateBack,
   )
 }
@@ -84,7 +74,6 @@ private fun TerminationDateScreen(
   windowSizeClass: WindowSizeClass,
   dateValidator: (Long) -> Boolean,
   submit: () -> Unit,
-  showedError: () -> Unit,
   navigateBack: () -> Unit,
 ) {
   Box(Modifier.fillMaxSize()) {
@@ -135,13 +124,6 @@ private fun TerminationDateScreen(
       }
     }
     HedvigFullScreenCenterAlignedProgressDebounced(show = uiState.isLoading)
-    ErrorSnackbar(
-      hasError = uiState.dateSubmissionError,
-      showedError = showedError,
-      modifier = Modifier
-        .align(Alignment.BottomCenter)
-        .windowInsetsPadding(WindowInsets.safeDrawing),
-    )
   }
 }
 
@@ -181,10 +163,9 @@ private fun PreviewTerminationDateScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       TerminationDateScreen(
-        TerminateInsuranceUiState(rememberDatePickerState(), false, null, false),
+        TerminateInsuranceUiState(rememberDatePickerState(), false),
         WindowSizeClass.calculateForPreview(),
         { true },
-        {},
         {},
         {},
       )
