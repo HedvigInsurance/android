@@ -66,6 +66,7 @@ class UnleashClientProvider(
     .properties(
       mutableMapOf(
         "appVersion" to appVersion,
+        "appName" to APP_NAME,
         "market" to market,
       ),
     )
