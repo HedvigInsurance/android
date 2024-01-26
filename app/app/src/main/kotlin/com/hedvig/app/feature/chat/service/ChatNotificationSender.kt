@@ -18,6 +18,7 @@ import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.core.common.android.notification.setupNotificationChannel
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
@@ -98,7 +99,10 @@ class ChatNotificationSender(
     style: NotificationCompat.MessagingStyle,
     alertOnlyOnce: Boolean = false,
   ) {
-    val chatIntent = Intent(Intent.ACTION_VIEW, Uri.parse(hedvigDeepLinkContainer.chat))
+    val chatIntent = Intent(
+      Intent.ACTION_VIEW,
+      Uri.parse(hedvigDeepLinkContainer.chat.createDeepLinkRoute(AppDestination.Chat.ChatContext.CLAIMS)),
+    )
 
     val pendingIntent: PendingIntent? = TaskStackBuilder
       .create(context)

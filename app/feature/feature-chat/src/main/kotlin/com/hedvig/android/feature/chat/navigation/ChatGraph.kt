@@ -23,7 +23,7 @@ fun NavGraphBuilder.chatGraph(
 ) {
   composable<AppDestination.Chat>(
     deepLinks = listOf(
-      navDeepLink { uriPattern = hedvigDeepLinkContainer.chat },
+      navDeepLink { uriPattern = hedvigDeepLinkContainer.chat.uriPattern },
     ),
     enterTransition = { slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Up) },
     exitTransition = { slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Down) },
