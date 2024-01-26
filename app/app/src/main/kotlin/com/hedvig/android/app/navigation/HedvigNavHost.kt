@@ -34,6 +34,7 @@ import com.hedvig.android.feature.forever.navigation.foreverGraph
 import com.hedvig.android.feature.help.center.helpCenterGraph
 import com.hedvig.android.feature.help.center.navigation.HelpCenterDestination
 import com.hedvig.android.feature.home.home.navigation.homeGraph
+import com.hedvig.android.feature.insurances.data.CancelInsuranceData
 import com.hedvig.android.feature.insurances.insurance.insuranceGraph
 import com.hedvig.android.feature.odyssey.navigation.claimFlowGraph
 import com.hedvig.android.feature.odyssey.navigation.navigateToClaimFlowDestination
@@ -132,6 +133,7 @@ internal fun HedvigNavHost(
           windowSizeClass = hedvigAppState.windowSizeClass,
           navigator = navigator,
           navController = hedvigAppState.navController,
+          imageLoader = imageLoader,
           openChat = { backStackEntry ->
             with(navigator) {
               backStackEntry.navigate(AppDestination.Chat())
@@ -157,9 +159,15 @@ internal fun HedvigNavHost(
           backStackEntry.navigate(AppDestination.ChangeAddress)
         }
       },
-      startTerminationFlow = { backStackEntry: NavBackStackEntry, insuranceId: String, insuranceDisplayName: String ->
+      startTerminationFlow = { backStackEntry: NavBackStackEntry, data: CancelInsuranceData ->
         with(navigator) {
-          backStackEntry.navigate(AppDestination.TerminateInsurance(insuranceId, insuranceDisplayName))
+          val destination = AppDestination.TerminateInsurance(
+            contractId = data.contractId,
+            insuranceDisplayName = data.contractDisplayName,
+            exposureName = data.contractExposure,
+            contractGroup = data.contractGroup,
+          )
+          backStackEntry.navigate(destination)
         }
       },
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,

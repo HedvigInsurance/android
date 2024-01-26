@@ -191,8 +191,10 @@ private fun ContractDetailScreen(
                       onCancelInsuranceClick = {
                         onCancelInsuranceClick(
                           CancelInsuranceData(
-                            state.insuranceContract.id,
-                            state.insuranceContract.currentInsuranceAgreement.productVariant.displayName,
+                            contractId = state.insuranceContract.id,
+                            contractDisplayName = state.insuranceContract.currentInsuranceAgreement.productVariant.displayName,
+                            contractExposure = state.insuranceContract.exposureDisplayName,
+                            contractGroup = state.insuranceContract.currentInsuranceAgreement.productVariant.contractGroup,
                           ),
                         )
                       },

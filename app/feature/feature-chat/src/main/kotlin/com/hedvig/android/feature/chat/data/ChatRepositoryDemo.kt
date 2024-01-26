@@ -49,15 +49,24 @@ internal class ChatRepositoryDemo(
     return messages.map { it.right() }
   }
 
-  override suspend fun sendPhoto(uri: Uri, context: AppDestination.Chat.ChatContext?): Either<ErrorMessage, ChatMessage> {
+  override suspend fun sendPhoto(
+    uri: Uri,
+    context: AppDestination.Chat.ChatContext?,
+  ): Either<ErrorMessage, ChatMessage> {
     return ErrorMessage("Demo mode").left()
   }
 
-  override suspend fun sendMedia(uri: Uri, context: AppDestination.Chat.ChatContext?): Either<ErrorMessage, ChatMessage> {
+  override suspend fun sendMedia(
+    uri: Uri,
+    context: AppDestination.Chat.ChatContext?,
+  ): Either<ErrorMessage, ChatMessage> {
     return ErrorMessage("Demo mode").left()
   }
 
-  override suspend fun sendMessage(text: String, context: AppDestination.Chat.ChatContext?): Either<ErrorMessage, ChatMessage> {
+  override suspend fun sendMessage(
+    text: String,
+    context: AppDestination.Chat.ChatContext?,
+  ): Either<ErrorMessage, ChatMessage> {
     val chatMessage = ChatMessage.ChatMessageText(
       id = Uuid.randomUUID().toString(),
       text = text,

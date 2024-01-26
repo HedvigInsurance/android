@@ -1,5 +1,6 @@
 package com.hedvig.android.navigation.core
 
+import com.hedvig.android.data.contract.ContractGroup
 import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.serialization.Serializable
 
@@ -23,10 +24,14 @@ sealed interface AppDestination : Destination {
 
   @Serializable
   data class Chat(
-    val chatContext: ChatContext? = null
+    val chatContext: ChatContext? = null,
   ) : AppDestination {
     enum class ChatContext {
-      PAYMENT, CLAIMS, COVERAGE, INSURANCE, OTHER,
+      PAYMENT,
+      CLAIMS,
+      COVERAGE,
+      INSURANCE,
+      OTHER,
     }
   }
 
@@ -59,8 +64,10 @@ sealed interface AppDestination : Destination {
 
   @Serializable
   data class TerminateInsurance(
-    val insuranceId: String,
+    val contractId: String,
     val insuranceDisplayName: String,
+    val exposureName: String,
+    val contractGroup: ContractGroup,
   ) : AppDestination
 
   @Serializable

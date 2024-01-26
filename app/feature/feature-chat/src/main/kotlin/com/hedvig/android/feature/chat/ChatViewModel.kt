@@ -9,7 +9,7 @@ import kotlinx.datetime.Clock
 internal class ChatViewModel(
   chatRepository: Provider<ChatRepository>,
   clock: Clock,
-  chatContext: AppDestination.Chat.ChatContext?
+  chatContext: AppDestination.Chat.ChatContext?,
 ) : MoleculeViewModel<ChatEvent, ChatUiState>(
     ChatUiState.Initializing,
     ChatPresenter(
