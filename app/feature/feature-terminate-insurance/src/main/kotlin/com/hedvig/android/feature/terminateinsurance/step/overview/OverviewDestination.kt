@@ -79,7 +79,8 @@ private fun OverViewScreen(
       .fillMaxSize()
       .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)),
   ) {
-    if (uiState.isLoading) {
+    val isLoadingOrNavigating = uiState.isLoading || uiState.nextStep != null
+    if (isLoadingOrNavigating) {
       HedvigFullScreenCenterAlignedLinearProgressDebounced(
         title = stringResource(id = R.string.TERMINATE_CONTRACT_TERMINATING_PROGRESS),
       )

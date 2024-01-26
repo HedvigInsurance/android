@@ -35,7 +35,7 @@ internal class OverviewViewModel(
   fun submitSelectedDate() {
     _uiState.update { it.copy(isLoading = true) }
     viewModelScope.launch {
-      delay(3000)
+      delay(3000) // Fake delay for better UX
       terminateInsuranceRepository.setTerminationDate(selectedDate).fold(
         ifLeft = { errorMessage ->
           _uiState.update {
@@ -60,7 +60,7 @@ internal class OverviewViewModel(
   fun confirmDeletion() {
     _uiState.update { it.copy(isLoading = true) }
     viewModelScope.launch {
-      delay(3000)
+      delay(3000) // Fake delay for better UX
       terminateInsuranceRepository.confirmDeletion().fold(
         ifLeft = { errorMessage ->
           _uiState.update {

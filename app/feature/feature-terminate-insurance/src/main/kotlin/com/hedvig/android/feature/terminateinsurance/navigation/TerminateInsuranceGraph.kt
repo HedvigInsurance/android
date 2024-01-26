@@ -1,15 +1,24 @@
 package com.hedvig.android.feature.terminateinsurance.navigation
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.unit.IntOffset
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navOptions
 import coil.ImageLoader
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.designsystem.material3.motion.MotionTokens
 import com.hedvig.android.feature.terminateinsurance.InsuranceId
 import com.hedvig.android.feature.terminateinsurance.data.toTerminateInsuranceDestination
 import com.hedvig.android.feature.terminateinsurance.step.deletion.InsuranceDeletionDestination
@@ -153,7 +162,12 @@ fun NavGraphBuilder.terminateInsuranceGraph(
         },
       )
     }
-    composable<TerminateInsuranceDestination.TerminationOverview> { backStackEntry ->
+    composable<TerminateInsuranceDestination.TerminationOverview>(
+      enterTransition = { sharedXAxisEnterTransition(50) },
+      exitTransition = { sharedXAxisExitTransition(50) },
+      popEnterTransition = { sharedXAxisEnterTransition(50) },
+      popExitTransition = { sharedXAxisExitTransition(50) },
+    ) { backStackEntry ->
       val terminateInsurance = getTerminateInsuranceDataFromParentBackstack(navController, backStackEntry)
       val viewModel: OverviewViewModel = koinViewModel {
         parametersOf(
@@ -218,4 +232,42 @@ private fun <T : TerminateInsuranceDestination> Navigator.navigateToTerminateFlo
 
 private fun finishTerminationFlow(navController: NavController) {
   navController.popBackStack<AppDestination.TerminateInsurance>(inclusive = true)
+}
+
+internal fun sharedXAxisExitTransition(targetOffsetX: Int): ExitTransition {
+  val slide = slideOutHorizontally(
+    animationSpec = tween<IntOffset>(
+      durationMillis = 2000,
+      delayMillis = 0,
+      easing = MotionTokens.EasingStandardCubicBezier,
+    ),
+    targetOffsetX = { targetOffsetX },
+  )
+  val fade = fadeOut(
+    tween(
+      durationMillis = 2000,
+      delayMillis = 0,
+      easing = MotionTokens.EasingStandardAccelerateCubicBezier,
+    ),
+  )
+  return slide + fade
+}
+
+internal fun sharedXAxisEnterTransition(initialOffsetX: Int): EnterTransition {
+  val slide = slideInHorizontally(
+    animationSpec = tween<IntOffset>(
+      durationMillis = 2000,
+      delayMillis = 0,
+      easing = MotionTokens.EasingStandardCubicBezier,
+    ),
+    initialOffsetX = { initialOffsetX },
+  )
+  val fade = fadeIn(
+    tween(
+      durationMillis = 2000,
+      delayMillis = 100,
+      easing = MotionTokens.EasingStandardDecelerateCubicBezier,
+    ),
+  )
+  return slide + fade
 }
