@@ -138,7 +138,7 @@ fun EmergencyScreen(title: String?, emergencyNumber: String?, navigateUp: () -> 
   }
 }
 
-@Suppress("ktlint:standard:max-line-length")
+@Suppress("ktlint:standard:max-line-length", "ktlint:standard:argument-list-wrapping")
 @Composable
 private fun QuestionsAndAnswers(modifier: Modifier = Modifier) {
   var expandedItem by rememberSaveable { mutableIntStateOf(-1) }

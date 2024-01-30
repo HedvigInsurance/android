@@ -8,11 +8,14 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navOptions
+import coil.ImageLoader
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.terminateinsurance.InsuranceId
 import com.hedvig.android.feature.terminateinsurance.data.toTerminateInsuranceDestination
 import com.hedvig.android.feature.terminateinsurance.step.deletion.InsuranceDeletionDestination
 import com.hedvig.android.feature.terminateinsurance.step.deletion.InsuranceDeletionViewModel
+import com.hedvig.android.feature.terminateinsurance.step.overview.OverviewDestination
+import com.hedvig.android.feature.terminateinsurance.step.overview.OverviewViewModel
 import com.hedvig.android.feature.terminateinsurance.step.start.TerminationStartDestination
 import com.hedvig.android.feature.terminateinsurance.step.start.TerminationStartStepViewModel
 import com.hedvig.android.feature.terminateinsurance.step.terminationdate.TerminationDateDestination
@@ -25,6 +28,7 @@ import com.hedvig.android.navigation.core.Navigator
 import com.kiwi.navigationcompose.typed.composable
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.decodeArguments
+import com.kiwi.navigationcompose.typed.navigate
 import com.kiwi.navigationcompose.typed.navigation
 import com.kiwi.navigationcompose.typed.popBackStack
 import com.kiwi.navigationcompose.typed.popUpTo
@@ -44,6 +48,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
   windowSizeClass: WindowSizeClass,
   navigator: Navigator,
   navController: NavController,
+  imageLoader: ImageLoader,
   openChat: (NavBackStackEntry) -> Unit,
   openPlayStore: () -> Unit,
 ) {
@@ -78,7 +83,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
   ) {
     composable<TerminateInsuranceDestination.StartStep> { backStackEntry ->
       val terminateInsurance = getTerminateInsuranceDataFromParentBackstack(navController, backStackEntry)
-      val insuranceId: InsuranceId = InsuranceId(terminateInsurance.insuranceId)
+      val insuranceId = InsuranceId(terminateInsurance.contractId)
       val viewModel: TerminationStartStepViewModel = koinViewModel { parametersOf(insuranceId) }
       TerminationStartDestination(
         viewModel = viewModel,
@@ -109,10 +114,12 @@ fun NavGraphBuilder.terminateInsuranceGraph(
             destination = terminationStep.toTerminateInsuranceDestination(),
           )
         },
+        onContinue = {
+          navController.navigate(TerminateInsuranceDestination.TerminationOverview(it))
+        },
         navigateBack = {
           if (shouldFinishFlowOnBack) {
             finishTerminationFlow(navController)
-          } else {
           }
         },
       )
@@ -146,6 +153,26 @@ fun NavGraphBuilder.terminateInsuranceGraph(
         },
       )
     }
+    composable<TerminateInsuranceDestination.TerminationOverview> { backStackEntry ->
+      val terminateInsurance = getTerminateInsuranceDataFromParentBackstack(navController, backStackEntry)
+      val viewModel: OverviewViewModel = koinViewModel {
+        parametersOf(
+          this.terminationDate,
+          terminateInsurance,
+        )
+      }
+      OverviewDestination(
+        viewModel = viewModel,
+        imageLoader = imageLoader,
+        navigateToNextStep = { terminationStep ->
+          viewModel.handledNextStepNavigation()
+          navigator.navigateToTerminateFlowDestination(
+            destination = terminationStep.toTerminateInsuranceDestination(),
+          )
+        },
+        navigateBack = navigator::navigateUp,
+      )
+    }
   }
 }
 
@@ -167,14 +194,16 @@ private fun getTerminateInsuranceDataFromParentBackstack(
  */
 private fun <T : TerminateInsuranceDestination> Navigator.navigateToTerminateFlowDestination(destination: T) {
   val navOptions = navOptions {
-    when {
-      destination is TerminateInsuranceDestination.TerminationSuccess ||
-        destination is TerminateInsuranceDestination.TerminationFailure ||
-        destination is TerminateInsuranceDestination.UnknownScreen -> {
+    when (destination) {
+      is TerminateInsuranceDestination.TerminationSuccess,
+      is TerminateInsuranceDestination.TerminationFailure,
+      is TerminateInsuranceDestination.UnknownScreen,
+      -> {
         popUpTo<AppDestination.TerminateInsurance> {
           inclusive = true
         }
       }
+
       else -> {}
     }
   }

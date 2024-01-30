@@ -4,6 +4,7 @@ import android.content.res.Resources
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.navDeepLink
 import com.hedvig.android.feature.help.center.commonclaim.CommonClaim
 import com.hedvig.android.feature.help.center.commonclaim.CommonClaimDestination
 import com.hedvig.android.feature.help.center.commonclaim.emergency.EmergencyDestination
@@ -14,6 +15,8 @@ import com.hedvig.android.feature.help.center.navigation.HelpCenterDestination
 import com.hedvig.android.feature.help.center.navigation.HelpCenterDestinations
 import com.hedvig.android.feature.help.center.question.HelpCenterQuestionDestination
 import com.hedvig.android.feature.help.center.topic.HelpCenterTopicDestination
+import com.hedvig.android.navigation.core.AppDestination
+import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
 import com.kiwi.navigationcompose.typed.composable
 import com.kiwi.navigationcompose.typed.createRoutePattern
@@ -21,11 +24,15 @@ import com.kiwi.navigationcompose.typed.navigation
 import org.koin.androidx.compose.koinViewModel
 
 fun NavGraphBuilder.helpCenterGraph(
+  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   navigator: Navigator,
-  openChat: (NavBackStackEntry) -> Unit,
+  openChat: (NavBackStackEntry, AppDestination.Chat.ChatContext?) -> Unit,
 ) {
   navigation<HelpCenterDestination>(
     startDestination = createRoutePattern<HelpCenterDestinations.HelpCenter>(),
+    deepLinks = listOf(
+      navDeepLink { uriPattern = hedvigDeepLinkContainer.helpCenter },
+    ),
   ) {
     composable<HelpCenterDestinations.HelpCenter> { backStackEntry ->
       val viewModel = koinViewModel<HelpCenterViewModel>()
@@ -53,7 +60,7 @@ fun NavGraphBuilder.helpCenterGraph(
           }
         },
         openChat = {
-          openChat(backStackEntry)
+          openChat(backStackEntry, null)
         },
         onNavigateUp = navigator::navigateUp,
       )
@@ -68,7 +75,7 @@ fun NavGraphBuilder.helpCenterGraph(
         onNavigateUp = navigator::navigateUp,
         onNavigateBack = navigator::popBackStack,
         openChat = {
-          openChat(backStackEntry)
+          openChat(backStackEntry, topic.chatContext)
         },
       )
     }
@@ -81,9 +88,10 @@ fun NavGraphBuilder.helpCenterGraph(
         },
         onNavigateUp = navigator::navigateUp,
         onNavigateBack = navigator::popBackStack,
-      ) {
-        openChat(backStackEntry)
-      }
+        openChat = {
+          openChat(backStackEntry, question.chatContext)
+        },
+      )
     }
     composable<HelpCenterDestinations.CommonClaim> {
       CommonClaimDestination(

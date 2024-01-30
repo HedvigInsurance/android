@@ -34,6 +34,7 @@ import com.hedvig.android.feature.forever.navigation.foreverGraph
 import com.hedvig.android.feature.help.center.helpCenterGraph
 import com.hedvig.android.feature.help.center.navigation.HelpCenterDestination
 import com.hedvig.android.feature.home.home.navigation.homeGraph
+import com.hedvig.android.feature.insurances.data.CancelInsuranceData
 import com.hedvig.android.feature.insurances.insurance.insuranceGraph
 import com.hedvig.android.feature.odyssey.navigation.claimFlowGraph
 import com.hedvig.android.feature.odyssey.navigation.navigateToClaimFlowDestination
@@ -107,7 +108,7 @@ internal fun HedvigNavHost(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       onStartChat = { backStackEntry ->
         with(navigator) {
-          backStackEntry.navigate(AppDestination.Chat)
+          backStackEntry.navigate(AppDestination.Chat())
         }
       },
       onStartClaim = { backStackEntry ->
@@ -132,9 +133,10 @@ internal fun HedvigNavHost(
           windowSizeClass = hedvigAppState.windowSizeClass,
           navigator = navigator,
           navController = hedvigAppState.navController,
+          imageLoader = imageLoader,
           openChat = { backStackEntry ->
             with(navigator) {
-              backStackEntry.navigate(AppDestination.Chat)
+              backStackEntry.navigate(AppDestination.Chat())
             }
           },
           openPlayStore = { activityNavigator.tryOpenPlayStore(context) },
@@ -149,7 +151,7 @@ internal fun HedvigNavHost(
       },
       openChat = { backStackEntry ->
         with(navigator) {
-          backStackEntry.navigate(AppDestination.Chat)
+          backStackEntry.navigate(AppDestination.Chat())
         }
       },
       startMovingFlow = { backStackEntry ->
@@ -157,21 +159,27 @@ internal fun HedvigNavHost(
           backStackEntry.navigate(AppDestination.ChangeAddress)
         }
       },
-      startTerminationFlow = { backStackEntry: NavBackStackEntry, insuranceId: String, insuranceDisplayName: String ->
+      startTerminationFlow = { backStackEntry: NavBackStackEntry, data: CancelInsuranceData ->
         with(navigator) {
-          backStackEntry.navigate(AppDestination.TerminateInsurance(insuranceId, insuranceDisplayName))
+          val destination = AppDestination.TerminateInsurance(
+            contractId = data.contractId,
+            insuranceDisplayName = data.contractDisplayName,
+            exposureName = data.contractExposure,
+            contractGroup = data.contractGroup,
+          )
+          backStackEntry.navigate(destination)
         }
       },
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       imageLoader = imageLoader,
       startEditCoInsured = { backStackEntry: NavBackStackEntry, contractId: String ->
         with(navigator) {
-          backStackEntry.navigate(AppDestination.CoInsuredAddInfo(contractId))
+          backStackEntry.navigate(AppDestination.CoInsuredAddOrRemove(contractId))
         }
       },
       startEditCoInsuredAddMissingInfo = { backStackEntry: NavBackStackEntry, contractId: String ->
         with(navigator) {
-          backStackEntry.navigate(AppDestination.CoInsuredAddOrRemove(contractId))
+          backStackEntry.navigate(AppDestination.CoInsuredAddInfo(contractId))
         }
       },
     )
@@ -231,10 +239,11 @@ internal fun HedvigNavHost(
     )
     connectAdyenPaymentGraph(navigator)
     helpCenterGraph(
+      hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       navigator = navigator,
-    ) { backStackEntry ->
+    ) { backStackEntry, chatContext ->
       with(navigator) {
-        backStackEntry.navigate(AppDestination.Chat)
+        backStackEntry.navigate(AppDestination.Chat(chatContext))
       }
     }
   }
@@ -259,7 +268,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     appPackageId = hedvigBuildConstants.appId,
     openChat = { backStackEntry ->
       with(navigator) {
-        backStackEntry.navigate(AppDestination.Chat)
+        backStackEntry.navigate(AppDestination.Chat())
       }
     },
   )
@@ -267,7 +276,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     navController = hedvigAppState.navController,
     openChat = { backStackEntry ->
       with(navigator) {
-        backStackEntry.navigate(AppDestination.Chat)
+        backStackEntry.navigate(AppDestination.Chat())
       }
     },
     openUrl = { activityNavigator.openWebsite(context, Uri.parse(it)) },
@@ -304,7 +313,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     openUrl = { activityNavigator.openWebsite(context, Uri.parse(it)) },
     openChat = { backStackEntry ->
       with(navigator) {
-        backStackEntry.navigate(AppDestination.Chat)
+        backStackEntry.navigate(AppDestination.Chat())
       }
     },
     imageLoader = imageLoader,
@@ -318,7 +327,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     },
     openChat = { backStackEntry ->
       with(navigator) {
-        backStackEntry.navigate(destination = AppDestination.Chat) {
+        backStackEntry.navigate(destination = AppDestination.Chat()) {
           popUpTo<AppDestination.TopLevelDestination.Home>()
         }
       }

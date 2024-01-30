@@ -142,6 +142,7 @@ fun ContractType.isTrialContract() = when (this) {
 fun ContractType.supportsTravelCertificate(): Boolean = when (this) {
   SE_HOUSE,
   SE_APARTMENT_BRF,
+  SE_APARTMENT_RENT,
   SE_APARTMENT_STUDENT_BRF,
   SE_APARTMENT_STUDENT_RENT,
   -> true

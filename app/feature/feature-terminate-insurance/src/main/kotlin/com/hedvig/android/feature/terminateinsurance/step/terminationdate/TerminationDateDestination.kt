@@ -44,12 +44,17 @@ import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbar
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 @Composable
 internal fun TerminationDateDestination(
   viewModel: TerminationDateViewModel,
   windowSizeClass: WindowSizeClass,
   navigateToNextStep: (TerminateInsuranceStep) -> Unit,
+  onContinue: (LocalDate) -> Unit,
   navigateBack: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -62,7 +67,12 @@ internal fun TerminationDateDestination(
     uiState = uiState,
     windowSizeClass = windowSizeClass,
     dateValidator = viewModel.dateValidator,
-    submit = viewModel::submitSelectedDate,
+    submit = {
+      uiState.datePickerState.selectedDateMillis?.let {
+        val date = Instant.fromEpochMilliseconds(it).toLocalDateTime(TimeZone.UTC).date
+        onContinue(date)
+      }
+    },
     showedError = viewModel::showedError,
     navigateBack = navigateBack,
   )

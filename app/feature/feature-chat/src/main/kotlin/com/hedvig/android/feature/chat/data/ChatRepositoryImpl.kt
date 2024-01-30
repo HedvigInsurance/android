@@ -30,6 +30,7 @@ import com.hedvig.android.feature.chat.model.ChatMessage
 import com.hedvig.android.feature.chat.model.ChatMessagesResult
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.navigation.core.AppDestination
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -76,6 +77,7 @@ internal class ChatRepositoryImpl(
         messages = result.chat.messages.mapNotNull { it.toChatMessage() },
         nextUntil = result.chat.nextUntil,
         hasNext = result.chat.hasNext,
+        informationMessage = null, // TODO query from schema
       )
     }
   }
@@ -120,7 +122,10 @@ internal class ChatRepositoryImpl(
       }
   }
 
-  override suspend fun sendPhoto(uri: Uri): Either<ErrorMessage, ChatMessage> = either<ErrorMessage, ChatMessage> {
+  override suspend fun sendPhoto(
+    uri: Uri,
+    context: AppDestination.Chat.ChatContext?, // TODO Pass to mutation
+  ): Either<ErrorMessage, ChatMessage> = either {
     logcat { "Chat sendPhoto uploading photo with uri:$uri" }
     val uploadToken = uploadFile(uri)
     val result = apolloClient.mutation(ChatSendFileMutation(uploadToken))
@@ -182,7 +187,10 @@ internal class ChatRepositoryImpl(
     }
   }
 
-  override suspend fun sendMedia(uri: Uri): Either<ErrorMessage, ChatMessage> = either<ErrorMessage, ChatMessage> {
+  override suspend fun sendMedia(
+    uri: Uri,
+    context: AppDestination.Chat.ChatContext?, // TODO Pass to mutation
+  ): Either<ErrorMessage, ChatMessage> = either {
     logcat { "Chat sendMedia uploading media with uri:$uri" }
     val uploadToken = uploadMedia(uri)
     val result = apolloClient.mutation(ChatSendFileMutation(uploadToken))
@@ -236,7 +244,10 @@ internal class ChatRepositoryImpl(
     return response.firstOrNull()?.uploadToken ?: raise(ErrorMessage("No upload token"))
   }
 
-  override suspend fun sendMessage(text: String): Either<ErrorMessage, ChatMessage> = either {
+  override suspend fun sendMessage(
+    text: String,
+    context: AppDestination.Chat.ChatContext?, // TODO Pass to mutation
+  ): Either<ErrorMessage, ChatMessage> = either {
     logcat { "Chat sendMessage uploading text:$text" }
     val result = apolloClient.mutation(ChatSendMessageMutation(text))
       .safeExecute()

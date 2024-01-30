@@ -31,6 +31,8 @@ dependencies {
   implementation(libs.kotlinx.serialization.json)
   implementation(libs.retrofit)
   implementation(libs.retrofitArrow)
+  implementation(libs.compose.richtext)
+  implementation(libs.compose.richtextUi)
   implementation(libs.retrofitKotlinxSerializationConverter)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)

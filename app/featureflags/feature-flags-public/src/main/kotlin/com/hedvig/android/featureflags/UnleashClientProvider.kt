@@ -11,8 +11,8 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
-private const val PRODUCTION_CLIENT_KEY = "*:production.d1f58888019fbbb45c3c62fe2f1999dd5295008e1f4f63edbb45d82a"
-private const val DEVELOPMENT_CLIENT_KEY = "*:development.f54c919d1c96360290328d53eeda65d7c4bddaeb24e31dc0d413437d"
+private const val PRODUCTION_CLIENT_KEY = "*:production.21d6af57ae16320fde3a3caf024162db19cc33bf600ab7439c865c20"
+private const val DEVELOPMENT_CLIENT_KEY = "*:development.f2455340ac9d599b5816fa879d079f21dd0eb03e4315130deb5377b6"
 private const val UNLEASH_URL = "https://eu.app.unleash-hosted.com/eubb1047/api/frontend"
 private const val APP_NAME = "android"
 
@@ -57,15 +57,18 @@ class UnleashClientProvider(
       .proxyUrl(UNLEASH_URL)
       .clientKey(clientKey)
       .environment(environmentContext)
+      .enableMetrics()
       .appName(APP_NAME)
       .pollingMode(AutoPollingMode(pollRateDuration = 2000))
       .build()
   }
 
   private fun createContext(market: String, appVersion: String) = UnleashContext.newBuilder()
+    .appName(APP_NAME)
     .properties(
       mutableMapOf(
         "appVersion" to appVersion,
+        "appName" to APP_NAME,
         "market" to market,
       ),
     )

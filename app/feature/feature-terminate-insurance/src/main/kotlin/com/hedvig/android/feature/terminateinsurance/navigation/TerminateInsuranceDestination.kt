@@ -15,6 +15,11 @@ internal sealed interface TerminateInsuranceDestination : Destination {
   ) : TerminateInsuranceDestination
 
   @Serializable
+  data class TerminationOverview(
+    val terminationDate: LocalDate,
+  ) : TerminateInsuranceDestination
+
+  @Serializable
   data class TerminationSuccess(
     val terminationDate: LocalDate?,
     val surveyUrl: String,

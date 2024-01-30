@@ -153,7 +153,9 @@ private fun MarketingScreen(
             }
           }
         },
-        modifier = Modifier.matchParentSize().windowInsetsPadding(WindowInsets.safeDrawing),
+        modifier = Modifier
+          .matchParentSize()
+          .windowInsetsPadding(WindowInsets.safeDrawing),
       ) {
         Image(
           Icons.Hedvig.HedvigLogotype,
@@ -173,7 +175,7 @@ private fun MarketingScreen(
             ),
         ) {
           HedvigContainedButton(
-            text = "Login",
+            text = stringResource(R.string.SETTINGS_LOGIN_ROW),
             enabled = uiState is MarketingUiState.Success,
             onClick = {
               (uiState as? MarketingUiState.Success)?.run {
@@ -183,7 +185,7 @@ private fun MarketingScreen(
             modifier = Modifier.testTag("login_button"),
           )
           HedvigTextButton(
-            text = "Get a price quote",
+            text = stringResource(R.string.MARKETING_GET_HEDVIG),
             enabled = uiState is MarketingUiState.Success,
             onClick = {
               (uiState as? MarketingUiState.Success)?.run {
@@ -231,7 +233,9 @@ private fun ColumnScope.PreferencesSheetContent(
   Text(
     text = stringResource(R.string.LOGIN_MARKET_PICKER_PREFERENCES),
     textAlign = TextAlign.Center,
-    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(horizontal = 16.dp),
   )
   Spacer(Modifier.height(24.dp))
   PreferencesPagerSelector(pagerState)
@@ -278,7 +282,9 @@ private fun ColumnScope.PreferencesSheetContent(
     text = "${stringResource(R.string.PROFILE_ABOUT_APP_VERSION)}: $appVersionName",
     style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
     textAlign = TextAlign.Center,
-    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(horizontal = 16.dp),
   )
   Spacer(Modifier.height(16.dp))
   Spacer(Modifier.windowInsetsBottomHeight(BottomSheetDefaults.windowInsets))
@@ -321,7 +327,9 @@ private fun PreferenceSelectableRow(
     Row(
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.spacedBy(8.dp),
-      modifier = Modifier.fillMaxWidth().padding(16.dp),
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(16.dp),
     ) {
       Image(imageVector, null)
       Text(
@@ -367,7 +375,7 @@ private fun PreviewMarketingScreen() {
 @Composable
 private fun PreviewPreferencesSheetContent() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.surface) {
+    Surface(color = MaterialTheme.colorScheme.background) {
       Column {
         PreferencesSheetContent(Market.SE, Language.EN_SE, "X.Y.Z", {}, {}, {})
       }

@@ -12,6 +12,7 @@ internal sealed interface CommonClaim {
     val emergencyNumber: String,
   ) : CommonClaim {
     companion object {
+      @Suppress("ktlint:standard:max-line-length")
       fun from(
         title: String,
         layout: CommonClaimsQuery.Data.CurrentMember.ActiveContract.CurrentAgreement.ProductVariant.CommonClaimDescription.CommonClaimLayoutEmergencyLayout,
@@ -37,6 +38,7 @@ internal sealed interface CommonClaim {
     val isFirstVet = id == "30" || id == "31" || id == "32"
 
     companion object {
+      @Suppress("ktlint:standard:max-line-length")
       fun from(
         id: String,
         title: String,

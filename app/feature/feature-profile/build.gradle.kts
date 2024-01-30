@@ -14,7 +14,6 @@ dependencies {
   apolloMetadata(projects.apolloOctopusPublic)
 
   implementation(libs.accompanist.permissions)
-  implementation(libs.accompanist.webview)
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.compose.material3.windowSizeClass)
   implementation(libs.androidx.compose.runtime)
@@ -30,6 +29,7 @@ dependencies {
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.authCorePublic)
+  implementation(projects.composeWebview)
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
