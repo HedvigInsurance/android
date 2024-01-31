@@ -30,7 +30,7 @@ internal class ProfileViewModel(
   val data: StateFlow<ProfileUiState> = retryChannel.flatMapLatest {
     combine(
       getMemberRemindersUseCase.invoke(),
-      flow { emit(featureManager.isFeatureEnabled(Feature.PAYMENT_SCREEN)) },
+      featureManager.isFeatureEnabled(Feature.PAYMENT_SCREEN),
       flow { emit(getEuroBonusStatusUseCase.invoke()) },
     ) { memberReminders, isPaymentScreenFeatureEnabled, eurobonusResponse ->
       ProfileUiState(

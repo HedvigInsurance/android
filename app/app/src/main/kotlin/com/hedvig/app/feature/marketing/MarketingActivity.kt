@@ -36,11 +36,9 @@ import com.hedvig.app.feature.sunsetting.ForceUpgradeActivity
 import com.kiwi.navigationcompose.typed.Destination
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigate
-import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
@@ -56,13 +54,12 @@ class MarketingActivity : AppCompatActivity() {
     super.onCreate(savedInstanceState)
     lifecycleScope.launch {
       launch {
-        while (isActive) {
-          if (featureManager.isFeatureEnabled(Feature.UPDATE_NECESSARY)) {
+        featureManager.isFeatureEnabled(Feature.UPDATE_NECESSARY).collectLatest {
+          if (it) {
             applicationContext.startActivity(ForceUpgradeActivity.newInstance(applicationContext))
             finish()
             cancel()
           }
-          delay(5.seconds)
         }
       }
       lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
