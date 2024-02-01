@@ -12,10 +12,9 @@ interface ActionLogger {
   fun logError(
     message: String,
     source: ErrorSource,
-    name: String,
     attributes: Map<String, Any?>,
-    throwable: Throwable? = null,
-    stacktrace: String? = null,
+    throwable: Throwable?,
+    stacktrace: String?,
   )
 
   companion object {
@@ -49,7 +48,6 @@ interface ActionLogger {
     override fun logError(
       message: String,
       source: ErrorSource,
-      name: String,
       attributes: Map<String, Any?>,
       throwable: Throwable?,
       stacktrace: String?
