@@ -28,4 +28,6 @@ dependencies {
   testImplementation(projects.authCoreTest)
   testImplementation(projects.coreDatastoreTest)
   testImplementation(projects.loggingTest)
+
+  implementation(libs.kotlinx.serialization.json)
 }
