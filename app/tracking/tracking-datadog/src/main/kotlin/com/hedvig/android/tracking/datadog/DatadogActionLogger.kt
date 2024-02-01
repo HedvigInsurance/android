@@ -31,7 +31,6 @@ class DatadogActionLogger(
   override fun logError(
     message: String,
     source: ErrorSource,
-    name: String,
     attributes: Map<String, Any?>,
     throwable: Throwable?,
     stacktrace: String?,

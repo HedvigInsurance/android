@@ -15,12 +15,11 @@ inline fun logAction(
 inline fun logError(
   message: String,
   source: ErrorSource,
-  name: String,
-  attributes: Map<String, Any?>,
+  attributes: Map<String, Any?> = emptyMap(),
   throwable: Throwable? = null,
   stacktrace: String? = null,
 ) {
   with(ActionLogger.actionLogger) {
-    logError(message, source, name, attributes, throwable, stacktrace)
+    logError(message, source, attributes, throwable, stacktrace)
   }
 }
