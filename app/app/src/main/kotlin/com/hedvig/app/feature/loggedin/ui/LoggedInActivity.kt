@@ -46,6 +46,7 @@ import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
 import com.hedvig.android.theme.Theme
 import com.hedvig.app.feature.sunsetting.ForceUpgradeActivity
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -105,10 +106,14 @@ class LoggedInActivity : AppCompatActivity() {
 
     val intent: Intent = intent
     lifecycleScope.launch {
-      if (featureManager.isFeatureEnabled(Feature.UPDATE_NECESSARY)) {
-        applicationContext.startActivity(ForceUpgradeActivity.newInstance(applicationContext))
-        finish()
-        return@launch
+      launch {
+        featureManager.isFeatureEnabled(Feature.UPDATE_NECESSARY).collectLatest {
+          if (it) {
+            applicationContext.startActivity(ForceUpgradeActivity.newInstance(applicationContext))
+            finish()
+            cancel()
+          }
+        }
       }
       launch {
         settingsDataStore.observeTheme().collectLatest { theme ->

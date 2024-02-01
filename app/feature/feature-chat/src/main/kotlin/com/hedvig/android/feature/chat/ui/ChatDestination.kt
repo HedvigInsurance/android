@@ -133,8 +133,10 @@ private fun ChatScreen(
               onFetchMoreMessages = onFetchMoreMessages,
             )
             val stillLoadingInitialMessages = uiState.messages.isEmpty() &&
-              (uiState.fetchMoreMessagesUiState is ChatUiState.Loaded.FetchMoreMessagesUiState.StillInitializing ||
-                uiState.fetchMoreMessagesUiState is ChatUiState.Loaded.FetchMoreMessagesUiState.FetchingMore)
+              (
+                uiState.fetchMoreMessagesUiState is ChatUiState.Loaded.FetchMoreMessagesUiState.StillInitializing ||
+                  uiState.fetchMoreMessagesUiState is ChatUiState.Loaded.FetchMoreMessagesUiState.FetchingMore
+              )
             if (stillLoadingInitialMessages) {
               loadingIndicator()
             }
