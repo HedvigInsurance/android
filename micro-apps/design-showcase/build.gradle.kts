@@ -59,4 +59,6 @@ dependencies {
   implementation(projects.memberRemindersPublic)
   implementation(projects.memberRemindersUi)
   implementation(projects.notificationPermission)
+  implementation(projects.trackingCore)
+  implementation(projects.trackingDatadog)
 }

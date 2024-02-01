@@ -75,6 +75,7 @@ import com.hedvig.android.navigation.core.di.deepLinkModule
 import com.hedvig.android.notification.badge.data.di.notificationBadgeModule
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.firebase.di.firebaseNotificationModule
+import com.hedvig.android.tracking.datadog.di.trackingDatadogModule
 import com.hedvig.app.authenticate.LogoutUseCaseImpl
 import com.hedvig.app.feature.chat.service.ChatNotificationSender
 import com.hedvig.app.feature.chat.service.ReplyWorker
@@ -342,8 +343,10 @@ val applicationModule = module {
       demoModule,
       editCoInsuredModule,
       featureManagerModule,
+      fileUploadModule,
       firebaseNotificationModule,
       foreverModule,
+      helpCenterModule,
       homeModule,
       insurancesModule,
       languageAuthListenersModule,
@@ -362,13 +365,12 @@ val applicationModule = module {
       settingsDatastoreModule,
       sharedPreferencesModule,
       terminateInsuranceModule,
+      trackingDatadogModule,
       travelCertificateDataModule,
       travelCertificateModule,
       useCaseModule,
       viewModelModule,
       workManagerModule,
-      fileUploadModule,
-      helpCenterModule,
     ),
   )
 }
