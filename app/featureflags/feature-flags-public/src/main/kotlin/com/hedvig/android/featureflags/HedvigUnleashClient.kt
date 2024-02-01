@@ -1,7 +1,6 @@
 package com.hedvig.android.featureflags
 
 import com.hedvig.android.auth.MemberIdService
-import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
 import io.getunleash.UnleashClient
@@ -20,20 +19,21 @@ private const val PRODUCTION_CLIENT_KEY = "*:production.21d6af57ae16320fde3a3caf
 private const val DEVELOPMENT_CLIENT_KEY = "*:development.f2455340ac9d599b5816fa879d079f21dd0eb03e4315130deb5377b6"
 private const val UNLEASH_URL = "https://eu.app.unleash-hosted.com/eubb1047/api/frontend"
 private const val APP_NAME = "android"
+private const val NO_MEMBER_ID = ""
 
 class HedvigUnleashClient(
   private val isProduction: Boolean,
   private val appVersionName: String,
   marketManager: MarketManager,
   val coroutineScope: CoroutineScope,
-  private val memberIdService: MemberIdService
+  private val memberIdService: MemberIdService,
 ) {
   val client = UnleashClient(
     unleashConfig = createConfig(),
     unleashContext = createContext(
       market = marketManager.market.value.name,
       appVersion = appVersionName,
-      memberId = memberIdService.getMemberId().value ?: "" //todo: what if we get null?
+      memberId = memberIdService.getMemberId().value ?: NO_MEMBER_ID,
     ),
   )
   val featureUpdatedFlow: Flow<Unit> = callbackFlow {
@@ -47,14 +47,13 @@ class HedvigUnleashClient(
   init {
     coroutineScope.launch {
       marketManager.market.combine(memberIdService.getMemberId()) { market: Market, memberId: String? ->
-        logcat { "mariia: memberId$memberId" }
-        Pair(market,memberId) // todo: is it okay??
+        Pair(market, memberId)
       }.collectLatest {
         client.updateContext(
           createContext(
             market = it.first.name,
             appVersion = appVersionName,
-            memberId = it.second ?: "" //todo: what if we get null?
+            memberId = it.second ?: NO_MEMBER_ID,
           ),
         )
       }
@@ -88,7 +87,7 @@ class HedvigUnleashClient(
           "appVersion" to appVersion,
           "appName" to APP_NAME,
           "market" to market,
-          "memberId" to memberId
+          "memberId" to memberId,
         ),
       )
       .build()

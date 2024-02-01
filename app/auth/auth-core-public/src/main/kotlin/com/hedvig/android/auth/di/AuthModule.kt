@@ -50,9 +50,11 @@ val authModule = module {
     )
   } bind Initializable::class
 
-  single<MemberIdService> { MemberIdService(
-    authTokenStorage = get<AuthTokenStorage>(),
-    coroutineScope = get<ApplicationScope>())
+  single<MemberIdService> {
+    MemberIdService(
+      authTokenStorage = get<AuthTokenStorage>(),
+      coroutineScope = get<ApplicationScope>(),
+    )
   }
 
   single<AuthRepository> {

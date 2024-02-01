@@ -16,8 +16,7 @@ val featureManagerModule = module {
       appVersionName = get<HedvigBuildConstants>().appVersionName,
       marketManager = get<MarketManager>(),
       coroutineScope = get<ApplicationScope>(),
-      memberIdService = get<MemberIdService>()
-
+      memberIdService = get<MemberIdService>(),
     )
   }
 

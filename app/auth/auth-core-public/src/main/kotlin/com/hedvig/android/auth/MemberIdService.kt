@@ -14,21 +14,19 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
-
-class MemberIdService (
+class MemberIdService(
   private val authTokenStorage: AuthTokenStorage,
-  val coroutineScope: CoroutineScope
+  val coroutineScope: CoroutineScope,
 ) {
-
   fun getMemberId(): StateFlow<String?> {
     return authTokenStorage.getTokens().map { authTokens ->
-      authTokens?.accessToken?.token?.let {stringToken ->
+      authTokens?.accessToken?.token?.let { stringToken ->
         extractMemberIdFromAccessToken(stringToken)
       }
     }.stateIn(
       coroutineScope,
       SharingStarted.Eagerly,
-      null
+      null,
     )
   }
 
