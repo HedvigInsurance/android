@@ -3,13 +3,16 @@ package com.hedvig.android.featureflags.test
 import app.cash.turbine.Turbine
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 
 class FakeFeatureManager(
   private val featureMap: (() -> Map<Feature, Boolean>)? = null,
 ) : FeatureManager {
-  override suspend fun isFeatureEnabled(feature: Feature): Boolean {
+  override fun isFeatureEnabled(feature: Feature): Flow<Boolean> {
     val featureMap = featureMap?.invoke() ?: error("Set the featureMap returned from FakeFeatureManager")
-    return featureMap[feature] ?: error("Set a return value for feature:$feature on FakeFeatureManager")
+    return flowOf(featureMap[feature] ?: error("Set a return value for feature:$feature on FakeFeatureManager"))
   }
 
   companion object {
@@ -19,9 +22,7 @@ class FakeFeatureManager(
      */
     operator fun invoke(noopFeatureManager: Boolean): FakeFeatureManager {
       return if (noopFeatureManager) {
-        FakeFeatureManager(
-          { Feature.entries.associateWith { false } },
-        )
+        FakeFeatureManager { Feature.entries.associateWith { false } }
       } else {
         error("Use the normal constructor instead")
       }
@@ -43,12 +44,15 @@ class FakeFeatureManager2(
 
   val featureTurbine = Turbine<Pair<Feature, Boolean>>(name = "FeatureTurbine")
 
-  override suspend fun isFeatureEnabled(feature: Feature): Boolean {
-    if (fixedMap.containsKey(feature)) {
-      return fixedMap.get(feature)!!
+  override fun isFeatureEnabled(feature: Feature): Flow<Boolean> {
+    return flow {
+      if (fixedMap.containsKey(feature)) {
+        emit(fixedMap[feature]!!)
+        return@flow
+      }
+      val pair = featureTurbine.awaitItem()
+      require(feature == pair.first)
+      emit(pair.second)
     }
-    val pair = featureTurbine.awaitItem()
-    require(feature == pair.first)
-    return pair.second
   }
 }

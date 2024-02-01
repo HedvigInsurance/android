@@ -2,6 +2,7 @@ package com.hedvig.android.feature.home.home.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -38,13 +39,12 @@ internal class HomePresenter(
     var successData: SuccessData? by remember { mutableStateOf(SuccessData.fromLastState(lastState)) }
     var loadIteration by remember { mutableIntStateOf(0) }
     val showChatIcon by produceState(lastState.showChatIcon) {
-      val showChatIcon = !featureManager.isFeatureEnabled(Feature.DISABLE_CHAT)
-      value = showChatIcon
+      featureManager.isFeatureEnabled(Feature.DISABLE_CHAT).collectLatest { isChatDisabled ->
+        value = !isChatDisabled
+      }
     }
-    val isHelpCenterEnabled by produceState(lastState.isHelpCenterEnabled) {
-      val isHelpCenterEnabled = featureManager.isFeatureEnabled(Feature.HELP_CENTER)
-      value = isHelpCenterEnabled
-    }
+    val isHelpCenterEnabled by
+      featureManager.isFeatureEnabled(Feature.HELP_CENTER).collectAsState(lastState.isHelpCenterEnabled)
     val hasUnseenChatMessages by produceState(
       lastState.safeCast<HomeUiState.Success>()?.hasUnseenChatMessages ?: false,
     ) {

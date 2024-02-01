@@ -1,7 +1,8 @@
 package com.hedvig.android.featureflags
 
 import com.hedvig.android.featureflags.flags.Feature
+import kotlinx.coroutines.flow.Flow
 
 interface FeatureManager {
-  suspend fun isFeatureEnabled(feature: Feature): Boolean
+  fun isFeatureEnabled(feature: Feature): Flow<Boolean>
 }

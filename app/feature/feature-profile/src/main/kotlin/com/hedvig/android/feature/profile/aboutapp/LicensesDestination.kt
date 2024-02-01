@@ -33,18 +33,18 @@ internal fun LicensesDestination(onBackPressed: () -> Unit) {
         title = stringResource(R.string.PROFILE_ABOUT_APP_LICENSE_ATTRIBUTIONS),
       )
       Column(
-          Modifier
-              .fillMaxSize()
-              .verticalScroll(rememberScrollState()),
+        Modifier
+          .fillMaxSize()
+          .verticalScroll(rememberScrollState()),
       ) {
         val webViewState = rememberWebViewState(licensesUrl)
         WebView(
           state = webViewState,
           modifier = Modifier
-              .fillMaxSize()
-              .windowInsetsPadding(
-                  WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal),
-              ),
+            .fillMaxSize()
+            .windowInsetsPadding(
+              WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal),
+            ),
         )
       }
     }

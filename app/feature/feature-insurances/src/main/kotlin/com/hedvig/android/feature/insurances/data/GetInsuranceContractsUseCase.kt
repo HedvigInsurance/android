@@ -15,6 +15,7 @@ import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.flow.first
 import octopus.InsuranceContractsQuery
 import octopus.fragment.ContractFragment
 import octopus.type.AgreementCreationCause
@@ -36,8 +37,8 @@ internal class GetInsuranceContractsUseCaseImpl(
         .toEither(::ErrorMessage)
         .bind()
 
-      val isEditCoInsuredEnabled = featureManager.isFeatureEnabled(Feature.EDIT_COINSURED)
-      val isMovingFlowEnabled = featureManager.isFeatureEnabled(Feature.MOVING_FLOW)
+      val isEditCoInsuredEnabled = featureManager.isFeatureEnabled(Feature.EDIT_COINSURED).first()
+      val isMovingFlowEnabled = featureManager.isFeatureEnabled(Feature.MOVING_FLOW).first()
 
       val contractHolderDisplayName = insuranceQueryData.getContractHolderDisplayName()
       val contractHolderSSN = insuranceQueryData.currentMember.ssn?.let { formatSsn(it) }
