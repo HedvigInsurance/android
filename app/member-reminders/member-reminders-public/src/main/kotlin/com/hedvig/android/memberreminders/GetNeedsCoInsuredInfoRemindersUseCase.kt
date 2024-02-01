@@ -11,6 +11,7 @@ import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
+import kotlinx.coroutines.flow.first
 import octopus.NeedsCoInsuredInfoReminderQuery
 
 internal interface GetNeedsCoInsuredInfoRemindersUseCase {
@@ -23,7 +24,7 @@ internal class GetNeedsCoInsuredInfoRemindersUseCaseImpl(
 ) : GetNeedsCoInsuredInfoRemindersUseCase {
   override suspend fun invoke(): Either<CoInsuredInfoReminderError, NonEmptyList<MemberReminder.CoInsuredInfo>> {
     return either {
-      if (!featureManager.isFeatureEnabled(Feature.EDIT_COINSURED)) {
+      if (!featureManager.isFeatureEnabled(Feature.EDIT_COINSURED).first()) {
         raise(CoInsuredInfoReminderError.CoInsuredReminderNotEnabled)
       }
 

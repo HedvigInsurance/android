@@ -17,6 +17,7 @@ import com.hedvig.android.navigation.core.AppDestination
 import hedvig.resources.R
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.flow.first
 import octopus.AvailableSelfServiceOnContractsQuery
 
 internal class GetQuickLinksUseCase(
@@ -35,7 +36,7 @@ internal class GetQuickLinksUseCase(
     buildList {
       contracts
         .filter { it.supportsCoInsured }
-        .takeIf { featureManager.isFeatureEnabled(Feature.EDIT_COINSURED) }
+        .takeIf { featureManager.isFeatureEnabled(Feature.EDIT_COINSURED).first() }
         ?.let {
           if (it.size > 1) {
             val links = it.map { contract ->
@@ -85,7 +86,7 @@ internal class GetQuickLinksUseCase(
 
       contracts
         .firstOrNull { it.supportsMoving }
-        .takeIf { featureManager.isFeatureEnabled(Feature.MOVING_FLOW) }
+        .takeIf { featureManager.isFeatureEnabled(Feature.MOVING_FLOW).first() }
         ?.let {
           add(
             QuickAction.QuickLink(
@@ -109,7 +110,7 @@ internal class GetQuickLinksUseCase(
           )
         }
 
-      if (featureManager.isFeatureEnabled(Feature.PAYMENT_SCREEN)) {
+      if (featureManager.isFeatureEnabled(Feature.PAYMENT_SCREEN).first()) {
         add(
           QuickAction.QuickLink(
             destination = AppDestination.ConnectPayment,
