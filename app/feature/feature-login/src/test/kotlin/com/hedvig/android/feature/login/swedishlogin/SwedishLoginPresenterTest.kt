@@ -170,7 +170,6 @@ class SwedishLoginPresenterTest {
     authRepository: AuthRepository,
     authTokenService: AuthTokenService = TestAuthTokenService(),
   ): SwedishLoginPresenter {
-    @Suppress("RemoveExplicitTypeArguments")
     return SwedishLoginPresenter(
       authTokenService,
       authRepository,
