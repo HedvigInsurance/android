@@ -5,29 +5,25 @@ import com.apollographql.apollo3.api.ApolloResponse
 import com.apollographql.apollo3.api.Operation
 import com.apollographql.apollo3.interceptor.ApolloInterceptor
 import com.apollographql.apollo3.interceptor.ApolloInterceptorChain
-import com.datadog.android.rum.GlobalRumMonitor
-import com.datadog.android.rum.RumErrorSource
+import com.hedvig.android.core.tracking.ErrorSource
+import com.hedvig.android.core.tracking.logError
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 
 class DatadogInterceptor : ApolloInterceptor {
   override fun <D : Operation.Data> intercept(
     request: ApolloRequest<D>,
     chain: ApolloInterceptorChain,
   ): Flow<ApolloResponse<D>> {
-    return chain.proceed(request)
-      .map { response ->
-        val errors = response.errors
-        if (!errors.isNullOrEmpty()) {
-          GlobalRumMonitor.get().addError(
-            message = ERROR_MSG_FORMAT.format(request.operation.name(), errors.map { it.message }),
-            source = RumErrorSource.NETWORK,
-            throwable = null,
-            attributes = mapOf(),
-          )
-        }
-        response
+    return chain.proceed(request).onEach { response ->
+      val errors = response.errors
+      if (!errors.isNullOrEmpty()) {
+        logError(
+          ERROR_MSG_FORMAT.format(request.operation.name(), errors.map { it.message }),
+          ErrorSource.NETWORK,
+        )
       }
+    }
   }
 
   companion object {
