@@ -1,5 +1,7 @@
 package com.hedvig.android.featureflags
 
+import com.hedvig.android.auth.MemberIdService
+import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
 import io.getunleash.UnleashClient
 import io.getunleash.UnleashConfig
@@ -10,6 +12,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 private const val PRODUCTION_CLIENT_KEY = "*:production.21d6af57ae16320fde3a3caf024162db19cc33bf600ab7439c865c20"
@@ -22,12 +25,14 @@ class HedvigUnleashClient(
   private val appVersionName: String,
   marketManager: MarketManager,
   coroutineScope: CoroutineScope,
+  private val memberIdService: MemberIdService,
 ) {
   val client = UnleashClient(
     unleashConfig = createConfig(),
     unleashContext = createContext(
-      market = marketManager.market.value.name,
       appVersion = appVersionName,
+      market = null,
+      memberId = null,
     ),
   )
   val featureUpdatedFlow: Flow<Unit> = callbackFlow {
@@ -40,11 +45,14 @@ class HedvigUnleashClient(
 
   init {
     coroutineScope.launch {
-      marketManager.market.collectLatest { market ->
+      marketManager.selectedMarket().combine(memberIdService.getMemberId()) { market: Market?, memberId: String? ->
+        Pair(market, memberId)
+      }.collectLatest { (market: Market?, memberId: String?) ->
         client.updateContext(
           createContext(
-            market = market.name,
+            market = market,
             appVersion = appVersionName,
+            memberId = memberId,
           ),
         )
       }
@@ -70,14 +78,21 @@ class HedvigUnleashClient(
       .build()
   }
 
-  private fun createContext(market: String, appVersion: String) = UnleashContext.newBuilder()
-    .appName(APP_NAME)
-    .properties(
-      mutableMapOf(
-        "appVersion" to appVersion,
-        "appName" to APP_NAME,
-        "market" to market,
-      ),
-    )
-    .build()
+  private fun createContext(appVersion: String, market: Market?, memberId: String?): UnleashContext {
+    return UnleashContext.newBuilder()
+      .appName(APP_NAME)
+      .properties(
+        buildMap {
+          put("appVersion", appVersion)
+          put("appName", APP_NAME)
+          if (market != null) {
+            put("market", market.name)
+          }
+          if (memberId != null) {
+            put("memberId", memberId)
+          }
+        }.toMutableMap(),
+      )
+      .build()
+  }
 }

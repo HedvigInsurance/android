@@ -12,4 +12,5 @@ dependencies {
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)
   implementation(projects.marketCore)
+  implementation(projects.authCorePublic)
 }

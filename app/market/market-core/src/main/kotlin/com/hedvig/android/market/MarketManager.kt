@@ -1,10 +1,10 @@
 package com.hedvig.android.market
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.stateIn
 
 interface MarketManager {
@@ -17,13 +17,14 @@ interface MarketManager {
   /**
    * Suspend version which does not default to some market if none is set.
    */
-  suspend fun market(): Market?
+  fun selectedMarket(): Flow<Market?>
 }
 
 internal class MarketManagerImpl(
   private val marketStorage: MarketStorage,
   coroutineScope: CoroutineScope,
 ) : MarketManager {
+  @Deprecated("Try to use selectedMarket instead, which does not default to SE by itself")
   override val market: StateFlow<Market> = marketStorage.market
     .filterNotNull()
     .stateIn(
@@ -32,7 +33,7 @@ internal class MarketManagerImpl(
       Market.SE,
     )
 
-  override suspend fun market(): Market? {
-    return marketStorage.market.firstOrNull()
+  override fun selectedMarket(): Flow<Market?> {
+    return marketStorage.market
   }
 }
