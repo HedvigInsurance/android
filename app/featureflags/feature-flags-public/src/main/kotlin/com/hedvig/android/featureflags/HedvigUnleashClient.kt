@@ -24,14 +24,14 @@ class HedvigUnleashClient(
   private val isProduction: Boolean,
   private val appVersionName: String,
   marketManager: MarketManager,
-  val coroutineScope: CoroutineScope,
+  coroutineScope: CoroutineScope,
   private val memberIdService: MemberIdService,
 ) {
   val client = UnleashClient(
     unleashConfig = createConfig(),
     unleashContext = createContext(
-      market = marketManager.market.value.name,
       appVersion = appVersionName,
+      market = null,
       memberId = null,
     ),
   )
@@ -45,14 +45,14 @@ class HedvigUnleashClient(
 
   init {
     coroutineScope.launch {
-      marketManager.market.combine(memberIdService.getMemberId()) { market: Market, memberId: String? ->
+      marketManager.selectedMarket().combine(memberIdService.getMemberId()) { market: Market?, memberId: String? ->
         Pair(market, memberId)
-      }.collectLatest {
+      }.collectLatest { (market: Market?, memberId: String?) ->
         client.updateContext(
           createContext(
-            market = it.first.name,
+            market = market,
             appVersion = appVersionName,
-            memberId = it.second,
+            memberId = memberId,
           ),
         )
       }
@@ -78,14 +78,16 @@ class HedvigUnleashClient(
       .build()
   }
 
-  private fun createContext(market: String, appVersion: String, memberId: String?): UnleashContext {
+  private fun createContext(appVersion: String, market: Market?, memberId: String?): UnleashContext {
     return UnleashContext.newBuilder()
       .appName(APP_NAME)
       .properties(
         buildMap {
           put("appVersion", appVersion)
           put("appName", APP_NAME)
-          put("market", market)
+          if (market != null) {
+            put("market", market.name)
+          }
           if (memberId != null) {
             put("memberId", memberId)
           }
