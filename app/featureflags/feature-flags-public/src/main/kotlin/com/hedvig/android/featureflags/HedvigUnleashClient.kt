@@ -32,7 +32,7 @@ class HedvigUnleashClient(
     unleashContext = createContext(
       market = marketManager.market.value.name,
       appVersion = appVersionName,
-      memberId = memberIdService.getMemberId().value,
+      memberId = null,
     ),
   )
   val featureUpdatedFlow: Flow<Unit> = callbackFlow {
@@ -79,26 +79,17 @@ class HedvigUnleashClient(
   }
 
   private fun createContext(market: String, appVersion: String, memberId: String?): UnleashContext {
-    return memberId?.let {
-      UnleashContext.newBuilder()
-        .appName(APP_NAME)
-        .properties(
-          mutableMapOf(
-            "appVersion" to appVersion,
-            "appName" to APP_NAME,
-            "market" to market,
-            "memberId" to memberId,
-          ),
-        )
-        .build()
-    } ?: UnleashContext.newBuilder()
+    return UnleashContext.newBuilder()
       .appName(APP_NAME)
       .properties(
-        mutableMapOf(
-          "appVersion" to appVersion,
-          "appName" to APP_NAME,
-          "market" to market
-        ),
+        buildMap {
+          put("appVersion", appVersion)
+          put("appName", APP_NAME)
+          put("market", market)
+          if (memberId != null) {
+            put("memberId", memberId)
+          }
+        }.toMutableMap(),
       )
       .build()
   }

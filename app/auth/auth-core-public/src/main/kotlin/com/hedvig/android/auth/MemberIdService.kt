@@ -3,10 +3,8 @@ package com.hedvig.android.auth
 import android.util.Base64
 import com.hedvig.android.auth.storage.AuthTokenStorage
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
@@ -18,18 +16,18 @@ class MemberIdService(
   private val authTokenStorage: AuthTokenStorage,
   val coroutineScope: CoroutineScope,
 ) {
-  fun getMemberId(): StateFlow<String?> {
+  fun getMemberId(): Flow<String?> {
     return authTokenStorage.getTokens().map { authTokens ->
       authTokens?.accessToken?.token?.let { stringToken ->
         extractMemberIdFromAccessToken(stringToken)
       }
-    }.stateIn(
-      coroutineScope,
-      SharingStarted.Eagerly,
-      null,
-    )
+    }
   }
 
+  /**
+   * [accessToken] must be the token returned from auth-lib. Will simply return null if the wrong token is passed, or if
+   * the token is malformed in some way.
+   */
   private fun extractMemberIdFromAccessToken(accessToken: String): String? {
     return try {
       val payload = accessToken.split(".").getOrNull(1) ?: return null
