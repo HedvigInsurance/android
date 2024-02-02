@@ -7,7 +7,6 @@ import com.hedvig.android.feature.changeaddress.data.NetworkChangeAddressReposit
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
-@Suppress("RemoveExplicitTypeArguments")
 val changeAddressModule = module {
   single<ChangeAddressRepository> { NetworkChangeAddressRepository(get<ApolloClient>()) }
   viewModel<ChangeAddressViewModel> { ChangeAddressViewModel(get<ChangeAddressRepository>()) }

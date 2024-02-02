@@ -5,7 +5,6 @@ import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.Dispatchers
 import org.koin.dsl.module
 
-@Suppress("RemoveExplicitTypeArguments")
 val coreCommonModule = module {
   single<ApplicationScope> { ApplicationScope() }
   single<CoroutineContext>(ioDispatcherQualifier) { Dispatchers.IO }

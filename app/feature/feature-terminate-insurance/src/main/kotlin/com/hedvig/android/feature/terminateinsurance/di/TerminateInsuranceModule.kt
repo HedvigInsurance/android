@@ -16,7 +16,6 @@ import kotlinx.datetime.LocalDate
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
-@Suppress("RemoveExplicitTypeArguments")
 val terminateInsuranceModule = module {
   viewModel<TerminationStartStepViewModel> { (insuranceId: InsuranceId) ->
     TerminationStartStepViewModel(

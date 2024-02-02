@@ -9,7 +9,6 @@ import io.opentracing.util.GlobalTracer
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
-@Suppress("RemoveExplicitTypeArguments")
 val datadogModule = module {
   single<DatadogMemberIdUpdatingAuthEventListener> {
     DatadogMemberIdUpdatingAuthEventListener(get<DatadogAttributesManager>())

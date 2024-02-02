@@ -26,7 +26,6 @@ import okhttp3.OkHttpClient
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
-@Suppress("RemoveExplicitTypeArguments")
 val authModule = module {
   single<AccessTokenProvider> { AndroidAccessTokenProvider(get()) }
   single<AuthTokenRefreshingInterceptor> { AuthTokenRefreshingInterceptor(get()) }
