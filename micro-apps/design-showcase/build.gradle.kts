@@ -49,6 +49,7 @@ dependencies {
   implementation(libs.androidx.compose.runtime)
   implementation(libs.androidx.graphicsShapes)
   implementation(libs.coil.coil)
+  implementation(libs.datadog.sdk.core)
   implementation(libs.kotlinx.immutable.collections)
   implementation(libs.zoomable)
   implementation(projects.audioPlayer)
