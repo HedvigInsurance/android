@@ -2,8 +2,10 @@ package com.hedvig.android.feature.profile.tab
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import arrow.core.getOrElse
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.core.common.RetryChannel
+import com.hedvig.android.data.travelcertificate.CheckTravelCertificateAvailabilityUseCase
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.memberreminders.EnableNotificationsReminderManager
@@ -20,6 +22,7 @@ import kotlinx.coroutines.launch
 
 internal class ProfileViewModel(
   private val getEuroBonusStatusUseCase: GetEurobonusStatusUseCase,
+  private val checkTravelCertificateAvailabilityUseCase: CheckTravelCertificateAvailabilityUseCase,
   private val getMemberRemindersUseCase: GetMemberRemindersUseCase,
   private val enableNotificationsReminderManager: EnableNotificationsReminderManager,
   private val featureManager: FeatureManager,
@@ -32,12 +35,14 @@ internal class ProfileViewModel(
       getMemberRemindersUseCase.invoke(),
       featureManager.isFeatureEnabled(Feature.PAYMENT_SCREEN),
       flow { emit(getEuroBonusStatusUseCase.invoke()) },
-    ) { memberReminders, isPaymentScreenFeatureEnabled, eurobonusResponse ->
+      flow { emit(checkTravelCertificateAvailabilityUseCase.invoke()) },
+    ) { memberReminders, isPaymentScreenFeatureEnabled, eurobonusResponse, travelCertificateAvailability ->
       ProfileUiState(
         euroBonus = eurobonusResponse.getOrNull(),
         showPaymentScreen = isPaymentScreenFeatureEnabled,
         memberReminders = memberReminders,
         isLoading = false,
+        travelCertificateAvailable = travelCertificateAvailability.getOrElse { false },
       )
     }
   }.stateIn(
@@ -63,6 +68,7 @@ internal class ProfileViewModel(
 
 internal data class ProfileUiState(
   val euroBonus: EuroBonus? = null,
+  val travelCertificateAvailable: Boolean = true,
   val showPaymentScreen: Boolean = false,
   val memberReminders: MemberReminders = MemberReminders(),
   val isLoading: Boolean = true,
