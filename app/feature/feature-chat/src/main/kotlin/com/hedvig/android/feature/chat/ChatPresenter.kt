@@ -58,8 +58,8 @@ internal sealed interface ChatUiState {
   data class Loaded(
     // The list of messages, ordered from the newest one to the oldest one
     val messages: ImmutableList<UiChatMessage>,
-    val bannerText: String?,
     val fetchMoreMessagesUiState: FetchMoreMessagesUiState,
+    val bannerText: String?,
   ) : ChatUiState {
     data class UiChatMessage(
       val chatMessage: ChatMessage,
@@ -239,8 +239,8 @@ internal class ChatPresenter(
         messages = (uiChatMessages + failedChatMessages)
           .sortedByDescending { it.chatMessage.sentAt }
           .toPersistentList(),
-        bannerText = bannerText,
         fetchMoreMessagesUiState = fetchMoreMessagesUiState,
+        bannerText = bannerText,
       )
     }
   }
