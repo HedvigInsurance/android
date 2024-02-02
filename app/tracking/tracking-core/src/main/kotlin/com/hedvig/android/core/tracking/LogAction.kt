@@ -1,11 +1,7 @@
 package com.hedvig.android.core.tracking
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun logAction(
-  type: ActionType,
-  name: String,
-  attributes: Map<String, Any?>,
-) {
+inline fun logAction(type: ActionType, name: String, attributes: Map<String, Any?>) {
   with(ActionLogger.actionLogger) {
     logAction(type, name, attributes)
   }
