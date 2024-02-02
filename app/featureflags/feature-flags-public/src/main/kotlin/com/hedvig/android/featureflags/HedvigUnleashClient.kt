@@ -19,7 +19,6 @@ private const val PRODUCTION_CLIENT_KEY = "*:production.21d6af57ae16320fde3a3caf
 private const val DEVELOPMENT_CLIENT_KEY = "*:development.f2455340ac9d599b5816fa879d079f21dd0eb03e4315130deb5377b6"
 private const val UNLEASH_URL = "https://eu.app.unleash-hosted.com/eubb1047/api/frontend"
 private const val APP_NAME = "android"
-private const val NO_MEMBER_ID = ""
 
 class HedvigUnleashClient(
   private val isProduction: Boolean,
@@ -33,7 +32,7 @@ class HedvigUnleashClient(
     unleashContext = createContext(
       market = marketManager.market.value.name,
       appVersion = appVersionName,
-      memberId = memberIdService.getMemberId().value ?: NO_MEMBER_ID,
+      memberId = memberIdService.getMemberId().value,
     ),
   )
   val featureUpdatedFlow: Flow<Unit> = callbackFlow {
@@ -53,7 +52,7 @@ class HedvigUnleashClient(
           createContext(
             market = it.first.name,
             appVersion = appVersionName,
-            memberId = it.second ?: NO_MEMBER_ID,
+            memberId = it.second,
           ),
         )
       }
@@ -79,15 +78,26 @@ class HedvigUnleashClient(
       .build()
   }
 
-  private fun createContext(market: String, appVersion: String, memberId: String): UnleashContext {
-    return UnleashContext.newBuilder()
+  private fun createContext(market: String, appVersion: String, memberId: String?): UnleashContext {
+    return memberId?.let {
+      UnleashContext.newBuilder()
+        .appName(APP_NAME)
+        .properties(
+          mutableMapOf(
+            "appVersion" to appVersion,
+            "appName" to APP_NAME,
+            "market" to market,
+            "memberId" to memberId,
+          ),
+        )
+        .build()
+    } ?: UnleashContext.newBuilder()
       .appName(APP_NAME)
       .properties(
         mutableMapOf(
           "appVersion" to appVersion,
           "appName" to APP_NAME,
-          "market" to market,
-          "memberId" to memberId,
+          "market" to market
         ),
       )
       .build()

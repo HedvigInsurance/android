@@ -37,7 +37,9 @@ class MemberIdService(
       val payloadJsonObject: JsonObject = Json.parseToJsonElement(decodedPayload).jsonObject
       val subContent: JsonElement = payloadJsonObject.getOrElse("sub") { return null }
       val subText = subContent.jsonPrimitive.content
-      if (!subText.startsWith("mem_")) return null
+      if (!subText.startsWith("mem_")) {
+        return null
+      }
       subText.removePrefix("mem_")
     } catch (ignored: SerializationException) {
       null
