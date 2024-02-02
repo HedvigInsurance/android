@@ -2,7 +2,6 @@ package com.hedvig.android.auth
 
 import android.util.Base64
 import com.hedvig.android.auth.storage.AuthTokenStorage
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.SerializationException
@@ -14,7 +13,6 @@ import kotlinx.serialization.json.jsonPrimitive
 
 class MemberIdService(
   private val authTokenStorage: AuthTokenStorage,
-  val coroutineScope: CoroutineScope,
 ) {
   fun getMemberId(): Flow<String?> {
     return authTokenStorage.getTokens().map { authTokens ->
