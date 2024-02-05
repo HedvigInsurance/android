@@ -38,6 +38,7 @@ import com.hedvig.android.core.demomode.di.demoModule
 import com.hedvig.android.core.fileupload.fileUploadModule
 import com.hedvig.android.data.chat.read.timestamp.di.chatReadTimestampModule
 import com.hedvig.android.data.claimflow.di.claimFlowDataModule
+import com.hedvig.android.data.paying.member.di.dataPayingMemberModule
 import com.hedvig.android.data.settings.datastore.di.settingsDatastoreModule
 import com.hedvig.android.data.travelcertificate.di.travelCertificateDataModule
 import com.hedvig.android.datadog.core.addDatadogConfiguration
@@ -337,6 +338,7 @@ val applicationModule = module {
       coilModule,
       connectPaymentTrustlyModule,
       coreCommonModule,
+      dataPayingMemberModule,
       dataStoreModule,
       datadogDemoTrackingModule,
       datadogModule,
