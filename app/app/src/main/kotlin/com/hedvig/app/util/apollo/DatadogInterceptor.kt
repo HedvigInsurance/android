@@ -2,6 +2,7 @@ package com.hedvig.app.util.apollo
 
 import com.apollographql.apollo3.api.ApolloRequest
 import com.apollographql.apollo3.api.ApolloResponse
+import com.apollographql.apollo3.api.Error
 import com.apollographql.apollo3.api.Operation
 import com.apollographql.apollo3.interceptor.ApolloInterceptor
 import com.apollographql.apollo3.interceptor.ApolloInterceptorChain
@@ -17,16 +18,33 @@ class DatadogInterceptor : ApolloInterceptor {
   ): Flow<ApolloResponse<D>> {
     return chain.proceed(request).onEach { response ->
       val errors = response.errors
-      if (!errors.isNullOrEmpty()) {
-        logError(
-          ERROR_MSG_FORMAT.format(request.operation.name(), errors.map { it.message }),
-          ErrorSource.NETWORK,
-        )
+      if (!errors.isNullOrEmpty() && !isUnauthenticated(errors)) {
+        logError(errors, request, response)
       }
     }
   }
 
-  companion object {
-    private const val ERROR_MSG_FORMAT = "Apollo GraphQL operation error %s, errors: %s"
+  private fun isUnauthenticated(errors: List<Error>) = errors
+    .mapNotNull { it.extensions }
+    .any { it["errorType"] == "UNAUTHENTICATED" }
+
+  private fun <D : Operation.Data> logError(
+    errors: List<Error>,
+    request: ApolloRequest<D>,
+    response: ApolloResponse<D>,
+  ) {
+    val exception = errors.first().extensions?.get("exception")
+    val body = (exception as? Map<*, *>)?.get("body")
+    val message = (body as? Map<*, *>)?.get("message") as? String
+
+    logError(
+      message = "GraphQL error for ${request.operation.name()}",
+      source = ErrorSource.NETWORK,
+      attributes = mapOf(
+        "message" to message,
+        "body" to body,
+        "data" to response.data,
+      ),
+    )
   }
 }

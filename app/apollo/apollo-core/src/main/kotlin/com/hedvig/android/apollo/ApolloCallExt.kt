@@ -45,8 +45,10 @@ private fun <D : Operation.Data> ApolloResponse<D>.toOperationResult(): Operatio
       val exception = errors?.first()?.extensions?.get("exception")
       val body = (exception as? Map<*, *>)?.get("body")
       val message = (body as? Map<*, *>)?.get("message") as? String
+
       OperationResult.Error.OperationError(message ?: errors?.first()?.message)
     }
+
     data != null -> OperationResult.Success(data)
     else -> OperationResult.Error.NoDataError("No data")
   }
