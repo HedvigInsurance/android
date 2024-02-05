@@ -27,7 +27,20 @@ class KotlinLibraryConventionPlugin : Plugin<Project> {
         if (target.name != "logging-public") {
           add("implementation", project(":logging-public"))
         }
+        // Add logging-public and tracking-core to all modules except themselves
+        if (!project.isLoggingPublicModule() && !project.isTrackingCoreModule()) {
+          add("implementation", project(":logging-public"))
+          add("implementation", project(":tracking-core"))
+        }
       }
     }
   }
+}
+
+private fun Project.isLoggingPublicModule(): Boolean {
+  return name == "logging-public"
+}
+
+private fun Project.isTrackingCoreModule(): Boolean {
+  return name == "tracking-core"
 }
