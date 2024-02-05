@@ -17,7 +17,7 @@ inline fun logError(
   source: ErrorSource,
   attributes: Map<String, Any?> = emptyMap(),
   throwable: Throwable? = null,
-  stacktrace: String? = null,
+  stacktrace: String? = throwable?.stackTraceToString(),
 ) {
   with(ActionLogger.actionLogger) {
     logError(message, source, attributes, throwable, stacktrace)
