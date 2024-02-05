@@ -28,7 +28,6 @@ internal class GetTravelCertificatesHistoryUseCaseImpl(val apolloClient: ApolloC
     val list = result?.map {
       TravelCertificate(it.startDate, it.id, it.signedUrl, it.expiryDate)
     }
-
     return MutableStateFlow(list ?: listOf()).asStateFlow()
   }
 }
@@ -44,6 +43,4 @@ sealed interface TravelCertificateHistoryError {
   data class Error(
     val errorMessage: ErrorMessage,
   ) : TravelCertificateHistoryError, ErrorMessage by errorMessage
-
-  data object NotHistory : TravelCertificateHistoryError
 }

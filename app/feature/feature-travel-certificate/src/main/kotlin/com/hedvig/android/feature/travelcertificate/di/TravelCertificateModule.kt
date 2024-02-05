@@ -10,5 +10,5 @@ import org.koin.dsl.module
 val travelCertificateModule = module {
   single<CreateTravelCertificateUseCase> { CreateTravelCertificateUseCase(get<ApolloClient>()) }
   single<DownloadTravelCertificateUseCase> { DownloadTravelCertificateUseCase(get()) }
-  viewModel<GenerateTravelCertificateViewModel> { GenerateTravelCertificateViewModel(get(), get(), get()) }
+  viewModel<GenerateTravelCertificateViewModel> { GenerateTravelCertificateViewModel(get(), get(), get(), get()) }
 }

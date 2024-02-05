@@ -1,6 +1,8 @@
 package com.hedvig.android.feature.travelcertificate.navigation
 
+import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
@@ -16,6 +18,8 @@ import com.hedvig.android.feature.travelcertificate.ui.AddCoInsured
 import com.hedvig.android.feature.travelcertificate.ui.GenerateTravelCertificateInput
 import com.hedvig.android.feature.travelcertificate.ui.TravelCertificateInformation
 import com.hedvig.android.feature.travelcertificate.ui.TravelCertificateOverview
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.compose.typed.destinationScopedViewModel
 import com.hedvig.android.navigation.core.AppDestination
 import com.kiwi.navigationcompose.typed.composable
@@ -46,6 +50,7 @@ fun NavGraphBuilder.generateTravelCertificateGraph(
           backStackEntry = navBackStackEntry,
         )
       val uiState: TravelCertificateInputState by viewModel.uiState.collectAsStateWithLifecycle()
+      val localContext = LocalContext.current
       TravelCertificateInformation(
         isLoading = uiState.isLoading,
         infoSections = uiState.infoSections,
@@ -55,6 +60,11 @@ fun NavGraphBuilder.generateTravelCertificateGraph(
           navController.navigate(GenerateTravelCertificateDestination.TravelCertificateInput)
         },
         navigateUp = navController::navigateUp,
+        historyList = uiState.historyList,
+        onCertificateClick = { url ->
+          openWebsite(localContext, if (url.isBlank()) Uri.EMPTY else Uri.parse(url))
+        },
+        // todo: openUrl in the browser here: downloads the file trough browser, but does not show it
       )
     }
     composable<GenerateTravelCertificateDestination.TravelCertificateInput> { navBackStackEntry ->
@@ -116,7 +126,7 @@ fun NavGraphBuilder.generateTravelCertificateGraph(
           backStackEntry = navBackStackEntry,
         )
       val uiState: TravelCertificateInputState by viewModel.uiState.collectAsStateWithLifecycle()
-      val context = LocalContext.current
+      val localContext = LocalContext.current
 
       BackHandler {
         finish()
@@ -133,7 +143,7 @@ fun NavGraphBuilder.generateTravelCertificateGraph(
         onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
         navigateBack = finish,
         onShareTravelCertificate = {
-          val contentUri = getUriForFile(context, "$applicationId.provider", it.uri)
+          val contentUri = getUriForFile(localContext, "$applicationId.provider", it.uri)
 
           val sendIntent: Intent = Intent().apply {
             action = Intent.ACTION_VIEW
@@ -141,9 +151,18 @@ fun NavGraphBuilder.generateTravelCertificateGraph(
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
           }
           val shareIntent = Intent.createChooser(sendIntent, "Hedvig Travel Certificate")
-          context.startActivity(shareIntent)
+          localContext.startActivity(shareIntent)
         },
       )
     }
+  }
+}
+
+internal fun openWebsite(context: Context, uri: Uri) {
+  val browserIntent = Intent(Intent.ACTION_VIEW, uri)
+  if (browserIntent.resolveActivity(context.packageManager) != null) {
+    context.startActivity(browserIntent)
+  } else {
+    logcat(LogPriority.ERROR) { "Tried to launch $uri but the phone has nothing to support such an intent." }
   }
 }

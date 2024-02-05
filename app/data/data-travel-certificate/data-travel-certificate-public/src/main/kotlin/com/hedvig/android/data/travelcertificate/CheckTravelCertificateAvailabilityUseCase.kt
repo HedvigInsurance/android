@@ -33,8 +33,10 @@ internal class CheckTravelCertificateAvailabilityUseCaseImpl(
       val contractsWithTravelCertificate = contracts
         ?.map { it.currentAgreement.productVariant.typeOfContract.toContractType() }
         ?.firstOrNull { it.supportsTravelCertificate() }
-
+//      val contractsWithTravelCertificate = null //todo: remove testing
+//
       val history = getTravelCertificatesHistory.invoke().value
+//      val history = listOf<TravelCertificate>() //todo: remove testing
 
       ensure(history.isNotEmpty() || contractsWithTravelCertificate != null) {
         TravelCertificateAvailabilityError.TravelCertificateNotAvailable

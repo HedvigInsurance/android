@@ -28,4 +28,5 @@ dependencies {
   implementation(projects.dataTravelCertificatePublic)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
+  implementation(projects.navigationActivity)
 }

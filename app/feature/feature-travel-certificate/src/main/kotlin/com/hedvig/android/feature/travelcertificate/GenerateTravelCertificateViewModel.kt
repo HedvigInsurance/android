@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.data.travelcertificate.GetTravelCertificateSpecificationsUseCase
+import com.hedvig.android.data.travelcertificate.GetTravelCertificatesHistoryUseCase
+import com.hedvig.android.data.travelcertificate.TravelCertificate
 import com.hedvig.android.data.travelcertificate.TravelCertificateError
 import com.hedvig.android.feature.travelcertificate.data.CreateTravelCertificateUseCase
 import com.hedvig.android.feature.travelcertificate.data.DownloadTravelCertificateUseCase
@@ -15,6 +17,7 @@ import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
@@ -26,53 +29,81 @@ internal class GenerateTravelCertificateViewModel(
   private val getTravelCertificateSpecificationsUseCase: GetTravelCertificateSpecificationsUseCase,
   private val createTravelCertificateUseCase: CreateTravelCertificateUseCase,
   private val downloadTravelCertificateUseCase: DownloadTravelCertificateUseCase,
+  private val getTravelCertificatesHistoryUseCase: GetTravelCertificatesHistoryUseCase,
 ) : ViewModel() {
   private val _uiState: MutableStateFlow<TravelCertificateInputState> = MutableStateFlow(TravelCertificateInputState())
   val uiState: StateFlow<TravelCertificateInputState> = _uiState.asStateFlow()
 
+  private val mockHistoryList = listOf(
+    TravelCertificate(
+      startDate = LocalDate(2023, 9, 12),
+      expiryDate = LocalDate(2023, 11, 12),
+      id = "121231",
+      signedUrl = "www.alakjj.sdjhsjdh",
+    ),
+    TravelCertificate(
+      startDate = LocalDate(2022, 5, 12),
+      expiryDate = LocalDate(2022, 6, 12),
+      id = "121221",
+      signedUrl = "www.alakjj.sdjhsjdh",
+    ),
+  ) // todo: remove this!
+
   init {
+    updateInfo()
+  }
+
+  private fun updateInfo() {
     viewModelScope.launch {
-      _uiState.update { it.copy(isLoading = true) }
-      getTravelCertificateSpecificationsUseCase
-        .invoke()
-        .fold(
-          ifLeft = { travelCertificateError ->
-            _uiState.update {
-              when (travelCertificateError) {
-                is TravelCertificateError.Error -> {
-                  TravelCertificateInputState(errorMessage = travelCertificateError.message)
-                }
-                TravelCertificateError.NotEligible -> {
-                  TravelCertificateInputState(errorMessage = "Not eligible")
+      getTravelCertificatesHistoryUseCase.invoke().collectLatest { list ->
+        getTravelCertificateSpecificationsUseCase.invoke()
+          .fold(
+            ifLeft = { travelCertificateError ->
+              _uiState.update {
+                when (travelCertificateError) {
+                  is TravelCertificateError.Error -> {
+                    TravelCertificateInputState(
+                      errorMessage = travelCertificateError.message,
+                      historyList = list,
+                    )
+                  }
+
+                  TravelCertificateError.NotEligible -> {
+                    TravelCertificateInputState(
+                      errorMessage = "Not eligible",
+                      historyList = list,
+                    )
+                  }
                 }
               }
-            }
-          },
-          ifRight = { travelCertificateData ->
-            _uiState.update {
-              val travelSpecification = travelCertificateData.travelCertificateSpecification
-              val datePickerState = DatePickerState(
-                initialSelectedDateMillis = null,
-                initialDisplayedMonthMillis = null,
-                yearRange = travelSpecification.dateRange.start.year..travelSpecification.dateRange.endInclusive.year,
-                initialDisplayMode = DisplayMode.Picker,
-              )
-              TravelCertificateInputState(
-                contractId = travelSpecification.contractId,
-                email = ValidatedInput(travelSpecification.email),
-                maximumCoInsured = travelSpecification.numberOfCoInsured,
-                datePickerState = datePickerState,
-                dateValidator = { date ->
-                  val selectedDate =
-                    Instant.fromEpochMilliseconds(date).toLocalDateTime(TimeZone.currentSystemDefault()).date
-                  travelSpecification.dateRange.contains(selectedDate)
-                },
-                daysValid = travelSpecification.maxDurationDays,
-                infoSections = travelCertificateData.infoSections,
-              )
-            }
-          },
-        )
+            },
+            ifRight = { travelCertificateData ->
+              _uiState.update {
+                val travelSpecification = travelCertificateData.travelCertificateSpecification
+                val datePickerState = DatePickerState(
+                  initialSelectedDateMillis = null,
+                  initialDisplayedMonthMillis = null,
+                  yearRange = travelSpecification.dateRange.start.year..travelSpecification.dateRange.endInclusive.year,
+                  initialDisplayMode = DisplayMode.Picker,
+                )
+                TravelCertificateInputState(
+                  contractId = travelSpecification.contractId,
+                  email = ValidatedInput(travelSpecification.email),
+                  maximumCoInsured = travelSpecification.numberOfCoInsured,
+                  datePickerState = datePickerState,
+                  dateValidator = { date ->
+                    val selectedDate =
+                      Instant.fromEpochMilliseconds(date).toLocalDateTime(TimeZone.currentSystemDefault()).date
+                    travelSpecification.dateRange.contains(selectedDate)
+                  },
+                  daysValid = travelSpecification.maxDurationDays,
+                  infoSections = travelCertificateData.infoSections,
+                  historyList = list,
+                )
+              }
+            },
+          )
+      }
     }
   }
 

@@ -3,6 +3,7 @@ package com.hedvig.android.feature.travelcertificate
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import com.hedvig.android.core.ui.ValidatedInput
+import com.hedvig.android.data.travelcertificate.TravelCertificate
 import com.hedvig.android.data.travelcertificate.TravelCertificateData
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUri
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
@@ -28,6 +29,7 @@ internal data class TravelCertificateInputState(
   val travelCertificateUrl: TravelCertificateUrl? = null,
   val travelCertificateUri: TravelCertificateUri? = null,
   val infoSections: List<TravelCertificateData.InfoSection>? = null,
+  val historyList: List<TravelCertificate>? = null,
 ) {
   val isInputValid: Boolean
     get() {
