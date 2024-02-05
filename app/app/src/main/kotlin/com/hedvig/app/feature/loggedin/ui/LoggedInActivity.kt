@@ -33,6 +33,7 @@ import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCaseProvider
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
@@ -73,6 +74,7 @@ class LoggedInActivity : AppCompatActivity() {
   private val hedvigDeepLinkContainer: HedvigDeepLinkContainer by inject()
   private val hedvigBuildConstants: HedvigBuildConstants by inject()
   private val settingsDataStore: SettingsDataStore by inject()
+  private val getOnlyHasNonPayingContractsUseCase: GetOnlyHasNonPayingContractsUseCaseProvider by inject()
 
   private val activityNavigator: ActivityNavigator by inject()
 
@@ -177,6 +179,7 @@ class LoggedInActivity : AppCompatActivity() {
         windowSizeClass = windowSizeClass,
         tabNotificationBadgeService = tabNotificationBadgeService,
         settingsDataStore = settingsDataStore,
+        getOnlyHasNonPayingContractsUseCase = getOnlyHasNonPayingContractsUseCase,
       )
       val darkTheme = hedvigAppState.darkTheme
       EnableEdgeToEdgeSideEffect(darkTheme)

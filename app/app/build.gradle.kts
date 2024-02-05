@@ -176,6 +176,7 @@ dependencies {
   implementation(projects.dataChatReadTimestampPublic)
   implementation(projects.dataClaimFlow)
   implementation(projects.dataContractPublic)
+  implementation(projects.dataPayingMember)
   implementation(projects.dataSettingsDatastorePublic)
   implementation(projects.dataTravelCertificatePublic)
   implementation(projects.datadogCore)

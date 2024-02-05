@@ -11,20 +11,20 @@ import com.hedvig.android.data.contract.toContractType
 import octopus.ActiveInsuranceContractTypesQuery
 
 internal class GetOnlyHasNonPayingContractsUseCaseImpl(
-    private val apolloClient: ApolloClient,
+  private val apolloClient: ApolloClient,
 ) : GetOnlyHasNonPayingContractsUseCase {
   override suspend fun invoke(): Either<ErrorMessage, Boolean> {
     return either {
-        val contractTypes: List<ContractType> =
-            apolloClient.query(ActiveInsuranceContractTypesQuery())
-                .safeExecute()
-                .toEither(::ErrorMessage)
-                .bind()
-                .currentMember
-                .activeContracts
-                .map { it.currentAgreement.productVariant.typeOfContract.toContractType() }
+      val contractTypes: List<ContractType> =
+        apolloClient.query(ActiveInsuranceContractTypesQuery())
+          .safeExecute()
+          .toEither(::ErrorMessage)
+          .bind()
+          .currentMember
+          .activeContracts
+          .map { it.currentAgreement.productVariant.typeOfContract.toContractType() }
 
-        contractTypes.all { it.isNonPayingContractType() }
+      contractTypes.all { it.isNonPayingContractType() }
     }
   }
 }
