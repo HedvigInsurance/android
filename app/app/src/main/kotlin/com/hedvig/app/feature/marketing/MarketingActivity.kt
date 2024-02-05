@@ -22,6 +22,8 @@ import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import com.datadog.android.compose.ExperimentalTrackingApi
+import com.datadog.android.compose.NavigationViewTrackingEffect
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -48,7 +50,7 @@ class MarketingActivity : AppCompatActivity() {
   private val demoManager: DemoManager by inject()
   private val featureManager: FeatureManager by inject()
 
-  @OptIn(ExperimentalComposeUiApi::class)
+  @OptIn(ExperimentalComposeUiApi::class, ExperimentalTrackingApi::class)
   override fun onCreate(savedInstanceState: Bundle?) {
     enableEdgeToEdge(navigationBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT))
     super.onCreate(savedInstanceState)
@@ -71,6 +73,7 @@ class MarketingActivity : AppCompatActivity() {
     setContent {
       HedvigTheme {
         val navController = rememberNavController()
+        NavigationViewTrackingEffect(navController = navController)
         val navigator = rememberNavigator(navController)
         NavHost(
           navController = navController,
