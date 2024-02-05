@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.connect.payment.trustly.ui
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
@@ -45,6 +46,8 @@ import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.feature.connect.payment.trustly.TrustlyEvent
 import com.hedvig.android.feature.connect.payment.trustly.TrustlyUiState
 import com.hedvig.android.feature.connect.payment.trustly.TrustlyViewModel
+import com.hedvig.android.feature.connect.payment.trustly.webview.TrustlyJavascriptInterface
+import com.hedvig.android.feature.connect.payment.trustly.webview.TrustlyWebChromeClient
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import hedvig.resources.R
@@ -79,6 +82,7 @@ private fun TrustlyScreen(
       TrustlyUiState.Loading -> {
         HedvigFullScreenCenterAlignedProgress()
       }
+
       is TrustlyUiState.Browsing -> {
         TrustlyBrowser(
           uiState,
@@ -87,6 +91,7 @@ private fun TrustlyScreen(
           connectingCardFailed,
         )
       }
+
       TrustlyUiState.FailedToConnectCard -> {
         HedvigErrorSection(
           retry = retryConnectingCard,
@@ -94,6 +99,7 @@ private fun TrustlyScreen(
           subTitle = stringResource(R.string.pay_in_error_body),
         )
       }
+
       TrustlyUiState.FailedToStartSession -> {
         HedvigErrorSection(
           retry = retryConnectingCard,
@@ -101,6 +107,7 @@ private fun TrustlyScreen(
           subTitle = null,
         )
       }
+
       TrustlyUiState.SucceededInConnectingCard -> {
         Column(
           horizontalAlignment = Alignment.CenterHorizontally,
@@ -133,6 +140,7 @@ private fun TrustlyBrowser(
   val context = LocalContext.current
   val webViewState = rememberSaveableWebViewState()
   val webViewNavigator = rememberWebViewNavigator()
+
   val webViewClient = remember {
     object : AccompanistWebViewClient() {
       override fun onPageStarted(view: WebView, url: String?, favicon: Bitmap?) {
@@ -211,7 +219,14 @@ private fun TrustlyBrowser(
         onCreated = { webView ->
           webView.settings.javaScriptEnabled = true
           webView.settings.javaScriptCanOpenWindowsAutomatically = true
+          webView.settings.domStorageEnabled = true
           webView.settings.setSupportMultipleWindows(true)
+
+          webView.webChromeClient = TrustlyWebChromeClient()
+          webView.addJavascriptInterface(
+            TrustlyJavascriptInterface(activity = context as Activity),
+            TrustlyJavascriptInterface.NAME,
+          )
         },
         client = webViewClient,
         modifier = Modifier.matchParentSize(),
