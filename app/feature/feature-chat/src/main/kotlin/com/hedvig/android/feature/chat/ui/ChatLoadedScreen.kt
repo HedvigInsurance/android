@@ -35,6 +35,7 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -115,6 +116,35 @@ internal fun ChatLoadedScreen(
   onSendMedia: (Uri) -> Unit,
   onFetchMoreMessages: () -> Unit,
 ) {
+  ChatLoadedScreen(
+    uiState = uiState,
+    imageLoader = imageLoader,
+    topAppBarScrollBehavior = topAppBarScrollBehavior,
+    openUrl = openUrl,
+    onRetrySendChatMessage = onRetrySendChatMessage,
+    onFetchMoreMessages = onFetchMoreMessages,
+    chatInput = {
+      ChatInput(
+        onSendMessage = onSendMessage,
+        onSendPhoto = onSendPhoto,
+        onSendMedia = onSendMedia,
+        appPackageId = appPackageId,
+        modifier = Modifier.padding(16.dp),
+      )
+    },
+  )
+}
+
+@Composable
+private fun ChatLoadedScreen(
+  uiState: ChatUiState.Loaded,
+  imageLoader: ImageLoader,
+  topAppBarScrollBehavior: TopAppBarScrollBehavior,
+  openUrl: (String) -> Unit,
+  onRetrySendChatMessage: (messageId: String) -> Unit,
+  onFetchMoreMessages: () -> Unit,
+  chatInput: @Composable () -> Unit,
+) {
   val lazyListState = rememberLazyListState()
 
   ScrollToBottomOnKeyboardShownEffect(lazyListState = lazyListState)
@@ -142,10 +172,10 @@ internal fun ChatLoadedScreen(
           .clearFocusOnTap()
           .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
       )
-      uiState.bannerText?.let {
+      if (uiState.bannerText != null) {
         Divider(Modifier.fillMaxWidth())
         ChatBanner(
-          text = it,
+          text = uiState.bannerText,
           modifier = Modifier.fillMaxWidth(),
         )
       }
@@ -156,13 +186,7 @@ internal fun ChatLoadedScreen(
           .fillMaxWidth()
           .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)),
       ) {
-        ChatInput(
-          onSendMessage = onSendMessage,
-          onSendPhoto = onSendPhoto,
-          onSendMedia = onSendMedia,
-          appPackageId = appPackageId,
-          modifier = Modifier.padding(16.dp),
-        )
+        chatInput()
       }
     }
   }
@@ -620,14 +644,12 @@ internal fun ChatMessageWithTimeAndDeliveryStatus(
 
 @HedvigPreview
 @Composable
-private fun PreviewChatLazyColumn() {
+private fun PreviewChatLoadedScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      val listSize = 10
-      ChatLazyColumn(
-        lazyListState = rememberLazyListState(),
+      ChatLoadedScreen(
         uiState = ChatUiState.Loaded(
-          messages = List(listSize) { index ->
+          messages = List(10) { index ->
             ChatUiState.Loaded.UiChatMessage(
               chatMessage = ChatMessage.ChatMessageText(
                 index.toString(),
@@ -641,13 +663,15 @@ private fun PreviewChatLazyColumn() {
               isLastDeliveredMessage = index == 0,
             )
           }.toPersistentList(),
-          bannerText = null,
           fetchMoreMessagesUiState = ChatUiState.Loaded.FetchMoreMessagesUiState.NothingMoreToFetch,
+          bannerText = "Banner text",
         ),
         imageLoader = rememberPreviewImageLoader(),
+        topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
         openUrl = {},
         onRetrySendChatMessage = {},
         onFetchMoreMessages = {},
+        chatInput = {},
       )
     }
   }

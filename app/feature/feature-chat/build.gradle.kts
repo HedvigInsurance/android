@@ -45,6 +45,7 @@ dependencies {
   implementation(projects.coreDesignSystem)
   implementation(projects.coreFileUpload)
   implementation(projects.coreIcons)
+  implementation(projects.coreMarkdown)
   implementation(projects.coreResources)
   implementation(projects.coreRetrofit)
   implementation(projects.coreUi)

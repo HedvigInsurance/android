@@ -14,6 +14,7 @@ dependencies {
   implementation(libs.koin.core)
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)
+  implementation(projects.coreMarkdown)
 }
 
 apollo { // Octopus client
@@ -39,6 +40,7 @@ apollo { // Octopus client
     mapScalar("Date", "kotlinx.datetime.LocalDate", "com.apollographql.apollo3.adapter.KotlinxLocalDateAdapter")
     mapScalar("DateTime", "kotlinx.datetime.LocalDate", "com.apollographql.apollo3.adapter.KotlinxLocalDateTimeAdapter")
     mapScalar("Instant", "kotlinx.datetime.Instant", "com.apollographql.apollo3.adapter.KotlinxInstantAdapter")
+    mapScalar("Markdown", "com.hedvig.android.core.markdown.MarkdownString", "com.hedvig.android.apollo.octopus.MarkdownStringAdapter")
     mapScalarToKotlinString("UUID")
     mapScalarToKotlinString("Url")
     mapScalarToKotlinString("FlowContext")

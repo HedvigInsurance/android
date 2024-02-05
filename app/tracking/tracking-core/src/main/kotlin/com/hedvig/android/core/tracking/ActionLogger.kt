@@ -3,11 +3,7 @@ package com.hedvig.android.core.tracking
 import com.hedvig.android.logger.logcat
 
 interface ActionLogger {
-  fun logAction(
-    type: ActionType,
-    name: String,
-    attributes: Map<String, Any?>,
-  )
+  fun logAction(type: ActionType, name: String, attributes: Map<String, Any?>)
 
   fun logError(
     message: String,
@@ -50,7 +46,7 @@ interface ActionLogger {
       source: ErrorSource,
       attributes: Map<String, Any?>,
       throwable: Throwable?,
-      stacktrace: String?
+      stacktrace: String?,
     ) {
       error("Should never receive any error")
     }
@@ -74,7 +70,7 @@ enum class ActionType {
   BACK,
 
   /** A custom action. */
-  CUSTOM
+  CUSTOM,
 }
 
 enum class ErrorSource {
