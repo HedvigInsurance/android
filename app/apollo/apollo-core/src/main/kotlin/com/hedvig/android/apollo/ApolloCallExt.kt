@@ -5,8 +5,6 @@ import com.apollographql.apollo3.ApolloCall
 import com.apollographql.apollo3.api.ApolloResponse
 import com.apollographql.apollo3.api.Operation
 import com.apollographql.apollo3.exception.ApolloException
-import com.hedvig.android.core.tracking.ErrorSource
-import com.hedvig.android.core.tracking.logError
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -45,38 +43,13 @@ private fun <D : Operation.Data> ApolloResponse<D>.toOperationResult(): Operatio
   return when {
     hasErrors() -> {
       val exception = errors?.first()?.extensions?.get("exception")
-
-      val hasUnauthenticatedErrors = errors
-        ?.mapNotNull { it.extensions }
-        ?.any { it["errorType"] == "UNAUTHENTICATED" }
-
       val body = (exception as? Map<*, *>)?.get("body")
       val message = (body as? Map<*, *>)?.get("message") as? String
-
-      if (hasUnauthenticatedErrors != true) {
-        logError(
-          message = "GraphQL error for ${operation.name()}",
-          source = ErrorSource.NETWORK,
-          attributes = mapOf(
-            "message" to message,
-            "body" to body,
-            "data" to data,
-          ),
-        )
-      }
 
       OperationResult.Error.OperationError(message ?: errors?.first()?.message)
     }
 
     data != null -> OperationResult.Success(data)
-    else -> {
-      logError(
-        message = "GraphQL empty response for ${operation.name()}",
-        source = ErrorSource.NETWORK,
-        attributes = mapOf(),
-      )
-
-      OperationResult.Error.NoDataError("No data")
-    }
+    else -> OperationResult.Error.NoDataError("No data")
   }
 }
