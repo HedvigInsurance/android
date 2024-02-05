@@ -25,6 +25,8 @@ import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.fileupload.FileService
 import com.hedvig.android.core.retrofit.toErrorMessage
+import com.hedvig.android.core.tracking.ErrorSource
+import com.hedvig.android.core.tracking.logError
 import com.hedvig.android.data.chat.read.timestamp.ChatLastMessageReadRepository
 import com.hedvig.android.feature.chat.model.ChatMessage
 import com.hedvig.android.feature.chat.model.ChatMessagesResult
@@ -78,6 +80,15 @@ internal class ChatRepositoryImpl(
         nextUntil = result.chat.nextUntil,
         hasNext = result.chat.hasNext,
         informationMessage = null, // TODO query from schema
+      )
+    }.onLeft {
+      logError(
+        message = "chat fetchChatMessages failed with error message:${it.message}",
+        source = ErrorSource.NETWORK,
+        attributes = mapOf(
+          """chat(until: ${"$"}{})""" to until.toString(),
+        ),
+        throwable = it.throwable,
       )
     }
   }
