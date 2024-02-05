@@ -25,7 +25,7 @@ dependencies {
   implementation(projects.apolloOctopusPublic)
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)
-  implementation(projects.hanalyticsFeatureFlagsPublic)
+  implementation(projects.featureFlagsPublic)
 
   testImplementation(libs.apollo.annotations)
   testImplementation(libs.apollo.testingSupport)
@@ -38,7 +38,7 @@ dependencies {
   testImplementation(projects.apolloTest)
   testImplementation(projects.coreCommonTest)
   testImplementation(projects.coreDatastoreTest)
-  testImplementation(projects.hanalyticsFeatureFlagsTest)
+  testImplementation(projects.featureFlagsTest)
   testImplementation(projects.loggingTest)
   testImplementation(projects.memberRemindersTest)
   testImplementation(projects.testClock)

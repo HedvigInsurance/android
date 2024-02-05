@@ -6,6 +6,7 @@ import com.hedvig.android.auth.AccessTokenProvider
 import com.hedvig.android.auth.AndroidAccessTokenProvider
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.AuthTokenServiceImpl
+import com.hedvig.android.auth.MemberIdService
 import com.hedvig.android.auth.event.AuthEventBroadcaster
 import com.hedvig.android.auth.event.AuthEventListener
 import com.hedvig.android.auth.event.AuthEventStorage
@@ -26,7 +27,6 @@ import okhttp3.OkHttpClient
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
-@Suppress("RemoveExplicitTypeArguments")
 val authModule = module {
   single<AccessTokenProvider> { AndroidAccessTokenProvider(get()) }
   single<AuthTokenRefreshingInterceptor> { AuthTokenRefreshingInterceptor(get()) }
@@ -48,6 +48,12 @@ val authModule = module {
       coroutineContext = get<CoroutineContext>(ioDispatcherQualifier),
     )
   } bind Initializable::class
+
+  single<MemberIdService> {
+    MemberIdService(
+      authTokenStorage = get<AuthTokenStorage>(),
+    )
+  }
 
   single<AuthRepository> {
     OkHttpNetworkAuthRepository(

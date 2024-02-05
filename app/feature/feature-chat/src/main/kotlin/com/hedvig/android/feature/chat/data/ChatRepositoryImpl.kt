@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.chat.data
 
-import android.content.ContentResolver
 import android.net.Uri
 import android.util.Patterns
 import androidx.core.net.toFile
@@ -24,13 +23,14 @@ import com.apollographql.apollo3.exception.CacheMissException
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.fileupload.FileService
 import com.hedvig.android.core.retrofit.toErrorMessage
 import com.hedvig.android.data.chat.read.timestamp.ChatLastMessageReadRepository
-import com.hedvig.android.feature.chat.FileService
 import com.hedvig.android.feature.chat.model.ChatMessage
 import com.hedvig.android.feature.chat.model.ChatMessagesResult
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.navigation.core.AppDestination
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -45,18 +45,12 @@ import octopus.fragment.ChatMessageFileMessageFragment
 import octopus.fragment.ChatMessageTextMessageFragment
 import octopus.fragment.MessageFragment
 import octopus.type.ChatMessageSender
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import okio.BufferedSink
-import okio.source
 
 internal class ChatRepositoryImpl(
   private val apolloClient: ApolloClient,
   private val botServiceService: BotServiceService,
   private val fileService: FileService,
-  private val contentResolver: ContentResolver,
   private val chatLastMessageReadRepository: ChatLastMessageReadRepository,
 ) : ChatRepository {
   override suspend fun fetchMoreMessages(until: Instant): Either<ErrorMessage, ChatMessagesResult> = either {
@@ -83,6 +77,7 @@ internal class ChatRepositoryImpl(
         messages = result.chat.messages.mapNotNull { it.toChatMessage() },
         nextUntil = result.chat.nextUntil,
         hasNext = result.chat.hasNext,
+        informationMessage = result.chat.bannerText?.string,
       )
     }
   }
@@ -127,7 +122,10 @@ internal class ChatRepositoryImpl(
       }
   }
 
-  override suspend fun sendPhoto(uri: Uri): Either<ErrorMessage, ChatMessage> = either<ErrorMessage, ChatMessage> {
+  override suspend fun sendPhoto(
+    uri: Uri,
+    context: AppDestination.Chat.ChatContext?, // TODO Pass to mutation
+  ): Either<ErrorMessage, ChatMessage> = either {
     logcat { "Chat sendPhoto uploading photo with uri:$uri" }
     val uploadToken = uploadFile(uri)
     val result = apolloClient.mutation(ChatSendFileMutation(uploadToken))
@@ -189,7 +187,10 @@ internal class ChatRepositoryImpl(
     }
   }
 
-  override suspend fun sendMedia(uri: Uri): Either<ErrorMessage, ChatMessage> = either<ErrorMessage, ChatMessage> {
+  override suspend fun sendMedia(
+    uri: Uri,
+    context: AppDestination.Chat.ChatContext?, // TODO Pass to mutation
+  ): Either<ErrorMessage, ChatMessage> = either {
     logcat { "Chat sendMedia uploading media with uri:$uri" }
     val uploadToken = uploadMedia(uri)
     val result = apolloClient.mutation(ChatSendFileMutation(uploadToken))
@@ -237,29 +238,16 @@ internal class ChatRepositoryImpl(
 
   private suspend fun Raise<ErrorMessage>.uploadMedia(uri: Uri): String {
     val response: List<FileUploadResponse> = botServiceService
-      .uploadFile(
-        MultipartBody.Part.createFormData(
-          name = "files",
-          filename = fileService.getFileName(uri) ?: "media",
-          body = object : RequestBody() {
-            override fun contentType(): MediaType? {
-              return fileService.getMimeType(uri).toMediaType()
-            }
-
-            override fun writeTo(sink: BufferedSink) {
-              contentResolver.openInputStream(uri)?.use { inputStream ->
-                sink.writeAll(inputStream.source())
-              } ?: error("Could not open input stream for uri:$uri")
-            }
-          },
-        ),
-      )
+      .uploadFile(fileService.createFormData(uri))
       .mapLeft(CallError::toErrorMessage)
       .bind()
     return response.firstOrNull()?.uploadToken ?: raise(ErrorMessage("No upload token"))
   }
 
-  override suspend fun sendMessage(text: String): Either<ErrorMessage, ChatMessage> = either {
+  override suspend fun sendMessage(
+    text: String,
+    context: AppDestination.Chat.ChatContext?, // TODO Pass to mutation
+  ): Either<ErrorMessage, ChatMessage> = either {
     logcat { "Chat sendMessage uploading text:$text" }
     val result = apolloClient.mutation(ChatSendMessageMutation(text))
       .safeExecute()

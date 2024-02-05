@@ -6,7 +6,7 @@ import com.hedvig.android.feature.login.marketing.MarketingViewModel
 import com.hedvig.android.feature.login.swedishlogin.SwedishLoginViewModel
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
-import com.hedvig.android.market.SetMarketUseCase
+import com.hedvig.android.market.set.SetMarketUseCase
 import com.hedvig.authlib.AuthRepository
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module

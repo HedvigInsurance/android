@@ -90,5 +90,10 @@ fragment MemberChargeFragment on MemberCharge {
   }
   pastFailedChargeIds
   status
-
+  carriedAdjustment {
+   ...MoneyFragment
+  }
+  settlementAdjustment {
+    ...MoneyFragment
+  }
 }

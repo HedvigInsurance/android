@@ -19,10 +19,12 @@ import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.feature.chat.data.ChatRepository
 import com.hedvig.android.feature.chat.model.ChatMessage
+import com.hedvig.android.feature.chat.model.ChatMessagesResult
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import com.hedvig.android.navigation.core.AppDestination
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
@@ -57,6 +59,7 @@ internal sealed interface ChatUiState {
     // The list of messages, ordered from the newest one to the oldest one
     val messages: ImmutableList<UiChatMessage>,
     val fetchMoreMessagesUiState: FetchMoreMessagesUiState,
+    val bannerText: String?,
   ) : ChatUiState {
     data class UiChatMessage(
       val chatMessage: ChatMessage,
@@ -78,6 +81,7 @@ internal sealed interface ChatUiState {
 internal class ChatPresenter(
   private val chatRepository: Provider<ChatRepository>,
   private val clock: Clock,
+  private val chatContext: AppDestination.Chat.ChatContext?,
 ) : MoleculePresenter<ChatEvent, ChatUiState> {
   @Composable
   override fun MoleculePresenterScope<ChatEvent>.present(lastState: ChatUiState): ChatUiState {
@@ -86,6 +90,8 @@ internal class ChatPresenter(
         *(lastState.safeCast<ChatUiState.Loaded>()?.messages?.map { it.chatMessage } ?: emptyList()).toTypedArray(),
       )
     }
+
+    var bannerText: String? by remember { mutableStateOf(null) }
 
     // We are considered to still be initializing before we get the first cache emission
     var isStillInitializing by remember { mutableStateOf(lastState is ChatUiState.Initializing) }
@@ -111,11 +117,12 @@ internal class ChatPresenter(
       },
     )
     LaunchPeriodicMessagePollsEffect(
-      reportNextUntilFromPolling = { nextUntil: Instant ->
+      reportChatMessagesResultFromPolling = { result: ChatMessagesResult ->
         // If we have not received a `nextUntil` value yet, we set the first value from the polling query
         if (fetchMoreState is FetchMoreState.HaveNotReceivedInitialFetchUntil) {
-          fetchMoreState = FetchMoreState.IdleWithKnownNextFetch(nextUntil)
+          fetchMoreState = FetchMoreState.IdleWithKnownNextFetch(result.nextUntil)
         }
+        bannerText = result.informationMessage
       },
     )
     LaunchFetchMoreMessagesEffect(
@@ -233,17 +240,20 @@ internal class ChatPresenter(
           .sortedByDescending { it.chatMessage.sentAt }
           .toPersistentList(),
         fetchMoreMessagesUiState = fetchMoreMessagesUiState,
+        bannerText = bannerText,
       )
     }
   }
 
   @Composable
-  private fun LaunchPeriodicMessagePollsEffect(reportNextUntilFromPolling: (nextUntil: Instant) -> Unit) {
-    val updatedReportNextUntilFromPolling by rememberUpdatedState(reportNextUntilFromPolling)
+  private fun LaunchPeriodicMessagePollsEffect(
+    reportChatMessagesResultFromPolling: (nextUntil: ChatMessagesResult) -> Unit,
+  ) {
+    val updatedReportNextUntilFromPolling by rememberUpdatedState(reportChatMessagesResultFromPolling)
     LaunchedEffect(Unit) {
       while (isActive) {
         chatRepository.provide().pollNewestMessages().onRight { result ->
-          updatedReportNextUntilFromPolling(result.nextUntil)
+          updatedReportNextUntilFromPolling(result)
         }
         delay(5.seconds)
       }
@@ -301,7 +311,10 @@ internal class ChatPresenter(
     LaunchedEffect(photosToSend) {
       photosToSend.receiveAsFlow().parMap { uri: Uri ->
         logcat { "Handling sending photo with uri:${uri.path}" }
-        chatRepository.provide().sendPhoto(uri).onLeft {
+        chatRepository.provide().sendPhoto(
+          uri = uri,
+          context = chatContext,
+        ).onLeft {
           logcat(LogPriority.WARN) { "Failed to send photo:${uri.path} | $it" }
           updatedReportPhotoFailedToBeSent(uri)
         }
@@ -315,7 +328,10 @@ internal class ChatPresenter(
     LaunchedEffect(mediaToSend) {
       mediaToSend.receiveAsFlow().parMap { uri: Uri ->
         logcat { "Handling sending media with uri:${uri.path}" }
-        chatRepository.provide().sendMedia(uri).onLeft {
+        chatRepository.provide().sendMedia(
+          uri = uri,
+          context = chatContext,
+        ).onLeft {
           logcat(LogPriority.WARN) { "Failed to send media:${uri.path} | $it" }
           updatedReportMediaFailedToBeSent(uri)
         }
@@ -332,7 +348,10 @@ internal class ChatPresenter(
     LaunchedEffect(messagesToSend) {
       messagesToSend.consumeAsFlow().parMap { message: String ->
         logcat { "Handling sending message with text:$message" }
-        chatRepository.provide().sendMessage(message).onLeft {
+        chatRepository.provide().sendMessage(
+          text = message,
+          context = chatContext,
+        ).onLeft {
           logcat(LogPriority.WARN) { "Failed to send message:$it" }
           updatedReportMessageFailedToBeSent(message)
         }

@@ -49,6 +49,7 @@ dependencies {
   implementation(libs.androidx.compose.runtime)
   implementation(libs.androidx.graphicsShapes)
   implementation(libs.coil.coil)
+  implementation(libs.datadog.sdk.core)
   implementation(libs.kotlinx.immutable.collections)
   implementation(libs.zoomable)
   implementation(projects.audioPlayer)
@@ -59,4 +60,6 @@ dependencies {
   implementation(projects.memberRemindersPublic)
   implementation(projects.memberRemindersUi)
   implementation(projects.notificationPermission)
+  implementation(projects.trackingCore)
+  implementation(projects.trackingDatadog)
 }

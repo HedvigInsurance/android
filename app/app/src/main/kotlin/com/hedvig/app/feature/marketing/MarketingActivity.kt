@@ -4,10 +4,10 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -22,33 +22,48 @@ import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import com.datadog.android.compose.ExperimentalTrackingApi
+import com.datadog.android.compose.NavigationViewTrackingEffect
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.feature.login.navigation.loginGraph
-import com.hedvig.android.market.Market
+import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.navigation.activity.ActivityNavigator
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.Navigator
 import com.hedvig.app.feature.genericauth.GenericAuthActivity
-import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationActivity
+import com.hedvig.app.feature.sunsetting.ForceUpgradeActivity
 import com.kiwi.navigationcompose.typed.Destination
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigate
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
-class MarketingActivity : ComponentActivity() {
+class MarketingActivity : AppCompatActivity() {
   private val hedvigBuildConstants: HedvigBuildConstants by inject()
   private val activityNavigator: ActivityNavigator by inject()
   private val demoManager: DemoManager by inject()
+  private val featureManager: FeatureManager by inject()
 
-  @OptIn(ExperimentalComposeUiApi::class)
+  @OptIn(ExperimentalComposeUiApi::class, ExperimentalTrackingApi::class)
   override fun onCreate(savedInstanceState: Bundle?) {
     enableEdgeToEdge(navigationBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT))
     super.onCreate(savedInstanceState)
     lifecycleScope.launch {
+      launch {
+        featureManager.isFeatureEnabled(Feature.UPDATE_NECESSARY).collectLatest {
+          if (it) {
+            applicationContext.startActivity(ForceUpgradeActivity.newInstance(applicationContext))
+            finish()
+            cancel()
+          }
+        }
+      }
       lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
         demoManager.isDemoMode().first { it == true }
         activityNavigator.navigateToLoggedInScreen(this@MarketingActivity, false)
@@ -58,6 +73,7 @@ class MarketingActivity : ComponentActivity() {
     setContent {
       HedvigTheme {
         val navController = rememberNavController()
+        NavigationViewTrackingEffect(navController = navController)
         val navigator = rememberNavigator(navController)
         NavHost(
           navController = navController,
@@ -75,10 +91,10 @@ class MarketingActivity : ComponentActivity() {
               finish()
             },
             startDKLogin = {
-              startActivity(SimpleSignAuthenticationActivity.newInstance(this@MarketingActivity, Market.DK))
+              startActivity(GenericAuthActivity.newInstance(this@MarketingActivity))
             },
             startNOLogin = {
-              startActivity(SimpleSignAuthenticationActivity.newInstance(this@MarketingActivity, Market.NO))
+              startActivity(GenericAuthActivity.newInstance(this@MarketingActivity))
             },
             startOtpLogin = {
               startActivity(GenericAuthActivity.newInstance(this@MarketingActivity))

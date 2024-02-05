@@ -15,6 +15,7 @@ dependencies {
   implementation(libs.androidx.navigation.common)
   implementation(libs.androidx.navigation.compose)
   implementation(libs.androidx.navigation.runtime)
+  implementation(libs.androidx.other.browser)
   implementation(libs.apollo.api)
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)

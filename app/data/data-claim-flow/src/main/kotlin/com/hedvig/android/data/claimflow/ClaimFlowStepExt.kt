@@ -1,5 +1,6 @@
 package com.hedvig.android.data.claimflow
 
+import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.core.uidata.UiNullableMoney
 import com.hedvig.android.data.claimflow.model.AudioUrl
@@ -10,6 +11,7 @@ import octopus.fragment.CheckoutMethodFragment
 import octopus.fragment.ClaimFlowStepFragment
 import octopus.fragment.FlowClaimContractSelectStepFragment
 import octopus.fragment.FlowClaimDeflectPartnerFragment
+import octopus.fragment.FlowClaimFileUploadFragment
 import octopus.fragment.FlowClaimLocationStepFragment
 import octopus.fragment.FlowClaimSingleItemStepFragment
 
@@ -107,6 +109,12 @@ fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
     is ClaimFlowStep.ClaimDeflectPestsStep -> ClaimFlowDestination.DeflectPests(
       partners.map { it.toLocalPartner() }.toPersistentList(),
     )
+
+    is ClaimFlowStep.ClaimFileUploadStep -> ClaimFlowDestination.FileUpload(
+      title,
+      targetUploadUrl,
+      uploads.map { it.toLocalUpload() }.toPersistentList(),
+    )
   }
 }
 
@@ -157,5 +165,14 @@ private fun ClaimFlowStepFragment.FlowClaimConfirmEmergencyStepCurrentStep.Optio
   return EmergencyOption(
     displayName = displayName,
     value = displayValue,
+  )
+}
+
+private fun FlowClaimFileUploadFragment.Upload.toLocalUpload(): UiFile {
+  return UiFile(
+    id = fileId,
+    name = name,
+    mimeType = mimeType,
+    path = signedUrl,
   )
 }

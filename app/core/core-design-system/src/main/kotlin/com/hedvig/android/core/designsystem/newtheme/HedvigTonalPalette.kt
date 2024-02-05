@@ -48,6 +48,16 @@ internal interface HedvigTonalPalette {
   val blue800: Color
   val blue900: Color
 
+  val yellow100: Color
+  val yellow300: Color
+  val yellow900: Color
+  val purple100: Color
+  val purple300: Color
+  val purple900: Color
+  val pink100: Color
+  val pink300: Color
+  val pink900: Color
+
   val lavender300: Color
   val lavender400: Color
 }

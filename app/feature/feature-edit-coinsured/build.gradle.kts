@@ -53,7 +53,7 @@ dependencies {
   testImplementation(projects.apolloTest)
   testImplementation(projects.coreCommonTest)
   testImplementation(projects.dataTravelCertificateTest)
-  testImplementation(projects.hanalyticsFeatureFlagsTest)
+  testImplementation(projects.featureFlagsTest)
   testImplementation(projects.languageTest)
   testImplementation(projects.loggingTest)
   testImplementation(projects.memberRemindersTest)

@@ -46,7 +46,6 @@ fun ClaimStatusCards(
         contentPadding = contentPadding,
         beyondBoundsPageCount = 1,
         pageSpacing = 8.dp,
-        key = { index -> claimStatusCardsUiState[index].id },
         modifier = Modifier.fillMaxWidth().systemGestureExclusion(),
       ) { page: Int ->
         val claimStatusUiState = claimStatusCardsUiState[page]

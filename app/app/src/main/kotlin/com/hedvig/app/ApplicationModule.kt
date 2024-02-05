@@ -35,9 +35,11 @@ import com.hedvig.android.core.common.di.datastoreFileQualifier
 import com.hedvig.android.core.datastore.di.dataStoreModule
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.di.demoModule
+import com.hedvig.android.core.fileupload.fileUploadModule
 import com.hedvig.android.data.chat.read.timestamp.di.chatReadTimestampModule
+import com.hedvig.android.data.claimflow.di.claimFlowDataModule
+import com.hedvig.android.data.paying.member.di.dataPayingMemberModule
 import com.hedvig.android.data.settings.datastore.di.settingsDatastoreModule
-import com.hedvig.android.data.travelcertificate.di.claimFlowDataModule
 import com.hedvig.android.data.travelcertificate.di.travelCertificateDataModule
 import com.hedvig.android.datadog.core.addDatadogConfiguration
 import com.hedvig.android.datadog.core.di.datadogModule
@@ -52,6 +54,7 @@ import com.hedvig.android.feature.connect.payment.adyen.di.adyenFeatureModule
 import com.hedvig.android.feature.connect.payment.trustly.di.connectPaymentTrustlyModule
 import com.hedvig.android.feature.editcoinsured.di.editCoInsuredModule
 import com.hedvig.android.feature.forever.di.foreverModule
+import com.hedvig.android.feature.help.center.di.helpCenterModule
 import com.hedvig.android.feature.home.di.homeModule
 import com.hedvig.android.feature.insurances.di.insurancesModule
 import com.hedvig.android.feature.login.di.loginModule
@@ -60,12 +63,12 @@ import com.hedvig.android.feature.payments.di.paymentsModule
 import com.hedvig.android.feature.profile.di.profileModule
 import com.hedvig.android.feature.terminateinsurance.di.terminateInsuranceModule
 import com.hedvig.android.feature.travelcertificate.di.travelCertificateModule
-import com.hedvig.android.hanalytics.android.di.hAnalyticsAndroidModule
-import com.hedvig.android.hanalytics.di.hAnalyticsModule
-import com.hedvig.android.hanalytics.featureflags.di.featureManagerModule
+import com.hedvig.android.featureflags.di.featureManagerModule
 import com.hedvig.android.language.LanguageService
+import com.hedvig.android.language.di.languageMigrationModule
 import com.hedvig.android.language.di.languageModule
 import com.hedvig.android.market.di.marketManagerModule
+import com.hedvig.android.market.di.setMarketModule
 import com.hedvig.android.memberreminders.di.memberRemindersModule
 import com.hedvig.android.navigation.activity.ActivityNavigator
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
@@ -73,6 +76,7 @@ import com.hedvig.android.navigation.core.di.deepLinkModule
 import com.hedvig.android.notification.badge.data.di.notificationBadgeModule
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.firebase.di.firebaseNotificationModule
+import com.hedvig.android.tracking.datadog.di.trackingDatadogModule
 import com.hedvig.app.authenticate.LogoutUseCaseImpl
 import com.hedvig.app.feature.chat.service.ChatNotificationSender
 import com.hedvig.app.feature.chat.service.ReplyWorker
@@ -81,16 +85,15 @@ import com.hedvig.app.feature.genericauth.otpinput.OtpInputViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.ReviewDialogViewModel
 import com.hedvig.app.feature.marketing.MarketingActivity
-import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationViewModel
 import com.hedvig.app.service.push.senders.CrossSellNotificationSender
 import com.hedvig.app.service.push.senders.GenericNotificationSender
 import com.hedvig.app.service.push.senders.PaymentNotificationSender
 import com.hedvig.app.service.push.senders.ReferralsNotificationSender
+import com.hedvig.app.util.apollo.DatadogInterceptor
 import com.hedvig.app.util.apollo.DeviceIdInterceptor
 import com.hedvig.app.util.apollo.NetworkCacheManagerImpl
 import com.hedvig.app.util.apollo.SunsettingInterceptor
 import java.io.File
-import java.util.Locale
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -113,9 +116,9 @@ private val networkModule = module {
           chain
             .request()
             .newBuilder()
-            .header("User-Agent", makeUserAgent(languageService.getLocale()))
-            .header("Accept-Language", languageService.getLocale().toLanguageTag())
-            .header("hedvig-language", languageService.getLocale().toLanguageTag())
+            .header("User-Agent", makeUserAgent(languageService.getLanguage().toBcp47Format()))
+            .header("Accept-Language", languageService.getLanguage().toBcp47Format())
+            .header("hedvig-language", languageService.getLanguage().toBcp47Format())
             .header("apollographql-client-name", BuildConfig.APPLICATION_ID)
             .header("apollographql-client-version", BuildConfig.VERSION_NAME)
             .header("X-Build-Version", BuildConfig.VERSION_CODE.toString())
@@ -148,6 +151,7 @@ private val networkModule = module {
     okHttpBuilder.build()
   }
   single<SunsettingInterceptor> { SunsettingInterceptor(get()) } bind ApolloInterceptor::class
+  single<DatadogInterceptor> { DatadogInterceptor() } bind ApolloInterceptor::class
   single<ApolloClient.Builder> {
     val interceptors = getAll<ApolloInterceptor>().distinct()
     ApolloClient.Builder()
@@ -162,7 +166,7 @@ private val networkModule = module {
   }
 }
 
-fun makeUserAgent(locale: Locale): String = buildString {
+fun makeUserAgent(languageBCP47: String): String = buildString {
   append(BuildConfig.APPLICATION_ID)
   append(" ")
   append(BuildConfig.VERSION_NAME)
@@ -177,14 +181,11 @@ fun makeUserAgent(locale: Locale): String = buildString {
   append("; ")
   append(Build.DEVICE)
   append("; ")
-  append(locale.language)
+  append(languageBCP47)
   append(")")
 }
 
 private val viewModelModule = module {
-  viewModel<SimpleSignAuthenticationViewModel> { params ->
-    SimpleSignAuthenticationViewModel(params.get(), get(), get())
-  }
   viewModel<GenericAuthViewModel> { GenericAuthViewModel(get(), get()) }
   viewModel<OtpInputViewModel> { (verifyUrl: String, resendUrl: String, credential: String) ->
     OtpInputViewModel(
@@ -219,9 +220,9 @@ private val buildConstantsModule = module {
     object : HedvigBuildConstants {
       override val urlGraphqlOctopus: String = context.getString(R.string.OCTOPUS_GRAPHQL_URL)
       override val urlBaseWeb: String = context.getString(R.string.WEB_BASE_URL)
-      override val urlHanalytics: String = context.getString(R.string.HANALYTICS_URL)
       override val urlOdyssey: String = context.getString(R.string.ODYSSEY_URL)
       override val urlBotService: String = context.getString(R.string.BOT_SERVICE)
+      override val urlClaimsService: String = context.getString(R.string.CLAIMS_SERVICE)
       override val deepLinkHost: String = context.getString(R.string.DEEP_LINK_DOMAIN_HOST)
 
       override val appVersionName: String = BuildConfig.VERSION_NAME
@@ -337,6 +338,7 @@ val applicationModule = module {
       coilModule,
       connectPaymentTrustlyModule,
       coreCommonModule,
+      dataPayingMemberModule,
       dataStoreModule,
       datadogDemoTrackingModule,
       datadogModule,
@@ -345,13 +347,14 @@ val applicationModule = module {
       demoModule,
       editCoInsuredModule,
       featureManagerModule,
+      fileUploadModule,
       firebaseNotificationModule,
       foreverModule,
-      hAnalyticsAndroidModule,
-      hAnalyticsModule,
+      helpCenterModule,
       homeModule,
       insurancesModule,
       languageAuthListenersModule,
+      languageMigrationModule,
       languageModule,
       loginModule,
       marketManagerModule,
@@ -362,9 +365,11 @@ val applicationModule = module {
       odysseyModule,
       paymentsModule,
       profileModule,
+      setMarketModule,
       settingsDatastoreModule,
       sharedPreferencesModule,
       terminateInsuranceModule,
+      trackingDatadogModule,
       travelCertificateDataModule,
       travelCertificateModule,
       useCaseModule,

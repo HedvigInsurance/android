@@ -7,10 +7,10 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
@@ -33,9 +33,10 @@ import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCaseProvider
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
-import com.hedvig.android.hanalytics.featureflags.FeatureManager
-import com.hedvig.android.hanalytics.featureflags.flags.Feature
+import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
@@ -46,6 +47,7 @@ import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
 import com.hedvig.android.theme.Theme
 import com.hedvig.app.feature.sunsetting.ForceUpgradeActivity
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -59,7 +61,7 @@ import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class LoggedInActivity : ComponentActivity() {
+class LoggedInActivity : AppCompatActivity() {
   private val reviewDialogViewModel: ReviewDialogViewModel by viewModel()
 
   private val authTokenService: AuthTokenService by inject()
@@ -72,6 +74,7 @@ class LoggedInActivity : ComponentActivity() {
   private val hedvigDeepLinkContainer: HedvigDeepLinkContainer by inject()
   private val hedvigBuildConstants: HedvigBuildConstants by inject()
   private val settingsDataStore: SettingsDataStore by inject()
+  private val getOnlyHasNonPayingContractsUseCase: GetOnlyHasNonPayingContractsUseCaseProvider by inject()
 
   private val activityNavigator: ActivityNavigator by inject()
 
@@ -105,10 +108,14 @@ class LoggedInActivity : ComponentActivity() {
 
     val intent: Intent = intent
     lifecycleScope.launch {
-      if (featureManager.isFeatureEnabled(Feature.UPDATE_NECESSARY)) {
-        applicationContext.startActivity(ForceUpgradeActivity.newInstance(applicationContext))
-        finish()
-        return@launch
+      launch {
+        featureManager.isFeatureEnabled(Feature.UPDATE_NECESSARY).collectLatest {
+          if (it) {
+            applicationContext.startActivity(ForceUpgradeActivity.newInstance(applicationContext))
+            finish()
+            cancel()
+          }
+        }
       }
       launch {
         settingsDataStore.observeTheme().collectLatest { theme ->
@@ -171,8 +178,8 @@ class LoggedInActivity : ComponentActivity() {
       val hedvigAppState = rememberHedvigAppState(
         windowSizeClass = windowSizeClass,
         tabNotificationBadgeService = tabNotificationBadgeService,
-        featureManager = featureManager,
         settingsDataStore = settingsDataStore,
+        getOnlyHasNonPayingContractsUseCase = getOnlyHasNonPayingContractsUseCase,
       )
       val darkTheme = hedvigAppState.darkTheme
       EnableEdgeToEdgeSideEffect(darkTheme)

@@ -6,6 +6,7 @@ import arrow.core.raise.either
 import arrow.retrofit.adapter.either.networkhandling.CallError
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.Optional
+import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
@@ -23,12 +24,14 @@ import octopus.FlowClaimConfirmEmergencyMutation
 import octopus.FlowClaimContractNextMutation
 import octopus.FlowClaimDateOfOccurrenceNextMutation
 import octopus.FlowClaimDateOfOccurrencePlusLocationNextMutation
+import octopus.FlowClaimFileUploadNextMutation
 import octopus.FlowClaimLocationNextMutation
 import octopus.FlowClaimPhoneNumberNextMutation
 import octopus.FlowClaimSingleItemCheckoutNextMutation
 import octopus.FlowClaimSingleItemNextMutation
 import octopus.FlowClaimStartMutation
 import octopus.FlowClaimSummaryNextMutation
+import octopus.type.FlowClaimFileUploadInput
 import octopus.type.FlowClaimItemBrandInput
 import octopus.type.FlowClaimItemModelInput
 import octopus.type.FlowClaimSingleItemInput
@@ -84,12 +87,15 @@ interface ClaimFlowRepository {
   ): Either<ErrorMessage, ClaimFlowStep>
 
   suspend fun submitUrgentEmergency(isUrgentEmergency: Boolean): Either<ErrorMessage, ClaimFlowStep>
+
+  suspend fun submitFiles(fileIds: List<String>): Either<ErrorMessage, ClaimFlowStep>
 }
 
 internal class ClaimFlowRepositoryImpl(
   private val apolloClient: ApolloClient,
   private val odysseyService: OdysseyService,
   private val claimFlowContextStorage: ClaimFlowContextStorage,
+  private val networkCacheManager: NetworkCacheManager,
 ) : ClaimFlowRepository {
   override suspend fun startClaimFlow(
     entryPointId: EntryPointId?,
@@ -276,6 +282,7 @@ internal class ClaimFlowRepositoryImpl(
         .bind()
         .flowClaimSummaryNext
       claimFlowContextStorage.saveContext(result.context)
+      networkCacheManager.clearCache()
       result.currentStep.toClaimFlowStep(FlowId(result.id))
     }
   }
@@ -293,6 +300,25 @@ internal class ClaimFlowRepositoryImpl(
         .toEither(::ErrorMessage)
         .bind()
         .flowClaimConfirmEmergencyNext
+
+      claimFlowContextStorage.saveContext(result.context)
+      result.currentStep.toClaimFlowStep(FlowId(result.id))
+    }
+  }
+
+  override suspend fun submitFiles(fileIds: List<String>): Either<ErrorMessage, ClaimFlowStep> {
+    return either {
+      val result = apolloClient
+        .mutation(
+          FlowClaimFileUploadNextMutation(
+            input = FlowClaimFileUploadInput(fileIds),
+            context = claimFlowContextStorage.getContext(),
+          ),
+        )
+        .safeExecute()
+        .toEither(::ErrorMessage)
+        .bind()
+        .flowClaimFileUploadNext
 
       claimFlowContextStorage.saveContext(result.context)
       result.currentStep.toClaimFlowStep(FlowId(result.id))

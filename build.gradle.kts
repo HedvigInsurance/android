@@ -13,23 +13,3 @@ plugins {
 apply {
   from(file("gradle/projectDependencyGraph.gradle"))
 }
-
-// region https://github.com/jeremymailen/kotlinter-gradle#custom-ktlint-version
-buildscript {
-  configurations.classpath {
-    resolutionStrategy {
-      force(
-        "com.pinterest.ktlint:ktlint-rule-engine:1.0.1",
-        "com.pinterest.ktlint:ktlint-rule-engine-core:1.0.1",
-        "com.pinterest.ktlint:ktlint-cli-reporter-core:1.0.1",
-        "com.pinterest.ktlint:ktlint-cli-reporter-checkstyle:1.0.1",
-        "com.pinterest.ktlint:ktlint-cli-reporter-json:1.0.1",
-        "com.pinterest.ktlint:ktlint-cli-reporter-html:1.0.1",
-        "com.pinterest.ktlint:ktlint-cli-reporter-plain:1.0.1",
-        "com.pinterest.ktlint:ktlint-cli-reporter-sarif:1.0.1",
-        "com.pinterest.ktlint:ktlint-ruleset-standard:1.0.1",
-      )
-    }
-  }
-}
-// endregion

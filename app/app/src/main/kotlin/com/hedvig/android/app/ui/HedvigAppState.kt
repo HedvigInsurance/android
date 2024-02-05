@@ -1,6 +1,5 @@
 package com.hedvig.android.app.ui
 
-import android.os.Bundle
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -18,11 +17,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
-import com.datadog.android.rum.GlobalRumMonitor
+import com.datadog.android.compose.ExperimentalTrackingApi
+import com.datadog.android.compose.NavigationViewTrackingEffect
+import com.hedvig.android.core.demomode.Provider
+import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.feature.insurances.navigation.insurancesBottomNavPermittedDestinations
-import com.hedvig.android.hanalytics.featureflags.FeatureManager
-import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.TopLevelGraph
@@ -45,23 +45,24 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalTrackingApi::class)
 @Composable
 internal fun rememberHedvigAppState(
   windowSizeClass: WindowSizeClass,
   tabNotificationBadgeService: TabNotificationBadgeService,
   settingsDataStore: SettingsDataStore,
-  featureManager: FeatureManager,
+  getOnlyHasNonPayingContractsUseCase: Provider<GetOnlyHasNonPayingContractsUseCase>,
   coroutineScope: CoroutineScope = rememberCoroutineScope(),
   navController: NavHostController = rememberNavController(),
 ): HedvigAppState {
-  NavigationTrackingSideEffect(navController)
+  NavigationViewTrackingEffect(navController = navController)
   TopLevelDestinationNavigationSideEffect(navController, tabNotificationBadgeService, coroutineScope)
   return remember(
     navController,
     coroutineScope,
     tabNotificationBadgeService,
-    featureManager,
     settingsDataStore,
+    getOnlyHasNonPayingContractsUseCase,
     windowSizeClass,
   ) {
     HedvigAppState(
@@ -70,7 +71,7 @@ internal fun rememberHedvigAppState(
       coroutineScope,
       tabNotificationBadgeService,
       settingsDataStore,
-      featureManager,
+      getOnlyHasNonPayingContractsUseCase,
     )
   }
 }
@@ -82,7 +83,7 @@ internal class HedvigAppState(
   coroutineScope: CoroutineScope,
   tabNotificationBadgeService: TabNotificationBadgeService,
   private val settingsDataStore: SettingsDataStore,
-  private val featureManager: FeatureManager,
+  private val getOnlyHasNonPayingContractsUseCase: Provider<GetOnlyHasNonPayingContractsUseCase>,
 ) {
   val currentDestination: NavDestination?
     @Composable get() = navController.currentBackStackEntryAsState().value?.destination
@@ -111,14 +112,16 @@ internal class HedvigAppState(
     }
 
   val topLevelGraphs: StateFlow<ImmutableSet<TopLevelGraph>> = flow {
-    val isForeverEnabled = featureManager.isFeatureEnabled(Feature.FOREVER)
+    val onlyHasNonPayingContracts = getOnlyHasNonPayingContractsUseCase.provide().invoke().getOrNull()
     emit(
-      listOfNotNull(
-        TopLevelGraph.HOME,
-        TopLevelGraph.INSURANCE,
-        TopLevelGraph.FOREVER.takeIf { isForeverEnabled },
-        TopLevelGraph.PROFILE,
-      ).toPersistentSet(),
+      buildList {
+        add(TopLevelGraph.HOME)
+        add(TopLevelGraph.INSURANCE)
+        if (onlyHasNonPayingContracts != true) {
+          add(TopLevelGraph.FOREVER)
+        }
+        add(TopLevelGraph.PROFILE)
+      }.toPersistentSet(),
     )
   }.stateIn(
     coroutineScope,
@@ -175,31 +178,6 @@ internal class HedvigAppState(
 }
 
 @Composable
-private fun NavigationTrackingSideEffect(navController: NavController) {
-  DisposableEffect(navController) {
-    val listener = NavController.OnDestinationChangedListener { _, destination: NavDestination, bundle: Bundle? ->
-      logcat {
-        buildString {
-          append("Navigated to route:${destination.route}")
-          if (bundle != null) {
-            append(" | ")
-            append("With bundle:$bundle")
-          }
-        }
-      }
-      GlobalRumMonitor.get().startView(
-        key = destination,
-        name = destination.route ?: "Unknown route",
-      )
-    }
-    navController.addOnDestinationChangedListener(listener)
-    onDispose {
-      navController.removeOnDestinationChangedListener(listener)
-    }
-  }
-}
-
-@Composable
 private fun TopLevelDestinationNavigationSideEffect(
   navController: NavController,
   tabNotificationBadgeService: TabNotificationBadgeService,
@@ -214,14 +192,17 @@ private fun TopLevelDestinationNavigationSideEffect(
             logcat { "Navigated to top level screen: HOME" }
             tabNotificationBadgeService.visitTab(BottomNavTab.HOME)
           }
+
           AppDestination.TopLevelDestination.Insurance -> {
             logcat { "Navigated to top level screen: INSURANCES" }
             tabNotificationBadgeService.visitTab(BottomNavTab.INSURANCE)
           }
+
           AppDestination.TopLevelDestination.Forever -> {
             logcat { "Navigated to top level screen: FOREVER" }
             tabNotificationBadgeService.visitTab(BottomNavTab.REFERRALS)
           }
+
           AppDestination.TopLevelDestination.Profile -> {
             logcat { "Navigated to top level screen: PROFILE" }
             tabNotificationBadgeService.visitTab(BottomNavTab.PROFILE)

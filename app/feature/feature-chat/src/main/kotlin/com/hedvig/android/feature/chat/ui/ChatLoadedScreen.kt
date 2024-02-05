@@ -35,6 +35,7 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -115,6 +116,35 @@ internal fun ChatLoadedScreen(
   onSendMedia: (Uri) -> Unit,
   onFetchMoreMessages: () -> Unit,
 ) {
+  ChatLoadedScreen(
+    uiState = uiState,
+    imageLoader = imageLoader,
+    topAppBarScrollBehavior = topAppBarScrollBehavior,
+    openUrl = openUrl,
+    onRetrySendChatMessage = onRetrySendChatMessage,
+    onFetchMoreMessages = onFetchMoreMessages,
+    chatInput = {
+      ChatInput(
+        onSendMessage = onSendMessage,
+        onSendPhoto = onSendPhoto,
+        onSendMedia = onSendMedia,
+        appPackageId = appPackageId,
+        modifier = Modifier.padding(16.dp),
+      )
+    },
+  )
+}
+
+@Composable
+private fun ChatLoadedScreen(
+  uiState: ChatUiState.Loaded,
+  imageLoader: ImageLoader,
+  topAppBarScrollBehavior: TopAppBarScrollBehavior,
+  openUrl: (String) -> Unit,
+  onRetrySendChatMessage: (messageId: String) -> Unit,
+  onFetchMoreMessages: () -> Unit,
+  chatInput: @Composable () -> Unit,
+) {
   val lazyListState = rememberLazyListState()
 
   ScrollToBottomOnKeyboardShownEffect(lazyListState = lazyListState)
@@ -142,6 +172,13 @@ internal fun ChatLoadedScreen(
           .clearFocusOnTap()
           .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
       )
+      if (uiState.bannerText != null) {
+        Divider(Modifier.fillMaxWidth())
+        ChatBanner(
+          text = uiState.bannerText,
+          modifier = Modifier.fillMaxWidth(),
+        )
+      }
       Divider(Modifier.fillMaxWidth())
       Box(
         propagateMinConstraints = true,
@@ -149,13 +186,7 @@ internal fun ChatLoadedScreen(
           .fillMaxWidth()
           .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)),
       ) {
-        ChatInput(
-          onSendMessage = onSendMessage,
-          onSendPhoto = onSendPhoto,
-          onSendMedia = onSendMedia,
-          appPackageId = appPackageId,
-          modifier = Modifier.padding(16.dp),
-        )
+        chatInput()
       }
     }
   }
@@ -267,37 +298,41 @@ private fun ChatLazyColumn(
           .padding(bottom = 8.dp),
       )
     }
-    item(
-      key = "Space",
-      contentType = "Space",
-    ) {
-      Spacer(modifier = Modifier.height(8.dp))
-    }
-    if (
-      uiState.fetchMoreMessagesUiState is ChatUiState.Loaded.FetchMoreMessagesUiState.FailedToFetch ||
-      uiState.fetchMoreMessagesUiState is ChatUiState.Loaded.FetchMoreMessagesUiState.FetchingMore
-    ) {
+    // We want to show other items only when there are already some chat messages, to have first messages appear at the
+    // bottom of the UI when the screen is first opened
+    if (uiState.messages.isNotEmpty()) {
       item(
-        key = "FetchingState",
-        contentType = "FetchingState",
+        key = "Space",
+        contentType = "Space",
       ) {
-        LaunchedEffect(Unit) {
-          onFetchMoreMessages()
-        }
-        if (uiState.fetchMoreMessagesUiState is ChatUiState.Loaded.FetchMoreMessagesUiState.FailedToFetch) {
+        Spacer(modifier = Modifier.height(8.dp))
+      }
+      if (
+        uiState.fetchMoreMessagesUiState is ChatUiState.Loaded.FetchMoreMessagesUiState.FailedToFetch ||
+        uiState.fetchMoreMessagesUiState is ChatUiState.Loaded.FetchMoreMessagesUiState.FetchingMore
+      ) {
+        item(
+          key = "FetchingState",
+          contentType = "FetchingState",
+        ) {
           LaunchedEffect(Unit) {
-            while (isActive) {
-              delay(5.seconds)
-              onFetchMoreMessages()
+            onFetchMoreMessages()
+          }
+          if (uiState.fetchMoreMessagesUiState is ChatUiState.Loaded.FetchMoreMessagesUiState.FailedToFetch) {
+            LaunchedEffect(Unit) {
+              while (isActive) {
+                delay(5.seconds)
+                onFetchMoreMessages()
+              }
             }
           }
+          ThreeDotsLoading(
+            Modifier
+              .padding(24.dp)
+              .fillParentMaxWidth()
+              .wrapContentWidth(Alignment.CenterHorizontally),
+          )
         }
-        ThreeDotsLoading(
-          Modifier
-            .padding(24.dp)
-            .fillParentMaxWidth()
-            .wrapContentWidth(Alignment.CenterHorizontally),
-        )
       }
     }
   }
@@ -575,7 +610,9 @@ internal fun ChatMessageWithTimeAndDeliveryStatus(
     Spacer(modifier = Modifier.height(4.dp))
     Row(
       verticalAlignment = Alignment.CenterVertically,
-      modifier = Modifier.align(uiChatMessage.chatMessage.messageHorizontalAlignment()).padding(horizontal = 2.dp),
+      modifier = Modifier
+        .align(uiChatMessage.chatMessage.messageHorizontalAlignment())
+        .padding(horizontal = 2.dp),
     ) {
       Text(
         text = buildString {
@@ -607,14 +644,12 @@ internal fun ChatMessageWithTimeAndDeliveryStatus(
 
 @HedvigPreview
 @Composable
-private fun PreviewChatLazyColumn() {
+private fun PreviewChatLoadedScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      val listSize = 10
-      ChatLazyColumn(
-        lazyListState = rememberLazyListState(),
+      ChatLoadedScreen(
         uiState = ChatUiState.Loaded(
-          List(listSize) { index ->
+          messages = List(10) { index ->
             ChatUiState.Loaded.UiChatMessage(
               chatMessage = ChatMessage.ChatMessageText(
                 index.toString(),
@@ -628,12 +663,15 @@ private fun PreviewChatLazyColumn() {
               isLastDeliveredMessage = index == 0,
             )
           }.toPersistentList(),
-          ChatUiState.Loaded.FetchMoreMessagesUiState.NothingMoreToFetch,
+          fetchMoreMessagesUiState = ChatUiState.Loaded.FetchMoreMessagesUiState.NothingMoreToFetch,
+          bannerText = "Banner text",
         ),
         imageLoader = rememberPreviewImageLoader(),
+        topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
         openUrl = {},
         onRetrySendChatMessage = {},
         onFetchMoreMessages = {},
+        chatInput = {},
       )
     }
   }

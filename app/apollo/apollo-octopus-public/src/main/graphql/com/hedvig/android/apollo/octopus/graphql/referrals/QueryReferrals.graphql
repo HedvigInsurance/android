@@ -11,21 +11,21 @@ query Referrals {
         ...MoneyFragment
       }
     }
-     referralInformation {
-       code
-       monthlyDiscountExcludingReferrals {
-         ...MoneyFragment
-       }
-       monthlyDiscountPerReferral {
-         ...MoneyFragment
-       }
-       referrals {
-         name
-         status
-         activeDiscount {
-           ...MoneyFragment
-         }
-       }
-     }
+    referralInformation {
+      code
+      monthlyDiscountExcludingReferrals {
+        ...MoneyFragment
+      }
+      monthlyDiscountPerReferral {
+        ...MoneyFragment
+      }
+      referrals {
+        name
+        status
+        activeDiscount {
+          ...MoneyFragment
+        }
+      }
+    }
   }
 }

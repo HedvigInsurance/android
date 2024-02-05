@@ -1,5 +1,7 @@
 package com.hedvig.android.feature.odyssey.di
 
+import com.hedvig.android.core.fileupload.FileService
+import com.hedvig.android.core.fileupload.UploadFileUseCase
 import com.hedvig.android.data.claimflow.AudioContent
 import com.hedvig.android.data.claimflow.ClaimFlowDestination
 import com.hedvig.android.data.claimflow.ClaimFlowRepository
@@ -8,6 +10,7 @@ import com.hedvig.android.data.claimflow.model.FlowId
 import com.hedvig.android.feature.odyssey.step.audiorecording.AudioRecordingViewModel
 import com.hedvig.android.feature.odyssey.step.dateofoccurrence.DateOfOccurrenceViewModel
 import com.hedvig.android.feature.odyssey.step.dateofoccurrencepluslocation.DateOfOccurrencePlusLocationViewModel
+import com.hedvig.android.feature.odyssey.step.fileupload.FileUploadViewModel
 import com.hedvig.android.feature.odyssey.step.informdeflect.ConfirmEmergencyViewModel
 import com.hedvig.android.feature.odyssey.step.location.LocationViewModel
 import com.hedvig.android.feature.odyssey.step.phonenumber.PhoneNumberViewModel
@@ -19,7 +22,6 @@ import com.hedvig.android.feature.odyssey.step.summary.ClaimSummaryViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
-@Suppress("RemoveExplicitTypeArguments")
 val odysseyModule = module {
   viewModel<AudioRecordingViewModel> { (flowId: FlowId, audioContent: AudioContent?) ->
     AudioRecordingViewModel(
@@ -64,5 +66,14 @@ val odysseyModule = module {
   }
   viewModel<ConfirmEmergencyViewModel> { (confirmEmergency: ClaimFlowDestination.ConfirmEmergency) ->
     ConfirmEmergencyViewModel(confirmEmergency, get<ClaimFlowRepository>())
+  }
+  viewModel<FileUploadViewModel> { (fileUpload: ClaimFlowDestination.FileUpload) ->
+    FileUploadViewModel(
+      uploadFileUseCase = get<UploadFileUseCase>(),
+      fileService = get<FileService>(),
+      targetUploadUrl = fileUpload.targetUploadUrl,
+      files = fileUpload.uploads,
+      claimFlowRepository = get<ClaimFlowRepository>(),
+    )
   }
 }

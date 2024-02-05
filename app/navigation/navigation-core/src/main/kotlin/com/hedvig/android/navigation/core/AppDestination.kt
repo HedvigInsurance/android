@@ -1,5 +1,6 @@
 package com.hedvig.android.navigation.core
 
+import com.hedvig.android.data.contract.ContractGroup
 import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.serialization.Serializable
 
@@ -22,7 +23,17 @@ sealed interface AppDestination : Destination {
   data object Login : AppDestination
 
   @Serializable
-  data object Chat : AppDestination
+  data class Chat(
+    val chatContext: ChatContext? = null,
+  ) : AppDestination {
+    enum class ChatContext {
+      PAYMENT,
+      CLAIMS,
+      COVERAGE,
+      INSURANCE,
+      OTHER,
+    }
+  }
 
   @Serializable
   data object ChangeAddress : AppDestination
@@ -53,8 +64,10 @@ sealed interface AppDestination : Destination {
 
   @Serializable
   data class TerminateInsurance(
-    val insuranceId: String,
+    val contractId: String,
     val insuranceDisplayName: String,
+    val exposureName: String,
+    val contractGroup: ContractGroup,
   ) : AppDestination
 
   @Serializable
@@ -67,4 +80,19 @@ sealed interface AppDestination : Destination {
   // To be deprecated as soon as Adyen support is dropped
   @Serializable
   data object ConnectPaymentAdyen : AppDestination
+
+  @Serializable
+  data class ClaimDetails(
+    val claimId: String,
+  ) : AppDestination
+
+  @Serializable
+  data class CoInsuredAddInfo(
+    val contractId: String,
+  ) : AppDestination
+
+  @Serializable
+  data class CoInsuredAddOrRemove(
+    val contractId: String,
+  ) : AppDestination
 }

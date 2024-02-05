@@ -1,13 +1,12 @@
 package com.hedvig.android.feature.chat.di
 
-import android.content.Context
 import arrow.retrofit.adapter.either.EitherCallAdapterFactory
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
+import com.hedvig.android.core.fileupload.FileService
 import com.hedvig.android.data.chat.read.timestamp.ChatLastMessageReadRepository
 import com.hedvig.android.feature.chat.ChatViewModel
-import com.hedvig.android.feature.chat.FileService
 import com.hedvig.android.feature.chat.closedevent.ChatClosedEventDataStore
 import com.hedvig.android.feature.chat.closedevent.ChatClosedEventStore
 import com.hedvig.android.feature.chat.data.BotServiceService
@@ -15,6 +14,7 @@ import com.hedvig.android.feature.chat.data.ChatRepository
 import com.hedvig.android.feature.chat.data.ChatRepositoryDemo
 import com.hedvig.android.feature.chat.data.ChatRepositoryImpl
 import com.hedvig.android.feature.chat.data.GetChatRepositoryProvider
+import com.hedvig.android.navigation.core.AppDestination
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.datetime.Clock
 import kotlinx.serialization.json.Json
@@ -26,10 +26,12 @@ import retrofit2.Retrofit
 
 val chatModule = module {
   single<ChatClosedEventStore> { ChatClosedEventDataStore(get()) }
-  viewModel<ChatViewModel> {
+  viewModel<ChatViewModel> { parametersHolder ->
+    val chatContext = parametersHolder.getOrNull<AppDestination.Chat.ChatContext>()
     ChatViewModel(
       chatRepository = get<GetChatRepositoryProvider>(),
       clock = get<Clock>(),
+      chatContext = chatContext,
     )
   }
   single<ChatRepositoryImpl> {
@@ -37,7 +39,6 @@ val chatModule = module {
       apolloClient = get<ApolloClient>(),
       botServiceService = get<BotServiceService>(),
       fileService = get<FileService>(),
-      contentResolver = get<Context>().contentResolver,
       chatLastMessageReadRepository = get<ChatLastMessageReadRepository>(),
     )
   }
@@ -51,8 +52,6 @@ val chatModule = module {
       prodImpl = get<ChatRepositoryImpl>(),
     )
   }
-
-  single<FileService> { FileService(get<Context>().contentResolver) }
 
   single<BotServiceService> {
     val retrofit = Retrofit.Builder()

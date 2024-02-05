@@ -7,7 +7,7 @@ import com.hedvig.android.data.travelcertificate.GetTravelCertificateSpecificati
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCaseDemo
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCaseImpl
 import com.hedvig.android.feature.home.home.ui.HomeViewModel
-import com.hedvig.android.hanalytics.featureflags.FeatureManager
+import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.memberreminders.GetMemberRemindersUseCase
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone

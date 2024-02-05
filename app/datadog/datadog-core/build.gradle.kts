@@ -16,10 +16,12 @@ dependencies {
   implementation(libs.kotlinx.serialization.json)
   implementation(libs.okhttp.core)
   implementation(libs.timber)
-  implementation(projects.authEventCore)
+  implementation(projects.authCorePublic)
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDatastorePublic)
+  implementation(projects.trackingCore)
+  implementation(projects.trackingDatadog)
 }
 
 android {

@@ -11,10 +11,11 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.formatName
 import com.hedvig.android.core.common.formatSsn
 import com.hedvig.android.data.productVariant.android.toProductVariant
-import com.hedvig.android.hanalytics.featureflags.FeatureManager
-import com.hedvig.android.hanalytics.featureflags.flags.Feature
+import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.featureflags.flags.Feature
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.flow.first
 import octopus.InsuranceContractsQuery
 import octopus.fragment.ContractFragment
 import octopus.type.AgreementCreationCause
@@ -36,7 +37,8 @@ internal class GetInsuranceContractsUseCaseImpl(
         .toEither(::ErrorMessage)
         .bind()
 
-      val isEditCoInsuredEnabled = featureManager.isFeatureEnabled(Feature.EDIT_COINSURED)
+      val isEditCoInsuredEnabled = featureManager.isFeatureEnabled(Feature.EDIT_COINSURED).first()
+      val isMovingFlowEnabled = featureManager.isFeatureEnabled(Feature.MOVING_FLOW).first()
 
       val contractHolderDisplayName = insuranceQueryData.getContractHolderDisplayName()
       val contractHolderSSN = insuranceQueryData.currentMember.ssn?.let { formatSsn(it) }
@@ -47,6 +49,7 @@ internal class GetInsuranceContractsUseCaseImpl(
           contractHolderDisplayName = contractHolderDisplayName,
           contractHolderSSN = contractHolderSSN,
           isEditCoInsuredEnabled = isEditCoInsuredEnabled,
+          isMovingFlowEnabled = isMovingFlowEnabled,
         )
       }
       val activeContracts = insuranceQueryData.currentMember.activeContracts.map {
@@ -55,6 +58,7 @@ internal class GetInsuranceContractsUseCaseImpl(
           contractHolderDisplayName = contractHolderDisplayName,
           contractHolderSSN = contractHolderSSN,
           isEditCoInsuredEnabled = isEditCoInsuredEnabled,
+          isMovingFlowEnabled = isMovingFlowEnabled,
         )
       }
       terminatedContracts + activeContracts
@@ -72,6 +76,7 @@ private fun ContractFragment.toContract(
   contractHolderDisplayName: String,
   contractHolderSSN: String?,
   isEditCoInsuredEnabled: Boolean,
+  isMovingFlowEnabled: Boolean,
 ): InsuranceContract {
   return InsuranceContract(
     id = id,
@@ -112,7 +117,7 @@ private fun ContractFragment.toContract(
         creationCause = it.creationCause.toCreationCause(),
       )
     },
-    supportsAddressChange = supportsMoving,
+    supportsAddressChange = supportsMoving && isMovingFlowEnabled,
     supportsEditCoInsured = supportsCoInsured && isEditCoInsuredEnabled,
     isTerminated = isTerminated,
   )

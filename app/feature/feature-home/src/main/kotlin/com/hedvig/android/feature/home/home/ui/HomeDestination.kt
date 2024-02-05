@@ -30,15 +30,12 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,7 +54,7 @@ import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.core.common.android.SHARED_PREFERENCE_NAME
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
-import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
+import com.hedvig.android.core.designsystem.component.button.HedvigSecondaryContainedButton
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.core.designsystem.material3.containedButtonContainer
@@ -75,11 +72,8 @@ import com.hedvig.android.core.ui.appbar.m3.TopAppBarLayoutForActions
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.plus
 import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
-import com.hedvig.android.feature.home.commonclaim.CommonClaimsData
-import com.hedvig.android.feature.home.emergency.EmergencyData
 import com.hedvig.android.feature.home.home.ChatTooltip
 import com.hedvig.android.feature.home.home.data.HomeData
-import com.hedvig.android.feature.home.otherservices.OtherServicesBottomSheet
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.memberreminders.ui.MemberReminderCardsWithoutNotification
@@ -101,7 +95,6 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.toJavaLocalDate
 
@@ -112,10 +105,7 @@ internal fun HomeDestination(
   onClaimDetailCardClicked: (String) -> Unit,
   navigateToConnectPayment: () -> Unit,
   onStartClaim: () -> Unit,
-  onStartMovingFlow: () -> Unit,
-  onGenerateTravelCertificateClicked: () -> Unit,
-  onOpenCommonClaim: (CommonClaimsData) -> Unit,
-  onOpenEmergencyScreen: (EmergencyData) -> Unit,
+  navigateToHelpCenter: () -> Unit,
   openUrl: (String) -> Unit,
   openAppSettings: () -> Unit,
   navigateToMissingInfo: (String) -> Unit,
@@ -130,10 +120,7 @@ internal fun HomeDestination(
     onClaimDetailCardClicked = onClaimDetailCardClicked,
     navigateToConnectPayment = navigateToConnectPayment,
     onStartClaim = onStartClaim,
-    onStartMovingFlow = onStartMovingFlow,
-    onGenerateTravelCertificateClicked = onGenerateTravelCertificateClicked,
-    onOpenCommonClaim = onOpenCommonClaim,
-    onOpenEmergencyScreen = onOpenEmergencyScreen,
+    navigateToHelpCenter = navigateToHelpCenter,
     openUrl = openUrl,
     openAppSettings = openAppSettings,
     navigateToMissingInfo = navigateToMissingInfo,
@@ -149,10 +136,7 @@ private fun HomeScreen(
   onClaimDetailCardClicked: (String) -> Unit,
   navigateToConnectPayment: () -> Unit,
   onStartClaim: () -> Unit,
-  onStartMovingFlow: () -> Unit,
-  onGenerateTravelCertificateClicked: () -> Unit,
-  onOpenCommonClaim: (CommonClaimsData) -> Unit,
-  onOpenEmergencyScreen: (EmergencyData) -> Unit,
+  navigateToHelpCenter: () -> Unit,
   openUrl: (String) -> Unit,
   openAppSettings: () -> Unit,
   navigateToMissingInfo: (String) -> Unit,
@@ -198,17 +182,11 @@ private fun HomeScreen(
             pullRefreshState = pullRefreshState,
             toolbarHeight = toolbarHeight,
             notificationPermissionState = notificationPermissionState,
-            onStartMovingFlow = onStartMovingFlow,
             onClaimDetailCardClicked = onClaimDetailCardClicked,
             navigateToConnectPayment = navigateToConnectPayment,
-            onEmergencyClicked = { emergencyData ->
-              onOpenEmergencyScreen(emergencyData)
-            },
-            onGenerateTravelCertificateClicked = onGenerateTravelCertificateClicked,
-            onOpenCommonClaim = onOpenCommonClaim,
+            navigateToHelpCenter = navigateToHelpCenter,
             onStartClaimClicked = onStartClaim,
             openAppSettings = openAppSettings,
-            openChat = onStartChat,
             openUrl = openUrl,
             navigateToMissingInfo = navigateToMissingInfo,
           )
@@ -265,42 +243,15 @@ private fun HomeScreenSuccess(
   pullRefreshState: PullRefreshState,
   toolbarHeight: Dp,
   notificationPermissionState: NotificationPermissionState,
-  onStartMovingFlow: () -> Unit,
   onClaimDetailCardClicked: (claimId: String) -> Unit,
   navigateToConnectPayment: () -> Unit,
-  onEmergencyClicked: (EmergencyData) -> Unit,
-  onGenerateTravelCertificateClicked: () -> Unit,
-  onOpenCommonClaim: (CommonClaimsData) -> Unit,
+  navigateToHelpCenter: () -> Unit,
   onStartClaimClicked: () -> Unit,
   openAppSettings: () -> Unit,
-  openChat: () -> Unit,
   openUrl: (String) -> Unit,
   navigateToMissingInfo: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val coroutineScope = rememberCoroutineScope()
-  val sheetState = rememberModalBottomSheetState(true)
-  var showEditYourInfoBottomSheet by rememberSaveable { mutableStateOf(false) }
-  val dismissOtherServicesBottomSheet: () -> Unit = {
-    coroutineScope.launch {
-      sheetState.hide()
-    }.invokeOnCompletion {
-      showEditYourInfoBottomSheet = false
-    }
-  }
-  if (showEditYourInfoBottomSheet) {
-    OtherServicesBottomSheet(
-      uiState = uiState,
-      dismissBottomSheet = dismissOtherServicesBottomSheet,
-      onChatClicked = openChat,
-      onStartMovingFlow = onStartMovingFlow,
-      onEmergencyClicked = onEmergencyClicked,
-      onGenerateTravelCertificateClicked = onGenerateTravelCertificateClicked,
-      onOpenCommonClaim = onOpenCommonClaim,
-      sheetState = sheetState,
-    )
-  }
-
   var fullScreenSize: IntSize? by remember { mutableStateOf(null) }
   Box(
     modifier = modifier
@@ -377,9 +328,9 @@ private fun HomeScreenSuccess(
           )
         },
         otherServicesButton = {
-          HedvigTextButton(
-            text = stringResource(R.string.home_tab_other_services),
-            onClick = { showEditYourInfoBottomSheet = true },
+          HedvigSecondaryContainedButton(
+            text = stringResource(R.string.home_tab_get_help),
+            onClick = navigateToHelpCenter,
             modifier = Modifier
               .padding(horizontal = 16.dp)
               .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
@@ -494,10 +445,7 @@ private fun PreviewHomeScreen(
           memberReminders = MemberReminders(
             connectPayment = MemberReminder.ConnectPayment(),
           ),
-          allowAddressChange = true,
-          allowGeneratingTravelCertificate = true,
-          emergencyData = null,
-          commonClaimsData = persistentListOf(),
+          isHelpCenterEnabled = true,
           showChatIcon = true,
           hasUnseenChatMessages = hasUnseenChatMessages,
         ),
@@ -507,10 +455,7 @@ private fun PreviewHomeScreen(
         onClaimDetailCardClicked = {},
         navigateToConnectPayment = {},
         onStartClaim = {},
-        onStartMovingFlow = {},
-        onGenerateTravelCertificateClicked = {},
-        onOpenCommonClaim = {},
-        onOpenEmergencyScreen = {},
+        navigateToHelpCenter = {},
         openUrl = {},
         openAppSettings = {},
         navigateToMissingInfo = {},

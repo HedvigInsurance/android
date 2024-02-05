@@ -67,6 +67,7 @@ internal class GetClaimDetailUiStateUseCase(
         audioUrl != null -> {
           ClaimDetailUiState.Content.SubmittedContent.Audio(SignedAudioUrl.fromSignedAudioUrlString(audioUrl))
         }
+
         memberFreeText != null -> ClaimDetailUiState.Content.SubmittedContent.FreeText(memberFreeText)
         else -> null
       },
@@ -97,11 +98,14 @@ internal class GetClaimDetailUiStateUseCase(
         null,
         -> ClaimDetailUiState.Content.ClaimOutcome.UNKNOWN
       },
+      uploadUri = claim.targetFileUploadUri,
+      isUploadingFile = false,
+      uploadError = null,
     )
   }
 
   companion object {
-    private val POLL_INTERVAL = 5.seconds
+    private val POLL_INTERVAL = 30.seconds
   }
 }
 

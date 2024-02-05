@@ -1,0 +1,7 @@
+mutation FlowClaimFileUploadNext($input: FlowClaimFileUploadInput!, $context: FlowContext!) {
+  flowClaimFileUploadNext(input: $input, context: $context) {
+    id
+    context
+    ...ClaimFlowStepFragment
+  }
+}

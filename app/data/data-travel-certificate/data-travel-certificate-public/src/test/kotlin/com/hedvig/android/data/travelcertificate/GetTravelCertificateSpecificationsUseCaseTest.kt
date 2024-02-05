@@ -11,8 +11,6 @@ import com.hedvig.android.apollo.octopus.test.OctopusFakeResolver
 import com.hedvig.android.apollo.test.TestApolloClientRule
 import com.hedvig.android.core.common.test.isLeft
 import com.hedvig.android.core.common.test.isRight
-import com.hedvig.android.hanalytics.featureflags.flags.Feature
-import com.hedvig.android.hanalytics.featureflags.test.FakeFeatureManager2
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
@@ -35,46 +33,9 @@ internal class GetTravelCertificateSpecificationsUseCaseTest {
     get() = testApolloClientRule.apolloClient
 
   @Test
-  fun `when the feature flag is off and the network request succeeds, we get not eligible`() = runTest {
-    val travelCertificateUseCase = GetTravelCertificateSpecificationsUseCaseImpl(
-      apolloClient,
-      FakeFeatureManager2(mapOf(Feature.TRAVEL_CERTIFICATE to false)),
-    )
-
-    apolloClient.enqueueTestResponse(
-      TravelCertificateSpecificationsQuery(),
-      TravelCertificateSpecificationsQuery.Data(OctopusFakeResolver) {
-        currentMember = buildMember {
-          travelCertificateSpecifications = buildTravelCertificateSpecification {
-            contractSpecifications = listOf(buildTravelCertificateContractSpecification({}))
-            infoSpecifications = listOf(buildTravelCertificateInfoSpecification({}))
-          }
-        }
-      },
-    )
-    val result = travelCertificateUseCase.invoke()
-
-    assertThat(result).isLeft().isInstanceOf<TravelCertificateError.NotEligible>()
-  }
-
-  @Test
-  fun `when the feature flag is off and the network request fails, we get not eligible`() = runTest {
-    val travelCertificateUseCase = GetTravelCertificateSpecificationsUseCaseImpl(
-      apolloClient,
-      FakeFeatureManager2(mapOf(Feature.TRAVEL_CERTIFICATE to false)),
-    )
-
-    apolloClient.enqueueTestNetworkError()
-    val result = travelCertificateUseCase.invoke()
-
-    assertThat(result).isLeft().isInstanceOf<TravelCertificateError.NotEligible>()
-  }
-
-  @Test
   fun `when the feature flag is on and the network request fails, we get not Error response`() = runTest {
     val travelCertificateUseCase = GetTravelCertificateSpecificationsUseCaseImpl(
       apolloClient,
-      FakeFeatureManager2(mapOf(Feature.TRAVEL_CERTIFICATE to true)),
     )
 
     apolloClient.enqueueTestNetworkError()
@@ -88,7 +49,6 @@ internal class GetTravelCertificateSpecificationsUseCaseTest {
     runTest {
       val travelCertificateUseCase = GetTravelCertificateSpecificationsUseCaseImpl(
         apolloClient,
-        FakeFeatureManager2(mapOf(Feature.TRAVEL_CERTIFICATE to true)),
       )
 
       apolloClient.enqueueTestResponse(
@@ -104,7 +64,6 @@ internal class GetTravelCertificateSpecificationsUseCaseTest {
   fun `when the feature flag is on and the network request succeeds, we get the travel certificate data`() = runTest {
     val travelCertificateUseCase = GetTravelCertificateSpecificationsUseCaseImpl(
       apolloClient,
-      FakeFeatureManager2(mapOf(Feature.TRAVEL_CERTIFICATE to true)),
     )
 
     apolloClient.enqueueTestResponse(

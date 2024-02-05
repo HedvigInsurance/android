@@ -25,7 +25,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "12.3.4"
+    versionName = "12.4.4"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -43,14 +43,12 @@ android {
   }
 
   buildTypes {
-    @Suppress("UNUSED_VARIABLE")
     val debug by getting {
       applicationIdSuffix = ".dev.app"
       manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = false
       isDebuggable = true
     }
 
-    @Suppress("UNUSED_VARIABLE")
     val release by getting {
 //      signingConfig = debug.signingConfig // uncomment to run release build locally
       applicationIdSuffix = ".app"
@@ -66,7 +64,6 @@ android {
       )
     }
 
-    @Suppress("UNUSED_VARIABLE")
     val staging by creating {
       applicationIdSuffix = ".test.app"
       matchingFallbacks.add("release")
@@ -143,6 +140,7 @@ dependencies {
   implementation(libs.concatAdapterExtension)
   implementation(libs.coroutines.android)
   implementation(libs.coroutines.core)
+  implementation(libs.datadog.sdk.compose)
   implementation(libs.datadog.sdk.core)
   implementation(libs.datadog.sdk.rum)
   implementation(libs.firebase.analytics)
@@ -171,11 +169,14 @@ dependencies {
   implementation(projects.coreDatastorePublic)
   implementation(projects.coreDemoMode)
   implementation(projects.coreDesignSystem)
+  implementation(projects.coreFileUpload)
   implementation(projects.coreIcons)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
   implementation(projects.dataChatReadTimestampPublic)
   implementation(projects.dataClaimFlow)
+  implementation(projects.dataContractPublic)
+  implementation(projects.dataPayingMember)
   implementation(projects.dataSettingsDatastorePublic)
   implementation(projects.dataTravelCertificatePublic)
   implementation(projects.datadogCore)
@@ -187,7 +188,9 @@ dependencies {
   implementation(projects.featureConnectPaymentAdyen)
   implementation(projects.featureConnectPaymentTrustly)
   implementation(projects.featureEditCoinsured)
+  implementation(projects.featureFlagsPublic)
   implementation(projects.featureForever)
+  implementation(projects.featureHelpCenter)
   implementation(projects.featureHome)
   implementation(projects.featureInsurances)
   implementation(projects.featureLogin)
@@ -196,15 +199,14 @@ dependencies {
   implementation(projects.featureProfile)
   implementation(projects.featureTerminateInsurance)
   implementation(projects.featureTravelCertificate)
-  implementation(projects.hanalyticsAndroid)
-  implementation(projects.hanalyticsCore)
-  implementation(projects.hanalyticsFeatureFlagsPublic)
   implementation(projects.initializable)
   implementation(projects.languageCore)
   implementation(projects.languageData)
+  implementation(projects.languageMigration)
   implementation(projects.loggingAndroid)
   implementation(projects.loggingPublic)
   implementation(projects.marketCore)
+  implementation(projects.marketSet)
   implementation(projects.memberRemindersPublic)
   implementation(projects.navigationActivity)
   implementation(projects.navigationCore)
@@ -213,6 +215,8 @@ dependencies {
   implementation(projects.notificationCore)
   implementation(projects.notificationFirebase)
   implementation(projects.theme)
+  implementation(projects.trackingCore)
+  implementation(projects.trackingDatadog)
 
   debugImplementation(libs.androidx.compose.uiTestManifest)
   debugImplementation(libs.androidx.compose.uiTooling)

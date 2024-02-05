@@ -13,6 +13,7 @@ dependencies {
   implementation(libs.androidx.other.appCompat)
   implementation(libs.androidx.other.core)
   implementation(libs.kotlinx.serialization.core)
+  implementation(libs.okhttp.core)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.coreResources)
 }

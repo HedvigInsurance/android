@@ -8,6 +8,7 @@ import com.benasher44.uuid.Uuid
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.chat.model.ChatMessage
 import com.hedvig.android.feature.chat.model.ChatMessagesResult
+import com.hedvig.android.navigation.core.AppDestination
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -48,15 +49,24 @@ internal class ChatRepositoryDemo(
     return messages.map { it.right() }
   }
 
-  override suspend fun sendPhoto(uri: Uri): Either<ErrorMessage, ChatMessage> {
+  override suspend fun sendPhoto(
+    uri: Uri,
+    context: AppDestination.Chat.ChatContext?,
+  ): Either<ErrorMessage, ChatMessage> {
     return ErrorMessage("Demo mode").left()
   }
 
-  override suspend fun sendMedia(uri: Uri): Either<ErrorMessage, ChatMessage> {
+  override suspend fun sendMedia(
+    uri: Uri,
+    context: AppDestination.Chat.ChatContext?,
+  ): Either<ErrorMessage, ChatMessage> {
     return ErrorMessage("Demo mode").left()
   }
 
-  override suspend fun sendMessage(text: String): Either<ErrorMessage, ChatMessage> {
+  override suspend fun sendMessage(
+    text: String,
+    context: AppDestination.Chat.ChatContext?,
+  ): Either<ErrorMessage, ChatMessage> {
     val chatMessage = ChatMessage.ChatMessageText(
       id = Uuid.randomUUID().toString(),
       text = text,

@@ -15,7 +15,7 @@ import com.hedvig.android.feature.profile.settings.SettingsViewModel
 import com.hedvig.android.feature.profile.tab.GetEurobonusStatusUseCase
 import com.hedvig.android.feature.profile.tab.NetworkGetEurobonusStatusUseCase
 import com.hedvig.android.feature.profile.tab.ProfileViewModel
-import com.hedvig.android.hanalytics.featureflags.FeatureManager
+import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.memberreminders.EnableNotificationsReminderManager

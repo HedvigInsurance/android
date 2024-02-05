@@ -293,12 +293,11 @@ private fun PreviewProfileSuccessScreen() {
         navigateToSettings = {},
         navigateToPayment = {},
         navigateToConnectPayment = {},
+        navigateToAddMissingInfo = {},
         openAppSettings = {},
         openUrl = {},
         snoozeNotificationPermission = {},
-        onLogout = {},
-        navigateToAddMissingInfo = {},
-      )
+      ) {}
     }
   }
 }

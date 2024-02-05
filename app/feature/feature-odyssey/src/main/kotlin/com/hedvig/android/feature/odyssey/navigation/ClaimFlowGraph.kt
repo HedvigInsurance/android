@@ -15,6 +15,8 @@ import com.hedvig.android.feature.odyssey.step.dateofoccurrence.DateOfOccurrence
 import com.hedvig.android.feature.odyssey.step.dateofoccurrence.DateOfOccurrenceViewModel
 import com.hedvig.android.feature.odyssey.step.dateofoccurrencepluslocation.DateOfOccurrencePlusLocationDestination
 import com.hedvig.android.feature.odyssey.step.dateofoccurrencepluslocation.DateOfOccurrencePlusLocationViewModel
+import com.hedvig.android.feature.odyssey.step.fileupload.FileUploadDestination
+import com.hedvig.android.feature.odyssey.step.fileupload.FileUploadViewModel
 import com.hedvig.android.feature.odyssey.step.honestypledge.HonestyPledgeDestination
 import com.hedvig.android.feature.odyssey.step.informdeflect.ConfirmEmergencyDestination
 import com.hedvig.android.feature.odyssey.step.informdeflect.ConfirmEmergencyViewModel
@@ -51,6 +53,7 @@ import org.koin.core.parameter.parametersOf
 fun NavGraphBuilder.claimFlowGraph(
   windowSizeClass: WindowSizeClass,
   navigator: Navigator,
+  appPackageId: String,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   navigateToTriaging: () -> Unit,
   openAppSettings: () -> Unit,
@@ -266,6 +269,21 @@ fun NavGraphBuilder.claimFlowGraph(
         windowSizeClass = windowSizeClass,
         closeClaimFlow = closeClaimFlow,
         imageLoader = imageLoader,
+      )
+    }
+    composable<ClaimFlowDestination.FileUpload> { backStackEntry ->
+      val viewModel: FileUploadViewModel = koinViewModel { parametersOf(this) }
+      FileUploadDestination(
+        viewModel = viewModel,
+        navigateUp = navigator::navigateUp,
+        windowSizeClass = windowSizeClass,
+        closeClaimFlow = closeClaimFlow,
+        imageLoader = imageLoader,
+        navigateToNextStep = { claimFlowStep ->
+          viewModel.handledNextStepNavigation()
+          navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())
+        },
+        appPackageId = appPackageId,
       )
     }
   }

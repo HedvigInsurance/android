@@ -54,10 +54,6 @@
           android:scheme="https" />
       </intent-filter>
     </activity>
-    <activity
-      android:name=".feature.zignsec.SimpleSignAuthenticationActivity"
-      android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-      android:windowSoftInputMode="adjustResize" />
     <activity android:name=".feature.sunsetting.ForceUpgradeActivity" />
     <activity
       android:name=".feature.genericauth.GenericAuthActivity"
@@ -70,7 +66,7 @@
       android:windowSoftInputMode="adjustResize" />
     <activity
       android:name=".feature.marketing.MarketingActivity"
-      android:configChanges="keyboard|keyboardHidden|orientation|screenSize|locale|layoutDirection"
+      android:configChanges="keyboard|keyboardHidden|orientation|screenSize|layoutDirection"
       android:theme="@style/Hedvig.Theme"
       android:windowSoftInputMode="adjustResize" />
 

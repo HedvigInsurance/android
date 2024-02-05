@@ -6,8 +6,8 @@
 
     <string name="OCTOPUS_GRAPHQL_URL" translatable="false">https://apollo-router.dev.hedvigit.com</string>
     <string name="WEB_BASE_URL" translatable="false">https://www.dev.hedvigit.com</string>
-    <string name="HANALYTICS_URL" translatable="false">https://hanalytics.dev.hedvigit.com</string>
     <string name="ODYSSEY_URL" translatable="false">https://odyssey.dev.hedvigit.com</string>
     <string name="BOT_SERVICE" translatable="false">https://gateway.dev.hedvigit.com/bot-service</string>
     <string name="AUTH_URL" translatable="false">"https://auth.dev.hedvigit.com"</string>
+    <string name="CLAIMS_SERVICE" translatable="false">https://gateway.dev.hedvigit.com/claims</string>
 </resources>

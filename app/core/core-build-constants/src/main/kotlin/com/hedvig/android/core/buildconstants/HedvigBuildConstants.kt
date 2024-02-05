@@ -12,11 +12,6 @@ interface HedvigBuildConstants {
   val urlBaseWeb: String
 
   /**
-   * The URL targeting Hanalytics backend
-   */
-  val urlHanalytics: String
-
-  /**
    * The URL targeting odyssey backend
    */
   val urlOdyssey: String
@@ -25,6 +20,11 @@ interface HedvigBuildConstants {
    * The URL targeting bot service backend
    */
   val urlBotService: String
+
+  /**
+   * The URL targeting claims service backend
+   */
+  val urlClaimsService: String
 
   /**
    * The base host used for all deep links.

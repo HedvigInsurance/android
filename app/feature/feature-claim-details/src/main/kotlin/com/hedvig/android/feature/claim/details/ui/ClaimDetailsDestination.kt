@@ -1,5 +1,9 @@
 package com.hedvig.android.feature.claim.details.ui
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -7,10 +11,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,11 +25,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
-import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
@@ -33,9 +38,14 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
@@ -44,22 +54,28 @@ import com.hedvig.android.audio.player.SignedAudioUrl
 import com.hedvig.android.audio.player.state.AudioPlayerState
 import com.hedvig.android.audio.player.state.PlayableAudioSource
 import com.hedvig.android.audio.player.state.rememberAudioPlayer
-import com.hedvig.android.core.designsystem.animation.animateContentHeight
+import com.hedvig.android.compose.photo.capture.state.rememberPhotoCaptureState
+import com.hedvig.android.core.designsystem.component.button.HedvigSecondaryContainedButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.fileupload.ui.FilePickerBottomSheet
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.HedvigIcons
 import com.hedvig.android.core.icons.hedvig.colored.hedvig.Chat
 import com.hedvig.android.core.icons.hedvig.normal.Document
 import com.hedvig.android.core.icons.hedvig.normal.Pictures
 import com.hedvig.android.core.icons.hedvig.normal.Play
+import com.hedvig.android.core.ui.FileContainer
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
+import com.hedvig.android.core.ui.dialog.ErrorDialog
+import com.hedvig.android.core.ui.plus
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.ui.claimstatus.ClaimStatusCard
 import com.hedvig.android.ui.claimstatus.model.ClaimPillType
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment
@@ -71,18 +87,23 @@ import octopus.type.CurrencyCode
 internal fun ClaimDetailsDestination(
   viewModel: ClaimDetailsViewModel,
   imageLoader: ImageLoader,
+  appPackageId: String,
   navigateUp: () -> Unit,
   onChatClick: () -> Unit,
+  onUri: (Uri, targetUploadUrl: String) -> Unit,
   openUrl: (String) -> Unit,
 ) {
   val viewState by viewModel.uiState.collectAsStateWithLifecycle()
   ClaimDetailScreen(
     uiState = viewState,
     imageLoader = imageLoader,
+    appPackageId = appPackageId,
+    openUrl = openUrl,
+    onDismissUploadError = { viewModel.emit(ClaimDetailsEvent.DismissUploadError) },
     retry = { viewModel.emit(ClaimDetailsEvent.Retry) },
     navigateUp = navigateUp,
-    openUrl = openUrl,
     onChatClick = onChatClick,
+    onUri = onUri,
   )
 }
 
@@ -90,10 +111,13 @@ internal fun ClaimDetailsDestination(
 private fun ClaimDetailScreen(
   uiState: ClaimDetailUiState,
   imageLoader: ImageLoader,
+  appPackageId: String,
   openUrl: (String) -> Unit,
+  onDismissUploadError: () -> Unit,
   retry: () -> Unit,
   navigateUp: () -> Unit,
   onChatClick: () -> Unit,
+  onUri: (file: Uri, uploadUri: String) -> Unit,
 ) {
   Surface(
     color = MaterialTheme.colorScheme.background,
@@ -107,9 +131,12 @@ private fun ClaimDetailScreen(
       when (uiState) {
         is ClaimDetailUiState.Content -> ClaimDetailScreen(
           uiState = uiState,
-          openUrl = openUrl,
           onChatClick = onChatClick,
+          onUri = onUri,
+          onDismissUploadError = onDismissUploadError,
+          openUrl = openUrl,
           imageLoader = imageLoader,
+          appPackageId = appPackageId,
         )
 
         ClaimDetailUiState.Error -> HedvigErrorSection(retry = retry)
@@ -123,19 +150,62 @@ private fun ClaimDetailScreen(
 private fun ClaimDetailScreen(
   uiState: ClaimDetailUiState.Content,
   onChatClick: () -> Unit,
+  onUri: (file: Uri, uploadUri: String) -> Unit,
   openUrl: (String) -> Unit,
+  onDismissUploadError: () -> Unit,
   imageLoader: ImageLoader,
-  modifier: Modifier = Modifier,
+  appPackageId: String,
 ) {
-  LazyVerticalStaggeredGrid(
-    columns = StaggeredGridCells.Fixed(3),
+  var showFileTypeSelectBottomSheet by remember { mutableStateOf(false) }
+
+  val photoCaptureState = rememberPhotoCaptureState(appPackageId = appPackageId) { uri ->
+    logcat { "ChatFileState sending uri:$uri" }
+    onUri(uri, uiState.uploadUri)
+  }
+  val photoPicker = rememberLauncherForActivityResult(
+    contract = ActivityResultContracts.PickVisualMedia(),
+  ) { resultingUri: Uri? ->
+    if (resultingUri != null) {
+      onUri(resultingUri, uiState.uploadUri)
+    }
+  }
+  val filePicker = rememberLauncherForActivityResult(
+    contract = ActivityResultContracts.GetContent(),
+  ) { resultingUri: Uri? ->
+    if (resultingUri != null) {
+      onUri(resultingUri, uiState.uploadUri)
+    }
+  }
+
+  if (showFileTypeSelectBottomSheet) {
+    FilePickerBottomSheet(
+      onPickPhoto = {
+        photoPicker.launch(PickVisualMediaRequest())
+        showFileTypeSelectBottomSheet = false
+      },
+      onPickFile = {
+        filePicker.launch("*/*")
+        showFileTypeSelectBottomSheet = false
+      },
+      onTakePhoto = {
+        photoCaptureState.launchTakePhotoRequest()
+        showFileTypeSelectBottomSheet = false
+      },
+      onDismiss = {
+        showFileTypeSelectBottomSheet = false
+      },
+    )
+  }
+
+  LazyVerticalGrid(
+    columns = GridCells.Fixed(3),
     horizontalArrangement = Arrangement.spacedBy(8.dp),
-    verticalItemSpacing = 8.dp,
-    modifier = modifier
-      .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom))
-      .padding(horizontal = 16.dp),
+    verticalArrangement = Arrangement.spacedBy(8.dp),
+    contentPadding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
+      .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
+      .asPaddingValues(),
   ) {
-    item(span = StaggeredGridItemSpan.FullLine) {
+    item(span = { GridItemSpan(3) }) {
       Column {
         Spacer(Modifier.height(8.dp))
         ClaimStatusCard(
@@ -166,7 +236,7 @@ private fun ClaimDetailScreen(
 
           else -> {}
         }
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(8.dp))
       }
     }
 
@@ -180,11 +250,11 @@ private fun ClaimDetailScreen(
           .clickable {
             openUrl(it.url)
           }
-          .animateContentHeight(),
+          .height(109.dp),
         contentAlignment = Alignment.Center,
       ) {
         if (it.mimeType.contains("image")) {
-          ClaimAsyncImage(
+          FileContainer(
             model = it.url,
             imageLoader = imageLoader,
             cacheKey = it.id,
@@ -201,11 +271,39 @@ private fun ClaimDetailScreen(
             )
             Text(
               text = it.name,
+              textAlign = TextAlign.Center,
+              maxLines = 3,
+              overflow = TextOverflow.Ellipsis,
               color = MaterialTheme.colorScheme.onSurfaceVariant,
               style = MaterialTheme.typography.labelMedium,
             )
           }
         }
+      }
+    }
+
+    item(span = { GridItemSpan(3) }) {
+      Column {
+        Spacer(Modifier.height(8.dp))
+
+        val text = if (uiState.files.isNotEmpty()) {
+          stringResource(id = R.string.claim_status_detail_add_more_files)
+        } else {
+          stringResource(id = R.string.claim_status_detail_add_files)
+        }
+        HedvigSecondaryContainedButton(
+          text = text,
+          onClick = { showFileTypeSelectBottomSheet = true },
+          isLoading = uiState.isUploadingFile,
+        )
+
+        if (uiState.uploadError != null) {
+          ErrorDialog(
+            message = uiState.uploadError,
+            onDismiss = { onDismissUploadError() },
+          )
+        }
+        Spacer(Modifier.height(32.dp))
       }
     }
   }
@@ -386,18 +484,17 @@ private fun PreviewClaimDetailScreen() {
               url = "",
               thumbnailUrl = "1",
             ),
-            ClaimDetailUiState.Content.ClaimFile(
-              id = "7",
-              name = "test7",
-              mimeType = "",
-              url = "1",
-              thumbnailUrl = "1",
-            ),
           ),
+          isUploadingFile = false,
+          uploadUri = "",
+          uploadError = null,
         ),
         onChatClick = {},
-        imageLoader = rememberPreviewImageLoader(),
+        onUri = { uri: Uri, s: String -> },
         openUrl = {},
+        imageLoader = rememberPreviewImageLoader(),
+        appPackageId = "",
+        onDismissUploadError = {},
       )
     }
   }

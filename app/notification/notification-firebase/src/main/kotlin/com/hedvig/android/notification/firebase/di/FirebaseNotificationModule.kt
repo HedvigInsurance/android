@@ -16,7 +16,6 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
-@Suppress("RemoveExplicitTypeArguments")
 val firebaseNotificationModule = module {
   single<FCMTokenStorage> { DatastoreFCMTokenStorage(get<DataStore<Preferences>>()) }
   single<FCMTokenManager> {

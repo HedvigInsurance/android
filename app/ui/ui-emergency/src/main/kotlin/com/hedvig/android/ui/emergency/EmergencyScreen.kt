@@ -28,7 +28,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.material3.alwaysBlackContainer
@@ -139,7 +138,7 @@ fun EmergencyScreen(title: String?, emergencyNumber: String?, navigateUp: () -> 
   }
 }
 
-@Suppress("ktlint:standard:max-line-length")
+@Suppress("ktlint:standard:max-line-length", "ktlint:standard:argument-list-wrapping")
 @Composable
 private fun QuestionsAndAnswers(modifier: Modifier = Modifier) {
   var expandedItem by rememberSaveable { mutableIntStateOf(-1) }

@@ -12,10 +12,8 @@ import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.travelcertificate.GetTravelCertificateSpecificationsUseCase
-import com.hedvig.android.feature.home.commonclaim.CommonClaimsData
-import com.hedvig.android.feature.home.emergency.EmergencyData
-import com.hedvig.android.hanalytics.featureflags.FeatureManager
-import com.hedvig.android.hanalytics.featureflags.flags.Feature
+import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.memberreminders.GetMemberRemindersUseCase
@@ -31,8 +29,6 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import octopus.HomeQuery
-import octopus.HomeQuery.Data.CurrentMember.ActiveContract.CurrentAgreement.ProductVariant.CommonClaimDescription
-import octopus.HomeQuery.Data.CurrentMember.ActiveContract.CurrentAgreement.ProductVariant.CommonClaimDescription.Layout.Companion.asCommonClaimLayoutEmergency
 
 internal interface GetHomeDataUseCase {
   fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, HomeData>>
@@ -53,8 +49,8 @@ internal class GetHomeDataUseCaseImpl(
         .safeFlow(::ErrorMessage),
       getMemberRemindersUseCase.invoke(),
       flow { emit(getTravelCertificateSpecificationsUseCase.invoke().getOrNull()) },
-      flow { emit(featureManager.isFeatureEnabled(Feature.NEW_MOVING_FLOW)) },
-    ) { homeQueryDataResult, memberReminders, travelCertificateData, isNewMovingFlowEnabled ->
+      flow { emit(featureManager.isFeatureEnabled(Feature.MOVING_FLOW)) },
+    ) { homeQueryDataResult, memberReminders, travelCertificateData, isMovingFlowEnabled ->
       either {
         val homeQueryData: HomeQuery.Data = homeQueryDataResult.bind()
         val contractStatus = homeQueryData.currentMember.toContractStatus()
@@ -65,43 +61,11 @@ internal class GetHomeDataUseCaseImpl(
             link = it.link,
           )
         }
-        val commonClaimsData: List<CommonClaimsData> =
-          homeQueryData.currentMember.activeContracts.flatMap { activeContract ->
-            activeContract.currentAgreement.productVariant.commonClaimDescriptions.mapNotNull {
-                commonClaimDescription ->
-              when (commonClaimDescription.layout) {
-                is CommonClaimDescription.CommonClaimLayoutEmergencyLayout -> null
-                is CommonClaimDescription.CommonClaimLayoutTitleAndBulletPointsLayout -> {
-                  CommonClaimsData.from(commonClaimDescription)
-                }
-
-                is CommonClaimDescription.OtherLayout -> {
-                  logcat(LogPriority.ERROR) {
-                    "Backend error: common claim descriptor with other layout:${commonClaimDescription.layout}"
-                  }
-                  null
-                }
-              }
-            }
-          }.distinctBy { it.id }
-        val emergencyData = homeQueryData.currentMember.activeContracts.flatMap { activeContract ->
-          activeContract.currentAgreement.productVariant.commonClaimDescriptions.mapNotNull { commonClaimDescription ->
-            val emergencyLayout = commonClaimDescription.layout.asCommonClaimLayoutEmergency() ?: return@mapNotNull null
-            EmergencyData(
-              title = commonClaimDescription.title,
-              emergencyNumber = emergencyLayout.emergencyNumber,
-            )
-          }
-        }.firstOrNull()
         HomeData(
           contractStatus = contractStatus,
           claimStatusCardsData = homeQueryData.claimStatusCards(),
           veryImportantMessages = veryImportantMessages.toPersistentList(),
           memberReminders = memberReminders,
-          allowAddressChange = contractStatus is HomeData.ContractStatus.Active && isNewMovingFlowEnabled,
-          allowGeneratingTravelCertificate = travelCertificateData != null,
-          emergencyData = emergencyData,
-          commonClaimsData = commonClaimsData.toPersistentList(),
         )
       }.onLeft { errorMessage ->
         logcat(throwable = errorMessage.throwable) { "GetHomeDataUseCase failed with ${errorMessage.message}" }
@@ -174,10 +138,6 @@ internal data class HomeData(
   val claimStatusCardsData: ClaimStatusCardsData?,
   val veryImportantMessages: ImmutableList<VeryImportantMessage>,
   val memberReminders: MemberReminders,
-  val allowAddressChange: Boolean,
-  val allowGeneratingTravelCertificate: Boolean,
-  val emergencyData: EmergencyData?,
-  val commonClaimsData: ImmutableList<CommonClaimsData>,
 ) {
   @Immutable
   data class ClaimStatusCardsData(
