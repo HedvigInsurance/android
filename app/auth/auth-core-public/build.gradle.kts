@@ -8,10 +8,12 @@ plugins {
 dependencies {
   api(libs.hedvig.authlib)
   api(libs.kotlinx.datetime)
+
   implementation(libs.androidx.datastore.core)
   implementation(libs.androidx.datastore.preferencesCore)
   implementation(libs.coroutines.core)
   implementation(libs.koin.core)
+  implementation(libs.kotlinx.serialization.json)
   implementation(libs.ktor)
   implementation(libs.okhttp.core)
   implementation(projects.authEventCore)
@@ -28,6 +30,4 @@ dependencies {
   testImplementation(projects.authCoreTest)
   testImplementation(projects.coreDatastoreTest)
   testImplementation(projects.loggingTest)
-
-  implementation(libs.kotlinx.serialization.json)
 }
