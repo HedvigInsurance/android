@@ -13,6 +13,7 @@ class DatadogActionLogger(
   private val sdkCore: SdkCore,
 ) : ActionLogger {
   val rumMonitor = GlobalRumMonitor.get(sdkCore)
+
   override fun logAction(type: ActionType, name: String, attributes: Map<String, Any?>) {
     rumMonitor.addAction(
       when (type) {

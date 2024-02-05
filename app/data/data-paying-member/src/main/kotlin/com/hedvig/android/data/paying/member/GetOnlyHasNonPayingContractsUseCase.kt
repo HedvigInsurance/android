@@ -9,4 +9,3 @@ import com.hedvig.android.core.common.ErrorMessage
 interface GetOnlyHasNonPayingContractsUseCase {
   suspend fun invoke(): Either<ErrorMessage, Boolean>
 }
-
