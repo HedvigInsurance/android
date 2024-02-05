@@ -24,6 +24,7 @@ import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
  * Configure base Kotlin with Android options
  */
 internal fun Project.configureKotlinAndroid(commonExtension: AndroidCommonExtension) {
+  val project = this@configureKotlinAndroid
   val libs = the<LibrariesForLibs>()
 
   commonExtension.apply {
@@ -43,7 +44,7 @@ internal fun Project.configureKotlinAndroid(commonExtension: AndroidCommonExtens
       (this as ExtensionAware).extensions.configure("kotlinOptions", block)
     }
     kotlinOptions {
-      configureKotlinOptions(this@configureKotlinAndroid)
+      configureKotlinOptions(project)
     }
 
     configureAutomaticNamespace(this)
@@ -55,10 +56,20 @@ internal fun Project.configureKotlinAndroid(commonExtension: AndroidCommonExtens
 
     add("coreLibraryDesugaring", libs.coreLibraryDesugaring.get())
     add("lintChecks", project(":hedvig-lint"))
-    if (this@configureKotlinAndroid.name != "logging-public") {
+    // Add logging-public and tracking-core to all modules except themselves
+    if (!project.isLoggingPublicModule() && !project.isTrackingCoreModule()) {
       add("implementation", project(":logging-public"))
+      add("implementation", project(":tracking-core"))
     }
   }
+}
+
+private fun Project.isLoggingPublicModule(): Boolean {
+  return name == "logging-public"
+}
+
+private fun Project.isTrackingCoreModule(): Boolean {
+  return name == "tracking-core"
 }
 
 /**
