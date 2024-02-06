@@ -5,13 +5,13 @@ import com.datadog.android.api.SdkCore
 import com.datadog.android.rum.GlobalRumMonitor
 import com.datadog.android.rum.RumActionType
 import com.datadog.android.rum.RumErrorSource
-import com.hedvig.android.core.tracking.ActionLogger
+import com.hedvig.android.core.tracking.RumLogger
 import com.hedvig.android.core.tracking.ActionType
 import com.hedvig.android.core.tracking.ErrorSource
 
-class DatadogActionLogger(
+class DatadogRumLogger(
   private val sdkCore: SdkCore,
-) : ActionLogger {
+) : RumLogger {
   val rumMonitor = GlobalRumMonitor.get(sdkCore)
 
   override fun logAction(type: ActionType, name: String, attributes: Map<String, Any?>) {
@@ -60,8 +60,8 @@ class DatadogActionLogger(
 
   companion object {
     fun install(sdkCore: SdkCore = Datadog.getInstance()) {
-      if (!ActionLogger.isInstalled) {
-        ActionLogger.install(DatadogActionLogger(sdkCore))
+      if (!RumLogger.isInstalled) {
+        RumLogger.install(DatadogRumLogger(sdkCore))
       }
     }
   }
