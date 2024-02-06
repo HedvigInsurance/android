@@ -5,9 +5,9 @@ import com.datadog.android.api.SdkCore
 import com.datadog.android.rum.GlobalRumMonitor
 import com.datadog.android.rum.RumActionType
 import com.datadog.android.rum.RumErrorSource
-import com.hedvig.android.core.tracking.RumLogger
 import com.hedvig.android.core.tracking.ActionType
 import com.hedvig.android.core.tracking.ErrorSource
+import com.hedvig.android.core.tracking.RumLogger
 
 class DatadogRumLogger(
   private val sdkCore: SdkCore,
