@@ -14,7 +14,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -113,34 +112,29 @@ private fun ChatScreen(
           .consumeWindowInsets(PaddingValues(top = topAppBarHeight)),
         propagateMinConstraints = true,
       ) {
-        val loadingIndicator = remember { movableContentOf { HedvigFullScreenCenterAlignedProgress() } }
-        when (uiState) {
-          ChatUiState.Initializing -> {
-            loadingIndicator()
-          }
-
-          is ChatUiState.Loaded -> {
-            ChatLoadedScreen(
-              uiState = uiState,
-              imageLoader = imageLoader,
-              appPackageId = appPackageId,
-              topAppBarScrollBehavior = topAppBarScrollBehavior,
-              openUrl = openUrl,
-              onRetrySendChatMessage = onRetrySendChatMessage,
-              onSendMessage = onSendMessage,
-              onSendPhoto = onSendPhoto,
-              onSendMedia = onSendMedia,
-              onFetchMoreMessages = onFetchMoreMessages,
-            )
-            val stillLoadingInitialMessages = uiState.messages.isEmpty() &&
-              (
-                uiState.fetchMoreMessagesUiState is ChatUiState.Loaded.FetchMoreMessagesUiState.StillInitializing ||
-                  uiState.fetchMoreMessagesUiState is ChatUiState.Loaded.FetchMoreMessagesUiState.FetchingMore
-              )
-            if (stillLoadingInitialMessages) {
-              loadingIndicator()
-            }
-          }
+        if (uiState is ChatUiState.Loaded) {
+          ChatLoadedScreen(
+            uiState = uiState,
+            imageLoader = imageLoader,
+            appPackageId = appPackageId,
+            topAppBarScrollBehavior = topAppBarScrollBehavior,
+            openUrl = openUrl,
+            onRetrySendChatMessage = onRetrySendChatMessage,
+            onSendMessage = onSendMessage,
+            onSendPhoto = onSendPhoto,
+            onSendMedia = onSendMedia,
+            onFetchMoreMessages = onFetchMoreMessages,
+          )
+        }
+        val shouldShowLoadingIndicator = uiState is ChatUiState.Initializing || run {
+          uiState as? ChatUiState.Loaded ?: return@run false
+          val stillLoadingInitialMessages =
+            uiState.fetchMoreMessagesUiState is ChatUiState.Loaded.FetchMoreMessagesUiState.StillInitializing ||
+              uiState.fetchMoreMessagesUiState is ChatUiState.Loaded.FetchMoreMessagesUiState.FetchingMore
+          uiState.messages.isEmpty() && stillLoadingInitialMessages
+        }
+        if (shouldShowLoadingIndicator) {
+          HedvigFullScreenCenterAlignedProgress()
         }
       }
     }
