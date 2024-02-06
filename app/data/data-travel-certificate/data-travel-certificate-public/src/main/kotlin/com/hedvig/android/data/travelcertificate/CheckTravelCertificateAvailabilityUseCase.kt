@@ -35,7 +35,7 @@ internal class CheckTravelCertificateAvailabilityUseCaseImpl(
         ?.firstOrNull { it.supportsTravelCertificate() }
 //      val contractsWithTravelCertificate = null //todo: remove testing
 //
-      val history = getTravelCertificatesHistory.invoke().value
+      val history = getTravelCertificatesHistory.invoke()
 //      val history = listOf<TravelCertificate>() //todo: remove testing
 
       ensure(history.isNotEmpty() || contractsWithTravelCertificate != null) {

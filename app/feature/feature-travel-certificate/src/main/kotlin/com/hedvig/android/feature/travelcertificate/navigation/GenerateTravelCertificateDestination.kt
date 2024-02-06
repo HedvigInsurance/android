@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 
 internal sealed interface GenerateTravelCertificateDestination : Destination {
   @Serializable
-  data object TravelCertificateInformation : GenerateTravelCertificateDestination
+  data object TravelCertificateHistory : GenerateTravelCertificateDestination
 
   @Serializable
   data object TravelCertificateInput : GenerateTravelCertificateDestination

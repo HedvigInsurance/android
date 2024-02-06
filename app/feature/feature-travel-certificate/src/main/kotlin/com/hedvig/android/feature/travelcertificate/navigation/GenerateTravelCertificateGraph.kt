@@ -12,11 +12,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
+import com.hedvig.android.feature.travelcertificate.CertificateHistoryViewModel
 import com.hedvig.android.feature.travelcertificate.GenerateTravelCertificateViewModel
 import com.hedvig.android.feature.travelcertificate.TravelCertificateInputState
 import com.hedvig.android.feature.travelcertificate.ui.AddCoInsured
 import com.hedvig.android.feature.travelcertificate.ui.GenerateTravelCertificateInput
-import com.hedvig.android.feature.travelcertificate.ui.TravelCertificateInformation
+import com.hedvig.android.feature.travelcertificate.ui.TravelCertificateHistoryDestination
 import com.hedvig.android.feature.travelcertificate.ui.TravelCertificateOverview
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
@@ -27,6 +28,7 @@ import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigate
 import com.kiwi.navigationcompose.typed.navigation
 import com.kiwi.navigationcompose.typed.popBackStack
+import org.koin.androidx.compose.koinViewModel
 
 fun NavGraphBuilder.generateTravelCertificateGraph(
   density: Density,
@@ -37,36 +39,24 @@ fun NavGraphBuilder.generateTravelCertificateGraph(
   },
 ) {
   navigation<AppDestination.GenerateTravelCertificate>(
-    startDestination = createRoutePattern<GenerateTravelCertificateDestination.TravelCertificateInformation>(),
+    startDestination = createRoutePattern<GenerateTravelCertificateDestination.TravelCertificateHistory>(),
     enterTransition = { MotionDefaults.sharedXAxisEnter(density) },
     exitTransition = { MotionDefaults.sharedXAxisExit(density) },
     popEnterTransition = { MotionDefaults.sharedXAxisPopEnter(density) },
     popExitTransition = { MotionDefaults.sharedXAxisPopExit(density) },
   ) {
-    composable<GenerateTravelCertificateDestination.TravelCertificateInformation> { navBackStackEntry ->
-      val viewModel: GenerateTravelCertificateViewModel =
-        destinationScopedViewModel<AppDestination.GenerateTravelCertificate, _>(
-          navController = navController,
-          backStackEntry = navBackStackEntry,
-        )
-      val uiState: TravelCertificateInputState by viewModel.uiState.collectAsStateWithLifecycle()
-      val localContext = LocalContext.current
-      TravelCertificateInformation(
-        isLoading = uiState.isLoading,
-        infoSections = uiState.infoSections,
-        errorMessage = uiState.errorMessage,
-        onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
-        onContinue = {
-          navController.navigate(GenerateTravelCertificateDestination.TravelCertificateInput)
-        },
+    composable<GenerateTravelCertificateDestination.TravelCertificateHistory> {
+      val viewModel: CertificateHistoryViewModel = koinViewModel()
+      TravelCertificateHistoryDestination(
+        viewModel = viewModel,
         navigateUp = navController::navigateUp,
-        historyList = uiState.historyList,
-        onCertificateClick = { url ->
-          openWebsite(localContext, if (url.isBlank()) Uri.EMPTY else Uri.parse(url))
-        },
-        // todo: openUrl in the browser here: downloads the file trough browser, but does not show it
+        onContinue = { navController.navigate(GenerateTravelCertificateDestination.TravelCertificateInput) },
       )
     }
+
+    // todo: should we add next 3 destinations to a separate nested graph, so the GenerateTravelCertificateViewModel
+    // todo: would be scoped to that nested graph destination?
+
     composable<GenerateTravelCertificateDestination.TravelCertificateInput> { navBackStackEntry ->
       val viewModel: GenerateTravelCertificateViewModel =
         destinationScopedViewModel<AppDestination.GenerateTravelCertificate, _>(
@@ -78,7 +68,9 @@ fun NavGraphBuilder.generateTravelCertificateGraph(
 
       GenerateTravelCertificateInput(
         uiState = uiState,
-        navigateBack = { navController.navigateUp() },
+        navigateBack = {
+          navController.navigateUp()
+        },
         onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
         onEmailChanged = viewModel::onEmailChanged,
         onCoInsuredClicked = { coInsured ->
@@ -129,7 +121,13 @@ fun NavGraphBuilder.generateTravelCertificateGraph(
       val localContext = LocalContext.current
 
       BackHandler {
-        finish()
+//        finish()
+//        navController.navigate(GenerateTravelCertificateDestination.TravelCertificateHistory)
+        navController.popBackStack<AppDestination.GenerateTravelCertificate>(false)
+        // todo: how
+        // todo: check here.
+        // todo: what exactly happens to backstack here, do we need to create AppDestination that inherits from
+        // todo: Destination
       }
 
       TravelCertificateOverview(
@@ -141,7 +139,10 @@ fun NavGraphBuilder.generateTravelCertificateGraph(
         isLoading = uiState.isLoading,
         errorMessage = uiState.errorMessage,
         onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
-        navigateBack = finish,
+//        navigateBack = finish,
+        navigateBack = {
+          navController.navigate(GenerateTravelCertificateDestination.TravelCertificateHistory)
+        }, // todo: check here}
         onShareTravelCertificate = {
           val contentUri = getUriForFile(localContext, "$applicationId.provider", it.uri)
 

@@ -8,6 +8,7 @@ plugins {
 dependencies {
   apolloMetadata(projects.apolloOctopusPublic)
   implementation(libs.apollo.runtime)
+  implementation(libs.apollo.normalizedCache)
   implementation(libs.arrow.core)
   implementation(libs.koin.core)
   implementation(projects.apolloCore)

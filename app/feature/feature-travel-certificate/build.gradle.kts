@@ -29,4 +29,6 @@ dependencies {
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
   implementation(projects.navigationActivity)
+  implementation(projects.moleculeAndroid)
+  implementation(projects.moleculePublic)
 }
