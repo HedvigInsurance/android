@@ -13,5 +13,10 @@ val travelCertificateModule = module {
   single<CreateTravelCertificateUseCase> { CreateTravelCertificateUseCase(get<ApolloClient>()) }
   single<DownloadTravelCertificateUseCase> { DownloadTravelCertificateUseCase(get()) }
   viewModel<GenerateTravelCertificateViewModel> { GenerateTravelCertificateViewModel(get(), get(), get()) }
-  viewModel<CertificateHistoryViewModel> { CertificateHistoryViewModel(get<GetTravelCertificatesHistoryUseCase>()) }
+  viewModel<CertificateHistoryViewModel> {
+    CertificateHistoryViewModel(
+      get<GetTravelCertificatesHistoryUseCase>(),
+      get<DownloadTravelCertificateUseCase>(),
+    )
+  }
 }

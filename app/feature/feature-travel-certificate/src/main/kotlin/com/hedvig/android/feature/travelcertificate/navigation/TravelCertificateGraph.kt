@@ -2,7 +2,6 @@ package com.hedvig.android.feature.travelcertificate.navigation
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
@@ -15,12 +14,11 @@ import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.feature.travelcertificate.CertificateHistoryViewModel
 import com.hedvig.android.feature.travelcertificate.GenerateTravelCertificateViewModel
 import com.hedvig.android.feature.travelcertificate.TravelCertificateInputState
+import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUri
 import com.hedvig.android.feature.travelcertificate.ui.AddCoInsured
 import com.hedvig.android.feature.travelcertificate.ui.GenerateTravelCertificateInput
 import com.hedvig.android.feature.travelcertificate.ui.TravelCertificateHistoryDestination
 import com.hedvig.android.feature.travelcertificate.ui.TravelCertificateOverview
-import com.hedvig.android.logger.LogPriority
-import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.compose.typed.destinationScopedViewModel
 import com.hedvig.android.navigation.core.AppDestination
 import com.kiwi.navigationcompose.typed.composable
@@ -47,10 +45,14 @@ fun NavGraphBuilder.travelCertificateGraph(
   ) {
     composable<TravelCertificateDestination.TravelCertificateHistory> {
       val viewModel: CertificateHistoryViewModel = koinViewModel()
+      val localContext = LocalContext.current
       TravelCertificateHistoryDestination(
         viewModel = viewModel,
         navigateUp = navController::navigateUp,
         onContinue = { navController.navigate(TravelCertificateDestination.GenerateTravelCertificateDestinations) },
+        onShareTravelCertificate = {
+          shareCertificate(it, localContext, applicationId)
+        },
       )
     }
     navigation<TravelCertificateDestination.GenerateTravelCertificateDestinations>(
@@ -125,12 +127,8 @@ fun NavGraphBuilder.travelCertificateGraph(
 
         BackHandler {
           finish()
-//        navController.navigate(GenerateTravelCertificateDestination.TravelCertificateHistory)
-//        navController.popBackStack<AppDestination.TravelCertificate>(false)
 //        // todo: how
 //        // todo: check here.
-//        // todo: what exactly happens to backstack here, do we need to create AppDestination that inherits from
-//        // todo: Destination
         }
 
         TravelCertificateOverview(
@@ -143,19 +141,9 @@ fun NavGraphBuilder.travelCertificateGraph(
           errorMessage = uiState.errorMessage,
           onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
           navigateBack = finish,
-//        navigateBack = {
-//          navController.navigate(GenerateTravelCertificateDestination.TravelCertificateHistory)
-//        }, // todo: check here}
+//        }, // todo: check here
           onShareTravelCertificate = {
-            val contentUri = getUriForFile(localContext, "$applicationId.provider", it.uri)
-
-            val sendIntent: Intent = Intent().apply {
-              action = Intent.ACTION_VIEW
-              setDataAndType(contentUri, "application/pdf")
-              addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-            }
-            val shareIntent = Intent.createChooser(sendIntent, "Hedvig Travel Certificate")
-            localContext.startActivity(shareIntent)
+            shareCertificate(it, localContext, applicationId)
           },
         )
       }
@@ -163,11 +151,14 @@ fun NavGraphBuilder.travelCertificateGraph(
   }
 }
 
-internal fun openWebsite(context: Context, uri: Uri) {
-  val browserIntent = Intent(Intent.ACTION_VIEW, uri)
-  if (browserIntent.resolveActivity(context.packageManager) != null) {
-    context.startActivity(browserIntent)
-  } else {
-    logcat(LogPriority.ERROR) { "Tried to launch $uri but the phone has nothing to support such an intent." }
+private fun shareCertificate(uri: TravelCertificateUri, context: Context, applicationId: String) {
+  val contentUri = getUriForFile(context, "$applicationId.provider", uri.uri)
+
+  val sendIntent: Intent = Intent().apply {
+    action = Intent.ACTION_VIEW
+    setDataAndType(contentUri, "application/pdf")
+    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
   }
+  val shareIntent = Intent.createChooser(sendIntent, "Hedvig Travel Certificate")
+  context.startActivity(shareIntent)
 }

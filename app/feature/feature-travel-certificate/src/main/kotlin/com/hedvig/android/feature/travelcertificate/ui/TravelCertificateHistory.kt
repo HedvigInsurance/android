@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.travelcertificate.ui
 
-import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,11 +18,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -38,7 +37,7 @@ import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.data.travelcertificate.TravelCertificate
 import com.hedvig.android.feature.travelcertificate.CertificateHistoryEvent
 import com.hedvig.android.feature.travelcertificate.CertificateHistoryViewModel
-import com.hedvig.android.feature.travelcertificate.navigation.openWebsite
+import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUri
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 
@@ -47,16 +46,15 @@ internal fun TravelCertificateHistoryDestination(
   viewModel: CertificateHistoryViewModel,
   onContinue: () -> Unit,
   navigateUp: () -> Unit,
+  onShareTravelCertificate: (TravelCertificateUri) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  val context = LocalContext.current
   TravelCertificateHistory(
     reload = { viewModel.emit(CertificateHistoryEvent.RetryLoadReferralData) },
     isLoading = uiState.isLoading,
     historyList = uiState.certificateHistoryList,
     onCertificateClick = { url ->
-      openWebsite(context, if (url.isBlank()) Uri.EMPTY else Uri.parse(url))
-      // todo: openUrl in the browser here: downloads the file trough browser, but does not show it
+      viewModel.emit(CertificateHistoryEvent.DownloadCertificate(url))
     },
     errorMessage = uiState.certificateHistoryErrorMessage?.message,
     onContinue = onContinue,
@@ -65,11 +63,13 @@ internal fun TravelCertificateHistoryDestination(
     onShowBottomSheet = { viewModel.emit(CertificateHistoryEvent.ShowBottomSheet) },
     onDismissBottomSheet = { viewModel.emit(CertificateHistoryEvent.DismissBottomSheet) },
     showBottomSheet = uiState.showInfoBottomSheet,
+    onShareTravelCertificate = onShareTravelCertificate,
+    travelCertificateUri = uiState.downLoadingUri,
   )
 }
 
 @Composable
-fun TravelCertificateHistory(
+private fun TravelCertificateHistory(
   reload: () -> Unit,
   isLoading: Boolean,
   historyList: List<TravelCertificate>?,
@@ -81,7 +81,15 @@ fun TravelCertificateHistory(
   onShowBottomSheet: () -> Unit,
   onDismissBottomSheet: () -> Unit,
   navigateUp: () -> Unit,
+  onShareTravelCertificate: (TravelCertificateUri) -> Unit,
+  travelCertificateUri: TravelCertificateUri?,
 ) {
+  LaunchedEffect(travelCertificateUri) {
+    travelCertificateUri?.let {
+      onShareTravelCertificate(it)
+    }
+  } // todo: how to make it a viewmodel event?
+
   if (errorMessage != null) {
     ErrorDialog(
       title = stringResource(id = R.string.general_error),
