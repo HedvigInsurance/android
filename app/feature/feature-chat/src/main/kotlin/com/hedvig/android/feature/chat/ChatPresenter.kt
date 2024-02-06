@@ -60,6 +60,8 @@ internal sealed interface ChatUiState {
     val messages: ImmutableList<UiChatMessage>,
     val fetchMoreMessagesUiState: FetchMoreMessagesUiState,
     val bannerText: String?,
+    // This is used to track if a message has been sent at least once in this chat "session"
+    val haveSentAtLeastOneMessage: Boolean,
   ) : ChatUiState {
     data class UiChatMessage(
       val chatMessage: ChatMessage,
@@ -90,8 +92,10 @@ internal class ChatPresenter(
         *(lastState.safeCast<ChatUiState.Loaded>()?.messages?.map { it.chatMessage } ?: emptyList()).toTypedArray(),
       )
     }
-
-    var bannerText: String? by remember { mutableStateOf(null) }
+    var bannerText: String? by remember { mutableStateOf(lastState.safeCast<ChatUiState.Loaded>()?.bannerText) }
+    var haveSendAtLeastOneMessage: Boolean by remember {
+      mutableStateOf(lastState.safeCast<ChatUiState.Loaded>()?.haveSentAtLeastOneMessage ?: false)
+    }
 
     // We are considered to still be initializing before we get the first cache emission
     var isStillInitializing by remember { mutableStateOf(lastState is ChatUiState.Initializing) }
@@ -171,14 +175,17 @@ internal class ChatPresenter(
         }
 
         is ChatEvent.SendPhotoMessage -> {
+          haveSendAtLeastOneMessage = true
           photosToSend.trySend(event.uri)
         }
 
         is ChatEvent.SendMediaMessage -> {
+          haveSendAtLeastOneMessage = true
           mediaToSend.trySend(event.uri)
         }
 
         is ChatEvent.SendTextMessage -> {
+          haveSendAtLeastOneMessage = true
           messagesToSend.trySend(event.message)
         }
 
@@ -241,6 +248,7 @@ internal class ChatPresenter(
           .toPersistentList(),
         fetchMoreMessagesUiState = fetchMoreMessagesUiState,
         bannerText = bannerText,
+        haveSentAtLeastOneMessage = haveSendAtLeastOneMessage,
       )
     }
   }
