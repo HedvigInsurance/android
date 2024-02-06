@@ -62,7 +62,7 @@ fun NavGraphBuilder.profileGraph(
           navigateToPaymentInfo(backStackEntry)
         },
         navigateToTravelCertificate = {
-          with(navigator) { backStackEntry.navigate(AppDestination.GenerateTravelCertificate) }
+          with(navigator) { backStackEntry.navigate(AppDestination.TravelCertificate) }
         },
         navigateToConnectPayment = navigateToConnectPayment,
         navigateToAddMissingInfo = { contractId ->

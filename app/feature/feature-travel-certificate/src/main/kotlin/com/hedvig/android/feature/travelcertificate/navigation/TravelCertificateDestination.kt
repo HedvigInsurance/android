@@ -5,20 +5,23 @@ import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.serialization.Serializable
 
-internal sealed interface GenerateTravelCertificateDestination : Destination {
+internal sealed interface TravelCertificateDestination : Destination {
   @Serializable
-  data object TravelCertificateHistory : GenerateTravelCertificateDestination
+  data object TravelCertificateHistory : TravelCertificateDestination
 
   @Serializable
-  data object TravelCertificateInput : GenerateTravelCertificateDestination
+  data object GenerateTravelCertificateDestinations : TravelCertificateDestination
+
+  @Serializable
+  data object TravelCertificateInput : TravelCertificateDestination
 
   @Serializable
   data class AddCoInsured(
     val coInsured: CoInsured?,
-  ) : GenerateTravelCertificateDestination
+  ) : TravelCertificateDestination
 
   @Serializable
   data class ShowCertificate(
     val travelCertificateUrl: TravelCertificateUrl,
-  ) : GenerateTravelCertificateDestination
+  ) : TravelCertificateDestination
 }

@@ -147,6 +147,7 @@ fun TravelCertificateHistory(
 
 @Composable
 private fun ShowInitialInfo() {
+  Spacer(modifier = Modifier.padding(vertical = 32.dp))
   Text(
     text = stringResource(id = R.string.travel_certificate_description),
     style = MaterialTheme.typography.headlineSmall,

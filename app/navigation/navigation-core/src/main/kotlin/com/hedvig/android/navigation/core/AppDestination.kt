@@ -42,7 +42,7 @@ sealed interface AppDestination : Destination {
   data object EditCoInsured : AppDestination
 
   @Serializable
-  data object GenerateTravelCertificate : AppDestination
+  data object TravelCertificate : AppDestination
 
   @Serializable
   data object Eurobonus : AppDestination

@@ -114,7 +114,7 @@ internal class GetQuickLinksUseCase(
       if (travelCertificateAvailable) {
         add(
           QuickAction.QuickLink(
-            destination = AppDestination.GenerateTravelCertificate,
+            destination = AppDestination.TravelCertificate,
             titleRes = R.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE,
             displayName = null,
           ),

@@ -29,6 +29,10 @@ internal class GetTravelCertificatesHistoryUseCaseImpl(val apolloClient: ApolloC
       TravelCertificate(it.startDate, it.id, it.signedUrl, it.expiryDate)
     }
     return list ?: listOf()
+//    return emptyList
+//    return mockWithOneExpiredEarlier
+//    return mockWithExpiredToday
+    // todo: remove mocks
   }
 }
 
@@ -46,7 +50,6 @@ sealed interface TravelCertificateHistoryError {
 }
 
 // mock responses
-
 val emptyList = listOf<TravelCertificate>()
 val mockWithOneExpiredEarlier = listOf<TravelCertificate>(
   TravelCertificate(
