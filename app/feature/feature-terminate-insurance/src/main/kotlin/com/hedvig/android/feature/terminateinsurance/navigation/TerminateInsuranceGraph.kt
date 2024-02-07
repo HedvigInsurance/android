@@ -162,12 +162,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
         },
       )
     }
-    composable<TerminateInsuranceDestination.TerminationOverview>(
-      enterTransition = { sharedXAxisEnterTransition(50) },
-      exitTransition = { sharedXAxisExitTransition(50) },
-      popEnterTransition = { sharedXAxisEnterTransition(50) },
-      popExitTransition = { sharedXAxisExitTransition(50) },
-    ) { backStackEntry ->
+    composable<TerminateInsuranceDestination.TerminationOverview> { backStackEntry ->
       val terminateInsurance = getTerminateInsuranceDataFromParentBackstack(navController, backStackEntry)
       val viewModel: OverviewViewModel = koinViewModel {
         parametersOf(
@@ -232,42 +227,4 @@ private fun <T : TerminateInsuranceDestination> Navigator.navigateToTerminateFlo
 
 private fun finishTerminationFlow(navController: NavController) {
   navController.popBackStack<AppDestination.TerminateInsurance>(inclusive = true)
-}
-
-internal fun sharedXAxisExitTransition(targetOffsetX: Int): ExitTransition {
-  val slide = slideOutHorizontally(
-    animationSpec = tween<IntOffset>(
-      durationMillis = 2000,
-      delayMillis = 0,
-      easing = MotionTokens.EasingStandardCubicBezier,
-    ),
-    targetOffsetX = { targetOffsetX },
-  )
-  val fade = fadeOut(
-    tween(
-      durationMillis = 2000,
-      delayMillis = 0,
-      easing = MotionTokens.EasingStandardAccelerateCubicBezier,
-    ),
-  )
-  return slide + fade
-}
-
-internal fun sharedXAxisEnterTransition(initialOffsetX: Int): EnterTransition {
-  val slide = slideInHorizontally(
-    animationSpec = tween<IntOffset>(
-      durationMillis = 2000,
-      delayMillis = 0,
-      easing = MotionTokens.EasingStandardCubicBezier,
-    ),
-    initialOffsetX = { initialOffsetX },
-  )
-  val fade = fadeIn(
-    tween(
-      durationMillis = 2000,
-      delayMillis = 100,
-      easing = MotionTokens.EasingStandardDecelerateCubicBezier,
-    ),
-  )
-  return slide + fade
 }
