@@ -10,7 +10,7 @@ import com.halilibo.richtext.ui.material3.RichText
 import com.hedvig.android.core.ui.card.ExpandablePlusCard
 
 @Composable
-fun CommonQuestion(question: String, answer: String, isExpanded: Boolean, onClick: () -> Unit) {
+internal fun CommonQuestion(question: String, answer: String, isExpanded: Boolean, onClick: () -> Unit) {
   ExpandablePlusCard(
     isExpanded = isExpanded,
     onClick = onClick,

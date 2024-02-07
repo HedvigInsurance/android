@@ -94,5 +94,5 @@ internal fun TerminationSummary(
 private fun terminationDateText(terminationDate: LocalDate): String {
   val formatter = rememberHedvigDateTimeFormatter()
   val formattedDate = formatter.format(terminationDate.toJavaLocalDate())
-  return "Terminates on $formattedDate"
+  return stringResource(R.string.CONTRACT_STATUS_TO_BE_TERMINATED, formattedDate)
 }
