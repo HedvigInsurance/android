@@ -394,7 +394,7 @@ private fun String.isGifUrl(): Boolean {
 private val webUrlLinkMatcher: Regex = Patterns.WEB_URL.toRegex()
 
 private fun AppDestination.Chat.ChatContext.toChatMessageContext(): ChatMessageContext {
-  return when(this) {
+  return when (this) {
     AppDestination.Chat.ChatContext.PAYMENT -> ChatMessageContext.HELP_CENTER_PAYMENTS
     AppDestination.Chat.ChatContext.CLAIMS -> ChatMessageContext.HELP_CENTER_CLAIMS
     AppDestination.Chat.ChatContext.COVERAGE -> ChatMessageContext.HELP_CENTER_COVERAGE
