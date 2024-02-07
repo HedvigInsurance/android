@@ -43,6 +43,7 @@ class GenericAuthViewModelTest {
           statusUrl = StatusUrl("testStatusUrl"),
           resendUrl = "resendUrl",
           verifyUrl = "verifyUrl",
+          maskedEmail = null
         )
       }
 
@@ -89,7 +90,7 @@ class GenericAuthViewModelTest {
     viewModel.submitEmail()
     advanceUntilIdle()
     assertThat(viewModel.viewState.value.emailInput).isEqualTo("invalid email..")
-    assertThat(viewModel.viewState.value.error).isEqualTo(GenericAuthViewState.TextFieldError.INVALID_EMAIL)
+    assertThat(viewModel.viewState.value.error).isEqualTo(GenericAuthViewState.TextFieldError.Other.InvalidEmail)
     assertThat(viewModel.viewState.value.verifyUrl).isEqualTo(null)
 
     viewModel.setEmailInput("valid@email.com")
@@ -106,7 +107,7 @@ class GenericAuthViewModelTest {
     viewModel.submitEmail()
     advanceUntilIdle()
     assertThat(viewModel.viewState.value.emailInput).isEqualTo("invalid email.. ")
-    assertThat(viewModel.viewState.value.error).isEqualTo(GenericAuthViewState.TextFieldError.INVALID_EMAIL)
+    assertThat(viewModel.viewState.value.error).isEqualTo(GenericAuthViewState.TextFieldError.Other.InvalidEmail)
 
     viewModel.clear()
     assertThat(viewModel.viewState.value.emailInput).isEqualTo("")
