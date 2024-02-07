@@ -14,22 +14,25 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
+import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.tracking.ActionType
+import com.hedvig.android.core.tracking.logAction
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.feature.chat.ChatEvent
@@ -37,6 +40,7 @@ import com.hedvig.android.feature.chat.ChatUiState
 import com.hedvig.android.feature.chat.ChatViewModel
 import com.hedvig.android.feature.chat.model.ChatMessage
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import hedvig.resources.R
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.collections.immutable.toImmutableList
@@ -47,15 +51,31 @@ internal fun ChatDestination(
   viewModel: ChatViewModel,
   imageLoader: ImageLoader,
   appPackageId: String,
+  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   openUrl: (String) -> Unit,
   onNavigateUp: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  val urihandler = LocalUriHandler.current
+  val onBannerLinkClicked: (String) -> Unit = remember(urihandler, uiState, hedvigDeepLinkContainer) {
+    { url: String ->
+      if (url == hedvigDeepLinkContainer.helpCenter) {
+        val haveSentAtLeastOneMessage = uiState.safeCast<ChatUiState.Loaded>()?.haveSentAtLeastOneMessage ?: false
+        logAction(
+          ActionType.CUSTOM,
+          "Help center opened from the chat",
+          mapOf("haveSentAMessage" to haveSentAtLeastOneMessage),
+        )
+      }
+      urihandler.openUri(url)
+    }
+  }
   ChatScreen(
     uiState = uiState,
     imageLoader = imageLoader,
     appPackageId = appPackageId,
     openUrl = openUrl,
+    onBannerLinkClicked = onBannerLinkClicked,
     onNavigateUp = onNavigateUp,
     onSendMessage = { message: String ->
       viewModel.emit(ChatEvent.SendTextMessage(message))
@@ -84,6 +104,7 @@ private fun ChatScreen(
   imageLoader: ImageLoader,
   appPackageId: String,
   openUrl: (String) -> Unit,
+  onBannerLinkClicked: (String) -> Unit,
   onNavigateUp: () -> Unit,
   onSendMessage: (String) -> Unit,
   onSendPhoto: (Uri) -> Unit,
@@ -113,34 +134,30 @@ private fun ChatScreen(
           .consumeWindowInsets(PaddingValues(top = topAppBarHeight)),
         propagateMinConstraints = true,
       ) {
-        val loadingIndicator = remember { movableContentOf { HedvigFullScreenCenterAlignedProgress() } }
-        when (uiState) {
-          ChatUiState.Initializing -> {
-            loadingIndicator()
-          }
-
-          is ChatUiState.Loaded -> {
-            ChatLoadedScreen(
-              uiState = uiState,
-              imageLoader = imageLoader,
-              appPackageId = appPackageId,
-              topAppBarScrollBehavior = topAppBarScrollBehavior,
-              openUrl = openUrl,
-              onRetrySendChatMessage = onRetrySendChatMessage,
-              onSendMessage = onSendMessage,
-              onSendPhoto = onSendPhoto,
-              onSendMedia = onSendMedia,
-              onFetchMoreMessages = onFetchMoreMessages,
-            )
-            val stillLoadingInitialMessages = uiState.messages.isEmpty() &&
-              (
-                uiState.fetchMoreMessagesUiState is ChatUiState.Loaded.FetchMoreMessagesUiState.StillInitializing ||
-                  uiState.fetchMoreMessagesUiState is ChatUiState.Loaded.FetchMoreMessagesUiState.FetchingMore
-              )
-            if (stillLoadingInitialMessages) {
-              loadingIndicator()
-            }
-          }
+        if (uiState is ChatUiState.Loaded) {
+          ChatLoadedScreen(
+            uiState = uiState,
+            imageLoader = imageLoader,
+            appPackageId = appPackageId,
+            topAppBarScrollBehavior = topAppBarScrollBehavior,
+            openUrl = openUrl,
+            onBannerLinkClicked = onBannerLinkClicked,
+            onRetrySendChatMessage = onRetrySendChatMessage,
+            onSendMessage = onSendMessage,
+            onSendPhoto = onSendPhoto,
+            onSendMedia = onSendMedia,
+            onFetchMoreMessages = onFetchMoreMessages,
+          )
+        }
+        val shouldShowLoadingIndicator = uiState is ChatUiState.Initializing || run {
+          uiState as? ChatUiState.Loaded ?: return@run false
+          val stillLoadingInitialMessages =
+            uiState.fetchMoreMessagesUiState is ChatUiState.Loaded.FetchMoreMessagesUiState.StillInitializing ||
+              uiState.fetchMoreMessagesUiState is ChatUiState.Loaded.FetchMoreMessagesUiState.FetchingMore
+          uiState.messages.isEmpty() && stillLoadingInitialMessages
+        }
+        if (shouldShowLoadingIndicator) {
+          HedvigFullScreenCenterAlignedProgress()
         }
       }
     }
@@ -177,6 +194,7 @@ private fun ChatScreenPreview(
         imageLoader = rememberPreviewImageLoader(),
         appPackageId = "com.hedvig",
         openUrl = {},
+        onBannerLinkClicked = {},
         onNavigateUp = {},
         onSendMessage = {},
         onSendPhoto = {},
@@ -215,8 +233,9 @@ private class ChatUiStateProvider : CollectionPreviewParameterProvider<ChatUiSta
           ChatUiState.Loaded.UiChatMessage(it, false)
         }
         .toImmutableList(),
-      bannerText = "Test",
       fetchMoreMessagesUiState = ChatUiState.Loaded.FetchMoreMessagesUiState.FetchingMore,
+      bannerText = "Test",
+      haveSentAtLeastOneMessage = false,
     ),
   ),
 )

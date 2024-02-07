@@ -33,6 +33,7 @@ fun NavGraphBuilder.chatGraph(
       viewModel = viewModel,
       imageLoader = imageLoader,
       appPackageId = hedvigBuildConstants.appId,
+      hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       openUrl = openUrl,
       onNavigateUp = navigator::navigateUp,
     )

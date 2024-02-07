@@ -5,6 +5,7 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.market.set.SetMarketUseCase
+import kotlinx.coroutines.flow.first
 
 /**
  * Runs once on app startup to ensure that the language from the current market is properly set.
@@ -23,7 +24,7 @@ internal class AndroidLanguageAndMarketLaunchCheckUseCase(
     val currentLanguageList = AppCompatDelegate.getApplicationLocales()
     logcat { "LanguageAndMarketLaunchCheckUseCase: initial language: $currentLanguageList" }
     val currentLanguage = languageService.getLanguage()
-    val market = marketManager.market()
+    val market = marketManager.selectedMarket().first()
     val currentLanguageMatchesMarket = if (market == null) {
       true
     } else {

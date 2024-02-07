@@ -25,7 +25,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "12.4.0"
+    versionName = "12.4.5"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -140,8 +140,8 @@ dependencies {
   implementation(libs.concatAdapterExtension)
   implementation(libs.coroutines.android)
   implementation(libs.coroutines.core)
-  implementation(libs.datadog.sdk.core)
   implementation(libs.datadog.sdk.compose)
+  implementation(libs.datadog.sdk.core)
   implementation(libs.datadog.sdk.rum)
   implementation(libs.firebase.analytics)
   implementation(libs.firebase.crashlytics)
@@ -175,10 +175,11 @@ dependencies {
   implementation(projects.coreUi)
   implementation(projects.dataChatReadTimestampPublic)
   implementation(projects.dataClaimFlow)
+  implementation(projects.dataContractPublic)
+  implementation(projects.dataPayingMember)
   implementation(projects.dataSettingsDatastorePublic)
   implementation(projects.dataTravelCertificatePublic)
   implementation(projects.datadogCore)
-  implementation(projects.dataContractPublic)
   implementation(projects.datadogDemoTracking)
   implementation(projects.featureChangeaddress)
   implementation(projects.featureChat)
@@ -187,9 +188,9 @@ dependencies {
   implementation(projects.featureConnectPaymentAdyen)
   implementation(projects.featureConnectPaymentTrustly)
   implementation(projects.featureEditCoinsured)
+  implementation(projects.featureFlagsPublic)
   implementation(projects.featureForever)
   implementation(projects.featureHelpCenter)
-  implementation(projects.featureFlagsPublic)
   implementation(projects.featureHome)
   implementation(projects.featureInsurances)
   implementation(projects.featureLogin)
@@ -214,6 +215,8 @@ dependencies {
   implementation(projects.notificationCore)
   implementation(projects.notificationFirebase)
   implementation(projects.theme)
+  implementation(projects.trackingCore)
+  implementation(projects.trackingDatadog)
 
   debugImplementation(libs.androidx.compose.uiTestManifest)
   debugImplementation(libs.androidx.compose.uiTooling)

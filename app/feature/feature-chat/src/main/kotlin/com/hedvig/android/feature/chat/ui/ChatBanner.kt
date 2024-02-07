@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.chat.ui
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
@@ -11,6 +10,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProvideTextStyle
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
@@ -21,11 +21,13 @@ import com.hedvig.android.core.designsystem.component.card.HedvigInfoCard
 import com.hedvig.android.core.designsystem.material3.infoContainer
 import com.hedvig.android.core.designsystem.material3.infoElement
 import com.hedvig.android.core.designsystem.material3.onInfoContainer
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.InfoFilled
 
 @Composable
-internal fun ChatBanner(text: String, modifier: Modifier = Modifier) {
+internal fun ChatBanner(text: String, onBannerLinkClicked: (String) -> Unit, modifier: Modifier = Modifier) {
   HedvigInfoCard(
     modifier = modifier,
     contentPadding = PaddingValues(
@@ -49,12 +51,20 @@ internal fun ChatBanner(text: String, modifier: Modifier = Modifier) {
       tint = MaterialTheme.colorScheme.infoElement,
     )
     Spacer(Modifier.width(8.dp))
-    Column {
-      ProvideTextStyle(MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onInfoContainer)) {
-        RichText {
-          Markdown(content = text)
-        }
+    ProvideTextStyle(MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onInfoContainer)) {
+      RichText {
+        Markdown(content = text, onLinkClicked = onBannerLinkClicked)
       }
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewChatBanner() {
+  HedvigTheme {
+    Surface(color = MaterialTheme.colorScheme.background) {
+      ChatBanner("HHHHHH".repeat(15), {})
     }
   }
 }

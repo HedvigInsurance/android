@@ -38,6 +38,7 @@ import com.hedvig.android.core.demomode.di.demoModule
 import com.hedvig.android.core.fileupload.fileUploadModule
 import com.hedvig.android.data.chat.read.timestamp.di.chatReadTimestampModule
 import com.hedvig.android.data.claimflow.di.claimFlowDataModule
+import com.hedvig.android.data.paying.member.di.dataPayingMemberModule
 import com.hedvig.android.data.settings.datastore.di.settingsDatastoreModule
 import com.hedvig.android.data.travelcertificate.di.travelCertificateDataModule
 import com.hedvig.android.datadog.core.addDatadogConfiguration
@@ -75,6 +76,7 @@ import com.hedvig.android.navigation.core.di.deepLinkModule
 import com.hedvig.android.notification.badge.data.di.notificationBadgeModule
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.firebase.di.firebaseNotificationModule
+import com.hedvig.android.tracking.datadog.di.trackingDatadogModule
 import com.hedvig.app.authenticate.LogoutUseCaseImpl
 import com.hedvig.app.feature.chat.service.ChatNotificationSender
 import com.hedvig.app.feature.chat.service.ReplyWorker
@@ -87,6 +89,7 @@ import com.hedvig.app.service.push.senders.CrossSellNotificationSender
 import com.hedvig.app.service.push.senders.GenericNotificationSender
 import com.hedvig.app.service.push.senders.PaymentNotificationSender
 import com.hedvig.app.service.push.senders.ReferralsNotificationSender
+import com.hedvig.app.util.apollo.DatadogInterceptor
 import com.hedvig.app.util.apollo.DeviceIdInterceptor
 import com.hedvig.app.util.apollo.NetworkCacheManagerImpl
 import com.hedvig.app.util.apollo.SunsettingInterceptor
@@ -148,6 +151,7 @@ private val networkModule = module {
     okHttpBuilder.build()
   }
   single<SunsettingInterceptor> { SunsettingInterceptor(get()) } bind ApolloInterceptor::class
+  single<DatadogInterceptor> { DatadogInterceptor() } bind ApolloInterceptor::class
   single<ApolloClient.Builder> {
     val interceptors = getAll<ApolloInterceptor>().distinct()
     ApolloClient.Builder()
@@ -334,6 +338,7 @@ val applicationModule = module {
       coilModule,
       connectPaymentTrustlyModule,
       coreCommonModule,
+      dataPayingMemberModule,
       dataStoreModule,
       datadogDemoTrackingModule,
       datadogModule,
@@ -342,8 +347,10 @@ val applicationModule = module {
       demoModule,
       editCoInsuredModule,
       featureManagerModule,
+      fileUploadModule,
       firebaseNotificationModule,
       foreverModule,
+      helpCenterModule,
       homeModule,
       insurancesModule,
       languageAuthListenersModule,
@@ -362,13 +369,12 @@ val applicationModule = module {
       settingsDatastoreModule,
       sharedPreferencesModule,
       terminateInsuranceModule,
+      trackingDatadogModule,
       travelCertificateDataModule,
       travelCertificateModule,
       useCaseModule,
       viewModelModule,
       workManagerModule,
-      fileUploadModule,
-      helpCenterModule,
     ),
   )
 }

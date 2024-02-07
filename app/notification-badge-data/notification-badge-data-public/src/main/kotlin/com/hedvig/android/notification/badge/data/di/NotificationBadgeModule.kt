@@ -15,7 +15,6 @@ import com.hedvig.android.notification.badge.data.storage.NotificationBadgeStora
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
 import org.koin.dsl.module
 
-@Suppress("RemoveExplicitTypeArguments")
 val notificationBadgeModule = module {
   single<CrossSellBottomNavNotificationBadgeService> { CrossSellBottomNavNotificationBadgeService(get()) }
   single<CrossSellNotificationBadgeService> { CrossSellNotificationBadgeService(get(), get()) }
