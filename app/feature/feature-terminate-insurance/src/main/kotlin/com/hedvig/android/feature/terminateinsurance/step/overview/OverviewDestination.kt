@@ -47,6 +47,7 @@ internal fun OverviewDestination(
   imageLoader: ImageLoader,
   navigateToNextStep: (TerminateInsuranceStep) -> Unit,
   onContinue: () -> Unit,
+  navigateUp: () -> Unit,
   navigateBack: () -> Unit,
 ) {
   val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -60,6 +61,7 @@ internal fun OverviewDestination(
   OverViewScreen(
     uiState = uiState,
     onContinue = onContinue,
+    navigateUp = navigateUp,
     navigateBack = navigateBack,
     topAppBarScrollBehavior = topAppBarScrollBehavior,
     imageLoader = imageLoader,
@@ -70,6 +72,7 @@ internal fun OverviewDestination(
 private fun OverViewScreen(
   uiState: OverviewUiState,
   onContinue: () -> Unit,
+  navigateUp: () -> Unit,
   navigateBack: () -> Unit,
   topAppBarScrollBehavior: TopAppBarScrollBehavior,
   imageLoader: ImageLoader,
@@ -86,7 +89,7 @@ private fun OverViewScreen(
       )
     } else {
       TopAppBarWithBack(
-        onClick = navigateBack,
+        onClick = navigateUp,
         title = stringResource(R.string.TERMINATION_CONFIRM_BUTTON),
         scrollBehavior = topAppBarScrollBehavior,
       )
@@ -100,7 +103,7 @@ private fun OverViewScreen(
           .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
       ) {
         TerminationSummary(
-          selectedDate = uiState.selectedDate,
+          selectedDate = uiState.terminationDate,
           insuranceDisplayName = uiState.insuranceDisplayName,
           exposureName = uiState.exposureName,
           painter = uiState.contractGroup.toDrawableRes()
@@ -114,10 +117,11 @@ private fun OverViewScreen(
           text = stringResource(id = R.string.TERMINATION_CONFIRM_BUTTON),
           colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.error,
-            contentColor = MaterialTheme.colorScheme.onPrimary,
+            contentColor = MaterialTheme.colorScheme.onError,
           ),
           onClick = onContinue,
         )
+        Spacer(Modifier.height(8.dp))
         HedvigTextButton(
           text = stringResource(id = R.string.general_cancel_button),
           onClick = navigateBack,
@@ -134,7 +138,7 @@ private fun OverviewScreenPreview() {
     Surface(color = MaterialTheme.colorScheme.background) {
       OverViewScreen(
         uiState = OverviewUiState(
-          selectedDate = LocalDate.fromEpochDays(300),
+          terminationDate = LocalDate.fromEpochDays(300),
           insuranceDisplayName = "Test insurance",
           exposureName = "destination.exposureName",
           contractGroup = ContractGroup.CAR,
@@ -143,6 +147,7 @@ private fun OverviewScreenPreview() {
           isSubmittingContractTermination = false,
         ),
         imageLoader = rememberPreviewImageLoader(),
+        navigateUp = {},
         navigateBack = {},
         onContinue = {},
         topAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),

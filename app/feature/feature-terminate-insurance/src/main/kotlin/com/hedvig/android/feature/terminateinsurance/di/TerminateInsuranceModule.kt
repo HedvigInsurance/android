@@ -12,6 +12,7 @@ import com.hedvig.android.feature.terminateinsurance.step.overview.OverviewViewM
 import com.hedvig.android.feature.terminateinsurance.step.start.TerminationStartStepViewModel
 import com.hedvig.android.feature.terminateinsurance.step.terminationdate.TerminationDateViewModel
 import com.hedvig.android.navigation.core.AppDestination
+import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -35,11 +36,14 @@ val terminateInsuranceModule = module {
       terminateInsuranceRepository = get<TerminateInsuranceRepository>(),
     )
   }
-  viewModel<OverviewViewModel> { (selectedDate: LocalDate, destination: AppDestination.TerminateInsurance) ->
+  viewModel<OverviewViewModel> { params ->
+    val terminationType = params.get<TerminateInsuranceDestination.TerminationOverview.TerminationType>()
+    val destination = params.get<AppDestination.TerminateInsurance>()
     OverviewViewModel(
-      selectedDate = selectedDate,
       destination = destination,
+      terminationType = terminationType,
       terminateInsuranceRepository = get(),
+      clock = get<Clock>(),
     )
   }
   single<TerminateInsuranceRepository> {

@@ -4,9 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination
 import com.hedvig.android.navigation.core.AppDestination
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -16,16 +18,22 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 internal class OverviewViewModel(
-  private val selectedDate: LocalDate,
   destination: AppDestination.TerminateInsurance,
+  private val terminationType: TerminateInsuranceDestination.TerminationOverview.TerminationType,
   private val terminateInsuranceRepository: TerminateInsuranceRepository,
+  clock: Clock,
 ) : ViewModel() {
   private val _uiState: MutableStateFlow<OverviewUiState> = MutableStateFlow(
     OverviewUiState(
-      selectedDate = selectedDate,
+      terminationDate = terminationType
+        .safeCast<TerminateInsuranceDestination.TerminationOverview.TerminationType.Termination>()
+        ?.terminationDate ?: clock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date,
       insuranceDisplayName = destination.insuranceDisplayName,
       exposureName = destination.exposureName,
       contractGroup = destination.contractGroup,
@@ -36,26 +44,20 @@ internal class OverviewViewModel(
   )
   val uiState: StateFlow<OverviewUiState> = _uiState.asStateFlow()
 
-  fun terminateContractWithSelectedDate() {
-    viewModelScope.launch {
-      submitContractTermination { terminateInsuranceRepository.setTerminationDate(selectedDate) }
-    }
-  }
-
-  fun submitContractDeletion() {
-    viewModelScope.launch {
-      submitContractTermination { terminateInsuranceRepository.confirmDeletion() }
-    }
-  }
-
-  private suspend fun submitContractTermination(
-    networkRequest: suspend () -> Either<ErrorMessage, TerminateInsuranceStep>,
-  ) {
+  fun submitContractTermination() {
     _uiState.update { it.copy(isSubmittingContractTermination = true) }
-    // Make the success response take at least 3 seconds as per the design
-    coroutineScope {
+    viewModelScope.launch {
+      // Make the success response take at least 3 seconds as per the design
       val minimumTimeDelay = async { delay(3000) }
-      networkRequest().fold(
+      when (terminationType) {
+        TerminateInsuranceDestination.TerminationOverview.TerminationType.Deletion -> {
+          terminateInsuranceRepository.confirmDeletion()
+        }
+
+        is TerminateInsuranceDestination.TerminationOverview.TerminationType.Termination -> {
+          terminateInsuranceRepository.setTerminationDate(terminationType.terminationDate)
+        }
+      }.fold(
         ifLeft = { errorMessage ->
           minimumTimeDelay.cancel()
           _uiState.update {
@@ -84,7 +86,7 @@ internal class OverviewViewModel(
 }
 
 internal data class OverviewUiState(
-  val selectedDate: LocalDate,
+  val terminationDate: LocalDate,
   val insuranceDisplayName: String,
   val nextStep: TerminateInsuranceStep?,
   val errorMessage: String?,

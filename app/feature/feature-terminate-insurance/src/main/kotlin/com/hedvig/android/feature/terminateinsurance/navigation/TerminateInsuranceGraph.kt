@@ -31,7 +31,6 @@ import com.kiwi.navigationcompose.typed.navigate
 import com.kiwi.navigationcompose.typed.navigation
 import com.kiwi.navigationcompose.typed.popBackStack
 import com.kiwi.navigationcompose.typed.popUpTo
-import kotlinx.datetime.toKotlinLocalDate
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -116,8 +115,12 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       TerminationDateDestination(
         viewModel = viewModel,
         windowSizeClass = windowSizeClass,
-        onContinue = {
-          navController.navigate(TerminateInsuranceDestination.TerminationOverview(it))
+        onContinue = { localDate ->
+          navController.navigate(
+            TerminateInsuranceDestination.TerminationOverview(
+              TerminateInsuranceDestination.TerminationOverview.TerminationType.Termination(localDate),
+            ),
+          )
         },
         navigateBack = {
           if (shouldFinishFlowOnBack) {
@@ -141,8 +144,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
         onContinue = {
           navController.navigate(
             TerminateInsuranceDestination.TerminationOverview(
-              terminationDate = java.time.LocalDate.now().toKotlinLocalDate(),
-              isDeletion = true,
+              TerminateInsuranceDestination.TerminationOverview.TerminationType.Deletion,
             ),
           )
         },
@@ -157,27 +159,22 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       val terminateInsurance = getTerminateInsuranceDataFromParentBackstack(navController, backStackEntry)
       val viewModel: OverviewViewModel = koinViewModel {
         parametersOf(
-          terminationDate,
+          terminationType,
           terminateInsurance,
         )
       }
       OverviewDestination(
         viewModel = viewModel,
         imageLoader = imageLoader,
-        onContinue = {
-          if (isDeletion) {
-            viewModel.submitContractDeletion()
-          } else {
-            viewModel.terminateContractWithSelectedDate()
-          }
-        },
+        onContinue = viewModel::submitContractTermination,
         navigateToNextStep = { terminationStep ->
           viewModel.handledNextStepNavigation()
           navigator.navigateToTerminateFlowDestination(
             destination = terminationStep.toTerminateInsuranceDestination(),
           )
         },
-        navigateBack = navigator::navigateUp,
+        navigateUp = navigator::navigateUp,
+        navigateBack = navigator::popBackStack,
       )
     }
   }
