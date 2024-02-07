@@ -93,7 +93,7 @@ internal class ChatPresenter(
       )
     }
     var bannerText: String? by remember { mutableStateOf(lastState.safeCast<ChatUiState.Loaded>()?.bannerText) }
-    var haveSendAtLeastOneMessage: Boolean by remember {
+    var haveSentAtLeastOneMessage: Boolean by remember {
       mutableStateOf(lastState.safeCast<ChatUiState.Loaded>()?.haveSentAtLeastOneMessage ?: false)
     }
 
@@ -175,17 +175,17 @@ internal class ChatPresenter(
         }
 
         is ChatEvent.SendPhotoMessage -> {
-          haveSendAtLeastOneMessage = true
+          haveSentAtLeastOneMessage = true
           photosToSend.trySend(event.uri)
         }
 
         is ChatEvent.SendMediaMessage -> {
-          haveSendAtLeastOneMessage = true
+          haveSentAtLeastOneMessage = true
           mediaToSend.trySend(event.uri)
         }
 
         is ChatEvent.SendTextMessage -> {
-          haveSendAtLeastOneMessage = true
+          haveSentAtLeastOneMessage = true
           messagesToSend.trySend(event.message)
         }
 
@@ -248,7 +248,7 @@ internal class ChatPresenter(
           .toPersistentList(),
         fetchMoreMessagesUiState = fetchMoreMessagesUiState,
         bannerText = bannerText,
-        haveSentAtLeastOneMessage = haveSendAtLeastOneMessage,
+        haveSentAtLeastOneMessage = haveSentAtLeastOneMessage,
       )
     }
   }
