@@ -66,7 +66,7 @@ internal fun TerminationSuccessDestination(
         selectedDate = selectedDate,
         insuranceDisplayName = insuranceDisplayName,
         exposureName = exposureName,
-        painter = ColorPainter(Color.Black.copy(alpha = 0.7f)),
+        insuranceCardPainter = ColorPainter(Color.Black.copy(alpha = 0.7f)),
         imageLoader = imageLoader,
       )
 
