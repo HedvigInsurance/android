@@ -44,6 +44,7 @@ import octopus.ChatSendMessageMutation
 import octopus.fragment.ChatMessageFileMessageFragment
 import octopus.fragment.ChatMessageTextMessageFragment
 import octopus.fragment.MessageFragment
+import octopus.type.ChatMessageContext
 import octopus.type.ChatMessageSender
 import okhttp3.MediaType.Companion.toMediaType
 
@@ -124,11 +125,11 @@ internal class ChatRepositoryImpl(
 
   override suspend fun sendPhoto(
     uri: Uri,
-    context: AppDestination.Chat.ChatContext?, // TODO Pass to mutation
+    context: AppDestination.Chat.ChatContext?,
   ): Either<ErrorMessage, ChatMessage> = either {
     logcat { "Chat sendPhoto uploading photo with uri:$uri" }
     val uploadToken = uploadFile(uri)
-    val result = apolloClient.mutation(ChatSendFileMutation(uploadToken))
+    val result = apolloClient.mutation(ChatSendFileMutation(uploadToken, context?.toChatMessageContext()))
       .safeExecute()
       .toEither(::ErrorMessage)
       .bind()
@@ -189,11 +190,11 @@ internal class ChatRepositoryImpl(
 
   override suspend fun sendMedia(
     uri: Uri,
-    context: AppDestination.Chat.ChatContext?, // TODO Pass to mutation
+    context: AppDestination.Chat.ChatContext?,
   ): Either<ErrorMessage, ChatMessage> = either {
     logcat { "Chat sendMedia uploading media with uri:$uri" }
     val uploadToken = uploadMedia(uri)
-    val result = apolloClient.mutation(ChatSendFileMutation(uploadToken))
+    val result = apolloClient.mutation(ChatSendFileMutation(uploadToken, context?.toChatMessageContext()))
       .safeExecute()
       .toEither(::ErrorMessage)
       .bind()
@@ -246,10 +247,10 @@ internal class ChatRepositoryImpl(
 
   override suspend fun sendMessage(
     text: String,
-    context: AppDestination.Chat.ChatContext?, // TODO Pass to mutation
+    context: AppDestination.Chat.ChatContext?,
   ): Either<ErrorMessage, ChatMessage> = either {
     logcat { "Chat sendMessage uploading text:$text" }
-    val result = apolloClient.mutation(ChatSendMessageMutation(text))
+    val result = apolloClient.mutation(ChatSendMessageMutation(text, context?.toChatMessageContext()))
       .safeExecute()
       .toEither(::ErrorMessage)
       .bind()
@@ -391,3 +392,13 @@ private fun String.isGifUrl(): Boolean {
 }
 
 private val webUrlLinkMatcher: Regex = Patterns.WEB_URL.toRegex()
+
+private fun AppDestination.Chat.ChatContext.toChatMessageContext(): ChatMessageContext {
+  return when (this) {
+    AppDestination.Chat.ChatContext.PAYMENT -> ChatMessageContext.HELP_CENTER_PAYMENTS
+    AppDestination.Chat.ChatContext.CLAIMS -> ChatMessageContext.HELP_CENTER_CLAIMS
+    AppDestination.Chat.ChatContext.COVERAGE -> ChatMessageContext.HELP_CENTER_COVERAGE
+    AppDestination.Chat.ChatContext.INSURANCE -> ChatMessageContext.HELP_CENTER_MY_INSURANCE
+    AppDestination.Chat.ChatContext.OTHER -> ChatMessageContext.UNKNOWN__
+  }
+}

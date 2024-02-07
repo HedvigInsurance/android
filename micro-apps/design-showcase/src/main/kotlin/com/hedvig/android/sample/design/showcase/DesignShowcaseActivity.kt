@@ -14,14 +14,14 @@ import androidx.compose.ui.Modifier
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.logger.AndroidLogcatLogger
 import com.hedvig.android.sample.design.showcase.ui.MaterialComponents
-import com.hedvig.android.tracking.datadog.DatadogActionLogger
+import com.hedvig.android.tracking.datadog.DatadogRumLogger
 
 class DesignShowcaseActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     enableEdgeToEdge(navigationBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT))
     super.onCreate(savedInstanceState)
     AndroidLogcatLogger.install()
-    DatadogActionLogger.install()
+    DatadogRumLogger.install()
     setContent {
       HedvigTheme {
         Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {

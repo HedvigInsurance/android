@@ -189,12 +189,16 @@ private fun ContractDetailScreen(
                       openChat = openChat,
                       openUrl = openUrl,
                       onCancelInsuranceClick = {
+                        val contractGroup =
+                          state.insuranceContract.currentInsuranceAgreement.productVariant.contractGroup
+                        val contractDisplayName =
+                          state.insuranceContract.currentInsuranceAgreement.productVariant.displayName
                         onCancelInsuranceClick(
                           CancelInsuranceData(
                             contractId = state.insuranceContract.id,
-                            contractDisplayName = state.insuranceContract.currentInsuranceAgreement.productVariant.displayName,
+                            contractDisplayName = contractDisplayName,
                             contractExposure = state.insuranceContract.exposureDisplayName,
-                            contractGroup = state.insuranceContract.currentInsuranceAgreement.productVariant.contractGroup,
+                            contractGroup = contractGroup,
                           ),
                         )
                       },

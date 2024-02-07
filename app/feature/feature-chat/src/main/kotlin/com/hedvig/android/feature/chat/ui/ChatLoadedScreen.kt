@@ -110,6 +110,7 @@ internal fun ChatLoadedScreen(
   appPackageId: String,
   topAppBarScrollBehavior: TopAppBarScrollBehavior,
   openUrl: (String) -> Unit,
+  onBannerLinkClicked: (String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
   onSendMessage: (String) -> Unit,
   onSendPhoto: (Uri) -> Unit,
@@ -121,6 +122,7 @@ internal fun ChatLoadedScreen(
     imageLoader = imageLoader,
     topAppBarScrollBehavior = topAppBarScrollBehavior,
     openUrl = openUrl,
+    onBannerLinkClicked = onBannerLinkClicked,
     onRetrySendChatMessage = onRetrySendChatMessage,
     onFetchMoreMessages = onFetchMoreMessages,
     chatInput = {
@@ -141,6 +143,7 @@ private fun ChatLoadedScreen(
   imageLoader: ImageLoader,
   topAppBarScrollBehavior: TopAppBarScrollBehavior,
   openUrl: (String) -> Unit,
+  onBannerLinkClicked: (String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
   onFetchMoreMessages: () -> Unit,
   chatInput: @Composable () -> Unit,
@@ -176,6 +179,7 @@ private fun ChatLoadedScreen(
         Divider(Modifier.fillMaxWidth())
         ChatBanner(
           text = uiState.bannerText,
+          onBannerLinkClicked = onBannerLinkClicked,
           modifier = Modifier.fillMaxWidth(),
         )
       }
@@ -665,10 +669,12 @@ private fun PreviewChatLoadedScreen() {
           }.toPersistentList(),
           fetchMoreMessagesUiState = ChatUiState.Loaded.FetchMoreMessagesUiState.NothingMoreToFetch,
           bannerText = "Banner text",
+          haveSentAtLeastOneMessage = false,
         ),
         imageLoader = rememberPreviewImageLoader(),
         topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
         openUrl = {},
+        onBannerLinkClicked = {},
         onRetrySendChatMessage = {},
         onFetchMoreMessages = {},
         chatInput = {},
