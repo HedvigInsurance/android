@@ -65,11 +65,14 @@ class OtpInputViewModel(
     when (val authCodeResult = authRepository.exchange(otpResult.loginAuthorizationCode)) {
       is AuthTokenResult.Error -> setErrorState(
         when (authCodeResult) {
-          is AuthTokenResult.Error.BackendErrorResponse -> "Error code:${authCodeResult.httpStatusValue}. ${authCodeResult.message}"
+          is AuthTokenResult.Error.BackendErrorResponse ->
+            "Error code:${authCodeResult.httpStatusValue}. ${authCodeResult.message}"
+
           is AuthTokenResult.Error.IOError -> "IO Error:${authCodeResult.message}"
           is AuthTokenResult.Error.UnknownError -> authCodeResult.message
         },
       )
+
       is AuthTokenResult.Success -> {
         authTokenService.loginWithTokens(
           authCodeResult.accessToken,
@@ -100,6 +103,7 @@ class OtpInputViewModel(
             it.copy(networkErrorMessage = result.message, loadingResend = false)
           }
         }
+
         Success -> {
           _events.trySend(Event.CodeResent)
           _viewState.update {
