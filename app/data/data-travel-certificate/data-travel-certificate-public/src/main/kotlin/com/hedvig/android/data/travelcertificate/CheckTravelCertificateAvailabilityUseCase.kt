@@ -14,35 +14,48 @@ import com.hedvig.android.logger.logcat
 import octopus.CurrentContractsQuery
 
 interface CheckTravelCertificateAvailabilityUseCase {
-  suspend fun invoke(): Either<TravelCertificateAvailabilityError, Boolean>
+  suspend fun invoke(): Either<TravelCertificateAvailabilityError, Unit>
 }
 
 internal class CheckTravelCertificateAvailabilityUseCaseImpl(
   private val getTravelCertificatesHistory: GetTravelCertificatesHistoryUseCase,
   val apolloClient: ApolloClient,
 ) : CheckTravelCertificateAvailabilityUseCase {
-  override suspend fun invoke(): Either<TravelCertificateAvailabilityError, Boolean> {
+  override suspend fun invoke(): Either<TravelCertificateAvailabilityError, Unit> {
     return either {
-      val contracts = apolloClient.query(CurrentContractsQuery())
+      val contractsResult = apolloClient.query(CurrentContractsQuery())
         .safeExecute()
         .toEither(::ErrorMessage)
-        .onLeft {
-          logcat(LogPriority.ERROR) { it.message ?: "Could not fetch current contracts" }
-        }.getOrNull()?.currentMember?.activeContracts
+        .map {
+          it.currentMember.activeContracts
+        }
+        .onLeft { errorMessage ->
+          logcat { "Could not fetch current contracts. Message:${errorMessage.message}" }
+        }
+      val historyResult = getTravelCertificatesHistory.invoke()
+        .onLeft { errorMessage ->
+          logcat(LogPriority.ERROR) { "Could not fetch travel certificates history: ${errorMessage.message}" }
+        }
 
-      val contractsWithTravelCertificate = contracts
-        ?.map { it.currentAgreement.productVariant.typeOfContract.toContractType() }
-        ?.firstOrNull { it.supportsTravelCertificate() }
-//      val contractsWithTravelCertificate = null //todo: remove testing
-//
-      val history = getTravelCertificatesHistory.invoke()
-//      val history = listOf<TravelCertificate>() //todo: remove testing
-
-      ensure(history.isNotEmpty() || contractsWithTravelCertificate != null) {
-        TravelCertificateAvailabilityError.TravelCertificateNotAvailable
+      if (contractsResult is Either.Left<ErrorMessage> && historyResult is Either.Left<ErrorMessage>) {
+        raise(
+          TravelCertificateAvailabilityError.Error(
+            ErrorMessage(
+              "TravelCertificateAvailabilityError: ${contractsResult.value.message} && ${historyResult.value.message}",
+            ),
+          ),
+        )
       }
 
-      true
+      val hasContractWhichSupportsTravelCertificates: Boolean = contractsResult.getOrNull()
+        ?.map { it.currentAgreement.productVariant.typeOfContract.toContractType() }
+        ?.any { it.supportsTravelCertificate() } ?: false
+
+      val hasCertificateHistory = !historyResult.getOrNull().isNullOrEmpty()
+
+      ensure(hasCertificateHistory || hasContractWhichSupportsTravelCertificates) {
+        TravelCertificateAvailabilityError.TravelCertificateNotAvailable
+      }
     }
   }
 }

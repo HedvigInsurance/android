@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.help.center.data
 
 import arrow.core.Either
-import arrow.core.getOrElse
 import arrow.core.raise.either
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.safeExecute
@@ -110,7 +109,7 @@ internal class GetQuickLinksUseCase(
 //            ),
 //          )
 //        }
-      val travelCertificateAvailable = checkTravelCertificateAvailabilityUseCase.invoke().getOrElse { false }
+      val travelCertificateAvailable = checkTravelCertificateAvailabilityUseCase.invoke().isRight()
       if (travelCertificateAvailable) {
         add(
           QuickAction.QuickLink(

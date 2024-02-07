@@ -2,7 +2,6 @@ package com.hedvig.android.feature.travelcertificate.navigation
 
 import android.content.Context
 import android.content.Intent
-import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Density
@@ -25,17 +24,10 @@ import com.kiwi.navigationcompose.typed.composable
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigate
 import com.kiwi.navigationcompose.typed.navigation
-import com.kiwi.navigationcompose.typed.popBackStack
+import com.kiwi.navigationcompose.typed.popUpTo
 import org.koin.androidx.compose.koinViewModel
 
-fun NavGraphBuilder.travelCertificateGraph(
-  density: Density,
-  navController: NavController,
-  applicationId: String,
-  finish: () -> Unit = {
-    navController.popBackStack<TravelCertificateDestination.TravelCertificateHistory>(false)
-  },
-) {
+fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavController, applicationId: String) {
   navigation<AppDestination.TravelCertificate>(
     startDestination = createRoutePattern<TravelCertificateDestination.TravelCertificateHistory>(),
     enterTransition = { MotionDefaults.sharedXAxisEnter(density) },
@@ -88,7 +80,11 @@ fun NavGraphBuilder.travelCertificateGraph(
           onTravelDateSelected = viewModel::onTravelDateSelected,
           onContinue = viewModel::onContinue,
           onSuccess = { travelCertificateUrl ->
-            navController.navigate(TravelCertificateDestination.ShowCertificate(travelCertificateUrl))
+            navController.navigate(TravelCertificateDestination.ShowCertificate(travelCertificateUrl)) {
+              popUpTo<TravelCertificateDestination.TravelCertificateHistory> {
+                inclusive = false
+              }
+            }
           },
         )
       }
@@ -125,12 +121,6 @@ fun NavGraphBuilder.travelCertificateGraph(
         val uiState: TravelCertificateInputState by viewModel.uiState.collectAsStateWithLifecycle()
         val localContext = LocalContext.current
 
-        BackHandler {
-          finish()
-//        // todo: how
-//        // todo: check here.
-        }
-
         TravelCertificateOverview(
           travelCertificateUrl = travelCertificateUrl,
           onDownloadCertificate = {
@@ -140,8 +130,7 @@ fun NavGraphBuilder.travelCertificateGraph(
           isLoading = uiState.isLoading,
           errorMessage = uiState.errorMessage,
           onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
-          navigateBack = finish,
-//        }, // todo: check here
+          navigateBack = navController::navigateUp,
           onShareTravelCertificate = {
             shareCertificate(it, localContext, applicationId)
           },

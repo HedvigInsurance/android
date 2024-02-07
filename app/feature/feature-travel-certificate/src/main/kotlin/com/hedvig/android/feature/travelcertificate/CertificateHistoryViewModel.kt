@@ -7,8 +7,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import arrow.core.raise.either
-import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.travelcertificate.GetTravelCertificatesHistoryUseCase
 import com.hedvig.android.data.travelcertificate.TravelCertificate
 import com.hedvig.android.feature.travelcertificate.data.DownloadTravelCertificateUseCase
@@ -37,18 +35,14 @@ internal class CertificateHistoryPresenter(
   override fun MoleculePresenterScope<CertificateHistoryEvent>.present(
     lastState: CertificateHistoryUiState,
   ): CertificateHistoryUiState {
-//    val downloadingErrorString = stringResource(id = R.string.travel_certificate_downloading_error)
-    // todo: doesn't work like this, get runtime error: java.lang.IllegalStateException: CompositionLocal LocalConfiguration not present
-    val downloadingErrorString = "downloading error"
-    var isLoading by remember { mutableStateOf(lastState.isLoading) }
+    var currentState by remember { mutableStateOf(lastState) }
     var dataLoadIteration by remember { mutableIntStateOf(0) }
-    var certificateHistoryErrorMessage by remember { mutableStateOf(lastState.certificateHistoryErrorMessage) }
-    var certificateHistoryList by remember { mutableStateOf(lastState.certificateHistoryList) }
-    var showBottomSheet by remember { mutableStateOf(false) }
+
     val noUrl = null
     var downloadingUrl by remember {
       mutableStateOf<String?>(noUrl)
     }
+
     val noUri = null
     var downloadingUri by remember {
       mutableStateOf<TravelCertificateUri?>(noUri)
@@ -57,101 +51,76 @@ internal class CertificateHistoryPresenter(
     CollectEvents { event ->
       when (event) {
         CertificateHistoryEvent.RetryLoadReferralData -> dataLoadIteration++
-        CertificateHistoryEvent.OnErrorDialogDismissed -> {
-          certificateHistoryErrorMessage = null
-        }
-
-        CertificateHistoryEvent.DismissBottomSheet -> showBottomSheet = false
-        CertificateHistoryEvent.ShowBottomSheet -> showBottomSheet = true
         is CertificateHistoryEvent.DownloadCertificate -> downloadingUrl = event.signedUrl
       }
     }
 
     LaunchedEffect(downloadingUrl) {
       if (downloadingUrl != noUrl) {
-        isLoading = true
+        currentState = CertificateHistoryUiState.Loading
         logcat(LogPriority.INFO) { "Downloading travel certificate with url:$downloadingUrl" }
         downloadingUrl?.let {
           downloadTravelCertificateUseCase.invoke(TravelCertificateUrl(it))
             .fold(
               ifLeft = { errorMessage ->
                 logcat(LogPriority.ERROR) { "Downloading travel certificate failed:$errorMessage" }
-                isLoading = false
-                certificateHistoryErrorMessage = errorMessage
+                currentState = CertificateHistoryUiState.FailureDownloadingCertificate
+                dataLoadIteration++
                 downloadingUrl = noUrl
               },
               ifRight = { uri ->
                 logcat(
                   LogPriority.INFO,
                 ) { "Downloading travel certificate succeeded. Result uri:${uri.uri.absolutePath}" }
-                isLoading = false
                 downloadingUri = uri
                 downloadingUrl = noUrl
+                currentState = CertificateHistoryUiState.SuccessDownloadingCertificate(uri)
+                dataLoadIteration++
               },
             )
         } ?: {
           logcat(LogPriority.ERROR) { "Downloading travel certificate failed: url is null" }
-          isLoading = false
-          certificateHistoryErrorMessage = ErrorMessage(downloadingErrorString)
+          currentState = CertificateHistoryUiState.FailureDownloadingCertificate
           downloadingUrl = noUrl
+          dataLoadIteration++
         }
       }
     }
 
     LaunchedEffect(dataLoadIteration) {
-      logcat { "CertificateHistoryPresenter is fetching again" }
-      isLoading = true
-      certificateHistoryErrorMessage = null
-      either<ErrorMessage, List<TravelCertificate>> {
-        val historyData = getTravelCertificatesHistoryUseCase.invoke()
-        historyData
-      }.fold(
-        ifLeft = {
-          certificateHistoryErrorMessage = it
-        },
-        ifRight = {
-          certificateHistoryList = it
-        },
-      )
-      isLoading = false
+      currentState = CertificateHistoryUiState.Loading
+      getTravelCertificatesHistoryUseCase.invoke()
+        .onLeft {
+          logcat { "Could not fetch travel certificates history. Message: ${it.message}" }
+          currentState = CertificateHistoryUiState.FailureDownloadingHistory
+        }
+        .onRight {
+          logcat(LogPriority.INFO) { "Successfully fetched travel certificates history." }
+          currentState = CertificateHistoryUiState.SuccessDownloadingHistory(it)
+        }
     }
-
-    return CertificateHistoryUiState(
-      certificateHistoryList,
-      certificateHistoryErrorMessage,
-      isLoading,
-      showBottomSheet,
-      downloadingUri,
-    )
+    return currentState
   }
 }
 
 sealed interface CertificateHistoryEvent {
   data object RetryLoadReferralData : CertificateHistoryEvent
 
-  data object OnErrorDialogDismissed : CertificateHistoryEvent
-
-  data object DismissBottomSheet : CertificateHistoryEvent
-
-  data object ShowBottomSheet : CertificateHistoryEvent
-
   data class DownloadCertificate(val signedUrl: String) : CertificateHistoryEvent
 }
 
-internal data class CertificateHistoryUiState(
-  val certificateHistoryList: List<TravelCertificate>?,
-  val certificateHistoryErrorMessage: ErrorMessage?,
-  val isLoading: Boolean,
-  val showInfoBottomSheet: Boolean,
-  val downLoadingUri: TravelCertificateUri?,
-) {
-  companion object {
-    val Loading: CertificateHistoryUiState = CertificateHistoryUiState(
-      certificateHistoryList = null,
-      certificateHistoryErrorMessage = null,
-      isLoading = true,
-      showInfoBottomSheet = false,
-      downLoadingUri = null,
-    )
-  }
+internal sealed interface CertificateHistoryUiState {
+  data class SuccessDownloadingHistory(
+    val certificateHistoryList: List<TravelCertificate>,
+  ) : CertificateHistoryUiState
+
+  data class SuccessDownloadingCertificate(
+    val downLoadingUri: TravelCertificateUri?,
+  ) : CertificateHistoryUiState
+
+  data object FailureDownloadingCertificate : CertificateHistoryUiState
+
+  data object FailureDownloadingHistory : CertificateHistoryUiState
+
+  data object Loading : CertificateHistoryUiState
 }
