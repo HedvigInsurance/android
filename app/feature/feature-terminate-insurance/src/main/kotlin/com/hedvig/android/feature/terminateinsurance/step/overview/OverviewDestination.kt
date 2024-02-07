@@ -79,8 +79,8 @@ private fun OverViewScreen(
       .fillMaxSize()
       .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)),
   ) {
-    val isLoadingOrNavigating = uiState.isLoading || uiState.nextStep != null
-    if (isLoadingOrNavigating) {
+    val isSubmittingTerminationOrNavigatingForward = uiState.isSubmittingContractTermination || uiState.nextStep != null
+    if (isSubmittingTerminationOrNavigatingForward) {
       HedvigFullScreenCenterAlignedLinearProgressDebounced(
         title = stringResource(id = R.string.TERMINATE_CONTRACT_TERMINATING_PROGRESS),
       )
@@ -140,7 +140,7 @@ private fun OverviewScreenPreview() {
           contractGroup = ContractGroup.CAR,
           nextStep = null,
           errorMessage = null,
-          isLoading = false,
+          isSubmittingContractTermination = false,
         ),
         imageLoader = rememberPreviewImageLoader(),
         navigateBack = {},

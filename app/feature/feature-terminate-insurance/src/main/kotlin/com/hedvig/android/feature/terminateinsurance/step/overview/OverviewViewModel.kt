@@ -2,10 +2,14 @@ package com.hedvig.android.feature.terminateinsurance.step.overview
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import arrow.core.Either
+import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 import com.hedvig.android.navigation.core.AppDestination
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,53 +31,45 @@ internal class OverviewViewModel(
       contractGroup = destination.contractGroup,
       nextStep = null,
       errorMessage = null,
-      isLoading = false,
+      isSubmittingContractTermination = false,
     ),
   )
   val uiState: StateFlow<OverviewUiState> = _uiState.asStateFlow()
 
-  fun submitSelectedDate() {
-    _uiState.update { it.copy(isLoading = true) }
+  fun terminateContractWithSelectedDate() {
     viewModelScope.launch {
-      delay(3000) // Fake delay for better UX
-      terminateInsuranceRepository.setTerminationDate(selectedDate).fold(
-        ifLeft = { errorMessage ->
-          _uiState.update {
-            it.copy(
-              errorMessage = errorMessage.message,
-              isLoading = false,
-            )
-          }
-        },
-        ifRight = { terminateInsuranceStep: TerminateInsuranceStep ->
-          _uiState.update {
-            it.copy(
-              nextStep = terminateInsuranceStep,
-              isLoading = false,
-            )
-          }
-        },
-      )
+      submitContractTermination { terminateInsuranceRepository.setTerminationDate(selectedDate) }
     }
   }
 
-  fun confirmDeletion() {
-    _uiState.update { it.copy(isLoading = true) }
+  fun submitContractDeletion() {
     viewModelScope.launch {
-      delay(3000) // Fake delay for better UX
-      terminateInsuranceRepository.confirmDeletion().fold(
+      submitContractTermination { terminateInsuranceRepository.confirmDeletion() }
+    }
+  }
+
+  private suspend fun submitContractTermination(
+    networkRequest: suspend () -> Either<ErrorMessage, TerminateInsuranceStep>,
+  ) {
+    _uiState.update { it.copy(isSubmittingContractTermination = true) }
+    // Make the success response take at least 3 seconds as per the design
+    coroutineScope {
+      val minimumTimeDelay = async { delay(3000) }
+      networkRequest().fold(
         ifLeft = { errorMessage ->
+          minimumTimeDelay.cancel()
           _uiState.update {
             it.copy(
-              isLoading = false,
+              isSubmittingContractTermination = false,
               errorMessage = errorMessage.message,
             )
           }
         },
         ifRight = { terminateInsuranceFlowStep ->
+          minimumTimeDelay.await()
           _uiState.update {
             it.copy(
-              isLoading = false,
+              isSubmittingContractTermination = false,
               nextStep = terminateInsuranceFlowStep,
             )
           }
@@ -92,7 +88,7 @@ internal data class OverviewUiState(
   val insuranceDisplayName: String,
   val nextStep: TerminateInsuranceStep?,
   val errorMessage: String?,
-  val isLoading: Boolean,
+  val isSubmittingContractTermination: Boolean,
   val exposureName: String,
   val contractGroup: ContractGroup,
 )

@@ -1,24 +1,15 @@
 package com.hedvig.android.feature.terminateinsurance.navigation
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.unit.IntOffset
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navOptions
 import coil.ImageLoader
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.core.designsystem.material3.motion.MotionTokens
 import com.hedvig.android.feature.terminateinsurance.InsuranceId
 import com.hedvig.android.feature.terminateinsurance.data.toTerminateInsuranceDestination
 import com.hedvig.android.feature.terminateinsurance.step.deletion.InsuranceDeletionDestination
@@ -175,9 +166,9 @@ fun NavGraphBuilder.terminateInsuranceGraph(
         imageLoader = imageLoader,
         onContinue = {
           if (isDeletion) {
-            viewModel.confirmDeletion()
+            viewModel.submitContractDeletion()
           } else {
-            viewModel.submitSelectedDate()
+            viewModel.terminateContractWithSelectedDate()
           }
         },
         navigateToNextStep = { terminationStep ->
