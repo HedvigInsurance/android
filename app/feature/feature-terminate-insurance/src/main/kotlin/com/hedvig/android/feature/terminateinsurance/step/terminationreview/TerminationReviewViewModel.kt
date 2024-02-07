@@ -1,9 +1,7 @@
-package com.hedvig.android.feature.terminateinsurance.step.overview
+package com.hedvig.android.feature.terminateinsurance.step.terminationreview
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import arrow.core.Either
-import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
@@ -11,7 +9,6 @@ import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination
 import com.hedvig.android.navigation.core.AppDestination
 import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,16 +20,16 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
-internal class OverviewViewModel(
+internal class TerminationReviewViewModel(
   destination: AppDestination.TerminateInsurance,
-  private val terminationType: TerminateInsuranceDestination.TerminationOverview.TerminationType,
+  private val terminationType: TerminateInsuranceDestination.TerminationReview.TerminationType,
   private val terminateInsuranceRepository: TerminateInsuranceRepository,
   clock: Clock,
 ) : ViewModel() {
   private val _uiState: MutableStateFlow<OverviewUiState> = MutableStateFlow(
     OverviewUiState(
       terminationDate = terminationType
-        .safeCast<TerminateInsuranceDestination.TerminationOverview.TerminationType.Termination>()
+        .safeCast<TerminateInsuranceDestination.TerminationReview.TerminationType.Termination>()
         ?.terminationDate ?: clock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date,
       insuranceDisplayName = destination.insuranceDisplayName,
       exposureName = destination.exposureName,
@@ -50,11 +47,11 @@ internal class OverviewViewModel(
       // Make the success response take at least 3 seconds as per the design
       val minimumTimeDelay = async { delay(3000) }
       when (terminationType) {
-        TerminateInsuranceDestination.TerminationOverview.TerminationType.Deletion -> {
+        TerminateInsuranceDestination.TerminationReview.TerminationType.Deletion -> {
           terminateInsuranceRepository.confirmDeletion()
         }
 
-        is TerminateInsuranceDestination.TerminationOverview.TerminationType.Termination -> {
+        is TerminateInsuranceDestination.TerminationReview.TerminationType.Termination -> {
           terminateInsuranceRepository.setTerminationDate(terminationType.terminationDate)
         }
       }.fold(

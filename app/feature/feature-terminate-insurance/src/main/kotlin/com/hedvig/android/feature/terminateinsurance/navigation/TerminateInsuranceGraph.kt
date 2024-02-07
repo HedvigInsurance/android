@@ -13,8 +13,8 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.terminateinsurance.InsuranceId
 import com.hedvig.android.feature.terminateinsurance.data.toTerminateInsuranceDestination
 import com.hedvig.android.feature.terminateinsurance.step.deletion.InsuranceDeletionDestination
-import com.hedvig.android.feature.terminateinsurance.step.overview.OverviewDestination
-import com.hedvig.android.feature.terminateinsurance.step.overview.OverviewViewModel
+import com.hedvig.android.feature.terminateinsurance.step.terminationreview.TerminationReviewDestination
+import com.hedvig.android.feature.terminateinsurance.step.terminationreview.TerminationReviewViewModel
 import com.hedvig.android.feature.terminateinsurance.step.start.TerminationStartDestination
 import com.hedvig.android.feature.terminateinsurance.step.start.TerminationStartStepViewModel
 import com.hedvig.android.feature.terminateinsurance.step.terminationdate.TerminationDateDestination
@@ -117,8 +117,8 @@ fun NavGraphBuilder.terminateInsuranceGraph(
         windowSizeClass = windowSizeClass,
         onContinue = { localDate ->
           navController.navigate(
-            TerminateInsuranceDestination.TerminationOverview(
-              TerminateInsuranceDestination.TerminationOverview.TerminationType.Termination(localDate),
+            TerminateInsuranceDestination.TerminationReview(
+              TerminateInsuranceDestination.TerminationReview.TerminationType.Termination(localDate),
             ),
           )
         },
@@ -143,8 +143,8 @@ fun NavGraphBuilder.terminateInsuranceGraph(
         activeFrom = terminateInsurance.activeFrom,
         onContinue = {
           navController.navigate(
-            TerminateInsuranceDestination.TerminationOverview(
-              TerminateInsuranceDestination.TerminationOverview.TerminationType.Deletion,
+            TerminateInsuranceDestination.TerminationReview(
+              TerminateInsuranceDestination.TerminationReview.TerminationType.Deletion,
             ),
           )
         },
@@ -155,15 +155,15 @@ fun NavGraphBuilder.terminateInsuranceGraph(
         },
       )
     }
-    composable<TerminateInsuranceDestination.TerminationOverview> { backStackEntry ->
+    composable<TerminateInsuranceDestination.TerminationReview> { backStackEntry ->
       val terminateInsurance = getTerminateInsuranceDataFromParentBackstack(navController, backStackEntry)
-      val viewModel: OverviewViewModel = koinViewModel {
+      val viewModel: TerminationReviewViewModel = koinViewModel {
         parametersOf(
           terminationType,
           terminateInsurance,
         )
       }
-      OverviewDestination(
+      TerminationReviewDestination(
         viewModel = viewModel,
         imageLoader = imageLoader,
         onContinue = viewModel::submitContractTermination,

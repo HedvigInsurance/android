@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.terminateinsurance.step.overview
+package com.hedvig.android.feature.terminateinsurance.step.terminationreview
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -24,8 +24,8 @@ import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 
 @Composable
-internal fun OverviewDestination(
-  viewModel: OverviewViewModel,
+internal fun TerminationReviewDestination(
+  viewModel: TerminationReviewViewModel,
   imageLoader: ImageLoader,
   navigateToNextStep: (TerminateInsuranceStep) -> Unit,
   onContinue: () -> Unit,
@@ -39,7 +39,7 @@ internal fun OverviewDestination(
     navigateToNextStep(nextStep)
   }
 
-  OverviewScreen(
+  TerminationReviewScreen(
     uiState = uiState,
     onContinue = onContinue,
     navigateUp = navigateUp,
@@ -49,7 +49,7 @@ internal fun OverviewDestination(
 }
 
 @Composable
-private fun OverviewScreen(
+private fun TerminationReviewScreen(
   uiState: OverviewUiState,
   onContinue: () -> Unit,
   navigateUp: () -> Unit,
@@ -89,7 +89,7 @@ private fun OverviewScreenPreview(
 ) {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      OverviewScreen(
+      TerminationReviewScreen(
         uiState = OverviewUiState(
           terminationDate = LocalDate.fromEpochDays(300),
           insuranceDisplayName = "Test insurance",

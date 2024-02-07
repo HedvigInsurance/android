@@ -14,8 +14,11 @@ internal sealed interface TerminateInsuranceDestination : Destination {
     val maxDate: LocalDate,
   ) : TerminateInsuranceDestination
 
+  /**
+   * The screen to review the termination situation before submitting the final request
+   */
   @Serializable
-  data class TerminationOverview(val terminationType: TerminationType) : TerminateInsuranceDestination {
+  data class TerminationReview(val terminationType: TerminationType) : TerminateInsuranceDestination {
     @Serializable
     sealed interface TerminationType {
       @Serializable
