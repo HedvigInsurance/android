@@ -86,7 +86,7 @@ internal class SwedishLoginPresenter(
       when (result) {
         is AuthAttemptResult.BankIdProperties -> bankIdProperties = result
         is AuthAttemptResult.Error -> {
-          logcat(LogPriority.ERROR) { "Got Error when signing in with BankId: ${result.toString()}" }
+          logcat(LogPriority.ERROR) { "Got Error when signing in with BankId: $result" }
           startLoginAttemptFailed = true
         }
 

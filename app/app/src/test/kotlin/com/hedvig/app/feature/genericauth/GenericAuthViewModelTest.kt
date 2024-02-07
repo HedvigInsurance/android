@@ -43,7 +43,7 @@ class GenericAuthViewModelTest {
           statusUrl = StatusUrl("testStatusUrl"),
           resendUrl = "resendUrl",
           verifyUrl = "verifyUrl",
-          maskedEmail = null
+          maskedEmail = null,
         )
       }
 

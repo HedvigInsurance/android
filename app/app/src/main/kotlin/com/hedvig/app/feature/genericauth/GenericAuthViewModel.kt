@@ -143,9 +143,12 @@ data class GenericAuthViewState(
 
   sealed interface TextFieldError {
     data class Message(val message: String) : TextFieldError
+
     sealed interface Other : TextFieldError {
       data object Empty : Other
+
       data object InvalidEmail : Other
+
       data object NetworkError : Other
     }
   }
