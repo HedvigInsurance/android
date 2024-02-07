@@ -2,7 +2,7 @@ package com.hedvig.android.core.tracking
 
 @Suppress("NOTHING_TO_INLINE")
 inline fun logAction(type: ActionType, name: String, attributes: Map<String, Any?>) {
-  with(ActionLogger.actionLogger) {
+  with(RumLogger.rumLogger) {
     logAction(type, name, attributes)
   }
 }
@@ -15,7 +15,7 @@ inline fun logError(
   throwable: Throwable? = null,
   stacktrace: String? = throwable?.stackTraceToString(),
 ) {
-  with(ActionLogger.actionLogger) {
+  with(RumLogger.rumLogger) {
     logError(message, source, attributes, throwable, stacktrace)
   }
 }
