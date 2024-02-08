@@ -1,17 +1,19 @@
 package com.hedvig.android.feature.insurances.data
 
 import arrow.core.Either
-import arrow.core.raise.either
+import arrow.core.right
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.datetime.LocalDate
 
 internal class GetInsuranceContractsUseCaseDemo : GetInsuranceContractsUseCase {
-  override suspend fun invoke(forceNetworkFetch: Boolean): Either<ErrorMessage, List<InsuranceContract>> {
-    return either {
+  override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, List<InsuranceContract>>> {
+    return flowOf(
       listOf(
         InsuranceContract(
           "1",
@@ -72,7 +74,7 @@ internal class GetInsuranceContractsUseCaseDemo : GetInsuranceContractsUseCase {
           contractHolderDisplayName = "Test Member",
           contractHolderSSN = "1111111111-33322",
         ),
-      )
-    }
+      ).right(),
+    )
   }
 }
