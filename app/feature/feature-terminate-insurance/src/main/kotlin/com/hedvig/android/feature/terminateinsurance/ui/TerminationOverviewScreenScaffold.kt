@@ -104,12 +104,12 @@ internal fun ColumnScope.TerminationOverviewScreenContent(
   insuranceCardPainter: Painter,
   imageLoader: ImageLoader,
   infoText: String?,
-  continueButtonText: String?,
-  onContinueButtonClick: (() -> Unit)?,
-  cancelButtonText: String,
-  onCancelButtonClick: () -> Unit,
-  continueButtonColor: Color = MaterialTheme.colorScheme.error,
-  onContinueButtonColor: Color = MaterialTheme.colorScheme.error,
+  containedButtonText: String?,
+  onContainedButtonClick: (() -> Unit)?,
+  textButtonText: String,
+  onTextButtonClick: () -> Unit,
+  containedButtonColor: Color = MaterialTheme.colorScheme.error,
+  onContainedButtonColor: Color = MaterialTheme.colorScheme.error,
 ) {
   Spacer(Modifier.height(8.dp))
   InsuranceCard(
@@ -142,21 +142,21 @@ internal fun ColumnScope.TerminationOverviewScreenContent(
   CommonQuestions(modifier = Modifier.padding(horizontal = 16.dp))
   Spacer(Modifier.height(32.dp))
   Spacer(Modifier.weight(1f))
-  if (continueButtonText != null && onContinueButtonClick != null) {
+  if (containedButtonText != null && onContainedButtonClick != null) {
     HedvigContainedButton(
-      text = continueButtonText,
+      text = containedButtonText,
       colors = ButtonDefaults.buttonColors(
-        containerColor = continueButtonColor,
-        contentColor = onContinueButtonColor,
+        containerColor = containedButtonColor,
+        contentColor = onContainedButtonColor,
       ),
-      onClick = onContinueButtonClick,
+      onClick = onContainedButtonClick,
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(8.dp))
   }
   HedvigTextButton(
-    text = cancelButtonText,
-    onClick = onCancelButtonClick,
+    text = textButtonText,
+    onClick = onTextButtonClick,
     modifier = Modifier.padding(horizontal = 16.dp),
   )
   Spacer(Modifier.height(16.dp))
@@ -230,12 +230,12 @@ private fun PreviewTerminationOverviewScreenScaffold() {
           insuranceCardPainter = ColorPainter(Color.Gray),
           imageLoader = rememberPreviewImageLoader(),
           infoText = "infoText",
-          continueButtonText = "continueButtonText",
-          onContinueButtonClick = {},
-          cancelButtonText = "cancelButtonText",
-          onCancelButtonClick = {},
-          continueButtonColor = MaterialTheme.colorScheme.error,
-          onContinueButtonColor = MaterialTheme.colorScheme.onError,
+          containedButtonText = "containedButtonText",
+          onContainedButtonClick = {},
+          textButtonText = "textButtonText",
+          onTextButtonClick = {},
+          containedButtonColor = MaterialTheme.colorScheme.error,
+          onContainedButtonColor = MaterialTheme.colorScheme.onError,
         )
       }
     }

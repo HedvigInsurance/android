@@ -73,10 +73,10 @@ private fun TerminationReviewScreen(
         insuranceCardPainter = painterResource(uiState.contractGroup.toDrawableRes()),
         imageLoader = imageLoader,
         infoText = null,
-        continueButtonText = stringResource(R.string.TERMINATION_CONFIRM_BUTTON),
-        onContinueButtonClick = onContinue,
-        cancelButtonText = stringResource(R.string.general_cancel_button),
-        onCancelButtonClick = navigateBack,
+        containedButtonText = stringResource(R.string.TERMINATION_CONFIRM_BUTTON),
+        onContainedButtonClick = onContinue,
+        textButtonText = stringResource(R.string.general_cancel_button),
+        onTextButtonClick = navigateBack,
       )
     }
   }
