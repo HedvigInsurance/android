@@ -11,14 +11,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -26,15 +26,20 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.LineBreak
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
+import com.hedvig.android.core.designsystem.material3.warningElement
 import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.hedvig.normal.WarningFilled
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import hedvig.resources.R
@@ -48,7 +53,6 @@ internal fun TerminationInfoScreen(
   title: String,
   headerText: String,
   bodyText: String,
-  icon: ImageVector,
   navigateUp: () -> Unit,
   bottomContent: @Composable () -> Unit,
 ) {
@@ -76,22 +80,29 @@ internal fun TerminationInfoScreen(
       }
       Spacer(Modifier.height(40.dp))
       Icon(
-        imageVector = icon,
+        imageVector = Icons.Hedvig.WarningFilled,
         contentDescription = "Icon",
-        modifier = sideSpacingModifier.size(32.dp),
+        tint = MaterialTheme.colorScheme.warningElement,
+        modifier = sideSpacingModifier
+          .align(Alignment.CenterHorizontally),
       )
       Spacer(Modifier.height(16.dp))
       Text(
         text = headerText,
-        style = MaterialTheme.typography.headlineSmall,
-        modifier = sideSpacingModifier,
+        textAlign = TextAlign.Center,
+        style = LocalTextStyle.current.copy(
+          lineBreak = LineBreak.Heading,
+        ),
+        modifier = sideSpacingModifier.align(Alignment.CenterHorizontally),
       )
       Spacer(Modifier.height(16.dp))
-      Text(
-        text = bodyText,
-        style = MaterialTheme.typography.bodyLarge,
-        modifier = sideSpacingModifier,
-      )
+      CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
+        Text(
+          text = bodyText,
+          style = MaterialTheme.typography.bodyLarge,
+          modifier = sideSpacingModifier.align(Alignment.CenterHorizontally),
+        )
+      }
       Spacer(Modifier.height(16.dp))
       Spacer(Modifier.weight(1f))
       Box(sideSpacingModifier) {
@@ -99,9 +110,9 @@ internal fun TerminationInfoScreen(
       }
       Spacer(Modifier.height(16.dp))
       Spacer(
-        Modifier.windowInsetsPadding(
-          WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom),
-        ),
+        Modifier
+          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom))
+          .align(Alignment.CenterHorizontally),
       )
     }
   }
@@ -121,7 +132,6 @@ private fun PreviewTerminationInfoScreen() {
 
           Thanks for being part of Hedvig and trusting us to protect you and your loved ones when needed. The doors are always open if you decide to come back in the near future.
         """.trimIndent(),
-        icon = Icons.Outlined.CheckCircle,
         navigateUp = {},
       ) {
         HedvigContainedButton(

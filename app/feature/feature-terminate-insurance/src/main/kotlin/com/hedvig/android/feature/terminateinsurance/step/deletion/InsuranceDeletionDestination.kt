@@ -1,111 +1,102 @@
 package com.hedvig.android.feature.terminateinsurance.step.deletion
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material.icons.Icons
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.style.LineBreak
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.button.HedvigOutlinedTextButton
+import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
+import com.hedvig.android.core.designsystem.material3.warningElement
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.preview.calculateForPreview
-import com.hedvig.android.core.ui.snackbar.ErrorSnackbar
-import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
-import com.hedvig.android.feature.terminateinsurance.ui.TerminationInfoScreen
+import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.hedvig.normal.WarningFilled
+import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
+import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
 import hedvig.resources.R
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.toJavaLocalDate
 
 @Composable
-internal fun InsuranceDeletionDestination(
-  viewModel: InsuranceDeletionViewModel,
-  insuranceDisplayName: String,
-  windowSizeClass: WindowSizeClass,
-  navigateToNextStep: (TerminateInsuranceStep) -> Unit,
-  navigateBack: () -> Unit,
-) {
-  val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  val nextStep = uiState.nextStep
-  LaunchedEffect(nextStep) {
-    if (nextStep == null) return@LaunchedEffect
-    navigateToNextStep(nextStep)
-  }
-  InsuranceDeletionScreen(
-    uiState = uiState,
-    insuranceDisplayName = insuranceDisplayName,
-    windowSizeClass = windowSizeClass,
-    showedError = viewModel::showedError,
-    confirmDeletion = viewModel::confirmDeletion,
-    navigateBack = navigateBack,
-  )
-}
-
-@Composable
-private fun InsuranceDeletionScreen(
-  uiState: InsuranceDeletionUiState,
-  insuranceDisplayName: String,
-  windowSizeClass: WindowSizeClass,
-  showedError: () -> Unit,
-  confirmDeletion: () -> Unit,
-  navigateBack: () -> Unit,
-) {
-  Box {
-    TerminationInfoScreen(
-      windowSizeClass = windowSizeClass,
-      title = "",
-      headerText = stringResource(
-        R.string.TERMINATION_CONTRACT_DELETION_ALERT_DESCRIPTION,
-        insuranceDisplayName,
-      ),
-      bodyText = uiState.disclaimer,
-      icon = ImageVector.vectorResource(com.hedvig.android.core.design.system.R.drawable.ic_warning_triangle),
-      navigateUp = navigateBack,
+internal fun InsuranceDeletionDestination(activeFrom: LocalDate, onContinue: () -> Unit, navigateUp: () -> Unit) {
+  Column(
+    Modifier
+      .fillMaxSize()
+      .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)),
+  ) {
+    TopAppBarWithBack(
+      onClick = navigateUp,
+      title = stringResource(R.string.TERMINATE_CONTRACT_CONFIRMATION_TITLE),
+    )
+    Spacer(Modifier.weight(1f))
+    Column(
+      horizontalAlignment = Alignment.CenterHorizontally,
+      modifier = Modifier.padding(horizontal = 28.dp),
     ) {
-      Column {
-        HedvigOutlinedTextButton(
-          text = stringResource(R.string.general_cancel_button),
-          onClick = navigateBack,
-          enabled = uiState.canSubmit,
-        )
-        Spacer(Modifier.height(16.dp))
-        HedvigContainedButton(
-          text = stringResource(R.string.general_continue_button),
-          onClick = { confirmDeletion() },
-          enabled = uiState.canSubmit,
-          colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.error,
-            contentColor = MaterialTheme.colorScheme.onError,
-            disabledContainerColor = MaterialTheme.colorScheme.error.copy(
-              alpha = 0.12f,
-            ),
-            disabledContentColor = MaterialTheme.colorScheme.onError.copy(
-              alpha = 0.38f,
-            ),
+      Icon(
+        imageVector = Icons.Hedvig.WarningFilled,
+        contentDescription = null,
+        tint = MaterialTheme.colorScheme.warningElement,
+      )
+      Spacer(Modifier.height(16.dp))
+      Text(
+        text = stringResource(id = R.string.GENERAL_ARE_YOU_SURE),
+        textAlign = TextAlign.Center,
+        style = LocalTextStyle.current.copy(
+          lineBreak = LineBreak.Heading,
+        ),
+        modifier = Modifier.fillMaxWidth(),
+      )
+      val dateTimeFormatter = rememberHedvigDateTimeFormatter()
+      Spacer(Modifier.height(2.dp))
+      CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
+        Text(
+          text = stringResource(
+            id = R.string.TERMINATE_CONTRACT_DELETION_TEXT,
+            dateTimeFormatter.format(activeFrom.toJavaLocalDate()),
           ),
+          textAlign = TextAlign.Center,
+          modifier = Modifier.fillMaxWidth(),
         )
       }
+      Spacer(Modifier.height(24.dp))
     }
-    ErrorSnackbar(
-      hasError = uiState.hasError,
-      showedError = showedError,
+    Spacer(Modifier.weight(1f))
+    HedvigContainedButton(
+      text = stringResource(id = R.string.TERMINATE_CONTRACT_DELETION_CONTINUE_BUTTON),
+      onClick = onContinue,
       modifier = Modifier
-        .align(Alignment.BottomCenter)
-        .windowInsetsPadding(WindowInsets.safeDrawing),
+        .padding(horizontal = 16.dp)
+        .padding(bottom = 8.dp),
+    )
+    HedvigTextButton(
+      text = stringResource(id = R.string.general_cancel_button),
+      onClick = onContinue,
+      modifier = Modifier
+        .padding(horizontal = 16.dp)
+        .padding(bottom = 32.dp),
     )
   }
 }
@@ -115,15 +106,10 @@ private fun InsuranceDeletionScreen(
 private fun PreviewInsuranceDeletionScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      InsuranceDeletionScreen(
-        InsuranceDeletionUiState(
-          "Your insurance will be deleted which means it will not be activated on 2023-01-23",
-        ),
-        "Home Insurance",
-        WindowSizeClass.calculateForPreview(),
-        {},
-        {},
-        {},
+      InsuranceDeletionDestination(
+        activeFrom = LocalDate.fromEpochDays(300),
+        onContinue = {},
+        navigateUp = {},
       )
     }
   }

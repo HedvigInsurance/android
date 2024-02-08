@@ -37,29 +37,38 @@ internal fun TerminationFlowStepFragment.CurrentStep.toTerminateInsuranceStep():
     is TerminationFlowStepFragment.FlowTerminationDateStepCurrentStep -> {
       TerminateInsuranceStep.TerminateInsuranceDate(minDate, maxDate)
     }
+
     is TerminationFlowStepFragment.FlowTerminationFailedStepCurrentStep -> TerminateInsuranceStep.Failure()
     is TerminationFlowStepFragment.FlowTerminationDeletionStepCurrentStep -> {
       TerminateInsuranceStep.InsuranceDeletion(disclaimer)
     }
+
     is TerminationFlowStepFragment.FlowTerminationSuccessStepCurrentStep -> {
       TerminateInsuranceStep.TerminateInsuranceSuccess(terminationDate, surveyUrl)
     }
+
     else -> TerminateInsuranceStep.UnknownStep()
   }
 }
 
-internal fun TerminateInsuranceStep.toTerminateInsuranceDestination(): TerminateInsuranceDestination {
+internal fun TerminateInsuranceStep.toTerminateInsuranceDestination(
+  insuranceDisplayName: String,
+  exposureName: String,
+): TerminateInsuranceDestination {
   return when (this) {
     is TerminateInsuranceStep.Failure -> TerminateInsuranceDestination.TerminationFailure(message)
     is TerminateInsuranceStep.TerminateInsuranceDate -> {
       TerminateInsuranceDestination.TerminationDate(minDate, maxDate)
     }
+
     is TerminateInsuranceStep.InsuranceDeletion -> {
       TerminateInsuranceDestination.InsuranceDeletion(disclaimer)
     }
+
     is TerminateInsuranceStep.TerminateInsuranceSuccess -> {
-      TerminateInsuranceDestination.TerminationSuccess(terminationDate, surveyUrl)
+      TerminateInsuranceDestination.TerminationSuccess(insuranceDisplayName, exposureName, terminationDate, surveyUrl)
     }
+
     is TerminateInsuranceStep.UnknownStep -> TerminateInsuranceDestination.UnknownScreen
   }
 }

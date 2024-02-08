@@ -1,60 +1,86 @@
 package com.hedvig.android.feature.terminateinsurance.step.start
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.hedvig.android.core.common.RetryChannel
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import com.hedvig.android.feature.terminateinsurance.InsuranceId
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
+import com.hedvig.android.molecule.android.MoleculeViewModel
+import com.hedvig.android.molecule.public.MoleculePresenter
+import com.hedvig.android.molecule.public.MoleculePresenterScope
 
 internal class TerminationStartStepViewModel(
   private val insuranceId: InsuranceId,
   private val terminateInsuranceRepository: TerminateInsuranceRepository,
-) : ViewModel() {
-  private val _uiState: MutableStateFlow<TerminationFlowUiState> =
-    MutableStateFlow(TerminationFlowUiState.Loading)
-  private val retryChannel = RetryChannel()
+) : MoleculeViewModel<TerminationStartStepEvent, TerminationStartStepUiState>(
+    TerminationStartStepUiState.Initial,
+    TerminationStartStepPresenter(insuranceId, terminateInsuranceRepository),
+  )
 
-  init {
-    viewModelScope.launch {
-      retryChannel.mapLatest {
-        _uiState.update { TerminationFlowUiState.Loading }
-        terminateInsuranceRepository.startTerminationFlow(insuranceId).fold(
-          ifLeft = {
-            _uiState.update { TerminationFlowUiState.Error }
-          },
-          ifRight = { terminationStep ->
-            _uiState.update { TerminationFlowUiState.Success(terminationStep) }
-          },
-        )
-      }.collect()
+private class TerminationStartStepPresenter(
+  private val insuranceId: InsuranceId,
+  private val terminateInsuranceRepository: TerminateInsuranceRepository,
+) : MoleculePresenter<TerminationStartStepEvent, TerminationStartStepUiState> {
+  @Composable
+  override fun MoleculePresenterScope<TerminationStartStepEvent>.present(
+    lastState: TerminationStartStepUiState,
+  ): TerminationStartStepUiState {
+    var loadingNextStepIteration by remember { mutableIntStateOf(0) }
+    var hasError by remember { mutableStateOf(false) }
+    var isLoadingNextStep by remember { mutableStateOf(false) }
+    var terminationStep: TerminateInsuranceStep? by remember { mutableStateOf(null) }
+
+    LaunchedEffect(loadingNextStepIteration) {
+      isLoadingNextStep = false
+      if (loadingNextStepIteration == 0) return@LaunchedEffect
+      isLoadingNextStep = true
+      hasError = false
+      terminateInsuranceRepository.startTerminationFlow(insuranceId).fold(
+        ifLeft = {
+          hasError = true
+        },
+        ifRight = { step: TerminateInsuranceStep ->
+          terminationStep = step
+        },
+      )
+      isLoadingNextStep = false
     }
-  }
 
-  val uiState: StateFlow<TerminationFlowUiState> = _uiState.asStateFlow()
-
-  fun retryToStartTerminationFlow() {
-    retryChannel.retry()
-  }
-
-  fun handledNextStepNavigation() {
-    val uiState = _uiState.value
-    if (uiState is TerminationFlowUiState.Success) {
-      _uiState.update { TerminationFlowUiState.Success(null) }
+    CollectEvents { event ->
+      when (event) {
+        TerminationStartStepEvent.InitiateTerminationFlow -> loadingNextStepIteration++
+        TerminationStartStepEvent.HandledNextStep -> terminationStep = null
+        TerminationStartStepEvent.HandledShowingNetworkError -> hasError = false
+      }
     }
+
+    return TerminationStartStepUiState(
+      failedToLoadNextStep = hasError,
+      isLoadingNextStep = isLoadingNextStep,
+      nextStep = terminationStep,
+    )
   }
 }
 
-internal sealed interface TerminationFlowUiState {
-  data object Loading : TerminationFlowUiState
+internal data class TerminationStartStepUiState(
+  val failedToLoadNextStep: Boolean,
+  val isLoadingNextStep: Boolean,
+  val nextStep: TerminateInsuranceStep?,
+) {
+  companion object {
+    val Initial = TerminationStartStepUiState(false, false, null)
+  }
+}
 
-  data object Error : TerminationFlowUiState
+internal sealed interface TerminationStartStepEvent {
+  data object InitiateTerminationFlow : TerminationStartStepEvent
 
-  data class Success(val nextStep: TerminateInsuranceStep?) : TerminationFlowUiState
+  data object HandledShowingNetworkError : TerminationStartStepEvent
+
+  data object HandledNextStep : TerminationStartStepEvent
 }
