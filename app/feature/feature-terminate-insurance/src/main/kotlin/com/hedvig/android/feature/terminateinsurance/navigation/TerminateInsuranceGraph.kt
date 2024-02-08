@@ -22,7 +22,6 @@ import com.hedvig.android.feature.terminateinsurance.step.terminationreview.Term
 import com.hedvig.android.feature.terminateinsurance.step.terminationreview.TerminationReviewViewModel
 import com.hedvig.android.feature.terminateinsurance.step.terminationsuccess.TerminationSuccessDestination
 import com.hedvig.android.feature.terminateinsurance.step.unknown.UnknownScreenDestination
-import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.Navigator
 import com.kiwi.navigationcompose.typed.composable
 import com.kiwi.navigationcompose.typed.createRoutePattern

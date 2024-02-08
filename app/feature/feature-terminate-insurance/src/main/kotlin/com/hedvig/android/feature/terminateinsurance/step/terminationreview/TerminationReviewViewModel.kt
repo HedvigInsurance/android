@@ -8,7 +8,6 @@ import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepo
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceFeatureDestination
-import com.hedvig.android.navigation.core.AppDestination
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow

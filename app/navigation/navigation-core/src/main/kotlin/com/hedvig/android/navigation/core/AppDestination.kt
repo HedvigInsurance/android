@@ -1,8 +1,6 @@
 package com.hedvig.android.navigation.core
 
-import com.hedvig.android.data.contract.ContractGroup
 import com.kiwi.navigationcompose.typed.Destination
-import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
 sealed interface AppDestination : Destination {
