@@ -51,7 +51,7 @@ internal fun TerminationDateDestination(
   viewModel: TerminationDateViewModel,
   windowSizeClass: WindowSizeClass,
   onContinue: (LocalDate) -> Unit,
-  navigateBack: () -> Unit,
+  navigateUp: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   TerminationDateScreen(
@@ -64,7 +64,7 @@ internal fun TerminationDateDestination(
         onContinue(date)
       }
     },
-    navigateBack = navigateBack,
+    navigateUp = navigateUp,
   )
 }
 
@@ -74,13 +74,13 @@ private fun TerminationDateScreen(
   windowSizeClass: WindowSizeClass,
   dateValidator: (Long) -> Boolean,
   submit: () -> Unit,
-  navigateBack: () -> Unit,
+  navigateUp: () -> Unit,
 ) {
   Box(Modifier.fillMaxSize()) {
     Column {
       val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
       TopAppBarWithBack(
-        onClick = navigateBack,
+        onClick = navigateUp,
         title = stringResource(hedvig.resources.R.string.TERMINATION_DATE_TEXT),
         scrollBehavior = topAppBarScrollBehavior,
       )

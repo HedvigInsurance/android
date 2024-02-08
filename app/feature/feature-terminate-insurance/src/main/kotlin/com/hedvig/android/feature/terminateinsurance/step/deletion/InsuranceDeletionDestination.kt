@@ -40,14 +40,14 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
 
 @Composable
-internal fun InsuranceDeletionDestination(activeFrom: LocalDate, onContinue: () -> Unit, navigateBack: () -> Unit) {
+internal fun InsuranceDeletionDestination(activeFrom: LocalDate, onContinue: () -> Unit, navigateUp: () -> Unit) {
   Column(
     Modifier
       .fillMaxSize()
       .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)),
   ) {
     TopAppBarWithBack(
-      onClick = navigateBack,
+      onClick = navigateUp,
       title = stringResource(R.string.TERMINATE_CONTRACT_CONFIRMATION_TITLE),
     )
     Spacer(Modifier.weight(1f))
@@ -109,7 +109,7 @@ private fun PreviewInsuranceDeletionScreen() {
       InsuranceDeletionDestination(
         activeFrom = LocalDate.fromEpochDays(300),
         onContinue = {},
-        navigateBack = {},
+        navigateUp = {},
       )
     }
   }

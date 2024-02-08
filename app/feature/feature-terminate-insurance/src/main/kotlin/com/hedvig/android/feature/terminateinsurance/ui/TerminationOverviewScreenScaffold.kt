@@ -74,10 +74,10 @@ internal fun TerminationOverviewScreenScaffold(
       )
       Column(
         modifier = Modifier
-            .fillMaxSize()
-            .nestedScroll(scrollBehavior.nestedScrollConnection)
-            .verticalScroll(rememberScrollState())
-            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+          .fillMaxSize()
+          .nestedScroll(scrollBehavior.nestedScrollConnection)
+          .verticalScroll(rememberScrollState())
+          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
       ) {
         content()
         Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
@@ -109,7 +109,8 @@ internal fun ColumnScope.TerminationOverviewScreenContent(
   textButtonText: String,
   onTextButtonClick: () -> Unit,
   containedButtonColor: Color = MaterialTheme.colorScheme.error,
-  onContainedButtonColor: Color = MaterialTheme.colorScheme.error,
+  onContainedButtonColor: Color = MaterialTheme.colorScheme.onError,
+  isContainedButtonLoading: Boolean = false,
 ) {
   Spacer(Modifier.height(8.dp))
   InsuranceCard(
@@ -129,8 +130,8 @@ internal fun ColumnScope.TerminationOverviewScreenContent(
     VectorInfoCard(
       text = infoText,
       modifier = Modifier
-          .padding(horizontal = 16.dp)
-          .fillMaxWidth(),
+        .padding(horizontal = 16.dp)
+        .fillMaxWidth(),
     )
   }
   Spacer(Modifier.height(16.dp))
@@ -150,6 +151,7 @@ internal fun ColumnScope.TerminationOverviewScreenContent(
         contentColor = onContainedButtonColor,
       ),
       onClick = onContainedButtonClick,
+      isLoading = isContainedButtonLoading,
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(8.dp))

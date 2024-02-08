@@ -29,7 +29,6 @@ import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.decodeArguments
 import com.kiwi.navigationcompose.typed.navigate
 import com.kiwi.navigationcompose.typed.navigation
-import com.kiwi.navigationcompose.typed.popBackStack
 import com.kiwi.navigationcompose.typed.popUpTo
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -52,7 +51,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
   openUrl: (String) -> Unit,
   openPlayStore: () -> Unit,
 ) {
-  composable<TerminateInsuranceDestination.TerminationSuccess> { backStackEntry ->
+  composable<TerminateInsuranceDestination.TerminationSuccess> {
     TerminationSuccessDestination(
       terminationDate = terminationDate,
       insuranceDisplayName = insuranceDisplayName,
@@ -88,9 +87,13 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       val viewModel: TerminationStartStepViewModel = koinViewModel { parametersOf(insuranceId) }
       TerminationStartDestination(
         viewModel = viewModel,
-        retryLoad = { viewModel.retryToStartTerminationFlow() },
+        insuranceDisplayName = terminateInsurance.insuranceDisplayName,
+        exposureName = terminateInsurance.exposureName,
+        contractGroup = terminateInsurance.contractGroup,
+        imageLoader = imageLoader,
+        navigateUp = navigator::navigateUp,
+        navigateBack = navigator::popBackStack,
         navigateToNextStep = { terminationStep ->
-          viewModel.handledNextStepNavigation()
           navigator.navigateToTerminateFlowDestination(
             destination = terminationStep.toTerminateInsuranceDestination(
               terminateInsurance.insuranceDisplayName,
@@ -101,13 +104,6 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       )
     }
     composable<TerminateInsuranceDestination.TerminationDate> {
-      val shouldFinishFlowOnBack = run {
-        val previousBackstackEntryRoute = navController.previousBackStackEntry?.destination?.route
-        previousBackstackEntryRoute == createRoutePattern<TerminateInsuranceDestination.StartStep>()
-      }
-      BackHandler(shouldFinishFlowOnBack) {
-        finishTerminationFlow(navController)
-      }
       val viewModel: TerminationDateViewModel = koinViewModel { parametersOf(minDate, maxDate) }
       TerminationDateDestination(
         viewModel = viewModel,
@@ -119,21 +115,10 @@ fun NavGraphBuilder.terminateInsuranceGraph(
             ),
           )
         },
-        navigateBack = {
-          if (shouldFinishFlowOnBack) {
-            finishTerminationFlow(navController)
-          }
-        },
+        navigateUp = navigator::navigateUp,
       )
     }
     composable<TerminateInsuranceDestination.InsuranceDeletion> { backStackEntry ->
-      val shouldFinishFlowOnBack = run {
-        val previousBackstackEntryRoute = navController.previousBackStackEntry?.destination?.route
-        previousBackstackEntryRoute == createRoutePattern<TerminateInsuranceDestination.StartStep>()
-      }
-      BackHandler(shouldFinishFlowOnBack) {
-        finishTerminationFlow(navController)
-      }
       val terminateInsurance = getTerminateInsuranceDataFromParentBackstack(navController, backStackEntry)
 
       InsuranceDeletionDestination(
@@ -145,21 +130,12 @@ fun NavGraphBuilder.terminateInsuranceGraph(
             ),
           )
         },
-        navigateBack = {
-          if (shouldFinishFlowOnBack) {
-            finishTerminationFlow(navController)
-          }
-        },
+        navigateUp = navigator::navigateUp,
       )
     }
     composable<TerminateInsuranceDestination.TerminationReview> { backStackEntry ->
       val terminateInsurance = getTerminateInsuranceDataFromParentBackstack(navController, backStackEntry)
-      val viewModel: TerminationReviewViewModel = koinViewModel {
-        parametersOf(
-          terminationType,
-          terminateInsurance,
-        )
-      }
+      val viewModel: TerminationReviewViewModel = koinViewModel { parametersOf(terminationType, terminateInsurance) }
       TerminationReviewDestination(
         viewModel = viewModel,
         imageLoader = imageLoader,
@@ -212,8 +188,4 @@ private fun <T : TerminateInsuranceDestination> Navigator.navigateToTerminateFlo
     }
   }
   navigateUnsafe(destination, navOptions)
-}
-
-private fun finishTerminationFlow(navController: NavController) {
-  navController.popBackStack<AppDestination.TerminateInsurance>(inclusive = true)
 }
