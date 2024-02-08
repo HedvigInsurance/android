@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 
 internal sealed interface TerminateInsuranceDestination : Destination {
   @Serializable
-  object StartStep : TerminateInsuranceDestination
+  data object StartStep : TerminateInsuranceDestination
 
   @Serializable
   data class TerminationDate(
@@ -14,13 +14,25 @@ internal sealed interface TerminateInsuranceDestination : Destination {
     val maxDate: LocalDate,
   ) : TerminateInsuranceDestination
 
+  /**
+   * The screen to review the termination situation before submitting the final request
+   */
   @Serializable
-  data class TerminationOverview(
-    val terminationDate: LocalDate,
-  ) : TerminateInsuranceDestination
+  data class TerminationReview(val terminationType: TerminationType) : TerminateInsuranceDestination {
+    @Serializable
+    sealed interface TerminationType {
+      @Serializable
+      data object Deletion : TerminationType
+
+      @Serializable
+      data class Termination(val terminationDate: LocalDate) : TerminationType
+    }
+  }
 
   @Serializable
   data class TerminationSuccess(
+    val insuranceDisplayName: String,
+    val exposureName: String,
     val terminationDate: LocalDate?,
     val surveyUrl: String,
   ) : TerminateInsuranceDestination
@@ -36,5 +48,5 @@ internal sealed interface TerminateInsuranceDestination : Destination {
   ) : TerminateInsuranceDestination
 
   @Serializable
-  object UnknownScreen : TerminateInsuranceDestination
+  data object UnknownScreen : TerminateInsuranceDestination
 }

@@ -36,7 +36,7 @@ class SwedishLoginPresenterTest {
 
     presenter.test(SwedishLoginUiState.Loading) {
       assertThat(awaitItem()).isInstanceOf<SwedishLoginUiState.Loading>()
-      authRepository.authAttemptResponse.add(AuthAttemptResult.Error("test error"))
+      authRepository.authAttemptResponse.add(AuthAttemptResult.Error.UnknownError("test error"))
       assertThat(awaitItem()).isInstanceOf<SwedishLoginUiState.StartLoginAttemptFailed>()
     }
   }
@@ -121,7 +121,7 @@ class SwedishLoginPresenterTest {
       authRepository.loginStatusResponse.add(LoginStatusResult.Completed(AuthorizationCodeGrant("grant")))
       expectNoEvents()
       // Exchange fails
-      authRepository.exchangeResponse.add(AuthTokenResult.Error("failed"))
+      authRepository.exchangeResponse.add(AuthTokenResult.Error.UnknownError("failed"))
       assertThat(awaitItem()).isEqualTo(SwedishLoginUiState.BankIdError("failed"))
       authTokenService.authEventTurbine.expectNoEvents()
     }

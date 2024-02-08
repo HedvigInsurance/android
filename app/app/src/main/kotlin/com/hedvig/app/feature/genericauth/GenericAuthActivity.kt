@@ -58,6 +58,7 @@ class GenericAuthActivity : ComponentActivity() {
               error = viewState.error?.let { errorMessage(it) },
               loading = viewState.loading,
             )
+
             Market.NO,
             Market.DK,
             -> SSNInputScreen(
@@ -76,18 +77,26 @@ class GenericAuthActivity : ComponentActivity() {
   }
 
   @Composable
-  private fun errorMessage(error: GenericAuthViewState.TextFieldError) = stringResource(
-    when (error) {
-      GenericAuthViewState.TextFieldError.EMPTY ->
-        hedvig.resources.R.string.login_text_input_email_error_enter_email
+  private fun errorMessage(error: GenericAuthViewState.TextFieldError): String {
+    return when (error) {
+      is GenericAuthViewState.TextFieldError.Message -> error.message
+      is GenericAuthViewState.TextFieldError.Other -> {
+        when (error) {
+          GenericAuthViewState.TextFieldError.Other.Empty -> {
+            stringResource(hedvig.resources.R.string.login_text_input_email_error_enter_email)
+          }
 
-      GenericAuthViewState.TextFieldError.INVALID_EMAIL ->
-        hedvig.resources.R.string.login_text_input_email_error_not_valid
+          GenericAuthViewState.TextFieldError.Other.InvalidEmail -> {
+            stringResource(hedvig.resources.R.string.login_text_input_email_error_not_valid)
+          }
 
-      GenericAuthViewState.TextFieldError.NETWORK_ERROR ->
-        hedvig.resources.R.string.NETWORK_ERROR_ALERT_MESSAGE
-    },
-  )
+          GenericAuthViewState.TextFieldError.Other.NetworkError -> {
+            stringResource(hedvig.resources.R.string.NETWORK_ERROR_ALERT_MESSAGE)
+          }
+        }
+      }
+    }
+  }
 
   private fun startOtpInputActivity(verifyUrl: String, resendUrl: String, email: String) {
     val intent = OtpInputActivity.newInstance(this, verifyUrl, resendUrl, email)

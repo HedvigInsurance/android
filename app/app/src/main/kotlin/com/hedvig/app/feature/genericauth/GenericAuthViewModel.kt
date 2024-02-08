@@ -86,11 +86,26 @@ class GenericAuthViewModel(
     val newState = when (val startLoginResult = createLoginAttempt()) {
       is AuthAttemptResult.BankIdProperties,
       is AuthAttemptResult.ZignSecProperties,
-      is AuthAttemptResult.Error,
       -> _viewState.value.copy(
-        error = GenericAuthViewState.TextFieldError.NETWORK_ERROR,
+        error = GenericAuthViewState.TextFieldError.Other.NetworkError,
         loading = false,
       )
+
+      is AuthAttemptResult.Error -> {
+        val error = when (startLoginResult) {
+          is AuthAttemptResult.Error.Localised -> GenericAuthViewState.TextFieldError.Message(startLoginResult.reason)
+          is AuthAttemptResult.Error.BackendErrorResponse,
+          is AuthAttemptResult.Error.IOError,
+          is AuthAttemptResult.Error.UnknownError,
+          -> {
+            GenericAuthViewState.TextFieldError.Other.NetworkError
+          }
+        }
+        _viewState.value.copy(
+          error = error,
+          loading = false,
+        )
+      }
 
       is AuthAttemptResult.OtpProperties -> _viewState.value.copy(
         verifyUrl = startLoginResult.verifyUrl,
@@ -105,11 +120,11 @@ class GenericAuthViewModel(
 
   private fun validate(email: EmailAddressWithTrimmedWhitespaces): GenericAuthViewState.TextFieldError? {
     if (email.value.isBlank()) {
-      return GenericAuthViewState.TextFieldError.EMPTY
+      return GenericAuthViewState.TextFieldError.Other.Empty
     }
 
     if (email.isValid.not()) {
-      return GenericAuthViewState.TextFieldError.INVALID_EMAIL
+      return GenericAuthViewState.TextFieldError.Other.InvalidEmail
     }
     return null
   }
@@ -126,9 +141,15 @@ data class GenericAuthViewState(
   val emailInputWithoutWhitespaces: EmailAddressWithTrimmedWhitespaces
     get() = EmailAddressWithTrimmedWhitespaces(emailInput)
 
-  enum class TextFieldError {
-    EMPTY,
-    INVALID_EMAIL,
-    NETWORK_ERROR,
+  sealed interface TextFieldError {
+    data class Message(val message: String) : TextFieldError
+
+    sealed interface Other : TextFieldError {
+      data object Empty : Other
+
+      data object InvalidEmail : Other
+
+      data object NetworkError : Other
+    }
   }
 }

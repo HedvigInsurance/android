@@ -2,6 +2,7 @@ package com.hedvig.android.navigation.core
 
 import com.hedvig.android.data.contract.ContractGroup
 import com.kiwi.navigationcompose.typed.Destination
+import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
 sealed interface AppDestination : Destination {
@@ -68,6 +69,7 @@ sealed interface AppDestination : Destination {
     val insuranceDisplayName: String,
     val exposureName: String,
     val contractGroup: ContractGroup,
+    val activeFrom: LocalDate,
   ) : AppDestination
 
   @Serializable

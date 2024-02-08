@@ -76,6 +76,7 @@ internal fun YourInfoTab(
   coverageItems: ImmutableList<Pair<String, String>>,
   coInsured: ImmutableList<InsuranceAgreement.CoInsured>,
   allowChangeAddress: Boolean,
+  allowTerminatingInsurance: Boolean,
   allowEditCoInsured: Boolean,
   upcomingChangesInsuranceAgreement: InsuranceAgreement?,
   onEditCoInsuredClick: () -> Unit,
@@ -249,15 +250,18 @@ internal fun YourInfoTab(
         )
         Spacer(Modifier.height(8.dp))
       }
-      HedvigTextButton(
-        text = stringResource(R.string.TERMINATION_BUTTON),
-        onClick = { onCancelInsuranceClick() },
-        colors = ButtonDefaults.textButtonColors(
-          contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-        ),
-        modifier = Modifier.padding(horizontal = 16.dp),
-      )
-      Spacer(Modifier.height(16.dp))
+      if (allowTerminatingInsurance) {
+        HedvigTextButton(
+          text = stringResource(R.string.TERMINATION_BUTTON),
+          onClick = { onCancelInsuranceClick() },
+          colors = ButtonDefaults.textButtonColors(
+            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+          ),
+          modifier = Modifier.padding(horizontal = 16.dp),
+        )
+        Spacer(Modifier.height(8.dp))
+      }
+      Spacer(Modifier.height(8.dp))
     }
   }
 }
@@ -486,6 +490,7 @@ private fun PreviewYourInfoTab() {
           ),
         ),
         allowChangeAddress = true,
+        allowTerminatingInsurance = true,
         allowEditCoInsured = true,
         upcomingChangesInsuranceAgreement = InsuranceAgreement(
           activeFrom = LocalDate.fromEpochDays(200),

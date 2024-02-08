@@ -4,6 +4,6 @@ import com.hedvig.android.initializable.Initializable
 
 class ActionLoggerInitializer : Initializable {
   override fun initialize() {
-    DatadogActionLogger.install()
+    DatadogRumLogger.install()
   }
 }

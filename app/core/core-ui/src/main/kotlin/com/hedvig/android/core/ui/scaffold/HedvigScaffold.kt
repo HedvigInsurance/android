@@ -49,8 +49,8 @@ fun HedvigScaffold(
   topAppBarActions: @Composable RowScope.() -> Unit = {},
   content: @Composable ColumnScope.() -> Unit,
 ) {
-  Surface(color = color) {
-    Column(modifier.fillMaxSize()) {
+  Surface(color = color, modifier = modifier.fillMaxSize()) {
+    Column {
       TopAppBar(
         title = topAppBarText ?: "",
         onClick = navigateUp,

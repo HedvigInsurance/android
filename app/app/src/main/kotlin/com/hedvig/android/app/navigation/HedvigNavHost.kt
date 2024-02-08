@@ -139,6 +139,7 @@ internal fun HedvigNavHost(
               backStackEntry.navigate(AppDestination.Chat())
             }
           },
+          openUrl = ::openUrl,
           openPlayStore = { activityNavigator.tryOpenPlayStore(context) },
         )
       },
@@ -166,6 +167,7 @@ internal fun HedvigNavHost(
             insuranceDisplayName = data.contractDisplayName,
             exposureName = data.contractExposure,
             contractGroup = data.contractGroup,
+            activeFrom = data.activateFrom,
           )
           backStackEntry.navigate(destination)
         }

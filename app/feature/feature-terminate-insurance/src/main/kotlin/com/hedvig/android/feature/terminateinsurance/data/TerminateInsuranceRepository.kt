@@ -32,13 +32,14 @@ internal class TerminateInsuranceRepository(
   }
 
   suspend fun setTerminationDate(terminationDate: LocalDate): Either<ErrorMessage, TerminateInsuranceStep> {
-    val nextMutation = FlowTerminationDateNextMutation(
-      context = terminationFlowContextStorage.getContext(),
-      input = FlowTerminationDateInput(terminationDate),
-    )
     return either {
       val result = apolloClient
-        .mutation(nextMutation)
+        .mutation(
+          FlowTerminationDateNextMutation(
+            context = terminationFlowContextStorage.getContext(),
+            input = FlowTerminationDateInput(terminationDate),
+          ),
+        )
         .safeExecute()
         .toEither(::ErrorMessage)
         .bind()

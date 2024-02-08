@@ -125,7 +125,7 @@ private fun ContractDetailScreen(
       when (state) {
         ContractDetailsUiState.Error -> HedvigErrorSection(retry = retry, modifier = Modifier.fillMaxSize())
         ContractDetailsUiState.Loading -> HedvigFullScreenCenterAlignedProgressDebounced(
-          show = uiState is ContractDetailsUiState.Loading,
+          show = state is ContractDetailsUiState.Loading,
           modifier = Modifier.fillMaxSize(),
         )
 
@@ -179,6 +179,7 @@ private fun ContractDetailScreen(
                       contractHolderDisplayName = state.insuranceContract.contractHolderDisplayName,
                       contractHolderSSN = state.insuranceContract.contractHolderSSN,
                       allowChangeAddress = state.insuranceContract.supportsAddressChange,
+                      allowTerminatingInsurance = state.allowTerminatingInsurance,
                       onEditCoInsuredClick = {
                         onEditCoInsuredClick(state.insuranceContract.id)
                       },
@@ -189,12 +190,17 @@ private fun ContractDetailScreen(
                       openChat = openChat,
                       openUrl = openUrl,
                       onCancelInsuranceClick = {
+                        val contractGroup =
+                          state.insuranceContract.currentInsuranceAgreement.productVariant.contractGroup
+                        val contractDisplayName =
+                          state.insuranceContract.currentInsuranceAgreement.productVariant.displayName
                         onCancelInsuranceClick(
                           CancelInsuranceData(
                             contractId = state.insuranceContract.id,
-                            contractDisplayName = state.insuranceContract.currentInsuranceAgreement.productVariant.displayName,
+                            contractDisplayName = contractDisplayName,
                             contractExposure = state.insuranceContract.exposureDisplayName,
-                            contractGroup = state.insuranceContract.currentInsuranceAgreement.productVariant.contractGroup,
+                            contractGroup = contractGroup,
+                            activateFrom = state.insuranceContract.currentInsuranceAgreement.activeFrom,
                           ),
                         )
                       },
@@ -313,6 +319,7 @@ private fun PreviewContractDetailScreen() {
             contractHolderDisplayName = "Hugo Linder",
             contractHolderSSN = "199101131093",
           ),
+          true,
         ),
         imageLoader = rememberPreviewImageLoader(),
         retry = {},
