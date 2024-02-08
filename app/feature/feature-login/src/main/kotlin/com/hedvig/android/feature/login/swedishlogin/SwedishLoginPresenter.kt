@@ -53,9 +53,19 @@ internal class SwedishLoginPresenter(
             if (loginStatusResult is LoginStatusResult.Completed) {
               when (val authTokenResult = authRepository.exchange(loginStatusResult.authorizationCode)) {
                 is AuthTokenResult.Error -> {
-                  logcat(LogPriority.ERROR) { "Login failed, with error: ${authTokenResult.message}" }
-                  return@map LoginStatusResult.Failed(authTokenResult.message)
+                  logcat(LogPriority.ERROR) { "Login failed, with error: $authTokenResult" }
+                  return@map when (authTokenResult) {
+                    is AuthTokenResult.Error.BackendErrorResponse -> {
+                      LoginStatusResult.Failed(
+                        "Error code:${authTokenResult.httpStatusValue}. ${authTokenResult.message}",
+                      )
+                    }
+
+                    is AuthTokenResult.Error.IOError -> LoginStatusResult.Failed("IO Error ${authTokenResult.message}")
+                    is AuthTokenResult.Error.UnknownError -> LoginStatusResult.Failed(authTokenResult.message)
+                  }
                 }
+
                 is AuthTokenResult.Success -> {
                   authTokenService.loginWithTokens(
                     authTokenResult.accessToken,
@@ -76,13 +86,15 @@ internal class SwedishLoginPresenter(
       when (result) {
         is AuthAttemptResult.BankIdProperties -> bankIdProperties = result
         is AuthAttemptResult.Error -> {
-          logcat(LogPriority.ERROR) { "Got Error when signing in with BankId: ${result.message}" }
+          logcat(LogPriority.ERROR) { "Got Error when signing in with BankId: $result" }
           startLoginAttemptFailed = true
         }
+
         is AuthAttemptResult.ZignSecProperties -> {
           logcat(LogPriority.ERROR) { "Got ZignSec properties when signing in with BankId" }
           startLoginAttemptFailed = true
         }
+
         is AuthAttemptResult.OtpProperties -> {
           logcat(LogPriority.ERROR) { "Got Otp properties when signing in with BankId" }
           startLoginAttemptFailed = true
@@ -100,6 +112,7 @@ internal class SwedishLoginPresenter(
             retryIndex++
           }
         }
+
         SwedishLoginEvent.DidOpenBankIDApp -> allowOpeningBankId = false
         SwedishLoginEvent.DidNavigateToLoginScreen -> navigateToLoginScreen = false
         SwedishLoginEvent.StartDemoMode -> launch { demoManager.setDemoMode(true) }

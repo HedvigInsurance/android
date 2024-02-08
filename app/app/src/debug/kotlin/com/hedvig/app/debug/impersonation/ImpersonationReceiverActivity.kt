@@ -117,7 +117,7 @@ class ImpersonationReceiverViewModel(
   init {
     viewModelScope.launch {
       when (val result = authRepository.exchange(AuthorizationCodeGrant(exchangeToken))) {
-        is AuthTokenResult.Error -> _state.update { ViewState.Error(result.message) }
+        is AuthTokenResult.Error -> _state.update { ViewState.Error(result.toString()) }
         is AuthTokenResult.Success -> {
           authTokenService.loginWithTokens(result.accessToken, result.refreshToken)
           _state.update { ViewState.Success }
