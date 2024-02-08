@@ -61,7 +61,9 @@ private fun PreviewTerminationSuccessScreen(
       TerminationSuccessDestination(
         terminationDate = if (withTerminationDate) {
           LocalDate.fromEpochDays(300)
-        } else null,
+        } else {
+          null
+        },
         insuranceDisplayName = "Test",
         exposureName = "123",
         navigateUp = {},

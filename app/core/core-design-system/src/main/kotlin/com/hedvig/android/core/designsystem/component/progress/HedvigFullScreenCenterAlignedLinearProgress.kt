@@ -72,7 +72,7 @@ fun HedvigFullScreenCenterAlignedLinearProgress(title: String, modifier: Modifie
             modifier = Modifier
               .fillMaxWidth(2 / 3f)
               .requiredWidthIn(min = 64.dp)
-              .widthIn(max = 240.dp)
+              .widthIn(max = 240.dp),
           )
         }
       }

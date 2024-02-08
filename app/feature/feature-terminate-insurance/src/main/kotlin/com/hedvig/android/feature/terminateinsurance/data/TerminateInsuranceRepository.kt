@@ -38,7 +38,7 @@ internal class TerminateInsuranceRepository(
           FlowTerminationDateNextMutation(
             context = terminationFlowContextStorage.getContext(),
             input = FlowTerminationDateInput(terminationDate),
-          )
+          ),
         )
         .safeExecute()
         .toEither(::ErrorMessage)

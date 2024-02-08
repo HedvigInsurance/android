@@ -18,16 +18,18 @@ internal class TerminationStartStepViewModel(
   private val insuranceId: InsuranceId,
   private val terminateInsuranceRepository: TerminateInsuranceRepository,
 ) : MoleculeViewModel<TerminationStartStepEvent, TerminationStartStepUiState>(
-  TerminationStartStepUiState.Initial,
-  TerminationStartStepPresenter(insuranceId, terminateInsuranceRepository),
-)
+    TerminationStartStepUiState.Initial,
+    TerminationStartStepPresenter(insuranceId, terminateInsuranceRepository),
+  )
 
 private class TerminationStartStepPresenter(
   private val insuranceId: InsuranceId,
   private val terminateInsuranceRepository: TerminateInsuranceRepository,
 ) : MoleculePresenter<TerminationStartStepEvent, TerminationStartStepUiState> {
   @Composable
-  override fun MoleculePresenterScope<TerminationStartStepEvent>.present(lastState: TerminationStartStepUiState): TerminationStartStepUiState {
+  override fun MoleculePresenterScope<TerminationStartStepEvent>.present(
+    lastState: TerminationStartStepUiState,
+  ): TerminationStartStepUiState {
     var loadingNextStepIteration by remember { mutableIntStateOf(0) }
     var hasError by remember { mutableStateOf(false) }
     var isLoadingNextStep by remember { mutableStateOf(false) }
@@ -77,6 +79,8 @@ internal data class TerminationStartStepUiState(
 
 internal sealed interface TerminationStartStepEvent {
   data object InitiateTerminationFlow : TerminationStartStepEvent
+
   data object HandledShowingNetworkError : TerminationStartStepEvent
+
   data object HandledNextStep : TerminationStartStepEvent
 }
