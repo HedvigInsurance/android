@@ -7,14 +7,20 @@ import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
+import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import octopus.TravelCertificatesQuery
 
 interface GetTravelCertificatesHistoryUseCase {
   suspend fun invoke(): Either<ErrorMessage, List<TravelCertificate>>
 }
 
-internal class GetTravelCertificatesHistoryUseCaseImpl(private val apolloClient: ApolloClient) :
+internal class GetTravelCertificatesHistoryUseCaseImpl(
+  private val apolloClient: ApolloClient,
+  private val clock: Clock,
+) :
   GetTravelCertificatesHistoryUseCase {
   override suspend fun invoke(): Either<ErrorMessage, List<TravelCertificate>> {
     return apolloClient.query(TravelCertificatesQuery())
@@ -23,7 +29,14 @@ internal class GetTravelCertificatesHistoryUseCaseImpl(private val apolloClient:
       .toEither(::ErrorMessage)
       .map {
         it.currentMember.travelCertificates.map { certificate ->
-          TravelCertificate(certificate.startDate, certificate.id, certificate.signedUrl, certificate.expiryDate)
+          val now = clock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+          TravelCertificate(
+            certificate.startDate,
+            certificate.id,
+            certificate.signedUrl,
+            certificate.expiryDate,
+            certificate.expiryDate <= now,
+          )
         }
       }
   }
@@ -34,4 +47,5 @@ data class TravelCertificate(
   val id: String,
   val signedUrl: String,
   val expiryDate: LocalDate,
+  val isExpiredNow: Boolean,
 )

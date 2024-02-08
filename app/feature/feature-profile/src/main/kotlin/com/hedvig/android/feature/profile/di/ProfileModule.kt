@@ -6,7 +6,7 @@ import com.hedvig.android.apollo.auth.listeners.UploadLanguagePreferenceToBacken
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
-import com.hedvig.android.data.travelcertificate.CheckTravelCertificateAvailabilityUseCase
+import com.hedvig.android.data.travelcertificate.CheckTravelCertificateDestinationAvailabilityUseCase
 import com.hedvig.android.feature.profile.aboutapp.AboutAppViewModel
 import com.hedvig.android.feature.profile.data.ProfileRepositoryDemo
 import com.hedvig.android.feature.profile.data.ProfileRepositoryImpl
@@ -29,7 +29,7 @@ val profileModule = module {
   viewModel<ProfileViewModel> {
     ProfileViewModel(
       get<GetEurobonusStatusUseCase>(),
-      get<CheckTravelCertificateAvailabilityUseCase>(),
+      get<CheckTravelCertificateDestinationAvailabilityUseCase>(),
       get<GetMemberRemindersUseCase>(),
       get<EnableNotificationsReminderManager>(),
       get<FeatureManager>(),

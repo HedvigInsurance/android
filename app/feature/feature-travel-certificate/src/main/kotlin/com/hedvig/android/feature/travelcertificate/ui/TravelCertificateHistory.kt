@@ -4,7 +4,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -29,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigSecondaryContainedButton
@@ -40,7 +41,9 @@ import com.hedvig.android.core.icons.hedvig.normal.Info
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.dialog.ErrorDialog
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
+import com.hedvig.android.core.ui.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
+import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.data.travelcertificate.TravelCertificate
 import com.hedvig.android.feature.travelcertificate.CertificateHistoryEvent
 import com.hedvig.android.feature.travelcertificate.CertificateHistoryUiState
@@ -48,11 +51,12 @@ import com.hedvig.android.feature.travelcertificate.CertificateHistoryViewModel
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUri
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.toJavaLocalDate
 
 @Composable
 internal fun TravelCertificateHistoryDestination(
   viewModel: CertificateHistoryViewModel,
-  onContinue: () -> Unit,
+  onStartGenerateTravelCertificateFlow: () -> Unit,
   navigateUp: () -> Unit,
   onShareTravelCertificate: (TravelCertificateUri) -> Unit,
 ) {
@@ -62,7 +66,10 @@ internal fun TravelCertificateHistoryDestination(
     onCertificateClick = { url ->
       viewModel.emit(CertificateHistoryEvent.DownloadCertificate(url))
     },
-    onContinue = onContinue,
+    onDismissDownloadCertificateError = {
+      viewModel.emit(CertificateHistoryEvent.DismissDownloadCertificateError)
+    },
+    onStartGenerateTravelCertificateFlow = onStartGenerateTravelCertificateFlow,
     navigateUp = navigateUp,
     onShareTravelCertificate = onShareTravelCertificate,
     uiState = uiState,
@@ -73,8 +80,9 @@ internal fun TravelCertificateHistoryDestination(
 private fun TravelCertificateHistoryScreen(
   reload: () -> Unit,
   onCertificateClick: (String) -> Unit,
-  onContinue: () -> Unit,
+  onStartGenerateTravelCertificateFlow: () -> Unit,
   navigateUp: () -> Unit,
+  onDismissDownloadCertificateError: () -> Unit,
   onShareTravelCertificate: (TravelCertificateUri) -> Unit,
   uiState: CertificateHistoryUiState,
 ) {
@@ -88,16 +96,6 @@ private fun TravelCertificateHistoryScreen(
   }
 
   when (uiState) {
-    CertificateHistoryUiState.FailureDownloadingCertificate -> {
-      ErrorDialog(
-        title = stringResource(id = R.string.general_error),
-        message = stringResource(id = R.string.travel_certificate_downloading_error),
-        onDismiss = {
-          reload()
-        },
-      )
-    }
-
     CertificateHistoryUiState.FailureDownloadingHistory -> {
       HedvigScaffold(
         navigateUp = navigateUp,
@@ -120,47 +118,57 @@ private fun TravelCertificateHistoryScreen(
         HedvigInformationSection(
           title = stringResource(id = R.string.something_went_wrong),
           buttonText = stringResource(id = R.string.GENERAL_RETRY),
-          onButtonClick = {
-            reload()
-          },
+          onButtonClick = reload,
         )
         Spacer(modifier = Modifier.weight(1f))
       }
     }
 
     CertificateHistoryUiState.Loading -> {
-      Box(modifier = Modifier.fillMaxSize()) {
-        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-      }
-    }
-
-    is CertificateHistoryUiState.SuccessDownloadingCertificate -> {
-      LaunchedEffect(uiState.downLoadingUri) {
-        uiState.downLoadingUri?.let {
-          onShareTravelCertificate(it)
-        }
-      }
+      FullScreenLoading()
     }
 
     is CertificateHistoryUiState.SuccessDownloadingHistory -> {
-      ShowHistory(
-        onIconClick = { showBottomSheet = true },
-        onCertificateClick = onCertificateClick,
-        onContinue = onContinue,
-        navigateUp = navigateUp,
-        historyList = uiState.certificateHistoryList,
-      )
+      if (uiState.travelCertificateUri != null) {
+        LaunchedEffect(uiState.travelCertificateUri) {
+          onShareTravelCertificate(uiState.travelCertificateUri)
+        }
+      }
+      if (uiState.isLoadingCertificate) {
+        FullScreenLoading()
+      } else {
+        TravelCertificateSuccessScreen(
+          onIconClick = { showBottomSheet = true },
+          onCertificateClick = onCertificateClick,
+          onStartGenerateTravelCertificateFlow = onStartGenerateTravelCertificateFlow,
+          navigateUp = navigateUp,
+          historyList = uiState.certificateHistoryList,
+          showErrorDialog = uiState.showDownloadCertificateError,
+          onDismissDownloadCertificateError = onDismissDownloadCertificateError,
+          showGenerationButton = uiState.showGenerateButton,
+        )
+      }
     }
   }
 }
 
 @Composable
-private fun ShowHistory(
+private fun FullScreenLoading() {
+  Box(modifier = Modifier.fillMaxSize()) {
+    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+  }
+}
+
+@Composable
+private fun TravelCertificateSuccessScreen(
   onIconClick: () -> Unit,
   onCertificateClick: (String) -> Unit,
-  onContinue: () -> Unit,
+  onStartGenerateTravelCertificateFlow: () -> Unit,
   navigateUp: () -> Unit,
   historyList: List<TravelCertificate>,
+  showErrorDialog: Boolean,
+  onDismissDownloadCertificateError: () -> Unit,
+  showGenerationButton: Boolean,
 ) {
   HedvigScaffold(
     navigateUp = navigateUp,
@@ -186,6 +194,8 @@ private fun ShowHistory(
       ShowNotEmptyList(
         list = historyList,
         onCertificateClick = onCertificateClick,
+        showErrorDialog = showErrorDialog,
+        onDismissDownloadCertificateError = onDismissDownloadCertificateError,
       )
     }
     Spacer(modifier = Modifier.weight(1f))
@@ -195,11 +205,13 @@ private fun ShowHistory(
         .fillMaxWidth()
         .padding(16.dp, 16.dp, 16.dp, 8.dp),
     )
-    HedvigSecondaryContainedButton(
-      text = stringResource(R.string.travel_certificate_get_travel_certificate_button),
-      onClick = onContinue,
-      modifier = Modifier.padding(16.dp, 8.dp, 16.dp, 0.dp),
-    )
+    if (showGenerationButton) {
+      HedvigSecondaryContainedButton(
+        text = stringResource(R.string.travel_certificate_get_travel_certificate_button),
+        onClick = onStartGenerateTravelCertificateFlow,
+        modifier = Modifier.padding(16.dp, 8.dp, 16.dp, 0.dp),
+      )
+    }
     Spacer(Modifier.height(32.dp))
   }
 }
@@ -218,64 +230,67 @@ private fun ShowInitialInfo() {
 }
 
 @Composable
-private fun ShowNotEmptyList(list: List<TravelCertificate>, onCertificateClick: (String) -> Unit) {
-  Column(
-    horizontalAlignment = Alignment.CenterHorizontally,
-  ) {
-    for (i in list) {
-      CertificateCard(
-        certificate = i,
-        onCertificateClick = onCertificateClick,
-      )
-    }
-  }
-}
-
-@Composable
-private fun CertificateCard(
-  certificate: TravelCertificate,
+private fun ShowNotEmptyList(
+  list: List<TravelCertificate>,
   onCertificateClick: (String) -> Unit,
-  modifier: Modifier = Modifier,
+  showErrorDialog: Boolean,
+  onDismissDownloadCertificateError: () -> Unit,
 ) {
-  Row(
-    verticalAlignment = Alignment.CenterVertically,
-    modifier = modifier
-      .fillMaxWidth()
-      .clickable(onClick = { onCertificateClick(certificate.signedUrl) })
-      .padding(16.dp),
-  ) {
-    val isExpired = isExpired(certificate.expiryDate)
-    val color = if (isExpired) Color.Red else Color.Unspecified
-    val expiryDateText =
-      "${certificate.expiryDate.dayOfMonth} ${certificate.expiryDate.month.name.lowercase().substring(0, 3)}"
-    Text(
-      text = expiryDateText,
-      style = MaterialTheme.typography.bodyLarge,
-      color = color,
+  if (showErrorDialog) {
+    ErrorDialog(
+      title = stringResource(id = R.string.general_error),
+      message = stringResource(id = R.string.travel_certificate_downloading_error),
+      onDismiss = {
+        onDismissDownloadCertificateError()
+      },
     )
-    Spacer(modifier = Modifier.weight(1f))
-    Text(
-      text = if (isExpired) {
+  }
+  val dateTimeFormatter = rememberHedvigMonthDateTimeFormatter()
+  val groupedHistory = list.groupBy { it.expiryDate.year }
+  groupedHistory.forEach {
+    val year = it.key
+    val travelCertificates = it.value
+
+    Text(text = year.toString(), modifier = Modifier.padding(horizontal = 16.dp))
+    Spacer(Modifier.height(4.dp))
+
+    travelCertificates.forEachIndexed { index, certificate ->
+      val isExpired = certificate.isExpiredNow
+      val color = if (isExpired) MaterialTheme.colorScheme.error else Color.Unspecified
+      val endText = if (isExpired) {
         stringResource(id = R.string.travel_certificate_expired)
       } else {
         stringResource(id = R.string.travel_certificate_active)
-      },
-      style = MaterialTheme.typography.bodyLarge,
-      color = color,
-    )
-  }
-}
+      }
 
-private fun isExpired(expiryDate: LocalDate): Boolean {
-  val current = java.time.LocalDate.now()
-  val currentYear = current.year
-  val currentDay = current.dayOfYear
-  val expiryYear = expiryDate.year
-  val expiryDay = expiryDate.dayOfYear
-  return if (expiryYear >= currentYear) {
-    expiryDay <= currentDay
-  } else {
-    true
+      HorizontalItemsWithMaximumSpaceTaken(
+        startSlot = {
+          Text(
+            text = dateTimeFormatter.format(certificate.expiryDate.toJavaLocalDate()),
+            color = color,
+          )
+        },
+        endSlot = {
+          Text(
+            text = endText,
+            color = color,
+            textAlign = TextAlign.End,
+            modifier = Modifier.fillMaxWidth(),
+          )
+        },
+        modifier = Modifier
+          .clickable {
+            onCertificateClick(certificate.signedUrl)
+          }
+          .padding(16.dp),
+      )
+
+      if (index != travelCertificates.size - 1) {
+        Divider(modifier = Modifier.padding(horizontal = 16.dp))
+      } else {
+        Spacer(Modifier.height(16.dp))
+      }
+    }
   }
 }
 
@@ -290,7 +305,8 @@ private fun PreviewTravelCertificateHistoryScreenWithEmptyList() {
         {},
         {},
         {},
-        CertificateHistoryUiState.SuccessDownloadingHistory(listOf()),
+        {},
+        CertificateHistoryUiState.SuccessDownloadingHistory(listOf(), false, true, null, false),
       )
     }
   }
@@ -307,6 +323,7 @@ private fun PreviewTravelCertificateHistoryScreenWithExpiredEarlier() {
         {},
         {},
         {},
+        {},
         CertificateHistoryUiState.SuccessDownloadingHistory(
           listOf(
             TravelCertificate(
@@ -314,20 +331,87 @@ private fun PreviewTravelCertificateHistoryScreenWithExpiredEarlier() {
               expiryDate = LocalDate(2024, 7, 9),
               id = "13213",
               signedUrl = "wkehdkwed",
+              isExpiredNow = false,
             ),
             TravelCertificate(
               startDate = LocalDate(2024, 1, 6),
               expiryDate = LocalDate(2024, 9, 10),
               id = "13213",
               signedUrl = "wkehdkwed",
+              isExpiredNow = false,
             ),
             TravelCertificate(
               startDate = LocalDate(2023, 12, 9),
               expiryDate = LocalDate(2024, 1, 31),
               id = "13213",
               signedUrl = "wkehdkwed",
+              isExpiredNow = true,
+            ),
+            TravelCertificate(
+              startDate = LocalDate(2022, 12, 9),
+              expiryDate = LocalDate(2023, 1, 31),
+              id = "13213",
+              signedUrl = "wkehdkwed",
+              isExpiredNow = true,
             ),
           ),
+          false,
+          false,
+          null,
+          false,
+        ),
+      )
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewErrorWithDownloadingCertificate() {
+  HedvigTheme {
+    Surface(color = MaterialTheme.colorScheme.background) {
+      TravelCertificateHistoryScreen(
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        CertificateHistoryUiState.SuccessDownloadingHistory(
+          listOf(
+            TravelCertificate(
+              startDate = LocalDate(2024, 6, 2),
+              expiryDate = LocalDate(2024, 7, 9),
+              id = "13213",
+              signedUrl = "wkehdkwed",
+              isExpiredNow = false,
+            ),
+            TravelCertificate(
+              startDate = LocalDate(2024, 1, 6),
+              expiryDate = LocalDate(2024, 9, 10),
+              id = "13213",
+              signedUrl = "wkehdkwed",
+              isExpiredNow = false,
+            ),
+            TravelCertificate(
+              startDate = LocalDate(2023, 12, 9),
+              expiryDate = LocalDate(2024, 1, 31),
+              id = "13213",
+              signedUrl = "wkehdkwed",
+              isExpiredNow = false,
+            ),
+            TravelCertificate(
+              startDate = LocalDate(2022, 12, 9),
+              expiryDate = LocalDate(2023, 1, 31),
+              id = "13213",
+              signedUrl = "wkehdkwed",
+              isExpiredNow = false,
+            ),
+          ),
+          true,
+          true,
+          null,
+          false,
         ),
       )
     }
@@ -345,6 +429,7 @@ private fun PreviewTravelCertificateHistoryScreenWithExpiredToday() {
         {},
         {},
         {},
+        {},
         CertificateHistoryUiState.SuccessDownloadingHistory(
           listOf(
             TravelCertificate(
@@ -352,6 +437,7 @@ private fun PreviewTravelCertificateHistoryScreenWithExpiredToday() {
               expiryDate = LocalDate(2024, 9, 10),
               id = "13213",
               signedUrl = "wkehdkwed",
+              isExpiredNow = false,
             ),
             TravelCertificate(
               startDate = LocalDate(2023, 11, 25),
@@ -362,8 +448,56 @@ private fun PreviewTravelCertificateHistoryScreenWithExpiredToday() {
               ),
               id = "13213",
               signedUrl = "wkehdkwed",
+              isExpiredNow = true,
             ),
           ),
+          false,
+          true,
+          null,
+          false,
+        ),
+      )
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewTravelCertificateHistoryScreenWithExpiredTodayNoGenerateButton() {
+  HedvigTheme {
+    Surface(color = MaterialTheme.colorScheme.background) {
+      TravelCertificateHistoryScreen(
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        CertificateHistoryUiState.SuccessDownloadingHistory(
+          listOf(
+            TravelCertificate(
+              startDate = LocalDate(2024, 1, 6),
+              expiryDate = LocalDate(2024, 9, 10),
+              id = "13213",
+              signedUrl = "wkehdkwed",
+              isExpiredNow = false,
+            ),
+            TravelCertificate(
+              startDate = LocalDate(2023, 11, 25),
+              expiryDate = LocalDate(
+                java.time.LocalDate.now().year,
+                java.time.LocalDate.now().month,
+                java.time.LocalDate.now().dayOfMonth,
+              ),
+              id = "13213",
+              signedUrl = "wkehdkwed",
+              isExpiredNow = true,
+            ),
+          ),
+          false,
+          false,
+          null,
+          false,
         ),
       )
     }
@@ -376,6 +510,7 @@ private fun PreviewCertificateHistoryLoading() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       TravelCertificateHistoryScreen(
+        {},
         {},
         {},
         {},
@@ -398,6 +533,7 @@ private fun PreviewErrorWithHistory() {
         {},
         {},
         {},
+        {},
         CertificateHistoryUiState.FailureDownloadingHistory,
       )
     }
@@ -406,7 +542,7 @@ private fun PreviewErrorWithHistory() {
 
 @HedvigPreview
 @Composable
-private fun PreviewErrorWithCertificate() {
+private fun PreviewLoadingCertificate() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       TravelCertificateHistoryScreen(
@@ -415,7 +551,43 @@ private fun PreviewErrorWithCertificate() {
         {},
         {},
         {},
-        CertificateHistoryUiState.FailureDownloadingCertificate,
+        {},
+        CertificateHistoryUiState.SuccessDownloadingHistory(
+          listOf(
+            TravelCertificate(
+              startDate = LocalDate(2024, 6, 2),
+              expiryDate = LocalDate(2024, 7, 9),
+              id = "13213",
+              signedUrl = "wkehdkwed",
+              isExpiredNow = false,
+            ),
+            TravelCertificate(
+              startDate = LocalDate(2024, 1, 6),
+              expiryDate = LocalDate(2024, 9, 10),
+              id = "13213",
+              signedUrl = "wkehdkwed",
+              isExpiredNow = false,
+            ),
+            TravelCertificate(
+              startDate = LocalDate(2023, 12, 9),
+              expiryDate = LocalDate(2024, 1, 31),
+              id = "13213",
+              signedUrl = "wkehdkwed",
+              isExpiredNow = false,
+            ),
+            TravelCertificate(
+              startDate = LocalDate(2022, 12, 9),
+              expiryDate = LocalDate(2023, 1, 31),
+              id = "13213",
+              signedUrl = "wkehdkwed",
+              isExpiredNow = false,
+            ),
+          ),
+          false,
+          true,
+          null,
+          true,
+        ),
       )
     }
   }

@@ -6,7 +6,7 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.data.travelcertificate.CheckTravelCertificateAvailabilityUseCase
+import com.hedvig.android.data.travelcertificate.CheckTravelCertificateDestinationAvailabilityUseCase
 import com.hedvig.android.feature.help.center.model.QuickAction
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
@@ -22,7 +22,7 @@ import octopus.AvailableSelfServiceOnContractsQuery
 internal class GetQuickLinksUseCase(
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,
-  private val checkTravelCertificateAvailabilityUseCase: CheckTravelCertificateAvailabilityUseCase,
+  private val checkTravelCertificateDestinationAvailabilityUseCase: CheckTravelCertificateDestinationAvailabilityUseCase,
 ) {
   suspend fun invoke(): Either<ErrorMessage, PersistentList<QuickAction>> = either {
     val contracts = apolloClient.query(AvailableSelfServiceOnContractsQuery())
@@ -97,7 +97,7 @@ internal class GetQuickLinksUseCase(
           )
         }
 
-      val travelCertificateAvailable = checkTravelCertificateAvailabilityUseCase.invoke().isRight()
+      val travelCertificateAvailable = checkTravelCertificateDestinationAvailabilityUseCase.invoke().isRight()
       if (travelCertificateAvailable) {
         add(
           QuickAction.QuickLink(

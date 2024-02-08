@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.travelcertificate.di
 
 import com.apollographql.apollo3.ApolloClient
+import com.hedvig.android.data.travelcertificate.CheckTravelCertificateAvailabilityForCurrentContractsUseCase
 import com.hedvig.android.data.travelcertificate.GetTravelCertificatesHistoryUseCase
 import com.hedvig.android.feature.travelcertificate.CertificateHistoryViewModel
 import com.hedvig.android.feature.travelcertificate.GenerateTravelCertificateViewModel
@@ -17,6 +18,7 @@ val travelCertificateModule = module {
     CertificateHistoryViewModel(
       get<GetTravelCertificatesHistoryUseCase>(),
       get<DownloadTravelCertificateUseCase>(),
+      get<CheckTravelCertificateAvailabilityForCurrentContractsUseCase>(),
     )
   }
 }

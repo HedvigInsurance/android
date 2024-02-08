@@ -10,6 +10,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
+import com.hedvig.android.feature.travelcertificate.CertificateHistoryEvent
 import com.hedvig.android.feature.travelcertificate.CertificateHistoryViewModel
 import com.hedvig.android.feature.travelcertificate.GenerateTravelCertificateViewModel
 import com.hedvig.android.feature.travelcertificate.TravelCertificateInputState
@@ -41,18 +42,17 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavC
       TravelCertificateHistoryDestination(
         viewModel = viewModel,
         navigateUp = navController::navigateUp,
-        onContinue = { navController.navigate(TravelCertificateDestination.GenerateTravelCertificateDestinations) },
+        onStartGenerateTravelCertificateFlow = {
+          navController.navigate(TravelCertificateDestination.GenerateTravelCertificateDestinations)
+        },
         onShareTravelCertificate = {
+          viewModel.emit(CertificateHistoryEvent.HaveProcessedCertificateUri)
           shareCertificate(it, localContext, applicationId)
         },
       )
     }
     navigation<TravelCertificateDestination.GenerateTravelCertificateDestinations>(
       startDestination = createRoutePattern<TravelCertificateDestination.TravelCertificateInput>(),
-      enterTransition = { MotionDefaults.sharedXAxisEnter(density) },
-      exitTransition = { MotionDefaults.sharedXAxisExit(density) },
-      popEnterTransition = { MotionDefaults.sharedXAxisPopEnter(density) },
-      popExitTransition = { MotionDefaults.sharedXAxisPopExit(density) },
     ) {
       composable<TravelCertificateDestination.TravelCertificateInput> { navBackStackEntry ->
         val viewModel: GenerateTravelCertificateViewModel =

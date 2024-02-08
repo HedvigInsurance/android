@@ -12,7 +12,7 @@ import assertk.assertions.isNull
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.test.MainCoroutineRule
-import com.hedvig.android.data.travelcertificate.CheckTravelCertificateAvailabilityUseCase
+import com.hedvig.android.data.travelcertificate.CheckTravelCertificateDestinationAvailabilityUseCase
 import com.hedvig.android.data.travelcertificate.TravelCertificateAvailabilityError
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.featureflags.test.FakeFeatureManager
@@ -38,7 +38,7 @@ class ProfileViewModelTest {
 
   @Test
   fun `when payment-feature is not activated, should not show payment-data`() = runTest {
-    val travelCertificateAvailabilityUseCase = FakeCheckTravelCertificateAvailabilityUseCase()
+    val travelCertificateAvailabilityUseCase = FakeCheckTravelCertificateDestinationAvailabilityUseCase()
     val viewModel = ProfileViewModel(
       FakeGetEurobonusStatusUseCase().apply { turbine.add(GetEurobonusError.EurobonusNotApplicable.left()) },
       travelCertificateAvailabilityUseCase.apply { turbine.add(Unit.right()) },
@@ -66,7 +66,7 @@ class ProfileViewModelTest {
 
   @Test
   fun `when payment-feature is activated, should show payment data`() = runTest {
-    val travelCertificateAvailabilityUseCase = FakeCheckTravelCertificateAvailabilityUseCase()
+    val travelCertificateAvailabilityUseCase = FakeCheckTravelCertificateDestinationAvailabilityUseCase()
     val viewModel = ProfileViewModel(
       FakeGetEurobonusStatusUseCase().apply { turbine.add(GetEurobonusError.EurobonusNotApplicable.left()) },
       travelCertificateAvailabilityUseCase.apply { turbine.add(Unit.right()) },
@@ -94,7 +94,7 @@ class ProfileViewModelTest {
 
   @Test
   fun `when payment-feature is activated, but response fails, should not show payment data`() = runTest {
-    val travelCertificateAvailabilityUseCase = FakeCheckTravelCertificateAvailabilityUseCase()
+    val travelCertificateAvailabilityUseCase = FakeCheckTravelCertificateDestinationAvailabilityUseCase()
     val viewModel = ProfileViewModel(
       FakeGetEurobonusStatusUseCase().apply { turbine.add(GetEurobonusError.EurobonusNotApplicable.left()) },
       travelCertificateAvailabilityUseCase.apply { turbine.add(Unit.right()) },
@@ -122,7 +122,7 @@ class ProfileViewModelTest {
 
   @Test
   fun `when euro bonus does not exist, should not show the EuroBonus status`() = runTest {
-    val travelCertificateAvailabilityUseCase = FakeCheckTravelCertificateAvailabilityUseCase()
+    val travelCertificateAvailabilityUseCase = FakeCheckTravelCertificateDestinationAvailabilityUseCase()
     val viewModel = ProfileViewModel(
       FakeGetEurobonusStatusUseCase().apply { turbine.add(GetEurobonusError.EurobonusNotApplicable.left()) },
       travelCertificateAvailabilityUseCase.apply { turbine.add(Unit.right()) },
@@ -143,7 +143,7 @@ class ProfileViewModelTest {
 
   @Test
   fun `when euro bonus exists, should show the EuroBonus status`() = runTest {
-    val travelCertificateAvailabilityUseCase = FakeCheckTravelCertificateAvailabilityUseCase()
+    val travelCertificateAvailabilityUseCase = FakeCheckTravelCertificateDestinationAvailabilityUseCase()
     val viewModel = ProfileViewModel(
       FakeGetEurobonusStatusUseCase().apply { turbine.add(EuroBonus("code1234").right()) },
       travelCertificateAvailabilityUseCase.apply { turbine.add(Unit.right()) },
@@ -164,7 +164,7 @@ class ProfileViewModelTest {
 
   @Test
   fun `when travel certificates are available should show travel certificate button`() = runTest {
-    val travelCertificateAvailabilityUseCase = FakeCheckTravelCertificateAvailabilityUseCase()
+    val travelCertificateAvailabilityUseCase = FakeCheckTravelCertificateDestinationAvailabilityUseCase()
     val viewModel = ProfileViewModel(
       FakeGetEurobonusStatusUseCase().apply { turbine.add(EuroBonus("code1234").right()) },
       travelCertificateAvailabilityUseCase.apply { turbine.add(Unit.right()) },
@@ -184,7 +184,7 @@ class ProfileViewModelTest {
 
   @Test
   fun `when travel certificates are not available should not show travel certificate button`() = runTest {
-    val travelCertificateAvailabilityUseCase = FakeCheckTravelCertificateAvailabilityUseCase()
+    val travelCertificateAvailabilityUseCase = FakeCheckTravelCertificateDestinationAvailabilityUseCase()
     val viewModel = ProfileViewModel(
       FakeGetEurobonusStatusUseCase().apply { turbine.add(EuroBonus("code1234").right()) },
       travelCertificateAvailabilityUseCase.apply {
@@ -211,7 +211,7 @@ class ProfileViewModelTest {
     )
     val euroBonusStatusUseCase = FakeGetEurobonusStatusUseCase()
     val getMemberRemindersUseCase = TestGetMemberRemindersUseCase()
-    val travelCertificateAvailabilityUseCase = FakeCheckTravelCertificateAvailabilityUseCase()
+    val travelCertificateAvailabilityUseCase = FakeCheckTravelCertificateDestinationAvailabilityUseCase()
 
     val viewModel = ProfileViewModel(
       euroBonusStatusUseCase,
@@ -252,7 +252,7 @@ class ProfileViewModelTest {
   @Test
   fun `when there are no reminders to show, uiState has an empty list of reminders`() = runTest {
     val getMemberRemindersUseCase = TestGetMemberRemindersUseCase()
-    val travelCertificateAvailabilityUseCase = FakeCheckTravelCertificateAvailabilityUseCase()
+    val travelCertificateAvailabilityUseCase = FakeCheckTravelCertificateDestinationAvailabilityUseCase()
     val viewModel = ProfileViewModel(
       FakeGetEurobonusStatusUseCase().apply { turbine.add(GetEurobonusError.EurobonusNotApplicable.left()) },
       travelCertificateAvailabilityUseCase.apply {
@@ -281,7 +281,7 @@ class ProfileViewModelTest {
   @Test
   fun `when there are some reminders to show, uiState has those reminders`() = runTest {
     val getMemberRemindersUseCase = TestGetMemberRemindersUseCase()
-    val travelCertificateAvailabilityUseCase = FakeCheckTravelCertificateAvailabilityUseCase()
+    val travelCertificateAvailabilityUseCase = FakeCheckTravelCertificateDestinationAvailabilityUseCase()
     val viewModel = ProfileViewModel(
       FakeGetEurobonusStatusUseCase().apply { turbine.add(GetEurobonusError.EurobonusNotApplicable.left()) },
       travelCertificateAvailabilityUseCase.apply {
@@ -316,7 +316,7 @@ class ProfileViewModelTest {
   fun `when there are errors, retrying and getting good data should reflect in the ui state`() = runTest {
     val getMemberRemindersUseCase = TestGetMemberRemindersUseCase()
     val getEurobonusStatusUseCase = FakeGetEurobonusStatusUseCase()
-    val travelCertificateAvailabilityUseCase = FakeCheckTravelCertificateAvailabilityUseCase()
+    val travelCertificateAvailabilityUseCase = FakeCheckTravelCertificateDestinationAvailabilityUseCase()
     val featureManager = FakeFeatureManager2()
     val viewModel = ProfileViewModel(
       getEurobonusStatusUseCase,
@@ -380,7 +380,7 @@ private class FakeGetEurobonusStatusUseCase() : GetEurobonusStatusUseCase {
   }
 }
 
-private class FakeCheckTravelCertificateAvailabilityUseCase : CheckTravelCertificateAvailabilityUseCase {
+private class FakeCheckTravelCertificateDestinationAvailabilityUseCase : CheckTravelCertificateDestinationAvailabilityUseCase {
   val turbine = Turbine<Either<TravelCertificateAvailabilityError, Unit>>(
     name = "TravelCertificateAvailability response",
   )
