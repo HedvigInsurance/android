@@ -97,18 +97,6 @@ internal class GetQuickLinksUseCase(
           )
         }
 
-//      contracts
-//        .map { it.currentAgreement.productVariant.typeOfContract.toContractType() }
-//        .firstOrNull { it.supportsTravelCertificate() }
-//        ?.let {
-//          add(
-//            QuickAction.QuickLink(
-//              destination = AppDestination.GenerateTravelCertificate,
-//              titleRes = R.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE,
-//              displayName = null,
-//            ),
-//          )
-//        }
       val travelCertificateAvailable = checkTravelCertificateAvailabilityUseCase.invoke().isRight()
       if (travelCertificateAvailable) {
         add(

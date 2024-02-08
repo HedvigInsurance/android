@@ -81,8 +81,8 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavC
           onContinue = viewModel::onContinue,
           onSuccess = { travelCertificateUrl ->
             navController.navigate(TravelCertificateDestination.ShowCertificate(travelCertificateUrl)) {
-              popUpTo<TravelCertificateDestination.TravelCertificateHistory> {
-                inclusive = false
+              popUpTo<TravelCertificateDestination.GenerateTravelCertificateDestinations> {
+                inclusive = true
               }
             }
           },

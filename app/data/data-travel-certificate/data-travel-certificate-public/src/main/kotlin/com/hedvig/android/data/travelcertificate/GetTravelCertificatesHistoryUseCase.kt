@@ -14,7 +14,7 @@ interface GetTravelCertificatesHistoryUseCase {
   suspend fun invoke(): Either<ErrorMessage, List<TravelCertificate>>
 }
 
-internal class GetTravelCertificatesHistoryUseCaseImpl(val apolloClient: ApolloClient) :
+internal class GetTravelCertificatesHistoryUseCaseImpl(private val apolloClient: ApolloClient) :
   GetTravelCertificatesHistoryUseCase {
   override suspend fun invoke(): Either<ErrorMessage, List<TravelCertificate>> {
     return apolloClient.query(TravelCertificatesQuery())
