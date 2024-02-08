@@ -27,7 +27,7 @@ val insurancesModule = module {
     TerminatedContractsViewModel(get<GetInsuranceContractsUseCaseProvider>())
   }
   viewModel<ContractDetailViewModel> { (contractId: String) ->
-    ContractDetailViewModel(contractId, get<GetInsuranceContractsUseCaseProvider>())
+    ContractDetailViewModel(contractId, get<FeatureManager>(), get<GetInsuranceContractsUseCaseProvider>())
   }
 
   provideGetContractsUseCase()
