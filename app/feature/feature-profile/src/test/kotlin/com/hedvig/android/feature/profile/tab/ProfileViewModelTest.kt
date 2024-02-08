@@ -21,7 +21,6 @@ import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.memberreminders.test.TestEnableNotificationsReminderManager
 import com.hedvig.android.memberreminders.test.TestGetMemberRemindersUseCase
-import io.ktor.util.reflect.instanceOf
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
@@ -142,7 +141,6 @@ class ProfileViewModelTest {
     }
   }
 
-
   @Test
   fun `when euro bonus exists, should show the EuroBonus status`() = runTest {
     val travelCertificateAvailabilityUseCase = FakeCheckTravelCertificateAvailabilityUseCase()
@@ -189,7 +187,9 @@ class ProfileViewModelTest {
     val travelCertificateAvailabilityUseCase = FakeCheckTravelCertificateAvailabilityUseCase()
     val viewModel = ProfileViewModel(
       FakeGetEurobonusStatusUseCase().apply { turbine.add(EuroBonus("code1234").right()) },
-      travelCertificateAvailabilityUseCase.apply { turbine.add(TravelCertificateAvailabilityError.TravelCertificateNotAvailable.left()) },
+      travelCertificateAvailabilityUseCase.apply {
+        turbine.add(TravelCertificateAvailabilityError.TravelCertificateNotAvailable.left())
+      },
       TestGetMemberRemindersUseCase().apply { memberReminders.add(MemberReminders()) },
       TestEnableNotificationsReminderManager(),
       FakeFeatureManager(noopFeatureManager = true),
@@ -204,7 +204,6 @@ class ProfileViewModelTest {
     }
   }
 
-  //todo: do not understand here. is travel certificate an optional item too? Failed test.
   @Test
   fun `Initially all optional items are off, and as they come in, they show one by one`() = runTest {
     val featureManager = FakeFeatureManager2(
@@ -230,8 +229,11 @@ class ProfileViewModelTest {
       assertThat(viewModel.data.value.euroBonus).isNull()
       euroBonusStatusUseCase.turbine.add(EuroBonus("1234").right())
       getMemberRemindersUseCase.memberReminders.add(MemberReminders())
+      travelCertificateAvailabilityUseCase.turbine.add(Unit.right())
+
       runCurrent()
       assertThat(viewModel.data.value.euroBonus).isEqualTo(EuroBonus("1234"))
+      assertThat(viewModel.data.value.travelCertificateAvailable).isEqualTo(true)
       assertThat(viewModel.data.value.showPaymentScreen).isEqualTo(true)
       assertThat(viewModel.data.value.memberReminders.connectPayment).isNull()
       assertThat(viewModel.data.value.memberReminders.upcomingRenewals).isNull()
@@ -253,7 +255,9 @@ class ProfileViewModelTest {
     val travelCertificateAvailabilityUseCase = FakeCheckTravelCertificateAvailabilityUseCase()
     val viewModel = ProfileViewModel(
       FakeGetEurobonusStatusUseCase().apply { turbine.add(GetEurobonusError.EurobonusNotApplicable.left()) },
-      travelCertificateAvailabilityUseCase.apply { turbine.add(TravelCertificateAvailabilityError.TravelCertificateNotAvailable.left()) },
+      travelCertificateAvailabilityUseCase.apply {
+        turbine.add(TravelCertificateAvailabilityError.TravelCertificateNotAvailable.left())
+      },
       getMemberRemindersUseCase,
       TestEnableNotificationsReminderManager(),
       FakeFeatureManager2(mapOf(Feature.PAYMENT_SCREEN to false, Feature.HELP_CENTER to true)),
@@ -280,7 +284,9 @@ class ProfileViewModelTest {
     val travelCertificateAvailabilityUseCase = FakeCheckTravelCertificateAvailabilityUseCase()
     val viewModel = ProfileViewModel(
       FakeGetEurobonusStatusUseCase().apply { turbine.add(GetEurobonusError.EurobonusNotApplicable.left()) },
-      travelCertificateAvailabilityUseCase.apply { turbine.add(TravelCertificateAvailabilityError.TravelCertificateNotAvailable.left()) },
+      travelCertificateAvailabilityUseCase.apply {
+        turbine.add(TravelCertificateAvailabilityError.TravelCertificateNotAvailable.left())
+      },
       getMemberRemindersUseCase,
       TestEnableNotificationsReminderManager(),
       FakeFeatureManager2(mapOf(Feature.PAYMENT_SCREEN to false, Feature.HELP_CENTER to true)),
@@ -306,7 +312,6 @@ class ProfileViewModelTest {
     }
   }
 
-
   @Test
   fun `when there are errors, retrying and getting good data should reflect in the ui state`() = runTest {
     val getMemberRemindersUseCase = TestGetMemberRemindersUseCase()
@@ -326,7 +331,9 @@ class ProfileViewModelTest {
     viewModel.data.test {
       assertThat(viewModel.data.value).isEqualTo(ProfileUiState())
       runCurrent()
-      travelCertificateAvailabilityUseCase.turbine.add(TravelCertificateAvailabilityError.TravelCertificateNotAvailable.left())
+      travelCertificateAvailabilityUseCase.turbine.add(
+        TravelCertificateAvailabilityError.TravelCertificateNotAvailable.left(),
+      )
       getMemberRemindersUseCase.memberReminders.add(MemberReminders())
       getEurobonusStatusUseCase.turbine.add(GetEurobonusError.Error(ErrorMessage()).left())
       featureManager.featureTurbine.add(Feature.PAYMENT_SCREEN to false)
@@ -373,11 +380,12 @@ private class FakeGetEurobonusStatusUseCase() : GetEurobonusStatusUseCase {
   }
 }
 
-private class FakeCheckTravelCertificateAvailabilityUseCase: CheckTravelCertificateAvailabilityUseCase {
+private class FakeCheckTravelCertificateAvailabilityUseCase : CheckTravelCertificateAvailabilityUseCase {
+  val turbine = Turbine<Either<TravelCertificateAvailabilityError, Unit>>(
+    name = "TravelCertificateAvailability response",
+  )
 
-  val turbine = Turbine<Either<TravelCertificateAvailabilityError, Unit>>(name = "TravelCertificateAvailability response")
   override suspend fun invoke(): Either<TravelCertificateAvailabilityError, Unit> {
     return turbine.awaitItem()
   }
-
 }
