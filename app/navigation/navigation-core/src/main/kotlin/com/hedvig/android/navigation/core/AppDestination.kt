@@ -64,15 +64,6 @@ sealed interface AppDestination : Destination {
   data object Settings : AppDestination
 
   @Serializable
-  data class TerminateInsurance(
-    val contractId: String,
-    val insuranceDisplayName: String,
-    val exposureName: String,
-    val contractGroup: ContractGroup,
-    val activeFrom: LocalDate,
-  ) : AppDestination
-
-  @Serializable
   data object PaymentInfo : AppDestination
 
   // Handles connecting payment with Trustly. Auto-navigates to Adyen for NO/DK
