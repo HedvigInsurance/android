@@ -31,6 +31,10 @@ internal class GenerateTravelCertificateViewModel(
   val uiState: StateFlow<TravelCertificateInputState> = _uiState.asStateFlow()
 
   init {
+    updateInfo()
+  }
+
+  private fun updateInfo() {
     viewModelScope.launch {
       _uiState.update { it.copy(isLoading = true) }
       getTravelCertificateSpecificationsUseCase
@@ -42,6 +46,7 @@ internal class GenerateTravelCertificateViewModel(
                 is TravelCertificateError.Error -> {
                   TravelCertificateInputState(errorMessage = travelCertificateError.message)
                 }
+
                 TravelCertificateError.NotEligible -> {
                   TravelCertificateInputState(errorMessage = "Not eligible")
                 }

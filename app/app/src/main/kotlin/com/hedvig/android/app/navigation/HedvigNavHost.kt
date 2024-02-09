@@ -43,7 +43,7 @@ import com.hedvig.android.feature.payments.navigation.paymentsGraph
 import com.hedvig.android.feature.profile.tab.profileGraph
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceFeatureDestination
 import com.hedvig.android.feature.terminateinsurance.navigation.terminateInsuranceGraph
-import com.hedvig.android.feature.travelcertificate.navigation.generateTravelCertificateGraph
+import com.hedvig.android.feature.travelcertificate.navigation.travelCertificateGraph
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.Market
 import com.hedvig.android.navigation.activity.ActivityNavigator
@@ -284,7 +284,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     },
     openUrl = { activityNavigator.openWebsite(context, Uri.parse(it)) },
   )
-  generateTravelCertificateGraph(
+  travelCertificateGraph(
     density = density,
     navController = hedvigAppState.navController,
     applicationId = BuildConfig.APPLICATION_ID,

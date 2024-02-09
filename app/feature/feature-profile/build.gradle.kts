@@ -55,6 +55,7 @@ dependencies {
   implementation(projects.placeholder)
   implementation(projects.pullrefresh)
   implementation(projects.theme)
+  implementation(projects.dataTravelCertificatePublic)
 
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)

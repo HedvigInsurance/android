@@ -13,6 +13,7 @@ dependencies {
   implementation(libs.androidx.navigation.common)
   implementation(libs.androidx.navigation.runtime)
   implementation(libs.arrow.core)
+  implementation(libs.arrow.fx)
   implementation(libs.coroutines.core)
   implementation(libs.koin.android)
   implementation(libs.koin.compose)
@@ -28,4 +29,7 @@ dependencies {
   implementation(projects.dataTravelCertificatePublic)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
+  implementation(projects.navigationActivity)
+  implementation(projects.moleculeAndroid)
+  implementation(projects.moleculePublic)
 }

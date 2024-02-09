@@ -66,7 +66,7 @@ sealed interface TravelCertificateError {
     val errorMessage: ErrorMessage,
   ) : TravelCertificateError, ErrorMessage by errorMessage
 
-  object NotEligible : TravelCertificateError
+  data object NotEligible : TravelCertificateError
 }
 
 data class TravelCertificateData(

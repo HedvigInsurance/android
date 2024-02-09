@@ -1,0 +1,11 @@
+query CurrentContracts {
+  currentMember {
+    activeContracts {
+      currentAgreement {
+        productVariant {
+          typeOfContract
+        }
+      }
+    }
+  }
+}
