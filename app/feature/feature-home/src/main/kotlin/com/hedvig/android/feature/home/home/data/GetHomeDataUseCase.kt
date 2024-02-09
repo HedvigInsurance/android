@@ -66,6 +66,7 @@ internal class GetHomeDataUseCaseImpl(
           claimStatusCardsData = homeQueryData.claimStatusCards(),
           veryImportantMessages = veryImportantMessages.toPersistentList(),
           memberReminders = memberReminders,
+          hasClaims = homeQueryData.currentMember.claims.isNotEmpty(),
         )
       }.onLeft { errorMessage ->
         logcat(throwable = errorMessage.throwable) { "GetHomeDataUseCase failed with ${errorMessage.message}" }
@@ -138,6 +139,7 @@ internal data class HomeData(
   val claimStatusCardsData: ClaimStatusCardsData?,
   val veryImportantMessages: ImmutableList<VeryImportantMessage>,
   val memberReminders: MemberReminders,
+  val hasClaims: Boolean,
 ) {
   @Immutable
   data class ClaimStatusCardsData(

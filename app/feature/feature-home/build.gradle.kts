@@ -50,6 +50,7 @@ dependencies {
   implementation(projects.featureFlagsPublic)
   implementation(projects.languageCore)
   implementation(projects.marketCore)
+  implementation(projects.featureChat)
   implementation(projects.memberRemindersPublic)
   implementation(projects.memberRemindersUi)
   implementation(projects.moleculeAndroid)

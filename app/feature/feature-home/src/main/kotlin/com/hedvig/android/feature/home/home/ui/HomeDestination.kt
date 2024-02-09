@@ -235,7 +235,6 @@ private suspend fun daysSinceLastTooltipShown(context: Context): Boolean {
   return daysSinceLastTooltipShown
 }
 
-@Suppress("UnusedReceiverParameter")
 @ExperimentalMaterial3Api
 @Composable
 private fun HomeScreenSuccess(
@@ -448,6 +447,7 @@ private fun PreviewHomeScreen(
           isHelpCenterEnabled = true,
           showChatIcon = true,
           hasUnseenChatMessages = hasUnseenChatMessages,
+          hasClaims = true,
         ),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
         reload = {},

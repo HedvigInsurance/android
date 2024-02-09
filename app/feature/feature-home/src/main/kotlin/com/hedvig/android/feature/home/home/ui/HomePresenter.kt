@@ -13,10 +13,14 @@ import androidx.compose.runtime.snapshots.Snapshot
 import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.chat.read.timestamp.ChatLastMessageReadRepository
+import com.hedvig.android.feature.chat.data.ChatRepository
+import com.hedvig.android.feature.chat.model.ChatMessage
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -24,11 +28,13 @@ import kotlin.time.Duration.Companion.seconds
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.isActive
 import kotlinx.datetime.LocalDate
 
 internal class HomePresenter(
   private val getHomeDataUseCaseProvider: Provider<GetHomeDataUseCase>,
+  private val chatRepositoryProvider: Provider<ChatRepository>,
   private val chatLastMessageReadRepository: ChatLastMessageReadRepository,
   private val featureManager: FeatureManager,
 ) : MoleculePresenter<HomeEvent, HomeUiState> {
@@ -38,7 +44,8 @@ internal class HomePresenter(
     var isReloading by remember { mutableStateOf(lastState.isReloading) }
     var successData: SuccessData? by remember { mutableStateOf(SuccessData.fromLastState(lastState)) }
     var loadIteration by remember { mutableIntStateOf(0) }
-    val showChatIcon by produceState(lastState.showChatIcon) {
+    var hasReceivedOrSentMessages by remember { mutableStateOf(false) }
+    val chatEnabled by produceState(lastState.showChatIcon) {
       featureManager.isFeatureEnabled(Feature.DISABLE_CHAT).collectLatest { isChatDisabled ->
         value = !isChatDisabled
       }
@@ -86,6 +93,20 @@ internal class HomePresenter(
       }
     }
 
+    LaunchedEffect(Unit) {
+      chatRepositoryProvider.provide()
+        .pollNewestMessages()
+        .fold(
+          ifLeft = { logcat(LogPriority.ERROR) { it.message ?: "Error fetching chat messages" } },
+          ifRight = { hasReceivedOrSentMessages = hasReceivedOrSentMessages(it.messages) },
+        )
+
+      chatRepositoryProvider.provide()
+        .watchMessages()
+        .mapNotNull { it.getOrNull() }
+        .collect { messages -> hasReceivedOrSentMessages = hasReceivedOrSentMessages(messages) }
+    }
+
     return if (hasError) {
       HomeUiState.Error(null)
     } else {
@@ -101,11 +122,19 @@ internal class HomePresenter(
           memberReminders = successData.memberReminders,
           veryImportantMessages = successData.veryImportantMessages,
           isHelpCenterEnabled = isHelpCenterEnabled,
-          showChatIcon = showChatIcon,
+          showChatIcon = chatEnabled && (hasReceivedOrSentMessages || successData.hasClaims),
           hasUnseenChatMessages = hasUnseenChatMessages,
+          hasClaims = successData.hasClaims,
         )
       }
     }
+  }
+
+  private fun hasReceivedOrSentMessages(messages: List<ChatMessage>): Boolean {
+    val memberHasSentMessage = messages.any { it.sender == ChatMessage.Sender.MEMBER }
+    // There is always an automatic message sent by Hedvig, therefore we need to check for > 1
+    val hedvigHasSentMessage = messages.filter { it.sender == ChatMessage.Sender.HEDVIG }.size > 1
+    return memberHasSentMessage || hedvigHasSentMessage
   }
 }
 
@@ -132,6 +161,7 @@ internal sealed interface HomeUiState {
     val claimStatusCardsData: HomeData.ClaimStatusCardsData?,
     val veryImportantMessages: ImmutableList<HomeData.VeryImportantMessage>,
     val memberReminders: MemberReminders,
+    val hasClaims: Boolean,
     override val isHelpCenterEnabled: Boolean,
     override val showChatIcon: Boolean,
     override val hasUnseenChatMessages: Boolean,
@@ -147,15 +177,17 @@ private data class SuccessData(
   val claimStatusCardsData: HomeData.ClaimStatusCardsData?,
   val veryImportantMessages: ImmutableList<HomeData.VeryImportantMessage>,
   val memberReminders: MemberReminders,
+  val hasClaims: Boolean,
 ) {
   companion object {
     fun fromLastState(lastState: HomeUiState): SuccessData? {
-      lastState as? HomeUiState.Success ?: return null
+      if (lastState !is HomeUiState.Success) return null
       return SuccessData(
         homeText = lastState.homeText,
         claimStatusCardsData = lastState.claimStatusCardsData,
         veryImportantMessages = lastState.veryImportantMessages,
         memberReminders = lastState.memberReminders,
+        hasClaims = lastState.hasClaims,
       )
     }
 
@@ -175,6 +207,7 @@ private data class SuccessData(
         claimStatusCardsData = homeData.claimStatusCardsData,
         memberReminders = homeData.memberReminders.copy(enableNotifications = null),
         veryImportantMessages = homeData.veryImportantMessages,
+        hasClaims = homeData.hasClaims,
       )
     }
   }
