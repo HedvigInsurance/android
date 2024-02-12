@@ -3,6 +3,7 @@ package com.hedvig.android.feature.profile.aboutapp
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -76,6 +77,7 @@ private fun AboutAppScreen(
     val localContext = LocalContext.current
 
     if (showSubmitBugWarning) {
+
       HedvigAlertDialog(
         title = null,
         text = "You cannot send claims here. This is only to tell us about bugs in the app and other technical problems",
@@ -88,7 +90,11 @@ private fun AboutAppScreen(
             localContext,
             "mariia.panasetskaia@hedvig.com",
             "bug report",
-            "there is a huge bug in your app!",
+            "there is a huge bug in your app! " +
+              "\nMember ID: $memberId" +
+              "\nApp version: $appVersionName" +
+              "\nApp version code: $appVersionCode" +
+              "\nSystem version: Android ${Build.VERSION.SDK_INT}",
           ) // todo: remove hardcoded strings here
         },
         confirmButtonLabel = stringResource(id = R.string.app_info_submit_bug_continue),
