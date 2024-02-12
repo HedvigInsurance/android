@@ -5,6 +5,10 @@ import com.hedvig.android.data.travelcertificate.CheckTravelCertificateAvailabil
 import com.hedvig.android.data.travelcertificate.CheckTravelCertificateAvailabilityForCurrentContractsUseCaseImpl
 import com.hedvig.android.data.travelcertificate.CheckTravelCertificateDestinationAvailabilityUseCase
 import com.hedvig.android.data.travelcertificate.CheckTravelCertificateDestinationAvailabilityUseCaseImpl
+import com.hedvig.android.data.travelcertificate.GetCoEnsuredForTravelCertificateUseCase
+import com.hedvig.android.data.travelcertificate.GetCoEnsuredForTravelCertificateUseCaseImpl
+import com.hedvig.android.data.travelcertificate.GetEligibleContractsWithAddressUseCase
+import com.hedvig.android.data.travelcertificate.GetEligibleContractsWithAddressUseCaseImpl
 import com.hedvig.android.data.travelcertificate.GetTravelCertificateSpecificationsUseCase
 import com.hedvig.android.data.travelcertificate.GetTravelCertificateSpecificationsUseCaseImpl
 import com.hedvig.android.data.travelcertificate.GetTravelCertificatesHistoryUseCase
@@ -30,5 +34,11 @@ val travelCertificateDataModule = module {
   }
   single<CheckTravelCertificateAvailabilityForCurrentContractsUseCase> {
     CheckTravelCertificateAvailabilityForCurrentContractsUseCaseImpl(get<ApolloClient>())
+  }
+  single<GetEligibleContractsWithAddressUseCase> {
+    GetEligibleContractsWithAddressUseCaseImpl(get<ApolloClient>())
+  }
+  single<GetCoEnsuredForTravelCertificateUseCase> {
+    GetCoEnsuredForTravelCertificateUseCaseImpl(get<ApolloClient>())
   }
 }

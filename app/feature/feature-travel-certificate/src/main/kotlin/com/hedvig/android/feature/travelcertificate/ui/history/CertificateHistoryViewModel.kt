@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.travelcertificate
+package com.hedvig.android.feature.travelcertificate.ui.history
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect

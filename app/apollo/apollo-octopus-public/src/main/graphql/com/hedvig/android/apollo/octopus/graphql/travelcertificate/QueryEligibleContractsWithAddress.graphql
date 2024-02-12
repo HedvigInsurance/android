@@ -1,0 +1,9 @@
+query EligibleContractsWithAddress {
+  currentMember {
+    activeContracts {
+      exposureDisplayName
+      supportsTravelCertificate
+      id
+    }
+  }
+}

@@ -6,7 +6,7 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.feature.travelcertificate.CoInsured
+import com.hedvig.android.feature.travelcertificate.ui.generate.CoInsured
 import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

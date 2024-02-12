@@ -12,13 +12,13 @@ import kotlinx.datetime.LocalDate
 import octopus.TravelCertificateSpecificationsQuery
 
 interface GetTravelCertificateSpecificationsUseCase {
-  suspend fun invoke(): Either<TravelCertificateError, TravelCertificateData>
+  suspend fun invoke(contractId: String?): Either<TravelCertificateError, TravelCertificateData>
 }
 
 internal class GetTravelCertificateSpecificationsUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : GetTravelCertificateSpecificationsUseCase {
-  override suspend fun invoke(): Either<TravelCertificateError, TravelCertificateData> {
+  override suspend fun invoke(contractId: String?): Either<TravelCertificateError, TravelCertificateData> {
     return either {
       val member = apolloClient
         .query(TravelCertificateSpecificationsQuery())
@@ -33,7 +33,14 @@ internal class GetTravelCertificateSpecificationsUseCaseImpl(
         .bind()
         .currentMember
 
-      val travelCertificateSpecifications = member.travelCertificateSpecifications.contractSpecifications.firstOrNull()
+      val travelCertificateSpecifications = if (contractId != null) {
+        member.travelCertificateSpecifications.contractSpecifications.firstOrNull { contractSpecification ->
+          contractSpecification.contractId == contractId
+        }
+      } else {
+        member.travelCertificateSpecifications.contractSpecifications.firstOrNull()
+      } // todo: or better write it like .firstOrNull {contractSpecification -> contractId?.let {contractSpecification.contractId == it } ?: true}
+
       ensureNotNull(travelCertificateSpecifications) { TravelCertificateError.NotEligible }
       TravelCertificateData(
         travelCertificateSpecification = travelCertificateSpecifications.toTravelCertificateSpecification(

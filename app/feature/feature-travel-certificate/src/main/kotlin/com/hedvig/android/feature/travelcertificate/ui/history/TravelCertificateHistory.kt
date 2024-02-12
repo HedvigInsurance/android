@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.travelcertificate.ui
+package com.hedvig.android.feature.travelcertificate.ui.history
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -45,10 +45,8 @@ import com.hedvig.android.core.ui.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.data.travelcertificate.TravelCertificate
-import com.hedvig.android.feature.travelcertificate.CertificateHistoryEvent
-import com.hedvig.android.feature.travelcertificate.CertificateHistoryUiState
-import com.hedvig.android.feature.travelcertificate.CertificateHistoryViewModel
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUri
+import com.hedvig.android.feature.travelcertificate.ui.TravelCertificateInfoBottomSheet
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate

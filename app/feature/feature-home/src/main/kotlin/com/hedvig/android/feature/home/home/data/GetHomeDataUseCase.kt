@@ -11,9 +11,6 @@ import com.apollographql.apollo3.cache.normalized.FetchPolicy
 import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.data.travelcertificate.GetTravelCertificateSpecificationsUseCase
-import com.hedvig.android.featureflags.FeatureManager
-import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.memberreminders.GetMemberRemindersUseCase
@@ -23,7 +20,6 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flow
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -37,8 +33,6 @@ internal interface GetHomeDataUseCase {
 internal class GetHomeDataUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val getMemberRemindersUseCase: GetMemberRemindersUseCase,
-  private val getTravelCertificateSpecificationsUseCase: GetTravelCertificateSpecificationsUseCase,
-  private val featureManager: FeatureManager,
   private val clock: Clock,
   private val timeZone: TimeZone,
 ) : GetHomeDataUseCase {
@@ -48,9 +42,7 @@ internal class GetHomeDataUseCaseImpl(
         .fetchPolicy(if (forceNetworkFetch) FetchPolicy.NetworkOnly else FetchPolicy.CacheFirst)
         .safeFlow(::ErrorMessage),
       getMemberRemindersUseCase.invoke(),
-      flow { emit(getTravelCertificateSpecificationsUseCase.invoke().getOrNull()) },
-      flow { emit(featureManager.isFeatureEnabled(Feature.MOVING_FLOW)) },
-    ) { homeQueryDataResult, memberReminders, travelCertificateData, isMovingFlowEnabled ->
+    ) { homeQueryDataResult, memberReminders ->
       either {
         val homeQueryData: HomeQuery.Data = homeQueryDataResult.bind()
         val contractStatus = homeQueryData.currentMember.toContractStatus()
