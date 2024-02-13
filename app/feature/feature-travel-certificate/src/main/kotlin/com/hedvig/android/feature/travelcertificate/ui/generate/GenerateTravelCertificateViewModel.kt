@@ -5,8 +5,6 @@ import androidx.compose.material3.DisplayMode
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.core.ui.ValidatedInput
-import com.hedvig.android.data.travelcertificate.GetCoEnsuredForTravelCertificateUseCase
-import com.hedvig.android.data.travelcertificate.GetEligibleContractsWithAddressUseCase
 import com.hedvig.android.data.travelcertificate.GetTravelCertificateSpecificationsUseCase
 import com.hedvig.android.data.travelcertificate.TravelCertificateError
 import com.hedvig.android.feature.travelcertificate.data.CreateTravelCertificateUseCase
@@ -28,40 +26,12 @@ internal class GenerateTravelCertificateViewModel(
   private val getTravelCertificateSpecificationsUseCase: GetTravelCertificateSpecificationsUseCase,
   private val createTravelCertificateUseCase: CreateTravelCertificateUseCase,
   private val downloadTravelCertificateUseCase: DownloadTravelCertificateUseCase,
-  private val getEligibleContractsWithAddressUseCase: GetEligibleContractsWithAddressUseCase,
-  private val getCoEnsuredForTravelCertificateUseCase: GetCoEnsuredForTravelCertificateUseCase,
 ) : ViewModel() {
   private val _uiState: MutableStateFlow<TravelCertificateInputState> = MutableStateFlow(TravelCertificateInputState())
   val uiState: StateFlow<TravelCertificateInputState> = _uiState.asStateFlow()
 
   init {
     updateSpecifications(null) // todo: null for now
-  }
-
-  private fun checkForChooseAddressOption() {
-    viewModelScope.launch {
-      _uiState.update { it.copy(isLoading = true) }
-      getEligibleContractsWithAddressUseCase
-        .invoke()
-        .fold(
-          ifLeft = { errorMessage ->
-            logcat(
-              LogPriority.ERROR,
-            ) { "Downloading eligible contracts for travel certificate with address failed: $errorMessage" }
-            updateSpecifications(null)
-          },
-          ifRight = { listOfContracts ->
-            logcat(
-              LogPriority.INFO,
-            ) { "Downloading eligible contracts for travel certificate with address succeeded." }
-            if (listOfContracts.size > 1) {
-              // todo! change ui state!
-            } else {
-              updateSpecifications(listOfContracts[0].contractId)
-            }
-          },
-        )
-    }
   }
 
   fun updateSpecifications(contractId: String?) {

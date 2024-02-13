@@ -55,12 +55,13 @@ import kotlinx.datetime.toJavaLocalDate
 internal fun TravelCertificateHistoryDestination(
   viewModel: CertificateHistoryViewModel,
   onStartGenerateTravelCertificateFlow: () -> Unit,
+  onGoToChooseContract: () -> Unit,
   navigateUp: () -> Unit,
   onShareTravelCertificate: (TravelCertificateUri) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   TravelCertificateHistoryScreen(
-    reload = { viewModel.emit(CertificateHistoryEvent.RetryLoadReferralData) },
+    reload = { viewModel.emit(CertificateHistoryEvent.RetryLoadData) },
     onCertificateClick = { url ->
       viewModel.emit(CertificateHistoryEvent.DownloadCertificate(url))
     },
@@ -68,6 +69,7 @@ internal fun TravelCertificateHistoryDestination(
       viewModel.emit(CertificateHistoryEvent.DismissDownloadCertificateError)
     },
     onStartGenerateTravelCertificateFlow = onStartGenerateTravelCertificateFlow,
+    onGoToChooseContract = onGoToChooseContract,
     navigateUp = navigateUp,
     onShareTravelCertificate = onShareTravelCertificate,
     uiState = uiState,
@@ -79,6 +81,7 @@ private fun TravelCertificateHistoryScreen(
   reload: () -> Unit,
   onCertificateClick: (String) -> Unit,
   onStartGenerateTravelCertificateFlow: () -> Unit,
+  onGoToChooseContract: () -> Unit,
   navigateUp: () -> Unit,
   onDismissDownloadCertificateError: () -> Unit,
   onShareTravelCertificate: (TravelCertificateUri) -> Unit,
@@ -144,6 +147,8 @@ private fun TravelCertificateHistoryScreen(
           showErrorDialog = uiState.showDownloadCertificateError,
           onDismissDownloadCertificateError = onDismissDownloadCertificateError,
           showGenerationButton = uiState.showGenerateButton,
+          onGoToChooseContract = onGoToChooseContract,
+          hasChooseOption = uiState.hasChooseOption,
         )
       }
     }
@@ -162,11 +167,13 @@ private fun TravelCertificateSuccessScreen(
   onIconClick: () -> Unit,
   onCertificateClick: (String) -> Unit,
   onStartGenerateTravelCertificateFlow: () -> Unit,
+  onGoToChooseContract: () -> Unit,
   navigateUp: () -> Unit,
   historyList: List<TravelCertificate>,
   showErrorDialog: Boolean,
   onDismissDownloadCertificateError: () -> Unit,
   showGenerationButton: Boolean,
+  hasChooseOption: Boolean,
 ) {
   HedvigScaffold(
     navigateUp = navigateUp,
@@ -206,7 +213,7 @@ private fun TravelCertificateSuccessScreen(
     if (showGenerationButton) {
       HedvigSecondaryContainedButton(
         text = stringResource(R.string.travel_certificate_get_travel_certificate_button),
-        onClick = onStartGenerateTravelCertificateFlow,
+        onClick = if (hasChooseOption) onGoToChooseContract else onStartGenerateTravelCertificateFlow,
         modifier = Modifier.padding(16.dp, 8.dp, 16.dp, 0.dp),
       )
     }
@@ -304,7 +311,15 @@ private fun PreviewTravelCertificateHistoryScreenWithEmptyList() {
         {},
         {},
         {},
-        CertificateHistoryUiState.SuccessDownloadingHistory(listOf(), false, true, null, false),
+        {},
+        CertificateHistoryUiState.SuccessDownloadingHistory(
+          listOf(),
+          false,
+          true,
+          null,
+          false,
+          false,
+        ),
       )
     }
   }
@@ -316,6 +331,7 @@ private fun PreviewTravelCertificateHistoryScreenWithExpiredEarlier() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       TravelCertificateHistoryScreen(
+        {},
         {},
         {},
         {},
@@ -356,6 +372,7 @@ private fun PreviewTravelCertificateHistoryScreenWithExpiredEarlier() {
           false,
           false,
           null,
+          false,
           false,
         ),
       )
@@ -375,6 +392,7 @@ private fun PreviewErrorWithDownloadingCertificate() {
         {},
         {},
         {},
+        {},
         CertificateHistoryUiState.SuccessDownloadingHistory(
           listOf(
             TravelCertificate(
@@ -410,6 +428,7 @@ private fun PreviewErrorWithDownloadingCertificate() {
           true,
           null,
           false,
+          false,
         ),
       )
     }
@@ -422,6 +441,7 @@ private fun PreviewTravelCertificateHistoryScreenWithExpiredToday() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       TravelCertificateHistoryScreen(
+        {},
         {},
         {},
         {},
@@ -453,6 +473,7 @@ private fun PreviewTravelCertificateHistoryScreenWithExpiredToday() {
           true,
           null,
           false,
+          false,
         ),
       )
     }
@@ -465,6 +486,7 @@ private fun PreviewTravelCertificateHistoryScreenWithExpiredTodayNoGenerateButto
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       TravelCertificateHistoryScreen(
+        {},
         {},
         {},
         {},
@@ -496,6 +518,7 @@ private fun PreviewTravelCertificateHistoryScreenWithExpiredTodayNoGenerateButto
           false,
           null,
           false,
+          false,
         ),
       )
     }
@@ -508,6 +531,7 @@ private fun PreviewCertificateHistoryLoading() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       TravelCertificateHistoryScreen(
+        {},
         {},
         {},
         {},
@@ -532,6 +556,7 @@ private fun PreviewErrorWithHistory() {
         {},
         {},
         {},
+        {},
         CertificateHistoryUiState.FailureDownloadingHistory,
       )
     }
@@ -544,6 +569,7 @@ private fun PreviewLoadingCertificate() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       TravelCertificateHistoryScreen(
+        {},
         {},
         {},
         {},
@@ -585,6 +611,7 @@ private fun PreviewLoadingCertificate() {
           true,
           null,
           true,
+          false,
         ),
       )
     }

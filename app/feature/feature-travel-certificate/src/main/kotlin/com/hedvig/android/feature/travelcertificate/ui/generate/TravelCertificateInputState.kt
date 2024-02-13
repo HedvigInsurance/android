@@ -3,8 +3,6 @@ package com.hedvig.android.feature.travelcertificate.ui.generate
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import com.hedvig.android.core.ui.ValidatedInput
-import com.hedvig.android.data.travelcertificate.ContractEligibleWithAddress
-import com.hedvig.android.data.travelcertificate.TravelCertificateCoEnsured
 import com.hedvig.android.data.travelcertificate.TravelCertificateData
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUri
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
@@ -14,31 +12,6 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.Serializable
 
-internal sealed interface GenerateTravelCertificateState {
-  data object Loading : GenerateTravelCertificateState
-
-  data class Input(
-    val contractId: String? = null,
-    val email: ValidatedInput<String?> = ValidatedInput(null),
-    val travelDate: LocalDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date,
-    val coInsured: List<TravelCertificateCoEnsured> = emptyList(),
-    val includeMember: Boolean = true,
-    val datePickerState: DatePickerState? = null,
-    val dateValidator: (Long) -> Boolean = { false },
-    val daysValid: Int? = null,
-    val isLoading: Boolean = false,
-    val errorMessage: String? = null,
-    val travelCertificateUrl: TravelCertificateUrl? = null,
-    val travelCertificateUri: TravelCertificateUri? = null,
-    val infoSections: List<TravelCertificateData.InfoSection>? = null, // todo: do we need it and why
-  )
-
-  data class ChooseContract(
-    val eligibleContracts: List<ContractEligibleWithAddress>,
-  )
-}
-
-// todo: remove later
 @ExperimentalMaterial3Api
 internal data class TravelCertificateInputState(
   val contractId: String? = null,

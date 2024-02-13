@@ -11,6 +11,8 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUri
+import com.hedvig.android.feature.travelcertificate.ui.choose.ChooseContractForCertificateDestination
+import com.hedvig.android.feature.travelcertificate.ui.choose.ChooseContractForCertificateViewModel
 import com.hedvig.android.feature.travelcertificate.ui.generate.AddCoInsured
 import com.hedvig.android.feature.travelcertificate.ui.generate.GenerateTravelCertificateInput
 import com.hedvig.android.feature.travelcertificate.ui.generate.GenerateTravelCertificateViewModel
@@ -43,12 +45,25 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavC
         viewModel = viewModel,
         navigateUp = navController::navigateUp,
         onStartGenerateTravelCertificateFlow = {
-          navController.navigate(TravelCertificateDestination.GenerateTravelCertificateDestinations)
+          navController.navigate(TravelCertificateDestination.GenerateTravelCertificateDestinations(null))
+        },
+        onGoToChooseContract = {
+          navController.navigate(TravelCertificateDestination.TravelCertificateChooseContract)
         },
         onShareTravelCertificate = {
           viewModel.emit(CertificateHistoryEvent.HaveProcessedCertificateUri)
           shareCertificate(it, localContext, applicationId)
         },
+      )
+    }
+    composable<TravelCertificateDestination.TravelCertificateChooseContract> {
+      val viewModel: ChooseContractForCertificateViewModel = koinViewModel()
+      ChooseContractForCertificateDestination(
+        viewModel = viewModel,
+        onContinue = { contractId ->
+          navController.navigate(TravelCertificateDestination.GenerateTravelCertificateDestinations(contractId))
+        },
+        navigateBack = navController::navigateUp,
       )
     }
     navigation<TravelCertificateDestination.GenerateTravelCertificateDestinations>(
