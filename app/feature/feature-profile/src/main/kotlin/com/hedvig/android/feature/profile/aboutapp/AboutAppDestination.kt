@@ -72,11 +72,11 @@ private fun AboutAppScreen(
     navigateUp = onBackPressed,
     modifier = Modifier.clearFocusOnTap(),
   ) {
-
     var showSubmitBugWarning by remember { mutableStateOf(false) }
     if (showSubmitBugWarning) {
-      SubmitBugWarningDialog (
-        memberId, appVersionName
+      SubmitBugWarningDialog(
+        memberId,
+        appVersionName,
       ) {
         showSubmitBugWarning = false
       }
@@ -145,16 +145,15 @@ private fun AboutAppScreen(
 }
 
 @Composable
-private fun SubmitBugWarningDialog (
-  memberId: String?,
-  appVersionName: String,
-  onDismissRequest: () -> Unit,
-) {
+private fun SubmitBugWarningDialog(memberId: String?, appVersionName: String, onDismissRequest: () -> Unit) {
   val localContext = LocalContext.current
   val letterSubject = stringResource(id = R.string.app_info_submit_bug_prefilled_letter_subject)
-  val letterBody = String.format(stringResource(id = R.string.app_info_submit_bug_prefilled_letter_body),
-    memberId, appVersionName,
-    "Android ${Build.VERSION.SDK_INT}")
+  val letterBody = String.format(
+    stringResource(id = R.string.app_info_submit_bug_prefilled_letter_body),
+    memberId,
+    appVersionName,
+    "Android ${Build.VERSION.SDK_INT}",
+  )
   HedvigAlertDialog(
     title = null,
     text = stringResource(id = R.string.app_info_submit_bug_warning),
@@ -164,7 +163,7 @@ private fun SubmitBugWarningDialog (
         localContext,
         "android@hedvig.com",
         letterSubject,
-        letterBody
+        letterBody,
       )
     },
     confirmButtonLabel = stringResource(id = R.string.app_info_submit_bug_continue),
@@ -187,11 +186,11 @@ private fun openEmailClientWithPrefilledData(
   }
   context.startActivity(
     Intent.createChooser(
-      sendLetterIntent, letterSubject,
+      sendLetterIntent,
+      letterSubject,
     ),
   )
 }
-
 
 @HedvigPreview
 @Composable
