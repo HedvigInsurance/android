@@ -67,41 +67,20 @@ private fun AboutAppScreen(
   appVersionName: String,
   appVersionCode: String,
 ) {
-  var showSubmitBugWarning by remember { mutableStateOf(false) }
-
   HedvigScaffold(
     topAppBarText = stringResource(R.string.PROFILE_ABOUT_APP_TITLE),
     navigateUp = onBackPressed,
     modifier = Modifier.clearFocusOnTap(),
   ) {
-    val localContext = LocalContext.current
 
+    var showSubmitBugWarning by remember { mutableStateOf(false) }
     if (showSubmitBugWarning) {
-
-      HedvigAlertDialog(
-        title = null,
-        text = "You cannot send claims here. This is only to tell us about bugs in the app and other technical problems",
-        // todo: remove hardcoded strings here for app_info.submit_warning.
-        onDismissRequest = {
-          showSubmitBugWarning = false
-        },
-        onConfirmClick = {
-          openEmailClientWithPrefilledData(
-            localContext,
-            "mariia.panasetskaia@hedvig.com",
-            "bug report",
-            "there is a huge bug in your app! " +
-              "\nMember ID: $memberId" +
-              "\nApp version: $appVersionName" +
-              "\nApp version code: $appVersionCode" +
-              "\nSystem version: Android ${Build.VERSION.SDK_INT}",
-          ) // todo: remove hardcoded strings here
-        },
-        confirmButtonLabel = stringResource(id = R.string.app_info_submit_bug_continue),
-        dismissButtonLabel = stringResource(id = R.string.app_info_submit_bug_go_back),
-      )
+      SubmitBugWarningDialog (
+        memberId, appVersionName
+      ) {
+        showSubmitBugWarning = false
+      }
     }
-
     Spacer(Modifier.height(16.dp))
     Column {
       Row(
@@ -157,7 +136,7 @@ private fun AboutAppScreen(
           .fillMaxWidth(),
       ) {
         HedvigContainedSmallButton(
-          text = "Submit bug", // todo: remove hardcoded strings here for app_info.submit_bug.button
+          text = stringResource(id = R.string.app_info_submit_bug_button),
           onClick = { showSubmitBugWarning = true },
         )
       }
@@ -165,21 +144,32 @@ private fun AboutAppScreen(
   }
 }
 
-@HedvigPreview
 @Composable
-private fun PreviewAboutAppScreen() {
-  HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
-      AboutAppScreen(
-        memberId = "123",
-        onBackPressed = {},
-        showOpenSourceLicenses = {},
-        isProduction = false,
-        appVersionName = "11.3.2",
-        appVersionCode = "43",
+private fun SubmitBugWarningDialog (
+  memberId: String?,
+  appVersionName: String,
+  onDismissRequest: () -> Unit,
+) {
+  val localContext = LocalContext.current
+  val letterSubject = stringResource(id = R.string.app_info_submit_bug_prefilled_letter_subject)
+  val letterBody = String.format(stringResource(id = R.string.app_info_submit_bug_prefilled_letter_body),
+    memberId, appVersionName,
+    "Android ${Build.VERSION.SDK_INT}")
+  HedvigAlertDialog(
+    title = null,
+    text = stringResource(id = R.string.app_info_submit_bug_warning),
+    onDismissRequest = onDismissRequest,
+    onConfirmClick = {
+      openEmailClientWithPrefilledData(
+        localContext,
+        "android@hedvig.com",
+        letterSubject,
+        letterBody
       )
-    }
-  }
+    },
+    confirmButtonLabel = stringResource(id = R.string.app_info_submit_bug_continue),
+    dismissButtonLabel = stringResource(id = R.string.app_info_submit_bug_go_back),
+  )
 }
 
 private fun openEmailClientWithPrefilledData(
@@ -197,7 +187,25 @@ private fun openEmailClientWithPrefilledData(
   }
   context.startActivity(
     Intent.createChooser(
-      sendLetterIntent, "Send a report about a bug in Hedvig app",
+      sendLetterIntent, letterSubject,
     ),
-  ) // todo: do we need to localise this title here? it would only show in chooser if the device has multiple email clients
+  )
+}
+
+
+@HedvigPreview
+@Composable
+private fun PreviewAboutAppScreen() {
+  HedvigTheme {
+    Surface(color = MaterialTheme.colorScheme.background) {
+      AboutAppScreen(
+        memberId = "123",
+        onBackPressed = {},
+        showOpenSourceLicenses = {},
+        isProduction = false,
+        appVersionName = "11.3.2",
+        appVersionCode = "43",
+      )
+    }
+  }
 }
