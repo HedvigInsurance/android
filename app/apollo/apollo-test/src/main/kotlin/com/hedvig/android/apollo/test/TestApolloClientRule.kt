@@ -48,5 +48,5 @@ class TestApolloClientRule(
 
 enum class TestNetworkTransportType {
   QUEUE,
-  MAP
+  MAP,
 }

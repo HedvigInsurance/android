@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.home.home.data
 
 import arrow.core.Either
-import arrow.core.left
 import arrow.core.right
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.memberreminders.MemberReminders
