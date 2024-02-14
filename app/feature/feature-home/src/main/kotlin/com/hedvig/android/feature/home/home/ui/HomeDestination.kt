@@ -447,7 +447,6 @@ private fun PreviewHomeScreen(
           isHelpCenterEnabled = true,
           showChatIcon = true,
           hasUnseenChatMessages = hasUnseenChatMessages,
-          hasClaims = true,
         ),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
         reload = {},

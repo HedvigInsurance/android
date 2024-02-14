@@ -108,7 +108,6 @@ internal class HomePresenterTest {
           ),
           veryImportantMessages = persistentListOf(),
           memberReminders = MemberReminders(),
-          hasClaims = true,
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -129,7 +128,6 @@ internal class HomePresenterTest {
           isHelpCenterEnabled = false,
           showChatIcon = false,
           hasUnseenChatMessages = false,
-          hasClaims = true,
         ),
       )
     }
@@ -155,7 +153,6 @@ internal class HomePresenterTest {
           memberReminders = MemberReminders(
             enableNotifications = MemberReminder.EnableNotifications(),
           ),
-          hasClaims = true,
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -170,7 +167,6 @@ internal class HomePresenterTest {
           isHelpCenterEnabled = false,
           showChatIcon = false,
           hasUnseenChatMessages = false,
-          hasClaims = true,
         ),
       )
     }
@@ -215,7 +211,6 @@ internal class HomePresenterTest {
         isHelpCenterEnabled = false,
         showChatIcon = false,
         hasUnseenChatMessages = false,
-        hasClaims = true,
       ),
     ) {
       assertThat(awaitItem().showChatIcon).isFalse()
@@ -236,13 +231,20 @@ internal class HomePresenterTest {
       HomeUiState.Success(
         isReloading = true,
         homeText = HomeText.Active,
-        claimStatusCardsData = null,
+        claimStatusCardsData = HomeData.ClaimStatusCardsData(
+          claimStatusCardsUiState = nonEmptyListOf(
+            ClaimStatusCardUiState(
+              id = "123",
+              pillTypes = listOf(),
+              claimProgressItemsUiState = listOf(),
+            ),
+          ),
+        ),
         veryImportantMessages = persistentListOf(),
         memberReminders = MemberReminders(),
         isHelpCenterEnabled = false,
         showChatIcon = false,
         hasUnseenChatMessages = false,
-        hasClaims = true,
       ),
     ) {
       assertThat(awaitItem().showChatIcon).isFalse()
@@ -270,7 +272,6 @@ internal class HomePresenterTest {
         isHelpCenterEnabled = false,
         showChatIcon = false,
         hasUnseenChatMessages = false,
-        hasClaims = true,
       ),
     ) {
       assertThat(awaitItem().isHelpCenterEnabled).isFalse()
@@ -303,7 +304,6 @@ internal class HomePresenterTest {
           memberReminders = MemberReminders(
             enableNotifications = MemberReminder.EnableNotifications(),
           ),
-          hasClaims = true,
         ).right(),
       )
       assertThat(awaitItem())
@@ -331,6 +331,5 @@ internal class HomePresenterTest {
     claimStatusCardsData = null,
     veryImportantMessages = persistentListOf(),
     memberReminders = MemberReminders(),
-    hasClaims = true,
   )
 }

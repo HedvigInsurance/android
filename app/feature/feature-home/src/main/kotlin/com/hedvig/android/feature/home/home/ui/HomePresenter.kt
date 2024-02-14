@@ -41,7 +41,7 @@ internal class HomePresenter(
     var successData: SuccessData? by remember { mutableStateOf(SuccessData.fromLastState(lastState)) }
     var loadIteration by remember { mutableIntStateOf(0) }
     var hasReceivedOrSentMessages by remember { mutableStateOf(false) }
-    val chatEnabled by produceState(lastState.showChatIcon) {
+    val showChatIcon by produceState(lastState.showChatIcon) {
       featureManager.isFeatureEnabled(Feature.DISABLE_CHAT).collectLatest { isChatDisabled ->
         value = !isChatDisabled
       }
@@ -112,9 +112,8 @@ internal class HomePresenter(
           memberReminders = successData.memberReminders,
           veryImportantMessages = successData.veryImportantMessages,
           isHelpCenterEnabled = isHelpCenterEnabled,
-          showChatIcon = chatEnabled && (hasReceivedOrSentMessages || successData.hasClaims),
+          showChatIcon = showChatIcon && (hasReceivedOrSentMessages || successData.claimStatusCardsData?.claimStatusCardsUiState?.isNotEmpty() == true),
           hasUnseenChatMessages = hasUnseenChatMessages,
-          hasClaims = successData.hasClaims,
         )
       }
     }
@@ -151,7 +150,6 @@ internal sealed interface HomeUiState {
     val claimStatusCardsData: HomeData.ClaimStatusCardsData?,
     val veryImportantMessages: ImmutableList<HomeData.VeryImportantMessage>,
     val memberReminders: MemberReminders,
-    val hasClaims: Boolean,
     override val isHelpCenterEnabled: Boolean,
     override val showChatIcon: Boolean,
     override val hasUnseenChatMessages: Boolean,
@@ -167,7 +165,6 @@ private data class SuccessData(
   val claimStatusCardsData: HomeData.ClaimStatusCardsData?,
   val veryImportantMessages: ImmutableList<HomeData.VeryImportantMessage>,
   val memberReminders: MemberReminders,
-  val hasClaims: Boolean,
 ) {
   companion object {
     fun fromLastState(lastState: HomeUiState): SuccessData? {
@@ -177,7 +174,6 @@ private data class SuccessData(
         claimStatusCardsData = lastState.claimStatusCardsData,
         veryImportantMessages = lastState.veryImportantMessages,
         memberReminders = lastState.memberReminders,
-        hasClaims = lastState.hasClaims,
       )
     }
 
@@ -197,7 +193,6 @@ private data class SuccessData(
         claimStatusCardsData = homeData.claimStatusCardsData,
         memberReminders = homeData.memberReminders.copy(enableNotifications = null),
         veryImportantMessages = homeData.veryImportantMessages,
-        hasClaims = homeData.hasClaims,
       )
     }
   }

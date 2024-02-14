@@ -329,9 +329,7 @@ internal class ChatRepositoryImpl(
     existingData: ChatMessagesQuery.Data,
     newMessages: List<ChatMessagesQuery.Data.Chat.Message>,
   ) {
-    val mergedMessages = (existingData.chat.messages + newMessages)
-      .distinctBy { it.id }
-      .sortedByDescending { it.sentAt }
+    val mergedMessages = (existingData.chat.messages + newMessages).distinctBy { it.id }
     val modifiedData = existingData.copy(existingData.chat.copy(messages = mergedMessages))
     apolloClient.apolloStore.writeOperation(
       ChatMessagesQuery(null),
