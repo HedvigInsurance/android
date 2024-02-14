@@ -39,6 +39,7 @@ import octopus.type.ChatMessageSender
 
 internal interface GetHomeDataUseCase {
   fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, HomeData>>
+
   fun observeChatMessages(): Flow<Either<ErrorMessage, List<ChatMessage>>>
 }
 
@@ -175,10 +176,10 @@ internal data class ChatMessage(
   val sender: Sender,
 ) {
   enum class Sender {
-    HEDVIG, MEMBER,
+    HEDVIG,
+    MEMBER,
   }
 }
-
 
 internal data class HomeData(
   val contractStatus: ContractStatus,

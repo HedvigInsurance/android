@@ -47,7 +47,7 @@ internal class HomePresenter(
       }
     }
     val isHelpCenterEnabled by
-    featureManager.isFeatureEnabled(Feature.HELP_CENTER).collectAsState(lastState.isHelpCenterEnabled)
+      featureManager.isFeatureEnabled(Feature.HELP_CENTER).collectAsState(lastState.isHelpCenterEnabled)
     val hasUnseenChatMessages by produceState(
       lastState.safeCast<HomeUiState.Success>()?.hasUnseenChatMessages ?: false,
     ) {
