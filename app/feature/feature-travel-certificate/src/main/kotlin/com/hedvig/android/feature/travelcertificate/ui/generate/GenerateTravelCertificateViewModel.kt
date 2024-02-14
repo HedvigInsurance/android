@@ -8,10 +8,6 @@ import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.data.travelcertificate.GetTravelCertificateSpecificationsUseCase
 import com.hedvig.android.data.travelcertificate.TravelCertificateError
 import com.hedvig.android.feature.travelcertificate.data.CreateTravelCertificateUseCase
-import com.hedvig.android.feature.travelcertificate.data.DownloadTravelCertificateUseCase
-import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
-import com.hedvig.android.logger.LogPriority
-import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,13 +21,12 @@ import kotlinx.datetime.toLocalDateTime
 internal class GenerateTravelCertificateViewModel(
   private val getTravelCertificateSpecificationsUseCase: GetTravelCertificateSpecificationsUseCase,
   private val createTravelCertificateUseCase: CreateTravelCertificateUseCase,
-  private val downloadTravelCertificateUseCase: DownloadTravelCertificateUseCase,
 ) : ViewModel() {
   private val _uiState: MutableStateFlow<TravelCertificateInputState> = MutableStateFlow(TravelCertificateInputState())
   val uiState: StateFlow<TravelCertificateInputState> = _uiState.asStateFlow()
 
   init {
-    updateSpecifications(null) // todo: null for now
+    updateSpecifications(null) // todo: remove null, we need a real argument here
   }
 
   fun updateSpecifications(contractId: String?) {
@@ -155,39 +150,6 @@ internal class GenerateTravelCertificateViewModel(
           },
         )
       }
-    }
-  }
-
-  fun canAddCoInsured(): Boolean {
-    val maximumCoInsured = uiState.value.maximumCoInsured
-    return maximumCoInsured != null && uiState.value.coInsured.input.size < maximumCoInsured
-  }
-
-  fun onDownloadTravelCertificate(url: TravelCertificateUrl) {
-    viewModelScope.launch {
-      _uiState.update { it.copy(isLoading = true) }
-      logcat(LogPriority.INFO) { "Downloading travel certificate with url:${url.uri}" }
-      downloadTravelCertificateUseCase.invoke(url)
-        .fold(
-          ifLeft = { errorMessage ->
-            logcat(LogPriority.ERROR) { "Downloading travel certificate failed:$errorMessage" }
-            _uiState.update {
-              it.copy(
-                isLoading = false,
-                errorMessage = errorMessage.message,
-              )
-            }
-          },
-          ifRight = { uri ->
-            logcat(LogPriority.INFO) { "Downloading travel certificate succeeded. Result uri:${uri.uri.absolutePath}" }
-            _uiState.update {
-              it.copy(
-                isLoading = false,
-                travelCertificateUri = uri,
-              )
-            }
-          },
-        )
     }
   }
 }

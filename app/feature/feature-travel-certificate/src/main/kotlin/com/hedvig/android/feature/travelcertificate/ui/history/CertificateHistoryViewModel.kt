@@ -9,7 +9,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import arrow.fx.coroutines.parZip
 import com.hedvig.android.data.travelcertificate.CheckTravelCertificateAvailabilityForCurrentContractsUseCase
-import com.hedvig.android.data.travelcertificate.ContractEligibleWithAddress
 import com.hedvig.android.data.travelcertificate.GetEligibleContractsWithAddressUseCase
 import com.hedvig.android.data.travelcertificate.GetTravelCertificatesHistoryUseCase
 import com.hedvig.android.data.travelcertificate.TravelCertificate
@@ -115,12 +114,10 @@ internal class CertificateHistoryPresenter(
         val history = travelCertificateHistoryResult.getOrNull()
         val eligibility = eligibilityResult.getOrNull()
 
-//        val eligibleContracts = getEligibleContractsWithAddressUseCase.invoke().getOrNull()
-        // todo: remove mock
-        val eligibleContracts = listOf(
-          ContractEligibleWithAddress("Morbydalen 12", "keuwhwkjfhjkeharfj"),
-          ContractEligibleWithAddress("Akerbyvagen 257", "sesjhfhakerfhlwkeija"),
-        )
+        val eligibleContracts = getEligibleContractsWithAddressUseCase.invoke().getOrNull()
+        // todo: if we get an error here,
+        // todo: we just go to the generate destination without choosing option. is it the behaviour we need?
+
         val hasChooseOption = eligibleContracts != null && eligibleContracts.size > 1
         screenContentState = if (history != null && eligibility != null) {
           logcat(LogPriority.INFO) { "Successfully fetched travel certificates history." }
@@ -131,6 +128,7 @@ internal class CertificateHistoryPresenter(
         }
       }
     }
+
     return when (val screenContentStateValue = screenContentState) {
       ScreenContentState.Failed -> CertificateHistoryUiState.FailureDownloadingHistory
       ScreenContentState.Loading -> CertificateHistoryUiState.Loading

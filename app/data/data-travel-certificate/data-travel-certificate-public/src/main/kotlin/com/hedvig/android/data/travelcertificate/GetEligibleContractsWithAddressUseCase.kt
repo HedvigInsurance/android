@@ -4,7 +4,6 @@ import arrow.core.Either
 import arrow.core.raise.either
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.logger.logcat
 
 interface GetEligibleContractsWithAddressUseCase {
   suspend fun invoke(): Either<ErrorMessage, List<ContractEligibleWithAddress>>
@@ -14,7 +13,6 @@ internal class GetEligibleContractsWithAddressUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : GetEligibleContractsWithAddressUseCase {
   override suspend fun invoke(): Either<ErrorMessage, List<ContractEligibleWithAddress>> {
-    logcat { "mariia: GetEligibleContractsWithAddressUseCaseImpl called" }
     // todo: remove mock!
     return either {
       listOf(

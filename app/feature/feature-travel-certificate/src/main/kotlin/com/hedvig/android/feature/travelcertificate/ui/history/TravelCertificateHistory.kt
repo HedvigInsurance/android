@@ -2,7 +2,6 @@ package com.hedvig.android.feature.travelcertificate.ui.history
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -46,6 +44,8 @@ import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.data.travelcertificate.TravelCertificate
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUri
+import com.hedvig.android.feature.travelcertificate.ui.FullScreenLoading
+import com.hedvig.android.feature.travelcertificate.ui.SomethingWrongInfo
 import com.hedvig.android.feature.travelcertificate.ui.TravelCertificateInfoBottomSheet
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
@@ -115,13 +115,7 @@ private fun TravelCertificateHistoryScreen(
           }
         },
       ) {
-        Spacer(modifier = Modifier.weight(1f))
-        HedvigInformationSection(
-          title = stringResource(id = R.string.something_went_wrong),
-          buttonText = stringResource(id = R.string.GENERAL_RETRY),
-          onButtonClick = reload,
-        )
-        Spacer(modifier = Modifier.weight(1f))
+        SomethingWrongInfo(reload, this)
       }
     }
 
@@ -152,13 +146,6 @@ private fun TravelCertificateHistoryScreen(
         )
       }
     }
-  }
-}
-
-@Composable
-private fun FullScreenLoading() {
-  Box(modifier = Modifier.fillMaxSize()) {
-    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
   }
 }
 

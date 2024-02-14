@@ -29,6 +29,8 @@ import com.hedvig.android.core.ui.SelectIndicationCircle
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.data.travelcertificate.ContractEligibleWithAddress
+import com.hedvig.android.feature.travelcertificate.ui.FullScreenLoading
+import com.hedvig.android.feature.travelcertificate.ui.SomethingWrongInfo
 import hedvig.resources.R
 
 @Composable
@@ -42,6 +44,7 @@ internal fun ChooseContractForCertificateDestination(
     uiState = uiState,
     navigateBack = navigateBack,
     onContinue = onContinue,
+    reload = { viewModel.emit(ChooseContractEvent.RetryLoadData) },
   )
 }
 
@@ -50,16 +53,20 @@ private fun ChooseContractForCertificate(
   uiState: ChooseContractUiState,
   navigateBack: () -> Unit,
   onContinue: (String) -> Unit,
+  reload: () -> Unit,
 ) {
   var selectedContractId by remember {
     mutableStateOf<String?>(null)
   }
   when (uiState) {
     ChooseContractUiState.Failure -> {
-      // todo
+      ShowFailure(
+        navigateBack = navigateBack,
+        reload = reload,
+      )
     }
     ChooseContractUiState.Loading -> {
-      // todo
+      FullScreenLoading()
     }
     is ChooseContractUiState.Success -> {
       HedvigScaffold(
@@ -116,6 +123,16 @@ private fun ChooseContractForCertificate(
   }
 }
 
+@Composable
+private fun ShowFailure(navigateBack: () -> Unit, reload: () -> Unit) {
+  HedvigScaffold(
+    navigateUp = navigateBack,
+    modifier = Modifier.clearFocusOnTap(),
+  ) {
+    SomethingWrongInfo(reload, this)
+  }
+}
+
 @HedvigPreview
 @Composable
 private fun PreviewChooseContractForCertificate() {
@@ -128,6 +145,7 @@ private fun PreviewChooseContractForCertificate() {
             ContractEligibleWithAddress("Akerbyvagen 257", "sesjhfhakerfhlwkeija"),
           ),
         ),
+        {},
         {},
         {},
       )

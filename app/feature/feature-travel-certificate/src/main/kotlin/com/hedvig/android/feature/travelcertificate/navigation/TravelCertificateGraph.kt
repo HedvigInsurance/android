@@ -20,7 +20,8 @@ import com.hedvig.android.feature.travelcertificate.ui.generate.TravelCertificat
 import com.hedvig.android.feature.travelcertificate.ui.history.CertificateHistoryEvent
 import com.hedvig.android.feature.travelcertificate.ui.history.CertificateHistoryViewModel
 import com.hedvig.android.feature.travelcertificate.ui.history.TravelCertificateHistoryDestination
-import com.hedvig.android.feature.travelcertificate.ui.overview.TravelCertificateOverview
+import com.hedvig.android.feature.travelcertificate.ui.overview.TravelCertificateOverviewDestination
+import com.hedvig.android.feature.travelcertificate.ui.overview.TravelCertificateOverviewViewModel
 import com.hedvig.android.navigation.compose.typed.destinationScopedViewModel
 import com.hedvig.android.navigation.core.AppDestination
 import com.kiwi.navigationcompose.typed.composable
@@ -56,6 +57,7 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavC
         },
       )
     }
+
     composable<TravelCertificateDestination.TravelCertificateChooseContract> {
       val viewModel: ChooseContractForCertificateViewModel = koinViewModel()
       ChooseContractForCertificateDestination(
@@ -66,6 +68,20 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavC
         navigateBack = navController::navigateUp,
       )
     }
+
+    composable<TravelCertificateDestination.ShowCertificate> {
+      val viewModel: TravelCertificateOverviewViewModel = koinViewModel()
+      val context = LocalContext.current
+      TravelCertificateOverviewDestination(
+        travelCertificateUrl = travelCertificateUrl,
+        viewModel = viewModel,
+        navigateUp = navController::navigateUp,
+        onShareTravelCertificate = {
+          shareCertificate(it, context, applicationId)
+        },
+      )
+    }
+
     navigation<TravelCertificateDestination.GenerateTravelCertificateDestinations>(
       startDestination = createRoutePattern<TravelCertificateDestination.TravelCertificateInput>(),
     ) {
@@ -75,9 +91,7 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavC
             navController = navController,
             backStackEntry = navBackStackEntry,
           )
-
         val uiState: TravelCertificateInputState by viewModel.uiState.collectAsStateWithLifecycle()
-
         GenerateTravelCertificateInput(
           uiState = uiState,
           navigateBack = {
@@ -96,8 +110,8 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavC
           onContinue = viewModel::onContinue,
           onSuccess = { travelCertificateUrl ->
             navController.navigate(TravelCertificateDestination.ShowCertificate(travelCertificateUrl)) {
-              popUpTo<TravelCertificateDestination.GenerateTravelCertificateDestinations> {
-                inclusive = true
+              popUpTo<TravelCertificateDestination.TravelCertificateHistory> {
+                inclusive = false
               }
             }
           },
@@ -124,30 +138,6 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavC
           onAddCoInsured = {
             navController.navigateUp()
             viewModel.onAddCoInsured(it)
-          },
-        )
-      }
-      composable<TravelCertificateDestination.ShowCertificate> { navBackStackEntry ->
-        val viewModel: GenerateTravelCertificateViewModel =
-          destinationScopedViewModel<TravelCertificateDestination.GenerateTravelCertificateDestinations, _>(
-            navController = navController,
-            backStackEntry = navBackStackEntry,
-          )
-        val uiState: TravelCertificateInputState by viewModel.uiState.collectAsStateWithLifecycle()
-        val localContext = LocalContext.current
-
-        TravelCertificateOverview(
-          travelCertificateUrl = travelCertificateUrl,
-          onDownloadCertificate = {
-            viewModel.onDownloadTravelCertificate(travelCertificateUrl)
-          },
-          travelCertificateUri = uiState.travelCertificateUri,
-          isLoading = uiState.isLoading,
-          errorMessage = uiState.errorMessage,
-          onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
-          navigateBack = navController::navigateUp,
-          onShareTravelCertificate = {
-            shareCertificate(it, localContext, applicationId)
           },
         )
       }
