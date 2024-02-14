@@ -108,8 +108,10 @@ internal fun HomeLayout(
         add(FixedSizePlaceable(0, 16.dp.roundToPx()))
       }
       add(startClaimButtonPlaceable)
-      add(FixedSizePlaceable(0, 8.dp.roundToPx()))
-      add(helpCenterButtonPlaceable)
+      if (!helpCenterButtonPlaceable.isEmpty()) {
+        add(FixedSizePlaceable(0, 8.dp.roundToPx()))
+        add(helpCenterButtonPlaceable)
+      }
       add(bottomSpacerPlaceable)
     }
 
@@ -151,6 +153,8 @@ internal fun HomeLayout(
     }
   }
 }
+
+private fun Placeable.isEmpty(): Boolean = width == 0 && height == 0
 
 /**
  * [reverseOrderOfZIndex] lays out items from top to bottom, so if they overlap the top ones show above the bottom ones
