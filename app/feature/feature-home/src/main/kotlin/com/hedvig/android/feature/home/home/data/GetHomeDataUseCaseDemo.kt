@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.home.home.data
 
 import arrow.core.Either
+import arrow.core.left
 import arrow.core.right
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.memberreminders.MemberReminders
@@ -22,4 +23,8 @@ internal class GetHomeDataUseCaseDemo : GetHomeDataUseCase {
       hasClaims = true,
     ).right(),
   )
+
+  override fun observeChatMessages(): Flow<Either<ErrorMessage, List<ChatMessage>>> {
+    return flowOf(ErrorMessage("Not implemented").left())
+  }
 }

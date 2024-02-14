@@ -1,11 +1,9 @@
 package com.hedvig.android.feature.home.home.ui
 
-import android.net.Uri
 import app.cash.turbine.Turbine
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.nonEmptyListOf
-import arrow.core.raise.either
 import arrow.core.right
 import assertk.assertThat
 import assertk.assertions.isEqualTo
@@ -17,9 +15,7 @@ import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.chat.read.timestamp.FakeChatLastMessageReadRepository
-import com.hedvig.android.feature.chat.data.ChatRepository
-import com.hedvig.android.feature.chat.model.ChatMessage
-import com.hedvig.android.feature.chat.model.ChatMessagesResult
+import com.hedvig.android.feature.home.home.data.ChatMessage
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.featureflags.flags.Feature
@@ -27,14 +23,12 @@ import com.hedvig.android.featureflags.test.FakeFeatureManager2
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.test.test
-import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.test.runTest
-import kotlinx.datetime.Instant
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -45,7 +39,6 @@ internal class HomePresenterTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
-      { TestChatRepository() },
       FakeChatLastMessageReadRepository(),
       FakeFeatureManager2(),
     )
@@ -71,7 +64,6 @@ internal class HomePresenterTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
-      { TestChatRepository() },
       FakeChatLastMessageReadRepository(),
       FakeFeatureManager2(),
     )
@@ -95,7 +87,6 @@ internal class HomePresenterTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
-      { TestChatRepository() },
       FakeChatLastMessageReadRepository(),
       FakeFeatureManager2(),
     )
@@ -149,7 +140,6 @@ internal class HomePresenterTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
-      { TestChatRepository() },
       FakeChatLastMessageReadRepository(),
       FakeFeatureManager2(),
     )
@@ -191,7 +181,6 @@ internal class HomePresenterTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
-      { TestChatRepository() },
       FakeChatLastMessageReadRepository(),
       FakeFeatureManager2(),
     )
@@ -212,7 +201,6 @@ internal class HomePresenterTest {
     val featureManager = FakeFeatureManager2()
     val homePresenter = HomePresenter(
       { TestGetHomeDataUseCase() },
-      { TestChatRepository() },
       FakeChatLastMessageReadRepository(),
       featureManager,
     )
@@ -240,7 +228,6 @@ internal class HomePresenterTest {
     val featureManager = FakeFeatureManager2(mapOf(Feature.HELP_CENTER to false))
     val homePresenter = HomePresenter(
       { TestGetHomeDataUseCase() },
-      { TestChatRepository() },
       FakeChatLastMessageReadRepository(),
       featureManager,
     )
@@ -269,7 +256,6 @@ internal class HomePresenterTest {
     val featureManager = FakeFeatureManager2(mapOf(Feature.DISABLE_CHAT to true))
     val homePresenter = HomePresenter(
       { TestGetHomeDataUseCase() },
-      { TestChatRepository() },
       FakeChatLastMessageReadRepository(),
       featureManager,
     )
@@ -301,7 +287,6 @@ internal class HomePresenterTest {
     val chatLastMessageReadRepository = FakeChatLastMessageReadRepository()
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
-      { TestChatRepository() },
       chatLastMessageReadRepository,
       FakeFeatureManager2(),
     )
@@ -335,6 +320,10 @@ internal class HomePresenterTest {
       forceNetworkFetchTurbine.add(forceNetworkFetch)
       return responseTurbine.asChannel().receiveAsFlow()
     }
+
+    override fun observeChatMessages(): Flow<Either<ErrorMessage, List<ChatMessage>>> {
+      return flowOf(ErrorMessage("Not implemented").left())
+    }
   }
 
   private val someIrrelevantHomeDataInstance: HomeData = HomeData(
@@ -344,55 +333,4 @@ internal class HomePresenterTest {
     memberReminders = MemberReminders(),
     hasClaims = true,
   )
-
-  private class TestChatRepository : ChatRepository {
-    override suspend fun fetchMoreMessages(until: Instant): Either<ErrorMessage, ChatMessagesResult> {
-      return either {
-        ChatMessagesResult(
-          messages = emptyList(),
-          nextUntil = Instant.DISTANT_FUTURE, hasNext = true,
-          informationMessage = null,
-        )
-      }
-    }
-
-    override suspend fun pollNewestMessages(): Either<ErrorMessage, ChatMessagesResult> {
-      return either {
-        ChatMessagesResult(
-          messages = emptyList(),
-          nextUntil = Instant.DISTANT_FUTURE, hasNext = true,
-          informationMessage = null,
-        )
-      }
-    }
-
-    override fun watchMessages(): Flow<Either<ErrorMessage, List<ChatMessage>>> {
-      return flowOf(
-        either {
-          listOf()
-        },
-      )
-    }
-
-    override suspend fun sendPhoto(
-      uri: Uri,
-      context: AppDestination.Chat.ChatContext?,
-    ): Either<ErrorMessage, ChatMessage> {
-      return either { raise(ErrorMessage("Not implemented")) }
-    }
-
-    override suspend fun sendMedia(
-      uri: Uri,
-      context: AppDestination.Chat.ChatContext?,
-    ): Either<ErrorMessage, ChatMessage> {
-      return either { raise(ErrorMessage("Not implemented")) }
-    }
-
-    override suspend fun sendMessage(
-      text: String,
-      context: AppDestination.Chat.ChatContext?,
-    ): Either<ErrorMessage, ChatMessage> {
-      return either { raise(ErrorMessage("Not implemented")) }
-    }
-  }
 }

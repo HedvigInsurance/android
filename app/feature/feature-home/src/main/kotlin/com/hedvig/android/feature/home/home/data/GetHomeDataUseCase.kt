@@ -4,11 +4,15 @@ import androidx.compose.runtime.Immutable
 import arrow.core.Either
 import arrow.core.NonEmptyList
 import arrow.core.raise.either
+import arrow.core.raise.ensure
+import arrow.core.raise.ensureNotNull
 import arrow.core.raise.nullable
 import arrow.core.toNonEmptyListOrNull
 import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.api.ApolloResponse
 import com.apollographql.apollo3.cache.normalized.FetchPolicy
 import com.apollographql.apollo3.cache.normalized.fetchPolicy
+import com.apollographql.apollo3.cache.normalized.watch
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.travelcertificate.GetTravelCertificateSpecificationsUseCase
@@ -24,14 +28,18 @@ import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
+import octopus.ChatMessagesQuery
 import octopus.HomeQuery
+import octopus.type.ChatMessageSender
 
 internal interface GetHomeDataUseCase {
   fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, HomeData>>
+  fun observeChatMessages(): Flow<Either<ErrorMessage, List<ChatMessage>>>
 }
 
 internal class GetHomeDataUseCaseImpl(
@@ -72,6 +80,34 @@ internal class GetHomeDataUseCaseImpl(
         logcat(throwable = errorMessage.throwable) { "GetHomeDataUseCase failed with ${errorMessage.message}" }
       }
     }
+  }
+
+  override fun observeChatMessages(): Flow<Either<ErrorMessage, List<ChatMessage>>> {
+    return apolloClient.query(ChatMessagesQuery(null))
+      .fetchPolicy(FetchPolicy.CacheFirst)
+      .watch(fetchThrows = true)
+      .map { apolloResponse: ApolloResponse<ChatMessagesQuery.Data> ->
+        either {
+          ensure(apolloResponse.errors.isNullOrEmpty()) {
+            ErrorMessage("watchMessages: Got errors from Apollo: ${apolloResponse.errors}")
+          }
+          val data: ChatMessagesQuery.Data? = apolloResponse.data
+          ensureNotNull(data) {
+            ErrorMessage("watchMessages: No data")
+          }
+          val chat = data.chat
+          chat.messages.map {
+            ChatMessage(
+              it.id,
+              when (it.sender) {
+                ChatMessageSender.MEMBER -> ChatMessage.Sender.MEMBER
+                ChatMessageSender.HEDVIG -> ChatMessage.Sender.HEDVIG
+                ChatMessageSender.UNKNOWN__ -> ChatMessage.Sender.HEDVIG
+              },
+            )
+          }
+        }
+      }
   }
 
   private fun HomeQuery.Data.CurrentMember.toContractStatus(): HomeData.ContractStatus {
@@ -133,6 +169,16 @@ private fun HomeQuery.Data.claimStatusCards(): HomeData.ClaimStatusCardsData? {
     this.currentMember.claims.toNonEmptyListOrNull() ?: return null
   return HomeData.ClaimStatusCardsData(claimStatusCards.map(ClaimStatusCardUiState::fromClaimStatusCardsQuery))
 }
+
+internal data class ChatMessage(
+  val id: String,
+  val sender: Sender,
+) {
+  enum class Sender {
+    HEDVIG, MEMBER,
+  }
+}
+
 
 internal data class HomeData(
   val contractStatus: ContractStatus,

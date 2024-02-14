@@ -13,14 +13,11 @@ import androidx.compose.runtime.snapshots.Snapshot
 import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.chat.read.timestamp.ChatLastMessageReadRepository
-import com.hedvig.android.feature.chat.data.ChatRepository
-import com.hedvig.android.feature.chat.model.ChatMessage
+import com.hedvig.android.feature.home.home.data.ChatMessage
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
-import com.hedvig.android.logger.LogPriority
-import com.hedvig.android.logger.logcat
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -34,7 +31,6 @@ import kotlinx.datetime.LocalDate
 
 internal class HomePresenter(
   private val getHomeDataUseCaseProvider: Provider<GetHomeDataUseCase>,
-  private val chatRepositoryProvider: Provider<ChatRepository>,
   private val chatLastMessageReadRepository: ChatLastMessageReadRepository,
   private val featureManager: FeatureManager,
 ) : MoleculePresenter<HomeEvent, HomeUiState> {
@@ -51,7 +47,7 @@ internal class HomePresenter(
       }
     }
     val isHelpCenterEnabled by
-      featureManager.isFeatureEnabled(Feature.HELP_CENTER).collectAsState(lastState.isHelpCenterEnabled)
+    featureManager.isFeatureEnabled(Feature.HELP_CENTER).collectAsState(lastState.isHelpCenterEnabled)
     val hasUnseenChatMessages by produceState(
       lastState.safeCast<HomeUiState.Success>()?.hasUnseenChatMessages ?: false,
     ) {
@@ -94,17 +90,11 @@ internal class HomePresenter(
     }
 
     LaunchedEffect(Unit) {
-      chatRepositoryProvider.provide()
-        .pollNewestMessages()
-        .fold(
-          ifLeft = { logcat(LogPriority.ERROR) { it.message ?: "Error fetching chat messages" } },
-          ifRight = { hasReceivedOrSentMessages = hasReceivedOrSentMessages(it.messages) },
-        )
-
-      chatRepositoryProvider.provide()
-        .watchMessages()
+      getHomeDataUseCaseProvider.provide().observeChatMessages()
         .mapNotNull { it.getOrNull() }
-        .collect { messages -> hasReceivedOrSentMessages = hasReceivedOrSentMessages(messages) }
+        .collect {
+          hasReceivedOrSentMessages = hasReceivedOrSentMessages(it)
+        }
     }
 
     return if (hasError) {
