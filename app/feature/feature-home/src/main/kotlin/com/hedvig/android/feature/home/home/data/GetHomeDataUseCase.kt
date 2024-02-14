@@ -46,7 +46,6 @@ internal interface GetHomeDataUseCase {
 internal class GetHomeDataUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val getMemberRemindersUseCase: GetMemberRemindersUseCase,
-  private val getTravelCertificateSpecificationsUseCase: GetTravelCertificateSpecificationsUseCase,
   private val featureManager: FeatureManager,
   private val clock: Clock,
   private val timeZone: TimeZone,
@@ -57,9 +56,8 @@ internal class GetHomeDataUseCaseImpl(
         .fetchPolicy(if (forceNetworkFetch) FetchPolicy.NetworkOnly else FetchPolicy.CacheFirst)
         .safeFlow(::ErrorMessage),
       getMemberRemindersUseCase.invoke(),
-      flow { emit(getTravelCertificateSpecificationsUseCase.invoke().getOrNull()) },
-      flow { emit(featureManager.isFeatureEnabled(Feature.MOVING_FLOW)) },
-    ) { homeQueryDataResult, memberReminders, travelCertificateData, isMovingFlowEnabled ->
+      featureManager.isFeatureEnabled(Feature.MOVING_FLOW),
+    ) { homeQueryDataResult, memberReminders, isMovingFlowEnabled ->
       either {
         val homeQueryData: HomeQuery.Data = homeQueryDataResult.bind()
         val contractStatus = homeQueryData.currentMember.toContractStatus()
