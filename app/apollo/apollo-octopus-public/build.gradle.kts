@@ -32,7 +32,7 @@ apollo { // Octopus client
     generateApolloMetadata.set(true)
     generateDataBuilders.set(true)
     // https://slack-chats.kotlinlang.org/t/16051277/so-speaking-of-more-multi-module-stuff-i-got-a-query-like-th#976bd846-3cb0-4815-80a1-f73a853fe962
-    alwaysGenerateTypesMatching.set(listOf("CrossSell", "CrossSellType", "MemberMutationOutput", "Chat", "ChatMessage"))
+    alwaysGenerateTypesMatching.set(listOf("CrossSell", "CrossSellType", "MemberMutationOutput", "Chat", "ChatMessage", "ChatMessageSender"))
 
     // https://www.apollographql.com/docs/android/advanced/operation-variables/#make-nullable-variables-non-optional
     generateOptionalOperationVariables.set(false)
