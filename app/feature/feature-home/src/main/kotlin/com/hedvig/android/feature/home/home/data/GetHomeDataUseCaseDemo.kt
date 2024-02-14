@@ -20,10 +20,8 @@ internal class GetHomeDataUseCaseDemo : GetHomeDataUseCase {
         upcomingRenewals = null,
         enableNotifications = null,
       ),
+      showChatIcon = true,
+      showHelpCenter = true,
     ).right(),
   )
-
-  override fun observeChatMessages(): Flow<Either<ErrorMessage, List<ChatMessage>>> {
-    return flowOf(ErrorMessage("Not implemented").left())
-  }
 }

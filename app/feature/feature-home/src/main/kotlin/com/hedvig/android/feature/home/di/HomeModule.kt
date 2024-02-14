@@ -37,7 +37,6 @@ val homeModule = module {
     HomeViewModel(
       get<GetHomeDataUseCaseProvider>(),
       get<ChatLastMessageReadRepository>(),
-      get<FeatureManager>(),
     )
   }
 }
