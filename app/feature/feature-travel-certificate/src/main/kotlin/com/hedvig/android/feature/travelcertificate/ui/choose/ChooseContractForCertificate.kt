@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
+import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.SelectIndicationCircle
@@ -30,7 +31,6 @@ import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.data.travelcertificate.ContractEligibleWithAddress
 import com.hedvig.android.feature.travelcertificate.ui.FullScreenLoading
-import com.hedvig.android.feature.travelcertificate.ui.SomethingWrongInfo
 import hedvig.resources.R
 
 @Composable
@@ -129,7 +129,9 @@ private fun ShowFailure(navigateBack: () -> Unit, reload: () -> Unit) {
     navigateUp = navigateBack,
     modifier = Modifier.clearFocusOnTap(),
   ) {
-    SomethingWrongInfo(reload, this)
+    Spacer(Modifier.weight(1f))
+    HedvigErrorSection(reload)
+    Spacer(Modifier.weight(1f))
   }
 }
 

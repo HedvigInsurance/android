@@ -110,16 +110,14 @@ internal class CertificateHistoryPresenter(
       parZip(
         { getTravelCertificatesHistoryUseCase.invoke() },
         { checkTravelCertificateAvailabilityForCurrentContractsUseCase.invoke() },
-      ) { travelCertificateHistoryResult, eligibilityResult ->
+        { getEligibleContractsWithAddressUseCase.invoke() },
+      ) { travelCertificateHistoryResult, eligibilityResult, eligibleContractsResult ->
         val history = travelCertificateHistoryResult.getOrNull()
         val eligibility = eligibilityResult.getOrNull()
+        val eligibleContracts = eligibleContractsResult.getOrNull()
 
-        val eligibleContracts = getEligibleContractsWithAddressUseCase.invoke().getOrNull()
-        // todo: if we get an error here,
-        // todo: we just go to the generate destination without choosing option. is it the behaviour we need?
-
-        val hasChooseOption = eligibleContracts != null && eligibleContracts.size > 1
-        screenContentState = if (history != null && eligibility != null) {
+        screenContentState = if (history != null && eligibility != null && eligibleContracts != null) {
+          val hasChooseOption = eligibleContracts.size > 1
           logcat(LogPriority.INFO) { "Successfully fetched travel certificates history." }
           ScreenContentState.Success(history, eligibility, hasChooseOption)
         } else {

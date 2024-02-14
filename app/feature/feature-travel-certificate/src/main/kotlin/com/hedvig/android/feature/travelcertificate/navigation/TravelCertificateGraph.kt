@@ -30,6 +30,7 @@ import com.kiwi.navigationcompose.typed.navigate
 import com.kiwi.navigationcompose.typed.navigation
 import com.kiwi.navigationcompose.typed.popUpTo
 import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavController, applicationId: String) {
   navigation<AppDestination.TravelCertificate>(
@@ -86,10 +87,12 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavC
       startDestination = createRoutePattern<TravelCertificateDestination.TravelCertificateInput>(),
     ) {
       composable<TravelCertificateDestination.TravelCertificateInput> { navBackStackEntry ->
+
         val viewModel: GenerateTravelCertificateViewModel =
           destinationScopedViewModel<TravelCertificateDestination.GenerateTravelCertificateDestinations, _>(
             navController = navController,
             backStackEntry = navBackStackEntry,
+            parameters = { parametersOf(this.contractId) },
           )
         val uiState: TravelCertificateInputState by viewModel.uiState.collectAsStateWithLifecycle()
         GenerateTravelCertificateInput(
@@ -100,10 +103,10 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavC
           onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
           onEmailChanged = viewModel::onEmailChanged,
           onCoInsuredClicked = { coInsured ->
-            navController.navigate(TravelCertificateDestination.AddCoInsured(coInsured))
+            navController.navigate(TravelCertificateDestination.AddCoInsured(coInsured, this.contractId))
           },
           onAddCoInsuredClicked = {
-            navController.navigate(TravelCertificateDestination.AddCoInsured(null))
+            navController.navigate(TravelCertificateDestination.AddCoInsured(null, this.contractId))
           },
           onIncludeMemberClicked = viewModel::onIncludeMemberClicked,
           onTravelDateSelected = viewModel::onTravelDateSelected,
@@ -122,6 +125,7 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavC
           destinationScopedViewModel<TravelCertificateDestination.GenerateTravelCertificateDestinations, _>(
             navController = navController,
             backStackEntry = navBackStackEntry,
+            parameters = { parametersOf(this.contractId) },
           )
 
         AddCoInsured(

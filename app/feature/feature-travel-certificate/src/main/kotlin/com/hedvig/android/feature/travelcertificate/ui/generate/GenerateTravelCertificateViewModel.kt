@@ -19,6 +19,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
 internal class GenerateTravelCertificateViewModel(
+  contractId: String?,
   private val getTravelCertificateSpecificationsUseCase: GetTravelCertificateSpecificationsUseCase,
   private val createTravelCertificateUseCase: CreateTravelCertificateUseCase,
 ) : ViewModel() {
@@ -26,7 +27,7 @@ internal class GenerateTravelCertificateViewModel(
   val uiState: StateFlow<TravelCertificateInputState> = _uiState.asStateFlow()
 
   init {
-    updateSpecifications(null) // todo: remove null, we need a real argument here
+    updateSpecifications(contractId)
   }
 
   fun updateSpecifications(contractId: String?) {

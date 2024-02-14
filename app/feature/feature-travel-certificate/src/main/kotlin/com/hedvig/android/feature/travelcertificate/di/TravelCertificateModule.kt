@@ -18,6 +18,7 @@ val travelCertificateModule = module {
   single<DownloadTravelCertificateUseCase> { DownloadTravelCertificateUseCase(get()) }
   viewModel<GenerateTravelCertificateViewModel> {
     GenerateTravelCertificateViewModel(
+      it.getOrNull<String>(),
       get(),
       get(),
     )

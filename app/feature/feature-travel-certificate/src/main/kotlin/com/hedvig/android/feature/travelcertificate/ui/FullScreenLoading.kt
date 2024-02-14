@@ -8,9 +8,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import com.hedvig.android.core.designsystem.component.information.HedvigInformationSection
-import hedvig.resources.R
+import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 
 @Composable
 internal fun FullScreenLoading() {
@@ -23,11 +21,7 @@ internal fun FullScreenLoading() {
 internal fun SomethingWrongInfo(onButtonClick: () -> Unit, scope: ColumnScope) { // todo: is it okay to pass a scope like this?
   scope.apply {
     Spacer(Modifier.weight(1f))
-    HedvigInformationSection(
-      title = stringResource(id = R.string.something_went_wrong),
-      buttonText = stringResource(id = R.string.GENERAL_RETRY),
-      onButtonClick = onButtonClick,
-    )
+    HedvigErrorSection(onButtonClick)
     Spacer(Modifier.weight(1f))
   }
 }

@@ -39,7 +39,7 @@ internal class GetTravelCertificateSpecificationsUseCaseImpl(
         }
       } else {
         member.travelCertificateSpecifications.contractSpecifications.firstOrNull()
-      } // todo: or better write it like .firstOrNull {contractSpecification -> contractId?.let {contractSpecification.contractId == it } ?: true}
+      }
 
       ensureNotNull(travelCertificateSpecifications) { TravelCertificateError.NotEligible }
       TravelCertificateData(

@@ -31,6 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigSecondaryContainedButton
+import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.information.HedvigInformationSection
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -45,7 +46,6 @@ import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.data.travelcertificate.TravelCertificate
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUri
 import com.hedvig.android.feature.travelcertificate.ui.FullScreenLoading
-import com.hedvig.android.feature.travelcertificate.ui.SomethingWrongInfo
 import com.hedvig.android.feature.travelcertificate.ui.TravelCertificateInfoBottomSheet
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
@@ -115,7 +115,9 @@ private fun TravelCertificateHistoryScreen(
           }
         },
       ) {
-        SomethingWrongInfo(reload, this)
+        Spacer(Modifier.weight(1f))
+        HedvigErrorSection(reload)
+        Spacer(Modifier.weight(1f))
       }
     }
 

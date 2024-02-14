@@ -16,7 +16,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.information.HedvigInformationSection
+import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarActionType
@@ -27,7 +27,6 @@ import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUri
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import com.hedvig.android.feature.travelcertificate.ui.FullScreenLoading
-import com.hedvig.android.logger.logcat
 import hedvig.resources.R
 
 @Composable
@@ -38,7 +37,6 @@ internal fun TravelCertificateOverviewDestination(
   onShareTravelCertificate: (TravelCertificateUri) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  logcat { "mariia: TravelCertificateOverviewDestination, currentUIstate: " }
   TravelCertificateOverview(
     travelCertificateUrl = travelCertificateUrl,
     onDownloadCertificate = { viewModel.emit(TravelCertificateOverviewEvent.OnDownloadCertificate(it)) },
@@ -64,11 +62,7 @@ internal fun TravelCertificateOverview(
         modifier = Modifier.clearFocusOnTap(),
       ) {
         Spacer(Modifier.weight(1f))
-        HedvigInformationSection(
-          title = stringResource(id = R.string.something_went_wrong),
-          buttonText = stringResource(id = R.string.GENERAL_RETRY),
-          onButtonClick = { onDownloadCertificate(travelCertificateUrl) },
-        )
+        HedvigErrorSection({ onDownloadCertificate(travelCertificateUrl) })
         Spacer(Modifier.weight(1f))
       }
     }

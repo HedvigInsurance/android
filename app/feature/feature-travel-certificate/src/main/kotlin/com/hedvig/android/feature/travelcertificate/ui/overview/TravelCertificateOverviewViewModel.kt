@@ -53,7 +53,8 @@ internal class TravelCertificateOverviewPresenter(
     }
 
     LaunchedEffect(dataLoadIteration) {
-      travelCertificateUrl?.let { url ->
+      val url = travelCertificateUrl
+      if (url != null) {
         currentState = TravelCertificateOverviewUiState.Loading
         logcat(LogPriority.INFO) { "Downloading travel certificate with url:${url.uri}" }
         downloadTravelCertificateUseCase.invoke(url)
@@ -69,7 +70,7 @@ internal class TravelCertificateOverviewPresenter(
               currentState = TravelCertificateOverviewUiState.Success(uri)
             },
           )
-      } ?: run {
+      } else {
         currentState = TravelCertificateOverviewUiState.Success(null)
       }
     }
