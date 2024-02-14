@@ -46,7 +46,7 @@ internal fun HomeLayout(
   veryImportantMessages: @Composable @UiComposable () -> Unit,
   memberReminderCards: @Composable @UiComposable () -> Unit,
   startClaimButton: @Composable @UiComposable () -> Unit,
-  otherServicesButton: @Composable @UiComposable () -> Unit,
+  helpCenterButton: @Composable @UiComposable () -> Unit,
   topSpacer: @Composable @UiComposable () -> Unit,
   bottomSpacer: @Composable @UiComposable () -> Unit,
   modifier: Modifier = Modifier,
@@ -58,7 +58,7 @@ internal fun HomeLayout(
       Box(Modifier.layoutId(HomeLayoutContent.VeryImportantMessages)) { veryImportantMessages() }
       Box(Modifier.layoutId(HomeLayoutContent.MemberReminderCards)) { memberReminderCards() }
       Box(Modifier.layoutId(HomeLayoutContent.StartClaimButton)) { startClaimButton() }
-      Box(Modifier.layoutId(HomeLayoutContent.OtherServicesButton)) { otherServicesButton() }
+      Box(Modifier.layoutId(HomeLayoutContent.HelpCenterButton)) { helpCenterButton() }
       Box(Modifier.layoutId(HomeLayoutContent.TopSpacer)) { topSpacer() }
       Box(Modifier.layoutId(HomeLayoutContent.BottomSpacer)) { bottomSpacer() }
     },
@@ -79,8 +79,8 @@ internal fun HomeLayout(
       measurables.fastFirstOrNull { it.layoutId == HomeLayoutContent.MemberReminderCards }!!.measure(constraints)
     val startClaimButtonPlaceable: Placeable =
       measurables.fastFirstOrNull { it.layoutId == HomeLayoutContent.StartClaimButton }!!.measure(constraints)
-    val otherServicesButtonPlaceable: Placeable =
-      measurables.fastFirstOrNull { it.layoutId == HomeLayoutContent.OtherServicesButton }!!.measure(constraints)
+    val helpCenterButtonPlaceable: Placeable =
+      measurables.fastFirstOrNull { it.layoutId == HomeLayoutContent.HelpCenterButton }!!.measure(constraints)
 
     val centerPlaceables = buildList {
       add(welcomeMessagePlaceable)
@@ -109,7 +109,7 @@ internal fun HomeLayout(
       }
       add(startClaimButtonPlaceable)
       add(FixedSizePlaceable(0, 8.dp.roundToPx()))
-      add(otherServicesButtonPlaceable)
+      add(helpCenterButtonPlaceable)
       add(bottomSpacerPlaceable)
     }
 
@@ -175,7 +175,7 @@ private enum class HomeLayoutContent {
   ClaimStatusCards,
   MemberReminderCards,
   StartClaimButton,
-  OtherServicesButton,
+  HelpCenterButton,
   VeryImportantMessages,
   TopSpacer,
   BottomSpacer,
@@ -300,7 +300,7 @@ private fun PreviewHomeLayout(
         modifier = Modifier.padding(horizontal = 16.dp),
       )
     },
-    otherServicesButton = {
+    helpCenterButton = {
       HedvigTextButton(
         text = "Other services",
         onClick = {},

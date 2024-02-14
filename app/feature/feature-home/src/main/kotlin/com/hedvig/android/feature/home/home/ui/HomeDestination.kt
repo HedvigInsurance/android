@@ -326,7 +326,7 @@ private fun HomeScreenSuccess(
               .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
           )
         },
-        otherServicesButton = {
+        helpCenterButton = {
           HedvigSecondaryContainedButton(
             text = stringResource(R.string.home_tab_get_help),
             onClick = navigateToHelpCenter,
