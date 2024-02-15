@@ -32,7 +32,9 @@ internal class CreateTravelCertificateUseCase(
         contractId = contractId,
         startDate = startDate,
         isMemberIncluded = isMemberIncluded,
-        coInsured = coInsured.map { TravelCertificateCreateCoInsured(it.name, Optional.present(it.ssn)) },
+        coInsured = coInsured.map {
+          TravelCertificateCreateCoInsured(fullName = it.name, ssn = Optional.present(it.ssn))
+        },
         email = email,
       )
 
