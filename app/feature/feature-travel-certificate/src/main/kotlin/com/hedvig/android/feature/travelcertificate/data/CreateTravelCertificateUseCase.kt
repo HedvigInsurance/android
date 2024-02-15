@@ -3,6 +3,7 @@ package com.hedvig.android.feature.travelcertificate.data
 import arrow.core.Either
 import arrow.core.raise.either
 import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.api.Optional
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
@@ -31,7 +32,7 @@ internal class CreateTravelCertificateUseCase(
         contractId = contractId,
         startDate = startDate,
         isMemberIncluded = isMemberIncluded,
-        coInsured = coInsured.map { TravelCertificateCreateCoInsured(it.name, it.ssn) },
+        coInsured = coInsured.map { TravelCertificateCreateCoInsured(it.name, Optional.present(it.ssn)) },
         email = email,
       )
 

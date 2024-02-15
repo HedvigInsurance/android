@@ -27,6 +27,7 @@ import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUri
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import com.hedvig.android.feature.travelcertificate.ui.FullScreenLoading
+import com.hedvig.android.feature.travelcertificate.ui.SomethingWrongInfo
 import hedvig.resources.R
 
 @Composable
@@ -61,9 +62,7 @@ internal fun TravelCertificateOverview(
         topAppBarActionType = TopAppBarActionType.CLOSE,
         modifier = Modifier.clearFocusOnTap(),
       ) {
-        Spacer(Modifier.weight(1f))
-        HedvigErrorSection({ onDownloadCertificate(travelCertificateUrl) })
-        Spacer(Modifier.weight(1f))
+        SomethingWrongInfo { onDownloadCertificate(travelCertificateUrl) }
       }
     }
     TravelCertificateOverviewUiState.Loading -> {

@@ -46,6 +46,7 @@ import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.data.travelcertificate.TravelCertificate
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUri
 import com.hedvig.android.feature.travelcertificate.ui.FullScreenLoading
+import com.hedvig.android.feature.travelcertificate.ui.SomethingWrongInfo
 import com.hedvig.android.feature.travelcertificate.ui.TravelCertificateInfoBottomSheet
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
@@ -115,9 +116,9 @@ private fun TravelCertificateHistoryScreen(
           }
         },
       ) {
-        Spacer(Modifier.weight(1f))
-        HedvigErrorSection(reload)
-        Spacer(Modifier.weight(1f))
+        SomethingWrongInfo {
+          reload()
+        }
       }
     }
 

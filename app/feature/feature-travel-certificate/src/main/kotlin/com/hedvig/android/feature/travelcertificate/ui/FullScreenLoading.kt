@@ -18,10 +18,8 @@ internal fun FullScreenLoading() {
 }
 
 @Composable
-internal fun SomethingWrongInfo(onButtonClick: () -> Unit, scope: ColumnScope) { // todo: is it okay to pass a scope like this?
-  scope.apply {
-    Spacer(Modifier.weight(1f))
-    HedvigErrorSection(onButtonClick)
-    Spacer(Modifier.weight(1f))
-  }
+internal fun ColumnScope.SomethingWrongInfo(onButtonClick: () -> Unit) {
+  Spacer(Modifier.weight(1f))
+  HedvigErrorSection(onButtonClick)
+  Spacer(Modifier.weight(1f))
 }
