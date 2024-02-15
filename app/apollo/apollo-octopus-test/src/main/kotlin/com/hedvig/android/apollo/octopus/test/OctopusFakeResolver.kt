@@ -3,6 +3,7 @@ package com.hedvig.android.apollo.octopus.test
 import com.apollographql.apollo3.api.DefaultFakeResolver
 import com.apollographql.apollo3.api.FakeResolver
 import com.apollographql.apollo3.api.FakeResolverContext
+import com.hedvig.android.core.markdown.MarkdownString
 import java.util.UUID
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
@@ -17,6 +18,8 @@ object OctopusFakeResolver : FakeResolver by delegate {
       "Date" -> Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
       "UUID" -> UUID.randomUUID().toString()
       "Url" -> """www.example.com"""
+      "Instant" -> kotlinx.datetime.Instant.DISTANT_FUTURE
+      "Markdown" -> MarkdownString("test")
       else -> delegate.resolveLeaf(context)
     }
   }

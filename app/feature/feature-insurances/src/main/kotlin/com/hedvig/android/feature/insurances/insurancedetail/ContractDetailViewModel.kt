@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.raise.either
 import arrow.core.raise.ensureNotNull
+import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.RetryChannel
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
@@ -16,7 +17,8 @@ import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 internal class ContractDetailViewModel(
@@ -27,24 +29,32 @@ internal class ContractDetailViewModel(
   private val retryChannel = RetryChannel()
   val uiState: StateFlow<ContractDetailsUiState> = retryChannel.transformLatest {
     emit(ContractDetailsUiState.Loading)
-    val uiState = either {
-      val contract = getInsuranceContractsUseCaseProvider
+    combine(
+      getInsuranceContractsUseCaseProvider
         .provide()
         .invoke(forceNetworkFetch = false)
-        .bind()
-        .firstOrNull { it.id == contractId }
-      ensureNotNull(contract) {
-        logcat(LogPriority.ERROR) { "No contract found with id: $contractId" }
-        ContractDetailsUiState.Error
-      }
-    }.fold(
-      ifLeft = { ContractDetailsUiState.Error },
-      ifRight = {
-        val allowTerminationFlow = featureManager.isFeatureEnabled(Feature.TERMINATION_FLOW).first()
-        ContractDetailsUiState.Success(it, allowTerminationFlow)
-      },
-    )
-    emit(uiState)
+        .map { insuranceContractResult ->
+          either {
+            val contract = insuranceContractResult.bind().firstOrNull { it.id == contractId }
+            ensureNotNull(contract) {
+              ErrorMessage("No contract found with id: $contractId").also {
+                logcat(LogPriority.ERROR) { it.message.toString() }
+              }
+            }
+          }
+        },
+      featureManager.isFeatureEnabled(Feature.TERMINATION_FLOW),
+    ) { insuranceContractResult, isTerminationFlowEnabled ->
+      insuranceContractResult.fold(
+        ifLeft = { ContractDetailsUiState.Error },
+        ifRight = { contract ->
+          ContractDetailsUiState.Success(
+            insuranceContract = contract,
+            allowTerminatingInsurance = isTerminationFlowEnabled,
+          )
+        },
+      )
+    }.collect(this)
   }.stateIn(
     viewModelScope,
     SharingStarted.WhileSubscribed(5.seconds),

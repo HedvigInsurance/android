@@ -119,6 +119,13 @@ private fun ContractDetailScreen(
     val pagerState = rememberPagerState(pageCount = { 3 })
     FadeAnimatedContent(
       targetState = uiState,
+      contentKey = { uiState ->
+        when (uiState) {
+          ContractDetailsUiState.Error -> "Error"
+          ContractDetailsUiState.Loading -> "Loading"
+          is ContractDetailsUiState.Success -> "Success"
+        }
+      },
       label = "contract detail screen fade animated content",
       modifier = Modifier.weight(1f),
     ) { state ->

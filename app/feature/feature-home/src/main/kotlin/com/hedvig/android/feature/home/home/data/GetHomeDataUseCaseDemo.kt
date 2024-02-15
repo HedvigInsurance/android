@@ -19,6 +19,8 @@ internal class GetHomeDataUseCaseDemo : GetHomeDataUseCase {
         upcomingRenewals = null,
         enableNotifications = null,
       ),
+      showChatIcon = true,
+      showHelpCenter = true,
     ).right(),
   )
 }

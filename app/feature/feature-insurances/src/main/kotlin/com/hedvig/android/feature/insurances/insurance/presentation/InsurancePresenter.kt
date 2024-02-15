@@ -28,6 +28,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import octopus.CrossSellsQuery
 import octopus.type.CrossSellType
@@ -144,7 +145,7 @@ private suspend fun loadInsuranceData(
 ): Either<ErrorMessage, InsuranceData> {
   return either {
     parZip(
-      { getInsuranceContractsUseCase.invoke(forceNetworkFetch).bind() },
+      { getInsuranceContractsUseCase.invoke(forceNetworkFetch).first().bind() },
       { getCrossSellsUseCase.invoke().bind() },
     ) {
         contracts: List<InsuranceContract>,
