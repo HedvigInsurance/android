@@ -1,9 +1,0 @@
-query CoEnsuredForTravelCertificate($contractId: UUID!) {
-  contract(id: $contractId) {
-    coInsured {
-      firstName
-      lastName
-      ssn
-    }
-  }
-}
