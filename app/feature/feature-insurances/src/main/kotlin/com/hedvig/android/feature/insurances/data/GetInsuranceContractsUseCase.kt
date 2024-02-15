@@ -5,8 +5,7 @@ import arrow.core.raise.either
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.cache.normalized.FetchPolicy
 import com.apollographql.apollo3.cache.normalized.fetchPolicy
-import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.apollo.toEither
+import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.formatName
 import com.hedvig.android.core.common.formatSsn
@@ -15,53 +14,54 @@ import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import octopus.InsuranceContractsQuery
 import octopus.fragment.ContractFragment
 import octopus.type.AgreementCreationCause
 
 internal interface GetInsuranceContractsUseCase {
-  suspend fun invoke(forceNetworkFetch: Boolean): Either<ErrorMessage, List<InsuranceContract>>
+  fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, List<InsuranceContract>>>
 }
 
 internal class GetInsuranceContractsUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,
 ) : GetInsuranceContractsUseCase {
-  override suspend fun invoke(forceNetworkFetch: Boolean): Either<ErrorMessage, List<InsuranceContract>> {
-    return either {
-      val insuranceQueryData = apolloClient
+  override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, List<InsuranceContract>>> {
+    return combine(
+      apolloClient
         .query(InsuranceContractsQuery())
-        .fetchPolicy(if (forceNetworkFetch) FetchPolicy.NetworkOnly else FetchPolicy.CacheFirst)
-        .safeExecute()
-        .toEither(::ErrorMessage)
-        .bind()
+        .fetchPolicy(if (forceNetworkFetch) FetchPolicy.NetworkOnly else FetchPolicy.CacheAndNetwork)
+        .safeFlow(::ErrorMessage),
+      featureManager.isFeatureEnabled(Feature.EDIT_COINSURED),
+      featureManager.isFeatureEnabled(Feature.MOVING_FLOW),
+    ) { insuranceQueryResponse, isEditCoInsuredEnabled, isMovingFlowEnabled ->
+      either {
+        val insuranceQueryData = insuranceQueryResponse.bind()
+        val contractHolderDisplayName = insuranceQueryData.getContractHolderDisplayName()
+        val contractHolderSSN = insuranceQueryData.currentMember.ssn?.let { formatSsn(it) }
 
-      val isEditCoInsuredEnabled = featureManager.isFeatureEnabled(Feature.EDIT_COINSURED).first()
-      val isMovingFlowEnabled = featureManager.isFeatureEnabled(Feature.MOVING_FLOW).first()
-
-      val contractHolderDisplayName = insuranceQueryData.getContractHolderDisplayName()
-      val contractHolderSSN = insuranceQueryData.currentMember.ssn?.let { formatSsn(it) }
-
-      val terminatedContracts = insuranceQueryData.currentMember.terminatedContracts.map {
-        it.toContract(
-          isTerminated = true,
-          contractHolderDisplayName = contractHolderDisplayName,
-          contractHolderSSN = contractHolderSSN,
-          isEditCoInsuredEnabled = isEditCoInsuredEnabled,
-          isMovingFlowEnabled = isMovingFlowEnabled,
-        )
+        val terminatedContracts = insuranceQueryData.currentMember.terminatedContracts.map {
+          it.toContract(
+            isTerminated = true,
+            contractHolderDisplayName = contractHolderDisplayName,
+            contractHolderSSN = contractHolderSSN,
+            isEditCoInsuredEnabled = isEditCoInsuredEnabled,
+            isMovingFlowEnabled = isMovingFlowEnabled,
+          )
+        }
+        val activeContracts = insuranceQueryData.currentMember.activeContracts.map {
+          it.toContract(
+            isTerminated = false,
+            contractHolderDisplayName = contractHolderDisplayName,
+            contractHolderSSN = contractHolderSSN,
+            isEditCoInsuredEnabled = isEditCoInsuredEnabled,
+            isMovingFlowEnabled = isMovingFlowEnabled,
+          )
+        }
+        terminatedContracts + activeContracts
       }
-      val activeContracts = insuranceQueryData.currentMember.activeContracts.map {
-        it.toContract(
-          isTerminated = false,
-          contractHolderDisplayName = contractHolderDisplayName,
-          contractHolderSSN = contractHolderSSN,
-          isEditCoInsuredEnabled = isEditCoInsuredEnabled,
-          isMovingFlowEnabled = isMovingFlowEnabled,
-        )
-      }
-      terminatedContracts + activeContracts
     }
   }
 }
