@@ -30,7 +30,7 @@ internal class GenerateTravelCertificateViewModel(
     updateSpecifications(contractId)
   }
 
-  fun updateSpecifications(contractId: String?) {
+  private fun updateSpecifications(contractId: String?) {
     viewModelScope.launch {
       _uiState.update { it.copy(isLoading = true) }
       getTravelCertificateSpecificationsUseCase
@@ -39,10 +39,11 @@ internal class GenerateTravelCertificateViewModel(
           ifLeft = { travelCertificateError ->
             _uiState.update {
               when (travelCertificateError) {
+                // todo: probably should not only show error dialog, but also don't show the input ui at all,
+                // todo: otherwise you have an opportunity to fill email etc manually, press continue and crash the app
                 is TravelCertificateError.Error -> {
                   TravelCertificateInputState(errorMessage = travelCertificateError.message)
                 }
-
                 TravelCertificateError.NotEligible -> {
                   TravelCertificateInputState(errorMessage = "Not eligible")
                 }

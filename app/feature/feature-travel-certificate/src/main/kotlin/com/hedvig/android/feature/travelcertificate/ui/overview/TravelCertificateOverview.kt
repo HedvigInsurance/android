@@ -16,7 +16,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarActionType
@@ -56,7 +55,7 @@ internal fun TravelCertificateOverview(
   uiState: TravelCertificateOverviewUiState,
 ) {
   when (uiState) {
-    TravelCertificateOverviewUiState.Failure -> { // todo: is this the kind of behaviour we want here?
+    TravelCertificateOverviewUiState.Failure -> {
       HedvigScaffold(
         navigateUp = { navigateBack() },
         topAppBarActionType = TopAppBarActionType.CLOSE,
@@ -65,9 +64,11 @@ internal fun TravelCertificateOverview(
         SomethingWrongInfo { onDownloadCertificate(travelCertificateUrl) }
       }
     }
+
     TravelCertificateOverviewUiState.Loading -> {
       FullScreenLoading()
     }
+
     is TravelCertificateOverviewUiState.Success -> {
       LaunchedEffect(uiState.travelCertificateUri) {
         uiState.travelCertificateUri?.let {

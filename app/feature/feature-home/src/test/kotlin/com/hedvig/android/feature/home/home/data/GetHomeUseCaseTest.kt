@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.home.home.data
 
 import arrow.core.NonEmptyList
-import arrow.core.left
 import assertk.Assert
 import assertk.assertThat
 import assertk.assertions.containsExactly
@@ -20,10 +19,6 @@ import com.hedvig.android.apollo.octopus.test.OctopusFakeResolver
 import com.hedvig.android.apollo.octopus.test.OctopusFakeResolverWithFilledLists
 import com.hedvig.android.apollo.test.TestApolloClientRule
 import com.hedvig.android.core.common.test.isRight
-import com.hedvig.android.data.travelcertificate.TestGetTravelCertificateSpecificationsUseCase
-import com.hedvig.android.data.travelcertificate.TravelCertificateError
-import com.hedvig.android.featureflags.FeatureManager
-import com.hedvig.android.featureflags.test.FakeFeatureManager2
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminders
@@ -61,17 +56,13 @@ internal class GetHomeUseCaseTest {
   fun `when reminders are present, return the MemberReminders`() = runTest {
     val testGetMemberRemindersUseCase = TestGetMemberRemindersUseCase()
     val getHomeDataUseCase = GetHomeDataUseCaseImpl(
-      apolloClient.apply {
+      apolloClient = apolloClient.apply {
         enqueueTestResponse(
           HomeQuery(),
           HomeQuery.Data(OctopusFakeResolver),
         )
       },
-      testGetMemberRemindersUseCase,
-      TestGetTravelCertificateSpecificationsUseCase().apply {
-        turbine.add(TravelCertificateError.NotEligible.left())
-      },
-      FakeFeatureManager2(true),
+      getMemberRemindersUseCase = testGetMemberRemindersUseCase,
       TestClock(),
       TimeZone.UTC,
     )
@@ -110,10 +101,6 @@ internal class GetHomeUseCaseTest {
         )
       },
       testGetMemberRemindersUseCase,
-      TestGetTravelCertificateSpecificationsUseCase().apply {
-        turbine.add(TravelCertificateError.NotEligible.left())
-      },
-      FakeFeatureManager2(true),
       TestClock(),
       TimeZone.UTC,
     )
@@ -130,7 +117,7 @@ internal class GetHomeUseCaseTest {
 
   @Test
   fun `when there are very important messages, show them`() = runTest {
-    val getHomeDataUseCase = testUseCaseWithoutRemindersAndNoTravelCertificate()
+    val getHomeDataUseCase = testUseCaseWithoutReminders()
 
     apolloClient.enqueueTestResponse(
       HomeQuery(),
@@ -161,7 +148,7 @@ internal class GetHomeUseCaseTest {
 
   @Test
   fun `when there are zero very important messages, don't show them`() = runTest {
-    val getHomeDataUseCase = testUseCaseWithoutRemindersAndNoTravelCertificate()
+    val getHomeDataUseCase = testUseCaseWithoutReminders()
 
     apolloClient.enqueueTestResponse(
       HomeQuery(),
@@ -182,7 +169,7 @@ internal class GetHomeUseCaseTest {
 
   @Test
   fun `when there are existing claims, show them as ClaimStatusCards`() = runTest {
-    val getHomeDataUseCase = testUseCaseWithoutRemindersAndNoTravelCertificate()
+    val getHomeDataUseCase = testUseCaseWithoutReminders()
 
     apolloClient.enqueueTestResponse(
       HomeQuery(),
@@ -216,7 +203,7 @@ internal class GetHomeUseCaseTest {
 
   @Test
   fun `when there are no existing claims, don't show them`() = runTest {
-    val getHomeDataUseCase = testUseCaseWithoutRemindersAndNoTravelCertificate()
+    val getHomeDataUseCase = testUseCaseWithoutReminders()
 
     apolloClient.enqueueTestResponse(
       HomeQuery(),
@@ -237,7 +224,7 @@ internal class GetHomeUseCaseTest {
 
   @Test
   fun `when the are only terminated contracts, the contract status is considered terminated`() = runTest {
-    val getHomeDataUseCase = testUseCaseWithoutRemindersAndNoTravelCertificate()
+    val getHomeDataUseCase = testUseCaseWithoutReminders()
 
     apolloClient.enqueueTestResponse(
       HomeQuery(),
@@ -268,7 +255,7 @@ internal class GetHomeUseCaseTest {
   ) = runTest {
     val testClock = TestClock()
     val timeZone = TimeZone.UTC
-    val getHomeDataUseCase = testUseCaseWithoutRemindersAndNoTravelCertificate(
+    val getHomeDataUseCase = testUseCaseWithoutReminders(
       testClock = testClock,
       timeZone = timeZone,
     )
@@ -309,8 +296,7 @@ internal class GetHomeUseCaseTest {
   fun `when the are only pending contracts, the contract status is considered pending or switchable`(
     @TestParameter isSwitchableByHedvig: Boolean,
   ) = runTest {
-    val featureManager = FakeFeatureManager2(true)
-    val getHomeDataUseCase = testUseCaseWithoutRemindersAndNoTravelCertificate(featureManager)
+    val getHomeDataUseCase = testUseCaseWithoutReminders()
 
     apolloClient.enqueueTestResponse(
       HomeQuery(),
@@ -344,18 +330,13 @@ internal class GetHomeUseCaseTest {
 
   // Used as a convenience to get a use case without any enqueued apollo responses, but some sane defaults for the
   // other dependencies
-  private fun testUseCaseWithoutRemindersAndNoTravelCertificate(
-    faetureManager: FeatureManager = FakeFeatureManager2(true),
+  private fun testUseCaseWithoutReminders(
     testClock: TestClock = TestClock(),
     timeZone: TimeZone = TimeZone.UTC,
   ): GetHomeDataUseCase {
     return GetHomeDataUseCaseImpl(
       apolloClient,
       TestGetMemberRemindersUseCase().apply { memberReminders.add(MemberReminders()) },
-      TestGetTravelCertificateSpecificationsUseCase().apply {
-        turbine.add(TravelCertificateError.NotEligible.left())
-      },
-      faetureManager,
       testClock,
       timeZone,
     )

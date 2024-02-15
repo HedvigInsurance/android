@@ -70,29 +70,17 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavC
       )
     }
 
-    composable<TravelCertificateDestination.ShowCertificate> {
-      val viewModel: TravelCertificateOverviewViewModel = koinViewModel()
-      val context = LocalContext.current
-      TravelCertificateOverviewDestination(
-        travelCertificateUrl = travelCertificateUrl,
-        viewModel = viewModel,
-        navigateUp = navController::navigateUp,
-        onShareTravelCertificate = {
-          shareCertificate(it, context, applicationId)
-        },
-      )
-    }
-
     navigation<TravelCertificateDestination.GenerateTravelCertificateDestinations>(
       startDestination = createRoutePattern<TravelCertificateDestination.TravelCertificateInput>(),
     ) {
       composable<TravelCertificateDestination.TravelCertificateInput> { navBackStackEntry ->
-
         val viewModel: GenerateTravelCertificateViewModel =
           destinationScopedViewModel<TravelCertificateDestination.GenerateTravelCertificateDestinations, _>(
             navController = navController,
             backStackEntry = navBackStackEntry,
-            parameters = { parametersOf(this.contractId) },
+            parameters = {
+              parametersOf(contractId)
+            },
           )
         val uiState: TravelCertificateInputState by viewModel.uiState.collectAsStateWithLifecycle()
         GenerateTravelCertificateInput(
@@ -103,10 +91,10 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavC
           onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
           onEmailChanged = viewModel::onEmailChanged,
           onCoInsuredClicked = { coInsured ->
-            navController.navigate(TravelCertificateDestination.AddCoInsured(coInsured, this.contractId))
+            navController.navigate(TravelCertificateDestination.AddCoInsured(coInsured, contractId))
           },
           onAddCoInsuredClicked = {
-            navController.navigate(TravelCertificateDestination.AddCoInsured(null, this.contractId))
+            navController.navigate(TravelCertificateDestination.AddCoInsured(null, contractId))
           },
           onIncludeMemberClicked = viewModel::onIncludeMemberClicked,
           onTravelDateSelected = viewModel::onTravelDateSelected,
@@ -125,7 +113,7 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavC
           destinationScopedViewModel<TravelCertificateDestination.GenerateTravelCertificateDestinations, _>(
             navController = navController,
             backStackEntry = navBackStackEntry,
-            parameters = { parametersOf(this.contractId) },
+            parameters = { parametersOf(contractId) },
           )
 
         AddCoInsured(
@@ -145,6 +133,19 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavC
           },
         )
       }
+    }
+
+    composable<TravelCertificateDestination.ShowCertificate> {
+      val viewModel: TravelCertificateOverviewViewModel = koinViewModel()
+      val context = LocalContext.current
+      TravelCertificateOverviewDestination(
+        travelCertificateUrl = travelCertificateUrl,
+        viewModel = viewModel,
+        navigateUp = navController::navigateUp,
+        onShareTravelCertificate = {
+          shareCertificate(it, context, applicationId)
+        },
+      )
     }
   }
 }

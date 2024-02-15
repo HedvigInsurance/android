@@ -33,12 +33,13 @@ internal class GetTravelCertificateSpecificationsUseCaseImpl(
         .bind()
         .currentMember
 
+      val allSpecifications = member.travelCertificateSpecifications.contractSpecifications
       val travelCertificateSpecifications = if (contractId != null) {
-        member.travelCertificateSpecifications.contractSpecifications.firstOrNull { contractSpecification ->
+        allSpecifications.firstOrNull { contractSpecification ->
           contractSpecification.contractId == contractId
         }
       } else {
-        member.travelCertificateSpecifications.contractSpecifications.firstOrNull()
+        allSpecifications.firstOrNull()
       }
 
       ensureNotNull(travelCertificateSpecifications) { TravelCertificateError.NotEligible }
