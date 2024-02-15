@@ -7,6 +7,7 @@ import io.getunleash.UnleashClient
 import io.getunleash.UnleashConfig
 import io.getunleash.UnleashContext
 import io.getunleash.polling.AutoPollingMode
+import io.getunleash.polling.TogglesUpdatedListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -37,10 +38,11 @@ class HedvigUnleashClient(
   )
   val featureUpdatedFlow: Flow<Unit> = callbackFlow {
     trySend(Unit)
-    client.addTogglesUpdatedListener {
-      trySend(Unit)
+    val listener = TogglesUpdatedListener { trySend(Unit) }
+    client.addTogglesUpdatedListener(listener = listener)
+    awaitClose {
+      client.removeTogglesUpdatedListener(listener = listener)
     }
-    awaitClose {}
   }
 
   init {

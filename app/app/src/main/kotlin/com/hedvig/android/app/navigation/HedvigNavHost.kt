@@ -41,8 +41,9 @@ import com.hedvig.android.feature.odyssey.navigation.navigateToClaimFlowDestinat
 import com.hedvig.android.feature.odyssey.navigation.terminalClaimFlowStepDestinations
 import com.hedvig.android.feature.payments.navigation.paymentsGraph
 import com.hedvig.android.feature.profile.tab.profileGraph
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceFeatureDestination
 import com.hedvig.android.feature.terminateinsurance.navigation.terminateInsuranceGraph
-import com.hedvig.android.feature.travelcertificate.navigation.generateTravelCertificateGraph
+import com.hedvig.android.feature.travelcertificate.navigation.travelCertificateGraph
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.Market
 import com.hedvig.android.navigation.activity.ActivityNavigator
@@ -162,7 +163,7 @@ internal fun HedvigNavHost(
       },
       startTerminationFlow = { backStackEntry: NavBackStackEntry, data: CancelInsuranceData ->
         with(navigator) {
-          val destination = AppDestination.TerminateInsurance(
+          val destination = TerminateInsuranceFeatureDestination(
             contractId = data.contractId,
             insuranceDisplayName = data.contractDisplayName,
             exposureName = data.contractExposure,
@@ -283,7 +284,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     },
     openUrl = { activityNavigator.openWebsite(context, Uri.parse(it)) },
   )
-  generateTravelCertificateGraph(
+  travelCertificateGraph(
     density = density,
     navController = hedvigAppState.navController,
     applicationId = BuildConfig.APPLICATION_ID,

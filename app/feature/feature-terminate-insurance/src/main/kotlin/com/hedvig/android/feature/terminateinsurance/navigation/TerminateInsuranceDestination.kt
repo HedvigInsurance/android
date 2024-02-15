@@ -1,8 +1,18 @@
 package com.hedvig.android.feature.terminateinsurance.navigation
 
+import com.hedvig.android.data.contract.ContractGroup
 import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
+
+@Serializable
+data class TerminateInsuranceFeatureDestination(
+  val contractId: String,
+  val insuranceDisplayName: String,
+  val exposureName: String,
+  val contractGroup: ContractGroup,
+  val activeFrom: LocalDate,
+) : Destination
 
 internal sealed interface TerminateInsuranceDestination : Destination {
   @Serializable

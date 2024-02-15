@@ -59,6 +59,7 @@ import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.ContactInformation
 import com.hedvig.android.core.icons.hedvig.normal.Eurobonus
 import com.hedvig.android.core.icons.hedvig.normal.Info
+import com.hedvig.android.core.icons.hedvig.normal.MultipleDocuments
 import com.hedvig.android.core.icons.hedvig.normal.Payments
 import com.hedvig.android.core.icons.hedvig.normal.Settings
 import com.hedvig.android.core.ui.dialog.HedvigAlertDialog
@@ -79,6 +80,7 @@ internal fun ProfileDestination(
   navigateToAboutApp: () -> Unit,
   navigateToSettings: () -> Unit,
   navigateToPayment: () -> Unit,
+  navigateToTravelCertificate: () -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToAddMissingInfo: (contractId: String) -> Unit,
   openAppSettings: () -> Unit,
@@ -94,6 +96,7 @@ internal fun ProfileDestination(
     navigateToAboutApp = navigateToAboutApp,
     navigateToSettings = navigateToSettings,
     navigateToPayment = navigateToPayment,
+    navigateToTravelCertificate = navigateToTravelCertificate,
     navigateToConnectPayment = navigateToConnectPayment,
     navigateToAddMissingInfo = navigateToAddMissingInfo,
     openAppSettings = openAppSettings,
@@ -112,6 +115,7 @@ private fun ProfileScreen(
   navigateToAboutApp: () -> Unit,
   navigateToSettings: () -> Unit,
   navigateToPayment: () -> Unit,
+  navigateToTravelCertificate: () -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToAddMissingInfo: (contractId: String) -> Unit,
   openAppSettings: () -> Unit,
@@ -167,6 +171,7 @@ private fun ProfileScreen(
         showSettings = navigateToSettings,
         showAboutApp = navigateToAboutApp,
         navigateToEurobonus = navigateToEurobonus,
+        navigateToTravelCertificate = navigateToTravelCertificate,
       )
       Spacer(Modifier.height(16.dp))
       Spacer(Modifier.weight(1f))
@@ -222,6 +227,7 @@ private fun ColumnScope.ProfileItemRows(
   showSettings: () -> Unit,
   showAboutApp: () -> Unit,
   navigateToEurobonus: () -> Unit,
+  navigateToTravelCertificate: () -> Unit,
 ) {
   ProfileRow(
     title = stringResource(R.string.PROFILE_MY_INFO_ROW_TITLE),
@@ -233,6 +239,18 @@ private fun ColumnScope.ProfileItemRows(
     icon = Icons.Hedvig.Payments,
     onClick = showPaymentInfo,
   )
+  AnimatedVisibility(
+    visible = profileUiState.travelCertificateAvailable,
+    enter = fadeIn() + expandVertically(expandFrom = Alignment.CenterVertically, clip = false),
+    exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.CenterVertically, clip = false),
+    label = "Travel",
+  ) {
+    ProfileRow(
+      title = stringResource(R.string.PROFILE_ROW_TRAVEL_CERTIFICATE),
+      icon = Icons.Hedvig.MultipleDocuments,
+      onClick = navigateToTravelCertificate,
+    )
+  }
   AnimatedVisibility(
     visible = profileUiState.euroBonus != null,
     enter = fadeIn() + expandVertically(expandFrom = Alignment.CenterVertically, clip = false),
@@ -292,6 +310,7 @@ private fun PreviewProfileSuccessScreen() {
         navigateToAboutApp = {},
         navigateToSettings = {},
         navigateToPayment = {},
+        navigateToTravelCertificate = {},
         navigateToConnectPayment = {},
         navigateToAddMissingInfo = {},
         openAppSettings = {},

@@ -1,8 +1,6 @@
 package com.hedvig.android.navigation.core
 
-import com.hedvig.android.data.contract.ContractGroup
 import com.kiwi.navigationcompose.typed.Destination
-import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
 sealed interface AppDestination : Destination {
@@ -43,7 +41,7 @@ sealed interface AppDestination : Destination {
   data object EditCoInsured : AppDestination
 
   @Serializable
-  data object GenerateTravelCertificate : AppDestination
+  data object TravelCertificate : AppDestination
 
   @Serializable
   data object Eurobonus : AppDestination
@@ -62,15 +60,6 @@ sealed interface AppDestination : Destination {
 
   @Serializable
   data object Settings : AppDestination
-
-  @Serializable
-  data class TerminateInsurance(
-    val contractId: String,
-    val insuranceDisplayName: String,
-    val exposureName: String,
-    val contractGroup: ContractGroup,
-    val activeFrom: LocalDate,
-  ) : AppDestination
 
   @Serializable
   data object PaymentInfo : AppDestination

@@ -22,7 +22,6 @@ import com.hedvig.android.feature.terminateinsurance.step.terminationreview.Term
 import com.hedvig.android.feature.terminateinsurance.step.terminationreview.TerminationReviewViewModel
 import com.hedvig.android.feature.terminateinsurance.step.terminationsuccess.TerminationSuccessDestination
 import com.hedvig.android.feature.terminateinsurance.step.unknown.UnknownScreenDestination
-import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.Navigator
 import com.kiwi.navigationcompose.typed.composable
 import com.kiwi.navigationcompose.typed.createRoutePattern
@@ -78,7 +77,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       navigateBack = navigator::popBackStack,
     )
   }
-  navigation<AppDestination.TerminateInsurance>(
+  navigation<TerminateInsuranceFeatureDestination>(
     startDestination = createRoutePattern<TerminateInsuranceDestination.StartStep>(),
   ) {
     composable<TerminateInsuranceDestination.StartStep> { backStackEntry ->
@@ -160,12 +159,12 @@ fun NavGraphBuilder.terminateInsuranceGraph(
 private fun getTerminateInsuranceDataFromParentBackstack(
   navController: NavController,
   backStackEntry: NavBackStackEntry,
-): AppDestination.TerminateInsurance {
+): TerminateInsuranceFeatureDestination {
   return remember(navController, backStackEntry) {
     val terminateInsuranceEntry = navController.getBackStackEntry(
-      createRoutePattern<AppDestination.TerminateInsurance>(),
+      createRoutePattern<TerminateInsuranceFeatureDestination>(),
     )
-    decodeArguments(AppDestination.TerminateInsurance.serializer(), terminateInsuranceEntry)
+    decodeArguments(TerminateInsuranceFeatureDestination.serializer(), terminateInsuranceEntry)
   }
 }
 
@@ -179,7 +178,7 @@ private fun <T : TerminateInsuranceDestination> Navigator.navigateToTerminateFlo
       is TerminateInsuranceDestination.TerminationFailure,
       is TerminateInsuranceDestination.UnknownScreen,
       -> {
-        popUpTo<AppDestination.TerminateInsurance> {
+        popUpTo<TerminateInsuranceFeatureDestination> {
           inclusive = true
         }
       }

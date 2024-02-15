@@ -21,6 +21,8 @@ import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
 import com.hedvig.android.notification.badge.data.crosssell.card.FakeCrossSellCardNotificationBadgeService
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import octopus.CrossSellsQuery
@@ -378,11 +380,15 @@ internal class InsurancePresenterTest {
     val errorMessages = Turbine<ErrorMessage>()
     val contracts = Turbine<List<InsuranceContract>>()
 
-    override suspend fun invoke(forceNetworkFetch: Boolean): Either<ErrorMessage, List<InsuranceContract>> {
-      return raceN(
-        { errorMessages.awaitItem() },
-        { contracts.awaitItem() },
-      )
+    override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, List<InsuranceContract>>> {
+      return flow {
+        emit(
+          raceN(
+            { errorMessages.awaitItem() },
+            { contracts.awaitItem() },
+          ),
+        )
+      }
     }
   }
 
