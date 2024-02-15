@@ -16,6 +16,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
+import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarActionType
@@ -25,8 +27,6 @@ import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUri
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
-import com.hedvig.android.feature.travelcertificate.ui.FullScreenLoading
-import com.hedvig.android.feature.travelcertificate.ui.SomethingWrongInfo
 import hedvig.resources.R
 
 @Composable
@@ -40,7 +40,7 @@ internal fun TravelCertificateOverviewDestination(
   TravelCertificateOverview(
     travelCertificateUrl = travelCertificateUrl,
     onDownloadCertificate = { viewModel.emit(TravelCertificateOverviewEvent.OnDownloadCertificate(it)) },
-    navigateBack = navigateUp,
+    navigateUp = navigateUp,
     onShareTravelCertificate = onShareTravelCertificate,
     uiState = uiState,
   )
@@ -50,23 +50,23 @@ internal fun TravelCertificateOverviewDestination(
 internal fun TravelCertificateOverview(
   travelCertificateUrl: TravelCertificateUrl,
   onDownloadCertificate: (TravelCertificateUrl) -> Unit,
-  navigateBack: () -> Unit,
+  navigateUp: () -> Unit,
   onShareTravelCertificate: (TravelCertificateUri) -> Unit,
   uiState: TravelCertificateOverviewUiState,
 ) {
   when (uiState) {
     TravelCertificateOverviewUiState.Failure -> {
       HedvigScaffold(
-        navigateUp = { navigateBack() },
+        navigateUp = navigateUp,
         topAppBarActionType = TopAppBarActionType.CLOSE,
         modifier = Modifier.clearFocusOnTap(),
       ) {
-        SomethingWrongInfo { onDownloadCertificate(travelCertificateUrl) }
+        HedvigErrorSection(retry = { onDownloadCertificate(travelCertificateUrl) }, modifier = Modifier.weight(1f))
       }
     }
 
     TravelCertificateOverviewUiState.Loading -> {
-      FullScreenLoading()
+      HedvigFullScreenCenterAlignedProgress()
     }
 
     is TravelCertificateOverviewUiState.Success -> {
@@ -76,9 +76,8 @@ internal fun TravelCertificateOverview(
         }
       }
       HedvigScaffold(
-        navigateUp = { navigateBack() },
+        navigateUp = navigateUp,
         topAppBarActionType = TopAppBarActionType.CLOSE,
-        modifier = Modifier.clearFocusOnTap(),
       ) {
         Spacer(modifier = Modifier.padding(top = 38.dp))
         Text(
@@ -136,7 +135,7 @@ private fun PreviewTravelCertificateOverview() {
     TravelCertificateOverview(
       travelCertificateUrl = TravelCertificateUrl(""),
       onDownloadCertificate = {},
-      navigateBack = {},
+      navigateUp = {},
       onShareTravelCertificate = {},
       uiState = TravelCertificateOverviewUiState.Success(null),
     )

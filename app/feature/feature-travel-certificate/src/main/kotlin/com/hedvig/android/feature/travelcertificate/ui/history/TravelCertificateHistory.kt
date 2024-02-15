@@ -31,7 +31,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigSecondaryContainedButton
+import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.information.HedvigInformationSection
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
@@ -44,8 +46,6 @@ import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.data.travelcertificate.TravelCertificate
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUri
-import com.hedvig.android.feature.travelcertificate.ui.FullScreenLoading
-import com.hedvig.android.feature.travelcertificate.ui.SomethingWrongInfo
 import com.hedvig.android.feature.travelcertificate.ui.TravelCertificateInfoBottomSheet
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
@@ -55,7 +55,7 @@ import kotlinx.datetime.toJavaLocalDate
 internal fun TravelCertificateHistoryDestination(
   viewModel: CertificateHistoryViewModel,
   onStartGenerateTravelCertificateFlow: () -> Unit,
-  onGoToChooseContract: () -> Unit,
+  onNavigateToChooseContract: () -> Unit,
   navigateUp: () -> Unit,
   onShareTravelCertificate: (TravelCertificateUri) -> Unit,
 ) {
@@ -69,7 +69,7 @@ internal fun TravelCertificateHistoryDestination(
       viewModel.emit(CertificateHistoryEvent.DismissDownloadCertificateError)
     },
     onStartGenerateTravelCertificateFlow = onStartGenerateTravelCertificateFlow,
-    onGoToChooseContract = onGoToChooseContract,
+    onGoToChooseContract = onNavigateToChooseContract,
     navigateUp = navigateUp,
     onShareTravelCertificate = onShareTravelCertificate,
     uiState = uiState,
@@ -115,14 +115,12 @@ private fun TravelCertificateHistoryScreen(
           }
         },
       ) {
-        SomethingWrongInfo {
-          reload()
-        }
+        HedvigErrorSection(retry = reload, modifier = Modifier.weight(1f))
       }
     }
 
     CertificateHistoryUiState.Loading -> {
-      FullScreenLoading()
+      HedvigFullScreenCenterAlignedProgress()
     }
 
     is CertificateHistoryUiState.SuccessDownloadingHistory -> {
@@ -132,7 +130,7 @@ private fun TravelCertificateHistoryScreen(
         }
       }
       if (uiState.isLoadingCertificate) {
-        FullScreenLoading()
+        HedvigFullScreenCenterAlignedProgress()
       } else {
         TravelCertificateSuccessScreen(
           onIconClick = { showBottomSheet = true },

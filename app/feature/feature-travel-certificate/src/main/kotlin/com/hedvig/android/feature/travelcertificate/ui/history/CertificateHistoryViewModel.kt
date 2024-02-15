@@ -136,7 +136,7 @@ internal class CertificateHistoryPresenter(
         screenContentStateValue.eligibleToCreateCertificate,
         savedFileUri,
         isLoadingCertificate,
-        screenContentStateValue.hasChooseOption,
+        screenContentStateValue.mustChooseContractBeforeGeneratingTravelCertificate,
       )
     }
   }
@@ -150,7 +150,7 @@ private sealed interface ScreenContentState {
   data class Success(
     val certificateHistoryList: List<TravelCertificate>,
     val eligibleToCreateCertificate: Boolean,
-    val hasChooseOption: Boolean,
+    val mustChooseContractBeforeGeneratingTravelCertificate: Boolean,
   ) :
     ScreenContentState
 }

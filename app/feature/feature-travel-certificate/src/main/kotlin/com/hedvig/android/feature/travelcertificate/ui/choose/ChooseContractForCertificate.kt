@@ -24,25 +24,25 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.SelectIndicationCircle
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.data.travelcertificate.ContractEligibleWithAddress
-import com.hedvig.android.feature.travelcertificate.ui.FullScreenLoading
 import hedvig.resources.R
 
 @Composable
 internal fun ChooseContractForCertificateDestination(
   viewModel: ChooseContractForCertificateViewModel,
-  navigateBack: () -> Unit,
+  navigateUp: () -> Unit,
   onContinue: (String) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   ChooseContractForCertificate(
     uiState = uiState,
-    navigateBack = navigateBack,
+    navigateUp = navigateUp,
     onContinue = onContinue,
     reload = { viewModel.emit(ChooseContractEvent.RetryLoadData) },
   )
@@ -51,7 +51,7 @@ internal fun ChooseContractForCertificateDestination(
 @Composable
 private fun ChooseContractForCertificate(
   uiState: ChooseContractUiState,
-  navigateBack: () -> Unit,
+  navigateUp: () -> Unit,
   onContinue: (String) -> Unit,
   reload: () -> Unit,
 ) {
@@ -60,23 +60,25 @@ private fun ChooseContractForCertificate(
   }
   when (uiState) {
     ChooseContractUiState.Failure -> {
-      ShowFailure(
-        navigateBack = navigateBack,
+      FailureScreen(
+        navigateUp = navigateUp,
         reload = reload,
       )
     }
+
     ChooseContractUiState.Loading -> {
-      FullScreenLoading()
+      HedvigFullScreenCenterAlignedProgress()
     }
+
     is ChooseContractUiState.Success -> {
       HedvigScaffold(
-        navigateUp = navigateBack,
+        navigateUp = navigateUp,
         modifier = Modifier.clearFocusOnTap(),
       ) {
         Spacer(modifier = Modifier.weight(1f))
         Text(
           text = stringResource(id = R.string.travel_certificate_select_contract_title),
-          style = MaterialTheme.typography.headlineSmall,
+          style = MaterialTheme.typography.headlineMedium,
           textAlign = TextAlign.Center,
           modifier = Modifier
             .fillMaxWidth()
@@ -124,14 +126,11 @@ private fun ChooseContractForCertificate(
 }
 
 @Composable
-private fun ShowFailure(navigateBack: () -> Unit, reload: () -> Unit) {
+private fun FailureScreen(navigateUp: () -> Unit, reload: () -> Unit) {
   HedvigScaffold(
-    navigateUp = navigateBack,
-    modifier = Modifier.clearFocusOnTap(),
+    navigateUp = navigateUp,
   ) {
-    Spacer(Modifier.weight(1f))
-    HedvigErrorSection(reload)
-    Spacer(Modifier.weight(1f))
+    HedvigErrorSection(retry = reload, modifier = Modifier.weight(1f))
   }
 }
 

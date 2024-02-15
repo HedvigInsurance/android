@@ -49,7 +49,7 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavC
         onStartGenerateTravelCertificateFlow = {
           navController.navigate(TravelCertificateDestination.GenerateTravelCertificateDestinations(null))
         },
-        onGoToChooseContract = {
+        onNavigateToChooseContract = {
           navController.navigate(TravelCertificateDestination.TravelCertificateChooseContract)
         },
         onShareTravelCertificate = {
@@ -66,7 +66,7 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavC
         onContinue = { contractId ->
           navController.navigate(TravelCertificateDestination.GenerateTravelCertificateDestinations(contractId))
         },
-        navigateBack = navController::navigateUp,
+        navigateUp = navController::navigateUp,
       )
     }
 

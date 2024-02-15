@@ -29,21 +29,21 @@ internal class ChooseContractPresenter(
   override fun MoleculePresenterScope<ChooseContractEvent>.present(
     lastState: ChooseContractUiState,
   ): ChooseContractUiState {
-    var dataLoadIteration by remember { mutableIntStateOf(0) }
+    var loadIteration by remember { mutableIntStateOf(0) }
     var currentState by remember {
-      mutableStateOf<ChooseContractUiState>(ChooseContractUiState.Loading)
+      mutableStateOf(lastState)
     }
 
     CollectEvents { event ->
       when (event) {
         ChooseContractEvent.RetryLoadData -> {
           currentState = ChooseContractUiState.Loading
-          dataLoadIteration++
+          loadIteration++
         }
       }
     }
 
-    LaunchedEffect(dataLoadIteration) {
+    LaunchedEffect(loadIteration) {
       getEligibleContractsWithAddressUseCase.invoke().fold(
         ifRight = { list ->
           logcat(priority = LogPriority.INFO) { "Successfully loaded contracts eligible for travel certificates" }
@@ -59,7 +59,7 @@ internal class ChooseContractPresenter(
   }
 }
 
-sealed interface ChooseContractEvent {
+internal sealed interface ChooseContractEvent {
   data object RetryLoadData : ChooseContractEvent
 }
 

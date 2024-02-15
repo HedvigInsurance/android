@@ -47,12 +47,11 @@ internal class TravelCertificateOverviewPresenter(
 
         is TravelCertificateOverviewEvent.OnDownloadCertificate -> {
           travelCertificateUrl = event.travelCertificateUrl
-          dataLoadIteration++
         }
       }
     }
 
-    LaunchedEffect(dataLoadIteration) {
+    LaunchedEffect(dataLoadIteration, travelCertificateUrl) {
       val url = travelCertificateUrl
       if (url != null) {
         currentState = TravelCertificateOverviewUiState.Loading
