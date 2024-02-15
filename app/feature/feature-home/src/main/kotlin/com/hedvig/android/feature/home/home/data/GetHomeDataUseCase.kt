@@ -3,19 +3,19 @@ package com.hedvig.android.feature.home.home.data
 import androidx.compose.runtime.Immutable
 import arrow.core.Either
 import arrow.core.NonEmptyList
+import arrow.core.left
 import arrow.core.raise.either
-import arrow.core.raise.ensure
 import arrow.core.raise.ensureNotNull
 import arrow.core.raise.nullable
 import arrow.core.toNonEmptyListOrNull
 import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.api.ApolloResponse
 import com.apollographql.apollo3.cache.normalized.FetchPolicy
 import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.apollographql.apollo3.cache.normalized.watch
+import com.apollographql.apollo3.exception.ApolloCompositeException
+import com.apollographql.apollo3.exception.CacheMissException
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.data.travelcertificate.GetTravelCertificateSpecificationsUseCase
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
@@ -23,30 +23,29 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.memberreminders.GetMemberRemindersUseCase
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.retryWhen
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
-import octopus.ChatMessagesQuery
 import octopus.HomeQuery
+import octopus.NumberOfChatMessagesQuery
 import octopus.type.ChatMessageSender
 
 internal interface GetHomeDataUseCase {
   fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, HomeData>>
-
-  fun observeChatMessages(): Flow<Either<ErrorMessage, List<ChatMessage>>>
 }
 
 internal class GetHomeDataUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val getMemberRemindersUseCase: GetMemberRemindersUseCase,
-  private val getTravelCertificateSpecificationsUseCase: GetTravelCertificateSpecificationsUseCase,
   private val featureManager: FeatureManager,
   private val clock: Clock,
   private val timeZone: TimeZone,
@@ -56,10 +55,11 @@ internal class GetHomeDataUseCaseImpl(
       apolloClient.query(HomeQuery())
         .fetchPolicy(if (forceNetworkFetch) FetchPolicy.NetworkOnly else FetchPolicy.CacheFirst)
         .safeFlow(::ErrorMessage),
+      isEligibleToShowTheChatIcon(),
       getMemberRemindersUseCase.invoke(),
-      flow { emit(getTravelCertificateSpecificationsUseCase.invoke().getOrNull()) },
-      flow { emit(featureManager.isFeatureEnabled(Feature.MOVING_FLOW)) },
-    ) { homeQueryDataResult, memberReminders, travelCertificateData, isMovingFlowEnabled ->
+      featureManager.isFeatureEnabled(Feature.DISABLE_CHAT),
+      featureManager.isFeatureEnabled(Feature.HELP_CENTER),
+    ) { homeQueryDataResult, isEligibleToShowTheChatIconResult, memberReminders, isChatDisabled, isHelpCenterEnabled ->
       either {
         val homeQueryData: HomeQuery.Data = homeQueryDataResult.bind()
         val contractStatus = homeQueryData.currentMember.toContractStatus()
@@ -70,11 +70,18 @@ internal class GetHomeDataUseCaseImpl(
             link = it.link,
           )
         }
+        val showChatIcon = !shouldHideChatButton(
+          isChatDisabledFromKillSwitch = isChatDisabled,
+          isEligibleToShowTheChatIcon = isEligibleToShowTheChatIconResult.bind(),
+          isHelpCenterEnabled = isHelpCenterEnabled,
+        )
         HomeData(
           contractStatus = contractStatus,
           claimStatusCardsData = homeQueryData.claimStatusCards(),
           veryImportantMessages = veryImportantMessages.toPersistentList(),
           memberReminders = memberReminders,
+          showChatIcon = showChatIcon,
+          showHelpCenter = isHelpCenterEnabled,
         )
       }.onLeft { errorMessage ->
         logcat(throwable = errorMessage.throwable) { "GetHomeDataUseCase failed with ${errorMessage.message}" }
@@ -82,32 +89,55 @@ internal class GetHomeDataUseCaseImpl(
     }
   }
 
-  override fun observeChatMessages(): Flow<Either<ErrorMessage, List<ChatMessage>>> {
-    return apolloClient.query(ChatMessagesQuery(null))
-      .fetchPolicy(FetchPolicy.CacheFirst)
+  private fun shouldHideChatButton(
+    isChatDisabledFromKillSwitch: Boolean,
+    isEligibleToShowTheChatIcon: Boolean,
+    isHelpCenterEnabled: Boolean,
+  ): Boolean {
+    // If the feature flag is off, we should hide the chat button regardless of the other conditions
+    if (isChatDisabledFromKillSwitch) return true
+    // If the help center is disabled, we must always show the chat button, otherwise there is no way to get to the chat
+    if (!isHelpCenterEnabled) return false
+    return !isEligibleToShowTheChatIcon
+  }
+
+  private fun isEligibleToShowTheChatIcon(): Flow<Either<ErrorMessage, Boolean>> {
+    return apolloClient.query(NumberOfChatMessagesQuery())
       .watch(fetchThrows = true)
-      .map { apolloResponse: ApolloResponse<ChatMessagesQuery.Data> ->
+      .map { apolloResponse ->
         either {
-          ensure(apolloResponse.errors.isNullOrEmpty()) {
-            ErrorMessage("watchMessages: Got errors from Apollo: ${apolloResponse.errors}")
+          val data = ensureNotNull(apolloResponse.data) {
+            ErrorMessage("Home failed to fetch chat history")
           }
-          val data: ChatMessagesQuery.Data? = apolloResponse.data
-          ensureNotNull(data) {
-            ErrorMessage("watchMessages: No data")
-          }
-          val chat = data.chat
-          chat.messages.map {
+          val chatMessages = data.chat.messages.map { message ->
             ChatMessage(
-              it.id,
-              when (it.sender) {
+              message.id,
+              when (message.sender) {
                 ChatMessageSender.MEMBER -> ChatMessage.Sender.MEMBER
                 ChatMessageSender.HEDVIG -> ChatMessage.Sender.HEDVIG
                 ChatMessageSender.UNKNOWN__ -> ChatMessage.Sender.HEDVIG
               },
             )
           }
+          chatMessages.isEligibleToShowTheChatIcon()
         }
       }
+      .retryWhen { cause, attempt ->
+        val shouldRetry = cause is CacheMissException ||
+          (cause is ApolloCompositeException && cause.suppressedExceptions.any { it is CacheMissException })
+        if (shouldRetry) {
+          emit(ErrorMessage("").left())
+          delay(attempt.coerceAtMost(3).seconds)
+        }
+        shouldRetry
+      }
+  }
+
+  private fun List<ChatMessage>.isEligibleToShowTheChatIcon(): Boolean {
+    // If there are *any* messages from the member, then we should show the chat icon
+    if (this.any { it.sender == ChatMessage.Sender.MEMBER }) return true
+    // There is always an automatic message sent by Hedvig, therefore we need to check for > 1
+    return this.filter { it.sender == ChatMessage.Sender.HEDVIG }.size > 1
   }
 
   private fun HomeQuery.Data.CurrentMember.toContractStatus(): HomeData.ContractStatus {
@@ -185,6 +215,8 @@ internal data class HomeData(
   val claimStatusCardsData: ClaimStatusCardsData?,
   val veryImportantMessages: ImmutableList<VeryImportantMessage>,
   val memberReminders: MemberReminders,
+  val showChatIcon: Boolean,
+  val showHelpCenter: Boolean,
 ) {
   @Immutable
   data class ClaimStatusCardsData(

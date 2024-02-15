@@ -326,14 +326,16 @@ private fun HomeScreenSuccess(
               .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
           )
         },
-        otherServicesButton = {
-          HedvigSecondaryContainedButton(
-            text = stringResource(R.string.home_tab_get_help),
-            onClick = navigateToHelpCenter,
-            modifier = Modifier
-              .padding(horizontal = 16.dp)
-              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-          )
+        helpCenterButton = {
+          if (uiState.isHelpCenterEnabled) {
+            HedvigSecondaryContainedButton(
+              text = stringResource(R.string.home_tab_get_help),
+              onClick = navigateToHelpCenter,
+              modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+            )
+          }
         },
         topSpacer = {
           Spacer(

@@ -28,14 +28,16 @@ fun <D : Operation.Data, ErrorType> ApolloCall<D>.safeFlow(
 ): Flow<Either<ErrorType, D>> {
   return toFlow()
     .map(ApolloResponse<D>::toOperationResult)
+    .map { it.toEither(ifEmpty) }
     .catch { throwable ->
       if (throwable is ApolloException) {
         OperationResult.Error.NetworkError(throwable)
       } else {
         OperationResult.Error.GeneralError(throwable)
+      }.also {
+        emit(it.toEither(ifEmpty))
       }
     }
-    .map { it.toEither(ifEmpty) }
 }
 
 private fun <D : Operation.Data> ApolloResponse<D>.toOperationResult(): OperationResult<D> {

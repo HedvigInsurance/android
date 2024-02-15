@@ -2,6 +2,7 @@ package com.hedvig.android.apollo.test
 
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.annotations.ApolloExperimental
+import com.apollographql.apollo3.testing.MapTestNetworkTransport
 import com.apollographql.apollo3.testing.QueueTestNetworkTransport
 import org.junit.rules.ExternalResource
 
@@ -22,18 +23,30 @@ import org.junit.rules.ExternalResource
  * }
  * ```
  */
-class TestApolloClientRule : ExternalResource() {
+class TestApolloClientRule(
+  private val testNetworkTransportType: TestNetworkTransportType = TestNetworkTransportType.QUEUE,
+) : ExternalResource() {
   lateinit var apolloClient: ApolloClient
     private set
 
   @OptIn(ApolloExperimental::class)
   override fun before() {
     apolloClient = ApolloClient.Builder()
-      .networkTransport(QueueTestNetworkTransport())
+      .networkTransport(
+        when (testNetworkTransportType) {
+          TestNetworkTransportType.QUEUE -> QueueTestNetworkTransport()
+          TestNetworkTransportType.MAP -> MapTestNetworkTransport()
+        },
+      )
       .build()
   }
 
   override fun after() {
     apolloClient.close()
   }
+}
+
+enum class TestNetworkTransportType {
+  QUEUE,
+  MAP,
 }

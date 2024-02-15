@@ -15,18 +15,14 @@ import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.chat.read.timestamp.FakeChatLastMessageReadRepository
-import com.hedvig.android.feature.home.home.data.ChatMessage
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
-import com.hedvig.android.featureflags.flags.Feature
-import com.hedvig.android.featureflags.test.FakeFeatureManager2
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.test.test
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
@@ -40,7 +36,6 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       FakeChatLastMessageReadRepository(),
-      FakeFeatureManager2(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -65,7 +60,6 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       FakeChatLastMessageReadRepository(),
-      FakeFeatureManager2(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -88,7 +82,6 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       FakeChatLastMessageReadRepository(),
-      FakeFeatureManager2(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -108,6 +101,8 @@ internal class HomePresenterTest {
           ),
           veryImportantMessages = persistentListOf(),
           memberReminders = MemberReminders(),
+          showChatIcon = false,
+          showHelpCenter = false,
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -139,7 +134,6 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       FakeChatLastMessageReadRepository(),
-      FakeFeatureManager2(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -153,6 +147,8 @@ internal class HomePresenterTest {
           memberReminders = MemberReminders(
             enableNotifications = MemberReminder.EnableNotifications(),
           ),
+          showChatIcon = false,
+          showHelpCenter = false,
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -178,7 +174,6 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       FakeChatLastMessageReadRepository(),
-      FakeFeatureManager2(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -193,94 +188,6 @@ internal class HomePresenterTest {
   }
 
   @Test
-  fun `when the disable chat feature flag is true, the chat icon should remain hidden`() = runTest {
-    val featureManager = FakeFeatureManager2()
-    val homePresenter = HomePresenter(
-      { TestGetHomeDataUseCase() },
-      FakeChatLastMessageReadRepository(),
-      featureManager,
-    )
-
-    homePresenter.test(
-      initialState = HomeUiState.Success(
-        isReloading = true,
-        homeText = HomeText.Active,
-        claimStatusCardsData = null,
-        veryImportantMessages = persistentListOf(),
-        memberReminders = MemberReminders(),
-        isHelpCenterEnabled = false,
-        showChatIcon = false,
-        hasUnseenChatMessages = false,
-      ),
-    ) {
-      assertThat(awaitItem().showChatIcon).isFalse()
-      featureManager.featureTurbine.add(Feature.DISABLE_CHAT to true)
-    }
-  }
-
-  @Test
-  fun `when the disable chat feature flag is false, the chat icon should now show`() = runTest {
-    val featureManager = FakeFeatureManager2(mapOf(Feature.HELP_CENTER to false))
-    val homePresenter = HomePresenter(
-      { TestGetHomeDataUseCase() },
-      FakeChatLastMessageReadRepository(),
-      featureManager,
-    )
-
-    homePresenter.test(
-      HomeUiState.Success(
-        isReloading = true,
-        homeText = HomeText.Active,
-        claimStatusCardsData = HomeData.ClaimStatusCardsData(
-          claimStatusCardsUiState = nonEmptyListOf(
-            ClaimStatusCardUiState(
-              id = "123",
-              pillTypes = listOf(),
-              claimProgressItemsUiState = listOf(),
-            ),
-          ),
-        ),
-        veryImportantMessages = persistentListOf(),
-        memberReminders = MemberReminders(),
-        isHelpCenterEnabled = false,
-        showChatIcon = false,
-        hasUnseenChatMessages = false,
-      ),
-    ) {
-      assertThat(awaitItem().showChatIcon).isFalse()
-      featureManager.featureTurbine.add(Feature.DISABLE_CHAT to false)
-      assertThat(awaitItem().showChatIcon).isTrue()
-    }
-  }
-
-  @Test
-  fun `when the disable help center feature flag is true it should show`() = runTest {
-    val featureManager = FakeFeatureManager2(mapOf(Feature.DISABLE_CHAT to true))
-    val homePresenter = HomePresenter(
-      { TestGetHomeDataUseCase() },
-      FakeChatLastMessageReadRepository(),
-      featureManager,
-    )
-
-    homePresenter.test(
-      HomeUiState.Success(
-        isReloading = true,
-        homeText = HomeText.Active,
-        claimStatusCardsData = null,
-        veryImportantMessages = persistentListOf(),
-        memberReminders = MemberReminders(),
-        isHelpCenterEnabled = false,
-        showChatIcon = false,
-        hasUnseenChatMessages = false,
-      ),
-    ) {
-      assertThat(awaitItem().isHelpCenterEnabled).isFalse()
-      featureManager.featureTurbine.add(Feature.HELP_CENTER to true)
-      assertThat(awaitItem().isHelpCenterEnabled).isTrue()
-    }
-  }
-
-  @Test
   fun `with a successfull response, the unread chat state is set according to the ChatLastMessageReadRepository`(
     @TestParameter hasNotification: Boolean,
   ) = runTest {
@@ -289,7 +196,6 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       chatLastMessageReadRepository,
-      FakeFeatureManager2(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -304,6 +210,8 @@ internal class HomePresenterTest {
           memberReminders = MemberReminders(
             enableNotifications = MemberReminder.EnableNotifications(),
           ),
+          showChatIcon = false,
+          showHelpCenter = false,
         ).right(),
       )
       assertThat(awaitItem())
@@ -320,10 +228,6 @@ internal class HomePresenterTest {
       forceNetworkFetchTurbine.add(forceNetworkFetch)
       return responseTurbine.asChannel().receiveAsFlow()
     }
-
-    override fun observeChatMessages(): Flow<Either<ErrorMessage, List<ChatMessage>>> {
-      return flowOf(ErrorMessage("Not implemented").left())
-    }
   }
 
   private val someIrrelevantHomeDataInstance: HomeData = HomeData(
@@ -331,5 +235,7 @@ internal class HomePresenterTest {
     claimStatusCardsData = null,
     veryImportantMessages = persistentListOf(),
     memberReminders = MemberReminders(),
+    showChatIcon = false,
+    showHelpCenter = false,
   )
 }

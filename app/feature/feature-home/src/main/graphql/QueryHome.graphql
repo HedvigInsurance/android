@@ -1,13 +1,4 @@
 query Home {
-  chat {
-    id
-    hasNext
-    nextUntil
-    messages {
-      ...MessageFragment
-    }
-    bannerText
-  }
   currentMember {
     claims {
       ...ClaimFragment

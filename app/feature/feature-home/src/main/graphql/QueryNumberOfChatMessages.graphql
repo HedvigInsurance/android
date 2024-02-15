@@ -1,0 +1,8 @@
+query NumberOfChatMessages {
+  chat {
+    messages {
+      id
+      sender
+    }
+  }
+}
