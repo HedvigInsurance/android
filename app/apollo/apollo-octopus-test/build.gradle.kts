@@ -9,4 +9,5 @@ dependencies {
   api(libs.kotlinx.datetime)
 
   implementation(projects.apolloOctopusPublic)
+  implementation(projects.coreMarkdown)
 }
