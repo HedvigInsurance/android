@@ -61,6 +61,7 @@ internal class SettingsPresenter(
         languageOptions = lastState.languageOptions,
         selectedTheme = selectedTheme,
         showNotificationReminder = showNotificationReminder,
+        showDeleteAccountButton = false,
       )
     }
   }
@@ -71,6 +72,7 @@ sealed interface SettingsUiState {
   val languageOptions: List<Language>
   val selectedTheme: Theme?
   val showNotificationReminder: Boolean?
+  val showDeleteAccountButton: Boolean?
 
   data class Loading(
     override val selectedLanguage: Language,
@@ -78,6 +80,7 @@ sealed interface SettingsUiState {
   ) : SettingsUiState {
     override val selectedTheme: Theme? = null
     override val showNotificationReminder: Boolean? = null
+    override val showDeleteAccountButton: Boolean? = null
   }
 
   data class Loaded(
@@ -85,6 +88,7 @@ sealed interface SettingsUiState {
     override val languageOptions: List<Language>,
     override val selectedTheme: Theme?,
     override val showNotificationReminder: Boolean,
+    override val showDeleteAccountButton: Boolean,
   ) : SettingsUiState
 }
 
