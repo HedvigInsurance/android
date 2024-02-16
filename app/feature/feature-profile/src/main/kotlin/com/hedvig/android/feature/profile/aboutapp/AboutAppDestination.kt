@@ -6,7 +6,6 @@ import android.net.Uri
 import android.os.Build
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,7 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
+import com.hedvig.android.core.designsystem.component.button.HedvigSecondaryContainedButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.clearFocusOnTap
@@ -82,65 +81,61 @@ private fun AboutAppScreen(
       }
     }
     Spacer(Modifier.height(16.dp))
-    Column {
-      Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(16.dp),
-      ) {
-        Text(stringResource(id = R.string.PROFILE_ABOUT_APP_MEMBER_ID))
-        CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
-          Text(memberId ?: "")
-        }
+    Row(
+      horizontalArrangement = Arrangement.SpaceBetween,
+      verticalAlignment = Alignment.CenterVertically,
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(16.dp),
+    ) {
+      Text(stringResource(id = R.string.PROFILE_ABOUT_APP_MEMBER_ID))
+      CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
+        Text(memberId ?: "")
       }
-      Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(16.dp),
-      ) {
-        Text(stringResource(id = R.string.PROFILE_ABOUT_APP_VERSION))
-        CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
-          Text(
-            text = buildString {
-              append(appVersionName)
-              if (!isProduction) {
-                append(" (")
-                append(appVersionCode)
-                append(")")
-              }
-            },
-            textAlign = TextAlign.End,
-            modifier = Modifier.fillMaxWidth(),
-          )
-        }
-      }
-      Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-          .fillMaxWidth()
-          .clickable(onClick = showOpenSourceLicenses)
-          .padding(16.dp),
-      ) {
-        Text(stringResource(R.string.PROFILE_ABOUT_APP_LICENSE_ATTRIBUTIONS))
-      }
-      Spacer(Modifier.height(16.dp))
-      Row(
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-          .fillMaxWidth(),
-      ) {
-        HedvigContainedSmallButton(
-          text = stringResource(id = R.string.app_info_submit_bug_button),
-          onClick = { showSubmitBugWarning = true },
+    }
+    Row(
+      horizontalArrangement = Arrangement.SpaceBetween,
+      verticalAlignment = Alignment.CenterVertically,
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(16.dp),
+    ) {
+      Text(stringResource(id = R.string.PROFILE_ABOUT_APP_VERSION))
+      CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
+        Text(
+          text = buildString {
+            append(appVersionName)
+            if (!isProduction) {
+              append(" (")
+              append(appVersionCode)
+              append(")")
+            }
+          },
+          textAlign = TextAlign.End,
+          modifier = Modifier.fillMaxWidth(),
         )
       }
     }
+    Row(
+      horizontalArrangement = Arrangement.SpaceBetween,
+      verticalAlignment = Alignment.CenterVertically,
+      modifier = Modifier
+        .fillMaxWidth()
+        .clickable(onClick = showOpenSourceLicenses)
+        .padding(16.dp),
+    ) {
+      Text(stringResource(R.string.PROFILE_ABOUT_APP_LICENSE_ATTRIBUTIONS))
+    }
+    Spacer(Modifier.height(16.dp))
+    Spacer(Modifier.weight(1f))
+    HedvigSecondaryContainedButton(
+      text = stringResource(R.string.app_info_submit_bug_button),
+      onClick = { showSubmitBugWarning = true },
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
+    )
+    Spacer(Modifier.height(16.dp))
   }
 }
 
