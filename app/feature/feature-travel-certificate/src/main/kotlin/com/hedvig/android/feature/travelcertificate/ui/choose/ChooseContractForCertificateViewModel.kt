@@ -37,13 +37,15 @@ internal class ChooseContractPresenter(
     CollectEvents { event ->
       when (event) {
         ChooseContractEvent.RetryLoadData -> {
-          currentState = ChooseContractUiState.Loading
           loadIteration++
         }
       }
     }
 
     LaunchedEffect(loadIteration) {
+      if (currentState is ChooseContractUiState.Success) {
+        return@LaunchedEffect
+      }
       getEligibleContractsWithAddressUseCase.invoke().fold(
         ifRight = { list ->
           logcat(priority = LogPriority.INFO) { "Successfully loaded contracts eligible for travel certificates" }

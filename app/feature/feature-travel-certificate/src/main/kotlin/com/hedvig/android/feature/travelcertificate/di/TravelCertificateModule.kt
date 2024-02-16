@@ -3,6 +3,7 @@ package com.hedvig.android.feature.travelcertificate.di
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.data.travelcertificate.CheckTravelCertificateAvailabilityForCurrentContractsUseCase
 import com.hedvig.android.data.travelcertificate.GetEligibleContractsWithAddressUseCase
+import com.hedvig.android.data.travelcertificate.GetTravelCertificateSpecificationsUseCase
 import com.hedvig.android.data.travelcertificate.GetTravelCertificatesHistoryUseCase
 import com.hedvig.android.feature.travelcertificate.data.CreateTravelCertificateUseCase
 import com.hedvig.android.feature.travelcertificate.data.DownloadTravelCertificateUseCase
@@ -19,8 +20,8 @@ val travelCertificateModule = module {
   viewModel<GenerateTravelCertificateViewModel> {
     GenerateTravelCertificateViewModel(
       it.getOrNull<String>(),
-      get(),
-      get(),
+      get<GetTravelCertificateSpecificationsUseCase>(),
+      get< CreateTravelCertificateUseCase>(),
     )
   }
   viewModel<CertificateHistoryViewModel> {
@@ -28,11 +29,13 @@ val travelCertificateModule = module {
       get<GetTravelCertificatesHistoryUseCase>(),
       get<DownloadTravelCertificateUseCase>(),
       get<CheckTravelCertificateAvailabilityForCurrentContractsUseCase>(),
-      get(),
+      get<GetEligibleContractsWithAddressUseCase>(),
     )
   }
   viewModel<ChooseContractForCertificateViewModel> {
-    ChooseContractForCertificateViewModel(get<GetEligibleContractsWithAddressUseCase>())
+    ChooseContractForCertificateViewModel(
+      get<GetEligibleContractsWithAddressUseCase>()
+    )
   }
   viewModel<TravelCertificateOverviewViewModel> {
     TravelCertificateOverviewViewModel(

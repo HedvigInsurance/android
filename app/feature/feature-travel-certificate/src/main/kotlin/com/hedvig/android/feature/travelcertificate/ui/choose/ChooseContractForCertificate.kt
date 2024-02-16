@@ -75,7 +75,7 @@ private fun ChooseContractForCertificate(
         navigateUp = navigateUp,
         modifier = Modifier.clearFocusOnTap(),
       ) {
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(Modifier.height(24.dp))
         Text(
           text = stringResource(id = R.string.travel_certificate_select_contract_title),
           style = MaterialTheme.typography.headlineMedium,
@@ -84,7 +84,8 @@ private fun ChooseContractForCertificate(
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         )
-        Spacer(Modifier.weight(2f))
+        Spacer(Modifier.weight(1f))
+        Spacer(Modifier.height(24.dp))
         for (contract in uiState.eligibleContracts) {
           HedvigCard(
             onClick = { selectedContractId = contract.contractId },
@@ -119,7 +120,7 @@ private fun ChooseContractForCertificate(
         ) {
           Text(text = stringResource(id = R.string.general_continue_button))
         }
-        Spacer(Modifier.height(32.dp))
+        Spacer(Modifier.height(16.dp))
       }
     }
   }
