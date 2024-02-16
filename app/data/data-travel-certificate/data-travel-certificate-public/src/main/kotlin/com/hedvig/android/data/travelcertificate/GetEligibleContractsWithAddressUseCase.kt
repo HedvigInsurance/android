@@ -21,15 +21,20 @@ internal class GetEligibleContractsWithAddressUseCaseImpl(
       .fetchPolicy(FetchPolicy.NetworkOnly)
       .safeExecute()
       .toEither(::ErrorMessage)
-      .map {
-        it.currentMember.activeContracts.filter { contract ->
+      .map { data ->
+        data.currentMember.activeContracts.filter { contract ->
           contract.supportsTravelCertificate
         }.map { contract ->
-          ContractEligibleWithAddress(contract.exposureDisplayName.substringBefore("•"), contract.id)
+          val street =
+            data.currentMember.travelCertificateSpecifications.contractSpecifications.firstOrNull { it.contractId == contract.id }?.location?.street
+          val address = street ?: contract.exposureDisplayName.substringBefore("•")
+          //todo: add this check here bc location.street is nullable?
+          ContractEligibleWithAddress(address, contract.id)
         }
       }
   }
 }
+
 
 data class ContractEligibleWithAddress(
   val address: String,
