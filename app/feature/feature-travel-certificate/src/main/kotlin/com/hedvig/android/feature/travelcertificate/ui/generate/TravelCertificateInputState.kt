@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.travelcertificate
+package com.hedvig.android.feature.travelcertificate.ui.generate
 
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api

@@ -1,8 +1,7 @@
-package com.hedvig.android.feature.travelcertificate.ui
+package com.hedvig.android.feature.travelcertificate.ui.history
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,7 +31,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigSecondaryContainedButton
+import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.information.HedvigInformationSection
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
@@ -45,10 +45,8 @@ import com.hedvig.android.core.ui.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.data.travelcertificate.TravelCertificate
-import com.hedvig.android.feature.travelcertificate.CertificateHistoryEvent
-import com.hedvig.android.feature.travelcertificate.CertificateHistoryUiState
-import com.hedvig.android.feature.travelcertificate.CertificateHistoryViewModel
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUri
+import com.hedvig.android.feature.travelcertificate.ui.TravelCertificateInfoBottomSheet
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
@@ -57,12 +55,13 @@ import kotlinx.datetime.toJavaLocalDate
 internal fun TravelCertificateHistoryDestination(
   viewModel: CertificateHistoryViewModel,
   onStartGenerateTravelCertificateFlow: () -> Unit,
+  onNavigateToChooseContract: () -> Unit,
   navigateUp: () -> Unit,
   onShareTravelCertificate: (TravelCertificateUri) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   TravelCertificateHistoryScreen(
-    reload = { viewModel.emit(CertificateHistoryEvent.RetryLoadReferralData) },
+    reload = { viewModel.emit(CertificateHistoryEvent.RetryLoadData) },
     onCertificateClick = { url ->
       viewModel.emit(CertificateHistoryEvent.DownloadCertificate(url))
     },
@@ -70,6 +69,7 @@ internal fun TravelCertificateHistoryDestination(
       viewModel.emit(CertificateHistoryEvent.DismissDownloadCertificateError)
     },
     onStartGenerateTravelCertificateFlow = onStartGenerateTravelCertificateFlow,
+    onGoToChooseContract = onNavigateToChooseContract,
     navigateUp = navigateUp,
     onShareTravelCertificate = onShareTravelCertificate,
     uiState = uiState,
@@ -81,6 +81,7 @@ private fun TravelCertificateHistoryScreen(
   reload: () -> Unit,
   onCertificateClick: (String) -> Unit,
   onStartGenerateTravelCertificateFlow: () -> Unit,
+  onGoToChooseContract: () -> Unit,
   navigateUp: () -> Unit,
   onDismissDownloadCertificateError: () -> Unit,
   onShareTravelCertificate: (TravelCertificateUri) -> Unit,
@@ -114,18 +115,12 @@ private fun TravelCertificateHistoryScreen(
           }
         },
       ) {
-        Spacer(modifier = Modifier.weight(1f))
-        HedvigInformationSection(
-          title = stringResource(id = R.string.something_went_wrong),
-          buttonText = stringResource(id = R.string.GENERAL_RETRY),
-          onButtonClick = reload,
-        )
-        Spacer(modifier = Modifier.weight(1f))
+        HedvigErrorSection(retry = reload, modifier = Modifier.weight(1f))
       }
     }
 
     CertificateHistoryUiState.Loading -> {
-      FullScreenLoading()
+      HedvigFullScreenCenterAlignedProgress()
     }
 
     is CertificateHistoryUiState.SuccessDownloadingHistory -> {
@@ -135,7 +130,7 @@ private fun TravelCertificateHistoryScreen(
         }
       }
       if (uiState.isLoadingCertificate) {
-        FullScreenLoading()
+        HedvigFullScreenCenterAlignedProgress()
       } else {
         TravelCertificateSuccessScreen(
           onIconClick = { showBottomSheet = true },
@@ -146,16 +141,11 @@ private fun TravelCertificateHistoryScreen(
           showErrorDialog = uiState.showDownloadCertificateError,
           onDismissDownloadCertificateError = onDismissDownloadCertificateError,
           showGenerationButton = uiState.showGenerateButton,
+          onGoToChooseContract = onGoToChooseContract,
+          hasChooseOption = uiState.hasChooseOption,
         )
       }
     }
-  }
-}
-
-@Composable
-private fun FullScreenLoading() {
-  Box(modifier = Modifier.fillMaxSize()) {
-    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
   }
 }
 
@@ -164,11 +154,13 @@ private fun TravelCertificateSuccessScreen(
   onIconClick: () -> Unit,
   onCertificateClick: (String) -> Unit,
   onStartGenerateTravelCertificateFlow: () -> Unit,
+  onGoToChooseContract: () -> Unit,
   navigateUp: () -> Unit,
   historyList: List<TravelCertificate>,
   showErrorDialog: Boolean,
   onDismissDownloadCertificateError: () -> Unit,
   showGenerationButton: Boolean,
+  hasChooseOption: Boolean,
 ) {
   HedvigScaffold(
     navigateUp = navigateUp,
@@ -208,11 +200,11 @@ private fun TravelCertificateSuccessScreen(
     if (showGenerationButton) {
       HedvigSecondaryContainedButton(
         text = stringResource(R.string.travel_certificate_get_travel_certificate_button),
-        onClick = onStartGenerateTravelCertificateFlow,
+        onClick = if (hasChooseOption) onGoToChooseContract else onStartGenerateTravelCertificateFlow,
         modifier = Modifier.padding(16.dp, 8.dp, 16.dp, 0.dp),
       )
     }
-    Spacer(Modifier.height(32.dp))
+    Spacer(Modifier.height(16.dp))
   }
 }
 
@@ -306,7 +298,15 @@ private fun PreviewTravelCertificateHistoryScreenWithEmptyList() {
         {},
         {},
         {},
-        CertificateHistoryUiState.SuccessDownloadingHistory(listOf(), false, true, null, false),
+        {},
+        CertificateHistoryUiState.SuccessDownloadingHistory(
+          listOf(),
+          false,
+          true,
+          null,
+          false,
+          false,
+        ),
       )
     }
   }
@@ -318,6 +318,7 @@ private fun PreviewTravelCertificateHistoryScreenWithExpiredEarlier() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       TravelCertificateHistoryScreen(
+        {},
         {},
         {},
         {},
@@ -358,6 +359,7 @@ private fun PreviewTravelCertificateHistoryScreenWithExpiredEarlier() {
           false,
           false,
           null,
+          false,
           false,
         ),
       )
@@ -377,6 +379,7 @@ private fun PreviewErrorWithDownloadingCertificate() {
         {},
         {},
         {},
+        {},
         CertificateHistoryUiState.SuccessDownloadingHistory(
           listOf(
             TravelCertificate(
@@ -412,6 +415,7 @@ private fun PreviewErrorWithDownloadingCertificate() {
           true,
           null,
           false,
+          false,
         ),
       )
     }
@@ -424,6 +428,7 @@ private fun PreviewTravelCertificateHistoryScreenWithExpiredToday() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       TravelCertificateHistoryScreen(
+        {},
         {},
         {},
         {},
@@ -455,6 +460,7 @@ private fun PreviewTravelCertificateHistoryScreenWithExpiredToday() {
           true,
           null,
           false,
+          false,
         ),
       )
     }
@@ -467,6 +473,7 @@ private fun PreviewTravelCertificateHistoryScreenWithExpiredTodayNoGenerateButto
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       TravelCertificateHistoryScreen(
+        {},
         {},
         {},
         {},
@@ -498,6 +505,7 @@ private fun PreviewTravelCertificateHistoryScreenWithExpiredTodayNoGenerateButto
           false,
           null,
           false,
+          false,
         ),
       )
     }
@@ -510,6 +518,7 @@ private fun PreviewCertificateHistoryLoading() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       TravelCertificateHistoryScreen(
+        {},
         {},
         {},
         {},
@@ -534,6 +543,7 @@ private fun PreviewErrorWithHistory() {
         {},
         {},
         {},
+        {},
         CertificateHistoryUiState.FailureDownloadingHistory,
       )
     }
@@ -546,6 +556,7 @@ private fun PreviewLoadingCertificate() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       TravelCertificateHistoryScreen(
+        {},
         {},
         {},
         {},
@@ -587,6 +598,7 @@ private fun PreviewLoadingCertificate() {
           true,
           null,
           true,
+          false,
         ),
       )
     }

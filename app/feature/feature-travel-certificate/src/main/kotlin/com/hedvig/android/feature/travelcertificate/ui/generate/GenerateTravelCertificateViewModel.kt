@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.travelcertificate
+package com.hedvig.android.feature.travelcertificate.ui.generate
 
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.DisplayMode
@@ -8,10 +8,6 @@ import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.data.travelcertificate.GetTravelCertificateSpecificationsUseCase
 import com.hedvig.android.data.travelcertificate.TravelCertificateError
 import com.hedvig.android.feature.travelcertificate.data.CreateTravelCertificateUseCase
-import com.hedvig.android.feature.travelcertificate.data.DownloadTravelCertificateUseCase
-import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
-import com.hedvig.android.logger.LogPriority
-import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,30 +19,31 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
 internal class GenerateTravelCertificateViewModel(
+  contractId: String?,
   private val getTravelCertificateSpecificationsUseCase: GetTravelCertificateSpecificationsUseCase,
   private val createTravelCertificateUseCase: CreateTravelCertificateUseCase,
-  private val downloadTravelCertificateUseCase: DownloadTravelCertificateUseCase,
 ) : ViewModel() {
   private val _uiState: MutableStateFlow<TravelCertificateInputState> = MutableStateFlow(TravelCertificateInputState())
   val uiState: StateFlow<TravelCertificateInputState> = _uiState.asStateFlow()
 
   init {
-    updateInfo()
+    updateSpecifications(contractId)
   }
 
-  private fun updateInfo() {
+  private fun updateSpecifications(contractId: String?) {
     viewModelScope.launch {
       _uiState.update { it.copy(isLoading = true) }
       getTravelCertificateSpecificationsUseCase
-        .invoke()
+        .invoke(contractId)
         .fold(
           ifLeft = { travelCertificateError ->
             _uiState.update {
               when (travelCertificateError) {
+                // todo: probably should not only show error dialog, but also don't show the input ui at all,
+                // todo: otherwise you have an opportunity to fill email etc manually, press continue and crash the app
                 is TravelCertificateError.Error -> {
                   TravelCertificateInputState(errorMessage = travelCertificateError.message)
                 }
-
                 TravelCertificateError.NotEligible -> {
                   TravelCertificateInputState(errorMessage = "Not eligible")
                 }
@@ -155,39 +152,6 @@ internal class GenerateTravelCertificateViewModel(
           },
         )
       }
-    }
-  }
-
-  fun canAddCoInsured(): Boolean {
-    val maximumCoInsured = uiState.value.maximumCoInsured
-    return maximumCoInsured != null && uiState.value.coInsured.input.size < maximumCoInsured
-  }
-
-  fun onDownloadTravelCertificate(url: TravelCertificateUrl) {
-    viewModelScope.launch {
-      _uiState.update { it.copy(isLoading = true) }
-      logcat(LogPriority.INFO) { "Downloading travel certificate with url:${url.uri}" }
-      downloadTravelCertificateUseCase.invoke(url)
-        .fold(
-          ifLeft = { errorMessage ->
-            logcat(LogPriority.ERROR) { "Downloading travel certificate failed:$errorMessage" }
-            _uiState.update {
-              it.copy(
-                isLoading = false,
-                errorMessage = errorMessage.message,
-              )
-            }
-          },
-          ifRight = { uri ->
-            logcat(LogPriority.INFO) { "Downloading travel certificate succeeded. Result uri:${uri.uri.absolutePath}" }
-            _uiState.update {
-              it.copy(
-                isLoading = false,
-                travelCertificateUri = uri,
-              )
-            }
-          },
-        )
     }
   }
 }

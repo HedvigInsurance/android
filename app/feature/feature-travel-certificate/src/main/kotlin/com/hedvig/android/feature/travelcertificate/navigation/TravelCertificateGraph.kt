@@ -10,15 +10,18 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
-import com.hedvig.android.feature.travelcertificate.CertificateHistoryEvent
-import com.hedvig.android.feature.travelcertificate.CertificateHistoryViewModel
-import com.hedvig.android.feature.travelcertificate.GenerateTravelCertificateViewModel
-import com.hedvig.android.feature.travelcertificate.TravelCertificateInputState
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUri
-import com.hedvig.android.feature.travelcertificate.ui.AddCoInsured
-import com.hedvig.android.feature.travelcertificate.ui.GenerateTravelCertificateInput
-import com.hedvig.android.feature.travelcertificate.ui.TravelCertificateHistoryDestination
-import com.hedvig.android.feature.travelcertificate.ui.TravelCertificateOverview
+import com.hedvig.android.feature.travelcertificate.ui.choose.ChooseContractForCertificateDestination
+import com.hedvig.android.feature.travelcertificate.ui.choose.ChooseContractForCertificateViewModel
+import com.hedvig.android.feature.travelcertificate.ui.generate.AddCoInsured
+import com.hedvig.android.feature.travelcertificate.ui.generate.GenerateTravelCertificateInput
+import com.hedvig.android.feature.travelcertificate.ui.generate.GenerateTravelCertificateViewModel
+import com.hedvig.android.feature.travelcertificate.ui.generate.TravelCertificateInputState
+import com.hedvig.android.feature.travelcertificate.ui.history.CertificateHistoryEvent
+import com.hedvig.android.feature.travelcertificate.ui.history.CertificateHistoryViewModel
+import com.hedvig.android.feature.travelcertificate.ui.history.TravelCertificateHistoryDestination
+import com.hedvig.android.feature.travelcertificate.ui.overview.TravelCertificateOverviewDestination
+import com.hedvig.android.feature.travelcertificate.ui.overview.TravelCertificateOverviewViewModel
 import com.hedvig.android.navigation.compose.typed.destinationScopedViewModel
 import com.hedvig.android.navigation.core.AppDestination
 import com.kiwi.navigationcompose.typed.composable
@@ -27,6 +30,7 @@ import com.kiwi.navigationcompose.typed.navigate
 import com.kiwi.navigationcompose.typed.navigation
 import com.kiwi.navigationcompose.typed.popUpTo
 import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavController, applicationId: String) {
   navigation<AppDestination.TravelCertificate>(
@@ -43,7 +47,10 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavC
         viewModel = viewModel,
         navigateUp = navController::navigateUp,
         onStartGenerateTravelCertificateFlow = {
-          navController.navigate(TravelCertificateDestination.GenerateTravelCertificateDestinations)
+          navController.navigate(TravelCertificateDestination.GenerateTravelCertificateDestinations(null))
+        },
+        onNavigateToChooseContract = {
+          navController.navigate(TravelCertificateDestination.TravelCertificateChooseContract)
         },
         onShareTravelCertificate = {
           viewModel.emit(CertificateHistoryEvent.HaveProcessedCertificateUri)
@@ -51,6 +58,18 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavC
         },
       )
     }
+
+    composable<TravelCertificateDestination.TravelCertificateChooseContract> {
+      val viewModel: ChooseContractForCertificateViewModel = koinViewModel()
+      ChooseContractForCertificateDestination(
+        viewModel = viewModel,
+        onContinue = { contractId ->
+          navController.navigate(TravelCertificateDestination.GenerateTravelCertificateDestinations(contractId))
+        },
+        navigateUp = navController::navigateUp,
+      )
+    }
+
     navigation<TravelCertificateDestination.GenerateTravelCertificateDestinations>(
       startDestination = createRoutePattern<TravelCertificateDestination.TravelCertificateInput>(),
     ) {
@@ -59,10 +78,11 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavC
           destinationScopedViewModel<TravelCertificateDestination.GenerateTravelCertificateDestinations, _>(
             navController = navController,
             backStackEntry = navBackStackEntry,
+            parameters = {
+              parametersOf(contractId)
+            },
           )
-
         val uiState: TravelCertificateInputState by viewModel.uiState.collectAsStateWithLifecycle()
-
         GenerateTravelCertificateInput(
           uiState = uiState,
           navigateBack = {
@@ -71,18 +91,18 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavC
           onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
           onEmailChanged = viewModel::onEmailChanged,
           onCoInsuredClicked = { coInsured ->
-            navController.navigate(TravelCertificateDestination.AddCoInsured(coInsured))
+            navController.navigate(TravelCertificateDestination.AddCoInsured(coInsured, contractId))
           },
           onAddCoInsuredClicked = {
-            navController.navigate(TravelCertificateDestination.AddCoInsured(null))
+            navController.navigate(TravelCertificateDestination.AddCoInsured(null, contractId))
           },
           onIncludeMemberClicked = viewModel::onIncludeMemberClicked,
           onTravelDateSelected = viewModel::onTravelDateSelected,
           onContinue = viewModel::onContinue,
           onSuccess = { travelCertificateUrl ->
             navController.navigate(TravelCertificateDestination.ShowCertificate(travelCertificateUrl)) {
-              popUpTo<TravelCertificateDestination.GenerateTravelCertificateDestinations> {
-                inclusive = true
+              popUpTo<TravelCertificateDestination.TravelCertificateHistory> {
+                inclusive = false
               }
             }
           },
@@ -93,6 +113,7 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavC
           destinationScopedViewModel<TravelCertificateDestination.GenerateTravelCertificateDestinations, _>(
             navController = navController,
             backStackEntry = navBackStackEntry,
+            parameters = { parametersOf(contractId) },
           )
 
         AddCoInsured(
@@ -112,30 +133,19 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavC
           },
         )
       }
-      composable<TravelCertificateDestination.ShowCertificate> { navBackStackEntry ->
-        val viewModel: GenerateTravelCertificateViewModel =
-          destinationScopedViewModel<TravelCertificateDestination.GenerateTravelCertificateDestinations, _>(
-            navController = navController,
-            backStackEntry = navBackStackEntry,
-          )
-        val uiState: TravelCertificateInputState by viewModel.uiState.collectAsStateWithLifecycle()
-        val localContext = LocalContext.current
+    }
 
-        TravelCertificateOverview(
-          travelCertificateUrl = travelCertificateUrl,
-          onDownloadCertificate = {
-            viewModel.onDownloadTravelCertificate(travelCertificateUrl)
-          },
-          travelCertificateUri = uiState.travelCertificateUri,
-          isLoading = uiState.isLoading,
-          errorMessage = uiState.errorMessage,
-          onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
-          navigateBack = navController::navigateUp,
-          onShareTravelCertificate = {
-            shareCertificate(it, localContext, applicationId)
-          },
-        )
-      }
+    composable<TravelCertificateDestination.ShowCertificate> {
+      val viewModel: TravelCertificateOverviewViewModel = koinViewModel()
+      val context = LocalContext.current
+      TravelCertificateOverviewDestination(
+        travelCertificateUrl = travelCertificateUrl,
+        viewModel = viewModel,
+        navigateUp = navController::navigateUp,
+        onShareTravelCertificate = {
+          shareCertificate(it, context, applicationId)
+        },
+      )
     }
   }
 }
