@@ -57,6 +57,7 @@ internal fun SettingsDestination(viewModel: SettingsViewModel, openAppSettings: 
     onNotificationInfoDismissed = { viewModel.emit(SettingsEvent.SnoozeNotificationPermissionReminder) },
     onLanguageSelected = { viewModel.emit(SettingsEvent.ChangeLanguage(it)) },
     onThemeSelected = { viewModel.emit(SettingsEvent.ChangeTheme(it)) },
+    onTerminateAccountClicked = { /* todo navigate to termination screen */ },
   )
 }
 
@@ -69,6 +70,7 @@ private fun SettingsScreen(
   onNotificationInfoDismissed: () -> Unit,
   onLanguageSelected: (Language) -> Unit,
   onThemeSelected: (Theme) -> Unit,
+  onTerminateAccountClicked: () -> Unit,
 ) {
   LaunchedEffect(uiState.selectedTheme) {
     uiState.selectedTheme?.apply()
@@ -137,17 +139,15 @@ private fun SettingsScreen(
             Spacer(Modifier.height(16.dp))
           }
         }
-        if (uiState.showDeleteAccountButton) {
-          Spacer(Modifier.height(16.dp))
-          Spacer(Modifier.weight(1f))
-          HedvigTextButton(
-              text = stringResource(R.string.SETTINGS_SCREEN_DELETE_ACCOUNT_BUTTON),
-              onClick = { /*TODO*/ },
-              colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
-              modifier = Modifier.padding(horizontal = 16.dp),
-          )
-          Spacer(Modifier.height(16.dp))
-        }
+        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.weight(1f))
+        HedvigTextButton(
+          text = stringResource(R.string.SETTINGS_SCREEN_DELETE_ACCOUNT_BUTTON),
+          onClick = onTerminateAccountClicked,
+          colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
+          modifier = Modifier.padding(horizontal = 16.dp),
+        )
+        Spacer(Modifier.height(16.dp))
       }
     }
   }

@@ -41,9 +41,11 @@ internal class SettingsPresenter(
           cacheManager.clearCache()
           launch { uploadLanguagePreferenceToBackendUseCase.invoke() }
         }
+
         is SettingsEvent.ChangeTheme -> {
           launch { settingsDataStore.setTheme(event.theme) }
         }
+
         SettingsEvent.SnoozeNotificationPermissionReminder -> {
           launch { enableNotificationsReminderManager.snoozeNotificationReminder() }
         }
@@ -61,7 +63,6 @@ internal class SettingsPresenter(
         languageOptions = lastState.languageOptions,
         selectedTheme = selectedTheme,
         showNotificationReminder = showNotificationReminder,
-        showDeleteAccountButton = false,
       )
     }
   }
@@ -72,7 +73,6 @@ sealed interface SettingsUiState {
   val languageOptions: List<Language>
   val selectedTheme: Theme?
   val showNotificationReminder: Boolean?
-  val showDeleteAccountButton: Boolean?
 
   data class Loading(
     override val selectedLanguage: Language,
@@ -80,7 +80,6 @@ sealed interface SettingsUiState {
   ) : SettingsUiState {
     override val selectedTheme: Theme? = null
     override val showNotificationReminder: Boolean? = null
-    override val showDeleteAccountButton: Boolean? = null
   }
 
   data class Loaded(
@@ -88,14 +87,11 @@ sealed interface SettingsUiState {
     override val languageOptions: List<Language>,
     override val selectedTheme: Theme?,
     override val showNotificationReminder: Boolean,
-    override val showDeleteAccountButton: Boolean,
   ) : SettingsUiState
 }
 
 sealed interface SettingsEvent {
   data class ChangeLanguage(val language: Language) : SettingsEvent
-
   data class ChangeTheme(val theme: Theme) : SettingsEvent
-
   data object SnoozeNotificationPermissionReminder : SettingsEvent
 }
