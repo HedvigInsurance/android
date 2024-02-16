@@ -204,7 +204,7 @@ private fun TravelCertificateSuccessScreen(
         modifier = Modifier.padding(16.dp, 8.dp, 16.dp, 0.dp),
       )
     }
-    Spacer(Modifier.height(32.dp))
+    Spacer(Modifier.height(16.dp))
   }
 }
 

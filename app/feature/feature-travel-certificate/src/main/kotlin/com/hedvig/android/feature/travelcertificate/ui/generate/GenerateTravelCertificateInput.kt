@@ -229,7 +229,7 @@ internal fun GenerateTravelCertificateInput(
         text = stringResource(R.string.SAVE_AND_CONTINUE_BUTTON_LABEL),
         modifier = Modifier.padding(horizontal = 16.dp),
       )
-      Spacer(Modifier.height(32.dp))
+      Spacer(Modifier.height(16.dp))
     }
   }
 }
