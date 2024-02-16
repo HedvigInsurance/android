@@ -7,6 +7,8 @@ import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import octopus.EligibleContractsWithAddressQuery
 
 interface GetEligibleContractsWithAddressUseCase {
@@ -29,8 +31,11 @@ internal class GetEligibleContractsWithAddressUseCaseImpl(
             data.currentMember.travelCertificateSpecifications.contractSpecifications.firstOrNull {
               it.contractId == contract.id
             }?.location?.street
-          val address = street ?: contract.exposureDisplayName.substringBefore("•")
-          // todo: add this check here bc location.street is nullable?
+          val address = street ?: contract.exposureDisplayName.substringBefore("•").also {
+            logcat(LogPriority.ERROR) {
+              "Received a travel certificate eligible contract, but the contractSpecifications did not include a valid street name"
+            }
+          }
           ContractEligibleWithAddress(address, contract.id)
         }
       }

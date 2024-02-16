@@ -118,9 +118,10 @@ private fun ChooseContractForCertificate(
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         ) {
-          Text(text = stringResource(id = R.string.general_continue_button),
-            style = MaterialTheme.typography.bodyLarge
-            )
+          Text(
+            text = stringResource(id = R.string.general_continue_button),
+            style = MaterialTheme.typography.bodyLarge,
+          )
         }
         Spacer(Modifier.height(16.dp))
       }
