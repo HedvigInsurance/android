@@ -1,7 +1,8 @@
 plugins {
+  id("hedvig.android.feature")
+  id("hedvig.android.ktlint")
   id("hedvig.android.library")
   id("hedvig.android.library.compose")
-  id("hedvig.android.ktlint")
   alias(libs.plugins.serialization)
   alias(libs.plugins.squareSortDependencies)
 }

@@ -1,4 +1,5 @@
 plugins {
+  id("hedvig.android.feature")
   id("hedvig.android.ktlint")
   id("hedvig.android.library")
   id("hedvig.android.library.compose")
@@ -40,6 +41,7 @@ dependencies {
   implementation(projects.claimStatus)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
+  implementation(projects.coreMarkdown)
   implementation(projects.coreDemoMode)
   implementation(projects.coreDesignSystem)
   implementation(projects.coreIcons)

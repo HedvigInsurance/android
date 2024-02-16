@@ -18,6 +18,7 @@ val homeModule = module {
     GetHomeDataUseCaseImpl(
       get<ApolloClient>(),
       get<GetMemberRemindersUseCase>(),
+      get<FeatureManager>(),
       get<Clock>(),
       get<TimeZone>(),
     )
@@ -36,7 +37,6 @@ val homeModule = module {
     HomeViewModel(
       get<GetHomeDataUseCaseProvider>(),
       get<ChatLastMessageReadRepository>(),
-      get<FeatureManager>(),
     )
   }
 }

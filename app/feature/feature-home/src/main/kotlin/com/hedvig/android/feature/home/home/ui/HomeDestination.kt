@@ -235,7 +235,6 @@ private suspend fun daysSinceLastTooltipShown(context: Context): Boolean {
   return daysSinceLastTooltipShown
 }
 
-@Suppress("UnusedReceiverParameter")
 @ExperimentalMaterial3Api
 @Composable
 private fun HomeScreenSuccess(
@@ -327,14 +326,16 @@ private fun HomeScreenSuccess(
               .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
           )
         },
-        otherServicesButton = {
-          HedvigSecondaryContainedButton(
-            text = stringResource(R.string.home_tab_get_help),
-            onClick = navigateToHelpCenter,
-            modifier = Modifier
-              .padding(horizontal = 16.dp)
-              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-          )
+        helpCenterButton = {
+          if (uiState.isHelpCenterEnabled) {
+            HedvigSecondaryContainedButton(
+              text = stringResource(R.string.home_tab_get_help),
+              onClick = navigateToHelpCenter,
+              modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+            )
+          }
         },
         topSpacer = {
           Spacer(
