@@ -76,6 +76,89 @@ internal class GetTravelCertificateSpecificationsUseCaseTest {
   }
 
   @Test
+  fun `when the passed contractId is right, we get TravelCertificateData`() = runTest {
+    val travelCertificateUseCase = GetTravelCertificateSpecificationsUseCaseImpl(
+      apolloClient,
+    )
+
+    apolloClient.enqueueTestResponse(
+      TravelCertificateSpecificationsQuery(),
+      TravelCertificateSpecificationsQuery.Data(OctopusFakeResolver) {
+        currentMember = buildMember {
+          travelCertificateSpecifications = buildTravelCertificateSpecification {
+            contractSpecifications = listOf(
+              buildTravelCertificateContractSpecification {
+                contractId = "id"
+                email = "email"
+                minStartDate = LocalDate.parse("2023-02-02")
+                maxStartDate = LocalDate.parse("2023-03-02")
+                maxDurationDays = 1
+                numberOfCoInsured = 2
+              },
+            )
+            infoSpecifications = listOf(
+              buildTravelCertificateInfoSpecification {
+                title = "infoTitle"
+                body = "infoBody"
+              },
+            )
+          }
+        }
+      },
+    )
+    val result = travelCertificateUseCase.invoke("id")
+
+    assertThat(result).isRight().isEqualTo(
+      TravelCertificateData(
+        TravelCertificateData.TravelCertificateSpecification(
+          contractId = "id",
+          email = "email",
+          maxDurationDays = 1,
+          dateRange = LocalDate.parse("2023-02-02")..LocalDate.parse("2023-03-02"),
+          numberOfCoInsured = 2,
+        ),
+        listOf(TravelCertificateData.InfoSection("infoTitle", "infoBody")),
+      ),
+    )
+  }
+
+  @Test
+  fun `when the passed contractId is correct, but the contract is not eligible, we get not eligible`() = runTest {
+    val travelCertificateUseCase = GetTravelCertificateSpecificationsUseCaseImpl(
+      apolloClient,
+    )
+
+    apolloClient.enqueueTestResponse(
+      TravelCertificateSpecificationsQuery(),
+      TravelCertificateSpecificationsQuery.Data(OctopusFakeResolver) {
+        currentMember = buildMember {
+          travelCertificateSpecifications = buildTravelCertificateSpecification {
+            contractSpecifications = listOf(
+              buildTravelCertificateContractSpecification {
+                contractId = "id"
+                email = "email"
+                minStartDate = LocalDate.parse("2023-02-02")
+                maxStartDate = LocalDate.parse("2023-03-02")
+                maxDurationDays = 1
+                numberOfCoInsured = 2
+              },
+            )
+            infoSpecifications = listOf(
+              buildTravelCertificateInfoSpecification {
+                title = "infoTitle"
+                body = "infoBody"
+              },
+            )
+          }
+        }
+      },
+    )
+    val result = travelCertificateUseCase.invoke("id not eligible")
+
+    assertThat(result).isLeft().isInstanceOf<TravelCertificateError.NotEligible>()
+  }
+
+  @Test
   fun `when the feature flag is on and the network request succeeds, we get the travel certificate data`() = runTest {
     val travelCertificateUseCase = GetTravelCertificateSpecificationsUseCaseImpl(
       apolloClient,

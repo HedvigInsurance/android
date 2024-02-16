@@ -21,7 +21,7 @@ val travelCertificateModule = module {
     GenerateTravelCertificateViewModel(
       it.getOrNull<String>(),
       get<GetTravelCertificateSpecificationsUseCase>(),
-      get< CreateTravelCertificateUseCase>(),
+      get<CreateTravelCertificateUseCase>(),
     )
   }
   viewModel<CertificateHistoryViewModel> {
@@ -34,7 +34,7 @@ val travelCertificateModule = module {
   }
   viewModel<ChooseContractForCertificateViewModel> {
     ChooseContractForCertificateViewModel(
-      get<GetEligibleContractsWithAddressUseCase>()
+      get<GetEligibleContractsWithAddressUseCase>(),
     )
   }
   viewModel<TravelCertificateOverviewViewModel> {
