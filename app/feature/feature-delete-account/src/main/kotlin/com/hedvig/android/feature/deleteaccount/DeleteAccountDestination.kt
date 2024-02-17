@@ -18,6 +18,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.halilibo.richtext.markdown.Markdown
+import com.halilibo.richtext.ui.material3.RichText
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
@@ -146,12 +148,15 @@ private fun DeleteScreenContents(
         .padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(32.dp))
-    Text(
-      text = description,
+    RichText(
       modifier = Modifier
         .fillMaxWidth()
         .padding(horizontal = 16.dp),
-    )
+    ) {
+      Markdown(
+        content = description,
+      )
+    }
     Spacer(Modifier.height(16.dp))
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(8.dp))

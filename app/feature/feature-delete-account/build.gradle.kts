@@ -18,6 +18,8 @@ dependencies {
   implementation(libs.androidx.navigation.runtime)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.arrow.core)
+  implementation(libs.compose.richtext)
+  implementation(libs.compose.richtextUi)
   implementation(libs.coroutines.core)
   implementation(libs.kiwi.navigationCompose)
   implementation(libs.koin.compose)
