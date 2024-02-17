@@ -44,22 +44,7 @@ sealed interface AppDestination : Destination {
   data object TravelCertificate : AppDestination
 
   @Serializable
-  data object Eurobonus : AppDestination
-
-  @Serializable
   data object ClaimsFlow : AppDestination
-
-  @Serializable
-  data object MyInfo : AppDestination
-
-  @Serializable
-  data object AboutApp : AppDestination
-
-  @Serializable
-  data object Licenses : AppDestination
-
-  @Serializable
-  data object Settings : AppDestination
 
   @Serializable
   data object PaymentInfo : AppDestination

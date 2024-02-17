@@ -92,6 +92,8 @@ sealed interface SettingsUiState {
 
 sealed interface SettingsEvent {
   data class ChangeLanguage(val language: Language) : SettingsEvent
+
   data class ChangeTheme(val theme: Theme) : SettingsEvent
+
   data object SnoozeNotificationPermissionReminder : SettingsEvent
 }

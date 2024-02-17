@@ -23,6 +23,7 @@ import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.feature.insurances.navigation.insurancesBottomNavPermittedDestinations
+import com.hedvig.android.feature.profile.navigation.profileBottomNavPermittedDestinations
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.TopLevelGraph
@@ -240,7 +241,7 @@ private fun NavDestination?.toTopLevelAppDestination(): AppDestination.TopLevelD
  * Special routes, which despite not being top level should still show the navigation bars.
  */
 private val bottomNavPermittedDestinations: List<String> = buildList {
-  add(createRoutePattern<AppDestination.Eurobonus>())
+  addAll(profileBottomNavPermittedDestinations)
   addAll(insurancesBottomNavPermittedDestinations)
 }
 

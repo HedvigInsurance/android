@@ -47,7 +47,12 @@ import com.hedvig.android.theme.Theme
 import hedvig.resources.R
 
 @Composable
-internal fun SettingsDestination(viewModel: SettingsViewModel, openAppSettings: () -> Unit, navigateUp: () -> Unit) {
+internal fun SettingsDestination(
+  viewModel: SettingsViewModel,
+  navigateUp: () -> Unit,
+  openAppSettings: () -> Unit,
+  onNavigateToDeleteAccountFeature: () -> Unit,
+) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   SettingsScreen(
     uiState = uiState,
@@ -57,7 +62,7 @@ internal fun SettingsDestination(viewModel: SettingsViewModel, openAppSettings: 
     onNotificationInfoDismissed = { viewModel.emit(SettingsEvent.SnoozeNotificationPermissionReminder) },
     onLanguageSelected = { viewModel.emit(SettingsEvent.ChangeLanguage(it)) },
     onThemeSelected = { viewModel.emit(SettingsEvent.ChangeTheme(it)) },
-    onTerminateAccountClicked = { /* todo navigate to termination screen */ },
+    onTerminateAccountClicked = onNavigateToDeleteAccountFeature,
   )
 }
 
@@ -94,8 +99,8 @@ private fun SettingsScreen(
           selectLanguage = onLanguageSelected,
           enabled = true,
           modifier = Modifier
-              .fillMaxWidth()
-              .padding(horizontal = 16.dp),
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
         )
         Spacer(Modifier.height(4.dp))
         ThemeWithDialog(
@@ -103,8 +108,8 @@ private fun SettingsScreen(
           selectTheme = onThemeSelected,
           enabled = true,
           modifier = Modifier
-              .fillMaxWidth()
-              .padding(horizontal = 16.dp),
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
         )
         Spacer(Modifier.height(4.dp))
         NotificationPermissionDialog(
@@ -120,8 +125,8 @@ private fun SettingsScreen(
           },
           hintText = stringResource(id = R.string.SETTINGS_NOTIFICATIONS_TITLE),
           modifier = Modifier
-              .fillMaxWidth()
-              .padding(horizontal = 16.dp),
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
         )
         Spacer(Modifier.height(16.dp))
 
@@ -164,12 +169,14 @@ fun PreviewSettingsScreen() {
           languageOptions = listOf(Language.SV_SE, Language.EN_SE),
           selectedTheme = Theme.SYSTEM_DEFAULT,
           showNotificationReminder = true,
-          showDeleteAccountButton = true,
         ),
         notificationPermissionState = object : NotificationPermissionState {
           override val showDialog = false
+
           override fun dismissDialog() {}
+
           override fun launchPermissionRequest() {}
+
           override val permission: String = ""
           override val status: PermissionStatus = PermissionStatus.Granted
         },
@@ -178,6 +185,7 @@ fun PreviewSettingsScreen() {
         onNotificationInfoDismissed = {},
         onLanguageSelected = {},
         onThemeSelected = {},
+        onTerminateAccountClicked = {},
       )
     }
   }
