@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.deleteaccount
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -63,35 +64,16 @@ private fun DeleteAccountScreen(
         HedvigFullScreenCenterAlignedProgress(Modifier.weight(1f))
       }
 
-is DeleteAccountUiState.CanNotDelete -> {
-  DeleteScreenContents(
-    title = when (uiState) {
-      DeleteAccountUiState.CanNotDelete.AlreadyRequestedDeletion -> stringResource(
-        R.string.DELETE_ACCOUNT_PROCESSED_TITLE,
-      )
-      DeleteAccountUiState.CanNotDelete.HasActiveInsurance -> stringResource(
-        R.string.DELETE_ACCOUNT_YOU_HAVE_ACTIVE_INSURANCE_TITLE,
-      )
-      DeleteAccountUiState.CanNotDelete.HasOngoingClaim -> stringResource(
-        R.string.DELETE_ACCOUNT_YOU_HAVE_ACTIVE_CLAIM_TITLE,
-      )
-    },
-    description = when (uiState) {
-      DeleteAccountUiState.CanNotDelete.AlreadyRequestedDeletion -> stringResource(
-        R.string.DELETE_ACCOUNT_PROCESSED_DESCRIPTION,
-      )
-      DeleteAccountUiState.CanNotDelete.HasActiveInsurance -> stringResource(
-        R.string.DELETE_ACCOUNT_YOU_HAVE_ACTIVE_INSURANCE_DESCRIPTION,
-      )
-      DeleteAccountUiState.CanNotDelete.HasOngoingClaim -> stringResource(
-        R.string.DELETE_ACCOUNT_YOU_HAVE_ACTIVE_CLAIM_DESCRIPTION,
-      )
-    },
-    buttonText = stringResource(R.string.general_back_button),
-    onButtonClick = navigateBack,
-    modifier = Modifier.weight(1f),
-  )
-}
+      is DeleteAccountUiState.CanNotDelete -> {
+        DeleteScreenContents(
+          title = stringResource(uiState.titleStringRes()),
+          description = stringResource(uiState.descriptionStringRes()),
+          buttonText = stringResource(R.string.general_back_button),
+          onButtonClick = navigateBack,
+          modifier = Modifier.weight(1f),
+        )
+      }
+
       is DeleteAccountUiState.CanDelete -> {
         if (uiState.failedToPerformDeletion) {
           HedvigErrorSection(retry = retryLoading, Modifier.weight(1f))
@@ -161,6 +143,24 @@ private fun DeleteScreenContents(
         .padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(16.dp))
+  }
+}
+
+@StringRes
+private fun DeleteAccountUiState.CanNotDelete.titleStringRes(): Int {
+  return when (this) {
+    DeleteAccountUiState.CanNotDelete.AlreadyRequestedDeletion -> R.string.DELETE_ACCOUNT_PROCESSED_TITLE
+    DeleteAccountUiState.CanNotDelete.HasActiveInsurance -> R.string.DELETE_ACCOUNT_YOU_HAVE_ACTIVE_INSURANCE_TITLE
+    DeleteAccountUiState.CanNotDelete.HasOngoingClaim -> R.string.DELETE_ACCOUNT_YOU_HAVE_ACTIVE_CLAIM_TITLE
+  }
+}
+
+@StringRes
+private fun DeleteAccountUiState.CanNotDelete.descriptionStringRes(): Int {
+  return when (this) {
+    DeleteAccountUiState.CanNotDelete.AlreadyRequestedDeletion -> R.string.DELETE_ACCOUNT_PROCESSED_DESCRIPTION
+    DeleteAccountUiState.CanNotDelete.HasActiveInsurance -> R.string.DELETE_ACCOUNT_YOU_HAVE_ACTIVE_INSURANCE_DESCRIPTION
+    DeleteAccountUiState.CanNotDelete.HasOngoingClaim -> R.string.DELETE_ACCOUNT_YOU_HAVE_ACTIVE_CLAIM_DESCRIPTION
   }
 }
 
