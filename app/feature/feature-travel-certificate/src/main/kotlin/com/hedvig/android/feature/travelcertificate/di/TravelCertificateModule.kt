@@ -9,6 +9,7 @@ import com.hedvig.android.feature.travelcertificate.data.CreateTravelCertificate
 import com.hedvig.android.feature.travelcertificate.data.DownloadTravelCertificateUseCase
 import com.hedvig.android.feature.travelcertificate.ui.choose.ChooseContractForCertificateViewModel
 import com.hedvig.android.feature.travelcertificate.ui.generate.GenerateTravelCertificateViewModel
+import com.hedvig.android.feature.travelcertificate.ui.generate_when.TravelCertificateDateInputViewModel
 import com.hedvig.android.feature.travelcertificate.ui.history.CertificateHistoryViewModel
 import com.hedvig.android.feature.travelcertificate.ui.overview.TravelCertificateOverviewViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -40,6 +41,13 @@ val travelCertificateModule = module {
   viewModel<TravelCertificateOverviewViewModel> {
     TravelCertificateOverviewViewModel(
       get<DownloadTravelCertificateUseCase>(),
+    )
+  }
+  viewModel<TravelCertificateDateInputViewModel> {
+    TravelCertificateDateInputViewModel(
+      it.getOrNull<String>(),
+      get<GetTravelCertificateSpecificationsUseCase>(),
+      get<CreateTravelCertificateUseCase>(),
     )
   }
 }

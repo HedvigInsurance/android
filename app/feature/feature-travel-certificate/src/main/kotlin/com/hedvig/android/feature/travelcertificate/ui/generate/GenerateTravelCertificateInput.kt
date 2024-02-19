@@ -341,11 +341,13 @@ private fun PreviewGenerateTravelCertificateInput() {
           id = "123",
           name = "Hugo K",
           ssn = "199101131093",
+          LocalDate(2016, 7, 11),
         ),
         CoInsured(
           id = "123",
           name = "MockName",
           ssn = "199101131093",
+          LocalDate(2016, 7, 11),
         ),
       ),
     ),

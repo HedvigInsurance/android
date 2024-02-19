@@ -59,7 +59,8 @@ internal data class TravelCertificateInputState(
 internal data class CoInsured(
   val id: String,
   val name: String,
-  val ssn: String,
+  val ssn: String?,
+  val dateOfBirth: LocalDate?, // todo: check here
 ) {
   fun firstName(): String = name.split(" ").firstOrNull() ?: this.name
 }

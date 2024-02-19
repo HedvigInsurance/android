@@ -25,6 +25,7 @@ import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import hedvig.resources.R
 import java.util.UUID
+import kotlinx.datetime.LocalDate
 
 @Composable
 internal fun AddCoInsured(
@@ -130,6 +131,7 @@ internal fun AddCoInsured(
               id = UUID.randomUUID().toString(),
               name = name,
               ssn = ssn,
+              LocalDate(2016, 7, 11), // todo: remove fake!
             )
             onAddCoInsured(newCoInsured)
           }

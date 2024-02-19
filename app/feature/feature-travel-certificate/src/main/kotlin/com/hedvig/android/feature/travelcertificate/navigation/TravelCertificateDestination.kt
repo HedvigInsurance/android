@@ -23,6 +23,11 @@ internal sealed interface TravelCertificateDestination : Destination {
   ) : TravelCertificateDestination
 
   @Serializable
+  data class TravelCertificateDateInput(
+    val contractId: String?,
+  ) : TravelCertificateDestination
+
+  @Serializable
   data class AddCoInsured(
     val coInsured: CoInsured?,
     val contractId: String?,
