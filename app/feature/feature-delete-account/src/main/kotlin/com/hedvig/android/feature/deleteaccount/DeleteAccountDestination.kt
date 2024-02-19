@@ -63,60 +63,51 @@ private fun DeleteAccountScreen(
         HedvigFullScreenCenterAlignedProgress(Modifier.weight(1f))
       }
 
-      is DeleteAccountUiState.Success -> {
-        when (uiState) {
-          is DeleteAccountUiState.Success.CanDelete -> {
-            if (uiState.failedToPerformDeletion) {
-              HedvigErrorSection(retry = retryLoading, Modifier.weight(1f))
-            } else {
-              DeleteScreenContents(
-                title = stringResource(R.string.DELETE_ACCOUNT_DELETE_ACCOUNT_TITLE),
-                description = stringResource(R.string.DELETE_ACCOUNT_DELETE_ACCOUNT_DESCRIPTION),
-                buttonText = stringResource(R.string.PROFILE_DELETE_ACCOUNT_CONFIRM_DELETION),
-                onButtonClick = initiateAccountDeletion,
-                modifier = Modifier.weight(1f),
-                isButtonLoading = uiState.isPerformingDeletion,
-                buttonColors = ButtonDefaults.buttonColors(
-                  containerColor = MaterialTheme.colorScheme.error,
-                  contentColor = MaterialTheme.colorScheme.onError,
-                ),
-              )
-            }
-          }
-          DeleteAccountUiState.Success.AlreadyRequestedDeletion,
-          DeleteAccountUiState.Success.HasActiveInsurance,
-          DeleteAccountUiState.Success.HasOngoingClaim,
-          -> {
-            DeleteScreenContents(
-              title = when (uiState) {
-                DeleteAccountUiState.Success.AlreadyRequestedDeletion -> stringResource(
-                  R.string.DELETE_ACCOUNT_PROCESSED_TITLE,
-                )
-                DeleteAccountUiState.Success.HasActiveInsurance -> stringResource(
-                  R.string.DELETE_ACCOUNT_YOU_HAVE_ACTIVE_INSURANCE_TITLE,
-                )
-                DeleteAccountUiState.Success.HasOngoingClaim -> stringResource(
-                  R.string.DELETE_ACCOUNT_YOU_HAVE_ACTIVE_CLAIM_TITLE,
-                )
-                is DeleteAccountUiState.Success.CanDelete -> error("Invalid state")
-              },
-              description = when (uiState) {
-                DeleteAccountUiState.Success.AlreadyRequestedDeletion -> stringResource(
-                  R.string.DELETE_ACCOUNT_PROCESSED_DESCRIPTION,
-                )
-                DeleteAccountUiState.Success.HasActiveInsurance -> stringResource(
-                  R.string.DELETE_ACCOUNT_YOU_HAVE_ACTIVE_INSURANCE_DESCRIPTION,
-                ) // todo clickable text
-                DeleteAccountUiState.Success.HasOngoingClaim -> stringResource(
-                  R.string.DELETE_ACCOUNT_YOU_HAVE_ACTIVE_CLAIM_DESCRIPTION,
-                )
-                is DeleteAccountUiState.Success.CanDelete -> error("Invalid state")
-              },
-              buttonText = stringResource(R.string.general_back_button),
-              onButtonClick = navigateBack,
-              modifier = Modifier.weight(1f),
-            )
-          }
+is DeleteAccountUiState.CanNotDelete -> {
+  DeleteScreenContents(
+    title = when (uiState) {
+      DeleteAccountUiState.CanNotDelete.AlreadyRequestedDeletion -> stringResource(
+        R.string.DELETE_ACCOUNT_PROCESSED_TITLE,
+      )
+      DeleteAccountUiState.CanNotDelete.HasActiveInsurance -> stringResource(
+        R.string.DELETE_ACCOUNT_YOU_HAVE_ACTIVE_INSURANCE_TITLE,
+      )
+      DeleteAccountUiState.CanNotDelete.HasOngoingClaim -> stringResource(
+        R.string.DELETE_ACCOUNT_YOU_HAVE_ACTIVE_CLAIM_TITLE,
+      )
+    },
+    description = when (uiState) {
+      DeleteAccountUiState.CanNotDelete.AlreadyRequestedDeletion -> stringResource(
+        R.string.DELETE_ACCOUNT_PROCESSED_DESCRIPTION,
+      )
+      DeleteAccountUiState.CanNotDelete.HasActiveInsurance -> stringResource(
+        R.string.DELETE_ACCOUNT_YOU_HAVE_ACTIVE_INSURANCE_DESCRIPTION,
+      )
+      DeleteAccountUiState.CanNotDelete.HasOngoingClaim -> stringResource(
+        R.string.DELETE_ACCOUNT_YOU_HAVE_ACTIVE_CLAIM_DESCRIPTION,
+      )
+    },
+    buttonText = stringResource(R.string.general_back_button),
+    onButtonClick = navigateBack,
+    modifier = Modifier.weight(1f),
+  )
+}
+      is DeleteAccountUiState.CanDelete -> {
+        if (uiState.failedToPerformDeletion) {
+          HedvigErrorSection(retry = retryLoading, Modifier.weight(1f))
+        } else {
+          DeleteScreenContents(
+            title = stringResource(R.string.DELETE_ACCOUNT_DELETE_ACCOUNT_TITLE),
+            description = stringResource(R.string.DELETE_ACCOUNT_DELETE_ACCOUNT_DESCRIPTION),
+            buttonText = stringResource(R.string.PROFILE_DELETE_ACCOUNT_CONFIRM_DELETION),
+            onButtonClick = initiateAccountDeletion,
+            modifier = Modifier.weight(1f),
+            isButtonLoading = uiState.isPerformingDeletion,
+            buttonColors = ButtonDefaults.buttonColors(
+              containerColor = MaterialTheme.colorScheme.error,
+              contentColor = MaterialTheme.colorScheme.onError,
+            ),
+          )
         }
       }
     }
@@ -189,11 +180,11 @@ private class DeleteAccountUiStateProvider : CollectionPreviewParameterProvider<
   listOf(
     DeleteAccountUiState.Loading,
     DeleteAccountUiState.FailedToLoadDeleteAccountState,
-    DeleteAccountUiState.Success.AlreadyRequestedDeletion,
-    DeleteAccountUiState.Success.HasOngoingClaim,
-    DeleteAccountUiState.Success.HasActiveInsurance,
-    DeleteAccountUiState.Success.CanDelete(true, false),
-    DeleteAccountUiState.Success.CanDelete(false, true),
-    DeleteAccountUiState.Success.CanDelete(false, false),
+    DeleteAccountUiState.CanNotDelete.AlreadyRequestedDeletion,
+    DeleteAccountUiState.CanNotDelete.HasOngoingClaim,
+    DeleteAccountUiState.CanNotDelete.HasActiveInsurance,
+    DeleteAccountUiState.CanDelete(true, false),
+    DeleteAccountUiState.CanDelete(false, true),
+    DeleteAccountUiState.CanDelete(false, false),
   ),
 )

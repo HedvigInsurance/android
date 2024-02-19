@@ -27,7 +27,7 @@ internal class DeleteAccountPresenter(
     var loadIteration by remember { mutableIntStateOf(0) }
     var isPerformingDeletion by remember { mutableStateOf(false) }
     var failedToPerformAccountDeletion by remember {
-      mutableStateOf(lastState.safeCast<DeleteAccountUiState.Success.CanDelete>()?.failedToPerformDeletion ?: false)
+      mutableStateOf(lastState.safeCast<DeleteAccountUiState.CanDelete>()?.failedToPerformDeletion ?: false)
     }
     var deleteAccountState: DeleteAccountState? by remember {
       mutableStateOf(lastState.toDeleteAccountStateResult())
@@ -68,10 +68,10 @@ internal class DeleteAccountPresenter(
     return when (deleteAccountState) {
       null -> DeleteAccountUiState.Loading
       DeleteAccountState.NetworkError -> DeleteAccountUiState.FailedToLoadDeleteAccountState
-      DeleteAccountState.AlreadyRequestedDeletion -> DeleteAccountUiState.Success.AlreadyRequestedDeletion
-      DeleteAccountState.HasActiveInsurance -> DeleteAccountUiState.Success.HasActiveInsurance
-      DeleteAccountState.HasOngoingClaim -> DeleteAccountUiState.Success.HasOngoingClaim
-      DeleteAccountState.CanDelete -> DeleteAccountUiState.Success.CanDelete(
+      DeleteAccountState.AlreadyRequestedDeletion -> DeleteAccountUiState.CanNotDelete.AlreadyRequestedDeletion
+      DeleteAccountState.HasActiveInsurance -> DeleteAccountUiState.CanNotDelete.HasActiveInsurance
+      DeleteAccountState.HasOngoingClaim -> DeleteAccountUiState.CanNotDelete.HasOngoingClaim
+      DeleteAccountState.CanDelete -> DeleteAccountUiState.CanDelete(
         isPerformingDeletion = isPerformingDeletion,
         failedToPerformDeletion = failedToPerformAccountDeletion,
       )
@@ -90,24 +90,22 @@ internal sealed interface DeleteAccountUiState {
 
   data object FailedToLoadDeleteAccountState : DeleteAccountUiState
 
-  sealed interface Success : DeleteAccountUiState {
-    data object AlreadyRequestedDeletion : Success
-
-    data object HasOngoingClaim : Success
-
-    data object HasActiveInsurance : Success
-
-    data class CanDelete(val isPerformingDeletion: Boolean, val failedToPerformDeletion: Boolean) : Success
+  sealed interface CanNotDelete : DeleteAccountUiState {
+    data object AlreadyRequestedDeletion : CanNotDelete
+    data object HasOngoingClaim : CanNotDelete
+    data object HasActiveInsurance : CanNotDelete
   }
+
+  data class CanDelete(val isPerformingDeletion: Boolean, val failedToPerformDeletion: Boolean) : DeleteAccountUiState
 }
 
 private fun DeleteAccountUiState.toDeleteAccountStateResult(): DeleteAccountState? {
   return when (this) {
+    is DeleteAccountUiState.CanDelete -> DeleteAccountState.CanDelete
+    DeleteAccountUiState.CanNotDelete.AlreadyRequestedDeletion -> DeleteAccountState.AlreadyRequestedDeletion
+    DeleteAccountUiState.CanNotDelete.HasActiveInsurance -> DeleteAccountState.HasActiveInsurance
+    DeleteAccountUiState.CanNotDelete.HasOngoingClaim -> DeleteAccountState.HasOngoingClaim
     DeleteAccountUiState.FailedToLoadDeleteAccountState -> DeleteAccountState.NetworkError
     DeleteAccountUiState.Loading -> null
-    DeleteAccountUiState.Success.AlreadyRequestedDeletion -> DeleteAccountState.AlreadyRequestedDeletion
-    is DeleteAccountUiState.Success.CanDelete -> DeleteAccountState.CanDelete
-    DeleteAccountUiState.Success.HasActiveInsurance -> DeleteAccountState.HasActiveInsurance
-    DeleteAccountUiState.Success.HasOngoingClaim -> DeleteAccountState.HasOngoingClaim
   }
 }
