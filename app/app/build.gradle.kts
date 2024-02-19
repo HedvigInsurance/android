@@ -187,6 +187,7 @@ dependencies {
   implementation(projects.featureClaimTriaging)
   implementation(projects.featureConnectPaymentAdyen)
   implementation(projects.featureConnectPaymentTrustly)
+  implementation(projects.featureDeleteAccount)
   implementation(projects.featureEditCoinsured)
   implementation(projects.featureFlagsPublic)
   implementation(projects.featureForever)
