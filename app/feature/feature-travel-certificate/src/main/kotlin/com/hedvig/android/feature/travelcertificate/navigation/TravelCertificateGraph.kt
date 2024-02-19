@@ -2,7 +2,6 @@ package com.hedvig.android.feature.travelcertificate.navigation
 
 import android.content.Context
 import android.content.Intent
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Density
 import androidx.core.content.FileProvider.getUriForFile
@@ -14,6 +13,8 @@ import com.hedvig.android.feature.travelcertificate.ui.choose.ChooseContractForC
 import com.hedvig.android.feature.travelcertificate.ui.choose.ChooseContractForCertificateViewModel
 import com.hedvig.android.feature.travelcertificate.ui.generate_when.TravelCertificateDateInputDestination
 import com.hedvig.android.feature.travelcertificate.ui.generate_when.TravelCertificateDateInputViewModel
+import com.hedvig.android.feature.travelcertificate.ui.generate_who.TravelCertificateTravellersInputDestination
+import com.hedvig.android.feature.travelcertificate.ui.generate_who.TravelCertificateTravellersInputViewModel
 import com.hedvig.android.feature.travelcertificate.ui.history.CertificateHistoryEvent
 import com.hedvig.android.feature.travelcertificate.ui.history.CertificateHistoryViewModel
 import com.hedvig.android.feature.travelcertificate.ui.history.TravelCertificateHistoryDestination
@@ -36,6 +37,7 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavC
     popEnterTransition = { MotionDefaults.sharedXAxisPopEnter(density) },
     popExitTransition = { MotionDefaults.sharedXAxisPopExit(density) },
   ) {
+
     composable<TravelCertificateDestination.TravelCertificateHistory> {
       val viewModel: CertificateHistoryViewModel = koinViewModel()
       val localContext = LocalContext.current
@@ -76,7 +78,11 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavC
         viewModel = viewModel,
         navigateUp = { navController.navigateUp() },
         onNavigateToFellowTravellers = { travelCertificatePrimaryInput ->
-          // todo: add navigation to fellow travelers
+          navController.navigate(
+            TravelCertificateDestination.TravelCertificateTravellersInput(
+              travelCertificatePrimaryInput,
+            ),
+          )
         },
         onNavigateToOverview = { travelCertificateUrl ->
           navController.navigate(TravelCertificateDestination.ShowCertificate(travelCertificateUrl)) {
@@ -87,6 +93,26 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavC
         },
       )
     }
+
+    composable<TravelCertificateDestination.TravelCertificateTravellersInput> {
+      val viewModel: TravelCertificateTravellersInputViewModel = koinViewModel(
+        parameters = {
+          parametersOf(primaryInput)
+        },
+      )
+      TravelCertificateTravellersInputDestination(
+        viewModel = viewModel,
+        navigateUp = { navController.navigateUp() },
+        onNavigateToOverview = { travelCertificateUrl ->
+          navController.navigate(TravelCertificateDestination.ShowCertificate(travelCertificateUrl)) {
+            popUpTo<TravelCertificateDestination.TravelCertificateHistory> {
+              inclusive = false
+            }
+          }
+        },
+      )
+    }
+
 //
 //    navigation<TravelCertificateDestination.GenerateTravelCertificateDestinations>(
 //      startDestination = createRoutePattern<TravelCertificateDestination.TravelCertificateInput>(),
