@@ -88,7 +88,9 @@ private fun File(
 ) {
   Box(
     contentAlignment = Alignment.TopEnd,
-    modifier = Modifier.fillMaxSize().aspectRatio(1f),
+    modifier = Modifier
+      .fillMaxSize()
+      .aspectRatio(1f),
   ) {
     Box(
       modifier = Modifier

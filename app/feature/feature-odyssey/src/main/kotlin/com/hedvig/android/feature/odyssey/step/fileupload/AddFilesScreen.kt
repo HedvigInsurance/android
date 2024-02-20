@@ -18,7 +18,6 @@ import coil.ImageLoader
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigSecondaryContainedButton
 import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.FilesLazyVerticalGrid
 import com.hedvig.android.core.ui.preview.calculateForPreview
