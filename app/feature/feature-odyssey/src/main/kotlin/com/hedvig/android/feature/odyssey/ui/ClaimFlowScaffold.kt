@@ -3,6 +3,7 @@ package com.hedvig.android.feature.odyssey.ui
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
@@ -49,7 +50,6 @@ internal fun ClaimFlowScaffold(
   topAppBarText: String? = null,
   errorSnackbarState: ErrorSnackbarState? = null,
   itemsColumnHorizontalAlignment: Alignment.Horizontal = Alignment.Start,
-  scrollable: Boolean = true,
   content: @Composable (ColumnScope.(sideSpacingModifier: Modifier) -> Unit),
 ) {
   HedvigTheme {
@@ -80,12 +80,8 @@ internal fun ClaimFlowScaffold(
             horizontalAlignment = itemsColumnHorizontalAlignment,
             modifier = Modifier
               .fillMaxSize()
-              .apply {
-                if (scrollable) {
-                  nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
-                  verticalScroll(rememberScrollState())
-                }
-              }
+              .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
+              .verticalScroll(rememberScrollState())
               .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
           ) {
             val sideSpacingModifier = if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded) {
