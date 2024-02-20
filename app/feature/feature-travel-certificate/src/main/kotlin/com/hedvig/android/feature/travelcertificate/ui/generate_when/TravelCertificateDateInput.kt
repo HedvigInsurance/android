@@ -47,7 +47,6 @@ import com.hedvig.android.core.icons.hedvig.normal.ChevronDown
 import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
-import com.hedvig.android.logger.logcat
 import hedvig.resources.R
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
@@ -85,19 +84,16 @@ private fun TravelCertificateDateInput(
   onNavigateToOverview: (TravelCertificateUrl) -> Unit,
   onGenerateCertificate: () -> Unit,
 ) {
-  logcat { "mariia: received uiState: $uiState" }
-
   var toast by remember { mutableStateOf<Int?>(null) }
   val context = LocalContext.current
-  // val errorMsg = stringResource(id = R.string.travel_certificate_email_empty_error)
-  val errorMsg = "er" // todo: remove mock
+  val errorMsg = stringResource(id = R.string.travel_certificate_email_empty_error)
 
   LaunchedEffect(toast) {
     val stringRes = toast
     if (stringRes != null) {
       Toast.makeText(context, errorMsg, Toast.LENGTH_SHORT).show()
     }
-  } // todo: do we do anything here, do we show toast or smth?
+  } // todo: do we do anything here, do we show toast or smth? is it good idea to show th same msg only once?
 
   when (uiState) {
     TravelCertificateDateInputUiState.Failure -> {

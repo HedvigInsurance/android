@@ -37,7 +37,6 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavC
     popEnterTransition = { MotionDefaults.sharedXAxisPopEnter(density) },
     popExitTransition = { MotionDefaults.sharedXAxisPopExit(density) },
   ) {
-
     composable<TravelCertificateDestination.TravelCertificateHistory> {
       val viewModel: CertificateHistoryViewModel = koinViewModel()
       val localContext = LocalContext.current
@@ -110,74 +109,11 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavC
             }
           }
         },
+        onNavigateToCoEnsuredAddInfo = {
+          navController.navigate(AppDestination.CoInsuredAddInfo(primaryInput.contractId))
+        },
       )
     }
-
-//
-//    navigation<TravelCertificateDestination.GenerateTravelCertificateDestinations>(
-//      startDestination = createRoutePattern<TravelCertificateDestination.TravelCertificateInput>(),
-//    ) {
-//      composable<TravelCertificateDestination.TravelCertificateInput> { navBackStackEntry ->
-//        val viewModel: GenerateTravelCertificateViewModel =
-//          destinationScopedViewModel<TravelCertificateDestination.GenerateTravelCertificateDestinations, _>(
-//            navController = navController,
-//            backStackEntry = navBackStackEntry,
-//            parameters = {
-//              parametersOf(contractId)
-//            },
-//          )
-//        val uiState: TravelCertificateInputState by viewModel.uiState.collectAsStateWithLifecycle()
-//        GenerateTravelCertificateInput(
-//          uiState = uiState,
-//          navigateBack = {
-//            navController.navigateUp()
-//          },
-//          onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
-//          onEmailChanged = viewModel::onEmailChanged,
-//          onCoInsuredClicked = { coInsured ->
-//            navController.navigate(TravelCertificateDestination.AddCoInsured(coInsured, contractId))
-//          },
-//          onAddCoInsuredClicked = {
-//            navController.navigate(TravelCertificateDestination.AddCoInsured(null, contractId))
-//          },
-//          onIncludeMemberClicked = viewModel::onIncludeMemberClicked,
-//          onTravelDateSelected = viewModel::onTravelDateSelected,
-//          onContinue = viewModel::onContinue,
-//          onSuccess = { travelCertificateUrl ->
-//            navController.navigate(TravelCertificateDestination.ShowCertificate(travelCertificateUrl)) {
-//              popUpTo<TravelCertificateDestination.TravelCertificateHistory> {
-//                inclusive = false
-//              }
-//            }
-//          },
-//        )
-//      }
-//      composable<TravelCertificateDestination.AddCoInsured> { navBackStackEntry ->
-//        val viewModel: GenerateTravelCertificateViewModel =
-//          destinationScopedViewModel<TravelCertificateDestination.GenerateTravelCertificateDestinations, _>(
-//            navController = navController,
-//            backStackEntry = navBackStackEntry,
-//            parameters = { parametersOf(contractId) },
-//          )
-//
-//        AddCoInsured(
-//          coInsured = coInsured,
-//          navigateUp = navController::navigateUp,
-//          onRemoveCoInsured = { coInsuredId ->
-//            navController.navigateUp()
-//            viewModel.onCoInsuredRemoved(coInsuredId)
-//          },
-//          onEditCoInsured = { coInsured ->
-//            navController.navigateUp()
-//            viewModel.onEditCoInsured(coInsured)
-//          },
-//          onAddCoInsured = {
-//            navController.navigateUp()
-//            viewModel.onAddCoInsured(it)
-//          },
-//        )
-//      }
-//    }
 
     composable<TravelCertificateDestination.ShowCertificate> {
       val viewModel: TravelCertificateOverviewViewModel = koinViewModel()
