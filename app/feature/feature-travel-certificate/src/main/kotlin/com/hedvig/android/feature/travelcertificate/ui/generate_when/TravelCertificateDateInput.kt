@@ -46,7 +46,6 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.ChevronDown
-import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import hedvig.resources.R
@@ -71,7 +70,8 @@ internal fun TravelCertificateDateInputDestination(
     navigateUp = navigateUp,
     onNavigateToFellowTravellers = onNavigateToFellowTravellers,
     onNavigateToOverview = onNavigateToOverview,
-    onGenerateCertificate = { viewModel.emit(TravelCertificateDateInputEvent.GenerateTravelCertificate) },
+    validateInput = { viewModel.emit(TravelCertificateDateInputEvent.ValidateInputAndChooseDirection) },
+    nullifyInputValidity = { viewModel.emit(TravelCertificateDateInputEvent.NullifyInputValidity) },
   )
 }
 
@@ -84,7 +84,8 @@ private fun TravelCertificateDateInput(
   navigateUp: () -> Unit,
   onNavigateToFellowTravellers: (TravelCertificatePrimaryInput) -> Unit,
   onNavigateToOverview: (TravelCertificateUrl) -> Unit,
-  onGenerateCertificate: () -> Unit,
+  validateInput: () -> Unit,
+  nullifyInputValidity: () -> Unit,
 ) {
   var toast by remember { mutableStateOf<Int?>(null) }
   val context = LocalContext.current
@@ -113,6 +114,17 @@ private fun TravelCertificateDateInput(
     }
 
     is TravelCertificateDateInputUiState.Success -> {
+      LaunchedEffect(uiState.inputValid) {
+        if (uiState.inputValid == true) {
+          if (uiState.primaryInput != null) {
+            onNavigateToFellowTravellers(uiState.primaryInput)
+            nullifyInputValidity()
+          }
+        } else if (uiState.inputValid == false) {
+          toast = R.string.travel_certificate_email_empty_error
+        }
+      }
+
       HedvigScaffold(
         navigateUp = navigateUp,
       ) {
@@ -143,22 +155,7 @@ private fun TravelCertificateDateInput(
         Spacer(Modifier.height(16.dp))
         HedvigContainedButton(
           onClick = {
-            val state = uiState.validateInput()
-            val email = state.email.input
-            if (state.isInputValid && email != null) {
-              if (uiState.hasCoEnsured) {
-                val travelCertificatePrimaryInput = TravelCertificatePrimaryInput(
-                  email,
-                  uiState.travelDate,
-                  uiState.contractId,
-                )
-                onNavigateToFellowTravellers(travelCertificatePrimaryInput)
-              } else {
-                onGenerateCertificate()
-              }
-            } else {
-              toast = state.email.errorMessageRes
-            }
+            validateInput()
           },
           modifier = Modifier
             .fillMaxWidth()
@@ -176,19 +173,15 @@ private fun TravelCertificateDateInput(
 }
 
 @Composable
-private fun EmailTextField(
-  email: ValidatedInput<String?>,
-  onStreetChanged: (String) -> Unit,
-  modifier: Modifier = Modifier,
-) {
+private fun EmailTextField(email: String?, onStreetChanged: (String) -> Unit, modifier: Modifier = Modifier) {
   HedvigTextField(
-    value = TextFieldValue( //todo: had a problem with a jumping cursor, this works, but not sure if it is a best solution
-      text = email.input ?: "",
-      selection = TextRange((email.input ?: "").length)
+    value = TextFieldValue(
+      // todo: had a problem with a jumping cursor, this works, but not sure if it is a best solution
+      text = email ?: "",
+      selection = TextRange((email ?: "").length),
     ),
     withNewDesign = true,
     onValueChange = { onStreetChanged(it.text) },
-    errorText = email.errorMessageRes?.let { stringResource(it) },
     label = {
       Text("Email")
     },
@@ -288,12 +281,15 @@ private fun PreviewTravelCertificateDateInput() {
       TravelCertificateDateInput(
         TravelCertificateDateInputUiState.Success(
           "id",
-          ValidatedInput("email"),
+          "emaild",
           hasCoEnsured = false,
           datePickerState = DatePickerState(null, null, 2020..2024, DisplayMode.Picker),
           dateValidator = { true },
           daysValid = 40,
+          inputValid = null,
+          primaryInput = null,
         ),
+        {},
         {},
         {},
         {},

@@ -242,7 +242,6 @@ private fun PreviewTravelCertificateTravellersInput() {
   }
 }
 
-
 @HedvigPreview
 @Composable
 private fun PreviewTravelCertificateTravellersInputWithEmailFailure() {

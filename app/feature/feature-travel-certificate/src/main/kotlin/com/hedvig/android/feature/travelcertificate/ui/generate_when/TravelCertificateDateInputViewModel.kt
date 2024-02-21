@@ -9,13 +9,17 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.data.travelcertificate.GetTravelCertificateSpecificationsUseCase
 import com.hedvig.android.feature.travelcertificate.data.CreateTravelCertificateUseCase
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
@@ -34,6 +38,9 @@ internal class TravelCertificateDateInputViewModel(
       getTravelCertificateSpecificationsUseCase,
       createTravelCertificateUseCase,
     ),
+    sharingStarted = SharingStarted.WhileSubscribed(15.seconds),
+// todo: I was wondering here if we should save the info on the previous step longer than 5 or even 15 seconds? Bc
+    // todo if we go back after that interval (to change email, for example), the travel date gets reset and it's easy to miss
   )
 
 internal class TravelCertificateDateInputPresenter(
@@ -57,7 +64,17 @@ internal class TravelCertificateDateInputPresenter(
       )
     }
 
-    var email by remember { mutableStateOf<ValidatedInput<String?>>(ValidatedInput(null)) }
+    var contractIdFromBackend by remember { mutableStateOf<String?>(null) }
+
+    var email by remember { mutableStateOf<String?>(null) }
+
+    var primaryInput by remember {
+      mutableStateOf<TravelCertificatePrimaryInput?>(null)
+    }
+
+    var isInputValid by remember { mutableStateOf<Boolean?>(null) }
+
+    var hasCoEnsured by remember { mutableStateOf(false) }
 
     CollectEvents { event ->
       when (event) {
@@ -66,22 +83,53 @@ internal class TravelCertificateDateInputPresenter(
         }
 
         is TravelCertificateDateInputEvent.ChangeEmailInput -> {
-          email = ValidatedInput(event.email)
+          email = event.email
         }
 
         is TravelCertificateDateInputEvent.ChangeDataInput -> {
           travelDate = event.localDate
         }
 
-        TravelCertificateDateInputEvent.GenerateTravelCertificate -> {
-          generateIteration++
+        TravelCertificateDateInputEvent.NullifyInputValidity -> {
+          isInputValid = null
+        }
+
+        TravelCertificateDateInputEvent.ValidateInputAndChooseDirection -> {
+          val currentEmail = email
+          val isCurrentInputValid =
+            currentEmail != null && currentEmail.length > 5 // todo: couldn't be shorter than this, right?
+          isInputValid = isCurrentInputValid
+          if (isCurrentInputValid) {
+            if (hasCoEnsured) {
+              val currentContractId = contractIdFromBackend
+              val travelCertificatePrimaryInput = if (currentEmail != null &&
+                currentContractId != null
+              ) {
+                TravelCertificatePrimaryInput(
+                  currentEmail,
+                  travelDate,
+                  currentContractId,
+                )
+              } else {
+                null
+              }
+              if (travelCertificatePrimaryInput == null) {
+                logcat(LogPriority.INFO) {
+                  "TravelCertificateDateInputPresenter: currentEmail or currentContractId are null when they shouldn't be"
+                }
+              }
+              primaryInput = travelCertificatePrimaryInput
+            } else {
+              generateIteration++ //
+            }
+          } // todo: else isInputValid will be false will go to Success and show toast
         }
       }
     }
 
     LaunchedEffect(generateIteration) {
       val currentContent = screenContent
-      val currentEmail = email.input
+      val currentEmail = email
       if (currentContent is DateInputScreenContent.Success && currentEmail != null) {
         screenContent = DateInputScreenContent.Loading
         createTravelCertificateUseCase.invoke(
@@ -121,11 +169,13 @@ internal class TravelCertificateDateInputPresenter(
               yearRange = travelSpecification.dateRange.start.year..travelSpecification.dateRange.endInclusive.year,
               initialDisplayMode = DisplayMode.Picker,
             )
-            email = ValidatedInput(travelSpecification.email)
+            email = travelSpecification.email
+            contractIdFromBackend = travelSpecification.contractId
+            hasCoEnsured = travelSpecification.numberOfCoInsured > 0
             screenContent = DateInputScreenContent.Success(
               SpecificationsDetails(
                 contractId = travelSpecification.contractId,
-                hasCoEnsured = travelSpecification.numberOfCoInsured > 0,
+                hasCoEnsured = hasCoEnsured,
                 datePickerState = datePickerState,
                 dateValidator = { date ->
                   val selectedDate =
@@ -150,6 +200,8 @@ internal class TravelCertificateDateInputPresenter(
           datePickerState = currentContent.details.datePickerState,
           dateValidator = currentContent.details.dateValidator,
           daysValid = currentContent.details.daysValid,
+          inputValid = isInputValid,
+          primaryInput = primaryInput,
         )
       }
 
@@ -185,7 +237,9 @@ internal sealed interface TravelCertificateDateInputEvent {
 
   data class ChangeDataInput(val localDate: LocalDate) : TravelCertificateDateInputEvent
 
-  data object GenerateTravelCertificate : TravelCertificateDateInputEvent
+  data object ValidateInputAndChooseDirection : TravelCertificateDateInputEvent
+
+  data object NullifyInputValidity : TravelCertificateDateInputEvent
 }
 
 internal sealed interface TravelCertificateDateInputUiState {
@@ -197,30 +251,15 @@ internal sealed interface TravelCertificateDateInputUiState {
 
   data class Success(
     val contractId: String,
-    val email: ValidatedInput<String?>,
+    val email: String?,
     val travelDate: LocalDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date,
     val hasCoEnsured: Boolean,
     val datePickerState: DatePickerState,
     val dateValidator: (Long) -> Boolean,
     val daysValid: Int,
-  ) : TravelCertificateDateInputUiState {
-    val isInputValid: Boolean
-      get() {
-        return email.errorMessageRes == null
-      }
-
-    fun validateInput(): Success {
-      return copy(
-        email = email.copy(
-          errorMessageRes = if (!email.isPresent || email.input?.isBlank() == true) {
-            hedvig.resources.R.string.travel_certificate_email_empty_error
-          } else {
-            null
-          },
-        ),
-      )
-    }
-  }
+    val primaryInput: TravelCertificatePrimaryInput?,
+    val inputValid: Boolean?,
+  ) : TravelCertificateDateInputUiState
 }
 
 @Serializable

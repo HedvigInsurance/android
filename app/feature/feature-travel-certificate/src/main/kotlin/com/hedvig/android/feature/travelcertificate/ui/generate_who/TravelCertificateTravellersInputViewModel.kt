@@ -107,7 +107,7 @@ internal class TravelCertificateTravellersInputPresenter(
         ).fold(
           ifLeft = { errorMessage ->
             val message = errorMessage.message
-            screenContent = if (message!=null && message.contains("Invalid email")) {
+            screenContent = if (message != null && message.contains("Invalid email")) {
               TravelersInputScreenContent.FailureWithInvalidEmail
             } else {
               TravelersInputScreenContent.Failure
@@ -143,7 +143,7 @@ private sealed interface TravelersInputScreenContent {
 
   data object Failure : TravelersInputScreenContent
 
-  data object FailureWithInvalidEmail: TravelersInputScreenContent
+  data object FailureWithInvalidEmail : TravelersInputScreenContent
 
   data class UrlFetched(val travelCertificateUrl: TravelCertificateUrl) : TravelersInputScreenContent
 
@@ -158,7 +158,7 @@ internal sealed interface TravelCertificateTravellersInputUiState {
 
   data object Failure : TravelCertificateTravellersInputUiState
 
-  data object FailureWithInvalidEmail: TravelCertificateTravellersInputUiState
+  data object FailureWithInvalidEmail : TravelCertificateTravellersInputUiState
 
   data class UrlFetched(val travelCertificateUrl: TravelCertificateUrl) : TravelCertificateTravellersInputUiState
 
