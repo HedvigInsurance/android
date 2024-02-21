@@ -103,9 +103,13 @@ internal class TravelCertificateTravellersInputPresenter(
           coInsured = currentCoEnsuredList.filter { it.isIncluded },
           email = primaryInput.email,
         ).fold(
-          ifLeft = { _ ->
-            screenContent = TravelersInputScreenContent.Failure
-            // todo: so on Retry we would just show the initial Input screen again, is it okay?
+          ifLeft = { errorMessage ->
+            val message = errorMessage.message
+            screenContent = if (message!=null && message.contains("Invalid email")) {
+              TravelersInputScreenContent.FailureWithInvalidEmail
+            } else {
+              TravelersInputScreenContent.Failure
+            }
           },
           ifRight = { url ->
             screenContent = TravelersInputScreenContent.UrlFetched(url)
@@ -127,6 +131,7 @@ internal class TravelCertificateTravellersInputPresenter(
       is TravelersInputScreenContent.UrlFetched -> TravelCertificateTravellersInputUiState.UrlFetched(
         currentContent.travelCertificateUrl,
       )
+      TravelersInputScreenContent.FailureWithInvalidEmail -> TravelCertificateTravellersInputUiState.FailureWithInvalidEmail
     }
   }
 }
@@ -135,6 +140,8 @@ private sealed interface TravelersInputScreenContent {
   data object Loading : TravelersInputScreenContent
 
   data object Failure : TravelersInputScreenContent
+
+  data object FailureWithInvalidEmail: TravelersInputScreenContent
 
   data class UrlFetched(val travelCertificateUrl: TravelCertificateUrl) : TravelersInputScreenContent
 
@@ -148,6 +155,8 @@ internal sealed interface TravelCertificateTravellersInputUiState {
   data object Loading : TravelCertificateTravellersInputUiState
 
   data object Failure : TravelCertificateTravellersInputUiState
+
+  data object FailureWithInvalidEmail: TravelCertificateTravellersInputUiState
 
   data class UrlFetched(val travelCertificateUrl: TravelCertificateUrl) : TravelCertificateTravellersInputUiState
 

@@ -70,6 +70,19 @@ private fun TravelCertificateTravellersInput(
   when (uiState) {
     TravelCertificateTravellersInputUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
 
+    TravelCertificateTravellersInputUiState.FailureWithInvalidEmail -> {
+      HedvigScaffold(
+        navigateUp = navigateUp,
+      ) {
+        HedvigErrorSection(
+          retry = navigateUp,
+          modifier = Modifier.weight(1f),
+          title = stringResource(id = R.string.travel_certificate_invalid_email),
+          subTitle = null
+        )
+      }
+    }
+
     TravelCertificateTravellersInputUiState.Failure -> {
       HedvigScaffold(
         navigateUp = navigateUp,
@@ -216,6 +229,26 @@ private fun PreviewTravelCertificateTravellersInput() {
           true,
           true,
         ),
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+      )
+    }
+  }
+}
+
+
+@HedvigPreview
+@Composable
+private fun PreviewTravelCertificateTravellersInputWithEmailFailure() {
+  HedvigTheme {
+    Surface(color = MaterialTheme.colorScheme.background) {
+      TravelCertificateTravellersInput(
+        TravelCertificateTravellersInputUiState.FailureWithInvalidEmail,
         {},
         {},
         {},
