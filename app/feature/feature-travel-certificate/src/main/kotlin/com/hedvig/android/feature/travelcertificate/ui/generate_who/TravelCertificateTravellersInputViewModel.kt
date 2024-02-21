@@ -58,7 +58,8 @@ internal class TravelCertificateTravellersInputPresenter(
           val newList = currentCoEnsuredList.toMutableList()
           newList.remove(event.coInsured)
           newList.add(changedTraveler)
-          currentCoEnsuredList = newList.sortedBy { it.name } // todo: sounds like a troublesome way of maintaining the same order
+          val sorted = newList.sortedBy { it.name }
+          currentCoEnsuredList = sorted
         }
         TravelCertificateTravellersInputEvent.ChangeMemberChecked -> {
           val lastMemberState = isMemberIncluded
@@ -73,7 +74,7 @@ internal class TravelCertificateTravellersInputPresenter(
           screenContent = TravelersInputScreenContent.Failure
         },
         ifRight = { data ->
-          currentCoEnsuredList = data.coEnsuredList.filterNot {
+          val resultList = data.coEnsuredList.filterNot {
             it.hasMissingInfo
           }.map { coEnsured ->
             CoInsured(
@@ -82,7 +83,8 @@ internal class TravelCertificateTravellersInputPresenter(
               coEnsured.ssn,
               coEnsured.dateOfBirth,
             )
-          }
+          }.sortedBy { it.name }
+          currentCoEnsuredList = resultList
           val hasMissingInfo = data.coEnsuredList.any { it.hasMissingInfo }
           screenContent = TravelersInputScreenContent.Success(
             hasMissingInfo,

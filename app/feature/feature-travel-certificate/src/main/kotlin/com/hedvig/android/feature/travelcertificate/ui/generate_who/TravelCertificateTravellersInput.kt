@@ -78,7 +78,7 @@ private fun TravelCertificateTravellersInput(
           retry = navigateUp,
           modifier = Modifier.weight(1f),
           title = stringResource(id = R.string.travel_certificate_invalid_email),
-          subTitle = null
+          subTitle = null,
         )
       }
     }
@@ -95,7 +95,7 @@ private fun TravelCertificateTravellersInput(
       onNavigateToOverview(uiState.travelCertificateUrl)
     }
 
-    is TravelCertificateTravellersInputUiState.Success ->
+    is TravelCertificateTravellersInputUiState.Success -> {
       HedvigScaffold(
         navigateUp = navigateUp,
       ) {
@@ -213,6 +213,7 @@ private fun TravelCertificateTravellersInput(
         }
         Spacer(Modifier.height(16.dp))
       }
+    }
   }
 }
 
