@@ -30,8 +30,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -64,13 +62,12 @@ internal fun TravelCertificateDateInputDestination(
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   TravelCertificateDateInput(
     uiState = uiState,
-    changeEmail = { viewModel.emit(TravelCertificateDateInputEvent.ChangeEmailInput(it)) },
     changeDate = { viewModel.emit(TravelCertificateDateInputEvent.ChangeDataInput(it)) },
     reload = { viewModel.emit(TravelCertificateDateInputEvent.RetryLoadData) },
     navigateUp = navigateUp,
     onNavigateToFellowTravellers = onNavigateToFellowTravellers,
     onNavigateToOverview = onNavigateToOverview,
-    validateInput = { viewModel.emit(TravelCertificateDateInputEvent.ValidateInputAndChooseDirection) },
+    validateInput = { viewModel.emit(TravelCertificateDateInputEvent.ValidateInputAndChooseDirection(it)) },
     nullifyInputValidity = { viewModel.emit(TravelCertificateDateInputEvent.NullifyInputValidity) },
   )
 }
@@ -78,13 +75,12 @@ internal fun TravelCertificateDateInputDestination(
 @Composable
 private fun TravelCertificateDateInput(
   uiState: TravelCertificateDateInputUiState,
-  changeEmail: (String) -> Unit,
   changeDate: (LocalDate) -> Unit,
   reload: () -> Unit,
   navigateUp: () -> Unit,
   onNavigateToFellowTravellers: (TravelCertificatePrimaryInput) -> Unit,
   onNavigateToOverview: (TravelCertificateUrl) -> Unit,
-  validateInput: () -> Unit,
+  validateInput: (String) -> Unit,
   nullifyInputValidity: () -> Unit,
 ) {
   var toast by remember { mutableStateOf<Int?>(null) }
@@ -125,6 +121,10 @@ private fun TravelCertificateDateInput(
         }
       }
 
+      var emailInput by remember {
+        mutableStateOf(uiState.email ?: "")
+      }
+
       HedvigScaffold(
         navigateUp = navigateUp,
       ) {
@@ -148,14 +148,16 @@ private fun TravelCertificateDateInput(
         )
         Spacer(Modifier.height(4.dp))
         EmailTextField(
-          email = uiState.email,
-          onStreetChanged = changeEmail,
+          email = emailInput,
+          onEmailChanged = {
+            emailInput = it
+          },
           modifier = Modifier.padding(horizontal = 16.dp),
         )
         Spacer(Modifier.height(16.dp))
         HedvigContainedButton(
           onClick = {
-            validateInput()
+            validateInput(emailInput)
           },
           modifier = Modifier
             .fillMaxWidth()
@@ -173,15 +175,11 @@ private fun TravelCertificateDateInput(
 }
 
 @Composable
-private fun EmailTextField(email: String?, onStreetChanged: (String) -> Unit, modifier: Modifier = Modifier) {
+private fun EmailTextField(email: String, onEmailChanged: (String) -> Unit, modifier: Modifier = Modifier) {
   HedvigTextField(
-    value = TextFieldValue(
-      // todo: had a problem with a jumping cursor, this works, but not sure if it is a best solution
-      text = email ?: "",
-      selection = TextRange((email ?: "").length),
-    ),
+    value = email,
     withNewDesign = true,
-    onValueChange = { onStreetChanged(it.text) },
+    onValueChange = { onEmailChanged(it) },
     label = {
       Text("Email")
     },
@@ -289,7 +287,6 @@ private fun PreviewTravelCertificateDateInput() {
           inputValid = null,
           primaryInput = null,
         ),
-        {},
         {},
         {},
         {},

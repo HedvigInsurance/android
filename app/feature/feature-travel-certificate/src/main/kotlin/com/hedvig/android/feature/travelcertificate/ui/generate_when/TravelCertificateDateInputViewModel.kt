@@ -82,10 +82,6 @@ internal class TravelCertificateDateInputPresenter(
           loadIteration++
         }
 
-        is TravelCertificateDateInputEvent.ChangeEmailInput -> {
-          email = event.email
-        }
-
         is TravelCertificateDateInputEvent.ChangeDataInput -> {
           travelDate = event.localDate
         }
@@ -94,7 +90,8 @@ internal class TravelCertificateDateInputPresenter(
           isInputValid = null
         }
 
-        TravelCertificateDateInputEvent.ValidateInputAndChooseDirection -> {
+        is TravelCertificateDateInputEvent.ValidateInputAndChooseDirection -> {
+          email = event.emailInput
           val currentEmail = email
           val isCurrentInputValid =
             currentEmail != null && currentEmail.length > 5 // todo: couldn't be shorter than this, right?
@@ -233,11 +230,9 @@ private data class SpecificationsDetails(
 internal sealed interface TravelCertificateDateInputEvent {
   data object RetryLoadData : TravelCertificateDateInputEvent
 
-  data class ChangeEmailInput(val email: String?) : TravelCertificateDateInputEvent
-
   data class ChangeDataInput(val localDate: LocalDate) : TravelCertificateDateInputEvent
 
-  data object ValidateInputAndChooseDirection : TravelCertificateDateInputEvent
+  data class ValidateInputAndChooseDirection(val emailInput: String) : TravelCertificateDateInputEvent
 
   data object NullifyInputValidity : TravelCertificateDateInputEvent
 }
