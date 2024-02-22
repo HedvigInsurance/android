@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.deleteaccount
 
-import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -93,7 +92,9 @@ internal sealed interface DeleteAccountUiState {
 
   sealed interface CanNotDelete : DeleteAccountUiState {
     data object AlreadyRequestedDeletion : CanNotDelete
+
     data object HasActiveInsurance : CanNotDelete
+
     data object HasOngoingClaim : CanNotDelete
   }
 
