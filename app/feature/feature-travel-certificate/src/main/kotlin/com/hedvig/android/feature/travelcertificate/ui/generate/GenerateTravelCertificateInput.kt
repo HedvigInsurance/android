@@ -268,7 +268,6 @@ private fun MovingDateButton(
               val selectedDate = Instant.fromEpochMilliseconds(it)
                 .toLocalDateTime(TimeZone.UTC)
                 .date
-              uiState.datePickerState.setSelection(it)
               onDateSelected(selectedDate)
             }
 
@@ -290,10 +289,7 @@ private fun MovingDateButton(
         }
       },
     ) {
-      HedvigDatePicker(
-        datePickerState = uiState.datePickerState,
-        dateValidator = { uiState.dateValidator(it) },
-      )
+      HedvigDatePicker(datePickerState = uiState.datePickerState)
     }
   }
 

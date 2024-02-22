@@ -2,12 +2,14 @@ package com.hedvig.android.feature.travelcertificate.ui.generate
 
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.DisplayMode
+import androidx.compose.material3.SelectableDates
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.data.travelcertificate.GetTravelCertificateSpecificationsUseCase
 import com.hedvig.android.data.travelcertificate.TravelCertificateError
 import com.hedvig.android.feature.travelcertificate.data.CreateTravelCertificateUseCase
+import com.hedvig.android.language.LanguageService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,6 +24,7 @@ internal class GenerateTravelCertificateViewModel(
   contractId: String?,
   private val getTravelCertificateSpecificationsUseCase: GetTravelCertificateSpecificationsUseCase,
   private val createTravelCertificateUseCase: CreateTravelCertificateUseCase,
+  private val languageService: LanguageService,
 ) : ViewModel() {
   private val _uiState: MutableStateFlow<TravelCertificateInputState> = MutableStateFlow(TravelCertificateInputState())
   val uiState: StateFlow<TravelCertificateInputState> = _uiState.asStateFlow()
@@ -44,6 +47,7 @@ internal class GenerateTravelCertificateViewModel(
                 is TravelCertificateError.Error -> {
                   TravelCertificateInputState(errorMessage = travelCertificateError.message)
                 }
+
                 TravelCertificateError.NotEligible -> {
                   TravelCertificateInputState(errorMessage = "Not eligible")
                 }
@@ -53,22 +57,28 @@ internal class GenerateTravelCertificateViewModel(
           ifRight = { travelCertificateData ->
             _uiState.update {
               val travelSpecification = travelCertificateData.travelCertificateSpecification
+              val yearRange = travelSpecification.dateRange.start.year..travelSpecification.dateRange.endInclusive.year
               val datePickerState = DatePickerState(
+                locale = languageService.getLocale(),
                 initialSelectedDateMillis = null,
                 initialDisplayedMonthMillis = null,
-                yearRange = travelSpecification.dateRange.start.year..travelSpecification.dateRange.endInclusive.year,
+                yearRange = yearRange,
                 initialDisplayMode = DisplayMode.Picker,
+                selectableDates = object : SelectableDates {
+                  override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                    val selectedDate =
+                      Instant.fromEpochMilliseconds(utcTimeMillis).toLocalDateTime(TimeZone.currentSystemDefault()).date
+                    return selectedDate in travelSpecification.dateRange
+                  }
+
+                  override fun isSelectableYear(year: Int): Boolean = year in yearRange
+                },
               )
               TravelCertificateInputState(
                 contractId = travelSpecification.contractId,
                 email = ValidatedInput(travelSpecification.email),
                 maximumCoInsured = travelSpecification.numberOfCoInsured,
                 datePickerState = datePickerState,
-                dateValidator = { date ->
-                  val selectedDate =
-                    Instant.fromEpochMilliseconds(date).toLocalDateTime(TimeZone.currentSystemDefault()).date
-                  travelSpecification.dateRange.contains(selectedDate)
-                },
                 daysValid = travelSpecification.maxDurationDays,
                 infoSections = travelCertificateData.infoSections,
               )

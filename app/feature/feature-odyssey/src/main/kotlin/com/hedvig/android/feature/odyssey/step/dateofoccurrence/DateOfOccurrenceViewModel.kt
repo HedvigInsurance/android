@@ -8,6 +8,7 @@ import com.hedvig.android.data.claimflow.ClaimFlowDestination
 import com.hedvig.android.data.claimflow.ClaimFlowRepository
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.feature.odyssey.ui.DatePickerUiState
+import com.hedvig.android.language.LanguageService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,10 +22,12 @@ import kotlinx.datetime.toLocalDateTime
 internal class DateOfOccurrenceViewModel(
   dateOfOccurrence: ClaimFlowDestination.DateOfOccurrence,
   private val claimFlowRepository: ClaimFlowRepository,
+  languageService: LanguageService,
 ) : ViewModel() {
   private val _uiState: MutableStateFlow<DateOfOccurrenceUiState> = MutableStateFlow(
     DateOfOccurrenceUiState(
       datePickerUiState = DatePickerUiState(
+        locale = languageService.getLocale(),
         initiallySelectedDate = dateOfOccurrence.dateOfOccurrence,
         maxDate = dateOfOccurrence.maxDate,
       ),

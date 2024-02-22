@@ -7,6 +7,7 @@ import com.hedvig.android.data.claimflow.ClaimFlowRepository
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.LocationOption
 import com.hedvig.android.feature.odyssey.ui.DatePickerUiState
+import com.hedvig.android.language.LanguageService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -18,10 +19,12 @@ import kotlinx.datetime.toLocalDateTime
 internal class DateOfOccurrencePlusLocationViewModel(
   private val dateOfOccurrencePlusLocation: ClaimFlowDestination.DateOfOccurrencePlusLocation,
   private val claimFlowRepository: ClaimFlowRepository,
+  languageService: LanguageService,
 ) : ViewModel() {
   private val _uiState = MutableStateFlow(
     DateOfOccurrencePlusLocationUiState.fromInitialSelection(
       DatePickerUiState(
+        locale = languageService.getLocale(),
         initiallySelectedDate = dateOfOccurrencePlusLocation.dateOfOccurrence,
         maxDate = dateOfOccurrencePlusLocation.maxDate,
       ),

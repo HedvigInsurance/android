@@ -4,6 +4,7 @@ import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -25,6 +26,7 @@ import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
 import hedvig.resources.R
+import java.util.Locale
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -63,10 +65,7 @@ internal fun DatePickerWithDialog(
         }
       },
     ) {
-      HedvigDatePicker(
-        datePickerState = uiState.datePickerState,
-        dateValidator = uiState::validateDate,
-      )
+      HedvigDatePicker(datePickerState = uiState.datePickerState)
     }
   }
 
@@ -95,26 +94,29 @@ internal fun DatePickerWithDialog(
 
 @Stable
 internal class DatePickerUiState(
+  locale: Locale,
   initiallySelectedDate: LocalDate?,
   minDate: LocalDate = LocalDate(1900, 1, 1),
   maxDate: LocalDate = LocalDate(2100, 1, 1),
 ) {
   private val minDateInMillis = minDate.atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
   private val maxDateInMillis = maxDate.atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
+  private val yearRange = minDate.year..maxDate.year
 
   val datePickerState = DatePickerState(
+    locale = locale,
     initialSelectedDateMillis = initiallySelectedDate?.atStartOfDayIn(TimeZone.UTC)?.toEpochMilliseconds(),
     initialDisplayedMonthMillis = null,
-    yearRange = minDate.year..maxDate.year,
+    yearRange = yearRange,
     initialDisplayMode = DisplayMode.Picker,
+    selectableDates = object : SelectableDates {
+      override fun isSelectableDate(utcTimeMillis: Long): Boolean = utcTimeMillis in minDateInMillis..maxDateInMillis
+      override fun isSelectableYear(year: Int): Boolean = year in yearRange
+    },
   )
 
   fun clearDateSelection() {
-    datePickerState.setSelection(null)
-  }
-
-  fun validateDate(selectedDateEpochMillis: Long): Boolean {
-    return selectedDateEpochMillis in minDateInMillis..maxDateInMillis
+    datePickerState.selectedDateMillis = null
   }
 }
 
@@ -127,6 +129,7 @@ private fun PreviewDatePickerWithDialog(
     Surface(color = MaterialTheme.colorScheme.background) {
       DatePickerWithDialog(
         uiState = DatePickerUiState(
+          locale = Locale.ENGLISH,
           initiallySelectedDate = if (hasSelectedDate) LocalDate(2100, 1, 1) else null,
         ),
         canInteract = true,
