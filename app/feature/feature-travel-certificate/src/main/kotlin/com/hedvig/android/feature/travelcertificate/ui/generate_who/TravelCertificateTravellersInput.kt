@@ -142,8 +142,7 @@ private fun TravelCertificateTravellersInput(
             Spacer(Modifier.width(8.dp))
             RoundedCornerCheckBox(
               isChecked = uiState.isMemberIncluded,
-              null,
-            )
+            ) { changeMemberChecked() }
           }
         }
         for (i in uiState.coEnsuredList) {
@@ -167,7 +166,7 @@ private fun TravelCertificateTravellersInput(
                 modifier = Modifier.weight(1f),
               )
               Spacer(Modifier.width(8.dp))
-              RoundedCornerCheckBox(isChecked = i.isIncluded, onCheckedChange = null)
+              RoundedCornerCheckBox(isChecked = i.isIncluded, onCheckedChange = { changeCoInsuredChecked(i) })
             }
           }
         }
