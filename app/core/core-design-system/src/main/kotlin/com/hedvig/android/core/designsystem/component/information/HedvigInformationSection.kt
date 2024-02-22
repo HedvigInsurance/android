@@ -92,7 +92,7 @@ fun HedvigInformationSection(
 
 @HedvigPreview
 @Composable
-fun HedvigInformationSectionPreview() {
+private fun HedvigInformationSectionPreview() {
   HedvigTheme {
     Surface {
       HedvigInformationSection(

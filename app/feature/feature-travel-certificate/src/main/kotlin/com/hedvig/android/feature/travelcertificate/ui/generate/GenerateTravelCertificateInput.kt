@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.travelcertificate.ui
+package com.hedvig.android.feature.travelcertificate.ui.generate
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -53,8 +53,6 @@ import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.dialog.ErrorDialog
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
-import com.hedvig.android.feature.travelcertificate.CoInsured
-import com.hedvig.android.feature.travelcertificate.TravelCertificateInputState
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import hedvig.resources.R
 import kotlinx.datetime.Instant
@@ -231,7 +229,7 @@ internal fun GenerateTravelCertificateInput(
         text = stringResource(R.string.SAVE_AND_CONTINUE_BUTTON_LABEL),
         modifier = Modifier.padding(horizontal = 16.dp),
       )
-      Spacer(Modifier.height(32.dp))
+      Spacer(Modifier.height(16.dp))
     }
   }
 }

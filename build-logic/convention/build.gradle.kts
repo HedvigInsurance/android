@@ -38,6 +38,7 @@ gradlePlugin {
     createPlugin("hedvig.android.apollo", "ApolloConventionPlugin")
     createPlugin("hedvig.android.application", "ApplicationConventionPlugin")
     createPlugin("hedvig.android.application.compose", "ApplicationComposeConventionPlugin")
+    createPlugin("hedvig.android.feature", "FeatureConventionPlugin")
     createPlugin("hedvig.android.ktlint", "KtlintConventionPlugin")
     createPlugin("hedvig.android.library", "LibraryConventionPlugin")
     createPlugin("hedvig.android.library.compose", "LibraryComposeConventionPlugin")

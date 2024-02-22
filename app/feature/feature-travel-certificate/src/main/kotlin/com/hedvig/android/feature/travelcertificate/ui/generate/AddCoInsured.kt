@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.travelcertificate.ui
+package com.hedvig.android.feature.travelcertificate.ui.generate
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,7 +23,6 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
-import com.hedvig.android.feature.travelcertificate.CoInsured
 import hedvig.resources.R
 import java.util.UUID
 

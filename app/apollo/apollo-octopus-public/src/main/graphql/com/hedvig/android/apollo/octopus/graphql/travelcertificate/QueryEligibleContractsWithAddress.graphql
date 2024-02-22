@@ -1,0 +1,17 @@
+query EligibleContractsWithAddress {
+  currentMember {
+    activeContracts {
+      id
+      supportsTravelCertificate
+      exposureDisplayName
+    }
+    travelCertificateSpecifications {
+      contractSpecifications {
+        contractId
+        location {
+          street
+        }
+      }
+    }
+  }
+}

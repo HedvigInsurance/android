@@ -12,6 +12,8 @@ import com.hedvig.android.feature.profile.eurobonus.EurobonusDestination
 import com.hedvig.android.feature.profile.eurobonus.EurobonusViewModel
 import com.hedvig.android.feature.profile.myinfo.MyInfoDestination
 import com.hedvig.android.feature.profile.myinfo.MyInfoViewModel
+import com.hedvig.android.feature.profile.navigation.ProfileDestinations
+import com.hedvig.android.feature.profile.navigation.SettingsDestinations
 import com.hedvig.android.feature.profile.settings.SettingsDestination
 import com.hedvig.android.feature.profile.settings.SettingsViewModel
 import com.hedvig.android.navigation.core.AppDestination
@@ -25,12 +27,14 @@ import org.koin.androidx.compose.koinViewModel
 
 fun NavGraphBuilder.profileGraph(
   nestedGraphs: NavGraphBuilder.() -> Unit,
+  settingsDestinationNestedGraphs: NavGraphBuilder.() -> Unit,
   navigator: Navigator,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   hedvigBuildConstants: HedvigBuildConstants,
   navigateToPaymentInfo: (NavBackStackEntry) -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToAddMissingInfo: (navBackStackEntry: NavBackStackEntry, contractId: String) -> Unit,
+  navigateToDeleteAccountFeature: (navBackStackEntry: NavBackStackEntry) -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
 ) {
@@ -47,16 +51,16 @@ fun NavGraphBuilder.profileGraph(
       val viewModel: ProfileViewModel = koinViewModel()
       ProfileDestination(
         navigateToEurobonus = {
-          with(navigator) { backStackEntry.navigate(AppDestination.Eurobonus) }
+          with(navigator) { backStackEntry.navigate(ProfileDestinations.Eurobonus) }
         },
         navigateToMyInfo = {
-          with(navigator) { backStackEntry.navigate(AppDestination.MyInfo) }
+          with(navigator) { backStackEntry.navigate(ProfileDestinations.MyInfo) }
         },
         navigateToAboutApp = {
-          with(navigator) { backStackEntry.navigate(AppDestination.AboutApp) }
+          with(navigator) { backStackEntry.navigate(ProfileDestinations.AboutApp) }
         },
         navigateToSettings = {
-          with(navigator) { backStackEntry.navigate(AppDestination.Settings) }
+          with(navigator) { backStackEntry.navigate(ProfileDestinations.SettingsGraph) }
         },
         navigateToPayment = {
           navigateToPaymentInfo(backStackEntry)
@@ -73,7 +77,7 @@ fun NavGraphBuilder.profileGraph(
         viewModel = viewModel,
       )
     }
-    composable<AppDestination.Eurobonus>(
+    composable<ProfileDestinations.Eurobonus>(
       deepLinks = listOf(
         navDeepLink { uriPattern = hedvigDeepLinkContainer.eurobonus },
       ),
@@ -84,36 +88,42 @@ fun NavGraphBuilder.profileGraph(
         navigateUp = navigator::navigateUp,
       )
     }
-    composable<AppDestination.MyInfo> {
+    composable<ProfileDestinations.MyInfo> {
       val viewModel: MyInfoViewModel = koinViewModel()
       MyInfoDestination(
         viewModel = viewModel,
         navigateUp = navigator::navigateUp,
       )
     }
-    composable<AppDestination.AboutApp> { backStackEntry ->
+    composable<ProfileDestinations.AboutApp> { backStackEntry ->
       val viewModel: AboutAppViewModel = koinViewModel()
       AboutAppDestination(
         viewModel = viewModel,
         onBackPressed = navigator::navigateUp,
         showOpenSourceLicenses = {
-          with(navigator) { backStackEntry.navigate(AppDestination.Licenses) }
+          with(navigator) { backStackEntry.navigate(ProfileDestinations.Licenses) }
         },
         hedvigBuildConstants = hedvigBuildConstants,
       )
     }
-    composable<AppDestination.Licenses> {
+    composable<ProfileDestinations.Licenses> {
       LicensesDestination(
         onBackPressed = navigator::navigateUp,
       )
     }
-    composable<AppDestination.Settings> {
-      val viewModel: SettingsViewModel = koinViewModel()
-      SettingsDestination(
-        viewModel = viewModel,
-        openAppSettings = openAppSettings,
-        navigateUp = navigator::navigateUp,
-      )
+    navigation<ProfileDestinations.SettingsGraph>(
+      startDestination = createRoutePattern<SettingsDestinations.Settings>(),
+    ) {
+      composable<SettingsDestinations.Settings> { backStackEntry ->
+        val viewModel: SettingsViewModel = koinViewModel()
+        SettingsDestination(
+          viewModel = viewModel,
+          navigateUp = navigator::navigateUp,
+          openAppSettings = openAppSettings,
+          onNavigateToDeleteAccountFeature = { navigateToDeleteAccountFeature(backStackEntry) },
+        )
+      }
+      settingsDestinationNestedGraphs()
     }
     nestedGraphs()
   }

@@ -5,9 +5,11 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
@@ -28,11 +30,18 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import com.hedvig.android.compose.photo.capture.state.rememberPhotoCaptureState
+import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
+import com.hedvig.android.core.designsystem.component.button.HedvigSecondaryContainedButton
+import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.fileupload.ui.FilePickerBottomSheet
-import com.hedvig.android.core.ui.FilesGridScreen
+import com.hedvig.android.core.ui.FilesLazyVerticalGrid
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
 import com.hedvig.android.core.ui.dialog.ErrorDialog
 import com.hedvig.android.core.ui.dialog.HedvigAlertDialog
+import com.hedvig.android.core.ui.plus
+import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
+import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.logger.logcat
 import hedvig.resources.R
 
@@ -51,62 +60,65 @@ internal fun AddFilesDestination(
     }
   }
 
-  AddFilesScreen(
-    uiState = uiState,
-    appPackageId = appPackageId,
-    navigateUp = navigateUp,
-    imageLoader = imageLoader,
-    onUri = viewModel::addLocalFile,
-    onContinue = viewModel::uploadFiles,
-    onRemove = viewModel::onRemoveFile,
-    onDismissError = viewModel::dismissError,
-  )
-}
-
-@Composable
-private fun AddFilesScreen(
-  uiState: FileUploadUiState,
-  appPackageId: String,
-  navigateUp: () -> Unit,
-  imageLoader: ImageLoader,
-  onUri: (Uri) -> Unit,
-  onContinue: () -> Unit,
-  onRemove: (String) -> Unit,
-  onDismissError: () -> Unit,
-) {
-  var showFileTypeSelectBottomSheet by remember { mutableStateOf(false) }
-
+  val addLocalFile = viewModel::addLocalFile
   val photoCaptureState = rememberPhotoCaptureState(appPackageId = appPackageId) { uri ->
     logcat { "ChatFileState sending uri:$uri" }
-    onUri(uri)
+    addLocalFile(uri)
   }
   val photoPicker = rememberLauncherForActivityResult(
     contract = ActivityResultContracts.PickVisualMedia(),
   ) { resultingUri: Uri? ->
     if (resultingUri != null) {
-      onUri(resultingUri)
+      addLocalFile(resultingUri)
     }
   }
   val filePicker = rememberLauncherForActivityResult(
     contract = ActivityResultContracts.GetContent(),
   ) { resultingUri: Uri? ->
     if (resultingUri != null) {
-      onUri(resultingUri)
+      addLocalFile(resultingUri)
     }
   }
+
+  AddFilesScreen(
+    uiState = uiState,
+    navigateUp = navigateUp,
+    imageLoader = imageLoader,
+    onContinue = viewModel::uploadFiles,
+    onRemove = viewModel::onRemoveFile,
+    onDismissError = viewModel::dismissError,
+    launchTakePhotoRequest = photoCaptureState::launchTakePhotoRequest,
+    onPickPhoto = { photoPicker.launch(PickVisualMediaRequest()) },
+    onPickFile = { filePicker.launch("*/*") },
+  )
+}
+
+@Composable
+private fun AddFilesScreen(
+  uiState: FileUploadUiState,
+  navigateUp: () -> Unit,
+  imageLoader: ImageLoader,
+  onContinue: () -> Unit,
+  onRemove: (String) -> Unit,
+  onDismissError: () -> Unit,
+  launchTakePhotoRequest: () -> Unit,
+  onPickPhoto: () -> Unit,
+  onPickFile: () -> Unit,
+) {
+  var showFileTypeSelectBottomSheet by remember { mutableStateOf(false) }
 
   if (showFileTypeSelectBottomSheet) {
     FilePickerBottomSheet(
       onPickPhoto = {
-        photoPicker.launch(PickVisualMediaRequest())
+        onPickPhoto()
         showFileTypeSelectBottomSheet = false
       },
       onPickFile = {
-        filePicker.launch("*/*")
+        onPickFile()
         showFileTypeSelectBottomSheet = false
       },
       onTakePhoto = {
-        photoCaptureState.launchTakePhotoRequest()
+        launchTakePhotoRequest()
         showFileTypeSelectBottomSheet = false
       },
       onDismiss = {
@@ -147,22 +159,55 @@ private fun AddFilesScreen(
         onClick = navigateUp,
         title = stringResource(R.string.CLAIMS_YOUR_CLAIM),
       )
-      Spacer(Modifier.height(16.dp))
-      FilesGridScreen(
+      FilesLazyVerticalGrid(
         files = uiState.localFiles,
-        onContinue = onContinue,
-        onAddMoreFiles = {
+        onRemoveFile = { fileToRemoveId = it },
+        imageLoader = imageLoader,
+        paddingValues = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)
+          .asPaddingValues() + PaddingValues(horizontal = 8.dp),
+        modifier = Modifier.weight(1f),
+      )
+      Spacer(Modifier.height(8.dp))
+      HedvigSecondaryContainedButton(
+        text = stringResource(R.string.claim_status_detail_add_more_files),
+        onClick = {
           showFileTypeSelectBottomSheet = true
         },
-        onRemoveFile = {
-          fileToRemoveId = it
-        },
-        imageLoader = imageLoader,
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
+      Spacer(Modifier.height(8.dp))
+      HedvigContainedButton(
+        text = stringResource(R.string.general_continue_button),
+        onClick = onContinue,
         isLoading = uiState.isLoading,
         modifier = Modifier.padding(horizontal = 16.dp),
       )
       Spacer(Modifier.height(16.dp))
       Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
+    }
+  }
+}
+
+@HedvigMultiScreenPreview
+@Composable
+private fun PreviewAddFilesScreen() {
+  HedvigTheme {
+    Surface(color = MaterialTheme.colorScheme.background) {
+      AddFilesScreen(
+        FileUploadUiState(
+          localFiles = List(25) {
+            UiFile("$it", "", "", "$it")
+          },
+        ),
+        {},
+        rememberPreviewImageLoader(),
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+      )
     }
   }
 }

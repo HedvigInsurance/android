@@ -7,7 +7,7 @@ import com.apollographql.apollo3.api.Optional
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.feature.travelcertificate.CoInsured
+import com.hedvig.android.feature.travelcertificate.ui.generate.CoInsured
 import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -32,7 +32,9 @@ internal class CreateTravelCertificateUseCase(
         contractId = contractId,
         startDate = startDate,
         isMemberIncluded = isMemberIncluded,
-        coInsured = coInsured.map { TravelCertificateCreateCoInsured(it.name, Optional.present(it.ssn)) },
+        coInsured = coInsured.map {
+          TravelCertificateCreateCoInsured(fullName = it.name, ssn = Optional.present(it.ssn))
+        },
         email = email,
       )
 

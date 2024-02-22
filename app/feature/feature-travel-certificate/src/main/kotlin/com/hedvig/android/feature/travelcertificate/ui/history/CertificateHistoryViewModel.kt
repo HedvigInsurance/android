@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.travelcertificate
+package com.hedvig.android.feature.travelcertificate.ui.history
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -9,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import arrow.fx.coroutines.parZip
 import com.hedvig.android.data.travelcertificate.CheckTravelCertificateAvailabilityForCurrentContractsUseCase
+import com.hedvig.android.data.travelcertificate.GetEligibleContractsWithAddressUseCase
 import com.hedvig.android.data.travelcertificate.GetTravelCertificatesHistoryUseCase
 import com.hedvig.android.data.travelcertificate.TravelCertificate
 import com.hedvig.android.feature.travelcertificate.data.DownloadTravelCertificateUseCase
@@ -24,11 +25,13 @@ internal class CertificateHistoryViewModel(
   getTravelCertificatesHistoryUseCase: GetTravelCertificatesHistoryUseCase,
   downloadTravelCertificateUseCase: DownloadTravelCertificateUseCase,
   checkTravelCertificateAvailabilityForCurrentContractsUseCase: CheckTravelCertificateAvailabilityForCurrentContractsUseCase,
+  getEligibleContractsWithAddressUseCase: GetEligibleContractsWithAddressUseCase,
 ) : MoleculeViewModel<CertificateHistoryEvent, CertificateHistoryUiState>(
     initialState = CertificateHistoryUiState.Loading,
     presenter = CertificateHistoryPresenter(
       getTravelCertificatesHistoryUseCase,
       downloadTravelCertificateUseCase,
+      getEligibleContractsWithAddressUseCase,
       checkTravelCertificateAvailabilityForCurrentContractsUseCase,
     ),
   )
@@ -36,6 +39,7 @@ internal class CertificateHistoryViewModel(
 internal class CertificateHistoryPresenter(
   private val getTravelCertificatesHistoryUseCase: GetTravelCertificatesHistoryUseCase,
   private val downloadTravelCertificateUseCase: DownloadTravelCertificateUseCase,
+  private val getEligibleContractsWithAddressUseCase: GetEligibleContractsWithAddressUseCase,
   private val checkTravelCertificateAvailabilityForCurrentContractsUseCase: CheckTravelCertificateAvailabilityForCurrentContractsUseCase,
 ) :
   MoleculePresenter<CertificateHistoryEvent, CertificateHistoryUiState> {
@@ -66,7 +70,7 @@ internal class CertificateHistoryPresenter(
 
     CollectEvents { event ->
       when (event) {
-        CertificateHistoryEvent.RetryLoadReferralData -> dataLoadIteration++
+        CertificateHistoryEvent.RetryLoadData -> dataLoadIteration++
         is CertificateHistoryEvent.DownloadCertificate -> downloadingUrl = event.signedUrl
         CertificateHistoryEvent.DismissDownloadCertificateError -> {
           showErrorDialog = false
@@ -106,18 +110,23 @@ internal class CertificateHistoryPresenter(
       parZip(
         { getTravelCertificatesHistoryUseCase.invoke() },
         { checkTravelCertificateAvailabilityForCurrentContractsUseCase.invoke() },
-      ) { travelCertificateHistoryResult, eligibilityResult ->
+        { getEligibleContractsWithAddressUseCase.invoke() },
+      ) { travelCertificateHistoryResult, eligibilityResult, eligibleContractsResult ->
         val history = travelCertificateHistoryResult.getOrNull()
         val eligibility = eligibilityResult.getOrNull()
-        screenContentState = if (history != null && eligibility != null) {
+        val eligibleContracts = eligibleContractsResult.getOrNull()
+
+        screenContentState = if (history != null && eligibility != null && eligibleContracts != null) {
+          val hasChooseOption = eligibleContracts.size > 1
           logcat(LogPriority.INFO) { "Successfully fetched travel certificates history." }
-          ScreenContentState.Success(history, eligibility)
+          ScreenContentState.Success(history, eligibility, hasChooseOption)
         } else {
           logcat { "Could not fetch travel certificates history and eligibility" }
           ScreenContentState.Failed
         }
       }
     }
+
     return when (val screenContentStateValue = screenContentState) {
       ScreenContentState.Failed -> CertificateHistoryUiState.FailureDownloadingHistory
       ScreenContentState.Loading -> CertificateHistoryUiState.Loading
@@ -127,6 +136,7 @@ internal class CertificateHistoryPresenter(
         screenContentStateValue.eligibleToCreateCertificate,
         savedFileUri,
         isLoadingCertificate,
+        screenContentStateValue.mustChooseContractBeforeGeneratingTravelCertificate,
       )
     }
   }
@@ -137,12 +147,16 @@ private sealed interface ScreenContentState {
 
   data object Loading : ScreenContentState
 
-  data class Success(val certificateHistoryList: List<TravelCertificate>, val eligibleToCreateCertificate: Boolean) :
+  data class Success(
+    val certificateHistoryList: List<TravelCertificate>,
+    val eligibleToCreateCertificate: Boolean,
+    val mustChooseContractBeforeGeneratingTravelCertificate: Boolean,
+  ) :
     ScreenContentState
 }
 
 sealed interface CertificateHistoryEvent {
-  data object RetryLoadReferralData : CertificateHistoryEvent
+  data object RetryLoadData : CertificateHistoryEvent
 
   data class DownloadCertificate(val signedUrl: String) : CertificateHistoryEvent
 
@@ -158,6 +172,7 @@ internal sealed interface CertificateHistoryUiState {
     val showGenerateButton: Boolean,
     val travelCertificateUri: TravelCertificateUri?,
     val isLoadingCertificate: Boolean,
+    val hasChooseOption: Boolean,
   ) : CertificateHistoryUiState
 
   data object FailureDownloadingHistory : CertificateHistoryUiState
