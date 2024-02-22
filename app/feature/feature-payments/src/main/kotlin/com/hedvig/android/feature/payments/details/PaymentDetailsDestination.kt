@@ -15,7 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -158,7 +158,7 @@ private fun MemberChargeDetailsScreen(
 
         memberCharge.discounts.forEach {
           DiscountRow(it)
-          Divider()
+          HorizontalDivider()
         }
       }
 
@@ -189,7 +189,7 @@ private fun MemberChargeDetailsScreen(
         },
         modifier = Modifier.padding(vertical = 16.dp),
       )
-      Divider()
+      HorizontalDivider()
 
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
@@ -296,7 +296,7 @@ private fun MemberChargeDetailsScreen(
           },
           modifier = Modifier.padding(vertical = 16.dp),
         )
-        Divider()
+        HorizontalDivider()
 
         HorizontalItemsWithMaximumSpaceTaken(
           startSlot = {
@@ -312,7 +312,7 @@ private fun MemberChargeDetailsScreen(
           },
           modifier = Modifier.padding(vertical = 16.dp),
         )
-        Divider()
+        HorizontalDivider()
 
         HorizontalItemsWithMaximumSpaceTaken(
           startSlot = {
@@ -328,7 +328,7 @@ private fun MemberChargeDetailsScreen(
           },
           modifier = Modifier.padding(vertical = 16.dp),
         )
-        Divider()
+        HorizontalDivider()
 
         HorizontalItemsWithMaximumSpaceTaken(
           startSlot = { Text(stringResource(id = R.string.PAYMENTS_BANK_LABEL)) },

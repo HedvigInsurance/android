@@ -183,6 +183,7 @@ internal class DatePickerUiState(
     initialDisplayMode = DisplayMode.Picker,
     selectableDates = object : SelectableDates {
       override fun isSelectableDate(utcTimeMillis: Long) = utcTimeMillis in minDateInMillis..maxDateInMillis
+
       override fun isSelectableYear(year: Int) = year in yearRange
     },
   )

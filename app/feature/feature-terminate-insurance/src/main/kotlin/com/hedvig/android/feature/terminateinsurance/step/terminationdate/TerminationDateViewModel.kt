@@ -45,6 +45,7 @@ private class DatePickerConfiguration(locale: Locale, minDate: LocalDate, maxDat
     initialDisplayMode = DisplayMode.Picker,
     selectableDates = object : SelectableDates {
       override fun isSelectableDate(utcTimeMillis: Long): Boolean = utcTimeMillis in minDateInMillis..maxDateInMillis
+
       override fun isSelectableYear(year: Int): Boolean = year in yearRange
     },
   )

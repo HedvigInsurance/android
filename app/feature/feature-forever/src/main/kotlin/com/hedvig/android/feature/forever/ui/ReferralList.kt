@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -46,7 +46,7 @@ internal fun ReferralList(
       text = stringResource(id = R.string.FOREVER_REFERRAL_LIST_LABEL),
       modifier = Modifier.padding(vertical = 16.dp),
     )
-    Divider()
+    HorizontalDivider()
     referrals.forEach { referral ->
       ReferralRow(referral)
     }
@@ -117,7 +117,7 @@ private fun ColumnScope.ReferralRow(referral: Referral, modifier: Modifier = Mod
       }
     }
   }
-  Divider()
+  HorizontalDivider()
 }
 
 @Composable

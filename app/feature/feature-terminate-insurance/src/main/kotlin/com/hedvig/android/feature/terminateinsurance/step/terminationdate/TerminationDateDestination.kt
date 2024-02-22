@@ -139,10 +139,7 @@ private fun ChatCard(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun DatePickerCard(
-  datePickerState: DatePickerState,
-  modifier: Modifier = Modifier,
-) {
+private fun DatePickerCard(datePickerState: DatePickerState, modifier: Modifier = Modifier) {
   HedvigCard(modifier.fillMaxWidth()) {
     HedvigDatePicker(datePickerState = datePickerState)
   }
