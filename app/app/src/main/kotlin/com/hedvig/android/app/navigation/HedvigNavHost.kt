@@ -202,7 +202,7 @@ internal fun HedvigNavHost(
         )
       },
       settingsDestinationNestedGraphs = {
-        deleteAccountGraph(navigator)
+        deleteAccountGraph(hedvigDeepLinkContainer, navigator)
       },
       navigator = navigator,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
