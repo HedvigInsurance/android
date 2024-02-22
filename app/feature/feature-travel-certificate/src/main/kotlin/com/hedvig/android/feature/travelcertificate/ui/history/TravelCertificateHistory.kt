@@ -237,6 +237,7 @@ private fun ShowNotEmptyList(
       },
     )
   }
+  Spacer(Modifier.height(16.dp))
   val dateTimeFormatter = rememberHedvigMonthDateTimeFormatter()
   val groupedHistory = list.groupBy { it.expiryDate.year }
   groupedHistory.forEach {

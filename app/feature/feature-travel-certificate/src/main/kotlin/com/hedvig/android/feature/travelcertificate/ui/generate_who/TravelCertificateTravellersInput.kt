@@ -1,5 +1,9 @@
 package com.hedvig.android.feature.travelcertificate.ui.generate_who
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -7,10 +11,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -18,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -31,6 +39,8 @@ import com.hedvig.android.core.designsystem.material3.secondaryContainedButtonCo
 import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.hedvig.small.hedvig.Checkmark
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
@@ -130,9 +140,9 @@ private fun TravelCertificateTravellersInput(
               modifier = Modifier.weight(1f),
             )
             Spacer(Modifier.width(8.dp))
-            Checkbox(
-              checked = uiState.isMemberIncluded,
-              onCheckedChange = null,
+            RoundedCornerCheckBox(
+              isChecked = uiState.isMemberIncluded,
+              null,
             )
           }
         }
@@ -157,10 +167,7 @@ private fun TravelCertificateTravellersInput(
                 modifier = Modifier.weight(1f),
               )
               Spacer(Modifier.width(8.dp))
-              Checkbox(
-                checked = i.isIncluded,
-                onCheckedChange = null,
-              )
+              RoundedCornerCheckBox(isChecked = i.isIncluded, onCheckedChange = null)
             }
           }
         }
@@ -213,6 +220,57 @@ private fun TravelCertificateTravellersInput(
         }
         Spacer(Modifier.height(16.dp))
       }
+    }
+  }
+}
+
+@Composable
+private fun RoundedCornerCheckBox(isChecked: Boolean, onCheckedChange: ((Boolean) -> Unit)?) {
+  val checkMarkColor = MaterialTheme.colorScheme.onPrimary
+  val checkColor = MaterialTheme.colorScheme.primary
+  val uncheckedColor = MaterialTheme.colorScheme.outlineVariant
+
+  Box(
+    modifier = Modifier
+      .size(24.dp)
+      .background(
+        if (isChecked) checkColor else Color.Transparent,
+        shape = RoundedCornerShape(8.dp),
+      )
+      .border(
+        1.dp,
+        if (isChecked) checkColor else uncheckedColor,
+        shape = RoundedCornerShape(8.dp),
+      )
+      .clickable {
+        if (onCheckedChange != null) {
+          onCheckedChange(isChecked)
+        }
+      },
+    contentAlignment = Alignment.Center,
+  ) {
+    if (isChecked) {
+      Icon(Icons.Hedvig.Checkmark, contentDescription = null, tint = checkMarkColor)
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewRoundedCornerCheckBoxChecked() {
+  HedvigTheme {
+    Surface(color = MaterialTheme.colorScheme.background) {
+      RoundedCornerCheckBox(true, {})
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewRoundedCornerCheckBoxUnChecked() {
+  HedvigTheme {
+    Surface(color = MaterialTheme.colorScheme.background) {
+      RoundedCornerCheckBox(false, {})
     }
   }
 }

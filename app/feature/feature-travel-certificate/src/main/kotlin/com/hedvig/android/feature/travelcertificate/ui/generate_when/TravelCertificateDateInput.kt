@@ -241,7 +241,7 @@ private fun MovingDateButton(
     HedvigCard(
       onClick = { showDatePicker = true },
       colors = CardDefaults.outlinedCardColors(
-        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        containerColor = MaterialTheme.colorScheme.surface,
         contentColor = MaterialTheme.colorScheme.onSurface,
       ),
       modifier = Modifier.fillMaxWidth(),
