@@ -19,6 +19,8 @@ import com.hedvig.android.feature.odyssey.step.singleitem.SingleItemViewModel
 import com.hedvig.android.feature.odyssey.step.singleitemcheckout.SingleItemCheckoutViewModel
 import com.hedvig.android.feature.odyssey.step.singleitempayout.SingleItemPayoutViewModel
 import com.hedvig.android.feature.odyssey.step.summary.ClaimSummaryViewModel
+import com.hedvig.android.language.LanguageService
+import kotlinx.datetime.Clock
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -36,7 +38,8 @@ val odysseyModule = module {
   viewModel<DateOfOccurrenceViewModel> { (dateOfOccurrence: ClaimFlowDestination.DateOfOccurrence) ->
     DateOfOccurrenceViewModel(
       dateOfOccurrence = dateOfOccurrence,
-      claimFlowRepository = get(),
+      claimFlowRepository = get<ClaimFlowRepository>(),
+      languageService = get<LanguageService>(),
     )
   }
   viewModel<LocationViewModel> { (selectedLocation: String?, locationOptions: List<LocationOption>) ->
@@ -47,10 +50,16 @@ val odysseyModule = module {
     DateOfOccurrencePlusLocationViewModel(
       dateOfOccurrencePlusLocation = dateOfOccurrencePlusLocation,
       claimFlowRepository = get<ClaimFlowRepository>(),
+      languageService = get<LanguageService>(),
     )
   }
   viewModel<SingleItemViewModel> { (singleItem: ClaimFlowDestination.SingleItem) ->
-    SingleItemViewModel(singleItem, get<ClaimFlowRepository>())
+    SingleItemViewModel(
+      singleItem,
+      get<ClaimFlowRepository>(),
+      get<Clock>(),
+      get<LanguageService>(),
+    )
   }
   viewModel<ClaimSummaryViewModel> { (summary: ClaimFlowDestination.Summary) ->
     ClaimSummaryViewModel(summary, get<ClaimFlowRepository>())

@@ -52,6 +52,7 @@ import com.hedvig.android.feature.claim.details.di.claimDetailsModule
 import com.hedvig.android.feature.claimtriaging.di.claimTriagingModule
 import com.hedvig.android.feature.connect.payment.adyen.di.adyenFeatureModule
 import com.hedvig.android.feature.connect.payment.trustly.di.connectPaymentTrustlyModule
+import com.hedvig.android.feature.deleteaccount.di.deleteAccountModule
 import com.hedvig.android.feature.editcoinsured.di.editCoInsuredModule
 import com.hedvig.android.feature.forever.di.foreverModule
 import com.hedvig.android.feature.help.center.di.helpCenterModule
@@ -344,6 +345,7 @@ val applicationModule = module {
       datadogModule,
       datastoreAndroidModule,
       deepLinkModule,
+      deleteAccountModule,
       demoModule,
       editCoInsuredModule,
       featureManagerModule,

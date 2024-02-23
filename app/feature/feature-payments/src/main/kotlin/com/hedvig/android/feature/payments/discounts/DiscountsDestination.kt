@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.BottomSheetDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -148,7 +148,7 @@ internal fun DiscountsScreen(
         discounts.forEachIndexed { index, discount ->
           DiscountRow(discount)
           if (index < discounts.size - 1) {
-            Divider()
+            HorizontalDivider()
           }
         }
       }

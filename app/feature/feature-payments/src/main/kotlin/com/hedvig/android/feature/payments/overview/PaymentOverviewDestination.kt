@@ -17,7 +17,7 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -192,7 +192,7 @@ private fun PaymentOverviewScreen(
               }
               .padding(16.dp),
           )
-          Divider(modifier = Modifier.padding(horizontal = 16.dp))
+          HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
           PaymentHistory(
             modifier = Modifier
               .clickable {
@@ -202,7 +202,7 @@ private fun PaymentOverviewScreen(
           )
         }
         uiState.paymentOverview?.paymentConnection?.connectionInfo?.let {
-          Divider(modifier = Modifier.padding(horizontal = 16.dp))
+          HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
           PaymentDetails(
             displayName = it.displayName,
             displayValue = it.displayValue,

@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -26,7 +28,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.isGranted
+import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.card.HedvigBigCard
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
@@ -37,31 +41,41 @@ import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.language.Language
 import com.hedvig.android.memberreminders.ui.ReminderCardEnableNotifications
 import com.hedvig.android.notification.permission.NotificationPermissionDialog
+import com.hedvig.android.notification.permission.NotificationPermissionState
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
 import com.hedvig.android.theme.Theme
 import hedvig.resources.R
 
 @Composable
-internal fun SettingsDestination(viewModel: SettingsViewModel, openAppSettings: () -> Unit, navigateUp: () -> Unit) {
+internal fun SettingsDestination(
+  viewModel: SettingsViewModel,
+  navigateUp: () -> Unit,
+  openAppSettings: () -> Unit,
+  onNavigateToDeleteAccountFeature: () -> Unit,
+) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   SettingsScreen(
     uiState = uiState,
+    notificationPermissionState = rememberNotificationPermissionState(),
     navigateUp = navigateUp,
     openAppSettings = openAppSettings,
     onNotificationInfoDismissed = { viewModel.emit(SettingsEvent.SnoozeNotificationPermissionReminder) },
     onLanguageSelected = { viewModel.emit(SettingsEvent.ChangeLanguage(it)) },
     onThemeSelected = { viewModel.emit(SettingsEvent.ChangeTheme(it)) },
+    onTerminateAccountClicked = onNavigateToDeleteAccountFeature,
   )
 }
 
 @Composable
 private fun SettingsScreen(
   uiState: SettingsUiState,
+  notificationPermissionState: NotificationPermissionState,
   navigateUp: () -> Unit,
   openAppSettings: () -> Unit,
   onNotificationInfoDismissed: () -> Unit,
   onLanguageSelected: (Language) -> Unit,
   onThemeSelected: (Theme) -> Unit,
+  onTerminateAccountClicked: () -> Unit,
 ) {
   LaunchedEffect(uiState.selectedTheme) {
     uiState.selectedTheme?.apply()
@@ -76,6 +90,7 @@ private fun SettingsScreen(
       is SettingsUiState.Loading -> {
         HedvigFullScreenCenterAlignedProgressDebounced()
       }
+
       is SettingsUiState.Loaded -> {
         Spacer(Modifier.height(8.dp))
         LanguageWithDialog(
@@ -83,17 +98,20 @@ private fun SettingsScreen(
           selectedLanguage = uiState.selectedLanguage,
           selectLanguage = onLanguageSelected,
           enabled = true,
-          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
         )
         Spacer(Modifier.height(4.dp))
         ThemeWithDialog(
           selectedTheme = uiState.selectedTheme,
           selectTheme = onThemeSelected,
           enabled = true,
-          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
         )
         Spacer(Modifier.height(4.dp))
-        val notificationPermissionState = rememberNotificationPermissionState()
         NotificationPermissionDialog(
           notificationPermissionState = notificationPermissionState,
           openAppSettings = openAppSettings,
@@ -106,7 +124,9 @@ private fun SettingsScreen(
             stringResource(id = R.string.PROFILE_NOTIFICATIONS_STATUS_OFF)
           },
           hintText = stringResource(id = R.string.SETTINGS_NOTIFICATIONS_TITLE),
-          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
         )
         Spacer(Modifier.height(16.dp))
 
@@ -124,6 +144,15 @@ private fun SettingsScreen(
             Spacer(Modifier.height(16.dp))
           }
         }
+        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.weight(1f))
+        HedvigTextButton(
+          text = stringResource(R.string.SETTINGS_SCREEN_DELETE_ACCOUNT_BUTTON),
+          onClick = onTerminateAccountClicked,
+          colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
+          modifier = Modifier.padding(horizontal = 16.dp),
+        )
+        Spacer(Modifier.height(16.dp))
       }
     }
   }
@@ -141,11 +170,22 @@ fun PreviewSettingsScreen() {
           selectedTheme = Theme.SYSTEM_DEFAULT,
           showNotificationReminder = true,
         ),
+        notificationPermissionState = object : NotificationPermissionState {
+          override val showDialog = false
+
+          override fun dismissDialog() {}
+
+          override fun launchPermissionRequest() {}
+
+          override val permission: String = ""
+          override val status: PermissionStatus = PermissionStatus.Granted
+        },
         navigateUp = {},
         openAppSettings = {},
         onNotificationInfoDismissed = {},
         onLanguageSelected = {},
         onThemeSelected = {},
+        onTerminateAccountClicked = {},
       )
     }
   }

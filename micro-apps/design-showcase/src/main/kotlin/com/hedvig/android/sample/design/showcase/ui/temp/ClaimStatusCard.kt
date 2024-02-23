@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -56,7 +56,7 @@ fun ClaimStatusCard(
         subtitle = uiState.subtitle,
         modifier = Modifier.padding(16.dp),
       )
-      Divider()
+      HorizontalDivider()
       ClaimProgressRow(
         claimProgressItemsUiState = uiState.claimProgressItemsUiState,
         modifier = Modifier.padding(16.dp),

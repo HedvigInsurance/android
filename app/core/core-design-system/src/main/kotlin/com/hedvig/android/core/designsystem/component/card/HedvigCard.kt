@@ -7,6 +7,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CardElevation
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -108,9 +109,9 @@ private fun Card(
   Surface(
     modifier = modifier,
     shape = shape,
-    color = colors.containerColor(enabled = true).value,
-    contentColor = colors.contentColor(enabled = true).value,
-    tonalElevation = elevation.tonalElevation(enabled = true, interactionSource = null).value,
+    color = colors.containerColor(enabled = true),
+    contentColor = colors.contentColor(enabled = true),
+    tonalElevation = elevation.tonalElevation(enabled = true),
     shadowElevation = elevation.shadowElevation(enabled = true, interactionSource = null).value,
     border = border,
   ) {
@@ -133,19 +134,19 @@ private fun Card(
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   content: @Composable () -> Unit,
 ) {
+  rememberDatePickerState()
   @Suppress("INVISIBLE_MEMBER")
   Surface(
     onClick = onClick,
     modifier = modifier,
     enabled = enabled,
     shape = shape,
-    color = colors.containerColor(enabled).value,
-    contentColor = colors.contentColor(enabled).value,
-    tonalElevation = elevation.tonalElevation(enabled, interactionSource).value,
+    color = colors.containerColor(enabled),
+    contentColor = colors.contentColor(enabled),
+    tonalElevation = elevation.tonalElevation(enabled),
     shadowElevation = elevation.shadowElevation(enabled, interactionSource).value,
     border = border,
     interactionSource = interactionSource,
-  ) {
-    content()
-  }
+    content = content,
+  )
 }
