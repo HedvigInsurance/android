@@ -63,27 +63,29 @@ internal fun TravelCertificateDateInputDestination(
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   TravelCertificateDateInput(
     uiState = uiState,
-    changeDate = { viewModel.emit(TravelCertificateDateInputEvent.ChangeDataInput(it)) },
+    onDateChanged = { viewModel.emit(TravelCertificateDateInputEvent.ChangeDateInput(it)) },
     reload = { viewModel.emit(TravelCertificateDateInputEvent.RetryLoadData) },
     navigateUp = navigateUp,
     onNavigateToFellowTravellers = onNavigateToFellowTravellers,
     onNavigateToOverview = onNavigateToOverview,
-    validateInput = { viewModel.emit(TravelCertificateDateInputEvent.ValidateInputAndChooseDirection(it)) },
+    submitInput = { viewModel.emit(TravelCertificateDateInputEvent.Submit) },
     nullifyPrimaryInput = { viewModel.emit(TravelCertificateDateInputEvent.NullifyPrimaryInput) },
+    onEmailChanged = { viewModel.emit(TravelCertificateDateInputEvent.ChangeEmailInput(it))  }
   )
 }
 
 @Composable
 private fun TravelCertificateDateInput(
   uiState: TravelCertificateDateInputUiState,
-  changeDate: (LocalDate) -> Unit,
+  onDateChanged: (LocalDate) -> Unit,
+  onEmailChanged: (String) -> Unit,
   reload: () -> Unit,
   navigateUp: () -> Unit,
   onNavigateToFellowTravellers: (
     TravelCertificateDestination.TravelCertificateTravellersInput.TravelCertificatePrimaryInput,
   ) -> Unit,
   onNavigateToOverview: (TravelCertificateUrl) -> Unit,
-  validateInput: (String) -> Unit,
+  submitInput: () -> Unit,
   nullifyPrimaryInput: () -> Unit,
 ) {
   when (uiState) {
@@ -136,7 +138,7 @@ private fun TravelCertificateDateInput(
         Spacer(Modifier.weight(1f))
         Spacer(Modifier.height(24.dp))
         MovingDateButton(
-          onDateSelected = changeDate,
+          onDateSelected = onDateChanged,
           datePickerState = uiState.datePickerState,
           dateValidator = uiState.dateValidator,
           travelDate = uiState.travelDate,
@@ -148,15 +150,14 @@ private fun TravelCertificateDateInput(
           onEmailChanged = {
             emailInput = it
             errorMessageRes = null
+            onEmailChanged(it)
           },
           modifier = Modifier.padding(horizontal = 16.dp),
           errorText = errorMessageRes?.let { stringResource(id = it) },
         )
         Spacer(Modifier.height(16.dp))
         HedvigContainedButton(
-          onClick = {
-            validateInput(emailInput)
-          },
+          onClick = submitInput,
           modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
@@ -290,10 +291,12 @@ private fun PreviewTravelCertificateDateInput() {
           hasCoInsured = false,
           datePickerState = DatePickerState(null, null, 2020..2024, DisplayMode.Picker),
           dateValidator = { true },
+          travelDate = LocalDate(2023,1,1),
           daysValid = 40,
           errorMessageRes = null,
           primaryInput = null,
         ),
+        {},
         {},
         {},
         {},
