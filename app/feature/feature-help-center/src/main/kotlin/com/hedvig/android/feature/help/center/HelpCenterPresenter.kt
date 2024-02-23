@@ -28,10 +28,14 @@ internal sealed interface HelpCenterEvent {
 internal data class HelpCenterUiState(
   val topics: ImmutableList<Topic>,
   val questions: ImmutableList<Question>,
-  val quickLinks: ImmutableList<QuickAction>,
-  val commonClaims: ImmutableList<CommonClaim>,
+  val quickLinks: ImmutableList<QuickLinkType>,
   val selectedQuickAction: QuickAction?,
-)
+) {
+  sealed interface QuickLinkType {
+    data class QuickActionType(val quickAction: QuickAction) : QuickLinkType
+    data class CommonClaimType(val commonClaim: CommonClaim) : QuickLinkType
+  }
+}
 
 internal class HelpCenterPresenter(
   private val getCommonClaimsUseCase: GetCommonClaimsUseCase,
@@ -39,7 +43,7 @@ internal class HelpCenterPresenter(
 ) : MoleculePresenter<HelpCenterEvent, HelpCenterUiState> {
   @Composable
   override fun MoleculePresenterScope<HelpCenterEvent>.present(lastState: HelpCenterUiState): HelpCenterUiState {
-    var quickLinks by remember { mutableStateOf(persistentListOf<QuickAction>()) }
+    var quickActions by remember { mutableStateOf(persistentListOf<QuickAction>()) }
     var commonClaims by remember { mutableStateOf(persistentListOf<CommonClaim>()) }
     var selectedQuickAction by remember { mutableStateOf<QuickAction?>(null) }
 
@@ -52,8 +56,8 @@ internal class HelpCenterPresenter(
 
     LaunchedEffect(Unit) {
       getQuickLinksUseCase.invoke().fold(
-        ifLeft = { quickLinks = persistentListOf() },
-        ifRight = { quickLinks = it },
+        ifLeft = { quickActions = persistentListOf() },
+        ifRight = { quickActions = it },
       )
 
       getCommonClaimsUseCase.invoke().fold(
@@ -65,8 +69,10 @@ internal class HelpCenterPresenter(
     return HelpCenterUiState(
       topics = commonTopics,
       questions = commonQuestions,
-      quickLinks = quickLinks,
-      commonClaims = commonClaims,
+      quickLinks = persistentListOf(
+        *quickActions.map { HelpCenterUiState.QuickLinkType.QuickActionType(it) }.toTypedArray(),
+        *commonClaims.map { HelpCenterUiState.QuickLinkType.CommonClaimType(it) }.toTypedArray(),
+      ),
       selectedQuickAction = selectedQuickAction,
     )
   }
