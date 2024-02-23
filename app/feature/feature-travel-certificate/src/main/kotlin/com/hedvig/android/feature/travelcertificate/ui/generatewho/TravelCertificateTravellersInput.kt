@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -26,6 +25,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -37,6 +37,7 @@ import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.designsystem.material3.onSecondaryContainedButtonContainer
 import com.hedvig.android.core.designsystem.material3.secondaryContainedButtonContainer
+import com.hedvig.android.core.designsystem.material3.squircleExtraSmall
 import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -223,14 +224,15 @@ private fun RoundedCornerCheckBox(isChecked: Boolean, onCheckedChange: ((Boolean
     modifier = Modifier
       .size(24.dp)
       .background(
-        if (isChecked) checkColor else Color.Transparent,
-        shape = RoundedCornerShape(8.dp),
+        color = if (isChecked) checkColor else Color.Transparent,
+        shape = MaterialTheme.shapes.squircleExtraSmall,
       )
       .border(
-        1.dp,
-        if (isChecked) checkColor else uncheckedColor,
-        shape = RoundedCornerShape(8.dp),
+        width = 1.dp,
+        color = if (isChecked) checkColor else uncheckedColor,
+        shape = MaterialTheme.shapes.squircleExtraSmall,
       )
+      .clip(MaterialTheme.shapes.squircleExtraSmall)
       .clickable {
         if (onCheckedChange != null) {
           onCheckedChange(isChecked)
