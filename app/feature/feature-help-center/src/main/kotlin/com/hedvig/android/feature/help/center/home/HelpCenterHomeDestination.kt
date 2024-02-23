@@ -187,8 +187,12 @@ private fun HelpCenterHomeScreen(
                   HedvigCard(
                     onClick = {
                       when (quickLink) {
-                        is HelpCenterUiState.QuickLinkType.CommonClaimType -> onNavigateToCommonClaim(quickLink.commonClaim)
-                        is HelpCenterUiState.QuickLinkType.QuickActionType -> onQuickActionsSelected(quickLink.quickAction)
+                        is HelpCenterUiState.QuickLinkType.CommonClaimType -> onNavigateToCommonClaim(
+                          quickLink.commonClaim,
+                        )
+                        is HelpCenterUiState.QuickLinkType.QuickActionType -> onQuickActionsSelected(
+                          quickLink.quickAction,
+                        )
                       }
                     },
                     modifier = Modifier.fillMaxWidth(),
@@ -200,7 +204,9 @@ private fun HelpCenterHomeScreen(
                       Text(
                         text = when (quickLink) {
                           is HelpCenterUiState.QuickLinkType.CommonClaimType -> quickLink.commonClaim.title
-                          is HelpCenterUiState.QuickLinkType.QuickActionType -> stringResource(quickLink.quickAction.titleRes)
+                          is HelpCenterUiState.QuickLinkType.QuickActionType -> stringResource(
+                            quickLink.quickAction.titleRes,
+                          )
                         },
                         textAlign = TextAlign.Center,
                         modifier = Modifier.padding(16.dp),
@@ -245,9 +251,11 @@ private fun HelpCenterHomeScreen(
           onClickItem = { onNavigateToQuestion(it) },
         )
         Spacer(Modifier.weight(1f))
-        Spacer(Modifier.height(56.dp))
-        StillNeedHelpSection(openChat = openChat)
-        Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
+        Spacer(Modifier.height(40.dp))
+        StillNeedHelpSection(
+          openChat = openChat,
+          contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom).asPaddingValues(),
+        )
       }
     }
   }

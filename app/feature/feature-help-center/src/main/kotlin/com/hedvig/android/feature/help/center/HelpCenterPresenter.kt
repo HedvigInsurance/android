@@ -33,6 +33,7 @@ internal data class HelpCenterUiState(
 ) {
   sealed interface QuickLinkType {
     data class QuickActionType(val quickAction: QuickAction) : QuickLinkType
+
     data class CommonClaimType(val commonClaim: CommonClaim) : QuickLinkType
   }
 }
