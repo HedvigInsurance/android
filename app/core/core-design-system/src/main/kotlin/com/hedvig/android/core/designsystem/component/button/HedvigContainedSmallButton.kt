@@ -167,4 +167,4 @@ private fun PreviewHedvigContainedSmallButton(
   }
 }
 
-private class IsLoadingProvider: CollectionPreviewParameterProvider<Boolean>(listOf(true, false))
+private class IsLoadingProvider : CollectionPreviewParameterProvider<Boolean>(listOf(true, false))
