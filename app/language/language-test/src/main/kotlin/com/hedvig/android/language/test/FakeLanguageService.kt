@@ -5,7 +5,7 @@ import com.hedvig.android.language.LanguageService
 import java.util.Locale
 
 class FakeLanguageService(
-  private val fixedLocale: Locale? = null
+  private val fixedLocale: Locale? = null,
 ) : LanguageService {
   override fun setLanguage(language: Language) {
     error("Not implemented")

@@ -47,7 +47,6 @@ import com.hedvig.android.core.designsystem.material3.typeContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.HedvigIcons
 import com.hedvig.android.core.icons.hedvig.normal.InfoFilled
 import com.hedvig.android.core.icons.hedvig.normal.WarningFilled
 import com.hedvig.android.core.icons.hedvig.small.hedvig.Checkmark
@@ -286,7 +285,7 @@ private fun MemberChargeDetailsScreen(
                 contentAlignment = Alignment.Center,
               ) {
                 Icon(
-                  imageVector = HedvigIcons.InfoFilled,
+                  imageVector = Icons.Hedvig.InfoFilled,
                   tint = MaterialTheme.colorScheme.onSurfaceVariant,
                   contentDescription = "Info icon",
                   modifier = Modifier.size(16.dp),

@@ -3,6 +3,7 @@ package com.hedvig.android.core.fileupload.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -11,7 +12,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.bottomsheet.HedvigBottomSheet
 import com.hedvig.android.core.designsystem.component.button.ClickableOption
-import com.hedvig.android.core.icons.HedvigIcons
+import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.Camera
 import com.hedvig.android.core.icons.hedvig.normal.Document
 import com.hedvig.android.core.icons.hedvig.normal.Pictures
@@ -34,18 +35,18 @@ fun FilePickerBottomSheet(
         verticalArrangement = Arrangement.spacedBy(4.dp),
       ) {
         ClickableOption(
-          text = stringResource(id = R.string.file_upload_photo_library),
-          icon = HedvigIcons.Pictures,
+          text = stringResource(R.string.file_upload_photo_library),
+          icon = Icons.Hedvig.Pictures,
           onClick = onPickPhoto,
         )
         ClickableOption(
-          text = stringResource(id = R.string.file_upload_take_photo),
-          icon = HedvigIcons.Camera,
+          text = stringResource(R.string.file_upload_take_photo),
+          icon = Icons.Hedvig.Camera,
           onClick = onTakePhoto,
         )
         ClickableOption(
-          text = stringResource(id = R.string.file_upload_choose_files),
-          icon = HedvigIcons.Document,
+          text = stringResource(R.string.file_upload_choose_files),
+          icon = Icons.Hedvig.Document,
           onClick = onPickFile,
         )
       }

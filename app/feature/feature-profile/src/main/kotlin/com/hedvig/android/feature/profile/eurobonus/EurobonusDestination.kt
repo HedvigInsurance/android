@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -28,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
@@ -36,7 +36,10 @@ import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
 import com.hedvig.android.core.designsystem.material3.warningElement
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.hedvig.normal.WarningFilled
 import com.hedvig.android.core.ui.clearFocusOnTap
+import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 
 @Composable
@@ -114,7 +117,7 @@ private fun EurobonusScreen(
               verticalAlignment = Alignment.CenterVertically,
             ) {
               Icon(
-                imageVector = Icons.Rounded.Warning,
+                imageVector = Icons.Hedvig.WarningFilled,
                 contentDescription = null,
                 modifier = Modifier.size(16.dp),
                 tint = MaterialTheme.colorScheme.warningElement,
@@ -165,7 +168,9 @@ private fun EurobonusScreen(
 
 @HedvigPreview
 @Composable
-private fun PreviewEurobonusScreen() {
+private fun PreviewEurobonusScreen(
+  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) hasError: Boolean,
+) {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       EurobonusScreen(
@@ -175,7 +180,7 @@ private fun PreviewEurobonusScreen() {
           canSubmit = true,
           isLoading = true,
           canEditText = true,
-          hasError = false,
+          hasError = hasError,
         ),
         {},
         {},

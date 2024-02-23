@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -41,6 +40,8 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.hedvig.normal.ChevronRight
 import kotlin.math.roundToInt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -81,7 +82,7 @@ internal fun PledgeAcceptingSlider(onAccepted: () -> Unit, text: String, modifie
         .background(MaterialTheme.colorScheme.primary),
     ) {
       Icon(
-        imageVector = Icons.Default.ChevronRight,
+        imageVector = Icons.Hedvig.ChevronRight,
         contentDescription = null,
         tint = MaterialTheme.colorScheme.onPrimary,
         modifier = Modifier.align(Alignment.Center),

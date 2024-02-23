@@ -413,7 +413,7 @@ private fun AddCoInsuredBottomSheetContentWithCoInsuredPreview() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       AddCoInsuredBottomSheetContent(
-        bottomSheetState = AddBottomSheetState(errorMessage = "text"),
+        bottomSheetState = AddBottomSheetState(errorMessage = "errorMessage"),
         onSsnChanged = {},
         onContinue = {},
         onManualInputSwitchChanged = {},

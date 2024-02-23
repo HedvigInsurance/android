@@ -64,7 +64,6 @@ import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.fileupload.ui.FilePickerBottomSheet
 import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.HedvigIcons
 import com.hedvig.android.core.icons.hedvig.colored.hedvig.Chat
 import com.hedvig.android.core.icons.hedvig.normal.Document
 import com.hedvig.android.core.icons.hedvig.normal.Pictures
@@ -310,10 +309,10 @@ private fun ClaimDetailScreen(
 }
 
 private fun getIconFromMimeType(mimeType: String) = when (mimeType) {
-  "image/jpg" -> HedvigIcons.Pictures
-  "video/quicktime" -> HedvigIcons.Play
-  "application/pdf" -> HedvigIcons.Document
-  else -> HedvigIcons.Document
+  "image/jpg" -> Icons.Hedvig.Pictures
+  "video/quicktime" -> Icons.Hedvig.Play
+  "application/pdf" -> Icons.Hedvig.Document
+  else -> Icons.Hedvig.Document
 }
 
 @Composable

@@ -20,7 +20,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
@@ -60,6 +59,8 @@ import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.offset
 import com.hedvig.android.core.designsystem.animation.animateContentHeight
 import com.hedvig.android.core.designsystem.material3.warningElement
+import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.hedvig.normal.Info
 import kotlin.math.max
 import kotlin.math.roundToInt
 
@@ -352,7 +353,7 @@ private fun ErrorRow(text: String) {
     verticalAlignment = Alignment.CenterVertically,
   ) {
     Icon(
-      imageVector = Icons.Rounded.Warning,
+      imageVector = Icons.Hedvig.Info,
       contentDescription = null,
       modifier = Modifier.size(16.dp),
       tint = MaterialTheme.colorScheme.warningElement,

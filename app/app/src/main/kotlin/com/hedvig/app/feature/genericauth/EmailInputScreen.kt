@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.genericauth
 
 import android.view.KeyEvent
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,9 +14,8 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -27,7 +25,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
@@ -36,6 +33,9 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.hedvig.normal.Info
+import com.hedvig.android.core.icons.hedvig.normal.X
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
 
 @Composable
@@ -119,17 +119,17 @@ private fun EmailTextField(
 @Composable
 private fun TrailingIcon(error: String?, loading: Boolean, emailInput: String, onClear: () -> Unit) {
   if (error != null) {
-    Image(
-      imageVector = Icons.Outlined.ErrorOutline,
+    Icon(
+      imageVector = Icons.Hedvig.Info,
       contentDescription = null,
-      colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.error),
+      tint = MaterialTheme.colorScheme.error,
     )
   } else if (loading) {
     CircularProgressIndicator(modifier = Modifier.size(24.dp))
   } else if (emailInput.isNotBlank()) {
     IconButton(onClick = onClear) {
-      Image(
-        imageVector = Icons.Filled.Clear,
+      Icon(
+        imageVector = Icons.Hedvig.X,
         contentDescription = stringResource(
           hedvig.resources.R.string.login_text_input_email_address_icon_description_clear_all,
         ),
