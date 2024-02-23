@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.core.common.android.validation.validateEmail
+import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.data.travelcertificate.GetTravelCertificateSpecificationsUseCase
 import com.hedvig.android.feature.travelcertificate.data.CreateTravelCertificateUseCase
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
@@ -56,18 +57,35 @@ internal class TravelCertificateDateInputPresenter(
 
     var generateIteration by remember { mutableIntStateOf(0) }
 
-    var screenContent by remember { mutableStateOf<DateInputScreenContent>(DateInputScreenContent.Loading) }
+    var screenContent by remember { mutableStateOf(
+      when (lastState) {
+        is TravelCertificateDateInputUiState.Success -> DateInputScreenContent.Success(
+          DateInputScreenContent.Success.SpecificationsDetails(
+            lastState.contractId, lastState.datePickerState, lastState.dateValidator,
+            lastState.daysValid, lastState.hasCoInsured
+          )
+        )
+        TravelCertificateDateInputUiState.Failure -> DateInputScreenContent.Failure
+        TravelCertificateDateInputUiState.Loading -> DateInputScreenContent.Loading
+        is TravelCertificateDateInputUiState.UrlFetched -> {
+          logcat(LogPriority.ERROR) { "TravelCertificateDateInputUiState is UrlFetched, should be impossible" }
+          DateInputScreenContent.Loading
+        }
+      })
+    }
 
     var travelDate by remember {
-      mutableStateOf(
+      mutableStateOf( lastState.safeCast<TravelCertificateDateInputUiState.Success>()?.travelDate ?:
         Clock.System.now()
           .toLocalDateTime(TimeZone.currentSystemDefault()).date,
       )
     }
 
-    var contractIdFromBackend by remember { mutableStateOf<String?>(null) }
+    var contractIdFromBackend by remember { mutableStateOf<String?>(lastState.safeCast<TravelCertificateDateInputUiState.Success>()?.contractId) }
 
-    var email by remember { mutableStateOf<String?>(null) }
+    var email by remember {
+      mutableStateOf<String?>(lastState.safeCast<TravelCertificateDateInputUiState.Success>()?.email)
+    }
 
     var primaryInput by remember {
       mutableStateOf<TravelCertificateDestination.TravelCertificateTravellersInput.TravelCertificatePrimaryInput?>(null)
@@ -75,7 +93,7 @@ internal class TravelCertificateDateInputPresenter(
 
     var errorMessage by remember { mutableStateOf<Int?>(null) }
 
-    var hasCoInsured by remember { mutableStateOf(false) }
+    var hasCoInsured by remember { mutableStateOf( lastState.safeCast<TravelCertificateDateInputUiState.Success>()?.hasCoInsured ?: false) }
 
     CollectEvents { event ->
 
@@ -158,6 +176,9 @@ internal class TravelCertificateDateInputPresenter(
     }
 
     LaunchedEffect(loadIteration) {
+      if (screenContent is DateInputScreenContent.Success) {
+        return@LaunchedEffect
+      }
       screenContent = DateInputScreenContent.Loading
       getTravelCertificateSpecificationsUseCase
         .invoke(contractId)
