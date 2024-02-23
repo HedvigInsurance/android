@@ -6,14 +6,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.DisplayMode
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -37,11 +33,8 @@ import com.hedvig.android.core.designsystem.component.datepicker.HedvigDatePicke
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
-import com.hedvig.android.core.designsystem.material3.onInfoElement
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.hedvig.normal.ChevronDown
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateDestination
@@ -70,7 +63,7 @@ internal fun TravelCertificateDateInputDestination(
     onNavigateToOverview = onNavigateToOverview,
     submitInput = { viewModel.emit(TravelCertificateDateInputEvent.Submit) },
     nullifyPrimaryInput = { viewModel.emit(TravelCertificateDateInputEvent.NullifyPrimaryInput) },
-    onEmailChanged = { viewModel.emit(TravelCertificateDateInputEvent.ChangeEmailInput(it))  }
+    onEmailChanged = { viewModel.emit(TravelCertificateDateInputEvent.ChangeEmailInput(it)) },
   )
 }
 
@@ -106,7 +99,6 @@ private fun TravelCertificateDateInput(
     }
 
     is TravelCertificateDateInputUiState.Success -> {
-
       LaunchedEffect(uiState.primaryInput) {
         if (uiState.errorMessageRes == null) {
           if (uiState.primaryInput != null) {
@@ -263,13 +255,6 @@ private fun MovingDateButton(
             style = MaterialTheme.typography.headlineSmall,
           )
         }
-        Spacer(Modifier.width(16.dp))
-        Icon(
-          imageVector = Icons.Hedvig.ChevronDown,
-          tint = MaterialTheme.colorScheme.onInfoElement,
-          contentDescription = null,
-          modifier = Modifier.size(16.dp),
-        )
       }
     }
   }
@@ -287,7 +272,7 @@ private fun PreviewTravelCertificateDateInput() {
           hasCoInsured = false,
           datePickerState = DatePickerState(null, null, 2020..2024, DisplayMode.Picker),
           dateValidator = { true },
-          travelDate = LocalDate(2023,1,1),
+          travelDate = LocalDate(2023, 1, 1),
           daysValid = 40,
           errorMessageRes = null,
           primaryInput = null,

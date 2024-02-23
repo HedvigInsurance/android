@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.travelcertificate.ui.overview
 
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -30,7 +31,6 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.small.hedvig.Checkmark
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarActionType
-import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUri
@@ -67,14 +67,13 @@ internal fun TravelCertificateOverview(
       HedvigScaffold(
         navigateUp = navigateUp,
         topAppBarActionType = TopAppBarActionType.CLOSE,
-        modifier = Modifier.clearFocusOnTap(),
       ) {
         HedvigErrorSection(retry = { onDownloadCertificate(travelCertificateUrl) }, modifier = Modifier.weight(1f))
       }
     }
 
     TravelCertificateOverviewUiState.Loading -> {
-      HedvigFullScreenCenterAlignedProgress()
+      HedvigFullScreenCenterAlignedProgress(modifier = Modifier.fillMaxSize())
     }
 
     is TravelCertificateOverviewUiState.Success -> {
