@@ -95,7 +95,7 @@ internal class TravelCertificateDateInputPresenter(
       mutableStateOf<TravelCertificateDestination.TravelCertificateTravellersInput.TravelCertificatePrimaryInput?>(null)
     }
 
-    var errorMessage by remember { mutableStateOf<Int?>(null) }
+    var invalidEmailErrorMessage by remember { mutableStateOf<Int?>(null) }
 
     CollectEvents { event ->
 
@@ -116,9 +116,9 @@ internal class TravelCertificateDateInputPresenter(
                 successScreenContent.details.email,)
 
           }
-          errorMessage = null
+          invalidEmailErrorMessage = null
         } else {
-          errorMessage = if (successScreenContent.details.email.isNullOrEmpty()) {
+          invalidEmailErrorMessage = if (successScreenContent.details.email.isNullOrEmpty()) {
             R.string.travel_certificate_email_empty_error
           } else {
             R.string.PROFILE_MY_INFO_INVALID_EMAIL
@@ -129,6 +129,7 @@ internal class TravelCertificateDateInputPresenter(
       when (event) {
         is TravelCertificateDateInputEvent.ChangeEmailInput -> {
           val successScreenContent = screenContent as? DateInputScreenContent.Success ?: return@CollectEvents
+          invalidEmailErrorMessage = null
           screenContent = successScreenContent.copy(
             details = successScreenContent.details.copy(
               email = event.email
@@ -230,7 +231,7 @@ internal class TravelCertificateDateInputPresenter(
           dateValidator = currentContent.details.dateValidator,
           daysValid = currentContent.details.daysValid,
           primaryInput = primaryInput,
-          errorMessageRes = errorMessage,
+          errorMessageRes = invalidEmailErrorMessage,
         )
       }
 

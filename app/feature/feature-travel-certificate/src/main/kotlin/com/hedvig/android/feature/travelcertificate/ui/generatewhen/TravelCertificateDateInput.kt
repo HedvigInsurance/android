@@ -106,16 +106,13 @@ private fun TravelCertificateDateInput(
     }
 
     is TravelCertificateDateInputUiState.Success -> {
-      var errorMessageRes by remember { mutableStateOf<Int?>(null) }
 
-      LaunchedEffect(uiState.errorMessageRes, uiState.primaryInput) {
+      LaunchedEffect(uiState.primaryInput) {
         if (uiState.errorMessageRes == null) {
           if (uiState.primaryInput != null) {
             onNavigateToFellowTravellers(uiState.primaryInput)
             nullifyPrimaryInput()
           }
-        } else {
-          errorMessageRes = uiState.errorMessageRes
         }
       }
 
@@ -149,11 +146,10 @@ private fun TravelCertificateDateInput(
           email = emailInput,
           onEmailChanged = {
             emailInput = it
-            errorMessageRes = null
             onEmailChanged(it)
           },
           modifier = Modifier.padding(horizontal = 16.dp),
-          errorText = errorMessageRes?.let { stringResource(id = it) },
+          errorText = uiState.errorMessageRes?.let { stringResource(id = it) },
         )
         Spacer(Modifier.height(16.dp))
         HedvigContainedButton(
