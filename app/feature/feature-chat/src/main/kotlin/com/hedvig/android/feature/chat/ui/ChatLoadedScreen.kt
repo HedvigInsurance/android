@@ -28,7 +28,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
@@ -176,14 +176,14 @@ private fun ChatLoadedScreen(
           .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
       )
       if (uiState.bannerText != null) {
-        Divider(Modifier.fillMaxWidth())
+        HorizontalDivider(Modifier.fillMaxWidth())
         ChatBanner(
           text = uiState.bannerText,
           onBannerLinkClicked = onBannerLinkClicked,
           modifier = Modifier.fillMaxWidth(),
         )
       }
-      Divider(Modifier.fillMaxWidth())
+      HorizontalDivider(Modifier.fillMaxWidth())
       Box(
         propagateMinConstraints = true,
         modifier = Modifier

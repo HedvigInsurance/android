@@ -28,6 +28,7 @@ dependencies {
   implementation(projects.coreResources)
   implementation(projects.coreUi)
   implementation(projects.dataTravelCertificatePublic)
+  implementation(projects.languageCore)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
   implementation(projects.navigationActivity)

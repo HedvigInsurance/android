@@ -109,7 +109,8 @@ internal fun HedvigIcons() {
     Modifier
       .fillMaxSize()
       .verticalScroll(rememberScrollState())
-      .safeContentPadding()) {
+      .safeContentPadding(),
+  ) {
     for ((index, iconsGroup) in Icons.Hedvig.AllHedvigIcons.withIndex()) {
       FlowRow {
         for (icon in iconsGroup) {

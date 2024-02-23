@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
@@ -271,7 +271,7 @@ private inline fun LADCOntainer(crossinline content: @Composable () -> Unit) {
         ) {
           content()
         }
-        Divider()
+        HorizontalDivider()
       }
     }
   }

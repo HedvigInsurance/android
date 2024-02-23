@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -47,7 +47,7 @@ fun ClaimStatusCard(
         )
         Spacer(modifier = Modifier.height(4.dp))
       }
-      Divider()
+      HorizontalDivider()
       ClaimProgressRow(
         claimProgressItemsUiState = uiState.claimProgressItemsUiState,
         modifier = Modifier.padding(16.dp),

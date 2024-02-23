@@ -26,13 +26,13 @@ squareSortDependencies = "0.6"
 
 # Other versions sorted alphabetically
 #noinspection GradleDependency // https://issuetracker.google.com/issues/322214617
-accompanist = "0.32.0"
+accompanist = "0.34.0"
 androidx-activity-compose = "1.8.2"
 androidx-activity-core = "1.8.2"
 androidx-annotation = "1.7.1"
 #noinspection GradleDependency // https://issuetracker.google.com/issues/322214617
-androidx-composeBom = "2023.10.01"
-androidx-composeCompiler = "1.5.8"
+androidx-composeBom = "2024.02.00"
+androidx-composeCompiler = "1.5.10"
 androidx-datastore = "1.0.0"
 androidx-lifecycle = "2.7.0"
 androidx-navigation = "2.7.6"

@@ -12,6 +12,7 @@ import com.hedvig.android.feature.terminateinsurance.step.deletion.InsuranceDele
 import com.hedvig.android.feature.terminateinsurance.step.start.TerminationStartStepViewModel
 import com.hedvig.android.feature.terminateinsurance.step.terminationdate.TerminationDateViewModel
 import com.hedvig.android.feature.terminateinsurance.step.terminationreview.TerminationReviewViewModel
+import com.hedvig.android.language.LanguageService
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -28,6 +29,7 @@ val terminateInsuranceModule = module {
     TerminationDateViewModel(
       minDate = minDate,
       maxDate = maxDate,
+      languageService = get<LanguageService>(),
     )
   }
   viewModel<InsuranceDeletionViewModel> { (insuranceDeletion: TerminateInsuranceDestination.InsuranceDeletion) ->

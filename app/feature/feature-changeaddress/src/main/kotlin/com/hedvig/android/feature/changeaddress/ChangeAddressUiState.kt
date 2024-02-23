@@ -2,6 +2,7 @@ package com.hedvig.android.feature.changeaddress
 
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.DisplayMode
+import androidx.compose.material3.SelectableDates
 import androidx.compose.runtime.Stable
 import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.feature.changeaddress.data.AddressId
@@ -11,6 +12,7 @@ import com.hedvig.android.feature.changeaddress.data.HousingType
 import com.hedvig.android.feature.changeaddress.data.MoveIntentId
 import com.hedvig.android.feature.changeaddress.data.MoveQuote
 import com.hedvig.android.feature.changeaddress.data.SuccessfulMove
+import java.util.Locale
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
@@ -164,21 +166,25 @@ internal data class ChangeAddressUiState(
 
 @Stable
 internal class DatePickerUiState(
+  locale: Locale,
   initiallySelectedDate: LocalDate?,
   minDate: LocalDate = LocalDate(1900, 1, 1),
   maxDate: LocalDate = LocalDate(2100, 1, 1),
 ) {
   private val minDateInMillis = minDate.atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
   private val maxDateInMillis = maxDate.atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
+  private val yearRange = minDate.year..maxDate.year
 
   val datePickerState = DatePickerState(
+    locale = locale,
     initialSelectedDateMillis = initiallySelectedDate?.atStartOfDayIn(TimeZone.UTC)?.toEpochMilliseconds(),
     initialDisplayedMonthMillis = null,
-    yearRange = minDate.year..maxDate.year,
+    yearRange = yearRange,
     initialDisplayMode = DisplayMode.Picker,
-  )
+    selectableDates = object : SelectableDates {
+      override fun isSelectableDate(utcTimeMillis: Long) = utcTimeMillis in minDateInMillis..maxDateInMillis
 
-  fun validateDate(selectedDateEpochMillis: Long): Boolean {
-    return selectedDateEpochMillis in minDateInMillis..maxDateInMillis
-  }
+      override fun isSelectableYear(year: Int) = year in yearRange
+    },
+  )
 }

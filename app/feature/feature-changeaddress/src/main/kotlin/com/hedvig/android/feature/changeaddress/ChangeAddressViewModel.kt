@@ -10,6 +10,7 @@ import com.hedvig.android.feature.changeaddress.data.HousingType
 import com.hedvig.android.feature.changeaddress.data.MoveIntentId
 import com.hedvig.android.feature.changeaddress.data.MoveQuote
 import com.hedvig.android.feature.changeaddress.data.QuoteInput
+import com.hedvig.android.language.LanguageService
 import hedvig.resources.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,6 +21,7 @@ import kotlinx.datetime.LocalDate
 
 internal class ChangeAddressViewModel(
   private val changeAddressRepository: ChangeAddressRepository,
+  private val languageService: LanguageService,
 ) : ViewModel() {
   private val _uiState: MutableStateFlow<ChangeAddressUiState> = MutableStateFlow(ChangeAddressUiState())
   val uiState: StateFlow<ChangeAddressUiState> = _uiState.asStateFlow()
@@ -225,6 +227,7 @@ internal class ChangeAddressViewModel(
               },
               isLoading = false,
               datePickerUiState = DatePickerUiState(
+                locale = languageService.getLocale(),
                 initiallySelectedDate = null,
                 minDate = moveIntent.movingDateRange.start,
                 maxDate = moveIntent.movingDateRange.endInclusive,

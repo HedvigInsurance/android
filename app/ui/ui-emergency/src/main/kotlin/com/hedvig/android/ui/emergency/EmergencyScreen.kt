@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
@@ -95,10 +95,18 @@ fun EmergencyScreen(title: String?, emergencyNumber: String?, navigateUp: () -> 
             Spacer(Modifier.height(24.dp))
             val context = LocalContext.current
             HedvigContainedSmallButton(
-              text = stringResource(R.string.SUBMIT_CLAIM_GLOBAL_ASSISTANCE_CALL_LABEL, emergencyNumber),
+              text = stringResource(
+                R.string.SUBMIT_CLAIM_GLOBAL_ASSISTANCE_CALL_LABEL,
+                emergencyNumber,
+              ),
               onClick = {
                 try {
-                  context.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:$emergencyNumber")))
+                  context.startActivity(
+                    Intent(
+                      Intent.ACTION_DIAL,
+                      Uri.parse("tel:$emergencyNumber"),
+                    ),
+                  )
                 } catch (exception: Throwable) {
                   logcat(LogPriority.ERROR, exception) {
                     "Could not open dial activity in deflect emergency destination"
@@ -131,7 +139,7 @@ fun EmergencyScreen(title: String?, emergencyNumber: String?, navigateUp: () -> 
       color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
     Spacer(Modifier.height(24.dp))
-    Divider(Modifier.padding(horizontal = 16.dp))
+    HorizontalDivider(Modifier.padding(horizontal = 16.dp))
     Spacer(Modifier.height(24.dp))
     QuestionsAndAnswers(Modifier.padding(horizontal = 16.dp))
     Spacer(Modifier.height(16.dp))

@@ -21,7 +21,6 @@ internal data class TravelCertificateInputState(
   val maximumCoInsured: Int? = null,
   val includeMember: Boolean = true,
   val datePickerState: DatePickerState? = null,
-  val dateValidator: (Long) -> Boolean = { false },
   val daysValid: Int? = null,
   val isLoading: Boolean = false,
   val errorMessage: String? = null,

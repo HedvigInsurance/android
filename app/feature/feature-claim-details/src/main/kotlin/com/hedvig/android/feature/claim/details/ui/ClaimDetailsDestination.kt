@@ -30,7 +30,7 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -334,7 +334,7 @@ internal fun ClaimInfoCard(
           modifier = Modifier.padding(16.dp),
         )
         Spacer(Modifier.height(4.dp))
-        Divider()
+        HorizontalDivider()
       }
       Row(
         horizontalArrangement = Arrangement.SpaceBetween,
