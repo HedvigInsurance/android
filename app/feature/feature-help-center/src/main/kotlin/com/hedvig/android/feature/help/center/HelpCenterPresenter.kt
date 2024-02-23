@@ -43,8 +43,16 @@ internal class HelpCenterPresenter(
 ) : MoleculePresenter<HelpCenterEvent, HelpCenterUiState> {
   @Composable
   override fun MoleculePresenterScope<HelpCenterEvent>.present(lastState: HelpCenterUiState): HelpCenterUiState {
-    var quickActions by remember { mutableStateOf(persistentListOf<QuickAction>()) }
-    var commonClaims by remember { mutableStateOf(persistentListOf<CommonClaim>()) }
+    var quickActions by remember {
+      mutableStateOf(
+        lastState.quickLinks.filterIsInstance<HelpCenterUiState.QuickLinkType.QuickActionType>().map { it.quickAction },
+      )
+    }
+    var commonClaims by remember {
+      mutableStateOf(
+        lastState.quickLinks.filterIsInstance<HelpCenterUiState.QuickLinkType.CommonClaimType>().map { it.commonClaim },
+      )
+    }
     var selectedQuickAction by remember { mutableStateOf<QuickAction?>(null) }
 
     CollectEvents { event ->
