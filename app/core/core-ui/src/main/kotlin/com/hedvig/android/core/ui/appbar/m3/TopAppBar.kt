@@ -5,11 +5,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -154,7 +156,7 @@ fun TopAppBarWithBackAndClose(
   onNavigateUp: () -> Unit,
   onClose: () -> Unit,
   modifier: Modifier = Modifier,
-  windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
+  windowInsets: WindowInsets = WindowInsets.systemBars.union(WindowInsets.displayCutout),
   colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(
     containerColor = MaterialTheme.colorScheme.background,
     scrolledContainerColor = MaterialTheme.colorScheme.surface,
