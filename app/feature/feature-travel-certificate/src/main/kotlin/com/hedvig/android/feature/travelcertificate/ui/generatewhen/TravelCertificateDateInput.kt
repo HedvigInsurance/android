@@ -39,6 +39,7 @@ import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateDestination
 import hedvig.resources.R
+import java.util.Locale
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -129,7 +130,6 @@ private fun TravelCertificateDateInput(
         MovingDateButton(
           onDateSelected = onDateChanged,
           datePickerState = uiState.datePickerState,
-          dateValidator = uiState.dateValidator,
           travelDate = uiState.travelDate,
           modifier = Modifier.padding(horizontal = 16.dp),
         )
@@ -187,7 +187,6 @@ private fun EmailTextField(
 private fun MovingDateButton(
   onDateSelected: (LocalDate) -> Unit,
   datePickerState: DatePickerState,
-  dateValidator: (Long) -> Boolean,
   travelDate: LocalDate,
   modifier: Modifier = Modifier,
 ) {
@@ -202,10 +201,8 @@ private fun MovingDateButton(
               val selectedDate = Instant.fromEpochMilliseconds(it)
                 .toLocalDateTime(TimeZone.UTC)
                 .date
-              datePickerState.setSelection(it)
               onDateSelected(selectedDate)
             }
-
             showDatePicker = false
           },
           shape = MaterialTheme.shapes.medium,
@@ -224,10 +221,7 @@ private fun MovingDateButton(
         }
       },
     ) {
-      HedvigDatePicker(
-        datePickerState = datePickerState,
-        dateValidator = { dateValidator(it) },
-      )
+      HedvigDatePicker(datePickerState = datePickerState)
     }
   }
 
@@ -270,8 +264,7 @@ private fun PreviewTravelCertificateDateInput() {
           "id",
           "emaild",
           hasCoInsured = false,
-          datePickerState = DatePickerState(null, null, 2020..2024, DisplayMode.Picker),
-          dateValidator = { true },
+          datePickerState = DatePickerState(Locale.ENGLISH, null, null, 2020..2024, DisplayMode.Picker),
           travelDate = LocalDate(2023, 1, 1),
           daysValid = 40,
           errorMessageRes = null,
