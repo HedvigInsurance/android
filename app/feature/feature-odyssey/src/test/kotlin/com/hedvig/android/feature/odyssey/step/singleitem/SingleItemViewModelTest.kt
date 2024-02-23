@@ -12,8 +12,11 @@ import com.hedvig.android.data.claimflow.ItemBrand
 import com.hedvig.android.data.claimflow.ItemModel
 import com.hedvig.android.data.claimflow.model.FlowId
 import com.hedvig.android.feature.odyssey.data.TestClaimFlowRepository
+import com.hedvig.android.language.test.FakeLanguageService
+import java.util.Locale
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
+import kotlinx.datetime.Clock
 import octopus.type.CurrencyCode
 import octopus.type.FlowClaimItemBrandInput
 import octopus.type.FlowClaimItemModelInput
@@ -45,6 +48,8 @@ class SingleItemViewModelTest {
         itemModels = listOf(model),
       ),
       claimFlowRepository,
+      Clock.System,
+      FakeLanguageService(fixedLocale = Locale.ENGLISH),
     )
 
     viewModel.uiState.test {
@@ -78,6 +83,8 @@ class SingleItemViewModelTest {
         itemModels = listOf(model),
       ),
       claimFlowRepository,
+      Clock.System,
+      FakeLanguageService(fixedLocale = Locale.ENGLISH),
     )
 
     viewModel.uiState.test {
@@ -103,6 +110,8 @@ class SingleItemViewModelTest {
         itemModels = listOf(model),
       ),
       claimFlowRepository,
+      Clock.System,
+      FakeLanguageService(fixedLocale = Locale.ENGLISH),
     )
 
     viewModel.uiState.test {
@@ -112,7 +121,12 @@ class SingleItemViewModelTest {
       viewModel.submitSelections()
       val (flowClaimItemBrandInput, flowClaimItemModelInput) =
         claimFlowRepository.submitSingleItemBrandAndModelInput.awaitItem()
-      assertThat(flowClaimItemBrandInput).isEqualTo(FlowClaimItemBrandInput(brand.itemTypeId, brand.itemBrandId))
+      assertThat(flowClaimItemBrandInput).isEqualTo(
+        FlowClaimItemBrandInput(
+          itemTypeId = brand.itemTypeId,
+          itemBrandId = brand.itemBrandId,
+        ),
+      )
       assertThat(flowClaimItemModelInput).isNull()
       cancelAndIgnoreRemainingEvents()
     }
@@ -127,6 +141,8 @@ class SingleItemViewModelTest {
         itemModels = listOf(model),
       ),
       claimFlowRepository,
+      Clock.System,
+      FakeLanguageService(fixedLocale = Locale.ENGLISH),
     )
 
     viewModel.uiState.test {
@@ -137,7 +153,12 @@ class SingleItemViewModelTest {
       viewModel.submitSelections()
       val (flowClaimItemBrandInput, flowClaimItemModelInput) =
         claimFlowRepository.submitSingleItemBrandAndModelInput.awaitItem()
-      assertThat(flowClaimItemBrandInput).isEqualTo(FlowClaimItemBrandInput(brand.itemTypeId, brand.itemBrandId))
+      assertThat(flowClaimItemBrandInput).isEqualTo(
+        FlowClaimItemBrandInput(
+          itemTypeId = brand.itemTypeId,
+          itemBrandId = brand.itemBrandId,
+        ),
+      )
       assertThat(flowClaimItemModelInput).isNull()
       cancelAndIgnoreRemainingEvents()
     }
@@ -152,6 +173,8 @@ class SingleItemViewModelTest {
         itemModels = listOf(model),
       ),
       claimFlowRepository,
+      Clock.System,
+      FakeLanguageService(fixedLocale = Locale.ENGLISH),
     )
 
     viewModel.uiState.test {
@@ -177,6 +200,8 @@ class SingleItemViewModelTest {
         itemModels = listOf(model),
       ),
       claimFlowRepository,
+      Clock.System,
+      FakeLanguageService(fixedLocale = Locale.ENGLISH),
     )
 
     viewModel.uiState.test {
@@ -198,6 +223,8 @@ class SingleItemViewModelTest {
         itemModels = listOf(model),
       ),
       claimFlowRepository,
+      Clock.System,
+      FakeLanguageService(fixedLocale = Locale.ENGLISH),
     )
 
     viewModel.uiState.test {
@@ -223,6 +250,8 @@ class SingleItemViewModelTest {
         },
       ),
       claimFlowRepository,
+      Clock.System,
+      FakeLanguageService(fixedLocale = Locale.ENGLISH),
     )
 
     viewModel.uiState.test {

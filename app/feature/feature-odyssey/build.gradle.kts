@@ -51,5 +51,6 @@ dependencies {
   testImplementation(libs.junit)
   testImplementation(libs.turbine)
   testImplementation(projects.coreCommonTest)
+  testImplementation(projects.languageTest)
   testImplementation(projects.loggingTest)
 }
