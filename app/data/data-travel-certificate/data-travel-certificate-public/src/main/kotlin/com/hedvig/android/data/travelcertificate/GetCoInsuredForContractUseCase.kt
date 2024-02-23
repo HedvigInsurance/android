@@ -8,23 +8,23 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import kotlinx.datetime.LocalDate
-import octopus.CoEnsuredForContractQuery
+import octopus.CoInsuredForContractQuery
 
-interface GetCoEnsuredForContractUseCase {
+interface GetCoInsuredForContractUseCase {
   suspend fun invoke(contractId: String): Either<ErrorMessage, CoInsuredDataWithMember>
 }
 
-internal class GetCoEnsuredForContractUseCaseImpl(
+internal class GetCoInsuredForContractUseCaseImpl(
   private val apolloClient: ApolloClient,
-) : GetCoEnsuredForContractUseCase {
+) : GetCoInsuredForContractUseCase {
   override suspend fun invoke(contractId: String): Either<ErrorMessage, CoInsuredDataWithMember> {
-    return apolloClient.query(CoEnsuredForContractQuery(contractId))
+    return apolloClient.query(CoInsuredForContractQuery(contractId))
       .fetchPolicy(FetchPolicy.NetworkOnly)
       .safeExecute()
       .toEither(::ErrorMessage)
       .map { data ->
-        val coEnsured = data.contract.coInsured ?: listOf()
-        val resultList = coEnsured.map {
+        val coInsured = data.contract.coInsured ?: listOf()
+        val resultList = coInsured.map {
           CoInsuredData(
             firstName = it.firstName,
             lastName = it.lastName,
@@ -43,7 +43,7 @@ internal class GetCoEnsuredForContractUseCaseImpl(
 }
 
 data class CoInsuredDataWithMember(
-  val coEnsuredList: List<CoInsuredData>,
+  val coInsuredList: List<CoInsuredData>,
   val memberFullName: String,
 )
 

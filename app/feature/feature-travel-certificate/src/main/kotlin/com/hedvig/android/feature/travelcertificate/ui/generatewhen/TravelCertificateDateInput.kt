@@ -1,6 +1,5 @@
-package com.hedvig.android.feature.travelcertificate.ui.generate_when
+package com.hedvig.android.feature.travelcertificate.ui.generatewhen
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -28,7 +27,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -46,6 +44,7 @@ import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.ChevronDown
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
+import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateDestination
 import hedvig.resources.R
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
@@ -56,7 +55,9 @@ import kotlinx.datetime.toLocalDateTime
 internal fun TravelCertificateDateInputDestination(
   viewModel: TravelCertificateDateInputViewModel,
   navigateUp: () -> Unit,
-  onNavigateToFellowTravellers: (TravelCertificatePrimaryInput) -> Unit,
+  onNavigateToFellowTravellers: (
+    TravelCertificateDestination.TravelCertificateTravellersInput.TravelCertificatePrimaryInput,
+  ) -> Unit,
   onNavigateToOverview: (TravelCertificateUrl) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -68,7 +69,7 @@ internal fun TravelCertificateDateInputDestination(
     onNavigateToFellowTravellers = onNavigateToFellowTravellers,
     onNavigateToOverview = onNavigateToOverview,
     validateInput = { viewModel.emit(TravelCertificateDateInputEvent.ValidateInputAndChooseDirection(it)) },
-    nullifyInputValidity = { viewModel.emit(TravelCertificateDateInputEvent.NullifyInputValidity) },
+    nullifyPrimaryInput = { viewModel.emit(TravelCertificateDateInputEvent.NullifyPrimaryInput) },
   )
 }
 
@@ -78,22 +79,13 @@ private fun TravelCertificateDateInput(
   changeDate: (LocalDate) -> Unit,
   reload: () -> Unit,
   navigateUp: () -> Unit,
-  onNavigateToFellowTravellers: (TravelCertificatePrimaryInput) -> Unit,
+  onNavigateToFellowTravellers: (
+    TravelCertificateDestination.TravelCertificateTravellersInput.TravelCertificatePrimaryInput,
+  ) -> Unit,
   onNavigateToOverview: (TravelCertificateUrl) -> Unit,
   validateInput: (String) -> Unit,
-  nullifyInputValidity: () -> Unit,
+  nullifyPrimaryInput: () -> Unit,
 ) {
-  var toast by remember { mutableStateOf<Int?>(null) }
-  val context = LocalContext.current
-  val errorMsg = stringResource(id = R.string.travel_certificate_email_empty_error)
-
-  LaunchedEffect(toast) {
-    val stringRes = toast
-    if (stringRes != null) {
-      Toast.makeText(context, errorMsg, Toast.LENGTH_SHORT).show()
-    }
-  } // todo: do we do anything here, do we show toast or smth? is it good idea to show th same msg only once?
-
   when (uiState) {
     TravelCertificateDateInputUiState.Failure -> {
       HedvigScaffold(
@@ -106,18 +98,22 @@ private fun TravelCertificateDateInput(
     TravelCertificateDateInputUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
 
     is TravelCertificateDateInputUiState.UrlFetched -> {
-      onNavigateToOverview(uiState.travelCertificateUrl)
+      LaunchedEffect(Unit) {
+        onNavigateToOverview(uiState.travelCertificateUrl)
+      }
     }
 
     is TravelCertificateDateInputUiState.Success -> {
-      LaunchedEffect(uiState.inputValid) {
-        if (uiState.inputValid == true) {
+      var errorMessageRes by remember { mutableStateOf<Int?>(null) }
+
+      LaunchedEffect(uiState.errorMessageRes, uiState.primaryInput) {
+        if (uiState.errorMessageRes == null) {
           if (uiState.primaryInput != null) {
             onNavigateToFellowTravellers(uiState.primaryInput)
-            nullifyInputValidity()
+            nullifyPrimaryInput()
           }
-        } else if (uiState.inputValid == false) {
-          toast = R.string.travel_certificate_email_empty_error
+        } else {
+          errorMessageRes = uiState.errorMessageRes
         }
       }
 
@@ -151,8 +147,10 @@ private fun TravelCertificateDateInput(
           email = emailInput,
           onEmailChanged = {
             emailInput = it
+            errorMessageRes = null
           },
           modifier = Modifier.padding(horizontal = 16.dp),
+          errorText = errorMessageRes?.let { stringResource(id = it) },
         )
         Spacer(Modifier.height(16.dp))
         HedvigContainedButton(
@@ -175,11 +173,20 @@ private fun TravelCertificateDateInput(
 }
 
 @Composable
-private fun EmailTextField(email: String, onEmailChanged: (String) -> Unit, modifier: Modifier = Modifier) {
+private fun EmailTextField(
+  email: String,
+  errorText: String?,
+  onEmailChanged: (String) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+//  var errorMessage by remember { mutableStateOf(errorText)}
   HedvigTextField(
     value = email,
+    errorText = errorText,
     withNewDesign = true,
-    onValueChange = { onEmailChanged(it) },
+    onValueChange = {
+      onEmailChanged(it)
+    },
     label = {
       Text("Email")
     },
@@ -280,11 +287,11 @@ private fun PreviewTravelCertificateDateInput() {
         TravelCertificateDateInputUiState.Success(
           "id",
           "emaild",
-          hasCoEnsured = false,
+          hasCoInsured = false,
           datePickerState = DatePickerState(null, null, 2020..2024, DisplayMode.Picker),
           dateValidator = { true },
           daysValid = 40,
-          inputValid = null,
+          errorMessageRes = null,
           primaryInput = null,
         ),
         {},

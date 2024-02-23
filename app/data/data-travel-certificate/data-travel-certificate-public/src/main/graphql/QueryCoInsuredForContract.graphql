@@ -1,4 +1,4 @@
-query CoEnsuredForContract($contractId: UUID!) {
+query CoInsuredForContract($contractId: UUID!) {
   contract(id: $contractId) {
     coInsured {
       birthdate

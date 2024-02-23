@@ -33,4 +33,5 @@ dependencies {
   implementation(projects.navigationActivity)
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
+  implementation(projects.coreCommonAndroidPublic)
 }

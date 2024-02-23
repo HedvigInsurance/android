@@ -11,10 +11,10 @@ import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUri
 import com.hedvig.android.feature.travelcertificate.ui.choose.ChooseContractForCertificateDestination
 import com.hedvig.android.feature.travelcertificate.ui.choose.ChooseContractForCertificateViewModel
-import com.hedvig.android.feature.travelcertificate.ui.generate_when.TravelCertificateDateInputDestination
-import com.hedvig.android.feature.travelcertificate.ui.generate_when.TravelCertificateDateInputViewModel
-import com.hedvig.android.feature.travelcertificate.ui.generate_who.TravelCertificateTravellersInputDestination
-import com.hedvig.android.feature.travelcertificate.ui.generate_who.TravelCertificateTravellersInputViewModel
+import com.hedvig.android.feature.travelcertificate.ui.generatewhen.TravelCertificateDateInputDestination
+import com.hedvig.android.feature.travelcertificate.ui.generatewhen.TravelCertificateDateInputViewModel
+import com.hedvig.android.feature.travelcertificate.ui.generatewho.TravelCertificateTravellersInputDestination
+import com.hedvig.android.feature.travelcertificate.ui.generatewho.TravelCertificateTravellersInputViewModel
 import com.hedvig.android.feature.travelcertificate.ui.history.CertificateHistoryEvent
 import com.hedvig.android.feature.travelcertificate.ui.history.CertificateHistoryViewModel
 import com.hedvig.android.feature.travelcertificate.ui.history.TravelCertificateHistoryDestination
@@ -109,7 +109,7 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavC
             }
           }
         },
-        onNavigateToCoEnsuredAddInfo = {
+        onNavigateToCoInsuredAddInfo = {
           navController.navigate(AppDestination.CoInsuredAddInfo(primaryInput.contractId))
         },
       )

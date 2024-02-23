@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.travelcertificate.ui.generate_who
+package com.hedvig.android.feature.travelcertificate.ui.generatewho
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -7,10 +7,10 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.hedvig.android.data.travelcertificate.GetCoEnsuredForContractUseCase
+import com.hedvig.android.data.travelcertificate.GetCoInsuredForContractUseCase
 import com.hedvig.android.feature.travelcertificate.data.CreateTravelCertificateUseCase
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
-import com.hedvig.android.feature.travelcertificate.ui.generate_when.TravelCertificatePrimaryInput
+import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateDestination
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -18,22 +18,22 @@ import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
 internal class TravelCertificateTravellersInputViewModel(
-  primaryInput: TravelCertificatePrimaryInput,
+  primaryInput: TravelCertificateDestination.TravelCertificateTravellersInput.TravelCertificatePrimaryInput,
   createTravelCertificateUseCase: CreateTravelCertificateUseCase,
-  getCoEnsuredForContractUseCase: GetCoEnsuredForContractUseCase,
+  getCoInsuredForContractUseCase: GetCoInsuredForContractUseCase,
 ) : MoleculeViewModel<TravelCertificateTravellersInputEvent, TravelCertificateTravellersInputUiState>(
     initialState = TravelCertificateTravellersInputUiState.Loading,
     presenter = TravelCertificateTravellersInputPresenter(
       primaryInput,
       createTravelCertificateUseCase,
-      getCoEnsuredForContractUseCase,
+      getCoInsuredForContractUseCase,
     ),
   )
 
 internal class TravelCertificateTravellersInputPresenter(
-  private val primaryInput: TravelCertificatePrimaryInput,
+  private val primaryInput: TravelCertificateDestination.TravelCertificateTravellersInput.TravelCertificatePrimaryInput,
   private val createTravelCertificateUseCase: CreateTravelCertificateUseCase,
-  private val getCoEnsuredForContractUseCase: GetCoEnsuredForContractUseCase,
+  private val getCoInsuredForContractUseCase: GetCoInsuredForContractUseCase,
 ) : MoleculePresenter<TravelCertificateTravellersInputEvent, TravelCertificateTravellersInputUiState> {
   @Composable
   override fun MoleculePresenterScope<TravelCertificateTravellersInputEvent>.present(
@@ -43,7 +43,7 @@ internal class TravelCertificateTravellersInputPresenter(
 
     var screenContent by remember { mutableStateOf<TravelersInputScreenContent>(TravelersInputScreenContent.Loading) }
 
-    var currentCoEnsuredList by remember { mutableStateOf<List<CoInsured>>(listOf()) }
+    var currentCoInsuredList by remember { mutableStateOf<List<CoInsured>>(listOf()) }
 
     var isMemberIncluded by remember { mutableStateOf(true) }
 
@@ -53,14 +53,15 @@ internal class TravelCertificateTravellersInputPresenter(
       when (event) {
         TravelCertificateTravellersInputEvent.RetryLoadData -> loadIteration++
         TravelCertificateTravellersInputEvent.GenerateTravelCertificate -> generateIteration++
-        is TravelCertificateTravellersInputEvent.ChangeCoEnsuredChecked -> {
+        is TravelCertificateTravellersInputEvent.ChangeCoInsuredChecked -> {
           val changedTraveler = event.coInsured.copy(isIncluded = !event.coInsured.isIncluded)
-          val newList = currentCoEnsuredList.toMutableList()
+          val newList = currentCoInsuredList.toMutableList()
           newList.remove(event.coInsured)
           newList.add(changedTraveler)
           val sorted = newList.sortedBy { it.name }
-          currentCoEnsuredList = sorted
+          currentCoInsuredList = sorted
         }
+
         TravelCertificateTravellersInputEvent.ChangeMemberChecked -> {
           val lastMemberState = isMemberIncluded
           isMemberIncluded = !lastMemberState
@@ -69,23 +70,23 @@ internal class TravelCertificateTravellersInputPresenter(
     }
 
     LaunchedEffect(loadIteration) {
-      getCoEnsuredForContractUseCase.invoke(primaryInput.contractId).fold(
+      getCoInsuredForContractUseCase.invoke(primaryInput.contractId).fold(
         ifLeft = {
           screenContent = TravelersInputScreenContent.Failure
         },
         ifRight = { data ->
-          val resultList = data.coEnsuredList.filterNot {
+          val resultList = data.coInsuredList.filterNot {
             it.hasMissingInfo
-          }.map { coEnsured ->
+          }.map { coInsured ->
             CoInsured(
-              coEnsured.id,
-              "${coEnsured.firstName} ${coEnsured.lastName}",
-              coEnsured.ssn,
-              coEnsured.dateOfBirth,
+              coInsured.id,
+              "${coInsured.firstName} ${coInsured.lastName}",
+              coInsured.ssn,
+              coInsured.dateOfBirth,
             )
           }.sortedBy { it.name }
-          currentCoEnsuredList = resultList
-          val hasMissingInfo = data.coEnsuredList.any { it.hasMissingInfo }
+          currentCoInsuredList = resultList
+          val hasMissingInfo = data.coInsuredList.any { it.hasMissingInfo }
           screenContent = TravelersInputScreenContent.Success(
             hasMissingInfo,
             data.memberFullName,
@@ -102,16 +103,11 @@ internal class TravelCertificateTravellersInputPresenter(
           contractId = primaryInput.contractId,
           startDate = primaryInput.travelDate,
           isMemberIncluded = isMemberIncluded,
-          coInsured = currentCoEnsuredList.filter { it.isIncluded },
+          coInsured = currentCoInsuredList.filter { it.isIncluded },
           email = primaryInput.email,
         ).fold(
-          ifLeft = { errorMessage ->
-            val message = errorMessage.message
-            screenContent = if (message != null && message.contains("Invalid email")) {
-              TravelersInputScreenContent.FailureWithInvalidEmail
-            } else {
-              TravelersInputScreenContent.Failure
-            }
+          ifLeft = { _ ->
+            TravelersInputScreenContent.Failure
           },
           ifRight = { url ->
             screenContent = TravelersInputScreenContent.UrlFetched(url)
@@ -124,16 +120,15 @@ internal class TravelCertificateTravellersInputPresenter(
       TravelersInputScreenContent.Failure -> TravelCertificateTravellersInputUiState.Failure
       TravelersInputScreenContent.Loading -> TravelCertificateTravellersInputUiState.Loading
       is TravelersInputScreenContent.Success -> TravelCertificateTravellersInputUiState.Success(
-        coEnsuredHasMissingInfo = currentContent.coEnsuredHasMissingInfo,
-        coEnsuredList = currentCoEnsuredList,
+        coInsuredHasMissingInfo = currentContent.coInsuredHasMissingInfo,
+        coInsuredList = currentCoInsuredList,
         memberFullName = currentContent.memberFullName,
         isMemberIncluded = isMemberIncluded,
-        hasAtLeastOneTraveler = isMemberIncluded || currentCoEnsuredList.any { it.isIncluded },
       )
+
       is TravelersInputScreenContent.UrlFetched -> TravelCertificateTravellersInputUiState.UrlFetched(
         currentContent.travelCertificateUrl,
       )
-      TravelersInputScreenContent.FailureWithInvalidEmail -> TravelCertificateTravellersInputUiState.FailureWithInvalidEmail
     }
   }
 }
@@ -143,12 +138,10 @@ private sealed interface TravelersInputScreenContent {
 
   data object Failure : TravelersInputScreenContent
 
-  data object FailureWithInvalidEmail : TravelersInputScreenContent
-
   data class UrlFetched(val travelCertificateUrl: TravelCertificateUrl) : TravelersInputScreenContent
 
   data class Success(
-    val coEnsuredHasMissingInfo: Boolean,
+    val coInsuredHasMissingInfo: Boolean,
     val memberFullName: String,
   ) : TravelersInputScreenContent
 }
@@ -158,17 +151,16 @@ internal sealed interface TravelCertificateTravellersInputUiState {
 
   data object Failure : TravelCertificateTravellersInputUiState
 
-  data object FailureWithInvalidEmail : TravelCertificateTravellersInputUiState
-
   data class UrlFetched(val travelCertificateUrl: TravelCertificateUrl) : TravelCertificateTravellersInputUiState
 
   data class Success(
-    val coEnsuredHasMissingInfo: Boolean,
-    val coEnsuredList: List<CoInsured>,
+    val coInsuredHasMissingInfo: Boolean,
+    val coInsuredList: List<CoInsured>,
     val memberFullName: String,
     val isMemberIncluded: Boolean,
-    val hasAtLeastOneTraveler: Boolean,
-  ) : TravelCertificateTravellersInputUiState
+  ) : TravelCertificateTravellersInputUiState {
+    val hasAtLeastOneTraveler = isMemberIncluded || coInsuredList.any { it.isIncluded }
+  }
 }
 
 internal sealed interface TravelCertificateTravellersInputEvent {
@@ -178,7 +170,7 @@ internal sealed interface TravelCertificateTravellersInputEvent {
 
   data object ChangeMemberChecked : TravelCertificateTravellersInputEvent
 
-  data class ChangeCoEnsuredChecked(val coInsured: CoInsured) : TravelCertificateTravellersInputEvent
+  data class ChangeCoInsuredChecked(val coInsured: CoInsured) : TravelCertificateTravellersInputEvent
 }
 
 @Serializable

@@ -2,16 +2,16 @@ package com.hedvig.android.feature.travelcertificate.di
 
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.data.travelcertificate.CheckTravelCertificateAvailabilityForCurrentContractsUseCase
-import com.hedvig.android.data.travelcertificate.GetCoEnsuredForContractUseCase
+import com.hedvig.android.data.travelcertificate.GetCoInsuredForContractUseCase
 import com.hedvig.android.data.travelcertificate.GetEligibleContractsWithAddressUseCase
 import com.hedvig.android.data.travelcertificate.GetTravelCertificateSpecificationsUseCase
 import com.hedvig.android.data.travelcertificate.GetTravelCertificatesHistoryUseCase
 import com.hedvig.android.feature.travelcertificate.data.CreateTravelCertificateUseCase
 import com.hedvig.android.feature.travelcertificate.data.DownloadTravelCertificateUseCase
+import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateDestination
 import com.hedvig.android.feature.travelcertificate.ui.choose.ChooseContractForCertificateViewModel
-import com.hedvig.android.feature.travelcertificate.ui.generate_when.TravelCertificateDateInputViewModel
-import com.hedvig.android.feature.travelcertificate.ui.generate_when.TravelCertificatePrimaryInput
-import com.hedvig.android.feature.travelcertificate.ui.generate_who.TravelCertificateTravellersInputViewModel
+import com.hedvig.android.feature.travelcertificate.ui.generatewhen.TravelCertificateDateInputViewModel
+import com.hedvig.android.feature.travelcertificate.ui.generatewho.TravelCertificateTravellersInputViewModel
 import com.hedvig.android.feature.travelcertificate.ui.history.CertificateHistoryViewModel
 import com.hedvig.android.feature.travelcertificate.ui.overview.TravelCertificateOverviewViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -47,9 +47,9 @@ val travelCertificateModule = module {
   }
   viewModel<TravelCertificateTravellersInputViewModel> {
     TravelCertificateTravellersInputViewModel(
-      it.get<TravelCertificatePrimaryInput>(),
+      it.get<TravelCertificateDestination.TravelCertificateTravellersInput.TravelCertificatePrimaryInput>(),
       get<CreateTravelCertificateUseCase>(),
-      get<GetCoEnsuredForContractUseCase>(),
+      get<GetCoInsuredForContractUseCase>(),
     )
   }
 }

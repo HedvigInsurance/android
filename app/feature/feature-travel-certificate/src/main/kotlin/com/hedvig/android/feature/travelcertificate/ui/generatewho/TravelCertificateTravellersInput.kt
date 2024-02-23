@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.travelcertificate.ui.generate_who
+package com.hedvig.android.feature.travelcertificate.ui.generatewho
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,7 +52,7 @@ internal fun TravelCertificateTravellersInputDestination(
   viewModel: TravelCertificateTravellersInputViewModel,
   navigateUp: () -> Unit,
   onNavigateToOverview: (TravelCertificateUrl) -> Unit,
-  onNavigateToCoEnsuredAddInfo: () -> Unit,
+  onNavigateToCoInsuredAddInfo: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   TravelCertificateTravellersInput(
@@ -59,9 +60,9 @@ internal fun TravelCertificateTravellersInputDestination(
     navigateUp,
     { viewModel.emit(TravelCertificateTravellersInputEvent.RetryLoadData) },
     onNavigateToOverview,
-    { viewModel.emit(TravelCertificateTravellersInputEvent.ChangeCoEnsuredChecked(it)) },
+    { viewModel.emit(TravelCertificateTravellersInputEvent.ChangeCoInsuredChecked(it)) },
     { viewModel.emit(TravelCertificateTravellersInputEvent.ChangeMemberChecked) },
-    onNavigateToCoEnsuredAddInfo,
+    onNavigateToCoInsuredAddInfo,
     { viewModel.emit(TravelCertificateTravellersInputEvent.GenerateTravelCertificate) },
   )
 }
@@ -74,24 +75,11 @@ private fun TravelCertificateTravellersInput(
   onNavigateToOverview: (TravelCertificateUrl) -> Unit,
   changeCoInsuredChecked: (CoInsured) -> Unit,
   changeMemberChecked: () -> Unit,
-  onNavigateToCoEnsuredAddInfo: () -> Unit,
+  onNavigateToCoInsuredAddInfo: () -> Unit,
   onGenerateTravelCertificate: () -> Unit,
 ) {
   when (uiState) {
     TravelCertificateTravellersInputUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
-
-    TravelCertificateTravellersInputUiState.FailureWithInvalidEmail -> {
-      HedvigScaffold(
-        navigateUp = navigateUp,
-      ) {
-        HedvigErrorSection(
-          retry = navigateUp,
-          modifier = Modifier.weight(1f),
-          title = stringResource(id = R.string.travel_certificate_invalid_email),
-          subTitle = null,
-        )
-      }
-    }
 
     TravelCertificateTravellersInputUiState.Failure -> {
       HedvigScaffold(
@@ -102,7 +90,9 @@ private fun TravelCertificateTravellersInput(
     }
 
     is TravelCertificateTravellersInputUiState.UrlFetched -> {
-      onNavigateToOverview(uiState.travelCertificateUrl)
+      LaunchedEffect(Unit) {
+        onNavigateToOverview(uiState.travelCertificateUrl)
+      }
     }
 
     is TravelCertificateTravellersInputUiState.Success -> {
@@ -145,7 +135,7 @@ private fun TravelCertificateTravellersInput(
             ) { changeMemberChecked() }
           }
         }
-        for (i in uiState.coEnsuredList) {
+        for (i in uiState.coInsuredList) {
           Spacer(Modifier.height(4.dp))
           HedvigCard(
             onClick = { changeCoInsuredChecked(i) },
@@ -170,7 +160,7 @@ private fun TravelCertificateTravellersInput(
             }
           }
         }
-        if (uiState.coEnsuredHasMissingInfo) {
+        if (uiState.coInsuredHasMissingInfo) {
           Spacer(Modifier.height(16.dp))
           VectorInfoCard(
             text = stringResource(id = R.string.travel_certificate_missing_coinsured_info),
@@ -180,7 +170,7 @@ private fun TravelCertificateTravellersInput(
           ) {
             Button(
               onClick = {
-                onNavigateToCoEnsuredAddInfo()
+                onNavigateToCoInsuredAddInfo()
               },
               enabled = true,
               modifier = Modifier.fillMaxWidth(),
@@ -282,9 +272,8 @@ private fun PreviewTravelCertificateTravellersInput() {
       TravelCertificateTravellersInput(
         TravelCertificateTravellersInputUiState.Success(
           true,
-          listOf(CoInsured("id", "Coensured Baby", null, null, false)),
+          listOf(CoInsured("id", "Co-insured Baby", null, null, false)),
           "The Member Themselves",
-          true,
           true,
         ),
         {},
@@ -305,7 +294,7 @@ private fun PreviewTravelCertificateTravellersInputWithEmailFailure() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       TravelCertificateTravellersInput(
-        TravelCertificateTravellersInputUiState.FailureWithInvalidEmail,
+        TravelCertificateTravellersInputUiState.Failure,
         {},
         {},
         {},
