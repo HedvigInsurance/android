@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -42,7 +42,7 @@ internal fun <T> HelpCenterSectionWithClickableRows(
       Column {
         for ((index, question) in items.withIndex()) {
           if (index > 0) {
-            Divider(
+            HorizontalDivider(
               Modifier
                 .padding(horizontal = 16.dp)
                 .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),

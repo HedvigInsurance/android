@@ -36,6 +36,7 @@ dependencies {
   implementation(projects.coreUi)
   implementation(projects.dataContractAndroid)
   implementation(projects.dataContractPublic)
+  implementation(projects.languageCore)
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
   implementation(projects.navigationActivity)

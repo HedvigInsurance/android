@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
@@ -57,7 +57,7 @@ internal fun FailedAudioPlayerCard(tryAgain: () -> Unit, modifier: Modifier = Mo
       }
     }
     Spacer(Modifier.height(16.dp))
-    Divider()
+    HorizontalDivider()
     TextButton(
       onClick = tryAgain,
       modifier = Modifier

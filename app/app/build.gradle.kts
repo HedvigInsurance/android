@@ -25,7 +25,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "12.5.1"
+    versionName = "12.5.2"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -187,6 +187,7 @@ dependencies {
   implementation(projects.featureClaimTriaging)
   implementation(projects.featureConnectPaymentAdyen)
   implementation(projects.featureConnectPaymentTrustly)
+  implementation(projects.featureDeleteAccount)
   implementation(projects.featureEditCoinsured)
   implementation(projects.featureFlagsPublic)
   implementation(projects.featureForever)

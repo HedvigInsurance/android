@@ -46,7 +46,6 @@ internal fun MovingDateButton(
   onDateSelected: (LocalDate) -> Unit,
   datePickerState: DatePickerState,
   movingDate: ValidatedInput<LocalDate?>,
-  validate: (Long) -> Boolean,
   modifier: Modifier = Modifier,
 ) {
   var showDatePicker by rememberSaveable { mutableStateOf(false) }
@@ -62,7 +61,7 @@ internal fun MovingDateButton(
                 .toLocalDateTime(TimeZone.UTC)
                 .date
 
-              datePickerState.setSelection(it)
+              datePickerState.selectedDateMillis = it
               onDateSelected(selectedDate)
             }
 
@@ -84,10 +83,7 @@ internal fun MovingDateButton(
         }
       },
     ) {
-      HedvigDatePicker(
-        datePickerState = datePickerState,
-        dateValidator = validate,
-      )
+      HedvigDatePicker(datePickerState = datePickerState)
     }
   }
 

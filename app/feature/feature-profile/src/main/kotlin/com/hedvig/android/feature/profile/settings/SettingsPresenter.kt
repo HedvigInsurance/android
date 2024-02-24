@@ -41,9 +41,11 @@ internal class SettingsPresenter(
           cacheManager.clearCache()
           launch { uploadLanguagePreferenceToBackendUseCase.invoke() }
         }
+
         is SettingsEvent.ChangeTheme -> {
           launch { settingsDataStore.setTheme(event.theme) }
         }
+
         SettingsEvent.SnoozeNotificationPermissionReminder -> {
           launch { enableNotificationsReminderManager.snoozeNotificationReminder() }
         }

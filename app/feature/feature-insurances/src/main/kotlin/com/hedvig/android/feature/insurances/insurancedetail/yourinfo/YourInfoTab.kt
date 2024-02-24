@@ -15,8 +15,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -230,7 +230,7 @@ internal fun YourInfoTab(
     CoverageRows(coverageItems, Modifier.padding(horizontal = 16.dp))
 
     if (allowEditCoInsured) {
-      Divider(Modifier.padding(horizontal = 16.dp))
+      HorizontalDivider(Modifier.padding(horizontal = 16.dp))
       Spacer(Modifier.height(16.dp))
       CoInsuredSection(
         coInsuredList = coInsured,
@@ -295,7 +295,7 @@ internal fun CoverageRows(coverageRowItems: ImmutableList<Pair<String, String>>,
         spaceBetween = 8.dp,
       )
       if (index != coverageRowItems.size - 1) {
-        Divider()
+        HorizontalDivider()
       }
     }
   }
@@ -342,7 +342,7 @@ internal fun CoInsuredSection(
       spaceBetween = 8.dp,
     )
     Spacer(Modifier.height(16.dp))
-    Divider()
+    HorizontalDivider()
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
         Row(
@@ -376,7 +376,7 @@ internal fun CoInsuredSection(
       spaceBetween = 8.dp,
     )
     coInsuredList.forEachIndexed { index, coInsured ->
-      Divider()
+      HorizontalDivider()
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
           Row(
@@ -384,7 +384,11 @@ internal fun CoInsuredSection(
             modifier = Modifier.padding(vertical = 12.dp),
           ) {
             Column {
-              Text(coInsured.getDisplayName().ifBlank { stringResource(id = R.string.CONTRACT_COINSURED) })
+              Text(
+                text = coInsured.getDisplayName().ifBlank {
+                  stringResource(id = R.string.CONTRACT_COINSURED)
+                },
+              )
 
               Text(
                 text = coInsured.getSsnOrBirthDate(birthDateTimeFormatter)

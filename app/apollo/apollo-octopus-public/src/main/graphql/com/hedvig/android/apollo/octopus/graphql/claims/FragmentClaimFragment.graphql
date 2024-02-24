@@ -5,7 +5,6 @@ fragment ClaimFragment on Claim {
   payoutAmount {
     ...MoneyFragment
   }
-  associatedTypeOfContract
   audioUrl
   memberFreeText
   targetFileUploadUri

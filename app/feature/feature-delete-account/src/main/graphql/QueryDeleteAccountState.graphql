@@ -1,0 +1,11 @@
+query DeleteAccountState {
+  currentMember {
+    claims {
+      status
+    }
+    activeContracts {
+      # noinspection ApolloUnusedField
+      __typename
+    }
+  }
+}

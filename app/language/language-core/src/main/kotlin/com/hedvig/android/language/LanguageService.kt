@@ -17,6 +17,8 @@ interface LanguageService {
   fun getSelectedLanguage(): Language?
 
   fun getLanguage(): Language
+
+  fun getLocale(): Locale
 }
 
 internal class AndroidLanguageService() : LanguageService {
@@ -31,7 +33,7 @@ internal class AndroidLanguageService() : LanguageService {
   }
 
   override fun getSelectedLanguage(): Language? {
-    val locale = getLocaleFromAppCompat() ?: return null
+    val locale = getSelectedLocale() ?: return null
     return Language.from(locale.toLanguageTag())
   }
 
@@ -40,6 +42,14 @@ internal class AndroidLanguageService() : LanguageService {
       logcat(LogPriority.WARN) { "LanguageService: getLocale: No locale set, defaulting to en_SE" }
       Language.EN_SE
     }
+  }
+
+  override fun getLocale(): Locale {
+    return getSelectedLocale() ?: Locale("en", "SE")
+  }
+
+  private fun getSelectedLocale(): Locale? {
+    return getLocaleFromAppCompat()
   }
 
   private fun getLocaleFromAppCompat(): Locale? {

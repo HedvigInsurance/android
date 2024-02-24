@@ -2,6 +2,7 @@ package com.hedvig.android.feature.travelcertificate.ui.generatewhen
 
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.DisplayMode
+import androidx.compose.material3.SelectableDates
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -14,6 +15,7 @@ import com.hedvig.android.data.travelcertificate.GetTravelCertificateSpecificati
 import com.hedvig.android.feature.travelcertificate.data.CreateTravelCertificateUseCase
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateDestination
+import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
@@ -33,12 +35,14 @@ internal class TravelCertificateDateInputViewModel(
   contractId: String?,
   getTravelCertificateSpecificationsUseCase: GetTravelCertificateSpecificationsUseCase,
   createTravelCertificateUseCase: CreateTravelCertificateUseCase,
+  languageService: LanguageService,
 ) : MoleculeViewModel<TravelCertificateDateInputEvent, TravelCertificateDateInputUiState>(
     initialState = TravelCertificateDateInputUiState.Loading,
     presenter = TravelCertificateDateInputPresenter(
       contractId,
       getTravelCertificateSpecificationsUseCase,
       createTravelCertificateUseCase,
+      languageService,
     ),
     sharingStarted = SharingStarted.WhileSubscribed(5.seconds),
   )
@@ -47,6 +51,7 @@ internal class TravelCertificateDateInputPresenter(
   private val contractId: String?,
   private val getTravelCertificateSpecificationsUseCase: GetTravelCertificateSpecificationsUseCase,
   private val createTravelCertificateUseCase: CreateTravelCertificateUseCase,
+  private val languageService: LanguageService,
 ) : MoleculePresenter<TravelCertificateDateInputEvent, TravelCertificateDateInputUiState> {
   @Composable
   override fun MoleculePresenterScope<TravelCertificateDateInputEvent>.present(
@@ -65,7 +70,6 @@ internal class TravelCertificateDateInputPresenter(
               email = lastState.email,
               travelDate = lastState.travelDate,
               datePickerState = lastState.datePickerState,
-              dateValidator = lastState.dateValidator,
               daysValid = lastState.daysValid,
               hasCoInsured = lastState.hasCoInsured,
             ),
@@ -185,20 +189,26 @@ internal class TravelCertificateDateInputPresenter(
           },
           ifRight = { travelCertificateData ->
             val travelSpecification = travelCertificateData.travelCertificateSpecification
+            val yearRange = travelSpecification.dateRange.start.year..travelSpecification.dateRange.endInclusive.year
             val datePickerState = DatePickerState(
+              locale = languageService.getLocale(),
               initialSelectedDateMillis = null,
               initialDisplayedMonthMillis = null,
-              yearRange = travelSpecification.dateRange.start.year..travelSpecification.dateRange.endInclusive.year,
+              yearRange = yearRange,
               initialDisplayMode = DisplayMode.Picker,
+              selectableDates = object : SelectableDates {
+                override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                  val selectedDate =
+                    Instant.fromEpochMilliseconds(utcTimeMillis).toLocalDateTime(TimeZone.currentSystemDefault()).date
+                  return selectedDate in travelSpecification.dateRange
+                }
+
+                override fun isSelectableYear(year: Int): Boolean = year in yearRange
+              }
             )
             screenContent = DateInputScreenContent.Success(
               DateInputScreenContent.Success.SpecificationsDetails(
                 datePickerState = datePickerState,
-                dateValidator = { date ->
-                  val selectedDate =
-                    Instant.fromEpochMilliseconds(date).toLocalDateTime(TimeZone.currentSystemDefault()).date
-                  travelSpecification.dateRange.contains(selectedDate)
-                },
                 daysValid = travelSpecification.maxDurationDays,
                 email = travelSpecification.email,
                 contractId = travelSpecification.contractId,
@@ -219,7 +229,6 @@ internal class TravelCertificateDateInputPresenter(
           contractId = currentContent.details.contractId,
           hasCoInsured = currentContent.details.hasCoInsured,
           datePickerState = currentContent.details.datePickerState,
-          dateValidator = currentContent.details.dateValidator,
           daysValid = currentContent.details.daysValid,
           primaryInput = primaryInput,
           errorMessageRes = invalidEmailErrorMessage,
@@ -244,7 +253,6 @@ private sealed interface DateInputScreenContent {
       val email: String?,
       val travelDate: LocalDate,
       val datePickerState: DatePickerState,
-      val dateValidator: (Long) -> Boolean,
       val daysValid: Int,
       val hasCoInsured: Boolean,
     )
@@ -278,7 +286,6 @@ internal sealed interface TravelCertificateDateInputUiState {
     val travelDate: LocalDate,
     val hasCoInsured: Boolean,
     val datePickerState: DatePickerState,
-    val dateValidator: (Long) -> Boolean,
     val daysValid: Int,
     val primaryInput: TravelCertificateDestination.TravelCertificateTravellersInput.TravelCertificatePrimaryInput?,
     val errorMessageRes: Int?,

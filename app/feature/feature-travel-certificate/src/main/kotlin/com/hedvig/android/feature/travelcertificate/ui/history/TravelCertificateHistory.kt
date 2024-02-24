@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -279,7 +279,7 @@ private fun ShowNotEmptyList(
       )
 
       if (index != travelCertificates.size - 1) {
-        Divider(modifier = Modifier.padding(horizontal = 16.dp))
+        HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
       } else {
         Spacer(Modifier.height(16.dp))
       }

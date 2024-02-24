@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -134,7 +134,7 @@ private fun SingleItemCheckoutScreen(
       }
     }
     Spacer(Modifier.height(16.dp))
-    Divider(sideSpacingModifier)
+    HorizontalDivider(sideSpacingModifier)
     Spacer(Modifier.height(16.dp))
     Text(
       text = stringResource(R.string.PAYMENTS_SUBTITLE_PAYMENT_METHOD),

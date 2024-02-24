@@ -33,6 +33,7 @@ import com.hedvig.android.feature.odyssey.ui.DatePickerUiState
 import com.hedvig.android.feature.odyssey.ui.DatePickerWithDialog
 import com.hedvig.android.feature.odyssey.ui.LocationWithDialog
 import hedvig.resources.R
+import java.util.Locale
 
 @Composable
 internal fun DateOfOccurrencePlusLocationDestination(
@@ -140,7 +141,7 @@ private fun PreviewDateOfOccurrencePlusLocationScreen() {
     Surface(color = MaterialTheme.colorScheme.background) {
       DateOfOccurrencePlusLocationScreen(
         uiState = DateOfOccurrencePlusLocationUiState(
-          datePickerUiState = remember { DatePickerUiState(null) },
+          datePickerUiState = remember { DatePickerUiState(Locale.ENGLISH, null) },
           locationOptions = emptyList(),
           selectedLocation = null,
         ),

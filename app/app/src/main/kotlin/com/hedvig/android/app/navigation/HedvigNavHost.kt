@@ -29,6 +29,8 @@ import com.hedvig.android.feature.claimtriaging.ClaimTriagingDestination
 import com.hedvig.android.feature.claimtriaging.claimTriagingDestinations
 import com.hedvig.android.feature.connect.payment.adyen.connectAdyenPaymentGraph
 import com.hedvig.android.feature.connect.payment.connectPaymentGraph
+import com.hedvig.android.feature.deleteaccount.navigation.DeleteAccountDestination
+import com.hedvig.android.feature.deleteaccount.navigation.deleteAccountGraph
 import com.hedvig.android.feature.editcoinsured.navigation.editCoInsuredGraph
 import com.hedvig.android.feature.forever.navigation.foreverGraph
 import com.hedvig.android.feature.help.center.helpCenterGraph
@@ -199,6 +201,9 @@ internal fun HedvigNavHost(
           navigateToConnectPayment = navigateToConnectPayment,
         )
       },
+      settingsDestinationNestedGraphs = {
+        deleteAccountGraph(hedvigDeepLinkContainer, navigator)
+      },
       navigator = navigator,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       hedvigBuildConstants = hedvigBuildConstants,
@@ -210,6 +215,9 @@ internal fun HedvigNavHost(
         with(navigator) {
           backStackEntry.navigate(AppDestination.CoInsuredAddInfo(contractId))
         }
+      },
+      navigateToDeleteAccountFeature = { backStackEntry: NavBackStackEntry ->
+        with(navigator) { backStackEntry.navigate(DeleteAccountDestination) }
       },
       openAppSettings = { activityNavigator.openAppSettings(context) },
       openUrl = ::openUrl,

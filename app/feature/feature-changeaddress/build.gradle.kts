@@ -37,6 +37,7 @@ dependencies {
   implementation(projects.dataContractPublic)
   implementation(projects.dataProductVariantAndroid)
   implementation(projects.dataProductVariantPublic)
+  implementation(projects.languageCore)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
 }

@@ -33,6 +33,7 @@ import com.hedvig.android.feature.changeaddress.ui.ChangeAddressSwitch
 import com.hedvig.android.feature.changeaddress.ui.InputTextField
 import com.hedvig.android.feature.changeaddress.ui.MovingDateButton
 import hedvig.resources.R
+import java.util.Locale
 import kotlinx.datetime.LocalDate
 
 @Composable
@@ -161,9 +162,6 @@ private fun ChangeAddressEnterNewAddressScreen(
         onDateSelected = { onMoveDateSelected(it) },
         datePickerState = uiState.datePickerUiState.datePickerState,
         movingDate = uiState.movingDate,
-        validate = {
-          uiState.datePickerUiState.validateDate(it)
-        },
         modifier = Modifier.padding(horizontal = 16.dp),
       )
     }
@@ -198,7 +196,7 @@ private fun PreviewChangeAddressEnterNewAddressScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       ChangeAddressEnterNewAddressScreen(
-        ChangeAddressUiState(datePickerUiState = DatePickerUiState(null)),
+        ChangeAddressUiState(datePickerUiState = DatePickerUiState(Locale.ENGLISH, null)),
         {}, {}, {}, {}, {}, {}, {}, {}, {},
       )
     }

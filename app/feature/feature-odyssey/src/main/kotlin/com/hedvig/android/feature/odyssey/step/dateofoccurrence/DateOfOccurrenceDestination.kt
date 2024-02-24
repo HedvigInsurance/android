@@ -30,6 +30,7 @@ import com.hedvig.android.feature.odyssey.ui.ClaimFlowScaffold
 import com.hedvig.android.feature.odyssey.ui.DatePickerUiState
 import com.hedvig.android.feature.odyssey.ui.DatePickerWithDialog
 import hedvig.resources.R
+import java.util.Locale
 
 @Composable
 internal fun DateOfOccurrenceDestination(
@@ -113,7 +114,7 @@ private fun PreviewDateOfOccurrenceScreen() {
     Surface(color = MaterialTheme.colorScheme.background) {
       DateOfOccurrenceScreen(
         uiState = DateOfOccurrenceUiState(
-          datePickerUiState = DatePickerUiState(null),
+          datePickerUiState = DatePickerUiState(Locale.ENGLISH, null),
           dateSubmissionError = false,
           nextStep = null,
           isLoading = false,
