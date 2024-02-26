@@ -2,8 +2,6 @@ package com.hedvig.android.core.ui.appbar
 
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -13,6 +11,9 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.hedvig.normal.ArrowBack
+import com.hedvig.android.core.icons.hedvig.normal.X
 
 @Composable
 fun TopAppBarWithBack(
@@ -63,8 +64,8 @@ private inline fun TopAppBar(
         content = {
           Icon(
             imageVector = when (actionType) {
-              TopAppBarActionType.BACK -> Icons.Filled.ArrowBack
-              TopAppBarActionType.CLOSE -> Icons.Filled.Close
+              TopAppBarActionType.BACK -> Icons.Hedvig.ArrowBack
+              TopAppBarActionType.CLOSE -> Icons.Hedvig.X
             },
             contentDescription = null,
           )

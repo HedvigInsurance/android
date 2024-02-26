@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,6 +29,9 @@ import com.hedvig.android.core.common.android.ProgressPercentage
 import com.hedvig.android.core.designsystem.material3.DisabledAlpha
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.hedvig.normal.Pause
+import com.hedvig.android.core.icons.hedvig.normal.Play
 
 @Composable
 internal fun FakeWaveAudioPlayerContent(
@@ -109,9 +111,9 @@ private fun AudioPlayerActionOrLoadingIcon(
         ) {
           Icon(
             imageVector = when (audioPlayerState.readyState) {
-              AudioPlayerState.Ready.ReadyState.Playing -> Icons.Default.Pause
-              AudioPlayerState.Ready.ReadyState.Seeking -> Icons.Default.Pause
-              else -> Icons.Default.PlayArrow
+              AudioPlayerState.Ready.ReadyState.Playing -> Icons.Hedvig.Pause
+              AudioPlayerState.Ready.ReadyState.Seeking -> Icons.Hedvig.Pause
+              else -> Icons.Hedvig.Play
             },
             contentDescription = null,
           )

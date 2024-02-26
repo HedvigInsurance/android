@@ -9,20 +9,27 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonElevation
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.animation.ThreeDotsLoading
 import com.hedvig.android.core.designsystem.material3.squircleMedium
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 
 @Composable
 fun HedvigContainedSmallButton(
@@ -88,8 +95,15 @@ fun HedvigContainedSmallButton(
         Box(
           contentAlignment = Alignment.Center,
         ) {
-          // render the text too so that the same space is taken in all cases
-          ButtonText(text, Modifier.alpha(0f), textStyle = textStyle)
+          ButtonText(
+            text = text,
+            textStyle = textStyle,
+            // render the text too wihtout placing it so that the same space is taken in all cases
+            modifier = Modifier.layout { measurable, constraints ->
+              val placeable = measurable.measure(constraints)
+              layout(placeable.width, placeable.height) {}
+            },
+          )
           ThreeDotsLoading()
         }
       } else {
@@ -131,6 +145,26 @@ private fun ButtonText(
   Text(
     text = text,
     style = textStyle,
+    textAlign = TextAlign.Center,
     modifier = modifier,
   )
 }
+
+@HedvigPreview
+@Composable
+private fun PreviewHedvigContainedSmallButton(
+  @PreviewParameter(IsLoadingProvider::class) isLoading: Boolean,
+) {
+  HedvigTheme {
+    Surface(color = MaterialTheme.colorScheme.background) {
+      HedvigContainedSmallButton(
+        text = "Hello there".repeat(5),
+        onClick = {},
+        isLoading = isLoading,
+        modifier = Modifier.padding(24.dp),
+      )
+    }
+  }
+}
+
+private class IsLoadingProvider : CollectionPreviewParameterProvider<Boolean>(listOf(true, false))

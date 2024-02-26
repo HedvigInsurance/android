@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -48,7 +49,7 @@ import com.hedvig.android.core.designsystem.material3.warningContainer
 import com.hedvig.android.core.designsystem.material3.warningElement
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.icons.HedvigIcons
+import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.WarningFilled
 import com.hedvig.android.core.icons.hedvig.small.hedvig.Lock
 import com.hedvig.android.core.ui.infocard.InfoCardTextButton
@@ -366,7 +367,7 @@ internal fun CoInsuredSection(
           modifier = Modifier.padding(vertical = 14.dp),
         ) {
           Icon(
-            imageVector = HedvigIcons.Lock,
+            imageVector = Icons.Hedvig.Lock,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             contentDescription = "Locked info",
             modifier = Modifier.size(16.dp),
@@ -428,7 +429,7 @@ internal fun CoInsuredSection(
               modifier = Modifier.padding(vertical = 14.dp),
             ) {
               Icon(
-                imageVector = HedvigIcons.WarningFilled,
+                imageVector = Icons.Hedvig.WarningFilled,
                 tint = MaterialTheme.colorScheme.warningElement,
                 contentDescription = "Needs info",
                 modifier = Modifier.size(16.dp),

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -18,7 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.icons.HedvigIcons
+import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.X
 import com.hedvig.android.core.icons.hedvig.small.hedvig.Lock
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
@@ -66,7 +67,7 @@ internal fun InsuredRow(
         when {
           isMember -> {
             Icon(
-              imageVector = HedvigIcons.Lock,
+              imageVector = Icons.Hedvig.Lock,
               contentDescription = "Locked",
               tint = MaterialTheme.colorScheme.onSurfaceVariant,
               modifier = Modifier.size(16.dp),
@@ -78,7 +79,7 @@ internal fun InsuredRow(
           }
 
           !allowEdit -> Icon(
-            imageVector = HedvigIcons.X,
+            imageVector = Icons.Hedvig.X,
             contentDescription = "Remove",
             modifier = Modifier.size(16.dp),
           )
