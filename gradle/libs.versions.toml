@@ -56,7 +56,6 @@ datadog = "2.5.0"
 dependencyAnalysis = "1.29.0"
 firebaseCrashlyticsBuildtools = "2.9.9"
 hedvigAuthlib = "1.3.17"
-jsonTest = "20231013"
 junit = "4.13.2"
 kiwi-navigationCompose = "0.9.0"
 koinBom = "3.5.3"
@@ -157,7 +156,6 @@ firebase-dynamicLinks = { module = "com.google.firebase:firebase-dynamic-links" 
 firebase-messaging = { module = "com.google.firebase:firebase-messaging-ktx" }
 firebase-playServicesBase = { module = "com.google.android.gms:play-services-base" }
 hedvig-authlib = { module = "com.hedvig.authlib:authlib", version.ref = "hedvigAuthlib" }
-jsonTest = { module = "org.json:json", version.ref = "jsonTest" }
 junit = { module = "junit:junit", version.ref = "junit" }
 kiwi-navigationCompose = { module = "com.kiwi.navigation-compose.typed:core", version.ref = "kiwi-navigationCompose" }
 koin-android = { module = "io.insert-koin:koin-android" }
