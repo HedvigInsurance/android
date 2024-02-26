@@ -38,7 +38,7 @@ apollo { // Octopus client
     generateOptionalOperationVariables.set(false)
 
     mapScalar("Date", "kotlinx.datetime.LocalDate", "com.apollographql.apollo3.adapter.KotlinxLocalDateAdapter")
-    mapScalar("DateTime", "kotlinx.datetime.LocalDate", "com.apollographql.apollo3.adapter.KotlinxLocalDateTimeAdapter")
+    mapScalar("DateTime", "kotlinx.datetime.LocalDateTime", "com.apollographql.apollo3.adapter.KotlinxLocalDateTimeAdapter")
     mapScalar("Instant", "kotlinx.datetime.Instant", "com.apollographql.apollo3.adapter.KotlinxInstantAdapter")
     mapScalar("Markdown", "com.hedvig.android.core.markdown.MarkdownString", "com.hedvig.android.apollo.octopus.MarkdownStringAdapter")
     mapScalarToKotlinString("UUID")
