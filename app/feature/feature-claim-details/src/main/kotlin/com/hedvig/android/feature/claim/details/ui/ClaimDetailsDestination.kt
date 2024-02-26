@@ -68,6 +68,7 @@ import com.hedvig.android.core.icons.hedvig.colored.hedvig.Chat
 import com.hedvig.android.core.icons.hedvig.normal.Document
 import com.hedvig.android.core.icons.hedvig.normal.Pictures
 import com.hedvig.android.core.icons.hedvig.normal.Play
+import com.hedvig.android.core.icons.hedvig.small.hedvig.ArrowNorthEast
 import com.hedvig.android.core.ui.FileContainer
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
 import com.hedvig.android.core.ui.dialog.ErrorDialog
@@ -95,6 +96,7 @@ internal fun ClaimDetailsDestination(
   onChatClick: () -> Unit,
   onUri: (Uri, targetUploadUrl: String) -> Unit,
   openUrl: (String) -> Unit,
+  downloadFromUrl: (String) -> Unit
 ) {
   val viewState by viewModel.uiState.collectAsStateWithLifecycle()
   ClaimDetailScreen(
@@ -107,6 +109,7 @@ internal fun ClaimDetailsDestination(
     navigateUp = navigateUp,
     onChatClick = onChatClick,
     onUri = onUri,
+    downloadFromUrl = downloadFromUrl
   )
 }
 
@@ -121,6 +124,7 @@ private fun ClaimDetailScreen(
   navigateUp: () -> Unit,
   onChatClick: () -> Unit,
   onUri: (file: Uri, uploadUri: String) -> Unit,
+  downloadFromUrl: (String) -> Unit
 ) {
   Surface(
     color = MaterialTheme.colorScheme.background,
@@ -140,6 +144,7 @@ private fun ClaimDetailScreen(
           openUrl = openUrl,
           imageLoader = imageLoader,
           appPackageId = appPackageId,
+          downloadFromUrl = downloadFromUrl
         )
 
         ClaimDetailUiState.Error -> HedvigErrorSection(retry = retry)
@@ -158,6 +163,7 @@ private fun ClaimDetailScreen(
   onDismissUploadError: () -> Unit,
   imageLoader: ImageLoader,
   appPackageId: String,
+  downloadFromUrl: (String) -> Unit
 ) {
   var showFileTypeSelectBottomSheet by remember { mutableStateOf(false) }
 
@@ -231,6 +237,26 @@ private fun ClaimDetailScreen(
           submitDate = uiState.submittedAt.date,
           incidentDate = uiState.incidentDate,
         )
+        Spacer(Modifier.height(16.dp))
+        if (uiState.termsConditionsUrl!=null) {
+          HedvigCard(Modifier.clickable { downloadFromUrl(uiState.termsConditionsUrl)}) {
+            Row(Modifier.padding(16.dp),
+              verticalAlignment = Alignment.CenterVertically) {
+              Column {
+                Row {
+                  Text(text = stringResource(id = R.string.MY_DOCUMENTS_INSURANCE_TERMS))
+                  Box(contentAlignment = Alignment.TopStart) {
+                    Text(text = "PDF", style = MaterialTheme.typography.labelMedium )
+                  }
+                }
+                Text(text = stringResource(id = R.string.MY_DOCUMENTS_INSURANCE_TERMS_SUBTITLE),
+                  color = MaterialTheme.colorScheme.onSurfaceVariant)
+              }
+              Spacer(modifier = Modifier.weight(1f))
+              Icon(Icons.Hedvig.ArrowNorthEast, contentDescription = null)
+            }
+          }
+        }
         Spacer(Modifier.height(24.dp))
         Text(
           stringResource(R.string.claim_status_detail_uploaded_files_info_title),
@@ -581,6 +607,7 @@ private fun PreviewClaimDetailScreen() {
         imageLoader = rememberPreviewImageLoader(),
         appPackageId = "",
         onDismissUploadError = {},
+        downloadFromUrl = {}
       )
     }
   }

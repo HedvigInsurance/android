@@ -46,6 +46,8 @@ fun NavGraphBuilder.claimDetailsGraph(
           )
         },
         openUrl = openUrl,
+        downloadFromUrl = { //todo
+           }
       )
     }
     composable<ClaimDetailDestinations.AddFilesDestination> {
