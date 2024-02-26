@@ -18,7 +18,8 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.isActive
-import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import octopus.ClaimsQuery
 import octopus.fragment.ClaimFragment
 import octopus.type.ClaimOutcome
@@ -66,7 +67,7 @@ internal class GetClaimDetailUiStateUseCase(
 
     val claimType: String? = claim.claimType
     val incidentDate = claim.incidentDate
-//    val submittedAt = claim.submittedAt
+    val submittedAt = claim.submittedAt.toLocalDateTime(TimeZone.currentSystemDefault())
     val insuranceDisplayName = claim.productVariant?.displayName
     val termsConditionsUrl =
       claim.productVariant?.documents?.firstOrNull { it.type == InsuranceDocumentType.TERMS_AND_CONDITIONS }?.url
@@ -111,12 +112,11 @@ internal class GetClaimDetailUiStateUseCase(
       uploadUri = claim.targetFileUploadUri,
       isUploadingFile = false,
       uploadError = null,
-
       claimType = claimType,
       incidentDate = incidentDate,
       insuranceDisplayName = insuranceDisplayName,
-//      submittedAt = submittedAt,
-      termsConditionsUrl = termsConditionsUrl
+      submittedAt = submittedAt,
+      termsConditionsUrl = termsConditionsUrl,
     )
   }
 

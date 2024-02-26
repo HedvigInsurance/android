@@ -123,16 +123,12 @@ internal sealed interface ClaimDetailUiState {
     val uploadUri: String,
     val isUploadingFile: Boolean,
     val uploadError: String?,
-
     val claimType: String?,
     val incidentDate: LocalDate?,
-//    val submittedAt: LocalDateTime,
+    val submittedAt: LocalDateTime,
     val insuranceDisplayName: String?,
-    val termsConditionsUrl: String?
-
-
-
-    ) : ClaimDetailUiState {
+    val termsConditionsUrl: String?,
+  ) : ClaimDetailUiState {
     sealed interface SubmittedContent {
       data class Audio(val signedAudioURL: SignedAudioUrl) : SubmittedContent
 
@@ -165,5 +161,3 @@ internal sealed interface ClaimDetailUiState {
     companion object
   }
 }
-
-

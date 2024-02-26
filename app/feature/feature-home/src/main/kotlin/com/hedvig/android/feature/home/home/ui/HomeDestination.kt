@@ -283,6 +283,8 @@ private fun HomeScreenSuccess(
                 .exclude(consumedWindowInsets)
                 .only(WindowInsetsSides.Horizontal)
                 .asPaddingValues(),
+              claimType = null, // todo: get real claimType here!
+              insuranceDisplayName = null,
               modifier = Modifier.onConsumedWindowInsetsChanged { consumedWindowInsets = it },
             )
           }

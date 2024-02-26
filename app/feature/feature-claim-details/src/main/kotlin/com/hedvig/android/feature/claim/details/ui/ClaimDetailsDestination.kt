@@ -60,7 +60,7 @@ import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.core.designsystem.material3.squircleMedium
-import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.fileupload.ui.FilePickerBottomSheet
 import com.hedvig.android.core.icons.Hedvig
@@ -73,6 +73,7 @@ import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
 import com.hedvig.android.core.ui.dialog.ErrorDialog
 import com.hedvig.android.core.ui.plus
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
+import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.ui.claimstatus.ClaimStatusCard
@@ -82,6 +83,7 @@ import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.toJavaLocalDate
 import octopus.type.CurrencyCode
 
 @Composable
@@ -212,10 +214,24 @@ private fun ClaimDetailScreen(
         ClaimStatusCard(
           uiState = uiState.claimStatusCardUiState,
           onClick = null,
+          claimType = uiState.claimType,
+          insuranceDisplayName = uiState.insuranceDisplayName,
         )
         Spacer(Modifier.height(8.dp))
         ClaimInfoCard(uiState.claimStatus, uiState.claimOutcome, onChatClick)
-        Spacer(Modifier.height(40.dp))
+        Spacer(Modifier.height(24.dp))
+        Text(
+          "Claim details", // todo: wait for translations
+//          stringResource(R.string.claim_status_claim_details_title),
+          Modifier.padding(horizontal = 2.dp),
+        )
+        Spacer(Modifier.height(8.dp))
+        ClaimTypeAndDatesCard(
+          claimType = uiState.claimType?.lowercase()?.replaceFirstChar { it.uppercase() },
+          submitDate = uiState.submittedAt.date,
+          incidentDate = uiState.incidentDate,
+        )
+        Spacer(Modifier.height(24.dp))
         Text(
           stringResource(R.string.claim_status_detail_uploaded_files_info_title),
           Modifier.padding(horizontal = 2.dp),
@@ -412,7 +428,71 @@ private fun ClaimDetailHedvigAudioPlayerItem(signedAudioUrl: SignedAudioUrl, mod
   }
 }
 
-@HedvigMultiScreenPreview
+@Composable
+private fun ClaimTypeAndDatesCard(claimType: String?, submitDate: LocalDate?, incidentDate: LocalDate?) {
+  val color = MaterialTheme.colorScheme.onSurfaceVariant
+  val dateTimeFormatter = rememberHedvigDateTimeFormatter()
+  Column(
+    Modifier
+      .fillMaxWidth()
+      .padding(horizontal = 2.dp),
+  ) {
+    Row(
+      verticalAlignment = Alignment.CenterVertically,
+      modifier = Modifier
+        .fillMaxWidth(),
+    ) {
+      Text(
+        text = "Type",
+        color = color,
+      ) // todo: wait for translations
+      //  Text(text = stringResource(R.string.claim_status_claim_details_type))
+      Spacer(modifier = Modifier.weight(1f))
+      Text(
+        text = claimType ?: stringResource(R.string.claim_casetype_insurance_case),
+        color = color,
+      )
+    }
+    if (incidentDate != null) {
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+          .fillMaxWidth(),
+      ) {
+        Text(
+          text = "Date of incident",
+          color = color,
+        ) // todo: wait for translations
+        //  Text(text = stringResource(R.string.claim_status_claim_details_incident))
+        Spacer(modifier = Modifier.weight(1f))
+        Text(
+          text = dateTimeFormatter.format(incidentDate.toJavaLocalDate()),
+          color = color,
+        )
+      }
+      if (submitDate != null) {
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+          modifier = Modifier
+            .fillMaxWidth(),
+        ) {
+          Text(
+            text = "Submitted",
+            color = color,
+          ) // todo: wait for translations
+          //  Text(text = stringResource(R.string.claim_status_claim_details_submitted))
+          Spacer(modifier = Modifier.weight(1f))
+          Text(
+            text = dateTimeFormatter.format(submitDate.toJavaLocalDate()),
+            color = color,
+          )
+        }
+      }
+    }
+  }
+}
+
+@HedvigPreview
 @Composable
 private fun PreviewClaimDetailScreen() {
   HedvigTheme {
@@ -490,10 +570,10 @@ private fun PreviewClaimDetailScreen() {
           uploadUri = "",
           uploadError = null,
           claimType = "Theft",
-        incidentDate = LocalDate(2023,1,2),
-//     submittedAt = LocalDateTime(2023,1,5, 12, 35),
-      insuranceDisplayName = "Home insurance",
-      termsConditionsUrl = "url"
+          incidentDate = LocalDate(2023, 1, 2),
+          submittedAt = LocalDateTime(2023, 1, 5, 12, 35),
+          insuranceDisplayName = "Home insurance",
+          termsConditionsUrl = "url",
         ),
         onChatClick = {},
         onUri = { uri: Uri, s: String -> },
