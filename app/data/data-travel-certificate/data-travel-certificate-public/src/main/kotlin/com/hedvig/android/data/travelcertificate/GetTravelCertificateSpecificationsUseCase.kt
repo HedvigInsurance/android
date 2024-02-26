@@ -39,7 +39,8 @@ internal class GetTravelCertificateSpecificationsUseCaseImpl(
           contractSpecification.contractId == contractId
         }
       } else {
-        allSpecifications.firstOrNull()
+        val activeContractsId = member.activeContracts.filter { it.supportsTravelCertificate }.map { it.id }
+        allSpecifications.firstOrNull { it.contractId in activeContractsId }
       }
 
       ensureNotNull(travelCertificateSpecifications) { TravelCertificateError.NotEligible }
