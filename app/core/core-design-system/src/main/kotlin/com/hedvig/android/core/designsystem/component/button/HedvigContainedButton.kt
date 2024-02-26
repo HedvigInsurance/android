@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.animation.ThreeDotsLoading
 import com.hedvig.android.core.designsystem.material3.onSecondaryContainedButtonContainer
@@ -165,6 +166,7 @@ private fun ButtonText(text: String, modifier: Modifier = Modifier) {
   Text(
     text = text,
     style = MaterialTheme.typography.bodyLarge,
+    textAlign = TextAlign.Center,
     modifier = modifier,
   )
 }
