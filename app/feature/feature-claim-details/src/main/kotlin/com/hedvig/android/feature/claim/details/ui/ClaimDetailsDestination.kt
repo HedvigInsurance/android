@@ -80,6 +80,8 @@ import com.hedvig.android.ui.claimstatus.model.ClaimPillType
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import hedvig.resources.R
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 import octopus.type.CurrencyCode
 
 @Composable
@@ -487,6 +489,11 @@ private fun PreviewClaimDetailScreen() {
           isUploadingFile = false,
           uploadUri = "",
           uploadError = null,
+          claimType = "Theft",
+        incidentDate = LocalDate(2023,1,2),
+//     submittedAt = LocalDateTime(2023,1,5, 12, 35),
+      insuranceDisplayName = "Home insurance",
+      termsConditionsUrl = "url"
         ),
         onChatClick = {},
         onUri = { uri: Uri, s: String -> },

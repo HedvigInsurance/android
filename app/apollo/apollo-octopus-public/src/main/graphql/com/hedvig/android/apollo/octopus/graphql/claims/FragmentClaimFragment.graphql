@@ -15,4 +15,14 @@ fragment ClaimFragment on Claim {
     url
     thumbnailUrl
   }
+  claimType
+  productVariant {
+    displayName
+    documents {
+      type
+      url
+    }
+  }
+  incidentDate
+  submittedAt
 }

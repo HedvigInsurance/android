@@ -19,6 +19,8 @@ import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 
 internal class ClaimDetailsViewModel(
   claimId: String,
@@ -121,7 +123,16 @@ internal sealed interface ClaimDetailUiState {
     val uploadUri: String,
     val isUploadingFile: Boolean,
     val uploadError: String?,
-  ) : ClaimDetailUiState {
+
+    val claimType: String?,
+    val incidentDate: LocalDate?,
+//    val submittedAt: LocalDateTime,
+    val insuranceDisplayName: String?,
+    val termsConditionsUrl: String?
+
+
+
+    ) : ClaimDetailUiState {
     sealed interface SubmittedContent {
       data class Audio(val signedAudioURL: SignedAudioUrl) : SubmittedContent
 
@@ -154,3 +165,5 @@ internal sealed interface ClaimDetailUiState {
     companion object
   }
 }
+
+
