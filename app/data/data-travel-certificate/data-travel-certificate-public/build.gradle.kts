@@ -21,6 +21,7 @@ dependencies {
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)
+  testImplementation(libs.testParameterInjector)
   testImplementation(libs.turbine)
   testImplementation(projects.apolloOctopusTest)
   testImplementation(projects.apolloTest)

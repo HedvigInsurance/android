@@ -7,6 +7,8 @@ import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.annotations.ApolloExperimental
 import com.apollographql.apollo3.testing.enqueueTestNetworkError
 import com.apollographql.apollo3.testing.enqueueTestResponse
+import com.google.testing.junit.testparameterinjector.TestParameter
+import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.hedvig.android.apollo.octopus.test.OctopusFakeResolver
 import com.hedvig.android.apollo.test.TestApolloClientRule
 import com.hedvig.android.core.common.test.isLeft
@@ -15,14 +17,17 @@ import com.hedvig.android.logger.TestLogcatLoggingRule
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import octopus.TravelCertificateSpecificationsQuery
+import octopus.type.buildContract
 import octopus.type.buildMember
 import octopus.type.buildTravelCertificateContractSpecification
 import octopus.type.buildTravelCertificateInfoSpecification
 import octopus.type.buildTravelCertificateSpecification
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
 
 @OptIn(ApolloExperimental::class)
+@RunWith(TestParameterInjector::class)
 internal class GetTravelCertificateSpecificationsUseCaseTest {
   @get:Rule
   val testLogcatLogger = TestLogcatLoggingRule()
@@ -159,7 +164,9 @@ internal class GetTravelCertificateSpecificationsUseCaseTest {
   }
 
   @Test
-  fun `when the feature flag is on and the network request succeeds, we get the travel certificate data`() = runTest {
+  fun `when the feature flag is on and the network request succeeds, the response depends on the active contract travel certificate eligibility`(
+    @TestParameter contractSupportsTravelCertificate: Boolean,
+  ) = runTest {
     val travelCertificateUseCase = GetTravelCertificateSpecificationsUseCaseImpl(
       apolloClient,
     )
@@ -169,9 +176,15 @@ internal class GetTravelCertificateSpecificationsUseCaseTest {
       TravelCertificateSpecificationsQuery.Data(OctopusFakeResolver) {
         currentMember = buildMember {
           travelCertificateSpecifications = buildTravelCertificateSpecification {
+            activeContracts = listOf(
+              buildContract {
+                id = "contractId"
+                supportsTravelCertificate = contractSupportsTravelCertificate
+              },
+            )
             contractSpecifications = listOf(
               buildTravelCertificateContractSpecification {
-                contractId = "id"
+                contractId = "contractId"
                 email = "email"
                 minStartDate = LocalDate.parse("2023-02-02")
                 maxStartDate = LocalDate.parse("2023-03-02")
@@ -191,17 +204,21 @@ internal class GetTravelCertificateSpecificationsUseCaseTest {
     )
     val result = travelCertificateUseCase.invoke(null)
 
-    assertThat(result).isRight().isEqualTo(
-      TravelCertificateData(
-        TravelCertificateData.TravelCertificateSpecification(
-          contractId = "id",
-          email = "email",
-          maxDurationDays = 1,
-          dateRange = LocalDate.parse("2023-02-02")..LocalDate.parse("2023-03-02"),
-          numberOfCoInsured = 2,
+    if (contractSupportsTravelCertificate) {
+      assertThat(result).isRight().isEqualTo(
+        TravelCertificateData(
+          TravelCertificateData.TravelCertificateSpecification(
+            contractId = "contractId",
+            email = "email",
+            maxDurationDays = 1,
+            dateRange = LocalDate.parse("2023-02-02")..LocalDate.parse("2023-03-02"),
+            numberOfCoInsured = 2,
+          ),
+          listOf(TravelCertificateData.InfoSection("infoTitle", "infoBody")),
         ),
-        listOf(TravelCertificateData.InfoSection("infoTitle", "infoBody")),
-      ),
-    )
+      )
+    } else {
+      assertThat(result).isLeft().isInstanceOf<TravelCertificateError.NotEligible>()
+    }
   }
 }
