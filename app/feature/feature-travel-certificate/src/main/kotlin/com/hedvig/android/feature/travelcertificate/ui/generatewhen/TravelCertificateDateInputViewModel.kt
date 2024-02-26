@@ -204,7 +204,7 @@ internal class TravelCertificateDateInputPresenter(
                 }
 
                 override fun isSelectableYear(year: Int): Boolean = year in yearRange
-              }
+              },
             )
             screenContent = DateInputScreenContent.Success(
               DateInputScreenContent.Success.SpecificationsDetails(

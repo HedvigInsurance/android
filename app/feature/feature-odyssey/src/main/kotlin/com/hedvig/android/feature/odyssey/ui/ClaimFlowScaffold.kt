@@ -76,16 +76,16 @@ internal fun ClaimFlowScaffold(
         Column(
           horizontalAlignment = itemsColumnHorizontalAlignment,
           modifier = Modifier
-              .fillMaxSize()
-              .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
-              .verticalScroll(rememberScrollState())
-              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+            .fillMaxSize()
+            .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
+            .verticalScroll(rememberScrollState())
+            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
         ) {
           val sideSpacingModifier = if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded) {
-              Modifier
-                  .fillMaxWidth(0.8f)
-                  .wrapContentWidth(Alignment.Start)
-                  .align(Alignment.CenterHorizontally)
+            Modifier
+              .fillMaxWidth(0.8f)
+              .wrapContentWidth(Alignment.Start)
+              .align(Alignment.CenterHorizontally)
           } else {
             Modifier.padding(horizontal = 16.dp)
           }
@@ -96,8 +96,8 @@ internal fun ClaimFlowScaffold(
         ErrorSnackbar(
           errorSnackbarState = errorSnackbarState,
           modifier = Modifier
-              .align(Alignment.BottomCenter)
-              .windowInsetsPadding(WindowInsets.safeDrawing),
+            .align(Alignment.BottomCenter)
+            .windowInsetsPadding(WindowInsets.safeDrawing),
         )
       }
     }
