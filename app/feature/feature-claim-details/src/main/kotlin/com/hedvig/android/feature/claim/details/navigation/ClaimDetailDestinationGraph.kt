@@ -1,11 +1,12 @@
-package com.hedvig.android.feature.claim.details
+package com.hedvig.android.feature.claim.details.navigation
 
 import android.net.Uri
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import coil.ImageLoader
-import com.hedvig.android.feature.claim.details.navigation.ClaimDetailDestinations
+import com.hedvig.android.core.common.android.sharePDF
 import com.hedvig.android.feature.claim.details.ui.AddFilesDestination
 import com.hedvig.android.feature.claim.details.ui.AddFilesViewModel
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailsDestination
@@ -25,12 +26,14 @@ fun NavGraphBuilder.claimDetailsGraph(
   navigateUp: () -> Unit,
   openChat: (NavBackStackEntry) -> Unit,
   navController: NavHostController,
+  applicationId: String,
 ) {
   navigation<AppDestination.ClaimDetails>(
     startDestination = createRoutePattern<ClaimDetailDestinations.ClaimOverviewDestination>(),
   ) {
     composable<ClaimDetailDestinations.ClaimOverviewDestination> { backStackEntry ->
       val viewModel: ClaimDetailsViewModel = koinViewModel { parametersOf(claimId) }
+      val context = LocalContext.current
       ClaimDetailsDestination(
         viewModel = viewModel,
         imageLoader = imageLoader,
@@ -46,8 +49,12 @@ fun NavGraphBuilder.claimDetailsGraph(
           )
         },
         openUrl = openUrl,
-        downloadFromUrl = { //todo
-           }
+        downloadFromUrl = {
+          // todo
+        },
+        sharePdf = {
+          context.sharePDF(it, applicationId)
+        },
       )
     }
     composable<ClaimDetailDestinations.AddFilesDestination> {
