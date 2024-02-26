@@ -1,14 +1,17 @@
 package com.hedvig.android.feature.help.center.home
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -47,6 +50,7 @@ import com.hedvig.android.core.ui.dialog.MultiSelectDialog
 import com.hedvig.android.core.ui.grid.HedvigGrid
 import com.hedvig.android.core.ui.grid.InsideGridSpace
 import com.hedvig.android.feature.help.center.HelpCenterEvent
+import com.hedvig.android.feature.help.center.HelpCenterUiState
 import com.hedvig.android.feature.help.center.HelpCenterViewModel
 import com.hedvig.android.feature.help.center.commonclaim.CommonClaim
 import com.hedvig.android.feature.help.center.model.Question
@@ -55,11 +59,11 @@ import com.hedvig.android.feature.help.center.model.Topic
 import com.hedvig.android.feature.help.center.ui.HelpCenterSection
 import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
 import com.hedvig.android.feature.help.center.ui.StillNeedHelpSection
-import com.hedvig.android.navigation.core.AppDestination
 import com.kiwi.navigationcompose.typed.Destination
 import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 internal fun HelpCenterHomeDestination(
@@ -76,8 +80,7 @@ internal fun HelpCenterHomeDestination(
   HelpCenterHomeScreen(
     topics = uiState.topics,
     questions = uiState.questions,
-    quickActions = uiState.quickLinks,
-    commonClaims = uiState.commonClaims,
+    quickLinks = uiState.quickLinks,
     selectedQuickAction = uiState.selectedQuickAction,
     onNavigateToTopic = onNavigateToTopic,
     onNavigateToQuestion = onNavigateToQuestion,
@@ -98,8 +101,7 @@ internal fun HelpCenterHomeDestination(
 private fun HelpCenterHomeScreen(
   topics: ImmutableList<Topic>,
   questions: ImmutableList<Question>,
-  quickActions: ImmutableList<QuickAction>,
-  commonClaims: ImmutableList<CommonClaim>,
+  quickLinks: ImmutableList<HelpCenterUiState.QuickLinkType>,
   selectedQuickAction: QuickAction?,
   onNavigateToTopic: (topic: Topic) -> Unit,
   onNavigateToQuestion: (question: Question) -> Unit,
@@ -166,35 +168,46 @@ private fun HelpCenterHomeScreen(
           )
         }
         Spacer(Modifier.height(40.dp))
-        HelpCenterSection(
-          title = stringResource(id = R.string.HC_QUICK_ACTIONS_TITLE),
-          chipContainerColor = MaterialTheme.colorScheme.typeContainer,
-          contentColor = MaterialTheme.colorScheme.onTypeContainer,
-          content = {
-            AnimatedVisibility(
-              visible = quickActions.isNotEmpty(),
-              enter = fadeIn(),
-              exit = fadeOut(),
-            ) {
+        AnimatedVisibility(
+          visible = quickLinks.isNotEmpty(),
+          enter = fadeIn() + expandVertically(clip = false, expandFrom = Alignment.CenterVertically),
+          exit = fadeOut() + shrinkVertically(clip = false, shrinkTowards = Alignment.CenterVertically),
+        ) {
+          HelpCenterSection(
+            title = stringResource(R.string.HC_QUICK_ACTIONS_TITLE),
+            chipContainerColor = MaterialTheme.colorScheme.typeContainer,
+            contentColor = MaterialTheme.colorScheme.onTypeContainer,
+            content = {
               HedvigGrid(
-                insideGridSpace = InsideGridSpace.Companion.invoke(8.dp),
+                contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal).asPaddingValues(),
+                insideGridSpace = InsideGridSpace(8.dp),
                 modifier = Modifier.padding(horizontal = 16.dp),
               ) {
-                for (quickAction in quickActions) {
+                for (quickLink in quickLinks) {
                   HedvigCard(
                     onClick = {
-                      onQuickActionsSelected(quickAction)
+                      when (quickLink) {
+                        is HelpCenterUiState.QuickLinkType.CommonClaimType -> onNavigateToCommonClaim(
+                          quickLink.commonClaim,
+                        )
+                        is HelpCenterUiState.QuickLinkType.QuickActionType -> onQuickActionsSelected(
+                          quickLink.quickAction,
+                        )
+                      }
                     },
-                    modifier = Modifier
-                      .fillMaxWidth()
-                      .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+                    modifier = Modifier.fillMaxWidth(),
                   ) {
                     Column(
                       verticalArrangement = Arrangement.Center,
                       horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                       Text(
-                        text = stringResource(quickAction.titleRes),
+                        text = when (quickLink) {
+                          is HelpCenterUiState.QuickLinkType.CommonClaimType -> quickLink.commonClaim.title
+                          is HelpCenterUiState.QuickLinkType.QuickActionType -> stringResource(
+                            quickLink.quickAction.titleRes,
+                          )
+                        },
                         textAlign = TextAlign.Center,
                         modifier = Modifier.padding(16.dp),
                       )
@@ -202,42 +215,10 @@ private fun HelpCenterHomeScreen(
                   }
                 }
               }
-            }
-            AnimatedVisibility(
-              visible = commonClaims.isNotEmpty(),
-              enter = fadeIn(),
-              exit = fadeOut(),
-            ) {
-              HedvigGrid(
-                insideGridSpace = InsideGridSpace.Companion.invoke(8.dp),
-                modifier = Modifier.padding(horizontal = 16.dp),
-              ) {
-                for (commonClaim in commonClaims) {
-                  HedvigCard(
-                    onClick = {
-                      onNavigateToCommonClaim(commonClaim)
-                    },
-                    modifier = Modifier
-                      .fillMaxWidth()
-                      .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-                  ) {
-                    Column(
-                      verticalArrangement = Arrangement.Center,
-                      horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                      Text(
-                        text = commonClaim.title,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(16.dp),
-                      )
-                    }
-                  }
-                }
-              }
-            }
-          },
-        )
-        Spacer(Modifier.height(56.dp))
+            },
+          )
+        }
+        Spacer(Modifier.height(48.dp))
         HelpCenterSection(
           title = stringResource(id = R.string.HC_COMMON_TOPICS_TITLE),
           chipContainerColor = MaterialTheme.colorScheme.yellowContainer,
@@ -270,9 +251,11 @@ private fun HelpCenterHomeScreen(
           onClickItem = { onNavigateToQuestion(it) },
         )
         Spacer(Modifier.weight(1f))
-        Spacer(Modifier.height(56.dp))
-        StillNeedHelpSection(openChat = openChat)
-        Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
+        Spacer(Modifier.height(40.dp))
+        StillNeedHelpSection(
+          openChat = openChat,
+          contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom).asPaddingValues(),
+        )
       }
     }
   }
@@ -286,15 +269,16 @@ private fun PreviewHelpCenterHomeScreen() {
       HelpCenterHomeScreen(
         topics = persistentListOf(Topic.PAYMENTS, Topic.PAYMENTS),
         questions = persistentListOf(Question.CLAIMS_Q1, Question.CLAIMS_Q1),
-        quickActions = persistentListOf(
-          QuickAction.QuickLink(0, "Long displayName 1234567", AppDestination.EditCoInsured),
-          QuickAction.QuickLink(
-            R.string.HC_QUICK_ACTIONS_UPDATE_ADDRESS,
-            "Long displayName 1234567",
-            AppDestination.EditCoInsured,
-          ),
-        ),
-        commonClaims = persistentListOf(),
+        quickLinks = List(3) {
+          HelpCenterUiState.QuickLinkType.CommonClaimType(
+            CommonClaim.Generic(
+              "$it",
+              "Long displayName 1234567",
+              emptyList(),
+            ),
+          )
+        }.plus(HelpCenterUiState.QuickLinkType.QuickActionType(QuickAction.MultiSelectQuickLink(0, emptyList())))
+          .toPersistentList(),
         selectedQuickAction = null,
         onNavigateToTopic = {},
         onNavigateToQuestion = {},

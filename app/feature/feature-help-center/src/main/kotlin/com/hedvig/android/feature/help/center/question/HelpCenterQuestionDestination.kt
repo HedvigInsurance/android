@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
@@ -155,9 +156,11 @@ private fun HelpCenterQuestionScreen(
             )
           }
           Spacer(Modifier.weight(1f))
-          Spacer(Modifier.height(56.dp))
-          StillNeedHelpSection(openChat)
-          Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
+          Spacer(Modifier.height(40.dp))
+          StillNeedHelpSection(
+            openChat = openChat,
+            contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom).asPaddingValues(),
+          )
         }
       }
     }
