@@ -22,7 +22,7 @@ jobs:
         distribution: 'zulu'
 
     - name: Setup Gradle
-      uses: gradle/gradle-build-action@v2
+      uses: gradle/gradle-build-action@v3
       with:
         # Only write to the cache for builds on the 'develop' branch
         cache-read-only: false
@@ -48,7 +48,7 @@ jobs:
         private_key: ${{ secrets.CI_APP_PRIVATE_KEY }}
 
     - name: Create PR
-      uses: peter-evans/create-pull-request@v5
+      uses: peter-evans/create-pull-request@v6
       with:
         token: ${{ steps.generate_token.outputs.token }}
         branch: "maintenance/remove-unused-resources"
