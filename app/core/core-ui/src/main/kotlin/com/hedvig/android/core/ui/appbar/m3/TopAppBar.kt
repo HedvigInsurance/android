@@ -154,7 +154,7 @@ fun TopAppBarWithBackAndClose(
   onNavigateUp: () -> Unit,
   onClose: () -> Unit,
   modifier: Modifier = Modifier,
-  windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
+  windowInsets: WindowInsets = WindowInsets.systemBars.union(WindowInsets.displayCutout),
   colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(
     containerColor = MaterialTheme.colorScheme.background,
     scrolledContainerColor = MaterialTheme.colorScheme.surface,
