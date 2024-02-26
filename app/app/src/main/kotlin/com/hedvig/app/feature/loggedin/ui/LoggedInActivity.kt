@@ -213,8 +213,14 @@ class LoggedInActivity : AppCompatActivity() {
     }
     DisposableEffect(darkTheme, splashIsRemovedIndex) {
       enableEdgeToEdge(
-        statusBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT) { darkTheme },
-        navigationBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT) { darkTheme },
+        statusBarStyle = when (darkTheme) {
+          true -> SystemBarStyle.dark(Color.TRANSPARENT)
+          false -> SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
+        },
+        navigationBarStyle = when (darkTheme) {
+          true -> SystemBarStyle.dark(Color.TRANSPARENT)
+          false -> SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
+        },
       )
       onDispose {}
     }
