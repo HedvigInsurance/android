@@ -23,7 +23,7 @@
   <application
     android:name=".HedvigApplication"
     android:allowBackup="true"
-    android:enableOnBackInvokedCallback="false"
+    android:enableOnBackInvokedCallback="true"
     android:fullBackupOnly="true"
     android:icon="@mipmap/ic_launcher"
     android:label="@string/APP_NAME"
