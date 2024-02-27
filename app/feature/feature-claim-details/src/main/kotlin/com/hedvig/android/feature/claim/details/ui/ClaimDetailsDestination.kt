@@ -354,8 +354,15 @@ private fun ClaimDetailScreen(
 
     item(span = { GridItemSpan(3) }) {
       Column {
-        Spacer(Modifier.height(8.dp))
-
+        Spacer(Modifier.height(48.dp))
+        if (uiState.files.isEmpty()) {
+          Text(
+            text = stringResource(id = R.string.claim_status_uploaded_files_upload_text),
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(horizontal = 2.dp),
+          )
+          Spacer(Modifier.height(16.dp))
+        }
         val text = if (uiState.files.isNotEmpty()) {
           stringResource(id = R.string.claim_status_detail_add_more_files)
         } else {
@@ -573,6 +580,8 @@ private fun PreviewClaimDetailScreen() {
               ),
               ClaimProgressSegment(ClaimProgressSegment.SegmentText.Closed, ClaimProgressSegment.SegmentType.PAID),
             ),
+            claimType = "Broken item",
+            displayName = "Home Insurance Homeowner",
           ),
           claimStatus = ClaimDetailUiState.Content.ClaimStatus.CLOSED,
           claimOutcome = ClaimDetailUiState.Content.ClaimOutcome.PAID,

@@ -283,8 +283,6 @@ private fun HomeScreenSuccess(
                 .exclude(consumedWindowInsets)
                 .only(WindowInsetsSides.Horizontal)
                 .asPaddingValues(),
-              claimType = null, // todo: get real claimType here!
-              insuranceDisplayName = null,
               modifier = Modifier.onConsumedWindowInsetsChanged { consumedWindowInsets = it },
             )
           }
@@ -441,6 +439,8 @@ private fun PreviewHomeScreen(
                 claimProgressItemsUiState = listOf(
                   ClaimProgressSegment(ClaimProgressSegment.SegmentText.Closed, ClaimProgressSegment.SegmentType.PAID),
                 ),
+                claimType = "Broken item",
+                displayName = "Home Insurance Homeowner",
               ),
             ),
           ),

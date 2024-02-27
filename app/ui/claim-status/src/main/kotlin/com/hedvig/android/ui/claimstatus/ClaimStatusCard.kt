@@ -79,6 +79,8 @@ private fun PreviewClaimStatusCard() {
         claimProgressItemsUiState = listOf(
           ClaimProgressSegment(ClaimProgressSegment.SegmentText.Closed, ClaimProgressSegment.SegmentType.PAID),
         ),
+        claimType = "Broken item",
+        displayName = "Home Insurance Homeowner",
       )
       ClaimStatusCard(claimStatusData, {}, "Broken item", "Home Insurance Homeowner")
     }
