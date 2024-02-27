@@ -262,26 +262,8 @@ private fun ClaimDetailScreen(
         )
         Spacer(Modifier.height(16.dp))
         if (uiState.termsConditionsUrl != null) {
-          HedvigCard(Modifier.clickable { downloadFromUrl(uiState.termsConditionsUrl) }) {
-            Row(
-              Modifier.padding(16.dp),
-              verticalAlignment = Alignment.CenterVertically,
-            ) {
-              Column {
-                Row {
-                  Text(text = stringResource(id = R.string.MY_DOCUMENTS_INSURANCE_TERMS))
-                  Box(contentAlignment = Alignment.TopStart) {
-                    Text(text = "PDF", style = MaterialTheme.typography.labelMedium)
-                  }
-                }
-                Text(
-                  text = stringResource(id = R.string.MY_DOCUMENTS_INSURANCE_TERMS_SUBTITLE),
-                  color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-              }
-              Spacer(modifier = Modifier.weight(1f))
-              Icon(Icons.Hedvig.ArrowNorthEast, contentDescription = null)
-            }
+          TermsConditionsCard {
+            downloadFromUrl(uiState.termsConditionsUrl)
           }
         }
         Spacer(Modifier.height(24.dp))
@@ -395,6 +377,31 @@ private fun getIconFromMimeType(mimeType: String) = when (mimeType) {
   "video/quicktime" -> Icons.Hedvig.Play
   "application/pdf" -> Icons.Hedvig.Document
   else -> Icons.Hedvig.Document
+}
+
+@Composable
+private fun TermsConditionsCard( onClick: () -> Unit) {
+  HedvigCard(Modifier.clickable { onClick() }) {
+    Row(
+      Modifier.padding(16.dp),
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      Column {
+        Row {
+          Text(text = stringResource(id = R.string.MY_DOCUMENTS_INSURANCE_TERMS))
+          Box(contentAlignment = Alignment.TopStart) {
+            Text(text = "PDF", style = MaterialTheme.typography.labelMedium)
+          }
+        }
+        Text(
+          text = stringResource(id = R.string.MY_DOCUMENTS_INSURANCE_TERMS_SUBTITLE),
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+      }
+      Spacer(modifier = Modifier.weight(1f))
+      Icon(Icons.Hedvig.ArrowNorthEast, contentDescription = null)
+    }
+  }
 }
 
 @Composable
