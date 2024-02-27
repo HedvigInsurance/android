@@ -48,7 +48,7 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavC
         },
         onShareTravelCertificate = {
           viewModel.emit(CertificateHistoryEvent.HaveProcessedCertificateUri)
-          localContext.sharePDF(it.uri, applicationId)
+          localContext.sharePDF(it, applicationId)
         },
       )
     }
@@ -120,7 +120,7 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavC
         viewModel = viewModel,
         navigateUp = navController::navigateUp,
         onShareTravelCertificate = {
-          context.sharePDF(it.uri, applicationId)
+          context.sharePDF(it, applicationId)
         },
       )
     }

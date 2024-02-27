@@ -10,12 +10,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import arrow.fx.coroutines.parMap
 import com.hedvig.android.audio.player.SignedAudioUrl
+import com.hedvig.android.core.fileupload.DownloadPdfUseCase
 import com.hedvig.android.core.fileupload.UploadFileUseCase
 import com.hedvig.android.feature.claim.details.data.GetClaimDetailUiStateUseCase
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
+import java.io.File
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -26,15 +30,17 @@ internal class ClaimDetailsViewModel(
   claimId: String,
   getClaimDetailUiStateUseCase: GetClaimDetailUiStateUseCase,
   uploadFileUseCase: UploadFileUseCase,
+  downloadPdfUseCase: DownloadPdfUseCase,
 ) : MoleculeViewModel<ClaimDetailsEvent, ClaimDetailUiState>(
     ClaimDetailUiState.Loading,
-    ClaimDetailPresenter(claimId, getClaimDetailUiStateUseCase, uploadFileUseCase),
+    ClaimDetailPresenter(claimId, getClaimDetailUiStateUseCase, uploadFileUseCase, downloadPdfUseCase),
   )
 
 private class ClaimDetailPresenter(
   private val claimId: String,
   private val getClaimDetailUiStateUseCase: GetClaimDetailUiStateUseCase,
   private val uploadFileUseCase: UploadFileUseCase,
+  private val downloadPdfUseCase: DownloadPdfUseCase,
 ) : MoleculePresenter<ClaimDetailsEvent, ClaimDetailUiState> {
   @Composable
   override fun MoleculePresenterScope<ClaimDetailsEvent>.present(lastState: ClaimDetailUiState): ClaimDetailUiState {
@@ -44,6 +50,9 @@ private class ClaimDetailPresenter(
     var loadIteration by remember { mutableIntStateOf(0) }
     val mediaToSend = remember { Channel<Uri>(Channel.UNLIMITED) }
 
+    var downloadingUrl by remember {
+      mutableStateOf<String?>(null)
+    }
     LaunchedEffect(loadIteration) {
       isLoading = true
       hasError = false
@@ -61,6 +70,26 @@ private class ClaimDetailPresenter(
           },
         )
       }
+    }
+
+    LaunchedEffect(downloadingUrl) {
+      val downloadingUrlValue = downloadingUrl ?: return@LaunchedEffect
+      logcat(LogPriority.INFO) { "Downloading terms and conditions with url:$downloadingUrl" }
+      downloadPdfUseCase.invoke(downloadingUrlValue)
+        .fold(
+          ifLeft = { errorMessage ->
+            logcat(LogPriority.ERROR) { "Downloading terms and conditions failed:$errorMessage" }
+            content = content?.copy(downloadError = true)
+            downloadingUrl = null
+          },
+          ifRight = { uri ->
+            logcat(
+              LogPriority.INFO,
+            ) { "Downloading terms and conditions succeeded. Result uri:${uri.absolutePath}" }
+            content = content?.copy(downloadError = null, savedFileUri = uri)
+            downloadingUrl = null
+          },
+        )
     }
 
     LaunchedEffect(mediaToSend) {
@@ -90,6 +119,8 @@ private class ClaimDetailPresenter(
         ClaimDetailsEvent.Retry -> loadIteration++
         is ClaimDetailsEvent.UploadFile -> mediaToSend.trySend(event.uri)
         ClaimDetailsEvent.DismissUploadError -> content = content?.copy(uploadError = null)
+        is ClaimDetailsEvent.DownloadPdf -> downloadingUrl = event.url
+        ClaimDetailsEvent.DismissDownloadError -> content = content?.copy(downloadError = null)
       }
     }
 
@@ -105,7 +136,11 @@ internal sealed interface ClaimDetailsEvent {
 
   data object DismissUploadError : ClaimDetailsEvent
 
+  data object DismissDownloadError : ClaimDetailsEvent
+
   data class UploadFile(val uri: Uri) : ClaimDetailsEvent
+
+  data class DownloadPdf(val url: String) : ClaimDetailsEvent
 }
 
 internal sealed interface ClaimDetailUiState {
@@ -128,6 +163,8 @@ internal sealed interface ClaimDetailUiState {
     val submittedAt: LocalDateTime,
     val insuranceDisplayName: String?,
     val termsConditionsUrl: String?,
+    val savedFileUri: File?,
+    val downloadError: Boolean?,
   ) : ClaimDetailUiState {
     sealed interface SubmittedContent {
       data class Audio(val signedAudioURL: SignedAudioUrl) : SubmittedContent

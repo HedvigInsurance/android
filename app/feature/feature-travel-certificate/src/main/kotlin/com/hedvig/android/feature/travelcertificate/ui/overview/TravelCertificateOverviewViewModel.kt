@@ -7,17 +7,17 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.hedvig.android.feature.travelcertificate.data.DownloadTravelCertificateUseCase
-import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUri
+import com.hedvig.android.core.fileupload.DownloadPdfUseCase
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import java.io.File
 
 internal class TravelCertificateOverviewViewModel(
-  downloadTravelCertificateUseCase: DownloadTravelCertificateUseCase,
+  downloadTravelCertificateUseCase: DownloadPdfUseCase,
 ) :
   MoleculeViewModel<TravelCertificateOverviewEvent, TravelCertificateOverviewUiState>(
       initialState = TravelCertificateOverviewUiState.Loading,
@@ -25,7 +25,7 @@ internal class TravelCertificateOverviewViewModel(
     )
 
 internal class TravelCertificateOverviewPresenter(
-  private val downloadTravelCertificateUseCase: DownloadTravelCertificateUseCase,
+  private val downloadTravelCertificateUseCase: DownloadPdfUseCase,
 ) : MoleculePresenter<TravelCertificateOverviewEvent, TravelCertificateOverviewUiState> {
   @Composable
   override fun MoleculePresenterScope<TravelCertificateOverviewEvent>.present(
@@ -56,7 +56,7 @@ internal class TravelCertificateOverviewPresenter(
       if (url != null) {
         currentState = TravelCertificateOverviewUiState.Loading
         logcat(LogPriority.INFO) { "Downloading travel certificate with url:${url.uri}" }
-        downloadTravelCertificateUseCase.invoke(url)
+        downloadTravelCertificateUseCase.invoke(url.uri)
           .fold(
             ifLeft = { errorMessage ->
               logcat(LogPriority.ERROR) { "Downloading travel certificate failed:$errorMessage" }
@@ -65,7 +65,7 @@ internal class TravelCertificateOverviewPresenter(
             ifRight = { uri ->
               logcat(
                 LogPriority.INFO,
-              ) { "Downloading travel certificate succeeded. Result uri:${uri.uri.absolutePath}" }
+              ) { "Downloading travel certificate succeeded. Result uri:${uri.absolutePath}" }
               currentState = TravelCertificateOverviewUiState.Success(uri)
             },
           )
@@ -89,6 +89,6 @@ internal sealed interface TravelCertificateOverviewUiState {
   data object Failure : TravelCertificateOverviewUiState
 
   data class Success(
-    val travelCertificateUri: TravelCertificateUri?,
+    val travelCertificateUri: File?,
   ) : TravelCertificateOverviewUiState
 }

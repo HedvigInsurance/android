@@ -117,6 +117,8 @@ internal class GetClaimDetailUiStateUseCase(
       insuranceDisplayName = insuranceDisplayName,
       submittedAt = submittedAt,
       termsConditionsUrl = termsConditionsUrl,
+      savedFileUri = null,
+      downloadError = null,
     )
   }
 

@@ -45,9 +45,9 @@ import com.hedvig.android.core.ui.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.data.travelcertificate.TravelCertificate
-import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUri
 import com.hedvig.android.feature.travelcertificate.ui.TravelCertificateInfoBottomSheet
 import hedvig.resources.R
+import java.io.File
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
 
@@ -57,7 +57,7 @@ internal fun TravelCertificateHistoryDestination(
   onStartGenerateTravelCertificateFlow: () -> Unit,
   onNavigateToChooseContract: () -> Unit,
   navigateUp: () -> Unit,
-  onShareTravelCertificate: (TravelCertificateUri) -> Unit,
+  onShareTravelCertificate: (File) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   TravelCertificateHistoryScreen(
@@ -84,7 +84,7 @@ private fun TravelCertificateHistoryScreen(
   onGoToChooseContract: () -> Unit,
   navigateUp: () -> Unit,
   onDismissDownloadCertificateError: () -> Unit,
-  onShareTravelCertificate: (TravelCertificateUri) -> Unit,
+  onShareTravelCertificate: (File) -> Unit,
   uiState: CertificateHistoryUiState,
 ) {
   var showBottomSheet by remember { mutableStateOf(false) }

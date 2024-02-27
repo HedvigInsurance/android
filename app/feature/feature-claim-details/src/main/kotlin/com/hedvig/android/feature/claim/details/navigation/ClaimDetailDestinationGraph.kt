@@ -49,9 +49,6 @@ fun NavGraphBuilder.claimDetailsGraph(
           )
         },
         openUrl = openUrl,
-        downloadFromUrl = {
-          // todo
-        },
         sharePdf = {
           context.sharePDF(it, applicationId)
         },

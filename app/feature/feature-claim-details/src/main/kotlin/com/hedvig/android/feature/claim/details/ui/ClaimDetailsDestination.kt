@@ -37,6 +37,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -97,7 +98,6 @@ internal fun ClaimDetailsDestination(
   onChatClick: () -> Unit,
   onUri: (Uri, targetUploadUrl: String) -> Unit,
   openUrl: (String) -> Unit,
-  downloadFromUrl: (String) -> Unit,
   sharePdf: (File) -> Unit,
 ) {
   val viewState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -111,8 +111,9 @@ internal fun ClaimDetailsDestination(
     navigateUp = navigateUp,
     onChatClick = onChatClick,
     onUri = onUri,
-    downloadFromUrl = downloadFromUrl,
+    downloadFromUrl = { viewModel.emit(ClaimDetailsEvent.DownloadPdf(it)) },
     sharePdf = sharePdf,
+    onDismissDownloadError = { viewModel.emit(ClaimDetailsEvent.DismissDownloadError) },
   )
 }
 
@@ -129,6 +130,7 @@ private fun ClaimDetailScreen(
   onUri: (file: Uri, uploadUri: String) -> Unit,
   downloadFromUrl: (String) -> Unit,
   sharePdf: (File) -> Unit,
+  onDismissDownloadError: () -> Unit,
 ) {
   Surface(
     color = MaterialTheme.colorScheme.background,
@@ -149,6 +151,8 @@ private fun ClaimDetailScreen(
           imageLoader = imageLoader,
           appPackageId = appPackageId,
           downloadFromUrl = downloadFromUrl,
+          sharePdf = sharePdf,
+          onDismissDownloadError = onDismissDownloadError,
         )
 
         ClaimDetailUiState.Error -> HedvigErrorSection(retry = retry)
@@ -168,7 +172,14 @@ private fun ClaimDetailScreen(
   imageLoader: ImageLoader,
   appPackageId: String,
   downloadFromUrl: (String) -> Unit,
+  onDismissDownloadError: () -> Unit,
+  sharePdf: (File) -> Unit,
 ) {
+  if (uiState.savedFileUri != null) {
+    LaunchedEffect(uiState.savedFileUri) {
+      sharePdf(uiState.savedFileUri)
+    }
+  }
   var showFileTypeSelectBottomSheet by remember { mutableStateOf(false) }
 
   val photoCaptureState = rememberPhotoCaptureState(appPackageId = appPackageId) { uri ->
@@ -190,6 +201,15 @@ private fun ClaimDetailScreen(
     }
   }
 
+  if (uiState.downloadError == true) {
+    ErrorDialog(
+      title = stringResource(id = R.string.general_error),
+      message = stringResource(id = R.string.travel_certificate_downloading_error),
+      onDismiss = {
+        onDismissDownloadError()
+      },
+    )
+  }
   if (showFileTypeSelectBottomSheet) {
     FilePickerBottomSheet(
       onPickPhoto = {
@@ -231,8 +251,7 @@ private fun ClaimDetailScreen(
         ClaimInfoCard(uiState.claimStatus, uiState.claimOutcome, onChatClick)
         Spacer(Modifier.height(24.dp))
         Text(
-          "Claim details", // todo: wait for translations
-//          stringResource(R.string.claim_status_claim_details_title),
+          stringResource(R.string.claim_status_claim_details_title),
           Modifier.padding(horizontal = 2.dp),
         )
         Spacer(Modifier.height(8.dp))
@@ -481,10 +500,9 @@ private fun ClaimTypeAndDatesCard(claimType: String?, submitDate: LocalDate?, in
         .fillMaxWidth(),
     ) {
       Text(
-        text = "Type",
+        text = stringResource(R.string.claim_status_claim_details_type),
         color = color,
-      ) // todo: wait for translations
-      //  Text(text = stringResource(R.string.claim_status_claim_details_type))
+      )
       Spacer(modifier = Modifier.weight(1f))
       Text(
         text = claimType ?: stringResource(R.string.claim_casetype_insurance_case),
@@ -498,10 +516,9 @@ private fun ClaimTypeAndDatesCard(claimType: String?, submitDate: LocalDate?, in
           .fillMaxWidth(),
       ) {
         Text(
-          text = "Date of incident",
+          text = stringResource(R.string.claim_status_claim_details_incident_date),
           color = color,
-        ) // todo: wait for translations
-        //  Text(text = stringResource(R.string.claim_status_claim_details_incident))
+        )
         Spacer(modifier = Modifier.weight(1f))
         Text(
           text = dateTimeFormatter.format(incidentDate.toJavaLocalDate()),
@@ -515,10 +532,9 @@ private fun ClaimTypeAndDatesCard(claimType: String?, submitDate: LocalDate?, in
             .fillMaxWidth(),
         ) {
           Text(
-            text = "Submitted",
+            text = stringResource(R.string.claim_status_claim_details_submitted),
             color = color,
-          ) // todo: wait for translations
-          //  Text(text = stringResource(R.string.claim_status_claim_details_submitted))
+          )
           Spacer(modifier = Modifier.weight(1f))
           Text(
             text = dateTimeFormatter.format(submitDate.toJavaLocalDate()),
@@ -612,6 +628,8 @@ private fun PreviewClaimDetailScreen() {
           submittedAt = LocalDateTime(2023, 1, 5, 12, 35),
           insuranceDisplayName = "Home insurance",
           termsConditionsUrl = "url",
+          savedFileUri = null,
+          downloadError = null,
         ),
         onChatClick = {},
         onUri = { uri: Uri, s: String -> },
@@ -620,6 +638,8 @@ private fun PreviewClaimDetailScreen() {
         appPackageId = "",
         onDismissUploadError = {},
         downloadFromUrl = {},
+        sharePdf = {},
+        onDismissDownloadError = {},
       )
     }
   }

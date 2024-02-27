@@ -33,16 +33,16 @@ import com.hedvig.android.core.icons.hedvig.small.hedvig.Checkmark
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarActionType
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
-import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUri
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import hedvig.resources.R
+import java.io.File
 
 @Composable
 internal fun TravelCertificateOverviewDestination(
   travelCertificateUrl: TravelCertificateUrl,
   viewModel: TravelCertificateOverviewViewModel,
   navigateUp: () -> Unit,
-  onShareTravelCertificate: (TravelCertificateUri) -> Unit,
+  onShareTravelCertificate: (File) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   TravelCertificateOverview(
@@ -59,7 +59,7 @@ internal fun TravelCertificateOverview(
   travelCertificateUrl: TravelCertificateUrl,
   onDownloadCertificate: (TravelCertificateUrl) -> Unit,
   navigateUp: () -> Unit,
-  onShareTravelCertificate: (TravelCertificateUri) -> Unit,
+  onShareTravelCertificate: (File) -> Unit,
   uiState: TravelCertificateOverviewUiState,
 ) {
   when (uiState) {
@@ -100,14 +100,18 @@ internal fun TravelCertificateOverview(
           style = LocalTextStyle.current.copy(
             lineBreak = LineBreak.Heading,
           ),
-          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
         )
         Spacer(Modifier.height(2.dp))
         Text(
           text = stringResource(id = R.string.travel_certificate_travel_certificate_ready_description),
           textAlign = TextAlign.Center,
           color = MaterialTheme.colorScheme.onSurfaceVariant,
-          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
         )
         Spacer(Modifier.height(32.dp))
         Spacer(modifier = Modifier.weight(1f))

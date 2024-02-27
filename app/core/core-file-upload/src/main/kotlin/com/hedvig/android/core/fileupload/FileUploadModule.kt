@@ -28,4 +28,7 @@ val fileUploadModule = module {
       contentResolver = get<Context>().contentResolver,
     )
   }
+  single<DownloadPdfUseCase> {
+    DownloadPdfUseCaseImpl(get<Context>())
+  }
 }

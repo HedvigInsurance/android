@@ -8,29 +8,28 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import arrow.fx.coroutines.parZip
+import com.hedvig.android.core.fileupload.DownloadPdfUseCase
 import com.hedvig.android.data.travelcertificate.CheckTravelCertificateAvailabilityForCurrentContractsUseCase
 import com.hedvig.android.data.travelcertificate.GetEligibleContractsWithAddressUseCase
 import com.hedvig.android.data.travelcertificate.GetTravelCertificatesHistoryUseCase
 import com.hedvig.android.data.travelcertificate.TravelCertificate
-import com.hedvig.android.feature.travelcertificate.data.DownloadTravelCertificateUseCase
-import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUri
-import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import java.io.File
 
 internal class CertificateHistoryViewModel(
   getTravelCertificatesHistoryUseCase: GetTravelCertificatesHistoryUseCase,
-  downloadTravelCertificateUseCase: DownloadTravelCertificateUseCase,
+  downloadPdfUseCase: DownloadPdfUseCase,
   checkTravelCertificateAvailabilityForCurrentContractsUseCase: CheckTravelCertificateAvailabilityForCurrentContractsUseCase,
   getEligibleContractsWithAddressUseCase: GetEligibleContractsWithAddressUseCase,
 ) : MoleculeViewModel<CertificateHistoryEvent, CertificateHistoryUiState>(
     initialState = CertificateHistoryUiState.Loading,
     presenter = CertificateHistoryPresenter(
       getTravelCertificatesHistoryUseCase,
-      downloadTravelCertificateUseCase,
+      downloadPdfUseCase,
       getEligibleContractsWithAddressUseCase,
       checkTravelCertificateAvailabilityForCurrentContractsUseCase,
     ),
@@ -38,7 +37,7 @@ internal class CertificateHistoryViewModel(
 
 internal class CertificateHistoryPresenter(
   private val getTravelCertificatesHistoryUseCase: GetTravelCertificatesHistoryUseCase,
-  private val downloadTravelCertificateUseCase: DownloadTravelCertificateUseCase,
+  private val downloadPdfUseCase: DownloadPdfUseCase,
   private val getEligibleContractsWithAddressUseCase: GetEligibleContractsWithAddressUseCase,
   private val checkTravelCertificateAvailabilityForCurrentContractsUseCase: CheckTravelCertificateAvailabilityForCurrentContractsUseCase,
 ) :
@@ -54,7 +53,7 @@ internal class CertificateHistoryPresenter(
     }
 
     var savedFileUri by remember {
-      mutableStateOf<TravelCertificateUri?>(null)
+      mutableStateOf<File?>(null)
     }
 
     var screenContentState by remember {
@@ -87,7 +86,7 @@ internal class CertificateHistoryPresenter(
       val downloadingUrlValue = downloadingUrl ?: return@LaunchedEffect
       isLoadingCertificate = true
       logcat(LogPriority.INFO) { "Downloading travel certificate with url:$downloadingUrl" }
-      downloadTravelCertificateUseCase.invoke(TravelCertificateUrl(downloadingUrlValue))
+      downloadPdfUseCase.invoke(downloadingUrlValue)
         .fold(
           ifLeft = { errorMessage ->
             isLoadingCertificate = false
@@ -99,7 +98,7 @@ internal class CertificateHistoryPresenter(
             isLoadingCertificate = false
             logcat(
               LogPriority.INFO,
-            ) { "Downloading travel certificate succeeded. Result uri:${uri.uri.absolutePath}" }
+            ) { "Downloading travel certificate succeeded. Result uri:${uri.absolutePath}" }
             savedFileUri = uri
             downloadingUrl = null
           },
@@ -170,7 +169,7 @@ internal sealed interface CertificateHistoryUiState {
     val certificateHistoryList: List<TravelCertificate>,
     val showDownloadCertificateError: Boolean,
     val showGenerateButton: Boolean,
-    val travelCertificateUri: TravelCertificateUri?,
+    val travelCertificateUri: File?,
     val isLoadingCertificate: Boolean,
     val hasChooseOption: Boolean,
   ) : CertificateHistoryUiState
