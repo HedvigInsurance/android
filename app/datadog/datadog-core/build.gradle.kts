@@ -20,6 +20,7 @@ dependencies {
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDatastorePublic)
+  implementation(projects.initializable)
   implementation(projects.trackingCore)
   implementation(projects.trackingDatadog)
 }
