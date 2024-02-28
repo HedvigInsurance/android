@@ -27,7 +27,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
@@ -74,6 +73,7 @@ private fun DocumentCard(onClick: () -> Unit, title: String?, subtitle: String?)
       modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
     ) {
       Column(Modifier.weight(1f)) {
+        val fontSize = MaterialTheme.typography.bodySmall.fontSize
         Text(
           text = buildAnnotatedString {
             val text = title ?: return@buildAnnotatedString
@@ -82,7 +82,7 @@ private fun DocumentCard(onClick: () -> Unit, title: String?, subtitle: String?)
             withStyle(
               SpanStyle(
                 baselineShift = BaselineShift(0.3f),
-                fontSize = 10.sp,
+                fontSize = fontSize,
               ),
             ) {
               append("PDF")

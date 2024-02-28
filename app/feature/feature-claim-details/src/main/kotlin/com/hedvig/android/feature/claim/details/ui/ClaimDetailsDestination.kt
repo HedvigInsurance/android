@@ -55,7 +55,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import com.hedvig.android.audio.player.HedvigAudioPlayer
@@ -84,6 +83,7 @@ import com.hedvig.android.core.ui.dialog.ErrorDialog
 import com.hedvig.android.core.ui.plus
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
+import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.ui.claimstatus.ClaimStatusCard
@@ -153,18 +153,40 @@ private fun ClaimDetailScreen(
         title = stringResource(R.string.CLAIMS_YOUR_CLAIM),
       )
       when (uiState) {
-        is ClaimDetailUiState.Content -> ClaimDetailScreen(
-          uiState = uiState,
-          onChatClick = onChatClick,
-          onUri = onUri,
-          onDismissUploadError = onDismissUploadError,
-          openUrl = openUrl,
-          imageLoader = imageLoader,
-          appPackageId = appPackageId,
-          downloadFromUrl = downloadFromUrl,
-          sharePdf = sharePdf,
-          onDismissDownloadError = onDismissDownloadError,
-        )
+        is ClaimDetailUiState.Content -> {
+          val photoCaptureState = rememberPhotoCaptureState(appPackageId = appPackageId) { uri ->
+            logcat { "ChatFileState sending uri:$uri" }
+
+            onUri(uri, uiState.uploadUri)
+          }
+          val photoPicker = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.PickVisualMedia(),
+          ) { resultingUri: Uri? ->
+            if (resultingUri != null) {
+              onUri(resultingUri, uiState.uploadUri)
+            }
+          }
+          val filePicker = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.GetContent(),
+          ) { resultingUri: Uri? ->
+            if (resultingUri != null) {
+              onUri(resultingUri, uiState.uploadUri)
+            }
+          }
+          ClaimDetailScreen(
+            uiState = uiState,
+            onChatClick = onChatClick,
+            onDismissUploadError = onDismissUploadError,
+            openUrl = openUrl,
+            imageLoader = imageLoader,
+            downloadFromUrl = downloadFromUrl,
+            sharePdf = sharePdf,
+            onDismissDownloadError = onDismissDownloadError,
+            onLaunchMediaRequest = { photoPicker.launch(PickVisualMediaRequest()) },
+            onPickFile = { filePicker.launch("*/*") },
+            onTakePhoto = { photoCaptureState.launchTakePhotoRequest() },
+          )
+        }
 
         ClaimDetailUiState.Error -> HedvigErrorSection(retry = retry)
         ClaimDetailUiState.Loading -> HedvigFullScreenCenterAlignedProgressDebounced()
@@ -177,14 +199,15 @@ private fun ClaimDetailScreen(
 private fun ClaimDetailScreen(
   uiState: ClaimDetailUiState.Content,
   onChatClick: () -> Unit,
-  onUri: (file: Uri, uploadUri: String) -> Unit,
   openUrl: (String) -> Unit,
   onDismissUploadError: () -> Unit,
   imageLoader: ImageLoader,
-  appPackageId: String,
   downloadFromUrl: (String) -> Unit,
   onDismissDownloadError: () -> Unit,
   sharePdf: (File) -> Unit,
+  onLaunchMediaRequest: () -> Unit,
+  onPickFile: () -> Unit,
+  onTakePhoto: () -> Unit,
 ) {
   if (uiState.savedFileUri != null) {
     LaunchedEffect(uiState.savedFileUri) {
@@ -192,25 +215,6 @@ private fun ClaimDetailScreen(
     }
   }
   var showFileTypeSelectBottomSheet by remember { mutableStateOf(false) }
-
-  val photoCaptureState = rememberPhotoCaptureState(appPackageId = appPackageId) { uri ->
-    logcat { "ChatFileState sending uri:$uri" }
-    onUri(uri, uiState.uploadUri)
-  }
-  val photoPicker = rememberLauncherForActivityResult(
-    contract = ActivityResultContracts.PickVisualMedia(),
-  ) { resultingUri: Uri? ->
-    if (resultingUri != null) {
-      onUri(resultingUri, uiState.uploadUri)
-    }
-  }
-  val filePicker = rememberLauncherForActivityResult(
-    contract = ActivityResultContracts.GetContent(),
-  ) { resultingUri: Uri? ->
-    if (resultingUri != null) {
-      onUri(resultingUri, uiState.uploadUri)
-    }
-  }
 
   if (uiState.downloadError == true) {
     ErrorDialog(
@@ -224,15 +228,15 @@ private fun ClaimDetailScreen(
   if (showFileTypeSelectBottomSheet) {
     FilePickerBottomSheet(
       onPickPhoto = {
-        photoPicker.launch(PickVisualMediaRequest())
+        onLaunchMediaRequest()
         showFileTypeSelectBottomSheet = false
       },
       onPickFile = {
-        filePicker.launch("*/*")
+        onPickFile()
         showFileTypeSelectBottomSheet = false
       },
       onTakePhoto = {
-        photoCaptureState.launchTakePhotoRequest()
+        onTakePhoto()
         showFileTypeSelectBottomSheet = false
       },
       onDismiss = {
@@ -409,10 +413,11 @@ private fun TermsConditionsCard(onClick: () -> Unit, isLoading: Boolean, modifie
         }
       } else {
         Column {
+          val fontSize = MaterialTheme.typography.bodySmall.fontSize
           Text(
             text = buildAnnotatedString {
               append(stringResource(id = R.string.MY_DOCUMENTS_INSURANCE_TERMS))
-              withStyle(SpanStyle(baselineShift = BaselineShift.Superscript, fontSize = 12.sp)) {
+              withStyle(SpanStyle(baselineShift = BaselineShift(0.3f), fontSize = fontSize)) {
                 append("PDF")
               }
             },
@@ -534,48 +539,49 @@ private fun ClaimTypeAndDatesSection(
   val dateTimeFormatter = rememberHedvigDateTimeFormatter()
   CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
     Column(modifier) {
-      Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-          .fillMaxWidth(),
-      ) {
-        Text(
-          text = stringResource(R.string.claim_status_claim_details_type),
-        )
-        Spacer(modifier = Modifier.weight(1f))
-        Text(
-          text = claimType ?: stringResource(R.string.claim_casetype_insurance_case),
+      HorizontalItemsWithMaximumSpaceTaken(
+        startSlot = {
+          Text(
+            text = stringResource(R.string.claim_status_claim_details_type),
+          )
+        },
+        endSlot = {
+          Text(
+            text = claimType ?: stringResource(R.string.claim_casetype_insurance_case),
+            textAlign = TextAlign.End,
+          )
+        },
+      )
+      if (incidentDate != null) {
+        HorizontalItemsWithMaximumSpaceTaken(
+          startSlot = {
+            Text(
+              text = stringResource(R.string.claim_status_claim_details_incident_date),
+            )
+          },
+          endSlot = {
+            Text(
+              text = dateTimeFormatter.format(incidentDate.toJavaLocalDate()),
+              textAlign = TextAlign.End,
+            )
+          },
         )
       }
-      if (incidentDate != null) {
-        Row(
-          verticalAlignment = Alignment.CenterVertically,
-          modifier = Modifier
-            .fillMaxWidth(),
-        ) {
-          Text(
-            text = stringResource(R.string.claim_status_claim_details_incident_date),
-          )
-          Spacer(modifier = Modifier.weight(1f))
-          Text(
-            text = dateTimeFormatter.format(incidentDate.toJavaLocalDate()),
-          )
-        }
-        if (submitDate != null) {
-          Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-              .fillMaxWidth(),
-          ) {
+
+      if (submitDate != null) {
+        HorizontalItemsWithMaximumSpaceTaken(
+          startSlot = {
             Text(
               text = stringResource(R.string.claim_status_claim_details_submitted),
             )
-            Spacer(modifier = Modifier.weight(1f))
+          },
+          endSlot = {
             Text(
               text = dateTimeFormatter.format(submitDate.toJavaLocalDate()),
+              textAlign = TextAlign.End,
             )
-          }
-        }
+          },
+        )
       }
     }
   }
@@ -601,12 +607,18 @@ private fun PreviewClaimDetailScreen() {
               ClaimPillType.Closed.NotCovered,
             ),
             claimProgressItemsUiState = listOf(
-              ClaimProgressSegment(ClaimProgressSegment.SegmentText.Submitted, ClaimProgressSegment.SegmentType.PAID),
+              ClaimProgressSegment(
+                ClaimProgressSegment.SegmentText.Submitted,
+                ClaimProgressSegment.SegmentType.PAID,
+              ),
               ClaimProgressSegment(
                 ClaimProgressSegment.SegmentText.BeingHandled,
                 ClaimProgressSegment.SegmentType.PAID,
               ),
-              ClaimProgressSegment(ClaimProgressSegment.SegmentText.Closed, ClaimProgressSegment.SegmentType.PAID),
+              ClaimProgressSegment(
+                ClaimProgressSegment.SegmentText.Closed,
+                ClaimProgressSegment.SegmentType.PAID,
+              ),
             ),
             claimType = "Broken item",
             insuranceDisplayName = "Home Insurance Homeowner",
@@ -670,14 +682,15 @@ private fun PreviewClaimDetailScreen() {
           isLoadingPdf = false,
         ),
         onChatClick = {},
-        onUri = { uri: Uri, s: String -> },
         openUrl = {},
         imageLoader = rememberPreviewImageLoader(),
-        appPackageId = "",
         onDismissUploadError = {},
         downloadFromUrl = {},
         sharePdf = {},
         onDismissDownloadError = {},
+        onLaunchMediaRequest = {},
+        onTakePhoto = {},
+        onPickFile = {},
       )
     }
   }
