@@ -12,8 +12,9 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.BottomSheetDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -37,7 +38,7 @@ import com.hedvig.android.core.designsystem.material3.squircleLargeTop
 import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.icons.HedvigIcons
+import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.InfoFilled
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
@@ -127,7 +128,7 @@ internal fun DiscountsScreen(
               contentAlignment = Alignment.Center,
             ) {
               Icon(
-                imageVector = HedvigIcons.InfoFilled,
+                imageVector = Icons.Hedvig.InfoFilled,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 contentDescription = "Info icon",
                 modifier = Modifier.size(16.dp),
@@ -148,7 +149,7 @@ internal fun DiscountsScreen(
         discounts.forEachIndexed { index, discount ->
           DiscountRow(discount)
           if (index < discounts.size - 1) {
-            Divider()
+            HorizontalDivider()
           }
         }
       }

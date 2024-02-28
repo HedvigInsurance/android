@@ -15,7 +15,6 @@ internal class HelpCenterViewModel(
       topics = commonTopics,
       questions = commonQuestions,
       quickLinks = persistentListOf(),
-      commonClaims = persistentListOf(),
       selectedQuickAction = null,
     ),
     presenter = HelpCenterPresenter(

@@ -1,5 +1,7 @@
 query Claims {
   currentMember {
-    ...ClaimsFragment
+    claims {
+      ...ClaimFragment
+    }
   }
 }

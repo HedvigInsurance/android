@@ -15,6 +15,8 @@ import com.hedvig.android.data.claimflow.ItemBrand
 import com.hedvig.android.data.claimflow.ItemModel
 import com.hedvig.android.data.claimflow.ItemProblem
 import com.hedvig.android.feature.odyssey.ui.DatePickerUiState
+import com.hedvig.android.language.LanguageService
+import java.util.Locale
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -35,7 +37,8 @@ import octopus.type.FlowClaimItemModelInput
 internal class SingleItemViewModel(
   singleItem: ClaimFlowDestination.SingleItem,
   private val claimFlowRepository: ClaimFlowRepository,
-  clock: Clock = Clock.System,
+  clock: Clock,
+  languageService: LanguageService,
 ) : ViewModel() {
   private val itemBrandsUiState: MutableStateFlow<ItemBrandsUiState> =
     MutableStateFlow(ItemBrandsUiState.fromSingleItem(singleItem))
@@ -44,7 +47,7 @@ internal class SingleItemViewModel(
 
   // Holds most of what [uiState] does, minus what's inside brands and models UiState above
   private val partialUiState: MutableStateFlow<PartialSingleItemUiState> =
-    MutableStateFlow(PartialSingleItemUiState.fromSingleItem(singleItem, clock))
+    MutableStateFlow(PartialSingleItemUiState.fromSingleItem(singleItem, languageService.getLocale(), clock))
 
   val uiState: StateFlow<SingleItemUiState> = combine(
     itemBrandsUiState,
@@ -64,7 +67,7 @@ internal class SingleItemViewModel(
   }.stateIn(
     viewModelScope,
     SharingStarted.WhileSubscribed(5.seconds),
-    SingleItemUiState.fromInitialSingleItem(singleItem, clock),
+    SingleItemUiState.fromInitialSingleItem(singleItem, languageService.getLocale(), clock),
   )
 
   private fun transformItemModelsToOnlyContainModelsOfTheSelectedBrand(
@@ -156,6 +159,7 @@ internal class SingleItemViewModel(
         is ItemModelsUiState.Content -> modelsUiState.copy(
           selectedItemModel = null,
         )
+
         ItemModelsUiState.NotApplicable -> modelsUiState
       }
     }
@@ -226,9 +230,14 @@ internal data class PartialSingleItemUiState(
   val nextStep: ClaimFlowStep? = null,
 ) {
   companion object {
-    fun fromSingleItem(singleItem: ClaimFlowDestination.SingleItem, clock: Clock): PartialSingleItemUiState {
+    fun fromSingleItem(
+      singleItem: ClaimFlowDestination.SingleItem,
+      locale: Locale,
+      clock: Clock,
+    ): PartialSingleItemUiState {
       return PartialSingleItemUiState(
         datePickerUiState = DatePickerUiState(
+          locale = locale,
           initiallySelectedDate = singleItem.purchaseDate,
           maxDate = clock.now().toLocalDateTime(TimeZone.UTC).date,
         ),
@@ -253,9 +262,14 @@ internal data class SingleItemUiState(
     get() = !isLoading && !hasError && nextStep == null
 
   companion object {
-    fun fromInitialSingleItem(singleItem: ClaimFlowDestination.SingleItem, clock: Clock): SingleItemUiState {
+    fun fromInitialSingleItem(
+      singleItem: ClaimFlowDestination.SingleItem,
+      locale: Locale,
+      clock: Clock,
+    ): SingleItemUiState {
       return SingleItemUiState(
         datePickerUiState = DatePickerUiState(
+          locale = locale,
           initiallySelectedDate = singleItem.purchaseDate,
           maxDate = clock.now().toLocalDateTime(TimeZone.UTC).date,
         ),

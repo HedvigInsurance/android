@@ -74,26 +74,26 @@ private fun SingleItemPayoutScreen(
   openChat: () -> Unit,
   closePayoutScreen: () -> Unit,
 ) {
-  HedvigTheme {
-    Surface(
-      color = MaterialTheme.colorScheme.background,
-      modifier = Modifier.fillMaxSize().safeDrawingPadding(),
-    ) {
-      Box {
-        LoadingContent(uiState.status is PayoutUiState.Status.Loading)
-        ErrorContent(
-          show = uiState.status is PayoutUiState.Status.Error,
-          allowInteraction = uiState.status is PayoutUiState.Status.Error,
-          exitFlow = closePayoutScreen,
-          retryPayout = retryPayout,
-          openChat = openChat,
-        )
-        PaidOutContent(
-          status = uiState.status,
-          paidOutAmount = uiState.amount,
-          onDoneAfterPayout = onDoneAfterPayout,
-        )
-      }
+  Surface(
+    color = MaterialTheme.colorScheme.background,
+    modifier = Modifier
+      .fillMaxSize()
+      .safeDrawingPadding(),
+  ) {
+    Box {
+      LoadingContent(uiState.status is PayoutUiState.Status.Loading)
+      ErrorContent(
+        show = uiState.status is PayoutUiState.Status.Error,
+        allowInteraction = uiState.status is PayoutUiState.Status.Error,
+        exitFlow = closePayoutScreen,
+        retryPayout = retryPayout,
+        openChat = openChat,
+      )
+      PaidOutContent(
+        status = uiState.status,
+        paidOutAmount = uiState.amount,
+        onDoneAfterPayout = onDoneAfterPayout,
+      )
     }
   }
 }
@@ -132,7 +132,9 @@ private fun BoxScope.ErrorContent(
     visible = show,
     enter = fadeIn(tween(600, 1_000, FastOutSlowInEasing)),
     exit = fadeOut(),
-    modifier = Modifier.align(Alignment.BottomCenter).padding(16.dp),
+    modifier = Modifier
+      .align(Alignment.BottomCenter)
+      .padding(16.dp),
   ) {
     LazyVerticalGrid(
       columns = GridCells.Fixed(2),
@@ -183,7 +185,11 @@ private fun BoxScope.LoadingContent(show: Boolean) {
         modifier = Modifier.fillMaxWidth(),
       )
       Spacer(Modifier.height(24.dp))
-      LinearProgressIndicator(Modifier.fillMaxWidth().padding(horizontal = 48.dp))
+      LinearProgressIndicator(
+        Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 48.dp),
+      )
     }
   }
 }
@@ -223,7 +229,9 @@ private fun BoxScope.PaidOutContent(
     visible = status is PayoutUiState.Status.PaidOut,
     enter = fadeIn(tween(600, 1_000, FastOutSlowInEasing)),
     exit = fadeOut(),
-    modifier = Modifier.align(Alignment.BottomCenter).padding(16.dp),
+    modifier = Modifier
+      .align(Alignment.BottomCenter)
+      .padding(16.dp),
   ) {
     HedvigTextButton(
       text = stringResource(hedvig.resources.R.string.general_close_button),

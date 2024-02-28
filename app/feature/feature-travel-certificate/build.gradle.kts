@@ -28,9 +28,12 @@ dependencies {
   implementation(projects.coreResources)
   implementation(projects.coreUi)
   implementation(projects.dataTravelCertificatePublic)
+  implementation(projects.languageCore)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
   implementation(projects.navigationActivity)
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
+  implementation(projects.coreCommonAndroidPublic)
+  implementation(projects.coreFileUpload)
 }

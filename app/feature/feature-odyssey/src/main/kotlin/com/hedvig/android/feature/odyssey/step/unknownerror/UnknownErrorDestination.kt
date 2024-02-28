@@ -36,38 +36,36 @@ internal fun UnknownErrorDestination(openChat: () -> Unit, closeFailureScreenDes
 
 @Composable
 private fun UnknownErrorScreen(openChat: () -> Unit, closeFailureScreenDestination: () -> Unit) {
-  HedvigTheme {
-    Surface(
-      color = MaterialTheme.colorScheme.background,
-      modifier = Modifier.fillMaxSize(),
+  Surface(
+    color = MaterialTheme.colorScheme.background,
+    modifier = Modifier.fillMaxSize(),
+  ) {
+    Column(
+      horizontalAlignment = Alignment.CenterHorizontally,
+      modifier = Modifier
+        .verticalScroll(rememberScrollState())
+        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
     ) {
-      Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
+      Spacer(Modifier.height(16.dp))
+      Box(
+        contentAlignment = Alignment.Center,
         modifier = Modifier
-          .verticalScroll(rememberScrollState())
-          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+          .padding(horizontal = 16.dp)
+          .weight(1f),
       ) {
-        Spacer(Modifier.height(16.dp))
-        Box(
-          contentAlignment = Alignment.Center,
-          modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .weight(1f),
-        ) {
-          HedvigErrorSection(
-            buttonText = stringResource(R.string.open_chat),
-            retry = openChat,
-          )
-        }
-        Spacer(Modifier.height(16.dp))
-        HedvigTextButton(
-          stringResource(R.string.general_close_button),
-          closeFailureScreenDestination,
-          Modifier.padding(horizontal = 16.dp),
+        HedvigErrorSection(
+          buttonText = stringResource(R.string.open_chat),
+          retry = openChat,
         )
-        Spacer(Modifier.height(16.dp))
-        Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
       }
+      Spacer(Modifier.height(16.dp))
+      HedvigTextButton(
+        stringResource(R.string.general_close_button),
+        closeFailureScreenDestination,
+        Modifier.padding(horizontal = 16.dp),
+      )
+      Spacer(Modifier.height(16.dp))
+      Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
     }
   }
 }

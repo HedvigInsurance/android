@@ -23,7 +23,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -34,6 +33,8 @@ import androidx.compose.material3.TopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.hedvig.normal.ArrowBack
 
 @Composable
 internal fun M3TopAppBars() {
@@ -73,7 +74,7 @@ internal fun M3TopAppBars() {
 private fun NavigationIcon() {
   IconButton(onClick = {}) {
     Icon(
-      imageVector = Icons.Default.ArrowBack,
+      imageVector = Icons.Hedvig.ArrowBack,
       contentDescription = null,
     )
   }

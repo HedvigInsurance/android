@@ -57,7 +57,6 @@ internal fun TerminationDateDestination(
   TerminationDateScreen(
     uiState = uiState,
     windowSizeClass = windowSizeClass,
-    dateValidator = viewModel.dateValidator,
     submit = {
       uiState.datePickerState.selectedDateMillis?.let {
         val date = Instant.fromEpochMilliseconds(it).toLocalDateTime(TimeZone.UTC).date
@@ -72,7 +71,6 @@ internal fun TerminationDateDestination(
 private fun TerminationDateScreen(
   uiState: TerminateInsuranceUiState,
   windowSizeClass: WindowSizeClass,
-  dateValidator: (Long) -> Boolean,
   submit: () -> Unit,
   navigateUp: () -> Unit,
 ) {
@@ -105,7 +103,6 @@ private fun TerminationDateScreen(
         Spacer(Modifier.weight(1f))
         DatePickerCard(
           datePickerState = uiState.datePickerState,
-          dateValidator = dateValidator,
           modifier = sideSpacingModifier,
         )
         Spacer(Modifier.height(16.dp))
@@ -142,18 +139,9 @@ private fun ChatCard(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun DatePickerCard(
-  datePickerState: DatePickerState,
-  dateValidator: (Long) -> Boolean,
-  modifier: Modifier = Modifier,
-) {
-  HedvigCard(
-    modifier = modifier.fillMaxWidth(),
-  ) {
-    HedvigDatePicker(
-      datePickerState = datePickerState,
-      dateValidator = dateValidator,
-    )
+private fun DatePickerCard(datePickerState: DatePickerState, modifier: Modifier = Modifier) {
+  HedvigCard(modifier.fillMaxWidth()) {
+    HedvigDatePicker(datePickerState = datePickerState)
   }
 }
 
@@ -165,7 +153,6 @@ private fun PreviewTerminationDateScreen() {
       TerminationDateScreen(
         TerminateInsuranceUiState(rememberDatePickerState(), false),
         WindowSizeClass.calculateForPreview(),
-        { true },
         {},
         {},
       )

@@ -24,7 +24,7 @@ import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.toClaimFlowDestination
 import com.hedvig.android.feature.changeaddress.navigation.changeAddressGraph
 import com.hedvig.android.feature.chat.navigation.chatGraph
-import com.hedvig.android.feature.claim.details.claimDetailsGraph
+import com.hedvig.android.feature.claim.details.navigation.claimDetailsGraph
 import com.hedvig.android.feature.claimtriaging.ClaimTriagingDestination
 import com.hedvig.android.feature.claimtriaging.claimTriagingDestinations
 import com.hedvig.android.feature.connect.payment.adyen.connectAdyenPaymentGraph
@@ -202,7 +202,7 @@ internal fun HedvigNavHost(
         )
       },
       settingsDestinationNestedGraphs = {
-        deleteAccountGraph(navigator)
+        deleteAccountGraph(hedvigDeepLinkContainer, navigator)
       },
       navigator = navigator,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
@@ -282,6 +282,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
         backStackEntry.navigate(AppDestination.Chat())
       }
     },
+    applicationId = BuildConfig.APPLICATION_ID,
   )
   changeAddressGraph(
     navController = hedvigAppState.navController,

@@ -14,11 +14,10 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
@@ -28,6 +27,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.ArrowBack
 import com.hedvig.android.core.icons.hedvig.normal.X
@@ -43,7 +44,8 @@ fun TopAppBarLayoutForActions(modifier: Modifier = Modifier, actions: @Composabl
     verticalAlignment = Alignment.CenterVertically,
     modifier = modifier
       .windowInsetsPadding(
-        WindowInsets.systemBars.union(WindowInsets.displayCutout)
+        WindowInsets.systemBars
+          .union(WindowInsets.displayCutout)
           .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top),
       )
       .height(64.dp)
@@ -152,7 +154,7 @@ fun TopAppBarWithBackAndClose(
   onNavigateUp: () -> Unit,
   onClose: () -> Unit,
   modifier: Modifier = Modifier,
-  windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
+  windowInsets: WindowInsets = WindowInsets.systemBars.union(WindowInsets.displayCutout),
   colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(
     containerColor = MaterialTheme.colorScheme.background,
     scrolledContainerColor = MaterialTheme.colorScheme.surface,
@@ -172,7 +174,7 @@ fun TopAppBarWithBackAndClose(
         onClick = onNavigateUp,
         content = {
           Icon(
-            imageVector = Icons.Filled.ArrowBack,
+            imageVector = Icons.Hedvig.ArrowBack,
             contentDescription = null,
           )
         },
@@ -183,7 +185,7 @@ fun TopAppBarWithBackAndClose(
         onClick = onClose,
         content = {
           Icon(
-            imageVector = Icons.Filled.Close,
+            imageVector = Icons.Hedvig.X,
             contentDescription = null,
           )
         },
@@ -193,4 +195,14 @@ fun TopAppBarWithBackAndClose(
     colors = colors,
     scrollBehavior = scrollBehavior,
   )
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewTopAppBarWithBackAndClose() {
+  HedvigTheme {
+    Surface(color = MaterialTheme.colorScheme.background) {
+      TopAppBarWithBackAndClose("title", {}, {})
+    }
+  }
 }

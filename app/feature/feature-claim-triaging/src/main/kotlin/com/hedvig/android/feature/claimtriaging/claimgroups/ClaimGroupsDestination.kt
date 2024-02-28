@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -29,6 +28,8 @@ import com.hedvig.android.core.designsystem.component.button.HedvigContainedButt
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.hedvig.normal.X
 import com.hedvig.android.core.ui.dialog.ErrorDialog
 import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
@@ -96,63 +97,61 @@ private fun ClaimGroupsScreen(
     )
   }
 
-  HedvigTheme {
-    HedvigScaffold(
-      navigateUp = navigateUp,
-      topAppBarActions = {
-        IconButton(
-          onClick = closeClaimFlow,
-          content = { Icon(imageVector = Icons.Filled.Close, contentDescription = null) },
-        )
-      },
-      modifier = Modifier.fillMaxWidth(),
-    ) {
-      Spacer(Modifier.height(16.dp))
-      if (uiState.chipLoadingErrorMessage != null) {
-        HedvigErrorSection(retry = loadClaimGroups)
-      } else {
-        Text(
-          text = stringResource(R.string.CLAIM_TRIAGING_NAVIGATION_TITLE),
-          style = MaterialTheme.typography.headlineMedium,
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        )
-        Spacer(Modifier.height(32.dp))
-        Spacer(Modifier.weight(1f))
-        AnimatedVisibility(
-          visible = uiState.haveTriedContinuingWithoutSelection,
-          enter = fadeIn(),
-          exit = fadeOut(),
-        ) {
-          Column {
-            WarningTextWithIcon(
-              modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .fillMaxWidth()
-                .wrapContentWidth(),
-              text = stringResource(R.string.CLAIMS_SELECT_CATEGORY),
-            )
-            Spacer(Modifier.height(16.dp))
-          }
+  HedvigScaffold(
+    navigateUp = navigateUp,
+    topAppBarActions = {
+      IconButton(
+        onClick = closeClaimFlow,
+        content = { Icon(imageVector = Icons.Hedvig.X, contentDescription = null) },
+      )
+    },
+    modifier = Modifier.fillMaxWidth(),
+  ) {
+    Spacer(Modifier.height(16.dp))
+    if (uiState.chipLoadingErrorMessage != null) {
+      HedvigErrorSection(retry = loadClaimGroups)
+    } else {
+      Text(
+        text = stringResource(R.string.CLAIM_TRIAGING_NAVIGATION_TITLE),
+        style = MaterialTheme.typography.headlineMedium,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+      )
+      Spacer(Modifier.height(32.dp))
+      Spacer(Modifier.weight(1f))
+      AnimatedVisibility(
+        visible = uiState.haveTriedContinuingWithoutSelection,
+        enter = fadeIn(),
+        exit = fadeOut(),
+      ) {
+        Column {
+          WarningTextWithIcon(
+            modifier = Modifier
+              .padding(horizontal = 16.dp)
+              .fillMaxWidth()
+              .wrapContentWidth(),
+            text = stringResource(R.string.CLAIMS_SELECT_CATEGORY),
+          )
+          Spacer(Modifier.height(16.dp))
         }
-        OptionChipsFlowRow(
-          items = uiState.claimGroups,
-          itemDisplayName = ClaimGroup::displayName,
-          selectedItem = uiState.selectedClaimGroup,
-          onItemClick = { claimGroup -> onSelectClaimGroup(claimGroup) },
-          modifier = Modifier.padding(horizontal = 16.dp),
-        )
-        Spacer(Modifier.height(8.dp))
-        HedvigContainedButton(
-          text = stringResource(R.string.claims_continue_button),
-          onClick = onContinue,
-          isLoading = uiState.isLoading,
-          enabled = uiState.canContinue,
-          modifier = Modifier.padding(horizontal = 16.dp),
-        )
-        Spacer(modifier = Modifier.height(16.dp))
       }
+      OptionChipsFlowRow(
+        items = uiState.claimGroups,
+        itemDisplayName = ClaimGroup::displayName,
+        selectedItem = uiState.selectedClaimGroup,
+        onItemClick = { claimGroup -> onSelectClaimGroup(claimGroup) },
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
+      Spacer(Modifier.height(8.dp))
+      HedvigContainedButton(
+        text = stringResource(R.string.claims_continue_button),
+        onClick = onContinue,
+        isLoading = uiState.isLoading,
+        enabled = uiState.canContinue,
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
+      Spacer(modifier = Modifier.height(16.dp))
     }
   }
 }

@@ -108,9 +108,9 @@ private fun Card(
   Surface(
     modifier = modifier,
     shape = shape,
-    color = colors.containerColor(enabled = true).value,
-    contentColor = colors.contentColor(enabled = true).value,
-    tonalElevation = elevation.tonalElevation(enabled = true, interactionSource = null).value,
+    color = colors.containerColor(enabled = true),
+    contentColor = colors.contentColor(enabled = true),
+    tonalElevation = elevation.tonalElevation(enabled = true),
     shadowElevation = elevation.shadowElevation(enabled = true, interactionSource = null).value,
     border = border,
   ) {
@@ -139,13 +139,12 @@ private fun Card(
     modifier = modifier,
     enabled = enabled,
     shape = shape,
-    color = colors.containerColor(enabled).value,
-    contentColor = colors.contentColor(enabled).value,
-    tonalElevation = elevation.tonalElevation(enabled, interactionSource).value,
+    color = colors.containerColor(enabled),
+    contentColor = colors.contentColor(enabled),
+    tonalElevation = elevation.tonalElevation(enabled),
     shadowElevation = elevation.shadowElevation(enabled, interactionSource).value,
     border = border,
     interactionSource = interactionSource,
-  ) {
-    content()
-  }
+    content = content,
+  )
 }

@@ -29,7 +29,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -245,7 +245,7 @@ private fun ColumnScope.InsuranceScreenContent(
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(16.dp))
-    Divider(Modifier.padding(horizontal = 16.dp))
+    HorizontalDivider(Modifier.padding(horizontal = 16.dp))
     Spacer(Modifier.height(16.dp))
     for ((index, crossSell) in crossSells.withIndex()) {
       CrossSellItem(

@@ -4,6 +4,7 @@ import android.content.Context
 import arrow.retrofit.adapter.either.EitherCallAdapterFactory
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import kotlinx.datetime.Clock
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -26,6 +27,13 @@ val fileUploadModule = module {
       uploadFileService = get<UploadFileService>(),
       fileService = get<FileService>(),
       contentResolver = get<Context>().contentResolver,
+    )
+  }
+  single<DownloadPdfUseCase> {
+    DownloadPdfUseCaseImpl(
+      get<Context>(),
+      get<Clock>(),
+      get<OkHttpClient.Builder>().build(),
     )
   }
 }

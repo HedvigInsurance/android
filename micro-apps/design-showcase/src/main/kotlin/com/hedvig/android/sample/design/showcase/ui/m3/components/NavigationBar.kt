@@ -23,7 +23,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -36,6 +35,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.hedvig.normal.Heart
 
 @Composable
 internal fun M3NavigationBars() {
@@ -52,7 +53,7 @@ internal fun M3NavigationBars() {
       NavigationBar {
         navbarItems.forEachIndexed { index, title ->
           NavigationBarItem(
-            icon = { Icon(Icons.Filled.Favorite, contentDescription = null) },
+            icon = { Icon(Icons.Hedvig.Heart, contentDescription = null) },
             label = { Text(title) },
             selected = selectedItem == index,
             onClick = { selectedItem = index },
@@ -64,7 +65,7 @@ internal fun M3NavigationBars() {
         NavigationBar {
           navbarItems.forEachIndexed { index, title ->
             NavigationBarItem(
-              icon = { Icon(Icons.Filled.Favorite, contentDescription = null) },
+              icon = { Icon(Icons.Hedvig.Heart, contentDescription = null) },
               label = { Text(title) },
               selected = selectedItem == index,
               onClick = { selectedItem = index },

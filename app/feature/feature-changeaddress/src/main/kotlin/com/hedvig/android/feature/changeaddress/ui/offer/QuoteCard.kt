@@ -15,7 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
@@ -60,7 +60,7 @@ internal fun QuoteCard(
     Column(Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp)) {
       PillAndBasicInfo(quote, movingDate)
       Spacer(Modifier.height(16.dp))
-      Divider()
+      HorizontalDivider()
       Spacer(Modifier.height(16.dp))
       QuoteDetailsAndPrice(isExpanded, quote)
       Spacer(Modifier.height(16.dp))

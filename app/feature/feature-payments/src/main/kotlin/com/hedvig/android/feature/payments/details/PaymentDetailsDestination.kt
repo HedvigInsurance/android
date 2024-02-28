@@ -15,7 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -47,7 +47,6 @@ import com.hedvig.android.core.designsystem.material3.typeContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.HedvigIcons
 import com.hedvig.android.core.icons.hedvig.normal.InfoFilled
 import com.hedvig.android.core.icons.hedvig.normal.WarningFilled
 import com.hedvig.android.core.icons.hedvig.small.hedvig.Checkmark
@@ -158,7 +157,7 @@ private fun MemberChargeDetailsScreen(
 
         memberCharge.discounts.forEach {
           DiscountRow(it)
-          Divider()
+          HorizontalDivider()
         }
       }
 
@@ -189,7 +188,7 @@ private fun MemberChargeDetailsScreen(
         },
         modifier = Modifier.padding(vertical = 16.dp),
       )
-      Divider()
+      HorizontalDivider()
 
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
@@ -286,7 +285,7 @@ private fun MemberChargeDetailsScreen(
                 contentAlignment = Alignment.Center,
               ) {
                 Icon(
-                  imageVector = HedvigIcons.InfoFilled,
+                  imageVector = Icons.Hedvig.InfoFilled,
                   tint = MaterialTheme.colorScheme.onSurfaceVariant,
                   contentDescription = "Info icon",
                   modifier = Modifier.size(16.dp),
@@ -296,7 +295,7 @@ private fun MemberChargeDetailsScreen(
           },
           modifier = Modifier.padding(vertical = 16.dp),
         )
-        Divider()
+        HorizontalDivider()
 
         HorizontalItemsWithMaximumSpaceTaken(
           startSlot = {
@@ -312,7 +311,7 @@ private fun MemberChargeDetailsScreen(
           },
           modifier = Modifier.padding(vertical = 16.dp),
         )
-        Divider()
+        HorizontalDivider()
 
         HorizontalItemsWithMaximumSpaceTaken(
           startSlot = {
@@ -328,7 +327,7 @@ private fun MemberChargeDetailsScreen(
           },
           modifier = Modifier.padding(vertical = 16.dp),
         )
-        Divider()
+        HorizontalDivider()
 
         HorizontalItemsWithMaximumSpaceTaken(
           startSlot = { Text(stringResource(id = R.string.PAYMENTS_BANK_LABEL)) },

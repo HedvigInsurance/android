@@ -1,0 +1,17 @@
+query CoInsuredForContract($contractId: UUID!) {
+  contract(id: $contractId) {
+    coInsured {
+      birthdate
+      firstName
+      ssn
+      lastName
+      hasMissingInfo
+      id
+    }
+  }
+  currentMember {
+    firstName
+    lastName
+  }
+}
+

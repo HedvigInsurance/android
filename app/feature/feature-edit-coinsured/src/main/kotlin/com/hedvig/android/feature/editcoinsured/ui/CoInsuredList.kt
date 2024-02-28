@@ -1,7 +1,7 @@
 package com.hedvig.android.feature.editcoinsured.ui
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -32,11 +32,12 @@ internal fun CoInsuredList(
     }
 
     uiState.coInsured.forEach { coInsured ->
-      Divider()
+      HorizontalDivider()
 
       InsuredRow(
         displayName = coInsured.displayName.ifBlank { stringResource(id = R.string.CONTRACT_COINSURED) },
-        identifier = coInsured.identifier(dateTimeFormatter) ?: stringResource(id = R.string.CONTRACT_NO_INFORMATION),
+        identifier = coInsured.identifier(dateTimeFormatter)
+          ?: stringResource(id = R.string.CONTRACT_NO_INFORMATION),
         hasMissingInfo = coInsured.hasMissingInfo,
         isMember = false,
         allowEdit = allowEdit,

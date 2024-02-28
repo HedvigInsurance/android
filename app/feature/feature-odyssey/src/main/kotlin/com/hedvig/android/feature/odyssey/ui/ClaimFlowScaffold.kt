@@ -29,7 +29,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBackAndClose
 import com.hedvig.android.core.ui.dialog.HedvigAlertDialog
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbar
@@ -51,57 +50,55 @@ internal fun ClaimFlowScaffold(
   itemsColumnHorizontalAlignment: Alignment.Horizontal = Alignment.Start,
   content: @Composable (ColumnScope.(sideSpacingModifier: Modifier) -> Unit),
 ) {
-  HedvigTheme {
-    var showCloseClaimsFlowDialog by rememberSaveable { mutableStateOf(false) }
-    if (showCloseClaimsFlowDialog) {
-      HedvigAlertDialog(
-        title = stringResource(R.string.GENERAL_ARE_YOU_SURE),
-        text = stringResource(R.string.claims_alert_body),
-        onDismissRequest = { showCloseClaimsFlowDialog = false },
-        onConfirmClick = closeClaimFlow,
-      )
-    }
+  var showCloseClaimsFlowDialog by rememberSaveable { mutableStateOf(false) }
+  if (showCloseClaimsFlowDialog) {
+    HedvigAlertDialog(
+      title = stringResource(R.string.GENERAL_ARE_YOU_SURE),
+      text = stringResource(R.string.claims_alert_body),
+      onDismissRequest = { showCloseClaimsFlowDialog = false },
+      onConfirmClick = closeClaimFlow,
+    )
+  }
 
-    Surface(
-      color = MaterialTheme.colorScheme.background,
-      modifier = modifier.fillMaxSize(),
-    ) {
-      Box {
-        Column {
-          val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-          TopAppBarWithBackAndClose(
-            onNavigateUp = navigateUp,
-            onClose = { showCloseClaimsFlowDialog = true },
-            title = topAppBarText ?: "",
-            scrollBehavior = topAppBarScrollBehavior,
-          )
-          Column(
-            horizontalAlignment = itemsColumnHorizontalAlignment,
-            modifier = Modifier
-              .fillMaxSize()
-              .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
-              .verticalScroll(rememberScrollState())
-              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-          ) {
-            val sideSpacingModifier = if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded) {
-              Modifier
-                .fillMaxWidth(0.8f)
-                .wrapContentWidth(Alignment.Start)
-                .align(Alignment.CenterHorizontally)
-            } else {
-              Modifier.padding(horizontal = 16.dp)
-            }
-            content(sideSpacingModifier)
+  Surface(
+    color = MaterialTheme.colorScheme.background,
+    modifier = modifier.fillMaxSize(),
+  ) {
+    Box {
+      Column {
+        val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+        TopAppBarWithBackAndClose(
+          onNavigateUp = navigateUp,
+          onClose = { showCloseClaimsFlowDialog = true },
+          title = topAppBarText ?: "",
+          scrollBehavior = topAppBarScrollBehavior,
+        )
+        Column(
+          horizontalAlignment = itemsColumnHorizontalAlignment,
+          modifier = Modifier
+            .fillMaxSize()
+            .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
+            .verticalScroll(rememberScrollState())
+            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+        ) {
+          val sideSpacingModifier = if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded) {
+            Modifier
+              .fillMaxWidth(0.8f)
+              .wrapContentWidth(Alignment.Start)
+              .align(Alignment.CenterHorizontally)
+          } else {
+            Modifier.padding(horizontal = 16.dp)
           }
+          content(sideSpacingModifier)
         }
-        if (errorSnackbarState != null) {
-          ErrorSnackbar(
-            errorSnackbarState = errorSnackbarState,
-            modifier = Modifier
-              .align(Alignment.BottomCenter)
-              .windowInsetsPadding(WindowInsets.safeDrawing),
-          )
-        }
+      }
+      if (errorSnackbarState != null) {
+        ErrorSnackbar(
+          errorSnackbarState = errorSnackbarState,
+          modifier = Modifier
+            .align(Alignment.BottomCenter)
+            .windowInsetsPadding(WindowInsets.safeDrawing),
+        )
       }
     }
   }

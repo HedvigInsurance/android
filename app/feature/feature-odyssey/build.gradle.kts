@@ -40,6 +40,7 @@ dependencies {
   implementation(projects.coreUiData)
   implementation(projects.dataClaimFlow)
   implementation(projects.dataClaimTriaging)
+  implementation(projects.languageCore)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
   implementation(projects.notificationPermission)
@@ -50,5 +51,6 @@ dependencies {
   testImplementation(libs.junit)
   testImplementation(libs.turbine)
   testImplementation(projects.coreCommonTest)
+  testImplementation(projects.languageTest)
   testImplementation(projects.loggingTest)
 }

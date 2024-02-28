@@ -96,7 +96,7 @@ fun HedvigGrid(
     }
     yPosition -= insideGridSpace.vertical.roundToPx()
 
-    layout(constraints.maxWidth, yPosition.coerceAtMost(constraints.maxHeight)) {
+    layout(constraints.maxWidth, yPosition.coerceIn(0, constraints.maxHeight)) {
       placeableWithCoordinatesList.forEach { (placeable, x, y) ->
         placeable.placeRelative(x, y)
       }

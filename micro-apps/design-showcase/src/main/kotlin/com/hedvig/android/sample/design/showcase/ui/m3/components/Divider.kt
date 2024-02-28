@@ -22,7 +22,7 @@ package com.hedvig.android.sample.design.showcase.ui.m3.components
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -37,6 +37,6 @@ internal fun M3Divider() {
       style = MaterialTheme.typography.headlineSmall,
     )
     Spacer(Modifier.size(16.dp))
-    Divider(thickness = 0.5.dp)
+    HorizontalDivider(thickness = 0.5.dp)
   }
 }

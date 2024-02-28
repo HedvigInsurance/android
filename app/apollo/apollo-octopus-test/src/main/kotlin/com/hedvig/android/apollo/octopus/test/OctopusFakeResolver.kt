@@ -19,6 +19,7 @@ object OctopusFakeResolver : FakeResolver by delegate {
       "UUID" -> UUID.randomUUID().toString()
       "Url" -> """www.example.com"""
       "Instant" -> kotlinx.datetime.Instant.DISTANT_FUTURE
+      "DateTime" -> kotlinx.datetime.Instant.DISTANT_FUTURE
       "Markdown" -> MarkdownString("test")
       else -> delegate.resolveLeaf(context)
     }

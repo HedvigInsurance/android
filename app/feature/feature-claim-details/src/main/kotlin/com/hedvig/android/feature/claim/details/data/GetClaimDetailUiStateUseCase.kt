@@ -18,10 +18,13 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.isActive
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import octopus.ClaimsQuery
 import octopus.fragment.ClaimFragment
 import octopus.type.ClaimOutcome
 import octopus.type.ClaimStatus
+import octopus.type.InsuranceDocumentType
 
 internal class GetClaimDetailUiStateUseCase(
   private val apolloClient: ApolloClient,
@@ -61,6 +64,14 @@ internal class GetClaimDetailUiStateUseCase(
   private fun ClaimDetailUiState.Content.Companion.fromClaim(claim: ClaimFragment): ClaimDetailUiState.Content {
     val audioUrl = claim.audioUrl
     val memberFreeText = claim.memberFreeText
+
+    val claimType: String? = claim.claimType
+    val incidentDate = claim.incidentDate
+    val submittedAt = claim.submittedAt.toLocalDateTime(TimeZone.currentSystemDefault())
+    val insuranceDisplayName = claim.productVariant?.displayName
+    val termsConditionsUrl =
+      claim.productVariant?.documents?.firstOrNull { it.type == InsuranceDocumentType.TERMS_AND_CONDITIONS }?.url
+
     return ClaimDetailUiState.Content(
       claimId = claim.id,
       submittedContent = when {
@@ -101,6 +112,14 @@ internal class GetClaimDetailUiStateUseCase(
       uploadUri = claim.targetFileUploadUri,
       isUploadingFile = false,
       uploadError = null,
+      claimType = claimType,
+      incidentDate = incidentDate,
+      insuranceDisplayName = insuranceDisplayName,
+      submittedAt = submittedAt,
+      termsConditionsUrl = termsConditionsUrl,
+      savedFileUri = null,
+      downloadError = null,
+      isLoadingPdf = false,
     )
   }
 
@@ -110,7 +129,7 @@ internal class GetClaimDetailUiStateUseCase(
 }
 
 sealed interface Error {
-  object NetworkError : Error
+  data object NetworkError : Error
 
-  object NoClaimFound : Error
+  data object NoClaimFound : Error
 }

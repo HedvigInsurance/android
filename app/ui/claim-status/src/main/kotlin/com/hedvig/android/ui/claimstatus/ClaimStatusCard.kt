@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -26,6 +26,8 @@ import hedvig.resources.R
 fun ClaimStatusCard(
   uiState: ClaimStatusCardUiState,
   onClick: ((claimId: String) -> Unit)?,
+  claimType: String?,
+  insuranceDisplayName: String?,
   modifier: Modifier = Modifier,
 ) {
   HedvigCard(
@@ -41,13 +43,23 @@ fun ClaimStatusCard(
         ClaimPillsRow(pillTypes = uiState.pillTypes)
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-          text = stringResource(R.string.claim_casetype_insurance_case),
+          text = claimType?.lowercase()?.replaceFirstChar { it.uppercase() }
+            ?: stringResource(R.string.claim_casetype_insurance_case),
           style = MaterialTheme.typography.bodyLarge,
           modifier = Modifier.padding(horizontal = 2.dp),
         )
         Spacer(modifier = Modifier.height(4.dp))
+        if (insuranceDisplayName != null) {
+          Text(
+            text = insuranceDisplayName,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(horizontal = 2.dp),
+          )
+          Spacer(modifier = Modifier.height(4.dp))
+        }
       }
-      Divider()
+      HorizontalDivider()
       ClaimProgressRow(
         claimProgressItemsUiState = uiState.claimProgressItemsUiState,
         modifier = Modifier.padding(16.dp),
@@ -67,8 +79,10 @@ private fun PreviewClaimStatusCard() {
         claimProgressItemsUiState = listOf(
           ClaimProgressSegment(ClaimProgressSegment.SegmentText.Closed, ClaimProgressSegment.SegmentType.PAID),
         ),
+        claimType = "Broken item",
+        insuranceDisplayName = "Home Insurance Homeowner",
       )
-      ClaimStatusCard(claimStatusData, null)
+      ClaimStatusCard(claimStatusData, {}, "Broken item", "Home Insurance Homeowner")
     }
   }
 }
