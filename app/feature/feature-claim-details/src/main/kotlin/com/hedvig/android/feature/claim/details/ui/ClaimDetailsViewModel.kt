@@ -61,8 +61,10 @@ private class ClaimDetailPresenter(
         isLoading = false
         result.fold(
           ifLeft = {
-            hasError = true
-            content = null
+            if (content !is ClaimDetailUiState.Content) {
+              hasError = true
+              content = null
+            }
           },
           ifRight = { claimDetailUiState: ClaimDetailUiState.Content ->
             hasError = false

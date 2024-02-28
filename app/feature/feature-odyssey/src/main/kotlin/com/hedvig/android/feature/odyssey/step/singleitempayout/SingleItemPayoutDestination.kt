@@ -188,7 +188,8 @@ private fun BoxScope.LoadingContent(show: Boolean) {
       LinearProgressIndicator(
         Modifier
           .fillMaxWidth()
-          .padding(horizontal = 48.dp))
+          .padding(horizontal = 48.dp),
+      )
     }
   }
 }
