@@ -3,6 +3,7 @@ package com.hedvig.android.app.ui
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.displayCutout
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.union
@@ -19,6 +20,7 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -95,9 +97,11 @@ private fun HedvigNavRail(
         },
         label = { Text(stringResource(destination.titleTextId())) },
         colors = NavigationRailItemDefaults.colors(
-          indicatorColor = MaterialTheme.colorScheme.surfaceVariant,
           selectedIconColor = MaterialTheme.colorScheme.onSurface,
+          selectedTextColor = MaterialTheme.colorScheme.onSurface,
+          indicatorColor = MaterialTheme.colorScheme.surfaceVariant,
           unselectedIconColor = MaterialTheme.colorScheme.onSurface,
+          unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
         ),
         modifier = Modifier.testTag(destination.toName()),
       )
@@ -109,7 +113,7 @@ private fun HedvigNavRail(
 @Composable
 private fun PreviewHedvigNavRail() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.height(300.dp)) {
       HedvigNavRail(
         destinations = persistentSetOf(
           TopLevelGraph.HOME,
