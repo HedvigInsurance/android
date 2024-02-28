@@ -30,6 +30,7 @@ interface DownloadPdfUseCase {
 
 internal class DownloadPdfUseCaseImpl(
   private val context: Context,
+  private val clock: Clock,
 ) : DownloadPdfUseCase {
   override suspend fun invoke(url: String): Either<ErrorMessage, File> = withContext(Dispatchers.IO) {
     either {
@@ -38,7 +39,7 @@ internal class DownloadPdfUseCaseImpl(
         .build()
 
       val now = DateTimeFormatter.ISO_DATE_TIME.format(
-        Clock.System.now()
+        clock.now()
           .toLocalDateTime(TimeZone.UTC)
           .toJavaLocalDateTime(),
       )

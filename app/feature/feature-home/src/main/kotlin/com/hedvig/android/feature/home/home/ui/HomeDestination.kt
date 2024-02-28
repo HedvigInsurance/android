@@ -440,7 +440,7 @@ private fun PreviewHomeScreen(
                   ClaimProgressSegment(ClaimProgressSegment.SegmentText.Closed, ClaimProgressSegment.SegmentType.PAID),
                 ),
                 claimType = "Broken item",
-                displayName = "Home Insurance Homeowner",
+                insuranceDisplayName = "Home Insurance Homeowner",
               ),
             ),
           ),

@@ -5,7 +5,7 @@ import octopus.fragment.ClaimFragment
 data class ClaimStatusCardUiState(
   val id: String,
   val claimType: String?,
-  val displayName: String?,
+  val insuranceDisplayName: String?,
   val pillTypes: List<ClaimPillType>,
   val claimProgressItemsUiState: List<ClaimProgressSegment>,
 ) {
@@ -14,7 +14,7 @@ data class ClaimStatusCardUiState(
       return ClaimStatusCardUiState(
         id = claim.id,
         claimType = claim.claimType,
-        displayName = claim.productVariant?.displayName,
+        insuranceDisplayName = claim.productVariant?.displayName,
         pillTypes = ClaimPillType.fromClaimFragment(claim),
         claimProgressItemsUiState = ClaimProgressSegment.fromClaimFragment(claim),
       )

@@ -33,10 +33,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,9 +47,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import com.hedvig.android.audio.player.HedvigAudioPlayer
@@ -255,13 +262,16 @@ private fun ClaimDetailScreen(
           Modifier.padding(horizontal = 2.dp),
         )
         Spacer(Modifier.height(8.dp))
-        ClaimTypeAndDatesCard(
+        ClaimTypeAndDatesSection(
           claimType = uiState.claimType?.lowercase()?.replaceFirstChar { it.uppercase() },
           submitDate = uiState.submittedAt.date,
           incidentDate = uiState.incidentDate,
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 2.dp),
         )
-        Spacer(Modifier.height(16.dp))
         if (uiState.termsConditionsUrl != null) {
+          Spacer(Modifier.height(16.dp))
           TermsConditionsCard {
             downloadFromUrl(uiState.termsConditionsUrl)
           }
@@ -380,19 +390,21 @@ private fun getIconFromMimeType(mimeType: String) = when (mimeType) {
 }
 
 @Composable
-private fun TermsConditionsCard( onClick: () -> Unit) {
-  HedvigCard(Modifier.clickable { onClick() }) {
+private fun TermsConditionsCard(onClick: () -> Unit) {
+  HedvigCard(onClick) {
     Row(
       Modifier.padding(16.dp),
       verticalAlignment = Alignment.CenterVertically,
     ) {
       Column {
-        Row {
-          Text(text = stringResource(id = R.string.MY_DOCUMENTS_INSURANCE_TERMS))
-          Box(contentAlignment = Alignment.TopStart) {
-            Text(text = "PDF", style = MaterialTheme.typography.labelMedium)
-          }
-        }
+        Text(
+          text = buildAnnotatedString {
+            append(stringResource(id = R.string.MY_DOCUMENTS_INSURANCE_TERMS))
+            withStyle(SpanStyle(baselineShift = BaselineShift.Superscript, fontSize = 12.sp)) {
+              append("PDF")
+            }
+          },
+        )
         Text(
           text = stringResource(id = R.string.MY_DOCUMENTS_INSURANCE_TERMS_SUBTITLE),
           color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -500,60 +512,56 @@ private fun ClaimDetailHedvigAudioPlayerItem(signedAudioUrl: SignedAudioUrl, mod
 }
 
 @Composable
-private fun ClaimTypeAndDatesCard(claimType: String?, submitDate: LocalDate?, incidentDate: LocalDate?) {
-  val color = MaterialTheme.colorScheme.onSurfaceVariant
+private fun ClaimTypeAndDatesSection(
+  claimType: String?,
+  submitDate: LocalDate?,
+  incidentDate: LocalDate?,
+  modifier: Modifier = Modifier,
+) {
   val dateTimeFormatter = rememberHedvigDateTimeFormatter()
-  Column(
-    Modifier
-      .fillMaxWidth()
-      .padding(horizontal = 2.dp),
-  ) {
-    Row(
-      verticalAlignment = Alignment.CenterVertically,
-      modifier = Modifier
-        .fillMaxWidth(),
-    ) {
-      Text(
-        text = stringResource(R.string.claim_status_claim_details_type),
-        color = color,
-      )
-      Spacer(modifier = Modifier.weight(1f))
-      Text(
-        text = claimType ?: stringResource(R.string.claim_casetype_insurance_case),
-        color = color,
-      )
-    }
-    if (incidentDate != null) {
+  CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
+    Column(modifier) {
       Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
           .fillMaxWidth(),
       ) {
         Text(
-          text = stringResource(R.string.claim_status_claim_details_incident_date),
-          color = color,
+          text = stringResource(R.string.claim_status_claim_details_type),
         )
         Spacer(modifier = Modifier.weight(1f))
         Text(
-          text = dateTimeFormatter.format(incidentDate.toJavaLocalDate()),
-          color = color,
+          text = claimType ?: stringResource(R.string.claim_casetype_insurance_case),
         )
       }
-      if (submitDate != null) {
+      if (incidentDate != null) {
         Row(
           verticalAlignment = Alignment.CenterVertically,
           modifier = Modifier
             .fillMaxWidth(),
         ) {
           Text(
-            text = stringResource(R.string.claim_status_claim_details_submitted),
-            color = color,
+            text = stringResource(R.string.claim_status_claim_details_incident_date),
           )
           Spacer(modifier = Modifier.weight(1f))
           Text(
-            text = dateTimeFormatter.format(submitDate.toJavaLocalDate()),
-            color = color,
+            text = dateTimeFormatter.format(incidentDate.toJavaLocalDate()),
           )
+        }
+        if (submitDate != null) {
+          Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+              .fillMaxWidth(),
+          ) {
+            Text(
+              text = stringResource(R.string.claim_status_claim_details_submitted),
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Text(
+              text = dateTimeFormatter.format(submitDate.toJavaLocalDate()),
+            )
+          }
         }
       }
     }
@@ -588,7 +596,7 @@ private fun PreviewClaimDetailScreen() {
               ClaimProgressSegment(ClaimProgressSegment.SegmentText.Closed, ClaimProgressSegment.SegmentType.PAID),
             ),
             claimType = "Broken item",
-            displayName = "Home Insurance Homeowner",
+            insuranceDisplayName = "Home Insurance Homeowner",
           ),
           claimStatus = ClaimDetailUiState.Content.ClaimStatus.CLOSED,
           claimOutcome = ClaimDetailUiState.Content.ClaimOutcome.PAID,

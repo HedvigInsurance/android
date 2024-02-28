@@ -37,7 +37,7 @@ fun ClaimStatusCards(
       uiState = claimStatusCardsUiState.first(),
       onClick = onClick,
       claimType = claimStatusCardsUiState.first().claimType,
-      insuranceDisplayName = claimStatusCardsUiState.first().displayName,
+      insuranceDisplayName = claimStatusCardsUiState.first().insuranceDisplayName,
       modifier = modifier.padding(contentPadding),
     )
   } else {
@@ -55,7 +55,7 @@ fun ClaimStatusCards(
           uiState = claimStatusUiState,
           onClick = onClick,
           claimType = claimStatusUiState.claimType,
-          insuranceDisplayName = claimStatusUiState.displayName,
+          insuranceDisplayName = claimStatusUiState.insuranceDisplayName,
           modifier = Modifier.fillMaxWidth(),
         )
       }
@@ -87,7 +87,7 @@ private fun PreviewClaimStatusCards() {
               ClaimProgressSegment(ClaimProgressSegment.SegmentText.Closed, ClaimProgressSegment.SegmentType.PAID),
             ),
             claimType = "Broken item",
-            displayName = "Home Insurance Homeowner",
+            insuranceDisplayName = "Home Insurance Homeowner",
           )
         }.toNonEmptyListOrNull()!!,
       )

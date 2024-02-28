@@ -80,7 +80,7 @@ private fun PreviewClaimStatusCard() {
           ClaimProgressSegment(ClaimProgressSegment.SegmentText.Closed, ClaimProgressSegment.SegmentType.PAID),
         ),
         claimType = "Broken item",
-        displayName = "Home Insurance Homeowner",
+        insuranceDisplayName = "Home Insurance Homeowner",
       )
       ClaimStatusCard(claimStatusData, {}, "Broken item", "Home Insurance Homeowner")
     }
