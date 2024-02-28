@@ -94,60 +94,60 @@ private fun ClaimEntryPointsScreen(
       onDismiss = showedStartClaimError,
     )
   }
-  HedvigTheme {
-    HedvigScaffold(
-      navigateUp = navigateUp,
-      topAppBarActions = {
-        IconButton(
-          onClick = closeClaimFlow,
-          content = { Icon(imageVector = Icons.Hedvig.X, contentDescription = null) },
-        )
-      },
-      modifier = Modifier.fillMaxWidth(),
+  HedvigScaffold(
+    navigateUp = navigateUp,
+    topAppBarActions = {
+      IconButton(
+        onClick = closeClaimFlow,
+        content = { Icon(imageVector = Icons.Hedvig.X, contentDescription = null) },
+      )
+    },
+    modifier = Modifier.fillMaxWidth(),
+  ) {
+    Spacer(Modifier.height(16.dp))
+    Text(
+      text = stringResource(R.string.CLAIMS_TRIAGING_WHAT_HAPPENED_TITLE),
+      style = MaterialTheme.typography.headlineMedium,
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
+    )
+    Spacer(Modifier.height(32.dp))
+    Spacer(Modifier.weight(1f))
+    AnimatedVisibility(
+      visible = uiState.haveTriedContinuingWithoutSelection,
+      enter = fadeIn(),
+      exit = fadeOut(),
     ) {
-      Spacer(Modifier.height(16.dp))
-      Text(
-        text = stringResource(R.string.CLAIMS_TRIAGING_WHAT_HAPPENED_TITLE),
-        style = MaterialTheme.typography.headlineMedium,
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
-      )
-      Spacer(Modifier.height(32.dp))
-      Spacer(Modifier.weight(1f))
-      AnimatedVisibility(
-        visible = uiState.haveTriedContinuingWithoutSelection,
-        enter = fadeIn(),
-        exit = fadeOut(),
-      ) {
-        Column {
-          WarningTextWithIcon(
-            modifier = Modifier
-              .padding(horizontal = 16.dp)
-              .fillMaxWidth()
-              .wrapContentWidth(),
-            text = stringResource(R.string.CLAIMS_SELECT_CATEGORY),
-          )
-          Spacer(Modifier.height(16.dp))
-        }
+      Column {
+        WarningTextWithIcon(
+          modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .fillMaxWidth()
+            .wrapContentWidth(),
+          text = stringResource(R.string.CLAIMS_SELECT_CATEGORY),
+        )
+        Spacer(Modifier.height(16.dp))
       }
-      OptionChipsFlowRow(
-        items = uiState.entryPoints,
-        itemDisplayName = EntryPoint::displayName,
-        selectedItem = uiState.selectedEntryPoint,
-        onItemClick = { entryPoint -> onSelectEntryPoint(entryPoint) },
-        modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
-      )
-      Spacer(Modifier.height(8.dp))
-      HedvigContainedButton(
-        text = stringResource(R.string.claims_continue_button),
-        onClick = onContinue,
-        isLoading = uiState.isLoading,
-        enabled = uiState.canContinue,
-        modifier = Modifier.padding(horizontal = 16.dp),
-      )
-      Spacer(modifier = Modifier.height(16.dp))
     }
+    OptionChipsFlowRow(
+      items = uiState.entryPoints,
+      itemDisplayName = EntryPoint::displayName,
+      selectedItem = uiState.selectedEntryPoint,
+      onItemClick = { entryPoint -> onSelectEntryPoint(entryPoint) },
+      modifier = Modifier
+        .padding(horizontal = 16.dp)
+        .fillMaxWidth(),
+    )
+    Spacer(Modifier.height(8.dp))
+    HedvigContainedButton(
+      text = stringResource(R.string.claims_continue_button),
+      onClick = onContinue,
+      isLoading = uiState.isLoading,
+      enabled = uiState.canContinue,
+      modifier = Modifier.padding(horizontal = 16.dp),
+    )
+    Spacer(modifier = Modifier.height(16.dp))
   }
 }
 

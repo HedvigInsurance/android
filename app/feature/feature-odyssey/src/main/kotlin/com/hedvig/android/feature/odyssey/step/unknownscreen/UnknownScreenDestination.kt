@@ -38,46 +38,49 @@ internal fun UnknownScreenDestination(openPlayStore: () -> Unit, closeUnknownScr
 
 @Composable
 private fun UnknownScreenScreen(openPlayStore: () -> Unit, closeUnknownScreenDestination: () -> Unit) {
-  HedvigTheme {
-    Surface(
-      color = MaterialTheme.colorScheme.background,
-      modifier = Modifier.fillMaxSize(),
+  Surface(
+    color = MaterialTheme.colorScheme.background,
+    modifier = Modifier.fillMaxSize(),
+  ) {
+    Column(
+      horizontalAlignment = Alignment.CenterHorizontally,
+      modifier = Modifier
+        .verticalScroll(rememberScrollState())
+        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
     ) {
-      Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
+      Spacer(Modifier.height(16.dp))
+      Box(
+        contentAlignment = Alignment.Center,
         modifier = Modifier
-          .verticalScroll(rememberScrollState())
-          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+          .padding(horizontal = 16.dp)
+          .weight(1f),
       ) {
-        Spacer(Modifier.height(16.dp))
-        Box(
-          contentAlignment = Alignment.Center,
-          modifier = Modifier.padding(horizontal = 16.dp).weight(1f),
-        ) {
-          AppStateInformation(
-            type = AppStateInformationType.Failure,
-            title = stringResource(R.string.EMBARK_UPDATE_APP_TITLE),
-            description = stringResource(R.string.EMBARK_UPDATE_APP_BODY),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth().wrapContentWidth(Alignment.CenterHorizontally).fillMaxWidth(0.8f),
-          )
-        }
-        Spacer(Modifier.height(16.dp))
-        HedvigContainedButton(
-          text = stringResource(R.string.EMBARK_UPDATE_APP_BUTTON),
-          onClick = openPlayStore,
-          modifier = Modifier.padding(horizontal = 16.dp),
+        AppStateInformation(
+          type = AppStateInformationType.Failure,
+          title = stringResource(R.string.EMBARK_UPDATE_APP_TITLE),
+          description = stringResource(R.string.EMBARK_UPDATE_APP_BODY),
+          horizontalAlignment = Alignment.CenterHorizontally,
+          textAlign = TextAlign.Center,
+          modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentWidth(Alignment.CenterHorizontally)
+            .fillMaxWidth(0.8f),
         )
-        Spacer(Modifier.height(16.dp))
-        HedvigTextButton(
-          text = stringResource(R.string.general_close_button),
-          onClick = closeUnknownScreenDestination,
-          modifier = Modifier.padding(horizontal = 16.dp),
-        )
-        Spacer(Modifier.height(16.dp))
-        Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
       }
+      Spacer(Modifier.height(16.dp))
+      HedvigContainedButton(
+        text = stringResource(R.string.EMBARK_UPDATE_APP_BUTTON),
+        onClick = openPlayStore,
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
+      Spacer(Modifier.height(16.dp))
+      HedvigTextButton(
+        text = stringResource(R.string.general_close_button),
+        onClick = closeUnknownScreenDestination,
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
+      Spacer(Modifier.height(16.dp))
+      Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
     }
   }
 }

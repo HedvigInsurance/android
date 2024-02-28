@@ -87,9 +87,11 @@ private fun HedvigBottomBar(
         },
         label = { Text(stringResource(destination.titleTextId())) },
         colors = NavigationBarItemDefaults.colors(
-          indicatorColor = MaterialTheme.colorScheme.surface,
           selectedIconColor = MaterialTheme.colorScheme.onSurface,
+          selectedTextColor = MaterialTheme.colorScheme.onSurface,
+          indicatorColor = MaterialTheme.colorScheme.surface,
           unselectedIconColor = MaterialTheme.colorScheme.onSurface,
+          unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
         ),
         modifier = Modifier.testTag(destination.toName()),
       )

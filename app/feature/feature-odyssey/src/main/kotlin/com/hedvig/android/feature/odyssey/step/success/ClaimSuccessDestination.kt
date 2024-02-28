@@ -41,54 +41,61 @@ internal fun ClaimSuccessDestination(openChat: () -> Unit, closeSuccessScreen: (
 
 @Composable
 private fun ClaimSuccessScreen(openChat: () -> Unit, closeSuccessScreen: () -> Unit) {
-  HedvigTheme {
-    Surface(
-      color = MaterialTheme.colorScheme.background,
-      modifier = Modifier.fillMaxSize(),
+  Surface(
+    color = MaterialTheme.colorScheme.background,
+    modifier = Modifier.fillMaxSize(),
+  ) {
+    Column(
+      horizontalAlignment = Alignment.CenterHorizontally,
+      modifier = Modifier
+        .verticalScroll(rememberScrollState())
+        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
     ) {
-      Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
+      Box(
+        contentAlignment = BiasAlignment(horizontalBias = 0f, verticalBias = 0.2f),
         modifier = Modifier
-          .verticalScroll(rememberScrollState())
-          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+          .weight(1f)
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
       ) {
-        Box(
-          contentAlignment = BiasAlignment(horizontalBias = 0f, verticalBias = 0.2f),
-          modifier = Modifier.weight(1f).fillMaxWidth().padding(horizontal = 16.dp),
-        ) {
-          Column(Modifier.fillMaxWidth()) {
-            Text(
-              text = stringResource(R.string.CLAIMS_SUCCESS_TITLE),
-              style = MaterialTheme.typography.headlineMedium,
-              modifier = Modifier.fillMaxWidth(),
-            )
-            Spacer(Modifier.height(16.dp))
-            Text(
-              text = stringResource(R.string.CLAIMS_SUCCESS_LABEL),
-              style = MaterialTheme.typography.bodyLarge.copy(
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-                lineBreak = LineBreak.Heading,
-              ),
-              modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-            )
-          }
+        Column(Modifier.fillMaxWidth()) {
+          Text(
+            text = stringResource(R.string.CLAIMS_SUCCESS_TITLE),
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.fillMaxWidth(),
+          )
+          Spacer(Modifier.height(16.dp))
+          Text(
+            text = stringResource(R.string.CLAIMS_SUCCESS_LABEL),
+            style = MaterialTheme.typography.bodyLarge.copy(
+              color = MaterialTheme.colorScheme.onSurfaceVariant,
+              textAlign = TextAlign.Center,
+              lineBreak = LineBreak.Heading,
+            ),
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(horizontal = 16.dp),
+          )
         }
-        Spacer(Modifier.height(16.dp))
-        HedvigContainedButton(
-          text = stringResource(R.string.open_chat),
-          onClick = openChat,
-          modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
-        )
-        Spacer(Modifier.height(8.dp))
-        HedvigTextButton(
-          onClick = closeSuccessScreen,
-          text = stringResource(R.string.general_close_button),
-          modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
-        )
-        Spacer(Modifier.height(16.dp))
-        Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
       }
+      Spacer(Modifier.height(16.dp))
+      HedvigContainedButton(
+        text = stringResource(R.string.open_chat),
+        onClick = openChat,
+        modifier = Modifier
+          .padding(horizontal = 16.dp)
+          .fillMaxWidth(),
+      )
+      Spacer(Modifier.height(8.dp))
+      HedvigTextButton(
+        onClick = closeSuccessScreen,
+        text = stringResource(R.string.general_close_button),
+        modifier = Modifier
+          .padding(horizontal = 16.dp)
+          .fillMaxWidth(),
+      )
+      Spacer(Modifier.height(16.dp))
+      Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
     }
   }
 }

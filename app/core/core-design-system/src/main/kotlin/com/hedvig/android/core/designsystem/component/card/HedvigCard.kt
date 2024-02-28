@@ -7,7 +7,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CardElevation
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -134,7 +133,6 @@ private fun Card(
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   content: @Composable () -> Unit,
 ) {
-  rememberDatePickerState()
   @Suppress("INVISIBLE_MEMBER")
   Surface(
     onClick = onClick,

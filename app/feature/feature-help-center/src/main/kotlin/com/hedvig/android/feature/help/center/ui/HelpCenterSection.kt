@@ -41,7 +41,10 @@ internal fun HelpCenterSection(
   content: @Composable () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+  Column(
+    modifier = modifier,
+    verticalArrangement = Arrangement.spacedBy(8.dp),
+  ) {
     val pillShape = MaterialTheme.shapes.squircleExtraSmall
     val outlineColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.32f)
     HedvigCard(
