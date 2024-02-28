@@ -30,6 +30,10 @@ val fileUploadModule = module {
     )
   }
   single<DownloadPdfUseCase> {
-    DownloadPdfUseCaseImpl(get<Context>(), get<Clock>())
+    DownloadPdfUseCaseImpl(
+      get<Context>(),
+      get<Clock>(),
+      get<OkHttpClient.Builder>().build(),
+    )
   }
 }

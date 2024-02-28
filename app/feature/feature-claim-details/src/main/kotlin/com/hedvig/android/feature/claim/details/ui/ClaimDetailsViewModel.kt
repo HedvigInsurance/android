@@ -79,14 +79,14 @@ private class ClaimDetailPresenter(
         .fold(
           ifLeft = { errorMessage ->
             logcat(LogPriority.ERROR) { "Downloading terms and conditions failed:$errorMessage" }
-            content = content?.copy(downloadError = true)
+            content = content?.copy(downloadError = true, isLoadingPdf = false)
             downloadingUrl = null
           },
           ifRight = { uri ->
             logcat(
               LogPriority.INFO,
             ) { "Downloading terms and conditions succeeded. Result uri:${uri.absolutePath}" }
-            content = content?.copy(downloadError = null, savedFileUri = uri)
+            content = content?.copy(downloadError = null, savedFileUri = uri, isLoadingPdf = false)
             downloadingUrl = null
           },
         )
@@ -119,8 +119,12 @@ private class ClaimDetailPresenter(
         ClaimDetailsEvent.Retry -> loadIteration++
         is ClaimDetailsEvent.UploadFile -> mediaToSend.trySend(event.uri)
         ClaimDetailsEvent.DismissUploadError -> content = content?.copy(uploadError = null)
-        is ClaimDetailsEvent.DownloadPdf -> downloadingUrl = event.url
+        is ClaimDetailsEvent.DownloadPdf -> {
+          content = content?.copy(isLoadingPdf = true)
+          downloadingUrl = event.url
+        }
         ClaimDetailsEvent.DismissDownloadError -> content = content?.copy(downloadError = null)
+        ClaimDetailsEvent.HandledSharingPdfFile -> content = content?.copy(downloadError = null, savedFileUri = null)
       }
     }
 
@@ -141,6 +145,8 @@ internal sealed interface ClaimDetailsEvent {
   data class UploadFile(val uri: Uri) : ClaimDetailsEvent
 
   data class DownloadPdf(val url: String) : ClaimDetailsEvent
+
+  data object HandledSharingPdfFile : ClaimDetailsEvent
 }
 
 internal sealed interface ClaimDetailUiState {
@@ -165,6 +171,7 @@ internal sealed interface ClaimDetailUiState {
     val termsConditionsUrl: String?,
     val savedFileUri: File?,
     val downloadError: Boolean?,
+    val isLoadingPdf: Boolean,
   ) : ClaimDetailUiState {
     sealed interface SubmittedContent {
       data class Audio(val signedAudioURL: SignedAudioUrl) : SubmittedContent

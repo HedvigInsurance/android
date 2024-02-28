@@ -31,6 +31,7 @@ interface DownloadPdfUseCase {
 internal class DownloadPdfUseCaseImpl(
   private val context: Context,
   private val clock: Clock,
+  private val okHttpClient: OkHttpClient,
 ) : DownloadPdfUseCase {
   override suspend fun invoke(url: String): Either<ErrorMessage, File> = withContext(Dispatchers.IO) {
     either {
@@ -47,11 +48,10 @@ internal class DownloadPdfUseCaseImpl(
       val downloadedFile = File(context.filesDir, FILE_NAME + now + FILE_EXT)
 
       try {
-        val response = OkHttpClient().newCall(request).await()
-        val buffer = downloadedFile.sink().buffer()
-        buffer.writeAll(response.body!!.source())
-        buffer.close()
-
+        val response = okHttpClient.newCall(request).await()
+        downloadedFile.sink().buffer().use { fileSink ->
+          fileSink.writeAll(response.body!!.source())
+        }
         downloadedFile
       } catch (exception: IOException) {
         logcat(LogPriority.ERROR, exception) { "Could not download pdf" }

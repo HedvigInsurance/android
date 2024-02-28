@@ -30,6 +30,7 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -119,7 +120,10 @@ internal fun ClaimDetailsDestination(
     onChatClick = onChatClick,
     onUri = onUri,
     downloadFromUrl = { viewModel.emit(ClaimDetailsEvent.DownloadPdf(it)) },
-    sharePdf = sharePdf,
+    sharePdf = {
+      viewModel.emit(ClaimDetailsEvent.HandledSharingPdfFile)
+      sharePdf(it)
+    },
     onDismissDownloadError = { viewModel.emit(ClaimDetailsEvent.DismissDownloadError) },
   )
 }
@@ -272,9 +276,11 @@ private fun ClaimDetailScreen(
         )
         if (uiState.termsConditionsUrl != null) {
           Spacer(Modifier.height(16.dp))
-          TermsConditionsCard {
-            downloadFromUrl(uiState.termsConditionsUrl)
-          }
+          TermsConditionsCard(
+            onClick = { downloadFromUrl(uiState.termsConditionsUrl) },
+            modifier = Modifier.padding(16.dp),
+            isLoading = uiState.isLoadingPdf,
+          )
         }
         Spacer(Modifier.height(24.dp))
         Text(
@@ -347,14 +353,12 @@ private fun ClaimDetailScreen(
     item(span = { GridItemSpan(3) }) {
       Column {
         Spacer(Modifier.height(48.dp))
-        if (uiState.files.isEmpty()) {
-          Text(
-            text = stringResource(id = R.string.claim_status_uploaded_files_upload_text),
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(horizontal = 2.dp),
-          )
-          Spacer(Modifier.height(16.dp))
-        }
+        Text(
+          text = stringResource(id = R.string.claim_status_uploaded_files_upload_text),
+          textAlign = TextAlign.Center,
+          modifier = Modifier.padding(horizontal = 2.dp),
+        )
+        Spacer(Modifier.height(16.dp))
         val text = if (uiState.files.isNotEmpty()) {
           stringResource(id = R.string.claim_status_detail_add_more_files)
         } else {
@@ -390,28 +394,37 @@ private fun getIconFromMimeType(mimeType: String) = when (mimeType) {
 }
 
 @Composable
-private fun TermsConditionsCard(onClick: () -> Unit) {
+private fun TermsConditionsCard(onClick: () -> Unit, isLoading: Boolean, modifier: Modifier = Modifier) {
   HedvigCard(onClick) {
     Row(
-      Modifier.padding(16.dp),
+      modifier,
       verticalAlignment = Alignment.CenterVertically,
     ) {
-      Column {
-        Text(
-          text = buildAnnotatedString {
-            append(stringResource(id = R.string.MY_DOCUMENTS_INSURANCE_TERMS))
-            withStyle(SpanStyle(baselineShift = BaselineShift.Superscript, fontSize = 12.sp)) {
-              append("PDF")
-            }
-          },
-        )
-        Text(
-          text = stringResource(id = R.string.MY_DOCUMENTS_INSURANCE_TERMS_SUBTITLE),
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+      if (isLoading) {
+        Column(
+          horizontalAlignment = Alignment.CenterHorizontally,
+          modifier = Modifier.fillMaxWidth(),
+        ) {
+          CircularProgressIndicator()
+        }
+      } else {
+        Column {
+          Text(
+            text = buildAnnotatedString {
+              append(stringResource(id = R.string.MY_DOCUMENTS_INSURANCE_TERMS))
+              withStyle(SpanStyle(baselineShift = BaselineShift.Superscript, fontSize = 12.sp)) {
+                append("PDF")
+              }
+            },
+          )
+          Text(
+            text = stringResource(id = R.string.MY_DOCUMENTS_INSURANCE_TERMS_SUBTITLE),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+          )
+        }
+        Spacer(modifier = Modifier.weight(1f))
+        Icon(Icons.Hedvig.ArrowNorthEast, contentDescription = null)
       }
-      Spacer(modifier = Modifier.weight(1f))
-      Icon(Icons.Hedvig.ArrowNorthEast, contentDescription = null)
     }
   }
 }
@@ -654,6 +667,7 @@ private fun PreviewClaimDetailScreen() {
           termsConditionsUrl = "url",
           savedFileUri = null,
           downloadError = null,
+          isLoadingPdf = false,
         ),
         onChatClick = {},
         onUri = { uri: Uri, s: String -> },

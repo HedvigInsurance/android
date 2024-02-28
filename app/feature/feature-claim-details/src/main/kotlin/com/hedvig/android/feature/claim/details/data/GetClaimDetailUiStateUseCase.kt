@@ -119,6 +119,7 @@ internal class GetClaimDetailUiStateUseCase(
       termsConditionsUrl = termsConditionsUrl,
       savedFileUri = null,
       downloadError = null,
+      isLoadingPdf = false,
     )
   }
 
