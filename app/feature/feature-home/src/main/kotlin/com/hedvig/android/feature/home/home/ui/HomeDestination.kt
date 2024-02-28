@@ -439,6 +439,8 @@ private fun PreviewHomeScreen(
                 claimProgressItemsUiState = listOf(
                   ClaimProgressSegment(ClaimProgressSegment.SegmentText.Closed, ClaimProgressSegment.SegmentType.PAID),
                 ),
+                claimType = "Broken item",
+                insuranceDisplayName = "Home Insurance Homeowner",
               ),
             ),
           ),

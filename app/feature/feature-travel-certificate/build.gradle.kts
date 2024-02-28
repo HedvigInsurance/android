@@ -35,4 +35,5 @@ dependencies {
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
   implementation(projects.coreCommonAndroidPublic)
+  implementation(projects.coreFileUpload)
 }

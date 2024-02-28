@@ -1,14 +1,11 @@
 package com.hedvig.android.feature.travelcertificate.navigation
 
-import android.content.Context
-import android.content.Intent
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Density
-import androidx.core.content.FileProvider.getUriForFile
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import com.hedvig.android.core.common.android.sharePDF
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
-import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUri
 import com.hedvig.android.feature.travelcertificate.ui.choose.ChooseContractForCertificateDestination
 import com.hedvig.android.feature.travelcertificate.ui.choose.ChooseContractForCertificateViewModel
 import com.hedvig.android.feature.travelcertificate.ui.generatewhen.TravelCertificateDateInputDestination
@@ -51,7 +48,7 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavC
         },
         onShareTravelCertificate = {
           viewModel.emit(CertificateHistoryEvent.HaveProcessedCertificateUri)
-          shareCertificate(it, localContext, applicationId)
+          localContext.sharePDF(it, applicationId)
         },
       )
     }
@@ -123,21 +120,9 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavC
         viewModel = viewModel,
         navigateUp = navController::navigateUp,
         onShareTravelCertificate = {
-          shareCertificate(it, context, applicationId)
+          context.sharePDF(it, applicationId)
         },
       )
     }
   }
-}
-
-private fun shareCertificate(uri: TravelCertificateUri, context: Context, applicationId: String) {
-  val contentUri = getUriForFile(context, "$applicationId.provider", uri.uri)
-
-  val sendIntent: Intent = Intent().apply {
-    action = Intent.ACTION_VIEW
-    setDataAndType(contentUri, "application/pdf")
-    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-  }
-  val shareIntent = Intent.createChooser(sendIntent, "Hedvig Travel Certificate")
-  context.startActivity(shareIntent)
 }
