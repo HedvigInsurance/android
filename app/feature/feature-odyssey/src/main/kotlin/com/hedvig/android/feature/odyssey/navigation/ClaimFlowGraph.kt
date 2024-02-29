@@ -193,6 +193,7 @@ fun NavGraphBuilder.claimFlowGraph(
         closeClaimFlow = closeClaimFlow,
         openUrl = openUrl,
         imageLoader = imageLoader,
+        windowSizeClass = windowSizeClass,
       )
     }
     composable<ClaimFlowDestination.SingleItemCheckout> { backStackEntry ->

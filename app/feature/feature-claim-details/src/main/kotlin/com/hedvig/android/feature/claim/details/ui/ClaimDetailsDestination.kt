@@ -271,7 +271,7 @@ private fun ClaimDetailScreen(
         )
         Spacer(Modifier.height(8.dp))
         ClaimTypeAndDatesSection(
-          claimType = uiState.claimType?.lowercase()?.replaceFirstChar { it.uppercase() },
+          claimType = uiState.claimType,
           submitDate = uiState.submittedAt.date,
           incidentDate = uiState.incidentDate,
           modifier = Modifier

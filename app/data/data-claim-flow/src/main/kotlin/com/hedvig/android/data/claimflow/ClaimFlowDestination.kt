@@ -262,6 +262,7 @@ sealed interface SubmittedContent {
   @Serializable
   data class Audio(val audioURL: String) : SubmittedContent
   // todo: can I just pass url as a String here? instead of val signedAudioURL: SignedAudioUrl as it is in ClaimDetailsDestination?
+  // todo: I'm not sure if I should add dependency on audio player module here, to import SignedAudioUrl class
 }
 
 @Serializable
