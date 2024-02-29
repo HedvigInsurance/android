@@ -77,6 +77,9 @@ internal class FileUploadViewModel(
   }
 
   fun addLocalFile(uri: Uri) {
+    if (uri.toString() in _uiState.value.localFiles.map { it.id }) {
+      return
+    }
     _uiState.update {
       try {
         val mimeType = fileService.getMimeType(uri)
