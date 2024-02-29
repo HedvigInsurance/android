@@ -4,8 +4,8 @@ import android.content.res.Resources
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.core.ui.hedvigDateTimeFormatter
+import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.core.uidata.UiNullableMoney
-import com.hedvig.android.data.claimflow.ClaimFile
 import com.hedvig.android.data.claimflow.ClaimFlowDestination
 import com.hedvig.android.data.claimflow.ClaimFlowRepository
 import com.hedvig.android.data.claimflow.ClaimFlowStep
@@ -131,7 +131,7 @@ internal data class ClaimSummaryInfoUiState(
   val priceOfPurchase: UiNullableMoney?,
   val itemProblems: List<ItemProblem>,
   val submittedContent: SubmittedContent?,
-  val files: List<ClaimFile>,
+  val files: List<UiFile>,
 ) {
   fun itemDetailPairs(resources: Resources, locale: Locale): List<Pair<String, String>> {
     return buildList {

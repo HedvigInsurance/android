@@ -72,8 +72,17 @@ fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
         selectedItemModel = selectedItemModel,
         availableItemProblems = availableItemProblems?.map { it.toItemProblem() },
         selectedItemProblems = selectedItemProblems,
-        files = files,
-        submittedContent = submittedContent,
+        files = fileUploads?.map {
+          UiFile(
+            id = it.fileId,
+            name = it.name,
+            mimeType = it.mimeType,
+            path = it.signedUrl,
+          )
+        } ?: listOf(),
+        submittedContent = signedAudioUrl?.let {
+          SubmittedContent.Audio(it)
+        },
       )
     }
 

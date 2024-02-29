@@ -34,9 +34,7 @@ import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.hedvig.normal.Document
-import com.hedvig.android.core.icons.hedvig.normal.Pictures
-import com.hedvig.android.core.icons.hedvig.normal.Play
+import com.hedvig.android.core.icons.getIconFromMimeType
 import com.hedvig.android.core.icons.hedvig.normal.X
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.core.uidata.UiFile
@@ -48,7 +46,7 @@ import com.hedvig.android.core.uidata.UiFile
 @Composable
 fun FilesLazyVerticalGrid(
   files: List<UiFile>,
-  onRemoveFile: (fileId: String) -> Unit,
+  onRemoveFile: ((fileId: String) -> Unit)?,
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
   paddingValues: PaddingValues = PaddingValues(0.dp),
@@ -83,7 +81,7 @@ private fun File(
   path: String,
   mimeType: String,
   imageLoader: ImageLoader,
-  onRemoveFile: (String) -> Unit,
+  onRemoveFile: ((fileId: String) -> Unit)?,
 ) {
   Box(
     contentAlignment = Alignment.TopEnd,
@@ -129,32 +127,27 @@ private fun File(
         }
       }
     }
-    IconButton(
-      onClick = { onRemoveFile(id) },
-      colors = IconButtonDefaults.iconButtonColors(
-        containerColor = MaterialTheme.colorScheme.surfaceVariant,
-        contentColor = MaterialTheme.colorScheme.onSurface,
-      ),
-      modifier = Modifier
-        .size(16.dp)
-        .wrapContentSize(unbounded = true)
-        .shadow(elevation = 4.dp, shape = CircleShape)
-        .size(24.dp),
-    ) {
-      Icon(
-        imageVector = Icons.Hedvig.X,
-        contentDescription = null,
-        modifier = Modifier.size(16.dp),
-      )
+    if (onRemoveFile != null) {
+      IconButton(
+        onClick = { onRemoveFile(id) },
+        colors = IconButtonDefaults.iconButtonColors(
+          containerColor = MaterialTheme.colorScheme.surfaceVariant,
+          contentColor = MaterialTheme.colorScheme.onSurface,
+        ),
+        modifier = Modifier
+          .size(16.dp)
+          .wrapContentSize(unbounded = true)
+          .shadow(elevation = 4.dp, shape = CircleShape)
+          .size(24.dp),
+      ) {
+        Icon(
+          imageVector = Icons.Hedvig.X,
+          contentDescription = null,
+          modifier = Modifier.size(16.dp),
+        )
+      }
     }
   }
-}
-
-private fun getIconFromMimeType(mimeType: String) = when (mimeType) {
-  "image/jpg" -> Icons.Hedvig.Pictures
-  "video/quicktime" -> Icons.Hedvig.Play
-  "application/pdf" -> Icons.Hedvig.Document
-  else -> Icons.Hedvig.Document
 }
 
 @HedvigPreview

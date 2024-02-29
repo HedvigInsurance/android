@@ -191,7 +191,6 @@ fun NavGraphBuilder.claimFlowGraph(
         },
         navigateUp = navigator::navigateUp,
         closeClaimFlow = closeClaimFlow,
-        openUrl = openUrl,
         imageLoader = imageLoader,
         windowSizeClass = windowSizeClass,
       )

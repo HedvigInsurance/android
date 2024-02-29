@@ -93,8 +93,8 @@ sealed interface ClaimFlowStep {
     val selectedItemModel: String?,
     val availableItemProblems: List<FlowClaimSingleItemStepFragment.AvailableItemProblem>?,
     val selectedItemProblems: List<String>?,
-    val submittedContent: SubmittedContent?,
-    val files: List<ClaimFile>,
+    val signedAudioUrl: String?,
+    val fileUploads: List<ClaimFlowStepFragment.FlowClaimSummaryStepCurrentStep.FileUploadStep.Upload>?,
   ) : ClaimFlowStep
 
   data class ClaimDeflectGlassDamageStep(
@@ -203,18 +203,8 @@ internal fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(flowId: FlowId): 
         singleItemStep?.selectedItemModel,
         singleItemStep?.availableItemProblems,
         singleItemStep?.selectedItemProblems,
-        files = fileUploadStep?.uploads?.map {
-          ClaimFile(
-            it.fileId,
-            it.name,
-            it.mimeType,
-            it.signedUrl,
-          )
-        } ?: listOf(),
-        submittedContent = audioRecordingStep?.audioContent?.signedUrl?.let {
-          SubmittedContent.Audio(it)
-        },
-        // todo: map it here or not here?
+        fileUploads = fileUploadStep?.uploads,
+        signedAudioUrl = audioRecordingStep?.audioContent?.signedUrl,
       )
     }
 
