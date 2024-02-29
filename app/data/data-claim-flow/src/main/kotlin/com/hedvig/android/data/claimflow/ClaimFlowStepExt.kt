@@ -72,6 +72,8 @@ fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
         selectedItemModel = selectedItemModel,
         availableItemProblems = availableItemProblems?.map { it.toItemProblem() },
         selectedItemProblems = selectedItemProblems,
+        files = files,
+        submittedContent = submittedContent,
       )
     }
 

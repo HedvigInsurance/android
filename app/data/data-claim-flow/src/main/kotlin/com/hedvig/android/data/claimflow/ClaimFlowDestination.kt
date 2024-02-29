@@ -109,6 +109,8 @@ sealed interface ClaimFlowDestination : Destination {
     val selectedItemModel: String?,
     val availableItemProblems: List<ItemProblem>?,
     val selectedItemProblems: List<String>?,
+    val submittedContent: SubmittedContent?,
+    val files: List<ClaimFile>,
   ) : ClaimFlowDestination
 
   @Serializable
@@ -254,3 +256,18 @@ data class DeflectPartner(
 
 @Serializable
 data class EmergencyOption(val displayName: String, val value: Boolean)
+
+@Serializable
+sealed interface SubmittedContent {
+  @Serializable
+  data class Audio(val audioURL: String) : SubmittedContent
+  // todo: can I just pass url as a String here? instead of val signedAudioURL: SignedAudioUrl as it is in ClaimDetailsDestination?
+}
+
+@Serializable
+data class ClaimFile(
+  val id: String?,
+  val name: String?,
+  val mimeType: String?,
+  val url: String?,
+)

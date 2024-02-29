@@ -185,13 +185,14 @@ fun NavGraphBuilder.claimFlowGraph(
       val viewModel: ClaimSummaryViewModel = koinViewModel { parametersOf(summary) }
       ClaimSummaryDestination(
         viewModel = viewModel,
-        windowSizeClass = windowSizeClass,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
           navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())
         },
         navigateUp = navigator::navigateUp,
         closeClaimFlow = closeClaimFlow,
+        openUrl = openUrl,
+        imageLoader = imageLoader,
       )
     }
     composable<ClaimFlowDestination.SingleItemCheckout> { backStackEntry ->
