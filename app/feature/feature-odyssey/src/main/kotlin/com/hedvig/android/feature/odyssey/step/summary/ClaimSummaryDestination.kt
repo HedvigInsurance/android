@@ -10,11 +10,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
@@ -138,7 +141,7 @@ private fun ClaimSummaryScreen(
           onNavigateUp = navigateUp,
           onClose = { showCloseClaimsFlowDialog = true },
           title = stringResource(R.string.claims_summary_screen_title),
-          modifier = Modifier.debugBorder(Color.Green), // todo: remove
+          windowInsets = WindowInsets.systemBars.only(WindowInsetsSides.Top)
         )
         LazyVerticalGrid(
           columns = GridCells.Fixed(3),
