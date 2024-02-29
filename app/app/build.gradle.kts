@@ -226,7 +226,6 @@ dependencies {
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
   testImplementation(libs.koin.test)
-  testImplementation(libs.mockk.jvm)
   testImplementation(libs.turbine)
   testImplementation(projects.authCoreTest)
   testImplementation(projects.coreCommonTest)

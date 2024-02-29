@@ -61,7 +61,6 @@ kotlinx-serialization = "1.6.3"
 kotlinxDatetime = "0.5.0"
 kotlinxImmutableCollections = "0.3.7"
 leakCanary = "2.13"
-mockk = "1.13.9"
 moneta = "1.4.4"
 okhttp = "4.12.0"
 okio = "3.8.0"
@@ -169,7 +168,6 @@ kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 ktor = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
 leakCanary = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakCanary" }
-mockk-jvm = { module = "io.mockk:mockk", version.ref = "mockk" }
 moneta = { module = "org.javamoney.moneta:moneta-core", version.ref = "moneta" }
 okhttp-core = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 okhttp-loggingInterceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
