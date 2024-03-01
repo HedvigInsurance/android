@@ -15,7 +15,6 @@ import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.market.Market
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.authlib.AuthAttemptResult
@@ -23,6 +22,7 @@ import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.AuthTokenResult
 import com.hedvig.authlib.LoginMethod
 import com.hedvig.authlib.LoginStatusResult
+import com.hedvig.authlib.OtpMarket
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -56,10 +56,7 @@ internal class SwedishLoginPresenter(
                   logcat(LogPriority.ERROR) { "Login failed, with error: $authTokenResult" }
                   return@map when (authTokenResult) {
                     is AuthTokenResult.Error.BackendErrorResponse -> {
-                      LoginStatusResult.Failed(
-                        "Error code:${authTokenResult.httpStatusValue}. ${authTokenResult.message}",
-                      )
-                    }
+                      LoginStatusResult.Failed("Error: ${authTokenResult.message}") }
 
                     is AuthTokenResult.Error.IOError -> LoginStatusResult.Failed("IO Error ${authTokenResult.message}")
                     is AuthTokenResult.Error.UnknownError -> LoginStatusResult.Failed(authTokenResult.message)
@@ -82,16 +79,11 @@ internal class SwedishLoginPresenter(
     }.collectAsState(initial = null).value
 
     LaunchedEffect(retryIndex) {
-      val result = authRepository.startLoginAttempt(LoginMethod.SE_BANKID, Market.SE.name)
+      val result = authRepository.startLoginAttempt(LoginMethod.SE_BANKID, OtpMarket.SE)
       when (result) {
         is AuthAttemptResult.BankIdProperties -> bankIdProperties = result
         is AuthAttemptResult.Error -> {
           logcat(LogPriority.ERROR) { "Got Error when signing in with BankId: $result" }
-          startLoginAttemptFailed = true
-        }
-
-        is AuthAttemptResult.ZignSecProperties -> {
-          logcat(LogPriority.ERROR) { "Got ZignSec properties when signing in with BankId" }
           startLoginAttemptFailed = true
         }
 

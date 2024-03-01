@@ -3,10 +3,12 @@ package com.hedvig.app.feature.genericauth
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.core.common.android.EmailAddressWithTrimmedWhitespaces
+import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
 import com.hedvig.authlib.AuthAttemptResult
 import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.LoginMethod
+import com.hedvig.authlib.OtpMarket
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -49,7 +51,11 @@ class GenericAuthViewModel(
           createLoginAttempt = {
             authRepository.startLoginAttempt(
               loginMethod = LoginMethod.OTP,
-              market = marketManager.market.value.name,
+              market = when(marketManager.market.value) {
+                Market.SE -> OtpMarket.SE
+                Market.NO -> OtpMarket.NO
+                Market.DK -> OtpMarket.DK
+              },
               personalNumber = null,
               email = emailInput.value,
             )
@@ -68,7 +74,11 @@ class GenericAuthViewModel(
         createLoginAttempt = {
           authRepository.startLoginAttempt(
             loginMethod = LoginMethod.OTP,
-            market = marketManager.market.value.name,
+            market = when(marketManager.market.value) {
+              Market.SE -> OtpMarket.SE
+              Market.NO -> OtpMarket.NO
+              Market.DK -> OtpMarket.DK
+            },
             personalNumber = ssnInput,
             email = null,
           )
@@ -84,9 +94,7 @@ class GenericAuthViewModel(
   private suspend fun createStateFromOtpAttempt(createLoginAttempt: suspend () -> AuthAttemptResult) {
     _viewState.update { it.copy(loading = true) }
     val newState = when (val startLoginResult = createLoginAttempt()) {
-      is AuthAttemptResult.BankIdProperties,
-      is AuthAttemptResult.ZignSecProperties,
-      -> _viewState.value.copy(
+      is AuthAttemptResult.BankIdProperties -> _viewState.value.copy(
         error = GenericAuthViewState.TextFieldError.Other.NetworkError,
         loading = false,
       )
