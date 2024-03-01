@@ -6,8 +6,6 @@ import com.hedvig.android.datadog.core.attributestracking.DatadogAttributesManag
 import com.hedvig.android.initializable.Initializable
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import kotlin.coroutines.CoroutineContext
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
