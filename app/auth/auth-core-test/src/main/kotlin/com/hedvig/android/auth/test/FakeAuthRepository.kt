@@ -7,10 +7,11 @@ import com.hedvig.authlib.AuthTokenResult
 import com.hedvig.authlib.Grant
 import com.hedvig.authlib.LoginMethod
 import com.hedvig.authlib.LoginStatusResult
+import com.hedvig.authlib.OtpMarket
 import com.hedvig.authlib.ResendOtpResult
 import com.hedvig.authlib.RevokeResult
-import com.hedvig.authlib.StatusUrl
 import com.hedvig.authlib.SubmitOtpResult
+import com.hedvig.authlib.url.LoginStatusUrl
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.consumeAsFlow
 
@@ -23,14 +24,14 @@ class FakeAuthRepository : AuthRepository {
 
   override suspend fun startLoginAttempt(
     loginMethod: LoginMethod,
-    market: String,
+    market: OtpMarket,
     personalNumber: String?,
-    email: String?,
+    email: String?
   ): AuthAttemptResult {
     return authAttemptResponse.awaitItem()
   }
 
-  override fun observeLoginStatus(statusUrl: StatusUrl): Flow<LoginStatusResult> {
+  override fun observeLoginStatus(statusUrl: LoginStatusUrl): Flow<LoginStatusResult> {
     return loginStatusResponse.asChannel().consumeAsFlow()
   }
 
@@ -46,11 +47,7 @@ class FakeAuthRepository : AuthRepository {
     return exchangeResponse.awaitItem()
   }
 
-  override suspend fun loginStatus(statusUrl: StatusUrl): LoginStatusResult {
-    error("Not implemented")
-  }
-
-  override suspend fun migrateOldToken(token: String): AuthTokenResult {
+  override suspend fun loginStatus(statusUrl: LoginStatusUrl): LoginStatusResult {
     error("Not implemented")
   }
 
