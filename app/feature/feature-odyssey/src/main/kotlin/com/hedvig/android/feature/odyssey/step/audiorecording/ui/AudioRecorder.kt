@@ -43,11 +43,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.audio.player.HedvigAudioPlayer
 import com.example.audio_player_data.AudioPlayer
 import com.example.audio_player_data.AudioPlayerState
 import com.example.audio_player_data.PlayableAudioSource
 import com.example.audio_player_data.SignedAudioUrl
+import com.hedvig.android.audio.player.HedvigAudioPlayer
 import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
 import com.hedvig.android.core.common.android.ProgressPercentage
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
@@ -327,7 +327,8 @@ private fun PreviewPrerecordedPlayback() {
         modifier = Modifier,
         audioPlayer = object : AudioPlayer {
           override val audioPlayerState: StateFlow<AudioPlayerState> = MutableStateFlow(
-              AudioPlayerState.Ready.done())
+            AudioPlayerState.Ready.done(),
+          )
 
           override fun initialize() = error("Not implemented")
 

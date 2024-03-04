@@ -40,7 +40,6 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.yield
 
-
 private const val ONE_SIXTIETH_OF_A_SECOND: Long = 1_000 / 60
 
 private class AudioPlayerImpl(
@@ -226,7 +225,6 @@ private class AudioPlayerImpl(
     }
   }
 }
-
 
 @Composable
 fun rememberAudioPlayer(playableAudioSource: PlayableAudioSource): AudioPlayer {
