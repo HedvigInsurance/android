@@ -5,7 +5,7 @@ plugins {
 }
 
 dependencies {
-  implementation(libs.androidx.lifecycle.runtime)
+  implementation(libs.coroutines.core)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)
   implementation(projects.coreCommonAndroidPublic)

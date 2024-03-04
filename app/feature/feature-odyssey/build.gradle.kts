@@ -28,7 +28,7 @@ dependencies {
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
-  implementation(projects.audioPlayer)
+  implementation(projects.audioPlayerUi)
   implementation(projects.audioPlayerData)
   implementation(projects.composePhotoCaptureState)
   implementation(projects.coreCommonAndroidPublic)

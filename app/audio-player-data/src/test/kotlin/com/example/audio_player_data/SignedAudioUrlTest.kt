@@ -4,6 +4,7 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
+import com.hedvig.audio.player.data.SignedAudioUrl
 import org.junit.Test
 
 class SignedAudioUrlTest {

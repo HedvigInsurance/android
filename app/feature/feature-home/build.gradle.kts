@@ -36,7 +36,7 @@ dependencies {
   implementation(libs.moneta)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
-  implementation(projects.audioPlayer)
+  implementation(projects.audioPlayerUi)
   implementation(projects.audioPlayerData)
   implementation(projects.authAndroid)
   implementation(projects.claimStatus)

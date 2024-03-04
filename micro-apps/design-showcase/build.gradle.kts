@@ -52,7 +52,7 @@ dependencies {
   implementation(libs.datadog.sdk.core)
   implementation(libs.kotlinx.immutable.collections)
   implementation(libs.zoomable)
-  implementation(projects.audioPlayer)
+  implementation(projects.audioPlayerUi)
   implementation(projects.audioPlayerData)
   implementation(projects.coreDesignSystem)
   implementation(projects.coreIcons)

@@ -22,7 +22,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.unit.dp
-import com.example.audio_player_data.AudioPlayerState
 import com.hedvig.android.core.common.android.ProgressPercentage
 import com.hedvig.android.core.designsystem.material3.DisabledAlpha
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
@@ -30,6 +29,7 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.Pause
 import com.hedvig.android.core.icons.hedvig.normal.Play
+import com.hedvig.audio.player.data.AudioPlayerState
 
 @Composable
 internal fun FakeWaveAudioPlayerContent(

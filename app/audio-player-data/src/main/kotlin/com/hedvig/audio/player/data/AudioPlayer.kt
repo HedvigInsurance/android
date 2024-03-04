@@ -1,4 +1,4 @@
-package com.example.audio_player_data
+package com.hedvig.audio.player.data
 
 import com.hedvig.android.core.common.android.ProgressPercentage
 import java.io.Closeable

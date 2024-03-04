@@ -15,14 +15,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
-import com.example.audio_player_data.AudioPlayerState
-import com.example.audio_player_data.AudioPlayerState.Ready.ReadyState
 import com.hedvig.android.core.common.android.ProgressPercentage
 import com.hedvig.android.core.designsystem.material3.onWarningContainer
 import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.material3.warningContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.audio.player.data.AudioPlayerState
+import com.hedvig.audio.player.data.AudioPlayerState.Ready.ReadyState
 
 @Composable
 internal fun FakeWaveAudioPlayerCard(
