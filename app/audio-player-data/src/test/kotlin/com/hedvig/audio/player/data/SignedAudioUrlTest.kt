@@ -1,10 +1,8 @@
-package com.example.audio_player_data
+package com.hedvig.audio.player.data
 
-import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
-import com.hedvig.audio.player.data.SignedAudioUrl
 import org.junit.Test
 
 class SignedAudioUrlTest {
@@ -20,7 +18,7 @@ class SignedAudioUrlTest {
 
     val signedAudioUrl = SignedAudioUrl.fromSignedAudioUrlStringOrNull(rawInput)
 
-    assertThat(signedAudioUrl).isNull()
+    assertk.assertThat(signedAudioUrl).isNull()
   }
 
   @Test
@@ -29,8 +27,8 @@ class SignedAudioUrlTest {
 
     val signedAudioUrl = SignedAudioUrl.fromSignedAudioUrlStringOrNull(rawInput)
 
-    assertThat(signedAudioUrl).isNotNull()
-    assertThat(signedAudioUrl!!.rawUrl).isEqualTo(rawInput)
+    assertk.assertThat(signedAudioUrl).isNotNull()
+    assertk.assertThat(signedAudioUrl!!.rawUrl).isEqualTo(rawInput)
   }
 
   @Test
@@ -41,6 +39,6 @@ class SignedAudioUrlTest {
     val signedAudioUrl0 = SignedAudioUrl.fromSignedAudioUrlStringOrNull(rawInput0)
     val signedAudioUrl1 = SignedAudioUrl.fromSignedAudioUrlStringOrNull(rawInput1)
 
-    assertThat(signedAudioUrl0).isEqualTo(signedAudioUrl1)
+    assertk.assertThat(signedAudioUrl0).isEqualTo(signedAudioUrl1)
   }
 }

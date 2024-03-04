@@ -13,13 +13,17 @@ interface CheckTravelCertificateDestinationAvailabilityUseCase {
 
 internal class CheckTravelCertificateDestinationAvailabilityUseCaseImpl(
   private val getTravelCertificatesHistory: GetTravelCertificatesHistoryUseCase,
-  private val checkTravelCertificateAvailabilityForCurrentContractsUseCase: CheckTravelCertificateAvailabilityForCurrentContractsUseCase,
+  private val checkTravelCertificateAvailabilityForCurrentContractsUseCase:
+    CheckTravelCertificateAvailabilityForCurrentContractsUseCase,
 ) : CheckTravelCertificateDestinationAvailabilityUseCase {
   override suspend fun invoke(): Either<TravelCertificateAvailabilityError, Unit> {
     return either {
       val contractsResponse =
         checkTravelCertificateAvailabilityForCurrentContractsUseCase.invoke().onLeft { errorMessage ->
-          logcat { "Could not fetch current contracts to check travel certificate availability. Message:${errorMessage.message}" }
+          logcat {
+            "Could not fetch current contracts to check travel certificate availability. " +
+              "Message:${errorMessage.message}"
+          }
         }
       val historyResult = getTravelCertificatesHistory.invoke()
         .onLeft { errorMessage ->
@@ -30,7 +34,8 @@ internal class CheckTravelCertificateDestinationAvailabilityUseCaseImpl(
         raise(
           TravelCertificateAvailabilityError.Error(
             ErrorMessage(
-              "TravelCertificateAvailabilityError: ${contractsResponse.value.message} && ${historyResult.value.message}",
+              "TravelCertificateAvailabilityError: " +
+                "${contractsResponse.value.message} && ${historyResult.value.message}",
             ),
           ),
         )
