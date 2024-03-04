@@ -1,9 +1,13 @@
-package com.hedvig.android.audio.player
+package com.example.audio_player_data
+
+import kotlinx.serialization.Serializable
 
 /**
  * A class to hold the url coming from the backend, with an overridden equals in order to return true in case we're
  * dealing with the same audio file but with a different query string
  */
+
+@Serializable
 class SignedAudioUrl private constructor(
   val rawUrl: String,
 ) {
@@ -32,3 +36,4 @@ class SignedAudioUrl private constructor(
     }
   }
 }
+

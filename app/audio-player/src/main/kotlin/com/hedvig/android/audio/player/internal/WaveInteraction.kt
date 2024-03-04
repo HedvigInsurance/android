@@ -1,8 +1,8 @@
-package com.hedvig.android.audio.player
+package com.hedvig.android.audio.player.internal
 
 import com.hedvig.android.core.common.android.ProgressPercentage
 
-fun interface WaveInteraction {
+internal fun interface WaveInteraction {
   /**
    * [horizontalProgressPercentage] is a value that shows where in the horizontal spectrum the wave was interacted
    * with.

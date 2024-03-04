@@ -1,4 +1,4 @@
-package com.hedvig.android.audio.player
+package com.example.audio_player_data
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo

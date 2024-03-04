@@ -1,4 +1,4 @@
-package com.hedvig.android.audio.player.state
+package com.example.audio_player_data
 
 import com.hedvig.android.core.common.android.ProgressPercentage
 

@@ -1,4 +1,4 @@
-package com.hedvig.android.audio.player.state
+package com.hedvig.android.audio.player.audioplayer
 
 import android.media.AudioAttributes
 import android.media.MediaPlayer
@@ -9,13 +9,14 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
-import com.hedvig.android.audio.player.SignedAudioUrl
+import com.example.audio_player_data.AudioPlayer
+import com.example.audio_player_data.AudioPlayerState
+import com.example.audio_player_data.PlayableAudioSource
 import com.hedvig.android.audio.player.internal.getProgressPercentage
 import com.hedvig.android.audio.player.internal.hasReachedTheEnd
 import com.hedvig.android.audio.player.internal.seekToPercent
 import com.hedvig.android.core.common.android.ProgressPercentage
 import com.hedvig.android.logger.logcat
-import java.io.Closeable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.awaitCancellation
@@ -39,46 +40,6 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.yield
 
-interface AudioPlayer : Closeable {
-  val audioPlayerState: StateFlow<AudioPlayerState>
-
-  fun initialize()
-
-  fun startPlayer()
-
-  fun pausePlayer()
-
-  fun retryLoadingAudio()
-
-  fun seekTo(progressPercentage: ProgressPercentage)
-}
-
-sealed interface PlayableAudioSource {
-  val dataSourceUrl: String
-
-  data class RemoteUrl(val signedAudioUrl: SignedAudioUrl) : PlayableAudioSource {
-    override val dataSourceUrl: String = signedAudioUrl.rawUrl
-  }
-
-  data class LocalFilePath(val audioFilePath: String) : PlayableAudioSource {
-    override val dataSourceUrl: String = audioFilePath
-  }
-}
-
-@Composable
-fun rememberAudioPlayer(playableAudioSource: PlayableAudioSource): AudioPlayer {
-  val lifecycleOwner = LocalLifecycleOwner.current
-  val audioPlayer: AudioPlayer = remember(playableAudioSource, lifecycleOwner) {
-    AudioPlayerImpl(playableAudioSource.dataSourceUrl, lifecycleOwner)
-  }
-  DisposableEffect(audioPlayer) {
-    audioPlayer.initialize()
-    onDispose {
-      audioPlayer.close()
-    }
-  }
-  return audioPlayer
-}
 
 private const val ONE_SIXTIETH_OF_A_SECOND: Long = 1_000 / 60
 
@@ -264,4 +225,20 @@ private class AudioPlayerImpl(
       }
     }
   }
+}
+
+
+@Composable
+fun rememberAudioPlayer(playableAudioSource: PlayableAudioSource): AudioPlayer {
+  val lifecycleOwner = LocalLifecycleOwner.current
+  val audioPlayer: AudioPlayer = remember(playableAudioSource, lifecycleOwner) {
+    AudioPlayerImpl(playableAudioSource.dataSourceUrl, lifecycleOwner)
+  }
+  DisposableEffect(audioPlayer) {
+    audioPlayer.initialize()
+    onDispose {
+      audioPlayer.close()
+    }
+  }
+  return audioPlayer
 }

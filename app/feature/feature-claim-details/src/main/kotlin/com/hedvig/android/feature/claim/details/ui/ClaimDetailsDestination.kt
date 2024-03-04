@@ -58,10 +58,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import com.hedvig.android.audio.player.HedvigAudioPlayer
-import com.hedvig.android.audio.player.SignedAudioUrl
-import com.hedvig.android.audio.player.state.AudioPlayerState
-import com.hedvig.android.audio.player.state.PlayableAudioSource
-import com.hedvig.android.audio.player.state.rememberAudioPlayer
+import com.example.audio_player_data.AudioPlayerState
+import com.example.audio_player_data.PlayableAudioSource
+import com.example.audio_player_data.SignedAudioUrl
+import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
 import com.hedvig.android.compose.photo.capture.state.rememberPhotoCaptureState
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard

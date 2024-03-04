@@ -15,9 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
-import com.hedvig.android.audio.player.WaveInteraction
-import com.hedvig.android.audio.player.state.AudioPlayerState
-import com.hedvig.android.audio.player.state.AudioPlayerState.Ready.ReadyState
+import com.example.audio_player_data.AudioPlayerState
+import com.example.audio_player_data.AudioPlayerState.Ready.ReadyState
 import com.hedvig.android.core.common.android.ProgressPercentage
 import com.hedvig.android.core.designsystem.material3.onWarningContainer
 import com.hedvig.android.core.designsystem.material3.squircleMedium
@@ -69,7 +68,7 @@ private fun cardColorForState(audioPlayerState: AudioPlayerState): Color = when 
 @Composable
 private fun cardContentColorForState(audioPlayerState: AudioPlayerState): Color = when {
   audioPlayerState.isFailed -> MaterialTheme.colorScheme.onWarningContainer
-  else -> androidx.compose.material3.MaterialTheme.colorScheme.onSurface
+  else -> MaterialTheme.colorScheme.onSurface
 }
 
 @HedvigPreview

@@ -44,11 +44,11 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.audio.player.HedvigAudioPlayer
-import com.hedvig.android.audio.player.SignedAudioUrl
-import com.hedvig.android.audio.player.state.AudioPlayer
-import com.hedvig.android.audio.player.state.AudioPlayerState
-import com.hedvig.android.audio.player.state.PlayableAudioSource
-import com.hedvig.android.audio.player.state.rememberAudioPlayer
+import com.example.audio_player_data.AudioPlayer
+import com.example.audio_player_data.AudioPlayerState
+import com.example.audio_player_data.PlayableAudioSource
+import com.example.audio_player_data.SignedAudioUrl
+import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
 import com.hedvig.android.core.common.android.ProgressPercentage
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
@@ -182,7 +182,7 @@ internal fun AudioRecorder(
             )
           } else {
             Text(
-              text = stringResource(hedvig.resources.R.string.EMBARK_START_RECORDING),
+              text = stringResource(R.string.EMBARK_START_RECORDING),
               style = MaterialTheme.typography.bodySmall,
               textAlign = TextAlign.Center,
               modifier = Modifier.padding(bottom = 16.dp),
@@ -214,7 +214,7 @@ private fun Playback(
 
     HedvigContainedButton(
       onClick = submit,
-      text = stringResource(hedvig.resources.R.string.SAVE_AND_CONTINUE_BUTTON_LABEL),
+      text = stringResource(R.string.SAVE_AND_CONTINUE_BUTTON_LABEL),
       isLoading = uiState.isLoading,
       enabled = uiState.canSubmit,
       modifier = Modifier.padding(top = 16.dp),
@@ -255,7 +255,7 @@ private fun PrerecordedPlayback(
         Spacer(Modifier.height(16.dp))
         HedvigContainedButton(
           onClick = submitAudioUrl,
-          text = stringResource(hedvig.resources.R.string.general_continue_button),
+          text = stringResource(R.string.general_continue_button),
           isLoading = uiState.isLoading,
           enabled = uiState.canSubmit,
         )
@@ -270,7 +270,7 @@ private fun PrerecordedPlayback(
       Column {
         Spacer(Modifier.height(8.dp))
         HedvigTextButton(
-          text = stringResource(hedvig.resources.R.string.EMBARK_RECORD_AGAIN),
+          text = stringResource(R.string.EMBARK_RECORD_AGAIN),
           onClick = redo,
           enabled = uiState.canSubmit,
         )
@@ -326,7 +326,8 @@ private fun PreviewPrerecordedPlayback() {
         submitAudioUrl = {},
         modifier = Modifier,
         audioPlayer = object : AudioPlayer {
-          override val audioPlayerState: StateFlow<AudioPlayerState> = MutableStateFlow(AudioPlayerState.Ready.done())
+          override val audioPlayerState: StateFlow<AudioPlayerState> = MutableStateFlow(
+              AudioPlayerState.Ready.done())
 
           override fun initialize() = error("Not implemented")
 

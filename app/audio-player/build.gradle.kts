@@ -17,6 +17,7 @@ dependencies {
   implementation(projects.coreDesignSystem)
   implementation(projects.coreIcons)
   implementation(projects.coreResources)
+  implementation(projects.audioPlayerData)
 
   testImplementation(libs.assertK)
   testImplementation(libs.junit)

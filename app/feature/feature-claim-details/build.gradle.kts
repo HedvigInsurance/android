@@ -39,6 +39,7 @@ dependencies {
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.audioPlayer)
+  implementation(projects.audioPlayerData)
   implementation(projects.claimStatus)
   implementation(projects.composePhotoCaptureState)
   implementation(projects.coreBuildConstants)

@@ -29,6 +29,7 @@ dependencies {
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.audioPlayer)
+  implementation(projects.audioPlayerData)
   implementation(projects.composePhotoCaptureState)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)

@@ -53,6 +53,7 @@ dependencies {
   implementation(libs.kotlinx.immutable.collections)
   implementation(libs.zoomable)
   implementation(projects.audioPlayer)
+  implementation(projects.audioPlayerData)
   implementation(projects.coreDesignSystem)
   implementation(projects.coreIcons)
   implementation(projects.coreUi)

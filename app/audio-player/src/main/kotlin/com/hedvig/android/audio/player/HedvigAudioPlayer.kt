@@ -5,7 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.audio.player.internal.FakeWaveAudioPlayerCard
-import com.hedvig.android.audio.player.state.AudioPlayer
+import com.example.audio_player_data.AudioPlayer
 
 /**
  * https://www.figma.com/file/e0lnWjMtp8x5Typlt5b33i/Claim-status-Android?node-id=1224%3A82&t=RgoySHgQiM6RyYNI-1
