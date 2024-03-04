@@ -72,12 +72,12 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.fileupload.ui.FilePickerBottomSheet
 import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.getIconFromMimeType
 import com.hedvig.android.core.icons.hedvig.colored.hedvig.Chat
 import com.hedvig.android.core.icons.hedvig.small.hedvig.ArrowNorthEast
 import com.hedvig.android.core.ui.FileContainer
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
 import com.hedvig.android.core.ui.dialog.ErrorDialog
+import com.hedvig.android.core.ui.getIconFromMimeType
 import com.hedvig.android.core.ui.plus
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter

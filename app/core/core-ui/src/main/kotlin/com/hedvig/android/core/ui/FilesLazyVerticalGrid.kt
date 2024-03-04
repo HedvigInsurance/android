@@ -34,7 +34,9 @@ import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.getIconFromMimeType
+import com.hedvig.android.core.icons.hedvig.normal.Document
+import com.hedvig.android.core.icons.hedvig.normal.Pictures
+import com.hedvig.android.core.icons.hedvig.normal.Play
 import com.hedvig.android.core.icons.hedvig.normal.X
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.core.uidata.UiFile
@@ -148,6 +150,13 @@ private fun File(
       }
     }
   }
+}
+
+fun getIconFromMimeType(mimeType: String) = when (mimeType) {
+  "image/jpg" -> Icons.Hedvig.Pictures
+  "video/quicktime" -> Icons.Hedvig.Play
+  "application/pdf" -> Icons.Hedvig.Document
+  else -> Icons.Hedvig.Document
 }
 
 @HedvigPreview
