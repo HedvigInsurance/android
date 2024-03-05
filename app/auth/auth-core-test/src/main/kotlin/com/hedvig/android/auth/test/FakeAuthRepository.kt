@@ -27,7 +27,6 @@ class FakeAuthRepository : AuthRepository {
     market: OtpMarket,
     personalNumber: String?,
     email: String?,
-    useBankIdV6: Boolean,
   ): AuthAttemptResult {
     return authAttemptResponse.awaitItem()
   }

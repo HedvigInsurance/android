@@ -37,7 +37,6 @@ class GenericAuthViewModelTest {
         market: OtpMarket,
         personalNumber: String?,
         email: String?,
-        useBankIdV6: Boolean
       ): AuthAttemptResult {
         delay(100.milliseconds)
         return AuthAttemptResult.OtpProperties(
