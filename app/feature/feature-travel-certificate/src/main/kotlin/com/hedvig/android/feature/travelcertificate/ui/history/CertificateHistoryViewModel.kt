@@ -23,7 +23,8 @@ import java.io.File
 internal class CertificateHistoryViewModel(
   getTravelCertificatesHistoryUseCase: GetTravelCertificatesHistoryUseCase,
   downloadPdfUseCase: DownloadPdfUseCase,
-  checkTravelCertificateAvailabilityForCurrentContractsUseCase: CheckTravelCertificateAvailabilityForCurrentContractsUseCase,
+  checkTravelCertificateAvailabilityForCurrentContractsUseCase:
+    CheckTravelCertificateAvailabilityForCurrentContractsUseCase,
   getEligibleContractsWithAddressUseCase: GetEligibleContractsWithAddressUseCase,
 ) : MoleculeViewModel<CertificateHistoryEvent, CertificateHistoryUiState>(
     initialState = CertificateHistoryUiState.Loading,
@@ -39,7 +40,8 @@ internal class CertificateHistoryPresenter(
   private val getTravelCertificatesHistoryUseCase: GetTravelCertificatesHistoryUseCase,
   private val downloadPdfUseCase: DownloadPdfUseCase,
   private val getEligibleContractsWithAddressUseCase: GetEligibleContractsWithAddressUseCase,
-  private val checkTravelCertificateAvailabilityForCurrentContractsUseCase: CheckTravelCertificateAvailabilityForCurrentContractsUseCase,
+  private val checkTravelCertificateAvailabilityForCurrentContractsUseCase:
+    CheckTravelCertificateAvailabilityForCurrentContractsUseCase,
 ) :
   MoleculePresenter<CertificateHistoryEvent, CertificateHistoryUiState> {
   @Composable

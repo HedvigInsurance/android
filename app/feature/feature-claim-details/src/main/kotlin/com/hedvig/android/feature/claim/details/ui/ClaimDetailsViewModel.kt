@@ -9,7 +9,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import arrow.fx.coroutines.parMap
-import com.hedvig.android.audio.player.SignedAudioUrl
 import com.hedvig.android.core.fileupload.DownloadPdfUseCase
 import com.hedvig.android.core.fileupload.UploadFileUseCase
 import com.hedvig.android.feature.claim.details.data.GetClaimDetailUiStateUseCase
@@ -19,6 +18,7 @@ import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
+import com.hedvig.audio.player.data.SignedAudioUrl
 import java.io.File
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
@@ -61,8 +61,10 @@ private class ClaimDetailPresenter(
         isLoading = false
         result.fold(
           ifLeft = {
-            hasError = true
-            content = null
+            if (content !is ClaimDetailUiState.Content) {
+              hasError = true
+              content = null
+            }
           },
           ifRight = { claimDetailUiState: ClaimDetailUiState.Content ->
             hasError = false

@@ -1,20 +1,21 @@
 package com.hedvig.android.datadog.core.memberid
 
 import com.hedvig.android.auth.MemberIdService
+import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.datadog.core.attributestracking.DatadogAttributesManager
+import com.hedvig.android.initializable.Initializable
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 internal class DatadogMemberIdUpdater(
   private val datadogAttributesManager: DatadogAttributesManager,
   private val memberIdService: MemberIdService,
-  coroutineScope: CoroutineScope,
-) {
-  init {
-    coroutineScope.launch {
+  private val applicationScope: ApplicationScope,
+) : Initializable {
+  override fun initialize() {
+    applicationScope.launch {
       memberIdService.getMemberId().collectLatest { memberId ->
         if (memberId == null) {
           logcat(LogPriority.INFO) { "Removing from global RUM attribute:$MEMBER_ID_TRACKING_KEY" }

@@ -25,7 +25,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "12.5.2"
+    versionName = "12.5.3"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -226,7 +226,6 @@ dependencies {
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
   testImplementation(libs.koin.test)
-  testImplementation(libs.mockk.jvm)
   testImplementation(libs.turbine)
   testImplementation(projects.authCoreTest)
   testImplementation(projects.coreCommonTest)
