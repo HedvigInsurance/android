@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.odyssey.ui
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -83,9 +84,9 @@ internal fun ClaimFlowScaffold(
         ) {
           val sideSpacingModifier = if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded) {
             Modifier
+              .fillMaxWidth(1f)
+              .wrapContentWidth(Alignment.CenterHorizontally)
               .fillMaxWidth(0.8f)
-              .wrapContentWidth(Alignment.Start)
-              .align(Alignment.CenterHorizontally)
           } else {
             Modifier.padding(horizontal = 16.dp)
           }
