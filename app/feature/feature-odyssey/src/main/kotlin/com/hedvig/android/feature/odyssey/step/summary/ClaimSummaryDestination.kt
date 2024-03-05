@@ -113,12 +113,14 @@ private fun ClaimSummaryScreen(
       content = {
         BeforeGridContent(uiState = uiState)
         AfterGridContent(uiState = uiState, submitSummary = submitSummary)
-        FilesLazyVerticalGrid(
-          paddingValues = PaddingValues(horizontal = 8.dp),
-          files = uiState.claimSummaryInfoUiState.files,
-          imageLoader = imageLoader,
-          onRemoveFile = null,
-        )
+        if (uiState.claimSummaryInfoUiState.files.isNotEmpty()) {
+          FilesLazyVerticalGrid(
+            paddingValues = PaddingValues(horizontal = 8.dp),
+            files = uiState.claimSummaryInfoUiState.files,
+            imageLoader = imageLoader,
+            onRemoveFile = null,
+          )
+        }
       },
       modifier = sideSpacingModifier
         .fillMaxWidth()
@@ -130,16 +132,22 @@ private fun ClaimSummaryScreen(
       val afterGridPlaceable = measurables[1].measure(constraints.copy(minWidth = 0, minHeight = 0))
       val remainingHeightForGrid = layoutHeight - beforeGridPlaceable.height - afterGridPlaceable.height
       val actualGridHeight = remainingHeightForGrid.coerceAtLeast(160.dp.roundToPx())
-      val gridPlaceable = measurables[2].measure(
+      val gridPlaceable = measurables.getOrNull(2)?.measure(
         constraints.copy(minWidth = 0, minHeight = actualGridHeight, maxHeight = actualGridHeight),
       )
+      val allContentMeasuredHeight =
+        beforeGridPlaceable.height + afterGridPlaceable.height + (gridPlaceable?.height ?: 0)
       layout(
         constraints.maxWidth,
-        beforeGridPlaceable.height + gridPlaceable.height + afterGridPlaceable.height,
+        allContentMeasuredHeight.coerceAtLeast(layoutHeight),
       ) {
         beforeGridPlaceable.place(0, 0)
-        gridPlaceable.place(0, beforeGridPlaceable.height)
-        afterGridPlaceable.place(0, beforeGridPlaceable.height + gridPlaceable.height)
+        gridPlaceable?.place(0, beforeGridPlaceable.height)
+        if (gridPlaceable == null && remainingHeightForGrid > 0) {
+          afterGridPlaceable.place(0, layoutHeight - afterGridPlaceable.height)
+        } else {
+          afterGridPlaceable.place(0, beforeGridPlaceable.height + (gridPlaceable?.height ?: 0))
+        }
       }
     }
   }
