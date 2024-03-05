@@ -51,7 +51,7 @@ class GenericAuthViewModel(
           createLoginAttempt = {
             authRepository.startLoginAttempt(
               loginMethod = LoginMethod.OTP,
-              market = when(marketManager.market.value) {
+              market = when (marketManager.market.value) {
                 Market.SE -> OtpMarket.SE
                 Market.NO -> OtpMarket.NO
                 Market.DK -> OtpMarket.DK
@@ -74,7 +74,7 @@ class GenericAuthViewModel(
         createLoginAttempt = {
           authRepository.startLoginAttempt(
             loginMethod = LoginMethod.OTP,
-            market = when(marketManager.market.value) {
+            market = when (marketManager.market.value) {
               Market.SE -> OtpMarket.SE
               Market.NO -> OtpMarket.NO
               Market.DK -> OtpMarket.DK

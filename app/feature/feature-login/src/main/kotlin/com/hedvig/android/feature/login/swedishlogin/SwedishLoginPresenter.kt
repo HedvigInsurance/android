@@ -174,9 +174,11 @@ internal sealed interface SwedishLoginUiState {
     value class BankIdLiveQrCodeData(val data: String)
   }
 
-
   data object Loading : SwedishLoginUiState
+
   data class LoggedIn(val navigateToLoginScreen: Boolean) : SwedishLoginUiState
+
   data class BankIdError(val message: String) : SwedishLoginUiState
+
   data object StartLoginAttemptFailed : SwedishLoginUiState
 }

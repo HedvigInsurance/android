@@ -160,10 +160,10 @@ class SwedishLoginPresenterTest {
         AuthAttemptResult.BankIdProperties("", LoginStatusUrl(""), ""),
       )
       authRepository.loginStatusResponse.add(
-          LoginStatusResult.Pending(
-              "pending",
-              LoginStatusResult.Pending.BankIdProperties("", "bankIdLiveQrCodeData", false),
-          ),
+        LoginStatusResult.Pending(
+          "pending",
+          LoginStatusResult.Pending.BankIdProperties("", "bankIdLiveQrCodeData", false),
+        ),
       )
       assertThat(awaitItem())
         .isInstanceOf<SwedishLoginUiState.HandlingBankId>()
