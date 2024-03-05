@@ -4,6 +4,7 @@ import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.core.uidata.UiNullableMoney
 import com.hedvig.android.data.claimflow.model.AudioUrl
+import com.hedvig.audio.player.data.SignedAudioUrl
 import kotlinx.collections.immutable.toPersistentList
 import octopus.fragment.AudioContentFragment
 import octopus.fragment.AutomaticAutogiroPayoutFragment
@@ -81,7 +82,7 @@ fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
           )
         } ?: listOf(),
         submittedContent = signedAudioUrl?.let {
-          SubmittedContent.Audio(it)
+          SubmittedContent.Audio(SignedAudioUrl.fromSignedAudioUrlString(it))
         },
       )
     }
