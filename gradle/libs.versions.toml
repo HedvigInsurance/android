@@ -75,9 +75,6 @@ unleash = "0.5.8"
 turbine = "1.0.0"
 zXing = "3.5.3"
 zoomable = "1.6.0"
-androidx-test-ext-junit = "1.1.5"
-espresso-core = "3.5.1"
-material = "1.9.0"
 
 [libraries]
 
@@ -197,9 +194,6 @@ kotlinter-gradlePlugin = { module = "org.jmailen.gradle:kotlinter-gradle", versi
 
 # lint dependencies
 lintApi = { module = "com.android.tools.lint:lint-api", version.ref = "lintApi" }
-androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 [bundles]
 
