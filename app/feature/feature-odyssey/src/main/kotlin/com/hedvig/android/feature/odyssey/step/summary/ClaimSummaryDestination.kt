@@ -56,7 +56,6 @@ import com.hedvig.android.data.claimflow.LocationOption
 import com.hedvig.android.data.claimflow.SubmittedContent
 import com.hedvig.android.feature.odyssey.ui.ClaimFlowScaffold
 import com.hedvig.audio.player.data.PlayableAudioSource
-import com.hedvig.audio.player.data.SignedAudioUrl
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 import octopus.type.CurrencyCode
@@ -184,9 +183,8 @@ private fun BeforeGridContent(uiState: ClaimSummaryUiState, modifier: Modifier =
     Text(stringResource(R.string.claim_status_detail_uploaded_files_info_title))
     when (uiState.claimSummaryInfoUiState.submittedContent) {
       is SubmittedContent.Audio -> {
-        val signedAudioUrl = SignedAudioUrl.fromSignedAudioUrlString(
-          uiState.claimSummaryInfoUiState.submittedContent.audioURL,
-        )
+        val signedAudioUrl =
+          uiState.claimSummaryInfoUiState.submittedContent.signedAudioURL
         Spacer(Modifier.height(8.dp))
         val audioPlayer = rememberAudioPlayer(
           playableAudioSource = PlayableAudioSource.RemoteUrl(signedAudioUrl),
