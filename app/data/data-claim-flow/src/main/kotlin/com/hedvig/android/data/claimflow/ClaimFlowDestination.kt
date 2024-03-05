@@ -109,6 +109,8 @@ sealed interface ClaimFlowDestination : Destination {
     val selectedItemModel: String?,
     val availableItemProblems: List<ItemProblem>?,
     val selectedItemProblems: List<String>?,
+    val submittedContent: SubmittedContent?,
+    val files: List<UiFile>,
   ) : ClaimFlowDestination
 
   @Serializable
@@ -254,3 +256,9 @@ data class DeflectPartner(
 
 @Serializable
 data class EmergencyOption(val displayName: String, val value: Boolean)
+
+@Serializable
+sealed interface SubmittedContent {
+  @Serializable
+  data class Audio(val audioURL: String) : SubmittedContent
+}

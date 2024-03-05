@@ -70,13 +70,11 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.fileupload.ui.FilePickerBottomSheet
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.colored.hedvig.Chat
-import com.hedvig.android.core.icons.hedvig.normal.Document
-import com.hedvig.android.core.icons.hedvig.normal.Pictures
-import com.hedvig.android.core.icons.hedvig.normal.Play
 import com.hedvig.android.core.icons.hedvig.small.hedvig.ArrowNorthEast
 import com.hedvig.android.core.ui.FileContainer
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
 import com.hedvig.android.core.ui.dialog.ErrorDialog
+import com.hedvig.android.core.ui.getIconFromMimeType
 import com.hedvig.android.core.ui.plus
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
@@ -271,7 +269,7 @@ private fun ClaimDetailScreen(
         )
         Spacer(Modifier.height(8.dp))
         ClaimTypeAndDatesSection(
-          claimType = uiState.claimType?.lowercase()?.replaceFirstChar { it.uppercase() },
+          claimType = uiState.claimType,
           submitDate = uiState.submittedAt.date,
           incidentDate = uiState.incidentDate,
           modifier = Modifier
@@ -388,13 +386,6 @@ private fun ClaimDetailScreen(
       }
     }
   }
-}
-
-private fun getIconFromMimeType(mimeType: String) = when (mimeType) {
-  "image/jpg" -> Icons.Hedvig.Pictures
-  "video/quicktime" -> Icons.Hedvig.Play
-  "application/pdf" -> Icons.Hedvig.Document
-  else -> Icons.Hedvig.Document
 }
 
 @Composable
