@@ -112,13 +112,13 @@ private fun ClaimSummaryScreen(
     Layout(
       content = {
         BeforeGridContent(uiState = uiState)
+        AfterGridContent(uiState = uiState, submitSummary = submitSummary)
         FilesLazyVerticalGrid(
           paddingValues = PaddingValues(horizontal = 8.dp),
           files = uiState.claimSummaryInfoUiState.files,
           imageLoader = imageLoader,
           onRemoveFile = null,
         )
-        AfterGridContent(uiState = uiState, submitSummary = submitSummary)
       },
       modifier = sideSpacingModifier
         .fillMaxWidth()
@@ -127,10 +127,10 @@ private fun ClaimSummaryScreen(
         .verticalScroll(rememberScrollState()),
     ) { measurables, constraints ->
       val beforeGridPlaceable = measurables[0].measure(constraints.copy(minWidth = 0, minHeight = 0))
-      val afterGridPlaceable = measurables[2].measure(constraints.copy(minWidth = 0, minHeight = 0))
+      val afterGridPlaceable = measurables[1].measure(constraints.copy(minWidth = 0, minHeight = 0))
       val remainingHeightForGrid = layoutHeight - beforeGridPlaceable.height - afterGridPlaceable.height
       val actualGridHeight = remainingHeightForGrid.coerceAtLeast(160.dp.roundToPx())
-      val gridPlaceable = measurables[1].measure(
+      val gridPlaceable = measurables[2].measure(
         constraints.copy(minWidth = 0, minHeight = actualGridHeight, maxHeight = actualGridHeight),
       )
       layout(
