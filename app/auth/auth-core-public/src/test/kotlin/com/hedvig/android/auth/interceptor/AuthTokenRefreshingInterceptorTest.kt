@@ -58,7 +58,7 @@ class AuthTokenRefreshingInterceptorTest {
     val clock = TestClock()
     val authTokenStorage = authTokenStorage(clock)
     authTokenStorage.updateTokens(
-      AccessToken("token", 10.minutes.inWholeSeconds.toInt()),
+      AccessToken("token", 10.minutes.inWholeSeconds),
       RefreshToken("", 0),
     )
     val authTokenService = authTokenService(authTokenStorage)
@@ -78,8 +78,8 @@ class AuthTokenRefreshingInterceptorTest {
     val clock = TestClock()
     val authTokenStorage = authTokenStorage(clock)
     authTokenStorage.updateTokens(
-      AccessToken("", 10.minutes.inWholeSeconds.toInt()),
-      RefreshToken("", 1.hours.inWholeSeconds.toInt()),
+      AccessToken("", 10.minutes.inWholeSeconds),
+      RefreshToken("", 1.hours.inWholeSeconds),
     )
     val authRepository = FakeAuthRepository()
     val authTokenService = authTokenService(authTokenStorage, authRepository)
@@ -91,7 +91,7 @@ class AuthTokenRefreshingInterceptorTest {
     clock.advanceTimeBy(30.minutes)
     authRepository.exchangeResponse.add(
       AuthTokenResult.Success(
-        AccessToken("refreshedToken", 10.minutes.inWholeSeconds.toInt()),
+        AccessToken("refreshedToken", 10.minutes.inWholeSeconds),
         RefreshToken("refreshedRefreshToken", 0),
       ),
     )
@@ -109,8 +109,8 @@ class AuthTokenRefreshingInterceptorTest {
     val clock = TestClock()
     val authTokenStorage = authTokenStorage(clock)
     authTokenStorage.updateTokens(
-      AccessToken("", 10.minutes.inWholeSeconds.toInt()),
-      RefreshToken("", 1.hours.inWholeSeconds.toInt()),
+      AccessToken("", 10.minutes.inWholeSeconds),
+      RefreshToken("", 1.hours.inWholeSeconds),
     )
     val authRepository = FakeAuthRepository()
     val authTokenService = authTokenService(authTokenStorage, authRepository)
@@ -133,8 +133,8 @@ class AuthTokenRefreshingInterceptorTest {
     val clock = TestClock()
     val authTokenStorage = authTokenStorage(clock)
     authTokenStorage.updateTokens(
-      AccessToken("", 10.minutes.inWholeSeconds.toInt()),
-      RefreshToken("", 1.hours.inWholeSeconds.toInt()),
+      AccessToken("", 10.minutes.inWholeSeconds),
+      RefreshToken("", 1.hours.inWholeSeconds),
     )
     val authRepository = FakeAuthRepository()
     val authTokenService = authTokenService(authTokenStorage, authRepository)
@@ -148,7 +148,7 @@ class AuthTokenRefreshingInterceptorTest {
     clock.advanceTimeBy(30.minutes)
     authRepository.exchangeResponse.add(
       AuthTokenResult.Success(
-        AccessToken("refreshedToken", 10.minutes.inWholeSeconds.toInt()),
+        AccessToken("refreshedToken", 10.minutes.inWholeSeconds),
         RefreshToken("refreshedRefreshToken", 0),
       ),
     )
@@ -171,8 +171,8 @@ class AuthTokenRefreshingInterceptorTest {
       val clock = TestClock()
       val authTokenStorage = authTokenStorage(clock)
       authTokenStorage.updateTokens(
-        AccessToken("", 10.minutes.inWholeSeconds.toInt()),
-        RefreshToken("", 1.hours.inWholeSeconds.toInt()),
+        AccessToken("", 10.minutes.inWholeSeconds),
+        RefreshToken("", 1.hours.inWholeSeconds),
       )
       val authRepository = FakeAuthRepository()
       val authTokenService = authTokenService(authTokenStorage, authRepository)
@@ -186,7 +186,7 @@ class AuthTokenRefreshingInterceptorTest {
       clock.advanceTimeBy(30.minutes)
       authRepository.exchangeResponse.add(
         AuthTokenResult.Success(
-          AccessToken("refreshedToken", 10.minutes.inWholeSeconds.toInt()),
+          AccessToken("refreshedToken", 10.minutes.inWholeSeconds),
           RefreshToken("refreshedRefreshToken", 0),
         ),
       )
