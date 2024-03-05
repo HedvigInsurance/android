@@ -43,9 +43,9 @@ fun DiscountPieChart(
       animation = keyframes {
         durationMillis = 4100
         0f at 0
-        0f at 1800 with FastOutSlowInEasing
+        0f at 1800 using FastOutSlowInEasing
         targetForeverIncentiveValue at 2300
-        targetForeverIncentiveValue at 3600 with FastOutSlowInEasing
+        targetForeverIncentiveValue at 3600 using FastOutSlowInEasing
         0f at 4100
       },
       repeatMode = RepeatMode.Restart,
