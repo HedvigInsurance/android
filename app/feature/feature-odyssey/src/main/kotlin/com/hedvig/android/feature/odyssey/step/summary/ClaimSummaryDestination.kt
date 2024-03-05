@@ -36,9 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import com.hedvig.android.audio.player.HedvigAudioPlayer
-import com.hedvig.android.audio.player.SignedAudioUrl
-import com.hedvig.android.audio.player.state.PlayableAudioSource
-import com.hedvig.android.audio.player.state.rememberAudioPlayer
+import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -57,6 +55,8 @@ import com.hedvig.android.data.claimflow.ItemProblem
 import com.hedvig.android.data.claimflow.LocationOption
 import com.hedvig.android.data.claimflow.SubmittedContent
 import com.hedvig.android.feature.odyssey.ui.ClaimFlowScaffold
+import com.hedvig.audio.player.data.PlayableAudioSource
+import com.hedvig.audio.player.data.SignedAudioUrl
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 import octopus.type.CurrencyCode
