@@ -83,6 +83,7 @@ private fun DeflectGlassDamageScreen(
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
     closeClaimFlow = closeClaimFlow,
+    topAppBarText = stringResource(id = R.string.SUBMIT_CLAIM_GLASS_DAMAGE_TITLE),
   ) {
     Spacer(Modifier.height(8.dp))
     VectorInfoCard(
@@ -157,8 +158,10 @@ private fun DeflectGlassDamageScreen(
       color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
     Spacer(Modifier.height(24.dp))
-    QuestionsAndAnswers(Modifier
-      .padding(horizontal = 16.dp))
+    QuestionsAndAnswers(
+      Modifier
+        .padding(horizontal = 16.dp),
+    )
     Spacer(Modifier.height(32.dp))
     Text(
       text = stringResource(R.string.SUBMIT_CLAIM_NEED_HELP_TITLE),
@@ -193,10 +196,16 @@ private fun DeflectGlassDamageScreen(
 private fun QuestionsAndAnswers(modifier: Modifier = Modifier) {
   var expandedItem by rememberSaveable { mutableIntStateOf(-1) }
   val faqList = listOf(
-    stringResource(R.string.SUBMIT_CLAIM_WHAT_COST_TITLE) to stringResource(R.string.SUBMIT_CLAIM_GLASS_DAMAGE_WHAT_COST_LABEL),
-    stringResource(R.string.SUBMIT_CLAIM_HOW_BOOK_TITLE) to stringResource(R.string.SUBMIT_CLAIM_GLASS_DAMAGE_HOW_BOOK_LABEL),
-    stringResource(R.string.SUBMIT_CLAIM_WORKSHOP_TITLE) to stringResource(R.string.SUBMIT_CLAIM_GLASS_DAMAGE_WORKSHOP_LABEL),
-    )
+    stringResource(
+      R.string.SUBMIT_CLAIM_WHAT_COST_TITLE,
+    ) to stringResource(R.string.SUBMIT_CLAIM_GLASS_DAMAGE_WHAT_COST_LABEL),
+    stringResource(
+      R.string.SUBMIT_CLAIM_HOW_BOOK_TITLE,
+    ) to stringResource(R.string.SUBMIT_CLAIM_GLASS_DAMAGE_HOW_BOOK_LABEL),
+    stringResource(
+      R.string.SUBMIT_CLAIM_WORKSHOP_TITLE,
+    ) to stringResource(R.string.SUBMIT_CLAIM_GLASS_DAMAGE_WORKSHOP_LABEL),
+  )
   Column(modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
     faqList.forEachIndexed { index, faqItem ->
       ExpandablePlusCard(

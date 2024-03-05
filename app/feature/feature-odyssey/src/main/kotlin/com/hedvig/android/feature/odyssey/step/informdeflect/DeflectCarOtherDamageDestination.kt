@@ -4,5 +4,5 @@ import androidx.compose.runtime.Composable
 
 @Composable
 internal fun DeflectCarOtherDamageDestination() {
-  //TODO
+  // TODO
 }
