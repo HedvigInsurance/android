@@ -58,10 +58,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import com.hedvig.android.audio.player.HedvigAudioPlayer
-import com.hedvig.android.audio.player.SignedAudioUrl
-import com.hedvig.android.audio.player.state.AudioPlayerState
-import com.hedvig.android.audio.player.state.PlayableAudioSource
-import com.hedvig.android.audio.player.state.rememberAudioPlayer
+import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
 import com.hedvig.android.compose.photo.capture.state.rememberPhotoCaptureState
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
@@ -90,6 +87,9 @@ import com.hedvig.android.ui.claimstatus.ClaimStatusCard
 import com.hedvig.android.ui.claimstatus.model.ClaimPillType
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
+import com.hedvig.audio.player.data.AudioPlayerState
+import com.hedvig.audio.player.data.PlayableAudioSource
+import com.hedvig.audio.player.data.SignedAudioUrl
 import hedvig.resources.R
 import java.io.File
 import kotlinx.datetime.LocalDate

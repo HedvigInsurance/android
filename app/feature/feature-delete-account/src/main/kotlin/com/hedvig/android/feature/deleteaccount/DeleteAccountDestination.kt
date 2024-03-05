@@ -158,9 +158,12 @@ private fun DeleteAccountUiState.CanNotDelete.titleStringRes(): Int {
 @StringRes
 private fun DeleteAccountUiState.CanNotDelete.descriptionStringRes(): Int {
   return when (this) {
-    DeleteAccountUiState.CanNotDelete.AlreadyRequestedDeletion -> R.string.DELETE_ACCOUNT_PROCESSED_DESCRIPTION
-    DeleteAccountUiState.CanNotDelete.HasActiveInsurance -> R.string.DELETE_ACCOUNT_YOU_HAVE_ACTIVE_INSURANCE_DESCRIPTION
-    DeleteAccountUiState.CanNotDelete.HasOngoingClaim -> R.string.DELETE_ACCOUNT_YOU_HAVE_ACTIVE_CLAIM_DESCRIPTION
+    DeleteAccountUiState.CanNotDelete.AlreadyRequestedDeletion ->
+      R.string.DELETE_ACCOUNT_PROCESSED_DESCRIPTION
+    DeleteAccountUiState.CanNotDelete.HasActiveInsurance ->
+      R.string.DELETE_ACCOUNT_YOU_HAVE_ACTIVE_INSURANCE_DESCRIPTION
+    DeleteAccountUiState.CanNotDelete.HasOngoingClaim ->
+      R.string.DELETE_ACCOUNT_YOU_HAVE_ACTIVE_CLAIM_DESCRIPTION
   }
 }
 

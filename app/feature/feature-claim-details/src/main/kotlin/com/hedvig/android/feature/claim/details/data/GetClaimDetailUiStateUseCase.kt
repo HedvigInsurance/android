@@ -7,9 +7,9 @@ import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.cache.normalized.FetchPolicy
 import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeFlow
-import com.hedvig.android.audio.player.SignedAudioUrl
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
+import com.hedvig.audio.player.data.SignedAudioUrl
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay

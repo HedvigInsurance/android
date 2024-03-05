@@ -29,9 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.PermissionStatus
 import com.hedvig.android.audio.player.HedvigAudioPlayer
-import com.hedvig.android.audio.player.SignedAudioUrl
-import com.hedvig.android.audio.player.state.PlayableAudioSource
-import com.hedvig.android.audio.player.state.rememberAudioPlayer
+import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
@@ -59,6 +57,8 @@ import com.hedvig.android.sample.design.showcase.ui.temp.ClaimProgressUiState
 import com.hedvig.android.sample.design.showcase.ui.temp.ClaimStatusCard
 import com.hedvig.android.sample.design.showcase.ui.temp.ClaimStatusCardUiState
 import com.hedvig.android.sample.design.showcase.ui.temp.PillUiState
+import com.hedvig.audio.player.data.PlayableAudioSource
+import com.hedvig.audio.player.data.SignedAudioUrl
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone

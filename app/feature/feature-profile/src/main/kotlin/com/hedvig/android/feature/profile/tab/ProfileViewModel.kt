@@ -21,7 +21,8 @@ import kotlinx.coroutines.launch
 
 internal class ProfileViewModel(
   private val getEuroBonusStatusUseCase: GetEurobonusStatusUseCase,
-  private val checkTravelCertificateDestinationAvailabilityUseCase: CheckTravelCertificateDestinationAvailabilityUseCase,
+  private val checkTravelCertificateDestinationAvailabilityUseCase:
+    CheckTravelCertificateDestinationAvailabilityUseCase,
   private val getMemberRemindersUseCase: GetMemberRemindersUseCase,
   private val enableNotificationsReminderManager: EnableNotificationsReminderManager,
   private val featureManager: FeatureManager,
