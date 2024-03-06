@@ -259,7 +259,7 @@ private fun ShowNotEmptyList(
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
           Text(
-            text = dateTimeFormatter.format(certificate.expiryDate.toJavaLocalDate()),
+            text = dateTimeFormatter.format(certificate.startDate.toJavaLocalDate()),
             color = color,
           )
         },
