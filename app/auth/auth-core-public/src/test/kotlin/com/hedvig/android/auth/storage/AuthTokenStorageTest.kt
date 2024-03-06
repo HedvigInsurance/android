@@ -30,7 +30,7 @@ internal class AuthTokenStorageTest {
     val authTokenStorage = authTokenStorage(clock)
     val now = clock.now()
 
-    val expiryInSeconds = 5.minutes.inWholeSeconds.toInt()
+    val expiryInSeconds = 5.minutes.inWholeSeconds
     authTokenStorage.updateTokens(
       AccessToken("", expiryInSeconds),
       RefreshToken("", expiryInSeconds),

@@ -18,7 +18,6 @@ import com.hedvig.android.core.common.di.ioDispatcherQualifier
 import com.hedvig.android.initializable.Initializable
 import com.hedvig.authlib.AuthEnvironment
 import com.hedvig.authlib.AuthRepository
-import com.hedvig.authlib.Callbacks
 import com.hedvig.authlib.OkHttpNetworkAuthRepository
 import com.hedvig.authlib.connectpayment.OkHttpNetworkPaymentRepository
 import com.hedvig.authlib.connectpayment.PaymentRepository
@@ -63,7 +62,6 @@ val authModule = module {
         AuthEnvironment.STAGING
       },
       additionalHttpHeadersProvider = { emptyMap() },
-      callbacks = Callbacks("https://hedvig.com?q=success", "https://hedvig.com?q=failure)"),
       okHttpClientBuilder = get<OkHttpClient.Builder>(),
     )
   }
