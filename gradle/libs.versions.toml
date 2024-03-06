@@ -5,11 +5,11 @@ targetSdkVersion = "33"
 minSdkVersion = "23"
 
 # lint versions
-lintApi = "31.2.2"
-lintGradlePlugin = "8.2.2"
+lintApi = "31.3.0"
+lintGradlePlugin = "8.3.0"
 
 # gradlePlugin versions
-androidGradlePlugin = "8.2.2"
+androidGradlePlugin = "8.3.0"
 apollo = "3.8.2"
 cacheFix = "3.0.1"
 crashlytics = "2.9.9"
