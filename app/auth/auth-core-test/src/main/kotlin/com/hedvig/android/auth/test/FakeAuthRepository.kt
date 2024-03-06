@@ -10,8 +10,8 @@ import com.hedvig.authlib.LoginStatusResult
 import com.hedvig.authlib.OtpMarket
 import com.hedvig.authlib.ResendOtpResult
 import com.hedvig.authlib.RevokeResult
+import com.hedvig.authlib.StatusUrl
 import com.hedvig.authlib.SubmitOtpResult
-import com.hedvig.authlib.url.LoginStatusUrl
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.consumeAsFlow
 
@@ -31,7 +31,7 @@ class FakeAuthRepository : AuthRepository {
     return authAttemptResponse.awaitItem()
   }
 
-  override fun observeLoginStatus(statusUrl: LoginStatusUrl): Flow<LoginStatusResult> {
+  override fun observeLoginStatus(statusUrl: StatusUrl): Flow<LoginStatusResult> {
     return loginStatusResponse.asChannel().consumeAsFlow()
   }
 
@@ -47,7 +47,7 @@ class FakeAuthRepository : AuthRepository {
     return exchangeResponse.awaitItem()
   }
 
-  override suspend fun loginStatus(statusUrl: LoginStatusUrl): LoginStatusResult {
+  override suspend fun loginStatus(statusUrl: StatusUrl): LoginStatusResult {
     error("Not implemented")
   }
 
