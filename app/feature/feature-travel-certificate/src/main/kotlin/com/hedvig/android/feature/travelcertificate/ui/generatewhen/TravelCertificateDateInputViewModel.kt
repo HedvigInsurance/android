@@ -167,7 +167,7 @@ internal class TravelCertificateDateInputPresenter(
         coInsured = listOf(),
         email = currentCreateTravelCertificateData.email,
       ).fold(
-        ifLeft = { _ ->
+        ifLeft = {
           screenContent = DateInputScreenContent.Failure
         },
         ifRight = { url ->

@@ -5,7 +5,7 @@ targetSdkVersion = "33"
 minSdkVersion = "23"
 
 # lint versions
-lintApi = "31.2.2"
+lintApi = "31.3.0"
 lintGradlePlugin = "8.3.0"
 
 # gradlePlugin versions
