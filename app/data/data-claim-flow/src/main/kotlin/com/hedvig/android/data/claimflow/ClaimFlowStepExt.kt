@@ -78,7 +78,9 @@ fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
             id = it.fileId,
             name = it.name,
             mimeType = it.mimeType,
-            path = it.signedUrl,
+            url = it.signedUrl,
+            thumbnailUrl = null,
+            localPath = null,
           )
         } ?: listOf(),
         submittedContent = signedAudioUrl?.let {
@@ -185,6 +187,8 @@ private fun FlowClaimFileUploadFragment.Upload.toLocalUpload(): UiFile {
     id = fileId,
     name = name,
     mimeType = mimeType,
-    path = signedUrl,
+    url = signedUrl,
+    localPath = null,
+    thumbnailUrl = null,
   )
 }

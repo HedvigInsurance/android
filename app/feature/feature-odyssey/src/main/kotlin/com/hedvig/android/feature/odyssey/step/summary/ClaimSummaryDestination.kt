@@ -1,17 +1,15 @@
 package com.hedvig.android.feature.odyssey.step.summary
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -21,12 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -40,7 +33,7 @@ import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.FilesLazyVerticalGrid
+import com.hedvig.android.core.ui.DynamicFilesGridBetweenOtherThings
 import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.preview.calculateForPreview
@@ -107,48 +100,28 @@ private fun ClaimSummaryScreen(
       showedError,
     ),
   ) { sideSpacingModifier ->
-    var layoutHeight by remember { mutableIntStateOf(-1) }
-    Layout(
-      content = {
-        BeforeGridContent(uiState = uiState)
-        AfterGridContent(uiState = uiState, submitSummary = submitSummary)
-        if (uiState.claimSummaryInfoUiState.files.isNotEmpty()) {
-          FilesLazyVerticalGrid(
-            paddingValues = PaddingValues(horizontal = 8.dp),
-            files = uiState.claimSummaryInfoUiState.files,
-            imageLoader = imageLoader,
-            onRemoveFile = null,
+    DynamicFilesGridBetweenOtherThings(
+      modifier = sideSpacingModifier,
+      files = uiState.claimSummaryInfoUiState.files,
+      imageLoader = imageLoader,
+      onRemoveFile = null,
+      aboveGridContent = { BeforeGridContent(uiState = uiState) },
+      belowGridContent = { AfterGridContent(uiState = uiState, submitSummary = submitSummary) },
+      bottomSpacing = {
+        Column {
+          Spacer(Modifier.height(16.dp))
+          Spacer(
+            Modifier.windowInsetsPadding(
+              WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom),
+            ),
           )
         }
       },
-      modifier = sideSpacingModifier
-        .fillMaxWidth()
-        .weight(1f)
-        .onSizeChanged { intSize -> layoutHeight = intSize.height }
-        .verticalScroll(rememberScrollState()),
-    ) { measurables, constraints ->
-      val beforeGridPlaceable = measurables[0].measure(constraints.copy(minWidth = 0, minHeight = 0))
-      val afterGridPlaceable = measurables[1].measure(constraints.copy(minWidth = 0, minHeight = 0))
-      val remainingHeightForGrid = layoutHeight - beforeGridPlaceable.height - afterGridPlaceable.height
-      val actualGridHeight = remainingHeightForGrid.coerceAtLeast(160.dp.roundToPx())
-      val gridPlaceable = measurables.getOrNull(2)?.measure(
-        constraints.copy(minWidth = 0, minHeight = actualGridHeight, maxHeight = actualGridHeight),
-      )
-      val allContentMeasuredHeight =
-        beforeGridPlaceable.height + afterGridPlaceable.height + (gridPlaceable?.height ?: 0)
-      layout(
-        constraints.maxWidth,
-        allContentMeasuredHeight.coerceAtLeast(layoutHeight),
-      ) {
-        beforeGridPlaceable.place(0, 0)
-        gridPlaceable?.place(0, beforeGridPlaceable.height)
-        if (gridPlaceable == null && remainingHeightForGrid > 0) {
-          afterGridPlaceable.place(0, layoutHeight - afterGridPlaceable.height)
-        } else {
-          afterGridPlaceable.place(0, beforeGridPlaceable.height + (gridPlaceable?.height ?: 0))
-        }
-      }
-    }
+      onClickFile = {},
+      gridContentPaddingValues =
+        WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
+          .asPaddingValues(),
+    )
   }
 }
 
@@ -201,7 +174,7 @@ private fun BeforeGridContent(uiState: ClaimSummaryUiState, modifier: Modifier =
 @Composable
 private fun AfterGridContent(uiState: ClaimSummaryUiState, submitSummary: () -> Unit, modifier: Modifier = Modifier) {
   Column(modifier) {
-    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.height(16.dp))
     VectorInfoCard(stringResource(R.string.CLAIMS_COMPLEMENT__CLAIM), Modifier.fillMaxWidth())
     Spacer(Modifier.height(16.dp))
     HedvigContainedButton(
@@ -210,8 +183,6 @@ private fun AfterGridContent(uiState: ClaimSummaryUiState, submitSummary: () -> 
       isLoading = uiState.claimSummaryStatusUiState.isLoading,
       enabled = uiState.canSubmit,
     )
-    Spacer(Modifier.height(16.dp))
-    Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
   }
 }
 
@@ -247,12 +218,14 @@ private fun PreviewClaimSummaryScreen() {
               ItemProblem(displayName = "Other", itemProblemId = ""),
               ItemProblem(displayName = "Water", itemProblemId = ""),
             ),
-            files = List(5) {
+            files = List(20) {
               UiFile(
                 id = "$it",
                 name = "$it",
                 mimeType = "",
-                path = "$it",
+                localPath = "$it",
+                url = "$it",
+                thumbnailUrl = null,
               )
             },
             submittedContent = null,

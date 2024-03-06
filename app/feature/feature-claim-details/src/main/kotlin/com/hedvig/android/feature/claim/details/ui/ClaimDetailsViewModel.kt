@@ -11,6 +11,7 @@ import androidx.compose.runtime.setValue
 import arrow.fx.coroutines.parMap
 import com.hedvig.android.core.fileupload.DownloadPdfUseCase
 import com.hedvig.android.core.fileupload.UploadFileUseCase
+import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.feature.claim.details.data.GetClaimDetailUiStateUseCase
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
@@ -159,7 +160,7 @@ internal sealed interface ClaimDetailUiState {
   data class Content(
     val claimId: String,
     val submittedContent: SubmittedContent?,
-    val files: List<ClaimFile>,
+    val files: List<UiFile>,
     val claimStatusCardUiState: ClaimStatusCardUiState,
     val claimStatus: ClaimStatus,
     val claimOutcome: ClaimOutcome,
@@ -180,14 +181,6 @@ internal sealed interface ClaimDetailUiState {
 
       data class FreeText(val text: String) : SubmittedContent
     }
-
-    data class ClaimFile(
-      val id: String,
-      val name: String,
-      val mimeType: String,
-      val url: String,
-      val thumbnailUrl: String?,
-    )
 
     enum class ClaimStatus {
       CREATED,

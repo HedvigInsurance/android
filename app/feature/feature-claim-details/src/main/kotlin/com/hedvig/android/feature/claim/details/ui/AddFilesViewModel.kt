@@ -36,7 +36,7 @@ internal class AddFilesViewModel(
     viewModelScope.launch {
       _uiState.update { it.copy(isLoading = true) }
       either {
-        val uris = uiState.value.localFiles.map { Uri.parse(it.path) }
+        val uris = uiState.value.localFiles.map { Uri.parse(it.localPath) }
         if (uris.isNotEmpty()) {
           val result = uploadFileUseCase.invoke(url = targetUploadUrl, uris = uris).bind()
           result.fileIds
@@ -62,9 +62,11 @@ internal class AddFilesViewModel(
         val name = fileService.getFileName(uri) ?: uri.toString()
         val localFile = UiFile(
           name = name,
-          path = uri.toString(),
+          localPath = uri.toString(),
           mimeType = mimeType,
           id = uri.toString(),
+          thumbnailUrl = null,
+          url = null,
         )
         it.copy(localFiles = it.localFiles + localFile)
       } catch (e: Exception) {

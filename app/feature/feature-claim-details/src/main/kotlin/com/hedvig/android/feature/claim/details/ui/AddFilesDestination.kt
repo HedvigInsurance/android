@@ -5,7 +5,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -35,11 +34,10 @@ import com.hedvig.android.core.designsystem.component.button.HedvigSecondaryCont
 import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.fileupload.ui.FilePickerBottomSheet
-import com.hedvig.android.core.ui.FilesLazyVerticalGrid
+import com.hedvig.android.core.ui.DynamicFilesGridBetweenOtherThings
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
 import com.hedvig.android.core.ui.dialog.ErrorDialog
 import com.hedvig.android.core.ui.dialog.HedvigAlertDialog
-import com.hedvig.android.core.ui.plus
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.logger.logcat
@@ -155,37 +153,64 @@ private fun AddFilesScreen(
     modifier = Modifier.fillMaxSize(),
   ) {
     Column(Modifier.fillMaxSize()) {
-      TopAppBarWithBack(
-        onClick = navigateUp,
-        title = stringResource(R.string.CLAIMS_YOUR_CLAIM),
-      )
-      FilesLazyVerticalGrid(
+      DynamicFilesGridBetweenOtherThings(
+        belowGridContent = {
+          BelowGridContent(
+            onAddMoreFilesButtonClick = {
+              showFileTypeSelectBottomSheet = true
+            },
+            onContinueButtonClick = onContinue,
+            isLoading = uiState.isLoading,
+          )
+        },
+        bottomSpacing = {
+          BottomSpacing()
+        },
+        aboveGridContent = {
+          TopAppBarWithBack(
+            onClick = navigateUp,
+            title = stringResource(R.string.CLAIMS_YOUR_CLAIM),
+          )
+        },
         files = uiState.localFiles,
         onRemoveFile = { fileToRemoveId = it },
         imageLoader = imageLoader,
-        paddingValues = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)
-          .asPaddingValues() + PaddingValues(horizontal = 8.dp),
-        modifier = Modifier.weight(1f),
-      )
-      Spacer(Modifier.height(8.dp))
-      HedvigSecondaryContainedButton(
-        text = stringResource(R.string.claim_status_detail_add_more_files),
-        onClick = {
-          showFileTypeSelectBottomSheet = true
-        },
+        gridContentPaddingValues =
+          WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
+            .asPaddingValues(),
+        // todo: somehow despite the default value for this parameter is exactly the same,
+        // todo: if i remove this gridContentPaddingValues parameter,
+        // todo: it goes narrower. Would you know why it happens?
         modifier = Modifier.padding(horizontal = 16.dp),
+        onClickFile = null,
       )
-      Spacer(Modifier.height(8.dp))
-      HedvigContainedButton(
-        text = stringResource(R.string.general_continue_button),
-        onClick = onContinue,
-        isLoading = uiState.isLoading,
-        modifier = Modifier.padding(horizontal = 16.dp),
-      )
-      Spacer(Modifier.height(16.dp))
-      Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
     }
   }
+}
+
+@Composable
+private fun BelowGridContent(
+  onAddMoreFilesButtonClick: () -> Unit,
+  onContinueButtonClick: () -> Unit,
+  isLoading: Boolean,
+) {
+  Spacer(Modifier.height(16.dp))
+  HedvigSecondaryContainedButton(
+    text = stringResource(R.string.claim_status_detail_add_more_files),
+    onClick = onAddMoreFilesButtonClick,
+  )
+  Spacer(Modifier.height(8.dp))
+  HedvigContainedButton(
+    text = stringResource(R.string.general_continue_button),
+    onClick = onContinueButtonClick,
+    isLoading = isLoading,
+  )
+}
+
+@Composable
+private fun BottomSpacing() {
+  Spacer(Modifier.height(16.dp))
+  Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
 }
 
 @HedvigMultiScreenPreview
@@ -196,7 +221,14 @@ private fun PreviewAddFilesScreen() {
       AddFilesScreen(
         FileUploadUiState(
           localFiles = List(25) {
-            UiFile("$it", "", "", "$it")
+            UiFile(
+              name = "$it",
+              localPath = "",
+              url = "",
+              mimeType = "$it",
+              thumbnailUrl = null,
+              id = "$it",
+            )
           },
         ),
         {},
