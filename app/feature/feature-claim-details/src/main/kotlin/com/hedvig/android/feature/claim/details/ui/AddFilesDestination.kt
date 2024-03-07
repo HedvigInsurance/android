@@ -5,6 +5,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -38,6 +39,7 @@ import com.hedvig.android.core.ui.DynamicFilesGridBetweenOtherThings
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
 import com.hedvig.android.core.ui.dialog.ErrorDialog
 import com.hedvig.android.core.ui.dialog.HedvigAlertDialog
+import com.hedvig.android.core.ui.plus
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.logger.logcat
@@ -64,16 +66,16 @@ internal fun AddFilesDestination(
     addLocalFile(uri)
   }
   val photoPicker = rememberLauncherForActivityResult(
-    contract = ActivityResultContracts.PickVisualMedia(),
-  ) { resultingUri: Uri? ->
-    if (resultingUri != null) {
+    contract = ActivityResultContracts.PickMultipleVisualMedia(),
+  ) { resultingUriList: List<Uri> ->
+    for (resultingUri in resultingUriList) {
       addLocalFile(resultingUri)
     }
   }
   val filePicker = rememberLauncherForActivityResult(
-    contract = ActivityResultContracts.GetContent(),
-  ) { resultingUri: Uri? ->
-    if (resultingUri != null) {
+    contract = ActivityResultContracts.GetMultipleContents(),
+  ) { resultingUriList: List<Uri> ->
+    for (resultingUri in resultingUriList) {
       addLocalFile(resultingUri)
     }
   }
@@ -153,6 +155,10 @@ private fun AddFilesScreen(
     modifier = Modifier.fillMaxSize(),
   ) {
     Column(Modifier.fillMaxSize()) {
+      TopAppBarWithBack(
+        onClick = navigateUp,
+        title = stringResource(R.string.CLAIMS_YOUR_CLAIM),
+      )
       DynamicFilesGridBetweenOtherThings(
         belowGridContent = {
           BelowGridContent(
@@ -166,22 +172,16 @@ private fun AddFilesScreen(
         bottomSpacing = {
           BottomSpacing()
         },
-        aboveGridContent = {
-          TopAppBarWithBack(
-            onClick = navigateUp,
-            title = stringResource(R.string.CLAIMS_YOUR_CLAIM),
-          )
-        },
         files = uiState.localFiles,
         onRemoveFile = { fileToRemoveId = it },
         imageLoader = imageLoader,
-        gridContentPaddingValues =
-          WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
+        gridContentPaddingValues = PaddingValues(),
+        modifier = Modifier.padding(
+          PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing.only(
+            WindowInsetsSides.Horizontal,
+          )
             .asPaddingValues(),
-        // todo: somehow despite the default value for this parameter is exactly the same,
-        // todo: if i remove this gridContentPaddingValues parameter,
-        // todo: it goes narrower. Would you know why it happens?
-        modifier = Modifier.padding(horizontal = 16.dp),
+        ),
         onClickFile = null,
       )
     }
@@ -210,7 +210,14 @@ private fun BelowGridContent(
 @Composable
 private fun BottomSpacing() {
   Spacer(Modifier.height(16.dp))
-  Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
+  Spacer(
+    Modifier.windowInsetsPadding(
+      WindowInsets.safeDrawing.only(
+        WindowInsetsSides.Horizontal +
+          WindowInsetsSides.Bottom,
+      ),
+    ),
+  )
 }
 
 @HedvigMultiScreenPreview

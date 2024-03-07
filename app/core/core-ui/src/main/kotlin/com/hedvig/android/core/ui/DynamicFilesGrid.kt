@@ -79,7 +79,9 @@ fun ColumnScope.DynamicFilesGridBetweenOtherThings(
   // todo: added this as a separate argument bc it's easy to forget about spacing if we have no below content,
   // todo: and putting some spacing in the default belowGridContent also feels weird, bc this fun could be called from
   // todo: a simple Column, ClaimFlowScaffold etc.
-  gridContentPaddingValues: PaddingValues = PaddingValues(horizontal = 8.dp),
+  gridContentPaddingValues: PaddingValues =
+    WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
+      .asPaddingValues(),
 ) {
   var layoutHeight by remember { mutableIntStateOf(-1) }
   Layout(
@@ -110,7 +112,7 @@ fun ColumnScope.DynamicFilesGridBetweenOtherThings(
     val beforeGridPlaceable = measurables[0].measure(constraints.copy(minWidth = 0, minHeight = 0))
     val afterGridPlaceable = measurables[1].measure(constraints.copy(minWidth = 0, minHeight = 0))
     val remainingHeightForGrid = layoutHeight - beforeGridPlaceable.height - afterGridPlaceable.height
-    val actualGridHeight = remainingHeightForGrid.coerceAtLeast(160.dp.roundToPx())
+    val actualGridHeight = remainingHeightForGrid.coerceAtLeast(170.dp.roundToPx())
     val gridPlaceable = measurables.getOrNull(2)?.measure(
       constraints.copy(minWidth = 0, minHeight = actualGridHeight, maxHeight = actualGridHeight),
     )
@@ -144,9 +146,7 @@ private fun FilesLazyVerticalGrid(
   onClickFile: ((fileId: String) -> Unit)?,
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
-  paddingValues: PaddingValues =
-    WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
-      .asPaddingValues(),
+  paddingValues: PaddingValues,
 ) {
   LazyVerticalGrid(
     columns = GridCells.Adaptive(109.dp),
@@ -414,6 +414,9 @@ private fun PreviewFile() {
           onRemoveFile = {},
           onClickFile = null,
           imageLoader = rememberPreviewImageLoader(),
+          paddingValues =
+            WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
+              .asPaddingValues(),
         )
       }
     }

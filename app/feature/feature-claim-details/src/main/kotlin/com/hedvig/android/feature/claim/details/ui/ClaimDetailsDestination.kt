@@ -8,6 +8,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -21,6 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
@@ -64,6 +66,7 @@ import com.hedvig.android.core.icons.hedvig.small.hedvig.ArrowNorthEast
 import com.hedvig.android.core.ui.DynamicFilesGridBetweenOtherThings
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
 import com.hedvig.android.core.ui.dialog.ErrorDialog
+import com.hedvig.android.core.ui.plus
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
@@ -91,7 +94,7 @@ internal fun ClaimDetailsDestination(
   appPackageId: String,
   navigateUp: () -> Unit,
   onChatClick: () -> Unit,
-  onUri: (Uri, targetUploadUrl: String) -> Unit,
+  onUri: (List<Uri>, targetUploadUrl: String) -> Unit,
   openUrl: (String) -> Unit,
   sharePdf: (File) -> Unit,
 ) {
@@ -125,7 +128,7 @@ private fun ClaimDetailScreen(
   retry: () -> Unit,
   navigateUp: () -> Unit,
   onChatClick: () -> Unit,
-  onUri: (file: Uri, uploadUri: String) -> Unit,
+  onUri: (files: List<Uri>, uploadUri: String) -> Unit,
   downloadFromUrl: (String) -> Unit,
   sharePdf: (File) -> Unit,
   onDismissDownloadError: () -> Unit,
@@ -143,22 +146,17 @@ private fun ClaimDetailScreen(
         is ClaimDetailUiState.Content -> {
           val photoCaptureState = rememberPhotoCaptureState(appPackageId = appPackageId) { uri ->
             logcat { "ChatFileState sending uri:$uri" }
-
-            onUri(uri, uiState.uploadUri)
+            onUri(listOf(uri), uiState.uploadUri)
           }
           val photoPicker = rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.PickVisualMedia(),
-          ) { resultingUri: Uri? ->
-            if (resultingUri != null) {
-              onUri(resultingUri, uiState.uploadUri)
-            }
+            contract = ActivityResultContracts.PickMultipleVisualMedia(),
+          ) { resultingUriList: List<Uri> ->
+            onUri(resultingUriList, uiState.uploadUri)
           }
           val filePicker = rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.GetContent(),
-          ) { resultingUri: Uri? ->
-            if (resultingUri != null) {
-              onUri(resultingUri, uiState.uploadUri)
-            }
+            contract = ActivityResultContracts.GetMultipleContents(),
+          ) { resultingUriList: List<Uri> ->
+            onUri(resultingUriList, uiState.uploadUri)
           }
           ClaimDetailScreen(
             uiState = uiState,
@@ -257,10 +255,13 @@ private fun ClaimDetailScreen(
         }
       },
       onRemoveFile = null,
-      gridContentPaddingValues = WindowInsets.safeDrawing
-        .only(WindowInsetsSides.Horizontal)
-        .asPaddingValues(),
-      modifier = Modifier.padding(horizontal = 16.dp),
+      gridContentPaddingValues = PaddingValues(),
+      modifier = Modifier.padding(
+        PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing.only(
+          WindowInsetsSides.Horizontal,
+        )
+          .asPaddingValues(),
+      ),
     )
   }
 }
@@ -336,11 +337,13 @@ private fun AfterGridContent(
   onDismissUploadError: () -> Unit,
 ) {
   Column {
-    Spacer(Modifier.height(48.dp))
+    Spacer(Modifier.height(32.dp))
     Text(
       text = stringResource(id = R.string.claim_status_uploaded_files_upload_text),
       textAlign = TextAlign.Center,
-      modifier = Modifier.padding(horizontal = 2.dp),
+      modifier = Modifier
+        .padding(horizontal = 2.dp)
+        .fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))
     val text = if (uiState.files.isNotEmpty()) {
@@ -370,6 +373,14 @@ private fun AfterGridContent(
 @Composable
 private fun AfterGridSpacing() {
   Spacer(Modifier.height(32.dp))
+  Spacer(
+    Modifier.windowInsetsPadding(
+      WindowInsets.safeDrawing.only(
+        WindowInsetsSides.Horizontal +
+          WindowInsetsSides.Bottom,
+      ),
+    ),
+  )
 }
 
 @Composable

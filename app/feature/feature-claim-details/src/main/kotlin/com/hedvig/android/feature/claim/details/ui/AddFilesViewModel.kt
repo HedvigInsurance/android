@@ -19,14 +19,16 @@ internal class AddFilesViewModel(
   private val fileService: FileService,
   private val targetUploadUrl: String,
   private val cacheManager: NetworkCacheManager,
-  initialFileUri: String,
+  initialFilesUri: List<String>,
 ) : ViewModel() {
   private val _uiState = MutableStateFlow(FileUploadUiState())
   val uiState: StateFlow<FileUploadUiState> = _uiState.asStateFlow()
 
   init {
     try {
-      addLocalFile(Uri.parse(initialFileUri))
+      for (uri in initialFilesUri) {
+        addLocalFile(Uri.parse(uri))
+      }
     } catch (e: Exception) {
       _uiState.update { it.copy(errorMessage = e.message) }
     }

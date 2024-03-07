@@ -40,11 +40,11 @@ fun NavGraphBuilder.claimDetailsGraph(
         appPackageId = appPackageId,
         navigateUp = navigateUp,
         onChatClick = { openChat(backStackEntry) },
-        onUri = { fileUri: Uri, uploadUri: String ->
+        onUri = { filesUri: List<Uri>, uploadUri: String ->
           navController.navigate(
             ClaimDetailDestinations.AddFilesDestination(
               targetUploadUrl = uploadUri,
-              initialFileUri = fileUri.toString(),
+              initialFilesUri = filesUri.map { it.toString() },
             ),
           )
         },
@@ -55,7 +55,7 @@ fun NavGraphBuilder.claimDetailsGraph(
       )
     }
     composable<ClaimDetailDestinations.AddFilesDestination> {
-      val viewModel: AddFilesViewModel = koinViewModel { parametersOf(targetUploadUrl, initialFileUri) }
+      val viewModel: AddFilesViewModel = koinViewModel { parametersOf(targetUploadUrl, initialFilesUri) }
       AddFilesDestination(
         viewModel = viewModel,
         navigateUp = navigateUp,

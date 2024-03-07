@@ -1,9 +1,9 @@
 package com.hedvig.android.feature.odyssey.step.fileupload
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
@@ -65,9 +65,7 @@ internal fun AddFilesScreen(
         BottomSpacing()
       },
       modifier = sideSpacingModifier,
-      gridContentPaddingValues =
-        WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
-          .asPaddingValues(),
+      gridContentPaddingValues = PaddingValues(),
     )
   }
 }
