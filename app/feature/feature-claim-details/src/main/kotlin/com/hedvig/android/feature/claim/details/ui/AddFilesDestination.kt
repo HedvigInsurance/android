@@ -13,9 +13,7 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -169,19 +167,14 @@ private fun AddFilesScreen(
             isLoading = uiState.isLoading,
           )
         },
-        bottomSpacing = {
-          BottomSpacing()
-        },
         files = uiState.localFiles,
         onRemoveFile = { fileToRemoveId = it },
         imageLoader = imageLoader,
-        gridContentPaddingValues = PaddingValues(),
-        modifier = Modifier.padding(
+        contentPadding =
           PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing.only(
-            WindowInsetsSides.Horizontal,
+            WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom,
           )
             .asPaddingValues(),
-        ),
         onClickFile = null,
       )
     }
@@ -194,30 +187,20 @@ private fun BelowGridContent(
   onContinueButtonClick: () -> Unit,
   isLoading: Boolean,
 ) {
-  Spacer(Modifier.height(16.dp))
-  HedvigSecondaryContainedButton(
-    text = stringResource(R.string.claim_status_detail_add_more_files),
-    onClick = onAddMoreFilesButtonClick,
-  )
-  Spacer(Modifier.height(8.dp))
-  HedvigContainedButton(
-    text = stringResource(R.string.general_continue_button),
-    onClick = onContinueButtonClick,
-    isLoading = isLoading,
-  )
-}
-
-@Composable
-private fun BottomSpacing() {
-  Spacer(Modifier.height(16.dp))
-  Spacer(
-    Modifier.windowInsetsPadding(
-      WindowInsets.safeDrawing.only(
-        WindowInsetsSides.Horizontal +
-          WindowInsetsSides.Bottom,
-      ),
-    ),
-  )
+  Column {
+    Spacer(Modifier.height(16.dp))
+    HedvigSecondaryContainedButton(
+      text = stringResource(R.string.claim_status_detail_add_more_files),
+      onClick = onAddMoreFilesButtonClick,
+    )
+    Spacer(Modifier.height(8.dp))
+    HedvigContainedButton(
+      text = stringResource(R.string.general_continue_button),
+      onClick = onContinueButtonClick,
+      isLoading = isLoading,
+    )
+    Spacer(Modifier.height(16.dp))
+  }
 }
 
 @HedvigMultiScreenPreview

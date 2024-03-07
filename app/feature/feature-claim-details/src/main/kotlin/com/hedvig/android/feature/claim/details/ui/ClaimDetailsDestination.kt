@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
@@ -231,7 +230,6 @@ private fun ClaimDetailScreen(
   }
   Column {
     DynamicFilesGridBetweenOtherThings(
-      bottomSpacing = { AfterGridSpacing() },
       belowGridContent = {
         AfterGridContent(
           uiState = uiState,
@@ -255,13 +253,9 @@ private fun ClaimDetailScreen(
         }
       },
       onRemoveFile = null,
-      gridContentPaddingValues = PaddingValues(),
-      modifier = Modifier.padding(
-        PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing.only(
-          WindowInsetsSides.Horizontal,
-        )
-          .asPaddingValues(),
-      ),
+      contentPadding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing.only(
+        WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom,
+      ).asPaddingValues(),
     )
   }
 }
@@ -361,6 +355,7 @@ private fun AfterGridContent(
         isLoading = uiState.isUploadingFile,
       )
     }
+    Spacer(Modifier.height(32.dp))
     if (uiState.uploadError != null) {
       ErrorDialog(
         message = uiState.uploadError,
@@ -368,19 +363,6 @@ private fun AfterGridContent(
       )
     }
   }
-}
-
-@Composable
-private fun AfterGridSpacing() {
-  Spacer(Modifier.height(32.dp))
-  Spacer(
-    Modifier.windowInsetsPadding(
-      WindowInsets.safeDrawing.only(
-        WindowInsetsSides.Horizontal +
-          WindowInsetsSides.Bottom,
-      ),
-    ),
-  )
 }
 
 @Composable

@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -69,20 +71,17 @@ import com.hedvig.android.core.uidata.UiFile
  */
 @Composable
 fun ColumnScope.DynamicFilesGridBetweenOtherThings(
-  modifier: Modifier = Modifier,
   files: List<UiFile>,
   imageLoader: ImageLoader,
   onRemoveFile: ((fileId: String) -> Unit)?,
   onClickFile: ((fileId: String) -> Unit)?,
+  contentPadding: PaddingValues,
+  modifier: Modifier = Modifier,
   aboveGridContent: @Composable () -> Unit = {},
   belowGridContent: @Composable () -> Unit = {},
-  bottomSpacing: @Composable () -> Unit = {},
   // todo: added this as a separate argument bc it's easy to forget about spacing if we have no below content,
   // todo: and putting some spacing in the default belowGridContent also feels weird, bc this fun could be called from
   // todo: a simple Column, ClaimFlowScaffold etc.
-  gridContentPaddingValues: PaddingValues =
-    WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
-      .asPaddingValues(),
 ) {
   var layoutHeight by remember { mutableIntStateOf(-1) }
   Layout(
@@ -90,13 +89,11 @@ fun ColumnScope.DynamicFilesGridBetweenOtherThings(
       Box {
         aboveGridContent()
       }
-      Column {
+      Box {
         belowGridContent()
-        bottomSpacing()
       }
       if (files.isNotEmpty()) {
         FilesLazyVerticalGrid(
-          paddingValues = gridContentPaddingValues,
           files = files,
           onRemoveFile = onRemoveFile,
           imageLoader = imageLoader,
@@ -110,25 +107,51 @@ fun ColumnScope.DynamicFilesGridBetweenOtherThings(
       .onSizeChanged { intSize -> layoutHeight = intSize.height }
       .verticalScroll(rememberScrollState()),
   ) { measurables, constraints ->
-    val beforeGridPlaceable = measurables[0].measure(constraints.copy(minWidth = 0, minHeight = 0))
-    val afterGridPlaceable = measurables[1].measure(constraints.copy(minWidth = 0, minHeight = 0))
-    val remainingHeightForGrid = layoutHeight - beforeGridPlaceable.height - afterGridPlaceable.height
+    val startContentPadding = contentPadding.calculateStartPadding(layoutDirection).roundToPx()
+    val horizontalContentPadding = startContentPadding +
+      contentPadding.calculateEndPadding(layoutDirection).roundToPx()
+    val topContentPadding = contentPadding.calculateTopPadding().roundToPx()
+    val bottomContentPadding = contentPadding.calculateBottomPadding().roundToPx()
+    val beforeGridPlaceable = measurables[0].measure(
+      constraints.copy(
+        minWidth = 0,
+        maxWidth = constraints.maxWidth - horizontalContentPadding,
+        minHeight = 0,
+      ),
+    )
+    val afterGridPlaceable = measurables[1].measure(
+      constraints.copy(
+        minWidth = 0,
+        maxWidth = constraints.maxWidth - horizontalContentPadding,
+        minHeight = 0,
+      ),
+    )
+    val remainingHeightForGrid =
+      layoutHeight - beforeGridPlaceable.height - afterGridPlaceable.height - topContentPadding - bottomContentPadding
     val actualGridHeight = remainingHeightForGrid.coerceAtLeast(170.dp.roundToPx())
     val gridPlaceable = measurables.getOrNull(2)?.measure(
-      constraints.copy(minWidth = 0, minHeight = actualGridHeight, maxHeight = actualGridHeight),
+      constraints.copy(
+        minWidth = 0,
+        minHeight = actualGridHeight,
+        maxWidth = constraints.maxWidth - horizontalContentPadding,
+        maxHeight = actualGridHeight,
+      ),
     )
     val allContentMeasuredHeight =
       beforeGridPlaceable.height + afterGridPlaceable.height + (gridPlaceable?.height ?: 0)
     layout(
-      constraints.maxWidth,
-      allContentMeasuredHeight.coerceAtLeast(layoutHeight),
+      width = constraints.maxWidth,
+      height = (allContentMeasuredHeight + topContentPadding + bottomContentPadding).coerceAtLeast(layoutHeight),
     ) {
-      beforeGridPlaceable.place(0, 0)
-      gridPlaceable?.place(0, beforeGridPlaceable.height)
+      beforeGridPlaceable.place(startContentPadding, topContentPadding)
+      gridPlaceable?.place(startContentPadding, beforeGridPlaceable.height + topContentPadding)
       if (gridPlaceable == null && remainingHeightForGrid > 0) {
-        afterGridPlaceable.place(0, layoutHeight - afterGridPlaceable.height)
+        afterGridPlaceable.place(startContentPadding, layoutHeight - (afterGridPlaceable.height + bottomContentPadding))
       } else {
-        afterGridPlaceable.place(0, beforeGridPlaceable.height + (gridPlaceable?.height ?: 0))
+        afterGridPlaceable.place(
+          startContentPadding,
+          beforeGridPlaceable.height + (gridPlaceable?.height ?: 0) + topContentPadding,
+        )
       }
     }
   }
@@ -145,7 +168,7 @@ private fun FilesLazyVerticalGrid(
   onClickFile: ((fileId: String) -> Unit)?,
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
-  paddingValues: PaddingValues,
+  paddingValues: PaddingValues = PaddingValues(),
 ) {
   LazyVerticalGrid(
     columns = GridCells.Adaptive(109.dp),
@@ -321,6 +344,7 @@ private fun PreviewDynamicFilesGridBetweenOtherThings() {
           onRemoveFile = null,
           onClickFile = null,
           modifier = Modifier,
+          contentPadding = PaddingValues(16.dp),
         )
       }
     }
@@ -349,9 +373,6 @@ private fun PreviewDynamicFilesGridManyFiles() {
               }
             }
           },
-          bottomSpacing = {
-            Spacer(Modifier.height(16.dp))
-          },
           files = List(25) {
             UiFile(
               name = "file",
@@ -366,6 +387,7 @@ private fun PreviewDynamicFilesGridManyFiles() {
           onRemoveFile = null,
           onClickFile = null,
           modifier = Modifier,
+          contentPadding = PaddingValues(16.dp),
         )
       }
     }

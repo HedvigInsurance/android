@@ -1,13 +1,13 @@
 package com.hedvig.android.feature.odyssey.step.fileupload
 
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Surface
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
@@ -61,11 +61,8 @@ internal fun AddFilesScreen(
           onContinueClick = onContinue,
         )
       },
-      bottomSpacing = {
-        BottomSpacing()
-      },
       modifier = sideSpacingModifier,
-      gridContentPaddingValues = PaddingValues(),
+      contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom).asPaddingValues(),
     )
   }
 }
@@ -77,25 +74,22 @@ private fun BelowContent(
   onAddMoreFilesClick: () -> Unit,
   onContinueClick: () -> Unit,
 ) {
-  Spacer(Modifier.height(16.dp))
-  HedvigSecondaryContainedButton(
-    text = stringResource(R.string.claim_status_detail_add_more_files),
-    onClick = onAddMoreFilesClick,
-    modifier = modifier,
-  )
-  Spacer(Modifier.height(8.dp))
-  HedvigContainedButton(
-    text = stringResource(R.string.general_continue_button),
-    onClick = onContinueClick,
-    isLoading = isLoading,
-    modifier = modifier,
-  )
-}
-
-@Composable
-private fun BottomSpacing() {
-  Spacer(Modifier.height(16.dp))
-  Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
+  Column {
+    Spacer(Modifier.height(16.dp))
+    HedvigSecondaryContainedButton(
+      text = stringResource(R.string.claim_status_detail_add_more_files),
+      onClick = onAddMoreFilesClick,
+      modifier = modifier,
+    )
+    Spacer(Modifier.height(8.dp))
+    HedvigContainedButton(
+      text = stringResource(R.string.general_continue_button),
+      onClick = onContinueClick,
+      isLoading = isLoading,
+      modifier = modifier,
+    )
+    Spacer(Modifier.height(16.dp))
+  }
 }
 
 @HedvigMultiScreenPreview

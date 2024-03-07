@@ -1,15 +1,14 @@
 package com.hedvig.android.feature.odyssey.step.summary
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -107,18 +106,8 @@ private fun ClaimSummaryScreen(
       onRemoveFile = null,
       aboveGridContent = { BeforeGridContent(uiState = uiState) },
       belowGridContent = { AfterGridContent(uiState = uiState, submitSummary = submitSummary) },
-      bottomSpacing = {
-        Column {
-          Spacer(Modifier.height(16.dp))
-          Spacer(
-            Modifier.windowInsetsPadding(
-              WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom),
-            ),
-          )
-        }
-      },
       onClickFile = {},
-      gridContentPaddingValues = PaddingValues(),
+      contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom).asPaddingValues(),
     )
   }
 }
@@ -181,6 +170,7 @@ private fun AfterGridContent(uiState: ClaimSummaryUiState, submitSummary: () -> 
       isLoading = uiState.claimSummaryStatusUiState.isLoading,
       enabled = uiState.canSubmit,
     )
+    Spacer(Modifier.height(16.dp))
   }
 }
 
