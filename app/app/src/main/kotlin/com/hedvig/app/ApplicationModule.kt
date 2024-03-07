@@ -28,6 +28,7 @@ import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.auth.di.authModule
 import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
+import com.hedvig.android.core.appreview.SelfServiceCompletedEventStore
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.di.coreCommonModule
@@ -35,6 +36,7 @@ import com.hedvig.android.core.common.di.datastoreFileQualifier
 import com.hedvig.android.core.datastore.di.dataStoreModule
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.di.demoModule
+import com.hedvig.android.core.di.coreAppReviewModule
 import com.hedvig.android.core.fileupload.fileUploadModule
 import com.hedvig.android.data.chat.read.timestamp.di.chatReadTimestampModule
 import com.hedvig.android.data.claimflow.di.claimFlowDataModule
@@ -45,7 +47,6 @@ import com.hedvig.android.datadog.core.addDatadogConfiguration
 import com.hedvig.android.datadog.core.di.datadogModule
 import com.hedvig.android.datadog.demo.tracking.di.datadogDemoTrackingModule
 import com.hedvig.android.feature.changeaddress.di.changeAddressModule
-import com.hedvig.android.feature.chat.closedevent.ChatClosedEventStore
 import com.hedvig.android.feature.chat.data.ChatRepository
 import com.hedvig.android.feature.chat.di.chatModule
 import com.hedvig.android.feature.claim.details.di.claimDetailsModule
@@ -84,7 +85,6 @@ import com.hedvig.app.feature.chat.service.ReplyWorker
 import com.hedvig.app.feature.genericauth.GenericAuthViewModel
 import com.hedvig.app.feature.genericauth.otpinput.OtpInputViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.feature.loggedin.ui.ReviewDialogViewModel
 import com.hedvig.app.feature.marketing.MarketingActivity
 import com.hedvig.app.service.push.senders.CrossSellNotificationSender
 import com.hedvig.app.service.push.senders.GenericNotificationSender
@@ -197,7 +197,6 @@ private val viewModelModule = module {
       get(),
     )
   }
-  viewModel<ReviewDialogViewModel> { ReviewDialogViewModel(get()) }
 }
 
 private val activityNavigatorModule = module {
@@ -256,7 +255,7 @@ private val useCaseModule = module {
   single<LogoutUseCase> {
     LogoutUseCaseImpl(
       get<AuthTokenService>(),
-      get<ChatClosedEventStore>(),
+      get<SelfServiceCompletedEventStore>(),
       get<ApplicationScope>(),
       get<DemoManager>(),
     )
@@ -377,6 +376,7 @@ val applicationModule = module {
       useCaseModule,
       viewModelModule,
       workManagerModule,
+      coreAppReviewModule,
     ),
   )
 }

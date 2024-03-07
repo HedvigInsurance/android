@@ -2,6 +2,7 @@ package com.hedvig.android.feature.editcoinsured.di
 
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.NetworkCacheManager
+import com.hedvig.android.core.appreview.SelfServiceCompletedEventStore
 import com.hedvig.android.feature.editcoinsured.data.CommitMidtermChangeUseCase
 import com.hedvig.android.feature.editcoinsured.data.CommitMidtermChangeUseCaseImpl
 import com.hedvig.android.feature.editcoinsured.data.CreateMidtermChangeUseCase
@@ -37,6 +38,7 @@ val editCoInsuredModule = module {
     CommitMidtermChangeUseCaseImpl(
       get<ApolloClient>(),
       get<NetworkCacheManager>(),
+      get<SelfServiceCompletedEventStore>(),
     )
   }
 

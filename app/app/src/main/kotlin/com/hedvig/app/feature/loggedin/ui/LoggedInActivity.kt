@@ -30,6 +30,7 @@ import com.hedvig.android.app.ui.HedvigApp
 import com.hedvig.android.app.ui.rememberHedvigAppState
 import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
+import com.hedvig.android.core.appreview.ReviewDialogViewModel
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -141,12 +142,6 @@ class LoggedInActivity : AppCompatActivity() {
           }
         }
       }
-      if (intent.getBooleanExtra(SHOW_RATING_DIALOG, false)) {
-        launch {
-          authTokenService.authStatus.first { it is AuthStatus.LoggedIn }
-          showReviewWithDelay()
-        }
-      }
       lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
         authTokenService.authStatus
           .onEach { authStatus ->
@@ -240,14 +235,12 @@ class LoggedInActivity : AppCompatActivity() {
 
   companion object {
     private const val INITIAL_TAB = "INITIAL_TAB"
-    private const val SHOW_RATING_DIALOG = "SHOW_RATING_DIALOG"
     private const val REVIEW_DIALOG_DELAY_MILLIS = 2000L
 
     fun newInstance(
       context: Context,
       withoutHistory: Boolean = false,
       initialTab: TopLevelGraph = TopLevelGraph.HOME,
-      showRatingDialog: Boolean = false,
     ): Intent = Intent(context, LoggedInActivity::class.java).apply {
       logcat(LogPriority.INFO) { "LoggedInActivity.newInstance was called. withoutHistory:$withoutHistory" }
       if (withoutHistory) {
@@ -257,7 +250,6 @@ class LoggedInActivity : AppCompatActivity() {
       if (initialTab != TopLevelGraph.HOME) {
         putExtra(INITIAL_TAB, initialTab.toName())
       }
-      putExtra(SHOW_RATING_DIALOG, showRatingDialog)
     }
   }
 }

@@ -7,8 +7,6 @@ import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.fileupload.FileService
 import com.hedvig.android.data.chat.read.timestamp.ChatLastMessageReadRepository
 import com.hedvig.android.feature.chat.ChatViewModel
-import com.hedvig.android.feature.chat.closedevent.ChatClosedEventDataStore
-import com.hedvig.android.feature.chat.closedevent.ChatClosedEventStore
 import com.hedvig.android.feature.chat.data.BotServiceService
 import com.hedvig.android.feature.chat.data.ChatRepository
 import com.hedvig.android.feature.chat.data.ChatRepositoryDemo
@@ -25,7 +23,6 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 
 val chatModule = module {
-  single<ChatClosedEventStore> { ChatClosedEventDataStore(get()) }
   viewModel<ChatViewModel> { parametersHolder ->
     val chatContext = parametersHolder.getOrNull<AppDestination.Chat.ChatContext>()
     ChatViewModel(
