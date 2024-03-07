@@ -1,5 +1,7 @@
 package com.hedvig.android.feature.odyssey.step.informdeflect
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -24,6 +26,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -55,7 +58,6 @@ internal fun DeflectTowingDestination(
   closeClaimFlow: () -> Unit,
   windowSizeClass: WindowSizeClass,
   navigateUp: () -> Unit,
-  openUrl: (String) -> Unit,
   imageLoader: ImageLoader,
 ) {
   DeflectTowingScreen(
@@ -64,7 +66,6 @@ internal fun DeflectTowingDestination(
     closeClaimFlow = closeClaimFlow,
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
-    openUrl = openUrl,
     imageLoader = imageLoader,
   )
 }
@@ -76,26 +77,22 @@ private fun DeflectTowingScreen(
   closeClaimFlow: () -> Unit,
   windowSizeClass: WindowSizeClass,
   navigateUp: () -> Unit,
-  openUrl: (String) -> Unit,
   imageLoader: ImageLoader,
 ) {
   ClaimFlowScaffold(
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
     closeClaimFlow = closeClaimFlow,
-    // todo: put real copy here
-    topAppBarText = "Towing",
+    topAppBarText = stringResource(id = R.string.SUBMIT_CLAIM_TOWING_TITLE),
   ) {
     Spacer(Modifier.height(8.dp))
     VectorInfoCard(
-      // todo: put real copy here
-      text = "You need to contact Assistancekåren directly to get help",
+      text = stringResource(id = R.string.SUBMIT_CLAIM_TOWING_INFO_LABEL),
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(16.dp))
     Text(
-      // todo: put real copy here
-      text = "Our partner",
+      text = stringResource(id = R.string.SUBMIT_CLAIM_PARTNER_SINGULAR_TITLE),
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(16.dp))
@@ -125,23 +122,33 @@ private fun DeflectTowingScreen(
           )
           Spacer(Modifier.height(16.dp))
           Text(
-            // todo: put real copy here
-            text = "Direct help all day long",
+            text = stringResource(id = R.string.SUBMIT_CLAIM_TOWING_ONLINE_BOOKING_LABEL),
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth(),
           )
           Spacer(Modifier.height(16.dp))
+          val context = LocalContext.current
           HedvigContainedButton(
-            // todo: put real copy here
-            text = "Call now",
+            text = stringResource(id = R.string.SUBMIT_CLAIM_TOWING_ONLINE_BOOKING_BUTTON),
             onClick = {
-              val url = partner.url
-              if (url != null) {
-                openUrl(url)
+              val phoneNumber = partner.phoneNumber
+              if (phoneNumber != null) {
+                try {
+                  context.startActivity(
+                    Intent(
+                      Intent.ACTION_DIAL,
+                      Uri.parse("tel:$phoneNumber"),
+                    ),
+                  )
+                } catch (exception: Throwable) {
+                  logcat(LogPriority.ERROR, exception) {
+                    "Could not open dial activity in deflect towing destination"
+                  }
+                }
               } else {
                 logcat(LogPriority.ERROR) {
                   """
-                  |Partner URL was null for DeflectTowingDestination! Deflect partner:[$this]. 
+                  |Partner phone number was null for DeflectTowingDestination! Deflect partner:[$this]. 
                   |This is problematic because the UI offers no real help to the member, the CTA button does nothing.
                   """.trimMargin()
                 }
@@ -158,8 +165,7 @@ private fun DeflectTowingScreen(
     )
     Spacer(Modifier.height(8.dp))
     Text(
-      // todo: put real copy here
-      text = "it works super easy bla-bla-bla",
+      text = stringResource(id = R.string.SUBMIT_CLAIM_TOWING_HOW_IT_WORKS_LABEL),
       modifier = Modifier.padding(horizontal = 16.dp),
       color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
@@ -202,10 +208,9 @@ private fun DeflectTowingScreen(
 private fun QuestionsAndAnswers(modifier: Modifier = Modifier) {
   var expandedItem by rememberSaveable { mutableIntStateOf(-1) }
   val faqList = listOf(
-    // todo: put real copy here!!
-    stringResource(R.string.SUBMIT_CLAIM_WHAT_COST_TITLE) to "blablabla",
-    stringResource(R.string.SUBMIT_CLAIM_HOW_BOOK_TITLE) to "blablabla",
-    stringResource(R.string.SUBMIT_CLAIM_WORKSHOP_TITLE) to "blablabla",
+    stringResource(R.string.SUBMIT_CLAIM_TOWING_Q1) to stringResource(R.string.SUBMIT_CLAIM_TOWING_A1),
+    stringResource(R.string.SUBMIT_CLAIM_TOWING_Q2) to stringResource(R.string.SUBMIT_CLAIM_TOWING_A2),
+    stringResource(R.string.SUBMIT_CLAIM_TOWING_Q3) to stringResource(R.string.SUBMIT_CLAIM_TOWING_A3),
   )
   Column(modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
     faqList.forEachIndexed { index, faqItem ->
@@ -250,7 +255,6 @@ private fun PreviewDeflectTowingScreen() {
         windowSizeClass = WindowSizeClass.calculateForPreview(),
         navigateUp = {},
         imageLoader = rememberPreviewImageLoader(),
-        openUrl = {},
       )
     }
   }
