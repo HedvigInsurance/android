@@ -4,6 +4,7 @@ import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.core.uidata.UiNullableMoney
 import com.hedvig.android.data.claimflow.model.AudioUrl
+import com.hedvig.audio.player.data.SignedAudioUrl
 import kotlinx.collections.immutable.toPersistentList
 import octopus.fragment.AudioContentFragment
 import octopus.fragment.AutomaticAutogiroPayoutFragment
@@ -72,6 +73,18 @@ fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
         selectedItemModel = selectedItemModel,
         availableItemProblems = availableItemProblems?.map { it.toItemProblem() },
         selectedItemProblems = selectedItemProblems,
+        files = fileUploads?.map {
+          UiFile(
+            id = it.fileId,
+            name = it.name,
+            mimeType = it.mimeType,
+            url = it.signedUrl,
+            localPath = null,
+          )
+        } ?: listOf(),
+        submittedContent = signedAudioUrl?.let {
+          SubmittedContent.Audio(SignedAudioUrl.fromSignedAudioUrlString(it))
+        },
       )
     }
 
@@ -177,6 +190,7 @@ private fun FlowClaimFileUploadFragment.Upload.toLocalUpload(): UiFile {
     id = fileId,
     name = name,
     mimeType = mimeType,
-    path = signedUrl,
+    url = signedUrl,
+    localPath = null,
   )
 }

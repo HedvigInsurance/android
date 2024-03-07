@@ -380,7 +380,8 @@ private class FakeGetEurobonusStatusUseCase() : GetEurobonusStatusUseCase {
   }
 }
 
-private class FakeCheckTravelCertificateDestinationAvailabilityUseCase : CheckTravelCertificateDestinationAvailabilityUseCase {
+private class FakeCheckTravelCertificateDestinationAvailabilityUseCase :
+  CheckTravelCertificateDestinationAvailabilityUseCase {
   val turbine = Turbine<Either<TravelCertificateAvailabilityError, Unit>>(
     name = "TravelCertificateAvailability response",
   )

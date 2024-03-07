@@ -42,16 +42,16 @@ internal fun FileUploadDestination(
     viewModel.addLocalFile(uri)
   }
   val photoPicker = rememberLauncherForActivityResult(
-    contract = ActivityResultContracts.PickVisualMedia(),
-  ) { resultingUri: Uri? ->
-    if (resultingUri != null) {
+    contract = ActivityResultContracts.PickMultipleVisualMedia(),
+  ) { resultingUriList: List<Uri> ->
+    for (resultingUri in resultingUriList) {
       viewModel.addLocalFile(resultingUri)
     }
   }
   val filePicker = rememberLauncherForActivityResult(
-    contract = ActivityResultContracts.GetContent(),
-  ) { resultingUri: Uri? ->
-    if (resultingUri != null) {
+    contract = ActivityResultContracts.GetMultipleContents(),
+  ) { resultingUriList: List<Uri> ->
+    for (resultingUri in resultingUriList) {
       viewModel.addLocalFile(resultingUri)
     }
   }

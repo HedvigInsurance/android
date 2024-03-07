@@ -22,7 +22,8 @@ import octopus.AvailableSelfServiceOnContractsQuery
 internal class GetQuickLinksUseCase(
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,
-  private val checkTravelCertificateDestinationAvailabilityUseCase: CheckTravelCertificateDestinationAvailabilityUseCase,
+  private val checkTravelCertificateDestinationAvailabilityUseCase:
+    CheckTravelCertificateDestinationAvailabilityUseCase,
 ) {
   suspend fun invoke(): Either<ErrorMessage, PersistentList<QuickAction>> = either {
     val contracts = apolloClient.query(AvailableSelfServiceOnContractsQuery())

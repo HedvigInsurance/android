@@ -83,9 +83,9 @@ internal fun ClaimFlowScaffold(
         ) {
           val sideSpacingModifier = if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded) {
             Modifier
+              .fillMaxWidth(1f)
+              .wrapContentWidth(Alignment.CenterHorizontally)
               .fillMaxWidth(0.8f)
-              .wrapContentWidth(Alignment.Start)
-              .align(Alignment.CenterHorizontally)
           } else {
             Modifier.padding(horizontal = 16.dp)
           }

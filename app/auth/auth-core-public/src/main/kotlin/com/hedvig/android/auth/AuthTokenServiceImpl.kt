@@ -68,16 +68,4 @@ internal class AuthTokenServiceImpl(
   private suspend fun getRefreshToken(): LocalRefreshToken? {
     return authTokenStorage.getTokens().first()?.refreshToken
   }
-
-  override suspend fun migrateFromToken(token: String) {
-    when (val result = authRepository.migrateOldToken(token)) {
-      is AuthTokenResult.Error -> {
-        logcat { "Migrating old token failed, logging out" }
-        logoutAndInvalidateTokens()
-      }
-      is AuthTokenResult.Success -> {
-        loginWithTokens(result.accessToken, result.refreshToken)
-      }
-    }
-  }
 }

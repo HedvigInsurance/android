@@ -3,7 +3,6 @@ package com.hedvig.android.feature.login.swedishlogin
 import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -15,7 +14,6 @@ import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.market.Market
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.authlib.AuthAttemptResult
@@ -23,9 +21,7 @@ import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.AuthTokenResult
 import com.hedvig.authlib.LoginMethod
 import com.hedvig.authlib.LoginStatusResult
-import kotlinx.coroutines.flow.flatMapConcat
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
+import com.hedvig.authlib.OtpMarket
 import kotlinx.coroutines.launch
 
 internal class SwedishLoginPresenter(
@@ -44,54 +40,54 @@ internal class SwedishLoginPresenter(
     // with BankID, and then they should be able to login with the QR code directly, without being forced into BankID
     // again.
     var allowOpeningBankId: Boolean by remember { mutableStateOf(true) }
-
-    val loginStatusResult = remember(retryIndex) {
-      snapshotFlow { bankIdProperties }.flatMapConcat { bankIdProperties ->
-        if (bankIdProperties == null) return@flatMapConcat flowOf(null)
-        authRepository.observeLoginStatus(bankIdProperties.statusUrl)
-          .map { loginStatusResult ->
-            if (loginStatusResult is LoginStatusResult.Completed) {
-              when (val authTokenResult = authRepository.exchange(loginStatusResult.authorizationCode)) {
-                is AuthTokenResult.Error -> {
-                  logcat(LogPriority.ERROR) { "Login failed, with error: $authTokenResult" }
-                  return@map when (authTokenResult) {
-                    is AuthTokenResult.Error.BackendErrorResponse -> {
-                      LoginStatusResult.Failed(
-                        "Error code:${authTokenResult.httpStatusValue}. ${authTokenResult.message}",
-                      )
-                    }
-
-                    is AuthTokenResult.Error.IOError -> LoginStatusResult.Failed("IO Error ${authTokenResult.message}")
-                    is AuthTokenResult.Error.UnknownError -> LoginStatusResult.Failed(authTokenResult.message)
-                  }
-                }
-
-                is AuthTokenResult.Success -> {
-                  authTokenService.loginWithTokens(
-                    authTokenResult.accessToken,
-                    authTokenResult.refreshToken,
-                  )
-                  navigateToLoginScreen = true
-                  logcat(LogPriority.INFO) { "Logged in!" }
-                }
-              }
-            }
-            loginStatusResult
-          }
-      }
-    }.collectAsState(initial = null).value
+    var loginStatusResult: LoginStatusResult? by remember { mutableStateOf(null) }
 
     LaunchedEffect(retryIndex) {
-      val result = authRepository.startLoginAttempt(LoginMethod.SE_BANKID, Market.SE.name)
+      snapshotFlow { bankIdProperties }.collect { bankIdProperties ->
+        if (bankIdProperties == null) {
+          loginStatusResult = null
+          return@collect
+        }
+        authRepository.observeLoginStatus(bankIdProperties.statusUrl).collect { latestLoginStatusResult ->
+          if (latestLoginStatusResult is LoginStatusResult.Completed) {
+            when (val authTokenResult = authRepository.exchange(latestLoginStatusResult.authorizationCode)) {
+              is AuthTokenResult.Error -> {
+                logcat(LogPriority.ERROR) { "Login failed, with error: $authTokenResult" }
+                loginStatusResult = when (authTokenResult) {
+                  is AuthTokenResult.Error.BackendErrorResponse -> {
+                    LoginStatusResult.Exception("Error: ${authTokenResult.message}")
+                  }
+
+                  is AuthTokenResult.Error.IOError -> LoginStatusResult.Exception("IO Error ${authTokenResult.message}")
+                  is AuthTokenResult.Error.UnknownError -> LoginStatusResult.Exception(authTokenResult.message)
+                }
+              }
+
+              is AuthTokenResult.Success -> {
+                authTokenService.loginWithTokens(
+                  authTokenResult.accessToken,
+                  authTokenResult.refreshToken,
+                )
+                navigateToLoginScreen = true
+                logcat(LogPriority.INFO) { "Logged in!" }
+              }
+            }
+          } else {
+            if (latestLoginStatusResult is LoginStatusResult.Exception) {
+              logcat(LogPriority.ERROR) { "Got exception for login status: ${latestLoginStatusResult.message}" }
+            }
+            loginStatusResult = latestLoginStatusResult
+          }
+        }
+      }
+    }
+
+    LaunchedEffect(retryIndex) {
+      val result = authRepository.startLoginAttempt(LoginMethod.SE_BANKID, OtpMarket.SE)
       when (result) {
         is AuthAttemptResult.BankIdProperties -> bankIdProperties = result
         is AuthAttemptResult.Error -> {
           logcat(LogPriority.ERROR) { "Got Error when signing in with BankId: $result" }
-          startLoginAttemptFailed = true
-        }
-
-        is AuthAttemptResult.ZignSecProperties -> {
-          logcat(LogPriority.ERROR) { "Got ZignSec properties when signing in with BankId" }
           startLoginAttemptFailed = true
         }
 
@@ -123,22 +119,28 @@ internal class SwedishLoginPresenter(
       return SwedishLoginUiState.StartLoginAttemptFailed
     }
     val bankIdPropertiesValue = bankIdProperties
-    if (bankIdPropertiesValue == null || loginStatusResult == null) {
+    if (bankIdPropertiesValue == null) {
       return SwedishLoginUiState.Loading
     }
-    if (loginStatusResult is LoginStatusResult.Failed) {
-      return SwedishLoginUiState.BankIdError(loginStatusResult.message)
+    val loginStatusResultValue = loginStatusResult
+    return when (loginStatusResultValue) {
+      null -> SwedishLoginUiState.Loading
+      is LoginStatusResult.Failed -> SwedishLoginUiState.BankIdError(loginStatusResultValue.localisedMessage)
+      is LoginStatusResult.Exception -> SwedishLoginUiState.BankIdError(loginStatusResultValue.message)
+      is LoginStatusResult.Completed -> SwedishLoginUiState.LoggedIn(navigateToLoginScreen)
+      is LoginStatusResult.Pending -> {
+        SwedishLoginUiState.HandlingBankId(
+          statusMessage = loginStatusResultValue.statusMessage,
+          autoStartToken = SwedishLoginUiState.HandlingBankId.AutoStartToken(bankIdPropertiesValue.autoStartToken),
+          bankIdLiveQrCodeData = loginStatusResultValue.bankIdProperties?.liveQrCodeData?.let {
+            SwedishLoginUiState.HandlingBankId.BankIdLiveQrCodeData(it)
+          },
+          bankIdAppOpened = loginStatusResultValue.bankIdProperties?.bankIdAppOpened == true,
+          allowOpeningBankId = allowOpeningBankId,
+          navigateToLoginScreen = navigateToLoginScreen,
+        )
+      }
     }
-    if (loginStatusResult is LoginStatusResult.Exception) {
-      logcat(LogPriority.ERROR) { "Got exception for login status: ${loginStatusResult.message}" }
-      return SwedishLoginUiState.BankIdError(loginStatusResult.message)
-    }
-    return SwedishLoginUiState.HandlingBankId(
-      autoStartToken = SwedishLoginUiState.HandlingBankId.AutoStartToken(bankIdPropertiesValue.autoStartToken),
-      loginStatusResult = loginStatusResult,
-      allowOpeningBankId = allowOpeningBankId,
-      navigateToLoginScreen = navigateToLoginScreen,
-    )
   }
 }
 
@@ -154,24 +156,27 @@ internal sealed interface SwedishLoginEvent {
 
 internal sealed interface SwedishLoginUiState {
   data class HandlingBankId(
+    val statusMessage: String,
     val autoStartToken: AutoStartToken,
-    val loginStatusResult: LoginStatusResult,
+    val bankIdLiveQrCodeData: BankIdLiveQrCodeData?,
+    val bankIdAppOpened: Boolean,
     val allowOpeningBankId: Boolean,
     val navigateToLoginScreen: Boolean,
   ) : SwedishLoginUiState {
     @JvmInline
     value class AutoStartToken(val token: String) {
-      // Used to generate the QR code that BankID can read
-      val autoStartUrl: String
-        get() = "bankid:///?autostarttoken=$token"
-
       // The Uri which opens the BankId app while also passing in the right autoStartUrl
       val bankIdUri: Uri
-        get() = Uri.parse("$autoStartUrl&redirect=null")
+        get() = Uri.parse("bankid:///?autostarttoken=$token&redirect=null")
     }
+
+    @JvmInline
+    value class BankIdLiveQrCodeData(val data: String)
   }
 
   data object Loading : SwedishLoginUiState
+
+  data class LoggedIn(val navigateToLoginScreen: Boolean) : SwedishLoginUiState
 
   data class BankIdError(val message: String) : SwedishLoginUiState
 

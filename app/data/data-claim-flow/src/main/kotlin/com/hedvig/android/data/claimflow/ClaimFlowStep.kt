@@ -93,6 +93,8 @@ sealed interface ClaimFlowStep {
     val selectedItemModel: String?,
     val availableItemProblems: List<FlowClaimSingleItemStepFragment.AvailableItemProblem>?,
     val selectedItemProblems: List<String>?,
+    val signedAudioUrl: String?,
+    val fileUploads: List<ClaimFlowStepFragment.FlowClaimSummaryStepCurrentStep.FileUploadStep.Upload>?,
   ) : ClaimFlowStep
 
   data class ClaimDeflectGlassDamageStep(
@@ -177,6 +179,7 @@ internal fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(flowId: FlowId): 
         selectedItemProblems,
       )
     }
+
     is ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep -> {
       ClaimFlowStep.ClaimResolutionSingleItemStep(
         flowId,
@@ -187,6 +190,7 @@ internal fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(flowId: FlowId): 
         availableCheckoutMethods,
       )
     }
+
     is ClaimFlowStepFragment.FlowClaimSummaryStepCurrentStep -> {
       ClaimFlowStep.ClaimSummaryStep(
         flowId,
@@ -204,42 +208,52 @@ internal fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(flowId: FlowId): 
         singleItemStep?.selectedItemModel,
         singleItemStep?.availableItemProblems,
         singleItemStep?.selectedItemProblems,
+        fileUploads = fileUploadStep?.uploads,
+        signedAudioUrl = audioRecordingStep?.audioContent?.signedUrl,
       )
     }
+
     is ClaimFlowStepFragment.FlowClaimFailedStepCurrentStep -> ClaimFlowStep.ClaimFailedStep(flowId)
     is ClaimFlowStepFragment.FlowClaimSuccessStepCurrentStep -> ClaimFlowStep.ClaimSuccessStep(flowId)
     is ClaimFlowStepFragment.FlowClaimContractSelectStepCurrentStep -> ClaimFlowStep.ClaimSelectContractStep(
       flowId,
       options,
     )
+
     is ClaimFlowStepFragment.FlowClaimDeflectGlassDamageStepCurrentStep -> ClaimFlowStep.ClaimDeflectGlassDamageStep(
       flowId,
       partners,
     )
+
     is ClaimFlowStepFragment.FlowClaimDeflectTowingStepCurrentStep -> ClaimFlowStep.ClaimDeflectTowingStep(
       flowId,
       partners,
     )
+
     is ClaimFlowStepFragment.FlowClaimConfirmEmergencyStepCurrentStep -> ClaimFlowStep.ClaimConfirmEmergencyStep(
       flowId,
       text,
       confirmEmergency,
       options,
     )
+
     is ClaimFlowStepFragment.FlowClaimDeflectEmergencyStepCurrentStep -> ClaimFlowStep.ClaimDeflectEmergencyStep(
       flowId,
       partners,
     )
+
     is ClaimFlowStepFragment.FlowClaimDeflectPestsStepCurrentStep -> ClaimFlowStep.ClaimDeflectPestsStep(
       flowId,
       partners,
     )
+
     is ClaimFlowStepFragment.FlowClaimFileUploadStepCurrentStep -> ClaimFlowStep.ClaimFileUploadStep(
       flowId,
       title,
       targetUploadUrl,
       uploads,
     )
+
     else -> ClaimFlowStep.UnknownStep(flowId)
   }
 }
