@@ -19,7 +19,7 @@ import com.hedvig.authlib.AuthTokenResult
 import com.hedvig.authlib.AuthorizationCodeGrant
 import com.hedvig.authlib.LoginStatusResult
 import com.hedvig.authlib.RefreshToken
-import com.hedvig.authlib.url.LoginStatusUrl
+import com.hedvig.authlib.StatusUrl
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
@@ -51,7 +51,7 @@ class SwedishLoginPresenterTest {
     presenter.test(SwedishLoginUiState.Loading) {
       assertThat(awaitItem()).isInstanceOf<SwedishLoginUiState.Loading>()
       authRepository.authAttemptResponse.add(
-        AuthAttemptResult.BankIdProperties("", LoginStatusUrl(""), "autoStartToken"),
+        AuthAttemptResult.BankIdProperties("", StatusUrl(""), "autoStartToken"),
       )
       awaitUnchanged()
 
@@ -122,7 +122,7 @@ class SwedishLoginPresenterTest {
     presenter.test(SwedishLoginUiState.Loading) {
       assertThat(awaitItem()).isInstanceOf<SwedishLoginUiState.Loading>()
       authRepository.authAttemptResponse.add(
-        AuthAttemptResult.BankIdProperties("", LoginStatusUrl(""), ""),
+        AuthAttemptResult.BankIdProperties("", StatusUrl(""), ""),
       )
       authRepository.loginStatusResponse.add(
         LoginStatusResult.Pending(
@@ -157,7 +157,7 @@ class SwedishLoginPresenterTest {
     presenter.test(SwedishLoginUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(SwedishLoginUiState.Loading)
       authRepository.authAttemptResponse.add(
-        AuthAttemptResult.BankIdProperties("", LoginStatusUrl(""), ""),
+        AuthAttemptResult.BankIdProperties("", StatusUrl(""), ""),
       )
       authRepository.loginStatusResponse.add(
         LoginStatusResult.Pending(
@@ -188,7 +188,7 @@ class SwedishLoginPresenterTest {
 
     presenter.test(SwedishLoginUiState.Loading) {
       authRepository.authAttemptResponse.add(
-        AuthAttemptResult.BankIdProperties("", LoginStatusUrl(""), ""),
+        AuthAttemptResult.BankIdProperties("", StatusUrl(""), ""),
       )
       authRepository.loginStatusResponse.add(LoginStatusResult.Completed(AuthorizationCodeGrant("grant")))
       authRepository.exchangeResponse.add(AuthTokenResult.Success(AccessToken("123", 90), RefreshToken("456", 90)))
