@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -35,6 +36,8 @@ import coil.compose.AsyncImage
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
+import com.hedvig.android.core.designsystem.material3.alwaysBlackContainer
+import com.hedvig.android.core.designsystem.material3.onAlwaysBlackContainer
 import com.hedvig.android.core.designsystem.material3.rememberShapedColorPainter
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -102,8 +105,8 @@ private fun DeflectTowingScreen(
       }
       HedvigCard(
         colors = CardDefaults.outlinedCardColors(
-          containerColor = MaterialTheme.colorScheme.surfaceVariant,
-          contentColor = MaterialTheme.colorScheme.onSurface,
+          containerColor = MaterialTheme.colorScheme.alwaysBlackContainer,
+          contentColor = MaterialTheme.colorScheme.onAlwaysBlackContainer,
         ),
         modifier = Modifier
           .padding(horizontal = 16.dp)
@@ -129,6 +132,10 @@ private fun DeflectTowingScreen(
           Spacer(Modifier.height(16.dp))
           val context = LocalContext.current
           HedvigContainedButton(
+            colors = ButtonDefaults.buttonColors(
+              containerColor = MaterialTheme.colorScheme.onAlwaysBlackContainer,
+              contentColor = MaterialTheme.colorScheme.alwaysBlackContainer,
+            ),
             text = stringResource(id = R.string.SUBMIT_CLAIM_TOWING_ONLINE_BOOKING_BUTTON),
             onClick = {
               val phoneNumber = partner.phoneNumber
@@ -147,10 +154,7 @@ private fun DeflectTowingScreen(
                 }
               } else {
                 logcat(LogPriority.ERROR) {
-                  """
-                  |Partner phone number was null for DeflectTowingDestination! Deflect partner:[$this]. 
-                  |This is problematic because the UI offers no real help to the member, the CTA button does nothing.
-                  """.trimMargin()
+                  "Partner phone number was null for DeflectTowingDestination! Deflect partner: $partner."
                 }
               }
             },

@@ -261,7 +261,6 @@ fun NavGraphBuilder.claimFlowGraph(
         },
         windowSizeClass = windowSizeClass,
         navigateUp = navigator::navigateUp,
-        callPhoneNumber = { TODO() },
         closeClaimFlow = closeClaimFlow,
         imageLoader = imageLoader,
       )
