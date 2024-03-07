@@ -33,6 +33,7 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -241,6 +242,7 @@ private fun File(
         modifier = Modifier
           .size(16.dp)
           .wrapContentSize(unbounded = true)
+          .minimumInteractiveComponentSize()
           .shadow(elevation = 4.dp, shape = CircleShape)
           .size(24.dp),
       ) {
