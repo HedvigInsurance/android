@@ -137,8 +137,6 @@ fun ColumnScope.DynamicFilesGridBetweenOtherThings(
  * Note that the [paddingValues] are added on top of a predefined `PaddingValues(top = 8.dp, end = 8.dp, start = 8.dp)`
  * which is used to ensure that the offset X button does not get clipped, nor does its shadow
  */
-// todo: changed this one here (see above), left only PaddingValues(top = 8.dp). Seems that the standard horizontal padding
-// todo: is enough for offset button either way, and it's closer to design this way. Let me know what you think
 @Composable
 private fun FilesLazyVerticalGrid(
   files: List<UiFile>,
@@ -153,6 +151,8 @@ private fun FilesLazyVerticalGrid(
     horizontalArrangement = Arrangement.spacedBy(8.dp),
     verticalArrangement = Arrangement.spacedBy(8.dp),
     contentPadding = PaddingValues(top = 8.dp) + paddingValues,
+    // todo: changed this one here (see doc above), left only PaddingValues(top = 8.dp). Seems that the standard horizontal padding
+// todo: is enough for offset button either way, and it's closer to design this way. Let me know what you think
     modifier = modifier,
   ) {
     items(
