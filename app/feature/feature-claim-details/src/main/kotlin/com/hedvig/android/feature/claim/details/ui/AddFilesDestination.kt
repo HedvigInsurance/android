@@ -13,9 +13,7 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -35,7 +33,7 @@ import com.hedvig.android.core.designsystem.component.button.HedvigSecondaryCont
 import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.fileupload.ui.FilePickerBottomSheet
-import com.hedvig.android.core.ui.FilesLazyVerticalGrid
+import com.hedvig.android.core.ui.DynamicFilesGridBetweenOtherThings
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
 import com.hedvig.android.core.ui.dialog.ErrorDialog
 import com.hedvig.android.core.ui.dialog.HedvigAlertDialog
@@ -66,16 +64,16 @@ internal fun AddFilesDestination(
     addLocalFile(uri)
   }
   val photoPicker = rememberLauncherForActivityResult(
-    contract = ActivityResultContracts.PickVisualMedia(),
-  ) { resultingUri: Uri? ->
-    if (resultingUri != null) {
+    contract = ActivityResultContracts.PickMultipleVisualMedia(),
+  ) { resultingUriList: List<Uri> ->
+    for (resultingUri in resultingUriList) {
       addLocalFile(resultingUri)
     }
   }
   val filePicker = rememberLauncherForActivityResult(
-    contract = ActivityResultContracts.GetContent(),
-  ) { resultingUri: Uri? ->
-    if (resultingUri != null) {
+    contract = ActivityResultContracts.GetMultipleContents(),
+  ) { resultingUriList: List<Uri> ->
+    for (resultingUri in resultingUriList) {
       addLocalFile(resultingUri)
     }
   }
@@ -159,32 +157,49 @@ private fun AddFilesScreen(
         onClick = navigateUp,
         title = stringResource(R.string.CLAIMS_YOUR_CLAIM),
       )
-      FilesLazyVerticalGrid(
+      DynamicFilesGridBetweenOtherThings(
+        belowGridContent = {
+          BelowGridContent(
+            onAddMoreFilesButtonClick = {
+              showFileTypeSelectBottomSheet = true
+            },
+            onContinueButtonClick = onContinue,
+            isLoading = uiState.isLoading,
+          )
+        },
         files = uiState.localFiles,
         onRemoveFile = { fileToRemoveId = it },
         imageLoader = imageLoader,
-        paddingValues = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)
-          .asPaddingValues() + PaddingValues(horizontal = 8.dp),
-        modifier = Modifier.weight(1f),
+        contentPadding =
+          PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing.only(
+            WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom,
+          )
+            .asPaddingValues(),
+        onClickFile = null,
       )
-      Spacer(Modifier.height(8.dp))
-      HedvigSecondaryContainedButton(
-        text = stringResource(R.string.claim_status_detail_add_more_files),
-        onClick = {
-          showFileTypeSelectBottomSheet = true
-        },
-        modifier = Modifier.padding(horizontal = 16.dp),
-      )
-      Spacer(Modifier.height(8.dp))
-      HedvigContainedButton(
-        text = stringResource(R.string.general_continue_button),
-        onClick = onContinue,
-        isLoading = uiState.isLoading,
-        modifier = Modifier.padding(horizontal = 16.dp),
-      )
-      Spacer(Modifier.height(16.dp))
-      Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
     }
+  }
+}
+
+@Composable
+private fun BelowGridContent(
+  onAddMoreFilesButtonClick: () -> Unit,
+  onContinueButtonClick: () -> Unit,
+  isLoading: Boolean,
+) {
+  Column {
+    Spacer(Modifier.height(16.dp))
+    HedvigSecondaryContainedButton(
+      text = stringResource(R.string.claim_status_detail_add_more_files),
+      onClick = onAddMoreFilesButtonClick,
+    )
+    Spacer(Modifier.height(8.dp))
+    HedvigContainedButton(
+      text = stringResource(R.string.general_continue_button),
+      onClick = onContinueButtonClick,
+      isLoading = isLoading,
+    )
+    Spacer(Modifier.height(16.dp))
   }
 }
 
@@ -196,7 +211,13 @@ private fun PreviewAddFilesScreen() {
       AddFilesScreen(
         FileUploadUiState(
           localFiles = List(25) {
-            UiFile("$it", "", "", "$it")
+            UiFile(
+              name = "$it",
+              localPath = "",
+              url = "",
+              mimeType = "$it",
+              id = "$it",
+            )
           },
         ),
         {},
