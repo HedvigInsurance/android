@@ -15,8 +15,8 @@ import com.hedvig.authlib.LoginStatusResult
 import com.hedvig.authlib.OtpMarket
 import com.hedvig.authlib.ResendOtpResult
 import com.hedvig.authlib.RevokeResult
+import com.hedvig.authlib.StatusUrl
 import com.hedvig.authlib.SubmitOtpResult
-import com.hedvig.authlib.url.LoginStatusUrl
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -41,14 +41,14 @@ class GenericAuthViewModelTest {
         delay(100.milliseconds)
         return AuthAttemptResult.OtpProperties(
           id = "123",
-          statusUrl = LoginStatusUrl("testStatusUrl"),
+          statusUrl = StatusUrl("testStatusUrl"),
           resendUrl = "resendUrl",
           verifyUrl = "verifyUrl",
           maskedEmail = null,
         )
       }
 
-      override fun observeLoginStatus(statusUrl: LoginStatusUrl): Flow<LoginStatusResult> {
+      override fun observeLoginStatus(statusUrl: StatusUrl): Flow<LoginStatusResult> {
         TODO("Not yet implemented")
       }
 
@@ -64,7 +64,7 @@ class GenericAuthViewModelTest {
         TODO("Not yet implemented")
       }
 
-      override suspend fun loginStatus(statusUrl: LoginStatusUrl): LoginStatusResult {
+      override suspend fun loginStatus(statusUrl: StatusUrl): LoginStatusResult {
         TODO("Not yet implemented")
       }
 
