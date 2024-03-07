@@ -23,6 +23,7 @@ import com.hedvig.android.feature.odyssey.step.informdeflect.ConfirmEmergencyVie
 import com.hedvig.android.feature.odyssey.step.informdeflect.DeflectEmergencyDestination
 import com.hedvig.android.feature.odyssey.step.informdeflect.DeflectGlassDamageDestination
 import com.hedvig.android.feature.odyssey.step.informdeflect.DeflectPestsDestination
+import com.hedvig.android.feature.odyssey.step.informdeflect.DeflectTowingDestination
 import com.hedvig.android.feature.odyssey.step.location.LocationDestination
 import com.hedvig.android.feature.odyssey.step.location.LocationViewModel
 import com.hedvig.android.feature.odyssey.step.notificationpermission.NotificationPermissionDestination
@@ -249,6 +250,18 @@ fun NavGraphBuilder.claimFlowGraph(
         windowSizeClass = windowSizeClass,
         navigateUp = navigator::navigateUp,
         openUrl = openUrl,
+        closeClaimFlow = closeClaimFlow,
+        imageLoader = imageLoader,
+      )
+    }
+    composable<ClaimFlowDestination.DeflectTowing> { navBackStackEntry ->
+      DeflectTowingDestination(
+        deflectTowing = this,
+        openChat = {
+          openChat(navBackStackEntry)
+        },
+        windowSizeClass = windowSizeClass,
+        navigateUp = navigator::navigateUp,
         closeClaimFlow = closeClaimFlow,
         imageLoader = imageLoader,
       )

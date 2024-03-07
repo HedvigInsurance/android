@@ -78,6 +78,16 @@ sealed interface ClaimFlowDestination : Destination {
   ) : ClaimFlowDestination
 
   @Serializable
+  data class DeflectTowing(
+    val partners: SerializableImmutableList<DeflectPartner>,
+  ) : ClaimFlowDestination
+
+  @Serializable
+  data class DeflectCarOtherDamage(
+    val partnerUrl: String,
+  ) : ClaimFlowDestination
+
+  @Serializable
   data class ConfirmEmergency(
     val text: String,
     val confirmEmergency: Boolean?,

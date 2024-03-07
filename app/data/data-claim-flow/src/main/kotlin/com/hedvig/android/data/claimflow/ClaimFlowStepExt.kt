@@ -109,6 +109,10 @@ fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
       partners.map { it.toLocalPartner() }.toPersistentList(),
     )
 
+    is ClaimFlowStep.ClaimDeflectTowingStep -> ClaimFlowDestination.DeflectTowing(
+      partners.map { it.toLocalPartner() }.toPersistentList(),
+    )
+
     is ClaimFlowStep.ClaimConfirmEmergencyStep -> ClaimFlowDestination.ConfirmEmergency(
       text,
       confirmEmergency,
