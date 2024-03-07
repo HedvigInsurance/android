@@ -76,12 +76,11 @@ private fun DeflectCarOtherDamageScreen(
     Spacer(Modifier.height(24.dp))
     HedvigContainedButton(
       // todo: add real copy here!
-      onClick = {
-        openUrl()
-      },
+      onClick = openUrl,
       modifier = Modifier.padding(horizontal = 16.dp),
     ) {
       Text(
+        // todo: add real copy here!
         text = "Report your claim",
         style = MaterialTheme.typography.bodyLarge,
         textAlign = TextAlign.Center,
