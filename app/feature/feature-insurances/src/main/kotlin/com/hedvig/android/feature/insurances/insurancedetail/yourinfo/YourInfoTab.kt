@@ -376,7 +376,7 @@ internal fun CoInsuredSection(
       },
       spaceBetween = 8.dp,
     )
-    coInsuredList.forEachIndexed { index, coInsured ->
+    for (coInsured in coInsuredList) {
       HorizontalDivider()
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {

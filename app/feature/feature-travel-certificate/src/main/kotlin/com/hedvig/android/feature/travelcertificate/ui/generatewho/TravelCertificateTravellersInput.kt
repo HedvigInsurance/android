@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -79,67 +80,42 @@ private fun TravelCertificateTravellersInput(
   onNavigateToCoInsuredAddInfo: () -> Unit,
   onGenerateTravelCertificate: () -> Unit,
 ) {
-  when (uiState) {
-    TravelCertificateTravellersInputUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
+  Box(Modifier.fillMaxSize()) {
+    when (uiState) {
+      TravelCertificateTravellersInputUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
 
-    TravelCertificateTravellersInputUiState.Failure -> {
-      HedvigScaffold(
-        navigateUp = navigateUp,
-      ) {
-        HedvigErrorSection(retry = reload, modifier = Modifier.weight(1f))
-      }
-    }
-
-    is TravelCertificateTravellersInputUiState.UrlFetched -> {
-      LaunchedEffect(Unit) {
-        onNavigateToOverview(uiState.travelCertificateUrl)
-      }
-    }
-
-    is TravelCertificateTravellersInputUiState.Success -> {
-      HedvigScaffold(
-        navigateUp = navigateUp,
-      ) {
-        Spacer(Modifier.height(24.dp))
-        Text(
-          text = stringResource(id = R.string.travel_certificate_who_is_traveling),
-          style = MaterialTheme.typography.headlineMedium,
-          textAlign = TextAlign.Center,
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        )
-        Spacer(Modifier.weight(1f))
-        Spacer(Modifier.height(16.dp))
-
-        HedvigCard(
-          onClick = changeMemberChecked,
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+      TravelCertificateTravellersInputUiState.Failure -> {
+        HedvigScaffold(
+          navigateUp = navigateUp,
         ) {
-          Row(
-            verticalAlignment = Alignment.CenterVertically,
+          HedvigErrorSection(retry = reload, modifier = Modifier.weight(1f))
+        }
+      }
+
+      is TravelCertificateTravellersInputUiState.UrlFetched -> {
+        LaunchedEffect(Unit) {
+          onNavigateToOverview(uiState.travelCertificateUrl)
+        }
+      }
+
+      is TravelCertificateTravellersInputUiState.Success -> {
+        HedvigScaffold(
+          navigateUp = navigateUp,
+        ) {
+          Spacer(Modifier.height(24.dp))
+          Text(
+            text = stringResource(id = R.string.travel_certificate_who_is_traveling),
+            style = MaterialTheme.typography.headlineMedium,
+            textAlign = TextAlign.Center,
             modifier = Modifier
-              .heightIn(72.dp)
               .fillMaxWidth()
               .padding(horizontal = 16.dp),
-          ) {
-            Text(
-              text = uiState.memberFullName,
-              style = MaterialTheme.typography.headlineSmall,
-              modifier = Modifier.weight(1f),
-            )
-            Spacer(Modifier.width(8.dp))
-            RoundedCornerCheckBox(
-              isChecked = uiState.isMemberIncluded,
-            ) { changeMemberChecked() }
-          }
-        }
-        for (i in uiState.coInsuredList) {
-          Spacer(Modifier.height(4.dp))
+          )
+          Spacer(Modifier.weight(1f))
+          Spacer(Modifier.height(16.dp))
+
           HedvigCard(
-            onClick = { changeCoInsuredChecked(i) },
+            onClick = changeMemberChecked,
             modifier = Modifier
               .fillMaxWidth()
               .padding(horizontal = 16.dp),
@@ -152,63 +128,90 @@ private fun TravelCertificateTravellersInput(
                 .padding(horizontal = 16.dp),
             ) {
               Text(
-                text = i.name,
+                text = uiState.memberFullName,
                 style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier.weight(1f),
               )
               Spacer(Modifier.width(8.dp))
-              RoundedCornerCheckBox(isChecked = i.isIncluded, onCheckedChange = { changeCoInsuredChecked(i) })
+              RoundedCornerCheckBox(
+                isChecked = uiState.isMemberIncluded,
+              ) { changeMemberChecked() }
             }
           }
-        }
-        if (uiState.coInsuredHasMissingInfo) {
+          for (i in uiState.coInsuredList) {
+            Spacer(Modifier.height(4.dp))
+            HedvigCard(
+              onClick = { changeCoInsuredChecked(i) },
+              modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            ) {
+              Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                  .heightIn(72.dp)
+                  .fillMaxWidth()
+                  .padding(horizontal = 16.dp),
+              ) {
+                Text(
+                  text = i.name,
+                  style = MaterialTheme.typography.headlineSmall,
+                  modifier = Modifier.weight(1f),
+                )
+                Spacer(Modifier.width(8.dp))
+                RoundedCornerCheckBox(isChecked = i.isIncluded, onCheckedChange = { changeCoInsuredChecked(i) })
+              }
+            }
+          }
+          if (uiState.coInsuredHasMissingInfo) {
+            Spacer(Modifier.height(16.dp))
+            VectorInfoCard(
+              text = stringResource(id = R.string.travel_certificate_missing_coinsured_info),
+              modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            ) {
+              Button(
+                onClick = {
+                  onNavigateToCoInsuredAddInfo()
+                },
+                enabled = true,
+                modifier = Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.squircleMedium,
+                contentPadding = PaddingValues(6.dp),
+                colors = ButtonDefaults.buttonColors(
+                  containerColor = MaterialTheme.colorScheme.secondaryContainedButtonContainer,
+                  contentColor = MaterialTheme.colorScheme.onSecondaryContainedButtonContainer,
+                  disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+                  disabledContentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.38f),
+                ),
+              ) {
+                Text(
+                  text = stringResource(id = R.string.travel_certificate_missing_coinsured_button),
+                  style = MaterialTheme.typography.titleSmall,
+                )
+              }
+            }
+          }
+
           Spacer(Modifier.height(16.dp))
-          VectorInfoCard(
-            text = stringResource(id = R.string.travel_certificate_missing_coinsured_info),
+          HedvigContainedButton(
+            onClick = {
+              if (uiState.hasAtLeastOneTraveler) {
+                onGenerateTravelCertificate()
+              }
+            },
             modifier = Modifier
               .fillMaxWidth()
               .padding(horizontal = 16.dp),
           ) {
-            Button(
-              onClick = {
-                onNavigateToCoInsuredAddInfo()
-              },
-              enabled = true,
-              modifier = Modifier.fillMaxWidth(),
-              shape = MaterialTheme.shapes.squircleMedium,
-              contentPadding = PaddingValues(6.dp),
-              colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainedButtonContainer,
-                contentColor = MaterialTheme.colorScheme.onSecondaryContainedButtonContainer,
-                disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
-                disabledContentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.38f),
-              ),
-            ) {
-              Text(
-                text = stringResource(id = R.string.travel_certificate_missing_coinsured_button),
-                style = MaterialTheme.typography.titleSmall,
-              )
-            }
+            Text(
+              text = stringResource(id = R.string.GENERAL_SUBMIT),
+              style = MaterialTheme.typography.bodyLarge,
+            )
           }
+          Spacer(Modifier.height(16.dp))
         }
-
-        Spacer(Modifier.height(16.dp))
-        HedvigContainedButton(
-          onClick = {
-            if (uiState.hasAtLeastOneTraveler) {
-              onGenerateTravelCertificate()
-            }
-          },
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        ) {
-          Text(
-            text = stringResource(id = R.string.GENERAL_SUBMIT),
-            style = MaterialTheme.typography.bodyLarge,
-          )
-        }
-        Spacer(Modifier.height(16.dp))
       }
     }
   }

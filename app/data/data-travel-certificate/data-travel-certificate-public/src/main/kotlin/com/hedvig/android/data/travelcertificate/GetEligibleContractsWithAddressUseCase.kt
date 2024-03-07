@@ -33,7 +33,8 @@ internal class GetEligibleContractsWithAddressUseCaseImpl(
             }?.location?.street
           val address = street ?: contract.exposureDisplayName.substringBefore("•").also {
             logcat(LogPriority.ERROR) {
-              "Received a travel certificate eligible contract, but the contractSpecifications did not include a valid street name"
+              "Received a travel certificate eligible contract, " +
+                "but the contractSpecifications did not include a valid street name"
             }
           }
           ContractEligibleWithAddress(address, contract.id)

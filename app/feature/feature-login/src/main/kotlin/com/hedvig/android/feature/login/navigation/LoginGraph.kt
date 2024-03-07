@@ -54,7 +54,7 @@ fun NavGraphBuilder.loginGraph(
         },
       )
     }
-    composable<LoginDestination.SwedishLogin> { backStackEntry ->
+    composable<LoginDestination.SwedishLogin> {
       val swedishLoginViewModel: SwedishLoginViewModel = koinViewModel()
       SwedishLoginDestination(
         swedishLoginViewModel = swedishLoginViewModel,

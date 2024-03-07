@@ -127,6 +127,7 @@ private fun SwedishLoginScreen(
           }
         }
       }
+
       is SwedishLoginUiState.BankIdError -> {
         Box(
           Modifier.weight(1f).fillMaxWidth(),
@@ -143,9 +144,11 @@ private fun SwedishLoginScreen(
           }
         }
       }
+
       SwedishLoginUiState.Loading -> {
         HedvigFullScreenCenterAlignedProgress(Modifier.weight(1f).fillMaxWidth())
       }
+
       is SwedishLoginUiState.HandlingBankId -> {
         val navigateToLoginScreen = uiState.navigateToLoginScreen
         LaunchedEffect(navigateToLoginScreen) {
@@ -167,7 +170,7 @@ private fun SwedishLoginScreen(
           modifier = Modifier.padding(horizontal = 16.dp),
         ) {
           QRCode(
-            autoStartToken = uiState.autoStartToken,
+            autoStartToken = uiState.bankIdLiveQrCodeData,
             modifier = Modifier.size(180.dp).then(demoModeModifier),
           )
           Spacer(Modifier.height(32.dp))
@@ -200,22 +203,34 @@ private fun SwedishLoginScreen(
         )
         Spacer(Modifier.height(16.dp))
       }
+
+      is SwedishLoginUiState.LoggedIn -> {
+        val navigateToLoginScreen = uiState.navigateToLoginScreen
+        LaunchedEffect(navigateToLoginScreen) {
+          if (!navigateToLoginScreen) return@LaunchedEffect
+          startLoggedInActivity()
+        }
+        HedvigFullScreenCenterAlignedProgress(Modifier.weight(1f))
+      }
     }
   }
 }
 
 @Composable
-internal fun QRCode(autoStartToken: SwedishLoginUiState.HandlingBankId.AutoStartToken, modifier: Modifier = Modifier) {
+internal fun QRCode(
+  autoStartToken: SwedishLoginUiState.HandlingBankId.BankIdLiveQrCodeData?,
+  modifier: Modifier = Modifier,
+) {
   var intSize: IntSize? by remember { mutableStateOf(null) }
   val painter by produceState<Painter>(ColorPainter(Color.Transparent), intSize, autoStartToken) {
     val size = intSize
-    if (size == null) {
+    if (size == null || autoStartToken == null) {
       value = ColorPainter(Color.Transparent)
       return@produceState
     }
     val bitmapPainter: BitmapPainter = withContext(Dispatchers.Default) {
       val bitMatrix: BitMatrix = QRCodeWriter().encode(
-        autoStartToken.autoStartUrl,
+        autoStartToken.data,
         BarcodeFormat.QR_CODE,
         size.width,
         size.height,
