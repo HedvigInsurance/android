@@ -79,7 +79,6 @@ fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
             name = it.name,
             mimeType = it.mimeType,
             url = it.signedUrl,
-            thumbnailUrl = null,
             localPath = null,
           )
         } ?: listOf(),
@@ -189,6 +188,5 @@ private fun FlowClaimFileUploadFragment.Upload.toLocalUpload(): UiFile {
     mimeType = mimeType,
     url = signedUrl,
     localPath = null,
-    thumbnailUrl = null,
   )
 }

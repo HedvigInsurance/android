@@ -600,14 +600,12 @@ private fun PreviewClaimDetailScreen() {
               mimeType = "",
               url = "1",
               localPath = null,
-              thumbnailUrl = "1",
             ),
             UiFile(
               id = "2",
               name = "test".repeat(10),
               mimeType = "",
               url = "1",
-              thumbnailUrl = "1",
               localPath = null,
             ),
             UiFile(
@@ -615,7 +613,6 @@ private fun PreviewClaimDetailScreen() {
               name = "test",
               mimeType = "",
               url = "1",
-              thumbnailUrl = "1",
               localPath = null,
             ),
             UiFile(
@@ -623,7 +620,6 @@ private fun PreviewClaimDetailScreen() {
               name = "test4",
               mimeType = "",
               url = "1",
-              thumbnailUrl = "1",
               localPath = null,
             ),
             UiFile(
@@ -631,7 +627,6 @@ private fun PreviewClaimDetailScreen() {
               name = "test5",
               mimeType = "",
               url = "1",
-              thumbnailUrl = "1",
               localPath = null,
             ),
             UiFile(
@@ -639,7 +634,6 @@ private fun PreviewClaimDetailScreen() {
               name = "test6",
               mimeType = "",
               url = "",
-              thumbnailUrl = "1",
               localPath = null,
             ),
           ),

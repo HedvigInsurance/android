@@ -9,5 +9,4 @@ data class UiFile(
   val url: String?,
   val mimeType: String,
   val id: String,
-  val thumbnailUrl: String?,
 )

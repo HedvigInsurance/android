@@ -120,7 +120,6 @@ private class ClaimDetailPresenter(
     CollectEvents { event ->
       when (event) {
         ClaimDetailsEvent.Retry -> loadIteration++
-        is ClaimDetailsEvent.UploadFile -> mediaToSend.trySend(event.uri)
         ClaimDetailsEvent.DismissUploadError -> content = content?.copy(uploadError = null)
         is ClaimDetailsEvent.DownloadPdf -> {
           content = content?.copy(isLoadingPdf = true)
@@ -144,8 +143,6 @@ internal sealed interface ClaimDetailsEvent {
   data object DismissUploadError : ClaimDetailsEvent
 
   data object DismissDownloadError : ClaimDetailsEvent
-
-  data class UploadFile(val uri: Uri) : ClaimDetailsEvent
 
   data class DownloadPdf(val url: String) : ClaimDetailsEvent
 

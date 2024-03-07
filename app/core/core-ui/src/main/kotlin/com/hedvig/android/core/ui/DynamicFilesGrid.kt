@@ -79,9 +79,6 @@ fun ColumnScope.DynamicFilesGridBetweenOtherThings(
   modifier: Modifier = Modifier,
   aboveGridContent: @Composable () -> Unit = {},
   belowGridContent: @Composable () -> Unit = {},
-  // todo: added this as a separate argument bc it's easy to forget about spacing if we have no below content,
-  // todo: and putting some spacing in the default belowGridContent also feels weird, bc this fun could be called from
-  // todo: a simple Column, ClaimFlowScaffold etc.
 ) {
   var layoutHeight by remember { mutableIntStateOf(-1) }
   Layout(
@@ -175,8 +172,6 @@ private fun FilesLazyVerticalGrid(
     horizontalArrangement = Arrangement.spacedBy(8.dp),
     verticalArrangement = Arrangement.spacedBy(8.dp),
     contentPadding = PaddingValues(top = 8.dp) + paddingValues,
-    // todo: changed this one here (see doc above), left only PaddingValues(top = 8.dp). Seems that the standard horizontal padding
-// todo: is enough for offset button either way, and it's closer to design this way. Let me know what you think
     modifier = modifier,
   ) {
     items(
@@ -312,7 +307,6 @@ private fun PreviewDynamicFilesGridBetweenOtherThings() {
               localPath = "path",
               mimeType = "image/jpg",
               url = null,
-              thumbnailUrl = null,
               id = "1",
             ),
             UiFile(
@@ -320,7 +314,6 @@ private fun PreviewDynamicFilesGridBetweenOtherThings() {
               localPath = "path",
               mimeType = "application/pdf",
               url = null,
-              thumbnailUrl = null,
               id = "2",
             ),
             UiFile(
@@ -328,7 +321,6 @@ private fun PreviewDynamicFilesGridBetweenOtherThings() {
               localPath = "path",
               mimeType = "video/quicktime",
               url = null,
-              thumbnailUrl = null,
               id = "3",
             ),
             UiFile(
@@ -336,7 +328,6 @@ private fun PreviewDynamicFilesGridBetweenOtherThings() {
               localPath = "path",
               mimeType = "other",
               url = null,
-              thumbnailUrl = null,
               id = "4",
             ),
           ),
@@ -379,7 +370,6 @@ private fun PreviewDynamicFilesGridManyFiles() {
               localPath = "path",
               mimeType = "image/jpg",
               url = null,
-              thumbnailUrl = null,
               id = "$it",
             )
           },
@@ -407,7 +397,6 @@ private fun PreviewFile() {
               localPath = "path",
               mimeType = "image/jpg",
               url = null,
-              thumbnailUrl = null,
               id = "1",
             ),
             UiFile(
@@ -415,7 +404,6 @@ private fun PreviewFile() {
               localPath = "path",
               mimeType = "application/pdf",
               url = null,
-              thumbnailUrl = null,
               id = "2",
             ),
             UiFile(
@@ -423,7 +411,6 @@ private fun PreviewFile() {
               localPath = "path",
               mimeType = "video/quicktime",
               url = null,
-              thumbnailUrl = null,
               id = "3",
             ),
             UiFile(
@@ -431,7 +418,6 @@ private fun PreviewFile() {
               localPath = "path",
               mimeType = "other",
               url = null,
-              thumbnailUrl = null,
               id = "4",
             ),
           ),

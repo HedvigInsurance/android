@@ -90,7 +90,6 @@ internal class FileUploadViewModel(
           mimeType = mimeType,
           id = uri.toString(),
           url = null,
-          thumbnailUrl = null,
         )
         it.copy(localFiles = it.localFiles + localFile)
       } catch (e: Exception) {

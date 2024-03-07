@@ -58,6 +58,9 @@ internal class AddFilesViewModel(
   }
 
   fun addLocalFile(uri: Uri) {
+    if (uri.toString() in _uiState.value.localFiles.map { it.id }) {
+      return
+    }
     _uiState.update {
       try {
         val mimeType = fileService.getMimeType(uri)
@@ -67,7 +70,6 @@ internal class AddFilesViewModel(
           localPath = uri.toString(),
           mimeType = mimeType,
           id = uri.toString(),
-          thumbnailUrl = null,
           url = null,
         )
         it.copy(localFiles = it.localFiles + localFile)

@@ -213,7 +213,6 @@ private fun PreviewClaimSummaryScreen() {
                 mimeType = "",
                 localPath = "$it",
                 url = "$it",
-                thumbnailUrl = null,
               )
             },
             submittedContent = null,

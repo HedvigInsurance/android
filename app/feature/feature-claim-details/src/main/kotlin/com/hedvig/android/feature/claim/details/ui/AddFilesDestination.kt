@@ -216,7 +216,6 @@ private fun PreviewAddFilesScreen() {
               localPath = "",
               url = "",
               mimeType = "$it",
-              thumbnailUrl = null,
               id = "$it",
             )
           },

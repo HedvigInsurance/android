@@ -90,7 +90,6 @@ internal class GetClaimDetailUiStateUseCase(
           mimeType = it.mimeType,
           url = it.url,
           localPath = null,
-          thumbnailUrl = it.thumbnailUrl,
         )
       },
       claimStatusCardUiState = ClaimStatusCardUiState.fromClaimStatusCardsQuery(claim),

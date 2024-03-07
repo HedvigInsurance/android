@@ -106,7 +106,6 @@ private fun AddFilesScreenPreview() {
               "",
               "$it",
               "$it",
-              null,
             )
           },
         ),
