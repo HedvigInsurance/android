@@ -37,6 +37,7 @@ import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
+import com.hedvig.android.core.ui.scaffold.ClaimFlowScaffold
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.uidata.UiFile
@@ -46,7 +47,6 @@ import com.hedvig.android.data.claimflow.ItemModel
 import com.hedvig.android.data.claimflow.ItemProblem
 import com.hedvig.android.data.claimflow.LocationOption
 import com.hedvig.android.data.claimflow.SubmittedContent
-import com.hedvig.android.feature.odyssey.ui.ClaimFlowScaffold
 import com.hedvig.audio.player.data.PlayableAudioSource
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate

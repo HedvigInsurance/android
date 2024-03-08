@@ -26,4 +26,5 @@ dependencies {
   implementation(projects.dataClaimTriaging)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
+  implementation(libs.androidx.compose.material3.windowSizeClass)
 }

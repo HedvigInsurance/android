@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.odyssey.ui
+package com.hedvig.android.core.ui.scaffold
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,7 +40,7 @@ import hedvig.resources.R
  * Sets up a top app bar with a back button, the X button and scrollable content and error/loading visuals.
  */
 @Composable
-internal fun ClaimFlowScaffold(
+fun ClaimFlowScaffold(
   windowSizeClass: WindowSizeClass,
   navigateUp: () -> Unit,
   closeClaimFlow: () -> Unit,

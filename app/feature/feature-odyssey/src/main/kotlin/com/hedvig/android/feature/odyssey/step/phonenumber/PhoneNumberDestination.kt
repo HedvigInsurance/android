@@ -29,9 +29,9 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.preview.calculateForPreview
+import com.hedvig.android.core.ui.scaffold.ClaimFlowScaffold
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
 import com.hedvig.android.data.claimflow.ClaimFlowStep
-import com.hedvig.android.feature.odyssey.ui.ClaimFlowScaffold
 import hedvig.resources.R
 
 @Composable
@@ -82,7 +82,7 @@ private fun PhoneNumberScreen(
   ) { sideSpacingModifier ->
     Spacer(Modifier.height(16.dp))
     Text(
-      text = stringResource(hedvig.resources.R.string.CLAIMS_CONFIRM_NUMBER_TITLE),
+      text = stringResource(R.string.CLAIMS_CONFIRM_NUMBER_TITLE),
       style = MaterialTheme.typography.headlineMedium,
       modifier = sideSpacingModifier.fillMaxWidth(),
     )

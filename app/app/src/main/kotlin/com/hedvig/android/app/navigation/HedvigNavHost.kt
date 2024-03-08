@@ -314,6 +314,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     nestedGraphs = {
       claimTriagingDestinations(
         navigator = navigator,
+        windowSizeClass = hedvigAppState.windowSizeClass,
         startClaimFlow = { backStackEntry, claimFlowStep: ClaimFlowStep ->
           navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())
         },

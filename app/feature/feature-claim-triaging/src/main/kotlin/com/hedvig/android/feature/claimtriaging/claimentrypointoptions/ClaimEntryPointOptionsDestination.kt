@@ -5,16 +5,19 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.material.icons.Icons
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -26,10 +29,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.hedvig.normal.X
 import com.hedvig.android.core.ui.dialog.ErrorDialog
-import com.hedvig.android.core.ui.scaffold.HedvigScaffold
+import com.hedvig.android.core.ui.preview.calculateForPreview
+import com.hedvig.android.core.ui.scaffold.ClaimFlowScaffold
 import com.hedvig.android.core.ui.text.WarningTextWithIcon
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimtriaging.EntryPointOption
@@ -41,6 +43,7 @@ import kotlinx.collections.immutable.toImmutableList
 @Composable
 internal fun ClaimEntryPointOptionsDestination(
   viewModel: ClaimEntryPointOptionsViewModel,
+  windowSizeClass: WindowSizeClass,
   startClaimFlow: (ClaimFlowStep) -> Unit,
   navigateUp: () -> Unit,
   closeClaimFlow: () -> Unit,
@@ -66,12 +69,14 @@ internal fun ClaimEntryPointOptionsDestination(
     showedStartClaimError = viewModel::showedStartClaimError,
     navigateUp = navigateUp,
     closeClaimFlow = closeClaimFlow,
+    windowSizeClass = windowSizeClass,
   )
 }
 
 @Composable
 private fun ClaimEntryPointOptionsScreen(
   uiState: ClaimEntryPointOptionsUiState,
+  windowSizeClass: WindowSizeClass,
   onSelectEntryPointOption: (EntryPointOption) -> Unit,
   onContinue: () -> Unit,
   showedStartClaimError: () -> Unit,
@@ -85,15 +90,11 @@ private fun ClaimEntryPointOptionsScreen(
       onDismiss = showedStartClaimError,
     )
   }
-  HedvigScaffold(
+  ClaimFlowScaffold(
     navigateUp = navigateUp,
-    topAppBarActions = {
-      IconButton(
-        onClick = closeClaimFlow,
-        content = { Icon(imageVector = Icons.Hedvig.X, contentDescription = null) },
-      )
-    },
     modifier = Modifier.fillMaxWidth(),
+    windowSizeClass = windowSizeClass,
+    closeClaimFlow = closeClaimFlow,
   ) {
     Spacer(Modifier.height(16.dp))
     Text(
@@ -137,6 +138,7 @@ private fun ClaimEntryPointOptionsScreen(
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(modifier = Modifier.height(16.dp))
+    Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
   }
 }
 
@@ -161,6 +163,7 @@ private fun PreviewClaimEntryPointOptionsScreen() {
         showedStartClaimError = {},
         navigateUp = {},
         closeClaimFlow = {},
+        windowSizeClass = WindowSizeClass.calculateForPreview(),
       )
     }
   }
