@@ -11,13 +11,13 @@ import org.koin.dsl.module
 
 val claimDetailsModule = module {
   single<GetClaimDetailUiStateUseCase> { GetClaimDetailUiStateUseCase(get<ApolloClient>()) }
-  viewModel<AddFilesViewModel> { (targetUploadUrl: String, initialFileUri: String) ->
+  viewModel<AddFilesViewModel> { (targetUploadUrl: String, initialFilesUri: List<String>) ->
     AddFilesViewModel(
       uploadFileUseCase = get(),
       fileService = get(),
       targetUploadUrl = targetUploadUrl,
       cacheManager = get(),
-      initialFileUri = initialFileUri,
+      initialFilesUri = initialFilesUri,
     )
   }
   viewModel<ClaimDetailsViewModel> { (claimId: String) ->
