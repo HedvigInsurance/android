@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 
-interface SelfServiceCompletedEventStore {
+internal interface SelfServiceCompletedEventStore {
   suspend fun onSelfServiceCompleted()
 
   suspend fun resetSelfServiceCompletions()
@@ -38,6 +38,7 @@ internal class SelfServiceCompletedEventDataStore(
     .map { it[SELF_SERVE_COMPLETED_COUNTER] ?: 0 }
 
   companion object {
-    private val SELF_SERVE_COMPLETED_COUNTER = intPreferencesKey("SELF_SERVE_COMPLETED_COUNTER")
+    private val SELF_SERVE_COMPLETED_COUNTER =
+      intPreferencesKey("com.hedvig.android.core.appreview.SELF_SERVE_COMPLETED_COUNTER")
   }
 }
