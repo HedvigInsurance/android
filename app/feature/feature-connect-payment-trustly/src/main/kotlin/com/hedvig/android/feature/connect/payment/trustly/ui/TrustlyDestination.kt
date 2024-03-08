@@ -209,7 +209,7 @@ private fun TrustlyBrowser(
       val loadingState = webViewState.loadingState
       if (loadingState is LoadingState.Loading) {
         LinearProgressIndicator(
-          progress = loadingState.progress,
+          progress = { loadingState.progress },
           modifier = Modifier.fillMaxWidth(),
         )
       }

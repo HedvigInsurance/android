@@ -104,8 +104,8 @@ private fun <T> dotInfiniteRepeatableSpec(
   animation = keyframes {
     durationMillis = animationDurationMilliseconds * numberOfDots
     stableValue at 0
-    temporaryValue at animationDurationMilliseconds with EaseIn
-    stableValue at animationDurationMilliseconds * 2 with EaseOut
+    temporaryValue at animationDurationMilliseconds using EaseIn
+    stableValue at animationDurationMilliseconds * 2 using EaseOut
     stableValue at durationMillis
   },
   repeatMode = RepeatMode.Restart,

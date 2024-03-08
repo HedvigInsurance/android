@@ -99,11 +99,12 @@ internal class TravelCertificateDateInputPresenter(
           ).isSuccessful
         ) {
           if (successScreenContent.details.hasCoInsured) {
-            val travelCertificatePrimaryInput = TravelCertificateDestination.TravelCertificateTravellersInput.TravelCertificatePrimaryInput(
-              successScreenContent.details.email,
-              successScreenContent.details.travelDate,
-              successScreenContent.details.contractId,
-            )
+            val travelCertificatePrimaryInput =
+              TravelCertificateDestination.TravelCertificateTravellersInput.TravelCertificatePrimaryInput(
+                successScreenContent.details.email,
+                successScreenContent.details.travelDate,
+                successScreenContent.details.contractId,
+              )
             primaryInput = travelCertificatePrimaryInput
           } else {
             createTravelCertificateData = CreateTravelCertificateData(
@@ -166,7 +167,7 @@ internal class TravelCertificateDateInputPresenter(
         coInsured = listOf(),
         email = currentCreateTravelCertificateData.email,
       ).fold(
-        ifLeft = { _ ->
+        ifLeft = {
           screenContent = DateInputScreenContent.Failure
         },
         ifRight = { url ->

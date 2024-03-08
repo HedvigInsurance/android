@@ -6,6 +6,7 @@ import arrow.core.raise.ensureNotNull
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
+import com.hedvig.android.core.appreview.SelfServiceCompletedEventManager
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.productVariant.android.toProductVariant
@@ -27,6 +28,7 @@ internal data object SuccessfulMove
 
 internal class NetworkChangeAddressRepository(
   private val apolloClient: ApolloClient,
+  private val selfServiceCompletedEventManager: SelfServiceCompletedEventManager,
 ) : ChangeAddressRepository {
   override suspend fun createMoveIntent(): Either<ErrorMessage, MoveIntent> {
     logcat { "Moving Flow: createMoveIntent" }
@@ -87,6 +89,7 @@ internal class NetworkChangeAddressRepository(
       if (userError != null) {
         raise(ErrorMessage(userError.message))
       }
+      selfServiceCompletedEventManager.completedSelfServiceSuccessfully()
       SuccessfulMove
     }
   }

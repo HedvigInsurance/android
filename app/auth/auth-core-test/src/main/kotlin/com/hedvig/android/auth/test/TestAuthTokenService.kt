@@ -30,8 +30,4 @@ class TestAuthTokenService : AuthTokenService {
   override suspend fun logoutAndInvalidateTokens() {
     authEventTurbine.add(AuthEvent.LoggedOut)
   }
-
-  override suspend fun migrateFromToken(token: String) {
-    error("Not implemented")
-  }
 }

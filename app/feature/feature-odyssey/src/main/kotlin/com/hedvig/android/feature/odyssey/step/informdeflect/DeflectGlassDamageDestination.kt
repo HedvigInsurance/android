@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.odyssey.step.informdeflect
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -13,9 +14,14 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -28,6 +34,8 @@ import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmal
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.material3.rememberShapedColorPainter
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.card.ExpandablePlusCard
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
@@ -75,6 +83,7 @@ private fun DeflectGlassDamageScreen(
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
     closeClaimFlow = closeClaimFlow,
+    topAppBarText = stringResource(id = R.string.SUBMIT_CLAIM_GLASS_DAMAGE_TITLE),
   ) {
     Spacer(Modifier.height(8.dp))
     VectorInfoCard(
@@ -148,6 +157,11 @@ private fun DeflectGlassDamageScreen(
       modifier = Modifier.padding(horizontal = 16.dp),
       color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
+    Spacer(Modifier.height(24.dp))
+    QuestionsAndAnswers(
+      Modifier
+        .padding(horizontal = 16.dp),
+    )
     Spacer(Modifier.height(32.dp))
     Text(
       text = stringResource(R.string.SUBMIT_CLAIM_NEED_HELP_TITLE),
@@ -168,36 +182,75 @@ private fun DeflectGlassDamageScreen(
     HedvigContainedSmallButton(
       text = stringResource(R.string.open_chat),
       onClick = openChat,
-      modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth().wrapContentWidth(Alignment.CenterHorizontally),
+      modifier = Modifier
+        .padding(horizontal = 16.dp)
+        .fillMaxWidth()
+        .wrapContentWidth(Alignment.CenterHorizontally),
     )
     Spacer(Modifier.height(16.dp))
     Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
   }
 }
 
+@Composable
+private fun QuestionsAndAnswers(modifier: Modifier = Modifier) {
+  var expandedItem by rememberSaveable { mutableIntStateOf(-1) }
+  val faqList = listOf(
+    stringResource(
+      R.string.SUBMIT_CLAIM_WHAT_COST_TITLE,
+    ) to stringResource(R.string.SUBMIT_CLAIM_GLASS_DAMAGE_WHAT_COST_LABEL),
+    stringResource(
+      R.string.SUBMIT_CLAIM_HOW_BOOK_TITLE,
+    ) to stringResource(R.string.SUBMIT_CLAIM_GLASS_DAMAGE_HOW_BOOK_LABEL),
+    stringResource(
+      R.string.SUBMIT_CLAIM_WORKSHOP_TITLE,
+    ) to stringResource(R.string.SUBMIT_CLAIM_GLASS_DAMAGE_WORKSHOP_LABEL),
+  )
+  Column(modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    faqList.forEachIndexed { index, faqItem ->
+      ExpandablePlusCard(
+        isExpanded = expandedItem == index,
+        onClick = {
+          expandedItem = if (expandedItem == index) {
+            -1
+          } else {
+            index
+          }
+        },
+        titleText = faqItem.first,
+        expandedText = faqItem.second,
+      )
+    }
+  }
+}
+
 @HedvigPreview
 @Composable
 private fun PreviewDeflectGlassDamageScreen() {
-  DeflectGlassDamageScreen(
-    partners = persistentListOf(
-      DeflectPartner(
-        id = "1",
-        imageUrl = "test",
-        phoneNumber = "1234",
-        url = "test",
-      ),
-      DeflectPartner(
-        id = "2",
-        imageUrl = "test2",
-        phoneNumber = "4321",
-        url = "test2",
-      ),
-    ),
-    openChat = {},
-    closeClaimFlow = {},
-    windowSizeClass = WindowSizeClass.calculateForPreview(),
-    navigateUp = {},
-    imageLoader = rememberPreviewImageLoader(),
-    openUrl = {},
-  )
+  HedvigTheme {
+    Surface(color = MaterialTheme.colorScheme.background) {
+      DeflectGlassDamageScreen(
+        partners = persistentListOf(
+          DeflectPartner(
+            id = "1",
+            imageUrl = "test",
+            phoneNumber = "1234",
+            url = "test",
+          ),
+          DeflectPartner(
+            id = "2",
+            imageUrl = "test2",
+            phoneNumber = "4321",
+            url = "test2",
+          ),
+        ),
+        openChat = {},
+        closeClaimFlow = {},
+        windowSizeClass = WindowSizeClass.calculateForPreview(),
+        navigateUp = {},
+        imageLoader = rememberPreviewImageLoader(),
+        openUrl = {},
+      )
+    }
+  }
 }

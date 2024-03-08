@@ -19,6 +19,8 @@ dependencies {
   implementation(libs.retrofitKotlinxSerializationConverter)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
+  implementation(projects.audioPlayerData)
+  implementation(projects.coreAppReview)
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDatastorePublic)

@@ -6,10 +6,7 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -25,10 +22,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
@@ -52,44 +45,40 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import com.hedvig.android.audio.player.HedvigAudioPlayer
-import com.hedvig.android.audio.player.SignedAudioUrl
-import com.hedvig.android.audio.player.state.AudioPlayerState
-import com.hedvig.android.audio.player.state.PlayableAudioSource
-import com.hedvig.android.audio.player.state.rememberAudioPlayer
+import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
 import com.hedvig.android.compose.photo.capture.state.rememberPhotoCaptureState
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
-import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.fileupload.ui.FilePickerBottomSheet
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.colored.hedvig.Chat
-import com.hedvig.android.core.icons.hedvig.normal.Document
-import com.hedvig.android.core.icons.hedvig.normal.Pictures
-import com.hedvig.android.core.icons.hedvig.normal.Play
 import com.hedvig.android.core.icons.hedvig.small.hedvig.ArrowNorthEast
-import com.hedvig.android.core.ui.FileContainer
+import com.hedvig.android.core.ui.DynamicFilesGridBetweenOtherThings
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
 import com.hedvig.android.core.ui.dialog.ErrorDialog
 import com.hedvig.android.core.ui.plus
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.ui.claimstatus.ClaimStatusCard
 import com.hedvig.android.ui.claimstatus.model.ClaimPillType
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
+import com.hedvig.audio.player.data.AudioPlayerState
+import com.hedvig.audio.player.data.PlayableAudioSource
+import com.hedvig.audio.player.data.SignedAudioUrl
 import hedvig.resources.R
 import java.io.File
 import kotlinx.datetime.LocalDate
@@ -104,7 +93,7 @@ internal fun ClaimDetailsDestination(
   appPackageId: String,
   navigateUp: () -> Unit,
   onChatClick: () -> Unit,
-  onUri: (Uri, targetUploadUrl: String) -> Unit,
+  onUri: (List<Uri>, targetUploadUrl: String) -> Unit,
   openUrl: (String) -> Unit,
   sharePdf: (File) -> Unit,
 ) {
@@ -138,7 +127,7 @@ private fun ClaimDetailScreen(
   retry: () -> Unit,
   navigateUp: () -> Unit,
   onChatClick: () -> Unit,
-  onUri: (file: Uri, uploadUri: String) -> Unit,
+  onUri: (files: List<Uri>, uploadUri: String) -> Unit,
   downloadFromUrl: (String) -> Unit,
   sharePdf: (File) -> Unit,
   onDismissDownloadError: () -> Unit,
@@ -156,22 +145,17 @@ private fun ClaimDetailScreen(
         is ClaimDetailUiState.Content -> {
           val photoCaptureState = rememberPhotoCaptureState(appPackageId = appPackageId) { uri ->
             logcat { "ChatFileState sending uri:$uri" }
-
-            onUri(uri, uiState.uploadUri)
+            onUri(listOf(uri), uiState.uploadUri)
           }
           val photoPicker = rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.PickVisualMedia(),
-          ) { resultingUri: Uri? ->
-            if (resultingUri != null) {
-              onUri(resultingUri, uiState.uploadUri)
-            }
+            contract = ActivityResultContracts.PickMultipleVisualMedia(),
+          ) { resultingUriList: List<Uri> ->
+            onUri(resultingUriList, uiState.uploadUri)
           }
           val filePicker = rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.GetContent(),
-          ) { resultingUri: Uri? ->
-            if (resultingUri != null) {
-              onUri(resultingUri, uiState.uploadUri)
-            }
+            contract = ActivityResultContracts.GetMultipleContents(),
+          ) { resultingUriList: List<Uri> ->
+            onUri(resultingUriList, uiState.uploadUri)
           }
           ClaimDetailScreen(
             uiState = uiState,
@@ -244,157 +228,141 @@ private fun ClaimDetailScreen(
       },
     )
   }
-
-  LazyVerticalGrid(
-    columns = GridCells.Fixed(3),
-    horizontalArrangement = Arrangement.spacedBy(8.dp),
-    verticalArrangement = Arrangement.spacedBy(8.dp),
-    contentPadding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
-      .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
-      .asPaddingValues(),
-  ) {
-    item(span = { GridItemSpan(3) }) {
-      Column {
-        Spacer(Modifier.height(8.dp))
-        ClaimStatusCard(
-          uiState = uiState.claimStatusCardUiState,
-          onClick = null,
-          claimType = uiState.claimType,
-          insuranceDisplayName = uiState.insuranceDisplayName,
+  Column {
+    DynamicFilesGridBetweenOtherThings(
+      belowGridContent = {
+        AfterGridContent(
+          uiState = uiState,
+          onAddFilesButtonClick = { showFileTypeSelectBottomSheet = true },
+          onDismissUploadError = onDismissUploadError,
         )
-        Spacer(Modifier.height(8.dp))
-        ClaimInfoCard(uiState.claimStatus, uiState.claimOutcome, onChatClick)
-        Spacer(Modifier.height(24.dp))
-        Text(
-          stringResource(R.string.claim_status_claim_details_title),
-          Modifier.padding(horizontal = 2.dp),
+      },
+      aboveGridContent = {
+        BeforeGridContent(
+          downloadFromUrl = downloadFromUrl,
+          uiState = uiState,
+          onChatClick = onChatClick,
         )
-        Spacer(Modifier.height(8.dp))
-        ClaimTypeAndDatesSection(
-          claimType = uiState.claimType?.lowercase()?.replaceFirstChar { it.uppercase() },
-          submitDate = uiState.submittedAt.date,
-          incidentDate = uiState.incidentDate,
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 2.dp),
-        )
-        if (uiState.termsConditionsUrl != null) {
-          Spacer(Modifier.height(16.dp))
-          TermsConditionsCard(
-            onClick = { downloadFromUrl(uiState.termsConditionsUrl) },
-            modifier = Modifier.padding(16.dp),
-            isLoading = uiState.isLoadingPdf,
-          )
+      },
+      files = uiState.files,
+      imageLoader = imageLoader,
+      onClickFile = { fileId ->
+        val url = uiState.files.firstOrNull { it.id == fileId }?.url
+        if (url != null) {
+          openUrl(url)
         }
-        Spacer(Modifier.height(24.dp))
-        Text(
-          stringResource(R.string.claim_status_detail_uploaded_files_info_title),
-          Modifier.padding(horizontal = 2.dp),
-        )
-        Spacer(Modifier.height(8.dp))
-        when (uiState.submittedContent) {
-          is ClaimDetailUiState.Content.SubmittedContent.Audio -> {
-            ClaimDetailHedvigAudioPlayerItem(uiState.submittedContent.signedAudioURL)
-          }
-
-          is ClaimDetailUiState.Content.SubmittedContent.FreeText -> {
-            HedvigCard(Modifier.fillMaxWidth()) {
-              Text(
-                uiState.submittedContent.text,
-                Modifier.padding(16.dp),
-              )
-            }
-          }
-
-          else -> {}
-        }
-        Spacer(Modifier.height(8.dp))
-      }
-    }
-
-    items(uiState.files) {
-      Box(
-        Modifier
-          .background(
-            shape = MaterialTheme.shapes.squircleMedium,
-            color = MaterialTheme.colorScheme.surface,
-          )
-          .clickable {
-            openUrl(it.url)
-          }
-          .height(109.dp),
-        contentAlignment = Alignment.Center,
-      ) {
-        if (it.mimeType.contains("image")) {
-          FileContainer(
-            model = it.url,
-            imageLoader = imageLoader,
-            cacheKey = it.id,
-          )
-        } else {
-          Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(16.dp),
-          ) {
-            Icon(
-              imageVector = getIconFromMimeType(it.mimeType),
-              tint = MaterialTheme.colorScheme.onSurfaceVariant,
-              contentDescription = "content icon",
-            )
-            Text(
-              text = it.name,
-              textAlign = TextAlign.Center,
-              maxLines = 3,
-              overflow = TextOverflow.Ellipsis,
-              color = MaterialTheme.colorScheme.onSurfaceVariant,
-              style = MaterialTheme.typography.labelMedium,
-            )
-          }
-        }
-      }
-    }
-
-    item(span = { GridItemSpan(3) }) {
-      Column {
-        Spacer(Modifier.height(48.dp))
-        Text(
-          text = stringResource(id = R.string.claim_status_uploaded_files_upload_text),
-          textAlign = TextAlign.Center,
-          modifier = Modifier.padding(horizontal = 2.dp),
-        )
-        Spacer(Modifier.height(16.dp))
-        val text = if (uiState.files.isNotEmpty()) {
-          stringResource(id = R.string.claim_status_detail_add_more_files)
-        } else {
-          stringResource(id = R.string.claim_status_detail_add_files)
-        }
-        Row(
-          modifier = Modifier.fillMaxWidth(),
-          horizontalArrangement = Arrangement.Center,
-        ) {
-          HedvigContainedSmallButton(
-            text = text,
-            onClick = { showFileTypeSelectBottomSheet = true },
-            isLoading = uiState.isUploadingFile,
-          )
-        }
-        if (uiState.uploadError != null) {
-          ErrorDialog(
-            message = uiState.uploadError,
-            onDismiss = { onDismissUploadError() },
-          )
-        }
-        Spacer(Modifier.height(32.dp))
-      }
-    }
+      },
+      onRemoveFile = null,
+      contentPadding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing.only(
+        WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom,
+      ).asPaddingValues(),
+    )
   }
 }
 
-private fun getIconFromMimeType(mimeType: String) = when (mimeType) {
-  "image/jpg" -> Icons.Hedvig.Pictures
-  "video/quicktime" -> Icons.Hedvig.Play
-  "application/pdf" -> Icons.Hedvig.Document
-  else -> Icons.Hedvig.Document
+@Composable
+private fun BeforeGridContent(
+  uiState: ClaimDetailUiState.Content,
+  onChatClick: () -> Unit,
+  downloadFromUrl: (url: String) -> Unit,
+) {
+  Column {
+    Spacer(Modifier.height(8.dp))
+    ClaimStatusCard(
+      uiState = uiState.claimStatusCardUiState,
+      onClick = null,
+      claimType = uiState.claimType,
+      insuranceDisplayName = uiState.insuranceDisplayName,
+    )
+    Spacer(Modifier.height(8.dp))
+    ClaimInfoCard(uiState.claimStatus, uiState.claimOutcome, onChatClick)
+    Spacer(Modifier.height(24.dp))
+    Text(
+      stringResource(R.string.claim_status_claim_details_title),
+      Modifier.padding(horizontal = 2.dp),
+    )
+    Spacer(Modifier.height(8.dp))
+    ClaimTypeAndDatesSection(
+      claimType = uiState.claimType,
+      submitDate = uiState.submittedAt.date,
+      incidentDate = uiState.incidentDate,
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 2.dp),
+    )
+    if (uiState.termsConditionsUrl != null) {
+      Spacer(Modifier.height(16.dp))
+      TermsConditionsCard(
+        onClick = { downloadFromUrl(uiState.termsConditionsUrl) },
+        modifier = Modifier.padding(16.dp),
+        isLoading = uiState.isLoadingPdf,
+      )
+    }
+    Spacer(Modifier.height(24.dp))
+    Text(
+      stringResource(R.string.claim_status_detail_uploaded_files_info_title),
+      Modifier.padding(horizontal = 2.dp),
+    )
+    Spacer(Modifier.height(8.dp))
+    when (uiState.submittedContent) {
+      is ClaimDetailUiState.Content.SubmittedContent.Audio -> {
+        ClaimDetailHedvigAudioPlayerItem(uiState.submittedContent.signedAudioURL)
+      }
+
+      is ClaimDetailUiState.Content.SubmittedContent.FreeText -> {
+        HedvigCard(Modifier.fillMaxWidth()) {
+          Text(
+            uiState.submittedContent.text,
+            Modifier.padding(16.dp),
+          )
+        }
+      }
+
+      else -> {}
+    }
+    Spacer(Modifier.height(8.dp))
+  }
+}
+
+@Composable
+private fun AfterGridContent(
+  uiState: ClaimDetailUiState.Content,
+  onAddFilesButtonClick: () -> Unit,
+  onDismissUploadError: () -> Unit,
+) {
+  Column {
+    Spacer(Modifier.height(32.dp))
+    Text(
+      text = stringResource(id = R.string.claim_status_uploaded_files_upload_text),
+      textAlign = TextAlign.Center,
+      modifier = Modifier
+        .padding(horizontal = 2.dp)
+        .fillMaxWidth(),
+    )
+    Spacer(Modifier.height(16.dp))
+    val text = if (uiState.files.isNotEmpty()) {
+      stringResource(id = R.string.claim_status_detail_add_more_files)
+    } else {
+      stringResource(id = R.string.claim_status_detail_add_files)
+    }
+    Row(
+      modifier = Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.Center,
+    ) {
+      HedvigContainedSmallButton(
+        text = text,
+        onClick = onAddFilesButtonClick,
+        isLoading = uiState.isUploadingFile,
+      )
+    }
+    Spacer(Modifier.height(32.dp))
+    if (uiState.uploadError != null) {
+      ErrorDialog(
+        message = uiState.uploadError,
+        onDismiss = onDismissUploadError,
+      )
+    }
+  }
 }
 
 @Composable
@@ -626,47 +594,47 @@ private fun PreviewClaimDetailScreen() {
           claimStatus = ClaimDetailUiState.Content.ClaimStatus.CLOSED,
           claimOutcome = ClaimDetailUiState.Content.ClaimOutcome.PAID,
           files = listOf(
-            ClaimDetailUiState.Content.ClaimFile(
+            UiFile(
               id = "1",
               name = "test",
               mimeType = "",
               url = "1",
-              thumbnailUrl = "1",
+              localPath = null,
             ),
-            ClaimDetailUiState.Content.ClaimFile(
+            UiFile(
               id = "2",
               name = "test".repeat(10),
               mimeType = "",
               url = "1",
-              thumbnailUrl = "1",
+              localPath = null,
             ),
-            ClaimDetailUiState.Content.ClaimFile(
+            UiFile(
               id = "3",
               name = "test",
               mimeType = "",
               url = "1",
-              thumbnailUrl = "1",
+              localPath = null,
             ),
-            ClaimDetailUiState.Content.ClaimFile(
+            UiFile(
               id = "4",
               name = "test4",
               mimeType = "",
               url = "1",
-              thumbnailUrl = "1",
+              localPath = null,
             ),
-            ClaimDetailUiState.Content.ClaimFile(
+            UiFile(
               id = "5",
               name = "test5",
               mimeType = "",
               url = "1",
-              thumbnailUrl = "1",
+              localPath = null,
             ),
-            ClaimDetailUiState.Content.ClaimFile(
+            UiFile(
               id = "6",
               name = "test6",
               mimeType = "",
               url = "",
-              thumbnailUrl = "1",
+              localPath = null,
             ),
           ),
           isUploadingFile = false,

@@ -40,4 +40,5 @@ private fun Lint.configure(lintXmlFile: File, lintBaselineFile: File) {
   baseline = lintBaselineFile
   lintConfig = lintXmlFile
   xmlReport = true
+  disable.add("UnsafeOptInUsageError") // https://issuetracker.google.com/issues/328279054
 }

@@ -12,6 +12,7 @@ import com.hedvig.authlib.AuthTokenResult
 import com.hedvig.authlib.Grant
 import com.hedvig.authlib.LoginMethod
 import com.hedvig.authlib.LoginStatusResult
+import com.hedvig.authlib.OtpMarket
 import com.hedvig.authlib.ResendOtpResult
 import com.hedvig.authlib.RevokeResult
 import com.hedvig.authlib.StatusUrl
@@ -33,7 +34,7 @@ class GenericAuthViewModelTest {
     authRepository = object : AuthRepository {
       override suspend fun startLoginAttempt(
         loginMethod: LoginMethod,
-        market: String,
+        market: OtpMarket,
         personalNumber: String?,
         email: String?,
       ): AuthAttemptResult {
@@ -64,10 +65,6 @@ class GenericAuthViewModelTest {
       }
 
       override suspend fun loginStatus(statusUrl: StatusUrl): LoginStatusResult {
-        TODO("Not yet implemented")
-      }
-
-      override suspend fun migrateOldToken(token: String): AuthTokenResult {
         TODO("Not yet implemented")
       }
 

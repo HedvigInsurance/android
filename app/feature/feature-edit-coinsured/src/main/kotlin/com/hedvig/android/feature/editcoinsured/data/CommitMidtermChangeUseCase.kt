@@ -6,6 +6,7 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
+import com.hedvig.android.core.appreview.SelfServiceCompletedEventManager
 import com.hedvig.android.core.common.ErrorMessage
 import kotlinx.datetime.LocalDate
 import octopus.CommitMidtermChangeMutation
@@ -18,6 +19,7 @@ internal interface CommitMidtermChangeUseCase {
 internal class CommitMidtermChangeUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val networkCacheManager: NetworkCacheManager,
+  private val selfServiceCompletedEventManager: SelfServiceCompletedEventManager,
 ) : CommitMidtermChangeUseCase {
   override suspend fun invoke(intentId: String): Either<ErrorMessage, CommitMidtermChangeSuccess> = either {
     val mutation = CommitMidtermChangeMutation(intentId)
@@ -35,6 +37,7 @@ internal class CommitMidtermChangeUseCaseImpl(
     when (val state = result.midtermChangeIntentCommit.intent?.state) {
       MidtermChangeIntentState.COMPLETED -> {
         networkCacheManager.clearCache()
+        selfServiceCompletedEventManager.completedSelfServiceSuccessfully()
         CommitMidtermChangeSuccess(
           result.midtermChangeIntentCommit.intent.activationDate,
         )

@@ -113,7 +113,7 @@ internal fun PaymentHistoryScreenPreview() {
     Surface(color = MaterialTheme.colorScheme.background) {
       PaymentHistoryDestination(
         pastCharges = paymentOverViewPreviewData.pastCharges,
-        onChargeClicked = { memberCharge: MemberCharge -> },
+        onChargeClicked = {},
         navigateUp = {},
       )
     }
@@ -127,7 +127,7 @@ internal fun PaymentHistoryScreenNoDataPreview() {
     Surface(color = MaterialTheme.colorScheme.background) {
       PaymentHistoryDestination(
         pastCharges = emptyList(),
-        onChargeClicked = { memberCharge: MemberCharge -> },
+        onChargeClicked = {},
         navigateUp = {},
       )
     }

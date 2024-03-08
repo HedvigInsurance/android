@@ -17,6 +17,8 @@ fragment ClaimFlowStepFragment on Flow {
     ...FlowClaimDeflectEmergencyStepFragment
     ...FlowClaimDeflectPestsStepFragment
     ...FlowClaimFileUploadFragment
+    ...FlowClaimDeflectTowingStepFragment
+    ...FlowClaimDeflectEirStepFragment
   }
 }
 
@@ -117,6 +119,12 @@ fragment FlowClaimSummaryStepFragment on FlowClaimSummaryStep {
   singleItemStep {
     ...FlowClaimSingleItemStepFragment
   }
+  fileUploadStep {
+    ...FlowClaimFileUploadFragment
+  }
+  audioRecordingStep {
+    ...FlowClaimAudioRecordingStepFragment
+  }
 }
 
 fragment FlowClaimFailedStepFragment on FlowClaimFailedStep {
@@ -160,6 +168,20 @@ fragment FlowClaimDeflectEmergencyStepFragment on FlowClaimDeflectEmergencyStep 
 }
 
 fragment FlowClaimDeflectPestsStepFragment on FlowClaimDeflectPestsStep {
+  id
+  partners {
+    ...FlowClaimDeflectPartnerFragment
+  }
+}
+
+fragment FlowClaimDeflectTowingStepFragment on FlowClaimDeflectTowingStep {
+  id
+  partners {
+    ...FlowClaimDeflectPartnerFragment
+  }
+}
+
+fragment FlowClaimDeflectEirStepFragment on FlowClaimDeflectEirStep {
   id
   partners {
     ...FlowClaimDeflectPartnerFragment

@@ -4,8 +4,8 @@ import arrow.core.Either
 import arrow.core.raise.either
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.language.LanguageService
-import com.hedvig.authlib.MemberAuthorizationCodeResult
-import com.hedvig.authlib.MemberPaymentUrl
+import com.hedvig.authlib.connectpayment.MemberAuthorizationCodeResult
+import com.hedvig.authlib.connectpayment.MemberPaymentUrl
 import com.hedvig.authlib.connectpayment.PaymentRepository
 
 internal class GetAdyenPaymentUrlUseCase(

@@ -11,6 +11,7 @@ import com.hedvig.android.data.claimflow.ItemModel.Unknown.displayName
 import com.hedvig.android.data.claimflow.model.AudioUrl
 import com.hedvig.android.data.claimflow.model.FlowId
 import com.hedvig.android.navigation.compose.typed.SerializableImmutableList
+import com.hedvig.audio.player.data.SignedAudioUrl
 import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
@@ -77,6 +78,16 @@ sealed interface ClaimFlowDestination : Destination {
   ) : ClaimFlowDestination
 
   @Serializable
+  data class DeflectTowing(
+    val partners: SerializableImmutableList<DeflectPartner>,
+  ) : ClaimFlowDestination
+
+  @Serializable
+  data class DeflectCarOtherDamage(
+    val partners: SerializableImmutableList<DeflectPartner>,
+  ) : ClaimFlowDestination
+
+  @Serializable
   data class ConfirmEmergency(
     val text: String,
     val confirmEmergency: Boolean?,
@@ -109,6 +120,8 @@ sealed interface ClaimFlowDestination : Destination {
     val selectedItemModel: String?,
     val availableItemProblems: List<ItemProblem>?,
     val selectedItemProblems: List<String>?,
+    val submittedContent: SubmittedContent?,
+    val files: List<UiFile>,
   ) : ClaimFlowDestination
 
   @Serializable
@@ -254,3 +267,9 @@ data class DeflectPartner(
 
 @Serializable
 data class EmergencyOption(val displayName: String, val value: Boolean)
+
+@Serializable
+sealed interface SubmittedContent {
+  @Serializable
+  data class Audio(val signedAudioURL: SignedAudioUrl) : SubmittedContent
+}

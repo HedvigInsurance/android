@@ -373,7 +373,7 @@ private fun PaymentDetailsScreenPreview() {
         selectedCharge = null,
         onCardClick = {},
         navigateUp = {},
-        onFailedChargeClick = { memberCharge: MemberCharge -> },
+        onFailedChargeClick = {},
       )
     }
   }
