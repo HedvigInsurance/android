@@ -107,6 +107,11 @@ sealed interface ClaimFlowStep {
     val partners: List<FlowClaimDeflectPartnerFragment>,
   ) : ClaimFlowStep
 
+  data class ClaimDeflectEirStep(
+    override val flowId: FlowId,
+    val partners: List<FlowClaimDeflectPartnerFragment>,
+  ) : ClaimFlowStep
+
   data class ClaimConfirmEmergencyStep(
     override val flowId: FlowId,
     val text: String,
@@ -226,6 +231,11 @@ internal fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(flowId: FlowId): 
     )
 
     is ClaimFlowStepFragment.FlowClaimDeflectTowingStepCurrentStep -> ClaimFlowStep.ClaimDeflectTowingStep(
+      flowId,
+      partners,
+    )
+
+    is ClaimFlowStepFragment.FlowClaimDeflectEirStepCurrentStep -> ClaimFlowStep.ClaimDeflectEirStep(
       flowId,
       partners,
     )

@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
@@ -28,6 +29,9 @@ import com.hedvig.android.core.icons.hedvig.small.hedvig.ArrowNorthEast
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.data.claimflow.ClaimFlowDestination
 import com.hedvig.android.feature.odyssey.ui.ClaimFlowScaffold
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
+import hedvig.resources.R
 
 @Composable
 internal fun DeflectCarOtherDamageDestination(
@@ -41,7 +45,14 @@ internal fun DeflectCarOtherDamageDestination(
     closeClaimFlow = closeClaimFlow,
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
-    openUrl = { openUrl(deflectCarOtherDamage.partnerUrl) },
+    openUrl = {
+      val url = deflectCarOtherDamage.partners[0].url
+      if (url != null) {
+        openUrl(url)
+      } else {
+        logcat(LogPriority.ERROR) { "Car other damage partner url is null" }
+      }
+    },
   )
 }
 
@@ -56,32 +67,27 @@ private fun DeflectCarOtherDamageScreen(
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
     closeClaimFlow = closeClaimFlow,
-    // todo: add real copy here!
-    topAppBarText = "Car claim",
+    topAppBarText = stringResource(id = R.string.SUBMIT_CLAIM_CAR_TITLE),
   ) {
-    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.height(16.dp))
     Text(
-      // todo: add real copy here!
-      text = "Report your claim",
+      text = stringResource(id = R.string.SUBMIT_CLAIM_CAR_REPORT_CLAIM_TITLE),
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(8.dp))
     Text(
-// todo: add real copy here!
-      text = "In order to give you the fastest service possible, " +
-        "we need to know more about what happened.",
+      text = stringResource(id = R.string.SUBMIT_CLAIM_CAR_REPORT_CLAIM_TEXT),
       modifier = Modifier.padding(horizontal = 16.dp),
       color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
-    Spacer(Modifier.height(24.dp))
+    Spacer(modifier = Modifier.weight(1f))
+    Spacer(Modifier.height(16.dp))
     HedvigContainedButton(
-      // todo: add real copy here!
       onClick = openUrl,
       modifier = Modifier.padding(horizontal = 16.dp),
     ) {
       Text(
-        // todo: add real copy here!
-        text = "Report your claim",
+        text = stringResource(id = R.string.SUBMIT_CLAIM_CAR_REPORT_CLAIM_BUTTON),
         style = MaterialTheme.typography.bodyLarge,
         textAlign = TextAlign.Center,
       )
