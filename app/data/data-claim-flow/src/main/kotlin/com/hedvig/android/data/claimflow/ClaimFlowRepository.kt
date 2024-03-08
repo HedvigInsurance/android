@@ -9,6 +9,7 @@ import com.apollographql.apollo3.api.Optional
 import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
+import com.hedvig.android.core.appreview.SelfServiceCompletedEventManager
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.retrofit.toErrorMessage
 import com.hedvig.android.data.claimflow.model.AudioUrl
@@ -97,6 +98,7 @@ internal class ClaimFlowRepositoryImpl(
   private val odysseyService: OdysseyService,
   private val claimFlowContextStorage: ClaimFlowContextStorage,
   private val networkCacheManager: NetworkCacheManager,
+  private val selfServiceCompletedEventManager: SelfServiceCompletedEventManager,
 ) : ClaimFlowRepository {
   override suspend fun startClaimFlow(
     entryPointId: EntryPointId?,
@@ -110,7 +112,7 @@ internal class ClaimFlowRepositoryImpl(
         .bind()
         .flowClaimStart
       claimFlowContextStorage.saveContext(result.context)
-      result.currentStep.toClaimFlowStep(FlowId(result.id))
+      result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
     }
   }
 
@@ -138,7 +140,7 @@ internal class ClaimFlowRepositoryImpl(
         .bind()
         .flowClaimDateOfOccurrenceNext
       claimFlowContextStorage.saveContext(result.context)
-      result.currentStep.toClaimFlowStep(FlowId(result.id))
+      result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
     }
   }
 
@@ -151,7 +153,7 @@ internal class ClaimFlowRepositoryImpl(
         .bind()
         .flowClaimLocationNext
       claimFlowContextStorage.saveContext(result.context)
-      result.currentStep.toClaimFlowStep(FlowId(result.id))
+      result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
     }
   }
 
@@ -164,7 +166,7 @@ internal class ClaimFlowRepositoryImpl(
         .bind()
         .flowClaimContractSelectNext
       claimFlowContextStorage.saveContext(result.context)
-      result.currentStep.toClaimFlowStep(FlowId(result.id))
+      result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
     }
   }
 
@@ -186,7 +188,7 @@ internal class ClaimFlowRepositoryImpl(
         .bind()
         .flowClaimDateOfOccurrencePlusLocationNext
       claimFlowContextStorage.saveContext(result.context)
-      result.currentStep.toClaimFlowStep(FlowId(result.id))
+      result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
     }
   }
 
@@ -199,7 +201,7 @@ internal class ClaimFlowRepositoryImpl(
         .bind()
         .flowClaimPhoneNumberNext
       claimFlowContextStorage.saveContext(result.context)
-      result.currentStep.toClaimFlowStep(FlowId(result.id))
+      result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
     }
   }
 
@@ -231,7 +233,7 @@ internal class ClaimFlowRepositoryImpl(
         .bind()
         .flowClaimSingleItemNext
       claimFlowContextStorage.saveContext(result.context)
-      result.currentStep.toClaimFlowStep(FlowId(result.id))
+      result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
     }
   }
 
@@ -284,7 +286,7 @@ internal class ClaimFlowRepositoryImpl(
         .flowClaimSummaryNext
       claimFlowContextStorage.saveContext(result.context)
       networkCacheManager.clearCache()
-      result.currentStep.toClaimFlowStep(FlowId(result.id))
+      result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
     }
   }
 
@@ -303,7 +305,7 @@ internal class ClaimFlowRepositoryImpl(
         .flowClaimConfirmEmergencyNext
 
       claimFlowContextStorage.saveContext(result.context)
-      result.currentStep.toClaimFlowStep(FlowId(result.id))
+      result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
     }
   }
 
@@ -322,7 +324,7 @@ internal class ClaimFlowRepositoryImpl(
         .flowClaimFileUploadNext
 
       claimFlowContextStorage.saveContext(result.context)
-      result.currentStep.toClaimFlowStep(FlowId(result.id))
+      result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
     }
   }
 
@@ -354,11 +356,14 @@ internal class ClaimFlowRepositoryImpl(
       .flowClaimAudioRecordingNext
     logcat { "Submitted audio file to GQL with URL $audioUrl" }
     claimFlowContextStorage.saveContext(result.context)
-    return result.currentStep.toClaimFlowStep(FlowId(result.id))
+    return result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
   }
 }
 
-private fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(flowId: FlowId): ClaimFlowStep {
+private suspend fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(
+  flowId: FlowId,
+  selfServiceCompletedEventManager: SelfServiceCompletedEventManager,
+): ClaimFlowStep {
   return when (this) {
     is ClaimFlowStepFragment.FlowClaimAudioRecordingStepCurrentStep -> {
       ClaimFlowStep.ClaimAudioRecordingStep(flowId, questions, audioContent)
@@ -430,7 +435,10 @@ private fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(flowId: FlowId): C
     }
 
     is ClaimFlowStepFragment.FlowClaimFailedStepCurrentStep -> ClaimFlowStep.ClaimFailedStep(flowId)
-    is ClaimFlowStepFragment.FlowClaimSuccessStepCurrentStep -> ClaimFlowStep.ClaimSuccessStep(flowId)
+    is ClaimFlowStepFragment.FlowClaimSuccessStepCurrentStep -> {
+      selfServiceCompletedEventManager.completedSelfServiceSuccessfully()
+      ClaimFlowStep.ClaimSuccessStep(flowId)
+    }
     is ClaimFlowStepFragment.FlowClaimContractSelectStepCurrentStep -> ClaimFlowStep.ClaimSelectContractStep(
       flowId,
       options,
