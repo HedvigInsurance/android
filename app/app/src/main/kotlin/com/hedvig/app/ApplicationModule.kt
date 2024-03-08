@@ -28,7 +28,7 @@ import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.auth.di.authModule
 import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
-import com.hedvig.android.core.appreview.SelfServiceCompletedEventStore
+import com.hedvig.android.core.appreview.SelfServiceCompletedEventManager
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.di.coreCommonModule
@@ -36,7 +36,7 @@ import com.hedvig.android.core.common.di.datastoreFileQualifier
 import com.hedvig.android.core.datastore.di.dataStoreModule
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.di.demoModule
-import com.hedvig.android.core.di.coreAppReviewModule
+import com.hedvig.android.core.appreview.di.coreAppReviewModule
 import com.hedvig.android.core.fileupload.fileUploadModule
 import com.hedvig.android.data.chat.read.timestamp.di.chatReadTimestampModule
 import com.hedvig.android.data.claimflow.di.claimFlowDataModule
@@ -255,7 +255,7 @@ private val useCaseModule = module {
   single<LogoutUseCase> {
     LogoutUseCaseImpl(
       get<AuthTokenService>(),
-      get<SelfServiceCompletedEventStore>(),
+      get<SelfServiceCompletedEventManager>(),
       get<ApplicationScope>(),
       get<DemoManager>(),
     )
@@ -337,6 +337,7 @@ val applicationModule = module {
       clockModule,
       coilModule,
       connectPaymentTrustlyModule,
+      coreAppReviewModule,
       coreCommonModule,
       dataPayingMemberModule,
       dataStoreModule,
@@ -376,7 +377,6 @@ val applicationModule = module {
       useCaseModule,
       viewModelModule,
       workManagerModule,
-      coreAppReviewModule,
     ),
   )
 }
