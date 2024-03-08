@@ -113,6 +113,10 @@ fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
       partners.map { it.toLocalPartner() }.toPersistentList(),
     )
 
+    is ClaimFlowStep.ClaimDeflectEirStep -> ClaimFlowDestination.DeflectCarOtherDamage(
+      partners.map { it.toLocalPartner() }.toPersistentList(),
+    )
+
     is ClaimFlowStep.ClaimConfirmEmergencyStep -> ClaimFlowDestination.ConfirmEmergency(
       text,
       confirmEmergency,
@@ -172,7 +176,7 @@ private fun AudioContentFragment.toAudioContent(): AudioContent {
 private fun FlowClaimDeflectPartnerFragment.toLocalPartner(): DeflectPartner {
   return DeflectPartner(
     id = id,
-    imageUrl = imageUrl,
+    imageUrl = imageUrl ?: "",
     phoneNumber = phoneNumber,
     url = url,
   )

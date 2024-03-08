@@ -29,6 +29,8 @@ import com.hedvig.android.core.icons.hedvig.small.hedvig.ArrowNorthEast
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.data.claimflow.ClaimFlowDestination
 import com.hedvig.android.feature.odyssey.ui.ClaimFlowScaffold
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import hedvig.resources.R
 
 @Composable
@@ -43,7 +45,14 @@ internal fun DeflectCarOtherDamageDestination(
     closeClaimFlow = closeClaimFlow,
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
-    openUrl = { openUrl(deflectCarOtherDamage.partnerUrl) },
+    openUrl = {
+      val url = deflectCarOtherDamage.partners[0].url
+      if (url != null) {
+        openUrl(url)
+      } else {
+        logcat(LogPriority.ERROR) { "Car other damage partner url is null" }
+      }
+    },
   )
 }
 

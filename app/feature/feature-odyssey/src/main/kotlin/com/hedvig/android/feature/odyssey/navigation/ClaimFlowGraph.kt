@@ -20,6 +20,7 @@ import com.hedvig.android.feature.odyssey.step.fileupload.FileUploadViewModel
 import com.hedvig.android.feature.odyssey.step.honestypledge.HonestyPledgeDestination
 import com.hedvig.android.feature.odyssey.step.informdeflect.ConfirmEmergencyDestination
 import com.hedvig.android.feature.odyssey.step.informdeflect.ConfirmEmergencyViewModel
+import com.hedvig.android.feature.odyssey.step.informdeflect.DeflectCarOtherDamageDestination
 import com.hedvig.android.feature.odyssey.step.informdeflect.DeflectEmergencyDestination
 import com.hedvig.android.feature.odyssey.step.informdeflect.DeflectGlassDamageDestination
 import com.hedvig.android.feature.odyssey.step.informdeflect.DeflectPestsDestination
@@ -266,6 +267,17 @@ fun NavGraphBuilder.claimFlowGraph(
         imageLoader = imageLoader,
       )
     }
+
+    composable<ClaimFlowDestination.DeflectCarOtherDamage> { navBackStackEntry ->
+      DeflectCarOtherDamageDestination(
+        deflectCarOtherDamage = this,
+        windowSizeClass = windowSizeClass,
+        navigateUp = navigator::navigateUp,
+        closeClaimFlow = closeClaimFlow,
+        openUrl = openUrl,
+      )
+    }
+
     composable<ClaimFlowDestination.DeflectEmergency> {
       DeflectEmergencyDestination(
         deflectEmergency = this,
