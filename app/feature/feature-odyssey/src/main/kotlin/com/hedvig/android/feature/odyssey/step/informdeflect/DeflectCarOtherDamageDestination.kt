@@ -80,7 +80,8 @@ private fun DeflectCarOtherDamageScreen(
       modifier = Modifier.padding(horizontal = 16.dp),
       color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
-    Spacer(Modifier.height(72.dp))
+    Spacer(modifier = Modifier.weight(1f))
+    Spacer(Modifier.height(16.dp))
     HedvigContainedButton(
       onClick = openUrl,
       modifier = Modifier.padding(horizontal = 16.dp),
