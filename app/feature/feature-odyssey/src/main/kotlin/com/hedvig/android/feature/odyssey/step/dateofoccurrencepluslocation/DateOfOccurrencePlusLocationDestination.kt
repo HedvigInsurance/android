@@ -25,10 +25,10 @@ import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.preview.calculateForPreview
+import com.hedvig.android.core.ui.scaffold.ClaimFlowScaffold
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.LocationOption
-import com.hedvig.android.feature.odyssey.ui.ClaimFlowScaffold
 import com.hedvig.android.feature.odyssey.ui.DatePickerUiState
 import com.hedvig.android.feature.odyssey.ui.DatePickerWithDialog
 import com.hedvig.android.feature.odyssey.ui.LocationWithDialog
@@ -93,7 +93,7 @@ private fun DateOfOccurrencePlusLocationScreen(
     DateOfIncident(uiState.datePickerUiState, !uiState.isLoading, sideSpacingModifier.fillMaxWidth())
     Spacer(Modifier.height(16.dp))
     VectorInfoCard(
-      text = stringResource(hedvig.resources.R.string.CLAIMS_DATE_NOT_SURE_NOTICE_LABEL),
+      text = stringResource(R.string.CLAIMS_DATE_NOT_SURE_NOTICE_LABEL),
       modifier = sideSpacingModifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))

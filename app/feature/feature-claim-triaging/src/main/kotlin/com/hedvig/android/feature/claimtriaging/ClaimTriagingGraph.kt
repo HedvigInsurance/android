@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.claimtriaging
 
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.data.claimflow.ClaimFlowStep
@@ -40,6 +41,7 @@ sealed interface ClaimTriagingDestination : Destination {
 
 fun NavGraphBuilder.claimTriagingDestinations(
   navigator: Navigator,
+  windowSizeClass: WindowSizeClass,
   startClaimFlow: (NavBackStackEntry, ClaimFlowStep) -> Unit,
   closeClaimFlow: () -> Unit,
 ) {
@@ -58,6 +60,7 @@ fun NavGraphBuilder.claimTriagingDestinations(
       },
       navigateUp = navigator::navigateUp,
       closeClaimFlow = closeClaimFlow,
+      windowSizeClass = windowSizeClass,
     )
   }
   composable<ClaimTriagingDestination.ClaimEntryPoints> { backStackEntry ->
@@ -76,6 +79,7 @@ fun NavGraphBuilder.claimTriagingDestinations(
       },
       navigateUp = navigator::navigateUp,
       closeClaimFlow = closeClaimFlow,
+      windowSizeClass = windowSizeClass,
     )
   }
   composable<ClaimTriagingDestination.ClaimEntryPointOptions> { backStackEntry ->
@@ -90,6 +94,7 @@ fun NavGraphBuilder.claimTriagingDestinations(
       },
       navigateUp = navigator::navigateUp,
       closeClaimFlow = closeClaimFlow,
+      windowSizeClass = windowSizeClass,
     )
   }
 }
