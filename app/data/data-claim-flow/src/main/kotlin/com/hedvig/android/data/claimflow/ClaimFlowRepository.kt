@@ -9,6 +9,7 @@ import com.apollographql.apollo3.api.Optional
 import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
+import com.hedvig.android.core.appreview.SelfServiceCompletedEventManager
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.retrofit.toErrorMessage
 import com.hedvig.android.data.claimflow.model.AudioUrl
@@ -31,6 +32,7 @@ import octopus.FlowClaimSingleItemCheckoutNextMutation
 import octopus.FlowClaimSingleItemNextMutation
 import octopus.FlowClaimStartMutation
 import octopus.FlowClaimSummaryNextMutation
+import octopus.fragment.ClaimFlowStepFragment
 import octopus.type.FlowClaimFileUploadInput
 import octopus.type.FlowClaimItemBrandInput
 import octopus.type.FlowClaimItemModelInput
@@ -96,6 +98,7 @@ internal class ClaimFlowRepositoryImpl(
   private val odysseyService: OdysseyService,
   private val claimFlowContextStorage: ClaimFlowContextStorage,
   private val networkCacheManager: NetworkCacheManager,
+  private val selfServiceCompletedEventManager: SelfServiceCompletedEventManager,
 ) : ClaimFlowRepository {
   override suspend fun startClaimFlow(
     entryPointId: EntryPointId?,
@@ -109,7 +112,7 @@ internal class ClaimFlowRepositoryImpl(
         .bind()
         .flowClaimStart
       claimFlowContextStorage.saveContext(result.context)
-      result.currentStep.toClaimFlowStep(FlowId(result.id))
+      result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
     }
   }
 
@@ -137,7 +140,7 @@ internal class ClaimFlowRepositoryImpl(
         .bind()
         .flowClaimDateOfOccurrenceNext
       claimFlowContextStorage.saveContext(result.context)
-      result.currentStep.toClaimFlowStep(FlowId(result.id))
+      result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
     }
   }
 
@@ -150,7 +153,7 @@ internal class ClaimFlowRepositoryImpl(
         .bind()
         .flowClaimLocationNext
       claimFlowContextStorage.saveContext(result.context)
-      result.currentStep.toClaimFlowStep(FlowId(result.id))
+      result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
     }
   }
 
@@ -163,7 +166,7 @@ internal class ClaimFlowRepositoryImpl(
         .bind()
         .flowClaimContractSelectNext
       claimFlowContextStorage.saveContext(result.context)
-      result.currentStep.toClaimFlowStep(FlowId(result.id))
+      result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
     }
   }
 
@@ -185,7 +188,7 @@ internal class ClaimFlowRepositoryImpl(
         .bind()
         .flowClaimDateOfOccurrencePlusLocationNext
       claimFlowContextStorage.saveContext(result.context)
-      result.currentStep.toClaimFlowStep(FlowId(result.id))
+      result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
     }
   }
 
@@ -198,7 +201,7 @@ internal class ClaimFlowRepositoryImpl(
         .bind()
         .flowClaimPhoneNumberNext
       claimFlowContextStorage.saveContext(result.context)
-      result.currentStep.toClaimFlowStep(FlowId(result.id))
+      result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
     }
   }
 
@@ -230,7 +233,7 @@ internal class ClaimFlowRepositoryImpl(
         .bind()
         .flowClaimSingleItemNext
       claimFlowContextStorage.saveContext(result.context)
-      result.currentStep.toClaimFlowStep(FlowId(result.id))
+      result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
     }
   }
 
@@ -283,7 +286,7 @@ internal class ClaimFlowRepositoryImpl(
         .flowClaimSummaryNext
       claimFlowContextStorage.saveContext(result.context)
       networkCacheManager.clearCache()
-      result.currentStep.toClaimFlowStep(FlowId(result.id))
+      result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
     }
   }
 
@@ -302,7 +305,7 @@ internal class ClaimFlowRepositoryImpl(
         .flowClaimConfirmEmergencyNext
 
       claimFlowContextStorage.saveContext(result.context)
-      result.currentStep.toClaimFlowStep(FlowId(result.id))
+      result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
     }
   }
 
@@ -321,7 +324,7 @@ internal class ClaimFlowRepositoryImpl(
         .flowClaimFileUploadNext
 
       claimFlowContextStorage.saveContext(result.context)
-      result.currentStep.toClaimFlowStep(FlowId(result.id))
+      result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
     }
   }
 
@@ -353,6 +356,133 @@ internal class ClaimFlowRepositoryImpl(
       .flowClaimAudioRecordingNext
     logcat { "Submitted audio file to GQL with URL $audioUrl" }
     claimFlowContextStorage.saveContext(result.context)
-    return result.currentStep.toClaimFlowStep(FlowId(result.id))
+    return result.currentStep.toClaimFlowStep(FlowId(result.id), selfServiceCompletedEventManager)
+  }
+}
+
+private suspend fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(
+  flowId: FlowId,
+  selfServiceCompletedEventManager: SelfServiceCompletedEventManager,
+): ClaimFlowStep {
+  return when (this) {
+    is ClaimFlowStepFragment.FlowClaimAudioRecordingStepCurrentStep -> {
+      ClaimFlowStep.ClaimAudioRecordingStep(flowId, questions, audioContent)
+    }
+    is ClaimFlowStepFragment.FlowClaimDateOfOccurrenceStepCurrentStep -> {
+      ClaimFlowStep.ClaimDateOfOccurrenceStep(flowId, dateOfOccurrence, maxDate)
+    }
+    is ClaimFlowStepFragment.FlowClaimLocationStepCurrentStep -> {
+      ClaimFlowStep.ClaimLocationStep(flowId, location, options)
+    }
+    is ClaimFlowStepFragment.FlowClaimDateOfOccurrencePlusLocationStepCurrentStep -> {
+      ClaimFlowStep.ClaimDateOfOccurrencePlusLocationStep(
+        flowId,
+        dateOfOccurrenceStep.dateOfOccurrence,
+        dateOfOccurrenceStep.maxDate,
+        locationStep.location,
+        locationStep.options,
+      )
+    }
+    is ClaimFlowStepFragment.FlowClaimPhoneNumberStepCurrentStep -> {
+      ClaimFlowStep.ClaimPhoneNumberStep(flowId, phoneNumber)
+    }
+    is ClaimFlowStepFragment.FlowClaimSingleItemStepCurrentStep -> {
+      ClaimFlowStep.ClaimSingleItemStep(
+        flowId,
+        preferredCurrency,
+        purchaseDate,
+        purchasePrice,
+        availableItemBrands,
+        selectedItemBrand,
+        availableItemModels,
+        selectedItemModel,
+        availableItemProblems,
+        selectedItemProblems,
+      )
+    }
+
+    is ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep -> {
+      ClaimFlowStep.ClaimResolutionSingleItemStep(
+        flowId,
+        price,
+        depreciation,
+        deductible,
+        payoutAmount,
+        availableCheckoutMethods,
+      )
+    }
+
+    is ClaimFlowStepFragment.FlowClaimSummaryStepCurrentStep -> {
+      ClaimFlowStep.ClaimSummaryStep(
+        flowId,
+        title,
+        locationStep.location,
+        locationStep.options,
+        dateOfOccurrenceStep.dateOfOccurrence,
+        dateOfOccurrenceStep.maxDate,
+        singleItemStep?.preferredCurrency,
+        singleItemStep?.purchaseDate,
+        singleItemStep?.purchasePrice,
+        singleItemStep?.availableItemBrands,
+        singleItemStep?.selectedItemBrand,
+        singleItemStep?.availableItemModels,
+        singleItemStep?.selectedItemModel,
+        singleItemStep?.availableItemProblems,
+        singleItemStep?.selectedItemProblems,
+        fileUploads = fileUploadStep?.uploads,
+        signedAudioUrl = audioRecordingStep?.audioContent?.signedUrl,
+      )
+    }
+
+    is ClaimFlowStepFragment.FlowClaimFailedStepCurrentStep -> ClaimFlowStep.ClaimFailedStep(flowId)
+    is ClaimFlowStepFragment.FlowClaimSuccessStepCurrentStep -> {
+      selfServiceCompletedEventManager.completedSelfServiceSuccessfully()
+      ClaimFlowStep.ClaimSuccessStep(flowId)
+    }
+    is ClaimFlowStepFragment.FlowClaimContractSelectStepCurrentStep -> ClaimFlowStep.ClaimSelectContractStep(
+      flowId,
+      options,
+    )
+
+    is ClaimFlowStepFragment.FlowClaimDeflectGlassDamageStepCurrentStep -> ClaimFlowStep.ClaimDeflectGlassDamageStep(
+      flowId,
+      partners,
+    )
+
+    is ClaimFlowStepFragment.FlowClaimDeflectTowingStepCurrentStep -> ClaimFlowStep.ClaimDeflectTowingStep(
+      flowId,
+      partners,
+    )
+
+    is ClaimFlowStepFragment.FlowClaimDeflectEirStepCurrentStep -> ClaimFlowStep.ClaimDeflectEirStep(
+      flowId,
+      partners,
+    )
+
+    is ClaimFlowStepFragment.FlowClaimConfirmEmergencyStepCurrentStep -> ClaimFlowStep.ClaimConfirmEmergencyStep(
+      flowId,
+      text,
+      confirmEmergency,
+      options,
+    )
+
+    is ClaimFlowStepFragment.FlowClaimDeflectEmergencyStepCurrentStep -> ClaimFlowStep.ClaimDeflectEmergencyStep(
+      flowId,
+      partners,
+    )
+
+    is ClaimFlowStepFragment.FlowClaimDeflectPestsStepCurrentStep -> ClaimFlowStep.ClaimDeflectPestsStep(
+      flowId,
+      partners,
+    )
+
+    is ClaimFlowStepFragment.FlowClaimFileUploadStepCurrentStep -> ClaimFlowStep.ClaimFileUploadStep(
+      flowId,
+      title,
+      targetUploadUrl,
+      uploads,
+    )
+
+    else -> ClaimFlowStep.UnknownStep(flowId)
   }
 }
