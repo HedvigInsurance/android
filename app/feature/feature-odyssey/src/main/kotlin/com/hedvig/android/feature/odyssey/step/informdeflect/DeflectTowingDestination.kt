@@ -1,5 +1,7 @@
 package com.hedvig.android.feature.odyssey.step.informdeflect
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -12,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -24,6 +27,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -32,6 +36,8 @@ import coil.compose.AsyncImage
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
+import com.hedvig.android.core.designsystem.material3.alwaysBlackContainer
+import com.hedvig.android.core.designsystem.material3.onAlwaysBlackContainer
 import com.hedvig.android.core.designsystem.material3.rememberShapedColorPainter
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -49,50 +55,47 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
 @Composable
-internal fun DeflectGlassDamageDestination(
-  deflectGlassDamage: ClaimFlowDestination.DeflectGlassDamage,
+internal fun DeflectTowingDestination(
+  deflectTowing: ClaimFlowDestination.DeflectTowing,
   openChat: () -> Unit,
   closeClaimFlow: () -> Unit,
   windowSizeClass: WindowSizeClass,
   navigateUp: () -> Unit,
-  openUrl: (String) -> Unit,
   imageLoader: ImageLoader,
 ) {
-  DeflectGlassDamageScreen(
-    partners = deflectGlassDamage.partners,
+  DeflectTowingScreen(
+    partners = deflectTowing.partners,
     openChat = openChat,
     closeClaimFlow = closeClaimFlow,
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
-    openUrl = openUrl,
     imageLoader = imageLoader,
   )
 }
 
 @Composable
-private fun DeflectGlassDamageScreen(
+private fun DeflectTowingScreen(
   partners: ImmutableList<DeflectPartner>,
   openChat: () -> Unit,
   closeClaimFlow: () -> Unit,
   windowSizeClass: WindowSizeClass,
   navigateUp: () -> Unit,
-  openUrl: (String) -> Unit,
   imageLoader: ImageLoader,
 ) {
   ClaimFlowScaffold(
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
     closeClaimFlow = closeClaimFlow,
-    topAppBarText = stringResource(id = R.string.SUBMIT_CLAIM_GLASS_DAMAGE_TITLE),
+    topAppBarText = stringResource(id = R.string.SUBMIT_CLAIM_TOWING_TITLE),
   ) {
     Spacer(Modifier.height(8.dp))
     VectorInfoCard(
-      text = stringResource(R.string.SUBMIT_CLAIM_GLASS_DAMAGE_INFO_LABEL),
+      text = stringResource(id = R.string.SUBMIT_CLAIM_TOWING_INFO_LABEL),
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(16.dp))
     Text(
-      text = stringResource(R.string.SUBMIT_CLAIM_PARTNER_TITLE),
+      text = stringResource(id = R.string.SUBMIT_CLAIM_PARTNER_SINGULAR_TITLE),
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(16.dp))
@@ -102,8 +105,8 @@ private fun DeflectGlassDamageScreen(
       }
       HedvigCard(
         colors = CardDefaults.outlinedCardColors(
-          containerColor = MaterialTheme.colorScheme.surfaceVariant,
-          contentColor = MaterialTheme.colorScheme.onSurface,
+          containerColor = MaterialTheme.colorScheme.alwaysBlackContainer,
+          contentColor = MaterialTheme.colorScheme.onAlwaysBlackContainer,
         ),
         modifier = Modifier
           .padding(horizontal = 16.dp)
@@ -122,23 +125,36 @@ private fun DeflectGlassDamageScreen(
           )
           Spacer(Modifier.height(16.dp))
           Text(
-            text = stringResource(R.string.SUBMIT_CLAIM_GLASS_DAMAGE_ONLINE_BOOKING_LABEL),
+            text = stringResource(id = R.string.SUBMIT_CLAIM_TOWING_ONLINE_BOOKING_LABEL),
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth(),
           )
           Spacer(Modifier.height(16.dp))
+          val context = LocalContext.current
           HedvigContainedButton(
-            text = stringResource(R.string.SUBMIT_CLAIM_GLASS_DAMAGE_ONLINE_BOOKING_BUTTON),
+            colors = ButtonDefaults.buttonColors(
+              containerColor = MaterialTheme.colorScheme.onAlwaysBlackContainer,
+              contentColor = MaterialTheme.colorScheme.alwaysBlackContainer,
+            ),
+            text = stringResource(id = R.string.SUBMIT_CLAIM_TOWING_ONLINE_BOOKING_BUTTON),
             onClick = {
-              val url = partner.url
-              if (url != null) {
-                openUrl(url)
+              val phoneNumber = partner.phoneNumber
+              if (phoneNumber != null) {
+                try {
+                  context.startActivity(
+                    Intent(
+                      Intent.ACTION_DIAL,
+                      Uri.parse("tel:$phoneNumber"),
+                    ),
+                  )
+                } catch (exception: Throwable) {
+                  logcat(LogPriority.ERROR, exception) {
+                    "Could not open dial activity in deflect towing destination"
+                  }
+                }
               } else {
                 logcat(LogPriority.ERROR) {
-                  """
-                  |Partner URL was null for DeflectGlassDamageDestination! Deflect partner:[$this]. 
-                  |This is problematic because the UI offers no real help to the member, the CTA button does nothing.
-                  """.trimMargin()
+                  "Partner phone number was null for DeflectTowingDestination! Deflect partner: $partner."
                 }
               }
             },
@@ -153,7 +169,7 @@ private fun DeflectGlassDamageScreen(
     )
     Spacer(Modifier.height(8.dp))
     Text(
-      text = stringResource(R.string.SUBMIT_CLAIM_GLASS_DAMAGE_HOW_IT_WORKS_LABEL),
+      text = stringResource(id = R.string.SUBMIT_CLAIM_TOWING_HOW_IT_WORKS_LABEL),
       modifier = Modifier.padding(horizontal = 16.dp),
       color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
@@ -196,15 +212,9 @@ private fun DeflectGlassDamageScreen(
 private fun QuestionsAndAnswers(modifier: Modifier = Modifier) {
   var expandedItem by rememberSaveable { mutableIntStateOf(-1) }
   val faqList = listOf(
-    stringResource(
-      R.string.SUBMIT_CLAIM_WHAT_COST_TITLE,
-    ) to stringResource(R.string.SUBMIT_CLAIM_GLASS_DAMAGE_WHAT_COST_LABEL),
-    stringResource(
-      R.string.SUBMIT_CLAIM_HOW_BOOK_TITLE,
-    ) to stringResource(R.string.SUBMIT_CLAIM_GLASS_DAMAGE_HOW_BOOK_LABEL),
-    stringResource(
-      R.string.SUBMIT_CLAIM_WORKSHOP_TITLE,
-    ) to stringResource(R.string.SUBMIT_CLAIM_GLASS_DAMAGE_WORKSHOP_LABEL),
+    stringResource(R.string.SUBMIT_CLAIM_TOWING_Q1) to stringResource(R.string.SUBMIT_CLAIM_TOWING_A1),
+    stringResource(R.string.SUBMIT_CLAIM_TOWING_Q2) to stringResource(R.string.SUBMIT_CLAIM_TOWING_A2),
+    stringResource(R.string.SUBMIT_CLAIM_TOWING_Q3) to stringResource(R.string.SUBMIT_CLAIM_TOWING_A3),
   )
   Column(modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
     faqList.forEachIndexed { index, faqItem ->
@@ -226,10 +236,10 @@ private fun QuestionsAndAnswers(modifier: Modifier = Modifier) {
 
 @HedvigPreview
 @Composable
-private fun PreviewDeflectGlassDamageScreen() {
+private fun PreviewDeflectTowingScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      DeflectGlassDamageScreen(
+      DeflectTowingScreen(
         partners = persistentListOf(
           DeflectPartner(
             id = "1",
@@ -249,7 +259,6 @@ private fun PreviewDeflectGlassDamageScreen() {
         windowSizeClass = WindowSizeClass.calculateForPreview(),
         navigateUp = {},
         imageLoader = rememberPreviewImageLoader(),
-        openUrl = {},
       )
     }
   }

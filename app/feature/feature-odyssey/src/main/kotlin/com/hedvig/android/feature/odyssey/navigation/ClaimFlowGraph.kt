@@ -20,9 +20,11 @@ import com.hedvig.android.feature.odyssey.step.fileupload.FileUploadViewModel
 import com.hedvig.android.feature.odyssey.step.honestypledge.HonestyPledgeDestination
 import com.hedvig.android.feature.odyssey.step.informdeflect.ConfirmEmergencyDestination
 import com.hedvig.android.feature.odyssey.step.informdeflect.ConfirmEmergencyViewModel
+import com.hedvig.android.feature.odyssey.step.informdeflect.DeflectCarOtherDamageDestination
 import com.hedvig.android.feature.odyssey.step.informdeflect.DeflectEmergencyDestination
 import com.hedvig.android.feature.odyssey.step.informdeflect.DeflectGlassDamageDestination
 import com.hedvig.android.feature.odyssey.step.informdeflect.DeflectPestsDestination
+import com.hedvig.android.feature.odyssey.step.informdeflect.DeflectTowingDestination
 import com.hedvig.android.feature.odyssey.step.location.LocationDestination
 import com.hedvig.android.feature.odyssey.step.location.LocationViewModel
 import com.hedvig.android.feature.odyssey.step.notificationpermission.NotificationPermissionDestination
@@ -253,6 +255,29 @@ fun NavGraphBuilder.claimFlowGraph(
         imageLoader = imageLoader,
       )
     }
+    composable<ClaimFlowDestination.DeflectTowing> { navBackStackEntry ->
+      DeflectTowingDestination(
+        deflectTowing = this,
+        openChat = {
+          openChat(navBackStackEntry)
+        },
+        windowSizeClass = windowSizeClass,
+        navigateUp = navigator::navigateUp,
+        closeClaimFlow = closeClaimFlow,
+        imageLoader = imageLoader,
+      )
+    }
+
+    composable<ClaimFlowDestination.DeflectCarOtherDamage> { navBackStackEntry ->
+      DeflectCarOtherDamageDestination(
+        deflectCarOtherDamage = this,
+        windowSizeClass = windowSizeClass,
+        navigateUp = navigator::navigateUp,
+        closeClaimFlow = closeClaimFlow,
+        openUrl = openUrl,
+      )
+    }
+
     composable<ClaimFlowDestination.DeflectEmergency> {
       DeflectEmergencyDestination(
         deflectEmergency = this,
