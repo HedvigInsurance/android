@@ -27,6 +27,7 @@ dependencies {
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
+  implementation(projects.coreAppReview)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDesignSystem)
   implementation(projects.coreIcons)
