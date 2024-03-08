@@ -25,12 +25,13 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import arrow.fx.coroutines.raceN
 import coil.ImageLoader
+import com.google.android.play.core.review.ReviewException
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.hedvig.android.app.ui.HedvigApp
 import com.hedvig.android.app.ui.rememberHedvigAppState
 import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
-import com.hedvig.android.core.appreview.ReviewDialogViewModel
+import com.hedvig.android.core.appreview.WaitUntilAppReviewDialogShouldBeOpenedUseCase
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -60,22 +61,20 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LoggedInActivity : AppCompatActivity() {
-  private val reviewDialogViewModel: ReviewDialogViewModel by viewModel()
-
   private val authTokenService: AuthTokenService by inject()
   private val demoManager: DemoManager by inject()
-  private val tabNotificationBadgeService: TabNotificationBadgeService by inject()
-  private val marketManager: MarketManager by inject()
-  private val imageLoader: ImageLoader by inject()
   private val featureManager: FeatureManager by inject()
-  private val languageService: LanguageService by inject()
-  private val hedvigDeepLinkContainer: HedvigDeepLinkContainer by inject()
-  private val hedvigBuildConstants: HedvigBuildConstants by inject()
-  private val settingsDataStore: SettingsDataStore by inject()
   private val getOnlyHasNonPayingContractsUseCase: GetOnlyHasNonPayingContractsUseCaseProvider by inject()
+  private val hedvigBuildConstants: HedvigBuildConstants by inject()
+  private val hedvigDeepLinkContainer: HedvigDeepLinkContainer by inject()
+  private val imageLoader: ImageLoader by inject()
+  private val languageService: LanguageService by inject()
+  private val marketManager: MarketManager by inject()
+  private val settingsDataStore: SettingsDataStore by inject()
+  private val tabNotificationBadgeService: TabNotificationBadgeService by inject()
+  private val waitUntilAppReviewDialogShouldBeOpenedUseCase: WaitUntilAppReviewDialogShouldBeOpenedUseCase by inject()
 
   private val activityNavigator: ActivityNavigator by inject()
 
@@ -135,11 +134,9 @@ class LoggedInActivity : AppCompatActivity() {
       launch {
         lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
           authTokenService.authStatus.first { it is AuthStatus.LoggedIn }
-          reviewDialogViewModel.shouldOpenReviewDialog.collect { shouldOpenReviewDialog ->
-            if (shouldOpenReviewDialog) {
-              showReviewWithDelay()
-            }
-          }
+          waitUntilAppReviewDialogShouldBeOpenedUseCase.invoke()
+          delay(REVIEW_DIALOG_DELAY_MILLIS)
+          tryShowAppStoreReviewDialog()
         }
       }
       lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -221,14 +218,32 @@ class LoggedInActivity : AppCompatActivity() {
     }
   }
 
-  private suspend fun showReviewWithDelay() {
-    delay(REVIEW_DIALOG_DELAY_MILLIS)
-    val manager = ReviewManagerFactory.create(this)
-    val request = manager.requestReviewFlow()
-    request.addOnCompleteListener { task ->
-      if (task.isSuccessful) {
-        val reviewInfo = task.result
-        manager.launchReviewFlow(this, reviewInfo)
+  private fun tryShowAppStoreReviewDialog() {
+    val tag = "PlayStoreReview"
+    val manager = ReviewManagerFactory.create(this@LoggedInActivity)
+    logcat(LogPriority.INFO) { "$tag: requestReviewFlow" }
+    manager.requestReviewFlow().apply {
+      addOnFailureListener { logcat(LogPriority.INFO, it) { "$tag: requestReviewFlow failed:${it.message}" } }
+      addOnCanceledListener { logcat(LogPriority.INFO) { "$tag: requestReviewFlow cancelled" } }
+      addOnCompleteListener { task ->
+        if (task.isSuccessful) {
+          logcat(LogPriority.INFO) { "$tag: requestReviewFlow completed" }
+          val reviewInfo = task.result
+          logcat(LogPriority.INFO) { "$tag: launchReviewFlow with ReviewInfo:$reviewInfo" }
+          manager.launchReviewFlow(this@LoggedInActivity, reviewInfo).apply {
+            addOnFailureListener { logcat(LogPriority.INFO, it) { "$tag: launchReviewFlow failed:${it.message}" } }
+            addOnCanceledListener { logcat(LogPriority.INFO) { "$tag: launchReviewFlow canceled" } }
+            addOnCompleteListener { logcat(LogPriority.INFO) { "$tag: launchReviewFlow completed" } }
+          }
+        } else {
+          val exception = task.exception
+          val errorMessage = if (exception != null && exception is ReviewException) {
+            "ReviewException:${exception.message}. ReviewException::errorCode:${exception.errorCode}"
+          } else {
+            "Unknown error with message: ${exception?.message}"
+          }
+          logcat(LogPriority.INFO, exception) { "$tag: requestReviewFlow failed. Error:$errorMessage" }
+        }
       }
     }
   }
