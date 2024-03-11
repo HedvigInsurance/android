@@ -176,7 +176,7 @@ private fun InsuranceScreen(
             }
 
             if (uiState.hasError) {
-              HedvigErrorSection(retry = reload)
+              HedvigErrorSection(onButtonClick = reload)
             } else {
               InsuranceScreenContent(
                 imageLoader = imageLoader,

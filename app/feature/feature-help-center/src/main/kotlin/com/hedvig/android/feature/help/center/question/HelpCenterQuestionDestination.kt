@@ -89,7 +89,7 @@ private fun HelpCenterQuestionScreen(
       )
       if (question == null) {
         HedvigErrorSection(
-          retry = onNavigateBack,
+          onButtonClick = onNavigateBack,
           title = stringResource(R.string.HC_QUESTION_NOT_FOUND),
           subTitle = null,
           buttonText = stringResource(R.string.general_back_button),

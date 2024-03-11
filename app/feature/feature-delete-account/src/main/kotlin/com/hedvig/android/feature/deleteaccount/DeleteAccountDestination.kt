@@ -57,7 +57,7 @@ private fun DeleteAccountScreen(
   HedvigScaffold(navigateUp = navigateUp) {
     when (uiState) {
       DeleteAccountUiState.FailedToLoadDeleteAccountState -> {
-        HedvigErrorSection(retry = retryLoading, Modifier.weight(1f))
+        HedvigErrorSection(onButtonClick = retryLoading, Modifier.weight(1f))
       }
 
       DeleteAccountUiState.Loading -> {
@@ -76,7 +76,7 @@ private fun DeleteAccountScreen(
 
       is DeleteAccountUiState.CanDelete -> {
         if (uiState.failedToPerformDeletion) {
-          HedvigErrorSection(retry = retryLoading, Modifier.weight(1f))
+          HedvigErrorSection(onButtonClick = retryLoading, Modifier.weight(1f))
         } else {
           DeleteScreenContents(
             title = stringResource(R.string.DELETE_ACCOUNT_DELETE_ACCOUNT_TITLE),

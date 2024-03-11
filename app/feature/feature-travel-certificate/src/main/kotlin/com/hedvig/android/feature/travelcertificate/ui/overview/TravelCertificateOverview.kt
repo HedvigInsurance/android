@@ -68,7 +68,7 @@ internal fun TravelCertificateOverview(
         navigateUp = navigateUp,
         topAppBarActionType = TopAppBarActionType.CLOSE,
       ) {
-        HedvigErrorSection(retry = { onDownloadCertificate(travelCertificateUrl) }, modifier = Modifier.weight(1f))
+        HedvigErrorSection(onButtonClick = { onDownloadCertificate(travelCertificateUrl) }, modifier = Modifier.weight(1f))
       }
     }
 

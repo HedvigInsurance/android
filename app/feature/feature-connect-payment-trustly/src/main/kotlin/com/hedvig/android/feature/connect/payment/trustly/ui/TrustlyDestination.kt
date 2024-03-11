@@ -94,7 +94,7 @@ private fun TrustlyScreen(
 
       TrustlyUiState.FailedToConnectCard -> {
         HedvigErrorSection(
-          retry = retryConnectingCard,
+          onButtonClick = retryConnectingCard,
           title = stringResource(R.string.something_went_wrong),
           subTitle = stringResource(R.string.pay_in_error_body),
         )
@@ -102,7 +102,7 @@ private fun TrustlyScreen(
 
       TrustlyUiState.FailedToStartSession -> {
         HedvigErrorSection(
-          retry = retryConnectingCard,
+          onButtonClick = retryConnectingCard,
           title = stringResource(R.string.something_went_wrong),
           subTitle = null,
         )

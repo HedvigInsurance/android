@@ -35,7 +35,7 @@ import hedvig.resources.R
 
 @Composable
 fun HedvigErrorSection(
-  retry: () -> Unit,
+  onButtonClick: () -> Unit,
   modifier: Modifier = Modifier,
   title: String = stringResource(R.string.something_went_wrong),
   subTitle: String? = stringResource(R.string.GENERAL_ERROR_BODY),
@@ -80,7 +80,7 @@ fun HedvigErrorSection(
     Spacer(Modifier.height(24.dp))
     HedvigContainedSmallButton(
       text = buttonText,
-      onClick = retry,
+      onClick = onButtonClick,
     )
     if (withDefaultVerticalSpacing) {
       Spacer(Modifier.height(32.dp))

@@ -82,7 +82,7 @@ private fun MyInfoScreen(
             }
             uiState.errorMessage != null -> {
               Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                HedvigErrorSection(retry = dismissError)
+                HedvigErrorSection(onButtonClick = dismissError)
               }
             }
             else -> {

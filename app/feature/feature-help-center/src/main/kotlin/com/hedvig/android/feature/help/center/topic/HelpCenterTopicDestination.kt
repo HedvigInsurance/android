@@ -89,7 +89,7 @@ private fun HelpCenterTopicScreen(
       )
       if (topic == null) {
         HedvigErrorSection(
-          retry = onNavigateBack,
+          onButtonClick = onNavigateBack,
           title = stringResource(id = R.string.HC_TOPIC_NOT_FOUND),
           subTitle = null,
           buttonText = stringResource(R.string.general_back_button),
@@ -102,7 +102,7 @@ private fun HelpCenterTopicScreen(
         )
       } else if (commonQuestions.isEmpty() && allQuestions.isEmpty()) {
         HedvigErrorSection(
-          retry = onNavigateBack,
+          onButtonClick = onNavigateBack,
           title = stringResource(id = R.string.HC_TOPIC_NO_QUESTIONS),
           subTitle = null,
           buttonText = stringResource(R.string.general_back_button),

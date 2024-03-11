@@ -75,7 +75,7 @@ private fun TerminatedContractsScreen(
       TerminatedContractsUiState.NoTerminatedInsurances -> {
         HedvigErrorSection(
           buttonText = stringResource(R.string.general_back_button),
-          retry = navigateUp,
+          onButtonClick = navigateUp,
         )
       }
       is TerminatedContractsUiState.Success -> {

@@ -109,7 +109,7 @@ private fun ClaimGroupsScreen(
   ) {
     Spacer(Modifier.height(16.dp))
     if (uiState.chipLoadingErrorMessage != null) {
-      HedvigErrorSection(retry = loadClaimGroups)
+      HedvigErrorSection(onButtonClick = loadClaimGroups)
     } else {
       Text(
         text = stringResource(R.string.CLAIM_TRIAGING_NAVIGATION_TITLE),
