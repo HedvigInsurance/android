@@ -14,11 +14,11 @@ internal class DeepLinkFirstUriHandler(
   private val delegate: UriHandler,
 ) : UriHandler {
   override fun openUri(uri: String) {
-    try {
+    if (navController.graph.hasDeepLink(uri.toUri())) {
       logcat { "DeepLinkFirstUriHandler will try to navigate to uri:$uri" }
       navController.navigate(uri.toUri())
       logcat { "DeepLinkFirstUriHandler did deep link to uri:$uri" }
-    } catch (e: IllegalArgumentException) {
+    } else {
       logcat { "DeepLinkFirstUriHandler falling back to default UriHandler for uri:$uri" }
       delegate.openUri(uri)
     }
