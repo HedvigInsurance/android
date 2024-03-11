@@ -9,6 +9,7 @@ interface HedvigDeepLinkContainer {
   val helpCenterQuestion: String // A specific question inside the help center
 
   val insurances: String // The insurances destination, which also shows cross sells
+  val contract: String // A specific contract destination with a contractId. If none match, an empty screen is shown
 
   val forever: String // The forever/referrals destination, showing the existing discount and the unique code
 
@@ -38,6 +39,7 @@ internal class HedvigDeepLinkContainerImpl(
   override val helpCenterQuestion: String = "$baseDeepLinkDomain/help-center/question&id={id}"
 
   override val insurances: String = "$baseDeepLinkDomain/insurances"
+  override val contract: String = "$baseDeepLinkDomain/contract?contractId={contractId}"
 
   override val forever: String = "$baseDeepLinkDomain/forever"
 
