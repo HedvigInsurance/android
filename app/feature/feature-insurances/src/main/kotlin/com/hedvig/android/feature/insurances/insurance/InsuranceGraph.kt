@@ -82,6 +82,7 @@ fun NavGraphBuilder.insuranceGraph(
         openChat = { openChat(backStackEntry) },
         openUrl = openUrl,
         navigateUp = navigator::navigateUp,
+        navigateBack = navigator::popBackStack,
         imageLoader = imageLoader,
       )
     }
