@@ -119,7 +119,7 @@ private fun PaymentOverviewScreen(
     ) {
       if (uiState.error != null) {
         Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
-          HedvigErrorSection(retry = onRetry)
+          HedvigErrorSection(onButtonClick = onRetry)
         }
       } else if (uiState.isLoadingPaymentOverView) {
         HedvigFullScreenCenterAlignedProgressDebounced(Modifier.weight(1f))

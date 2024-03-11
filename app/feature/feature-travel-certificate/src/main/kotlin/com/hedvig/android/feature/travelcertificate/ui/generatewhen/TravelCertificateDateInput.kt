@@ -87,7 +87,7 @@ private fun TravelCertificateDateInput(
       HedvigScaffold(
         navigateUp = navigateUp,
       ) {
-        HedvigErrorSection(retry = reload, modifier = Modifier.weight(1f))
+        HedvigErrorSection(onButtonClick = reload, modifier = Modifier.weight(1f))
       }
     }
 

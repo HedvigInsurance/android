@@ -172,7 +172,7 @@ private fun ClaimDetailScreen(
           )
         }
 
-        ClaimDetailUiState.Error -> HedvigErrorSection(retry = retry)
+        ClaimDetailUiState.Error -> HedvigErrorSection(onButtonClick = retry)
         ClaimDetailUiState.Loading -> HedvigFullScreenCenterAlignedProgressDebounced()
       }
     }
