@@ -107,7 +107,7 @@ internal fun darkHedvigColorScheme(hedvigTonalPalette: HedvigTonalPalette) = Hed
   onContainedButtonContainer = hedvigTonalPalette.greyscale1000,
   secondaryContainedButtonContainer = hedvigTonalPalette.greyscale800,
   onSecondaryContainedButtonContainer = hedvigTonalPalette.greyscale100,
-  alwaysBlackContainer = hedvigTonalPalette.greyscale700,
+  alwaysBlackContainer = hedvigTonalPalette.greyscale900,
   onAlwaysBlackContainer = hedvigTonalPalette.greyscale25,
   // In the comments are the light mode colors, showing the equivalent and how it was chosen
   warningElement = hedvigTonalPalette.amber700,

@@ -17,6 +17,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -32,6 +37,8 @@ import com.hedvig.android.feature.odyssey.ui.ClaimFlowScaffold
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import hedvig.resources.R
+import kotlin.time.Duration.Companion.minutes
+import kotlinx.coroutines.delay
 
 @Composable
 internal fun DeflectCarOtherDamageDestination(
@@ -69,6 +76,17 @@ private fun DeflectCarOtherDamageScreen(
     closeClaimFlow = closeClaimFlow,
     topAppBarText = stringResource(id = R.string.SUBMIT_CLAIM_CAR_TITLE),
   ) {
+    var shouldCloseFlow by remember {
+      mutableStateOf(false)
+    }
+
+    LaunchedEffect(shouldCloseFlow) {
+      if (shouldCloseFlow) {
+        delay(3.minutes) // todo: on the test session decided to make a delay here
+        closeClaimFlow()
+      }
+    }
+
     Spacer(Modifier.height(16.dp))
     Text(
       text = stringResource(id = R.string.SUBMIT_CLAIM_CAR_REPORT_CLAIM_TITLE),
@@ -85,7 +103,7 @@ private fun DeflectCarOtherDamageScreen(
     HedvigContainedButton(
       onClick = {
         openUrl()
-        closeClaimFlow()
+        shouldCloseFlow = true
       },
       modifier = Modifier.padding(horizontal = 16.dp),
     ) {

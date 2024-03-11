@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -29,9 +30,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.ImageLoader
 import coil.compose.AsyncImage
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
+import com.hedvig.android.core.designsystem.material3.alwaysBlackContainer
+import com.hedvig.android.core.designsystem.material3.onAlwaysBlackContainer
 import com.hedvig.android.core.designsystem.material3.rememberShapedColorPainter
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -102,8 +104,8 @@ private fun DeflectGlassDamageScreen(
       }
       HedvigCard(
         colors = CardDefaults.outlinedCardColors(
-          containerColor = MaterialTheme.colorScheme.surfaceVariant,
-          contentColor = MaterialTheme.colorScheme.onSurface,
+          containerColor = MaterialTheme.colorScheme.alwaysBlackContainer,
+          contentColor = MaterialTheme.colorScheme.onAlwaysBlackContainer,
         ),
         modifier = Modifier
           .padding(horizontal = 16.dp)
@@ -127,7 +129,12 @@ private fun DeflectGlassDamageScreen(
             modifier = Modifier.fillMaxWidth(),
           )
           Spacer(Modifier.height(16.dp))
-          HedvigContainedButton(
+          HedvigContainedSmallButton(
+            colors = ButtonDefaults.buttonColors(
+              containerColor = MaterialTheme.colorScheme.onAlwaysBlackContainer,
+              contentColor = MaterialTheme.colorScheme.alwaysBlackContainer,
+            ),
+            modifier = Modifier.fillMaxWidth(),
             text = stringResource(R.string.SUBMIT_CLAIM_GLASS_DAMAGE_ONLINE_BOOKING_BUTTON),
             onClick = {
               val url = partner.url
