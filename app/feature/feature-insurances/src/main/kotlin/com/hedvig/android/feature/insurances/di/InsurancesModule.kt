@@ -2,12 +2,15 @@ package com.hedvig.android.feature.insurances.di
 
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.core.demomode.DemoManager
+import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCaseDemo
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCaseImpl
+import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCaseDemo
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCaseImpl
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceViewModel
 import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailViewModel
+import com.hedvig.android.feature.insurances.insurancedetail.GetContractForContractIdUseCase
 import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContractsViewModel
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.notification.badge.data.crosssell.CrossSellCardNotificationBadgeServiceProvider
@@ -27,9 +30,11 @@ val insurancesModule = module {
     TerminatedContractsViewModel(get<GetInsuranceContractsUseCaseProvider>())
   }
   viewModel<ContractDetailViewModel> { (contractId: String) ->
-    ContractDetailViewModel(contractId, get<FeatureManager>(), get<GetInsuranceContractsUseCaseProvider>())
+    ContractDetailViewModel(contractId, get<FeatureManager>(), get<GetContractForContractIdUseCase>())
   }
-
+  single<GetContractForContractIdUseCase> {
+    GetContractForContractIdUseCase(get<GetInsuranceContractsUseCaseProvider>())
+  }
   provideGetContractsUseCase()
   provideGetCrossSellsUseCase()
 }
