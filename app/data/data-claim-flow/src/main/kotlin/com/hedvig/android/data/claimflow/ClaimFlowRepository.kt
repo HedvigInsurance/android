@@ -71,6 +71,7 @@ interface ClaimFlowRepository {
   suspend fun submitSingleItem(
     itemBrandInput: FlowClaimItemBrandInput?,
     itemModelInput: FlowClaimItemModelInput?,
+    customName: String?,
     itemProblemIds: List<String>?,
     purchaseDate: LocalDate?,
     purchasePrice: Double?,
@@ -208,6 +209,7 @@ internal class ClaimFlowRepositoryImpl(
   override suspend fun submitSingleItem(
     itemBrandInput: FlowClaimItemBrandInput?,
     itemModelInput: FlowClaimItemModelInput?,
+    customName: String?,
     itemProblemIds: List<String>?,
     purchaseDate: LocalDate?,
     purchasePrice: Double?,
@@ -218,7 +220,7 @@ internal class ClaimFlowRepositoryImpl(
           FlowClaimSingleItemNextMutation(
             FlowClaimSingleItemInput(
               // Will be used when entering a free form text is supported
-              customName = Optional.absent(),
+              customName = Optional.presentIfNotNull(customName),
               itemBrandInput = Optional.presentIfNotNull(itemBrandInput),
               itemModelInput = Optional.presentIfNotNull(itemModelInput),
               itemProblemIds = Optional.presentIfNotNull(itemProblemIds),

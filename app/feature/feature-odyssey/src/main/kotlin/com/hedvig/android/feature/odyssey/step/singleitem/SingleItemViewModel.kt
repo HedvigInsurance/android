@@ -74,7 +74,6 @@ internal class SingleItemViewModel(
     itemBrandsUiState: ItemBrandsUiState,
     itemModelsUiState: ItemModelsUiState,
   ): Pair<ItemBrandsUiState, ItemModelsUiState> {
-    if (itemModelsUiState !is ItemModelsUiState.Content) return itemBrandsUiState to itemModelsUiState
     val selectedBrandId = itemBrandsUiState
       .asContent()
       ?.selectedItemBrand
@@ -82,23 +81,20 @@ internal class SingleItemViewModel(
       ?.itemBrandId
       ?: return itemBrandsUiState to itemModelsUiState
 
-    val availableItemModelsWithSelectedBrands: NonEmptyList<ItemModel> = itemModelsUiState
+    val availableItemModelsWithSelectedBrands: List<ItemModel> = itemModelsUiState
       .availableItemModels
       .filter { itemModel ->
         when (itemModel) {
           is ItemModel.Unknown -> true
           is ItemModel.Known -> itemModel.itemBrandId == selectedBrandId
+          is ItemModel.New -> true // todo: but it's never in this list, it can only be selectedItemModel
         }
       }
-      .toNonEmptyListOrNull()
-      ?: return itemBrandsUiState to ItemModelsUiState.NotApplicable
-    if (availableItemModelsWithSelectedBrands.all { it is ItemModel.Unknown }) {
-      return itemBrandsUiState to ItemModelsUiState.NotApplicable
-    }
+      .toList()
 
     return itemBrandsUiState to itemModelsUiState.copy(
-      availableItemModelsWithSelectedBrands,
-      itemModelsUiState.selectedItemModel,
+      availableItemModels = availableItemModelsWithSelectedBrands,
+      selectedItemModel = itemModelsUiState.selectedItemModel,
     )
   }
 
@@ -108,13 +104,21 @@ internal class SingleItemViewModel(
     partialUiState.update { it.copy(isLoading = true) }
     viewModelScope.launch {
       val itemModelInput = run {
-        val itemModelUiState = uiState.itemModelsUiState.asContent()
-        val selectedItemModel = itemModelUiState?.selectedItemModel?.asKnown() ?: return@run null
+        val itemModelUiState = uiState.itemModelsUiState
+        val selectedItemModel = itemModelUiState.selectedItemModel?.asKnown() ?: return@run null
         FlowClaimItemModelInput(selectedItemModel.itemModelId)
+      }
+      val customNameInput = run {
+        val selectedItemModel = uiState.itemModelsUiState.selectedItemModel?.asNew() ?: return@run null
+        selectedItemModel.displayName
       }
       val itemBrandInput = run {
         // If there is a specific model selected, brand must be null as the input should only have one or the other and
         //  we prefer the more specific, meaning the model instead of just the generic brand.
+        // todo: this comment above: do we still want it or not? why must it be one or another?
+        // and I guess we do not want it, if the model is custom -
+        // because we would not have the brand name if our member chooses a brand, then writes a model themselves - they
+        // won't write the brand name again
         if (itemModelInput != null) return@run null
         val itemBrandsUiState = uiState.itemBrandsUiState.asContent()
         val selectedItemBrand = itemBrandsUiState?.selectedItemBrand?.asKnown() ?: return@run null
@@ -123,9 +127,11 @@ internal class SingleItemViewModel(
           itemBrandId = selectedItemBrand.itemBrandId,
         )
       }
+      // todo: should we make sure that we have at least one of itemModelInput, customNameInput, itemBrandInput? all nullable
       claimFlowRepository.submitSingleItem(
         itemBrandInput = itemBrandInput,
         itemModelInput = itemModelInput,
+        customName = customNameInput,
         itemProblemIds = run {
           val itemProblemsUiState = uiState.itemProblemsUiState.asContent() ?: return@run null
           val selectedItemProblems =
@@ -155,13 +161,9 @@ internal class SingleItemViewModel(
     val currentItemBrandsUiState = itemBrandsUiState.value.asContent() ?: return
     itemBrandsUiState.update { currentItemBrandsUiState.copy(selectedItemBrand = itemBrand) }
     itemModelsUiState.update { modelsUiState ->
-      when (modelsUiState) {
-        is ItemModelsUiState.Content -> modelsUiState.copy(
-          selectedItemModel = null,
-        )
-
-        ItemModelsUiState.NotApplicable -> modelsUiState
-      }
+      modelsUiState.copy(
+        selectedItemModel = null,
+      )
     }
   }
 
@@ -171,10 +173,7 @@ internal class SingleItemViewModel(
    */
   fun selectModel(itemModel: ItemModel) {
     itemModelsUiState.update { itemModelsUiState ->
-      when (itemModelsUiState) {
-        ItemModelsUiState.NotApplicable -> itemModelsUiState
-        is ItemModelsUiState.Content -> itemModelsUiState.copy(selectedItemModel = itemModel)
-      }
+      itemModelsUiState.copy(selectedItemModel = itemModel)
     }
     if (itemModel !is ItemModel.Known) return
     val currentItemBrandsUiState: ItemBrandsUiState.Content = itemBrandsUiState.value.asContent() ?: return
@@ -321,25 +320,19 @@ internal sealed interface ItemBrandsUiState {
   }
 }
 
-internal sealed interface ItemModelsUiState {
-  fun asContent(): Content? = this as? Content
-
-  object NotApplicable : ItemModelsUiState
-
-  data class Content(
-    val availableItemModels: NonEmptyList<ItemModel>,
-    val selectedItemModel: ItemModel?,
-  ) : ItemModelsUiState
-
+internal data class ItemModelsUiState(
+  val availableItemModels: List<ItemModel>,
+  val selectedItemModel: ItemModel?,
+) {
   companion object {
     fun fromSingleItem(singleItem: ClaimFlowDestination.SingleItem): ItemModelsUiState {
-      val availableItemModels = singleItem.availableItemModels?.toNonEmptyListOrNull() ?: return NotApplicable
+      val availableItemModels = singleItem.availableItemModels?.toMutableList() ?: listOf()
       val selectedItemModel = availableItemModels.firstOrNull { availableItemModel ->
         availableItemModel.asKnown()?.itemModelId == singleItem.selectedItemModel
       }
-      val notSureModel = ItemModel.Unknown
-      return Content(
-        availableItemModels.plus(notSureModel),
+      val otherModel = ItemModel.Unknown
+      return ItemModelsUiState(
+        availableItemModels.plus(otherModel),
         selectedItemModel,
       )
     }

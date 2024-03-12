@@ -197,12 +197,20 @@ sealed interface ItemBrand {
 sealed interface ItemModel {
   fun asKnown(): Known? = this as? Known
 
+  fun asNew(): New? = this as? New
+
   fun displayName(resources: Resources): String {
     return when (this) {
       is Known -> displayName
       is Unknown -> resources.getString(displayName)
+      is New -> displayName
     }
   }
+
+  @Serializable
+  data class New(
+    val displayName: String,
+  ) : ItemModel
 
   @Serializable
   data class Known(
@@ -215,7 +223,7 @@ sealed interface ItemModel {
   @Serializable
   object Unknown : ItemModel {
     @StringRes
-    val displayName: Int = hedvig.resources.R.string.GENERAL_NOT_SURE
+    val displayName: Int = hedvig.resources.R.string.claims_item_model_other
   }
 }
 
