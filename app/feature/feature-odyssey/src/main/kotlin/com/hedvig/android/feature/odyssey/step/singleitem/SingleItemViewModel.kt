@@ -298,7 +298,7 @@ internal class PurchasePriceUiState(amount: Double?, preferredCurrency: Currency
 internal sealed interface ItemBrandsUiState {
   fun asContent(): Content? = this as? Content
 
-  object NotApplicable : ItemBrandsUiState
+  data object NotApplicable : ItemBrandsUiState
 
   data class Content(
     val availableItemBrands: NonEmptyList<ItemBrand>,
@@ -311,9 +311,8 @@ internal sealed interface ItemBrandsUiState {
       val selectedItemBrand = availableItemBrands.firstOrNull { availableItemBrand: ItemBrand ->
         availableItemBrand.asKnown()?.itemBrandId == singleItem.selectedItemBrand
       }
-      val notSureBrand = ItemBrand.Unknown
       return Content(
-        availableItemBrands.plus(notSureBrand),
+        availableItemBrands,
         selectedItemBrand,
       )
     }
@@ -342,7 +341,7 @@ internal data class ItemModelsUiState(
 internal sealed interface ItemProblemsUiState {
   fun asContent(): Content? = this as? Content
 
-  object NotApplicable : ItemProblemsUiState
+  data object NotApplicable : ItemProblemsUiState
 
   data class Content(
     val availableItemProblems: NonEmptyList<ItemProblem>,

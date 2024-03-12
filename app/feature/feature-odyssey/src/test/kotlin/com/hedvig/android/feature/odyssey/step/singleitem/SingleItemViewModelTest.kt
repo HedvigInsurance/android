@@ -54,16 +54,16 @@ class SingleItemViewModelTest {
 
     viewModel.uiState.test {
       assertThat(viewModel.uiState.value.itemBrandsUiState.asContent()!!.selectedItemBrand).isNull()
-      assertThat(viewModel.uiState.value.itemModelsUiState.asContent()!!.selectedItemModel).isNull()
+      assertThat(viewModel.uiState.value.itemModelsUiState.selectedItemModel).isNull()
 
       viewModel.selectBrand(brand)
       runCurrent()
       assertThat(viewModel.uiState.value.itemBrandsUiState.asContent()!!.selectedItemBrand!!).isEqualTo(brand)
-      assertThat(viewModel.uiState.value.itemModelsUiState.asContent()!!.selectedItemModel).isNull()
+      assertThat(viewModel.uiState.value.itemModelsUiState.selectedItemModel).isNull()
 
       viewModel.selectModel(model)
       runCurrent()
-      assertThat(viewModel.uiState.value.itemModelsUiState.asContent()!!.selectedItemModel!!).isEqualTo(model)
+      assertThat(viewModel.uiState.value.itemModelsUiState.selectedItemModel!!).isEqualTo(model)
 
       claimFlowRepository.submitSingleItemResponse.add(ClaimFlowStep.UnknownStep(FlowId("")).right())
       viewModel.submitSelections()
@@ -164,6 +164,7 @@ class SingleItemViewModelTest {
     }
   }
 
+  // todo! change tests
   @Test
   fun `submitting with a selected unknown model and a selected unknown brand sends in neither`() = runTest {
     val claimFlowRepository = TestClaimFlowRepository()
@@ -178,7 +179,7 @@ class SingleItemViewModelTest {
     )
 
     viewModel.uiState.test {
-      viewModel.selectBrand(ItemBrand.Unknown)
+      // viewModel.selectBrand(ItemBrand.Unknown) //todo: does not exist anymore
       viewModel.selectModel(ItemModel.Unknown)
       runCurrent()
       claimFlowRepository.submitSingleItemResponse.add(ClaimFlowStep.UnknownStep(FlowId("")).right())
@@ -208,7 +209,7 @@ class SingleItemViewModelTest {
       viewModel.selectModel(model)
       runCurrent()
       val uiState = viewModel.uiState.value
-      assertThat(uiState.itemModelsUiState.asContent()!!.selectedItemModel!!).isEqualTo(model)
+      assertThat(uiState.itemModelsUiState.selectedItemModel!!).isEqualTo(model)
       assertThat(uiState.itemBrandsUiState.asContent()!!.selectedItemBrand!!).isEqualTo(brand)
       cancelAndIgnoreRemainingEvents()
     }
@@ -231,7 +232,7 @@ class SingleItemViewModelTest {
       viewModel.selectModel(model)
       runCurrent()
       val uiState = viewModel.uiState.value
-      assertThat(uiState.itemModelsUiState.asContent()!!.selectedItemModel!!).isEqualTo(model)
+      assertThat(uiState.itemModelsUiState.selectedItemModel!!).isEqualTo(model)
       assertThat(uiState.itemBrandsUiState.asContent()!!.selectedItemBrand).isNull()
       cancelAndIgnoreRemainingEvents()
     }
@@ -255,12 +256,12 @@ class SingleItemViewModelTest {
     )
 
     viewModel.uiState.test {
-      val availableModelsBeforeBrandSet = viewModel.uiState.value.itemModelsUiState.asContent()!!.availableItemModels
+      val availableModelsBeforeBrandSet = viewModel.uiState.value.itemModelsUiState.availableItemModels
       assertThat(availableModelsBeforeBrandSet.count { it.asKnown()?.itemBrandId == "brand#1" }).isEqualTo(3)
       assertThat(availableModelsBeforeBrandSet.count { it.asKnown()?.itemBrandId == "brand#2" }).isEqualTo(2)
       viewModel.selectBrand(brandWithId2)
       runCurrent()
-      val availableModelsAfterBrandSet = viewModel.uiState.value.itemModelsUiState.asContent()!!.availableItemModels
+      val availableModelsAfterBrandSet = viewModel.uiState.value.itemModelsUiState.availableItemModels
       assertThat(availableModelsAfterBrandSet.count { it.asKnown()?.itemBrandId == "brand#1" }).isEqualTo(0)
       assertThat(availableModelsAfterBrandSet.count { it.asKnown()?.itemBrandId == "brand#2" }).isEqualTo(2)
       cancelAndIgnoreRemainingEvents()

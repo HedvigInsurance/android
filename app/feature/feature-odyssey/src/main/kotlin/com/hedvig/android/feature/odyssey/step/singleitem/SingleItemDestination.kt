@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.odyssey.step.singleitem
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -130,37 +131,48 @@ private fun SingleItemScreen(
         selectBrand = {
           shouldShowFreeTextModelField = false
           selectBrand(it)
+          // todo: if newly selected brand also has only "Other" model,
+          // I don't clear the input in the Custom model name EditText below.
+          // right thing?
         },
         modifier = sideSpacingModifier.fillMaxWidth(),
       )
-      Spacer(Modifier.height(2.dp))
     }
     val itemModelsUiStateContent = uiState.itemModelsUiState
     Spacer(Modifier.height(2.dp))
-    Models(
-      uiState = itemModelsUiStateContent,
-      enabled = uiState.canSubmit,
-      selectModel = selectModel,
-      modifier = sideSpacingModifier.fillMaxWidth(),
-      isCustomModelOnly = uiState.itemModelsUiState.availableItemModels.size == 1 &&
-        uiState.itemModelsUiState.availableItemModels[0] is ItemModel.Unknown,
-      onSelectUnknownModel = {
-        shouldShowFreeTextModelField = true
-      },
-      onSelectKnownModel = {
-        shouldShowFreeTextModelField = false
-      },
-    )
-    Spacer(Modifier.height(2.dp))
-    if (shouldShowFreeTextModelField) {
-      CustomModelInput(
-        onInput = { input ->
-          if (input != null) {
-            selectModel(ItemModel.New(input))
-          }
-        },
-        modifier = sideSpacingModifier.fillMaxWidth(),
-      )
+    val isCustomModelOnly = uiState.itemModelsUiState.availableItemModels.size == 1 &&
+      uiState.itemModelsUiState.availableItemModels[0] is ItemModel.Unknown
+    if (!isCustomModelOnly) {
+      Column(modifier = sideSpacingModifier.fillMaxWidth()) {
+        Spacer(Modifier.height(2.dp))
+        Models(
+          uiState = itemModelsUiStateContent,
+          enabled = uiState.canSubmit,
+          selectModel = selectModel,
+          modifier = Modifier.fillMaxWidth(),
+          onSelectUnknownModel = {
+            shouldShowFreeTextModelField = true
+          },
+          onSelectKnownModel = {
+            shouldShowFreeTextModelField = false
+          },
+        )
+        Spacer(Modifier.height(2.dp))
+      }
+    }
+    if (shouldShowFreeTextModelField || isCustomModelOnly) {
+      Column(modifier = sideSpacingModifier.fillMaxWidth()) {
+        Spacer(Modifier.height(2.dp))
+        CustomModelInput(
+          onInput = { input ->
+            if (input != null) {
+              selectModel(ItemModel.New(input))
+            }
+          },
+          modifier = Modifier.fillMaxWidth(),
+        )
+        Spacer(Modifier.height(2.dp))
+      }
     }
     Spacer(Modifier.height(2.dp))
     DateOfPurchase(uiState.datePickerUiState, uiState.canSubmit, sideSpacingModifier.fillMaxWidth())
@@ -205,47 +217,33 @@ private fun Models(
   enabled: Boolean,
   selectModel: (ItemModel) -> Unit,
   modifier: Modifier = Modifier,
-  isCustomModelOnly: Boolean,
   onSelectUnknownModel: () -> Unit,
   onSelectKnownModel: () -> Unit,
 ) {
   LocalConfiguration.current
   val resources = LocalContext.current.resources
-  if (isCustomModelOnly) {
-    CustomModelInput(
-      onInput = { input ->
-        if (input != null) {
-          val newModel = ItemModel.New(
-            displayName = input,
-          )
-          selectModel(newModel)
-        }
-      },
-      modifier = modifier,
-    )
-  } else {
-    var showDialog by rememberSaveable { mutableStateOf(false) }
-    if (showDialog) {
-      SelectDialogWithFreeTextField(
-        uiState = uiState,
-        onDismissRequest = { showDialog = false },
-        selectModel = selectModel,
-        onSelectUnknownModel = onSelectUnknownModel,
-        onSelectKnownModel = onSelectKnownModel,
-      )
-    }
-    HedvigBigCard(
-      onClick = { showDialog = true },
-      hintText = stringResource(R.string.claims_item_screen_model_button),
-      inputText = if (uiState.selectedItemModel is ItemModel.New) {
-        ItemModel.Unknown.displayName(resources)
-      } else {
-        uiState.selectedItemModel?.displayName(resources)
-      },
-      modifier = modifier,
-      enabled = enabled,
+
+  var showDialog by rememberSaveable { mutableStateOf(false) }
+  if (showDialog) {
+    SelectDialogWithFreeTextField(
+      uiState = uiState,
+      onDismissRequest = { showDialog = false },
+      selectModel = selectModel,
+      onSelectUnknownModel = onSelectUnknownModel,
+      onSelectKnownModel = onSelectKnownModel,
     )
   }
+  HedvigBigCard(
+    onClick = { showDialog = true },
+    hintText = stringResource(R.string.claims_item_screen_model_button),
+    inputText = if (uiState.selectedItemModel is ItemModel.New) {
+      ItemModel.Unknown.displayName(resources)
+    } else {
+      uiState.selectedItemModel?.displayName(resources)
+    },
+    modifier = modifier,
+    enabled = enabled,
+  )
 }
 
 @Composable
