@@ -23,10 +23,10 @@ import com.hedvig.android.core.designsystem.component.button.HedvigContainedButt
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.preview.calculateForPreview
+import com.hedvig.android.core.ui.scaffold.ClaimFlowScaffold
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.LocationOption
-import com.hedvig.android.feature.odyssey.ui.ClaimFlowScaffold
 import com.hedvig.android.feature.odyssey.ui.LocationWithDialog
 import hedvig.resources.R
 
@@ -77,7 +77,7 @@ private fun LocationScreen(
   ) { sideSpacingModifier ->
     Spacer(Modifier.height(16.dp))
     Text(
-      text = stringResource(hedvig.resources.R.string.claims_incident_screen_location),
+      text = stringResource(R.string.claims_incident_screen_location),
       style = MaterialTheme.typography.headlineMedium,
       modifier = sideSpacingModifier.fillMaxWidth(),
     )
