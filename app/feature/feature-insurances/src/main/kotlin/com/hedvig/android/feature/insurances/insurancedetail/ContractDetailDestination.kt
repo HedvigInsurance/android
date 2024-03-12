@@ -78,6 +78,7 @@ internal fun ContractDetailDestination(
   openChat: () -> Unit,
   openUrl: (String) -> Unit,
   navigateUp: () -> Unit,
+  navigateBack: () -> Unit,
   imageLoader: ImageLoader,
 ) {
   val uiState: ContractDetailsUiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -93,6 +94,7 @@ internal fun ContractDetailDestination(
     openUrl = openUrl,
     openWebsite = openWebsite,
     navigateUp = navigateUp,
+    navigateBack = navigateBack,
   )
 }
 
@@ -108,6 +110,7 @@ private fun ContractDetailScreen(
   onCancelInsuranceClick: (cancelInsuranceData: CancelInsuranceData) -> Unit,
   openWebsite: (Uri) -> Unit,
   navigateUp: () -> Unit,
+  navigateBack: () -> Unit,
   openChat: () -> Unit,
   openUrl: (String) -> Unit,
 ) {
@@ -122,6 +125,7 @@ private fun ContractDetailScreen(
       contentKey = { uiState ->
         when (uiState) {
           ContractDetailsUiState.Error -> "Error"
+          ContractDetailsUiState.NoContractFound -> "NoContractFound"
           ContractDetailsUiState.Loading -> "Loading"
           is ContractDetailsUiState.Success -> "Success"
         }
@@ -130,11 +134,19 @@ private fun ContractDetailScreen(
       modifier = Modifier.weight(1f),
     ) { state ->
       when (state) {
-        ContractDetailsUiState.Error -> HedvigErrorSection(retry = retry, modifier = Modifier.fillMaxSize())
+        ContractDetailsUiState.Error -> HedvigErrorSection(onButtonClick = retry, modifier = Modifier.fillMaxSize())
         ContractDetailsUiState.Loading -> HedvigFullScreenCenterAlignedProgressDebounced(
           show = state is ContractDetailsUiState.Loading,
           modifier = Modifier.fillMaxSize(),
         )
+        ContractDetailsUiState.NoContractFound -> {
+          HedvigErrorSection(
+            subTitle = stringResource(R.string.CONTRACT_DETAILS_ERROR),
+            buttonText = stringResource(R.string.general_back_button),
+            onButtonClick = navigateBack,
+            modifier = Modifier.fillMaxSize(),
+          )
+        }
 
         is ContractDetailsUiState.Success -> {
           LazyColumn(
@@ -336,6 +348,7 @@ private fun PreviewContractDetailScreen() {
         },
         openWebsite = {},
         navigateUp = {},
+        navigateBack = {},
         openChat = {},
         onMissingInfoClick = {},
         openUrl = {},

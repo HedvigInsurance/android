@@ -1,13 +1,12 @@
 package com.hedvig.android.feature.chat.ui
 
-import android.content.Intent
 import android.net.Uri
 import android.util.Patterns
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLayoutResult
@@ -34,8 +33,8 @@ internal fun TextWithClickableUrls(
     textDecoration = TextDecoration.Underline,
   ),
   linkMatcher: Regex = Patterns.WEB_URL.toRegex(),
-  onClick: (url: String) -> Unit = with(LocalContext.current) {
-    { url -> startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
+  onClick: (url: String) -> Unit = with(LocalUriHandler.current) {
+    { url -> this.openUri(url) }
   },
 ) {
   val annotatedText = buildAnnotatedString {

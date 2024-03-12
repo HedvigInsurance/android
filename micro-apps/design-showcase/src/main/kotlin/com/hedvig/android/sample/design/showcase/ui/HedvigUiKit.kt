@@ -190,7 +190,7 @@ internal fun HedvigUiKit() {
       }
     }
     lightAndDarkItem {
-      HedvigErrorSection(retry = { })
+      HedvigErrorSection(onButtonClick = { })
     }
     lightAndDarkItem {
       HedvigSuccessSection("HedvigSuccessSection")

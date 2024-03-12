@@ -14,9 +14,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.core.content.getSystemService
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
@@ -27,6 +29,7 @@ import arrow.fx.coroutines.raceN
 import coil.ImageLoader
 import com.google.android.play.core.review.ReviewException
 import com.google.android.play.core.review.ReviewManagerFactory
+import com.hedvig.android.app.ui.DeepLinkFirstUriHandler
 import com.hedvig.android.app.ui.HedvigApp
 import com.hedvig.android.app.ui.rememberHedvigAppState
 import com.hedvig.android.auth.AuthStatus
@@ -175,25 +178,29 @@ class LoggedInActivity : AppCompatActivity() {
       )
       val darkTheme = hedvigAppState.darkTheme
       EnableEdgeToEdgeSideEffect(darkTheme)
-      HedvigTheme(darkTheme = darkTheme) {
-        HedvigApp(
-          hedvigAppState = hedvigAppState,
-          hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-          activityNavigator = activityNavigator,
-          getInitialTab = {
-            intent.extras?.getString(INITIAL_TAB)?.let {
-              TopLevelGraph.fromName(it)
-            }
-          },
-          clearInitialTab = {
-            intent.removeExtra(INITIAL_TAB)
-          },
-          shouldShowRequestPermissionRationale = ::shouldShowRequestPermissionRationale,
-          market = market,
-          imageLoader = imageLoader,
-          languageService = languageService,
-          hedvigBuildConstants = hedvigBuildConstants,
-        )
+      CompositionLocalProvider(
+        LocalUriHandler provides DeepLinkFirstUriHandler(hedvigAppState.navController, LocalUriHandler.current),
+      ) {
+        HedvigTheme(darkTheme = darkTheme) {
+          HedvigApp(
+            hedvigAppState = hedvigAppState,
+            hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+            activityNavigator = activityNavigator,
+            getInitialTab = {
+              intent.extras?.getString(INITIAL_TAB)?.let {
+                TopLevelGraph.fromName(it)
+              }
+            },
+            clearInitialTab = {
+              intent.removeExtra(INITIAL_TAB)
+            },
+            shouldShowRequestPermissionRationale = ::shouldShowRequestPermissionRationale,
+            market = market,
+            imageLoader = imageLoader,
+            languageService = languageService,
+            hedvigBuildConstants = hedvigBuildConstants,
+          )
+        }
       }
     }
   }

@@ -55,7 +55,7 @@ private fun UnknownErrorScreen(openChat: () -> Unit, closeFailureScreenDestinati
       ) {
         HedvigErrorSection(
           buttonText = stringResource(R.string.open_chat),
-          retry = openChat,
+          onButtonClick = openChat,
         )
       }
       Spacer(Modifier.height(16.dp))

@@ -169,7 +169,7 @@ private fun HomeScreen(
 
         is HomeUiState.Error -> {
           HedvigErrorSection(
-            retry = reload,
+            onButtonClick = reload,
             modifier = Modifier
               .padding(16.dp)
               .windowInsetsPadding(WindowInsets.safeDrawing),
