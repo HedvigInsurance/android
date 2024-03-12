@@ -5,16 +5,19 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.material.icons.Icons
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -28,11 +31,10 @@ import com.hedvig.android.core.designsystem.component.button.HedvigContainedButt
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.hedvig.normal.X
 import com.hedvig.android.core.ui.dialog.ErrorDialog
 import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
-import com.hedvig.android.core.ui.scaffold.HedvigScaffold
+import com.hedvig.android.core.ui.preview.calculateForPreview
+import com.hedvig.android.core.ui.scaffold.ClaimFlowScaffold
 import com.hedvig.android.core.ui.text.WarningTextWithIcon
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimtriaging.ClaimGroup
@@ -45,6 +47,7 @@ import kotlinx.collections.immutable.toImmutableList
 @Composable
 internal fun ClaimGroupsDestination(
   viewModel: ClaimGroupsViewModel,
+  windowSizeClass: WindowSizeClass,
   onClaimGroupWithEntryPointsSubmit: (ClaimGroup) -> Unit,
   startClaimFlow: (ClaimFlowStep) -> Unit,
   navigateUp: () -> Unit,
@@ -76,12 +79,14 @@ internal fun ClaimGroupsDestination(
     showedStartClaimError = viewModel::showedStartClaimError,
     navigateUp = navigateUp,
     closeClaimFlow = closeClaimFlow,
+    windowSizeClass = windowSizeClass,
   )
 }
 
 @Composable
 private fun ClaimGroupsScreen(
   uiState: ClaimGroupsUiState,
+  windowSizeClass: WindowSizeClass,
   loadClaimGroups: () -> Unit,
   onSelectClaimGroup: (claimGroup: ClaimGroup) -> Unit,
   onContinue: () -> Unit,
@@ -97,19 +102,15 @@ private fun ClaimGroupsScreen(
     )
   }
 
-  HedvigScaffold(
+  ClaimFlowScaffold(
     navigateUp = navigateUp,
-    topAppBarActions = {
-      IconButton(
-        onClick = closeClaimFlow,
-        content = { Icon(imageVector = Icons.Hedvig.X, contentDescription = null) },
-      )
-    },
     modifier = Modifier.fillMaxWidth(),
+    windowSizeClass = windowSizeClass,
+    closeClaimFlow = closeClaimFlow,
   ) {
     Spacer(Modifier.height(16.dp))
     if (uiState.chipLoadingErrorMessage != null) {
-      HedvigErrorSection(retry = loadClaimGroups)
+      HedvigErrorSection(onButtonClick = loadClaimGroups)
     } else {
       Text(
         text = stringResource(R.string.CLAIM_TRIAGING_NAVIGATION_TITLE),
@@ -152,6 +153,7 @@ private fun ClaimGroupsScreen(
         modifier = Modifier.padding(horizontal = 16.dp),
       )
       Spacer(modifier = Modifier.height(16.dp))
+      Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
     }
   }
 }
@@ -183,6 +185,7 @@ private fun PreviewClaimGroupsScreen(
         showedStartClaimError = {},
         navigateUp = {},
         closeClaimFlow = {},
+        windowSizeClass = WindowSizeClass.calculateForPreview(),
       )
     }
   }

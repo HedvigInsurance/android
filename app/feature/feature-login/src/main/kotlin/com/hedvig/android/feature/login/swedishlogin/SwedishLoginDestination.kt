@@ -122,7 +122,7 @@ private fun SwedishLoginScreen(
           modifier = Modifier.weight(1f).fillMaxWidth(),
         ) {
           Column {
-            HedvigErrorSection(retry = retry, subTitle = null, withDefaultVerticalSpacing = false)
+            HedvigErrorSection(onButtonClick = retry, subTitle = null, withDefaultVerticalSpacing = false)
             Box(Modifier.size(48.dp).then(demoModeModifier))
           }
         }
@@ -137,7 +137,7 @@ private fun SwedishLoginScreen(
             HedvigErrorSection(
               title = stringResource(R.string.general_error),
               subTitle = uiState.message,
-              retry = retry,
+              onButtonClick = retry,
               withDefaultVerticalSpacing = false,
             )
             Box(Modifier.size(48.dp).then(demoModeModifier))

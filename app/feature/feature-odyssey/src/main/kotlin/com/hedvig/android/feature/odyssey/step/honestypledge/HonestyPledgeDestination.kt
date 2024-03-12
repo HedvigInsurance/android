@@ -24,8 +24,9 @@ import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.preview.calculateForPreview
-import com.hedvig.android.feature.odyssey.ui.ClaimFlowScaffold
+import com.hedvig.android.core.ui.scaffold.ClaimFlowScaffold
 import com.hedvig.android.notification.permission.rememberNotificationPermissionStatus
+import hedvig.resources.R
 
 @Composable
 internal fun HonestyPledgeDestination(
@@ -60,13 +61,13 @@ private fun HonestyPledgeScreen(
   ) { sideSpacingModifier ->
     Spacer(Modifier.height(16.dp))
     Text(
-      text = stringResource(hedvig.resources.R.string.HONESTY_PLEDGE_TITLE),
+      text = stringResource(R.string.HONESTY_PLEDGE_TITLE),
       style = MaterialTheme.typography.headlineMedium,
       modifier = Modifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(32.dp))
     Text(
-      text = stringResource(hedvig.resources.R.string.HONESTY_PLEDGE_DESCRIPTION),
+      text = stringResource(R.string.HONESTY_PLEDGE_DESCRIPTION),
       modifier = sideSpacingModifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))
@@ -79,7 +80,7 @@ private fun HonestyPledgeScreen(
           openNotificationPermissionStep()
         }
       },
-      text = stringResource(hedvig.resources.R.string.CLAIMS_PLEDGE_SLIDE_LABEL),
+      text = stringResource(R.string.CLAIMS_PLEDGE_SLIDE_LABEL),
       modifier = Modifier
         .widthIn(max = 450.dp)
         .fillMaxWidth()
@@ -90,7 +91,7 @@ private fun HonestyPledgeScreen(
     Spacer(Modifier.height(8.dp))
     HedvigTextButton(
       onClick = closeClaimFlow,
-      text = stringResource(hedvig.resources.R.string.general_cancel_button),
+      text = stringResource(R.string.general_cancel_button),
       modifier = sideSpacingModifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))

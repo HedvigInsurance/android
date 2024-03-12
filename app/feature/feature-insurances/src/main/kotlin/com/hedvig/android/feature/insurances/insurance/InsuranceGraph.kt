@@ -60,7 +60,11 @@ fun NavGraphBuilder.insuranceGraph(
         imageLoader = imageLoader,
       )
     }
-    composable<InsurancesDestination.InsuranceContractDetail> { backStackEntry ->
+    composable<InsurancesDestination.InsuranceContractDetail>(
+      deepLinks = listOf(
+        navDeepLink { uriPattern = hedvigDeepLinkContainer.contract },
+      ),
+    ) { backStackEntry ->
       val contractDetail = this
       val viewModel: ContractDetailViewModel = koinViewModel { parametersOf(contractDetail.contractId) }
       ContractDetailDestination(
@@ -78,6 +82,7 @@ fun NavGraphBuilder.insuranceGraph(
         openChat = { openChat(backStackEntry) },
         openUrl = openUrl,
         navigateUp = navigator::navigateUp,
+        navigateBack = navigator::popBackStack,
         imageLoader = imageLoader,
       )
     }

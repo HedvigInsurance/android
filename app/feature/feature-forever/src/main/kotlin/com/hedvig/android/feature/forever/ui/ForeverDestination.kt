@@ -141,7 +141,7 @@ private fun ForeverScreen(
       contentKey = { it.foreverDataErrorMessage },
     ) { uiState ->
       if (uiState.foreverDataErrorMessage != null) {
-        HedvigErrorSection(retry = reload)
+        HedvigErrorSection(onButtonClick = reload)
       } else {
         val shareSheetTitle = stringResource(R.string.REFERRALS_SHARE_SHEET_TITLE)
         ForeverContent(
