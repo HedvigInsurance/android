@@ -9,6 +9,13 @@ interface HedvigDeepLinkContainer {
   val helpCenterQuestion: String // A specific question inside the help center
 
   val insurances: String // The insurances destination, which also shows cross sells
+
+  /**
+   * A link to a contract without an id, which should fall back to the same behavior that [insurances] gives us.
+   * This is required so that it takes over the [contract] link in scenarios where the ID is not provided. Otherwise
+   * the deep link is still matched but the contractId is not present, which results in a crash.
+   */
+  val contractWithoutContractId: String
   val contract: String // A specific contract destination with a contractId. If none match, an empty screen is shown
 
   val forever: String // The forever/referrals destination, showing the existing discount and the unique code
@@ -39,6 +46,7 @@ internal class HedvigDeepLinkContainerImpl(
   override val helpCenterQuestion: String = "$baseDeepLinkDomain/help-center/question&id={id}"
 
   override val insurances: String = "$baseDeepLinkDomain/insurances"
+  override val contractWithoutContractId: String = "$baseDeepLinkDomain/contract"
   override val contract: String = "$baseDeepLinkDomain/contract?contractId={contractId}"
 
   override val forever: String = "$baseDeepLinkDomain/forever"

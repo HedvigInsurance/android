@@ -40,6 +40,7 @@ fun NavGraphBuilder.insuranceGraph(
     startDestination = createRoutePattern<AppDestination.TopLevelDestination.Insurance>(),
     deepLinks = listOf(
       navDeepLink { uriPattern = hedvigDeepLinkContainer.insurances },
+      navDeepLink { uriPattern = hedvigDeepLinkContainer.contractWithoutContractId },
     ),
   ) {
     nestedGraphs()
