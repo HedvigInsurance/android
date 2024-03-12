@@ -179,7 +179,7 @@ class SingleItemViewModelTest {
     )
 
     viewModel.uiState.test {
-      // viewModel.selectBrand(ItemBrand.Unknown) //todo: does not exist anymore
+      viewModel.selectBrand(ItemBrand.Unknown)
       viewModel.selectModel(ItemModel.Unknown)
       runCurrent()
       claimFlowRepository.submitSingleItemResponse.add(ClaimFlowStep.UnknownStep(FlowId("")).right())

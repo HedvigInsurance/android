@@ -131,9 +131,6 @@ private fun SingleItemScreen(
         selectBrand = {
           shouldShowFreeTextModelField = false
           selectBrand(it)
-          // todo: if newly selected brand also has only "Other" model,
-          // I don't clear the input in the Custom model name EditText below.
-          // right thing?
         },
         modifier = sideSpacingModifier.fillMaxWidth(),
       )
@@ -237,7 +234,7 @@ private fun Models(
     onClick = { showDialog = true },
     hintText = stringResource(R.string.claims_item_screen_model_button),
     inputText = if (uiState.selectedItemModel is ItemModel.New) {
-      ItemModel.Unknown.displayName(resources)
+      stringResource(id = R.string.claims_item_model_other)
     } else {
       uiState.selectedItemModel?.displayName(resources)
     },
@@ -261,10 +258,10 @@ private fun SelectDialogWithFreeTextField(
     onSelected =
       { selectedModel ->
         if (selectedModel is ItemModel.Unknown) {
-          onSelectUnknownModel()
-          selectModel(selectedModel) // todo: maybe not needed?
+          onSelectUnknownModel() // todo: remove both lambda and move the differnt. logic to vm
+          selectModel(selectedModel)
         } else {
-          onSelectKnownModel()
+          onSelectKnownModel() // todo: remove both lambda and move the differnt. logic to vm
           selectModel(selectedModel)
         }
       },

@@ -115,10 +115,6 @@ internal class SingleItemViewModel(
       val itemBrandInput = run {
         // If there is a specific model selected, brand must be null as the input should only have one or the other and
         //  we prefer the more specific, meaning the model instead of just the generic brand.
-        // todo: this comment above: do we still want it or not? why must it be one or another?
-        // and I guess we do not want it, if the model is custom -
-        // because we would not have the brand name if our member chooses a brand, then writes a model themselves - they
-        // won't write the brand name again
         if (itemModelInput != null) return@run null
         val itemBrandsUiState = uiState.itemBrandsUiState.asContent()
         val selectedItemBrand = itemBrandsUiState?.selectedItemBrand?.asKnown() ?: return@run null
