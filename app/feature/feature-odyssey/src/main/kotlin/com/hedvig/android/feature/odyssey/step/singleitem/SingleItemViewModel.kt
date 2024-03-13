@@ -16,6 +16,7 @@ import com.hedvig.android.data.claimflow.ItemModel
 import com.hedvig.android.data.claimflow.ItemProblem
 import com.hedvig.android.feature.odyssey.ui.DatePickerUiState
 import com.hedvig.android.language.LanguageService
+import com.hedvig.android.logger.logcat
 import java.util.Locale
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -87,7 +88,7 @@ internal class SingleItemViewModel(
         when (itemModel) {
           is ItemModel.Unknown -> true
           is ItemModel.Known -> itemModel.itemBrandId == selectedBrandId
-          is ItemModel.New -> true // todo: but it's never in this list, it can only be selectedItemModel
+          is ItemModel.New -> true
         }
       }
       .toList()
@@ -103,14 +104,14 @@ internal class SingleItemViewModel(
     if (uiState.canSubmit.not()) return
     partialUiState.update { it.copy(isLoading = true) }
     viewModelScope.launch {
+      val customNameInput = run {
+        val selectedItemModel = uiState.itemModelsUiState.selectedItemModel?.asNew() ?: return@run null
+        selectedItemModel.displayName
+      }
       val itemModelInput = run {
         val itemModelUiState = uiState.itemModelsUiState
         val selectedItemModel = itemModelUiState.selectedItemModel?.asKnown() ?: return@run null
         FlowClaimItemModelInput(selectedItemModel.itemModelId)
-      }
-      val customNameInput = run {
-        val selectedItemModel = uiState.itemModelsUiState.selectedItemModel?.asNew() ?: return@run null
-        selectedItemModel.displayName
       }
       val itemBrandInput = run {
         // If there is a specific model selected, brand must be null as the input should only have one or the other and
@@ -122,6 +123,11 @@ internal class SingleItemViewModel(
           itemTypeId = selectedItemBrand.itemTypeId,
           itemBrandId = selectedItemBrand.itemBrandId,
         )
+      }
+      logcat {
+        "mariia: single item itemBrandInput $itemBrandInput,\n" +
+          "        itemModelInput $itemModelInput,\n" +
+          "        customName $customNameInput "
       }
       // todo: should we make sure that we have at least one of itemModelInput, customNameInput, itemBrandInput? all nullable
       claimFlowRepository.submitSingleItem(
@@ -155,10 +161,28 @@ internal class SingleItemViewModel(
    */
   fun selectBrand(itemBrand: ItemBrand) {
     val currentItemBrandsUiState = itemBrandsUiState.value.asContent() ?: return
+    val availableItemModelsWithSelectedBrands: List<ItemModel> = itemModelsUiState.value
+      .availableItemModels
+      .filter { itemModel ->
+        when (itemModel) {
+          is ItemModel.Unknown -> true
+          is ItemModel.Known -> itemModel.itemBrandId == itemBrand.asKnown()?.itemBrandId
+          is ItemModel.New -> true
+        }
+      }
+      .toList()
+    val onlyUnKnown = availableItemModelsWithSelectedBrands.size == 1 && availableItemModelsWithSelectedBrands[0] is ItemModel.Unknown
+    val modelUi = if (availableItemModelsWithSelectedBrands.isEmpty() || onlyUnKnown) {
+      ModelUi.JustCustomModel
+    } else {
+      ModelUi.JustModelDialog
+    }
     itemBrandsUiState.update { currentItemBrandsUiState.copy(selectedItemBrand = itemBrand) }
     itemModelsUiState.update { modelsUiState ->
       modelsUiState.copy(
         selectedItemModel = null,
+        modelUi = modelUi,
+        initialCustomValue = "",
       )
     }
   }
@@ -168,8 +192,35 @@ internal class SingleItemViewModel(
    * brandId inside the [itemModel] passed here.
    */
   fun selectModel(itemModel: ItemModel) {
-    itemModelsUiState.update { itemModelsUiState ->
-      itemModelsUiState.copy(selectedItemModel = itemModel)
+    when (itemModel) {
+      is ItemModel.Known -> {
+        itemModelsUiState.update { itemModelsUiState ->
+          itemModelsUiState.copy(
+            selectedItemModel = itemModel,
+            modelUi = ModelUi.JustModelDialog,
+            initialCustomValue = "",
+          )
+        }
+      }
+      is ItemModel.New -> {
+        itemModelsUiState.update { itemModelsUiState ->
+          itemModelsUiState.copy(
+            selectedItemModel = itemModel,
+            initialCustomValue = itemModel.displayName,
+          )
+        }
+        // do not change modelUi but save the value (for the case if we go back)
+      }
+      ItemModel.Unknown -> {
+        // show extra custom name field
+        itemModelsUiState.update { itemModelsUiState ->
+          itemModelsUiState.copy(
+            selectedItemModel = itemModel,
+            modelUi = ModelUi.BothDialogAndCustom,
+            initialCustomValue = "",
+          )
+        }
+      }
     }
     if (itemModel !is ItemModel.Known) return
     val currentItemBrandsUiState: ItemBrandsUiState.Content = itemBrandsUiState.value.asContent() ?: return
@@ -291,6 +342,25 @@ internal class PurchasePriceUiState(amount: Double?, preferredCurrency: Currency
   }
 }
 
+internal sealed interface ModelUi {
+  data object JustModelDialog : ModelUi
+
+  data object JustCustomModel : ModelUi
+
+  data object BothDialogAndCustom : ModelUi
+
+  companion object {
+    fun fromSingleItem(singleItem: ClaimFlowDestination.SingleItem): ModelUi {
+      val availableItemModels = singleItem.availableItemModels?.toMutableList() ?: listOf()
+      return if (availableItemModels.isEmpty()) {
+        JustCustomModel
+      } else {
+        JustModelDialog
+      }
+    }
+  }
+}
+
 internal sealed interface ItemBrandsUiState {
   fun asContent(): Content? = this as? Content
 
@@ -318,6 +388,8 @@ internal sealed interface ItemBrandsUiState {
 internal data class ItemModelsUiState(
   val availableItemModels: List<ItemModel>,
   val selectedItemModel: ItemModel?,
+  val modelUi: ModelUi,
+  val initialCustomValue: String,
 ) {
   companion object {
     fun fromSingleItem(singleItem: ClaimFlowDestination.SingleItem): ItemModelsUiState {
@@ -329,6 +401,8 @@ internal data class ItemModelsUiState(
       return ItemModelsUiState(
         availableItemModels.plus(otherModel),
         selectedItemModel,
+        ModelUi.fromSingleItem(singleItem),
+        "",
       )
     }
   }

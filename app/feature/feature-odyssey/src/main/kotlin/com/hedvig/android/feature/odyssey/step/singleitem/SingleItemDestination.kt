@@ -101,9 +101,6 @@ private fun SingleItemScreen(
   navigateUp: () -> Unit,
   closeClaimFlow: () -> Unit,
 ) {
-  var shouldShowFreeTextModelField by remember {
-    mutableStateOf(false)
-  }
   ClaimFlowScaffold(
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
@@ -129,48 +126,53 @@ private fun SingleItemScreen(
         uiState = itemBrandsUiState,
         enabled = uiState.canSubmit,
         selectBrand = {
-          shouldShowFreeTextModelField = false
           selectBrand(it)
         },
         modifier = sideSpacingModifier.fillMaxWidth(),
       )
     }
-    val itemModelsUiStateContent = uiState.itemModelsUiState
     Spacer(Modifier.height(2.dp))
-    val isCustomModelOnly = uiState.itemModelsUiState.availableItemModels.size == 1 &&
-      uiState.itemModelsUiState.availableItemModels[0] is ItemModel.Unknown
-    if (!isCustomModelOnly) {
-      Column(modifier = sideSpacingModifier.fillMaxWidth()) {
-        Spacer(Modifier.height(2.dp))
-        Models(
-          uiState = itemModelsUiStateContent,
-          enabled = uiState.canSubmit,
-          selectModel = selectModel,
-          modifier = Modifier.fillMaxWidth(),
-          onSelectUnknownModel = {
-            shouldShowFreeTextModelField = true
-          },
-          onSelectKnownModel = {
-            shouldShowFreeTextModelField = false
-          },
-        )
-        Spacer(Modifier.height(2.dp))
-      }
-    }
-    if (shouldShowFreeTextModelField || isCustomModelOnly) {
-      Column(modifier = sideSpacingModifier.fillMaxWidth()) {
+    when (uiState.itemModelsUiState.modelUi) {
+      is ModelUi.JustCustomModel -> {
         Spacer(Modifier.height(2.dp))
         CustomModelInput(
+          initialValue = uiState.itemModelsUiState.initialCustomValue,
           onInput = { input ->
             if (input != null) {
               selectModel(ItemModel.New(input))
             }
           },
-          modifier = Modifier.fillMaxWidth(),
+          modifier = sideSpacingModifier.fillMaxWidth(),
+        )
+        Spacer(Modifier.height(2.dp))
+      }
+      ModelUi.JustModelDialog -> {
+        ModelPicker(
+          uiState = uiState,
+          selectModel = selectModel,
+          modifier = sideSpacingModifier,
+        )
+      }
+      is ModelUi.BothDialogAndCustom -> {
+        ModelPicker(
+          uiState = uiState,
+          selectModel = selectModel,
+          modifier = sideSpacingModifier,
+        )
+        Spacer(Modifier.height(2.dp))
+        CustomModelInput(
+          initialValue = uiState.itemModelsUiState.initialCustomValue,
+          onInput = { input ->
+            if (input != null) {
+              selectModel(ItemModel.New(input))
+            }
+          },
+          modifier = sideSpacingModifier.fillMaxWidth(),
         )
         Spacer(Modifier.height(2.dp))
       }
     }
+
     Spacer(Modifier.height(2.dp))
     DateOfPurchase(uiState.datePickerUiState, uiState.canSubmit, sideSpacingModifier.fillMaxWidth())
     Spacer(Modifier.height(4.dp))
@@ -209,13 +211,25 @@ private fun SingleItemScreen(
 }
 
 @Composable
+private fun ModelPicker(uiState: SingleItemUiState, selectModel: (ItemModel) -> Unit, modifier: Modifier = Modifier) {
+  Column(modifier = modifier.fillMaxWidth()) {
+    Spacer(Modifier.height(2.dp))
+    Models(
+      uiState = uiState.itemModelsUiState,
+      enabled = uiState.canSubmit,
+      selectModel = selectModel,
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(2.dp))
+  }
+}
+
+@Composable
 private fun Models(
   uiState: ItemModelsUiState,
   enabled: Boolean,
   selectModel: (ItemModel) -> Unit,
   modifier: Modifier = Modifier,
-  onSelectUnknownModel: () -> Unit,
-  onSelectKnownModel: () -> Unit,
 ) {
   LocalConfiguration.current
   val resources = LocalContext.current.resources
@@ -226,8 +240,6 @@ private fun Models(
       uiState = uiState,
       onDismissRequest = { showDialog = false },
       selectModel = selectModel,
-      onSelectUnknownModel = onSelectUnknownModel,
-      onSelectKnownModel = onSelectKnownModel,
     )
   }
   HedvigBigCard(
@@ -248,8 +260,6 @@ private fun SelectDialogWithFreeTextField(
   uiState: ItemModelsUiState,
   onDismissRequest: () -> Unit,
   selectModel: (ItemModel) -> Unit,
-  onSelectUnknownModel: () -> Unit,
-  onSelectKnownModel: () -> Unit,
 ) {
   val resources = LocalContext.current.resources
   SingleSelectDialog(
@@ -257,13 +267,7 @@ private fun SelectDialogWithFreeTextField(
     optionsList = uiState.availableItemModels,
     onSelected =
       { selectedModel ->
-        if (selectedModel is ItemModel.Unknown) {
-          onSelectUnknownModel() // todo: remove both lambda and move the differnt. logic to vm
-          selectModel(selectedModel)
-        } else {
-          onSelectKnownModel() // todo: remove both lambda and move the differnt. logic to vm
-          selectModel(selectedModel)
-        }
+        selectModel(selectedModel)
       },
     getDisplayText = { it.displayName(resources) },
     getIsSelected = { it: ItemModel -> it == uiState.selectedItemModel },
@@ -331,13 +335,13 @@ private fun PriceOfPurchase(uiState: PurchasePriceUiState, canInteract: Boolean,
 }
 
 @Composable
-private fun CustomModelInput(onInput: (String?) -> Unit, modifier: Modifier = Modifier) {
+private fun CustomModelInput(initialValue: String, onInput: (String?) -> Unit, modifier: Modifier = Modifier) {
+  var text by remember { mutableStateOf(initialValue) }
   val focusRequester = remember { FocusRequester() }
-  var text by rememberSaveable { mutableStateOf("") }
   val focusManager = LocalFocusManager.current
   HedvigTextField(
-    value = text,
-    onValueChange = onValueChange@{ newValue ->
+    value = initialValue,
+    onValueChange = { newValue ->
       text = newValue
       onInput(newValue.ifBlank { null })
     },
@@ -411,6 +415,8 @@ private fun PreviewSingleItemScreen(
           itemModelsUiState = ItemModelsUiState(
             nonEmptyListOf(ItemModel.Known("Item Model", "", "", "")),
             ItemModel.Known("Item Model #2", "", "", ""),
+            modelUi = ModelUi.BothDialogAndCustom,
+            initialCustomValue = "",
           ),
           itemProblemsUiState = ItemProblemsUiState.Content(
             nonEmptyListOf(ItemProblem("Item Problem", "")),
