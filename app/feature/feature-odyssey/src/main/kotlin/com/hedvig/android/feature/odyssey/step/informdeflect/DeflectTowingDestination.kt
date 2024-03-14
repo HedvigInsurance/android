@@ -33,7 +33,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.ImageLoader
 import coil.compose.AsyncImage
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.material3.alwaysBlackContainer
@@ -131,7 +130,8 @@ private fun DeflectTowingScreen(
           )
           Spacer(Modifier.height(16.dp))
           val context = LocalContext.current
-          HedvigContainedButton(
+          HedvigContainedSmallButton(
+            modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
               containerColor = MaterialTheme.colorScheme.onAlwaysBlackContainer,
               contentColor = MaterialTheme.colorScheme.alwaysBlackContainer,
