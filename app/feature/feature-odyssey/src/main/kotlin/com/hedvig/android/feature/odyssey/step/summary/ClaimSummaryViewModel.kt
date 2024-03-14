@@ -163,8 +163,10 @@ internal data class ClaimSummaryInfoUiState(
       // Modell
       if (itemType != null) {
         val isKnownBrand = (itemType as? ItemType.Brand)?.itemBrand?.asKnown() != null
+        val isCustomModel = (itemType as? ItemType.Model)?.itemModel?.asNew() != null
         val isKnownModel = (itemType as? ItemType.Model)?.itemModel?.asKnown() != null
-        if (isKnownBrand || isKnownModel) {
+        val isCustomModelWithBrand = (itemType as? ItemType.CustomModelWithBrand) != null
+        if (isKnownBrand || isKnownModel || isCustomModel || isCustomModelWithBrand) {
           add(resources.getString(R.string.claims_item_screen_model_button) to itemType.displayName(resources))
         }
       }
@@ -190,12 +192,15 @@ internal data class ClaimSummaryInfoUiState(
       return when (this) {
         is Brand -> itemBrand.displayName(resources)
         is Model -> itemModel.displayName(resources)
+        is CustomModelWithBrand -> "${itemBrand.displayName(resources)} ${itemModel.displayName(resources)}"
       }
     }
 
     data class Brand(val itemBrand: ItemBrand) : ItemType
 
     data class Model(val itemModel: ItemModel) : ItemType
+
+    data class CustomModelWithBrand(val itemBrand: ItemBrand, val itemModel: ItemModel) : ItemType
 
     companion object {
       fun fromSummary(summary: ClaimFlowDestination.Summary): ItemType? {
@@ -205,10 +210,17 @@ internal data class ClaimSummaryInfoUiState(
         if (selectedModel != null) {
           return Model(selectedModel)
         }
+        val customName = summary.customName
         val selectedBrand = summary.availableItemBrands?.firstOrNull {
           it.asKnown()?.itemBrandId == summary.selectedItemBrand
         }
-        if (selectedBrand != null) return Brand(selectedBrand)
+        if (customName != null && selectedBrand != null) {
+          return CustomModelWithBrand(selectedBrand, ItemModel.New(customName))
+        } else if (customName != null) {
+          return Model(ItemModel.New(customName))
+        } else if (selectedBrand != null) {
+          return Brand(selectedBrand)
+        }
         return null
       }
     }

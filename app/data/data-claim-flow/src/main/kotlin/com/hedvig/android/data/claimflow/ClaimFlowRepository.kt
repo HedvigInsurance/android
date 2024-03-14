@@ -429,6 +429,7 @@ private suspend fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(
         singleItemStep?.selectedItemBrand,
         singleItemStep?.availableItemModels,
         singleItemStep?.selectedItemModel,
+        customName = singleItemStep?.customName,
         singleItemStep?.availableItemProblems,
         singleItemStep?.selectedItemProblems,
         fileUploads = fileUploadStep?.uploads,
