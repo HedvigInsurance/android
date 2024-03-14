@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -82,5 +83,6 @@ fun HedvigBottomSheet(
       },
       modifier = Modifier.padding(start = 24.dp, end = 24.dp, bottom = 16.dp),
     )
+    Spacer(Modifier.windowInsetsPadding(BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Bottom)))
   }
 }
