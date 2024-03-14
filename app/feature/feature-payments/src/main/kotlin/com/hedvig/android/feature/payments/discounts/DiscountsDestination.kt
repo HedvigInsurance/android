@@ -151,6 +151,7 @@ private fun DiscountsScreen(
           color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
       } else {
+        Spacer(modifier = Modifier.height(16.dp))
         DiscountRows(discounts)
       }
 
