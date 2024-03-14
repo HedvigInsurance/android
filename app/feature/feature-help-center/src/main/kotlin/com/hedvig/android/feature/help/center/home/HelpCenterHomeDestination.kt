@@ -47,8 +47,6 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.dialog.MultiSelectDialog
-import com.hedvig.android.core.ui.grid.HedvigGrid
-import com.hedvig.android.core.ui.grid.InsideGridSpace
 import com.hedvig.android.feature.help.center.HelpCenterEvent
 import com.hedvig.android.feature.help.center.HelpCenterUiState
 import com.hedvig.android.feature.help.center.HelpCenterViewModel
@@ -178,10 +176,8 @@ private fun HelpCenterHomeScreen(
             chipContainerColor = MaterialTheme.colorScheme.typeContainer,
             contentColor = MaterialTheme.colorScheme.onTypeContainer,
             content = {
-              HedvigGrid(
-                contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal).asPaddingValues(),
-                insideGridSpace = InsideGridSpace(8.dp),
-                modifier = Modifier.padding(horizontal = 16.dp),
+              Column(
+                verticalArrangement = Arrangement.spacedBy(4.dp),
               ) {
                 for (quickLink in quickLinks) {
                   HedvigCard(
@@ -190,17 +186,20 @@ private fun HelpCenterHomeScreen(
                         is HelpCenterUiState.QuickLinkType.CommonClaimType -> onNavigateToCommonClaim(
                           quickLink.commonClaim,
                         )
+
                         is HelpCenterUiState.QuickLinkType.QuickActionType -> onQuickActionsSelected(
                           quickLink.quickAction,
                         )
                       }
                     },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                      .fillMaxWidth()
+                      .padding(horizontal = 16.dp),
                   ) {
                     Column(
                       verticalArrangement = Arrangement.Center,
-                      horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
+                      Spacer(modifier = Modifier.height(12.dp))
                       Text(
                         text = when (quickLink) {
                           is HelpCenterUiState.QuickLinkType.CommonClaimType -> quickLink.commonClaim.title
@@ -208,9 +207,26 @@ private fun HelpCenterHomeScreen(
                             quickLink.quickAction.titleRes,
                           )
                         },
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(16.dp),
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.padding(horizontal = 16.dp),
                       )
+                      Spacer(modifier = Modifier.height(4.dp))
+                      Text(
+                        text = when (quickLink) {
+                          is HelpCenterUiState.QuickLinkType.CommonClaimType -> {
+                            val hintTextRes = quickLink.commonClaim.hintTextRes
+                            if (hintTextRes != null) stringResource(hintTextRes) else ""
+                          }
+                          is HelpCenterUiState.QuickLinkType.QuickActionType -> stringResource(
+                            quickLink.quickAction.hintTextRes,
+                          )
+                        },
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontSize = MaterialTheme.typography.titleSmall.fontSize,
+                      )
+                      Spacer(modifier = Modifier.height(14.dp))
                     }
                   }
                 }
@@ -274,10 +290,11 @@ private fun PreviewHelpCenterHomeScreen() {
             CommonClaim.Generic(
               "$it",
               "Long displayName 1234567",
+              12,
               emptyList(),
             ),
           )
-        }.plus(HelpCenterUiState.QuickLinkType.QuickActionType(QuickAction.MultiSelectQuickLink(0, emptyList())))
+        }.plus(HelpCenterUiState.QuickLinkType.QuickActionType(QuickAction.MultiSelectQuickLink(0, 0, emptyList())))
           .toPersistentList(),
         selectedQuickAction = null,
         onNavigateToTopic = {},

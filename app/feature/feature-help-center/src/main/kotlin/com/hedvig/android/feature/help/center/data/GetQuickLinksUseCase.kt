@@ -44,13 +44,15 @@ internal class GetQuickLinksUseCase(
               if (contract.coInsured?.any { it.hasMissingInfo } == true) {
                 QuickAction.QuickLink(
                   destination = AppDestination.CoInsuredAddInfo(contract.id),
-                  titleRes = R.string.HC_QUICK_ACTIONS_EDIT_COINSURED,
+                  titleRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_TITLE,
+                  hintTextRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
                   displayName = contract.currentAgreement.productVariant.displayName,
                 )
               } else {
                 QuickAction.QuickLink(
                   destination = AppDestination.CoInsuredAddOrRemove(contract.id),
-                  titleRes = R.string.HC_QUICK_ACTIONS_EDIT_COINSURED,
+                  titleRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_TITLE,
+                  hintTextRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
                   displayName = contract.currentAgreement.productVariant.displayName,
                 )
               }
@@ -59,6 +61,7 @@ internal class GetQuickLinksUseCase(
             add(
               QuickAction.MultiSelectQuickLink(
                 titleRes = R.string.HC_QUICK_ACTIONS_EDIT_COINSURED,
+                hintTextRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
                 links = links,
               ),
             )
@@ -68,7 +71,8 @@ internal class GetQuickLinksUseCase(
               add(
                 QuickAction.QuickLink(
                   destination = AppDestination.CoInsuredAddInfo(it.first().id),
-                  titleRes = R.string.HC_QUICK_ACTIONS_EDIT_COINSURED,
+                  titleRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_TITLE,
+                  hintTextRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
                   displayName = contract.currentAgreement.productVariant.displayName,
                 ),
               )
@@ -76,7 +80,8 @@ internal class GetQuickLinksUseCase(
               add(
                 QuickAction.QuickLink(
                   destination = AppDestination.CoInsuredAddOrRemove(it.first().id),
-                  titleRes = R.string.HC_QUICK_ACTIONS_EDIT_COINSURED,
+                  titleRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_TITLE,
+                  hintTextRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
                   displayName = contract.currentAgreement.productVariant.displayName,
                 ),
               )
@@ -92,7 +97,8 @@ internal class GetQuickLinksUseCase(
           add(
             QuickAction.QuickLink(
               destination = AppDestination.ChangeAddress,
-              titleRes = R.string.HC_QUICK_ACTIONS_UPDATE_ADDRESS,
+              titleRes = R.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_TITLE,
+              hintTextRes = R.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_SUBTITLE,
               displayName = null,
             ),
           )
@@ -104,6 +110,7 @@ internal class GetQuickLinksUseCase(
           QuickAction.QuickLink(
             destination = AppDestination.TravelCertificate,
             titleRes = R.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE,
+            hintTextRes = R.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE_SUBTITLE,
             displayName = null,
           ),
         )
@@ -113,7 +120,8 @@ internal class GetQuickLinksUseCase(
         add(
           QuickAction.QuickLink(
             destination = AppDestination.ConnectPayment,
-            titleRes = R.string.HC_QUICK_ACTIONS_CHANGE_BANK,
+            titleRes = R.string.HC_QUICK_ACTIONS_PAYMENTS_TITLE,
+            hintTextRes = R.string.HC_QUICK_ACTIONS_PAYMENTS_SUBTITLE,
             displayName = null,
           ),
         )
