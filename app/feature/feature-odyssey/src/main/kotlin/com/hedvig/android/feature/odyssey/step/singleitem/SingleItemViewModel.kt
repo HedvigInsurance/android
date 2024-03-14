@@ -16,7 +16,6 @@ import com.hedvig.android.data.claimflow.ItemModel
 import com.hedvig.android.data.claimflow.ItemProblem
 import com.hedvig.android.feature.odyssey.ui.DatePickerUiState
 import com.hedvig.android.language.LanguageService
-import com.hedvig.android.logger.logcat
 import java.util.Locale
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -124,12 +123,6 @@ internal class SingleItemViewModel(
           itemBrandId = selectedItemBrand.itemBrandId,
         )
       }
-      logcat {
-        "mariia: single item itemBrandInput $itemBrandInput,\n" +
-          "        itemModelInput $itemModelInput,\n" +
-          "        customName $customNameInput "
-      }
-      // todo: should we make sure that we have at least one of itemModelInput, customNameInput, itemBrandInput? all nullable
       claimFlowRepository.submitSingleItem(
         itemBrandInput = itemBrandInput,
         itemModelInput = itemModelInput,

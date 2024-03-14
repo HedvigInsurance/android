@@ -13,6 +13,7 @@ import com.hedvig.android.data.claimflow.ItemModel
 import com.hedvig.android.data.claimflow.model.FlowId
 import com.hedvig.android.feature.odyssey.data.TestClaimFlowRepository
 import com.hedvig.android.language.test.FakeLanguageService
+import com.hedvig.android.logger.TestLogcatLoggingRule
 import java.util.Locale
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
@@ -27,6 +28,9 @@ class SingleItemViewModelTest {
   @get:Rule
   val mainCoroutineRule = MainCoroutineRule()
 
+  @get:Rule
+  val testLogcatLogger = TestLogcatLoggingRule()
+
   private val brand = ItemBrand.Known(
     displayName = "",
     itemTypeId = "",
@@ -38,6 +42,7 @@ class SingleItemViewModelTest {
     itemBrandId = "brand#1",
     itemModelId = "model#1",
   )
+  private val customNameModel = ItemModel.New("New custom model")
 
   @Test
   fun `selecting models changes the selections and then submitting results in a nextStep`() = runTest {
@@ -70,6 +75,37 @@ class SingleItemViewModelTest {
       runCurrent()
 
       assertThat(viewModel.uiState.value.nextStep!!).given { it as ClaimFlowStep.UnknownStep }
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `submitting with a selected brand and a custom name sends in both`() = runTest {
+    val claimFlowRepository = TestClaimFlowRepository()
+    val viewModel = SingleItemViewModel(
+      testSingleItem(
+        itemBrands = listOf(brand),
+        itemModels = listOf(model),
+      ),
+      claimFlowRepository,
+      Clock.System,
+      FakeLanguageService(fixedLocale = Locale.ENGLISH),
+    )
+    viewModel.uiState.test {
+      viewModel.selectBrand(brand)
+      viewModel.selectModel(customNameModel)
+      runCurrent()
+      claimFlowRepository.submitSingleItemResponse.add(ClaimFlowStep.UnknownStep(FlowId("")).right())
+      viewModel.submitSelections()
+      val (flowClaimItemBrandInput, flowCustomNameInput) =
+        claimFlowRepository.submitSingleItemBrandAndCustomNameInput.awaitItem()
+      assertThat(flowClaimItemBrandInput).isEqualTo(
+        FlowClaimItemBrandInput(
+          itemTypeId = brand.itemTypeId,
+          itemBrandId = brand.itemBrandId,
+        ),
+      )
+      assertThat(flowCustomNameInput).isEqualTo(customNameModel.displayName)
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -164,7 +200,6 @@ class SingleItemViewModelTest {
     }
   }
 
-  // todo! change tests
   @Test
   fun `submitting with a selected unknown model and a selected unknown brand sends in neither`() = runTest {
     val claimFlowRepository = TestClaimFlowRepository()

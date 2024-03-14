@@ -192,8 +192,6 @@ sealed interface ItemBrand {
     @StringRes
     val displayName: Int = hedvig.resources.R.string.GENERAL_NOT_SURE
   }
-  // todo: no idea why, but I cannot delete this object (and we are not using it now without getting
-  // Unresolved reference: toClaimFlowDestination error in ClaimFlowGraph
 }
 
 @Serializable
