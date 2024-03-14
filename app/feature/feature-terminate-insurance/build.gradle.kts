@@ -34,6 +34,7 @@ dependencies {
   implementation(projects.coreDesignSystem)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
+  implementation(projects.coreUiData)
   implementation(projects.dataContractAndroid)
   implementation(projects.dataContractPublic)
   implementation(projects.languageCore)

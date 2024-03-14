@@ -4,10 +4,13 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.feature.terminateinsurance.InsuranceId
+import com.hedvig.android.feature.terminateinsurance.data.GetContractsEligibleToTerminateUseCase
+import com.hedvig.android.feature.terminateinsurance.data.GetContractsEligibleToTerminateUseCaseImpl
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
 import com.hedvig.android.feature.terminateinsurance.data.TerminationFlowContextStorage
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceFeatureDestination
+import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateViewModel
 import com.hedvig.android.feature.terminateinsurance.step.deletion.InsuranceDeletionViewModel
 import com.hedvig.android.feature.terminateinsurance.step.start.TerminationStartStepViewModel
 import com.hedvig.android.feature.terminateinsurance.step.terminationdate.TerminationDateViewModel
@@ -19,6 +22,11 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val terminateInsuranceModule = module {
+  viewModel<ChooseInsuranceToTerminateViewModel> {
+    ChooseInsuranceToTerminateViewModel(
+      get<GetContractsEligibleToTerminateUseCase>(),
+    )
+  }
   viewModel<TerminationStartStepViewModel> { (insuranceId: InsuranceId) ->
     TerminationStartStepViewModel(
       insuranceId = insuranceId,
@@ -52,6 +60,11 @@ val terminateInsuranceModule = module {
     TerminateInsuranceRepository(
       apolloClient = get<ApolloClient>(),
       terminationFlowContextStorage = get(),
+    )
+  }
+  single<GetContractsEligibleToTerminateUseCase> {
+    GetContractsEligibleToTerminateUseCaseImpl(
+      apolloClient = get<ApolloClient>(),
     )
   }
   single<TerminationFlowContextStorage> {
