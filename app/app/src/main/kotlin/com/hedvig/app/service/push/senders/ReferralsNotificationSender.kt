@@ -11,7 +11,6 @@ import androidx.core.app.TaskStackBuilder
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.core.common.android.notification.setupNotificationChannel
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
@@ -80,10 +79,7 @@ class ReferralsNotificationSender(
     val pendingIntent: PendingIntent? = TaskStackBuilder
       .create(context)
       .addNextIntent(
-        LoggedInActivity.newInstance(
-          context,
-          initialTab = TopLevelGraph.FOREVER,
-        ),
+        LoggedInActivity.newInstance(context), // todo consider opening Forever directly instead here
       )
       .getPendingIntent(0, getImmutablePendingIntentFlags())
 

@@ -8,7 +8,6 @@ import androidx.core.app.TaskStackBuilder
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.android.notification.setupNotificationChannel
-import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
@@ -59,11 +58,8 @@ class CrossSellNotificationSender(
 
   private fun createInsuranceTabIntent(context: Context): PendingIntent? {
     val builder = TaskStackBuilder.create(context)
-    val intent = LoggedInActivity.newInstance(
-      context = context,
-      initialTab = TopLevelGraph.INSURANCE,
-      withoutHistory = true,
-    )
+    // todo: Consider opening some cross sell detail screen here instead
+    val intent = LoggedInActivity.newInstance(context = context)
     builder.addNextIntent(intent)
     return builder.getPendingIntent(0, getImmutablePendingIntentFlags())
   }

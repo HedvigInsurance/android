@@ -27,7 +27,6 @@ import androidx.compose.foundation.layout.union
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,7 +45,6 @@ import com.hedvig.android.market.Market
 import com.hedvig.android.navigation.activity.ActivityNavigator
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import com.hedvig.android.navigation.core.TopLevelGraph
 import com.kiwi.navigationcompose.typed.navigate
 
 @Composable
@@ -54,19 +52,12 @@ internal fun HedvigApp(
   hedvigAppState: HedvigAppState,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   activityNavigator: ActivityNavigator,
-  getInitialTab: () -> TopLevelGraph?,
-  clearInitialTab: () -> Unit,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   market: Market,
   imageLoader: ImageLoader,
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
 ) {
-  LaunchedEffect(getInitialTab, clearInitialTab, hedvigAppState) {
-    val initialTab: TopLevelGraph = getInitialTab() ?: return@LaunchedEffect
-    clearInitialTab()
-    hedvigAppState.navigateToTopLevelGraph(initialTab)
-  }
   Surface(
     color = MaterialTheme.colorScheme.background,
     contentColor = MaterialTheme.colorScheme.onBackground,
