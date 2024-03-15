@@ -2,6 +2,7 @@ package com.hedvig.android.feature.payments.navigation
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
+import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.PaymentOverview
 import com.hedvig.android.feature.payments.details.PaymentDetailsDestination
@@ -9,7 +10,6 @@ import com.hedvig.android.feature.payments.discounts.DiscountsDestination
 import com.hedvig.android.feature.payments.history.PaymentHistoryDestination
 import com.hedvig.android.feature.payments.overview.PaymentOverviewDestination
 import com.hedvig.android.feature.payments.overview.PaymentOverviewViewModel
-import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
 import com.kiwi.navigationcompose.typed.composable
@@ -22,13 +22,16 @@ fun NavGraphBuilder.paymentsGraph(
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   navigateToConnectPayment: () -> Unit,
 ) {
-  navigation<AppDestination.PaymentInfo>(
+  navigation<PaymentsDestination>(
     startDestination = createRoutePattern<PaymentsDestinations.Overview>(),
     deepLinks = listOf(
       navDeepLink { uriPattern = hedvigDeepLinkContainer.payments },
     ),
   ) {
-    composable<PaymentsDestinations.Overview> { backStackEntry ->
+    composable<PaymentsDestinations.Overview>(
+      enterTransition = { MotionDefaults.fadeThroughEnter },
+      exitTransition = { MotionDefaults.fadeThroughExit },
+    ) { backStackEntry ->
       val viewModel: PaymentOverviewViewModel = koinViewModel()
       PaymentOverviewDestination(
         viewModel = viewModel,

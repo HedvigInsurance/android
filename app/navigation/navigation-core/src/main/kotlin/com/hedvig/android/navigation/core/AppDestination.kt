@@ -43,9 +43,6 @@ sealed interface AppDestination : Destination {
   @Serializable
   data object ClaimsFlow : AppDestination
 
-  @Serializable
-  data object PaymentInfo : AppDestination
-
   // Handles connecting payment with Trustly. Auto-navigates to Adyen for NO/DK
   @Serializable
   data object ConnectPayment : AppDestination

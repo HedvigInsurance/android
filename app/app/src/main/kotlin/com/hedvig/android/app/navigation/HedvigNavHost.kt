@@ -32,6 +32,7 @@ import com.hedvig.android.feature.connect.payment.connectPaymentGraph
 import com.hedvig.android.feature.deleteaccount.navigation.DeleteAccountDestination
 import com.hedvig.android.feature.deleteaccount.navigation.deleteAccountGraph
 import com.hedvig.android.feature.editcoinsured.navigation.editCoInsuredGraph
+import com.hedvig.android.feature.forever.navigation.ForeverDestination
 import com.hedvig.android.feature.forever.navigation.foreverGraph
 import com.hedvig.android.feature.help.center.helpCenterGraph
 import com.hedvig.android.feature.help.center.navigation.HelpCenterDestination
@@ -188,17 +189,17 @@ internal fun HedvigNavHost(
         }
       },
     )
-    foreverGraph(
+    paymentsGraph(
+      navigator = navigator,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-      languageService = languageService,
-      hedvigBuildConstants = hedvigBuildConstants,
+      navigateToConnectPayment = navigateToConnectPayment,
     )
     profileGraph(
       nestedGraphs = {
-        paymentsGraph(
-          navigator = navigator,
+        foreverGraph(
           hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-          navigateToConnectPayment = navigateToConnectPayment,
+          languageService = languageService,
+          hedvigBuildConstants = hedvigBuildConstants,
         )
       },
       settingsDestinationNestedGraphs = {
@@ -207,8 +208,8 @@ internal fun HedvigNavHost(
       navigator = navigator,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       hedvigBuildConstants = hedvigBuildConstants,
-      navigateToPaymentInfo = { backStackEntry ->
-        with(navigator) { backStackEntry.navigate(AppDestination.PaymentInfo) }
+      navigateToForever = { backStackEntry ->
+        with(navigator) { backStackEntry.navigate(ForeverDestination) }
       },
       navigateToConnectPayment = navigateToConnectPayment,
       navigateToAddMissingInfo = { backStackEntry: NavBackStackEntry, contractId: String ->
