@@ -56,11 +56,11 @@ import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.hedvig.nav.hedvig.Forever
 import com.hedvig.android.core.icons.hedvig.normal.ContactInformation
 import com.hedvig.android.core.icons.hedvig.normal.Eurobonus
 import com.hedvig.android.core.icons.hedvig.normal.Info
 import com.hedvig.android.core.icons.hedvig.normal.MultipleDocuments
-import com.hedvig.android.core.icons.hedvig.normal.Payments
 import com.hedvig.android.core.icons.hedvig.normal.Settings
 import com.hedvig.android.core.ui.dialog.HedvigAlertDialog
 import com.hedvig.android.core.ui.plus
@@ -79,7 +79,7 @@ internal fun ProfileDestination(
   navigateToMyInfo: () -> Unit,
   navigateToAboutApp: () -> Unit,
   navigateToSettings: () -> Unit,
-  navigateToPayment: () -> Unit,
+  navigateToForever: () -> Unit,
   navigateToTravelCertificate: () -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToAddMissingInfo: (contractId: String) -> Unit,
@@ -95,7 +95,7 @@ internal fun ProfileDestination(
     navigateToMyInfo = navigateToMyInfo,
     navigateToAboutApp = navigateToAboutApp,
     navigateToSettings = navigateToSettings,
-    navigateToPayment = navigateToPayment,
+    navigateToForever = navigateToForever,
     navigateToTravelCertificate = navigateToTravelCertificate,
     navigateToConnectPayment = navigateToConnectPayment,
     navigateToAddMissingInfo = navigateToAddMissingInfo,
@@ -114,7 +114,7 @@ private fun ProfileScreen(
   navigateToMyInfo: () -> Unit,
   navigateToAboutApp: () -> Unit,
   navigateToSettings: () -> Unit,
-  navigateToPayment: () -> Unit,
+  navigateToForever: () -> Unit,
   navigateToTravelCertificate: () -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToAddMissingInfo: (contractId: String) -> Unit,
@@ -167,7 +167,7 @@ private fun ProfileScreen(
       ProfileItemRows(
         profileUiState = uiState,
         showMyInfo = navigateToMyInfo,
-        showPaymentInfo = navigateToPayment,
+        navigateToForever = navigateToForever,
         showSettings = navigateToSettings,
         showAboutApp = navigateToAboutApp,
         navigateToEurobonus = navigateToEurobonus,
@@ -223,7 +223,7 @@ private fun ProfileScreen(
 private fun ColumnScope.ProfileItemRows(
   profileUiState: ProfileUiState,
   showMyInfo: () -> Unit,
-  showPaymentInfo: () -> Unit,
+  navigateToForever: () -> Unit,
   showSettings: () -> Unit,
   showAboutApp: () -> Unit,
   navigateToEurobonus: () -> Unit,
@@ -235,9 +235,9 @@ private fun ColumnScope.ProfileItemRows(
     onClick = showMyInfo,
   )
   ProfileRow(
-    title = stringResource(R.string.PROFILE_ROW_PAYMENT_TITLE),
-    icon = Icons.Hedvig.Payments,
-    onClick = showPaymentInfo,
+    title = stringResource(R.string.PROFILE_FOREVER_TITLE),
+    icon = Icons.Hedvig.Forever,
+    onClick = navigateToForever,
   )
   AnimatedVisibility(
     visible = profileUiState.travelCertificateAvailable,
@@ -309,7 +309,7 @@ private fun PreviewProfileSuccessScreen() {
         navigateToMyInfo = {},
         navigateToAboutApp = {},
         navigateToSettings = {},
-        navigateToPayment = {},
+        navigateToForever = {},
         navigateToTravelCertificate = {},
         navigateToConnectPayment = {},
         navigateToAddMissingInfo = {},

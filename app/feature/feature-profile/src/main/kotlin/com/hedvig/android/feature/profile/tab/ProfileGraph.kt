@@ -31,7 +31,7 @@ fun NavGraphBuilder.profileGraph(
   navigator: Navigator,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   hedvigBuildConstants: HedvigBuildConstants,
-  navigateToPaymentInfo: (NavBackStackEntry) -> Unit,
+  navigateToForever: (NavBackStackEntry) -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToAddMissingInfo: (navBackStackEntry: NavBackStackEntry, contractId: String) -> Unit,
   navigateToDeleteAccountFeature: (navBackStackEntry: NavBackStackEntry) -> Unit,
@@ -62,8 +62,8 @@ fun NavGraphBuilder.profileGraph(
         navigateToSettings = {
           with(navigator) { backStackEntry.navigate(ProfileDestinations.SettingsGraph) }
         },
-        navigateToPayment = {
-          navigateToPaymentInfo(backStackEntry)
+        navigateToForever = {
+          navigateToForever(backStackEntry)
         },
         navigateToTravelCertificate = {
           with(navigator) { backStackEntry.navigate(AppDestination.TravelCertificate) }
