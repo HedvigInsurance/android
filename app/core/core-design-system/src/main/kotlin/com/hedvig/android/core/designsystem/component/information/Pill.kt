@@ -11,17 +11,16 @@ import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.Modifier.Companion
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.material3.squircleExtraSmall
 
 @Composable
 fun HedvigPill(
-    text: String,
-    color: Color,
-    modifier: Modifier = Modifier,
-    contentColor: Color = contentColorFor(color),
+  text: String,
+  color: Color,
+  modifier: Modifier = Modifier,
+  contentColor: Color = contentColorFor(color),
 ) {
   Surface(
     shape = MaterialTheme.shapes.squircleExtraSmall,

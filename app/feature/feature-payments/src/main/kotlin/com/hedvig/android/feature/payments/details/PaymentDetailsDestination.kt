@@ -367,7 +367,9 @@ private fun PaymentDetailsScreenPreview() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       MemberChargeDetailsScreen(
-        memberCharge = paymentOverViewPreviewData.memberCharge!!.copy(discounts = paymentOverViewPreviewData.memberCharge.discounts.take(2)),
+        memberCharge = paymentOverViewPreviewData.memberCharge!!.copy(
+          discounts = paymentOverViewPreviewData.memberCharge.discounts.take(2),
+        ),
         paymentOverview = paymentOverViewPreviewData,
         selectedCharge = null,
         onCardClick = {},
