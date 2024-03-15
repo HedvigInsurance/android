@@ -36,6 +36,7 @@ import com.hedvig.android.feature.forever.navigation.ForeverDestination
 import com.hedvig.android.feature.forever.navigation.foreverGraph
 import com.hedvig.android.feature.help.center.helpCenterGraph
 import com.hedvig.android.feature.help.center.navigation.HelpCenterDestination
+import com.hedvig.android.feature.home.home.navigation.HomeDestination
 import com.hedvig.android.feature.home.home.navigation.homeGraph
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
 import com.hedvig.android.feature.insurances.insurance.insuranceGraph
@@ -53,7 +54,6 @@ import com.hedvig.android.navigation.activity.ActivityNavigator
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
-import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.app.BuildConfig
 import com.kiwi.navigationcompose.typed.Destination
 import com.kiwi.navigationcompose.typed.createRoutePattern
@@ -87,7 +87,7 @@ internal fun HedvigNavHost(
   }
   NavHost(
     navController = hedvigAppState.navController,
-    startDestination = createRoutePattern<TopLevelGraph.HOME>(),
+    startDestination = createRoutePattern<HomeDestination>(),
     route = "root",
     modifier = modifier,
     enterTransition = { MotionDefaults.sharedXAxisEnter(density) },
