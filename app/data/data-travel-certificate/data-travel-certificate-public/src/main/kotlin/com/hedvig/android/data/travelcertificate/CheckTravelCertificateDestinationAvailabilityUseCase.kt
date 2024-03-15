@@ -20,14 +20,14 @@ internal class CheckTravelCertificateDestinationAvailabilityUseCaseImpl(
     return either {
       val contractsResponse =
         checkTravelCertificateAvailabilityForCurrentContractsUseCase.invoke().onLeft { errorMessage ->
-          logcat {
+          logcat(LogPriority.WARN) {
             "Could not fetch current contracts to check travel certificate availability. " +
               "Message:${errorMessage.message}"
           }
         }
       val historyResult = getTravelCertificatesHistory.invoke()
         .onLeft { errorMessage ->
-          logcat(LogPriority.ERROR) { "Could not fetch travel certificates history: ${errorMessage.message}" }
+          logcat(LogPriority.WARN) { "Could not fetch travel certificates history: ${errorMessage.message}" }
         }
 
       if (contractsResponse is Either.Left<ErrorMessage> && historyResult is Either.Left<ErrorMessage>) {
