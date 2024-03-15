@@ -4,7 +4,13 @@ import com.kiwi.navigationcompose.typed.Destination
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import kotlinx.serialization.Serializable
 
+@Serializable
+data object ProfileDestination : Destination
+
 internal sealed interface ProfileDestinations : Destination {
+  @Serializable
+  data object Profile : ProfileDestinations
+
   @Serializable
   data object Eurobonus : ProfileDestinations
 

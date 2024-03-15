@@ -10,9 +10,6 @@ sealed interface TopLevelGraph : Destination {
   @Serializable
   data object INSURANCE : TopLevelGraph
 
-  @Serializable
-  data object PROFILE : TopLevelGraph
-
   fun toName(): String {
     return when (this) {
       HOME -> "HOME"

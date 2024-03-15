@@ -10,9 +10,6 @@ sealed interface AppDestination : Destination {
 
     @Serializable
     data object Insurance : TopLevelDestination
-
-    @Serializable
-    data object Profile : TopLevelDestination
   }
 
   @Serializable
