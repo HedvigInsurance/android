@@ -17,6 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.information.HedvigPill
+import com.hedvig.android.core.designsystem.material3.DisabledAlpha
 import com.hedvig.android.core.designsystem.material3.onSecondaryContainedButtonContainer
 import com.hedvig.android.core.designsystem.material3.secondaryContainedButtonContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
@@ -45,13 +46,18 @@ internal fun DiscountRows(discounts: List<Discount>, modifier: Modifier = Modifi
 
 @Composable
 private fun DiscountRow(discount: Discount, modifier: Modifier = Modifier) {
+  val discountIsExpired = discount.expiredState is Discount.ExpiredState.AlreadyExpired
   Column(modifier = modifier) {
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
         HedvigPill(
           text = discount.code,
           color = MaterialTheme.colorScheme.secondaryContainedButtonContainer,
-          contentColor = MaterialTheme.colorScheme.onSecondaryContainedButtonContainer,
+          contentColor = if (discountIsExpired) {
+            MaterialTheme.colorScheme.onSurface.copy(DisabledAlpha)
+          } else {
+            MaterialTheme.colorScheme.onSecondaryContainedButtonContainer
+          },
           modifier = Modifier.wrapContentSize(Alignment.CenterStart),
         )
       },
@@ -59,7 +65,11 @@ private fun DiscountRow(discount: Discount, modifier: Modifier = Modifier) {
         discount.amount?.let { discount ->
           Text(
             text = stringResource(R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, discount.toString()),
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = if (discountIsExpired) {
+              MaterialTheme.colorScheme.onSurface.copy(DisabledAlpha)
+            } else {
+              MaterialTheme.colorScheme.onSurfaceVariant
+            },
             textAlign = TextAlign.End,
             modifier = Modifier.wrapContentSize(Alignment.CenterEnd),
           )
@@ -76,7 +86,11 @@ private fun DiscountRow(discount: Discount, modifier: Modifier = Modifier) {
           discount.displayName?.let {
             Text(
               text = it,
-              color = MaterialTheme.colorScheme.onSurfaceVariant,
+              color = if (discountIsExpired) {
+                MaterialTheme.colorScheme.onSurface.copy(DisabledAlpha)
+              } else {
+                MaterialTheme.colorScheme.onSurfaceVariant
+              },
               style = MaterialTheme.typography.bodyMedium,
             )
           }
@@ -88,7 +102,11 @@ private fun DiscountRow(discount: Discount, modifier: Modifier = Modifier) {
           if (bottomText != null) {
             Text(
               text = bottomText,
-              color = MaterialTheme.colorScheme.onSurfaceVariant,
+              color = if (discountIsExpired) {
+                MaterialTheme.colorScheme.onSurface.copy(DisabledAlpha)
+              } else {
+                MaterialTheme.colorScheme.onSurfaceVariant
+              },
               style = MaterialTheme.typography.bodyMedium,
             )
           }
@@ -104,7 +122,7 @@ private fun DiscountRow(discount: Discount, modifier: Modifier = Modifier) {
                 dateTimeFormatter.format(discount.expiredState.expirationDate.toJavaLocalDate()),
               ),
               textAlign = TextAlign.End,
-              style = MaterialTheme.typography.labelMedium,
+              style = MaterialTheme.typography.bodyMedium,
               color = MaterialTheme.colorScheme.error,
               modifier = Modifier.fillMaxWidth(),
             )
@@ -117,7 +135,7 @@ private fun DiscountRow(discount: Discount, modifier: Modifier = Modifier) {
                 dateTimeFormatter.format(discount.expiredState.expirationDate.toJavaLocalDate()),
               ),
               textAlign = TextAlign.End,
-              style = MaterialTheme.typography.labelMedium,
+              style = MaterialTheme.typography.bodyMedium,
               color = MaterialTheme.colorScheme.onSurfaceVariant,
               modifier = Modifier.fillMaxWidth(),
             )
