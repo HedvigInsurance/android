@@ -45,6 +45,7 @@ import com.hedvig.android.market.Market
 import com.hedvig.android.navigation.activity.ActivityNavigator
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
+import com.hedvig.android.navigation.core.TopLevelGraph
 import com.kiwi.navigationcompose.typed.navigate
 
 @Composable
@@ -70,11 +71,10 @@ internal fun HedvigApp(
           enter = expandHorizontally(expandFrom = Alignment.End),
           exit = shrinkHorizontally(shrinkTowards = Alignment.End),
         ) {
-          val topLevelGraphs by hedvigAppState.topLevelGraphs.collectAsStateWithLifecycle()
           val destinationsWithNotifications by hedvigAppState
             .topLevelGraphsWithNotifications.collectAsStateWithLifecycle()
           HedvigNavRail(
-            destinations = topLevelGraphs,
+            destinations = TopLevelGraph.entries.toSet(),
             destinationsWithNotifications = destinationsWithNotifications,
             onNavigateToDestination = hedvigAppState::navigateToTopLevelGraph,
             currentDestination = hedvigAppState.currentDestination,
@@ -101,11 +101,10 @@ internal fun HedvigApp(
         enter = expandVertically(expandFrom = Alignment.Top),
         exit = shrinkVertically(shrinkTowards = Alignment.Top),
       ) {
-        val topLevelGraphs by hedvigAppState.topLevelGraphs.collectAsStateWithLifecycle()
         val destinationsWithNotifications by hedvigAppState
           .topLevelGraphsWithNotifications.collectAsStateWithLifecycle()
         HedvigBottomBar(
-          destinations = topLevelGraphs,
+          destinations = TopLevelGraph.entries.toSet(),
           destinationsWithNotifications = destinationsWithNotifications,
           onNavigateToDestination = hedvigAppState::navigateToTopLevelGraph,
           currentDestination = hedvigAppState.currentDestination,

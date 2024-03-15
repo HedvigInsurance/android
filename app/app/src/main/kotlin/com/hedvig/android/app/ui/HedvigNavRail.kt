@@ -33,7 +33,7 @@ import kotlinx.collections.immutable.persistentSetOf
 
 @Composable
 internal fun HedvigNavRail(
-  destinations: ImmutableSet<TopLevelGraph>,
+  destinations: Set<TopLevelGraph>,
   destinationsWithNotifications: ImmutableSet<TopLevelGraph>,
   onNavigateToDestination: (TopLevelGraph) -> Unit,
   currentDestination: NavDestination?,
@@ -43,21 +43,14 @@ internal fun HedvigNavRail(
     destinations = destinations,
     destinationsWithNotifications = destinationsWithNotifications,
     onNavigateToDestination = onNavigateToDestination,
-    getIsCurrentlySelected = { destination: TopLevelGraph ->
-      when (destination) {
-        TopLevelGraph.HOME -> currentDestination.isTopLevelGraphInHierarchy<TopLevelGraph.HOME>()
-        TopLevelGraph.INSURANCE -> currentDestination.isTopLevelGraphInHierarchy<TopLevelGraph.INSURANCE>()
-        TopLevelGraph.PROFILE -> currentDestination.isTopLevelGraphInHierarchy<TopLevelGraph.PROFILE>()
-        TopLevelGraph.FOREVER -> currentDestination.isTopLevelGraphInHierarchy<TopLevelGraph.FOREVER>()
-      }
-    },
+    getIsCurrentlySelected = currentDestination::isTopLevelGraphInHierarchy,
     modifier = modifier,
   )
 }
 
 @Composable
 private fun HedvigNavRail(
-  destinations: ImmutableSet<TopLevelGraph>,
+  destinations: Set<TopLevelGraph>,
   destinationsWithNotifications: ImmutableSet<TopLevelGraph>,
   onNavigateToDestination: (TopLevelGraph) -> Unit,
   getIsCurrentlySelected: (TopLevelGraph) -> Boolean,
@@ -103,7 +96,7 @@ private fun HedvigNavRail(
           unselectedIconColor = MaterialTheme.colorScheme.onSurface,
           unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
         ),
-        modifier = Modifier.testTag(destination.toName()),
+        modifier = Modifier.testTag(destination.name),
       )
     }
   }
@@ -115,15 +108,10 @@ private fun PreviewHedvigNavRail() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.height(300.dp)) {
       HedvigNavRail(
-        destinations = persistentSetOf(
-          TopLevelGraph.HOME,
-          TopLevelGraph.INSURANCE,
-          TopLevelGraph.FOREVER,
-          TopLevelGraph.PROFILE,
-        ),
-        destinationsWithNotifications = persistentSetOf(TopLevelGraph.INSURANCE),
+        destinations = TopLevelGraph.entries.toSet(),
+        destinationsWithNotifications = persistentSetOf(TopLevelGraph.Insurances),
         onNavigateToDestination = {},
-        getIsCurrentlySelected = { it == TopLevelGraph.HOME },
+        getIsCurrentlySelected = { it == TopLevelGraph.Home },
       )
     }
   }

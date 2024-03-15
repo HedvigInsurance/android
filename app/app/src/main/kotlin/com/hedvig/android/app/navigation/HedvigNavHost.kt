@@ -342,7 +342,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     openChat = { backStackEntry ->
       with(navigator) {
         backStackEntry.navigate(destination = AppDestination.Chat()) {
-          popUpTo<AppDestination.TopLevelDestination.Home>()
+          popUpTo<HomeDestination>()
         }
       }
     },

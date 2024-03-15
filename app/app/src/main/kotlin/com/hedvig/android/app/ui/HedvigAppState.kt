@@ -22,18 +22,21 @@ import com.datadog.android.compose.NavigationViewTrackingEffect
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
+import com.hedvig.android.feature.home.home.navigation.HomeDestination
+import com.hedvig.android.feature.insurances.navigation.InsurancesDestination
 import com.hedvig.android.feature.insurances.navigation.insurancesBottomNavPermittedDestinations
+import com.hedvig.android.feature.payments.navigation.PaymentsDestination
+import com.hedvig.android.feature.profile.navigation.ProfileDestination
 import com.hedvig.android.feature.profile.navigation.profileBottomNavPermittedDestinations
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.notification.badge.data.tab.BottomNavTab
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
 import com.hedvig.android.theme.Theme
+import com.kiwi.navigationcompose.typed.Destination
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigate
 import kotlin.time.Duration.Companion.seconds
-import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentSet
@@ -41,7 +44,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -89,12 +91,9 @@ internal class HedvigAppState(
   val currentDestination: NavDestination?
     @Composable get() = navController.currentBackStackEntryAsState().value?.destination
 
-  private val currentTopLevelAppDestination: AppDestination.TopLevelDestination?
-    @Composable get() = currentDestination?.toTopLevelAppDestination()
-
   private val shouldShowNavBars: Boolean
     @Composable get() {
-      if (currentTopLevelAppDestination != null) return true
+      if (currentDestination?.toTopLevelAppDestination() != null) return true
       return currentDestination.isInListOfNonTopLevelNavBarPermittedDestinations()
     }
 
@@ -112,34 +111,19 @@ internal class HedvigAppState(
       return navRailWidthRequirements && shouldShowNavBars
     }
 
-  val topLevelGraphs: StateFlow<ImmutableSet<TopLevelGraph>> = flow {
-    val onlyHasNonPayingContracts = getOnlyHasNonPayingContractsUseCase.provide().invoke().getOrNull()
-    emit(
-      buildList {
-        add(TopLevelGraph.HOME)
-        add(TopLevelGraph.INSURANCE)
-        if (onlyHasNonPayingContracts != true) {
-          add(TopLevelGraph.FOREVER)
-        }
-        add(TopLevelGraph.PROFILE)
-      }.toPersistentSet(),
-    )
-  }.stateIn(
-    coroutineScope,
-    SharingStarted.Eagerly,
-    persistentSetOf(
-      TopLevelGraph.HOME,
-      TopLevelGraph.INSURANCE,
-      TopLevelGraph.PROFILE,
-    ),
-  )
-
   val topLevelGraphsWithNotifications: StateFlow<PersistentSet<TopLevelGraph>> =
     tabNotificationBadgeService.unseenTabNotificationBadges().map { bottomNavTabs: Set<BottomNavTab> ->
-      bottomNavTabs.map(BottomNavTab::topTopLevelGraph).toPersistentSet()
+      bottomNavTabs.map { bottomNavTab ->
+        when (bottomNavTab) {
+          BottomNavTab.HOME -> TopLevelGraph.Home
+          BottomNavTab.INSURANCE -> TopLevelGraph.Insurances
+          BottomNavTab.PAYMENTS -> TopLevelGraph.Payments
+          BottomNavTab.PROFILE -> TopLevelGraph.Profile
+        }
+      }.toPersistentSet()
     }.stateIn(
-      coroutineScope,
-      SharingStarted.WhileSubscribed(5.seconds),
+      scope = coroutineScope,
+      started = SharingStarted.WhileSubscribed(5.seconds),
       initialValue = persistentSetOf(),
     )
 
@@ -159,10 +143,10 @@ internal class HedvigAppState(
       restoreState = true
     }
     when (topLevelGraph) {
-      TopLevelGraph.HOME -> navController.navigate(TopLevelGraph.HOME, topLevelNavOptions)
-      TopLevelGraph.INSURANCE -> navController.navigate(TopLevelGraph.INSURANCE, topLevelNavOptions)
-      TopLevelGraph.PROFILE -> navController.navigate(TopLevelGraph.PROFILE, topLevelNavOptions)
-      TopLevelGraph.FOREVER -> navController.navigate(TopLevelGraph.FOREVER, topLevelNavOptions)
+      TopLevelGraph.Home -> navController.navigate(HomeDestination, topLevelNavOptions)
+      TopLevelGraph.Insurances -> navController.navigate(InsurancesDestination, topLevelNavOptions)
+      TopLevelGraph.Payments -> navController.navigate(PaymentsDestination, topLevelNavOptions)
+      TopLevelGraph.Profile -> navController.navigate(ProfileDestination, topLevelNavOptions)
     }
   }
 
@@ -189,22 +173,22 @@ private fun TopLevelDestinationNavigationSideEffect(
       val topLevelDestination = destination.toTopLevelAppDestination() ?: return@OnDestinationChangedListener
       coroutineScope.launch {
         when (topLevelDestination) {
-          AppDestination.TopLevelDestination.Home -> {
+          is HomeDestination -> {
             logcat { "Navigated to top level screen: HOME" }
             tabNotificationBadgeService.visitTab(BottomNavTab.HOME)
           }
 
-          AppDestination.TopLevelDestination.Insurance -> {
+          is InsurancesDestination -> {
             logcat { "Navigated to top level screen: INSURANCES" }
             tabNotificationBadgeService.visitTab(BottomNavTab.INSURANCE)
           }
 
-          AppDestination.TopLevelDestination.Forever -> {
-            logcat { "Navigated to top level screen: FOREVER" }
-            tabNotificationBadgeService.visitTab(BottomNavTab.REFERRALS)
+          is PaymentsDestination -> {
+            logcat { "Navigated to top level screen: PAYMENTS" }
+            tabNotificationBadgeService.visitTab(BottomNavTab.PAYMENTS)
           }
 
-          AppDestination.TopLevelDestination.Profile -> {
+          is ProfileDestination -> {
             logcat { "Navigated to top level screen: PROFILE" }
             tabNotificationBadgeService.visitTab(BottomNavTab.PROFILE)
           }
@@ -218,21 +202,12 @@ private fun TopLevelDestinationNavigationSideEffect(
   }
 }
 
-private fun BottomNavTab.topTopLevelGraph(): TopLevelGraph {
-  return when (this) {
-    BottomNavTab.HOME -> TopLevelGraph.Home
-    BottomNavTab.INSURANCE -> TopLevelGraph.Insurances
-    BottomNavTab.PAYMENTS -> TopLevelGraph.Payments
-    BottomNavTab.PROFILE -> TopLevelGraph.Profile
-  }
-}
-
-private fun NavDestination?.toTopLevelAppDestination(): AppDestination.TopLevelDestination? {
+private fun NavDestination?.toTopLevelAppDestination(): Destination? {
   return when (this?.route) {
-    createRoutePattern<AppDestination.TopLevelDestination.Home>() -> AppDestination.TopLevelDestination.Home
-    createRoutePattern<AppDestination.TopLevelDestination.Insurances>() -> AppDestination.TopLevelDestination.Insurance
-    createRoutePattern<AppDestination.TopLevelDestination.Forever>() -> AppDestination.TopLevelDestination.Forever
-    createRoutePattern<AppDestination.TopLevelDestination.Profile>() -> AppDestination.TopLevelDestination.Profile
+    createRoutePattern<HomeDestination>() -> HomeDestination
+    createRoutePattern<InsurancesDestination>() -> InsurancesDestination
+    createRoutePattern<PaymentsDestination>() -> PaymentsDestination
+    createRoutePattern<ProfileDestination>() -> ProfileDestination
     else -> null
   }
 }
