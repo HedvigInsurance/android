@@ -6,6 +6,15 @@ class BooleanCollectionPreviewParameterProvider : CollectionPreviewParameterProv
   listOf(true, false),
 )
 
+/**
+ * Models 3 distinct permutations
+ */
+class TripleBooleanCollectionPreviewParameterProvider : CollectionPreviewParameterProvider<TripleCase>(
+  listOf(TripleCase.FIRST, TripleCase.SECOND, TripleCase.THIRD),
+)
+
+enum class TripleCase { FIRST, SECOND, THIRD }
+
 class DoubleBooleanCollectionPreviewParameterProvider : CollectionPreviewParameterProvider<Pair<Boolean, Boolean>>(
   listOf(
     true to true,

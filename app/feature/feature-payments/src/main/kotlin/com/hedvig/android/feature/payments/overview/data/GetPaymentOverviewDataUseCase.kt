@@ -30,13 +30,13 @@ internal class GetPaymentOverviewDataUseCaseImpl(
         { getForeverInformationUseCase.invoke().bind() },
         { getUpcomingPaymentUseCase.invoke().bind() },
         { getOnlyHasNonPayingContractsUseCase.invoke().bind() },
-      ) { ForeverInformation, paymentOverview, onlyHasNonPayingContracts ->
+      ) { foreverInformation, paymentOverview, onlyHasNonPayingContracts ->
         PaymentOverviewData(
           paymentOverview = paymentOverview,
           foreverInformation = if (onlyHasNonPayingContracts) {
             null
           } else {
-            ForeverInformation
+            foreverInformation
           },
         )
       }
