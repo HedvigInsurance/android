@@ -68,6 +68,7 @@ sealed interface ClaimFlowDestination : Destination {
     val selectedItemBrand: String?,
     val availableItemModels: List<ItemModel>?,
     val selectedItemModel: String?,
+    val customName: String?,
     val availableItemProblems: List<ItemProblem>?,
     val selectedItemProblems: List<String>?,
   ) : ClaimFlowDestination

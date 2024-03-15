@@ -64,6 +64,7 @@ sealed interface ClaimFlowStep {
     val selectedItemBrand: String?,
     val availableItemModels: List<FlowClaimSingleItemStepFragment.AvailableItemModel>?,
     val selectedItemModel: String?,
+    val customName: String?,
     val availableItemProblems: List<FlowClaimSingleItemStepFragment.AvailableItemProblem>?,
     val selectedItemProblems: List<String>?,
   ) : ClaimFlowStep

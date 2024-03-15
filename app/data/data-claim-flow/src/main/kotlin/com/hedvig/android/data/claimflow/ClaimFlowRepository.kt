@@ -398,6 +398,7 @@ private suspend fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(
         selectedItemBrand,
         availableItemModels,
         selectedItemModel,
+        customName,
         availableItemProblems,
         selectedItemProblems,
       )

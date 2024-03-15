@@ -342,16 +342,6 @@ internal sealed interface ModelUi {
 
   data object BothDialogAndCustom : ModelUi
 
-  companion object {
-    fun fromSingleItem(singleItem: ClaimFlowDestination.SingleItem): ModelUi {
-      val availableItemModels = singleItem.availableItemModels?.toMutableList() ?: listOf()
-      return if (availableItemModels.isEmpty()) {
-        JustCustomModel
-      } else {
-        JustModelDialog
-      }
-    }
-  }
 }
 
 internal sealed interface ItemBrandsUiState {
@@ -387,15 +377,21 @@ internal data class ItemModelsUiState(
   companion object {
     fun fromSingleItem(singleItem: ClaimFlowDestination.SingleItem): ItemModelsUiState {
       val availableItemModels = singleItem.availableItemModels?.toMutableList() ?: listOf()
-      val selectedItemModel = availableItemModels.firstOrNull { availableItemModel ->
+      val selectedKnownItemModel = availableItemModels.firstOrNull { availableItemModel ->
         availableItemModel.asKnown()?.itemModelId == singleItem.selectedItemModel
       }
+      val customName = singleItem.customName
+      val initialCustomValue = customName ?: ""
+      val selectedItemModel = if (customName!=null) ItemModel.New(customName) else selectedKnownItemModel
+      val noAvailableModels = availableItemModels.isEmpty()
+      val modelUi = if (noAvailableModels) ModelUi.JustCustomModel
+      else if (customName!=null) ModelUi.BothDialogAndCustom else ModelUi.JustModelDialog
       val otherModel = ItemModel.Unknown
       return ItemModelsUiState(
         availableItemModels.plus(otherModel),
         selectedItemModel,
-        ModelUi.fromSingleItem(singleItem),
-        "",
+        modelUi,
+        initialCustomValue,
       )
     }
   }

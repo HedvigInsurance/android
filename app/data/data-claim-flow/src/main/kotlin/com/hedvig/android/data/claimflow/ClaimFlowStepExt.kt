@@ -52,6 +52,7 @@ fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
         selectedItemBrand = selectedItemBrand,
         availableItemModels = availableItemModels?.map { it.toItemModel() },
         selectedItemModel = selectedItemModel,
+        customName = customName,
         availableItemProblems = availableItemProblems?.map { it.toItemProblem() },
         selectedItemProblems = selectedItemProblems,
       )
