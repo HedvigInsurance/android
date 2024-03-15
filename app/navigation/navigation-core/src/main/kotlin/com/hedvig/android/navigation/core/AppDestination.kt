@@ -13,9 +13,6 @@ sealed interface AppDestination : Destination {
 
     @Serializable
     data object Profile : TopLevelDestination
-
-    @Serializable
-    data object Forever : TopLevelDestination
   }
 
   @Serializable

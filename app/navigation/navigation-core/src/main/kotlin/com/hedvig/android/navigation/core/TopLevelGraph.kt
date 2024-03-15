@@ -11,9 +11,6 @@ sealed interface TopLevelGraph : Destination {
   data object INSURANCE : TopLevelGraph
 
   @Serializable
-  data object FOREVER : TopLevelGraph
-
-  @Serializable
   data object PROFILE : TopLevelGraph
 
   fun toName(): String {
