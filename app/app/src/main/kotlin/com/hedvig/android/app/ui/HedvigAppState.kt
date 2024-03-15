@@ -220,17 +220,17 @@ private fun TopLevelDestinationNavigationSideEffect(
 
 private fun BottomNavTab.topTopLevelGraph(): TopLevelGraph {
   return when (this) {
-    BottomNavTab.HOME -> TopLevelGraph.HOME
-    BottomNavTab.INSURANCE -> TopLevelGraph.INSURANCE
-    BottomNavTab.REFERRALS -> TopLevelGraph.FOREVER
-    BottomNavTab.PROFILE -> TopLevelGraph.PROFILE
+    BottomNavTab.HOME -> TopLevelGraph.Home
+    BottomNavTab.INSURANCE -> TopLevelGraph.Insurances
+    BottomNavTab.PAYMENTS -> TopLevelGraph.Payments
+    BottomNavTab.PROFILE -> TopLevelGraph.Profile
   }
 }
 
 private fun NavDestination?.toTopLevelAppDestination(): AppDestination.TopLevelDestination? {
   return when (this?.route) {
     createRoutePattern<AppDestination.TopLevelDestination.Home>() -> AppDestination.TopLevelDestination.Home
-    createRoutePattern<AppDestination.TopLevelDestination.Insurance>() -> AppDestination.TopLevelDestination.Insurance
+    createRoutePattern<AppDestination.TopLevelDestination.Insurances>() -> AppDestination.TopLevelDestination.Insurance
     createRoutePattern<AppDestination.TopLevelDestination.Forever>() -> AppDestination.TopLevelDestination.Forever
     createRoutePattern<AppDestination.TopLevelDestination.Profile>() -> AppDestination.TopLevelDestination.Profile
     else -> null

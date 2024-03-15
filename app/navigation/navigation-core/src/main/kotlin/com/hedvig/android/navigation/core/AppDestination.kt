@@ -4,11 +4,6 @@ import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.serialization.Serializable
 
 sealed interface AppDestination : Destination {
-  sealed interface TopLevelDestination : AppDestination {
-    @Serializable
-    data object Home : TopLevelDestination
-  }
-
   @Serializable
   data object Login : AppDestination
 
