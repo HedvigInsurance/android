@@ -343,7 +343,7 @@ private fun CustomModelInput(initialValue: String, onInput: (String?) -> Unit, m
     value = initialValue,
     onValueChange = { newValue ->
       text = newValue
-      onInput(newValue.ifBlank { null })
+      onInput(newValue)
     },
     withNewDesign = true,
     modifier = modifier.focusRequester(focusRequester),

@@ -16,6 +16,7 @@ import com.hedvig.android.data.claimflow.ItemModel
 import com.hedvig.android.data.claimflow.ItemProblem
 import com.hedvig.android.feature.odyssey.ui.DatePickerUiState
 import com.hedvig.android.language.LanguageService
+import com.hedvig.android.logger.logcat
 import java.util.Locale
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -105,7 +106,7 @@ internal class SingleItemViewModel(
     viewModelScope.launch {
       val customNameInput = run {
         val selectedItemModel = uiState.itemModelsUiState.selectedItemModel?.asNew() ?: return@run null
-        selectedItemModel.displayName
+        selectedItemModel.displayName.ifBlank { null }
       }
       val itemModelInput = run {
         val itemModelUiState = uiState.itemModelsUiState
@@ -122,6 +123,9 @@ internal class SingleItemViewModel(
           itemTypeId = selectedItemBrand.itemTypeId,
           itemBrandId = selectedItemBrand.itemBrandId,
         )
+      }
+      logcat {
+        "mariia: customNameInput: $customNameInput,\nitemModelInput: $itemModelInput \nitemBrandInput: $itemBrandInput"
       }
       claimFlowRepository.submitSingleItem(
         itemBrandInput = itemBrandInput,
@@ -341,7 +345,6 @@ internal sealed interface ModelUi {
   data object JustCustomModel : ModelUi
 
   data object BothDialogAndCustom : ModelUi
-
 }
 
 internal sealed interface ItemBrandsUiState {
@@ -382,10 +385,15 @@ internal data class ItemModelsUiState(
       }
       val customName = singleItem.customName
       val initialCustomValue = customName ?: ""
-      val selectedItemModel = if (customName!=null) ItemModel.New(customName) else selectedKnownItemModel
+      val selectedItemModel = if (customName != null) ItemModel.New(customName) else selectedKnownItemModel
       val noAvailableModels = availableItemModels.isEmpty()
-      val modelUi = if (noAvailableModels) ModelUi.JustCustomModel
-      else if (customName!=null) ModelUi.BothDialogAndCustom else ModelUi.JustModelDialog
+      val modelUi = if (noAvailableModels) {
+        ModelUi.JustCustomModel
+      } else if (customName != null) {
+        ModelUi.BothDialogAndCustom
+      } else {
+        ModelUi.JustModelDialog
+      }
       val otherModel = ItemModel.Unknown
       return ItemModelsUiState(
         availableItemModels.plus(otherModel),
