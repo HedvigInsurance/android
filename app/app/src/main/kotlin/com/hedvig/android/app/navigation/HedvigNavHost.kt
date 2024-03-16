@@ -78,23 +78,19 @@ internal fun HedvigNavHost(
   val density = LocalDensity.current
   val navigator: Navigator = rememberNavigator(hedvigAppState.navController)
 
-  val openUrl: (String) -> Unit = remember {
-    { url ->
-      activityNavigator.openWebsite(
-        context,
-        if (url.isBlank()) Uri.EMPTY else Uri.parse(url),
-      )
-    }
+  val openUrl: (String) -> Unit = { url ->
+    activityNavigator.openWebsite(
+      context,
+      if (url.isBlank()) Uri.EMPTY else Uri.parse(url),
+    )
   }
 
-  val navigateToConnectPayment = remember(hedvigAppState.navController, market) {
-    {
-      when (market) {
-        Market.SE -> hedvigAppState.navController.navigate(AppDestination.ConnectPayment)
-        Market.NO,
-        Market.DK,
-        -> hedvigAppState.navController.navigate(AppDestination.ConnectPaymentAdyen)
-      }
+  val navigateToConnectPayment = {
+    when (market) {
+      Market.SE -> hedvigAppState.navController.navigate(AppDestination.ConnectPayment)
+      Market.NO,
+      Market.DK,
+      -> hedvigAppState.navController.navigate(AppDestination.ConnectPaymentAdyen)
     }
   }
 
