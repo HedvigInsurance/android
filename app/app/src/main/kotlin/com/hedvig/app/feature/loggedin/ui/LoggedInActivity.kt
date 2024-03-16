@@ -2,6 +2,7 @@ package com.hedvig.app.feature.loggedin.ui
 
 import android.app.UiModeManager
 import android.app.UiModeManager.MODE_NIGHT_CUSTOM
+import android.app.assist.AssistContent
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -20,11 +21,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.core.content.getSystemService
+import androidx.core.net.toUri
+import androidx.core.os.BundleCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import arrow.fx.coroutines.raceN
 import coil.ImageLoader
 import com.google.android.play.core.review.ReviewException
@@ -47,6 +55,7 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.navigation.activity.ActivityNavigator
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
+import com.hedvig.android.navigation.core.allDeepLinks
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
 import com.hedvig.android.theme.Theme
 import com.hedvig.app.feature.sunsetting.ForceUpgradeActivity
@@ -170,6 +179,10 @@ class LoggedInActivity : AppCompatActivity() {
         windowSizeClass = windowSizeClass,
         tabNotificationBadgeService = tabNotificationBadgeService,
         settingsDataStore = settingsDataStore,
+        navController = rememberNavController().also {
+          navController = it
+          logcat { "Stelios navController is populated" }
+        },
       )
       val darkTheme = hedvigAppState.darkTheme
       EnableEdgeToEdgeSideEffect(darkTheme)
@@ -241,6 +254,74 @@ class LoggedInActivity : AppCompatActivity() {
       }
     }
   }
+
+//  override fun onProvideAssistContent(outContent: AssistContent) {
+//    super.onProvideAssistContent(outContent)
+//    val navController = navController ?: return
+//    val backStackEntry: NavBackStackEntry? = navController.currentBackStackEntry
+//    val navDestination: NavDestination? = backStackEntry?.destination
+//    val arguments = backStackEntry?.arguments ?: return
+//    val deepLinkUri =
+//      BundleCompat.getParcelable(arguments, NavController.KEY_DEEP_LINK_INTENT, Intent::class.java)?.data
+//    outContent.webUri = deepLinkUri
+//    logcat { "Stelios: deepLinkUri$deepLinkUri" }
+//  }
+
+  override fun onProvideAssistContent(outContent: AssistContent) {
+    super.onProvideAssistContent(outContent)
+    val navController = navController ?: return
+
+    for (deepLink in hedvigDeepLinkContainer.allDeepLinks) {
+      val backStackEntry: NavBackStackEntry? = navController.currentBackStackEntry
+      val navDestination: NavDestination? = backStackEntry?.destination
+      if (!(navDestination?.hasDeepLink(deepLink.toUri()) == true)) {
+        continue
+      }
+      val arguments = backStackEntry.arguments
+      if (arguments == null) {
+        outContent.webUri = deepLink.toUri()
+      } else {
+        val androidxNavigationUri = BundleCompat
+          .getParcelable(arguments, NavController.KEY_DEEP_LINK_INTENT, Intent::class.java)
+          ?.data ?: continue
+        // if androidxNavigationUri is already a deep link as-is, just keep it as-is if possible
+        val deepLinkUri = buildString {
+//          append(hedvigDeepLinkContainer.baseDeepLinkDomain)
+          val argumentsPartFromAndroidxNavigationUri = androidxNavigationUri.toString()
+            .removePrefix("""android-app://androidx.navigation/""")
+            .dropWhile { it != '/' && it != '?' }
+          logcat { "Stelios argumentsPartFromAndroidxNavigationUri:$argumentsPartFromAndroidxNavigationUri" }
+          val deepLinkUntilOptionalItems = deepLink.takeWhile { it != '?' && it != '{' }
+          logcat { "Stelios deepLinkUntilOptionalItems:$deepLinkUntilOptionalItems" }
+          append(deepLinkUntilOptionalItems)
+          append(argumentsPartFromAndroidxNavigationUri)
+        }
+        outContent.webUri = deepLinkUri.toUri()
+      }
+      break
+      //      val bundle = backStackEntry.arguments?.getParcelable(NavController.KEY_DEEP_LINK_INTENT, Intent::class.java)
+      //      val arguentNameToRealValueList: List<Pair<String, String?>> =
+      //        navDestination.arguments.map { (argumentName: String, navArgument: NavArgument) ->
+      //          when (navArgument.type) {
+      //            NavType.StringType -> argumentName to backStackEntry.arguments?.getString(argumentName)
+      //            else -> null
+      //          }
+      //        }.filterNotNull()
+      //      val deepLinkWithPlaceholdersFilled =
+      //        arguentNameToRealValueList.fold(initial = deepLink) { acc, (argumentName: String, value: String?) ->
+      //          if (value == null) return@fold acc
+      //          acc.replace("{$argumentName}", value)
+      //        }
+      //      if (deepLinkWithPlaceholdersFilled.contains("{")) {
+      //        logcat(LogPriority.WARN) { "Deep link $deepLinkWithPlaceholdersFilled still contains placeholders" }
+      //        break
+      //      }
+      //      outContent.webUri = deepLinkWithPlaceholdersFilled.toUri()
+      //      break
+    }
+  }
+
+  private var navController: NavController? = null
 
   companion object {
     private const val REVIEW_DIALOG_DELAY_MILLIS = 2000L

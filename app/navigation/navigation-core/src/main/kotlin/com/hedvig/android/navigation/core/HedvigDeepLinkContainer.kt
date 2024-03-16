@@ -30,6 +30,25 @@ interface HedvigDeepLinkContainer {
   val chat: String // Hedvig Chat
 }
 
+val HedvigDeepLinkContainer.allDeepLinks: List<String>
+  get() = listOf(
+    home,
+    helpCenter,
+    helpCenterCommonTopic,
+    helpCenterQuestion,
+    insurances,
+    contractWithoutContractId,
+    contract,
+    forever,
+    profile,
+    connectPayment,
+    directDebit,
+    eurobonus,
+    payments,
+    deleteAccount,
+    chat,
+  )
+
 internal class HedvigDeepLinkContainerImpl(
   hedvigBuildConstants: HedvigBuildConstants,
 ) : HedvigDeepLinkContainer {
