@@ -313,6 +313,7 @@ class SingleItemViewModelTest {
         null,
         itemModels,
         null,
+        null,
         emptyList(),
         emptyList(),
       )
