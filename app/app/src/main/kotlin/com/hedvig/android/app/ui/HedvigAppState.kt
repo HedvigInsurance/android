@@ -19,8 +19,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import com.datadog.android.compose.ExperimentalTrackingApi
 import com.datadog.android.compose.NavigationViewTrackingEffect
-import com.hedvig.android.core.demomode.Provider
-import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.feature.home.home.navigation.HomeDestination
 import com.hedvig.android.feature.insurances.navigation.InsurancesDestination
@@ -54,7 +52,6 @@ internal fun rememberHedvigAppState(
   windowSizeClass: WindowSizeClass,
   tabNotificationBadgeService: TabNotificationBadgeService,
   settingsDataStore: SettingsDataStore,
-  getOnlyHasNonPayingContractsUseCase: Provider<GetOnlyHasNonPayingContractsUseCase>,
   coroutineScope: CoroutineScope = rememberCoroutineScope(),
   navController: NavHostController = rememberNavController(),
 ): HedvigAppState {
@@ -65,7 +62,6 @@ internal fun rememberHedvigAppState(
     coroutineScope,
     tabNotificationBadgeService,
     settingsDataStore,
-    getOnlyHasNonPayingContractsUseCase,
     windowSizeClass,
   ) {
     HedvigAppState(
@@ -74,7 +70,6 @@ internal fun rememberHedvigAppState(
       coroutineScope,
       tabNotificationBadgeService,
       settingsDataStore,
-      getOnlyHasNonPayingContractsUseCase,
     )
   }
 }
@@ -86,7 +81,6 @@ internal class HedvigAppState(
   coroutineScope: CoroutineScope,
   tabNotificationBadgeService: TabNotificationBadgeService,
   private val settingsDataStore: SettingsDataStore,
-  private val getOnlyHasNonPayingContractsUseCase: Provider<GetOnlyHasNonPayingContractsUseCase>,
 ) {
   val currentDestination: NavDestination?
     @Composable get() = navController.currentBackStackEntryAsState().value?.destination
