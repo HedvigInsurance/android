@@ -1,5 +1,6 @@
 package com.hedvig.android.app.ui
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -97,12 +98,20 @@ private fun HedvigBottomBar(
 private fun PreviewHedvigBottomBar() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      HedvigBottomBar(
-        destinations = TopLevelGraph.entries.toSet(),
-        destinationsWithNotifications = persistentSetOf(TopLevelGraph.Insurances),
-        onNavigateToDestination = {},
-        getIsCurrentlySelected = { it == TopLevelGraph.Home },
-      )
+      Column {
+        HedvigBottomBar(
+          destinations = TopLevelGraph.entries.toSet(),
+          destinationsWithNotifications = persistentSetOf(TopLevelGraph.Insurances),
+          onNavigateToDestination = {},
+          getIsCurrentlySelected = { false },
+        )
+        HedvigBottomBar(
+          destinations = TopLevelGraph.entries.toSet(),
+          destinationsWithNotifications = persistentSetOf(TopLevelGraph.Insurances),
+          onNavigateToDestination = {},
+          getIsCurrentlySelected = { true },
+        )
+      }
     }
   }
 }

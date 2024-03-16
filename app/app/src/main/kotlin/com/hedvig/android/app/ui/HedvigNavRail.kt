@@ -1,5 +1,6 @@
 package com.hedvig.android.app.ui
 
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.displayCutout
@@ -107,12 +108,20 @@ private fun HedvigNavRail(
 private fun PreviewHedvigNavRail() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.height(300.dp)) {
-      HedvigNavRail(
-        destinations = TopLevelGraph.entries.toSet(),
-        destinationsWithNotifications = persistentSetOf(TopLevelGraph.Insurances),
-        onNavigateToDestination = {},
-        getIsCurrentlySelected = { it == TopLevelGraph.Home },
-      )
+      Row {
+        HedvigNavRail(
+          destinations = TopLevelGraph.entries.toSet(),
+          destinationsWithNotifications = persistentSetOf(TopLevelGraph.Insurances),
+          onNavigateToDestination = {},
+          getIsCurrentlySelected = { false },
+        )
+        HedvigNavRail(
+          destinations = TopLevelGraph.entries.toSet(),
+          destinationsWithNotifications = persistentSetOf(TopLevelGraph.Insurances),
+          onNavigateToDestination = {},
+          getIsCurrentlySelected = { true },
+        )
+      }
     }
   }
 }

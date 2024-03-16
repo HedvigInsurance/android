@@ -29,6 +29,8 @@ import com.hedvig.android.core.icons.hedvig.flag.FlagNorway
 import com.hedvig.android.core.icons.hedvig.flag.FlagSweden
 import com.hedvig.android.core.icons.hedvig.flag.FlagUk
 import com.hedvig.android.core.icons.hedvig.logo.HedvigLogotype
+import com.hedvig.android.core.icons.hedvig.nav.Payments
+import com.hedvig.android.core.icons.hedvig.nav.PaymentsFilled
 import com.hedvig.android.core.icons.hedvig.nav.hedvig.Forever
 import com.hedvig.android.core.icons.hedvig.nav.hedvig.ForeverFilled
 import com.hedvig.android.core.icons.hedvig.nav.hedvig.Home
@@ -75,7 +77,6 @@ import com.hedvig.android.core.icons.hedvig.normal.MoreIos
 import com.hedvig.android.core.icons.hedvig.normal.MultipleDocuments
 import com.hedvig.android.core.icons.hedvig.normal.Other
 import com.hedvig.android.core.icons.hedvig.normal.Pause
-import com.hedvig.android.core.icons.hedvig.normal.Payments
 import com.hedvig.android.core.icons.hedvig.normal.Pictures
 import com.hedvig.android.core.icons.hedvig.normal.Play
 import com.hedvig.android.core.icons.hedvig.normal.Reciept
@@ -153,12 +154,12 @@ private val HedvigIcons.AllHedvigIcons: List<List<ImageVector>>
       ),
       // Nav icons
       listOf(
-        Forever,
-        ForeverFilled,
         Home,
         HomeFilled,
         Insurance,
         InsuranceFilled,
+        Payments,
+        PaymentsFilled,
         Profile,
         ProfileFilled,
       ),
@@ -189,6 +190,8 @@ private val HedvigIcons.AllHedvigIcons: List<List<ImageVector>>
         Document,
         Edit,
         Eurobonus,
+        Forever,
+        ForeverFilled,
         Heart,
         House,
         Info,
@@ -201,7 +204,6 @@ private val HedvigIcons.AllHedvigIcons: List<List<ImageVector>>
         MultipleDocuments,
         Other,
         Pause,
-        Payments,
         Pictures,
         Play,
         Reciept,
