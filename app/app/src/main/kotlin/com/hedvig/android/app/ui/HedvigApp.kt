@@ -35,7 +35,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import coil.ImageLoader
 import com.hedvig.android.app.navigation.HedvigNavHost
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
@@ -43,10 +42,8 @@ import com.hedvig.android.core.designsystem.material3.motion.MotionTokens
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.Market
 import com.hedvig.android.navigation.activity.ActivityNavigator
-import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.TopLevelGraph
-import com.kiwi.navigationcompose.typed.navigate
 
 @Composable
 internal fun HedvigApp(
@@ -84,7 +81,6 @@ internal fun HedvigApp(
           hedvigAppState = hedvigAppState,
           hedvigDeepLinkContainer = hedvigDeepLinkContainer,
           activityNavigator = activityNavigator,
-          navigateToConnectPayment = { navigateToConnectPayment(hedvigAppState.navController, market) },
           shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
           imageLoader = imageLoader,
           market = market,
@@ -160,13 +156,4 @@ private fun Modifier.animatedNavigationBarInsetsConsumption(hedvigAppState: Hedv
     label = "Padding values inset animation",
   )
   consumeWindowInsets(animatedInsetsToConsume)
-}
-
-private fun navigateToConnectPayment(navController: NavController, market: Market) {
-  when (market) {
-    Market.SE -> navController.navigate(AppDestination.ConnectPayment)
-    Market.NO,
-    Market.DK,
-    -> navController.navigate(AppDestination.ConnectPaymentAdyen)
-  }
 }
