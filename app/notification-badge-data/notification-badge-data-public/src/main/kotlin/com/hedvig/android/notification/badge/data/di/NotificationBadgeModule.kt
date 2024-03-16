@@ -25,9 +25,9 @@ val notificationBadgeModule = module {
 
   single<CrossSellCardNotificationBadgeServiceProvider> {
     CrossSellCardNotificationBadgeServiceProvider(
-      get<DemoManager>(),
-      get<CrossSellCardNotificationBadgeServiceImpl>(),
-      get<DemoCrossSellCardNotificationBadgeService>(),
+      demoManager = get<DemoManager>(),
+      demoImpl = get<DemoCrossSellCardNotificationBadgeService>(),
+      prodImpl = get<CrossSellCardNotificationBadgeServiceImpl>(),
     )
   }
   single<CrossSellCardNotificationBadgeServiceImpl> {
