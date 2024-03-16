@@ -35,11 +35,11 @@ fun NavGraphBuilder.insuranceGraph(
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   imageLoader: ImageLoader,
 ) {
-  navigation<InsurancesDestination>(
-    startDestination = createRoutePattern<InsurancesDestinations.Insurances>(),
+  navigation<InsurancesDestination.Graph>(
+    startDestination = createRoutePattern<InsurancesDestination.Insurances>(),
   ) {
     nestedGraphs()
-    composable<InsurancesDestinations.Insurances>(
+    composable<InsurancesDestination.Insurances>(
       deepLinks = listOf(
         navDeepLink { uriPattern = hedvigDeepLinkContainer.insurances },
         navDeepLink { uriPattern = hedvigDeepLinkContainer.contractWithoutContractId },

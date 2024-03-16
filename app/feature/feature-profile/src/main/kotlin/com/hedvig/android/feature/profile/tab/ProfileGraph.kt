@@ -38,13 +38,13 @@ fun NavGraphBuilder.profileGraph(
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
 ) {
-  navigation<ProfileDestination>(
-    startDestination = createRoutePattern<ProfileDestinations.Profile>(),
-    deepLinks = listOf(
-      navDeepLink { uriPattern = hedvigDeepLinkContainer.profile },
-    ),
+  navigation<ProfileDestination.Graph>(
+    startDestination = createRoutePattern<ProfileDestination.Profile>(),
   ) {
-    composable<ProfileDestinations.Profile>(
+    composable<ProfileDestination.Profile>(
+      deepLinks = listOf(
+        navDeepLink { uriPattern = hedvigDeepLinkContainer.profile },
+      ),
       enterTransition = { MotionDefaults.fadeThroughEnter },
       exitTransition = { MotionDefaults.fadeThroughExit },
     ) { backStackEntry ->

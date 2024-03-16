@@ -143,10 +143,10 @@ internal class HedvigAppState(
       restoreState = true
     }
     when (topLevelGraph) {
-      TopLevelGraph.Home -> navController.navigate(HomeDestination, topLevelNavOptions)
-      TopLevelGraph.Insurances -> navController.navigate(InsurancesDestination, topLevelNavOptions)
-      TopLevelGraph.Payments -> navController.navigate(PaymentsDestination, topLevelNavOptions)
-      TopLevelGraph.Profile -> navController.navigate(ProfileDestination, topLevelNavOptions)
+      TopLevelGraph.Home -> navController.navigate(HomeDestination.Graph, topLevelNavOptions)
+      TopLevelGraph.Insurances -> navController.navigate(InsurancesDestination.Graph, topLevelNavOptions)
+      TopLevelGraph.Payments -> navController.navigate(PaymentsDestination.Graph, topLevelNavOptions)
+      TopLevelGraph.Profile -> navController.navigate(ProfileDestination.Graph, topLevelNavOptions)
     }
   }
 
@@ -171,27 +171,25 @@ private fun TopLevelDestinationNavigationSideEffect(
   DisposableEffect(navController, tabNotificationBadgeService, coroutineScope) {
     val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
       val topLevelDestination = destination.toTopLevelAppDestination() ?: return@OnDestinationChangedListener
-      coroutineScope.launch {
-        when (topLevelDestination) {
-          is HomeDestination -> {
-            logcat { "Navigated to top level screen: HOME" }
-            tabNotificationBadgeService.visitTab(BottomNavTab.HOME)
-          }
+      when (topLevelDestination) {
+        TopLevelDestination.Home -> {
+          logcat { "Navigated to top level screen: HOME" }
+          coroutineScope.launch { tabNotificationBadgeService.visitTab(BottomNavTab.HOME) }
+        }
 
-          is InsurancesDestination -> {
-            logcat { "Navigated to top level screen: INSURANCES" }
-            tabNotificationBadgeService.visitTab(BottomNavTab.INSURANCE)
-          }
+        TopLevelDestination.Insurances -> {
+          logcat { "Navigated to top level screen: INSURANCES" }
+          coroutineScope.launch { tabNotificationBadgeService.visitTab(BottomNavTab.INSURANCE) }
+        }
 
-          is PaymentsDestination -> {
-            logcat { "Navigated to top level screen: PAYMENTS" }
-            tabNotificationBadgeService.visitTab(BottomNavTab.PAYMENTS)
-          }
+        TopLevelDestination.Payments -> {
+          logcat { "Navigated to top level screen: PAYMENTS" }
+          coroutineScope.launch { tabNotificationBadgeService.visitTab(BottomNavTab.PAYMENTS) }
+        }
 
-          is ProfileDestination -> {
-            logcat { "Navigated to top level screen: PROFILE" }
-            tabNotificationBadgeService.visitTab(BottomNavTab.PROFILE)
-          }
+        TopLevelDestination.Profile -> {
+          logcat { "Navigated to top level screen: PROFILE" }
+          coroutineScope.launch { tabNotificationBadgeService.visitTab(BottomNavTab.PROFILE) }
         }
       }
     }
@@ -202,14 +200,18 @@ private fun TopLevelDestinationNavigationSideEffect(
   }
 }
 
-private fun NavDestination?.toTopLevelAppDestination(): Destination? {
+private fun NavDestination?.toTopLevelAppDestination(): TopLevelDestination? {
   return when (this?.route) {
-    createRoutePattern<HomeDestination>() -> HomeDestination
-    createRoutePattern<InsurancesDestination>() -> InsurancesDestination
-    createRoutePattern<PaymentsDestination>() -> PaymentsDestination
-    createRoutePattern<ProfileDestination>() -> ProfileDestination
+    createRoutePattern<HomeDestination.Home>() -> TopLevelDestination.Home
+    createRoutePattern<InsurancesDestination.Insurances>() -> TopLevelDestination.Insurances
+    createRoutePattern<PaymentsDestination.Payments>() -> TopLevelDestination.Payments
+    createRoutePattern<ProfileDestination.Profile>() -> TopLevelDestination.Profile
     else -> null
   }
+}
+
+private fun NavDestination?.isInListOfNonTopLevelNavBarPermittedDestinations(): Boolean {
+  return this?.route in bottomNavPermittedDestinations
 }
 
 /**
@@ -220,6 +222,22 @@ private val bottomNavPermittedDestinations: List<String> = buildList {
   addAll(insurancesBottomNavPermittedDestinations)
 }
 
-private fun NavDestination?.isInListOfNonTopLevelNavBarPermittedDestinations(): Boolean {
-  return this?.route in bottomNavPermittedDestinations
+private sealed interface TopLevelDestination {
+  val destination: Destination
+
+  object Home : TopLevelDestination {
+    override val destination: Destination = HomeDestination.Home
+  }
+
+  object Insurances : TopLevelDestination {
+    override val destination: Destination = InsurancesDestination.Insurances
+  }
+
+  object Payments : TopLevelDestination {
+    override val destination: Destination = PaymentsDestination.Payments
+  }
+
+  object Profile : TopLevelDestination {
+    override val destination: Destination = ProfileDestination.Profile
+  }
 }

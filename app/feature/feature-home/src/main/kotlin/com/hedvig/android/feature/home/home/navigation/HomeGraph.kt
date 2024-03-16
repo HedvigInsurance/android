@@ -24,10 +24,10 @@ fun NavGraphBuilder.homeGraph(
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
 ) {
-  navigation<HomeDestination>(
-    startDestination = createRoutePattern<HomeDestinations.Home>(),
+  navigation<HomeDestination.Graph>(
+    startDestination = createRoutePattern<HomeDestination.Home>(),
   ) {
-    composable<HomeDestinations.Home>(
+    composable<HomeDestination.Home>(
       deepLinks = listOf(
         navDeepLink { uriPattern = hedvigDeepLinkContainer.home },
       ),

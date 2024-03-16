@@ -100,7 +100,7 @@ internal fun HedvigNavHost(
 
   NavHost(
     navController = hedvigAppState.navController,
-    startDestination = createRoutePattern<HomeDestination>(),
+    startDestination = createRoutePattern<HomeDestination.Graph>(),
     route = "root",
     modifier = modifier,
     enterTransition = { MotionDefaults.sharedXAxisEnter(density) },

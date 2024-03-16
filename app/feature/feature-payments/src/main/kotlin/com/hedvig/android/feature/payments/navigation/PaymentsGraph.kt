@@ -22,13 +22,13 @@ fun NavGraphBuilder.paymentsGraph(
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   navigateToConnectPayment: () -> Unit,
 ) {
-  navigation<PaymentsDestination>(
-    startDestination = createRoutePattern<PaymentsDestinations.Overview>(),
-    deepLinks = listOf(
-      navDeepLink { uriPattern = hedvigDeepLinkContainer.payments },
-    ),
+  navigation<PaymentsDestination.Graph>(
+    startDestination = createRoutePattern<PaymentsDestination.Payments>(),
   ) {
-    composable<PaymentsDestinations.Overview>(
+    composable<PaymentsDestination.Payments>(
+      deepLinks = listOf(
+        navDeepLink { uriPattern = hedvigDeepLinkContainer.payments },
+      ),
       enterTransition = { MotionDefaults.fadeThroughEnter },
       exitTransition = { MotionDefaults.fadeThroughExit },
     ) { backStackEntry ->
