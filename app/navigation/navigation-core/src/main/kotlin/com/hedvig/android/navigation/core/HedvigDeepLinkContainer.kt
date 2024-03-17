@@ -52,7 +52,7 @@ val HedvigDeepLinkContainer.allDeepLinks: List<String>
 internal class HedvigDeepLinkContainerImpl(
   hedvigBuildConstants: HedvigBuildConstants,
 ) : HedvigDeepLinkContainer {
-  private val baseDeepLinkDomain = "https://${hedvigBuildConstants.deepLinkHost}"
+  private val baseDeepLinkDomain: String = "https://${hedvigBuildConstants.deepLinkHost}"
 
   // Home does not have some special text, acts as the fallback to all unknown deep links
   override val home: String = baseDeepLinkDomain

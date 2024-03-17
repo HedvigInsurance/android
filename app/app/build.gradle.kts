@@ -211,6 +211,7 @@ dependencies {
   implementation(projects.memberRemindersPublic)
   implementation(projects.navigationActivity)
   implementation(projects.navigationCore)
+  implementation(projects.navigationProvideAssistContent)
   implementation(projects.navigationUi)
   implementation(projects.notificationBadgeDataPublic)
   implementation(projects.notificationCore)

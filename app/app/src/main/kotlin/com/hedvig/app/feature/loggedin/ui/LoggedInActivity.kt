@@ -21,7 +21,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.core.content.getSystemService
-import androidx.core.net.toUri
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleStartEffect
@@ -54,6 +53,7 @@ import com.hedvig.android.market.MarketManager
 import com.hedvig.android.navigation.activity.ActivityNavigator
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.allDeepLinks
+import com.hedvig.android.navigation.provide.assist.content.provideAssistContent
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
 import com.hedvig.android.theme.Theme
 import com.hedvig.app.feature.sunsetting.ForceUpgradeActivity
@@ -261,15 +261,7 @@ class LoggedInActivity : AppCompatActivity() {
 
   override fun onProvideAssistContent(outContent: AssistContent) {
     super.onProvideAssistContent(outContent)
-    navController?.also { navController ->
-      for (deepLink in hedvigDeepLinkContainer.allDeepLinks) {
-        val deepLinkUri = deepLink.toUri()
-        if (navController.currentBackStackEntry?.destination?.hasDeepLink(deepLinkUri) == true) {
-          outContent.webUri = deepLinkUri
-          break
-        }
-      }
-    }
+    navController?.provideAssistContent(outContent, hedvigDeepLinkContainer.allDeepLinks)
   }
 
   companion object {
