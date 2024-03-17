@@ -56,9 +56,8 @@ private fun constructWebUriOrNull(
   val backStackEntryArguments: Bundle = backStackEntry.arguments ?: return null
   val arguentNameToRealValueList: List<Pair<String, String?>> =
     navDestination.arguments.map { (argumentName: String, navArgument: NavArgument) ->
-      @Suppress("DEPRECATION")
       val serializedTypeValue: String? =
-        navArgument.type.serializeAsValue(backStackEntryArguments.get(argumentName))
+        navArgument.type.serializeAsValue(navArgument.type.get(backStackEntryArguments, argumentName))
       argumentName to serializedTypeValue
     }
   val deepLinkWithPlaceholdersFilled =
