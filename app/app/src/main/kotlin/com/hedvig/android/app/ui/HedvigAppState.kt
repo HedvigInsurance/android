@@ -211,6 +211,11 @@ private fun TopLevelDestinationNavigationSideEffect(
           coroutineScope.launch { tabNotificationBadgeService.visitTab(BottomNavTab.INSURANCE) }
         }
 
+        TopLevelDestination.Forever -> {
+          logcat { "Navigated to top level screen: FOREVER" }
+          coroutineScope.launch { tabNotificationBadgeService.visitTab(BottomNavTab.FOREVER) }
+        }
+
         TopLevelDestination.Payments -> {
           logcat { "Navigated to top level screen: PAYMENTS" }
           coroutineScope.launch { tabNotificationBadgeService.visitTab(BottomNavTab.PAYMENTS) }
@@ -233,6 +238,7 @@ private fun NavDestination?.toTopLevelAppDestination(): TopLevelDestination? {
   return when (this?.route) {
     createRoutePattern<HomeDestination.Home>() -> TopLevelDestination.Home
     createRoutePattern<InsurancesDestination.Insurances>() -> TopLevelDestination.Insurances
+    createRoutePattern<ForeverDestination.Forever>() -> TopLevelDestination.Forever
     createRoutePattern<PaymentsDestination.Payments>() -> TopLevelDestination.Payments
     createRoutePattern<ProfileDestination.Profile>() -> TopLevelDestination.Profile
     else -> null
@@ -260,6 +266,10 @@ private sealed interface TopLevelDestination {
 
   object Insurances : TopLevelDestination {
     override val destination: Destination = InsurancesDestination.Insurances
+  }
+
+  object Forever : TopLevelDestination {
+    override val destination: Destination = ForeverDestination.Forever
   }
 
   object Payments : TopLevelDestination {
