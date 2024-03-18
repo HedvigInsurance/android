@@ -121,7 +121,7 @@ internal class HedvigAppState(
         add(TopLevelGraph.Home)
         add(TopLevelGraph.Insurances)
         if (onlyHasNonPayingContracts != true) {
-          // todo add back forever here add(TopLevelGraph.Forever)
+          add(TopLevelGraph.Forever)
         }
         add(TopLevelGraph.Payments)
         add(TopLevelGraph.Profile)
