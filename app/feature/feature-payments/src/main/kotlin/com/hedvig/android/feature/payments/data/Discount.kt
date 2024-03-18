@@ -9,9 +9,17 @@ internal data class Discount(
   val code: String,
   val displayName: String?,
   val description: String?,
-  val expiresAt: LocalDate?,
+  val expiredState: ExpiredState,
   val amount: UiMoney?,
   val isReferral: Boolean,
 ) {
-  fun isExpired(now: LocalDate) = expiresAt?.let { it < now } ?: true
+  sealed interface ExpiredState {
+    data object NotExpired : ExpiredState
+
+    data class AlreadyExpired(val expirationDate: LocalDate) : ExpiredState
+
+    data class ExpiringInTheFuture(val expirationDate: LocalDate) : ExpiredState
+
+    companion object
+  }
 }

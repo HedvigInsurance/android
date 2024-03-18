@@ -23,6 +23,7 @@ internal class FetchCoInsuredPersonalInformationUseCaseImpl(
       .bind()
 
     ensureNotNull(result.personalInformation) {
+      // todo localize this error message. Perhaps trigger "manual input" directly when we get this error too.
       ErrorMessage("No personal information found")
     }
 

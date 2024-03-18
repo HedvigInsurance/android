@@ -60,7 +60,7 @@ private fun ClaimPill(type: ClaimPillType) {
     ClaimPillType.Reopened -> MaterialTheme.colorScheme.warningContainer to MaterialTheme.colorScheme.onWarningContainer
     ClaimPillType.Unknown -> MaterialTheme.colorScheme.outlineVariant to LocalContentColor.current
   }
-  HedvigPill(text, color, contentColor)
+  HedvigPill(text, color, contentColor = contentColor)
 }
 
 @HedvigPreview

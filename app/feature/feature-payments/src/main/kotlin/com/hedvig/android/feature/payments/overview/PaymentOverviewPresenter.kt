@@ -7,14 +7,16 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.hedvig.android.feature.payments.data.AddDiscountUseCase
-import com.hedvig.android.feature.payments.data.GetUpcomingPaymentUseCase
+import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.feature.payments.data.PaymentOverview
+import com.hedvig.android.feature.payments.overview.data.AddDiscountUseCase
+import com.hedvig.android.feature.payments.overview.data.ForeverInformation
+import com.hedvig.android.feature.payments.overview.data.GetPaymentOverviewDataUseCase
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 
 internal class PaymentOverviewPresenter(
-  val getUpcomingPaymentUseCase: GetUpcomingPaymentUseCase,
+  val getPaymentOverviewDataUseCase: Provider<GetPaymentOverviewDataUseCase>,
   val addDiscountUseCase: AddDiscountUseCase,
 ) : MoleculePresenter<PaymentEvent, OverViewUiState> {
   @Composable
@@ -49,18 +51,18 @@ internal class PaymentOverviewPresenter(
       } else {
         paymentUiState.copy(isLoadingPaymentOverView = true)
       }
-
-      getUpcomingPaymentUseCase.invoke().fold(
+      getPaymentOverviewDataUseCase.provide().invoke().fold(
         ifLeft = {
           paymentUiState = paymentUiState.copy(
-            error = it.message,
+            error = true,
             isLoadingPaymentOverView = false,
             isRetrying = false,
           )
         },
-        ifRight = {
+        ifRight = { paymentOverviewData ->
           paymentUiState = paymentUiState.copy(
-            paymentOverview = it,
+            paymentOverview = paymentOverviewData.paymentOverview,
+            foreverInformation = paymentOverviewData.foreverInformation,
             error = null,
             isLoadingPaymentOverView = false,
             isRetrying = false,
@@ -110,9 +112,10 @@ internal sealed interface PaymentEvent {
 }
 
 internal data class OverViewUiState(
+  val foreverInformation: ForeverInformation?,
   val paymentOverview: PaymentOverview? = null,
   val discountError: String? = null,
-  val error: String? = null,
+  val error: Boolean? = null,
   val showAddDiscountBottomSheet: Boolean = false,
   val isLoadingPaymentOverView: Boolean = true,
   val isRetrying: Boolean = false,
