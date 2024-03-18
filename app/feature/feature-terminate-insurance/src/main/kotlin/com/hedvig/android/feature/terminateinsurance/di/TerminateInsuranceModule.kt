@@ -4,8 +4,8 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.feature.terminateinsurance.InsuranceId
-import com.hedvig.android.feature.terminateinsurance.data.GetContractsEligibleToTerminateUseCase
-import com.hedvig.android.feature.terminateinsurance.data.GetContractsEligibleToTerminateUseCaseImpl
+import com.hedvig.android.feature.terminateinsurance.data.GetContractsToTerminateUseCase
+import com.hedvig.android.feature.terminateinsurance.data.GetContractsToTerminateUseCaseImpl
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
 import com.hedvig.android.feature.terminateinsurance.data.TerminationFlowContextStorage
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination
@@ -15,6 +15,7 @@ import com.hedvig.android.feature.terminateinsurance.step.deletion.InsuranceDele
 import com.hedvig.android.feature.terminateinsurance.step.start.TerminationStartStepViewModel
 import com.hedvig.android.feature.terminateinsurance.step.terminationdate.TerminationDateViewModel
 import com.hedvig.android.feature.terminateinsurance.step.terminationreview.TerminationReviewViewModel
+import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.language.LanguageService
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
@@ -24,7 +25,8 @@ import org.koin.dsl.module
 val terminateInsuranceModule = module {
   viewModel<ChooseInsuranceToTerminateViewModel> {
     ChooseInsuranceToTerminateViewModel(
-      get<GetContractsEligibleToTerminateUseCase>(),
+      get<GetContractsToTerminateUseCase>(),
+      get<FeatureManager>(),
     )
   }
   viewModel<TerminationStartStepViewModel> { (insuranceId: InsuranceId) ->
@@ -62,8 +64,8 @@ val terminateInsuranceModule = module {
       terminationFlowContextStorage = get(),
     )
   }
-  single<GetContractsEligibleToTerminateUseCase> {
-    GetContractsEligibleToTerminateUseCaseImpl(
+  single<GetContractsToTerminateUseCase> {
+    GetContractsToTerminateUseCaseImpl(
       apolloClient = get<ApolloClient>(),
     )
   }

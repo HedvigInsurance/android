@@ -1,0 +1,23 @@
+query ContractsToTerminate {
+  currentMember {
+    futureCharge {
+      contractsChargeBreakdown {
+        contract {
+          id
+          exposureDisplayName
+          currentAgreement {
+            activeFrom
+            productVariant {
+              displayName
+              typeOfContract
+            }
+          }
+        }
+        gross {
+          ...MoneyFragment
+        }
+      }
+      date
+    }
+  }
+}

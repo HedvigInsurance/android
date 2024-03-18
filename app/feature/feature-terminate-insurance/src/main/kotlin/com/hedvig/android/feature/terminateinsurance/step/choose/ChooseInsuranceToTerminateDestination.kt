@@ -68,6 +68,19 @@ internal fun ChooseInsuranceToTerminateScreen(
   startTerminationFlow: (insuranceForCancellation: InsuranceForCancellation) -> Unit,
 ) {
   when (uiState) {
+    ChooseInsuranceToTerminateStepUiState.NotAllowed -> {
+      HedvigScaffold(
+        navigateUp = navigateUp,
+      ) {
+        // todo: should probably have some other copy here
+        HedvigErrorSection(
+          onButtonClick = navigateUp,
+          modifier = Modifier.weight(1f),
+          subTitle = null,
+          buttonText = stringResource(id = R.string.general_back_button),
+        )
+      }
+    }
     ChooseInsuranceToTerminateStepUiState.Failure -> {
       HedvigScaffold(
         navigateUp = navigateUp,
@@ -102,23 +115,23 @@ internal fun ChooseInsuranceToTerminateScreen(
         VectorInfoCard(
           text = stringResource(id = R.string.TERMINATION_FLOW_CHOOSE_CONTRACT_INFO),
           modifier = Modifier
-              .padding(horizontal = 16.dp)
-              .fillMaxWidth(),
+            .padding(horizontal = 16.dp)
+            .fillMaxWidth(),
         )
         Spacer(Modifier.height(16.dp))
         for (insurance in uiState.insuranceList) {
           HedvigCard(
             onClick = { selectInsurance(insurance) },
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+              .fillMaxWidth()
+              .padding(horizontal = 16.dp),
           ) {
             Row(
               verticalAlignment = Alignment.CenterVertically,
               modifier = Modifier
-                  .heightIn(72.dp)
-                  .fillMaxWidth()
-                  .padding(horizontal = 16.dp, vertical = 10.dp),
+                .heightIn(72.dp)
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 10.dp),
             ) {
               Column(modifier = Modifier.weight(1f)) {
                 Text(
@@ -126,14 +139,14 @@ internal fun ChooseInsuranceToTerminateScreen(
                   style = MaterialTheme.typography.bodyLarge,
                 )
                 Text(
-                  text = insurance.displayDetails,
+                  text = insurance.contractExposure,
                   style = MaterialTheme.typography.bodyMedium,
                   color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 val nextPayment = stringResource(id = R.string.TERMINATION_FLOW_NEXT_PAYMENT)
                 val perMonth = stringResource(
-                    id = R.string.TERMINATION_FLOW_PAYMENT_PER_MONTH,
-                    insurance.monthlyPayment.amount.toInt(),
+                  id = R.string.TERMINATION_FLOW_PAYMENT_PER_MONTH,
+                  insurance.monthlyPayment.amount.toInt(),
                 )
                 val dateTimeFormatter = rememberHedvigMonthDateTimeFormatter()
                 val nextPaymentDate = dateTimeFormatter.format(insurance.nextPaymentDate?.toJavaLocalDate())
@@ -147,8 +160,8 @@ internal fun ChooseInsuranceToTerminateScreen(
 
               Spacer(Modifier.width(8.dp))
               SelectIndicationCircle(
-                  uiState.selectedInsurance?.id == insurance.id,
-                  customColor = MaterialTheme.colorScheme.typeElement,
+                uiState.selectedInsurance?.id == insurance.id,
+                customColor = MaterialTheme.colorScheme.typeElement,
               )
             }
           }
@@ -160,8 +173,9 @@ internal fun ChooseInsuranceToTerminateScreen(
           enabled = uiState.continueEnabled,
           modifier = Modifier.padding(horizontal = 16.dp),
           onClick = {
-            if (uiState.selectedInsurance != null)
+            if (uiState.selectedInsurance != null) {
               startTerminationFlow(uiState.selectedInsurance)
+            }
           },
         )
         Spacer(Modifier.height(16.dp))
@@ -182,49 +196,45 @@ private fun PreviewChooseInsuranceToTerminateScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       ChooseInsuranceToTerminateScreen(
-          ChooseInsuranceToTerminateStepUiState.Success(
-              insuranceList = listOf(
-                  InsuranceForCancellation(
-                      "1",
-                      "Homeowner Insurance",
-                      "Bellmansgatan 19A",
-                      UiMoney(449.0, currencyCode = CurrencyCode.SEK),
-                      LocalDate(2024, 7, 27),
-                    "",
-                    ContractGroup.HOUSE,
-                    LocalDate(2024, 6, 27),
-                  ),
-                  InsuranceForCancellation(
-                      "3",
-                      "Tenant Insurance",
-                      "Bullegatan 23",
-                      UiMoney(332.0, currencyCode = CurrencyCode.SEK),
-                      LocalDate(2024, 7, 27),
-                    "",
-                    ContractGroup.HOUSE,
-                    LocalDate(2024, 6, 27),
-                  ),
-              ),
+        ChooseInsuranceToTerminateStepUiState.Success(
+          insuranceList = listOf(
             InsuranceForCancellation(
-              "3",
-              "Tenant Insurance",
-              "Bullegatan 23",
-              UiMoney(332.0, currencyCode = CurrencyCode.SEK),
-              LocalDate(2024, 7, 27),
-              "",
-              ContractGroup.HOUSE,
-              LocalDate(2024, 6, 27),
+              id = "1",
+              displayName = "HomeownerInsurance",
+              contractExposure = "Opulullegatan 19",
+              monthlyPayment = UiMoney(784.0, currencyCode = CurrencyCode.SEK),
+              nextPaymentDate = LocalDate(2024, 7, 27),
+              contractGroup = ContractGroup.HOUSE,
+              activateFrom = LocalDate(2024, 6, 27),
+            ),
+            InsuranceForCancellation(
+              id = "3",
+              displayName = "Tenant Insurance",
+              contractExposure = "Bullegatan 23",
+              monthlyPayment = UiMoney(332.0, currencyCode = CurrencyCode.SEK),
+              nextPaymentDate = LocalDate(2024, 7, 27),
+              contractGroup = ContractGroup.HOUSE,
+              activateFrom = LocalDate(2024, 6, 27),
             ),
           ),
-          {},
-          {},
-          {},
-          {},
+          InsuranceForCancellation(
+            id = "3",
+            displayName = "Tenant Insurance",
+            contractExposure = "Bullegatan 23",
+            monthlyPayment = UiMoney(332.0, currencyCode = CurrencyCode.SEK),
+            nextPaymentDate = LocalDate(2024, 7, 27),
+            contractGroup = ContractGroup.HOUSE,
+            activateFrom = LocalDate(2024, 6, 27),
+          ),
+        ),
+        {},
+        {},
+        {},
+        {},
       )
     }
   }
 }
-
 
 @HedvigPreview
 @Composable
@@ -232,10 +242,28 @@ private fun PreviewChooseInsuranceToTerminateScreenWithFailure() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       ChooseInsuranceToTerminateScreen(
-          ChooseInsuranceToTerminateStepUiState.Failure,
-          {}, {}, {}, {},
+        ChooseInsuranceToTerminateStepUiState.Failure,
+        {},
+        {},
+        {},
+        {},
       )
     }
   }
 }
 
+@HedvigPreview
+@Composable
+private fun PreviewChooseInsuranceToTerminateScreenWithNotAllowed() {
+  HedvigTheme {
+    Surface(color = MaterialTheme.colorScheme.background) {
+      ChooseInsuranceToTerminateScreen(
+        ChooseInsuranceToTerminateStepUiState.NotAllowed,
+        {},
+        {},
+        {},
+        {},
+      )
+    }
+  }
+}
