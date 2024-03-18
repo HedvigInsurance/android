@@ -40,7 +40,7 @@ internal sealed interface CommonClaim {
       val description: String,
     )
 
-    val isFirstVet = id == "30" || id == "31" || id == "32"
+    val isFirstVet = checkIfFirstVet(id)
 
     companion object {
       @Suppress("ktlint:standard:max-line-length")

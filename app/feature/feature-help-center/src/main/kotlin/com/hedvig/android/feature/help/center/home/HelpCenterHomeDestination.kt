@@ -194,7 +194,8 @@ private fun HelpCenterHomeScreen(
                     },
                     modifier = Modifier
                       .fillMaxWidth()
-                      .padding(horizontal = 16.dp),
+                      .padding(horizontal = 16.dp)
+                      .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
                   ) {
                     Column(
                       verticalArrangement = Arrangement.Center,
@@ -224,9 +225,9 @@ private fun HelpCenterHomeScreen(
                         textAlign = TextAlign.Start,
                         modifier = Modifier.padding(horizontal = 16.dp),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontSize = MaterialTheme.typography.titleSmall.fontSize,
+                        style = MaterialTheme.typography.titleSmall,
                       )
-                      Spacer(modifier = Modifier.height(14.dp))
+                      Spacer(modifier = Modifier.height(12.dp))
                     }
                   }
                 }
