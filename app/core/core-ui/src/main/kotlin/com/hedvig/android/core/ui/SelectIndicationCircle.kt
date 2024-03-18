@@ -12,6 +12,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
@@ -19,14 +20,18 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
 
 @Composable
-fun SelectIndicationCircle(selected: Boolean, modifier: Modifier = Modifier) {
+fun SelectIndicationCircle(
+  selected: Boolean,
+  modifier: Modifier = Modifier,
+  customColor: Color? = null) {
+  val selectedColor = customColor ?: LocalContentColor.current
   Spacer(
     modifier
       .size(24.dp)
       .clip(CircleShape)
       .then(
         if (selected) {
-          Modifier.background(LocalContentColor.current)
+          Modifier.background(selectedColor)
         } else {
           Modifier.border(2.dp, MaterialTheme.colorScheme.onSurfaceVariant, CircleShape)
         },
