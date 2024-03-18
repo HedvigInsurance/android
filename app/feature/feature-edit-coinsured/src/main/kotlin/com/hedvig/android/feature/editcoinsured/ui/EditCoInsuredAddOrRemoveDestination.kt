@@ -220,8 +220,8 @@ private fun EditCoInsuredScreen(
 
         Column(
           modifier = Modifier
-              .weight(1f)
-              .verticalScroll(state = rememberScrollState()),
+            .weight(1f)
+            .verticalScroll(state = rememberScrollState()),
         ) {
           CoInsuredList(
             uiState = uiState.listState,
@@ -260,10 +260,10 @@ private fun EditCoInsuredScreen(
           )
           Spacer(Modifier.height(16.dp))
           Spacer(
-              Modifier.padding(
-                  WindowInsets.safeDrawing
-                      .only(WindowInsetsSides.Bottom).asPaddingValues(),
-              ),
+            Modifier.padding(
+              WindowInsets.safeDrawing
+                .only(WindowInsetsSides.Bottom).asPaddingValues(),
+            ),
           )
         }
       }
@@ -279,8 +279,8 @@ private fun PriceInfo(priceInfo: EditCoInsuredState.Loaded.PriceInfo) {
 
   Column(
     modifier = Modifier
-        .padding(16.dp)
-        .fillMaxWidth(),
+      .padding(16.dp)
+      .fillMaxWidth(),
   ) {
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = { Text(text = stringResource(id = R.string.CONTRACT_ADD_COINSURED_TOTAL)) },
