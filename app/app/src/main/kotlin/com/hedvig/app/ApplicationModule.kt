@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.os.Build
+import androidx.core.content.ContextCompat.startActivity
 import androidx.work.WorkerParameters
 import coil.ImageLoader
 import coil.decode.GifDecoder
@@ -73,6 +74,7 @@ import com.hedvig.android.market.di.marketManagerModule
 import com.hedvig.android.market.di.setMarketModule
 import com.hedvig.android.memberreminders.di.memberRemindersModule
 import com.hedvig.android.navigation.activity.ActivityNavigator
+import com.hedvig.android.navigation.activity.ActivityNavigatorImpl
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.di.deepLinkModule
 import com.hedvig.android.notification.badge.data.di.notificationBadgeModule
@@ -201,7 +203,7 @@ private val viewModelModule = module {
 
 private val activityNavigatorModule = module {
   single<ActivityNavigator> {
-    ActivityNavigator(
+    ActivityNavigatorImpl(
       application = get<Application>(),
       loggedOutActivityClass = MarketingActivity::class.java,
       buildConfigApplicationId = BuildConfig.APPLICATION_ID,
