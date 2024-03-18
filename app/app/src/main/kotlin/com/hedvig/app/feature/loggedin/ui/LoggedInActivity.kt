@@ -2,6 +2,7 @@ package com.hedvig.app.feature.loggedin.ui
 
 import android.app.UiModeManager
 import android.app.UiModeManager.MODE_NIGHT_CUSTOM
+import android.app.assist.AssistContent
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -22,9 +23,12 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.core.content.getSystemService
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import arrow.fx.coroutines.raceN
 import coil.ImageLoader
 import com.google.android.play.core.review.ReviewException
@@ -48,9 +52,11 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.navigation.activity.ActivityNavigator
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
+import com.hedvig.android.navigation.core.allDeepLinkUriPatterns
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
 import com.hedvig.android.theme.Theme
 import com.hedvig.app.feature.sunsetting.ForceUpgradeActivity
+import com.stylianosgakis.navigation.recents.url.sharing.provideAssistContent
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -79,6 +85,7 @@ class LoggedInActivity : AppCompatActivity() {
   private val waitUntilAppReviewDialogShouldBeOpenedUseCase: WaitUntilAppReviewDialogShouldBeOpenedUseCase by inject()
 
   private val activityNavigator: ActivityNavigator by inject()
+  private var navController: NavController? = null
 
   // Shows the splash screen as long as the auth status or the demo mode status is still undetermined
   private val showSplash = MutableStateFlow(true)
@@ -168,11 +175,19 @@ class LoggedInActivity : AppCompatActivity() {
     setContent {
       val market by marketManager.market.collectAsStateWithLifecycle()
       val windowSizeClass = calculateWindowSizeClass(this)
+      val navHostController = rememberNavController().also { navController = it }
+      LifecycleStartEffect(navHostController) {
+        navController = navHostController
+        onStopOrDispose {
+          navController = null
+        }
+      }
       val hedvigAppState = rememberHedvigAppState(
         windowSizeClass = windowSizeClass,
         tabNotificationBadgeService = tabNotificationBadgeService,
         settingsDataStore = settingsDataStore,
         getOnlyHasNonPayingContractsUseCase = getOnlyHasNonPayingContractsUseCase,
+        navHostController = navHostController,
       )
       val darkTheme = hedvigAppState.darkTheme
       EnableEdgeToEdgeSideEffect(darkTheme)
@@ -243,6 +258,11 @@ class LoggedInActivity : AppCompatActivity() {
         }
       }
     }
+  }
+
+  override fun onProvideAssistContent(outContent: AssistContent) {
+    super.onProvideAssistContent(outContent)
+    navController?.provideAssistContent(outContent, hedvigDeepLinkContainer.allDeepLinkUriPatterns)
   }
 
   companion object {

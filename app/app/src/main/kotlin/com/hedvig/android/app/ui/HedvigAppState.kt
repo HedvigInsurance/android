@@ -15,7 +15,6 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import com.datadog.android.compose.ExperimentalTrackingApi
 import com.datadog.android.compose.NavigationViewTrackingEffect
@@ -58,13 +57,13 @@ internal fun rememberHedvigAppState(
   tabNotificationBadgeService: TabNotificationBadgeService,
   settingsDataStore: SettingsDataStore,
   getOnlyHasNonPayingContractsUseCase: Provider<GetOnlyHasNonPayingContractsUseCase>,
+  navHostController: NavHostController,
   coroutineScope: CoroutineScope = rememberCoroutineScope(),
-  navController: NavHostController = rememberNavController(),
 ): HedvigAppState {
-  NavigationViewTrackingEffect(navController = navController)
-  TopLevelDestinationNavigationSideEffect(navController, tabNotificationBadgeService, coroutineScope)
+  NavigationViewTrackingEffect(navController = navHostController)
+  TopLevelDestinationNavigationSideEffect(navHostController, tabNotificationBadgeService, coroutineScope)
   return remember(
-    navController,
+    navHostController,
     windowSizeClass,
     coroutineScope,
     tabNotificationBadgeService,
@@ -72,7 +71,7 @@ internal fun rememberHedvigAppState(
     getOnlyHasNonPayingContractsUseCase,
   ) {
     HedvigAppState(
-      navController = navController,
+      navController = navHostController,
       windowSizeClass = windowSizeClass,
       coroutineScope = coroutineScope,
       tabNotificationBadgeService = tabNotificationBadgeService,
