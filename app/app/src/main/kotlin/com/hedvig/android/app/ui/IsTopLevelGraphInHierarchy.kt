@@ -22,6 +22,6 @@ internal fun NavDestination?.isTopLevelGraphInHierarchy(topLevelGraph: TopLevelG
     TopLevelGraph.Profile -> createRoutePattern<ProfileDestination.Graph>()
   }
   return this?.hierarchy?.any {
-    it.route?.contains(topLevelGraphRelatedRoute, true) ?: false
+    it.route?.contains(topLevelGraphRelatedRoute) ?: false
   } ?: false
 }
