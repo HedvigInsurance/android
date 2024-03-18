@@ -5,12 +5,12 @@ import com.kiwi.navigationcompose.typed.createRoutePattern
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-sealed interface InsurancesDestination : Destination {
+sealed interface InsurancesDestination {
   @Serializable
-  data object Graph : InsurancesDestination
+  data object Graph : InsurancesDestination, Destination
 
   @Serializable
-  data object Insurances : InsurancesDestination
+  data object Insurances : InsurancesDestination, Destination
 }
 
 internal sealed interface InsurancesDestinations : Destination {

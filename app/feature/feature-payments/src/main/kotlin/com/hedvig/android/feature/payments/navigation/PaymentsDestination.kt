@@ -6,12 +6,12 @@ import com.hedvig.android.feature.payments.data.PaymentOverview
 import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.serialization.Serializable
 
-sealed interface PaymentsDestination : Destination {
+sealed interface PaymentsDestination {
   @Serializable
-  data object Graph : PaymentsDestination
+  data object Graph : PaymentsDestination, Destination
 
   @Serializable
-  data object Payments : PaymentsDestination
+  data object Payments : PaymentsDestination, Destination
 }
 
 internal sealed interface PaymentsDestinations : Destination {
