@@ -43,7 +43,6 @@ import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.Market
 import com.hedvig.android.navigation.activity.ActivityNavigator
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import com.hedvig.android.navigation.core.TopLevelGraph
 
 @Composable
 internal fun HedvigApp(
@@ -61,6 +60,7 @@ internal fun HedvigApp(
     contentColor = MaterialTheme.colorScheme.onBackground,
     modifier = Modifier.fillMaxSize(),
   ) {
+    val topLevelGraphs by hedvigAppState.topLevelGraphs.collectAsStateWithLifecycle()
     Column {
       Row(Modifier.weight(1f).fillMaxWidth()) {
         AnimatedVisibility(
@@ -71,7 +71,7 @@ internal fun HedvigApp(
           val destinationsWithNotifications by hedvigAppState
             .topLevelGraphsWithNotifications.collectAsStateWithLifecycle()
           HedvigNavRail(
-            destinations = TopLevelGraph.entries.toSet(),
+            destinations = topLevelGraphs,
             destinationsWithNotifications = destinationsWithNotifications,
             onNavigateToDestination = hedvigAppState::navigateToTopLevelGraph,
             currentDestination = hedvigAppState.currentDestination,
@@ -100,7 +100,7 @@ internal fun HedvigApp(
         val destinationsWithNotifications by hedvigAppState
           .topLevelGraphsWithNotifications.collectAsStateWithLifecycle()
         HedvigBottomBar(
-          destinations = TopLevelGraph.entries.toSet(),
+          destinations = topLevelGraphs,
           destinationsWithNotifications = destinationsWithNotifications,
           onNavigateToDestination = hedvigAppState::navigateToTopLevelGraph,
           currentDestination = hedvigAppState.currentDestination,

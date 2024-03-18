@@ -31,10 +31,11 @@ import com.hedvig.android.navigation.core.titleTextId
 import com.hedvig.android.navigation.core.unselectedIcon
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.collections.immutable.toPersistentSet
 
 @Composable
 internal fun HedvigNavRail(
-  destinations: Set<TopLevelGraph>,
+  destinations: ImmutableSet<TopLevelGraph>,
   destinationsWithNotifications: ImmutableSet<TopLevelGraph>,
   onNavigateToDestination: (TopLevelGraph) -> Unit,
   currentDestination: NavDestination?,
@@ -51,7 +52,7 @@ internal fun HedvigNavRail(
 
 @Composable
 private fun HedvigNavRail(
-  destinations: Set<TopLevelGraph>,
+  destinations: ImmutableSet<TopLevelGraph>,
   destinationsWithNotifications: ImmutableSet<TopLevelGraph>,
   onNavigateToDestination: (TopLevelGraph) -> Unit,
   getIsCurrentlySelected: (TopLevelGraph) -> Boolean,
@@ -110,13 +111,13 @@ private fun PreviewHedvigNavRail() {
     Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.height(300.dp)) {
       Row {
         HedvigNavRail(
-          destinations = TopLevelGraph.entries.toSet(),
+          destinations = TopLevelGraph.entries.toSet().toPersistentSet(),
           destinationsWithNotifications = persistentSetOf(TopLevelGraph.Insurances),
           onNavigateToDestination = {},
           getIsCurrentlySelected = { false },
         )
         HedvigNavRail(
-          destinations = TopLevelGraph.entries.toSet(),
+          destinations = TopLevelGraph.entries.toSet().toPersistentSet(),
           destinationsWithNotifications = persistentSetOf(TopLevelGraph.Insurances),
           onNavigateToDestination = {},
           getIsCurrentlySelected = { true },

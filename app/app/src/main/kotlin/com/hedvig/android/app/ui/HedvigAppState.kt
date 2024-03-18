@@ -19,6 +19,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import com.datadog.android.compose.ExperimentalTrackingApi
 import com.datadog.android.compose.NavigationViewTrackingEffect
+import com.hedvig.android.core.demomode.Provider
+import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.feature.home.home.navigation.HomeDestination
 import com.hedvig.android.feature.insurances.navigation.InsurancesDestination
@@ -35,6 +37,7 @@ import com.kiwi.navigationcompose.typed.Destination
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigate
 import kotlin.time.Duration.Companion.seconds
+import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentSet
@@ -42,6 +45,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -52,6 +56,7 @@ internal fun rememberHedvigAppState(
   windowSizeClass: WindowSizeClass,
   tabNotificationBadgeService: TabNotificationBadgeService,
   settingsDataStore: SettingsDataStore,
+  getOnlyHasNonPayingContractsUseCase: Provider<GetOnlyHasNonPayingContractsUseCase>,
   coroutineScope: CoroutineScope = rememberCoroutineScope(),
   navController: NavHostController = rememberNavController(),
 ): HedvigAppState {
@@ -59,17 +64,19 @@ internal fun rememberHedvigAppState(
   TopLevelDestinationNavigationSideEffect(navController, tabNotificationBadgeService, coroutineScope)
   return remember(
     navController,
+    windowSizeClass,
     coroutineScope,
     tabNotificationBadgeService,
     settingsDataStore,
-    windowSizeClass,
+    getOnlyHasNonPayingContractsUseCase,
   ) {
     HedvigAppState(
-      navController,
-      windowSizeClass,
-      coroutineScope,
-      tabNotificationBadgeService,
-      settingsDataStore,
+      navController = navController,
+      windowSizeClass = windowSizeClass,
+      coroutineScope = coroutineScope,
+      tabNotificationBadgeService = tabNotificationBadgeService,
+      settingsDataStore = settingsDataStore,
+      getOnlyHasNonPayingContractsUseCase = getOnlyHasNonPayingContractsUseCase,
     )
   }
 }
@@ -81,6 +88,7 @@ internal class HedvigAppState(
   coroutineScope: CoroutineScope,
   tabNotificationBadgeService: TabNotificationBadgeService,
   private val settingsDataStore: SettingsDataStore,
+  getOnlyHasNonPayingContractsUseCase: Provider<GetOnlyHasNonPayingContractsUseCase>,
 ) {
   val currentDestination: NavDestination?
     @Composable get() = navController.currentBackStackEntryAsState().value?.destination
@@ -104,6 +112,30 @@ internal class HedvigAppState(
       val navRailWidthRequirements = windowSizeClass.widthSizeClass != WindowWidthSizeClass.Compact
       return navRailWidthRequirements && shouldShowNavBars
     }
+
+  val topLevelGraphs: StateFlow<ImmutableSet<TopLevelGraph>> = flow {
+    val onlyHasNonPayingContracts = getOnlyHasNonPayingContractsUseCase.provide().invoke().getOrNull()
+    emit(
+      buildList {
+        add(TopLevelGraph.Home)
+        add(TopLevelGraph.Insurances)
+        if (onlyHasNonPayingContracts != true) {
+          // todo add back forever here add(TopLevelGraph.Forever)
+        }
+        add(TopLevelGraph.Payments)
+        add(TopLevelGraph.Profile)
+      }.toPersistentSet(),
+    )
+  }.stateIn(
+    coroutineScope,
+    SharingStarted.Eagerly,
+    persistentSetOf(
+      TopLevelGraph.Home,
+      TopLevelGraph.Insurances,
+      TopLevelGraph.Payments,
+      TopLevelGraph.Profile,
+    ),
+  )
 
   val topLevelGraphsWithNotifications: StateFlow<PersistentSet<TopLevelGraph>> =
     tabNotificationBadgeService.unseenTabNotificationBadges().map { bottomNavTabs: Set<BottomNavTab> ->
