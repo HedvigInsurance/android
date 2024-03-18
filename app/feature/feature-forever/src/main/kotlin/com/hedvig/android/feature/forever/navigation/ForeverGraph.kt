@@ -8,6 +8,8 @@ import com.hedvig.android.feature.forever.ui.ForeverDestination
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.kiwi.navigationcompose.typed.composable
+import com.kiwi.navigationcompose.typed.createRoutePattern
+import com.kiwi.navigationcompose.typed.navigation
 import org.koin.androidx.compose.koinViewModel
 
 fun NavGraphBuilder.foreverGraph(
@@ -15,16 +17,20 @@ fun NavGraphBuilder.foreverGraph(
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
 ) {
-  composable<ForeverDestination>(
-    deepLinks = listOf(
-      navDeepLink { uriPattern = hedvigDeepLinkContainer.forever },
-    ),
+  navigation<ForeverDestination.Graph>(
+    startDestination = createRoutePattern<ForeverDestination.Forever>(),
   ) {
-    val viewModel: ForeverViewModel = koinViewModel()
-    ForeverDestination(
-      viewModel = viewModel,
-      languageService = languageService,
-      hedvigBuildConstants = hedvigBuildConstants,
-    )
+    composable<ForeverDestination.Forever>(
+      deepLinks = listOf(
+        navDeepLink { uriPattern = hedvigDeepLinkContainer.forever },
+      ),
+    ) {
+      val viewModel: ForeverViewModel = koinViewModel()
+      ForeverDestination(
+        viewModel = viewModel,
+        languageService = languageService,
+        hedvigBuildConstants = hedvigBuildConstants,
+      )
+    }
   }
 }

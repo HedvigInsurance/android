@@ -22,6 +22,7 @@ import com.datadog.android.compose.NavigationViewTrackingEffect
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
+import com.hedvig.android.feature.forever.navigation.ForeverDestination
 import com.hedvig.android.feature.home.home.navigation.HomeDestination
 import com.hedvig.android.feature.insurances.navigation.InsurancesDestination
 import com.hedvig.android.feature.insurances.navigation.insurancesBottomNavPermittedDestinations
@@ -143,6 +144,7 @@ internal class HedvigAppState(
         when (bottomNavTab) {
           BottomNavTab.HOME -> TopLevelGraph.Home
           BottomNavTab.INSURANCE -> TopLevelGraph.Insurances
+          BottomNavTab.FOREVER -> TopLevelGraph.Forever
           BottomNavTab.PAYMENTS -> TopLevelGraph.Payments
           BottomNavTab.PROFILE -> TopLevelGraph.Profile
         }
@@ -171,6 +173,7 @@ internal class HedvigAppState(
     when (topLevelGraph) {
       TopLevelGraph.Home -> navController.navigate(HomeDestination.Graph, topLevelNavOptions)
       TopLevelGraph.Insurances -> navController.navigate(InsurancesDestination.Graph, topLevelNavOptions)
+      TopLevelGraph.Forever -> navController.navigate(ForeverDestination.Graph, topLevelNavOptions)
       TopLevelGraph.Payments -> navController.navigate(PaymentsDestination.Graph, topLevelNavOptions)
       TopLevelGraph.Profile -> navController.navigate(ProfileDestination.Graph, topLevelNavOptions)
     }

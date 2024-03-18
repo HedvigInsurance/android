@@ -198,19 +198,18 @@ internal fun HedvigNavHost(
         }
       },
     )
+    foreverGraph(
+      hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+      languageService = languageService,
+      hedvigBuildConstants = hedvigBuildConstants,
+    )
     paymentsGraph(
       navigator = navigator,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       navigateToConnectPayment = navigateToConnectPayment,
     )
     profileGraph(
-      nestedGraphs = {
-        foreverGraph(
-          hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-          languageService = languageService,
-          hedvigBuildConstants = hedvigBuildConstants,
-        )
-      },
+      nestedGraphs = {},
       settingsDestinationNestedGraphs = {
         deleteAccountGraph(hedvigDeepLinkContainer, navigator)
       },

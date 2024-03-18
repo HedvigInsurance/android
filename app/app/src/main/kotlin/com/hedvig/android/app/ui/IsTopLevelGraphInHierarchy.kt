@@ -2,6 +2,7 @@ package com.hedvig.android.app.ui
 
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
+import com.hedvig.android.feature.forever.navigation.ForeverDestination
 import com.hedvig.android.feature.home.home.navigation.HomeDestination
 import com.hedvig.android.feature.insurances.navigation.InsurancesDestination
 import com.hedvig.android.feature.payments.navigation.PaymentsDestination
@@ -16,6 +17,7 @@ internal fun NavDestination?.isTopLevelGraphInHierarchy(topLevelGraph: TopLevelG
   val topLevelGraphRelatedRoute = when (topLevelGraph) {
     TopLevelGraph.Home -> createRoutePattern<HomeDestination.Graph>()
     TopLevelGraph.Insurances -> createRoutePattern<InsurancesDestination.Graph>()
+    TopLevelGraph.Forever -> createRoutePattern<ForeverDestination.Graph>()
     TopLevelGraph.Payments -> createRoutePattern<PaymentsDestination.Graph>()
     TopLevelGraph.Profile -> createRoutePattern<ProfileDestination.Graph>()
   }
