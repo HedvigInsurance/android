@@ -263,6 +263,9 @@ class LoggedInActivity : AppCompatActivity() {
   override fun onProvideAssistContent(outContent: AssistContent) {
     super.onProvideAssistContent(outContent)
     navController?.provideAssistContent(outContent, hedvigDeepLinkContainer.allDeepLinkUriPatterns)
+    outContent.webUri?.let {
+      logcat { "Providing a deep link to current screen: $it" }
+    }
   }
 
   companion object {
