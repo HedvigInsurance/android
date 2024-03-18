@@ -3,6 +3,7 @@ package com.hedvig.android.feature.forever.navigation
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.feature.forever.ForeverViewModel
 import com.hedvig.android.feature.forever.ui.ForeverDestination
 import com.hedvig.android.language.LanguageService
@@ -24,6 +25,8 @@ fun NavGraphBuilder.foreverGraph(
       deepLinks = listOf(
         navDeepLink { uriPattern = hedvigDeepLinkContainer.forever },
       ),
+      enterTransition = { MotionDefaults.fadeThroughEnter },
+      exitTransition = { MotionDefaults.fadeThroughExit },
     ) {
       val viewModel: ForeverViewModel = koinViewModel()
       ForeverDestination(
