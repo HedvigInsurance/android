@@ -1,18 +1,11 @@
 package com.hedvig.android.app.ui
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.AnimationVector4D
 import androidx.compose.animation.core.TwoWayConverter
 import androidx.compose.animation.core.animateValueAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandHorizontally
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.shrinkHorizontally
-import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
@@ -20,7 +13,6 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.union
@@ -28,13 +20,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import com.hedvig.android.app.navigation.HedvigNavHost
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
@@ -60,52 +50,21 @@ internal fun HedvigApp(
     contentColor = MaterialTheme.colorScheme.onBackground,
     modifier = Modifier.fillMaxSize(),
   ) {
-    val topLevelGraphs by hedvigAppState.topLevelGraphs.collectAsStateWithLifecycle()
-    Column {
-      Row(Modifier.weight(1f).fillMaxWidth()) {
-        AnimatedVisibility(
-          visible = hedvigAppState.shouldShowNavRail,
-          enter = expandHorizontally(expandFrom = Alignment.End),
-          exit = shrinkHorizontally(shrinkTowards = Alignment.End),
-        ) {
-          val destinationsWithNotifications by hedvigAppState
-            .topLevelGraphsWithNotifications.collectAsStateWithLifecycle()
-          HedvigNavRail(
-            destinations = topLevelGraphs,
-            destinationsWithNotifications = destinationsWithNotifications,
-            onNavigateToDestination = hedvigAppState::navigateToTopLevelGraph,
-            currentDestination = hedvigAppState.currentDestination,
-          )
-        }
-        HedvigNavHost(
-          hedvigAppState = hedvigAppState,
-          hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-          activityNavigator = activityNavigator,
-          shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-          imageLoader = imageLoader,
-          market = market,
-          languageService = languageService,
-          hedvigBuildConstants = hedvigBuildConstants,
-          modifier = Modifier
-            .fillMaxHeight()
-            .weight(1f)
-            .animatedNavigationBarInsetsConsumption(hedvigAppState),
-        )
-      }
-      AnimatedVisibility(
-        visible = hedvigAppState.shouldShowBottomBar,
-        enter = expandVertically(expandFrom = Alignment.Top),
-        exit = shrinkVertically(shrinkTowards = Alignment.Top),
-      ) {
-        val destinationsWithNotifications by hedvigAppState
-          .topLevelGraphsWithNotifications.collectAsStateWithLifecycle()
-        HedvigBottomBar(
-          destinations = topLevelGraphs,
-          destinationsWithNotifications = destinationsWithNotifications,
-          onNavigateToDestination = hedvigAppState::navigateToTopLevelGraph,
-          currentDestination = hedvigAppState.currentDestination,
-        )
-      }
+    NavigationSuite(hedvigAppState = hedvigAppState) {
+      HedvigNavHost(
+        hedvigAppState = hedvigAppState,
+        hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+        activityNavigator = activityNavigator,
+        shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+        imageLoader = imageLoader,
+        market = market,
+        languageService = languageService,
+        hedvigBuildConstants = hedvigBuildConstants,
+        modifier = Modifier
+          .fillMaxHeight()
+          .weight(1f)
+          .animatedNavigationBarInsetsConsumption(hedvigAppState),
+      )
     }
   }
 }
