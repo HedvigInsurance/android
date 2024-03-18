@@ -11,59 +11,86 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
+import androidx.compose.ui.tooling.preview.PreviewFontScale
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewScreenSizes
+import androidx.navigation.NavDestination
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
+import com.hedvig.android.navigation.core.TopLevelGraph
+import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.toPersistentSet
 
 @Composable
 internal fun NavigationSuite(
-  hedvigAppState: HedvigAppState,
+  navigationSuiteType: NavigationSuiteType,
+  topLevelGraphs: ImmutableSet<TopLevelGraph>,
+  topLevelGraphsWithNotifications: ImmutableSet<TopLevelGraph>,
+  currentDestination: NavDestination?,
+  onNavigateToTopLevelGraph: (TopLevelGraph) -> Unit,
   modifier: Modifier = Modifier,
   content: @Composable RowScope.() -> Unit,
 ) {
-  val topLevelGraphs by hedvigAppState.topLevelGraphs.collectAsStateWithLifecycle()
   Column(modifier) {
-    val destinationsWithNotifications by hedvigAppState.topLevelGraphsWithNotifications.collectAsStateWithLifecycle()
-    Row(Modifier.weight(1f).fillMaxWidth()) {
+    Row(
+      modifier = Modifier
+        .weight(1f)
+        .fillMaxWidth(),
+    ) {
       AnimatedVisibility(
-        visible = hedvigAppState.shouldShowNavRail,
+        visible = navigationSuiteType == NavigationSuiteType.NavigationRail,
         enter = expandHorizontally(expandFrom = Alignment.End),
         exit = shrinkHorizontally(shrinkTowards = Alignment.End),
       ) {
         HedvigNavRail(
           destinations = topLevelGraphs,
-          destinationsWithNotifications = destinationsWithNotifications,
-          onNavigateToDestination = hedvigAppState::navigateToTopLevelGraph,
-          currentDestination = hedvigAppState.currentDestination,
+          destinationsWithNotifications = topLevelGraphsWithNotifications,
+          onNavigateToDestination = onNavigateToTopLevelGraph,
+          currentDestination = currentDestination,
         )
       }
       content()
     }
     AnimatedVisibility(
-      visible = hedvigAppState.shouldShowBottomBar,
+      visible = navigationSuiteType == NavigationSuiteType.NavigationBar,
       enter = expandVertically(expandFrom = Alignment.Top),
       exit = shrinkVertically(shrinkTowards = Alignment.Top),
     ) {
       HedvigBottomBar(
         destinations = topLevelGraphs,
-        destinationsWithNotifications = destinationsWithNotifications,
-        onNavigateToDestination = hedvigAppState::navigateToTopLevelGraph,
-        currentDestination = hedvigAppState.currentDestination,
+        destinationsWithNotifications = topLevelGraphsWithNotifications,
+        onNavigateToDestination = onNavigateToTopLevelGraph,
+        currentDestination = currentDestination,
       )
     }
   }
 }
 
-@HedvigPreview
+@PreviewFontScale
+@PreviewScreenSizes
 @Composable
-private fun PreviewNavigationSuite() {
+private fun PreviewNavigationSuite(
+  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) showBottomBar: Boolean,
+) {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      NavigationSuite()
+      NavigationSuite(
+        navigationSuiteType = if (showBottomBar) {
+          NavigationSuiteType.NavigationBar
+        } else {
+          NavigationSuiteType.NavigationRail
+        },
+        topLevelGraphs = TopLevelGraph.entries.toPersistentSet(),
+        topLevelGraphsWithNotifications = TopLevelGraph.entries.toPersistentSet(),
+        currentDestination = null,
+        onNavigateToTopLevelGraph = {},
+      ) {
+        Text("Content")
+      }
     }
   }
 }

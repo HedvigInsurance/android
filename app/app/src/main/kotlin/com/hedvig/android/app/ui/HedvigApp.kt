@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.union
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -50,7 +51,13 @@ internal fun HedvigApp(
     contentColor = MaterialTheme.colorScheme.onBackground,
     modifier = Modifier.fillMaxSize(),
   ) {
-    NavigationSuite(hedvigAppState = hedvigAppState) {
+    NavigationSuite(
+      navigationSuiteType = hedvigAppState.navigationSuiteType,
+      topLevelGraphs = hedvigAppState.topLevelGraphs.collectAsState().value,
+      topLevelGraphsWithNotifications = hedvigAppState.topLevelGraphsWithNotifications.collectAsState().value,
+      currentDestination = hedvigAppState.currentDestination,
+      onNavigateToTopLevelGraph = hedvigAppState::navigateToTopLevelGraph,
+    ) {
       HedvigNavHost(
         hedvigAppState = hedvigAppState,
         hedvigDeepLinkContainer = hedvigDeepLinkContainer,
@@ -78,12 +85,12 @@ internal fun HedvigApp(
 @OptIn(ExperimentalLayoutApi::class)
 private fun Modifier.animatedNavigationBarInsetsConsumption(hedvigAppState: HedvigAppState) = composed {
   val density = LocalDensity.current
-  val insetsToConsume = if (hedvigAppState.shouldShowBottomBar) {
-    WindowInsets.systemBars.only(WindowInsetsSides.Bottom).asPaddingValues(density)
-  } else if (hedvigAppState.shouldShowNavRail) {
-    WindowInsets.systemBars.union(WindowInsets.displayCutout).only(WindowInsetsSides.Left).asPaddingValues(density)
-  } else {
-    PaddingValues(0.dp)
+  val insetsToConsume = when (hedvigAppState.navigationSuiteType) {
+    NavigationSuiteType.NavigationBar -> WindowInsets.systemBars.only(WindowInsetsSides.Bottom).asPaddingValues(density)
+    NavigationSuiteType.NavigationRail -> WindowInsets.systemBars.union(WindowInsets.displayCutout)
+      .only(WindowInsetsSides.Left).asPaddingValues(density)
+
+    else -> PaddingValues(0.dp)
   }
 
   val paddingValuesVectorConverter: TwoWayConverter<PaddingValues, AnimationVector4D> = TwoWayConverter(
