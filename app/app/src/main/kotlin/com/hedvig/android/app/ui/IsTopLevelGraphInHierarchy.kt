@@ -14,6 +14,7 @@ import com.kiwi.navigationcompose.typed.createRoutePattern
  * Checks if the [TopLevelGraph] is part of the hiararchy of [this]
  */
 internal fun NavDestination?.isTopLevelGraphInHierarchy(topLevelGraph: TopLevelGraph): Boolean {
+  val hierarchy = this?.hierarchy ?: return false
   val topLevelGraphRelatedRoute = when (topLevelGraph) {
     TopLevelGraph.Home -> createRoutePattern<HomeDestination.Graph>()
     TopLevelGraph.Insurances -> createRoutePattern<InsurancesDestination.Graph>()
@@ -21,7 +22,7 @@ internal fun NavDestination?.isTopLevelGraphInHierarchy(topLevelGraph: TopLevelG
     TopLevelGraph.Payments -> createRoutePattern<PaymentsDestination.Graph>()
     TopLevelGraph.Profile -> createRoutePattern<ProfileDestination.Graph>()
   }
-  return this?.hierarchy?.any {
-    it.route?.contains(topLevelGraphRelatedRoute) ?: false
-  } ?: false
+  return hierarchy.any { navDestination ->
+    navDestination.route?.contains(topLevelGraphRelatedRoute) == true
+  }
 }
