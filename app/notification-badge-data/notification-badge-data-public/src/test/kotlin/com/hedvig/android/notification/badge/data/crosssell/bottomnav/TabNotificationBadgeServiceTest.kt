@@ -8,6 +8,7 @@ import com.hedvig.android.notification.badge.data.crosssell.CrossSellNotificatio
 import com.hedvig.android.notification.badge.data.crosssell.FakeNotificationBadgeStorage
 import com.hedvig.android.notification.badge.data.crosssell.GetCrossSellIdentifiersUseCase
 import com.hedvig.android.notification.badge.data.crosssell.card.FakeGetCrossSellIdentifiersUseCase
+import com.hedvig.android.notification.badge.data.referrals.ReferralsNotificationBadgeService
 import com.hedvig.android.notification.badge.data.storage.NotificationBadge
 import com.hedvig.android.notification.badge.data.storage.NotificationBadgeStorage
 import com.hedvig.android.notification.badge.data.tab.BottomNavTab
@@ -28,7 +29,24 @@ class TabNotificationBadgeServiceTest {
           notificationBadgeStorage,
         ),
       ),
+      ReferralsNotificationBadgeService(
+        notificationBadgeStorage,
+      ),
     )
+  }
+
+  @Test
+  fun `When backend returns no cross sells, show no badge`() = runTest {
+    val notificationBadgeService = FakeNotificationBadgeStorage(this)
+    val getCrossSellsContractTypeIdentifiersUseCase = FakeGetCrossSellIdentifiersUseCase()
+    val service = tabNotificationBadgeService(
+      notificationBadgeStorage = notificationBadgeService,
+      getCrossSellIdentifiersUseCase = getCrossSellsContractTypeIdentifiersUseCase,
+    )
+
+    val unseenBadges = service.unseenTabNotificationBadges().first()
+
+    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.FOREVER))
   }
 
   @Test
@@ -45,7 +63,7 @@ class TabNotificationBadgeServiceTest {
 
     val unseenBadges = service.unseenTabNotificationBadges().first()
 
-    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.INSURANCE))
+    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.INSURANCE, BottomNavTab.FOREVER))
   }
 
   @Test
@@ -67,7 +85,7 @@ class TabNotificationBadgeServiceTest {
 
     val unseenBadges = service.unseenTabNotificationBadges().first()
 
-    assertThat(unseenBadges).isEqualTo(emptySet())
+    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.FOREVER))
   }
 
   @Test
@@ -93,7 +111,7 @@ class TabNotificationBadgeServiceTest {
 
     val unseenBadges = service.unseenTabNotificationBadges().first()
 
-    assertThat(unseenBadges).isEqualTo(emptySet())
+    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.FOREVER))
   }
 
   @Test
@@ -116,7 +134,7 @@ class TabNotificationBadgeServiceTest {
 
     val unseenBadges = service.unseenTabNotificationBadges().first()
 
-    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.INSURANCE))
+    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.INSURANCE, BottomNavTab.FOREVER))
   }
 
   @Test
@@ -147,7 +165,7 @@ class TabNotificationBadgeServiceTest {
 
     val unseenBadges = service.unseenTabNotificationBadges().first()
 
-    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.INSURANCE))
+    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.INSURANCE, BottomNavTab.FOREVER))
   }
 
   @Test
@@ -162,9 +180,9 @@ class TabNotificationBadgeServiceTest {
       getCrossSellIdentifiersUseCase = getCrossSellsContractTypesUseCase,
     )
     service.unseenTabNotificationBadges().test {
-      assertThat(awaitItem()).isEqualTo(setOf(BottomNavTab.INSURANCE))
+      assertThat(awaitItem()).isEqualTo(setOf(BottomNavTab.INSURANCE, BottomNavTab.FOREVER))
       service.visitTab(BottomNavTab.INSURANCE)
-      assertThat(awaitItem()).isEqualTo(emptySet())
+      assertThat(awaitItem()).isEqualTo(setOf(BottomNavTab.FOREVER))
       ensureAllEventsConsumed()
     }
   }
@@ -182,8 +200,10 @@ class TabNotificationBadgeServiceTest {
     )
 
     service.unseenTabNotificationBadges().test {
-      assertThat(awaitItem()).isEqualTo(setOf(BottomNavTab.INSURANCE))
+      assertThat(awaitItem()).isEqualTo(setOf(BottomNavTab.INSURANCE, BottomNavTab.FOREVER))
       service.visitTab(BottomNavTab.INSURANCE)
+      assertThat(awaitItem()).isEqualTo(setOf(BottomNavTab.FOREVER))
+      service.visitTab(BottomNavTab.FOREVER)
       assertThat(awaitItem()).isEqualTo(emptySet())
       ensureAllEventsConsumed()
     }

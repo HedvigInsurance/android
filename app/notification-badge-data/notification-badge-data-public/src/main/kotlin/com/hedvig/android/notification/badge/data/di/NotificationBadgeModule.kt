@@ -9,6 +9,7 @@ import com.hedvig.android.notification.badge.data.crosssell.GetCrossSellIdentifi
 import com.hedvig.android.notification.badge.data.crosssell.bottomnav.CrossSellBottomNavNotificationBadgeService
 import com.hedvig.android.notification.badge.data.crosssell.card.CrossSellCardNotificationBadgeServiceImpl
 import com.hedvig.android.notification.badge.data.crosssell.card.DemoCrossSellCardNotificationBadgeService
+import com.hedvig.android.notification.badge.data.referrals.ReferralsNotificationBadgeService
 import com.hedvig.android.notification.badge.data.storage.DatastoreNotificationBadgeStorage
 import com.hedvig.android.notification.badge.data.storage.NotificationBadgeStorage
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
@@ -21,7 +22,8 @@ val notificationBadgeModule = module {
     GetCrossSellIdentifiersUseCaseImpl(get<ApolloClient>())
   }
   single<NotificationBadgeStorage> { DatastoreNotificationBadgeStorage(get()) }
-  single<TabNotificationBadgeService> { TabNotificationBadgeService(get()) }
+  single<ReferralsNotificationBadgeService> { ReferralsNotificationBadgeService(get()) }
+  single<TabNotificationBadgeService> { TabNotificationBadgeService(get(), get()) }
 
   single<CrossSellCardNotificationBadgeServiceProvider> {
     CrossSellCardNotificationBadgeServiceProvider(
