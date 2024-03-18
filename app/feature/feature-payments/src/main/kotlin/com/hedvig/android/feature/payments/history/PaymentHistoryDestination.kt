@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.payments.history
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -11,95 +10,161 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.information.HedvigInformationSection
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
+import com.hedvig.android.core.ui.preview.TripleBooleanCollectionPreviewParameterProvider
+import com.hedvig.android.core.ui.preview.TripleCase
 import com.hedvig.android.core.ui.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.payments.data.MemberCharge
-import com.hedvig.android.feature.payments.paymentOverViewPreviewData
 import hedvig.resources.R
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
+import octopus.type.CurrencyCode
 
+@Suppress("NAME_SHADOWING")
 @Composable
 internal fun PaymentHistoryDestination(
   pastCharges: List<MemberCharge>?,
   onChargeClicked: (memberCharge: MemberCharge) -> Unit,
   navigateUp: () -> Unit,
 ) {
+  val updatedOnChargeClicked by rememberUpdatedState(onChargeClicked)
+  val (paymentHistory: PaymentHistory, onChargeClicked: (String) -> Unit) = remember(pastCharges) {
+    if (pastCharges.isNullOrEmpty()) {
+      PaymentHistory.NoHistoryData to { _ -> }
+    } else {
+      PaymentHistory.PastCharges(
+        chargesInYear = pastCharges.sortedBy { it.dueDate }.groupBy { it.dueDate.year }.map { (year, charges) ->
+          PaymentHistory.PastCharges.YearCharges(
+            year = year,
+            charge = charges.map { charge ->
+              PaymentHistory.PastCharges.YearCharges.Charge(
+                id = charge.id,
+                dueDate = charge.dueDate,
+                netAmount = charge.netAmount,
+                hasFailedCharge = charge.status == MemberCharge.MemberChargeStatus.FAILED,
+              )
+            },
+          )
+        },
+        showInfoAboutOlderCharges = pastCharges.size > 11,
+      ) to { chargeId: String ->
+        updatedOnChargeClicked(pastCharges.first { it.id == chargeId })
+      }
+    }
+  }
+  PaymentHistoryScreen(
+    paymentHistory = paymentHistory,
+    onChargeClicked = onChargeClicked,
+    navigateUp = navigateUp,
+  )
+}
+
+@Composable
+private fun PaymentHistoryScreen(
+  paymentHistory: PaymentHistory,
+  onChargeClicked: (chargeId: String) -> Unit,
+  navigateUp: () -> Unit,
+) {
   HedvigScaffold(
     topAppBarText = stringResource(R.string.PAYMENT_HISTORY_TITLE),
     navigateUp = navigateUp,
   ) {
-    if (pastCharges.isNullOrEmpty()) {
-      HedvigInformationSection(
-        title = stringResource(id = R.string.PAYMENTS_NO_HISTORY_DATA),
-        withDefaultVerticalSpacing = true,
-      )
-      return@HedvigScaffold
-    }
-
-    Column {
-      Spacer(Modifier.height(8.dp))
-
-      val dateTimeFormatter = rememberHedvigMonthDateTimeFormatter()
-      val groupedHistory = pastCharges.reversed().groupBy { it.dueDate.year }
-      groupedHistory.forEach {
-        val year = it.key
-        val charges = it.value
-
-        Text(text = year.toString(), modifier = Modifier.padding(horizontal = 16.dp))
-        Spacer(Modifier.height(4.dp))
-
-        charges.forEachIndexed { index, charge ->
-          HorizontalItemsWithMaximumSpaceTaken(
-            startSlot = {
-              Text(
-                text = dateTimeFormatter.format(charge.dueDate.toJavaLocalDate()),
-                color = charge.color(),
-              )
-            },
-            endSlot = {
-              Text(
-                text = charge.netAmount.toString(),
-                color = charge.color(),
-                textAlign = TextAlign.End,
-                modifier = Modifier.fillMaxWidth(),
-              )
-            },
-            modifier = Modifier
-              .clickable {
-                onChargeClicked(charge)
-              }
-              .padding(16.dp),
-          )
-
-          if (index != charges.size - 1) {
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-          } else {
-            Spacer(Modifier.height(16.dp))
-          }
-        }
+    when (paymentHistory) {
+      PaymentHistory.NoHistoryData -> {
+        HedvigInformationSection(
+          title = stringResource(R.string.PAYMENTS_NO_HISTORY_DATA),
+          withDefaultVerticalSpacing = true,
+          modifier = Modifier.weight(1f),
+        )
       }
 
-      VectorInfoCard(
-        text = stringResource(id = R.string.PAYMENTS_HISTORY_INFO),
-        modifier = Modifier.padding(horizontal = 16.dp),
+      is PaymentHistory.PastCharges -> {
+        val dateTimeFormatter = rememberHedvigMonthDateTimeFormatter()
+        Spacer(Modifier.height(8.dp))
+        paymentHistory.chargesInYear.forEachIndexed { yearIndex, yearCharges ->
+          if (yearIndex != 0) {
+            Spacer(Modifier.height(16.dp))
+          }
+          Text(text = "${yearCharges.year}", modifier = Modifier.padding(horizontal = 18.dp))
+          yearCharges.charge.forEachIndexed { chargeIndex, charge ->
+            if (chargeIndex != 0) {
+              HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+            }
+            HorizontalItemsWithMaximumSpaceTaken(
+              startSlot = {
+                Text(
+                  text = dateTimeFormatter.format(charge.dueDate.toJavaLocalDate()),
+                  color = charge.color(),
+                  modifier = Modifier.padding(start = 2.dp),
+                )
+              },
+              endSlot = {
+                Text(
+                  text = charge.netAmount.toString(),
+                  color = charge.color(),
+                  textAlign = TextAlign.End,
+                  modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(end = 2.dp),
+                )
+              },
+              modifier = Modifier
+                .clickable { onChargeClicked(charge.id) }
+                .padding(16.dp),
+            )
+          }
+        }
+        if (paymentHistory.showInfoAboutOlderCharges) {
+          VectorInfoCard(
+            text = stringResource(id = R.string.PAYMENTS_HISTORY_INFO),
+            modifier = Modifier.padding(horizontal = 16.dp),
+          )
+        }
+        Spacer(Modifier.height(16.dp))
+      }
+    }
+  }
+}
+
+private sealed interface PaymentHistory {
+  object NoHistoryData : PaymentHistory
+
+  data class PastCharges(
+    val chargesInYear: List<YearCharges>,
+    val showInfoAboutOlderCharges: Boolean,
+  ) : PaymentHistory {
+    data class YearCharges(
+      val year: Int,
+      val charge: List<Charge>,
+    ) {
+      data class Charge(
+        val id: String,
+        val dueDate: LocalDate,
+        val netAmount: UiMoney,
+        val hasFailedCharge: Boolean,
       )
     }
   }
 }
 
 @Composable
-private fun MemberCharge.color(): Color {
-  return if (this.status == MemberCharge.MemberChargeStatus.FAILED) {
+private fun PaymentHistory.PastCharges.YearCharges.Charge.color(): Color {
+  return if (hasFailedCharge) {
     MaterialTheme.colorScheme.error
   } else {
     MaterialTheme.colorScheme.onSurfaceVariant
@@ -108,25 +173,44 @@ private fun MemberCharge.color(): Color {
 
 @Composable
 @HedvigPreview
-internal fun PaymentHistoryScreenPreview() {
+internal fun PaymentHistoryScreenPreview(
+  @PreviewParameter(TripleBooleanCollectionPreviewParameterProvider::class) cases: TripleCase,
+) {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      PaymentHistoryDestination(
-        pastCharges = paymentOverViewPreviewData.pastCharges,
-        onChargeClicked = {},
-        navigateUp = {},
-      )
-    }
-  }
-}
+      val buildChargesList: (Int) -> List<PaymentHistory.PastCharges.YearCharges.Charge> = { numberOfCharges ->
+        List(numberOfCharges) { index ->
+          PaymentHistory.PastCharges.YearCharges.Charge(
+            id = "$index",
+            dueDate = LocalDate(2021, 7, 1 + index),
+            netAmount = UiMoney(index * 100.0, CurrencyCode.SEK),
+            hasFailedCharge = index % 2 == 0,
+          )
+        }
+      }
+      PaymentHistoryScreen(
+        paymentHistory = when (cases) {
+          TripleCase.FIRST -> PaymentHistory.NoHistoryData
+          TripleCase.SECOND -> PaymentHistory.PastCharges(
+            listOf(
+              PaymentHistory.PastCharges.YearCharges(
+                year = 2021,
+                charge = buildChargesList(10),
+              ),
+            ),
+            false,
+          )
 
-@Composable
-@HedvigPreview
-internal fun PaymentHistoryScreenNoDataPreview() {
-  HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
-      PaymentHistoryDestination(
-        pastCharges = emptyList(),
+          TripleCase.THIRD -> PaymentHistory.PastCharges(
+            List(3) {
+              PaymentHistory.PastCharges.YearCharges(
+                year = 2021 + it,
+                charge = buildChargesList(3),
+              )
+            },
+            true,
+          )
+        },
         onChargeClicked = {},
         navigateUp = {},
       )
