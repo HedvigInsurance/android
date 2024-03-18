@@ -79,7 +79,8 @@ class ReferralsNotificationSender(
     val pendingIntent: PendingIntent? = TaskStackBuilder
       .create(context)
       .addNextIntent(
-        LoggedInActivity.newInstance(context), // todo consider opening Forever directly instead here
+        // todo consider opening Forever directly instead here
+        LoggedInActivity.newInstance(context),
       )
       .getPendingIntent(0, getImmutablePendingIntentFlags())
 
