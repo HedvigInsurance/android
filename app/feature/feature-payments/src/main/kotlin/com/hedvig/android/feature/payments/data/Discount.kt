@@ -13,11 +13,15 @@ internal data class Discount(
   val amount: UiMoney?,
   val isReferral: Boolean,
 ) {
+  @Serializable
   sealed interface ExpiredState {
+    @Serializable
     data object NotExpired : ExpiredState
 
+    @Serializable
     data class AlreadyExpired(val expirationDate: LocalDate) : ExpiredState
 
+    @Serializable
     data class ExpiringInTheFuture(val expirationDate: LocalDate) : ExpiredState
 
     companion object
