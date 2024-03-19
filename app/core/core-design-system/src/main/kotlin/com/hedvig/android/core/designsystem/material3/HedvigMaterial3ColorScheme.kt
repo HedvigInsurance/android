@@ -4,20 +4,57 @@ package com.hedvig.android.core.designsystem.material3
 
 import android.annotation.SuppressLint
 import androidx.compose.material3.ColorScheme
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
+import com.hedvig.android.core.designsystem.component.navigation.HedvigNavigationBarItemColors
 import com.hedvig.android.core.designsystem.component.tokens.HedvigColorSchemeKeyTokens
 import com.hedvig.android.core.designsystem.newtheme.hedvigTonalPalette
 
 @SuppressLint("ComposeCompositionLocalUsage")
 internal val LocalHedvigMaterial3ColorScheme = staticCompositionLocalOf<HedvigMaterial3ColorScheme> {
-  lightHedvigColorScheme(hedvigTonalPalette)
+  lightHedvigColorScheme(hedvigTonalPalette, lightColorScheme())
 }
 
 class HedvigMaterial3ColorScheme(
+  val primary: Color,
+  val onPrimary: Color,
+  val primaryContainer: Color,
+  val onPrimaryContainer: Color,
+  val inversePrimary: Color,
+  val secondary: Color,
+  val onSecondary: Color,
+  val secondaryContainer: Color,
+  val onSecondaryContainer: Color,
+  val tertiary: Color,
+  val onTertiary: Color,
+  val tertiaryContainer: Color,
+  val onTertiaryContainer: Color,
+  val background: Color,
+  val onBackground: Color,
+  val surface: Color,
+  val onSurface: Color,
+  val surfaceVariant: Color,
+  val onSurfaceVariant: Color,
+  val surfaceTint: Color,
+  val inverseSurface: Color,
+  val inverseOnSurface: Color,
+  val error: Color,
+  val onError: Color,
+  val errorContainer: Color,
+  val onErrorContainer: Color,
+  val outline: Color,
+  val outlineVariant: Color,
+  val scrim: Color,
+  val surfaceBright: Color,
+  val surfaceDim: Color,
+  val surfaceContainer: Color,
+  val surfaceContainerHigh: Color,
+  val surfaceContainerHighest: Color,
+  val surfaceContainerLow: Color,
+  val surfaceContainerLowest: Color,
   val containedButtonContainer: Color,
   val onContainedButtonContainer: Color,
   val secondaryContainedButtonContainer: Color,
@@ -48,7 +85,9 @@ class HedvigMaterial3ColorScheme(
   val onPinkContainer: Color,
   val purpleContainer: Color,
   val onPurpleContainer: Color,
-)
+) {
+  internal var defaultNavigationBarItemColorsCached: HedvigNavigationBarItemColors? = null
+}
 
 val ColorScheme.containedButtonContainer: Color
   @ReadOnlyComposable
@@ -196,39 +235,39 @@ val ColorScheme.onPinkContainer: Color
 /**
  * Helper function for component color tokens. Here is an example on how to use component color
  * tokens:
- * `MaterialTheme.colorScheme.fromToken(HedvigColorSchemeKeyTokens.Background)`
+ * `LocalHedvigMaterial3ColorScheme.current.fromToken(HedvigColorSchemeKeyTokens.Background)`
  */
-internal fun HedvigMaterial3ColorScheme.fromToken(value: HedvigColorSchemeKeyTokens, m3Fallback: ColorScheme): Color {
+internal fun HedvigMaterial3ColorScheme.fromToken(value: HedvigColorSchemeKeyTokens): Color {
   return when (value) {
-    HedvigColorSchemeKeyTokens.Background -> m3Fallback.background
-    HedvigColorSchemeKeyTokens.Error -> m3Fallback.error
-    HedvigColorSchemeKeyTokens.ErrorContainer -> m3Fallback.errorContainer
-    HedvigColorSchemeKeyTokens.InverseOnSurface -> m3Fallback.inverseOnSurface
-    HedvigColorSchemeKeyTokens.InversePrimary -> m3Fallback.inversePrimary
-    HedvigColorSchemeKeyTokens.InverseSurface -> m3Fallback.inverseSurface
-    HedvigColorSchemeKeyTokens.OnBackground -> m3Fallback.onBackground
-    HedvigColorSchemeKeyTokens.OnError -> m3Fallback.onError
-    HedvigColorSchemeKeyTokens.OnErrorContainer -> m3Fallback.onErrorContainer
-    HedvigColorSchemeKeyTokens.OnPrimary -> m3Fallback.onPrimary
-    HedvigColorSchemeKeyTokens.OnPrimaryContainer -> m3Fallback.onPrimaryContainer
-    HedvigColorSchemeKeyTokens.OnSecondary -> m3Fallback.onSecondary
-    HedvigColorSchemeKeyTokens.OnSecondaryContainer -> m3Fallback.onSecondaryContainer
-    HedvigColorSchemeKeyTokens.OnSurface -> m3Fallback.onSurface
-    HedvigColorSchemeKeyTokens.OnSurfaceVariant -> m3Fallback.onSurfaceVariant
-    HedvigColorSchemeKeyTokens.SurfaceTint -> m3Fallback.surfaceTint
-    HedvigColorSchemeKeyTokens.OnTertiary -> m3Fallback.onTertiary
-    HedvigColorSchemeKeyTokens.OnTertiaryContainer -> m3Fallback.onTertiaryContainer
-    HedvigColorSchemeKeyTokens.Outline -> m3Fallback.outline
-    HedvigColorSchemeKeyTokens.OutlineVariant -> m3Fallback.outlineVariant
-    HedvigColorSchemeKeyTokens.Primary -> m3Fallback.primary
-    HedvigColorSchemeKeyTokens.PrimaryContainer -> m3Fallback.primaryContainer
-    HedvigColorSchemeKeyTokens.Scrim -> m3Fallback.scrim
-    HedvigColorSchemeKeyTokens.Secondary -> m3Fallback.secondary
-    HedvigColorSchemeKeyTokens.SecondaryContainer -> m3Fallback.secondaryContainer
-    HedvigColorSchemeKeyTokens.Surface -> m3Fallback.surface
-    HedvigColorSchemeKeyTokens.SurfaceVariant -> m3Fallback.surfaceVariant
-    HedvigColorSchemeKeyTokens.Tertiary -> m3Fallback.tertiary
-    HedvigColorSchemeKeyTokens.TertiaryContainer -> m3Fallback.tertiaryContainer
+    HedvigColorSchemeKeyTokens.Background -> background
+    HedvigColorSchemeKeyTokens.Error -> error
+    HedvigColorSchemeKeyTokens.ErrorContainer -> errorContainer
+    HedvigColorSchemeKeyTokens.InverseOnSurface -> inverseOnSurface
+    HedvigColorSchemeKeyTokens.InversePrimary -> inversePrimary
+    HedvigColorSchemeKeyTokens.InverseSurface -> inverseSurface
+    HedvigColorSchemeKeyTokens.OnBackground -> onBackground
+    HedvigColorSchemeKeyTokens.OnError -> onError
+    HedvigColorSchemeKeyTokens.OnErrorContainer -> onErrorContainer
+    HedvigColorSchemeKeyTokens.OnPrimary -> onPrimary
+    HedvigColorSchemeKeyTokens.OnPrimaryContainer -> onPrimaryContainer
+    HedvigColorSchemeKeyTokens.OnSecondary -> onSecondary
+    HedvigColorSchemeKeyTokens.OnSecondaryContainer -> onSecondaryContainer
+    HedvigColorSchemeKeyTokens.OnSurface -> onSurface
+    HedvigColorSchemeKeyTokens.OnSurfaceVariant -> onSurfaceVariant
+    HedvigColorSchemeKeyTokens.SurfaceTint -> surfaceTint
+    HedvigColorSchemeKeyTokens.OnTertiary -> onTertiary
+    HedvigColorSchemeKeyTokens.OnTertiaryContainer -> onTertiaryContainer
+    HedvigColorSchemeKeyTokens.Outline -> outline
+    HedvigColorSchemeKeyTokens.OutlineVariant -> outlineVariant
+    HedvigColorSchemeKeyTokens.Primary -> primary
+    HedvigColorSchemeKeyTokens.PrimaryContainer -> primaryContainer
+    HedvigColorSchemeKeyTokens.Scrim -> scrim
+    HedvigColorSchemeKeyTokens.Secondary -> secondary
+    HedvigColorSchemeKeyTokens.SecondaryContainer -> secondaryContainer
+    HedvigColorSchemeKeyTokens.Surface -> surface
+    HedvigColorSchemeKeyTokens.SurfaceVariant -> surfaceVariant
+    HedvigColorSchemeKeyTokens.Tertiary -> tertiary
+    HedvigColorSchemeKeyTokens.TertiaryContainer -> tertiaryContainer
 
     HedvigColorSchemeKeyTokens.WarningContainer -> warningContainer
     HedvigColorSchemeKeyTokens.OnWarningContainer -> onWarningContainer
@@ -248,7 +287,7 @@ internal fun HedvigMaterial3ColorScheme.fromToken(value: HedvigColorSchemeKeyTok
 @ReadOnlyComposable
 @Composable
 internal fun HedvigColorSchemeKeyTokens.toColor(): Color {
-  return LocalHedvigMaterial3ColorScheme.current.fromToken(this, MaterialTheme.colorScheme)
+  return LocalHedvigMaterial3ColorScheme.current.fromToken(this)
 }
 
 /**
