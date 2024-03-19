@@ -28,14 +28,14 @@ import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentSet
 
 @Composable
-internal fun HedvigBottomBar(
+internal fun HedvigNavigationBar(
   destinations: ImmutableSet<TopLevelGraph>,
   destinationsWithNotifications: ImmutableSet<TopLevelGraph>,
   onNavigateToDestination: (TopLevelGraph) -> Unit,
   currentDestination: NavDestination?,
   modifier: Modifier = Modifier,
 ) {
-  HedvigBottomBar(
+  HedvigNavigationBar(
     destinations = destinations,
     destinationsWithNotifications = destinationsWithNotifications,
     onNavigateToDestination = onNavigateToDestination,
@@ -45,7 +45,7 @@ internal fun HedvigBottomBar(
 }
 
 @Composable
-private fun HedvigBottomBar(
+private fun HedvigNavigationBar(
   destinations: ImmutableSet<TopLevelGraph>,
   destinationsWithNotifications: ImmutableSet<TopLevelGraph>,
   onNavigateToDestination: (TopLevelGraph) -> Unit,
@@ -104,13 +104,13 @@ private fun PreviewHedvigBottomBar() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       Column {
-        HedvigBottomBar(
+        HedvigNavigationBar(
           destinations = TopLevelGraph.entries.toSet().toPersistentSet(),
           destinationsWithNotifications = persistentSetOf(TopLevelGraph.Insurances),
           onNavigateToDestination = {},
           getIsCurrentlySelected = { false },
         )
-        HedvigBottomBar(
+        HedvigNavigationBar(
           destinations = TopLevelGraph.entries.toSet().toPersistentSet(),
           destinationsWithNotifications = persistentSetOf(TopLevelGraph.Insurances),
           onNavigateToDestination = {},

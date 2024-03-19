@@ -60,7 +60,7 @@ internal fun NavigationSuite(
       enter = expandVertically(expandFrom = Alignment.Top),
       exit = shrinkVertically(shrinkTowards = Alignment.Top),
     ) {
-      HedvigBottomBar(
+      HedvigNavigationBar(
         destinations = topLevelGraphs,
         destinationsWithNotifications = topLevelGraphsWithNotifications,
         onNavigateToDestination = onNavigateToTopLevelGraph,
