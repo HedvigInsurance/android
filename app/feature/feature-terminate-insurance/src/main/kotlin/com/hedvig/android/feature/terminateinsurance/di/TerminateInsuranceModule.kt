@@ -8,10 +8,8 @@ import com.hedvig.android.feature.terminateinsurance.data.GetContractsToTerminat
 import com.hedvig.android.feature.terminateinsurance.data.GetContractsToTerminateUseCaseImpl
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
 import com.hedvig.android.feature.terminateinsurance.data.TerminationFlowContextStorage
-import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination
-import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceFeatureDestination
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminationReviewViewModelParameters
 import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateViewModel
-import com.hedvig.android.feature.terminateinsurance.step.deletion.InsuranceDeletionViewModel
 import com.hedvig.android.feature.terminateinsurance.step.start.TerminationStartStepViewModel
 import com.hedvig.android.feature.terminateinsurance.step.terminationdate.TerminationDateViewModel
 import com.hedvig.android.feature.terminateinsurance.step.terminationreview.TerminationReviewViewModel
@@ -23,10 +21,12 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val terminateInsuranceModule = module {
-  viewModel<ChooseInsuranceToTerminateViewModel> {
+  viewModel<ChooseInsuranceToTerminateViewModel> { (insuranceId: String?) ->
     ChooseInsuranceToTerminateViewModel(
-      get<GetContractsToTerminateUseCase>(),
-      get<FeatureManager>(),
+      insuranceId = insuranceId,
+      getContractsToTerminateUseCase = get<GetContractsToTerminateUseCase>(),
+      featureManager = get<FeatureManager>(),
+      terminateInsuranceRepository = get<TerminateInsuranceRepository>(),
     )
   }
   viewModel<TerminationStartStepViewModel> { (insuranceId: InsuranceId) ->
@@ -42,20 +42,16 @@ val terminateInsuranceModule = module {
       languageService = get<LanguageService>(),
     )
   }
-  viewModel<InsuranceDeletionViewModel> { (insuranceDeletion: TerminateInsuranceDestination.InsuranceDeletion) ->
-    InsuranceDeletionViewModel(
-      insuranceDeletion = insuranceDeletion,
-      terminateInsuranceRepository = get<TerminateInsuranceRepository>(),
-    )
-  }
   viewModel<TerminationReviewViewModel> { params ->
-    val terminationType = params.get<TerminateInsuranceDestination.TerminationReview.TerminationType>()
-    val destination = params.get<TerminateInsuranceFeatureDestination>()
+    val parameters = params.get<TerminationReviewViewModelParameters>()
+
     TerminationReviewViewModel(
-      destination = destination,
-      terminationType = terminationType,
+      terminationType = parameters.terminationType,
       terminateInsuranceRepository = get(),
       clock = get<Clock>(),
+      contractGroup = parameters.contractGroup,
+      exposureName = parameters.exposureName,
+      insuranceDisplayName = parameters.insuranceDisplayName,
     )
   }
   single<TerminateInsuranceRepository> {

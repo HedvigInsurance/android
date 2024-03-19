@@ -7,11 +7,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class TerminateInsuranceFeatureDestination(
-  val contractId: String,
-  val insuranceDisplayName: String,
-  val exposureName: String,
-  val contractGroup: ContractGroup,
-  val activeFrom: LocalDate,
+  val contractId: String?,
 ) : Destination
 
 internal sealed interface TerminateInsuranceDestination : Destination {
@@ -22,13 +18,19 @@ internal sealed interface TerminateInsuranceDestination : Destination {
   data class TerminationDate(
     val minDate: LocalDate,
     val maxDate: LocalDate,
+    val insuranceDisplayName: String,
+    val exposureName: String,
+    val activeFrom: LocalDate,
+    val contractGroup: ContractGroup,
   ) : TerminateInsuranceDestination
 
   /**
    * The screen to review the termination situation before submitting the final request
    */
   @Serializable
-  data class TerminationReview(val terminationType: TerminationType) : TerminateInsuranceDestination {
+  data class TerminationReview(
+    val parameters: TerminationReviewViewModelParameters,
+  ) : TerminateInsuranceDestination {
     @Serializable
     sealed interface TerminationType {
       @Serializable
@@ -49,7 +51,10 @@ internal sealed interface TerminateInsuranceDestination : Destination {
 
   @Serializable
   data class InsuranceDeletion(
-    val disclaimer: String,
+    val insuranceDisplayName: String,
+    val exposureName: String,
+    val activeFrom: LocalDate,
+    val contractGroup: ContractGroup,
   ) : TerminateInsuranceDestination
 
   @Serializable
@@ -60,3 +65,12 @@ internal sealed interface TerminateInsuranceDestination : Destination {
   @Serializable
   data object UnknownScreen : TerminateInsuranceDestination
 }
+
+@Serializable
+internal data class TerminationReviewViewModelParameters(
+  val activeFrom: LocalDate,
+  val insuranceDisplayName: String,
+  val exposureName: String,
+  val contractGroup: ContractGroup,
+  val terminationType: TerminateInsuranceDestination.TerminationReview.TerminationType,
+)

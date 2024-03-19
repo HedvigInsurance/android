@@ -167,10 +167,6 @@ internal fun HedvigNavHost(
         with(navigator) {
           val destination = TerminateInsuranceFeatureDestination(
             contractId = data.contractId,
-            insuranceDisplayName = data.contractDisplayName,
-            exposureName = data.contractExposure,
-            contractGroup = data.contractGroup,
-            activeFrom = data.activateFrom,
           )
           backStackEntry.navigate(destination)
         }

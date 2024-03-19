@@ -3,15 +3,10 @@ package com.hedvig.android.feature.terminateinsurance.step.choose
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -37,6 +32,7 @@ import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.feature.terminateinsurance.data.InsuranceForCancellation
+import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationOverviewScreenScaffold
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
@@ -47,25 +43,28 @@ import octopus.type.CurrencyCode
 internal fun ChooseInsuranceToTerminateDestination(
   viewModel: ChooseInsuranceToTerminateViewModel,
   navigateUp: () -> Unit,
-  startTerminationFlow: (insuranceForCancellation: InsuranceForCancellation) -> Unit,
+  navigateBack: () -> Unit,
+  navigateToNextStep: (step: TerminateInsuranceStep, insuranceForCancellation: InsuranceForCancellation) -> Unit,
 ) {
   val uiState: ChooseInsuranceToTerminateStepUiState by viewModel.uiState.collectAsStateWithLifecycle()
   ChooseInsuranceToTerminateScreen(
     uiState = uiState,
     navigateUp = navigateUp,
-    startTerminationFlow = startTerminationFlow,
+    navigateToNextStep = navigateToNextStep,
+    navigateBack = navigateBack,
     reload = { viewModel.emit(ChooseInsuranceToTerminateEvent.RetryLoadData) },
     selectInsurance = { viewModel.emit(ChooseInsuranceToTerminateEvent.SelectInsurance(it)) },
   )
 }
 
 @Composable
-internal fun ChooseInsuranceToTerminateScreen(
+private fun ChooseInsuranceToTerminateScreen(
   uiState: ChooseInsuranceToTerminateStepUiState,
   navigateUp: () -> Unit,
   reload: () -> Unit,
+  navigateBack: () -> Unit,
   selectInsurance: (insurance: InsuranceForCancellation) -> Unit,
-  startTerminationFlow: (insuranceForCancellation: InsuranceForCancellation) -> Unit,
+  navigateToNextStep: (step: TerminateInsuranceStep, insuranceForCancellation: InsuranceForCancellation) -> Unit,
 ) {
   when (uiState) {
     ChooseInsuranceToTerminateStepUiState.NotAllowed -> {
@@ -150,7 +149,11 @@ internal fun ChooseInsuranceToTerminateScreen(
                 )
                 val dateTimeFormatter = rememberHedvigMonthDateTimeFormatter()
                 val nextPaymentDate = dateTimeFormatter.format(insurance.nextPaymentDate?.toJavaLocalDate())
-                val paymentDetails = "$perMonth · $nextPayment $nextPaymentDate"
+                val paymentDetails = if (insurance.nextPaymentDate != null) {
+                  "$perMonth · $nextPayment $nextPaymentDate"
+                } else {
+                  perMonth
+                }
                 Text(
                   text = paymentDetails,
                   style = MaterialTheme.typography.bodyMedium,
@@ -170,21 +173,15 @@ internal fun ChooseInsuranceToTerminateScreen(
         Spacer(Modifier.height(16.dp))
         HedvigContainedButton(
           stringResource(id = R.string.general_continue_button),
-          enabled = uiState.continueEnabled,
+          enabled = uiState.selectedInsurance != null && uiState.nextStep != null,
           modifier = Modifier.padding(horizontal = 16.dp),
           onClick = {
-            if (uiState.selectedInsurance != null) {
-              startTerminationFlow(uiState.selectedInsurance)
+            if (uiState.selectedInsurance != null && uiState.nextStep != null) {
+              navigateToNextStep(uiState.nextStep, uiState.selectedInsurance)
             }
           },
         )
         Spacer(Modifier.height(16.dp))
-        Spacer(
-          Modifier.padding(
-            WindowInsets.safeDrawing
-              .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom).asPaddingValues(),
-          ),
-        )
       }
     }
   }
@@ -197,6 +194,7 @@ private fun PreviewChooseInsuranceToTerminateScreen() {
     Surface(color = MaterialTheme.colorScheme.background) {
       ChooseInsuranceToTerminateScreen(
         ChooseInsuranceToTerminateStepUiState.Success(
+          nextStep = TerminateInsuranceStep.UnknownStep(""),
           insuranceList = listOf(
             InsuranceForCancellation(
               id = "1",
@@ -217,7 +215,7 @@ private fun PreviewChooseInsuranceToTerminateScreen() {
               activateFrom = LocalDate(2024, 6, 27),
             ),
           ),
-          InsuranceForCancellation(
+          selectedInsurance = InsuranceForCancellation(
             id = "3",
             displayName = "Tenant Insurance",
             contractExposure = "Bullegatan 23",
@@ -231,6 +229,7 @@ private fun PreviewChooseInsuranceToTerminateScreen() {
         {},
         {},
         {},
+        { step, insurance -> },
       )
     }
   }
@@ -247,6 +246,7 @@ private fun PreviewChooseInsuranceToTerminateScreenWithFailure() {
         {},
         {},
         {},
+        { step, insurance -> },
       )
     }
   }
@@ -263,6 +263,7 @@ private fun PreviewChooseInsuranceToTerminateScreenWithNotAllowed() {
         {},
         {},
         {},
+        { step, insurance -> },
       )
     }
   }

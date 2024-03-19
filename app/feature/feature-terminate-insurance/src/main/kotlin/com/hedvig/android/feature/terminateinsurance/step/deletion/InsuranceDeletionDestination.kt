@@ -2,15 +2,9 @@ package com.hedvig.android.feature.terminateinsurance.step.deletion
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
@@ -33,23 +27,18 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.WarningFilled
-import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
+import com.hedvig.android.feature.terminateinsurance.ui.TerminationOverviewScreenScaffold
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
 
 @Composable
 internal fun InsuranceDeletionDestination(activeFrom: LocalDate, onContinue: () -> Unit, navigateUp: () -> Unit) {
-  Column(
-    Modifier
-      .fillMaxSize()
-      .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)),
+  TerminationOverviewScreenScaffold(
+    navigateUp = navigateUp,
+    topAppBarText = stringResource(R.string.TERMINATE_CONTRACT_CONFIRMATION_TITLE),
   ) {
-    TopAppBarWithBack(
-      onClick = navigateUp,
-      title = stringResource(R.string.TERMINATE_CONTRACT_CONFIRMATION_TITLE),
-    )
     Spacer(Modifier.weight(1f))
     Column(
       horizontalAlignment = Alignment.CenterHorizontally,
@@ -95,8 +84,7 @@ internal fun InsuranceDeletionDestination(activeFrom: LocalDate, onContinue: () 
       text = stringResource(id = R.string.general_cancel_button),
       onClick = onContinue,
       modifier = Modifier
-        .padding(horizontal = 16.dp)
-        .padding(bottom = 32.dp),
+        .padding(horizontal = 16.dp),
     )
   }
 }

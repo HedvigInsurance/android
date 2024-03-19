@@ -1,20 +1,23 @@
 query ContractsToTerminate {
   currentMember {
+    activeContracts {
+      id
+      exposureDisplayName
+      currentAgreement {
+        activeFrom
+        premium {
+          ...MoneyFragment
+        }
+        productVariant {
+          displayName
+          typeOfContract
+        }
+      }
+    }
     futureCharge {
       contractsChargeBreakdown {
         contract {
           id
-          exposureDisplayName
-          currentAgreement {
-            activeFrom
-            productVariant {
-              displayName
-              typeOfContract
-            }
-          }
-        }
-        gross {
-          ...MoneyFragment
         }
       }
       date

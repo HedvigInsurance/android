@@ -7,7 +7,6 @@ import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination
-import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceFeatureDestination
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +20,9 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
 internal class TerminationReviewViewModel(
-  destination: TerminateInsuranceFeatureDestination,
+  insuranceDisplayName: String,
+  exposureName: String,
+  contractGroup: ContractGroup,
   private val terminationType: TerminateInsuranceDestination.TerminationReview.TerminationType,
   private val terminateInsuranceRepository: TerminateInsuranceRepository,
   clock: Clock,
@@ -31,9 +32,9 @@ internal class TerminationReviewViewModel(
       terminationDate = terminationType
         .safeCast<TerminateInsuranceDestination.TerminationReview.TerminationType.Termination>()
         ?.terminationDate ?: clock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date,
-      insuranceDisplayName = destination.insuranceDisplayName,
-      exposureName = destination.exposureName,
-      contractGroup = destination.contractGroup,
+      insuranceDisplayName = insuranceDisplayName,
+      exposureName = exposureName,
+      contractGroup = contractGroup,
       nextStep = null,
       errorMessage = null,
       isSubmittingContractTermination = false,

@@ -36,7 +36,9 @@ apollo { // Octopus client
 
     // https://www.apollographql.com/docs/android/advanced/operation-variables/#make-nullable-variables-non-optional
     generateOptionalOperationVariables.set(false)
-
+    outputDirConnection {
+      connectToKotlinSourceSet("main") // main is by default but setting this explicitly fixed the warning "Duplicate content roots detected.
+    }
     mapScalar("Date", "kotlinx.datetime.LocalDate", "com.apollographql.apollo3.adapter.KotlinxLocalDateAdapter")
     mapScalar("DateTime", "kotlinx.datetime.Instant", "com.apollographql.apollo3.adapter.KotlinxInstantAdapter")
     mapScalar("Instant", "kotlinx.datetime.Instant", "com.apollographql.apollo3.adapter.KotlinxInstantAdapter")

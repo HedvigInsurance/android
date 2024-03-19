@@ -1,5 +1,8 @@
 package com.hedvig.android.data.contract
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 enum class ContractGroup {
   HOMEOWNER,
   RENTAL,
