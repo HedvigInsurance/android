@@ -51,13 +51,13 @@ import com.hedvig.android.feature.help.center.HelpCenterEvent
 import com.hedvig.android.feature.help.center.HelpCenterUiState
 import com.hedvig.android.feature.help.center.HelpCenterViewModel
 import com.hedvig.android.feature.help.center.commonclaim.CommonClaim
+import com.hedvig.android.feature.help.center.data.QuickLinkDestination
 import com.hedvig.android.feature.help.center.model.Question
 import com.hedvig.android.feature.help.center.model.QuickAction
 import com.hedvig.android.feature.help.center.model.Topic
 import com.hedvig.android.feature.help.center.ui.HelpCenterSection
 import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
 import com.hedvig.android.feature.help.center.ui.StillNeedHelpSection
-import com.kiwi.navigationcompose.typed.Destination
 import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -68,7 +68,7 @@ internal fun HelpCenterHomeDestination(
   viewModel: HelpCenterViewModel,
   onNavigateToTopic: (topic: Topic) -> Unit,
   onNavigateToQuestion: (question: Question) -> Unit,
-  onNavigateToQuickLink: (Destination) -> Unit,
+  onNavigateToQuickLink: (QuickLinkDestination) -> Unit,
   onNavigateToCommonClaim: (CommonClaim) -> Unit,
   onNavigateUp: () -> Unit,
   openChat: () -> Unit,
@@ -103,7 +103,7 @@ private fun HelpCenterHomeScreen(
   selectedQuickAction: QuickAction?,
   onNavigateToTopic: (topic: Topic) -> Unit,
   onNavigateToQuestion: (question: Question) -> Unit,
-  onNavigateToQuickLink: (Destination) -> Unit,
+  onNavigateToQuickLink: (QuickLinkDestination) -> Unit,
   onQuickActionsSelected: (QuickAction) -> Unit,
   onNavigateToCommonClaim: (CommonClaim) -> Unit,
   onDismissQuickActionDialog: () -> Unit,
@@ -117,7 +117,7 @@ private fun HelpCenterHomeScreen(
       optionsList = selectedQuickAction.links,
       onSelected = {
         onDismissQuickActionDialog()
-        onNavigateToQuickLink(it.destination)
+        onNavigateToQuickLink(it.quickLinkDestination)
       },
       getDisplayText = { it.displayName ?: "" },
       getIsSelected = null,
@@ -126,7 +126,7 @@ private fun HelpCenterHomeScreen(
 
     is QuickAction.QuickLink -> {
       onDismissQuickActionDialog()
-      onNavigateToQuickLink(selectedQuickAction.destination)
+      onNavigateToQuickLink(selectedQuickAction.quickLinkDestination)
     }
 
     null -> {}

@@ -33,6 +33,7 @@ import com.hedvig.android.feature.deleteaccount.navigation.DeleteAccountDestinat
 import com.hedvig.android.feature.deleteaccount.navigation.deleteAccountGraph
 import com.hedvig.android.feature.editcoinsured.navigation.editCoInsuredGraph
 import com.hedvig.android.feature.forever.navigation.foreverGraph
+import com.hedvig.android.feature.help.center.data.QuickLinkDestination
 import com.hedvig.android.feature.help.center.helpCenterGraph
 import com.hedvig.android.feature.help.center.navigation.HelpCenterDestination
 import com.hedvig.android.feature.home.home.navigation.homeGraph
@@ -249,11 +250,39 @@ internal fun HedvigNavHost(
     helpCenterGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       navigator = navigator,
-    ) { backStackEntry, chatContext ->
-      with(navigator) {
-        backStackEntry.navigate(AppDestination.Chat(chatContext))
-      }
-    }
+      onNavigateToQuickLink = { backStackEntry, quickLinkDestination ->
+        with(navigator) {
+          when (quickLinkDestination) {
+            is QuickLinkDestination.QuickLinkCoInsuredAddInfo -> {
+              backStackEntry.navigate(AppDestination.CoInsuredAddInfo(quickLinkDestination.contractId))
+            }
+
+            is QuickLinkDestination.QuickLinkCoInsuredAddOrRemove -> {
+              backStackEntry.navigate(AppDestination.CoInsuredAddOrRemove(quickLinkDestination.contractId))
+            }
+
+            QuickLinkDestination.QuickLinkChangeAddress ->
+              {
+                backStackEntry.navigate(AppDestination.ChangeAddress)
+              }
+            QuickLinkDestination.QuickLinkConnectPayment -> {
+              backStackEntry.navigate(AppDestination.ChangeAddress)
+            }
+            QuickLinkDestination.QuickLinkTermination -> {
+              backStackEntry.navigate(TerminateInsuranceFeatureDestination(null))
+            }
+            QuickLinkDestination.QuickLinkTravelCertificate -> {
+              backStackEntry.navigate(AppDestination.TravelCertificate)
+            }
+          }
+        }
+      },
+      openChat = { backStackEntry, chatContext ->
+        with(navigator) {
+          backStackEntry.navigate(AppDestination.Chat(chatContext))
+        }
+      },
+    )
   }
 }
 

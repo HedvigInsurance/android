@@ -12,7 +12,6 @@ import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.navigation.core.AppDestination
 import hedvig.resources.R
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
@@ -43,14 +42,14 @@ internal class GetQuickLinksUseCase(
             val links = it.map { contract ->
               if (contract.coInsured?.any { it.hasMissingInfo } == true) {
                 QuickAction.QuickLink(
-                  destination = AppDestination.CoInsuredAddInfo(contract.id),
+                  quickLinkDestination = QuickLinkDestination.QuickLinkCoInsuredAddInfo(contract.id),
                   titleRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_TITLE,
                   hintTextRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
                   displayName = contract.currentAgreement.productVariant.displayName,
                 )
               } else {
                 QuickAction.QuickLink(
-                  destination = AppDestination.CoInsuredAddOrRemove(contract.id),
+                  quickLinkDestination = QuickLinkDestination.QuickLinkCoInsuredAddOrRemove(contract.id),
                   titleRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_TITLE,
                   hintTextRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
                   displayName = contract.currentAgreement.productVariant.displayName,
@@ -70,7 +69,7 @@ internal class GetQuickLinksUseCase(
             if (contract.coInsured?.any { it.hasMissingInfo } == true) {
               add(
                 QuickAction.QuickLink(
-                  destination = AppDestination.CoInsuredAddInfo(it.first().id),
+                  quickLinkDestination = QuickLinkDestination.QuickLinkCoInsuredAddInfo(it.first().id),
                   titleRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_TITLE,
                   hintTextRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
                   displayName = contract.currentAgreement.productVariant.displayName,
@@ -79,7 +78,7 @@ internal class GetQuickLinksUseCase(
             } else {
               add(
                 QuickAction.QuickLink(
-                  destination = AppDestination.CoInsuredAddOrRemove(it.first().id),
+                  quickLinkDestination = QuickLinkDestination.QuickLinkCoInsuredAddOrRemove(it.first().id),
                   titleRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_TITLE,
                   hintTextRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
                   displayName = contract.currentAgreement.productVariant.displayName,
@@ -91,12 +90,25 @@ internal class GetQuickLinksUseCase(
         }
 
       contracts
+        .takeIf { featureManager.isFeatureEnabled(Feature.TERMINATION_FLOW).first() }
+        ?.let {
+          add(
+            QuickAction.QuickLink(
+              quickLinkDestination = QuickLinkDestination.QuickLinkTermination,
+              titleRes = R.string.HC_QUICK_ACTIONS_CANCELLATION_TITLE,
+              hintTextRes = R.string.HC_QUICK_ACTIONS_CANCELLATION_SUBTITLE,
+              displayName = null,
+            ),
+          )
+        }
+
+      contracts
         .firstOrNull { it.supportsMoving }
         .takeIf { featureManager.isFeatureEnabled(Feature.MOVING_FLOW).first() }
         ?.let {
           add(
             QuickAction.QuickLink(
-              destination = AppDestination.ChangeAddress,
+              quickLinkDestination = QuickLinkDestination.QuickLinkChangeAddress,
               titleRes = R.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_TITLE,
               hintTextRes = R.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_SUBTITLE,
               displayName = null,
@@ -108,7 +120,7 @@ internal class GetQuickLinksUseCase(
       if (travelCertificateAvailable) {
         add(
           QuickAction.QuickLink(
-            destination = AppDestination.TravelCertificate,
+            quickLinkDestination = QuickLinkDestination.QuickLinkTravelCertificate,
             titleRes = R.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE,
             hintTextRes = R.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE_SUBTITLE,
             displayName = null,
@@ -119,7 +131,7 @@ internal class GetQuickLinksUseCase(
       if (featureManager.isFeatureEnabled(Feature.PAYMENT_SCREEN).first()) {
         add(
           QuickAction.QuickLink(
-            destination = AppDestination.ConnectPayment,
+            quickLinkDestination = QuickLinkDestination.QuickLinkConnectPayment,
             titleRes = R.string.HC_QUICK_ACTIONS_PAYMENTS_TITLE,
             hintTextRes = R.string.HC_QUICK_ACTIONS_PAYMENTS_SUBTITLE,
             displayName = null,
@@ -128,4 +140,18 @@ internal class GetQuickLinksUseCase(
       }
     }.toPersistentList()
   }
+}
+
+sealed interface QuickLinkDestination {
+  data class QuickLinkCoInsuredAddInfo(val contractId: String) : QuickLinkDestination
+
+  data class QuickLinkCoInsuredAddOrRemove(val contractId: String) : QuickLinkDestination
+
+  data object QuickLinkTermination : QuickLinkDestination
+
+  data object QuickLinkTravelCertificate : QuickLinkDestination
+
+  data object QuickLinkChangeAddress : QuickLinkDestination
+
+  data object QuickLinkConnectPayment : QuickLinkDestination
 }

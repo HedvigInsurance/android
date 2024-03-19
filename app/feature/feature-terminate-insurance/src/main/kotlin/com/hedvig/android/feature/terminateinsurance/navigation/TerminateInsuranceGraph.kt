@@ -72,10 +72,8 @@ fun NavGraphBuilder.terminateInsuranceGraph(
   navigation<TerminateInsuranceFeatureDestination>(
     startDestination = createRoutePattern<TerminateInsuranceDestination.StartStep>(),
     deepLinks = listOf(
-      navDeepLink { uriPattern = hedvigDeepLinkContainer.allInsurancesToTerminate },
-      navDeepLink { uriPattern = hedvigDeepLinkContainer.insuranceToTerminateWithoutContractId },
-      navDeepLink { uriPattern = hedvigDeepLinkContainer.insuranceToTerminate },
-    )
+      navDeepLink { uriPattern = hedvigDeepLinkContainer.terminateInsurance },
+    ),
   ) {
     composable<TerminateInsuranceDestination.StartStep> { backStackEntry ->
       val terminateInsurance = getTerminateInsuranceDataFromParentBackstack(navController, backStackEntry)
