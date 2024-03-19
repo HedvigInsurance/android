@@ -37,10 +37,10 @@ fun TopLevelGraph.unselectedIcon(): ImageVector {
 
 fun TopLevelGraph.titleTextId(): Int {
   return when (this) {
-    TopLevelGraph.Home -> R.string.home_tab_title
-    TopLevelGraph.Insurances -> R.string.insurances_tab_title
+    TopLevelGraph.Home -> R.string.TAB_HOME_TITLE
+    TopLevelGraph.Insurances -> R.string.TAB_INSURANCES_TITLE
     TopLevelGraph.Forever -> R.string.TAB_REFERRALS_TITLE
     TopLevelGraph.Payments -> R.string.TAB_PAYMENTS_TITLE
-    TopLevelGraph.Profile -> R.string.TAB_TITLE_PROFILE
+    TopLevelGraph.Profile -> R.string.TAB_PROFILE_TITLE
   }
 }
