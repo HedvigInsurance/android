@@ -66,8 +66,8 @@ fun HorizontalItemsWithMaximumSpaceTaken(
       secondConstraints = halfWidthMinusSpaceConstraints
     } else if (firstWidth > halfWidthMinusSpace) {
       firstConstraints = constraints.copy(
-        minWidth = totalWidth - secondWidth - halfCenterSpace,
-        maxWidth = totalWidth - secondWidth - halfCenterSpace,
+        minWidth = totalWidth - secondWidth - centerSpace,
+        maxWidth = totalWidth - secondWidth - centerSpace,
       )
       secondConstraints = constraints.copy(
         minWidth = secondWidth,
@@ -79,8 +79,8 @@ fun HorizontalItemsWithMaximumSpaceTaken(
         maxWidth = firstWidth,
       )
       secondConstraints = constraints.copy(
-        minWidth = totalWidth - firstWidth - halfCenterSpace,
-        maxWidth = totalWidth - firstWidth - halfCenterSpace,
+        minWidth = totalWidth - firstWidth - centerSpace,
+        maxWidth = totalWidth - firstWidth - centerSpace,
       )
     }
     val maxCommonHeight = maxOf(

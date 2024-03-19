@@ -55,11 +55,13 @@ import com.hedvig.android.core.ui.infocard.VectorWarningCard
 import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.payments.data.Discount
 import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.PaymentConnection
 import com.hedvig.android.feature.payments.data.PaymentOverview
 import com.hedvig.android.feature.payments.discountsPreviewData
+import com.hedvig.android.feature.payments.overview.data.ForeverInformation
 import com.hedvig.android.feature.payments.paymentOverViewPreviewData
 import com.hedvig.android.pullrefresh.PullRefreshDefaults
 import com.hedvig.android.pullrefresh.PullRefreshIndicator
@@ -67,6 +69,7 @@ import com.hedvig.android.pullrefresh.pullRefresh
 import com.hedvig.android.pullrefresh.rememberPullRefreshState
 import hedvig.resources.R
 import kotlinx.datetime.toJavaLocalDate
+import octopus.type.CurrencyCode
 
 @Composable
 internal fun PaymentOverviewDestination(
@@ -351,6 +354,11 @@ private fun PreviewPaymentScreen() {
         uiState = OverViewUiState(
           paymentOverview = paymentOverViewPreviewData,
           isLoadingPaymentOverView = true,
+          foreverInformation = ForeverInformation(
+            "CODDD",
+            UiMoney(23.0, CurrencyCode.SEK),
+            UiMoney(10.0, CurrencyCode.SEK),
+          ),
         ),
         {},
         { _, _ -> },
@@ -369,6 +377,11 @@ private fun PreviewPaymentScreenNoPayment() {
     Surface(color = MaterialTheme.colorScheme.background) {
       PaymentOverviewScreen(
         uiState = OverViewUiState(
+          foreverInformation = ForeverInformation(
+            "CODDD",
+            UiMoney(23.0, CurrencyCode.SEK),
+            UiMoney(10.0, CurrencyCode.SEK),
+          ),
           paymentOverview = PaymentOverview(
             memberCharge = null,
             pastCharges = null,

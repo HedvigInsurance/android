@@ -1,16 +1,17 @@
 package com.hedvig.android.feature.payments.overview
 
-import com.hedvig.android.feature.payments.data.AddDiscountUseCase
-import com.hedvig.android.feature.payments.data.GetUpcomingPaymentUseCase
+import com.hedvig.android.core.demomode.Provider
+import com.hedvig.android.feature.payments.overview.data.AddDiscountUseCase
+import com.hedvig.android.feature.payments.overview.data.GetPaymentOverviewDataUseCase
 import com.hedvig.android.molecule.android.MoleculeViewModel
 
 internal class PaymentOverviewViewModel(
-  getUpcomingPaymentUseCase: GetUpcomingPaymentUseCase,
+  getPaymentOverviewDataUseCase: Provider<GetPaymentOverviewDataUseCase>,
   addDiscountUseCase: AddDiscountUseCase,
 ) : MoleculeViewModel<PaymentEvent, OverViewUiState>(
-    OverViewUiState(),
+    OverViewUiState(foreverInformation = null),
     PaymentOverviewPresenter(
-      getUpcomingPaymentUseCase = getUpcomingPaymentUseCase,
+      getPaymentOverviewDataUseCase = getPaymentOverviewDataUseCase,
       addDiscountUseCase = addDiscountUseCase,
     ),
   )
