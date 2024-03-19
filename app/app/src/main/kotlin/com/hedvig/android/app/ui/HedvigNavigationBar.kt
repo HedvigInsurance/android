@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
@@ -82,7 +81,7 @@ private fun HedvigNavigationBar(
             modifier = if (hasNotification) Modifier.notificationDot() else Modifier,
           )
         },
-        label = { Text(stringResource(destination.titleTextId())) },
+        label = stringResource(destination.titleTextId()),
         colors = HedvigNavigationBarItemDefaults.colors(
           selectedIconColor = MaterialTheme.colorScheme.onSurface,
           selectedTextColor = MaterialTheme.colorScheme.onSurface,

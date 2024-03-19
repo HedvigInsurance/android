@@ -23,6 +23,7 @@ import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -48,7 +49,9 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastFirst
@@ -110,7 +113,7 @@ fun RowScope.HedvigNavigationBarItem(
   icon: @Composable () -> Unit,
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
-  label: @Composable () -> Unit,
+  label: String,
   colors: HedvigNavigationBarItemColors = HedvigNavigationBarItemDefaults.colors(),
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
@@ -122,12 +125,26 @@ fun RowScope.HedvigNavigationBarItem(
   }
 
   val styledLabel: @Composable () -> Unit = {
-    val style = HedvigNavigationBarTokens.LabelTextFont.toTextStyle()
+    val style = HedvigNavigationBarTokens.LabelTextFont.toTextStyle().copy()
     val textColor by colors.textColor(selected = selected, enabled = enabled)
     ProvideContentColorTextStyle(
       contentColor = textColor,
       textStyle = style,
-      content = label,
+      content = {
+        val density = LocalDensity.current
+        val fontCappedDensity = Density(
+          density = density.density,
+          fontScale = density.fontScale.coerceAtMost(NavigationBarFontScaleCap),
+        )
+        CompositionLocalProvider(LocalDensity provides fontCappedDensity) {
+          Text(
+            text = label,
+            overflow = TextOverflow.Clip,
+            softWrap = false,
+            maxLines = 1,
+          )
+        }
+      },
     )
   }
 
@@ -530,11 +547,18 @@ private const val ItemAnimationDurationMillis: Int = 100
 private val NavigationBarIndicatorToLabelPadding: Dp = 4.dp
 
 /**
- * The label is allowed to break out of its max constraints by this amount to give it more room before it breaks into a
- * new line. This is theoretically allowing the texts to overlap a bit, but in practice it's a good tradeoff since only
+ * The maximum font scale for the label text. This is to prevent the label from being too large and having to wrap or
+ * truncate the text which is discouraged in the spec
+ * https://m3.material.io/components/navigation-bar/guidelines#5a0e52ea-eb3f-42ef-96a4-160c7faf3c93
+ */
+private val NavigationBarFontScaleCap: Float = 1.3f
+
+/**
+ * The label is allowed to break out of its max constraints by this amount to give it more room before it needs to be
+ * clipped. This is theoretically allowing the texts to overlap a bit, but in practice it's an okay tradeoff since only
  * one of our labels is in comparison much bigger than the others.
  */
-private val NavigationBarLabelHorizontalBreakoutPadding = 16.dp
+private val NavigationBarLabelHorizontalBreakoutPadding = 8.dp
 
 private val IndicatorHorizontalPadding: Dp =
   (HedvigNavigationBarTokens.ActiveIndicatorWidth - HedvigNavigationBarTokens.IconSize) / 2
