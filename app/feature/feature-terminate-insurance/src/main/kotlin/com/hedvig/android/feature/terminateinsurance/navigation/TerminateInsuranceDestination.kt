@@ -3,10 +3,12 @@ package com.hedvig.android.feature.terminateinsurance.navigation
 import com.hedvig.android.data.contract.ContractGroup
 import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.datetime.LocalDate
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class TerminateInsuranceFeatureDestination(
+  @SerialName("insuranceId")
   val contractId: String?,
 ) : Destination
 

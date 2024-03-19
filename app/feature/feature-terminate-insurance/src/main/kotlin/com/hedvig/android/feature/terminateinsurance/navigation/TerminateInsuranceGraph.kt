@@ -6,6 +6,7 @@ import androidx.compose.runtime.remember
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.navDeepLink
 import androidx.navigation.navOptions
 import coil.ImageLoader
 import com.hedvig.android.core.common.ErrorMessage
@@ -20,6 +21,7 @@ import com.hedvig.android.feature.terminateinsurance.step.terminationreview.Term
 import com.hedvig.android.feature.terminateinsurance.step.terminationreview.TerminationReviewViewModel
 import com.hedvig.android.feature.terminateinsurance.step.terminationsuccess.TerminationSuccessDestination
 import com.hedvig.android.feature.terminateinsurance.step.unknown.UnknownScreenDestination
+import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
 import com.kiwi.navigationcompose.typed.composable
 import com.kiwi.navigationcompose.typed.createRoutePattern
@@ -35,6 +37,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
   navigator: Navigator,
   navController: NavController,
   imageLoader: ImageLoader,
+  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   openChat: (NavBackStackEntry) -> Unit,
   openUrl: (String) -> Unit,
   openPlayStore: () -> Unit,
@@ -68,6 +71,11 @@ fun NavGraphBuilder.terminateInsuranceGraph(
   }
   navigation<TerminateInsuranceFeatureDestination>(
     startDestination = createRoutePattern<TerminateInsuranceDestination.StartStep>(),
+    deepLinks = listOf(
+      navDeepLink { uriPattern = hedvigDeepLinkContainer.allInsurancesToTerminate },
+      navDeepLink { uriPattern = hedvigDeepLinkContainer.insuranceToTerminateWithoutContractId },
+      navDeepLink { uriPattern = hedvigDeepLinkContainer.insuranceToTerminate },
+    )
   ) {
     composable<TerminateInsuranceDestination.StartStep> { backStackEntry ->
       val terminateInsurance = getTerminateInsuranceDataFromParentBackstack(navController, backStackEntry)

@@ -144,6 +144,7 @@ internal fun HedvigNavHost(
           },
           openUrl = ::openUrl,
           openPlayStore = { activityNavigator.tryOpenPlayStore(context) },
+          hedvigDeepLinkContainer = hedvigDeepLinkContainer,
         )
       },
       navigator = navigator,
