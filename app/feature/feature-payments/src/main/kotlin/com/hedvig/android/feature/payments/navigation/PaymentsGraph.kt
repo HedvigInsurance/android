@@ -7,6 +7,7 @@ import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.PaymentOverview
 import com.hedvig.android.feature.payments.details.PaymentDetailsDestination
 import com.hedvig.android.feature.payments.discounts.DiscountsDestination
+import com.hedvig.android.feature.payments.discounts.DiscountsViewModel
 import com.hedvig.android.feature.payments.history.PaymentHistoryDestination
 import com.hedvig.android.feature.payments.overview.PaymentOverviewDestination
 import com.hedvig.android.feature.payments.overview.PaymentOverviewViewModel
@@ -89,8 +90,7 @@ fun NavGraphBuilder.paymentsGraph(
       )
     }
     composable<PaymentsDestinations.Discounts> {
-      val viewModel: PaymentOverviewViewModel = koinViewModel()
-
+      val viewModel: DiscountsViewModel = koinViewModel()
       DiscountsDestination(
         viewModel = viewModel,
         navigateUp = navigator::navigateUp,

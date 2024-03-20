@@ -94,7 +94,7 @@ internal fun PaymentOverviewDestination(
 
 @Composable
 private fun PaymentOverviewScreen(
-  uiState: OverViewUiState,
+  uiState: PaymentOverviewUiState,
   navigateUp: () -> Unit,
   onUpcomingPaymentClicked: (MemberCharge, PaymentOverview) -> Unit,
   onChangeBankAccount: () -> Unit,
@@ -351,7 +351,7 @@ private fun PreviewPaymentScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       PaymentOverviewScreen(
-        uiState = OverViewUiState(
+        uiState = PaymentOverviewUiState(
           paymentOverview = paymentOverViewPreviewData,
           isLoadingPaymentOverView = true,
           foreverInformation = ForeverInformation(
@@ -376,7 +376,7 @@ private fun PreviewPaymentScreenNoPayment() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       PaymentOverviewScreen(
-        uiState = OverViewUiState(
+        uiState = PaymentOverviewUiState(
           foreverInformation = ForeverInformation(
             "CODDD",
             UiMoney(23.0, CurrencyCode.SEK),

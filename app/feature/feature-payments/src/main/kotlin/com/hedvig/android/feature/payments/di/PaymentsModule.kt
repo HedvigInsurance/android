@@ -4,6 +4,7 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCaseProvider
+import com.hedvig.android.feature.payments.discounts.DiscountsViewModel
 import com.hedvig.android.feature.payments.overview.PaymentOverviewViewModel
 import com.hedvig.android.feature.payments.overview.data.AddDiscountUseCase
 import com.hedvig.android.feature.payments.overview.data.AddDiscountUseCaseImpl
@@ -42,6 +43,13 @@ val paymentsModule = module {
 
   viewModel<PaymentOverviewViewModel> {
     PaymentOverviewViewModel(
+      get<GetPaymentOverviewDataUseCaseProvider>(),
+      get<AddDiscountUseCase>(),
+    )
+  }
+
+  viewModel<DiscountsViewModel> {
+    DiscountsViewModel(
       get<GetPaymentOverviewDataUseCaseProvider>(),
       get<AddDiscountUseCase>(),
     )
