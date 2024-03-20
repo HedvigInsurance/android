@@ -10,14 +10,26 @@ import com.hedvig.android.core.common.android.tryOpenPlayStore
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 
-class ActivityNavigator(
+interface ActivityNavigator {
+  fun navigateToMarketingActivity()
+
+  fun openAppSettings(context: Context)
+
+  fun navigateToLoggedInScreen(context: Context, clearBackstack: Boolean = true)
+
+  fun tryOpenPlayStore(context: Context)
+
+  fun openWebsite(context: Context, uri: Uri)
+}
+
+class ActivityNavigatorImpl(
   private val application: Application,
   private val loggedOutActivityClass: Class<*>,
   private val buildConfigApplicationId: String,
   private val navigateToLoggedInActivity: Context.(clearBackstack: Boolean) -> Unit,
-) {
+) : ActivityNavigator {
   @SuppressLint("IntentWithNullActionLaunch")
-  fun navigateToMarketingActivity() {
+  override fun navigateToMarketingActivity() {
     application.startActivity(
       Intent(application, loggedOutActivityClass)
         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -26,7 +38,7 @@ class ActivityNavigator(
   }
 
   @Suppress("DEPRECATION")
-  fun openAppSettings(context: Context) {
+  override fun openAppSettings(context: Context) {
     val permissionActivity = Intent(
       Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
       Uri.parse("package:$buildConfigApplicationId"),
@@ -38,16 +50,16 @@ class ActivityNavigator(
     context.startActivity(Intent(Intent(Settings.ACTION_SETTINGS)))
   }
 
-  fun navigateToLoggedInScreen(context: Context, clearBackstack: Boolean = true) {
+  override fun navigateToLoggedInScreen(context: Context, clearBackstack: Boolean) {
     context.navigateToLoggedInActivity(clearBackstack)
   }
 
-  fun tryOpenPlayStore(context: Context) {
+  override fun tryOpenPlayStore(context: Context) {
     context.tryOpenPlayStore()
   }
 
   @SuppressLint("QueryPermissionsNeeded")
-  fun openWebsite(context: Context, uri: Uri) {
+  override fun openWebsite(context: Context, uri: Uri) {
     val browserIntent = Intent(Intent.ACTION_VIEW, uri)
 
     if (browserIntent.resolveActivity(context.packageManager) != null) {

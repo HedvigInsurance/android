@@ -99,18 +99,16 @@ internal class HedvigAppState(
       return currentDestination.isInListOfNonTopLevelNavBarPermittedDestinations()
     }
 
-  val shouldShowBottomBar: Boolean
+  val navigationSuiteType: NavigationSuiteType
     @Composable
     get() {
+      if (!shouldShowNavBars) return NavigationSuiteType.None
       val bottomBarWidthRequirements = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact
-      return bottomBarWidthRequirements && shouldShowNavBars
-    }
-
-  val shouldShowNavRail: Boolean
-    @Composable
-    get() {
-      val navRailWidthRequirements = windowSizeClass.widthSizeClass != WindowWidthSizeClass.Compact
-      return navRailWidthRequirements && shouldShowNavBars
+      return if (bottomBarWidthRequirements) {
+        NavigationSuiteType.NavigationBar
+      } else {
+        NavigationSuiteType.NavigationRail
+      }
     }
 
   val topLevelGraphs: StateFlow<ImmutableSet<TopLevelGraph>> = flow {
@@ -188,6 +186,17 @@ internal class HedvigAppState(
         else -> isSystemInDarkTheme()
       }
     }
+}
+
+@JvmInline
+value class NavigationSuiteType private constructor(private val description: String) {
+  override fun toString(): String = description
+
+  companion object {
+    val NavigationBar = NavigationSuiteType(description = "NavigationBar")
+    val NavigationRail = NavigationSuiteType(description = "NavigationRail")
+    val None = NavigationSuiteType(description = "None")
+  }
 }
 
 @Composable
