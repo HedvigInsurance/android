@@ -1,17 +1,18 @@
 package com.hedvig.android.feature.payments.overview
 
 import com.hedvig.android.core.demomode.Provider
-import com.hedvig.android.feature.payments.overview.data.AddDiscountUseCase
 import com.hedvig.android.feature.payments.overview.data.GetPaymentOverviewDataUseCase
 import com.hedvig.android.molecule.android.MoleculeViewModel
+import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.WhileSubscribed
 
-internal class PaymentOverviewViewModel(
+internal class PaymentsViewModel(
   getPaymentOverviewDataUseCase: Provider<GetPaymentOverviewDataUseCase>,
-  addDiscountUseCase: AddDiscountUseCase,
-) : MoleculeViewModel<PaymentEvent, OverViewUiState>(
-    OverViewUiState(foreverInformation = null),
-    PaymentOverviewPresenter(
+) : MoleculeViewModel<PaymentsEvent, PaymentOverviewUiState>(
+    PaymentOverviewUiState.Loading,
+    PaymentsPresenter(
       getPaymentOverviewDataUseCase = getPaymentOverviewDataUseCase,
-      addDiscountUseCase = addDiscountUseCase,
     ),
+    SharingStarted.WhileSubscribed(0.seconds),
   )
