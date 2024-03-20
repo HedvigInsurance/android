@@ -312,7 +312,6 @@ private fun CrossSellItem(crossSell: CrossSell, onCrossSellClick: (Uri) -> Unit,
         containerColor = MaterialTheme.colorScheme.lightTypeContainer,
         contentColor = MaterialTheme.colorScheme.onLightTypeContainer,
       ),
-      elevation = ButtonDefaults.buttonElevation(defaultElevation = 1.dp),
       shape = MaterialTheme.shapes.squircleSmall,
     )
   }

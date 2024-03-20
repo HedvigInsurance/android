@@ -73,6 +73,7 @@ internal fun EditCodeBottomSheet(
       label = { Text(stringResource(R.string.referrals_empty_code_headline)) },
       onValueChange = onCodeChanged,
       errorText = updatedReferralCodeUpdateError?.toErrorMessage(),
+      withNewDesign = true,
       modifier = Modifier
         .padding(horizontal = 16.dp)
         .focusRequester(focusRequester)

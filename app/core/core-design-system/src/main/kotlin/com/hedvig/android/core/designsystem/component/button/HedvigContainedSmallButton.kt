@@ -46,7 +46,7 @@ fun HedvigContainedSmallButton(
     disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
     disabledContentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.38f),
   ),
-  elevation: ButtonElevation? = ButtonDefaults.buttonElevation(),
+  elevation: ButtonElevation? = ButtonDefaults.elevatedButtonElevation(defaultElevation = 1.dp),
   contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
 ) {
   HedvigContainedSmallButton(
