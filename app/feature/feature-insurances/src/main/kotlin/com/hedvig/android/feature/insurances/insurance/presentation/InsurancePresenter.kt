@@ -27,6 +27,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -65,6 +66,7 @@ internal class InsurancePresenter(
   private val getInsuranceContractsUseCaseProvider: Provider<GetInsuranceContractsUseCase>,
   private val getCrossSellsUseCaseProvider: Provider<GetCrossSellsUseCase>,
   private val crossSellCardNotificationBadgeServiceProvider: Provider<CrossSellCardNotificationBadgeService>,
+  private val applicationScope: CoroutineScope,
 ) : MoleculePresenter<InsuranceScreenEvent, InsuranceUiState> {
   @Composable
   override fun MoleculePresenterScope<InsuranceScreenEvent>.present(lastState: InsuranceUiState): InsuranceUiState {
@@ -91,7 +93,7 @@ internal class InsurancePresenter(
       when (event) {
         InsuranceScreenEvent.RetryLoading -> loadIteration++
         InsuranceScreenEvent.MarkCardCrossSellsAsSeen -> {
-          launch { crossSellCardNotificationBadgeServiceProvider.provide().markAsSeen() }
+          applicationScope.launch { crossSellCardNotificationBadgeServiceProvider.provide().markAsSeen() }
         }
       }
     }

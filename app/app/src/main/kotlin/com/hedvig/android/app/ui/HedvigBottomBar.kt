@@ -1,5 +1,6 @@
 package com.hedvig.android.app.ui
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -22,6 +23,7 @@ import com.hedvig.android.navigation.core.titleTextId
 import com.hedvig.android.navigation.core.unselectedIcon
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.collections.immutable.toPersistentSet
 
 @Composable
 internal fun HedvigBottomBar(
@@ -35,14 +37,7 @@ internal fun HedvigBottomBar(
     destinations = destinations,
     destinationsWithNotifications = destinationsWithNotifications,
     onNavigateToDestination = onNavigateToDestination,
-    getIsCurrentlySelected = { destination: TopLevelGraph ->
-      when (destination) {
-        TopLevelGraph.HOME -> currentDestination.isTopLevelGraphInHierarchy<TopLevelGraph.HOME>()
-        TopLevelGraph.INSURANCE -> currentDestination.isTopLevelGraphInHierarchy<TopLevelGraph.INSURANCE>()
-        TopLevelGraph.PROFILE -> currentDestination.isTopLevelGraphInHierarchy<TopLevelGraph.PROFILE>()
-        TopLevelGraph.FOREVER -> currentDestination.isTopLevelGraphInHierarchy<TopLevelGraph.FOREVER>()
-      }
-    },
+    getIsCurrentlySelected = currentDestination::isTopLevelGraphInHierarchy,
     modifier = modifier,
   )
 }
@@ -93,7 +88,7 @@ private fun HedvigBottomBar(
           unselectedIconColor = MaterialTheme.colorScheme.onSurface,
           unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
         ),
-        modifier = Modifier.testTag(destination.toName()),
+        modifier = Modifier.testTag(destination.name),
       )
     }
   }
@@ -104,17 +99,20 @@ private fun HedvigBottomBar(
 private fun PreviewHedvigBottomBar() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      HedvigBottomBar(
-        destinations = persistentSetOf(
-          TopLevelGraph.HOME,
-          TopLevelGraph.INSURANCE,
-          TopLevelGraph.FOREVER,
-          TopLevelGraph.PROFILE,
-        ),
-        destinationsWithNotifications = persistentSetOf(TopLevelGraph.INSURANCE),
-        onNavigateToDestination = {},
-        getIsCurrentlySelected = { it == TopLevelGraph.HOME },
-      )
+      Column {
+        HedvigBottomBar(
+          destinations = TopLevelGraph.entries.toSet().toPersistentSet(),
+          destinationsWithNotifications = persistentSetOf(TopLevelGraph.Insurances),
+          onNavigateToDestination = {},
+          getIsCurrentlySelected = { false },
+        )
+        HedvigBottomBar(
+          destinations = TopLevelGraph.entries.toSet().toPersistentSet(),
+          destinationsWithNotifications = persistentSetOf(TopLevelGraph.Insurances),
+          onNavigateToDestination = {},
+          getIsCurrentlySelected = { true },
+        )
+      }
     }
   }
 }

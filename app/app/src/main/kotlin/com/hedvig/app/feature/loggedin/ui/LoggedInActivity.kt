@@ -48,7 +48,6 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.navigation.activity.ActivityNavigator
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
 import com.hedvig.android.theme.Theme
 import com.hedvig.app.feature.sunsetting.ForceUpgradeActivity
@@ -109,7 +108,6 @@ class LoggedInActivity : AppCompatActivity() {
     super.onCreate(savedInstanceState)
     val uiModeManager = getSystemService<UiModeManager>()
 
-    val intent: Intent = intent
     lifecycleScope.launch {
       launch {
         featureManager.isFeatureEnabled(Feature.UPDATE_NECESSARY).collectLatest {
@@ -186,14 +184,6 @@ class LoggedInActivity : AppCompatActivity() {
             hedvigAppState = hedvigAppState,
             hedvigDeepLinkContainer = hedvigDeepLinkContainer,
             activityNavigator = activityNavigator,
-            getInitialTab = {
-              intent.extras?.getString(INITIAL_TAB)?.let {
-                TopLevelGraph.fromName(it)
-              }
-            },
-            clearInitialTab = {
-              intent.removeExtra(INITIAL_TAB)
-            },
             shouldShowRequestPermissionRationale = ::shouldShowRequestPermissionRationale,
             market = market,
             imageLoader = imageLoader,
@@ -256,23 +246,16 @@ class LoggedInActivity : AppCompatActivity() {
   }
 
   companion object {
-    private const val INITIAL_TAB = "INITIAL_TAB"
     private const val REVIEW_DIALOG_DELAY_MILLIS = 2000L
 
-    fun newInstance(
-      context: Context,
-      withoutHistory: Boolean = false,
-      initialTab: TopLevelGraph = TopLevelGraph.HOME,
-    ): Intent = Intent(context, LoggedInActivity::class.java).apply {
-      logcat(LogPriority.INFO) { "LoggedInActivity.newInstance was called. withoutHistory:$withoutHistory" }
-      if (withoutHistory) {
-        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+    fun newInstance(context: Context, withoutHistory: Boolean = false): Intent =
+      Intent(context, LoggedInActivity::class.java).apply {
+        logcat(LogPriority.INFO) { "LoggedInActivity.newInstance was called. withoutHistory:$withoutHistory" }
+        if (withoutHistory) {
+          addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+          addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        }
       }
-      if (initialTab != TopLevelGraph.HOME) {
-        putExtra(INITIAL_TAB, initialTab.toName())
-      }
-    }
   }
 }
 
