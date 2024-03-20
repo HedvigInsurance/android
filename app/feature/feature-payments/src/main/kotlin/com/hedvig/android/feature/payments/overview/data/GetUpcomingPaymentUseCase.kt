@@ -13,6 +13,8 @@ import com.hedvig.android.feature.payments.data.Discount
 import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.PaymentConnection
 import com.hedvig.android.feature.payments.data.PaymentOverview
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -47,20 +49,25 @@ internal data class GetUpcomingPaymentUseCaseImpl(
       pastCharges = result.currentMember.pastCharges
         .map { it.toMemberCharge(redeemedCampaigns, referralInformation, clock) }
         .reversed(),
-      paymentConnection = PaymentConnection(
-        connectionInfo = result.currentMember.paymentInformation.connection?.let {
-          PaymentConnection.ConnectionInfo(
-            displayName = it.displayName,
-            displayValue = it.descriptor,
-          )
-        },
-        status = when (result.currentMember.paymentInformation.status) {
-          MemberPaymentConnectionStatus.ACTIVE -> PaymentConnection.PaymentConnectionStatus.ACTIVE
-          MemberPaymentConnectionStatus.PENDING -> PaymentConnection.PaymentConnectionStatus.PENDING
-          MemberPaymentConnectionStatus.NEEDS_SETUP -> PaymentConnection.PaymentConnectionStatus.NEEDS_SETUP
-          MemberPaymentConnectionStatus.UNKNOWN__ -> PaymentConnection.PaymentConnectionStatus.UNKNOWN
-        },
-      ),
+      paymentConnection = run {
+        val paymentInformation = result.currentMember.paymentInformation
+        when (paymentInformation.status) {
+          MemberPaymentConnectionStatus.ACTIVE -> {
+            if (paymentInformation.connection == null) {
+              logcat(LogPriority.ERROR) { "Payment connection is active but connection is null" }
+              PaymentConnection.Unknown
+            } else {
+              PaymentConnection.Active(
+                displayName = paymentInformation.connection.displayName,
+                displayValue = paymentInformation.connection.descriptor,
+              )
+            }
+          }
+          MemberPaymentConnectionStatus.PENDING -> PaymentConnection.Pending
+          MemberPaymentConnectionStatus.NEEDS_SETUP -> PaymentConnection.NeedsSetup
+          MemberPaymentConnectionStatus.UNKNOWN__ -> PaymentConnection.Unknown
+        }
+      },
       discounts = result.currentMember.redeemedCampaigns
         .filter { it.type == RedeemedCampaignType.VOUCHER }
         .map {

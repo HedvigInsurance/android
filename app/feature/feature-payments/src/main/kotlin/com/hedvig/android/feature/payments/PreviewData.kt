@@ -236,12 +236,9 @@ internal val paymentOverViewPreviewData = PaymentOverview(
     settlementAdjustment = UiMoney(200.0, CurrencyCode.SEK),
   ),
   pastCharges = chargeHistoryPreviewData.sortedBy { it.dueDate },
-  paymentConnection = PaymentConnection(
-    connectionInfo = PaymentConnection.ConnectionInfo(
-      displayName = "Nordea",
-      displayValue = "31489*****",
-    ),
-    status = PaymentConnection.PaymentConnectionStatus.NEEDS_SETUP,
+  paymentConnection = PaymentConnection.Active(
+    displayName = "Nordea",
+    displayValue = "31489*****",
   ),
   discounts = discountsPreviewData,
 )

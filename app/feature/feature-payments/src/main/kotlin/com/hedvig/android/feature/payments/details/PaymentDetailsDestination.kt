@@ -56,6 +56,7 @@ import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.feature.payments.data.MemberCharge
+import com.hedvig.android.feature.payments.data.PaymentConnection
 import com.hedvig.android.feature.payments.data.PaymentOverview
 import com.hedvig.android.feature.payments.discounts.DiscountRows
 import com.hedvig.android.feature.payments.paymentOverViewPreviewData
@@ -262,7 +263,8 @@ private fun MemberChargeDetailsScreen(
         MemberCharge.MemberChargeStatus.UNKNOWN -> {}
       }
 
-      paymentOverview?.paymentConnection?.connectionInfo?.let {
+      val paymentConnection = paymentOverview?.paymentConnection
+      if (paymentConnection is PaymentConnection.Active) {
         Spacer(Modifier.height(32.dp))
         HorizontalItemsWithMaximumSpaceTaken(
           startSlot = {
@@ -317,7 +319,7 @@ private fun MemberChargeDetailsScreen(
           },
           endSlot = {
             Text(
-              text = it.displayValue,
+              text = paymentConnection.displayValue,
               textAlign = TextAlign.End,
               modifier = Modifier.fillMaxWidth(),
               color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -331,7 +333,7 @@ private fun MemberChargeDetailsScreen(
           startSlot = { Text(stringResource(id = R.string.PAYMENTS_BANK_LABEL)) },
           endSlot = {
             Text(
-              text = it.displayName,
+              text = paymentConnection.displayName,
               textAlign = TextAlign.End,
               modifier = Modifier.fillMaxWidth(),
               color = MaterialTheme.colorScheme.onSurfaceVariant,
