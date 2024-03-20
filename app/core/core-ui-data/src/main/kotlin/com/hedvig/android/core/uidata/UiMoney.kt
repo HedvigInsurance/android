@@ -4,16 +4,12 @@ import androidx.compose.runtime.Immutable
 import java.math.BigDecimal
 import java.text.DecimalFormat
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 import octopus.fragment.MoneyFragment
 import octopus.type.CurrencyCode
 
 @Immutable
 @Serializable
 data class UiMoney(val amount: Double, val currencyCode: CurrencyCode) {
-  @Transient
-  val decimalFormatter: DecimalFormat = DecimalFormat("")
-
   override fun toString(): String {
     return buildString {
       append(decimalFormatter.format(amount))
@@ -41,3 +37,5 @@ data class UiMoney(val amount: Double, val currencyCode: CurrencyCode) {
     }
   }
 }
+
+private val decimalFormatter: DecimalFormat = DecimalFormat("")
