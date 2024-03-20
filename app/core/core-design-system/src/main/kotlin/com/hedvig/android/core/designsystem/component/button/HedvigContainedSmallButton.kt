@@ -27,7 +27,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.animation.ThreeDotsLoading
-import com.hedvig.android.core.designsystem.material3.squircleMedium
+import com.hedvig.android.core.designsystem.material3.squircleExtraSmall
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 
@@ -127,7 +127,7 @@ private fun HedvigContainedSmallButton(
     onClick = onClick,
     modifier = modifier,
     enabled = enabled,
-    shape = MaterialTheme.shapes.squircleMedium,
+    shape = MaterialTheme.shapes.squircleExtraSmall,
     colors = colors,
     elevation = elevation,
     contentPadding = contentPadding,

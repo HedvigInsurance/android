@@ -382,6 +382,7 @@ private fun VeryImportantMessageCard(
         ),
         textStyle = MaterialTheme.typography.bodyMedium,
         modifier = Modifier.fillMaxWidth(),
+        elevation = ButtonDefaults.elevatedButtonElevation(defaultElevation = 1.dp),
       )
     }
   }
