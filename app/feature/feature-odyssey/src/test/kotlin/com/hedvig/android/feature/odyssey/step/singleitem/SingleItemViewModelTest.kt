@@ -13,6 +13,7 @@ import com.hedvig.android.data.claimflow.ItemModel
 import com.hedvig.android.data.claimflow.model.FlowId
 import com.hedvig.android.feature.odyssey.data.TestClaimFlowRepository
 import com.hedvig.android.language.test.FakeLanguageService
+import com.hedvig.android.logger.TestLogcatLoggingRule
 import java.util.Locale
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
@@ -27,6 +28,9 @@ class SingleItemViewModelTest {
   @get:Rule
   val mainCoroutineRule = MainCoroutineRule()
 
+  @get:Rule
+  val testLogcatLogger = TestLogcatLoggingRule()
+
   private val brand = ItemBrand.Known(
     displayName = "",
     itemTypeId = "",
@@ -38,6 +42,7 @@ class SingleItemViewModelTest {
     itemBrandId = "brand#1",
     itemModelId = "model#1",
   )
+  private val customNameModel = ItemModel.New("New custom model")
 
   @Test
   fun `selecting models changes the selections and then submitting results in a nextStep`() = runTest {
@@ -54,22 +59,53 @@ class SingleItemViewModelTest {
 
     viewModel.uiState.test {
       assertThat(viewModel.uiState.value.itemBrandsUiState.asContent()!!.selectedItemBrand).isNull()
-      assertThat(viewModel.uiState.value.itemModelsUiState.asContent()!!.selectedItemModel).isNull()
+      assertThat(viewModel.uiState.value.itemModelsUiState.selectedItemModel).isNull()
 
       viewModel.selectBrand(brand)
       runCurrent()
       assertThat(viewModel.uiState.value.itemBrandsUiState.asContent()!!.selectedItemBrand!!).isEqualTo(brand)
-      assertThat(viewModel.uiState.value.itemModelsUiState.asContent()!!.selectedItemModel).isNull()
+      assertThat(viewModel.uiState.value.itemModelsUiState.selectedItemModel).isNull()
 
       viewModel.selectModel(model)
       runCurrent()
-      assertThat(viewModel.uiState.value.itemModelsUiState.asContent()!!.selectedItemModel!!).isEqualTo(model)
+      assertThat(viewModel.uiState.value.itemModelsUiState.selectedItemModel!!).isEqualTo(model)
 
       claimFlowRepository.submitSingleItemResponse.add(ClaimFlowStep.UnknownStep(FlowId("")).right())
       viewModel.submitSelections()
       runCurrent()
 
       assertThat(viewModel.uiState.value.nextStep!!).given { it as ClaimFlowStep.UnknownStep }
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `submitting with a selected brand and a custom name sends in both`() = runTest {
+    val claimFlowRepository = TestClaimFlowRepository()
+    val viewModel = SingleItemViewModel(
+      testSingleItem(
+        itemBrands = listOf(brand),
+        itemModels = listOf(model),
+      ),
+      claimFlowRepository,
+      Clock.System,
+      FakeLanguageService(fixedLocale = Locale.ENGLISH),
+    )
+    viewModel.uiState.test {
+      viewModel.selectBrand(brand)
+      viewModel.selectModel(customNameModel)
+      runCurrent()
+      claimFlowRepository.submitSingleItemResponse.add(ClaimFlowStep.UnknownStep(FlowId("")).right())
+      viewModel.submitSelections()
+      val (flowClaimItemBrandInput, flowCustomNameInput) =
+        claimFlowRepository.submitSingleItemBrandAndCustomNameInput.awaitItem()
+      assertThat(flowClaimItemBrandInput).isEqualTo(
+        FlowClaimItemBrandInput(
+          itemTypeId = brand.itemTypeId,
+          itemBrandId = brand.itemBrandId,
+        ),
+      )
+      assertThat(flowCustomNameInput).isEqualTo(customNameModel.displayName)
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -208,7 +244,7 @@ class SingleItemViewModelTest {
       viewModel.selectModel(model)
       runCurrent()
       val uiState = viewModel.uiState.value
-      assertThat(uiState.itemModelsUiState.asContent()!!.selectedItemModel!!).isEqualTo(model)
+      assertThat(uiState.itemModelsUiState.selectedItemModel!!).isEqualTo(model)
       assertThat(uiState.itemBrandsUiState.asContent()!!.selectedItemBrand!!).isEqualTo(brand)
       cancelAndIgnoreRemainingEvents()
     }
@@ -231,7 +267,7 @@ class SingleItemViewModelTest {
       viewModel.selectModel(model)
       runCurrent()
       val uiState = viewModel.uiState.value
-      assertThat(uiState.itemModelsUiState.asContent()!!.selectedItemModel!!).isEqualTo(model)
+      assertThat(uiState.itemModelsUiState.selectedItemModel!!).isEqualTo(model)
       assertThat(uiState.itemBrandsUiState.asContent()!!.selectedItemBrand).isNull()
       cancelAndIgnoreRemainingEvents()
     }
@@ -255,12 +291,12 @@ class SingleItemViewModelTest {
     )
 
     viewModel.uiState.test {
-      val availableModelsBeforeBrandSet = viewModel.uiState.value.itemModelsUiState.asContent()!!.availableItemModels
+      val availableModelsBeforeBrandSet = viewModel.uiState.value.itemModelsUiState.availableItemModels
       assertThat(availableModelsBeforeBrandSet.count { it.asKnown()?.itemBrandId == "brand#1" }).isEqualTo(3)
       assertThat(availableModelsBeforeBrandSet.count { it.asKnown()?.itemBrandId == "brand#2" }).isEqualTo(2)
       viewModel.selectBrand(brandWithId2)
       runCurrent()
-      val availableModelsAfterBrandSet = viewModel.uiState.value.itemModelsUiState.asContent()!!.availableItemModels
+      val availableModelsAfterBrandSet = viewModel.uiState.value.itemModelsUiState.availableItemModels
       assertThat(availableModelsAfterBrandSet.count { it.asKnown()?.itemBrandId == "brand#1" }).isEqualTo(0)
       assertThat(availableModelsAfterBrandSet.count { it.asKnown()?.itemBrandId == "brand#2" }).isEqualTo(2)
       cancelAndIgnoreRemainingEvents()
@@ -276,6 +312,7 @@ class SingleItemViewModelTest {
         itemBrands,
         null,
         itemModels,
+        null,
         null,
         emptyList(),
         emptyList(),

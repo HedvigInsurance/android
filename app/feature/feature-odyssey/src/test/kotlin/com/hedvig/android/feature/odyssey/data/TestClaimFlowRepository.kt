@@ -54,16 +54,19 @@ internal class TestClaimFlowRepository : ClaimFlowRepository {
   }
 
   val submitSingleItemBrandAndModelInput = Turbine<Pair<FlowClaimItemBrandInput?, FlowClaimItemModelInput?>>()
+  val submitSingleItemBrandAndCustomNameInput = Turbine<Pair<FlowClaimItemBrandInput?, String?>>()
   val submitSingleItemResponse = Turbine<Either<ErrorMessage, ClaimFlowStep>>()
 
   override suspend fun submitSingleItem(
     itemBrandInput: FlowClaimItemBrandInput?,
     itemModelInput: FlowClaimItemModelInput?,
+    customName: String?,
     itemProblemIds: List<String>?,
     purchaseDate: LocalDate?,
     purchasePrice: Double?,
   ): Either<ErrorMessage, ClaimFlowStep> {
     submitSingleItemBrandAndModelInput.add(itemBrandInput to itemModelInput)
+    submitSingleItemBrandAndCustomNameInput.add(itemBrandInput to customName)
     return submitSingleItemResponse.awaitItem()
   }
 
