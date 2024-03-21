@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.payments.overview
+package com.hedvig.android.feature.payments.payments
 
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.feature.payments.overview.data.GetPaymentOverviewDataUseCase

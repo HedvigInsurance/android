@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.payments.overview
+package com.hedvig.android.feature.payments.payments
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

@@ -5,7 +5,6 @@ import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCaseProvider
 import com.hedvig.android.feature.payments.discounts.DiscountsViewModel
-import com.hedvig.android.feature.payments.overview.PaymentsViewModel
 import com.hedvig.android.feature.payments.overview.data.AddDiscountUseCase
 import com.hedvig.android.feature.payments.overview.data.AddDiscountUseCaseImpl
 import com.hedvig.android.feature.payments.overview.data.GetForeverInformationUseCase
@@ -15,6 +14,7 @@ import com.hedvig.android.feature.payments.overview.data.GetPaymentOverviewDataU
 import com.hedvig.android.feature.payments.overview.data.GetPaymentOverviewDataUseCaseProvider
 import com.hedvig.android.feature.payments.overview.data.GetUpcomingPaymentUseCase
 import com.hedvig.android.feature.payments.overview.data.GetUpcomingPaymentUseCaseImpl
+import com.hedvig.android.feature.payments.payments.PaymentsViewModel
 import kotlinx.datetime.Clock
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module

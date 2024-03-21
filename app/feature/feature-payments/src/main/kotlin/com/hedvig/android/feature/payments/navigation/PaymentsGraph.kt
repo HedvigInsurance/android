@@ -9,8 +9,8 @@ import com.hedvig.android.feature.payments.details.PaymentDetailsDestination
 import com.hedvig.android.feature.payments.discounts.DiscountsDestination
 import com.hedvig.android.feature.payments.discounts.DiscountsViewModel
 import com.hedvig.android.feature.payments.history.PaymentHistoryDestination
-import com.hedvig.android.feature.payments.overview.PaymentsDestination
-import com.hedvig.android.feature.payments.overview.PaymentsViewModel
+import com.hedvig.android.feature.payments.payments.PaymentsDestination
+import com.hedvig.android.feature.payments.payments.PaymentsViewModel
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
 import com.kiwi.navigationcompose.typed.composable

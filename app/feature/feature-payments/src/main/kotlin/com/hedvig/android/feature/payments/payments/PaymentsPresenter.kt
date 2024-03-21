@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.payments.overview
+package com.hedvig.android.feature.payments.payments
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -22,9 +22,7 @@ internal class PaymentsPresenter(
   val getPaymentOverviewDataUseCase: Provider<GetPaymentOverviewDataUseCase>,
 ) : MoleculePresenter<PaymentsEvent, PaymentsUiState> {
   @Composable
-  override fun MoleculePresenterScope<PaymentsEvent>.present(
-    lastState: PaymentsUiState,
-  ): PaymentsUiState {
+  override fun MoleculePresenterScope<PaymentsEvent>.present(lastState: PaymentsUiState): PaymentsUiState {
     var paymentUiState: PaymentsUiState by remember { mutableStateOf(lastState) }
     var loadIteration by remember { mutableIntStateOf(0) }
 
