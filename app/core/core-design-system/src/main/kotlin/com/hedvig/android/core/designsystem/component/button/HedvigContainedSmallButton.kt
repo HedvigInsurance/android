@@ -87,7 +87,7 @@ fun HedvigContainedSmallButton(
     contentPadding = contentPadding,
     colors = colors,
     modifier = modifier,
-    shape = shape
+    shape = shape,
   ) {
     val loadingTransition = updateTransition(isLoading)
     loadingTransition.AnimatedContent(

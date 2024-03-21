@@ -10,11 +10,7 @@ import com.hedvig.android.core.designsystem.material3.containedButtonContainer
 import com.hedvig.android.core.designsystem.material3.onContainedButtonContainer
 
 @Composable
-fun InfoCardTextButton(
-  onClick: () -> Unit,
-  text: String,
-  modifier: Modifier = Modifier,
-) {
+fun InfoCardTextButton(onClick: () -> Unit, text: String, modifier: Modifier = Modifier) {
   HedvigContainedSmallButton(
     text = text,
     onClick = onClick,
