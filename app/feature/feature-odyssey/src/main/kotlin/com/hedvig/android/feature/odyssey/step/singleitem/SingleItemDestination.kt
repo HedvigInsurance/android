@@ -1,10 +1,5 @@
 package com.hedvig.android.feature.odyssey.step.singleitem
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -14,6 +9,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -25,13 +23,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -39,6 +40,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.nonEmptyListOf
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.card.HedvigBigCard
+import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.clearFocusOnTap
@@ -120,26 +122,57 @@ private fun SingleItemScreen(
 
     uiState.itemBrandsUiState.asContent()?.let { itemBrandsUiState ->
       Spacer(Modifier.height(2.dp))
-      Brands(itemBrandsUiState, uiState.canSubmit, selectBrand, sideSpacingModifier.fillMaxWidth())
-      Spacer(Modifier.height(2.dp))
+      Brands(
+        uiState = itemBrandsUiState,
+        enabled = uiState.canSubmit,
+        selectBrand = {
+          selectBrand(it)
+        },
+        modifier = sideSpacingModifier.fillMaxWidth(),
+      )
     }
-    val itemModelsUiStateContent = uiState.itemModelsUiState.asContent()
-    AnimatedVisibility(
-      visible = itemModelsUiStateContent != null,
-      enter = fadeIn() + expandVertically(expandFrom = Alignment.CenterVertically, clip = false),
-      exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.CenterVertically, clip = false),
-    ) {
-      Column {
+    Spacer(Modifier.height(2.dp))
+    when (uiState.itemModelsUiState.modelUi) {
+      is ModelUi.JustCustomModel -> {
         Spacer(Modifier.height(2.dp))
-        Models(
-          uiState = itemModelsUiStateContent,
-          enabled = uiState.canSubmit,
+        CustomModelInput(
+          initialValue = uiState.itemModelsUiState.initialCustomValue,
+          onInput = { input ->
+            if (input != null) {
+              selectModel(ItemModel.New(input))
+            }
+          },
+          modifier = sideSpacingModifier.fillMaxWidth(),
+        )
+        Spacer(Modifier.height(2.dp))
+      }
+      ModelUi.JustModelDialog -> {
+        ModelPicker(
+          uiState = uiState,
           selectModel = selectModel,
+          modifier = sideSpacingModifier,
+        )
+      }
+      is ModelUi.BothDialogAndCustom -> {
+        ModelPicker(
+          uiState = uiState,
+          selectModel = selectModel,
+          modifier = sideSpacingModifier,
+        )
+        Spacer(Modifier.height(2.dp))
+        CustomModelInput(
+          initialValue = uiState.itemModelsUiState.initialCustomValue,
+          onInput = { input ->
+            if (input != null) {
+              selectModel(ItemModel.New(input))
+            }
+          },
           modifier = sideSpacingModifier.fillMaxWidth(),
         )
         Spacer(Modifier.height(2.dp))
       }
     }
+
     Spacer(Modifier.height(2.dp))
     DateOfPurchase(uiState.datePickerUiState, uiState.canSubmit, sideSpacingModifier.fillMaxWidth())
     Spacer(Modifier.height(4.dp))
@@ -178,34 +211,69 @@ private fun SingleItemScreen(
 }
 
 @Composable
+private fun ModelPicker(uiState: SingleItemUiState, selectModel: (ItemModel) -> Unit, modifier: Modifier = Modifier) {
+  Column(modifier = modifier.fillMaxWidth()) {
+    Spacer(Modifier.height(2.dp))
+    Models(
+      uiState = uiState.itemModelsUiState,
+      enabled = uiState.canSubmit,
+      selectModel = selectModel,
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(2.dp))
+  }
+}
+
+@Composable
 private fun Models(
-  uiState: ItemModelsUiState.Content?,
+  uiState: ItemModelsUiState,
   enabled: Boolean,
   selectModel: (ItemModel) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   LocalConfiguration.current
   val resources = LocalContext.current.resources
+
   var showDialog by rememberSaveable { mutableStateOf(false) }
-  if (showDialog && uiState != null) {
-    SingleSelectDialog(
-      title = stringResource(R.string.claims_item_screen_model_button),
-      optionsList = uiState.availableItemModels,
-      onSelected = selectModel,
-      getDisplayText = { it.displayName(resources) },
-      getIsSelected = { it: ItemModel -> it == uiState.selectedItemModel },
-      getId = { it.asKnown()?.itemModelId ?: "id" },
+  if (showDialog) {
+    SelectDialogWithFreeTextField(
+      uiState = uiState,
       onDismissRequest = { showDialog = false },
-      smallSelectionItems = true,
+      selectModel = selectModel,
     )
   }
-
   HedvigBigCard(
     onClick = { showDialog = true },
     hintText = stringResource(R.string.claims_item_screen_model_button),
-    inputText = uiState?.selectedItemModel?.displayName(resources),
+    inputText = if (uiState.selectedItemModel is ItemModel.New) {
+      stringResource(id = R.string.claims_item_model_other)
+    } else {
+      uiState.selectedItemModel?.displayName(resources)
+    },
     modifier = modifier,
     enabled = enabled,
+  )
+}
+
+@Composable
+private fun SelectDialogWithFreeTextField(
+  uiState: ItemModelsUiState,
+  onDismissRequest: () -> Unit,
+  selectModel: (ItemModel) -> Unit,
+) {
+  val resources = LocalContext.current.resources
+  SingleSelectDialog(
+    title = stringResource(R.string.claims_item_screen_model_button),
+    optionsList = uiState.availableItemModels,
+    onSelected =
+      { selectedModel ->
+        selectModel(selectedModel)
+      },
+    getDisplayText = { it.displayName(resources) },
+    getIsSelected = { it: ItemModel -> it == uiState.selectedItemModel },
+    getId = { it.asKnown()?.itemModelId ?: "id" },
+    onDismissRequest = onDismissRequest,
+    smallSelectionItems = true,
   )
 }
 
@@ -267,6 +335,35 @@ private fun PriceOfPurchase(uiState: PurchasePriceUiState, canInteract: Boolean,
 }
 
 @Composable
+private fun CustomModelInput(initialValue: String, onInput: (String?) -> Unit, modifier: Modifier = Modifier) {
+  var text by remember { mutableStateOf(initialValue) }
+  val focusRequester = remember { FocusRequester() }
+  val focusManager = LocalFocusManager.current
+  HedvigTextField(
+    value = initialValue,
+    onValueChange = { newValue ->
+      text = newValue
+      onInput(newValue)
+    },
+    withNewDesign = true,
+    modifier = modifier.focusRequester(focusRequester),
+    enabled = true,
+    textStyle = LocalTextStyle.current,
+    label = { Text(stringResource(id = R.string.claims_item_enter_model_name)) },
+    keyboardOptions = KeyboardOptions(
+      autoCorrect = false,
+      keyboardType = KeyboardType.Text,
+      imeAction = ImeAction.Done,
+    ),
+    keyboardActions = KeyboardActions(
+      onDone = {
+        focusManager.clearFocus()
+      },
+    ),
+  )
+}
+
+@Composable
 private fun ItemProblems(
   uiState: ItemProblemsUiState.Content,
   enabled: Boolean,
@@ -315,9 +412,11 @@ private fun PreviewSingleItemScreen(
             nonEmptyListOf(ItemBrand.Known("Item Brand", "", "")),
             ItemBrand.Known("Item Brand #1", "", ""),
           ),
-          itemModelsUiState = ItemModelsUiState.Content(
+          itemModelsUiState = ItemModelsUiState(
             nonEmptyListOf(ItemModel.Known("Item Model", "", "", "")),
             ItemModel.Known("Item Model #2", "", "", ""),
+            modelUi = ModelUi.BothDialogAndCustom,
+            initialCustomValue = "",
           ),
           itemProblemsUiState = ItemProblemsUiState.Content(
             nonEmptyListOf(ItemProblem("Item Problem", "")),

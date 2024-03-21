@@ -44,7 +44,7 @@ fun HorizontalItemsWithMaximumSpaceTaken(
     val totalWidth = constraints.maxWidth
     val halfWidth = totalWidth / 2
 
-    val centerSpace = spaceBetween.roundToPx()
+    val centerSpace = spaceBetween.roundToPx().takeIf { firstWidth != 0 && secondWidth != 0 } ?: 0
     val halfCenterSpace = centerSpace / 2
 
     val halfWidthMinusSpace = halfWidth - halfCenterSpace
@@ -66,8 +66,8 @@ fun HorizontalItemsWithMaximumSpaceTaken(
       secondConstraints = halfWidthMinusSpaceConstraints
     } else if (firstWidth > halfWidthMinusSpace) {
       firstConstraints = constraints.copy(
-        minWidth = totalWidth - secondWidth - halfCenterSpace,
-        maxWidth = totalWidth - secondWidth - halfCenterSpace,
+        minWidth = totalWidth - secondWidth - centerSpace,
+        maxWidth = totalWidth - secondWidth - centerSpace,
       )
       secondConstraints = constraints.copy(
         minWidth = secondWidth,
@@ -79,8 +79,8 @@ fun HorizontalItemsWithMaximumSpaceTaken(
         maxWidth = firstWidth,
       )
       secondConstraints = constraints.copy(
-        minWidth = totalWidth - firstWidth - halfCenterSpace,
-        maxWidth = totalWidth - firstWidth - halfCenterSpace,
+        minWidth = totalWidth - firstWidth - centerSpace,
+        maxWidth = totalWidth - firstWidth - centerSpace,
       )
     }
     val maxCommonHeight = maxOf(
@@ -188,6 +188,21 @@ private fun PreviewBigEndTextWithSpace() {
         endSlot = { Text(text = "End".repeat(10), textAlign = TextAlign.End) },
         modifier = Modifier.size(width = 250.dp, height = 100.dp),
         spaceBetween = 32.dp,
+      )
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewOnlyOneSideSkippingSpaceBetween() {
+  HedvigTheme {
+    Surface(color = MaterialTheme.colorScheme.background) {
+      HorizontalItemsWithMaximumSpaceTaken(
+        startSlot = { Text(text = "Start".repeat(15)) },
+        endSlot = {},
+        modifier = Modifier.size(width = 250.dp, height = 100.dp),
+        spaceBetween = 64.dp,
       )
     }
   }

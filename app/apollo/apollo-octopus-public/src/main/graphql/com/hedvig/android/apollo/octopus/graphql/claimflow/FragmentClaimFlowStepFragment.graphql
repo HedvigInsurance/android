@@ -73,6 +73,7 @@ fragment FlowClaimSingleItemStepFragment on FlowClaimSingleItemStep {
     itemProblemId
   }
   selectedItemBrand
+  customName
   availableItemBrands {
     displayName
     itemTypeId

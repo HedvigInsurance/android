@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.payments.data
+package com.hedvig.android.feature.payments.overview.data
 
 import arrow.core.Either
 import arrow.core.raise.either
@@ -9,7 +9,16 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiMoney
-import kotlinx.collections.immutable.toPersistentList
+import com.hedvig.android.feature.payments.data.Discount
+import com.hedvig.android.feature.payments.data.MemberCharge
+import com.hedvig.android.feature.payments.data.PaymentConnection
+import com.hedvig.android.feature.payments.data.PaymentOverview
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
+import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.todayIn
 import octopus.UpcomingPaymentQuery
 import octopus.fragment.MemberChargeFragment
 import octopus.type.CurrencyCode
@@ -23,6 +32,7 @@ internal interface GetUpcomingPaymentUseCase {
 
 internal data class GetUpcomingPaymentUseCaseImpl(
   val apolloClient: ApolloClient,
+  val clock: Clock,
 ) : GetUpcomingPaymentUseCase {
   override suspend fun invoke(): Either<ErrorMessage, PaymentOverview> = either {
     val result = apolloClient.query(UpcomingPaymentQuery())
@@ -35,24 +45,29 @@ internal data class GetUpcomingPaymentUseCaseImpl(
     val referralInformation = result.currentMember.referralInformation
 
     PaymentOverview(
-      memberCharge = result.currentMember.futureCharge?.toMemberCharge(redeemedCampaigns, referralInformation),
+      memberCharge = result.currentMember.futureCharge?.toMemberCharge(redeemedCampaigns, referralInformation, clock),
       pastCharges = result.currentMember.pastCharges
-        .map { it.toMemberCharge(redeemedCampaigns, referralInformation) }
+        .map { it.toMemberCharge(redeemedCampaigns, referralInformation, clock) }
         .reversed(),
-      paymentConnection = PaymentConnection(
-        connectionInfo = result.currentMember.paymentInformation.connection?.let {
-          PaymentConnection.ConnectionInfo(
-            displayName = it.displayName,
-            displayValue = it.descriptor,
-          )
-        },
-        status = when (result.currentMember.paymentInformation.status) {
-          MemberPaymentConnectionStatus.ACTIVE -> PaymentConnection.PaymentConnectionStatus.ACTIVE
-          MemberPaymentConnectionStatus.PENDING -> PaymentConnection.PaymentConnectionStatus.PENDING
-          MemberPaymentConnectionStatus.NEEDS_SETUP -> PaymentConnection.PaymentConnectionStatus.NEEDS_SETUP
-          MemberPaymentConnectionStatus.UNKNOWN__ -> PaymentConnection.PaymentConnectionStatus.UNKNOWN
-        },
-      ),
+      paymentConnection = run {
+        val paymentInformation = result.currentMember.paymentInformation
+        when (paymentInformation.status) {
+          MemberPaymentConnectionStatus.ACTIVE -> {
+            if (paymentInformation.connection == null) {
+              logcat(LogPriority.ERROR) { "Payment connection is active but connection is null" }
+              PaymentConnection.Unknown
+            } else {
+              PaymentConnection.Active(
+                displayName = paymentInformation.connection.displayName,
+                displayValue = paymentInformation.connection.descriptor,
+              )
+            }
+          }
+          MemberPaymentConnectionStatus.PENDING -> PaymentConnection.Pending
+          MemberPaymentConnectionStatus.NEEDS_SETUP -> PaymentConnection.NeedsSetup
+          MemberPaymentConnectionStatus.UNKNOWN__ -> PaymentConnection.Unknown
+        }
+      },
       discounts = result.currentMember.redeemedCampaigns
         .filter { it.type == RedeemedCampaignType.VOUCHER }
         .map {
@@ -60,7 +75,7 @@ internal data class GetUpcomingPaymentUseCaseImpl(
             code = it.code,
             displayName = it.onlyApplicableToContracts?.firstOrNull()?.exposureDisplayName,
             description = it.description,
-            expiresAt = it.expiresAt,
+            expiredState = Discount.ExpiredState.from(it.expiresAt, clock),
             amount = null,
             isReferral = false,
           )
@@ -72,6 +87,7 @@ internal data class GetUpcomingPaymentUseCaseImpl(
 private fun MemberChargeFragment.toMemberCharge(
   redeemedCampaigns: List<UpcomingPaymentQuery.Data.CurrentMember.RedeemedCampaign>,
   referralInformation: UpcomingPaymentQuery.Data.CurrentMember.ReferralInformation,
+  clock: Clock,
 ) = MemberCharge(
   id = id ?: "",
   grossAmount = UiMoney.fromMoneyFragment(gross),
@@ -85,21 +101,21 @@ private fun MemberChargeFragment.toMemberCharge(
   },
   dueDate = date,
   failedCharge = toFailedCharge(),
-  chargeBreakdowns = contractsChargeBreakdown.map {
+  chargeBreakdowns = contractsChargeBreakdown.map { chargeBreakdown ->
     MemberCharge.ChargeBreakdown(
-      contractDisplayName = it.contract.currentAgreement.productVariant.displayName,
-      contractDetails = it.contract.exposureDisplayName,
-      grossAmount = UiMoney.fromMoneyFragment(it.gross),
-      periods = it.periods.map {
+      contractDisplayName = chargeBreakdown.contract.currentAgreement.productVariant.displayName,
+      contractDetails = chargeBreakdown.contract.exposureDisplayName,
+      grossAmount = UiMoney.fromMoneyFragment(chargeBreakdown.gross),
+      periods = chargeBreakdown.periods.map {
         MemberCharge.ChargeBreakdown.Period(
           amount = UiMoney.fromMoneyFragment(it.amount),
           fromDate = it.fromDate,
           toDate = it.toDate,
           isPreviouslyFailedCharge = it.isPreviouslyFailedCharge,
         )
-      }.toPersistentList(),
+      },
     )
-  }.toPersistentList(),
+  },
   discounts = discountBreakdown.map { discountBreakdown ->
     val code = if (discountBreakdown.isReferral) {
       referralInformation.code
@@ -109,13 +125,14 @@ private fun MemberChargeFragment.toMemberCharge(
       "-"
     }
 
+    val relatedRedeemedCampaign = redeemedCampaigns.firstOrNull { it.code == discountBreakdown.code }
     Discount(
       code = code,
       displayName = redeemedCampaigns.firstOrNull {
         it.code == discountBreakdown.code
       }?.onlyApplicableToContracts?.firstOrNull()?.exposureDisplayName,
-      description = redeemedCampaigns.firstOrNull { it.code == discountBreakdown.code }?.description,
-      expiresAt = redeemedCampaigns.firstOrNull { it.code == discountBreakdown.code }?.expiresAt,
+      description = relatedRedeemedCampaign?.description,
+      expiredState = Discount.ExpiredState.from(relatedRedeemedCampaign?.expiresAt, clock),
       amount = UiMoney(discountBreakdown.discount.amount.unaryMinus(), discountBreakdown.discount.currencyCode),
       isReferral = discountBreakdown.isReferral,
     )
@@ -152,11 +169,23 @@ private fun discountFromReferral(
     code = referralInformation.code,
     displayName = null,
     description = null,
-    expiresAt = null,
+    expiredState = Discount.ExpiredState.NotExpired,
     amount = UiMoney(
       referralInformation.referrals.sumOf { it.activeDiscount?.amount?.unaryMinus() ?: 0.0 },
       referralInformation.referrals.first().activeDiscount?.currencyCode ?: CurrencyCode.SEK,
     ),
     isReferral = true,
   )
+}
+
+private fun Discount.ExpiredState.Companion.from(expirationDate: LocalDate?, clock: Clock): Discount.ExpiredState {
+  if (expirationDate == null) {
+    return Discount.ExpiredState.NotExpired
+  }
+  val today = clock.todayIn(TimeZone.currentSystemDefault())
+  return if (expirationDate < today) {
+    Discount.ExpiredState.AlreadyExpired(expirationDate)
+  } else {
+    Discount.ExpiredState.ExpiringInTheFuture(expirationDate)
+  }
 }

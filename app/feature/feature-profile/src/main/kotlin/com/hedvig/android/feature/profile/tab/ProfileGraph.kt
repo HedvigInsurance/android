@@ -12,6 +12,7 @@ import com.hedvig.android.feature.profile.eurobonus.EurobonusDestination
 import com.hedvig.android.feature.profile.eurobonus.EurobonusViewModel
 import com.hedvig.android.feature.profile.myinfo.MyInfoDestination
 import com.hedvig.android.feature.profile.myinfo.MyInfoViewModel
+import com.hedvig.android.feature.profile.navigation.ProfileDestination
 import com.hedvig.android.feature.profile.navigation.ProfileDestinations
 import com.hedvig.android.feature.profile.navigation.SettingsDestinations
 import com.hedvig.android.feature.profile.settings.SettingsDestination
@@ -19,7 +20,6 @@ import com.hedvig.android.feature.profile.settings.SettingsViewModel
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
-import com.hedvig.android.navigation.core.TopLevelGraph
 import com.kiwi.navigationcompose.typed.composable
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigation
@@ -31,20 +31,19 @@ fun NavGraphBuilder.profileGraph(
   navigator: Navigator,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   hedvigBuildConstants: HedvigBuildConstants,
-  navigateToPaymentInfo: (NavBackStackEntry) -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToAddMissingInfo: (navBackStackEntry: NavBackStackEntry, contractId: String) -> Unit,
   navigateToDeleteAccountFeature: (navBackStackEntry: NavBackStackEntry) -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
 ) {
-  navigation<TopLevelGraph.PROFILE>(
-    startDestination = createRoutePattern<AppDestination.TopLevelDestination.Profile>(),
-    deepLinks = listOf(
-      navDeepLink { uriPattern = hedvigDeepLinkContainer.profile },
-    ),
+  navigation<ProfileDestination.Graph>(
+    startDestination = createRoutePattern<ProfileDestination.Profile>(),
   ) {
-    composable<AppDestination.TopLevelDestination.Profile>(
+    composable<ProfileDestination.Profile>(
+      deepLinks = listOf(
+        navDeepLink { uriPattern = hedvigDeepLinkContainer.profile },
+      ),
       enterTransition = { MotionDefaults.fadeThroughEnter },
       exitTransition = { MotionDefaults.fadeThroughExit },
     ) { backStackEntry ->
@@ -61,9 +60,6 @@ fun NavGraphBuilder.profileGraph(
         },
         navigateToSettings = {
           with(navigator) { backStackEntry.navigate(ProfileDestinations.SettingsGraph) }
-        },
-        navigateToPayment = {
-          navigateToPaymentInfo(backStackEntry)
         },
         navigateToTravelCertificate = {
           with(navigator) { backStackEntry.navigate(AppDestination.TravelCertificate) }

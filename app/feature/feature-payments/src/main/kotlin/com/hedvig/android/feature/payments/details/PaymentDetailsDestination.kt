@@ -33,6 +33,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.bottomsheet.HedvigInfoBottomSheet
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
@@ -55,8 +56,9 @@ import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.feature.payments.data.MemberCharge
+import com.hedvig.android.feature.payments.data.PaymentConnection
 import com.hedvig.android.feature.payments.data.PaymentOverview
-import com.hedvig.android.feature.payments.discounts.DiscountRow
+import com.hedvig.android.feature.payments.discounts.DiscountRows
 import com.hedvig.android.feature.payments.paymentOverViewPreviewData
 import hedvig.resources.R
 import kotlinx.datetime.toJavaLocalDate
@@ -153,21 +155,18 @@ private fun MemberChargeDetailsScreen(
 
       if (memberCharge.discounts.isNotEmpty()) {
         Spacer(modifier = Modifier.height(16.dp))
-        Text(stringResource(id = R.string.PAYMENTS_DISCOUNTS_SECTION_TITLE))
-
-        memberCharge.discounts.forEach {
-          DiscountRow(it)
-          HorizontalDivider()
-        }
+        Text(stringResource(R.string.PAYMENTS_DISCOUNTS_SECTION_TITLE))
+        Spacer(modifier = Modifier.height(16.dp))
+        DiscountRows(memberCharge.discounts)
+        Spacer(modifier = Modifier.height(16.dp))
       }
 
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
-          Text(stringResource(id = R.string.payment_details_receipt_card_total))
+          Text(stringResource(R.string.payment_details_receipt_card_total))
         },
         endSlot = {
           Row(
-            Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically,
           ) {
@@ -186,8 +185,8 @@ private fun MemberChargeDetailsScreen(
             )
           }
         },
-        modifier = Modifier.padding(vertical = 16.dp),
       )
+      Spacer(modifier = Modifier.height(16.dp))
       HorizontalDivider()
 
       HorizontalItemsWithMaximumSpaceTaken(
@@ -264,7 +263,8 @@ private fun MemberChargeDetailsScreen(
         MemberCharge.MemberChargeStatus.UNKNOWN -> {}
       }
 
-      paymentOverview?.paymentConnection?.connectionInfo?.let {
+      val paymentConnection = paymentOverview?.paymentConnection
+      if (paymentConnection is PaymentConnection.Active) {
         Spacer(Modifier.height(32.dp))
         HorizontalItemsWithMaximumSpaceTaken(
           startSlot = {
@@ -319,7 +319,7 @@ private fun MemberChargeDetailsScreen(
           },
           endSlot = {
             Text(
-              text = it.displayValue,
+              text = paymentConnection.displayValue,
               textAlign = TextAlign.End,
               modifier = Modifier.fillMaxWidth(),
               color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -333,7 +333,7 @@ private fun MemberChargeDetailsScreen(
           startSlot = { Text(stringResource(id = R.string.PAYMENTS_BANK_LABEL)) },
           endSlot = {
             Text(
-              text = it.displayName,
+              text = paymentConnection.displayName,
               textAlign = TextAlign.End,
               modifier = Modifier.fillMaxWidth(),
               color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -363,12 +363,15 @@ private fun MemberCharge.topAppBarColors(): TopAppBarColors {
 }
 
 @Composable
+@Preview(device = "spec:width=1080px,height=3500px,dpi=440")
 @HedvigPreview
 private fun PaymentDetailsScreenPreview() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       MemberChargeDetailsScreen(
-        memberCharge = paymentOverViewPreviewData.memberCharge!!.copy(discounts = emptyList()),
+        memberCharge = paymentOverViewPreviewData.memberCharge!!.copy(
+          discounts = paymentOverViewPreviewData.memberCharge.discounts.take(2),
+        ),
         paymentOverview = paymentOverViewPreviewData,
         selectedCharge = null,
         onCardClick = {},

@@ -30,11 +30,12 @@ fun NavGraphBuilder.helpCenterGraph(
 ) {
   navigation<HelpCenterDestination>(
     startDestination = createRoutePattern<HelpCenterDestinations.HelpCenter>(),
-    deepLinks = listOf(
-      navDeepLink { uriPattern = hedvigDeepLinkContainer.helpCenter },
-    ),
   ) {
-    composable<HelpCenterDestinations.HelpCenter> { backStackEntry ->
+    composable<HelpCenterDestinations.HelpCenter>(
+      deepLinks = listOf(
+        navDeepLink { uriPattern = hedvigDeepLinkContainer.helpCenter },
+      ),
+    ) { backStackEntry ->
       val viewModel = koinViewModel<HelpCenterViewModel>()
       val resources = LocalContext.current.resources
       HelpCenterHomeDestination(

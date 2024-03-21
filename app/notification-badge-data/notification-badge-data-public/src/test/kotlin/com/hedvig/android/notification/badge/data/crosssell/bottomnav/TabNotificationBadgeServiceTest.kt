@@ -36,7 +36,7 @@ class TabNotificationBadgeServiceTest {
   }
 
   @Test
-  fun `When backend returns no cross sells and the referral campaign is off, show no badge`() = runTest {
+  fun `When backend returns no cross sells, show no badge`() = runTest {
     val notificationBadgeService = FakeNotificationBadgeStorage(this)
     val getCrossSellsContractTypeIdentifiersUseCase = FakeGetCrossSellIdentifiersUseCase()
     val service = tabNotificationBadgeService(
@@ -46,21 +46,7 @@ class TabNotificationBadgeServiceTest {
 
     val unseenBadges = service.unseenTabNotificationBadges().first()
 
-    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.REFERRALS))
-  }
-
-  @Test
-  fun `When backend returns no cross sells and the referral campaign is on, show referral badge`() = runTest {
-    val notificationBadgeService = FakeNotificationBadgeStorage(this)
-    val getCrossSellsContractTypeIdentifiersUseCase = FakeGetCrossSellIdentifiersUseCase()
-    val service = tabNotificationBadgeService(
-      notificationBadgeStorage = notificationBadgeService,
-      getCrossSellIdentifiersUseCase = getCrossSellsContractTypeIdentifiersUseCase,
-    )
-
-    val unseenBadges = service.unseenTabNotificationBadges().first()
-
-    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.REFERRALS))
+    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.FOREVER))
   }
 
   @Test
@@ -77,7 +63,7 @@ class TabNotificationBadgeServiceTest {
 
     val unseenBadges = service.unseenTabNotificationBadges().first()
 
-    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.INSURANCE, BottomNavTab.REFERRALS))
+    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.INSURANCE, BottomNavTab.FOREVER))
   }
 
   @Test
@@ -99,7 +85,7 @@ class TabNotificationBadgeServiceTest {
 
     val unseenBadges = service.unseenTabNotificationBadges().first()
 
-    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.REFERRALS))
+    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.FOREVER))
   }
 
   @Test
@@ -125,7 +111,7 @@ class TabNotificationBadgeServiceTest {
 
     val unseenBadges = service.unseenTabNotificationBadges().first()
 
-    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.REFERRALS))
+    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.FOREVER))
   }
 
   @Test
@@ -148,7 +134,7 @@ class TabNotificationBadgeServiceTest {
 
     val unseenBadges = service.unseenTabNotificationBadges().first()
 
-    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.INSURANCE, BottomNavTab.REFERRALS))
+    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.INSURANCE, BottomNavTab.FOREVER))
   }
 
   @Test
@@ -179,7 +165,7 @@ class TabNotificationBadgeServiceTest {
 
     val unseenBadges = service.unseenTabNotificationBadges().first()
 
-    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.INSURANCE, BottomNavTab.REFERRALS))
+    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.INSURANCE, BottomNavTab.FOREVER))
   }
 
   @Test
@@ -194,9 +180,9 @@ class TabNotificationBadgeServiceTest {
       getCrossSellIdentifiersUseCase = getCrossSellsContractTypesUseCase,
     )
     service.unseenTabNotificationBadges().test {
-      assertThat(awaitItem()).isEqualTo(setOf(BottomNavTab.INSURANCE, BottomNavTab.REFERRALS))
+      assertThat(awaitItem()).isEqualTo(setOf(BottomNavTab.INSURANCE, BottomNavTab.FOREVER))
       service.visitTab(BottomNavTab.INSURANCE)
-      assertThat(awaitItem()).isEqualTo(setOf(BottomNavTab.REFERRALS))
+      assertThat(awaitItem()).isEqualTo(setOf(BottomNavTab.FOREVER))
       ensureAllEventsConsumed()
     }
   }
@@ -214,10 +200,10 @@ class TabNotificationBadgeServiceTest {
     )
 
     service.unseenTabNotificationBadges().test {
-      assertThat(awaitItem()).isEqualTo(setOf(BottomNavTab.INSURANCE, BottomNavTab.REFERRALS))
+      assertThat(awaitItem()).isEqualTo(setOf(BottomNavTab.INSURANCE, BottomNavTab.FOREVER))
       service.visitTab(BottomNavTab.INSURANCE)
-      assertThat(awaitItem()).isEqualTo(setOf(BottomNavTab.REFERRALS))
-      service.visitTab(BottomNavTab.REFERRALS)
+      assertThat(awaitItem()).isEqualTo(setOf(BottomNavTab.FOREVER))
+      service.visitTab(BottomNavTab.FOREVER)
       assertThat(awaitItem()).isEqualTo(emptySet())
       ensureAllEventsConsumed()
     }

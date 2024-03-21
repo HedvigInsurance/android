@@ -29,7 +29,14 @@ internal class GetCommonClaimsUseCase(
       .activeContracts
       .map { it.toCommonClaims() }
 
-    commonClaims.flatten().toPersistentList()
+    commonClaims.flatten()
+      .distinctBy {
+        when (it) {
+          is CommonClaim.Emergency -> it.title
+          is CommonClaim.Generic -> it.id
+        }
+      }
+      .toPersistentList()
   }
 
   private fun CommonClaimsQuery.Data.CurrentMember.ActiveContract.toCommonClaims() =

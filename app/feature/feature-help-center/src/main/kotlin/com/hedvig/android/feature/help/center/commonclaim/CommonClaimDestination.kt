@@ -102,6 +102,7 @@ private fun PreviewCommonClaimDestination(
         CommonClaim.Generic(
           if (isManyPets) "30" else "29",
           "Title",
+          hintTextRes = 1,
           listOf(
             CommonClaim.Generic.BulletPoint("Title", "Description"),
             CommonClaim.Generic.BulletPoint("Title#2", "Description#2"),

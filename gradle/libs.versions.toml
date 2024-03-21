@@ -62,8 +62,9 @@ kotlinxDatetime = "0.5.0"
 kotlinxImmutableCollections = "0.3.7"
 leakCanary = "2.13"
 moneta = "1.4.4"
+navigationRecentsUrlSharing = "0.0.1"
 okhttp = "4.12.0"
-okio = "3.8.0"
+okio = "3.9.0"
 playReview = "2.0.1"
 retrofit = "2.9.0"
 retrofitArrow = "1.2.3"
@@ -71,8 +72,8 @@ retrofitKotlinxSerializationConverter = "1.0.0"
 slimber = "2.0.0"
 testParameterInjector = "1.15"
 timber = "5.0.1"
-unleash = "0.5.9"
 turbine = "1.1.0"
+unleash = "0.5.9"
 zXing = "3.5.3"
 zoomable = "1.6.1"
 
@@ -169,6 +170,7 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 ktor = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
 leakCanary = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakCanary" }
 moneta = { module = "org.javamoney.moneta:moneta-core", version.ref = "moneta" }
+navigationRecentsUrlSharing = { module = "com.stylianosgakis.navigation.recents.url.sharing:navigation-recents-url-sharing", version.ref = "navigationRecentsUrlSharing" }
 okhttp-core = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 okhttp-loggingInterceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
 okhttp-mockWebServer = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "okhttp" }

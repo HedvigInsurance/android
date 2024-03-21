@@ -8,6 +8,7 @@ import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.contract.supportsTravelCertificate
 import com.hedvig.android.data.contract.toContractType
+import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import octopus.CurrentContractsQuery
 
@@ -29,7 +30,7 @@ internal class CheckTravelCertificateAvailabilityForCurrentContractsUseCaseImpl(
           it.currentMember.activeContracts
         }
         .onLeft { errorMessage ->
-          logcat { "Could not fetch current contracts. Message:${errorMessage.message}" }
+          logcat(priority = LogPriority.ERROR) { "Could not fetch current contracts. Message:${errorMessage.message}" }
         }
         .bind()
       val hasContractWhichSupportsTravelCertificates: Boolean = contracts
