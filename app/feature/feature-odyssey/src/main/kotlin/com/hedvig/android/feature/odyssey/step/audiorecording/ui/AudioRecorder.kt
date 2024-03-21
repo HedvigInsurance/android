@@ -183,7 +183,7 @@ internal fun AudioRecorder(
           } else {
             Text(
               text = stringResource(R.string.EMBARK_START_RECORDING),
-              style = MaterialTheme.typography.bodySmall,
+              style = MaterialTheme.typography.bodyLarge,
               textAlign = TextAlign.Center,
               modifier = Modifier.padding(bottom = 16.dp),
             )
