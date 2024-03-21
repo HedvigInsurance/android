@@ -485,15 +485,6 @@ private fun ClaimDetailHedvigAudioPlayerItem(signedAudioUrl: SignedAudioUrl, mod
   Column(modifier) {
     val audioPlayer = rememberAudioPlayer(playableAudioSource = PlayableAudioSource.RemoteUrl(signedAudioUrl))
     HedvigAudioPlayer(audioPlayer = audioPlayer)
-    Spacer(Modifier.height(8.dp))
-    val audioPlayerState by audioPlayer.audioPlayerState.collectAsStateWithLifecycle()
-    AnimatedVisibility(visible = audioPlayerState !is AudioPlayerState.Failed) {
-      Text(
-        text = stringResource(R.string.claim_status_files_claim_audio_footer),
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-      )
-    }
   }
 }
 
