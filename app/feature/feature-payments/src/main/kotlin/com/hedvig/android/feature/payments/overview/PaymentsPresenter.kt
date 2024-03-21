@@ -18,7 +18,7 @@ import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import kotlinx.datetime.LocalDate
 
-internal class PaymentOverviewPresenter(
+internal class PaymentsPresenter(
   val getPaymentOverviewDataUseCase: Provider<GetPaymentOverviewDataUseCase>,
 ) : MoleculePresenter<PaymentsEvent, PaymentOverviewUiState> {
   @Composable
