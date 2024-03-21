@@ -22,7 +22,7 @@ fun NavGraphBuilder.loginGraph(
   navigator: Navigator,
   appVersionName: String,
   urlBaseWeb: String,
-  openUri: (String) -> Unit,
+  openUrl: (String) -> Unit,
   startLoggedInActivity: () -> Unit,
   startDKLogin: () -> Unit,
   startNOLogin: () -> Unit,
@@ -40,7 +40,7 @@ fun NavGraphBuilder.loginGraph(
         openWebOnboarding = { market ->
           val baseUrl = urlBaseWeb.substringAfter("//")
           val uri = market.createOnboardingUri(baseUrl, Language.from(locale.toLanguageTag())).toString()
-          openUri(uri)
+          openUrl(uri)
         },
         navigateToLoginScreen = { market ->
           logcat { "Navigating to login screen for market market:$market" }

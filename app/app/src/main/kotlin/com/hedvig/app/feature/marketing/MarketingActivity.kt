@@ -87,7 +87,7 @@ class MarketingActivity : AppCompatActivity() {
             navigator = navigator,
             appVersionName = hedvigBuildConstants.appVersionName,
             urlBaseWeb = hedvigBuildConstants.urlBaseWeb,
-            openUri = { safeAndroidUriHandler.openUri(it) },
+            openUrl = { safeAndroidUriHandler.openUri(it) },
             startLoggedInActivity = {
               activityNavigator.navigateToLoggedInScreen(this@MarketingActivity, false)
               finish()
