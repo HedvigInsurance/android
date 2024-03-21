@@ -1,13 +1,13 @@
 package com.hedvig.android.app.navigation
 
 import android.content.Context
-import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.Density
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavBackStackEntry
@@ -76,13 +76,7 @@ internal fun HedvigNavHost(
   val context = LocalContext.current
   val density = LocalDensity.current
   val navigator: Navigator = rememberNavigator(hedvigAppState.navController)
-
-  val openUrl: (String) -> Unit = { url ->
-    activityNavigator.openWebsite(
-      context,
-      if (url.isBlank()) Uri.EMPTY else Uri.parse(url),
-    )
-  }
+  val uriHandler = LocalUriHandler.current
 
   val navigateToConnectPayment = {
     when (market) {
@@ -114,7 +108,7 @@ internal fun HedvigNavHost(
           shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
           activityNavigator = activityNavigator,
           imageLoader = imageLoader,
-          openUrl = openUrl,
+          openUrl = uriHandler::openUri,
         )
       },
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
@@ -137,7 +131,7 @@ internal fun HedvigNavHost(
         with(navigator) { backStackEntry.navigate(HelpCenterDestination) }
       },
       openAppSettings = { activityNavigator.openAppSettings(context) },
-      openUrl = openUrl,
+      openUrl = uriHandler::openUri,
     )
     insuranceGraph(
       nestedGraphs = {
@@ -151,17 +145,12 @@ internal fun HedvigNavHost(
               backStackEntry.navigate(AppDestination.Chat())
             }
           },
-          openUrl = openUrl,
+          openUrl = uriHandler::openUri,
           openPlayStore = { activityNavigator.tryOpenPlayStore(context) },
         )
       },
       navigator = navigator,
-      openWebsite = { uri ->
-        activityNavigator.openWebsite(context, uri)
-      },
-      openUrl = {
-        openUrl(it)
-      },
+      openUrl = uriHandler::openUri,
       openChat = { backStackEntry ->
         with(navigator) {
           backStackEntry.navigate(AppDestination.Chat())
@@ -225,13 +214,13 @@ internal fun HedvigNavHost(
         with(navigator) { backStackEntry.navigate(DeleteAccountDestination) }
       },
       openAppSettings = { activityNavigator.openAppSettings(context) },
-      openUrl = openUrl,
+      openUrl = uriHandler::openUri,
     )
     chatGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       hedvigBuildConstants = hedvigBuildConstants,
       imageLoader = imageLoader,
-      openUrl = openUrl,
+      openUrl = uriHandler::openUri,
       navigator = navigator,
     )
     connectPaymentGraph(
@@ -296,7 +285,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
         backStackEntry.navigate(AppDestination.Chat())
       }
     },
-    openUrl = { activityNavigator.openWebsite(context, Uri.parse(it)) },
+    openUrl = openUrl,
   )
   travelCertificateGraph(
     density = density,
@@ -328,7 +317,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
         },
       )
     },
-    openUrl = { activityNavigator.openWebsite(context, Uri.parse(it)) },
+    openUrl = openUrl,
     openChat = { backStackEntry ->
       with(navigator) {
         backStackEntry.navigate(AppDestination.Chat())

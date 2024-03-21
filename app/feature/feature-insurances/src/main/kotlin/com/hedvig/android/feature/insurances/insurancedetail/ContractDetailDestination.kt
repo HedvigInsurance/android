@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.insurances.insurancedetail
 
-import android.net.Uri
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -74,7 +73,6 @@ internal fun ContractDetailDestination(
   onMissingInfoClick: (String) -> Unit,
   onChangeAddressClick: () -> Unit,
   onCancelInsuranceClick: (cancelInsuranceData: CancelInsuranceData) -> Unit,
-  openWebsite: (Uri) -> Unit,
   openChat: () -> Unit,
   openUrl: (String) -> Unit,
   navigateUp: () -> Unit,
@@ -92,7 +90,6 @@ internal fun ContractDetailDestination(
     onCancelInsuranceClick = onCancelInsuranceClick,
     openChat = openChat,
     openUrl = openUrl,
-    openWebsite = openWebsite,
     navigateUp = navigateUp,
     navigateBack = navigateBack,
   )
@@ -108,7 +105,6 @@ private fun ContractDetailScreen(
   onMissingInfoClick: (String) -> Unit,
   onChangeAddressClick: () -> Unit,
   onCancelInsuranceClick: (cancelInsuranceData: CancelInsuranceData) -> Unit,
-  openWebsite: (Uri) -> Unit,
   navigateUp: () -> Unit,
   navigateBack: () -> Unit,
   openChat: () -> Unit,
@@ -238,7 +234,7 @@ private fun ContractDetailScreen(
                   2 -> {
                     DocumentsTab(
                       documents = state.insuranceContract.getAllDocuments(),
-                      onDocumentClicked = openWebsite,
+                      onDocumentClicked = openUrl,
                     )
                   }
 
@@ -346,7 +342,6 @@ private fun PreviewContractDetailScreen() {
         onChangeAddressClick = {},
         onCancelInsuranceClick = {
         },
-        openWebsite = {},
         navigateUp = {},
         navigateBack = {},
         openChat = {},
