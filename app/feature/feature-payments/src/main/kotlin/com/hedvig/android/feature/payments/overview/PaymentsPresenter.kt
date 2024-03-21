@@ -20,12 +20,12 @@ import kotlinx.datetime.LocalDate
 
 internal class PaymentsPresenter(
   val getPaymentOverviewDataUseCase: Provider<GetPaymentOverviewDataUseCase>,
-) : MoleculePresenter<PaymentsEvent, PaymentOverviewUiState> {
+) : MoleculePresenter<PaymentsEvent, PaymentsUiState> {
   @Composable
   override fun MoleculePresenterScope<PaymentsEvent>.present(
-    lastState: PaymentOverviewUiState,
-  ): PaymentOverviewUiState {
-    var paymentUiState: PaymentOverviewUiState by remember { mutableStateOf(lastState) }
+    lastState: PaymentsUiState,
+  ): PaymentsUiState {
+    var paymentUiState: PaymentsUiState by remember { mutableStateOf(lastState) }
     var loadIteration by remember { mutableIntStateOf(0) }
 
     CollectEvents { event ->
@@ -36,20 +36,20 @@ internal class PaymentsPresenter(
 
     LaunchedEffect(loadIteration) {
       val currentPaymentUiState = paymentUiState
-      paymentUiState = if (currentPaymentUiState is PaymentOverviewUiState.Content) {
+      paymentUiState = if (currentPaymentUiState is PaymentsUiState.Content) {
         currentPaymentUiState.copy(isLoading = true)
       } else {
-        PaymentOverviewUiState.Loading
+        PaymentsUiState.Loading
       }
       getPaymentOverviewDataUseCase.provide().invoke().fold(
         ifLeft = {
-          paymentUiState = PaymentOverviewUiState.Error
+          paymentUiState = PaymentsUiState.Error
         },
         ifRight = { paymentOverviewData ->
-          paymentUiState = PaymentOverviewUiState.Content(
+          paymentUiState = PaymentsUiState.Content(
             isLoading = false,
             upcomingPayment = paymentOverviewData.paymentOverview.memberCharge?.let { memberCharge ->
-              PaymentOverviewUiState.Content.UpcomingPayment(
+              PaymentsUiState.Content.UpcomingPayment(
                 grossAmount = memberCharge.grossAmount,
                 dueDate = memberCharge.dueDate,
               )
@@ -57,10 +57,10 @@ internal class PaymentsPresenter(
             upcomingPaymentInfo = run {
               val memberCharge = paymentOverviewData.paymentOverview.memberCharge
               if (memberCharge?.status == MemberCharge.MemberChargeStatus.PENDING) {
-                return@run PaymentOverviewUiState.Content.UpcomingPaymentInfo.InProgress
+                return@run PaymentsUiState.Content.UpcomingPaymentInfo.InProgress
               }
               memberCharge?.failedCharge?.let { failedCharge ->
-                return@run PaymentOverviewUiState.Content.UpcomingPaymentInfo.PaymentFailed(
+                return@run PaymentsUiState.Content.UpcomingPaymentInfo.PaymentFailed(
                   failedPaymentStartDate = failedCharge.fromDate,
                   failedPaymentEndDate = failedCharge.toDate,
                 )
@@ -69,18 +69,18 @@ internal class PaymentsPresenter(
             connectedPaymentInfo = run {
               val paymentConnection = paymentOverviewData.paymentOverview.paymentConnection
               when (paymentConnection) {
-                is PaymentConnection.Active -> PaymentOverviewUiState.Content.ConnectedPaymentInfo.Connected(
+                is PaymentConnection.Active -> PaymentsUiState.Content.ConnectedPaymentInfo.Connected(
                   displayName = paymentConnection.displayName,
                   maskedAccountNumber = paymentConnection.displayValue,
                 )
 
-                PaymentConnection.Pending -> PaymentOverviewUiState.Content.ConnectedPaymentInfo.Pending
-                else -> PaymentOverviewUiState.Content.ConnectedPaymentInfo.NotConnected(
+                PaymentConnection.Pending -> PaymentsUiState.Content.ConnectedPaymentInfo.Pending
+                else -> PaymentsUiState.Content.ConnectedPaymentInfo.NotConnected(
                   paymentOverviewData.paymentOverview.memberCharge?.dueDate,
                 )
               }
             },
-            contentForOtherScreens = PaymentOverviewUiState.Content.ContentForOtherScreens(
+            contentForOtherScreens = PaymentsUiState.Content.ContentForOtherScreens(
               paymentOverview = paymentOverviewData.paymentOverview,
               memberCharge = paymentOverviewData.paymentOverview.memberCharge,
               discountList = paymentOverviewData.paymentOverview.discounts,
@@ -97,10 +97,10 @@ internal sealed interface PaymentsEvent {
   data object Retry : PaymentsEvent
 }
 
-internal sealed interface PaymentOverviewUiState {
-  data object Loading : PaymentOverviewUiState
+internal sealed interface PaymentsUiState {
+  data object Loading : PaymentsUiState
 
-  data object Error : PaymentOverviewUiState
+  data object Error : PaymentsUiState
 
   data class Content(
     val isLoading: Boolean,
@@ -108,7 +108,7 @@ internal sealed interface PaymentOverviewUiState {
     val upcomingPaymentInfo: UpcomingPaymentInfo?,
     val connectedPaymentInfo: ConnectedPaymentInfo,
     val contentForOtherScreens: ContentForOtherScreens,
-  ) : PaymentOverviewUiState {
+  ) : PaymentsUiState {
     data class UpcomingPayment(
       val grossAmount: UiMoney,
       val dueDate: LocalDate,

@@ -79,7 +79,7 @@ import kotlinx.datetime.toLocalDateTime
 import octopus.type.CurrencyCode
 
 @Composable
-internal fun PaymentOverviewDestination(
+internal fun PaymentsDestination(
   viewModel: PaymentsViewModel,
   onUpcomingPaymentClicked: (MemberCharge, PaymentOverview) -> Unit,
   onDiscountClicked: (List<Discount>) -> Unit,
@@ -87,7 +87,7 @@ internal fun PaymentOverviewDestination(
   onChangeBankAccount: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  PaymentOverviewScreen(
+  PaymentsScreen(
     uiState = uiState,
     onUpcomingPaymentClicked = onUpcomingPaymentClicked,
     onChangeBankAccount = onChangeBankAccount,
@@ -98,8 +98,8 @@ internal fun PaymentOverviewDestination(
 }
 
 @Composable
-private fun PaymentOverviewScreen(
-  uiState: PaymentOverviewUiState,
+private fun PaymentsScreen(
+  uiState: PaymentsUiState,
   onUpcomingPaymentClicked: (MemberCharge, PaymentOverview) -> Unit,
   onChangeBankAccount: () -> Unit,
   onDiscountClicked: (List<Discount>) -> Unit,
@@ -110,7 +110,7 @@ private fun PaymentOverviewScreen(
     WindowInsets.systemBars.getTop(this).toDp()
   }
   val isRefreshing =
-    uiState is PaymentOverviewUiState.Loading || uiState.safeCast<PaymentOverviewUiState.Content>()?.isLoading == true
+    uiState is PaymentsUiState.Loading || uiState.safeCast<PaymentsUiState.Content>()?.isLoading == true
   val pullRefreshState = rememberPullRefreshState(
     refreshing = isRefreshing,
     onRefresh = onRetry,
@@ -132,12 +132,12 @@ private fun PaymentOverviewScreen(
         )
         Spacer(Modifier.height(8.dp))
         when (uiState) {
-          PaymentOverviewUiState.Loading -> {
+          PaymentsUiState.Loading -> {
             // Pull to refresh handles this case
           }
 
-          PaymentOverviewUiState.Error -> HedvigErrorSection(onButtonClick = onRetry, Modifier.weight(1f))
-          is PaymentOverviewUiState.Content -> {
+          PaymentsUiState.Error -> HedvigErrorSection(onButtonClick = onRetry, Modifier.weight(1f))
+          is PaymentsUiState.Content -> {
             PaymentsContent(
               uiState = uiState,
               onUpcomingPaymentClicked = {
@@ -169,7 +169,7 @@ private fun PaymentOverviewScreen(
 
 @Composable
 private fun PaymentsContent(
-  uiState: PaymentOverviewUiState.Content,
+  uiState: PaymentsUiState.Content,
   onUpcomingPaymentClicked: () -> Unit,
   onChangeBankAccount: () -> Unit,
   onDiscountClicked: () -> Unit,
@@ -198,7 +198,7 @@ private fun PaymentsContent(
         .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
     )
 
-    if (uiState.connectedPaymentInfo is PaymentOverviewUiState.Content.ConnectedPaymentInfo.NotConnected) {
+    if (uiState.connectedPaymentInfo is PaymentsUiState.Content.ConnectedPaymentInfo.NotConnected) {
       CardNotConnectedWarningCard(
         connectedPaymentInfo = uiState.connectedPaymentInfo,
         onChangeBankAccount = onChangeBankAccount,
@@ -209,7 +209,7 @@ private fun PaymentsContent(
     }
 
     PaymentsListItems(uiState, onDiscountClicked, onPaymentHistoryClicked)
-    if (uiState.connectedPaymentInfo is PaymentOverviewUiState.Content.ConnectedPaymentInfo.Connected) {
+    if (uiState.connectedPaymentInfo is PaymentsUiState.Content.ConnectedPaymentInfo.Connected) {
       Spacer(Modifier.weight(1f))
       HedvigSecondaryContainedButton(
         text = stringResource(R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT),
@@ -219,7 +219,7 @@ private fun PaymentsContent(
           .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
       )
     }
-    if (uiState.connectedPaymentInfo is PaymentOverviewUiState.Content.ConnectedPaymentInfo.Pending) {
+    if (uiState.connectedPaymentInfo is PaymentsUiState.Content.ConnectedPaymentInfo.Pending) {
       VectorInfoCard(
         text = stringResource(R.string.MY_PAYMENT_UPDATING_MESSAGE),
         modifier = Modifier
@@ -232,7 +232,7 @@ private fun PaymentsContent(
 
 @Composable
 private fun CardNotConnectedWarningCard(
-  connectedPaymentInfo: PaymentOverviewUiState.Content.ConnectedPaymentInfo.NotConnected,
+  connectedPaymentInfo: PaymentsUiState.Content.ConnectedPaymentInfo.NotConnected,
   onChangeBankAccount: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -263,14 +263,14 @@ private fun CardNotConnectedWarningCard(
 }
 
 @Composable
-private fun UpcomingPaymentInfoCard(uiState: PaymentOverviewUiState.Content, modifier: Modifier = Modifier) {
+private fun UpcomingPaymentInfoCard(uiState: PaymentsUiState.Content, modifier: Modifier = Modifier) {
   Box(modifier) {
     when (uiState.upcomingPaymentInfo) {
-      PaymentOverviewUiState.Content.UpcomingPaymentInfo.InProgress -> {
+      PaymentsUiState.Content.UpcomingPaymentInfo.InProgress -> {
         VectorInfoCard(text = stringResource(id = R.string.PAYMENTS_IN_PROGRESS))
       }
 
-      is PaymentOverviewUiState.Content.UpcomingPaymentInfo.PaymentFailed -> {
+      is PaymentsUiState.Content.UpcomingPaymentInfo.PaymentFailed -> {
         val monthDateFormatter = rememberHedvigMonthDateTimeFormatter()
         VectorErrorCard(
           text = stringResource(
@@ -288,7 +288,7 @@ private fun UpcomingPaymentInfoCard(uiState: PaymentOverviewUiState.Content, mod
 
 @Composable
 private fun PaymentsListItems(
-  uiState: PaymentOverviewUiState.Content,
+  uiState: PaymentsUiState.Content,
   onDiscountClicked: () -> Unit,
   onPaymentHistoryClicked: () -> Unit,
 ) {
@@ -329,7 +329,7 @@ private fun PaymentsListItems(
         .padding(vertical = 16.dp)
         .fillMaxWidth(),
     )
-    if (uiState.connectedPaymentInfo is PaymentOverviewUiState.Content.ConnectedPaymentInfo.Connected) {
+    if (uiState.connectedPaymentInfo is PaymentsUiState.Content.ConnectedPaymentInfo.Connected) {
       HorizontalDivider(listItemsSideSpacingModifier)
       PaymentsListItem(
         text = uiState.connectedPaymentInfo.displayName,
@@ -355,7 +355,7 @@ private fun PaymentsListItems(
 
 @Composable
 private fun PaymentAmountCard(
-  upcomingPayment: PaymentOverviewUiState.Content.UpcomingPayment,
+  upcomingPayment: PaymentsUiState.Content.UpcomingPayment,
   onCardClicked: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -419,11 +419,11 @@ private fun PaymentsListItem(
 @Composable
 @HedvigPreview
 private fun PreviewPaymentScreen(
-  @PreviewParameter(PaymentOverviewUiStatePreviewProvider::class) uiState: PaymentOverviewUiState,
+  @PreviewParameter(PaymentsStatePreviewProvider::class) uiState: PaymentsUiState,
 ) {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      PaymentOverviewScreen(
+      PaymentsScreen(
         uiState = uiState,
         { _, _ -> },
         {},
@@ -435,105 +435,113 @@ private fun PreviewPaymentScreen(
   }
 }
 
-private class PaymentOverviewUiStatePreviewProvider : CollectionPreviewParameterProvider<PaymentOverviewUiState>(
+private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<PaymentsUiState>(
   buildList {
-    val contentForOtherScreens = PaymentOverviewUiState.Content.ContentForOtherScreens(
+    val contentForOtherScreens = PaymentsUiState.Content.ContentForOtherScreens(
       PaymentOverview(null, null, emptyList(), null),
       null,
       emptyList(),
     )
-    add(PaymentOverviewUiState.Loading)
-    add(PaymentOverviewUiState.Error)
+    add(PaymentsUiState.Error)
     add(
-      PaymentOverviewUiState.Content(
+      PaymentsUiState.Content(
         isLoading = false,
-        upcomingPayment = PaymentOverviewUiState.Content.UpcomingPayment(
+        upcomingPayment = null,
+        upcomingPaymentInfo = null,
+        connectedPaymentInfo = PaymentsUiState.Content.ConnectedPaymentInfo.Connected("Card", "****1234"),
+        contentForOtherScreens,
+      ),
+    )
+    add(
+      PaymentsUiState.Content(
+        isLoading = false,
+        upcomingPayment = PaymentsUiState.Content.UpcomingPayment(
           UiMoney(100.0, CurrencyCode.SEK),
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
         ),
         upcomingPaymentInfo = null,
-        connectedPaymentInfo = PaymentOverviewUiState.Content.ConnectedPaymentInfo.Connected("Card", "****1234"),
+        connectedPaymentInfo = PaymentsUiState.Content.ConnectedPaymentInfo.Connected("Card", "****1234"),
         contentForOtherScreens,
       ),
     )
     add(
-      PaymentOverviewUiState.Content(
+      PaymentsUiState.Content(
         isLoading = false,
-        upcomingPayment = PaymentOverviewUiState.Content.UpcomingPayment(
+        upcomingPayment = PaymentsUiState.Content.UpcomingPayment(
           UiMoney(100.0, CurrencyCode.SEK),
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
         ),
-        upcomingPaymentInfo = PaymentOverviewUiState.Content.UpcomingPaymentInfo.InProgress,
-        connectedPaymentInfo = PaymentOverviewUiState.Content.ConnectedPaymentInfo.Connected("Card", "****1234"),
+        upcomingPaymentInfo = PaymentsUiState.Content.UpcomingPaymentInfo.InProgress,
+        connectedPaymentInfo = PaymentsUiState.Content.ConnectedPaymentInfo.Connected("Card", "****1234"),
         contentForOtherScreens,
       ),
     )
     add(
-      PaymentOverviewUiState.Content(
+      PaymentsUiState.Content(
         isLoading = false,
-        upcomingPayment = PaymentOverviewUiState.Content.UpcomingPayment(
+        upcomingPayment = PaymentsUiState.Content.UpcomingPayment(
           UiMoney(100.0, CurrencyCode.SEK),
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
         ),
-        upcomingPaymentInfo = PaymentOverviewUiState.Content.UpcomingPaymentInfo.PaymentFailed(
+        upcomingPaymentInfo = PaymentsUiState.Content.UpcomingPaymentInfo.PaymentFailed(
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
           Clock.System.now().minus(30.days).toLocalDateTime(TimeZone.UTC).date,
         ),
-        connectedPaymentInfo = PaymentOverviewUiState.Content.ConnectedPaymentInfo.Connected("Card", "****1234"),
+        connectedPaymentInfo = PaymentsUiState.Content.ConnectedPaymentInfo.Connected("Card", "****1234"),
         contentForOtherScreens,
       ),
     )
     add(
-      PaymentOverviewUiState.Content(
+      PaymentsUiState.Content(
         isLoading = false,
-        upcomingPayment = PaymentOverviewUiState.Content.UpcomingPayment(
+        upcomingPayment = PaymentsUiState.Content.UpcomingPayment(
           UiMoney(100.0, CurrencyCode.SEK),
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
         ),
         upcomingPaymentInfo = null,
-        connectedPaymentInfo = PaymentOverviewUiState.Content.ConnectedPaymentInfo.Pending,
+        connectedPaymentInfo = PaymentsUiState.Content.ConnectedPaymentInfo.Pending,
         contentForOtherScreens,
       ),
     )
     add(
-      PaymentOverviewUiState.Content(
+      PaymentsUiState.Content(
         isLoading = false,
-        upcomingPayment = PaymentOverviewUiState.Content.UpcomingPayment(
+        upcomingPayment = PaymentsUiState.Content.UpcomingPayment(
           UiMoney(100.0, CurrencyCode.SEK),
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
         ),
         upcomingPaymentInfo = null,
-        connectedPaymentInfo = PaymentOverviewUiState.Content.ConnectedPaymentInfo.NotConnected(null),
+        connectedPaymentInfo = PaymentsUiState.Content.ConnectedPaymentInfo.NotConnected(null),
         contentForOtherScreens,
       ),
     )
     add(
-      PaymentOverviewUiState.Content(
+      PaymentsUiState.Content(
         isLoading = false,
-        upcomingPayment = PaymentOverviewUiState.Content.UpcomingPayment(
+        upcomingPayment = PaymentsUiState.Content.UpcomingPayment(
           UiMoney(100.0, CurrencyCode.SEK),
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
         ),
-        upcomingPaymentInfo = PaymentOverviewUiState.Content.UpcomingPaymentInfo.PaymentFailed(
+        upcomingPaymentInfo = PaymentsUiState.Content.UpcomingPaymentInfo.PaymentFailed(
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
           Clock.System.now().minus(30.days).toLocalDateTime(TimeZone.UTC).date,
         ),
-        connectedPaymentInfo = PaymentOverviewUiState.Content.ConnectedPaymentInfo.NotConnected(null),
+        connectedPaymentInfo = PaymentsUiState.Content.ConnectedPaymentInfo.NotConnected(null),
         contentForOtherScreens,
       ),
     )
     add(
-      PaymentOverviewUiState.Content(
+      PaymentsUiState.Content(
         isLoading = false,
-        upcomingPayment = PaymentOverviewUiState.Content.UpcomingPayment(
+        upcomingPayment = PaymentsUiState.Content.UpcomingPayment(
           UiMoney(100.0, CurrencyCode.SEK),
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
         ),
-        upcomingPaymentInfo = PaymentOverviewUiState.Content.UpcomingPaymentInfo.PaymentFailed(
+        upcomingPaymentInfo = PaymentsUiState.Content.UpcomingPaymentInfo.PaymentFailed(
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
           Clock.System.now().minus(30.days).toLocalDateTime(TimeZone.UTC).date,
         ),
-        connectedPaymentInfo = PaymentOverviewUiState.Content.ConnectedPaymentInfo.NotConnected(
+        connectedPaymentInfo = PaymentsUiState.Content.ConnectedPaymentInfo.NotConnected(
           Clock.System.now().plus(30.days).toLocalDateTime(TimeZone.UTC).date,
         ),
         contentForOtherScreens,

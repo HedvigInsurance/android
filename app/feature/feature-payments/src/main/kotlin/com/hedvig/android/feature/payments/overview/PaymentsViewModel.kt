@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.WhileSubscribed
 
 internal class PaymentsViewModel(
   getPaymentOverviewDataUseCase: Provider<GetPaymentOverviewDataUseCase>,
-) : MoleculeViewModel<PaymentsEvent, PaymentOverviewUiState>(
-    PaymentOverviewUiState.Loading,
+) : MoleculeViewModel<PaymentsEvent, PaymentsUiState>(
+    PaymentsUiState.Loading,
     PaymentsPresenter(
       getPaymentOverviewDataUseCase = getPaymentOverviewDataUseCase,
     ),
