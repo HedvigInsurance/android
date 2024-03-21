@@ -153,8 +153,7 @@ private fun ContractDetailScreen(
             contentPadding = WindowInsets
               .safeDrawing
               .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
-              .asPaddingValues()
-              .plus(PaddingValues(top = 16.dp)),
+              .asPaddingValues(),
             modifier = Modifier
               .fillMaxSize()
               .consumeWindowInsets(

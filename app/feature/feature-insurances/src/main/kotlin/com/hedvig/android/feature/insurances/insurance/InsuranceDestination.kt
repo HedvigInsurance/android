@@ -162,7 +162,6 @@ private fun InsuranceScreen(
               .verticalScroll(rememberScrollState())
               .windowInsetsPadding(WindowInsets.safeDrawing),
           ) {
-            Spacer(Modifier.height(16.dp))
             Row(
               verticalAlignment = Alignment.CenterVertically,
               modifier = Modifier
