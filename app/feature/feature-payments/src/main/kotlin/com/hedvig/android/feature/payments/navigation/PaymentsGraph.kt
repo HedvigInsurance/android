@@ -10,7 +10,7 @@ import com.hedvig.android.feature.payments.discounts.DiscountsDestination
 import com.hedvig.android.feature.payments.discounts.DiscountsViewModel
 import com.hedvig.android.feature.payments.history.PaymentHistoryDestination
 import com.hedvig.android.feature.payments.overview.PaymentOverviewDestination
-import com.hedvig.android.feature.payments.overview.PaymentOverviewViewModel
+import com.hedvig.android.feature.payments.overview.PaymentsViewModel
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
 import com.kiwi.navigationcompose.typed.composable
@@ -33,10 +33,9 @@ fun NavGraphBuilder.paymentsGraph(
       enterTransition = { MotionDefaults.fadeThroughEnter },
       exitTransition = { MotionDefaults.fadeThroughExit },
     ) { backStackEntry ->
-      val viewModel: PaymentOverviewViewModel = koinViewModel()
+      val viewModel: PaymentsViewModel = koinViewModel()
       PaymentOverviewDestination(
         viewModel = viewModel,
-        onBackPressed = navigator::navigateUp,
         onPaymentHistoryClicked = { paymentOverview ->
           with(navigator) { backStackEntry.navigate(PaymentsDestinations.History(paymentOverview)) }
         },
