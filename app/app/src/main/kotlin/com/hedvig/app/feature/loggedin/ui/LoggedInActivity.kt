@@ -204,6 +204,7 @@ class LoggedInActivity : AppCompatActivity() {
             hedvigDeepLinkContainer = hedvigDeepLinkContainer,
             activityNavigator = activityNavigator,
             shouldShowRequestPermissionRationale = ::shouldShowRequestPermissionRationale,
+            openUrl = deepLinkFirstUriHandler::openUri,
             market = market,
             imageLoader = imageLoader,
             languageService = languageService,
