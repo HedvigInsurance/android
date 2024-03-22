@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.terminateinsurance.data
+package com.hedvig.android.data.termination.data
 
 import arrow.core.Either
 import arrow.core.raise.either
@@ -9,19 +9,18 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.toContractGroup
-import com.hedvig.android.logger.logcat
 import kotlinx.datetime.LocalDate
 import octopus.ContractsToTerminateQuery
 
-internal interface GetContractsToTerminateUseCase {
-  suspend fun invoke(): Either<ErrorMessage, List<InsuranceForCancellation>>
+
+interface GetTerminatableContractsUseCase {
+  suspend fun invoke(): Either<ErrorMessage, List<TerminatableInsurance>>
 }
 
-internal class GetContractsToTerminateUseCaseImpl(
+internal class GetTerminatableContractsUseCaseImpl(
   private val apolloClient: ApolloClient,
-) : GetContractsToTerminateUseCase {
-  override suspend fun invoke(): Either<ErrorMessage, List<InsuranceForCancellation>> {
-    logcat { "mariia: GetContractsToTerminateUseCaseImpl launched" }
+) : GetTerminatableContractsUseCase {
+  override suspend fun invoke(): Either<ErrorMessage, List<TerminatableInsurance>> {
     return either {
       val member = apolloClient
         .query(ContractsToTerminateQuery())
@@ -34,7 +33,7 @@ internal class GetContractsToTerminateUseCaseImpl(
   }
 }
 
-data class InsuranceForCancellation(
+data class TerminatableInsurance(
   val id: String,
   val displayName: String,
   val monthlyPayment: UiMoney,
@@ -44,13 +43,13 @@ data class InsuranceForCancellation(
   val activateFrom: LocalDate,
 )
 
-private fun ContractsToTerminateQuery.Data.CurrentMember.toInsurancesForCancellation(): List<InsuranceForCancellation> {
+private fun ContractsToTerminateQuery.Data.CurrentMember.toInsurancesForCancellation(): List<TerminatableInsurance> {
   val futureChargeIds = futureCharge?.contractsChargeBreakdown?.map {
     it.contract.id
   } ?: listOf()
   val nextPaymentDate = futureCharge?.date
   return activeContracts.map {
-    InsuranceForCancellation(
+    TerminatableInsurance(
       id = it.id,
       displayName = it.currentAgreement.productVariant.displayName,
       contractGroup = it.currentAgreement.productVariant.typeOfContract.toContractGroup(),

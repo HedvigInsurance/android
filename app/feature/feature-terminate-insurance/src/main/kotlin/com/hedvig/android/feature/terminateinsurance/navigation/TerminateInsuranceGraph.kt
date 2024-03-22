@@ -82,7 +82,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       ChooseInsuranceToTerminateDestination(
         viewModel = viewModel,
         navigateUp = navigator::navigateUp,
-        navigateBack = navigator::popBackStack,
+        openChat = { openChat(backStackEntry) },
         navigateToNextStep = { step, insuranceForCancellation ->
           navigator.navigateToTerminateFlowDestination(
             destination = step.toTerminateInsuranceDestination(

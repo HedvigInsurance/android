@@ -45,5 +45,6 @@ dependencies {
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
   implementation(projects.featureFlagsPublic)
+  implementation(projects.dataTermination)
 
 }

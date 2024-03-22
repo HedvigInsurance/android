@@ -31,7 +31,7 @@ import com.hedvig.android.core.ui.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup
-import com.hedvig.android.feature.terminateinsurance.data.InsuranceForCancellation
+import com.hedvig.android.data.termination.data.TerminatableInsurance
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationOverviewScreenScaffold
 import hedvig.resources.R
@@ -43,15 +43,15 @@ import octopus.type.CurrencyCode
 internal fun ChooseInsuranceToTerminateDestination(
   viewModel: ChooseInsuranceToTerminateViewModel,
   navigateUp: () -> Unit,
-  navigateBack: () -> Unit,
-  navigateToNextStep: (step: TerminateInsuranceStep, insuranceForCancellation: InsuranceForCancellation) -> Unit,
+  openChat: () -> Unit,
+  navigateToNextStep: (step: TerminateInsuranceStep, terminatableInsurance: TerminatableInsurance) -> Unit,
 ) {
   val uiState: ChooseInsuranceToTerminateStepUiState by viewModel.uiState.collectAsStateWithLifecycle()
   ChooseInsuranceToTerminateScreen(
     uiState = uiState,
     navigateUp = navigateUp,
     navigateToNextStep = navigateToNextStep,
-    navigateBack = navigateBack,
+    openChat = openChat,
     reload = { viewModel.emit(ChooseInsuranceToTerminateEvent.RetryLoadData) },
     selectInsurance = { viewModel.emit(ChooseInsuranceToTerminateEvent.SelectInsurance(it)) },
   )
@@ -62,21 +62,21 @@ private fun ChooseInsuranceToTerminateScreen(
   uiState: ChooseInsuranceToTerminateStepUiState,
   navigateUp: () -> Unit,
   reload: () -> Unit,
-  navigateBack: () -> Unit,
-  selectInsurance: (insurance: InsuranceForCancellation) -> Unit,
-  navigateToNextStep: (step: TerminateInsuranceStep, insuranceForCancellation: InsuranceForCancellation) -> Unit,
+  openChat: () -> Unit,
+  selectInsurance: (insurance: TerminatableInsurance) -> Unit,
+  navigateToNextStep: (step: TerminateInsuranceStep, terminatableInsurance: TerminatableInsurance) -> Unit,
 ) {
   when (uiState) {
     ChooseInsuranceToTerminateStepUiState.NotAllowed -> {
       HedvigScaffold(
         navigateUp = navigateUp,
       ) {
-        // todo: should probably have some other copy here
         HedvigErrorSection(
-          onButtonClick = navigateUp,
+          onButtonClick = openChat,
           modifier = Modifier.weight(1f),
-          subTitle = null,
-          buttonText = stringResource(id = R.string.general_back_button),
+          title = stringResource(id = R.string.TERMINATION_FLOW_NOT_ELIGIBLE_TITLE),
+          subTitle = stringResource(id = R.string.TERMINATION_FLOW_NOT_ELIGIBLE),
+          buttonText = stringResource(id = R.string.TERMINATION_FLOW_NOT_ELIGIBLE_BUTTON),
         )
       }
     }
@@ -164,7 +164,7 @@ private fun ChooseInsuranceToTerminateScreen(
               Spacer(Modifier.width(8.dp))
               SelectIndicationCircle(
                 uiState.selectedInsurance?.id == insurance.id,
-                customColor = MaterialTheme.colorScheme.typeElement,
+                selectedIndicationColor = MaterialTheme.colorScheme.typeElement,
               )
             }
           }
@@ -196,7 +196,7 @@ private fun PreviewChooseInsuranceToTerminateScreen() {
         ChooseInsuranceToTerminateStepUiState.Success(
           nextStep = TerminateInsuranceStep.UnknownStep(""),
           insuranceList = listOf(
-            InsuranceForCancellation(
+            TerminatableInsurance(
               id = "1",
               displayName = "HomeownerInsurance",
               contractExposure = "Opulullegatan 19",
@@ -205,7 +205,7 @@ private fun PreviewChooseInsuranceToTerminateScreen() {
               contractGroup = ContractGroup.HOUSE,
               activateFrom = LocalDate(2024, 6, 27),
             ),
-            InsuranceForCancellation(
+            TerminatableInsurance(
               id = "3",
               displayName = "Tenant Insurance",
               contractExposure = "Bullegatan 23",
@@ -215,7 +215,7 @@ private fun PreviewChooseInsuranceToTerminateScreen() {
               activateFrom = LocalDate(2024, 6, 27),
             ),
           ),
-          selectedInsurance = InsuranceForCancellation(
+          selectedInsurance = TerminatableInsurance(
             id = "3",
             displayName = "Tenant Insurance",
             contractExposure = "Bullegatan 23",

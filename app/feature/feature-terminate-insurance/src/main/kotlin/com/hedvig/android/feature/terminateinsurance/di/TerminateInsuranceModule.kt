@@ -3,8 +3,7 @@ package com.hedvig.android.feature.terminateinsurance.di
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.feature.terminateinsurance.data.GetContractsToTerminateUseCase
-import com.hedvig.android.feature.terminateinsurance.data.GetContractsToTerminateUseCaseImpl
+import com.hedvig.android.data.termination.data.GetTerminatableContractsUseCase
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
 import com.hedvig.android.feature.terminateinsurance.data.TerminationFlowContextStorage
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationReviewViewModelParameters
@@ -22,7 +21,7 @@ val terminateInsuranceModule = module {
   viewModel<ChooseInsuranceToTerminateViewModel> { (insuranceId: String?) ->
     ChooseInsuranceToTerminateViewModel(
       insuranceId = insuranceId,
-      getContractsToTerminateUseCase = get<GetContractsToTerminateUseCase>(),
+      getTerminatableContractsUseCase = get<GetTerminatableContractsUseCase>(),
       featureManager = get<FeatureManager>(),
       terminateInsuranceRepository = get<TerminateInsuranceRepository>(),
     )
@@ -50,11 +49,6 @@ val terminateInsuranceModule = module {
     TerminateInsuranceRepository(
       apolloClient = get<ApolloClient>(),
       terminationFlowContextStorage = get(),
-    )
-  }
-  single<GetContractsToTerminateUseCase> {
-    GetContractsToTerminateUseCaseImpl(
-      apolloClient = get<ApolloClient>(),
     )
   }
   single<TerminationFlowContextStorage> {

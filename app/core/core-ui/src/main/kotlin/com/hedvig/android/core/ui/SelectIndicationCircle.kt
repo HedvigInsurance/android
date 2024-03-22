@@ -20,15 +20,18 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
 
 @Composable
-fun SelectIndicationCircle(selected: Boolean, modifier: Modifier = Modifier, customColor: Color? = null) {
-  val selectedColor = customColor ?: LocalContentColor.current
+fun SelectIndicationCircle(
+  selected: Boolean,
+  modifier: Modifier = Modifier,
+  selectedIndicationColor: Color = LocalContentColor.current,
+) {
   Spacer(
     modifier
       .size(24.dp)
       .clip(CircleShape)
       .then(
         if (selected) {
-          Modifier.background(selectedColor)
+          Modifier.background(selectedIndicationColor)
         } else {
           Modifier.border(2.dp, MaterialTheme.colorScheme.onSurfaceVariant, CircleShape)
         },
