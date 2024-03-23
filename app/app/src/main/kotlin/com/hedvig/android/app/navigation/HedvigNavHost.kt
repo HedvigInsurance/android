@@ -168,7 +168,7 @@ internal fun HedvigNavHost(
       startTerminationFlow = { backStackEntry: NavBackStackEntry, data: CancelInsuranceData ->
         with(navigator) {
           val destination = TerminateInsuranceFeatureDestination(
-            contractId = data.contractId,
+            insuranceId = data.contractId,
           )
           backStackEntry.navigate(destination)
         }

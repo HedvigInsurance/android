@@ -78,7 +78,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
   ) {
     composable<TerminateInsuranceDestination.StartStep> { backStackEntry ->
       val terminateInsurance = getTerminateInsuranceDataFromParentBackstack(navController, backStackEntry)
-      val insuranceId = terminateInsurance.contractId
+      val insuranceId = terminateInsurance.insuranceId
       val viewModel: ChooseInsuranceToTerminateViewModel = koinViewModel { parametersOf(insuranceId) }
       ChooseInsuranceToTerminateDestination(
         viewModel = viewModel,

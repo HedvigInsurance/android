@@ -18,7 +18,7 @@ interface HedvigDeepLinkContainer {
   val contractWithoutContractId: String
   val contract: String // A specific contract destination with a contractId. If none match, an empty screen is shown
 
-  val terminateInsurance: String
+  val terminateInsurance: String // The screen with a list of insurances eligible for self-service cancellation
 
   val forever: String // The forever/referrals destination, showing the existing discount and the unique code
 

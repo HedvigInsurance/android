@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class TerminateInsuranceFeatureDestination(
   @SerialName("insuranceId")
-  val contractId: String?,
+  val insuranceId: String?,
 ) : Destination
 
 internal sealed interface TerminateInsuranceDestination : Destination {
