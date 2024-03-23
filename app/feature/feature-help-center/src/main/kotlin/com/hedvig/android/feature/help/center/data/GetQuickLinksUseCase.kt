@@ -92,19 +92,6 @@ internal class GetQuickLinksUseCase(
         }
 
       contracts
-        .takeIf { featureManager.isFeatureEnabled(Feature.TERMINATION_FLOW).first() }
-        ?.let {
-          add(
-            QuickAction.QuickLink(
-              quickLinkDestination = QuickLinkDestination.QuickLinkTermination,
-              titleRes = R.string.HC_QUICK_ACTIONS_CANCELLATION_TITLE,
-              hintTextRes = R.string.HC_QUICK_ACTIONS_CANCELLATION_SUBTITLE,
-              displayName = null,
-            ),
-          )
-        }
-
-      contracts
         .takeIf { getTerminatableContractsUseCase.invoke().first().getOrNull() != null }
         ?.let {
           add(

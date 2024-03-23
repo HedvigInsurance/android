@@ -41,7 +41,12 @@ private class ChooseInsuranceToTerminatePresenter(
     lastState: ChooseInsuranceToTerminateStepUiState,
   ): ChooseInsuranceToTerminateStepUiState {
     var loadIteration by remember { mutableIntStateOf(0) }
-    var currentSelectedId by remember { mutableStateOf(insuranceId) }
+    val initialSelected = if (lastState is ChooseInsuranceToTerminateStepUiState.Success) {
+      lastState.selectedInsurance?.id
+    } else {
+      insuranceId
+    }
+    var currentSelectedId by remember { mutableStateOf(initialSelected) }
     var terminationStep: TerminateInsuranceStep? by remember { mutableStateOf(null) }
     var currentPartialState by remember {
       mutableStateOf(lastState.toPartialState())
@@ -71,7 +76,9 @@ private class ChooseInsuranceToTerminatePresenter(
     }
 
     LaunchedEffect(loadIteration) {
-      currentPartialState = PartialUiState.Loading
+      if (lastState !is ChooseInsuranceToTerminateStepUiState.Success) {
+        currentPartialState = PartialUiState.Loading
+      }
       getTerminatableContractsUseCase.invoke().collect { contractsResult ->
         contractsResult.fold(
           ifLeft = {
@@ -80,8 +87,8 @@ private class ChooseInsuranceToTerminatePresenter(
           },
           ifRight = { eligibleInsurances ->
             logcat(priority = LogPriority.INFO) { "Successfully loaded contracts for cancellation" }
-            val selectedInsurance = if (insuranceId != null) {
-              eligibleInsurances?.firstOrNull { it.id == insuranceId }
+            val selectedInsurance = if (currentSelectedId != null) {
+              eligibleInsurances?.firstOrNull { it.id == currentSelectedId }
             } else {
               null
             }
@@ -91,7 +98,7 @@ private class ChooseInsuranceToTerminatePresenter(
                 selectedInsurance,
               )
             } else {
-              PartialUiState.NotAllowed
+              PartialUiState.NotEligible
             }
           },
         )
@@ -111,7 +118,7 @@ private sealed interface PartialUiState {
 
   data object Failure : PartialUiState
 
-  data object NotAllowed : PartialUiState
+  data object NotEligible : PartialUiState
 }
 
 internal sealed interface ChooseInsuranceToTerminateEvent {
@@ -139,7 +146,7 @@ private fun ChooseInsuranceToTerminateStepUiState.toPartialState(): PartialUiSta
   return when (this) {
     ChooseInsuranceToTerminateStepUiState.Failure -> PartialUiState.Failure
     ChooseInsuranceToTerminateStepUiState.Loading -> PartialUiState.Loading
-    ChooseInsuranceToTerminateStepUiState.NotAllowed -> PartialUiState.NotAllowed
+    ChooseInsuranceToTerminateStepUiState.NotAllowed -> PartialUiState.NotEligible
     is ChooseInsuranceToTerminateStepUiState.Success -> PartialUiState.Success(
       insuranceList,
       selectedInsurance,
@@ -151,7 +158,7 @@ private fun PartialUiState.toUiState(nextStep: TerminateInsuranceStep?): ChooseI
   return when (this) {
     PartialUiState.Failure -> ChooseInsuranceToTerminateStepUiState.Failure
     PartialUiState.Loading -> ChooseInsuranceToTerminateStepUiState.Loading
-    PartialUiState.NotAllowed -> ChooseInsuranceToTerminateStepUiState.NotAllowed
+    PartialUiState.NotEligible -> ChooseInsuranceToTerminateStepUiState.NotAllowed
     is PartialUiState.Success -> ChooseInsuranceToTerminateStepUiState.Success(
       insuranceList,
       selectedInsurance,
