@@ -378,7 +378,7 @@ val applicationModule = module {
       useCaseModule,
       viewModelModule,
       workManagerModule,
-      terminationDataModule
+      terminationDataModule,
     ),
   )
 }

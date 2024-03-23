@@ -10,6 +10,7 @@ import androidx.navigation.navDeepLink
 import androidx.navigation.navOptions
 import coil.ImageLoader
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.data.termination.data.TerminatableInsurance
 import com.hedvig.android.feature.terminateinsurance.data.toTerminateInsuranceDestination
 import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateDestination
 import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateViewModel
@@ -83,7 +84,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
         viewModel = viewModel,
         navigateUp = navigator::navigateUp,
         openChat = { openChat(backStackEntry) },
-        navigateToNextStep = { step, insuranceForCancellation ->
+        navigateToNextStep = { step, insuranceForCancellation: TerminatableInsurance ->
           navigator.navigateToTerminateFlowDestination(
             destination = step.toTerminateInsuranceDestination(
               insuranceForCancellation.displayName,

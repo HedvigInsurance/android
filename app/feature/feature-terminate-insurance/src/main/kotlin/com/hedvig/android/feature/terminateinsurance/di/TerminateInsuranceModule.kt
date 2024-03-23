@@ -10,7 +10,6 @@ import com.hedvig.android.feature.terminateinsurance.navigation.TerminationRevie
 import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateViewModel
 import com.hedvig.android.feature.terminateinsurance.step.terminationdate.TerminationDateViewModel
 import com.hedvig.android.feature.terminateinsurance.step.terminationreview.TerminationReviewViewModel
-import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.language.LanguageService
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
@@ -22,7 +21,6 @@ val terminateInsuranceModule = module {
     ChooseInsuranceToTerminateViewModel(
       insuranceId = insuranceId,
       getTerminatableContractsUseCase = get<GetTerminatableContractsUseCase>(),
-      featureManager = get<FeatureManager>(),
       terminateInsuranceRepository = get<TerminateInsuranceRepository>(),
     )
   }

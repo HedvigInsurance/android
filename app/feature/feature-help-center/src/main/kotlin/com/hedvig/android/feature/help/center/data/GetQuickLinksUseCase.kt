@@ -6,6 +6,7 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.data.termination.data.GetTerminatableContractsUseCase
 import com.hedvig.android.data.travelcertificate.CheckTravelCertificateDestinationAvailabilityUseCase
 import com.hedvig.android.feature.help.center.model.QuickAction
 import com.hedvig.android.featureflags.FeatureManager
@@ -23,6 +24,7 @@ internal class GetQuickLinksUseCase(
   private val featureManager: FeatureManager,
   private val checkTravelCertificateDestinationAvailabilityUseCase:
     CheckTravelCertificateDestinationAvailabilityUseCase,
+  private val getTerminatableContractsUseCase: GetTerminatableContractsUseCase,
 ) {
   suspend fun invoke(): Either<ErrorMessage, PersistentList<QuickAction>> = either {
     val contracts = apolloClient.query(AvailableSelfServiceOnContractsQuery())
@@ -91,6 +93,19 @@ internal class GetQuickLinksUseCase(
 
       contracts
         .takeIf { featureManager.isFeatureEnabled(Feature.TERMINATION_FLOW).first() }
+        ?.let {
+          add(
+            QuickAction.QuickLink(
+              quickLinkDestination = QuickLinkDestination.QuickLinkTermination,
+              titleRes = R.string.HC_QUICK_ACTIONS_CANCELLATION_TITLE,
+              hintTextRes = R.string.HC_QUICK_ACTIONS_CANCELLATION_SUBTITLE,
+              displayName = null,
+            ),
+          )
+        }
+
+      contracts
+        .takeIf { getTerminatableContractsUseCase.invoke().first().getOrNull() != null }
         ?.let {
           add(
             QuickAction.QuickLink(

@@ -12,36 +12,29 @@ import com.hedvig.android.data.termination.data.TerminatableInsurance
 import com.hedvig.android.feature.terminateinsurance.InsuranceId
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
-import com.hedvig.android.featureflags.FeatureManager
-import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flow
 
 internal class ChooseInsuranceToTerminateViewModel(
   insuranceId: String?,
   getTerminatableContractsUseCase: GetTerminatableContractsUseCase,
   terminateInsuranceRepository: TerminateInsuranceRepository,
-  featureManager: FeatureManager,
 ) : MoleculeViewModel<ChooseInsuranceToTerminateEvent, ChooseInsuranceToTerminateStepUiState>(
-  initialState = ChooseInsuranceToTerminateStepUiState.Loading,
-  presenter = ChooseInsuranceToTerminatePresenter(
-    insuranceId = insuranceId,
-    getTerminatableContractsUseCase = getTerminatableContractsUseCase,
-    terminateInsuranceRepository = terminateInsuranceRepository,
-    featureManager = featureManager,
-  ),
-)
+    initialState = ChooseInsuranceToTerminateStepUiState.Loading,
+    presenter = ChooseInsuranceToTerminatePresenter(
+      insuranceId = insuranceId,
+      getTerminatableContractsUseCase = getTerminatableContractsUseCase,
+      terminateInsuranceRepository = terminateInsuranceRepository,
+    ),
+  )
 
 private class ChooseInsuranceToTerminatePresenter(
   private val insuranceId: String?,
   private val getTerminatableContractsUseCase: GetTerminatableContractsUseCase,
   private val terminateInsuranceRepository: TerminateInsuranceRepository,
-  private val featureManager: FeatureManager,
 ) : MoleculePresenter<ChooseInsuranceToTerminateEvent, ChooseInsuranceToTerminateStepUiState> {
   @Composable
   override fun MoleculePresenterScope<ChooseInsuranceToTerminateEvent>.present(
@@ -79,38 +72,29 @@ private class ChooseInsuranceToTerminatePresenter(
 
     LaunchedEffect(loadIteration) {
       currentPartialState = PartialUiState.Loading
-      combine(
-        flow { emit(getTerminatableContractsUseCase.invoke()) },
-        featureManager.isFeatureEnabled(Feature.TERMINATION_FLOW),
-      ) { contractsResult, isTerminationFlowEnabled ->
-        contractsResult to isTerminationFlowEnabled
-      }.collect { (contractsResult, isTerminationFlowEnabled) ->
-        if (!isTerminationFlowEnabled) {
-          currentPartialState = PartialUiState.NotAllowed
-        } else {
-          contractsResult.fold(
-            ifLeft = {
-              logcat(priority = LogPriority.INFO) { "Cannot load contracts for cancellation" }
-              currentPartialState = PartialUiState.Failure
-            },
-            ifRight = { eligibleInsurances ->
-              logcat(priority = LogPriority.INFO) { "Successfully loaded contracts for cancellation" }
-              val selectedInsurance = if (insuranceId != null) {
-                eligibleInsurances.firstOrNull { it.id == insuranceId }
-              } else {
-                null
-              }
-              currentPartialState = if (eligibleInsurances.isNotEmpty()) {
-                PartialUiState.Success(
-                  eligibleInsurances,
-                  selectedInsurance,
-                )
-              } else {
-                PartialUiState.NotAllowed
-              }
-            },
-          )
-        }
+      getTerminatableContractsUseCase.invoke().collect { contractsResult ->
+        contractsResult.fold(
+          ifLeft = {
+            logcat(priority = LogPriority.INFO) { "Cannot load contracts for cancellation" }
+            currentPartialState = PartialUiState.Failure
+          },
+          ifRight = { eligibleInsurances ->
+            logcat(priority = LogPriority.INFO) { "Successfully loaded contracts for cancellation" }
+            val selectedInsurance = if (insuranceId != null) {
+              eligibleInsurances?.firstOrNull { it.id == insuranceId }
+            } else {
+              null
+            }
+            currentPartialState = if (eligibleInsurances != null) {
+              PartialUiState.Success(
+                eligibleInsurances,
+                selectedInsurance,
+              )
+            } else {
+              PartialUiState.NotAllowed
+            }
+          },
+        )
       }
     }
     return currentPartialState.toUiState(terminationStep)

@@ -17,6 +17,7 @@ dependencies {
   implementation(projects.coreCommonPublic)
   implementation(projects.dataContractPublic)
   implementation(libs.kotlinx.datetime)
+  implementation(projects.featureFlagsPublic)
 }
 
 apollo {
