@@ -9,13 +9,19 @@ sealed interface QuickAction {
   data class MultiSelectQuickLink(
     override val titleRes: Int,
     override val hintTextRes: Int,
-    val links: List<QuickLink>,
+    val links: List<QuickLinkForMultiSelect>,
   ) : QuickAction
 
-  data class QuickLink(
+  data class StandaloneQuickLink(
     override val titleRes: Int,
-    val displayName: String?,
     override val hintTextRes: Int,
     val quickLinkDestination: QuickLinkDestination,
   ) : QuickAction
 }
+
+data class QuickLinkForMultiSelect(
+  val titleRes: Int,
+  val displayName: String?,
+  val hintTextRes: Int,
+  val quickLinkDestination: QuickLinkDestination,
+)

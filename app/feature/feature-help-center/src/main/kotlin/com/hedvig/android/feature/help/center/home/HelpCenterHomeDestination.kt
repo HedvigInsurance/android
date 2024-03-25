@@ -124,7 +124,7 @@ private fun HelpCenterHomeScreen(
       getId = { it.hashCode().toString() },
     )
 
-    is QuickAction.QuickLink -> {
+    is QuickAction.StandaloneQuickLink -> {
       onDismissQuickActionDialog()
       onNavigateToQuickLink(selectedQuickAction.quickLinkDestination)
     }
