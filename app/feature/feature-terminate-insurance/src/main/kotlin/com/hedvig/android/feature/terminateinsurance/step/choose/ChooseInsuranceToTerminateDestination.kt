@@ -27,7 +27,6 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.SelectIndicationCircle
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
-import com.hedvig.android.core.ui.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup
@@ -36,7 +35,6 @@ import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationOverviewScreenScaffold
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.toJavaLocalDate
 import octopus.type.CurrencyCode
 
 @Composable
@@ -80,6 +78,7 @@ private fun ChooseInsuranceToTerminateScreen(
         )
       }
     }
+
     ChooseInsuranceToTerminateStepUiState.Failure -> {
       HedvigScaffold(
         navigateUp = navigateUp,
@@ -142,25 +141,7 @@ private fun ChooseInsuranceToTerminateScreen(
                   style = MaterialTheme.typography.bodyMedium,
                   color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
-                val nextPayment = stringResource(id = R.string.TERMINATION_FLOW_NEXT_PAYMENT)
-                val perMonth = stringResource(
-                  id = R.string.TERMINATION_FLOW_PAYMENT_PER_MONTH,
-                  insurance.monthlyPayment.amount.toInt(),
-                )
-                val dateTimeFormatter = rememberHedvigMonthDateTimeFormatter()
-                val nextPaymentDate = dateTimeFormatter.format(insurance.nextPaymentDate?.toJavaLocalDate())
-                val paymentDetails = if (insurance.nextPaymentDate != null) {
-                  "$perMonth · $nextPayment $nextPaymentDate"
-                } else {
-                  perMonth
-                }
-                Text(
-                  text = paymentDetails,
-                  style = MaterialTheme.typography.bodyMedium,
-                  color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
               }
-
               Spacer(Modifier.width(8.dp))
               SelectIndicationCircle(
                 uiState.selectedInsurance?.id == insurance.id,
