@@ -38,11 +38,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.common.android.time.daysUntil
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.information.HedvigPill
-import com.hedvig.android.core.designsystem.material3.containedButtonContainer
-import com.hedvig.android.core.designsystem.material3.onContainedButtonContainer
 import com.hedvig.android.core.designsystem.material3.onWarningContainer
 import com.hedvig.android.core.designsystem.material3.squircleLargeTop
 import com.hedvig.android.core.designsystem.material3.warningContainer
@@ -213,13 +210,9 @@ internal fun YourInfoTab(
             .padding(horizontal = 16.dp),
         ) {
           if (upcomingChangesInsuranceAgreement.displayItems.isNotEmpty()) {
-            HedvigContainedSmallButton(
+            InfoCardTextButton(
               text = stringResource(id = R.string.insurances_tab_view_details),
               onClick = { showUpcomingChangesBottomSheet = true },
-              colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.containedButtonContainer,
-                contentColor = MaterialTheme.colorScheme.onContainedButtonContainer,
-              ),
               modifier = Modifier.fillMaxWidth(),
             )
           }
@@ -447,14 +440,9 @@ internal fun CoInsuredSection(
       VectorWarningCard(
         text = stringResource(id = R.string.CONTRACT_COINSURED_ADD_PERSONAL_INFO),
       ) {
-        HedvigContainedSmallButton(
+        InfoCardTextButton(
           text = stringResource(id = R.string.CONTRACT_COINSURED_MISSING_ADD_INFO),
           onClick = onMissingInfoClick,
-          colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.containedButtonContainer,
-            contentColor = MaterialTheme.colorScheme.onContainedButtonContainer,
-          ),
-          textStyle = MaterialTheme.typography.bodyMedium,
           modifier = Modifier.fillMaxWidth(),
         )
       }

@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -53,12 +52,9 @@ import arrow.core.nonEmptyListOf
 import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.core.common.android.SHARED_PREFERENCE_NAME
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.button.HedvigSecondaryContainedButton
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
-import com.hedvig.android.core.designsystem.material3.containedButtonContainer
-import com.hedvig.android.core.designsystem.material3.onContainedButtonContainer
 import com.hedvig.android.core.designsystem.material3.onWarningContainer
 import com.hedvig.android.core.designsystem.material3.warningContainer
 import com.hedvig.android.core.designsystem.material3.warningElement
@@ -69,6 +65,7 @@ import com.hedvig.android.core.icons.hedvig.compose.notificationCircle
 import com.hedvig.android.core.icons.hedvig.normal.WarningFilled
 import com.hedvig.android.core.ui.appbar.m3.ToolbarChatIcon
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarLayoutForActions
+import com.hedvig.android.core.ui.infocard.InfoCardTextButton
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.plus
 import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
@@ -373,14 +370,9 @@ private fun VeryImportantMessageCard(
       ),
       modifier = modifier,
     ) {
-      HedvigContainedSmallButton(
+      InfoCardTextButton(
         text = stringResource(R.string.important_message_read_more),
         onClick = { openUrl(veryImportantMessage.link) },
-        colors = ButtonDefaults.buttonColors(
-          containerColor = MaterialTheme.colorScheme.containedButtonContainer,
-          contentColor = MaterialTheme.colorScheme.onContainedButtonContainer,
-        ),
-        textStyle = MaterialTheme.typography.bodyMedium,
         modifier = Modifier.fillMaxWidth(),
       )
     }

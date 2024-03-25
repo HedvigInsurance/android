@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -36,11 +35,8 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.bottomsheet.HedvigInfoBottomSheet
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
-import com.hedvig.android.core.designsystem.material3.containedButtonContainer
 import com.hedvig.android.core.designsystem.material3.infoContainer
 import com.hedvig.android.core.designsystem.material3.infoElement
-import com.hedvig.android.core.designsystem.material3.onContainedButtonContainer
 import com.hedvig.android.core.designsystem.material3.onInfoContainer
 import com.hedvig.android.core.designsystem.material3.onTypeContainer
 import com.hedvig.android.core.designsystem.material3.squircleMedium
@@ -51,6 +47,7 @@ import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.InfoFilled
 import com.hedvig.android.core.icons.hedvig.normal.WarningFilled
 import com.hedvig.android.core.icons.hedvig.small.hedvig.Checkmark
+import com.hedvig.android.core.ui.infocard.InfoCardTextButton
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
@@ -241,7 +238,7 @@ private fun MemberChargeDetailsScreen(
             contentColor = MaterialTheme.colorScheme.onErrorContainer,
           ),
           underTextContent = {
-            HedvigContainedSmallButton(
+            InfoCardTextButton(
               text = stringResource(R.string.PAYMENTS_VIEW_PAYMENT),
               onClick = {
                 val nextCharge = paymentOverview?.getNextCharge(memberCharge)
@@ -249,11 +246,6 @@ private fun MemberChargeDetailsScreen(
                   onFailedChargeClick(nextCharge)
                 }
               },
-              colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.containedButtonContainer,
-                contentColor = MaterialTheme.colorScheme.onContainedButtonContainer,
-              ),
-              textStyle = MaterialTheme.typography.bodyMedium,
               modifier = Modifier.fillMaxWidth(),
             )
           },

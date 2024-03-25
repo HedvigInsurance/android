@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -32,14 +31,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.animation.animateContentHeight
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.button.HedvigSecondaryContainedButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.information.HedvigInformationSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
-import com.hedvig.android.core.designsystem.material3.containedButtonContainer
-import com.hedvig.android.core.designsystem.material3.onContainedButtonContainer
 import com.hedvig.android.core.designsystem.material3.typeElement
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -49,6 +45,7 @@ import com.hedvig.android.core.icons.hedvig.normal.Payments
 import com.hedvig.android.core.icons.hedvig.normal.Waiting
 import com.hedvig.android.core.icons.hedvig.small.hedvig.Campaign
 import com.hedvig.android.core.ui.clearFocusOnTap
+import com.hedvig.android.core.ui.infocard.InfoCardTextButton
 import com.hedvig.android.core.ui.infocard.VectorErrorCard
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.infocard.VectorWarningCard
@@ -174,14 +171,9 @@ private fun PaymentOverviewScreen(
             text = text,
             modifier = Modifier.padding(horizontal = 16.dp),
           ) {
-            HedvigContainedSmallButton(
+            InfoCardTextButton(
               text = stringResource(id = R.string.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_TITLE),
               onClick = onChangeBankAccount,
-              colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.containedButtonContainer,
-                contentColor = MaterialTheme.colorScheme.onContainedButtonContainer,
-              ),
-              textStyle = MaterialTheme.typography.bodyMedium,
               modifier = Modifier.fillMaxWidth(),
             )
           }
