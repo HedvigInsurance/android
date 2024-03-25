@@ -7,7 +7,6 @@ import com.apollographql.apollo3.cache.normalized.FetchPolicy
 import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.toContractGroup
 import com.hedvig.android.featureflags.FeatureManager
@@ -46,18 +45,12 @@ internal class GetTerminatableContractsUseCaseImpl(
 data class TerminatableInsurance(
   val id: String,
   val displayName: String,
-  val monthlyPayment: UiMoney,
-  val nextPaymentDate: LocalDate?,
   val contractExposure: String,
   val contractGroup: ContractGroup,
   val activateFrom: LocalDate,
 )
 
 private fun ContractsToTerminateQuery.Data.CurrentMember.toInsurancesForCancellation(): List<TerminatableInsurance> {
-  val futureChargeIds = futureCharge?.contractsChargeBreakdown?.map {
-    it.contract.id
-  } ?: listOf()
-  val nextPaymentDate = futureCharge?.date
   return activeContracts.map {
     TerminatableInsurance(
       id = it.id,
@@ -65,8 +58,6 @@ private fun ContractsToTerminateQuery.Data.CurrentMember.toInsurancesForCancella
       contractGroup = it.currentAgreement.productVariant.typeOfContract.toContractGroup(),
       contractExposure = it.exposureDisplayName,
       activateFrom = it.currentAgreement.activeFrom,
-      monthlyPayment = UiMoney.fromMoneyFragment(it.currentAgreement.premium),
-      nextPaymentDate = if (it.id in futureChargeIds) nextPaymentDate else null,
     )
   }
 }

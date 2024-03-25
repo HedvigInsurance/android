@@ -28,14 +28,12 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.SelectIndicationCircle
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
-import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.termination.data.TerminatableInsurance
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationOverviewScreenScaffold
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
-import octopus.type.CurrencyCode
 
 @Composable
 internal fun ChooseInsuranceToTerminateDestination(
@@ -181,8 +179,6 @@ private fun PreviewChooseInsuranceToTerminateScreen() {
               id = "1",
               displayName = "HomeownerInsurance",
               contractExposure = "Opulullegatan 19",
-              monthlyPayment = UiMoney(784.0, currencyCode = CurrencyCode.SEK),
-              nextPaymentDate = LocalDate(2024, 7, 27),
               contractGroup = ContractGroup.HOUSE,
               activateFrom = LocalDate(2024, 6, 27),
             ),
@@ -190,8 +186,6 @@ private fun PreviewChooseInsuranceToTerminateScreen() {
               id = "3",
               displayName = "Tenant Insurance",
               contractExposure = "Bullegatan 23",
-              monthlyPayment = UiMoney(332.0, currencyCode = CurrencyCode.SEK),
-              nextPaymentDate = LocalDate(2024, 7, 27),
               contractGroup = ContractGroup.HOUSE,
               activateFrom = LocalDate(2024, 6, 27),
             ),
@@ -200,8 +194,6 @@ private fun PreviewChooseInsuranceToTerminateScreen() {
             id = "3",
             displayName = "Tenant Insurance",
             contractExposure = "Bullegatan 23",
-            monthlyPayment = UiMoney(332.0, currencyCode = CurrencyCode.SEK),
-            nextPaymentDate = LocalDate(2024, 7, 27),
             contractGroup = ContractGroup.HOUSE,
             activateFrom = LocalDate(2024, 6, 27),
           ),

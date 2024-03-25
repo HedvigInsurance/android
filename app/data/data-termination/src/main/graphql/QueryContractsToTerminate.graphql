@@ -5,22 +5,11 @@ query ContractsToTerminate {
       exposureDisplayName
       currentAgreement {
         activeFrom
-        premium {
-          ...MoneyFragment
-        }
         productVariant {
           displayName
           typeOfContract
         }
       }
-    }
-    futureCharge {
-      contractsChargeBreakdown {
-        contract {
-          id
-        }
-      }
-      date
     }
   }
 }
