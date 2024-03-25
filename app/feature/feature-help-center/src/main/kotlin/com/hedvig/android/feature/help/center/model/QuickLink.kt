@@ -21,7 +21,7 @@ sealed interface QuickAction {
 
 data class QuickLinkForMultiSelect(
   val titleRes: Int,
-  val displayName: String?,
+  val displayName: String,
   val hintTextRes: Int,
   val quickLinkDestination: QuickLinkDestination,
 )

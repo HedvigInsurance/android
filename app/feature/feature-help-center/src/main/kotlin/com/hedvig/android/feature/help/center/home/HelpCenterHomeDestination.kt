@@ -119,7 +119,7 @@ private fun HelpCenterHomeScreen(
         onDismissQuickActionDialog()
         onNavigateToQuickLink(it.quickLinkDestination)
       },
-      getDisplayText = { it.displayName ?: "" },
+      getDisplayText = { it.displayName },
       getIsSelected = null,
       getId = { it.hashCode().toString() },
     )
