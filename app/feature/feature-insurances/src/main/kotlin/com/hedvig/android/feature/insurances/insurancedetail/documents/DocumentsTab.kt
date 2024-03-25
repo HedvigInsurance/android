@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.insurances.insurancedetail.documents
 
-import android.net.Uri
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,7 +26,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -40,14 +38,14 @@ import kotlinx.collections.immutable.persistentListOf
 @Composable
 internal fun DocumentsTab(
   documents: ImmutableList<InsuranceVariantDocument>,
-  onDocumentClicked: (Uri) -> Unit,
+  onDocumentClicked: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
     Spacer(Modifier.height(16.dp))
     for ((index, document) in documents.withIndex()) {
       DocumentCard(
-        onClick = { onDocumentClicked(document.url.toUri()) },
+        onClick = { onDocumentClicked(document.url) },
         title = document.displayName,
         subtitle = null,
       )

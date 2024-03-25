@@ -20,7 +20,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -56,19 +55,16 @@ internal fun ChatDestination(
   onNavigateUp: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  val urihandler = LocalUriHandler.current
-  val onBannerLinkClicked: (String) -> Unit = remember(urihandler, uiState, hedvigDeepLinkContainer) {
-    { url: String ->
-      if (url == hedvigDeepLinkContainer.helpCenter) {
-        val haveSentAtLeastOneMessage = uiState.safeCast<ChatUiState.Loaded>()?.haveSentAtLeastOneMessage ?: false
-        logAction(
-          ActionType.CUSTOM,
-          "Help center opened from the chat",
-          mapOf("haveSentAMessage" to haveSentAtLeastOneMessage),
-        )
-      }
-      urihandler.openUri(url)
+  val onBannerLinkClicked: (String) -> Unit = { url: String ->
+    if (url == hedvigDeepLinkContainer.helpCenter) {
+      val haveSentAtLeastOneMessage = uiState.safeCast<ChatUiState.Loaded>()?.haveSentAtLeastOneMessage ?: false
+      logAction(
+        ActionType.CUSTOM,
+        "Help center opened from the chat",
+        mapOf("haveSentAMessage" to haveSentAtLeastOneMessage),
+      )
     }
+    openUrl(url)
   }
   ChatScreen(
     uiState = uiState,

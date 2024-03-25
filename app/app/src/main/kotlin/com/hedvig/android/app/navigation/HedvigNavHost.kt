@@ -1,7 +1,6 @@
 package com.hedvig.android.app.navigation
 
 import android.content.Context
-import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -66,6 +65,7 @@ internal fun HedvigNavHost(
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   activityNavigator: ActivityNavigator,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
+  openUrl: (String) -> Unit,
   imageLoader: ImageLoader,
   market: Market,
   languageService: LanguageService,
@@ -76,13 +76,6 @@ internal fun HedvigNavHost(
   val context = LocalContext.current
   val density = LocalDensity.current
   val navigator: Navigator = rememberNavigator(hedvigAppState.navController)
-
-  val openUrl: (String) -> Unit = { url ->
-    activityNavigator.openWebsite(
-      context,
-      if (url.isBlank()) Uri.EMPTY else Uri.parse(url),
-    )
-  }
 
   val navigateToConnectPayment = {
     when (market) {
@@ -156,12 +149,7 @@ internal fun HedvigNavHost(
         )
       },
       navigator = navigator,
-      openWebsite = { uri ->
-        activityNavigator.openWebsite(context, uri)
-      },
-      openUrl = {
-        openUrl(it)
-      },
+      openUrl = openUrl,
       openChat = { backStackEntry ->
         with(navigator) {
           backStackEntry.navigate(AppDestination.Chat())
@@ -296,7 +284,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
         backStackEntry.navigate(AppDestination.Chat())
       }
     },
-    openUrl = { activityNavigator.openWebsite(context, Uri.parse(it)) },
+    openUrl = openUrl,
   )
   travelCertificateGraph(
     density = density,
@@ -328,7 +316,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
         },
       )
     },
-    openUrl = { activityNavigator.openWebsite(context, Uri.parse(it)) },
+    openUrl = openUrl,
     openChat = { backStackEntry ->
       with(navigator) {
         backStackEntry.navigate(AppDestination.Chat())
