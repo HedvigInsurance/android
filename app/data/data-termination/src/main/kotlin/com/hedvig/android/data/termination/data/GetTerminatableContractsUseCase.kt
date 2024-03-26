@@ -51,13 +51,17 @@ data class TerminatableInsurance(
 )
 
 private fun ContractsToTerminateQuery.Data.CurrentMember.toInsurancesForCancellation(): List<TerminatableInsurance> {
-  return activeContracts.map {
-    TerminatableInsurance(
-      id = it.id,
-      displayName = it.currentAgreement.productVariant.displayName,
-      contractGroup = it.currentAgreement.productVariant.typeOfContract.toContractGroup(),
-      contractExposure = it.exposureDisplayName,
-      activateFrom = it.currentAgreement.activeFrom,
-    )
-  }
+  return activeContracts
+    .filter {
+      it.terminationDate == null
+    }
+    .map {
+      TerminatableInsurance(
+        id = it.id,
+        displayName = it.currentAgreement.productVariant.displayName,
+        contractGroup = it.currentAgreement.productVariant.typeOfContract.toContractGroup(),
+        contractExposure = it.exposureDisplayName,
+        activateFrom = it.currentAgreement.activeFrom,
+      )
+    }
 }

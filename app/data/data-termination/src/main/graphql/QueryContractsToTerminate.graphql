@@ -3,6 +3,7 @@ query ContractsToTerminate {
     activeContracts {
       id
       exposureDisplayName
+      terminationDate
       currentAgreement {
         activeFrom
         productVariant {
