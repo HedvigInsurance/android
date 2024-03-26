@@ -56,7 +56,10 @@ fun NavGraphBuilder.terminateInsuranceGraph(
           .setPopUpTo(createRoutePattern<AppDestination.TopLevelDestination.Home>(), inclusive = false).build()
         navigateToInsurances(navOptions, backStackEntry)
         /**
-        We clear everything except for Home destination and navigate to Insurances upon success
+         We clear everything except for Home destination and navigate to Insurances when we press Done on success screen.
+         If we go back (system back button) we return to screen we we've been before termination flow (Help Center or Insurance Details).
+         If we successfully delete insurance that was supposed to activate in the future and press system back button on Success screen,
+         We'll get a "can't find this insurance" error on Insurance Details screen, which I think is logical.
          */
       },
     )
