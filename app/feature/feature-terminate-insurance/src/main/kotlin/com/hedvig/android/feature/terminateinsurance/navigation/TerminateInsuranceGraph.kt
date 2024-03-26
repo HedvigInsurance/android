@@ -6,7 +6,6 @@ import androidx.compose.runtime.remember
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavOptions
 import androidx.navigation.navDeepLink
 import androidx.navigation.navOptions
 import coil.ImageLoader
@@ -44,7 +43,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
   openChat: (NavBackStackEntry) -> Unit,
   openUrl: (String) -> Unit,
   openPlayStore: () -> Unit,
-  navigateToInsurances: (NavOptions, NavBackStackEntry) -> Unit,
+  navigateToInsurances: (NavBackStackEntry) -> Unit,
   closeTerminationFlow: () -> Unit,
 ) {
   composable<TerminateInsuranceDestination.TerminationSuccess> { backStackEntry ->
@@ -52,9 +51,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       terminationDate = terminationDate,
       onSurveyClicked = { openUrl(surveyUrl) },
       navigateToInsurances = {
-        val navOptions = NavOptions.Builder()
-          .setPopUpTo(createRoutePattern<AppDestination.TopLevelDestination.Home>(), inclusive = false).build()
-        navigateToInsurances(navOptions, backStackEntry)
+        navigateToInsurances(backStackEntry)
         /**
          We clear everything except for Home destination and navigate to Insurances when we press Done on success screen.
          If we go back (system back button) we return to screen we we've been before termination flow (Help Center or Insurance Details).
