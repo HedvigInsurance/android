@@ -44,7 +44,6 @@ import com.hedvig.android.feature.odyssey.navigation.navigateToClaimFlowDestinat
 import com.hedvig.android.feature.odyssey.navigation.terminalClaimFlowStepDestinations
 import com.hedvig.android.feature.payments.navigation.paymentsGraph
 import com.hedvig.android.feature.profile.tab.profileGraph
-import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceFeatureDestination
 import com.hedvig.android.feature.terminateinsurance.navigation.terminateInsuranceGraph
 import com.hedvig.android.feature.travelcertificate.navigation.travelCertificateGraph
 import com.hedvig.android.language.LanguageService
@@ -146,6 +145,12 @@ internal fun HedvigNavHost(
           openUrl = ::openUrl,
           openPlayStore = { activityNavigator.tryOpenPlayStore(context) },
           hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+          navigateToInsurances = { navOptions, backStackEntry ->
+            with(navigator) { backStackEntry.navigate(AppDestination.TopLevelDestination.Insurance, navOptions) }
+          },
+          closeTerminationFlow = {
+            hedvigAppState.navController.popBackStack<AppDestination.TerminationFlow>(inclusive = true)
+          },
         )
       },
       navigator = navigator,
@@ -167,7 +172,7 @@ internal fun HedvigNavHost(
       },
       startTerminationFlow = { backStackEntry: NavBackStackEntry, data: CancelInsuranceData ->
         with(navigator) {
-          val destination = TerminateInsuranceFeatureDestination(
+          val destination = AppDestination.TerminationFlow(
             insuranceId = data.contractId,
           )
           backStackEntry.navigate(destination)
@@ -261,16 +266,19 @@ internal fun HedvigNavHost(
               backStackEntry.navigate(AppDestination.CoInsuredAddOrRemove(quickLinkDestination.contractId))
             }
 
-            QuickLinkDestination.QuickLinkChangeAddress ->
-              {
-                backStackEntry.navigate(AppDestination.ChangeAddress)
-              }
-            QuickLinkDestination.QuickLinkConnectPayment -> {
+            QuickLinkDestination.QuickLinkChangeAddress -> {
               backStackEntry.navigate(AppDestination.ChangeAddress)
             }
-            QuickLinkDestination.QuickLinkTermination -> {
-              backStackEntry.navigate(TerminateInsuranceFeatureDestination(null))
+
+            QuickLinkDestination.QuickLinkConnectPayment -> {
+              backStackEntry.navigate(AppDestination.ChangeAddress)
+              //todo: wrong link, but I think we got rid of this part altogether in develop
             }
+
+            QuickLinkDestination.QuickLinkTermination -> {
+              backStackEntry.navigate(AppDestination.TerminationFlow(null))
+            }
+
             QuickLinkDestination.QuickLinkTravelCertificate -> {
               backStackEntry.navigate(AppDestination.TravelCertificate)
             }

@@ -6,6 +6,7 @@ import androidx.compose.runtime.remember
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavOptions
 import androidx.navigation.navDeepLink
 import androidx.navigation.navOptions
 import coil.ImageLoader
@@ -22,6 +23,7 @@ import com.hedvig.android.feature.terminateinsurance.step.terminationreview.Term
 import com.hedvig.android.feature.terminateinsurance.step.terminationreview.TerminationReviewViewModel
 import com.hedvig.android.feature.terminateinsurance.step.terminationsuccess.TerminationSuccessDestination
 import com.hedvig.android.feature.terminateinsurance.step.unknown.UnknownScreenDestination
+import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
 import com.kiwi.navigationcompose.typed.composable
@@ -42,15 +44,21 @@ fun NavGraphBuilder.terminateInsuranceGraph(
   openChat: (NavBackStackEntry) -> Unit,
   openUrl: (String) -> Unit,
   openPlayStore: () -> Unit,
+  navigateToInsurances: (NavOptions, NavBackStackEntry) -> Unit,
+  closeTerminationFlow: () -> Unit,
 ) {
-  composable<TerminateInsuranceDestination.TerminationSuccess> {
+  composable<TerminateInsuranceDestination.TerminationSuccess> { backStackEntry ->
     TerminationSuccessDestination(
       terminationDate = terminationDate,
-      insuranceDisplayName = insuranceDisplayName,
-      exposureName = exposureName,
-      imageLoader = imageLoader,
       onSurveyClicked = { openUrl(surveyUrl) },
-      navigateUp = navigator::navigateUp,
+      navigateToInsurances = {
+        val navOptions = NavOptions.Builder()
+          .setPopUpTo(createRoutePattern<AppDestination.TopLevelDestination.Home>(), inclusive = false).build()
+        navigateToInsurances(navOptions, backStackEntry)
+        /**
+        We clear everything except for Home destination and navigate to Insurances upon success
+         */
+      },
     )
   }
   composable<TerminateInsuranceDestination.TerminationFailure> { backStackEntry ->
@@ -70,7 +78,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       navigateBack = navigator::popBackStack,
     )
   }
-  navigation<TerminateInsuranceFeatureDestination>(
+  navigation<AppDestination.TerminationFlow>(
     startDestination = createRoutePattern<TerminateInsuranceDestination.StartStep>(),
     deepLinks = listOf(
       navDeepLink { uriPattern = hedvigDeepLinkContainer.terminateInsurance },
@@ -149,7 +157,9 @@ fun NavGraphBuilder.terminateInsuranceGraph(
           )
         },
         navigateUp = navigator::navigateUp,
-        navigateBack = navigator::popBackStack,
+        navigateBack = {
+          closeTerminationFlow()
+        },
       )
     }
 
@@ -179,12 +189,12 @@ fun NavGraphBuilder.terminateInsuranceGraph(
 private fun getTerminateInsuranceDataFromParentBackstack(
   navController: NavController,
   backStackEntry: NavBackStackEntry,
-): TerminateInsuranceFeatureDestination {
+): AppDestination.TerminationFlow {
   return remember(navController, backStackEntry) {
     val terminateInsuranceEntry = navController.getBackStackEntry(
-      createRoutePattern<TerminateInsuranceFeatureDestination>(),
+      createRoutePattern<AppDestination.TerminationFlow>(),
     )
-    decodeArguments(TerminateInsuranceFeatureDestination.serializer(), terminateInsuranceEntry)
+    decodeArguments(AppDestination.TerminationFlow.serializer(), terminateInsuranceEntry)
   }
 }
 
@@ -198,7 +208,7 @@ private fun <T : TerminateInsuranceDestination> Navigator.navigateToTerminateFlo
       is TerminateInsuranceDestination.TerminationFailure,
       is TerminateInsuranceDestination.UnknownScreen,
       -> {
-        popUpTo<TerminateInsuranceFeatureDestination> {
+        popUpTo<TerminateInsuranceDestination.StartStep> {
           inclusive = true
         }
       }
