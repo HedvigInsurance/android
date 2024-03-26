@@ -16,7 +16,7 @@ class TabNotificationBadgeService internal constructor(
     ) { showCrossSellNotification: Boolean, showReferralNotification: Boolean ->
       buildSet {
         if (showCrossSellNotification) add(BottomNavTab.INSURANCE)
-        if (showReferralNotification) add(BottomNavTab.REFERRALS)
+        if (showReferralNotification) add(BottomNavTab.FOREVER)
       }
     }
   }
@@ -26,7 +26,7 @@ class TabNotificationBadgeService internal constructor(
       BottomNavTab.INSURANCE -> {
         crossSellBottomNavNotificationBadgeService.markAsSeen()
       }
-      BottomNavTab.REFERRALS -> {
+      BottomNavTab.FOREVER -> {
         referralsNotificationBadgeService.markAsSeen()
       }
       else -> {}

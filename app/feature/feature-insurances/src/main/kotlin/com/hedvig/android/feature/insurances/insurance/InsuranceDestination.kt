@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.insurances.insurance
 
-import android.net.Uri
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.togetherWith
@@ -91,7 +90,7 @@ import kotlinx.datetime.LocalDate
 internal fun InsuranceDestination(
   viewModel: InsuranceViewModel,
   onInsuranceCardClick: (contractId: String) -> Unit,
-  onCrossSellClick: (Uri) -> Unit,
+  onCrossSellClick: (String) -> Unit,
   navigateToCancelledInsurances: () -> Unit,
   imageLoader: ImageLoader,
 ) {
@@ -129,7 +128,7 @@ private fun InsuranceScreen(
   uiState: InsuranceUiState,
   reload: () -> Unit,
   onInsuranceCardClick: (contractId: String) -> Unit,
-  onCrossSellClick: (Uri) -> Unit,
+  onCrossSellClick: (String) -> Unit,
   navigateToCancelledInsurances: () -> Unit,
   imageLoader: ImageLoader,
 ) {
@@ -213,7 +212,7 @@ private fun ColumnScope.InsuranceScreenContent(
   crossSells: ImmutableList<CrossSell>,
   showNotificationBadge: Boolean,
   onInsuranceCardClick: (contractId: String) -> Unit,
-  onCrossSellClick: (Uri) -> Unit,
+  onCrossSellClick: (String) -> Unit,
   navigateToCancelledInsurances: () -> Unit,
   quantityOfCancelledInsurances: Int,
 ) {
@@ -273,7 +272,7 @@ private fun ColumnScope.InsuranceScreenContent(
 }
 
 @Composable
-private fun CrossSellItem(crossSell: CrossSell, onCrossSellClick: (Uri) -> Unit, modifier: Modifier = Modifier) {
+private fun CrossSellItem(crossSell: CrossSell, onCrossSellClick: (String) -> Unit, modifier: Modifier = Modifier) {
   Row(
     modifier = modifier.heightIn(64.dp),
     verticalAlignment = Alignment.CenterVertically,
@@ -303,9 +302,7 @@ private fun CrossSellItem(crossSell: CrossSell, onCrossSellClick: (Uri) -> Unit,
     HedvigContainedSmallButton(
       text = stringResource(R.string.cross_sell_get_price),
       onClick = {
-        onCrossSellClick(
-          if (crossSell.storeUrl.isBlank()) Uri.EMPTY else Uri.parse(crossSell.storeUrl),
-        )
+        onCrossSellClick(crossSell.storeUrl)
       },
       colors = ButtonDefaults.buttonColors(
         containerColor = MaterialTheme.colorScheme.typeContainer,

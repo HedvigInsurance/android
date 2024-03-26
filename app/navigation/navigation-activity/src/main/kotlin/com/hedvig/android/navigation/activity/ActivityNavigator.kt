@@ -1,23 +1,29 @@
 package com.hedvig.android.navigation.activity
 
-import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
 import com.hedvig.android.core.common.android.tryOpenPlayStore
-import com.hedvig.android.logger.LogPriority
-import com.hedvig.android.logger.logcat
 
-class ActivityNavigator(
+interface ActivityNavigator {
+  fun navigateToMarketingActivity()
+
+  fun openAppSettings(context: Context)
+
+  fun navigateToLoggedInScreen(context: Context, clearBackstack: Boolean = true)
+
+  fun tryOpenPlayStore(context: Context)
+}
+
+class ActivityNavigatorImpl(
   private val application: Application,
   private val loggedOutActivityClass: Class<*>,
   private val buildConfigApplicationId: String,
   private val navigateToLoggedInActivity: Context.(clearBackstack: Boolean) -> Unit,
-) {
-  @SuppressLint("IntentWithNullActionLaunch")
-  fun navigateToMarketingActivity() {
+) : ActivityNavigator {
+  override fun navigateToMarketingActivity() {
     application.startActivity(
       Intent(application, loggedOutActivityClass)
         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -25,8 +31,7 @@ class ActivityNavigator(
     )
   }
 
-  @Suppress("DEPRECATION")
-  fun openAppSettings(context: Context) {
+  override fun openAppSettings(context: Context) {
     val permissionActivity = Intent(
       Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
       Uri.parse("package:$buildConfigApplicationId"),
@@ -38,22 +43,11 @@ class ActivityNavigator(
     context.startActivity(Intent(Intent(Settings.ACTION_SETTINGS)))
   }
 
-  fun navigateToLoggedInScreen(context: Context, clearBackstack: Boolean = true) {
+  override fun navigateToLoggedInScreen(context: Context, clearBackstack: Boolean) {
     context.navigateToLoggedInActivity(clearBackstack)
   }
 
-  fun tryOpenPlayStore(context: Context) {
+  override fun tryOpenPlayStore(context: Context) {
     context.tryOpenPlayStore()
-  }
-
-  @SuppressLint("QueryPermissionsNeeded")
-  fun openWebsite(context: Context, uri: Uri) {
-    val browserIntent = Intent(Intent.ACTION_VIEW, uri)
-
-    if (browserIntent.resolveActivity(context.packageManager) != null) {
-      context.startActivity(browserIntent)
-    } else {
-      logcat(LogPriority.ERROR) { "Tried to launch $uri but the phone has nothing to support such an intent." }
-    }
   }
 }

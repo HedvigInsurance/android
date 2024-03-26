@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.payments.overview
+package com.hedvig.android.feature.payments.discounts
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -15,21 +15,21 @@ import com.hedvig.android.feature.payments.overview.data.GetPaymentOverviewDataU
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 
-internal class PaymentOverviewPresenter(
+internal class DiscountsPresenter(
   val getPaymentOverviewDataUseCase: Provider<GetPaymentOverviewDataUseCase>,
   val addDiscountUseCase: AddDiscountUseCase,
-) : MoleculePresenter<PaymentEvent, OverViewUiState> {
+) : MoleculePresenter<DiscountsEvent, DiscountsUiState> {
   @Composable
-  override fun MoleculePresenterScope<PaymentEvent>.present(lastState: OverViewUiState): OverViewUiState {
-    var paymentUiState: OverViewUiState by remember { mutableStateOf(lastState) }
+  override fun MoleculePresenterScope<DiscountsEvent>.present(lastState: DiscountsUiState): DiscountsUiState {
+    var paymentUiState: DiscountsUiState by remember { mutableStateOf(lastState) }
     var loadIteration by remember { mutableIntStateOf(0) }
     var addedDiscount by remember { mutableStateOf<String?>(null) }
 
     CollectEvents { event ->
       when (event) {
-        PaymentEvent.Retry -> loadIteration++
-        is PaymentEvent.OnSubmitDiscountCode -> addedDiscount = event.code
-        PaymentEvent.DismissBottomSheet -> {
+        DiscountsEvent.Retry -> loadIteration++
+        is DiscountsEvent.OnSubmitDiscountCode -> addedDiscount = event.code
+        DiscountsEvent.DismissBottomSheet -> {
           addedDiscount = null
           paymentUiState = paymentUiState.copy(
             showAddDiscountBottomSheet = false,
@@ -37,7 +37,7 @@ internal class PaymentOverviewPresenter(
           )
         }
 
-        PaymentEvent.ShowBottomSheet -> {
+        DiscountsEvent.ShowBottomSheet -> {
           paymentUiState = paymentUiState.copy(
             showAddDiscountBottomSheet = true,
           )
@@ -101,17 +101,17 @@ internal class PaymentOverviewPresenter(
   }
 }
 
-internal sealed interface PaymentEvent {
-  data object Retry : PaymentEvent
+internal sealed interface DiscountsEvent {
+  data object Retry : DiscountsEvent
 
-  data object DismissBottomSheet : PaymentEvent
+  data object DismissBottomSheet : DiscountsEvent
 
-  data object ShowBottomSheet : PaymentEvent
+  data object ShowBottomSheet : DiscountsEvent
 
-  data class OnSubmitDiscountCode(val code: String) : PaymentEvent
+  data class OnSubmitDiscountCode(val code: String) : DiscountsEvent
 }
 
-internal data class OverViewUiState(
+internal data class DiscountsUiState(
   val foreverInformation: ForeverInformation?,
   val paymentOverview: PaymentOverview? = null,
   val discountError: String? = null,

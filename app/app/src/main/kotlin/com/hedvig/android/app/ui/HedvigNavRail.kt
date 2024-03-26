@@ -1,5 +1,6 @@
 package com.hedvig.android.app.ui
 
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.displayCutout
@@ -30,6 +31,7 @@ import com.hedvig.android.navigation.core.titleTextId
 import com.hedvig.android.navigation.core.unselectedIcon
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.collections.immutable.toPersistentSet
 
 @Composable
 internal fun HedvigNavRail(
@@ -43,14 +45,7 @@ internal fun HedvigNavRail(
     destinations = destinations,
     destinationsWithNotifications = destinationsWithNotifications,
     onNavigateToDestination = onNavigateToDestination,
-    getIsCurrentlySelected = { destination: TopLevelGraph ->
-      when (destination) {
-        TopLevelGraph.HOME -> currentDestination.isTopLevelGraphInHierarchy<TopLevelGraph.HOME>()
-        TopLevelGraph.INSURANCE -> currentDestination.isTopLevelGraphInHierarchy<TopLevelGraph.INSURANCE>()
-        TopLevelGraph.PROFILE -> currentDestination.isTopLevelGraphInHierarchy<TopLevelGraph.PROFILE>()
-        TopLevelGraph.FOREVER -> currentDestination.isTopLevelGraphInHierarchy<TopLevelGraph.FOREVER>()
-      }
-    },
+    getIsCurrentlySelected = currentDestination::isTopLevelGraphInHierarchy,
     modifier = modifier,
   )
 }
@@ -103,7 +98,7 @@ private fun HedvigNavRail(
           unselectedIconColor = MaterialTheme.colorScheme.onSurface,
           unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
         ),
-        modifier = Modifier.testTag(destination.toName()),
+        modifier = Modifier.testTag(destination.name),
       )
     }
   }
@@ -114,17 +109,20 @@ private fun HedvigNavRail(
 private fun PreviewHedvigNavRail() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.height(300.dp)) {
-      HedvigNavRail(
-        destinations = persistentSetOf(
-          TopLevelGraph.HOME,
-          TopLevelGraph.INSURANCE,
-          TopLevelGraph.FOREVER,
-          TopLevelGraph.PROFILE,
-        ),
-        destinationsWithNotifications = persistentSetOf(TopLevelGraph.INSURANCE),
-        onNavigateToDestination = {},
-        getIsCurrentlySelected = { it == TopLevelGraph.HOME },
-      )
+      Row {
+        HedvigNavRail(
+          destinations = TopLevelGraph.entries.toSet().toPersistentSet(),
+          destinationsWithNotifications = persistentSetOf(TopLevelGraph.Insurances),
+          onNavigateToDestination = {},
+          getIsCurrentlySelected = { false },
+        )
+        HedvigNavRail(
+          destinations = TopLevelGraph.entries.toSet().toPersistentSet(),
+          destinationsWithNotifications = persistentSetOf(TopLevelGraph.Insurances),
+          onNavigateToDestination = {},
+          getIsCurrentlySelected = { true },
+        )
+      }
     }
   }
 }

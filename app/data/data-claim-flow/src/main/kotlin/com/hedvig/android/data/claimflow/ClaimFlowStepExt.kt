@@ -52,6 +52,7 @@ fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
         selectedItemBrand = selectedItemBrand,
         availableItemModels = availableItemModels?.map { it.toItemModel() },
         selectedItemModel = selectedItemModel,
+        customName = customName,
         availableItemProblems = availableItemProblems?.map { it.toItemProblem() },
         selectedItemProblems = selectedItemProblems,
       )
@@ -66,6 +67,7 @@ fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
         maxDate = maxDate,
         preferredCurrency = preferredCurrency,
         purchaseDate = purchaseDate,
+        customName = customName,
         purchasePrice = UiNullableMoney.fromMoneyFragment(purchasePrice),
         availableItemBrands = availableItemBrands?.map { it.toItemBrand() },
         selectedItemBrand = selectedItemBrand,

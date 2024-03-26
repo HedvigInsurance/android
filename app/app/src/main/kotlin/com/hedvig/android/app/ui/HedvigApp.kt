@@ -1,18 +1,11 @@
 package com.hedvig.android.app.ui
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.AnimationVector4D
 import androidx.compose.animation.core.TwoWayConverter
 import androidx.compose.animation.core.animateValueAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandHorizontally
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.shrinkHorizontally
-import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
@@ -20,23 +13,19 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.union
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import coil.ImageLoader
 import com.hedvig.android.app.navigation.HedvigNavHost
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
@@ -44,82 +33,47 @@ import com.hedvig.android.core.designsystem.material3.motion.MotionTokens
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.Market
 import com.hedvig.android.navigation.activity.ActivityNavigator
-import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import com.hedvig.android.navigation.core.TopLevelGraph
-import com.kiwi.navigationcompose.typed.navigate
 
 @Composable
 internal fun HedvigApp(
   hedvigAppState: HedvigAppState,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   activityNavigator: ActivityNavigator,
-  getInitialTab: () -> TopLevelGraph?,
-  clearInitialTab: () -> Unit,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
+  openUrl: (String) -> Unit,
   market: Market,
   imageLoader: ImageLoader,
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
 ) {
-  LaunchedEffect(getInitialTab, clearInitialTab, hedvigAppState) {
-    val initialTab: TopLevelGraph = getInitialTab() ?: return@LaunchedEffect
-    clearInitialTab()
-    hedvigAppState.navigateToTopLevelGraph(initialTab)
-  }
   Surface(
     color = MaterialTheme.colorScheme.background,
     contentColor = MaterialTheme.colorScheme.onBackground,
     modifier = Modifier.fillMaxSize(),
   ) {
-    Column {
-      Row(Modifier.weight(1f).fillMaxWidth()) {
-        AnimatedVisibility(
-          visible = hedvigAppState.shouldShowNavRail,
-          enter = expandHorizontally(expandFrom = Alignment.End),
-          exit = shrinkHorizontally(shrinkTowards = Alignment.End),
-        ) {
-          val topLevelGraphs by hedvigAppState.topLevelGraphs.collectAsStateWithLifecycle()
-          val destinationsWithNotifications by hedvigAppState
-            .topLevelGraphsWithNotifications.collectAsStateWithLifecycle()
-          HedvigNavRail(
-            destinations = topLevelGraphs,
-            destinationsWithNotifications = destinationsWithNotifications,
-            onNavigateToDestination = hedvigAppState::navigateToTopLevelGraph,
-            currentDestination = hedvigAppState.currentDestination,
-          )
-        }
-        HedvigNavHost(
-          hedvigAppState = hedvigAppState,
-          hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-          activityNavigator = activityNavigator,
-          navigateToConnectPayment = { navigateToConnectPayment(hedvigAppState.navController, market) },
-          shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-          imageLoader = imageLoader,
-          market = market,
-          languageService = languageService,
-          hedvigBuildConstants = hedvigBuildConstants,
-          modifier = Modifier
-            .fillMaxHeight()
-            .weight(1f)
-            .animatedNavigationBarInsetsConsumption(hedvigAppState),
-        )
-      }
-      AnimatedVisibility(
-        visible = hedvigAppState.shouldShowBottomBar,
-        enter = expandVertically(expandFrom = Alignment.Top),
-        exit = shrinkVertically(shrinkTowards = Alignment.Top),
-      ) {
-        val topLevelGraphs by hedvigAppState.topLevelGraphs.collectAsStateWithLifecycle()
-        val destinationsWithNotifications by hedvigAppState
-          .topLevelGraphsWithNotifications.collectAsStateWithLifecycle()
-        HedvigBottomBar(
-          destinations = topLevelGraphs,
-          destinationsWithNotifications = destinationsWithNotifications,
-          onNavigateToDestination = hedvigAppState::navigateToTopLevelGraph,
-          currentDestination = hedvigAppState.currentDestination,
-        )
-      }
+    NavigationSuite(
+      navigationSuiteType = hedvigAppState.navigationSuiteType,
+      topLevelGraphs = hedvigAppState.topLevelGraphs.collectAsState().value,
+      topLevelGraphsWithNotifications = hedvigAppState.topLevelGraphsWithNotifications.collectAsState().value,
+      currentDestination = hedvigAppState.currentDestination,
+      onNavigateToTopLevelGraph = hedvigAppState::navigateToTopLevelGraph,
+    ) {
+      HedvigNavHost(
+        hedvigAppState = hedvigAppState,
+        hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+        activityNavigator = activityNavigator,
+        shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+        openUrl = openUrl,
+        imageLoader = imageLoader,
+        market = market,
+        languageService = languageService,
+        hedvigBuildConstants = hedvigBuildConstants,
+        modifier = Modifier
+          .fillMaxHeight()
+          .weight(1f)
+          .animatedNavigationBarInsetsConsumption(hedvigAppState),
+      )
     }
   }
 }
@@ -133,12 +87,12 @@ internal fun HedvigApp(
 @OptIn(ExperimentalLayoutApi::class)
 private fun Modifier.animatedNavigationBarInsetsConsumption(hedvigAppState: HedvigAppState) = composed {
   val density = LocalDensity.current
-  val insetsToConsume = if (hedvigAppState.shouldShowBottomBar) {
-    WindowInsets.systemBars.only(WindowInsetsSides.Bottom).asPaddingValues(density)
-  } else if (hedvigAppState.shouldShowNavRail) {
-    WindowInsets.systemBars.union(WindowInsets.displayCutout).only(WindowInsetsSides.Left).asPaddingValues(density)
-  } else {
-    PaddingValues(0.dp)
+  val insetsToConsume = when (hedvigAppState.navigationSuiteType) {
+    NavigationSuiteType.NavigationBar -> WindowInsets.systemBars.only(WindowInsetsSides.Bottom).asPaddingValues(density)
+    NavigationSuiteType.NavigationRail -> WindowInsets.systemBars.union(WindowInsets.displayCutout)
+      .only(WindowInsetsSides.Left).asPaddingValues(density)
+
+    else -> PaddingValues(0.dp)
   }
 
   val paddingValuesVectorConverter: TwoWayConverter<PaddingValues, AnimationVector4D> = TwoWayConverter(
@@ -170,13 +124,4 @@ private fun Modifier.animatedNavigationBarInsetsConsumption(hedvigAppState: Hedv
     label = "Padding values inset animation",
   )
   consumeWindowInsets(animatedInsetsToConsume)
-}
-
-private fun navigateToConnectPayment(navController: NavController, market: Market) {
-  when (market) {
-    Market.SE -> navController.navigate(AppDestination.ConnectPayment)
-    Market.NO,
-    Market.DK,
-    -> navController.navigate(AppDestination.ConnectPaymentAdyen)
-  }
 }

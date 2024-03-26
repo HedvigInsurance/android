@@ -3,16 +3,12 @@ package com.hedvig.android.core.uidata
 import androidx.compose.runtime.Immutable
 import java.text.DecimalFormat
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 import octopus.fragment.MoneyFragment
 import octopus.type.CurrencyCode
 
 @Immutable
 @Serializable
 data class UiNullableMoney(val amount: Double?, val currencyCode: CurrencyCode) {
-  @Transient
-  val decimalFormatter: DecimalFormat = DecimalFormat("")
-
   override fun toString(): String {
     return buildString {
       if (amount != null) {
@@ -39,3 +35,5 @@ data class UiNullableMoney(val amount: Double?, val currencyCode: CurrencyCode) 
     }
   }
 }
+
+private val decimalFormatter: DecimalFormat = DecimalFormat("")

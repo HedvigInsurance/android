@@ -74,7 +74,6 @@ internal class SingleItemViewModel(
     itemBrandsUiState: ItemBrandsUiState,
     itemModelsUiState: ItemModelsUiState,
   ): Pair<ItemBrandsUiState, ItemModelsUiState> {
-    if (itemModelsUiState !is ItemModelsUiState.Content) return itemBrandsUiState to itemModelsUiState
     val selectedBrandId = itemBrandsUiState
       .asContent()
       ?.selectedItemBrand
@@ -82,23 +81,20 @@ internal class SingleItemViewModel(
       ?.itemBrandId
       ?: return itemBrandsUiState to itemModelsUiState
 
-    val availableItemModelsWithSelectedBrands: NonEmptyList<ItemModel> = itemModelsUiState
+    val availableItemModelsWithSelectedBrands: List<ItemModel> = itemModelsUiState
       .availableItemModels
       .filter { itemModel ->
         when (itemModel) {
           is ItemModel.Unknown -> true
           is ItemModel.Known -> itemModel.itemBrandId == selectedBrandId
+          is ItemModel.New -> true
         }
       }
-      .toNonEmptyListOrNull()
-      ?: return itemBrandsUiState to ItemModelsUiState.NotApplicable
-    if (availableItemModelsWithSelectedBrands.all { it is ItemModel.Unknown }) {
-      return itemBrandsUiState to ItemModelsUiState.NotApplicable
-    }
+      .toList()
 
     return itemBrandsUiState to itemModelsUiState.copy(
-      availableItemModelsWithSelectedBrands,
-      itemModelsUiState.selectedItemModel,
+      availableItemModels = availableItemModelsWithSelectedBrands,
+      selectedItemModel = itemModelsUiState.selectedItemModel,
     )
   }
 
@@ -107,9 +103,13 @@ internal class SingleItemViewModel(
     if (uiState.canSubmit.not()) return
     partialUiState.update { it.copy(isLoading = true) }
     viewModelScope.launch {
+      val customNameInput = run {
+        val selectedItemModel = uiState.itemModelsUiState.selectedItemModel?.asNew() ?: return@run null
+        selectedItemModel.displayName.ifBlank { null }
+      }
       val itemModelInput = run {
-        val itemModelUiState = uiState.itemModelsUiState.asContent()
-        val selectedItemModel = itemModelUiState?.selectedItemModel?.asKnown() ?: return@run null
+        val itemModelUiState = uiState.itemModelsUiState
+        val selectedItemModel = itemModelUiState.selectedItemModel?.asKnown() ?: return@run null
         FlowClaimItemModelInput(selectedItemModel.itemModelId)
       }
       val itemBrandInput = run {
@@ -126,6 +126,7 @@ internal class SingleItemViewModel(
       claimFlowRepository.submitSingleItem(
         itemBrandInput = itemBrandInput,
         itemModelInput = itemModelInput,
+        customName = customNameInput,
         itemProblemIds = run {
           val itemProblemsUiState = uiState.itemProblemsUiState.asContent() ?: return@run null
           val selectedItemProblems =
@@ -153,15 +154,30 @@ internal class SingleItemViewModel(
    */
   fun selectBrand(itemBrand: ItemBrand) {
     val currentItemBrandsUiState = itemBrandsUiState.value.asContent() ?: return
+    val availableItemModelsWithSelectedBrands: List<ItemModel> = itemModelsUiState.value
+      .availableItemModels
+      .filter { itemModel ->
+        when (itemModel) {
+          is ItemModel.Unknown -> true
+          is ItemModel.Known -> itemModel.itemBrandId == itemBrand.asKnown()?.itemBrandId
+          is ItemModel.New -> true
+        }
+      }
+      .toList()
+    val onlyUnKnown =
+      availableItemModelsWithSelectedBrands.size == 1 && availableItemModelsWithSelectedBrands[0] is ItemModel.Unknown
+    val modelUi = if (availableItemModelsWithSelectedBrands.isEmpty() || onlyUnKnown) {
+      ModelUi.JustCustomModel
+    } else {
+      ModelUi.JustModelDialog
+    }
     itemBrandsUiState.update { currentItemBrandsUiState.copy(selectedItemBrand = itemBrand) }
     itemModelsUiState.update { modelsUiState ->
-      when (modelsUiState) {
-        is ItemModelsUiState.Content -> modelsUiState.copy(
-          selectedItemModel = null,
-        )
-
-        ItemModelsUiState.NotApplicable -> modelsUiState
-      }
+      modelsUiState.copy(
+        selectedItemModel = null,
+        modelUi = modelUi,
+        initialCustomValue = "",
+      )
     }
   }
 
@@ -170,10 +186,36 @@ internal class SingleItemViewModel(
    * brandId inside the [itemModel] passed here.
    */
   fun selectModel(itemModel: ItemModel) {
-    itemModelsUiState.update { itemModelsUiState ->
-      when (itemModelsUiState) {
-        ItemModelsUiState.NotApplicable -> itemModelsUiState
-        is ItemModelsUiState.Content -> itemModelsUiState.copy(selectedItemModel = itemModel)
+    when (itemModel) {
+      is ItemModel.Known -> {
+        itemModelsUiState.update { itemModelsUiState ->
+          itemModelsUiState.copy(
+            selectedItemModel = itemModel,
+            modelUi = ModelUi.JustModelDialog,
+            initialCustomValue = "",
+          )
+        }
+      }
+
+      is ItemModel.New -> {
+        itemModelsUiState.update { itemModelsUiState ->
+          itemModelsUiState.copy(
+            selectedItemModel = itemModel,
+            initialCustomValue = itemModel.displayName,
+          )
+        }
+        // do not change modelUi but save the value (for the case if we go back)
+      }
+
+      ItemModel.Unknown -> {
+        // show extra custom name field
+        itemModelsUiState.update { itemModelsUiState ->
+          itemModelsUiState.copy(
+            selectedItemModel = itemModel,
+            modelUi = ModelUi.BothDialogAndCustom,
+            initialCustomValue = "",
+          )
+        }
       }
     }
     if (itemModel !is ItemModel.Known) return
@@ -296,10 +338,18 @@ internal class PurchasePriceUiState(amount: Double?, preferredCurrency: Currency
   }
 }
 
+internal sealed interface ModelUi {
+  data object JustModelDialog : ModelUi
+
+  data object JustCustomModel : ModelUi
+
+  data object BothDialogAndCustom : ModelUi
+}
+
 internal sealed interface ItemBrandsUiState {
   fun asContent(): Content? = this as? Content
 
-  object NotApplicable : ItemBrandsUiState
+  data object NotApplicable : ItemBrandsUiState
 
   data class Content(
     val availableItemBrands: NonEmptyList<ItemBrand>,
@@ -312,35 +362,43 @@ internal sealed interface ItemBrandsUiState {
       val selectedItemBrand = availableItemBrands.firstOrNull { availableItemBrand: ItemBrand ->
         availableItemBrand.asKnown()?.itemBrandId == singleItem.selectedItemBrand
       }
-      val notSureBrand = ItemBrand.Unknown
       return Content(
-        availableItemBrands.plus(notSureBrand),
+        availableItemBrands,
         selectedItemBrand,
       )
     }
   }
 }
 
-internal sealed interface ItemModelsUiState {
-  fun asContent(): Content? = this as? Content
-
-  object NotApplicable : ItemModelsUiState
-
-  data class Content(
-    val availableItemModels: NonEmptyList<ItemModel>,
-    val selectedItemModel: ItemModel?,
-  ) : ItemModelsUiState
-
+internal data class ItemModelsUiState(
+  val availableItemModels: List<ItemModel>,
+  val selectedItemModel: ItemModel?,
+  val modelUi: ModelUi,
+  val initialCustomValue: String,
+) {
   companion object {
     fun fromSingleItem(singleItem: ClaimFlowDestination.SingleItem): ItemModelsUiState {
-      val availableItemModels = singleItem.availableItemModels?.toNonEmptyListOrNull() ?: return NotApplicable
-      val selectedItemModel = availableItemModels.firstOrNull { availableItemModel ->
+      val availableItemModels = singleItem.availableItemModels?.toMutableList() ?: listOf()
+      val selectedKnownItemModel = availableItemModels.firstOrNull { availableItemModel ->
         availableItemModel.asKnown()?.itemModelId == singleItem.selectedItemModel
       }
-      val notSureModel = ItemModel.Unknown
-      return Content(
-        availableItemModels.plus(notSureModel),
+      val customName = singleItem.customName
+      val initialCustomValue = customName ?: ""
+      val selectedItemModel = if (customName != null) ItemModel.New(customName) else selectedKnownItemModel
+      val noAvailableModels = availableItemModels.isEmpty()
+      val modelUi = if (customName != null && !noAvailableModels) {
+        ModelUi.BothDialogAndCustom
+      } else if (noAvailableModels) {
+        ModelUi.JustCustomModel
+      } else {
+        ModelUi.JustModelDialog
+      }
+      val otherModel = ItemModel.Unknown
+      return ItemModelsUiState(
+        availableItemModels.plus(otherModel),
         selectedItemModel,
+        modelUi,
+        initialCustomValue,
       )
     }
   }
@@ -349,7 +407,7 @@ internal sealed interface ItemModelsUiState {
 internal sealed interface ItemProblemsUiState {
   fun asContent(): Content? = this as? Content
 
-  object NotApplicable : ItemProblemsUiState
+  data object NotApplicable : ItemProblemsUiState
 
   data class Content(
     val availableItemProblems: NonEmptyList<ItemProblem>,

@@ -62,9 +62,6 @@ import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.payments.data.Discount
-import com.hedvig.android.feature.payments.overview.OverViewUiState
-import com.hedvig.android.feature.payments.overview.PaymentEvent
-import com.hedvig.android.feature.payments.overview.PaymentOverviewViewModel
 import com.hedvig.android.feature.payments.overview.data.ForeverInformation
 import com.hedvig.android.feature.payments.paymentOverViewPreviewData
 import hedvig.resources.R
@@ -72,35 +69,35 @@ import kotlinx.datetime.LocalDate
 import octopus.type.CurrencyCode
 
 @Composable
-internal fun DiscountsDestination(viewModel: PaymentOverviewViewModel, navigateUp: () -> Unit) {
+internal fun DiscountsDestination(viewModel: DiscountsViewModel, navigateUp: () -> Unit) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   DiscountsScreen(
     uiState = uiState,
-    onDismissBottomSheet = { viewModel.emit(PaymentEvent.DismissBottomSheet) },
-    onShowBottomSheet = { viewModel.emit(PaymentEvent.ShowBottomSheet) },
-    onSubmitDiscountCode = { viewModel.emit(PaymentEvent.OnSubmitDiscountCode(it)) },
+    onDismissBottomSheet = { viewModel.emit(DiscountsEvent.DismissBottomSheet) },
+    onShowBottomSheet = { viewModel.emit(DiscountsEvent.ShowBottomSheet) },
+    onSubmitDiscountCode = { viewModel.emit(DiscountsEvent.OnSubmitDiscountCode(it)) },
     navigateUp = navigateUp,
   )
 }
 
 @Composable
 private fun DiscountsScreen(
-  uiState: OverViewUiState,
+  uiState: DiscountsUiState,
   navigateUp: () -> Unit,
   onShowBottomSheet: () -> Unit,
   onDismissBottomSheet: () -> Unit,
   onSubmitDiscountCode: (String) -> Unit,
 ) {
   HedvigScaffold(
-    topAppBarText = stringResource(id = R.string.PAYMENTS_DISCOUNTS_SECTION_TITLE),
+    topAppBarText = stringResource(R.string.PAYMENTS_DISCOUNTS_SECTION_TITLE),
     navigateUp = navigateUp,
   ) {
     var showInfoBottomSheet by remember { mutableStateOf(false) }
     if (showInfoBottomSheet) {
       HedvigInfoBottomSheet(
         onDismissed = { showInfoBottomSheet = false },
-        title = stringResource(id = R.string.PAYMENTS_CAMPAIGNS_INFO_TITLE),
-        body = stringResource(id = R.string.PAYMENTS_CAMPAIGNS_INFO_DESCRIPTION),
+        title = stringResource(R.string.PAYMENTS_CAMPAIGNS_INFO_TITLE),
+        body = stringResource(R.string.PAYMENTS_CAMPAIGNS_INFO_DESCRIPTION),
       )
     }
     if (uiState.showAddDiscountBottomSheet) {
@@ -122,6 +119,7 @@ private fun DiscountsScreen(
         )
       }
     }
+
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
       Spacer(modifier = Modifier.height(16.dp))
       HorizontalItemsWithMaximumSpaceTaken(
@@ -267,7 +265,7 @@ private fun PaymentDetailsScreenPreview(
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       DiscountsScreen(
-        uiState = OverViewUiState(
+        uiState = DiscountsUiState(
           paymentOverview = paymentOverViewPreviewData.copy(
             discounts = if (hasForeverAndDiscounts) {
               listOf(

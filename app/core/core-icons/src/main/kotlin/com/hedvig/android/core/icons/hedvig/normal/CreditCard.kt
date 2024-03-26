@@ -7,12 +7,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.hedvig.android.core.icons.HedvigIcons
 
 @Suppress("UnusedReceiverParameter")
-public val HedvigIcons.Payments: ImageVector
+public val HedvigIcons.CreditCard: ImageVector
   get() {
-    if (_payments != null) {
-      return _payments!!
+    if (_creditCard != null) {
+      return _creditCard!!
     }
-    _payments = materialIcon(name = "Payments") {
+    _creditCard = materialIcon(name = "Credit Card") {
       materialPath(pathFillType = PathFillType.EvenOdd) {
         moveTo(1.25f, 15.052f)
         verticalLineTo(8.948f)
@@ -68,7 +68,7 @@ public val HedvigIcons.Payments: ImageVector
         close()
       }
     }
-    return _payments!!
+    return _creditCard!!
   }
 
-private var _payments: ImageVector? = null
+private var _creditCard: ImageVector? = null

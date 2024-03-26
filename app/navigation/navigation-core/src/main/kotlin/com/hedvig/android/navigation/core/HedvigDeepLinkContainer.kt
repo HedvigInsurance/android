@@ -64,3 +64,22 @@ internal class HedvigDeepLinkContainerImpl(
 
   override val chat: String = "$baseDeepLinkDomain/chat"
 }
+
+val HedvigDeepLinkContainer.allDeepLinkUriPatterns: List<String>
+  get() = listOf(
+    home,
+    helpCenter,
+    helpCenterCommonTopic,
+    helpCenterQuestion,
+    insurances,
+    contract,
+    contractWithoutContractId,
+    forever,
+    profile,
+    connectPayment,
+    directDebit,
+    eurobonus,
+    payments,
+    deleteAccount,
+    chat,
+  )

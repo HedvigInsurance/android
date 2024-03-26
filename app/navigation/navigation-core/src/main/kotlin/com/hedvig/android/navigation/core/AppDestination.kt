@@ -5,20 +5,6 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 sealed interface AppDestination : Destination {
-  sealed interface TopLevelDestination : AppDestination {
-    @Serializable
-    data object Home : TopLevelDestination
-
-    @Serializable
-    data object Insurance : TopLevelDestination
-
-    @Serializable
-    data object Profile : TopLevelDestination
-
-    @Serializable
-    data object Forever : TopLevelDestination
-  }
-
   @Serializable
   data object Login : AppDestination
 
@@ -52,9 +38,6 @@ sealed interface AppDestination : Destination {
     @SerialName("insuranceId")
     val insuranceId: String?,
   ) : AppDestination
-
-  @Serializable
-  data object PaymentInfo : AppDestination
 
   // Handles connecting payment with Trustly. Auto-navigates to Adyen for NO/DK
   @Serializable
