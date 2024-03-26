@@ -111,10 +111,11 @@ fun NavGraphBuilder.terminateInsuranceGraph(
     }
 
     composable<TerminateInsuranceDestination.TerminationDate> {
-      val viewModel: TerminationDateViewModel = koinViewModel { parametersOf(minDate, maxDate) }
+      val viewModel: TerminationDateViewModel = koinViewModel {
+        parametersOf(TerminationDataParameters(minDate, maxDate, insuranceDisplayName, exposureName))
+      }
       TerminationDateDestination(
         viewModel = viewModel,
-        windowSizeClass = windowSizeClass,
         onContinue = { localDate ->
           navController.navigate(
             TerminateInsuranceDestination.TerminationReview(

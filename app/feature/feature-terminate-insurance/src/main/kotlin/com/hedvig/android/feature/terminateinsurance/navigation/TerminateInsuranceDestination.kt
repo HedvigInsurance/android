@@ -3,14 +3,7 @@ package com.hedvig.android.feature.terminateinsurance.navigation
 import com.hedvig.android.data.contract.ContractGroup
 import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.datetime.LocalDate
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-
-@Serializable
-data class TerminateInsuranceFeatureDestination(
-  @SerialName("insuranceId")
-  val insuranceId: String?,
-) : Destination
 
 internal sealed interface TerminateInsuranceDestination : Destination {
   @Serializable
@@ -75,4 +68,12 @@ internal data class TerminationReviewViewModelParameters(
   val exposureName: String,
   val contractGroup: ContractGroup,
   val terminationType: TerminateInsuranceDestination.TerminationReview.TerminationType,
+)
+
+@Serializable
+internal data class TerminationDataParameters(
+  val minDate: LocalDate,
+  val maxDate: LocalDate,
+  val insuranceDisplayName: String,
+  val exposureName: String,
 )
