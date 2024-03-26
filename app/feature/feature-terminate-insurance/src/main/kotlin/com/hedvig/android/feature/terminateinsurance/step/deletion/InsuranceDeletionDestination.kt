@@ -81,8 +81,8 @@ internal fun InsuranceDeletionDestination(activeFrom: LocalDate, onContinue: () 
         .padding(bottom = 8.dp),
     )
     HedvigTextButton(
-      text = stringResource(id = R.string.general_cancel_button),
-      onClick = onContinue,
+      text = stringResource(id = R.string.general_back_button),
+      onClick = navigateUp,
       modifier = Modifier
         .padding(horizontal = 16.dp),
     )
