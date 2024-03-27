@@ -18,6 +18,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
@@ -66,11 +67,11 @@ private fun TerminationDateScreen(
     closeTerminationFlow = closeTerminationFlow,
   ) {
     Text(
+      style = MaterialTheme.typography.headlineSmall.copy(
+        lineBreak = LineBreak.Heading,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+      ),
       text = stringResource(id = R.string.TERMINATION_DATE_TEXT),
-      fontSize = MaterialTheme.typography.headlineSmall.fontSize,
-      fontStyle = MaterialTheme.typography.headlineSmall.fontStyle,
-      fontFamily = MaterialTheme.typography.headlineSmall.fontFamily,
-      color = MaterialTheme.colorScheme.onSurfaceVariant,
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.weight(1f))
@@ -89,7 +90,7 @@ private fun TerminationDateScreen(
     )
     Spacer(Modifier.height(16.dp))
     HedvigContainedButton(
-      text = "Cancel insurance", // todo: actual copy here
+      text = stringResource(id = R.string.TERMINATION_FLOW_CANCEL_INSURANCE_BUTTON),
       onClick = submit,
       enabled = uiState.canSubmit,
       modifier = Modifier.padding(horizontal = 16.dp),

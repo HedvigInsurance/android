@@ -16,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
@@ -95,11 +96,11 @@ private fun ChooseInsuranceToTerminateScreen(
         closeTerminationFlow = closeTerminationFlow,
       ) {
         Text(
+          style = MaterialTheme.typography.headlineSmall.copy(
+            lineBreak = LineBreak.Heading,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+          ),
           text = stringResource(id = R.string.TERMINATION_FLOW_CHOOSE_CONTRACT_SUBTITLE),
-          fontSize = MaterialTheme.typography.headlineSmall.fontSize,
-          fontStyle = MaterialTheme.typography.headlineSmall.fontStyle,
-          fontFamily = MaterialTheme.typography.headlineSmall.fontFamily,
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
           modifier = Modifier.padding(horizontal = 16.dp),
         )
         Spacer(Modifier.weight(1f))

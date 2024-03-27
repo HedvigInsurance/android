@@ -68,7 +68,7 @@ internal fun TerminationScaffold(
             ),
         ) {
           Text(
-            text = stringResource(id = R.string.TERMINATION_FLOW_CANCELLATION_TITLE), // todo: change copy
+            text = stringResource(id = R.string.TERMINATION_FLOW_CANCELLATION_TITLE),
             fontSize = MaterialTheme.typography.headlineSmall.fontSize,
             fontStyle = MaterialTheme.typography.headlineSmall.fontStyle,
             fontFamily = MaterialTheme.typography.headlineSmall.fontFamily,

@@ -95,7 +95,11 @@ private fun AreYouSureScreen(
     horizontalAlignment = Alignment.CenterHorizontally,
     verticalArrangement = Arrangement.Center,
     modifier = modifier
-      .padding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal).asPaddingValues())
+      .padding(
+        WindowInsets.safeDrawing
+          .only(WindowInsetsSides.Horizontal)
+          .asPaddingValues(),
+      )
       .padding(horizontal = 16.dp),
   ) {
     Spacer(modifier = Modifier.weight(1f))
@@ -107,7 +111,7 @@ private fun AreYouSureScreen(
     )
     Spacer(Modifier.height(16.dp))
     Text(
-      text = "Are you sure?", // todo: add actual copy
+      text = stringResource(id = R.string.GENERAL_ARE_YOU_SURE),
       textAlign = TextAlign.Center,
       style = LocalTextStyle.current.copy(
         lineBreak = LineBreak.Heading,
@@ -117,15 +121,13 @@ private fun AreYouSureScreen(
     Spacer(Modifier.height(2.dp))
     val subtitle = when (type) {
       TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Deletion ->
-        // todo: actual copy here
-        "Your insurance will be cancelled before the activation date"
+        stringResource(id = R.string.TERMINATION_FLOW_CONFIRMATION_SUBTITLE_DELETION)
 
       is TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Termination ->
-        // todo: actual copy here
-        String.format(
-          "Your insurance will be cancelled on %s",
+        stringResource(
+          id = R.string.TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TERMINATION,
           dateTimeFormatter.format(type.terminationDate.toJavaLocalDate()),
-        ) // todo: format
+        )
     }
     Text(
       text = subtitle,
@@ -139,13 +141,13 @@ private fun AreYouSureScreen(
     Spacer(modifier = Modifier.weight(1f))
     Spacer(Modifier.height(16.dp))
     HedvigContainedButton(
-      "Yes, cancel", // todo: actual copy here
+      stringResource(id = R.string.TERMINATION_FLOW_CONFIRM_BUTTON),
       enabled = true,
       onClick = onContinue,
     )
     Spacer(Modifier.height(8.dp))
     HedvigTextButton(
-      "Close", // todo: actual copy here
+      stringResource(id = R.string.general_close_button),
       onClick = navigateUp,
     )
     Spacer(Modifier.height(16.dp))

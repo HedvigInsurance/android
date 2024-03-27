@@ -267,7 +267,6 @@ internal fun HedvigNavHost(
 
             QuickLinkDestination.QuickLinkConnectPayment -> {
               backStackEntry.navigate(AppDestination.ChangeAddress)
-              // todo: wrong link, but I think we got rid of this part altogether in develop
             }
 
             QuickLinkDestination.QuickLinkTermination -> {

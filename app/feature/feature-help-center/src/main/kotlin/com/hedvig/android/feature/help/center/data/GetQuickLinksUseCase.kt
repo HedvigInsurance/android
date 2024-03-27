@@ -9,7 +9,6 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.termination.data.GetTerminatableContractsUseCase
 import com.hedvig.android.data.travelcertificate.CheckTravelCertificateDestinationAvailabilityUseCase
 import com.hedvig.android.feature.help.center.model.QuickAction
-import com.hedvig.android.feature.help.center.model.QuickLinkForMultiSelect
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
@@ -44,17 +43,13 @@ internal class GetQuickLinksUseCase(
           if (it.size > 1) {
             val links = it.map { contract ->
               if (contract.coInsured?.any { it.hasMissingInfo } == true) {
-                QuickLinkForMultiSelect(
+                QuickAction.MultiSelectQuickLink.QuickLinkForMultiSelect(
                   quickLinkDestination = QuickLinkDestination.QuickLinkCoInsuredAddInfo(contract.id),
-                  titleRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_TITLE,
-                  hintTextRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
                   displayName = contract.currentAgreement.productVariant.displayName,
                 )
               } else {
-                QuickLinkForMultiSelect(
+                QuickAction.MultiSelectQuickLink.QuickLinkForMultiSelect(
                   quickLinkDestination = QuickLinkDestination.QuickLinkCoInsuredAddOrRemove(contract.id),
-                  titleRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_TITLE,
-                  hintTextRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
                   displayName = contract.currentAgreement.productVariant.displayName,
                 )
               }

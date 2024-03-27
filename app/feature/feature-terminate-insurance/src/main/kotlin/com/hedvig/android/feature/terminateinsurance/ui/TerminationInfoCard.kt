@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
@@ -26,6 +27,8 @@ import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.ChevronDown
 import com.hedvig.android.core.icons.hedvig.small.hedvig.Lock
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
+import hedvig.resources.R
+import kotlinx.datetime.LocalDate
 
 @Composable
 internal fun TerminationInfoCardInsurance(displayName: String, exposureName: String, modifier: Modifier = Modifier) {
@@ -77,13 +80,13 @@ internal fun TerminationInfoCardDate(
         startSlot = {
           Column {
             Text(
-              text = "Termination date", // todo: real copy here
+              text = stringResource(id = R.string.TERMINATION_FLOW_DATE_FIELD_TEXT),
               style = MaterialTheme.typography.bodyMedium,
               color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-              text = dateValue ?: "Select date...", // todo: real copy here
+              text = dateValue ?: stringResource(R.string.TERMINATION_FLOW_DATE_FIELD_PLACEHOLDER),
               style = MaterialTheme.typography.bodyLarge,
               color = if (dateValue == null) {
                 MaterialTheme.colorScheme.onSurfaceVariant
@@ -124,7 +127,17 @@ internal fun TerminationInfoCardDate(
 private fun PreviewTerminationInfoCardDate() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      TerminationInfoCardDate("Today", {}, true)
+      TerminationInfoCardDate(null, {}, false)
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewTerminationInfoCardDateNotLocked() {
+  HedvigTheme {
+    Surface(color = MaterialTheme.colorScheme.background) {
+      TerminationInfoCardDate(LocalDate(2023, 9, 8).toString(), {}, true)
     }
   }
 }
