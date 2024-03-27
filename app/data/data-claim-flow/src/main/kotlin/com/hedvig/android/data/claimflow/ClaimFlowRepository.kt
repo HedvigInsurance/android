@@ -338,7 +338,7 @@ internal class ClaimFlowRepositoryImpl(
           // Same name for both due to this: https://hedviginsurance.slack.com/archives/C03RP2M458V/p1680004365854429
           name = file.name,
           filename = file.name,
-          body = file.asRequestBody("audio/aac".toMediaType()),
+          body = file.asRequestBody("audio/mp4".toMediaType()),
         ),
       )
       .onLeft {
