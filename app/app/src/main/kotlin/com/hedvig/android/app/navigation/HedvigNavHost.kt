@@ -139,7 +139,6 @@ internal fun HedvigNavHost(
           windowSizeClass = hedvigAppState.windowSizeClass,
           navigator = navigator,
           navController = hedvigAppState.navController,
-          imageLoader = imageLoader,
           openChat = { backStackEntry ->
             with(navigator) {
               backStackEntry.navigate(AppDestination.Chat())

@@ -116,7 +116,7 @@ fun ClaimFlowScaffold(
 }
 
 @Composable
-private fun TopAppBarWithBackAndClose(
+fun TopAppBarWithBackAndClose(
   title: String,
   onNavigateUp: () -> Unit,
   onClose: () -> Unit,

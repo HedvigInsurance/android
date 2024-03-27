@@ -1,15 +1,23 @@
 package com.hedvig.android.feature.terminateinsurance.ui
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -17,116 +25,63 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.ColorPainter
-import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import coil.ImageLoader
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.card.InsuranceCard
-import com.hedvig.android.core.ui.infocard.VectorInfoCard
-import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
-import com.hedvig.android.core.ui.scaffold.HedvigScaffold
+import com.hedvig.android.core.ui.scaffold.TopAppBarWithBackAndClose
 import hedvig.resources.R
-import kotlinx.collections.immutable.toPersistentList
-import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDate
-import kotlinx.datetime.toLocalDateTime
 
 @Composable
-internal fun TerminationOverviewScreenScaffold(
+internal fun TerminationScaffold(
   navigateUp: () -> Unit,
-  topAppBarText: String,
+  closeTerminationFlow: () -> Unit,
   modifier: Modifier = Modifier,
   content: @Composable ColumnScope.() -> Unit,
 ) {
-  HedvigScaffold(
-    navigateUp = navigateUp,
-    topAppBarText = topAppBarText,
-    modifier = modifier,
+  Surface(
+    color = MaterialTheme.colorScheme.background,
+    modifier = modifier.fillMaxSize(),
   ) {
-    content()
-  }
-}
-
-/**
- * Common screen content composable for termination flow screens that show the overview + common questions.
- */
-@Composable
-internal fun ColumnScope.TerminationOverviewScreenContent(
-  terminationDate: LocalDate?,
-  insuranceDisplayName: String,
-  exposureName: String,
-  insuranceCardPainter: Painter,
-  imageLoader: ImageLoader,
-  infoText: String?,
-  containedButtonText: String?,
-  onContainedButtonClick: (() -> Unit)?,
-  textButtonText: String,
-  onTextButtonClick: () -> Unit,
-  containedButtonColor: Color = MaterialTheme.colorScheme.error,
-  onContainedButtonColor: Color = MaterialTheme.colorScheme.onError,
-  isContainedButtonLoading: Boolean = false,
-) {
-  Spacer(Modifier.height(8.dp))
-  InsuranceCard(
-    chips = buildList {
-      if (terminationDate != null) {
-        add(terminationDateText(terminationDate = terminationDate))
+    Box {
+      Column {
+        val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+        TopAppBarWithBackAndClose(
+          onNavigateUp = navigateUp,
+          onClose = closeTerminationFlow,
+          title = "",
+          scrollBehavior = topAppBarScrollBehavior,
+        )
+        Column(
+          modifier = Modifier
+            .fillMaxSize()
+            .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
+            .verticalScroll(rememberScrollState())
+            .windowInsetsPadding(
+              WindowInsets.safeDrawing.only(
+                WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom,
+              ),
+            ),
+        ) {
+          Text(
+            text = stringResource(id = R.string.TERMINATION_FLOW_CANCELLATION_TITLE), // todo: change copy
+            fontSize = MaterialTheme.typography.headlineSmall.fontSize,
+            fontStyle = MaterialTheme.typography.headlineSmall.fontStyle,
+            fontFamily = MaterialTheme.typography.headlineSmall.fontFamily,
+            modifier = Modifier.padding(horizontal = 16.dp),
+          )
+          content()
+        }
       }
-    }.toPersistentList(),
-    topText = insuranceDisplayName,
-    bottomText = exposureName,
-    imageLoader = imageLoader,
-    fallbackPainter = insuranceCardPainter,
-    modifier = Modifier.padding(horizontal = 16.dp),
-  )
-  if (infoText != null) {
-    Spacer(Modifier.height(16.dp))
-    VectorInfoCard(
-      text = infoText,
-      modifier = Modifier
-        .padding(horizontal = 16.dp)
-        .fillMaxWidth(),
-    )
+    }
   }
-  Spacer(Modifier.height(16.dp))
-  Text(
-    stringResource(id = R.string.TERMINATE_CONTRACT_COMMON_QUESTIONS),
-    modifier = Modifier.padding(horizontal = 18.dp),
-  )
-  Spacer(Modifier.height(16.dp))
-  CommonQuestions(modifier = Modifier.padding(horizontal = 16.dp))
-  Spacer(Modifier.height(32.dp))
-  Spacer(Modifier.weight(1f))
-  if (containedButtonText != null && onContainedButtonClick != null) {
-    HedvigContainedButton(
-      text = containedButtonText,
-      colors = ButtonDefaults.buttonColors(
-        containerColor = containedButtonColor,
-        contentColor = onContainedButtonColor,
-      ),
-      onClick = onContainedButtonClick,
-      isLoading = isContainedButtonLoading,
-      modifier = Modifier.padding(horizontal = 16.dp),
-    )
-    Spacer(Modifier.height(8.dp))
-  }
-  HedvigTextButton(
-    text = textButtonText,
-    onClick = onTextButtonClick,
-    modifier = Modifier.padding(horizontal = 16.dp),
-  )
-  Spacer(Modifier.height(16.dp))
 }
 
+// will probably need it later
 @Composable
 private fun CommonQuestions(modifier: Modifier = Modifier) {
   var expandedQuestionId by rememberSaveable<MutableState<Int?>> { mutableStateOf(null) }
@@ -184,24 +139,10 @@ private fun terminationDateText(terminationDate: LocalDate): String {
 private fun PreviewTerminationOverviewScreenScaffold() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      TerminationOverviewScreenScaffold(
+      TerminationScaffold(
         navigateUp = {},
-        topAppBarText = "topAppBarText",
+        closeTerminationFlow = {},
       ) {
-        TerminationOverviewScreenContent(
-          terminationDate = Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
-          insuranceDisplayName = "insuranceDisplayName",
-          exposureName = "exposureName",
-          insuranceCardPainter = ColorPainter(Color.Gray),
-          imageLoader = rememberPreviewImageLoader(),
-          infoText = "infoText",
-          containedButtonText = "containedButtonText",
-          onContainedButtonClick = {},
-          textButtonText = "textButtonText",
-          onTextButtonClick = {},
-          containedButtonColor = MaterialTheme.colorScheme.error,
-          onContainedButtonColor = MaterialTheme.colorScheme.onError,
-        )
       }
     }
   }

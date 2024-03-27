@@ -23,8 +23,9 @@ internal sealed interface TerminateInsuranceDestination : Destination {
    * The screen to review the termination situation before submitting the final request
    */
   @Serializable
-  data class TerminationReview(
-    val parameters: TerminationReviewViewModelParameters,
+  data class TerminationConfirmation(
+    val terminationType: TerminationType,
+    val parameters: TerminationConfirmationParameters,
   ) : TerminateInsuranceDestination {
     @Serializable
     sealed interface TerminationType {
@@ -62,18 +63,17 @@ internal sealed interface TerminateInsuranceDestination : Destination {
 }
 
 @Serializable
-internal data class TerminationReviewViewModelParameters(
-  val activeFrom: LocalDate,
-  val insuranceDisplayName: String,
-  val exposureName: String,
-  val contractGroup: ContractGroup,
-  val terminationType: TerminateInsuranceDestination.TerminationReview.TerminationType,
-)
-
-@Serializable
 internal data class TerminationDataParameters(
   val minDate: LocalDate,
   val maxDate: LocalDate,
   val insuranceDisplayName: String,
   val exposureName: String,
+)
+
+@Serializable
+internal data class TerminationConfirmationParameters(
+  val insuranceDisplayName: String,
+  val exposureName: String,
+  val activeFrom: LocalDate,
+  val contractGroup: ContractGroup,
 )

@@ -31,7 +31,7 @@ import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.termination.data.TerminatableInsurance
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
-import com.hedvig.android.feature.terminateinsurance.ui.TerminationOverviewScreenScaffold
+import com.hedvig.android.feature.terminateinsurance.ui.TerminationScaffold
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 
@@ -40,6 +40,7 @@ internal fun ChooseInsuranceToTerminateDestination(
   viewModel: ChooseInsuranceToTerminateViewModel,
   navigateUp: () -> Unit,
   openChat: () -> Unit,
+  closeTerminationFlow: () -> Unit,
   navigateToNextStep: (step: TerminateInsuranceStep, terminatableInsurance: TerminatableInsurance) -> Unit,
 ) {
   val uiState: ChooseInsuranceToTerminateStepUiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -48,6 +49,7 @@ internal fun ChooseInsuranceToTerminateDestination(
     navigateUp = navigateUp,
     navigateToNextStep = navigateToNextStep,
     openChat = openChat,
+    closeTerminationFlow = closeTerminationFlow,
     reload = { viewModel.emit(ChooseInsuranceToTerminateEvent.RetryLoadData) },
     selectInsurance = { viewModel.emit(ChooseInsuranceToTerminateEvent.SelectInsurance(it)) },
   )
@@ -59,6 +61,7 @@ private fun ChooseInsuranceToTerminateScreen(
   navigateUp: () -> Unit,
   reload: () -> Unit,
   openChat: () -> Unit,
+  closeTerminationFlow: () -> Unit,
   selectInsurance: (insurance: TerminatableInsurance) -> Unit,
   navigateToNextStep: (step: TerminateInsuranceStep, terminatableInsurance: TerminatableInsurance) -> Unit,
 ) {
@@ -87,17 +90,10 @@ private fun ChooseInsuranceToTerminateScreen(
 
     ChooseInsuranceToTerminateStepUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
     is ChooseInsuranceToTerminateStepUiState.Success -> {
-      TerminationOverviewScreenScaffold(
+      TerminationScaffold(
         navigateUp = navigateUp,
-        topAppBarText = "",
+        closeTerminationFlow = closeTerminationFlow,
       ) {
-        Text(
-          text = stringResource(id = R.string.TERMINATION_FLOW_CANCELLATION_TITLE),
-          fontSize = MaterialTheme.typography.headlineSmall.fontSize,
-          fontStyle = MaterialTheme.typography.headlineSmall.fontStyle,
-          fontFamily = MaterialTheme.typography.headlineSmall.fontFamily,
-          modifier = Modifier.padding(horizontal = 16.dp),
-        )
         Text(
           text = stringResource(id = R.string.TERMINATION_FLOW_CHOOSE_CONTRACT_SUBTITLE),
           fontSize = MaterialTheme.typography.headlineSmall.fontSize,
@@ -202,6 +198,7 @@ private fun PreviewChooseInsuranceToTerminateScreen() {
         {},
         {},
         {},
+        {},
         { step, insurance -> },
       )
     }
@@ -219,6 +216,7 @@ private fun PreviewChooseInsuranceToTerminateScreenWithFailure() {
         {},
         {},
         {},
+        {},
         { step, insurance -> },
       )
     }
@@ -232,6 +230,7 @@ private fun PreviewChooseInsuranceToTerminateScreenWithNotAllowed() {
     Surface(color = MaterialTheme.colorScheme.background) {
       ChooseInsuranceToTerminateScreen(
         ChooseInsuranceToTerminateStepUiState.NotAllowed,
+        {},
         {},
         {},
         {},
