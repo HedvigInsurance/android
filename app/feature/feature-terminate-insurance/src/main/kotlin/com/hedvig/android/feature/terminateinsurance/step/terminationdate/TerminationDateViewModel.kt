@@ -32,9 +32,15 @@ internal class TerminationDateViewModel(
       isLoading = false,
       exposureName = parameters.exposureName,
       displayName = parameters.insuranceDisplayName,
+      isCheckBoxChecked = false,
     ),
   )
   val uiState: StateFlow<TerminateInsuranceUiState> = _uiState.asStateFlow()
+
+  fun changeCheckBoxState() {
+    val isCheckedNow = uiState.value.isCheckBoxChecked
+    _uiState.value = uiState.value.copy(isCheckBoxChecked = !isCheckedNow)
+  }
 }
 
 // todo change with generic DatePickerUiState
@@ -62,6 +68,7 @@ internal data class TerminateInsuranceUiState(
   val isLoading: Boolean,
   val exposureName: String,
   val displayName: String,
+  val isCheckBoxChecked: Boolean,
 ) {
   val canSubmit: Boolean
     @Composable
@@ -72,5 +79,5 @@ internal data class TerminateInsuranceUiState(
 }
 
 private fun TerminateInsuranceUiState.canSubmitSelectedDate(): Boolean {
-  return datePickerState.selectedDateMillis != null && !isLoading
+  return datePickerState.selectedDateMillis != null && !isLoading && isCheckBoxChecked
 }

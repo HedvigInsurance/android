@@ -1,5 +1,8 @@
 package com.hedvig.android.feature.terminateinsurance.step.terminationdate
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,15 +19,23 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineBreak
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
+import com.hedvig.android.core.designsystem.component.button.RoundedCornerCheckBox
+import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.datepicker.HedvigDatePicker
+import com.hedvig.android.core.designsystem.material3.onTypeElement
+import com.hedvig.android.core.designsystem.material3.typeElement
 import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationInfoCardDate
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationInfoCardInsurance
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationScaffold
@@ -52,6 +63,9 @@ internal fun TerminationDateDestination(
     },
     navigateUp = navigateUp,
     closeTerminationFlow = closeTerminationFlow,
+    onCheckedChange = {
+      viewModel.changeCheckBoxState()
+    },
   )
 }
 
@@ -61,6 +75,7 @@ private fun TerminationDateScreen(
   submit: () -> Unit,
   navigateUp: () -> Unit,
   closeTerminationFlow: () -> Unit,
+  onCheckedChange: () -> Unit,
 ) {
   TerminationScaffold(
     navigateUp = navigateUp,
@@ -88,6 +103,14 @@ private fun TerminationDateScreen(
       datePickerState = uiState.datePickerState,
       modifier = Modifier,
     )
+    if (uiState.datePickerState.selectedDateMillis != null) {
+      Spacer(modifier = Modifier.height(8.dp))
+      ImportantInfoCheckBox(
+        uiState.isCheckBoxChecked,
+        onCheckedChange,
+        Modifier.padding(horizontal = 16.dp),
+      )
+    }
     Spacer(Modifier.height(16.dp))
     HedvigContainedButton(
       text = stringResource(id = R.string.TERMINATION_FLOW_CANCEL_INSURANCE_BUTTON),
@@ -96,6 +119,63 @@ private fun TerminationDateScreen(
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(16.dp))
+  }
+}
+
+@Composable
+private fun ImportantInfoCheckBox(isChecked: Boolean, onCheckedChange: () -> Unit, modifier: Modifier = Modifier) {
+  HedvigCard(
+    onClick = null,
+    modifier = modifier,
+  ) {
+    Row(
+      verticalAlignment = Alignment.CenterVertically,
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp, vertical = 10.dp),
+    ) {
+      Column(modifier = Modifier.weight(1f)) {
+        Text(
+          text = stringResource(id = R.string.TERMINATION_FLOW_IMPORTANT_INFORMATION_TITLE),
+          style = MaterialTheme.typography.bodyLarge,
+        )
+        Text(
+          text = stringResource(id = R.string.TERMINATION_FLOW_IMPORTANT_INFORMATION_TEXT),
+          style = MaterialTheme.typography.bodyMedium,
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Spacer(Modifier.height(16.dp))
+        HedvigContainedButton(
+          onClick = {},
+          modifier = Modifier.padding(horizontal = 16.dp),
+        ) {
+          HorizontalItemsWithMaximumSpaceTaken(
+            startSlot = {
+              Text(
+                textAlign = TextAlign.Start,
+                text = stringResource(R.string.TERMINATION_FLOW_I_UNDERSTAND_TEXT),
+                style = MaterialTheme.typography.bodyLarge,
+              )
+            },
+            endSlot = {
+              Row(
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically,
+              ) {
+                RoundedCornerCheckBox(
+                  isChecked = isChecked,
+                  onCheckedChange = {
+                    onCheckedChange()
+                  },
+                  checkMarkColor = MaterialTheme.colorScheme.onTypeElement,
+                  checkColor = MaterialTheme.colorScheme.typeElement,
+                )
+              }
+            },
+          )
+        }
+      }
+    }
   }
 }
 
@@ -134,9 +214,29 @@ private fun PreviewTerminationDateScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       TerminationDateScreen(
-        TerminateInsuranceUiState(rememberDatePickerState(), false, "Bullegatan 34", "Homeowner insurance"),
+        TerminateInsuranceUiState(
+          rememberDatePickerState(),
+          false,
+          "Bullegatan 34",
+          "Homeowner insurance",
+          true,
+        ),
         {},
         {},
+        {},
+        {},
+      )
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewImportantInfoCheckBox() {
+  HedvigTheme {
+    Surface(color = MaterialTheme.colorScheme.background) {
+      ImportantInfoCheckBox(
+        true,
         {},
       )
     }
