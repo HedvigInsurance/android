@@ -45,19 +45,21 @@ internal fun TerminationSuccessDestination(
         .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
     ) {
       HedvigSuccessSection(
-        title = "Insurance cancelled", // TODO: actual copy
+        title = stringResource(id = R.string.TERMINATION_FLOW_SUCCESS_TITLE),
         modifier = Modifier.weight(1f),
         subTitle = terminationDate?.let {
           stringResource(
-            R.string.TERMINATE_CONTRACT_CONFIRMATION_INFO_TEXT,
+            R.string.TERMINATION_FLOW_SUCCESS_SUBTITLE_WITH_DATE,
             rememberHedvigDateTimeFormatter().format(terminationDate.toJavaLocalDate()),
           )
-        },
+        } ?: stringResource(id = R.string.TERMINATION_FLOW_SUCCESS_SUBTITLE_WITHOUT_DATE),
         withDefaultVerticalSpacing = false,
       )
       Spacer(Modifier.height(16.dp))
       HedvigTextButton(
-        text = stringResource(R.string.TERMINATION_OPEN_SURVEY_LABEL), // TODO: actual copy
+        text = stringResource(
+          R.string.TERMINATION_OPEN_SURVEY_LABEL,
+        ), // TODO: delete this when we'll have survey in app
         onClick = onSurveyClicked,
         modifier = Modifier.padding(horizontal = 16.dp),
       )

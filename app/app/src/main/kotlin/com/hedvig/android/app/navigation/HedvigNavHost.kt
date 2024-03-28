@@ -139,7 +139,6 @@ internal fun HedvigNavHost(
           windowSizeClass = hedvigAppState.windowSizeClass,
           navigator = navigator,
           navController = hedvigAppState.navController,
-          imageLoader = imageLoader,
           openChat = { backStackEntry ->
             with(navigator) {
               backStackEntry.navigate(AppDestination.Chat())
@@ -268,7 +267,6 @@ internal fun HedvigNavHost(
 
             QuickLinkDestination.QuickLinkConnectPayment -> {
               backStackEntry.navigate(AppDestination.ChangeAddress)
-              // todo: wrong link, but I think we got rid of this part altogether in develop
             }
 
             QuickLinkDestination.QuickLinkTermination -> {

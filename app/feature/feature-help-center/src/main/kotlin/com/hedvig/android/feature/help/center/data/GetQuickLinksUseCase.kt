@@ -9,7 +9,6 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.termination.data.GetTerminatableContractsUseCase
 import com.hedvig.android.data.travelcertificate.CheckTravelCertificateDestinationAvailabilityUseCase
 import com.hedvig.android.feature.help.center.model.QuickAction
-import com.hedvig.android.feature.help.center.model.QuickLinkForMultiSelect
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
@@ -40,54 +39,9 @@ internal class GetQuickLinksUseCase(
       contracts
         .filter { it.supportsCoInsured }
         .takeIf { featureManager.isFeatureEnabled(Feature.EDIT_COINSURED).first() }
-        ?.let {
-          if (it.size > 1) {
-            val links = it.map { contract ->
-              if (contract.coInsured?.any { it.hasMissingInfo } == true) {
-                QuickLinkForMultiSelect(
-                  quickLinkDestination = QuickLinkDestination.QuickLinkCoInsuredAddInfo(contract.id),
-                  titleRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_TITLE,
-                  hintTextRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
-                  displayName = contract.currentAgreement.productVariant.displayName,
-                )
-              } else {
-                QuickLinkForMultiSelect(
-                  quickLinkDestination = QuickLinkDestination.QuickLinkCoInsuredAddOrRemove(contract.id),
-                  titleRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_TITLE,
-                  hintTextRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
-                  displayName = contract.currentAgreement.productVariant.displayName,
-                )
-              }
-            }
-
-            add(
-              QuickAction.MultiSelectQuickLink(
-                titleRes = R.string.HC_QUICK_ACTIONS_EDIT_COINSURED,
-                hintTextRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
-                links = links,
-              ),
-            )
-          } else if (it.isNotEmpty()) {
-            val contract = it.first()
-            if (contract.coInsured?.any { it.hasMissingInfo } == true) {
-              add(
-                QuickAction.StandaloneQuickLink(
-                  quickLinkDestination = QuickLinkDestination.QuickLinkCoInsuredAddInfo(it.first().id),
-                  titleRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_TITLE,
-                  hintTextRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
-                ),
-              )
-            } else {
-              add(
-                QuickAction.StandaloneQuickLink(
-                  quickLinkDestination = QuickLinkDestination.QuickLinkCoInsuredAddOrRemove(it.first().id),
-                  titleRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_TITLE,
-                  hintTextRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
-                ),
-              )
-            }
-          } else {
-          }
+        ?.createCoInsuredQuickLink()
+        ?.let { quickAction ->
+          add(quickAction)
         }
 
       contracts
@@ -136,6 +90,46 @@ internal class GetQuickLinksUseCase(
         )
       }
     }.toPersistentList()
+  }
+}
+
+private fun List<AvailableSelfServiceOnContractsQuery.Data.CurrentMember.ActiveContract>.createCoInsuredQuickLink(): QuickAction? {
+  if (this.size > 1) {
+    val links = this.map { contract ->
+      if (contract.coInsured?.any { it.hasMissingInfo } == true) {
+        QuickAction.MultiSelectQuickLink.QuickLinkForMultiSelect(
+          quickLinkDestination = QuickLinkDestination.QuickLinkCoInsuredAddInfo(contract.id),
+          displayName = contract.currentAgreement.productVariant.displayName,
+        )
+      } else {
+        QuickAction.MultiSelectQuickLink.QuickLinkForMultiSelect(
+          quickLinkDestination = QuickLinkDestination.QuickLinkCoInsuredAddOrRemove(contract.id),
+          displayName = contract.currentAgreement.productVariant.displayName,
+        )
+      }
+    }
+    return QuickAction.MultiSelectQuickLink(
+      titleRes = R.string.HC_QUICK_ACTIONS_EDIT_COINSURED,
+      hintTextRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
+      links = links,
+    )
+  } else if (this.isNotEmpty()) {
+    val contract = this.first()
+    return if (contract.coInsured?.any { it.hasMissingInfo } == true) {
+      QuickAction.StandaloneQuickLink(
+        quickLinkDestination = QuickLinkDestination.QuickLinkCoInsuredAddInfo(this.first().id),
+        titleRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_TITLE,
+        hintTextRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
+      )
+    } else {
+      QuickAction.StandaloneQuickLink(
+        quickLinkDestination = QuickLinkDestination.QuickLinkCoInsuredAddOrRemove(this.first().id),
+        titleRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_TITLE,
+        hintTextRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
+      )
+    }
+  } else {
+    return null
   }
 }
 
