@@ -30,8 +30,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.appbar.TopAppBarWithBackAndClose
 import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
-import com.hedvig.android.core.ui.scaffold.TopAppBarWithBackAndClose
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate

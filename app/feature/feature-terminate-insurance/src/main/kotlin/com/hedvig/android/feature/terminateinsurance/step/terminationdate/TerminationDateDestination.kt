@@ -148,12 +148,14 @@ private fun ImportantInfoCheckBox(isChecked: Boolean, onCheckedChange: () -> Uni
         )
         Spacer(Modifier.height(16.dp))
         HedvigContainedButton(
-          onClick = {},
+          onClick = {
+            onCheckedChange()
+          },
           colors = ButtonDefaults.buttonColors(
             containerColor = Color.White,
             contentColor = Color.Black,
             // todo: not really sure what to do here, the white color is not in the palette.
-            // this element stays the same in light/dark themes
+            //  this element stays the same in light/dark themes
           ),
         ) {
           HorizontalItemsWithMaximumSpaceTaken(

@@ -5,27 +5,18 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
@@ -38,9 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.hedvig.normal.ArrowBack
-import com.hedvig.android.core.icons.hedvig.normal.X
+import com.hedvig.android.core.ui.appbar.TopAppBarWithBackAndClose
 import com.hedvig.android.core.ui.dialog.HedvigAlertDialog
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbar
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
@@ -113,54 +102,4 @@ fun ClaimFlowScaffold(
       }
     }
   }
-}
-
-@Composable
-fun TopAppBarWithBackAndClose(
-  title: String,
-  onNavigateUp: () -> Unit,
-  onClose: () -> Unit,
-  modifier: Modifier = Modifier,
-  windowInsets: WindowInsets = TopAppBarDefaults.windowInsets
-    .union(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)),
-  colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(
-    containerColor = MaterialTheme.colorScheme.background,
-    scrolledContainerColor = MaterialTheme.colorScheme.surface,
-  ),
-  scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-) {
-  TopAppBar(
-    modifier = modifier,
-    title = {
-      Text(
-        text = title,
-        style = MaterialTheme.typography.titleLarge,
-      )
-    },
-    navigationIcon = {
-      IconButton(
-        onClick = onNavigateUp,
-        content = {
-          Icon(
-            imageVector = Icons.Hedvig.ArrowBack,
-            contentDescription = null,
-          )
-        },
-      )
-    },
-    actions = {
-      IconButton(
-        onClick = onClose,
-        content = {
-          Icon(
-            imageVector = Icons.Hedvig.X,
-            contentDescription = null,
-          )
-        },
-      )
-    },
-    windowInsets = windowInsets,
-    colors = colors,
-    scrollBehavior = scrollBehavior,
-  )
 }
