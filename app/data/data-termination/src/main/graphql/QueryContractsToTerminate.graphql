@@ -1,0 +1,16 @@
+query ContractsToTerminate {
+  currentMember {
+    activeContracts {
+      id
+      exposureDisplayName
+      terminationDate
+      currentAgreement {
+        activeFrom
+        productVariant {
+          displayName
+          typeOfContract
+        }
+      }
+    }
+  }
+}

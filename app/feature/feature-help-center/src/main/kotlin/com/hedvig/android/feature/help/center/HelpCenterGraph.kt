@@ -8,6 +8,7 @@ import androidx.navigation.navDeepLink
 import com.hedvig.android.feature.help.center.commonclaim.CommonClaim
 import com.hedvig.android.feature.help.center.commonclaim.CommonClaimDestination
 import com.hedvig.android.feature.help.center.commonclaim.emergency.EmergencyDestination
+import com.hedvig.android.feature.help.center.data.QuickLinkDestination
 import com.hedvig.android.feature.help.center.home.HelpCenterHomeDestination
 import com.hedvig.android.feature.help.center.model.Question
 import com.hedvig.android.feature.help.center.model.Topic
@@ -26,6 +27,7 @@ import org.koin.androidx.compose.koinViewModel
 fun NavGraphBuilder.helpCenterGraph(
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   navigator: Navigator,
+  onNavigateToQuickLink: (NavBackStackEntry, QuickLinkDestination) -> Unit,
   openChat: (NavBackStackEntry, AppDestination.Chat.ChatContext?) -> Unit,
 ) {
   navigation<HelpCenterDestination>(
@@ -47,7 +49,7 @@ fun NavGraphBuilder.helpCenterGraph(
           navigateToQuestion(resources, question, navigator, backStackEntry)
         },
         onNavigateToQuickLink = { destination ->
-          with(navigator) { backStackEntry.navigate(destination) }
+          onNavigateToQuickLink(backStackEntry, destination)
         },
         onNavigateToCommonClaim = { commonClaim ->
           when (commonClaim) {

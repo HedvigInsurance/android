@@ -26,5 +26,6 @@ val featureManagerModule = module {
     } else {
       UnleashFeatureFlagProvider(get<HedvigUnleashClient>())
     }
+    // todo: don't understand this here
   }
 }

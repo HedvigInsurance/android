@@ -6,6 +6,7 @@ import androidx.compose.material3.SelectableDates
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminationDataParameters
 import com.hedvig.android.language.LanguageService
 import java.util.Locale
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,19 +17,30 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 
 internal class TerminationDateViewModel(
-  minDate: LocalDate,
-  maxDate: LocalDate,
+  parameters: TerminationDataParameters,
   languageService: LanguageService,
 ) : ViewModel() {
-  private val datePickerConfiguration = DatePickerConfiguration(languageService.getLocale(), minDate, maxDate)
+  private val datePickerConfiguration = DatePickerConfiguration(
+    languageService.getLocale(),
+    parameters.minDate,
+    parameters.maxDate,
+  )
 
   private val _uiState: MutableStateFlow<TerminateInsuranceUiState> = MutableStateFlow(
     TerminateInsuranceUiState(
       datePickerState = datePickerConfiguration.datePickerState,
       isLoading = false,
+      exposureName = parameters.exposureName,
+      displayName = parameters.insuranceDisplayName,
+      isCheckBoxChecked = false,
     ),
   )
   val uiState: StateFlow<TerminateInsuranceUiState> = _uiState.asStateFlow()
+
+  fun changeCheckBoxState() {
+    val isCheckedNow = uiState.value.isCheckBoxChecked
+    _uiState.value = uiState.value.copy(isCheckBoxChecked = !isCheckedNow)
+  }
 }
 
 // todo change with generic DatePickerUiState
@@ -54,15 +66,19 @@ private class DatePickerConfiguration(locale: Locale, minDate: LocalDate, maxDat
 internal data class TerminateInsuranceUiState(
   val datePickerState: DatePickerState,
   val isLoading: Boolean,
+  val exposureName: String,
+  val displayName: String,
+  val isCheckBoxChecked: Boolean,
 ) {
   val canSubmit: Boolean
     @Composable
     get() = remember(
       datePickerState.selectedDateMillis,
       isLoading,
+      isCheckBoxChecked,
     ) { canSubmitSelectedDate() }
 }
 
 private fun TerminateInsuranceUiState.canSubmitSelectedDate(): Boolean {
-  return datePickerState.selectedDateMillis != null && !isLoading
+  return datePickerState.selectedDateMillis != null && !isLoading && isCheckBoxChecked
 }

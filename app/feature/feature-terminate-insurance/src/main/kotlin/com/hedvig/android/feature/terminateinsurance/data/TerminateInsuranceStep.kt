@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.terminateinsurance.data
 
+import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination
 import kotlinx.datetime.LocalDate
 import octopus.fragment.TerminationFlowStepFragment
@@ -54,19 +55,38 @@ internal fun TerminationFlowStepFragment.CurrentStep.toTerminateInsuranceStep():
 internal fun TerminateInsuranceStep.toTerminateInsuranceDestination(
   insuranceDisplayName: String,
   exposureName: String,
+  activeFrom: LocalDate,
+  contractGroup: ContractGroup,
 ): TerminateInsuranceDestination {
   return when (this) {
     is TerminateInsuranceStep.Failure -> TerminateInsuranceDestination.TerminationFailure(message)
     is TerminateInsuranceStep.TerminateInsuranceDate -> {
-      TerminateInsuranceDestination.TerminationDate(minDate, maxDate)
+      TerminateInsuranceDestination.TerminationDate(
+        minDate = minDate,
+        maxDate = maxDate,
+        insuranceDisplayName = insuranceDisplayName,
+        exposureName = exposureName,
+        activeFrom = activeFrom,
+        contractGroup = contractGroup,
+      )
     }
 
     is TerminateInsuranceStep.InsuranceDeletion -> {
-      TerminateInsuranceDestination.InsuranceDeletion(disclaimer)
+      TerminateInsuranceDestination.InsuranceDeletion(
+        insuranceDisplayName = insuranceDisplayName,
+        exposureName = exposureName,
+        activeFrom = activeFrom,
+        contractGroup = contractGroup,
+      )
     }
 
     is TerminateInsuranceStep.TerminateInsuranceSuccess -> {
-      TerminateInsuranceDestination.TerminationSuccess(insuranceDisplayName, exposureName, terminationDate, surveyUrl)
+      TerminateInsuranceDestination.TerminationSuccess(
+        insuranceDisplayName = insuranceDisplayName,
+        exposureName = exposureName,
+        terminationDate = terminationDate,
+        surveyUrl = surveyUrl,
+      )
     }
 
     is TerminateInsuranceStep.UnknownStep -> TerminateInsuranceDestination.UnknownScreen

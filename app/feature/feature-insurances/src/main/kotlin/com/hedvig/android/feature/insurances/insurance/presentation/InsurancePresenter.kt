@@ -107,7 +107,7 @@ internal class InsurancePresenter(
       loadInsuranceData(
         getInsuranceContractsUseCase = getInsuranceContractsUseCaseProvider.provide(),
         getCrossSellsUseCase = getCrossSellsUseCaseProvider.provide(),
-        forceNetworkFetch = isRetryingIteration,
+        forceNetworkFetch = true,
       ).fold(
         ifLeft = {
           Snapshot.withMutableSnapshot {

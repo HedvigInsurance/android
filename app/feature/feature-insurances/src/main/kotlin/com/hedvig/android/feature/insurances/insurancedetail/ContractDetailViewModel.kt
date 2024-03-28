@@ -33,9 +33,10 @@ internal class ContractDetailViewModel(
           }
         },
         ifRight = { contract ->
+          val noTerminationDateYet = contract.terminationDate == null
           ContractDetailsUiState.Success(
             insuranceContract = contract,
-            allowTerminatingInsurance = isTerminationFlowEnabled,
+            allowTerminatingInsurance = isTerminationFlowEnabled && noTerminationDateYet,
           )
         },
       )

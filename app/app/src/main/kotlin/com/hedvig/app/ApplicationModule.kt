@@ -43,6 +43,7 @@ import com.hedvig.android.data.chat.read.timestamp.di.chatReadTimestampModule
 import com.hedvig.android.data.claimflow.di.claimFlowDataModule
 import com.hedvig.android.data.paying.member.di.dataPayingMemberModule
 import com.hedvig.android.data.settings.datastore.di.settingsDatastoreModule
+import com.hedvig.android.data.termination.di.terminationDataModule
 import com.hedvig.android.data.travelcertificate.di.travelCertificateDataModule
 import com.hedvig.android.datadog.core.addDatadogConfiguration
 import com.hedvig.android.datadog.core.di.datadogModule
@@ -379,6 +380,7 @@ val applicationModule = module {
       useCaseModule,
       viewModelModule,
       workManagerModule,
+      terminationDataModule,
     ),
   )
 }
