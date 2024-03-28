@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.MaterialTheme
@@ -21,6 +23,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
@@ -30,7 +33,6 @@ import com.hedvig.android.core.designsystem.component.button.HedvigContainedButt
 import com.hedvig.android.core.designsystem.component.button.RoundedCornerCheckBox
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.datepicker.HedvigDatePicker
-import com.hedvig.android.core.designsystem.material3.onTypeElement
 import com.hedvig.android.core.designsystem.material3.typeElement
 import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
@@ -147,7 +149,12 @@ private fun ImportantInfoCheckBox(isChecked: Boolean, onCheckedChange: () -> Uni
         Spacer(Modifier.height(16.dp))
         HedvigContainedButton(
           onClick = {},
-          modifier = Modifier.padding(horizontal = 16.dp),
+          colors = ButtonDefaults.buttonColors(
+            containerColor = Color.White,
+            contentColor = Color.Black,
+            // todo: not really sure what to do here, the white color is not in the palette.
+            // this element stays the same in light/dark themes
+          ),
         ) {
           HorizontalItemsWithMaximumSpaceTaken(
             startSlot = {
@@ -167,7 +174,8 @@ private fun ImportantInfoCheckBox(isChecked: Boolean, onCheckedChange: () -> Uni
                   onCheckedChange = {
                     onCheckedChange()
                   },
-                  checkMarkColor = MaterialTheme.colorScheme.onTypeElement,
+                  checkMarkColor = Color.White,
+                  // todo: same here with color
                   checkColor = MaterialTheme.colorScheme.typeElement,
                 )
               }
@@ -195,7 +203,15 @@ private fun DateButton(datePickerState: DatePickerState, modifier: Modifier = Mo
         }
       },
     ) {
-      HedvigDatePicker(datePickerState = datePickerState)
+      HedvigDatePicker(
+        datePickerState = datePickerState,
+        colors = DatePickerDefaults.colors(
+          selectedDayContainerColor = MaterialTheme.colorScheme.typeElement,
+          selectedDayContentColor = Color.White,
+          // todo: same here with color
+          todayDateBorderColor = MaterialTheme.colorScheme.typeElement,
+        ),
+      )
     }
   }
   TerminationInfoCardDate(

@@ -1,5 +1,11 @@
 package com.hedvig.android.core.ui
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -27,28 +33,36 @@ fun SelectIndicationCircle(
   modifier: Modifier = Modifier,
   selectedIndicationColor: Color = LocalContentColor.current,
 ) {
-  Box(
+  val selectedTransition = updateTransition(selected)
+  selectedTransition.AnimatedContent(
+    transitionSpec = {
+      fadeIn(tween(durationMillis = 500)) togetherWith fadeOut(tween(90))
+    },
     contentAlignment = Alignment.Center,
-  ) {
-    Spacer(
-      modifier
-        .size(24.dp)
-        .clip(CircleShape)
-        .then(
-          if (selected) {
-            Modifier.background(selectedIndicationColor)
-          } else {
-            Modifier.border(2.dp, MaterialTheme.colorScheme.onSurfaceVariant, CircleShape)
-          },
-        ),
-    )
-    if (selected) {
+  ) { isSelected ->
+    Box(
+      contentAlignment = Alignment.Center,
+    ) {
       Spacer(
         modifier
-          .size(8.dp)
+          .size(24.dp)
           .clip(CircleShape)
-          .then(Modifier.background(MaterialTheme.colorScheme.background)),
+          .then(
+            if (isSelected) {
+              Modifier.background(selectedIndicationColor)
+            } else {
+              Modifier.border(2.dp, MaterialTheme.colorScheme.onSurfaceVariant, CircleShape)
+            },
+          ),
       )
+      if (isSelected) {
+        Spacer(
+          modifier
+            .size(8.dp)
+            .clip(CircleShape)
+            .then(Modifier.background(MaterialTheme.colorScheme.background)),
+        )
+      }
     }
   }
 }

@@ -75,6 +75,7 @@ internal data class TerminateInsuranceUiState(
     get() = remember(
       datePickerState.selectedDateMillis,
       isLoading,
+      isCheckBoxChecked,
     ) { canSubmitSelectedDate() }
 }
 
