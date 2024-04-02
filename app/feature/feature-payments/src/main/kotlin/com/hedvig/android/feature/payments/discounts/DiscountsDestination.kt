@@ -1,5 +1,7 @@
 package com.hedvig.android.feature.payments.discounts
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -32,10 +34,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.core.content.getSystemService
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.bottomsheet.HedvigInfoBottomSheet
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
@@ -72,7 +76,7 @@ import octopus.type.CurrencyCode
 internal fun DiscountsDestination(
   viewModel: DiscountsViewModel,
   navigateUp: () -> Unit,
-  navigateToForever: () -> Unit
+  navigateToForever: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   DiscountsScreen(
@@ -81,7 +85,7 @@ internal fun DiscountsDestination(
     onShowBottomSheet = { viewModel.emit(DiscountsEvent.ShowBottomSheet) },
     onSubmitDiscountCode = { viewModel.emit(DiscountsEvent.OnSubmitDiscountCode(it)) },
     navigateUp = navigateUp,
-    navigateToForever = navigateToForever
+    navigateToForever = navigateToForever,
   )
 }
 
@@ -92,7 +96,7 @@ private fun DiscountsScreen(
   onShowBottomSheet: () -> Unit,
   onDismissBottomSheet: () -> Unit,
   onSubmitDiscountCode: (String) -> Unit,
-  navigateToForever: () -> Unit
+  navigateToForever: () -> Unit,
 ) {
   HedvigScaffold(
     topAppBarText = stringResource(R.string.PAYMENTS_DISCOUNTS_SECTION_TITLE),
@@ -214,6 +218,7 @@ private fun ForeverSection(
       },
     )
     Spacer(modifier = Modifier.height(16.dp))
+    val context = LocalContext.current
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
         HedvigCard(
@@ -222,7 +227,11 @@ private fun ForeverSection(
             containerColor = MaterialTheme.colorScheme.secondaryContainedButtonContainer,
             contentColor = MaterialTheme.colorScheme.onSecondaryContainedButtonContainer,
           ),
-          modifier = Modifier.wrapContentSize(Alignment.TopStart),
+          modifier = Modifier.wrapContentSize(Alignment.TopStart).clickable {
+            context.getSystemService<ClipboardManager>()?.setPrimaryClip(
+              ClipData.newPlainText(null, foreverInformation.foreverCode),
+            )
+          },
         ) {
           Text(
             text = foreverInformation.foreverCode,
@@ -326,7 +335,7 @@ private fun PaymentDetailsScreenPreview(
         onShowBottomSheet = {},
         onDismissBottomSheet = {},
         onSubmitDiscountCode = {},
-        navigateToForever = {}
+        navigateToForever = {},
       )
     }
   }

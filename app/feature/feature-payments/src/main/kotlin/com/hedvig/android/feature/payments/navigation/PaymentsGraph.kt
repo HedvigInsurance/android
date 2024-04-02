@@ -1,8 +1,6 @@
 package com.hedvig.android.feature.payments.navigation
 
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavOptions
 import androidx.navigation.navDeepLink
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.feature.payments.data.MemberCharge
@@ -15,11 +13,9 @@ import com.hedvig.android.feature.payments.payments.PaymentsDestination
 import com.hedvig.android.feature.payments.payments.PaymentsViewModel
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
-import com.kiwi.navigationcompose.typed.Destination
 import com.kiwi.navigationcompose.typed.composable
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigation
-import com.kiwi.navigationcompose.typed.popBackStack
 import org.koin.androidx.compose.koinViewModel
 
 fun NavGraphBuilder.paymentsGraph(
@@ -61,7 +57,7 @@ fun NavGraphBuilder.paymentsGraph(
       )
     }
 
-    //todo: this one needs a separate viewmodel
+    // todo: this one needs a separate viewmodel
     composable<PaymentsDestinations.Details> { backStackEntry ->
       PaymentDetailsDestination(
         memberCharge = selectedMemberCharge,
@@ -80,7 +76,7 @@ fun NavGraphBuilder.paymentsGraph(
       )
     }
 
-    //todo: this one needs a separate viewmodel
+    // todo: this one needs a separate viewmodel
     composable<PaymentsDestinations.History> { backStackEntry ->
       PaymentHistoryDestination(
         pastCharges = paymentOverview.pastCharges,
@@ -98,14 +94,13 @@ fun NavGraphBuilder.paymentsGraph(
       )
     }
 
-    //todo: this one has to have navigation to Forever and copying of the code right here
-    composable<PaymentsDestinations.Discounts> {backStackEntry ->
+    composable<PaymentsDestinations.Discounts> { backStackEntry ->
       val viewModel: DiscountsViewModel = koinViewModel()
       DiscountsDestination(
         viewModel = viewModel,
         navigateUp = navigator::navigateUp,
-        navigateToForever = navigateToForever
-        //todo: the navigation behaviour here is not nice.
+        navigateToForever = navigateToForever,
+        // todo: the navigation behaviour here is not nice.
         // We can't go back, but we can go to payments tab again to the same page.
         // What would be a better way to navigate to bottom tab destination,
         // but without popping backstack?
