@@ -69,7 +69,11 @@ import kotlinx.datetime.LocalDate
 import octopus.type.CurrencyCode
 
 @Composable
-internal fun DiscountsDestination(viewModel: DiscountsViewModel, navigateUp: () -> Unit) {
+internal fun DiscountsDestination(
+  viewModel: DiscountsViewModel,
+  navigateUp: () -> Unit,
+  navigateToForever: () -> Unit
+) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   DiscountsScreen(
     uiState = uiState,
@@ -77,6 +81,7 @@ internal fun DiscountsDestination(viewModel: DiscountsViewModel, navigateUp: () 
     onShowBottomSheet = { viewModel.emit(DiscountsEvent.ShowBottomSheet) },
     onSubmitDiscountCode = { viewModel.emit(DiscountsEvent.OnSubmitDiscountCode(it)) },
     navigateUp = navigateUp,
+    navigateToForever = navigateToForever
   )
 }
 
@@ -87,6 +92,7 @@ private fun DiscountsScreen(
   onShowBottomSheet: () -> Unit,
   onDismissBottomSheet: () -> Unit,
   onSubmitDiscountCode: (String) -> Unit,
+  navigateToForever: () -> Unit
 ) {
   HedvigScaffold(
     topAppBarText = stringResource(R.string.PAYMENTS_DISCOUNTS_SECTION_TITLE),
@@ -160,7 +166,7 @@ private fun DiscountsScreen(
       )
       if (uiState.foreverInformation != null) {
         Spacer(modifier = Modifier.height(32.dp))
-        ForeverSection(uiState.foreverInformation, Modifier)
+        ForeverSection(uiState.foreverInformation, navigateToForever, Modifier)
       }
       Spacer(modifier = Modifier.height(16.dp))
       Spacer(
@@ -171,7 +177,11 @@ private fun DiscountsScreen(
 }
 
 @Composable
-private fun ForeverSection(foreverInformation: ForeverInformation, modifier: Modifier = Modifier) {
+private fun ForeverSection(
+  foreverInformation: ForeverInformation,
+  navigateToForever: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
   Column(modifier) {
     val incentive = foreverInformation.potentialDiscountAmountPerNewReferral.toString()
     var showForeverInfoBottomSheet by remember { mutableStateOf(false) }
@@ -250,7 +260,7 @@ private fun ForeverSection(foreverInformation: ForeverInformation, modifier: Mod
           ),
           textStyle = MaterialTheme.typography.bodyMedium,
           text = stringResource(R.string.important_message_read_more),
-          onClick = { showForeverInfoBottomSheet = true },
+          onClick = navigateToForever,
         )
       },
     )
@@ -316,6 +326,7 @@ private fun PaymentDetailsScreenPreview(
         onShowBottomSheet = {},
         onDismissBottomSheet = {},
         onSubmitDiscountCode = {},
+        navigateToForever = {}
       )
     }
   }

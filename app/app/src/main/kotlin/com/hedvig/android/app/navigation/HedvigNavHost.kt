@@ -31,6 +31,7 @@ import com.hedvig.android.feature.connect.payment.connectPaymentGraph
 import com.hedvig.android.feature.deleteaccount.navigation.DeleteAccountDestination
 import com.hedvig.android.feature.deleteaccount.navigation.deleteAccountGraph
 import com.hedvig.android.feature.editcoinsured.navigation.editCoInsuredGraph
+import com.hedvig.android.feature.forever.navigation.ForeverDestination
 import com.hedvig.android.feature.forever.navigation.foreverGraph
 import com.hedvig.android.feature.help.center.helpCenterGraph
 import com.hedvig.android.feature.help.center.navigation.HelpCenterDestination
@@ -41,6 +42,7 @@ import com.hedvig.android.feature.insurances.insurance.insuranceGraph
 import com.hedvig.android.feature.odyssey.navigation.claimFlowGraph
 import com.hedvig.android.feature.odyssey.navigation.navigateToClaimFlowDestination
 import com.hedvig.android.feature.odyssey.navigation.terminalClaimFlowStepDestinations
+import com.hedvig.android.feature.payments.navigation.PaymentsDestination
 import com.hedvig.android.feature.payments.navigation.paymentsGraph
 import com.hedvig.android.feature.profile.tab.profileGraph
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceFeatureDestination
@@ -52,6 +54,7 @@ import com.hedvig.android.navigation.activity.ActivityNavigator
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
+import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.app.BuildConfig
 import com.kiwi.navigationcompose.typed.Destination
 import com.kiwi.navigationcompose.typed.createRoutePattern
@@ -194,6 +197,9 @@ internal fun HedvigNavHost(
       navigator = navigator,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       navigateToConnectPayment = navigateToConnectPayment,
+      navigateToForever = {
+        hedvigAppState.navigateToTopLevelGraph(TopLevelGraph.Forever)
+      },
     )
     profileGraph(
       nestedGraphs = {},
