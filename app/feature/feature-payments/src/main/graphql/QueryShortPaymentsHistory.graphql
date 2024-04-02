@@ -1,0 +1,13 @@
+
+query ShortPaymentHistory {
+  currentMember {
+    pastCharges {
+      net {
+        ...MoneyFragment
+      }
+      id
+      status
+      date
+    }
+  }
+}

@@ -140,6 +140,7 @@ private fun MemberChargeFragment.toMemberCharge(
   settlementAdjustment = settlementAdjustment?.let(UiMoney::fromMoneyFragment),
   carriedAdjustment = carriedAdjustment?.let(UiMoney::fromMoneyFragment),
 )
+// todo: delete from here
 
 private fun MemberChargeFragment.toFailedCharge(): MemberCharge.FailedCharge? {
   val previousChargesPeriods = contractsChargeBreakdown

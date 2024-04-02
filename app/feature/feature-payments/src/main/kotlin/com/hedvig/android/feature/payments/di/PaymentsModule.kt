@@ -4,6 +4,11 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCaseProvider
+import com.hedvig.android.feature.payments.data.GetChargeDetailsUseCase
+import com.hedvig.android.feature.payments.data.GetChargeDetailsUseCaseImpl
+import com.hedvig.android.feature.payments.data.GetPaymentsHistoryUseCase
+import com.hedvig.android.feature.payments.data.GetPaymentsHistoryUseCaseImpl
+import com.hedvig.android.feature.payments.details.PaymentDetailsViewModel
 import com.hedvig.android.feature.payments.discounts.DiscountsViewModel
 import com.hedvig.android.feature.payments.overview.data.AddDiscountUseCase
 import com.hedvig.android.feature.payments.overview.data.AddDiscountUseCaseImpl
@@ -25,6 +30,17 @@ val paymentsModule = module {
     AddDiscountUseCaseImpl(
       get<ApolloClient>(),
       get<NetworkCacheManager>(),
+    )
+  }
+  single<GetPaymentsHistoryUseCase> {
+    GetPaymentsHistoryUseCaseImpl(
+      get<ApolloClient>(),
+    )
+  }
+  single<GetChargeDetailsUseCase> {
+    GetChargeDetailsUseCaseImpl(
+      get<ApolloClient>(),
+      get<Clock>(),
     )
   }
   single<GetForeverInformationUseCase> {
@@ -51,6 +67,13 @@ val paymentsModule = module {
     DiscountsViewModel(
       get<GetPaymentOverviewDataUseCaseProvider>(),
       get<AddDiscountUseCase>(),
+    )
+  }
+
+  viewModel<PaymentDetailsViewModel> { (chargeId: String) ->
+    PaymentDetailsViewModel(
+      chargeId = chargeId,
+      getChargeDetailsUseCase = get<GetChargeDetailsUseCase>(),
     )
   }
 }
