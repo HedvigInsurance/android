@@ -205,6 +205,7 @@ class LoggedInActivity : AppCompatActivity() {
             activityNavigator = activityNavigator,
             shouldShowRequestPermissionRationale = ::shouldShowRequestPermissionRationale,
             openUrl = deepLinkFirstUriHandler::openUri,
+            onBackPressed = onBackPressedDispatcher::onBackPressed,
             market = market,
             imageLoader = imageLoader,
             languageService = languageService,
