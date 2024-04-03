@@ -254,7 +254,6 @@ private class PersonalNumberVisualTransformation(
       withStyle(SpanStyle(color = maskColor)) {
         append(mask.takeLast(mask.length - length))
       }
-      toAnnotatedString()
     }
 
     val personalNumberOffsetTranslator = object : OffsetMapping {
@@ -267,7 +266,10 @@ private class PersonalNumberVisualTransformation(
       }
 
       override fun transformedToOriginal(offset: Int): Int {
-        return text.length
+        return when {
+          offset <= 8 -> offset
+          else -> offset - 1
+        }.coerceAtMost(text.length)
       }
     }
     return TransformedText(annotatedString, personalNumberOffsetTranslator)
