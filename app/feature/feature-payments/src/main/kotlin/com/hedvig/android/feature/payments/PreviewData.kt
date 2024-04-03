@@ -63,7 +63,7 @@ internal val discountsPreviewData = listOf(
   ),
 )
 
-private val chargeHistoryPreviewData = listOf(
+internal val chargeHistoryPreviewData = listOf(
   MemberCharge(
     grossAmount = UiMoney(130.0, CurrencyCode.SEK),
     netAmount = UiMoney(250.0, CurrencyCode.SEK),
@@ -235,10 +235,8 @@ internal val paymentOverViewPreviewData = PaymentOverview(
     carriedAdjustment = UiMoney(200.0, CurrencyCode.SEK),
     settlementAdjustment = UiMoney(200.0, CurrencyCode.SEK),
   ),
-  pastCharges = chargeHistoryPreviewData.sortedBy { it.dueDate },
   paymentConnection = PaymentConnection.Active(
     displayName = "Nordea",
     displayValue = "31489*****",
   ),
-  discounts = discountsPreviewData,
 )

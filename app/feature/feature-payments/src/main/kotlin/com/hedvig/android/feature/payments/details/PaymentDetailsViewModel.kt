@@ -8,7 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.feature.payments.data.GetChargeDetailsUseCase
-import com.hedvig.android.feature.payments.data.MemberCharge
+import com.hedvig.android.feature.payments.data.PaymentDetails
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -43,11 +43,11 @@ private class PaymentDetailsPresenter(
       }
     }
 
-    LaunchedEffect(key1 = dataLoadIteration) {
+    LaunchedEffect(dataLoadIteration) {
       screenState = PaymentDetailsUiState.Loading
       getChargeDetailsUseCase.invoke(chargeId).fold(
-        ifRight = { memberCharge ->
-          screenState = PaymentDetailsUiState.Success(memberCharge)
+        ifRight = { paymentDetails ->
+          screenState = PaymentDetailsUiState.Success(paymentDetails)
         },
         ifLeft = {
           screenState = PaymentDetailsUiState.Failure
@@ -64,7 +64,7 @@ internal sealed interface PaymentDetailsUiState {
   data object Failure : PaymentDetailsUiState
 
   data class Success(
-    val memberCharge: MemberCharge,
+    val paymentDetails: PaymentDetails,
   ) : PaymentDetailsUiState
 }
 

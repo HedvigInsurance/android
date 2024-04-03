@@ -3,12 +3,12 @@ package com.hedvig.android.feature.payments.navigation
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
-import com.hedvig.android.feature.payments.data.MemberCharge
-import com.hedvig.android.feature.payments.data.PaymentOverview
 import com.hedvig.android.feature.payments.details.PaymentDetailsDestination
+import com.hedvig.android.feature.payments.details.PaymentDetailsViewModel
 import com.hedvig.android.feature.payments.discounts.DiscountsDestination
 import com.hedvig.android.feature.payments.discounts.DiscountsViewModel
 import com.hedvig.android.feature.payments.history.PaymentHistoryDestination
+import com.hedvig.android.feature.payments.history.PaymentHistoryViewModel
 import com.hedvig.android.feature.payments.payments.PaymentsDestination
 import com.hedvig.android.feature.payments.payments.PaymentsViewModel
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
@@ -17,6 +17,7 @@ import com.kiwi.navigationcompose.typed.composable
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigation
 import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 fun NavGraphBuilder.paymentsGraph(
   navigator: Navigator,
@@ -37,19 +38,18 @@ fun NavGraphBuilder.paymentsGraph(
       val viewModel: PaymentsViewModel = koinViewModel()
       PaymentsDestination(
         viewModel = viewModel,
-        onPaymentHistoryClicked = { paymentOverview ->
-          with(navigator) { backStackEntry.navigate(PaymentsDestinations.History(paymentOverview)) }
+        onPaymentHistoryClicked = {
+          with(navigator) { backStackEntry.navigate(PaymentsDestinations.History) }
         },
         onChangeBankAccount = navigateToConnectPayment,
-        onDiscountClicked = { discounts ->
-          with(navigator) { backStackEntry.navigate(PaymentsDestinations.Discounts(discounts)) }
+        onDiscountClicked = {
+          with(navigator) { backStackEntry.navigate(PaymentsDestinations.Discounts) }
         },
-        onUpcomingPaymentClicked = { memberCharge: MemberCharge, paymentOverview: PaymentOverview ->
+        onUpcomingPaymentClicked = { memberChargeId: String ->
           with(navigator) {
             backStackEntry.navigate(
               PaymentsDestinations.Details(
-                selectedMemberCharge = memberCharge,
-                paymentOverview = paymentOverview,
+                memberChargeId,
               ),
             )
           }
@@ -57,17 +57,15 @@ fun NavGraphBuilder.paymentsGraph(
       )
     }
 
-    // todo: this one needs a separate viewmodel
     composable<PaymentsDestinations.Details> { backStackEntry ->
+      val viewModel: PaymentDetailsViewModel = koinViewModel(parameters = { parametersOf(this.memberChargeId) })
       PaymentDetailsDestination(
-        memberCharge = selectedMemberCharge,
-        paymentOverview = paymentOverview,
-        onFailedChargeClick = { memberCharge: MemberCharge ->
+        viewModel = viewModel,
+        onFailedChargeClick = { memberChargeId: String ->
           with(navigator) {
             backStackEntry.navigate(
               PaymentsDestinations.Details(
-                selectedMemberCharge = memberCharge,
-                paymentOverview = paymentOverview,
+                memberChargeId,
               ),
             )
           }
@@ -76,16 +74,15 @@ fun NavGraphBuilder.paymentsGraph(
       )
     }
 
-    // todo: this one needs a separate viewmodel
     composable<PaymentsDestinations.History> { backStackEntry ->
+      val viewModel: PaymentHistoryViewModel = koinViewModel()
       PaymentHistoryDestination(
-        pastCharges = paymentOverview.pastCharges,
-        onChargeClicked = { memberCharge: MemberCharge ->
+        viewModel = viewModel,
+        onChargeClicked = { memberChargeId: String ->
           with(navigator) {
             backStackEntry.navigate(
               PaymentsDestinations.Details(
-                selectedMemberCharge = memberCharge,
-                paymentOverview,
+                memberChargeId,
               ),
             )
           }
@@ -101,9 +98,6 @@ fun NavGraphBuilder.paymentsGraph(
         navigateUp = navigator::navigateUp,
         navigateToForever = navigateToForever,
         // todo: the navigation behaviour here is not nice.
-        // We can't go back, but we can go to payments tab again to the same page.
-        // What would be a better way to navigate to bottom tab destination,
-        // but without popping backstack?
       )
     }
   }

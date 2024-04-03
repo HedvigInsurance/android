@@ -1,6 +1,9 @@
-query PaymentHistory {
+query PaymentHistoryWithDetails {
   currentMember {
     pastCharges {
+      ...MemberChargeFragment
+    }
+    futureCharge {
       ...MemberChargeFragment
     }
     redeemedCampaigns {
@@ -14,6 +17,13 @@ query PaymentHistory {
     }
     referralInformation {
       code
+    }
+    paymentInformation {
+      status
+      connection {
+        displayName
+        descriptor
+      }
     }
   }
 }

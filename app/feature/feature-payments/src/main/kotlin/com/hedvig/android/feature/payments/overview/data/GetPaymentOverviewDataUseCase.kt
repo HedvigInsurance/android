@@ -67,8 +67,6 @@ internal class GetPaymentOverviewDataUseCaseDemo(
           null,
           null,
         ),
-        emptyList(),
-        emptyList(),
         null,
       ),
       ForeverInformation(

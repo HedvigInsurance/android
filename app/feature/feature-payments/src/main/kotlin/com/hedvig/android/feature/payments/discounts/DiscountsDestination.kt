@@ -67,7 +67,6 @@ import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.payments.data.Discount
 import com.hedvig.android.feature.payments.overview.data.ForeverInformation
-import com.hedvig.android.feature.payments.paymentOverViewPreviewData
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 import octopus.type.CurrencyCode
@@ -151,8 +150,8 @@ private fun DiscountsScreen(
         },
       )
 
-      val discounts = uiState.paymentOverview?.discounts
-      if (discounts.isNullOrEmpty()) {
+      val discounts = uiState.discounts
+      if (discounts.isEmpty()) {
         Spacer(modifier = Modifier.height(16.dp))
         Text(
           text = stringResource(id = R.string.PAYMENTS_NO_CAMPAIGN_CODE_ADDED),
@@ -285,46 +284,44 @@ private fun PaymentDetailsScreenPreview(
     Surface(color = MaterialTheme.colorScheme.background) {
       DiscountsScreen(
         uiState = DiscountsUiState(
-          paymentOverview = paymentOverViewPreviewData.copy(
-            discounts = if (hasForeverAndDiscounts) {
-              listOf(
-                Discount(
-                  "MYDISCOUNT1",
-                  "display name of referral",
-                  "description",
-                  Discount.ExpiredState.NotExpired,
-                  UiMoney(10.0, CurrencyCode.SEK),
-                  true,
-                ),
-                Discount(
-                  "MYDISCOUNT2",
-                  "display name of non referral",
-                  "description",
-                  Discount.ExpiredState.NotExpired,
-                  UiMoney(10.0, CurrencyCode.SEK),
-                  false,
-                ),
-                Discount(
-                  "MYDISCOUNT3",
-                  "display name of expiring soon",
-                  "description",
-                  Discount.ExpiredState.ExpiringInTheFuture(LocalDate(2124, 12, 14)),
-                  UiMoney(10.0, CurrencyCode.SEK),
-                  false,
-                ),
-                Discount(
-                  "MYDISCOUNT3",
-                  "display name of expired",
-                  "description",
-                  Discount.ExpiredState.AlreadyExpired(LocalDate(2014, 12, 14)),
-                  UiMoney(10.0, CurrencyCode.SEK),
-                  false,
-                ),
-              )
-            } else {
-              emptyList()
-            },
-          ),
+          discounts = if (hasForeverAndDiscounts) {
+            listOf(
+              Discount(
+                "MYDISCOUNT1",
+                "display name of referral",
+                "description",
+                Discount.ExpiredState.NotExpired,
+                UiMoney(10.0, CurrencyCode.SEK),
+                true,
+              ),
+              Discount(
+                "MYDISCOUNT2",
+                "display name of non referral",
+                "description",
+                Discount.ExpiredState.NotExpired,
+                UiMoney(10.0, CurrencyCode.SEK),
+                false,
+              ),
+              Discount(
+                "MYDISCOUNT3",
+                "display name of expiring soon",
+                "description",
+                Discount.ExpiredState.ExpiringInTheFuture(LocalDate(2124, 12, 14)),
+                UiMoney(10.0, CurrencyCode.SEK),
+                false,
+              ),
+              Discount(
+                "MYDISCOUNT3",
+                "display name of expired",
+                "description",
+                Discount.ExpiredState.AlreadyExpired(LocalDate(2014, 12, 14)),
+                UiMoney(10.0, CurrencyCode.SEK),
+                false,
+              ),
+            )
+          } else {
+            emptyList()
+          },
           foreverInformation = ForeverInformation(
             "MYDISCOUNT1",
             UiMoney(23.0, CurrencyCode.SEK),

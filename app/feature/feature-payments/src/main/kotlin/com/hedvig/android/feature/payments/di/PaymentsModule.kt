@@ -6,10 +6,15 @@ import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCaseProvider
 import com.hedvig.android.feature.payments.data.GetChargeDetailsUseCase
 import com.hedvig.android.feature.payments.data.GetChargeDetailsUseCaseImpl
+import com.hedvig.android.feature.payments.data.GetDiscountsOverviewUseCase
+import com.hedvig.android.feature.payments.data.GetDiscountsOverviewUseCaseImpl
+import com.hedvig.android.feature.payments.data.GetDiscountsUseCase
+import com.hedvig.android.feature.payments.data.GetDiscountsUseCaseImpl
 import com.hedvig.android.feature.payments.data.GetPaymentsHistoryUseCase
 import com.hedvig.android.feature.payments.data.GetPaymentsHistoryUseCaseImpl
 import com.hedvig.android.feature.payments.details.PaymentDetailsViewModel
 import com.hedvig.android.feature.payments.discounts.DiscountsViewModel
+import com.hedvig.android.feature.payments.history.PaymentHistoryViewModel
 import com.hedvig.android.feature.payments.overview.data.AddDiscountUseCase
 import com.hedvig.android.feature.payments.overview.data.AddDiscountUseCaseImpl
 import com.hedvig.android.feature.payments.overview.data.GetForeverInformationUseCase
@@ -54,6 +59,20 @@ val paymentsModule = module {
       get<Clock>(),
     )
   }
+  single<GetDiscountsOverviewUseCase> {
+    GetDiscountsOverviewUseCaseImpl(
+      get<GetDiscountsUseCase>(),
+      get<GetForeverInformationUseCase>(),
+      get<GetOnlyHasNonPayingContractsUseCaseProvider>().prodImpl,
+    )
+  }
+
+  single<GetDiscountsUseCase> {
+    GetDiscountsUseCaseImpl(
+      get<ApolloClient>(),
+      get<Clock>(),
+    )
+  }
 
   provideGetPaymentOverviewDataUseCase()
 
@@ -65,7 +84,7 @@ val paymentsModule = module {
 
   viewModel<DiscountsViewModel> {
     DiscountsViewModel(
-      get<GetPaymentOverviewDataUseCaseProvider>(),
+      get<GetDiscountsOverviewUseCase>(),
       get<AddDiscountUseCase>(),
     )
   }
@@ -76,8 +95,15 @@ val paymentsModule = module {
       getChargeDetailsUseCase = get<GetChargeDetailsUseCase>(),
     )
   }
+
+  viewModel<PaymentHistoryViewModel> {
+    PaymentHistoryViewModel(
+      get<GetPaymentsHistoryUseCase>(),
+    )
+  }
 }
 
+// todo: should I do this Provider thing for the new usecases?
 private fun Module.provideGetPaymentOverviewDataUseCase() {
   single<GetPaymentOverviewDataUseCaseImpl> {
     GetPaymentOverviewDataUseCaseImpl(

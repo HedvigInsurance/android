@@ -21,10 +21,8 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
 import octopus.UpcomingPaymentQuery
 import octopus.fragment.MemberChargeFragment
-import octopus.type.CurrencyCode
 import octopus.type.MemberChargeStatus
 import octopus.type.MemberPaymentConnectionStatus
-import octopus.type.RedeemedCampaignType
 
 internal interface GetUpcomingPaymentUseCase {
   suspend fun invoke(): Either<ErrorMessage, PaymentOverview>
@@ -46,9 +44,6 @@ internal data class GetUpcomingPaymentUseCaseImpl(
 
     PaymentOverview(
       memberCharge = result.currentMember.futureCharge?.toMemberCharge(redeemedCampaigns, referralInformation, clock),
-      pastCharges = result.currentMember.pastCharges
-        .map { it.toMemberCharge(redeemedCampaigns, referralInformation, clock) }
-        .reversed(),
       paymentConnection = run {
         val paymentInformation = result.currentMember.paymentInformation
         when (paymentInformation.status) {
@@ -68,18 +63,6 @@ internal data class GetUpcomingPaymentUseCaseImpl(
           MemberPaymentConnectionStatus.UNKNOWN__ -> PaymentConnection.Unknown
         }
       },
-      discounts = result.currentMember.redeemedCampaigns
-        .filter { it.type == RedeemedCampaignType.VOUCHER }
-        .map {
-          Discount(
-            code = it.code,
-            displayName = it.onlyApplicableToContracts?.firstOrNull()?.exposureDisplayName,
-            description = it.description,
-            expiredState = Discount.ExpiredState.from(it.expiresAt, clock),
-            amount = null,
-            isReferral = false,
-          )
-        } + listOfNotNull(discountFromReferral(result.currentMember.referralInformation)),
     )
   }
 }
@@ -158,25 +141,6 @@ private fun MemberChargeFragment.toFailedCharge(): MemberCharge.FailedCharge? {
   } else {
     null
   }
-}
-
-private fun discountFromReferral(
-  referralInformation: UpcomingPaymentQuery.Data.CurrentMember.ReferralInformation,
-): Discount? {
-  if (referralInformation.referrals.isEmpty()) {
-    return null
-  }
-  return Discount(
-    code = referralInformation.code,
-    displayName = null,
-    description = null,
-    expiredState = Discount.ExpiredState.NotExpired,
-    amount = UiMoney(
-      referralInformation.referrals.sumOf { it.activeDiscount?.amount?.unaryMinus() ?: 0.0 },
-      referralInformation.referrals.first().activeDiscount?.currencyCode ?: CurrencyCode.SEK,
-    ),
-    isReferral = true,
-  )
 }
 
 private fun Discount.ExpiredState.Companion.from(expirationDate: LocalDate?, clock: Clock): Discount.ExpiredState {

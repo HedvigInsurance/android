@@ -7,16 +7,15 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.hedvig.android.core.demomode.Provider
-import com.hedvig.android.feature.payments.data.PaymentOverview
+import com.hedvig.android.feature.payments.data.Discount
+import com.hedvig.android.feature.payments.data.GetDiscountsOverviewUseCase
 import com.hedvig.android.feature.payments.overview.data.AddDiscountUseCase
 import com.hedvig.android.feature.payments.overview.data.ForeverInformation
-import com.hedvig.android.feature.payments.overview.data.GetPaymentOverviewDataUseCase
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 
 internal class DiscountsPresenter(
-  val getPaymentOverviewDataUseCase: Provider<GetPaymentOverviewDataUseCase>,
+  val getDiscountsOverviewUseCase: GetDiscountsOverviewUseCase,
   val addDiscountUseCase: AddDiscountUseCase,
 ) : MoleculePresenter<DiscountsEvent, DiscountsUiState> {
   @Composable
@@ -51,7 +50,7 @@ internal class DiscountsPresenter(
       } else {
         paymentUiState.copy(isLoadingPaymentOverView = true)
       }
-      getPaymentOverviewDataUseCase.provide().invoke().fold(
+      getDiscountsOverviewUseCase.invoke().fold(
         ifLeft = {
           paymentUiState = paymentUiState.copy(
             error = true,
@@ -59,10 +58,10 @@ internal class DiscountsPresenter(
             isRetrying = false,
           )
         },
-        ifRight = { paymentOverviewData ->
+        ifRight = { discountsOverview ->
           paymentUiState = paymentUiState.copy(
-            paymentOverview = paymentOverviewData.paymentOverview,
-            foreverInformation = paymentOverviewData.foreverInformation,
+            discounts = discountsOverview.discounts,
+            foreverInformation = discountsOverview.foreverInformation,
             error = null,
             isLoadingPaymentOverView = false,
             isRetrying = false,
@@ -113,7 +112,7 @@ internal sealed interface DiscountsEvent {
 
 internal data class DiscountsUiState(
   val foreverInformation: ForeverInformation?,
-  val paymentOverview: PaymentOverview? = null,
+  val discounts: List<Discount>,
   val discountError: String? = null,
   val error: Boolean? = null,
   val showAddDiscountBottomSheet: Boolean = false,

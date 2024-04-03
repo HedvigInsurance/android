@@ -6,7 +6,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
 import kotlinx.serialization.Serializable
-import octopus.PaymentHistoryQuery
+import octopus.PaymentHistoryWithDetailsQuery
 import octopus.ShortPaymentHistoryQuery
 import octopus.fragment.MemberChargeFragment
 import octopus.type.MemberChargeStatus
@@ -93,8 +93,8 @@ internal fun ShortPaymentHistoryQuery.Data.CurrentMember.PastCharge.toPaymentHis
 }
 
 internal fun MemberChargeFragment.toMemberCharge(
-  redeemedCampaigns: List<PaymentHistoryQuery.Data.CurrentMember.RedeemedCampaign>,
-  referralInformation: PaymentHistoryQuery.Data.CurrentMember.ReferralInformation,
+  redeemedCampaigns: List<PaymentHistoryWithDetailsQuery.Data.CurrentMember.RedeemedCampaign>,
+  referralInformation: PaymentHistoryWithDetailsQuery.Data.CurrentMember.ReferralInformation,
   clock: Clock,
 ) = MemberCharge(
   id = id ?: "",

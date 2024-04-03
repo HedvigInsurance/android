@@ -1,17 +1,16 @@
 package com.hedvig.android.feature.payments.discounts
 
-import com.hedvig.android.core.demomode.Provider
+import com.hedvig.android.feature.payments.data.GetDiscountsOverviewUseCase
 import com.hedvig.android.feature.payments.overview.data.AddDiscountUseCase
-import com.hedvig.android.feature.payments.overview.data.GetPaymentOverviewDataUseCase
 import com.hedvig.android.molecule.android.MoleculeViewModel
 
 internal class DiscountsViewModel(
-  getPaymentOverviewDataUseCase: Provider<GetPaymentOverviewDataUseCase>,
+  getDiscountsOverviewUseCase: GetDiscountsOverviewUseCase,
   addDiscountUseCase: AddDiscountUseCase,
 ) : MoleculeViewModel<DiscountsEvent, DiscountsUiState>(
-    DiscountsUiState(foreverInformation = null),
+    DiscountsUiState(foreverInformation = null, discounts = listOf()),
     DiscountsPresenter(
-      getPaymentOverviewDataUseCase = getPaymentOverviewDataUseCase,
+      getDiscountsOverviewUseCase = getDiscountsOverviewUseCase,
       addDiscountUseCase = addDiscountUseCase,
     ),
   )

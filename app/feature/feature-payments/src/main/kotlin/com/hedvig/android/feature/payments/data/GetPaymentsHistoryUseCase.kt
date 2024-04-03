@@ -11,13 +11,13 @@ import com.hedvig.android.core.common.ErrorMessage
 import octopus.ShortPaymentHistoryQuery
 
 internal interface GetPaymentsHistoryUseCase {
-  suspend fun invoke(): Either<ErrorMessage, List<PaymentHistoryItem>?>
+  suspend fun invoke(): Either<ErrorMessage, List<PaymentHistoryItem>>
 }
 
 internal class GetPaymentsHistoryUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : GetPaymentsHistoryUseCase {
-  override suspend fun invoke(): Either<ErrorMessage, List<PaymentHistoryItem>?> = either {
+  override suspend fun invoke(): Either<ErrorMessage, List<PaymentHistoryItem>> = either {
     val result = apolloClient.query(ShortPaymentHistoryQuery())
       .fetchPolicy(FetchPolicy.NetworkFirst)
       .safeExecute()

@@ -9,10 +9,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.core.uidata.UiMoney
-import com.hedvig.android.feature.payments.data.Discount
 import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.PaymentConnection
-import com.hedvig.android.feature.payments.data.PaymentOverview
 import com.hedvig.android.feature.payments.overview.data.GetPaymentOverviewDataUseCase
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -50,6 +48,7 @@ internal class PaymentsPresenter(
               PaymentsUiState.Content.UpcomingPayment(
                 grossAmount = memberCharge.grossAmount,
                 dueDate = memberCharge.dueDate,
+                id = memberCharge.id,
               )
             },
             upcomingPaymentInfo = run {
@@ -65,8 +64,7 @@ internal class PaymentsPresenter(
               }
             },
             connectedPaymentInfo = run {
-              val paymentConnection = paymentOverviewData.paymentOverview.paymentConnection
-              when (paymentConnection) {
+              when (val paymentConnection = paymentOverviewData.paymentOverview.paymentConnection) {
                 is PaymentConnection.Active -> PaymentsUiState.Content.ConnectedPaymentInfo.Connected(
                   displayName = paymentConnection.displayName,
                   maskedAccountNumber = paymentConnection.displayValue,
@@ -78,11 +76,6 @@ internal class PaymentsPresenter(
                 )
               }
             },
-            contentForOtherScreens = PaymentsUiState.Content.ContentForOtherScreens(
-              paymentOverview = paymentOverviewData.paymentOverview,
-              memberCharge = paymentOverviewData.paymentOverview.memberCharge,
-              discountList = paymentOverviewData.paymentOverview.discounts,
-            ),
           )
         },
       )
@@ -105,11 +98,11 @@ internal sealed interface PaymentsUiState {
     val upcomingPayment: UpcomingPayment?,
     val upcomingPaymentInfo: UpcomingPaymentInfo?,
     val connectedPaymentInfo: ConnectedPaymentInfo,
-    val contentForOtherScreens: ContentForOtherScreens,
   ) : PaymentsUiState {
     data class UpcomingPayment(
       val grossAmount: UiMoney,
       val dueDate: LocalDate,
+      val id: String,
     )
 
     sealed interface UpcomingPaymentInfo {
@@ -133,11 +126,5 @@ internal sealed interface PaymentsUiState {
         val maskedAccountNumber: String,
       ) : ConnectedPaymentInfo
     }
-
-    data class ContentForOtherScreens(
-      val paymentOverview: PaymentOverview,
-      val memberCharge: MemberCharge?,
-      val discountList: List<Discount>,
-    )
   }
 }
