@@ -41,7 +41,6 @@ import com.hedvig.android.feature.home.home.navigation.HomeDestination
 import com.hedvig.android.feature.home.home.navigation.homeGraph
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
 import com.hedvig.android.feature.insurances.insurance.insuranceGraph
-import com.hedvig.android.feature.insurances.navigation.InsurancesDestination
 import com.hedvig.android.feature.odyssey.navigation.claimFlowGraph
 import com.hedvig.android.feature.odyssey.navigation.navigateToClaimFlowDestination
 import com.hedvig.android.feature.odyssey.navigation.terminalClaimFlowStepDestinations
@@ -150,11 +149,6 @@ internal fun HedvigNavHost(
           openUrl = openUrl,
           openPlayStore = { activityNavigator.tryOpenPlayStore(context) },
           hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-          navigateToInsurances = { backStackEntry ->
-            val navOptions = NavOptions.Builder()
-              .setPopUpTo(createRoutePattern<HomeDestination.Home>(), inclusive = false).build()
-            with(navigator) { backStackEntry.navigate(InsurancesDestination.Insurances, navOptions) }
-          },
           closeTerminationFlow = {
             hedvigAppState.navController.popBackStack<AppDestination.TerminationFlow>(inclusive = true)
           },
