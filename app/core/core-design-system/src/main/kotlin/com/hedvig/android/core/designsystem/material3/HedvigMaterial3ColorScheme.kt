@@ -85,6 +85,8 @@ class HedvigMaterial3ColorScheme(
   val onPinkContainer: Color,
   val purpleContainer: Color,
   val onPurpleContainer: Color,
+  // The new Self-service flows
+  val borderSecondary: Color,
 ) {
   internal var defaultNavigationBarItemColorsCached: HedvigNavigationBarItemColors? = null
 }
@@ -188,6 +190,11 @@ val ColorScheme.infoContainer: Color
   @ReadOnlyComposable
   @Composable
   get() = LocalHedvigMaterial3ColorScheme.current.infoContainer
+
+val ColorScheme.borderSecondary: Color
+  @ReadOnlyComposable
+  @Composable
+  get() = LocalHedvigMaterial3ColorScheme.current.borderSecondary
 
 val ColorScheme.onInfoContainer: Color
   @ReadOnlyComposable

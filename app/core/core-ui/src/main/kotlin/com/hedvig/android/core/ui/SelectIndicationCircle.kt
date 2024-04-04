@@ -27,7 +27,7 @@ fun SelectIndicationCircle(
   selected: Boolean,
   modifier: Modifier = Modifier,
   selectedIndicationColor: Color = LocalContentColor.current,
-  unselectedCircleColor: Color = MaterialTheme.colorScheme.onSurfaceVariant
+  unselectedCircleColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
 ) {
   CheckItemAnimation(selected = selected) { isSelected: Boolean ->
     Box(
@@ -41,7 +41,7 @@ fun SelectIndicationCircle(
             if (isSelected) {
               Modifier.background(selectedIndicationColor)
             } else {
-              Modifier.border(2.dp, MaterialTheme.colorScheme.onSurfaceVariant, CircleShape)
+              Modifier.border(2.dp, unselectedCircleColor, CircleShape)
             },
           ),
       )

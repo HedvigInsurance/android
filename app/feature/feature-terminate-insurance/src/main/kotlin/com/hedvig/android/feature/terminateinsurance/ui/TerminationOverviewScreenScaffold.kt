@@ -76,7 +76,6 @@ internal fun TerminationScaffold(
         content()
       }
     }
-
   }
 }
 

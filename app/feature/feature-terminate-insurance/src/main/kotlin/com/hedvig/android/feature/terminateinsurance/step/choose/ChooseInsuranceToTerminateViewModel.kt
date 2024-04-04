@@ -91,6 +91,9 @@ private class ChooseInsuranceToTerminatePresenter(
             logcat(priority = LogPriority.INFO) { "Successfully loaded contracts for cancellation" }
             val selectedInsurance = if (currentSelectedId != null) {
               eligibleInsurances?.firstOrNull { it.id == currentSelectedId }
+            } else if (eligibleInsurances?.size == 1) {
+              currentSelectedId = eligibleInsurances[0].id
+              eligibleInsurances[0]
             } else {
               null
             }

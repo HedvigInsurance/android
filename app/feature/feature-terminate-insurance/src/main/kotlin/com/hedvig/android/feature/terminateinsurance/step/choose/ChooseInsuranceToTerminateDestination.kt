@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -23,11 +25,11 @@ import com.hedvig.android.core.designsystem.component.button.HedvigContainedButt
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.core.designsystem.material3.borderSecondary
 import com.hedvig.android.core.designsystem.material3.typeElement
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.SelectIndicationCircle
-import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.termination.data.TerminatableInsurance
@@ -105,18 +107,12 @@ private fun ChooseInsuranceToTerminateScreen(
         )
         Spacer(Modifier.weight(1f))
         Spacer(Modifier.height(16.dp))
-        if (uiState.insuranceList.size > 1) {
-          VectorInfoCard(
-            text = stringResource(id = R.string.TERMINATION_FLOW_CHOOSE_CONTRACT_INFO),
-            modifier = Modifier
-              .padding(horizontal = 16.dp)
-              .fillMaxWidth(),
-          )
-        }
-        Spacer(Modifier.height(16.dp))
         for (insurance in uiState.insuranceList) {
           HedvigCard(
             onClick = { selectInsurance(insurance) },
+            colors = CardDefaults.outlinedCardColors(
+              containerColor = MaterialTheme.colorScheme.surface,
+            ),
             modifier = Modifier
               .fillMaxWidth()
               .padding(horizontal = 16.dp),
@@ -143,6 +139,7 @@ private fun ChooseInsuranceToTerminateScreen(
               SelectIndicationCircle(
                 uiState.selectedInsurance?.id == insurance.id,
                 selectedIndicationColor = MaterialTheme.colorScheme.typeElement,
+                unselectedCircleColor = MaterialTheme.colorScheme.borderSecondary,
               )
             }
           }
@@ -153,6 +150,10 @@ private fun ChooseInsuranceToTerminateScreen(
           stringResource(id = R.string.general_continue_button),
           enabled = uiState.selectedInsurance != null && uiState.nextStep != null,
           modifier = Modifier.padding(horizontal = 16.dp),
+          colors = ButtonDefaults.buttonColors(
+            disabledContainerColor = MaterialTheme.colorScheme.surface,
+            disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+          ),
           onClick = {
             if (uiState.selectedInsurance != null && uiState.nextStep != null) {
               navigateToNextStep(uiState.nextStep, uiState.selectedInsurance)
@@ -189,13 +190,14 @@ private fun PreviewChooseInsuranceToTerminateScreen() {
               activateFrom = LocalDate(2024, 6, 27),
             ),
           ),
-          selectedInsurance = TerminatableInsurance(
-            id = "3",
-            displayName = "Tenant Insurance",
-            contractExposure = "Bullegatan 23",
-            contractGroup = ContractGroup.HOUSE,
-            activateFrom = LocalDate(2024, 6, 27),
-          ),
+          selectedInsurance = null,
+//          TerminatableInsurance(
+//            id = "3",
+//            displayName = "Tenant Insurance",
+//            contractExposure = "Bullegatan 23",
+//            contractGroup = ContractGroup.HOUSE,
+//            activateFrom = LocalDate(2024, 6, 27),
+//          ),
         ),
         {},
         {},
