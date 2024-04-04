@@ -68,9 +68,7 @@ internal fun TerminationScaffold(
         Spacer(modifier = Modifier.height(8.dp))
         Text(
           text = stringResource(id = R.string.TERMINATION_FLOW_CANCELLATION_TITLE),
-          fontSize = MaterialTheme.typography.headlineSmall.fontSize,
-          fontStyle = MaterialTheme.typography.headlineSmall.fontStyle,
-          fontFamily = MaterialTheme.typography.headlineSmall.fontFamily,
+          style = MaterialTheme.typography.headlineSmall,
           modifier = Modifier.padding(horizontal = 16.dp),
         )
         content()
