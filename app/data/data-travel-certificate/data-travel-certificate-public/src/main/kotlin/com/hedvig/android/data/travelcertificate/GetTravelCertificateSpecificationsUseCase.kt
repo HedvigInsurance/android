@@ -47,13 +47,7 @@ internal class GetTravelCertificateSpecificationsUseCaseImpl(
       TravelCertificateData(
         travelCertificateSpecification = travelCertificateSpecifications.toTravelCertificateSpecification(
           member.email,
-        ),
-        infoSections = member.travelCertificateSpecifications.infoSpecifications.map {
-          TravelCertificateData.InfoSection(
-            it.title,
-            it.body,
-          )
-        },
+        )
       )
     }
   }
@@ -80,12 +74,7 @@ sealed interface TravelCertificateError {
 
 data class TravelCertificateData(
   val travelCertificateSpecification: TravelCertificateSpecification,
-  val infoSections: List<InfoSection>,
 ) {
-  data class InfoSection(
-    val title: String,
-    val body: String,
-  )
 
   data class TravelCertificateSpecification(
     val contractId: String,
