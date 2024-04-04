@@ -159,7 +159,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       )
     }
 
-    composable<TerminateInsuranceDestination.InsuranceDeletion> { _ ->
+    composable<TerminateInsuranceDestination.InsuranceDeletion> {
       InsuranceDeletionDestination(
         displayName = insuranceDisplayName,
         exposureName = exposureName,
