@@ -19,6 +19,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineBreak
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
@@ -168,80 +170,77 @@ private fun ChooseInsuranceToTerminateScreen(
 
 @HedvigPreview
 @Composable
-private fun PreviewChooseInsuranceToTerminateScreen() {
+private fun PreviewChooseInsuranceToTerminateScreen(
+  @PreviewParameter(
+    ChooseInsuranceToTerminateStepUiStateProvider::class,
+  ) uiState: ChooseInsuranceToTerminateStepUiState,
+) {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       ChooseInsuranceToTerminateScreen(
-        ChooseInsuranceToTerminateStepUiState.Success(
-          nextStep = TerminateInsuranceStep.UnknownStep(""),
-          insuranceList = listOf(
-            TerminatableInsurance(
-              id = "1",
-              displayName = "HomeownerInsurance",
-              contractExposure = "Opulullegatan 19",
-              contractGroup = ContractGroup.HOUSE,
-              activateFrom = LocalDate(2024, 6, 27),
-            ),
-            TerminatableInsurance(
-              id = "3",
-              displayName = "Tenant Insurance",
-              contractExposure = "Bullegatan 23",
-              contractGroup = ContractGroup.HOUSE,
-              activateFrom = LocalDate(2024, 6, 27),
-            ),
+        uiState,
+        {},
+        {},
+        {},
+        {},
+        {},
+        { step, insurance -> },
+      )
+    }
+  }
+}
+
+private class ChooseInsuranceToTerminateStepUiStateProvider :
+  CollectionPreviewParameterProvider<ChooseInsuranceToTerminateStepUiState>(
+    listOf(
+      ChooseInsuranceToTerminateStepUiState.Success(
+        nextStep = TerminateInsuranceStep.UnknownStep(""),
+        insuranceList = listOf(
+          TerminatableInsurance(
+            id = "1",
+            displayName = "HomeownerInsurance",
+            contractExposure = "Opulullegatan 19",
+            contractGroup = ContractGroup.HOUSE,
+            activateFrom = LocalDate(2024, 6, 27),
           ),
-          selectedInsurance = null,
-//          TerminatableInsurance(
-//            id = "3",
-//            displayName = "Tenant Insurance",
-//            contractExposure = "Bullegatan 23",
-//            contractGroup = ContractGroup.HOUSE,
-//            activateFrom = LocalDate(2024, 6, 27),
-//          ),
+          TerminatableInsurance(
+            id = "3",
+            displayName = "Tenant Insurance",
+            contractExposure = "Bullegatan 23",
+            contractGroup = ContractGroup.HOUSE,
+            activateFrom = LocalDate(2024, 6, 27),
+          ),
         ),
-        {},
-        {},
-        {},
-        {},
-        {},
-        { step, insurance -> },
-      )
-    }
-  }
-}
-
-@HedvigPreview
-@Composable
-private fun PreviewChooseInsuranceToTerminateScreenWithFailure() {
-  HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
-      ChooseInsuranceToTerminateScreen(
-        ChooseInsuranceToTerminateStepUiState.Failure,
-        {},
-        {},
-        {},
-        {},
-        {},
-        { step, insurance -> },
-      )
-    }
-  }
-}
-
-@HedvigPreview
-@Composable
-private fun PreviewChooseInsuranceToTerminateScreenWithNotAllowed() {
-  HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
-      ChooseInsuranceToTerminateScreen(
-        ChooseInsuranceToTerminateStepUiState.NotAllowed,
-        {},
-        {},
-        {},
-        {},
-        {},
-        { step, insurance -> },
-      )
-    }
-  }
-}
+        selectedInsurance = null,
+      ),
+      ChooseInsuranceToTerminateStepUiState.Success(
+        nextStep = TerminateInsuranceStep.UnknownStep(""),
+        insuranceList = listOf(
+          TerminatableInsurance(
+            id = "1",
+            displayName = "HomeownerInsurance",
+            contractExposure = "Opulullegatan 19",
+            contractGroup = ContractGroup.HOUSE,
+            activateFrom = LocalDate(2024, 6, 27),
+          ),
+          TerminatableInsurance(
+            id = "3",
+            displayName = "Tenant Insurance",
+            contractExposure = "Bullegatan 23",
+            contractGroup = ContractGroup.HOUSE,
+            activateFrom = LocalDate(2024, 6, 27),
+          ),
+        ),
+        selectedInsurance = TerminatableInsurance(
+          id = "3",
+          displayName = "Tenant Insurance",
+          contractExposure = "Bullegatan 23",
+          contractGroup = ContractGroup.HOUSE,
+          activateFrom = LocalDate(2024, 6, 27),
+        ),
+      ),
+      ChooseInsuranceToTerminateStepUiState.Failure,
+      ChooseInsuranceToTerminateStepUiState.NotAllowed,
+      ChooseInsuranceToTerminateStepUiState.Loading,
+    ),
+  )

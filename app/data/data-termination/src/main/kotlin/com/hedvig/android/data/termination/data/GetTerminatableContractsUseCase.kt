@@ -1,7 +1,9 @@
 package com.hedvig.android.data.termination.data
 
 import arrow.core.Either
+import arrow.core.NonEmptyList
 import arrow.core.raise.either
+import arrow.core.toNonEmptyListOrNull
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.cache.normalized.FetchPolicy
 import com.apollographql.apollo3.cache.normalized.fetchPolicy
@@ -17,14 +19,14 @@ import kotlinx.datetime.LocalDate
 import octopus.ContractsToTerminateQuery
 
 interface GetTerminatableContractsUseCase {
-  suspend fun invoke(): Flow<Either<ErrorMessage, List<TerminatableInsurance>?>>
+  suspend fun invoke(): Flow<Either<ErrorMessage, NonEmptyList<TerminatableInsurance>?>>
 }
 
 internal class GetTerminatableContractsUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,
 ) : GetTerminatableContractsUseCase {
-  override suspend fun invoke(): Flow<Either<ErrorMessage, List<TerminatableInsurance>?>> {
+  override suspend fun invoke(): Flow<Either<ErrorMessage, NonEmptyList<TerminatableInsurance>?>> {
     return combine(
       featureManager.isFeatureEnabled(Feature.TERMINATION_FLOW),
       apolloClient
@@ -33,10 +35,8 @@ internal class GetTerminatableContractsUseCaseImpl(
         .safeFlow(::ErrorMessage),
     ) { isEnabled, memberResponse ->
       either {
-        val memberData = memberResponse.bind().currentMember
-        val uncheckedContracts = memberData.toInsurancesForCancellation()
-        val checkedContracts = uncheckedContracts.takeIf { isEnabled && uncheckedContracts.isNotEmpty() }
-        checkedContracts
+        if (!isEnabled) return@either null
+        memberResponse.bind().currentMember.toInsurancesForCancellation().toNonEmptyListOrNull()
       }
     }
   }

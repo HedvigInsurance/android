@@ -32,6 +32,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.datepicker.HedvigDatePicker
+import com.hedvig.android.core.designsystem.material3.borderSecondary
 import com.hedvig.android.core.designsystem.material3.typeElement
 import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
@@ -116,6 +117,10 @@ private fun TerminationDateScreen(
     Spacer(Modifier.height(16.dp))
     HedvigContainedButton(
       text = stringResource(id = R.string.TERMINATION_FLOW_CANCEL_INSURANCE_BUTTON),
+      colors = ButtonDefaults.buttonColors(
+        disabledContainerColor = MaterialTheme.colorScheme.surface,
+        disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+      ),
       onClick = submit,
       enabled = uiState.canSubmit,
       modifier = Modifier.padding(horizontal = 16.dp),
@@ -179,6 +184,7 @@ private fun ImportantInfoCheckBox(isChecked: Boolean, onCheckedChange: () -> Uni
                   checkMarkColor = Color.White,
                   // todo: same here with color
                   checkColor = MaterialTheme.colorScheme.typeElement,
+                  uncheckedColor = MaterialTheme.colorScheme.borderSecondary,
                 )
               }
             },
@@ -211,6 +217,7 @@ private fun DateButton(datePickerState: DatePickerState, modifier: Modifier = Mo
           selectedDayContainerColor = MaterialTheme.colorScheme.typeElement,
           selectedDayContentColor = Color.White,
           // todo: same here with color
+          todayContentColor = MaterialTheme.colorScheme.typeElement,
           todayDateBorderColor = MaterialTheme.colorScheme.typeElement,
         ),
       )
