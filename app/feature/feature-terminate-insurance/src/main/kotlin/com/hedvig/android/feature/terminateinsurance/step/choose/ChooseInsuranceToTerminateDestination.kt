@@ -105,12 +105,14 @@ private fun ChooseInsuranceToTerminateScreen(
         )
         Spacer(Modifier.weight(1f))
         Spacer(Modifier.height(16.dp))
-        VectorInfoCard(
-          text = stringResource(id = R.string.TERMINATION_FLOW_CHOOSE_CONTRACT_INFO),
-          modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .fillMaxWidth(),
-        )
+        if (uiState.insuranceList.size > 1) {
+          VectorInfoCard(
+            text = stringResource(id = R.string.TERMINATION_FLOW_CHOOSE_CONTRACT_INFO),
+            modifier = Modifier
+              .padding(horizontal = 16.dp)
+              .fillMaxWidth(),
+          )
+        }
         Spacer(Modifier.height(16.dp))
         for (insurance in uiState.insuranceList) {
           HedvigCard(
@@ -122,7 +124,7 @@ private fun ChooseInsuranceToTerminateScreen(
             Row(
               verticalAlignment = Alignment.CenterVertically,
               modifier = Modifier
-                .heightIn(72.dp)
+                .heightIn(64.dp)
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 10.dp),
             ) {
@@ -146,7 +148,7 @@ private fun ChooseInsuranceToTerminateScreen(
           }
           Spacer(modifier = (Modifier.height(4.dp)))
         }
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(12.dp))
         HedvigContainedButton(
           stringResource(id = R.string.general_continue_button),
           enabled = uiState.selectedInsurance != null && uiState.nextStep != null,

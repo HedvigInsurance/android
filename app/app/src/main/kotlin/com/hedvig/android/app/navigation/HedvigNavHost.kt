@@ -266,7 +266,7 @@ internal fun HedvigNavHost(
             }
 
             QuickLinkDestination.QuickLinkConnectPayment -> {
-              backStackEntry.navigate(AppDestination.ChangeAddress)
+              backStackEntry.navigate(AppDestination.ConnectPayment)
             }
 
             QuickLinkDestination.QuickLinkTermination -> {

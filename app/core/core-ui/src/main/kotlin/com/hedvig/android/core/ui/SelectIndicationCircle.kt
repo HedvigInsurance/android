@@ -1,11 +1,5 @@
 package com.hedvig.android.core.ui
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.updateTransition
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -25,6 +19,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.animation.CheckItemAnimation
 import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
 
 @Composable
@@ -32,14 +27,9 @@ fun SelectIndicationCircle(
   selected: Boolean,
   modifier: Modifier = Modifier,
   selectedIndicationColor: Color = LocalContentColor.current,
+  unselectedCircleColor: Color = MaterialTheme.colorScheme.onSurfaceVariant
 ) {
-  val selectedTransition = updateTransition(selected)
-  selectedTransition.AnimatedContent(
-    transitionSpec = {
-      fadeIn(tween(durationMillis = 500)) togetherWith fadeOut(tween(90))
-    },
-    contentAlignment = Alignment.Center,
-  ) { isSelected ->
+  CheckItemAnimation(selected = selected) { isSelected: Boolean ->
     Box(
       contentAlignment = Alignment.Center,
     ) {

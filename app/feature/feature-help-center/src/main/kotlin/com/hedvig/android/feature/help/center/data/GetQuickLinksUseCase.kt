@@ -113,7 +113,7 @@ private fun List<AvailableSelfServiceOnContractsQuery.Data.CurrentMember.ActiveC
       hintTextRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
       links = links,
     )
-  } else if (this.isNotEmpty()) {
+  } else if (this.size == 1) {
     val contract = this.first()
     return if (contract.coInsured?.any { it.hasMissingInfo } == true) {
       QuickAction.StandaloneQuickLink(

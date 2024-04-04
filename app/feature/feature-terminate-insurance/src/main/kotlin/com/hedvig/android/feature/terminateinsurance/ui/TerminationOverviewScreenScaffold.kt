@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.terminateinsurance.ui
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
@@ -47,37 +46,37 @@ internal fun TerminationScaffold(
     color = MaterialTheme.colorScheme.background,
     modifier = modifier.fillMaxSize(),
   ) {
-    Box {
-      Column {
-        val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-        TopAppBarWithBackAndClose(
-          onNavigateUp = navigateUp,
-          onClose = closeTerminationFlow,
-          title = "",
-          scrollBehavior = topAppBarScrollBehavior,
-        )
-        Column(
-          modifier = Modifier
-            .fillMaxSize()
-            .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
-            .verticalScroll(rememberScrollState())
-            .windowInsetsPadding(
-              WindowInsets.safeDrawing.only(
-                WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom,
-              ),
+    Column {
+      val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+      TopAppBarWithBackAndClose(
+        onNavigateUp = navigateUp,
+        onClose = closeTerminationFlow,
+        title = "",
+        scrollBehavior = topAppBarScrollBehavior,
+      )
+      Column(
+        modifier = Modifier
+          .fillMaxSize()
+          .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
+          .verticalScroll(rememberScrollState())
+          .windowInsetsPadding(
+            WindowInsets.safeDrawing.only(
+              WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom,
             ),
-        ) {
-          Text(
-            text = stringResource(id = R.string.TERMINATION_FLOW_CANCELLATION_TITLE),
-            fontSize = MaterialTheme.typography.headlineSmall.fontSize,
-            fontStyle = MaterialTheme.typography.headlineSmall.fontStyle,
-            fontFamily = MaterialTheme.typography.headlineSmall.fontFamily,
-            modifier = Modifier.padding(horizontal = 16.dp),
-          )
-          content()
-        }
+          ),
+      ) {
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+          text = stringResource(id = R.string.TERMINATION_FLOW_CANCELLATION_TITLE),
+          fontSize = MaterialTheme.typography.headlineSmall.fontSize,
+          fontStyle = MaterialTheme.typography.headlineSmall.fontStyle,
+          fontFamily = MaterialTheme.typography.headlineSmall.fontFamily,
+          modifier = Modifier.padding(horizontal = 16.dp),
+        )
+        content()
       }
     }
+
   }
 }
 

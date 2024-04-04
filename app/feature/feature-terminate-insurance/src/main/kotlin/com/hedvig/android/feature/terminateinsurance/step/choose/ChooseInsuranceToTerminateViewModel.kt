@@ -47,7 +47,7 @@ private class ChooseInsuranceToTerminatePresenter(
       } else {
         insuranceId
       }
-      mutableStateOf(initialSelected) 
+      mutableStateOf(initialSelected)
     }
     var terminationStep: TerminateInsuranceStep? by remember { mutableStateOf(null) }
     var currentPartialState by remember {

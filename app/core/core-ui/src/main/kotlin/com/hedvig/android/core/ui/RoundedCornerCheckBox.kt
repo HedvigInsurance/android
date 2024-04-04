@@ -1,4 +1,4 @@
-package com.hedvig.android.core.designsystem.component.button
+package com.hedvig.android.core.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.material3.squircleExtraSmall
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.small.hedvig.Checkmark
+import com.hedvig.android.core.ui.animation.CheckItemAnimation
 
 @Composable
 fun RoundedCornerCheckBox(
@@ -26,28 +27,30 @@ fun RoundedCornerCheckBox(
   checkColor: Color = MaterialTheme.colorScheme.primary,
   uncheckedColor: Color = MaterialTheme.colorScheme.outlineVariant,
 ) {
-  Box(
-    modifier = Modifier
-      .size(24.dp)
-      .background(
-        color = if (isChecked) checkColor else Color.Transparent,
-        shape = MaterialTheme.shapes.squircleExtraSmall,
-      )
-      .border(
-        width = 1.dp,
-        color = if (isChecked) checkColor else uncheckedColor,
-        shape = MaterialTheme.shapes.squircleExtraSmall,
-      )
-      .clip(MaterialTheme.shapes.squircleExtraSmall)
-      .clickable {
-        if (onCheckedChange != null) {
-          onCheckedChange(isChecked)
-        }
-      },
-    contentAlignment = Alignment.Center,
-  ) {
-    if (isChecked) {
-      Icon(Icons.Hedvig.Checkmark, contentDescription = null, tint = checkMarkColor)
+  CheckItemAnimation(selected = isChecked) { isSelected: Boolean ->
+    Box(
+      modifier = Modifier
+        .size(24.dp)
+        .background(
+          color = if (isSelected) checkColor else Color.Transparent,
+          shape = MaterialTheme.shapes.squircleExtraSmall,
+        )
+        .border(
+          width = 1.dp,
+          color = if (isSelected) checkColor else uncheckedColor,
+          shape = MaterialTheme.shapes.squircleExtraSmall,
+        )
+        .clip(MaterialTheme.shapes.squircleExtraSmall)
+        .clickable {
+          if (onCheckedChange != null) {
+            onCheckedChange(isSelected)
+          }
+        },
+      contentAlignment = Alignment.Center,
+    ) {
+      if (isSelected) {
+        Icon(Icons.Hedvig.Checkmark, contentDescription = null, tint = checkMarkColor)
+      }
     }
   }
 }
