@@ -1,6 +1,7 @@
 package com.hedvig.android.core.ui.animation
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.EaseInOut
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.fadeIn
@@ -14,7 +15,7 @@ fun CheckItemAnimation(selected: Boolean, content: @Composable (isSelected: Bool
   val selectedTransition = updateTransition(selected)
   selectedTransition.AnimatedContent(
     transitionSpec = {
-      fadeIn(tween(durationMillis = 200)) togetherWith fadeOut(tween(200))
+      fadeIn(tween(durationMillis = 200, easing = EaseInOut)) togetherWith fadeOut(tween(200, easing = EaseInOut))
     },
     contentAlignment = Alignment.Center,
   ) { isSelected ->
