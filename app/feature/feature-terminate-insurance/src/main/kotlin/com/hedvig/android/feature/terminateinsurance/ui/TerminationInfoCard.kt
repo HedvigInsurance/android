@@ -62,7 +62,7 @@ internal fun TerminationInfoCardInsurance(displayName: String, exposureName: Str
 @Composable
 internal fun TerminationInfoCardDate(
   dateValue: String?,
-  onClick: () -> Unit,
+  onClick: (() -> Unit)?,
   isLocked: Boolean,
   modifier: Modifier = Modifier,
 ) {

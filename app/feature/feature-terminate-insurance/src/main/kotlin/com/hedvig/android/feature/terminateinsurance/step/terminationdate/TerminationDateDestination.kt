@@ -159,8 +159,6 @@ private fun ImportantInfoCheckBox(isChecked: Boolean, onCheckedChange: () -> Uni
           colors = ButtonDefaults.buttonColors(
             containerColor = Color.White,
             contentColor = Color.Black,
-            // todo: not really sure what to do here, the white color is not in the palette.
-            //  this element stays the same in light/dark themes
           ),
         ) {
           HorizontalItemsWithMaximumSpaceTaken(
@@ -182,7 +180,6 @@ private fun ImportantInfoCheckBox(isChecked: Boolean, onCheckedChange: () -> Uni
                     onCheckedChange()
                   },
                   checkMarkColor = Color.White,
-                  // todo: same here with color
                   checkColor = MaterialTheme.colorScheme.typeElement,
                   uncheckedColor = MaterialTheme.colorScheme.borderSecondary,
                 )
@@ -216,7 +213,6 @@ private fun DateButton(datePickerState: DatePickerState, modifier: Modifier = Mo
         colors = DatePickerDefaults.colors(
           selectedDayContainerColor = MaterialTheme.colorScheme.typeElement,
           selectedDayContentColor = Color.White,
-          // todo: same here with color
           todayContentColor = MaterialTheme.colorScheme.typeElement,
           todayDateBorderColor = MaterialTheme.colorScheme.typeElement,
         ),
