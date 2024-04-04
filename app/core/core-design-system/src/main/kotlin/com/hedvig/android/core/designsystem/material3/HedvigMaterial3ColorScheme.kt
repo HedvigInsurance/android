@@ -287,6 +287,8 @@ internal fun HedvigMaterial3ColorScheme.fromToken(value: HedvigColorSchemeKeyTok
     HedvigColorSchemeKeyTokens.TypeContainer -> typeContainer
     HedvigColorSchemeKeyTokens.OnTypeContainer -> onTypeContainer
     HedvigColorSchemeKeyTokens.TypeHighlight -> typeHighlight
+
+    HedvigColorSchemeKeyTokens.BorderSecondary -> borderSecondary
   }
 }
 

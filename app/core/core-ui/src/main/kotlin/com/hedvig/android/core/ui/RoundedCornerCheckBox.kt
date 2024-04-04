@@ -36,7 +36,7 @@ fun RoundedCornerCheckBox(
           shape = MaterialTheme.shapes.squircleExtraSmall,
         )
         .border(
-          width = 1.dp,
+          width = 2.dp,
           color = if (isSelected) checkColor else uncheckedColor,
           shape = MaterialTheme.shapes.squircleExtraSmall,
         )
