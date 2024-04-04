@@ -66,7 +66,7 @@ internal fun HedvigNavHost(
   hedvigAppState: HedvigAppState,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   activityNavigator: ActivityNavigator,
-  onBackPressed: () -> Unit,
+  finishApp: () -> Unit,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   openUrl: (String) -> Unit,
   imageLoader: ImageLoader,
@@ -78,7 +78,7 @@ internal fun HedvigNavHost(
   LocalConfiguration.current
   val context = LocalContext.current
   val density = LocalDensity.current
-  val navigator: Navigator = rememberNavigator(hedvigAppState.navController, onBackPressed)
+  val navigator: Navigator = rememberNavigator(hedvigAppState.navController, finishApp)
 
   val navigateToConnectPayment = {
     when (market) {
@@ -374,8 +374,8 @@ private fun NavGraphBuilder.nestedHomeGraphs(
 }
 
 @Composable
-private fun rememberNavigator(navController: NavController, onActivityBackPressed: () -> Unit): Navigator {
-  val updatedOnActivityBackPressed by rememberUpdatedState(onActivityBackPressed)
+private fun rememberNavigator(navController: NavController, finishApp: () -> Unit): Navigator {
+  val updatedFinishApp by rememberUpdatedState(finishApp)
   return remember(navController) {
     object : Navigator {
       override fun NavBackStackEntry.navigate(
@@ -402,7 +402,7 @@ private fun rememberNavigator(navController: NavController, onActivityBackPresse
 
       override fun popBackStack() {
         if (!navController.popBackStack()) {
-          updatedOnActivityBackPressed()
+          updatedFinishApp()
         }
       }
     }
