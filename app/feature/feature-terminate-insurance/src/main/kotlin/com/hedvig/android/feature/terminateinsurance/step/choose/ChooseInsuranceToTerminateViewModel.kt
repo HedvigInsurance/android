@@ -41,12 +41,14 @@ private class ChooseInsuranceToTerminatePresenter(
     lastState: ChooseInsuranceToTerminateStepUiState,
   ): ChooseInsuranceToTerminateStepUiState {
     var loadIteration by remember { mutableIntStateOf(0) }
-    val initialSelected = if (lastState is ChooseInsuranceToTerminateStepUiState.Success) {
-      lastState.selectedInsurance?.id
-    } else {
-      insuranceId
+    var currentSelectedId by remember {
+      val initialSelected = if (lastState is ChooseInsuranceToTerminateStepUiState.Success) {
+        lastState.selectedInsurance?.id
+      } else {
+        insuranceId
+      }
+      mutableStateOf(initialSelected) 
     }
-    var currentSelectedId by remember { mutableStateOf(initialSelected) }
     var terminationStep: TerminateInsuranceStep? by remember { mutableStateOf(null) }
     var currentPartialState by remember {
       mutableStateOf(lastState.toPartialState())
