@@ -2,7 +2,9 @@ package com.hedvig.android.app.navigation
 
 import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -39,7 +41,6 @@ import com.hedvig.android.feature.home.home.navigation.HomeDestination
 import com.hedvig.android.feature.home.home.navigation.homeGraph
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
 import com.hedvig.android.feature.insurances.insurance.insuranceGraph
-import com.hedvig.android.feature.insurances.navigation.InsurancesDestination
 import com.hedvig.android.feature.odyssey.navigation.claimFlowGraph
 import com.hedvig.android.feature.odyssey.navigation.navigateToClaimFlowDestination
 import com.hedvig.android.feature.odyssey.navigation.terminalClaimFlowStepDestinations
@@ -65,6 +66,7 @@ internal fun HedvigNavHost(
   hedvigAppState: HedvigAppState,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   activityNavigator: ActivityNavigator,
+  finishApp: () -> Unit,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   openUrl: (String) -> Unit,
   imageLoader: ImageLoader,
@@ -76,7 +78,7 @@ internal fun HedvigNavHost(
   LocalConfiguration.current
   val context = LocalContext.current
   val density = LocalDensity.current
-  val navigator: Navigator = rememberNavigator(hedvigAppState.navController)
+  val navigator: Navigator = rememberNavigator(hedvigAppState.navController, finishApp)
 
   val navigateToConnectPayment = {
     when (market) {
@@ -147,11 +149,6 @@ internal fun HedvigNavHost(
           openUrl = openUrl,
           openPlayStore = { activityNavigator.tryOpenPlayStore(context) },
           hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-          navigateToInsurances = { backStackEntry ->
-            val navOptions = NavOptions.Builder()
-              .setPopUpTo(createRoutePattern<HomeDestination.Home>(), inclusive = false).build()
-            with(navigator) { backStackEntry.navigate(InsurancesDestination.Insurances, navOptions) }
-          },
           closeTerminationFlow = {
             hedvigAppState.navController.popBackStack<AppDestination.TerminationFlow>(inclusive = true)
           },
@@ -377,7 +374,8 @@ private fun NavGraphBuilder.nestedHomeGraphs(
 }
 
 @Composable
-private fun rememberNavigator(navController: NavController): Navigator {
+private fun rememberNavigator(navController: NavController, finishApp: () -> Unit): Navigator {
+  val updatedFinishApp by rememberUpdatedState(finishApp)
   return remember(navController) {
     object : Navigator {
       override fun NavBackStackEntry.navigate(
@@ -403,7 +401,9 @@ private fun rememberNavigator(navController: NavController): Navigator {
       }
 
       override fun popBackStack() {
-        navController.popBackStack()
+        if (!navController.popBackStack()) {
+          updatedFinishApp()
+        }
       }
     }
   }

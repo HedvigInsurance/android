@@ -41,22 +41,13 @@ fun NavGraphBuilder.terminateInsuranceGraph(
   openChat: (NavBackStackEntry) -> Unit,
   openUrl: (String) -> Unit,
   openPlayStore: () -> Unit,
-  navigateToInsurances: (NavBackStackEntry) -> Unit,
   closeTerminationFlow: () -> Unit,
 ) {
   composable<TerminateInsuranceDestination.TerminationSuccess> { backStackEntry ->
     TerminationSuccessDestination(
       terminationDate = terminationDate,
       onSurveyClicked = { openUrl(surveyUrl) },
-      navigateToInsurances = {
-        navigateToInsurances(backStackEntry)
-        /**
-         We clear everything except for Home destination and navigate to Insurances when we press Done on success screen.
-         If we go back (system back button) we return to screen we we've been before termination flow (Help Center or Insurance Details).
-         If we successfully delete insurance that was supposed to activate in the future and press system back button on Success screen,
-         We'll get a "can't find this insurance" error on Insurance Details screen, which I think is logical.
-         */
-      },
+      navigateBack = navigator::popBackStack,
     )
   }
   composable<TerminateInsuranceDestination.TerminationFailure> { backStackEntry ->

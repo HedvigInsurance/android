@@ -35,7 +35,7 @@ import kotlinx.datetime.toJavaLocalDate
 internal fun TerminationSuccessDestination(
   terminationDate: LocalDate?,
   onSurveyClicked: () -> Unit,
-  navigateToInsurances: () -> Unit,
+  navigateBack: () -> Unit,
 ) {
   Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.fillMaxSize()) {
     Column(
@@ -66,7 +66,7 @@ internal fun TerminationSuccessDestination(
       Spacer(Modifier.height(8.dp))
       HedvigContainedButton(
         text = stringResource(id = R.string.general_done_button),
-        onClick = navigateToInsurances,
+        onClick = navigateBack,
         modifier = Modifier.padding(horizontal = 16.dp),
       )
       Spacer(Modifier.height(16.dp))
