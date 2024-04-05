@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.ArrowBack
+import com.hedvig.android.core.icons.hedvig.normal.Info
 import com.hedvig.android.core.icons.hedvig.normal.X
 
 @Composable
@@ -110,6 +111,56 @@ fun TopAppBarWithBackAndClose(
         content = {
           Icon(
             imageVector = Icons.Hedvig.ArrowBack,
+            contentDescription = null,
+          )
+        },
+      )
+    },
+    actions = {
+      IconButton(
+        onClick = onClose,
+        content = {
+          Icon(
+            imageVector = Icons.Hedvig.X,
+            contentDescription = null,
+          )
+        },
+      )
+    },
+    windowInsets = windowInsets,
+    colors = colors,
+    scrollBehavior = scrollBehavior,
+  )
+}
+
+@Composable
+fun TopAppBarWithInfoAndClose(
+  title: String,
+  onClose: () -> Unit,
+  onInfoClick: () -> Unit,
+  modifier: Modifier = Modifier,
+  windowInsets: WindowInsets = TopAppBarDefaults.windowInsets
+    .union(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)),
+  colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(
+    containerColor = MaterialTheme.colorScheme.background,
+    scrolledContainerColor = MaterialTheme.colorScheme.surface,
+  ),
+  scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+) {
+  TopAppBar(
+    modifier = modifier,
+    title = {
+      Text(
+        text = title,
+        style = MaterialTheme.typography.titleLarge,
+      )
+    },
+    navigationIcon = {
+      IconButton(
+        onClick = onInfoClick,
+        content = {
+          Icon(
+            imageVector = Icons.Hedvig.Info,
             contentDescription = null,
           )
         },

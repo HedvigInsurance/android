@@ -98,6 +98,7 @@ private fun ChooseInsuranceToTerminateScreen(
       TerminationScaffold(
         navigateUp = navigateUp,
         closeTerminationFlow = closeTerminationFlow,
+        textForInfoIcon = stringResource(id = R.string.TERMINATION_FLOW_CANCEL_INFO_TEXT),
       ) {
         Text(
           style = MaterialTheme.typography.headlineSmall.copy(

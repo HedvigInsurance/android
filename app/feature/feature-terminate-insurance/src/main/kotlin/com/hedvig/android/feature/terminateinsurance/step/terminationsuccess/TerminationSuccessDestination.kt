@@ -60,7 +60,7 @@ internal fun TerminationSuccessDestination(
             R.string.TERMINATION_FLOW_SUCCESS_SUBTITLE_WITH_DATE,
             rememberHedvigDateTimeFormatter().format(terminationDate.toJavaLocalDate()),
           )
-        } ?: stringResource(id = R.string.TERMINATION_FLOW_SUCCESS_SUBTITLE_WITHOUT_DATE),
+        } ?: stringResource(id = R.string.TERMINATE_CONTRACT_TERMINATION_COMPLETE),
         withDefaultVerticalSpacing = false,
         iconImageVector = Icons.Hedvig.CircleWithCheckmarkFilled,
         iconModifier = Modifier.size(32.dp),
