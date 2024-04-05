@@ -10,6 +10,7 @@ import com.hedvig.android.feature.help.center.commonclaim.CommonClaimDestination
 import com.hedvig.android.feature.help.center.commonclaim.emergency.EmergencyDestination
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination
 import com.hedvig.android.feature.help.center.home.HelpCenterHomeDestination
+import com.hedvig.android.feature.help.center.model.HelpCenterContext
 import com.hedvig.android.feature.help.center.model.Question
 import com.hedvig.android.feature.help.center.model.Topic
 import com.hedvig.android.feature.help.center.navigation.HelpCenterDestination
@@ -78,7 +79,7 @@ fun NavGraphBuilder.helpCenterGraph(
         onNavigateUp = navigator::navigateUp,
         onNavigateBack = navigator::popBackStack,
         openChat = {
-          openChat(backStackEntry, topic.chatContext)
+          openChat(backStackEntry, topic.helpCenterContext.toChatContext())
         },
       )
     }
@@ -92,7 +93,7 @@ fun NavGraphBuilder.helpCenterGraph(
         onNavigateUp = navigator::navigateUp,
         onNavigateBack = navigator::popBackStack,
         openChat = {
-          openChat(backStackEntry, question.chatContext)
+          openChat(backStackEntry, question.helpCenterContext.toChatContext())
         },
       )
     }
@@ -109,6 +110,17 @@ fun NavGraphBuilder.helpCenterGraph(
         navigateUp = navigator::navigateUp,
       )
     }
+  }
+}
+
+private fun HelpCenterContext?.toChatContext(): AppDestination.Chat.ChatContext? {
+  return when(this) {
+    HelpCenterContext.PAYMENT -> AppDestination.Chat.ChatContext.PAYMENT
+    HelpCenterContext.CLAIMS -> AppDestination.Chat.ChatContext.CLAIMS
+    HelpCenterContext.COVERAGE -> AppDestination.Chat.ChatContext.COVERAGE
+    HelpCenterContext.INSURANCE -> AppDestination.Chat.ChatContext.INSURANCE
+    HelpCenterContext.OTHER -> AppDestination.Chat.ChatContext.OTHER
+    null -> null
   }
 }
 
