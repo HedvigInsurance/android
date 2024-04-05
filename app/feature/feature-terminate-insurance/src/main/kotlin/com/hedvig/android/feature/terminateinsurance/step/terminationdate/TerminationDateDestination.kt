@@ -101,13 +101,13 @@ private fun TerminationDateScreen(
         .fillMaxWidth()
         .padding(horizontal = 16.dp),
     )
-    Spacer(modifier = Modifier.height(8.dp))
+    Spacer(modifier = Modifier.height(4.dp))
     DateButton(
       datePickerState = uiState.datePickerState,
       modifier = Modifier,
     )
     if (uiState.datePickerState.selectedDateMillis != null) {
-      Spacer(modifier = Modifier.height(8.dp))
+      Spacer(modifier = Modifier.height(4.dp))
       ImportantInfoCheckBox(
         uiState.isCheckBoxChecked,
         onCheckedChange,
@@ -139,7 +139,7 @@ private fun ImportantInfoCheckBox(isChecked: Boolean, onCheckedChange: () -> Uni
       verticalAlignment = Alignment.CenterVertically,
       modifier = Modifier
         .fillMaxWidth()
-        .padding(horizontal = 16.dp, vertical = 10.dp),
+        .padding(horizontal = 16.dp, vertical = 16.dp),
     ) {
       Column(modifier = Modifier.weight(1f)) {
         Text(

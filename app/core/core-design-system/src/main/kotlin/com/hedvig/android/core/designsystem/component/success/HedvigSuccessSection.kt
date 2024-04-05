@@ -21,6 +21,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.material3.typeElement
@@ -36,6 +38,8 @@ fun HedvigSuccessSection(
   subTitle: String? = null,
   contentPadding: PaddingValues = WindowInsets.safeDrawing.asPaddingValues(),
   withDefaultVerticalSpacing: Boolean = true,
+  iconImageVector: ImageVector = Icons.Hedvig.Checkmark,
+  iconModifier: Modifier = Modifier.size(24.dp),
 ) {
   Column(
     horizontalAlignment = Alignment.CenterHorizontally,
@@ -48,10 +52,10 @@ fun HedvigSuccessSection(
       Spacer(Modifier.height(32.dp))
     }
     Icon(
-      imageVector = Icons.Hedvig.Checkmark,
+      imageVector = iconImageVector,
       contentDescription = null,
       tint = MaterialTheme.colorScheme.typeElement,
-      modifier = Modifier.size(24.dp),
+      modifier = iconModifier,
     )
     Spacer(Modifier.height(16.dp))
     Text(
@@ -66,6 +70,9 @@ fun HedvigSuccessSection(
           text = subTitle,
           textAlign = TextAlign.Center,
           modifier = Modifier.fillMaxWidth(),
+          style = MaterialTheme.typography.bodyLarge.copy(
+            lineBreak = LineBreak.Heading,
+          ),
         )
       }
     }
