@@ -2,7 +2,9 @@ package com.hedvig.android.app.navigation
 
 import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -32,6 +34,7 @@ import com.hedvig.android.feature.deleteaccount.navigation.DeleteAccountDestinat
 import com.hedvig.android.feature.deleteaccount.navigation.deleteAccountGraph
 import com.hedvig.android.feature.editcoinsured.navigation.editCoInsuredGraph
 import com.hedvig.android.feature.forever.navigation.foreverGraph
+import com.hedvig.android.feature.help.center.data.QuickLinkDestination
 import com.hedvig.android.feature.help.center.helpCenterGraph
 import com.hedvig.android.feature.help.center.navigation.HelpCenterDestination
 import com.hedvig.android.feature.home.home.navigation.HomeDestination
@@ -43,7 +46,6 @@ import com.hedvig.android.feature.odyssey.navigation.navigateToClaimFlowDestinat
 import com.hedvig.android.feature.odyssey.navigation.terminalClaimFlowStepDestinations
 import com.hedvig.android.feature.payments.navigation.paymentsGraph
 import com.hedvig.android.feature.profile.tab.profileGraph
-import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceFeatureDestination
 import com.hedvig.android.feature.terminateinsurance.navigation.terminateInsuranceGraph
 import com.hedvig.android.feature.travelcertificate.navigation.travelCertificateGraph
 import com.hedvig.android.language.LanguageService
@@ -64,6 +66,7 @@ internal fun HedvigNavHost(
   hedvigAppState: HedvigAppState,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   activityNavigator: ActivityNavigator,
+  finishApp: () -> Unit,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   openUrl: (String) -> Unit,
   imageLoader: ImageLoader,
@@ -75,7 +78,7 @@ internal fun HedvigNavHost(
   LocalConfiguration.current
   val context = LocalContext.current
   val density = LocalDensity.current
-  val navigator: Navigator = rememberNavigator(hedvigAppState.navController)
+  val navigator: Navigator = rememberNavigator(hedvigAppState.navController, finishApp)
 
   val navigateToConnectPayment = {
     when (market) {
@@ -138,7 +141,6 @@ internal fun HedvigNavHost(
           windowSizeClass = hedvigAppState.windowSizeClass,
           navigator = navigator,
           navController = hedvigAppState.navController,
-          imageLoader = imageLoader,
           openChat = { backStackEntry ->
             with(navigator) {
               backStackEntry.navigate(AppDestination.Chat())
@@ -146,6 +148,10 @@ internal fun HedvigNavHost(
           },
           openUrl = openUrl,
           openPlayStore = { activityNavigator.tryOpenPlayStore(context) },
+          hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+          closeTerminationFlow = {
+            hedvigAppState.navController.popBackStack<AppDestination.TerminationFlow>(inclusive = true)
+          },
         )
       },
       navigator = navigator,
@@ -162,12 +168,8 @@ internal fun HedvigNavHost(
       },
       startTerminationFlow = { backStackEntry: NavBackStackEntry, data: CancelInsuranceData ->
         with(navigator) {
-          val destination = TerminateInsuranceFeatureDestination(
-            contractId = data.contractId,
-            insuranceDisplayName = data.contractDisplayName,
-            exposureName = data.contractExposure,
-            contractGroup = data.contractGroup,
-            activeFrom = data.activateFrom,
+          val destination = AppDestination.TerminationFlow(
+            insuranceId = data.contractId,
           )
           backStackEntry.navigate(destination)
         }
@@ -245,11 +247,41 @@ internal fun HedvigNavHost(
     helpCenterGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       navigator = navigator,
-    ) { backStackEntry, chatContext ->
-      with(navigator) {
-        backStackEntry.navigate(AppDestination.Chat(chatContext))
-      }
-    }
+      onNavigateToQuickLink = { backStackEntry, quickLinkDestination ->
+        with(navigator) {
+          when (quickLinkDestination) {
+            is QuickLinkDestination.QuickLinkCoInsuredAddInfo -> {
+              backStackEntry.navigate(AppDestination.CoInsuredAddInfo(quickLinkDestination.contractId))
+            }
+
+            is QuickLinkDestination.QuickLinkCoInsuredAddOrRemove -> {
+              backStackEntry.navigate(AppDestination.CoInsuredAddOrRemove(quickLinkDestination.contractId))
+            }
+
+            QuickLinkDestination.QuickLinkChangeAddress -> {
+              backStackEntry.navigate(AppDestination.ChangeAddress)
+            }
+
+            QuickLinkDestination.QuickLinkConnectPayment -> {
+              backStackEntry.navigate(AppDestination.ConnectPayment)
+            }
+
+            QuickLinkDestination.QuickLinkTermination -> {
+              backStackEntry.navigate(AppDestination.TerminationFlow(null))
+            }
+
+            QuickLinkDestination.QuickLinkTravelCertificate -> {
+              backStackEntry.navigate(AppDestination.TravelCertificate)
+            }
+          }
+        }
+      },
+      openChat = { backStackEntry, chatContext ->
+        with(navigator) {
+          backStackEntry.navigate(AppDestination.Chat(chatContext))
+        }
+      },
+    )
   }
 }
 
@@ -342,7 +374,8 @@ private fun NavGraphBuilder.nestedHomeGraphs(
 }
 
 @Composable
-private fun rememberNavigator(navController: NavController): Navigator {
+private fun rememberNavigator(navController: NavController, finishApp: () -> Unit): Navigator {
+  val updatedFinishApp by rememberUpdatedState(finishApp)
   return remember(navController) {
     object : Navigator {
       override fun NavBackStackEntry.navigate(
@@ -368,7 +401,9 @@ private fun rememberNavigator(navController: NavController): Navigator {
       }
 
       override fun popBackStack() {
-        navController.popBackStack()
+        if (!navController.popBackStack()) {
+          updatedFinishApp()
+        }
       }
     }
   }
