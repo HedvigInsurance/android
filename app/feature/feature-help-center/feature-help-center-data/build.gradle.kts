@@ -24,6 +24,7 @@ dependencies {
   implementation(projects.moleculePublic)
   implementation(projects.uiEmergency)
   implementation(projects.dataTravelCertificatePublic)
+  implementation(projects.dataTermination)
 }
 
 apollo {
