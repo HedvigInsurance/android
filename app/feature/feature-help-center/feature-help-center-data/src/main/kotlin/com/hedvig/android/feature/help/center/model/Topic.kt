@@ -5,7 +5,7 @@ import com.hedvig.android.navigation.core.AppDestination
 import hedvig.resources.R
 import kotlinx.collections.immutable.persistentListOf
 
-internal enum class Topic(
+enum class Topic(
   @StringRes val titleRes: Int,
   val commonQuestionIds: List<Question>,
   val allQuestionIds: List<Question>,
@@ -109,7 +109,7 @@ internal enum class Topic(
   ),
 }
 
-internal val commonTopics = persistentListOf(
+val commonTopics = persistentListOf(
   Topic.PAYMENTS,
   Topic.CLAIMS,
   Topic.INSURANCE,

@@ -4,7 +4,7 @@ import hedvig.resources.R
 import kotlinx.serialization.Serializable
 import octopus.CommonClaimsQuery
 
-internal sealed interface CommonClaim {
+sealed interface CommonClaim {
   val title: String
   val hintTextRes: Int?
 

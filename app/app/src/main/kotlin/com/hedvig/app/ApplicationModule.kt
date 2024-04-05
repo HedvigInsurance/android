@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.os.Build
-import androidx.core.content.ContextCompat.startActivity
 import androidx.work.WorkerParameters
 import coil.ImageLoader
 import coil.decode.GifDecoder
@@ -57,7 +56,8 @@ import com.hedvig.android.feature.connect.payment.trustly.di.connectPaymentTrust
 import com.hedvig.android.feature.deleteaccount.di.deleteAccountModule
 import com.hedvig.android.feature.editcoinsured.di.editCoInsuredModule
 import com.hedvig.android.feature.forever.di.foreverModule
-import com.hedvig.android.feature.help.center.di.helpCenterModule
+import com.hedvig.android.feature.help.center.di.helpCenterDataModule
+import com.hedvig.android.feature.help.center.di.helpCenterUiModule
 import com.hedvig.android.feature.home.di.homeModule
 import com.hedvig.android.feature.insurances.di.insurancesModule
 import com.hedvig.android.feature.login.di.loginModule
@@ -354,7 +354,8 @@ val applicationModule = module {
       fileUploadModule,
       firebaseNotificationModule,
       foreverModule,
-      helpCenterModule,
+      helpCenterDataModule,
+      helpCenterUiModule,
       homeModule,
       insurancesModule,
       languageAuthListenersModule,

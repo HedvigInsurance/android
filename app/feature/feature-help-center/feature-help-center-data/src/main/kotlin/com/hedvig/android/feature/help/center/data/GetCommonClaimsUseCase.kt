@@ -16,7 +16,7 @@ import octopus.CommonClaimsQuery
 import octopus.CommonClaimsQuery.Data.CurrentMember.ActiveContract.CurrentAgreement.ProductVariant.CommonClaimDescription.Layout.Companion.asCommonClaimLayoutEmergency
 import octopus.CommonClaimsQuery.Data.CurrentMember.ActiveContract.CurrentAgreement.ProductVariant.CommonClaimDescription.Layout.Companion.asCommonClaimLayoutTitleAndBulletPoints
 
-internal class GetCommonClaimsUseCase(
+class GetCommonClaimsUseCase(
   private val apolloClient: ApolloClient,
 ) {
   suspend fun invoke(): Either<ErrorMessage, PersistentList<CommonClaim>> = either {

@@ -19,7 +19,7 @@ import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.first
 import octopus.AvailableSelfServiceOnContractsQuery
 
-internal class GetQuickLinksUseCase(
+class GetQuickLinksUseCase(
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,
   private val checkTravelCertificateDestinationAvailabilityUseCase:

@@ -19,13 +19,13 @@ import com.hedvig.android.molecule.public.MoleculePresenterScope
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
-internal sealed interface HelpCenterEvent {
+sealed interface HelpCenterEvent {
   data class OnQuickActionSelected(val quickAction: QuickAction) : HelpCenterEvent
 
   data object OnDismissQuickActionDialog : HelpCenterEvent
 }
 
-internal data class HelpCenterUiState(
+data class HelpCenterUiState(
   val topics: ImmutableList<Topic>,
   val questions: ImmutableList<Question>,
   val quickLinks: ImmutableList<QuickLinkType>,
@@ -38,7 +38,7 @@ internal data class HelpCenterUiState(
   }
 }
 
-internal class HelpCenterPresenter(
+class HelpCenterPresenter(
   private val getCommonClaimsUseCase: GetCommonClaimsUseCase,
   private val getQuickLinksUseCase: GetQuickLinksUseCase,
 ) : MoleculePresenter<HelpCenterEvent, HelpCenterUiState> {
