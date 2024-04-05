@@ -1,6 +1,6 @@
 package com.hedvig.android.data.claimtriaging
 
-import com.hedvig.android.navigation.compose.typed.SerializableImmutableList
+import com.hedvig.android.core.uidata.SerializableImmutableList
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.serialization.Serializable

@@ -3,6 +3,7 @@ package com.hedvig.android.feature.claimtriaging
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
+import com.hedvig.android.core.uidata.SerializableImmutableList
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimtriaging.ClaimGroup
 import com.hedvig.android.data.claimtriaging.EntryPoint
@@ -14,16 +15,14 @@ import com.hedvig.android.feature.claimtriaging.claimentrypoints.ClaimEntryPoint
 import com.hedvig.android.feature.claimtriaging.claimentrypoints.ClaimEntryPointsViewModel
 import com.hedvig.android.feature.claimtriaging.claimgroups.ClaimGroupsDestination
 import com.hedvig.android.feature.claimtriaging.claimgroups.ClaimGroupsViewModel
-import com.hedvig.android.navigation.compose.typed.SerializableImmutableList
+import com.hedvig.android.navigation.compose.typed.composable
 import com.hedvig.android.navigation.core.Navigator
-import com.kiwi.navigationcompose.typed.Destination
-import com.kiwi.navigationcompose.typed.composable
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-sealed interface ClaimTriagingDestination : Destination {
+sealed interface ClaimTriagingDestination {
   @Serializable
   object ClaimGroups : ClaimTriagingDestination
 
@@ -63,8 +62,8 @@ fun NavGraphBuilder.claimTriagingDestinations(
       windowSizeClass = windowSizeClass,
     )
   }
-  composable<ClaimTriagingDestination.ClaimEntryPoints> { backStackEntry ->
-    val entryPoints: ImmutableList<EntryPoint> = this.entryPoints
+  composable<ClaimTriagingDestination.ClaimEntryPoints> { backStackEntry, destination ->
+    val entryPoints: ImmutableList<EntryPoint> = destination.entryPoints
     val viewModel: ClaimEntryPointsViewModel = koinViewModel { parametersOf(entryPoints) }
     ClaimEntryPointsDestination(
       viewModel = viewModel,
@@ -82,9 +81,9 @@ fun NavGraphBuilder.claimTriagingDestinations(
       windowSizeClass = windowSizeClass,
     )
   }
-  composable<ClaimTriagingDestination.ClaimEntryPointOptions> { backStackEntry ->
-    val entryPointId: EntryPointId = this.entryPointId
-    val entryPointOptions: ImmutableList<EntryPointOption> = this.entryPointOptions
+  composable<ClaimTriagingDestination.ClaimEntryPointOptions> { backStackEntry, destination ->
+    val entryPointId: EntryPointId = destination.entryPointId
+    val entryPointOptions: ImmutableList<EntryPointOption> = destination.entryPointOptions
     val viewModel: ClaimEntryPointOptionsViewModel = koinViewModel { parametersOf(entryPointId, entryPointOptions) }
     ClaimEntryPointOptionsDestination(
       viewModel = viewModel,

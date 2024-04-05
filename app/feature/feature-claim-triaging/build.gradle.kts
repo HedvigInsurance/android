@@ -1,8 +1,8 @@
 plugins {
-  id("hedvig.android.feature")
   id("hedvig.android.ktlint")
   id("hedvig.android.library")
   id("hedvig.android.library.compose")
+  id("hedvig.android.feature")
   alias(libs.plugins.serialization)
   alias(libs.plugins.squareSortDependencies)
 }
@@ -22,9 +22,9 @@ dependencies {
   implementation(projects.coreDesignSystem)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
+  implementation(projects.coreUiData)
   implementation(projects.dataClaimFlow)
   implementation(projects.dataClaimTriaging)
-  implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
   implementation(libs.androidx.compose.material3.windowSizeClass)
 }

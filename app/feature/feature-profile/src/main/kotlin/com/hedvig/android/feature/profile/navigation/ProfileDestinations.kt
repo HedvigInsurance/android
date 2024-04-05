@@ -1,18 +1,18 @@
 package com.hedvig.android.feature.profile.navigation
 
-import com.kiwi.navigationcompose.typed.Destination
-import com.kiwi.navigationcompose.typed.createRoutePattern
+import androidx.navigation.serialization.generateRouteWithArgs
+import kotlin.reflect.KClass
 import kotlinx.serialization.Serializable
 
 sealed interface ProfileDestination {
   @Serializable
-  data object Graph : ProfileDestination, Destination
+  data object Graph : ProfileDestination
 
   @Serializable
-  data object Profile : ProfileDestination, Destination
+  data object Profile : ProfileDestination
 }
 
-internal sealed interface ProfileDestinations : Destination {
+internal sealed interface ProfileDestinations {
   @Serializable
   data object Eurobonus : ProfileDestinations
 
@@ -34,6 +34,6 @@ internal sealed interface SettingsDestinations {
   data object Settings : ProfileDestinations
 }
 
-val profileBottomNavPermittedDestinations: List<String> = listOf(
-  createRoutePattern<ProfileDestinations.Eurobonus>(),
+val profileBottomNavPermittedDestinations: List<KClass<*>> = listOf(
+  ProfileDestinations.Eurobonus::class,
 )

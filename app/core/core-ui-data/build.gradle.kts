@@ -8,6 +8,7 @@ plugins {
 
 dependencies {
   implementation(libs.androidx.compose.runtime)
+  implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.coreResources)

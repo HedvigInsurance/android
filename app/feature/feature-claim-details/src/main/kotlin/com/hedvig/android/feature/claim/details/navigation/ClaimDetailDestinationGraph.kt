@@ -1,21 +1,26 @@
 package com.hedvig.android.feature.claim.details.navigation
 
 import android.net.Uri
+import android.os.Bundle
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.CollectionNavType
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.navigation
+import androidx.navigation.toRoute
+import kotlin.collections.ArrayList
 import coil.ImageLoader
 import com.hedvig.android.core.common.android.sharePDF
 import com.hedvig.android.feature.claim.details.ui.AddFilesDestination
 import com.hedvig.android.feature.claim.details.ui.AddFilesViewModel
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailsDestination
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailsViewModel
+import com.hedvig.android.navigation.compose.typed.composable
 import com.hedvig.android.navigation.core.AppDestination
-import com.kiwi.navigationcompose.typed.composable
-import com.kiwi.navigationcompose.typed.createRoutePattern
-import com.kiwi.navigationcompose.typed.navigate
-import com.kiwi.navigationcompose.typed.navigation
+import kotlin.reflect.KType
+import kotlin.reflect.typeOf
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -29,10 +34,12 @@ fun NavGraphBuilder.claimDetailsGraph(
   applicationId: String,
 ) {
   navigation<AppDestination.ClaimDetails>(
-    startDestination = createRoutePattern<ClaimDetailDestinations.ClaimOverviewDestination>(),
+    startDestination = ClaimDetailDestinations.ClaimOverviewDestination::class,
   ) {
     composable<ClaimDetailDestinations.ClaimOverviewDestination> { backStackEntry ->
-      val viewModel: ClaimDetailsViewModel = koinViewModel { parametersOf(claimId) }
+      val viewModel: ClaimDetailsViewModel = koinViewModel {
+        parametersOf(backStackEntry.toRoute<ClaimDetailDestinations.ClaimOverviewDestination>().claimId)
+      }
       val context = LocalContext.current
       ClaimDetailsDestination(
         viewModel = viewModel,
@@ -54,8 +61,12 @@ fun NavGraphBuilder.claimDetailsGraph(
         },
       )
     }
-    composable<ClaimDetailDestinations.AddFilesDestination> {
-      val viewModel: AddFilesViewModel = koinViewModel { parametersOf(targetUploadUrl, initialFilesUri) }
+    composable<ClaimDetailDestinations.AddFilesDestination>(
+      typeMap = mapOf<KType, @JvmSuppressWildcards NavType<*>>(Pair(typeOf<ArrayList<String>>(), StringArrayListType)),
+    ) { _, destination ->
+      val viewModel: AddFilesViewModel = koinViewModel {
+        parametersOf(destination.targetUploadUrl, destination.initialFilesUri)
+      }
       AddFilesDestination(
         viewModel = viewModel,
         navigateUp = navigateUp,
@@ -65,3 +76,50 @@ fun NavGraphBuilder.claimDetailsGraph(
     }
   }
 }
+
+public val StringArrayListType: NavType<ArrayList<String>?> = object : CollectionNavType<ArrayList<String>?>(false) {
+  override val name: String
+    get() = "stringarraylist[]"
+
+  override fun put(bundle: Bundle, key: String, value: ArrayList<String>?) {
+    bundle.putStringArrayList(key, value)
+  }
+
+  override fun get(bundle: Bundle, key: String): ArrayList<String>? {
+    return bundle.getStringArrayList(key)
+  }
+
+  override fun parseValue(value: String): ArrayList<String>? {
+    return arrayListOf(value)
+  }
+
+  override fun parseValue(value: String, previousValue: ArrayList<String>?): ArrayList<String>? {
+    return previousValue?.toMutableList()?.plus(value)?.let { ArrayList(it) } ?: parseValue(value)
+  }
+
+  override fun valueEquals(value: ArrayList<String>?, other: ArrayList<String>?): Boolean {
+    return value?.toTypedArray().contentDeepEquals(other?.toTypedArray())
+  }
+
+  override fun serializeAsValues(value: ArrayList<String>?): List<String> {
+    return value?.toList() ?: emptyList()
+  }
+}
+
+//public val StringArrayListType: NavType<ArrayList<String>?> = object : CollectionNavType<ArrayList<String>?>(false) {
+//  override fun serializeAsValues(value: ArrayList<String>?): List<String> {
+//    TODO("Not yet implemented")
+//  }
+//
+//  override fun get(bundle: Bundle, key: String): ArrayList<String>? {
+//    TODO("Not yet implemented")
+//  }
+//
+//  override fun parseValue(value: String): ArrayList<String>? {
+//    TODO("Not yet implemented")
+//  }
+//
+//  override fun put(bundle: Bundle, key: String, value: ArrayList<String>?) {
+//    TODO("Not yet implemented")
+//  }
+//}

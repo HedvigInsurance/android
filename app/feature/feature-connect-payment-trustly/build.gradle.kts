@@ -1,8 +1,8 @@
 plugins {
-  id("hedvig.android.feature")
   id("hedvig.android.ktlint")
   id("hedvig.android.library")
   id("hedvig.android.library.compose")
+  id("hedvig.android.feature")
   alias(libs.plugins.apollo)
   alias(libs.plugins.squareSortDependencies)
 }
@@ -20,7 +20,6 @@ dependencies {
   implementation(libs.apollo.api)
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
-  implementation(libs.kiwi.navigationCompose)
   implementation(libs.koin.compose)
   implementation(libs.koin.core)
   implementation(projects.apolloCore)

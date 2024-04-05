@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalSafeArgsApi::class)
+
 package com.hedvig.android.app.navigation
 
 import android.content.Context
@@ -9,6 +11,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.lifecycle.Lifecycle
+import androidx.navigation.ExperimentalSafeArgsApi
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -52,12 +55,8 @@ import com.hedvig.android.navigation.activity.ActivityNavigator
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
+import com.hedvig.android.navigation.core.RootGraphDestination
 import com.hedvig.app.BuildConfig
-import com.kiwi.navigationcompose.typed.Destination
-import com.kiwi.navigationcompose.typed.createRoutePattern
-import com.kiwi.navigationcompose.typed.navigate
-import com.kiwi.navigationcompose.typed.popBackStack
-import com.kiwi.navigationcompose.typed.popUpTo
 
 @Composable
 internal fun HedvigNavHost(
@@ -88,8 +87,8 @@ internal fun HedvigNavHost(
 
   NavHost(
     navController = hedvigAppState.navController,
-    startDestination = createRoutePattern<HomeDestination.Graph>(),
-    route = "root",
+    startDestination = HomeDestination.Graph,
+    route = RootGraphDestination::class,
     modifier = modifier,
     enterTransition = { MotionDefaults.sharedXAxisEnter(density) },
     exitTransition = { MotionDefaults.sharedXAxisExit(density) },
@@ -230,7 +229,7 @@ internal fun HedvigNavHost(
         navigator.navigateUnsafe(
           AppDestination.ConnectPaymentAdyen,
           navOptions {
-            popUpTo(createRoutePattern<AppDestination.ConnectPayment>()) {
+            popUpTo<AppDestination.ConnectPayment> {
               inclusive = true
             }
           },
@@ -345,8 +344,8 @@ private fun NavGraphBuilder.nestedHomeGraphs(
 private fun rememberNavigator(navController: NavController): Navigator {
   return remember(navController) {
     object : Navigator {
-      override fun NavBackStackEntry.navigate(
-        destination: Destination,
+      override fun <T : Any> NavBackStackEntry.navigate(
+        destination: T,
         navOptions: NavOptions?,
         navigatorExtras: androidx.navigation.Navigator.Extras?,
       ) {
@@ -355,8 +354,8 @@ private fun rememberNavigator(navController: NavController): Navigator {
         }
       }
 
-      override fun navigateUnsafe(
-        destination: Destination,
+      override fun <T : Any> navigateUnsafe(
+        destination: T,
         navOptions: NavOptions?,
         navigatorExtras: androidx.navigation.Navigator.Extras?,
       ) {

@@ -3,13 +3,12 @@ package com.hedvig.android.feature.home.home.navigation
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
+import androidx.navigation.navigation
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.feature.home.home.ui.HomeDestination
 import com.hedvig.android.feature.home.home.ui.HomeViewModel
+import com.hedvig.android.navigation.compose.typed.composable
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import com.kiwi.navigationcompose.typed.composable
-import com.kiwi.navigationcompose.typed.createRoutePattern
-import com.kiwi.navigationcompose.typed.navigation
 import org.koin.androidx.compose.koinViewModel
 
 fun NavGraphBuilder.homeGraph(
@@ -25,7 +24,7 @@ fun NavGraphBuilder.homeGraph(
   openUrl: (String) -> Unit,
 ) {
   navigation<HomeDestination.Graph>(
-    startDestination = createRoutePattern<HomeDestination.Home>(),
+    startDestination = HomeDestination.Home::class,
   ) {
     composable<HomeDestination.Home>(
       deepLinks = listOf(

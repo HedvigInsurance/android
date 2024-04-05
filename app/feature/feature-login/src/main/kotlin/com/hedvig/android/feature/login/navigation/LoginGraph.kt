@@ -2,6 +2,7 @@ package com.hedvig.android.feature.login.navigation
 
 import android.net.Uri
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.navigation
 import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.feature.login.marketing.MarketingDestination
 import com.hedvig.android.feature.login.marketing.MarketingViewModel
@@ -11,11 +12,9 @@ import com.hedvig.android.language.Language
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.Market
+import com.hedvig.android.navigation.compose.typed.composable
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.Navigator
-import com.kiwi.navigationcompose.typed.composable
-import com.kiwi.navigationcompose.typed.createRoutePattern
-import com.kiwi.navigationcompose.typed.navigation
 import org.koin.androidx.compose.koinViewModel
 
 fun NavGraphBuilder.loginGraph(
@@ -28,8 +27,8 @@ fun NavGraphBuilder.loginGraph(
   startNOLogin: () -> Unit,
   startOtpLogin: () -> Unit,
 ) {
-  navigation<AppDestination.Login>(
-    startDestination = createRoutePattern<LoginDestination.Marketing>(),
+  navigation<LoginGraph>(
+    startDestination = LoginDestination.Marketing::class,
   ) {
     composable<LoginDestination.Marketing> { backStackEntry ->
       val marketingViewModel: MarketingViewModel = koinViewModel()
@@ -54,7 +53,7 @@ fun NavGraphBuilder.loginGraph(
         },
       )
     }
-    composable<LoginDestination.SwedishLogin> {
+    composable<LoginDestination.SwedishLogin> { _ ->
       val swedishLoginViewModel: SwedishLoginViewModel = koinViewModel()
       SwedishLoginDestination(
         swedishLoginViewModel = swedishLoginViewModel,

@@ -1,7 +1,5 @@
 package com.hedvig.android.feature.help.center.model
 
-import com.kiwi.navigationcompose.typed.Destination
-
 sealed interface QuickAction {
   val titleRes: Int
   val hintTextRes: Int
@@ -16,6 +14,6 @@ sealed interface QuickAction {
     override val titleRes: Int,
     val displayName: String?,
     override val hintTextRes: Int,
-    val destination: Destination,
+    val destination: Any,
   ) : QuickAction
 }

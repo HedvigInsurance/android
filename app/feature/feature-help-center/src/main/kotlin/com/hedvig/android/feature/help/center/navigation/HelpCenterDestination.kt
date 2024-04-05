@@ -1,12 +1,11 @@
 package com.hedvig.android.feature.help.center.navigation
 
-import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object HelpCenterDestination : Destination
+data object HelpCenterDestination
 
-internal sealed interface HelpCenterDestinations : Destination {
+internal sealed interface HelpCenterDestinations {
   @Serializable
   data object HelpCenter : HelpCenterDestinations
 

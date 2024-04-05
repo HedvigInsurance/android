@@ -1,8 +1,8 @@
 plugins {
-  id("hedvig.android.feature")
   id("hedvig.android.ktlint")
   id("hedvig.android.library")
   id("hedvig.android.library.compose")
+  id("hedvig.android.feature")
   alias(libs.plugins.serialization)
   alias(libs.plugins.squareSortDependencies)
 }
@@ -15,7 +15,6 @@ dependencies {
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.androidx.lifecycle.viewModel)
   implementation(libs.androidx.navigation.compose)
-  implementation(libs.kiwi.navigationCompose)
   implementation(libs.koin.compose)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.core)

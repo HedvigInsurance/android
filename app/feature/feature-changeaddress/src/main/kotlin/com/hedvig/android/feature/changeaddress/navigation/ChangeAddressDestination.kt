@@ -1,10 +1,9 @@
 package com.hedvig.android.feature.changeaddress.navigation
 
-import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
-internal sealed interface ChangeAddressDestination : Destination {
+internal sealed interface ChangeAddressDestination {
   @Serializable
   data object SelectHousingType : ChangeAddressDestination
 

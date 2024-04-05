@@ -3,18 +3,17 @@ package com.hedvig.android.feature.payments.navigation
 import com.hedvig.android.feature.payments.data.Discount
 import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.PaymentOverview
-import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.serialization.Serializable
 
 sealed interface PaymentsDestination {
   @Serializable
-  data object Graph : PaymentsDestination, Destination
+  data object Graph : PaymentsDestination
 
   @Serializable
-  data object Payments : PaymentsDestination, Destination
+  data object Payments : PaymentsDestination
 }
 
-internal sealed interface PaymentsDestinations : Destination {
+internal sealed interface PaymentsDestinations {
   @Serializable
   data class Details(
     val selectedMemberCharge: MemberCharge,

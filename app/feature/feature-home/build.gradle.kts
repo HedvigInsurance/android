@@ -1,8 +1,8 @@
 plugins {
-  id("hedvig.android.feature")
   id("hedvig.android.ktlint")
   id("hedvig.android.library")
   id("hedvig.android.library.compose")
+  id("hedvig.android.feature")
   id("kotlin-parcelize")
   alias(libs.plugins.apollo)
   alias(libs.plugins.serialization)
@@ -58,7 +58,6 @@ dependencies {
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
   implementation(projects.navigationActivity)
-  implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
   implementation(projects.notificationPermission)
   implementation(projects.pullrefresh)

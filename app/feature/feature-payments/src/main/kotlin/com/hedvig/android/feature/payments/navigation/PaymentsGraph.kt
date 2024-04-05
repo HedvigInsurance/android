@@ -2,6 +2,7 @@ package com.hedvig.android.feature.payments.navigation
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
+import androidx.navigation.navigation
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.PaymentOverview
@@ -11,11 +12,9 @@ import com.hedvig.android.feature.payments.discounts.DiscountsViewModel
 import com.hedvig.android.feature.payments.history.PaymentHistoryDestination
 import com.hedvig.android.feature.payments.payments.PaymentsDestination
 import com.hedvig.android.feature.payments.payments.PaymentsViewModel
+import com.hedvig.android.navigation.compose.typed.composable
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
-import com.kiwi.navigationcompose.typed.composable
-import com.kiwi.navigationcompose.typed.createRoutePattern
-import com.kiwi.navigationcompose.typed.navigation
 import org.koin.androidx.compose.koinViewModel
 
 fun NavGraphBuilder.paymentsGraph(
@@ -24,7 +23,7 @@ fun NavGraphBuilder.paymentsGraph(
   navigateToConnectPayment: () -> Unit,
 ) {
   navigation<PaymentsDestination.Graph>(
-    startDestination = createRoutePattern<PaymentsDestination.Payments>(),
+    startDestination = PaymentsDestination.Payments::class,
   ) {
     composable<PaymentsDestination.Payments>(
       deepLinks = listOf(
@@ -55,16 +54,16 @@ fun NavGraphBuilder.paymentsGraph(
         },
       )
     }
-    composable<PaymentsDestinations.Details> { backStackEntry ->
+    composable<PaymentsDestinations.Details> { backStackEntry, destination ->
       PaymentDetailsDestination(
-        memberCharge = selectedMemberCharge,
-        paymentOverview = paymentOverview,
+        memberCharge = destination.selectedMemberCharge,
+        paymentOverview = destination.paymentOverview,
         onFailedChargeClick = { memberCharge: MemberCharge ->
           with(navigator) {
             backStackEntry.navigate(
               PaymentsDestinations.Details(
                 selectedMemberCharge = memberCharge,
-                paymentOverview = paymentOverview,
+                paymentOverview = destination.paymentOverview,
               ),
             )
           }
@@ -72,15 +71,15 @@ fun NavGraphBuilder.paymentsGraph(
         navigateUp = navigator::navigateUp,
       )
     }
-    composable<PaymentsDestinations.History> { backStackEntry ->
+    composable<PaymentsDestinations.History> { backStackEntry, destination ->
       PaymentHistoryDestination(
-        pastCharges = paymentOverview.pastCharges,
+        pastCharges = destination.paymentOverview.pastCharges,
         onChargeClicked = { memberCharge: MemberCharge ->
           with(navigator) {
             backStackEntry.navigate(
               PaymentsDestinations.Details(
                 selectedMemberCharge = memberCharge,
-                paymentOverview,
+                paymentOverview = destination.paymentOverview,
               ),
             )
           }
@@ -88,7 +87,7 @@ fun NavGraphBuilder.paymentsGraph(
         navigateUp = navigator::navigateUp,
       )
     }
-    composable<PaymentsDestinations.Discounts> {
+    composable<PaymentsDestinations.Discounts> { _ ->
       val viewModel: DiscountsViewModel = koinViewModel()
       DiscountsDestination(
         viewModel = viewModel,

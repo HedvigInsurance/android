@@ -9,7 +9,7 @@ import com.hedvig.android.core.fileupload.UploadFileUseCase
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.data.claimflow.ClaimFlowRepository
 import com.hedvig.android.data.claimflow.ClaimFlowStep
-import com.hedvig.android.navigation.compose.typed.SerializableImmutableList
+import com.hedvig.android.core.uidata.SerializableImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

@@ -1,8 +1,8 @@
 plugins {
-  id("hedvig.android.feature")
   id("hedvig.android.ktlint")
   id("hedvig.android.library")
   id("hedvig.android.library.compose")
+  id("hedvig.android.feature")
   alias(libs.plugins.apollo)
   alias(libs.plugins.serialization)
   alias(libs.plugins.squareSortDependencies)
@@ -41,7 +41,6 @@ dependencies {
   implementation(projects.dataTravelCertificatePublic)
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
-  implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
   implementation(projects.coreAppReview)
   

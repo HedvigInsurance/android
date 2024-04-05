@@ -33,9 +33,7 @@ import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.notification.badge.data.tab.BottomNavTab
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
 import com.hedvig.android.theme.Theme
-import com.kiwi.navigationcompose.typed.Destination
-import com.kiwi.navigationcompose.typed.createRoutePattern
-import com.kiwi.navigationcompose.typed.navigate
+import kotlin.reflect.KClass
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.PersistentSet
@@ -49,6 +47,8 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.serialization.InternalSerializationApi
+import kotlinx.serialization.serializer
 
 @OptIn(ExperimentalTrackingApi::class)
 @Composable
@@ -243,48 +243,49 @@ private fun TopLevelDestinationNavigationSideEffect(
 }
 
 private fun NavDestination?.toTopLevelAppDestination(): TopLevelDestination? {
-  return when (this?.route) {
-    createRoutePattern<HomeDestination.Home>() -> TopLevelDestination.Home
-    createRoutePattern<InsurancesDestination.Insurances>() -> TopLevelDestination.Insurances
-    createRoutePattern<ForeverDestination.Forever>() -> TopLevelDestination.Forever
-    createRoutePattern<PaymentsDestination.Payments>() -> TopLevelDestination.Payments
-    createRoutePattern<ProfileDestination.Profile>() -> TopLevelDestination.Profile
+  return when (this?.id) {
+    serializer<HomeDestination.Home>().hashCode() -> TopLevelDestination.Home
+    serializer<InsurancesDestination.Insurances>().hashCode() -> TopLevelDestination.Insurances
+    serializer<ForeverDestination.Forever>().hashCode() -> TopLevelDestination.Forever
+    serializer<PaymentsDestination.Payments>().hashCode() -> TopLevelDestination.Payments
+    serializer<ProfileDestination.Profile>().hashCode() -> TopLevelDestination.Profile
     else -> null
   }
 }
 
+@OptIn(InternalSerializationApi::class)
 private fun NavDestination?.isInListOfNonTopLevelNavBarPermittedDestinations(): Boolean {
-  return this?.route in bottomNavPermittedDestinations
+  return this?.id in bottomNavPermittedDestinations.map { it.serializer().hashCode() }
 }
 
 /**
  * Special routes, which despite not being top level should still show the navigation bars.
  */
-private val bottomNavPermittedDestinations: List<String> = buildList {
+private val bottomNavPermittedDestinations: List<KClass<*>> = buildList {
   addAll(profileBottomNavPermittedDestinations)
   addAll(insurancesBottomNavPermittedDestinations)
 }
 
 private sealed interface TopLevelDestination {
-  val destination: Destination
+  val destination: Any
 
   object Home : TopLevelDestination {
-    override val destination: Destination = HomeDestination.Home
+    override val destination = HomeDestination.Home
   }
 
   object Insurances : TopLevelDestination {
-    override val destination: Destination = InsurancesDestination.Insurances
+    override val destination = InsurancesDestination.Insurances
   }
 
   object Forever : TopLevelDestination {
-    override val destination: Destination = ForeverDestination.Forever
+    override val destination = ForeverDestination.Forever
   }
 
   object Payments : TopLevelDestination {
-    override val destination: Destination = PaymentsDestination.Payments
+    override val destination = PaymentsDestination.Payments
   }
 
   object Profile : TopLevelDestination {
-    override val destination: Destination = ProfileDestination.Profile
+    override val destination = ProfileDestination.Profile
   }
 }

@@ -1,8 +1,8 @@
 plugins {
-  id("hedvig.android.feature")
   id("hedvig.android.ktlint")
   id("hedvig.android.library")
   id("hedvig.android.library.compose")
+  id("hedvig.android.feature")
   alias(libs.plugins.serialization)
   alias(libs.plugins.squareSortDependencies)
 }
@@ -42,7 +42,6 @@ dependencies {
   implementation(projects.dataClaimFlow)
   implementation(projects.dataClaimTriaging)
   implementation(projects.languageCore)
-  implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
   implementation(projects.notificationPermission)
   implementation(projects.uiEmergency)

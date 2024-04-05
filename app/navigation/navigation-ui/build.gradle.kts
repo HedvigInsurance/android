@@ -6,7 +6,6 @@ plugins {
 
 dependencies {
   implementation(libs.androidx.compose.materialIconsCore)
-  implementation(libs.kiwi.navigationCompose)
   implementation(projects.coreIcons)
   implementation(projects.coreResources)
   implementation(projects.navigationCore)

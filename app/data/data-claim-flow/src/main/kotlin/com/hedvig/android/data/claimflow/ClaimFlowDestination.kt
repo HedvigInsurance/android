@@ -3,6 +3,7 @@ package com.hedvig.android.data.claimflow
 import android.content.res.Resources
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Immutable
+import com.hedvig.android.core.uidata.SerializableImmutableList
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.core.uidata.UiNullableMoney
@@ -10,14 +11,12 @@ import com.hedvig.android.data.claimflow.ItemBrand.Unknown.displayName
 import com.hedvig.android.data.claimflow.ItemModel.Unknown.displayName
 import com.hedvig.android.data.claimflow.model.AudioUrl
 import com.hedvig.android.data.claimflow.model.FlowId
-import com.hedvig.android.navigation.compose.typed.SerializableImmutableList
 import com.hedvig.audio.player.data.SignedAudioUrl
-import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 import octopus.type.CurrencyCode
 
-sealed interface ClaimFlowDestination : Destination {
+sealed interface ClaimFlowDestination {
   @Serializable
   object HonestyPledge : ClaimFlowDestination
 

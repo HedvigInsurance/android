@@ -9,5 +9,5 @@ dependencies {
   implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.apolloOctopusPublic)
-  implementation(projects.navigationComposeTyped)
+  implementation(projects.coreUiData)
 }

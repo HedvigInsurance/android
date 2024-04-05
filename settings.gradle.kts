@@ -23,7 +23,7 @@ dependencyResolutionManagement {
       credentials(PasswordCredentials::class)
     }
     maven("https://jitpack.io")
-    maven(url = "https://androidx.dev/snapshots/builds/11496936/artifacts/repository")
+    maven(url = "https://androidx.dev/snapshots/builds/11672781/artifacts/repository")
   }
 }
 
@@ -54,4 +54,3 @@ rootProject.projectDir
 include("design-showcase")
 project(":design-showcase").projectDir = rootProject.projectDir.resolve("micro-apps").resolve("design-showcase")
 include("hedvig-lint")
-

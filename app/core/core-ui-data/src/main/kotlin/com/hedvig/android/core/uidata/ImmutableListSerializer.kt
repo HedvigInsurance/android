@@ -1,4 +1,4 @@
-package com.hedvig.android.navigation.compose.typed
+package com.hedvig.android.core.uidata
 
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList

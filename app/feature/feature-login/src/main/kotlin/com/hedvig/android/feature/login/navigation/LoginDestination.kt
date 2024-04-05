@@ -1,9 +1,13 @@
 package com.hedvig.android.feature.login.navigation
 
-import com.kiwi.navigationcompose.typed.Destination
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-internal sealed interface LoginDestination : Destination {
+@Serializable
+@SerialName("Login")
+data object LoginGraph
+
+internal sealed interface LoginDestination {
   @Serializable
   object Marketing : LoginDestination
 

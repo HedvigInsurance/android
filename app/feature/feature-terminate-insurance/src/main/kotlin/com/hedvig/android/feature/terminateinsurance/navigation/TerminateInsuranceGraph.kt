@@ -2,12 +2,11 @@ package com.hedvig.android.feature.terminateinsurance.navigation
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navOptions
+import androidx.navigation.navigation
 import coil.ImageLoader
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.terminateinsurance.InsuranceId
@@ -22,13 +21,9 @@ import com.hedvig.android.feature.terminateinsurance.step.terminationreview.Term
 import com.hedvig.android.feature.terminateinsurance.step.terminationreview.TerminationReviewViewModel
 import com.hedvig.android.feature.terminateinsurance.step.terminationsuccess.TerminationSuccessDestination
 import com.hedvig.android.feature.terminateinsurance.step.unknown.UnknownScreenDestination
+import com.hedvig.android.navigation.compose.typed.composable
+import com.hedvig.android.navigation.compose.typed.getRouteFromBackStack
 import com.hedvig.android.navigation.core.Navigator
-import com.kiwi.navigationcompose.typed.composable
-import com.kiwi.navigationcompose.typed.createRoutePattern
-import com.kiwi.navigationcompose.typed.decodeArguments
-import com.kiwi.navigationcompose.typed.navigate
-import com.kiwi.navigationcompose.typed.navigation
-import com.kiwi.navigationcompose.typed.popUpTo
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -50,26 +45,26 @@ fun NavGraphBuilder.terminateInsuranceGraph(
   openUrl: (String) -> Unit,
   openPlayStore: () -> Unit,
 ) {
-  composable<TerminateInsuranceDestination.TerminationSuccess> {
+  composable<TerminateInsuranceDestination.TerminationSuccess> { _, destination ->
     TerminationSuccessDestination(
-      terminationDate = terminationDate,
-      insuranceDisplayName = insuranceDisplayName,
-      exposureName = exposureName,
+      terminationDate = destination.terminationDate,
+      insuranceDisplayName = destination.insuranceDisplayName,
+      exposureName = destination.exposureName,
       imageLoader = imageLoader,
-      onSurveyClicked = { openUrl(surveyUrl) },
+      onSurveyClicked = { openUrl(destination.surveyUrl) },
       navigateUp = navigator::navigateUp,
     )
   }
-  composable<TerminateInsuranceDestination.TerminationFailure> { backStackEntry ->
+  composable<TerminateInsuranceDestination.TerminationFailure> { backStackEntry, destination ->
     TerminationFailureDestination(
       windowSizeClass = windowSizeClass,
-      errorMessage = ErrorMessage(message),
+      errorMessage = ErrorMessage(destination.message),
       openChat = { openChat(backStackEntry) },
       navigateUp = navigator::navigateUp,
       navigateBack = navigator::popBackStack,
     )
   }
-  composable<TerminateInsuranceDestination.UnknownScreen> {
+  composable<TerminateInsuranceDestination.UnknownScreen> { _ ->
     UnknownScreenDestination(
       windowSizeClass = windowSizeClass,
       openPlayStore = openPlayStore,
@@ -78,10 +73,10 @@ fun NavGraphBuilder.terminateInsuranceGraph(
     )
   }
   navigation<TerminateInsuranceFeatureDestination>(
-    startDestination = createRoutePattern<TerminateInsuranceDestination.StartStep>(),
+    startDestination = TerminateInsuranceDestination.StartStep::class,
   ) {
     composable<TerminateInsuranceDestination.StartStep> { backStackEntry ->
-      val terminateInsurance = getTerminateInsuranceDataFromParentBackstack(navController, backStackEntry)
+      val terminateInsurance = navController.getRouteFromBackStack<TerminateInsuranceFeatureDestination>(backStackEntry)
       val insuranceId = InsuranceId(terminateInsurance.contractId)
       val viewModel: TerminationStartStepViewModel = koinViewModel { parametersOf(insuranceId) }
       TerminationStartDestination(
@@ -102,8 +97,10 @@ fun NavGraphBuilder.terminateInsuranceGraph(
         },
       )
     }
-    composable<TerminateInsuranceDestination.TerminationDate> {
-      val viewModel: TerminationDateViewModel = koinViewModel { parametersOf(minDate, maxDate) }
+    composable<TerminateInsuranceDestination.TerminationDate> { _, destination ->
+      val viewModel: TerminationDateViewModel = koinViewModel {
+        parametersOf(destination.minDate, destination.maxDate)
+      }
       TerminationDateDestination(
         viewModel = viewModel,
         windowSizeClass = windowSizeClass,
@@ -118,7 +115,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       )
     }
     composable<TerminateInsuranceDestination.InsuranceDeletion> { backStackEntry ->
-      val terminateInsurance = getTerminateInsuranceDataFromParentBackstack(navController, backStackEntry)
+      val terminateInsurance = navController.getRouteFromBackStack<TerminateInsuranceFeatureDestination>(backStackEntry)
 
       InsuranceDeletionDestination(
         activeFrom = terminateInsurance.activeFrom,
@@ -132,9 +129,11 @@ fun NavGraphBuilder.terminateInsuranceGraph(
         navigateUp = navigator::navigateUp,
       )
     }
-    composable<TerminateInsuranceDestination.TerminationReview> { backStackEntry ->
-      val terminateInsurance = getTerminateInsuranceDataFromParentBackstack(navController, backStackEntry)
-      val viewModel: TerminationReviewViewModel = koinViewModel { parametersOf(terminationType, terminateInsurance) }
+    composable<TerminateInsuranceDestination.TerminationReview> { backStackEntry, destination ->
+      val terminateInsurance = navController.getRouteFromBackStack<TerminateInsuranceFeatureDestination>(backStackEntry)
+      val viewModel: TerminationReviewViewModel = koinViewModel {
+        parametersOf(destination.terminationType, terminateInsurance)
+      }
       TerminationReviewDestination(
         viewModel = viewModel,
         imageLoader = imageLoader,
@@ -152,19 +151,6 @@ fun NavGraphBuilder.terminateInsuranceGraph(
         navigateBack = navigator::popBackStack,
       )
     }
-  }
-}
-
-@Composable
-private fun getTerminateInsuranceDataFromParentBackstack(
-  navController: NavController,
-  backStackEntry: NavBackStackEntry,
-): TerminateInsuranceFeatureDestination {
-  return remember(navController, backStackEntry) {
-    val terminateInsuranceEntry = navController.getBackStackEntry(
-      createRoutePattern<TerminateInsuranceFeatureDestination>(),
-    )
-    decodeArguments(TerminateInsuranceFeatureDestination.serializer(), terminateInsuranceEntry)
   }
 }
 

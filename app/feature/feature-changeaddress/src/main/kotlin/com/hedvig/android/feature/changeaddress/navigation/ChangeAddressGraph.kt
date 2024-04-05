@@ -3,19 +3,16 @@ package com.hedvig.android.feature.changeaddress.navigation
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.navigation
 import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
 import com.hedvig.android.feature.changeaddress.destination.ChangeAddressEnterNewAddressDestination
 import com.hedvig.android.feature.changeaddress.destination.ChangeAddressEnterVillaInformationDestination
 import com.hedvig.android.feature.changeaddress.destination.ChangeAddressOfferDestination
 import com.hedvig.android.feature.changeaddress.destination.ChangeAddressResultDestination
 import com.hedvig.android.feature.changeaddress.destination.ChangeAddressSelectHousingTypeDestination
+import com.hedvig.android.navigation.compose.typed.composable
 import com.hedvig.android.navigation.compose.typed.destinationScopedViewModel
 import com.hedvig.android.navigation.core.AppDestination
-import com.kiwi.navigationcompose.typed.composable
-import com.kiwi.navigationcompose.typed.createRoutePattern
-import com.kiwi.navigationcompose.typed.navigate
-import com.kiwi.navigationcompose.typed.navigation
-import com.kiwi.navigationcompose.typed.popUpTo
 
 fun NavGraphBuilder.changeAddressGraph(
   navController: NavController,
@@ -23,7 +20,7 @@ fun NavGraphBuilder.changeAddressGraph(
   openUrl: (String) -> Unit,
 ) {
   navigation<AppDestination.ChangeAddress>(
-    startDestination = createRoutePattern<ChangeAddressDestination.SelectHousingType>(),
+    startDestination = ChangeAddressDestination.SelectHousingType::class,
   ) {
     composable<ChangeAddressDestination.SelectHousingType> { navBackStackEntry ->
       val viewModel: ChangeAddressViewModel = destinationScopedViewModel<AppDestination.ChangeAddress, _>(
@@ -88,9 +85,9 @@ fun NavGraphBuilder.changeAddressGraph(
       )
     }
   }
-  composable<ChangeAddressDestination.AddressResult> {
+  composable<ChangeAddressDestination.AddressResult> { _, destination ->
     ChangeAddressResultDestination(
-      movingDate = movingDate,
+      movingDate = destination.movingDate,
       popBackstack = navController::popBackStack,
     )
   }

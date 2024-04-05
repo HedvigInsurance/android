@@ -1,12 +1,8 @@
 package com.hedvig.android.navigation.core
 
-import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.serialization.Serializable
 
-sealed interface AppDestination : Destination {
-  @Serializable
-  data object Login : AppDestination
-
+sealed interface AppDestination {
   @Serializable
   data class Chat(
     val chatContext: ChatContext? = null,

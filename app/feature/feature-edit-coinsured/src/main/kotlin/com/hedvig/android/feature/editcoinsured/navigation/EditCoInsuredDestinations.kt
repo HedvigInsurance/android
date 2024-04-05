@@ -1,12 +1,9 @@
 package com.hedvig.android.feature.editcoinsured.navigation
 
-import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
-sealed interface EditCoInsuredDestination : Destination {
+sealed interface EditCoInsuredDestination {
   @Serializable
-  data class Success(
-    val date: LocalDate,
-  ) : Destination
+  data class Success(val date: LocalDate)
 }

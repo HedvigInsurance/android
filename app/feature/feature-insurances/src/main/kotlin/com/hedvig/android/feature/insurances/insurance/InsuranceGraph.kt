@@ -3,6 +3,7 @@ package com.hedvig.android.feature.insurances.insurance
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
+import androidx.navigation.navigation
 import coil.ImageLoader
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
@@ -13,11 +14,9 @@ import com.hedvig.android.feature.insurances.navigation.InsurancesDestination
 import com.hedvig.android.feature.insurances.navigation.InsurancesDestinations
 import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContractsDestination
 import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContractsViewModel
+import com.hedvig.android.navigation.compose.typed.composable
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
-import com.kiwi.navigationcompose.typed.composable
-import com.kiwi.navigationcompose.typed.createRoutePattern
-import com.kiwi.navigationcompose.typed.navigation
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -34,7 +33,7 @@ fun NavGraphBuilder.insuranceGraph(
   imageLoader: ImageLoader,
 ) {
   navigation<InsurancesDestination.Graph>(
-    startDestination = createRoutePattern<InsurancesDestination.Insurances>(),
+    startDestination = InsurancesDestination.Insurances::class,
   ) {
     nestedGraphs()
     composable<InsurancesDestination.Insurances>(
@@ -62,9 +61,8 @@ fun NavGraphBuilder.insuranceGraph(
       deepLinks = listOf(
         navDeepLink { uriPattern = hedvigDeepLinkContainer.contract },
       ),
-    ) { backStackEntry ->
-      val contractDetail = this
-      val viewModel: ContractDetailViewModel = koinViewModel { parametersOf(contractDetail.contractId) }
+    ) { backStackEntry, destination ->
+      val viewModel: ContractDetailViewModel = koinViewModel { parametersOf(destination.contractId) }
       ContractDetailDestination(
         viewModel = viewModel,
         onEditCoInsuredClick = { contractId: String -> startEditCoInsured(backStackEntry, contractId) },

@@ -1,5 +1,6 @@
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.dependencies
 
 /**
  * Common configuration for feature modules.
@@ -8,6 +9,9 @@ class FeatureConventionPlugin : Plugin<Project> {
   override fun apply(target: Project) {
     with(target) {
       ensureNotDependingOnOtherFeatureModule()
+      dependencies {
+        add("implementation", project(":navigation-compose-typed"))
+      }
     }
   }
 }

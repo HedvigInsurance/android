@@ -2,6 +2,7 @@ plugins {
   id("hedvig.android.ktlint")
   id("hedvig.android.library")
   id("hedvig.android.library.compose")
+  id("hedvig.android.feature")
   alias(libs.plugins.apollo)
   alias(libs.plugins.serialization)
   alias(libs.plugins.squareSortDependencies)
@@ -21,7 +22,6 @@ dependencies {
   implementation(libs.compose.richtext)
   implementation(libs.compose.richtextUi)
   implementation(libs.coroutines.core)
-  implementation(libs.kiwi.navigationCompose)
   implementation(libs.koin.compose)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.core)
@@ -34,7 +34,6 @@ dependencies {
   implementation(projects.coreUi)
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
-  implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
 }
 

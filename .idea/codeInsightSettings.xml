@@ -13,7 +13,6 @@
       <name>androidx.constraintlayout.helper.widget.Flow</name>
       <name>androidx.constraintlayout.solver.widgets.Flow</name>
       <name>androidx.navigation.compose.composable</name>
-      <name>androidx.navigation.compose.navigation</name>
       <name>com.google.errorprone.annotations.Modifier</name>
       <name>com.google.firebase.crashlytics.internal.model.ImmutableList</name>
       <name>java.lang.LinkageError</name>

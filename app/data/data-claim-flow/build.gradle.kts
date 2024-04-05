@@ -28,5 +28,4 @@ dependencies {
   implementation(projects.coreRetrofit)
   implementation(projects.coreUiData)
   implementation(projects.dataClaimTriaging)
-  implementation(projects.navigationComposeTyped)
 }
