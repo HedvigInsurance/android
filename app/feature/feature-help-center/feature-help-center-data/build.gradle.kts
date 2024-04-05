@@ -9,6 +9,7 @@ plugins {
 dependencies {
   apolloMetadata(projects.apolloOctopusPublic)
 
+  implementation(libs.androidx.annotation)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
