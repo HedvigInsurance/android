@@ -1,6 +1,7 @@
 package com.hedvig.android.app.navigation
 
 import android.content.Context
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -57,12 +58,12 @@ import com.hedvig.android.navigation.core.Navigator
 import com.hedvig.app.BuildConfig
 import com.kiwi.navigationcompose.typed.Destination
 import com.kiwi.navigationcompose.typed.createRoutePattern
-import com.kiwi.navigationcompose.typed.navigate
-import com.kiwi.navigationcompose.typed.popBackStack
-import com.kiwi.navigationcompose.typed.popUpTo
+import com.kiwi.navigationcompose.typed.navigate as typedNavigate
+import com.kiwi.navigationcompose.typed.popBackStack as typedPopBackStack
+import com.kiwi.navigationcompose.typed.popUpTo as typedPopUpTo
 
 @Composable
-internal fun HedvigNavHost(
+internal fun SharedTransitionScope.HedvigNavHost(
   hedvigAppState: HedvigAppState,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   activityNavigator: ActivityNavigator,
@@ -82,10 +83,10 @@ internal fun HedvigNavHost(
 
   val navigateToConnectPayment = {
     when (market) {
-      Market.SE -> hedvigAppState.navController.navigate(AppDestination.ConnectPayment)
+      Market.SE -> hedvigAppState.navController.typedNavigate(AppDestination.ConnectPayment)
       Market.NO,
       Market.DK,
-      -> hedvigAppState.navController.navigate(AppDestination.ConnectPaymentAdyen)
+      -> hedvigAppState.navController.typedNavigate(AppDestination.ConnectPaymentAdyen)
     }
   }
 
@@ -136,6 +137,7 @@ internal fun HedvigNavHost(
       openUrl = openUrl,
     )
     insuranceGraph(
+      sharedTransitionScope = this@HedvigNavHost,
       nestedGraphs = {
         terminateInsuranceGraph(
           windowSizeClass = hedvigAppState.windowSizeClass,
@@ -150,7 +152,7 @@ internal fun HedvigNavHost(
           openPlayStore = { activityNavigator.tryOpenPlayStore(context) },
           hedvigDeepLinkContainer = hedvigDeepLinkContainer,
           closeTerminationFlow = {
-            hedvigAppState.navController.popBackStack<AppDestination.TerminationFlow>(inclusive = true)
+            hedvigAppState.navController.typedPopBackStack<AppDestination.TerminationFlow>(inclusive = true)
           },
         )
       },
@@ -334,7 +336,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
       activityNavigator.openAppSettings(context)
     },
     closeClaimFlow = {
-      hedvigAppState.navController.popBackStack<AppDestination.ClaimsFlow>(inclusive = true)
+      hedvigAppState.navController.typedPopBackStack<AppDestination.ClaimsFlow>(inclusive = true)
     },
     nestedGraphs = {
       claimTriagingDestinations(
@@ -344,7 +346,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
           navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())
         },
         closeClaimFlow = {
-          hedvigAppState.navController.popBackStack<AppDestination.ClaimsFlow>(inclusive = true)
+          hedvigAppState.navController.typedPopBackStack<AppDestination.ClaimsFlow>(inclusive = true)
         },
       )
     },
@@ -366,7 +368,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     openChat = { backStackEntry ->
       with(navigator) {
         backStackEntry.navigate(destination = AppDestination.Chat()) {
-          popUpTo<HomeDestination.Home>()
+          typedPopUpTo<HomeDestination.Home>()
         }
       }
     },
@@ -393,7 +395,7 @@ private fun rememberNavigator(navController: NavController, finishApp: () -> Uni
         navOptions: NavOptions?,
         navigatorExtras: androidx.navigation.Navigator.Extras?,
       ) {
-        navController.navigate(destination, navOptions, navigatorExtras)
+        navController.typedNavigate(destination, navOptions, navigatorExtras)
       }
 
       override fun navigateUp() {

@@ -1,7 +1,15 @@
 package com.hedvig.android.feature.insurances.insurance
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.runtime.Composable
 import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavDeepLink
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
 import coil.ImageLoader
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
@@ -15,13 +23,21 @@ import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContr
 import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContractsViewModel
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
+import com.kiwi.navigationcompose.typed.Destination
 import com.kiwi.navigationcompose.typed.composable
+import com.kiwi.navigationcompose.typed.createNavArguments
 import com.kiwi.navigationcompose.typed.createRoutePattern
+import com.kiwi.navigationcompose.typed.decodeArguments
 import com.kiwi.navigationcompose.typed.navigation
+import com.kiwi.navigationcompose.typed.registerDestinationType
+import kotlin.reflect.KClass
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.serializer
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 fun NavGraphBuilder.insuranceGraph(
+  sharedTransitionScope: SharedTransitionScope,
   nestedGraphs: NavGraphBuilder.() -> Unit,
   navigator: Navigator,
   openChat: (NavBackStackEntry) -> Unit,
@@ -37,16 +53,17 @@ fun NavGraphBuilder.insuranceGraph(
     startDestination = createRoutePattern<InsurancesDestination.Insurances>(),
   ) {
     nestedGraphs()
-    composable<InsurancesDestination.Insurances>(
+    animatedComposable<InsurancesDestination.Insurances>(
       deepLinks = listOf(
         navDeepLink { uriPattern = hedvigDeepLinkContainer.insurances },
         navDeepLink { uriPattern = hedvigDeepLinkContainer.contractWithoutContractId },
       ),
       enterTransition = { MotionDefaults.fadeThroughEnter },
       exitTransition = { MotionDefaults.fadeThroughExit },
-    ) { backStackEntry ->
+    ) { backStackEntry, _ ->
       val viewModel: InsuranceViewModel = koinViewModel()
-      InsuranceDestination(
+      sharedTransitionScope.InsuranceDestination(
+        animatedContentScope = this,
         viewModel = viewModel,
         onInsuranceCardClick = { contractId: String ->
           with(navigator) { backStackEntry.navigate(InsurancesDestinations.InsuranceContractDetail(contractId)) }
@@ -58,14 +75,14 @@ fun NavGraphBuilder.insuranceGraph(
         imageLoader = imageLoader,
       )
     }
-    composable<InsurancesDestinations.InsuranceContractDetail>(
+    animatedComposable<InsurancesDestinations.InsuranceContractDetail>(
       deepLinks = listOf(
         navDeepLink { uriPattern = hedvigDeepLinkContainer.contract },
       ),
-    ) { backStackEntry ->
-      val contractDetail = this
+    ) { backStackEntry, contractDetail ->
       val viewModel: ContractDetailViewModel = koinViewModel { parametersOf(contractDetail.contractId) }
-      ContractDetailDestination(
+      sharedTransitionScope.ContractDetailDestination(
+        animatedContentScope = this,
         viewModel = viewModel,
         onEditCoInsuredClick = { contractId: String -> startEditCoInsured(backStackEntry, contractId) },
         onMissingInfoClick = { contractId -> startEditCoInsuredAddMissingInfo(backStackEntry, contractId) },
@@ -94,5 +111,29 @@ fun NavGraphBuilder.insuranceGraph(
         imageLoader = imageLoader,
       )
     }
+  }
+}
+
+private inline fun <reified T : Destination> NavGraphBuilder.animatedComposable(
+  deepLinks: List<NavDeepLink> = emptyList(),
+  noinline enterTransition: (@JvmSuppressWildcards AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?)? = null,
+  noinline exitTransition: (@JvmSuppressWildcards AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?)? = null,
+  noinline popEnterTransition: (@JvmSuppressWildcards AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?)? = enterTransition,
+  noinline popExitTransition: (@JvmSuppressWildcards AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?)? = exitTransition,
+  noinline content: @Composable AnimatedContentScope.(NavBackStackEntry, T) -> Unit,
+) {
+  val serializer = serializer<T>()
+  registerDestinationType(T::class, serializer)
+  composable(
+    route = createRoutePattern(serializer),
+    arguments = createNavArguments(serializer),
+    enterTransition = enterTransition,
+    exitTransition = exitTransition,
+    popEnterTransition = popEnterTransition,
+    popExitTransition = popExitTransition,
+    deepLinks = deepLinks,
+  ) { navBackStackEntry ->
+    val t = decodeArguments(serializer, navBackStackEntry)
+    content(navBackStackEntry, t)
   }
 }

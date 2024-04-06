@@ -35,7 +35,7 @@ import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeServic
 import com.hedvig.android.theme.Theme
 import com.kiwi.navigationcompose.typed.Destination
 import com.kiwi.navigationcompose.typed.createRoutePattern
-import com.kiwi.navigationcompose.typed.navigate
+import com.kiwi.navigationcompose.typed.navigate as typedNavigate
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.PersistentSet
@@ -168,11 +168,11 @@ internal class HedvigAppState(
       restoreState = true
     }
     when (topLevelGraph) {
-      TopLevelGraph.Home -> navController.navigate(HomeDestination.Graph, topLevelNavOptions)
-      TopLevelGraph.Insurances -> navController.navigate(InsurancesDestination.Graph, topLevelNavOptions)
-      TopLevelGraph.Forever -> navController.navigate(ForeverDestination.Graph, topLevelNavOptions)
-      TopLevelGraph.Payments -> navController.navigate(PaymentsDestination.Graph, topLevelNavOptions)
-      TopLevelGraph.Profile -> navController.navigate(ProfileDestination.Graph, topLevelNavOptions)
+      TopLevelGraph.Home -> navController.typedNavigate(HomeDestination.Graph, topLevelNavOptions)
+      TopLevelGraph.Insurances -> navController.typedNavigate(InsurancesDestination.Graph, topLevelNavOptions)
+      TopLevelGraph.Forever -> navController.typedNavigate(ForeverDestination.Graph, topLevelNavOptions)
+      TopLevelGraph.Payments -> navController.typedNavigate(PaymentsDestination.Graph, topLevelNavOptions)
+      TopLevelGraph.Profile -> navController.typedNavigate(ProfileDestination.Graph, topLevelNavOptions)
     }
   }
 
