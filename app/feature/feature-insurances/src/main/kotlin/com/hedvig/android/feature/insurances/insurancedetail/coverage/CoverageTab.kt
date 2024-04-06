@@ -322,7 +322,7 @@ private val previewPerils: PersistentList<ProductVariantPeril> = List(4) { index
     title = "Eldsvåda",
     description = "description$index",
     covered = persistentListOf("Covered#$index"),
-    colorCode = "0xFFC45D4F",
+    colorCode = "#FFC45D4F",
     info = "test",
     exceptions = listOf(),
   )
