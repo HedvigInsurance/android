@@ -14,6 +14,7 @@ dependencyResolutionManagement {
   repositories {
     google()
     mavenCentral()
+    maven { url = uri("https://androidx.dev/snapshots/builds/11679629/artifacts/repository/") }
     maven("https://maven.pkg.github.com/HedvigInsurance/odyssey") {
       name = "odyssey"
       credentials(PasswordCredentials::class)

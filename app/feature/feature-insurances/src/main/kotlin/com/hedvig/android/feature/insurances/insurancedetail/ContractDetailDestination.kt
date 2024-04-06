@@ -1,5 +1,7 @@
 package com.hedvig.android.feature.insurances.insurancedetail
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -20,11 +22,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -37,22 +42,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
-import com.hedvig.android.core.designsystem.animation.FadeAnimatedContent
 import com.hedvig.android.core.designsystem.animation.animateContentHeight
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
+import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.hedvig.normal.ArrowBack
 import com.hedvig.android.core.ui.card.InsuranceCard
 import com.hedvig.android.core.ui.plus
-import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
-import com.hedvig.android.data.contract.ContractGroup
-import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
-import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
-import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceContract
 import com.hedvig.android.feature.insurances.insurancedetail.coverage.CoverageTab
 import com.hedvig.android.feature.insurances.insurancedetail.documents.DocumentsTab
@@ -61,13 +59,12 @@ import com.hedvig.android.feature.insurances.ui.createChips
 import com.hedvig.android.feature.insurances.ui.createPainter
 import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
-import kotlinx.datetime.LocalDate
 
 @Composable
-internal fun ContractDetailDestination(
+internal fun SharedTransitionScope.ContractDetailDestination(
+  animatedContentScope: AnimatedContentScope,
   viewModel: ContractDetailViewModel,
   onEditCoInsuredClick: (String) -> Unit,
   onMissingInfoClick: (String) -> Unit,
@@ -81,6 +78,7 @@ internal fun ContractDetailDestination(
 ) {
   val uiState: ContractDetailsUiState by viewModel.uiState.collectAsStateWithLifecycle()
   ContractDetailScreen(
+    animatedContentScope = animatedContentScope,
     uiState = uiState,
     imageLoader = imageLoader,
     retry = viewModel::retryLoadingContract,
@@ -97,7 +95,8 @@ internal fun ContractDetailDestination(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun ContractDetailScreen(
+private fun SharedTransitionScope.ContractDetailScreen(
+  animatedContentScope: AnimatedContentScope,
   uiState: ContractDetailsUiState,
   imageLoader: ImageLoader,
   retry: () -> Unit,
@@ -111,30 +110,54 @@ private fun ContractDetailScreen(
   openUrl: (String) -> Unit,
 ) {
   Column(Modifier.fillMaxSize()) {
-    TopAppBarWithBack(
-      title = stringResource(R.string.insurance_details_view_title),
-      onClick = navigateUp,
+    TopAppBar(
+      title = {
+        Text(
+          text = stringResource(R.string.insurance_details_view_title),
+          style = MaterialTheme.typography.titleLarge,
+          modifier = Modifier
+            .sharedBounds(
+              rememberSharedContentState("title"),
+              animatedContentScope,
+            )
+            .skipToLookaheadSize(),
+        )
+      },
+      navigationIcon = {
+        IconButton(
+          onClick = navigateUp,
+          content = {
+            Icon(
+              imageVector = Icons.Hedvig.ArrowBack,
+              contentDescription = null,
+            )
+          },
+        )
+      },
     )
     val pagerState = rememberPagerState(pageCount = { 3 })
-    FadeAnimatedContent(
-      targetState = uiState,
-      contentKey = { uiState ->
-        when (uiState) {
-          ContractDetailsUiState.Error -> "Error"
-          ContractDetailsUiState.NoContractFound -> "NoContractFound"
-          ContractDetailsUiState.Loading -> "Loading"
-          is ContractDetailsUiState.Success -> "Success"
-        }
-      },
-      label = "contract detail screen fade animated content",
-      modifier = Modifier.weight(1f),
-    ) { state ->
+//    FadeAnimatedContent(
+//      targetState = uiState,
+//      contentKey = { uiState ->
+//        when (uiState) {
+//          ContractDetailsUiState.Error -> "Error"
+//          ContractDetailsUiState.NoContractFound -> "NoContractFound"
+//          ContractDetailsUiState.Loading -> "Loading"
+//          is ContractDetailsUiState.Success -> "Success"
+//        }
+//      },
+//      label = "contract detail screen fade animated content",
+//      modifier = Modifier.weight(1f),
+//    ) { state ->
+    val state = uiState
+    run {
       when (state) {
         ContractDetailsUiState.Error -> HedvigErrorSection(onButtonClick = retry, modifier = Modifier.fillMaxSize())
         ContractDetailsUiState.Loading -> HedvigFullScreenCenterAlignedProgressDebounced(
           show = state is ContractDetailsUiState.Loading,
           modifier = Modifier.fillMaxSize(),
         )
+
         ContractDetailsUiState.NoContractFound -> {
           HedvigErrorSection(
             subTitle = stringResource(R.string.CONTRACT_DETAILS_ERROR),
@@ -167,8 +190,13 @@ private fun ContractDetailScreen(
                 topText = contract.currentInsuranceAgreement.productVariant.displayName,
                 bottomText = contract.exposureDisplayName,
                 imageLoader = imageLoader,
-                modifier = Modifier.padding(horizontal = 16.dp),
                 fallbackPainter = contract.createPainter(),
+                modifier = Modifier
+                  .padding(horizontal = 16.dp)
+                  .sharedElement(
+                    rememberSharedContentState("contract-${contract.id}"),
+                    animatedContentScope,
+                  ),
               )
             }
             item(key = 2, contentType = "space") { Spacer(Modifier.height(16.dp)) }

@@ -1,7 +1,9 @@
 package com.hedvig.android.feature.insurances.insurance
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
@@ -30,7 +32,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -61,15 +62,8 @@ import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.core.designsystem.material3.onTypeContainer
 import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.material3.typeContainer
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.card.InsuranceCard
-import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
-import com.hedvig.android.data.contract.ContractGroup
-import com.hedvig.android.data.contract.ContractType
-import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.feature.insurances.data.CrossSell
-import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceContract
 import com.hedvig.android.feature.insurances.data.iconRes
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceScreenEvent
@@ -83,11 +77,10 @@ import com.hedvig.android.pullrefresh.pullRefresh
 import com.hedvig.android.pullrefresh.rememberPullRefreshState
 import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.datetime.LocalDate
 
 @Composable
-internal fun InsuranceDestination(
+internal fun SharedTransitionScope.InsuranceDestination(
+  animatedContentScope: AnimatedContentScope,
   viewModel: InsuranceViewModel,
   onInsuranceCardClick: (contractId: String) -> Unit,
   onCrossSellClick: (String) -> Unit,
@@ -114,6 +107,7 @@ internal fun InsuranceDestination(
     }
   }
   InsuranceScreen(
+    animatedContentScope = animatedContentScope,
     uiState = uiState,
     reload = { viewModel.emit(InsuranceScreenEvent.RetryLoading) },
     onInsuranceCardClick = onInsuranceCardClick,
@@ -124,7 +118,8 @@ internal fun InsuranceDestination(
 }
 
 @Composable
-private fun InsuranceScreen(
+private fun SharedTransitionScope.InsuranceScreen(
+  animatedContentScope: AnimatedContentScope,
   uiState: InsuranceUiState,
   reload: () -> Unit,
   onInsuranceCardClick: (contractId: String) -> Unit,
@@ -171,6 +166,12 @@ private fun InsuranceScreen(
               Text(
                 text = stringResource(id = R.string.DASHBOARD_SCREEN_TITLE),
                 style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier
+                  .sharedBounds(
+                    rememberSharedContentState("title"),
+                    animatedContentScope,
+                  )
+                  .skipToLookaheadSize(),
               )
             }
 
@@ -178,6 +179,8 @@ private fun InsuranceScreen(
               HedvigErrorSection(onButtonClick = reload)
             } else {
               InsuranceScreenContent(
+                sharedTransitionScope = this@InsuranceScreen,
+                animatedContentScope = animatedContentScope,
                 imageLoader = imageLoader,
                 contracts = uiState.contracts,
                 crossSells = uiState.crossSells,
@@ -207,6 +210,8 @@ private fun InsuranceScreen(
 @Suppress("UnusedReceiverParameter")
 @Composable
 private fun ColumnScope.InsuranceScreenContent(
+  sharedTransitionScope: SharedTransitionScope,
+  animatedContentScope: AnimatedContentScope,
   imageLoader: ImageLoader,
   contracts: ImmutableList<InsuranceContract>,
   crossSells: ImmutableList<CrossSell>,
@@ -216,24 +221,30 @@ private fun ColumnScope.InsuranceScreenContent(
   navigateToCancelledInsurances: () -> Unit,
   quantityOfCancelledInsurances: Int,
 ) {
-  for ((index, contract) in contracts.withIndex()) {
-    InsuranceCard(
-      backgroundImageUrl = null,
-      chips = contract.createChips(),
-      topText = contract.currentInsuranceAgreement.productVariant.displayName,
-      bottomText = contract.exposureDisplayName,
-      imageLoader = imageLoader,
-      modifier = Modifier
-        .padding(horizontal = 16.dp)
-        .clip(MaterialTheme.shapes.squircleMedium)
-        .clickable {
-          onInsuranceCardClick(contract.id)
-        },
-      shape = MaterialTheme.shapes.squircleMedium,
-      fallbackPainter = contract.createPainter(),
-    )
-    if (index != contracts.lastIndex) {
-      Spacer(Modifier.height(8.dp))
+  with(sharedTransitionScope) {
+    for ((index, contract) in contracts.withIndex()) {
+      InsuranceCard(
+        backgroundImageUrl = null,
+        chips = contract.createChips(),
+        topText = contract.currentInsuranceAgreement.productVariant.displayName,
+        bottomText = contract.exposureDisplayName,
+        imageLoader = imageLoader,
+        shape = MaterialTheme.shapes.squircleMedium,
+        fallbackPainter = contract.createPainter(),
+        modifier = Modifier
+          .padding(horizontal = 16.dp)
+          .clip(MaterialTheme.shapes.squircleMedium)
+          .clickable {
+            onInsuranceCardClick(contract.id)
+          }
+          .sharedElement(
+            rememberSharedContentState("contract-${contract.id}"),
+            animatedContentScope,
+          ),
+      )
+      if (index != contracts.lastIndex) {
+        Spacer(Modifier.height(8.dp))
+      }
     }
   }
   if (crossSells.isNotEmpty()) {

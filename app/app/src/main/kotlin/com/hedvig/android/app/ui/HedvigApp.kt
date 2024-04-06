@@ -1,5 +1,6 @@
 package com.hedvig.android.app.ui
 
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.core.AnimationVector4D
 import androidx.compose.animation.core.TwoWayConverter
 import androidx.compose.animation.core.animateValueAsState
@@ -60,22 +61,24 @@ internal fun HedvigApp(
       currentDestination = hedvigAppState.currentDestination,
       onNavigateToTopLevelGraph = hedvigAppState::navigateToTopLevelGraph,
     ) {
-      HedvigNavHost(
-        hedvigAppState = hedvigAppState,
-        hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-        activityNavigator = activityNavigator,
-        finishApp = finishApp,
-        shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-        openUrl = openUrl,
-        imageLoader = imageLoader,
-        market = market,
-        languageService = languageService,
-        hedvigBuildConstants = hedvigBuildConstants,
-        modifier = Modifier
-          .fillMaxHeight()
-          .weight(1f)
-          .animatedNavigationBarInsetsConsumption(hedvigAppState),
-      )
+      SharedTransitionLayout {
+        HedvigNavHost(
+          hedvigAppState = hedvigAppState,
+          hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+          activityNavigator = activityNavigator,
+          finishApp = finishApp,
+          shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+          openUrl = openUrl,
+          imageLoader = imageLoader,
+          market = market,
+          languageService = languageService,
+          hedvigBuildConstants = hedvigBuildConstants,
+          modifier = Modifier
+            .fillMaxHeight()
+            .weight(1f)
+            .animatedNavigationBarInsetsConsumption(hedvigAppState),
+        )
+      }
     }
   }
 }
