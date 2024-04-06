@@ -41,17 +41,14 @@ private class ChooseInsuranceToTerminatePresenter(
     lastState: ChooseInsuranceToTerminateStepUiState,
   ): ChooseInsuranceToTerminateStepUiState {
     var loadIteration by remember { mutableIntStateOf(0) }
-    var currentSelectedId by remember {
-      val initialSelected = if (lastState is ChooseInsuranceToTerminateStepUiState.Success) {
-        lastState.selectedInsurance?.id
-      } else {
-        insuranceId
-      }
-      mutableStateOf(initialSelected)
+    var terminationStepLoadIteration by remember { mutableIntStateOf(0) }
+    val initialSelected = if (lastState is ChooseInsuranceToTerminateStepUiState.Success) {
+      lastState.selectedInsurance?.id
+    } else {
+      insuranceId
     }
-    var terminationStep: TerminateInsuranceStep? by remember { mutableStateOf(null) }
-    var currentPartialState by remember {
-      mutableStateOf(lastState.toPartialState())
+    var currentState by remember {
+      mutableStateOf(lastState)
     }
 
     CollectEvents { event ->
@@ -60,70 +57,82 @@ private class ChooseInsuranceToTerminatePresenter(
           loadIteration++
         }
 
+        ChooseInsuranceToTerminateEvent.FetchTerminationStep -> {
+          terminationStepLoadIteration++
+        }
+
         is ChooseInsuranceToTerminateEvent.SelectInsurance -> {
-          currentSelectedId = event.insurance.id
-          if (currentPartialState is PartialUiState.Success) {
-            currentPartialState =
-              (currentPartialState as PartialUiState.Success).copy(selectedInsurance = event.insurance)
+          if (currentState is ChooseInsuranceToTerminateStepUiState.Success) {
+            currentState =
+              (currentState as ChooseInsuranceToTerminateStepUiState.Success).copy(selectedInsurance = event.insurance)
+          }
+        }
+
+        ChooseInsuranceToTerminateEvent.ClearTerminationStep -> {
+          if (currentState is ChooseInsuranceToTerminateStepUiState.Success) {
+            currentState =
+              (currentState as ChooseInsuranceToTerminateStepUiState.Success).copy(
+                nextStepWithInsurance = null,
+                isNavigationStepLoading = false,
+              )
           }
         }
       }
     }
 
-    LaunchedEffect(currentSelectedId) {
-      val id = currentSelectedId
-      if (id != null) {
-        terminationStep = terminateInsuranceRepository.startTerminationFlow(InsuranceId(id)).getOrNull()
+    LaunchedEffect(terminationStepLoadIteration) {
+      val previousState = currentState
+      if (previousState is ChooseInsuranceToTerminateStepUiState.Success &&
+        terminationStepLoadIteration != 0 &&
+        previousState.selectedInsurance?.id != null
+      ) {
+        currentState = previousState.copy(isNavigationStepLoading = true)
+        val id = previousState.selectedInsurance.id
+        val step = terminateInsuranceRepository.startTerminationFlow(InsuranceId(id)).getOrNull()
+        currentState = if (step == null) {
+          previousState
+        } else {
+          val terminationStepWithInsurance = Pair(step, previousState.selectedInsurance)
+          previousState.copy(nextStepWithInsurance = terminationStepWithInsurance, isNavigationStepLoading = true)
+        }
       }
     }
 
     LaunchedEffect(loadIteration) {
       if (lastState !is ChooseInsuranceToTerminateStepUiState.Success) {
-        currentPartialState = PartialUiState.Loading
+        currentState = ChooseInsuranceToTerminateStepUiState.Loading
       }
       getTerminatableContractsUseCase.invoke().collect { contractsResult ->
         contractsResult.fold(
           ifLeft = {
             logcat(priority = LogPriority.INFO) { "Cannot load contracts for cancellation" }
-            currentPartialState = PartialUiState.Failure
+            currentState = ChooseInsuranceToTerminateStepUiState.Failure
           },
           ifRight = { eligibleInsurances ->
             logcat(priority = LogPriority.INFO) { "Successfully loaded contracts for cancellation" }
-            val selectedInsurance = if (currentSelectedId != null) {
-              eligibleInsurances?.firstOrNull { it.id == currentSelectedId }
+            val selectedInsurance = if (initialSelected != null) {
+              eligibleInsurances?.firstOrNull { it.id == initialSelected }
             } else if (eligibleInsurances?.size == 1) {
-              currentSelectedId = eligibleInsurances[0].id
               eligibleInsurances[0]
             } else {
               null
             }
-            currentPartialState = if (eligibleInsurances != null) {
-              PartialUiState.Success(
+            currentState = if (eligibleInsurances != null) {
+              ChooseInsuranceToTerminateStepUiState.Success(
                 eligibleInsurances,
                 selectedInsurance,
+                null,
+                false,
               )
             } else {
-              PartialUiState.NotEligible
+              ChooseInsuranceToTerminateStepUiState.NotAllowed
             }
           },
         )
       }
     }
-    return currentPartialState.toUiState(terminationStep)
+    return currentState
   }
-}
-
-private sealed interface PartialUiState {
-  data object Loading : PartialUiState
-
-  data class Success(
-    val insuranceList: List<TerminatableInsurance>,
-    val selectedInsurance: TerminatableInsurance?,
-  ) : PartialUiState
-
-  data object Failure : PartialUiState
-
-  data object NotEligible : PartialUiState
 }
 
 internal sealed interface ChooseInsuranceToTerminateEvent {
@@ -131,6 +140,10 @@ internal sealed interface ChooseInsuranceToTerminateEvent {
     ChooseInsuranceToTerminateEvent
 
   data object RetryLoadData : ChooseInsuranceToTerminateEvent
+
+  data object FetchTerminationStep : ChooseInsuranceToTerminateEvent
+
+  data object ClearTerminationStep : ChooseInsuranceToTerminateEvent
 }
 
 internal sealed interface ChooseInsuranceToTerminateStepUiState {
@@ -139,35 +152,11 @@ internal sealed interface ChooseInsuranceToTerminateStepUiState {
   data class Success(
     val insuranceList: List<TerminatableInsurance>,
     val selectedInsurance: TerminatableInsurance?,
-    val nextStep: TerminateInsuranceStep?,
+    val nextStepWithInsurance: Pair<TerminateInsuranceStep, TerminatableInsurance>?,
+    val isNavigationStepLoading: Boolean,
   ) : ChooseInsuranceToTerminateStepUiState
 
   data object Failure : ChooseInsuranceToTerminateStepUiState
 
   data object NotAllowed : ChooseInsuranceToTerminateStepUiState
-}
-
-private fun ChooseInsuranceToTerminateStepUiState.toPartialState(): PartialUiState {
-  return when (this) {
-    ChooseInsuranceToTerminateStepUiState.Failure -> PartialUiState.Failure
-    ChooseInsuranceToTerminateStepUiState.Loading -> PartialUiState.Loading
-    ChooseInsuranceToTerminateStepUiState.NotAllowed -> PartialUiState.NotEligible
-    is ChooseInsuranceToTerminateStepUiState.Success -> PartialUiState.Success(
-      insuranceList,
-      selectedInsurance,
-    )
-  }
-}
-
-private fun PartialUiState.toUiState(nextStep: TerminateInsuranceStep?): ChooseInsuranceToTerminateStepUiState {
-  return when (this) {
-    PartialUiState.Failure -> ChooseInsuranceToTerminateStepUiState.Failure
-    PartialUiState.Loading -> ChooseInsuranceToTerminateStepUiState.Loading
-    PartialUiState.NotEligible -> ChooseInsuranceToTerminateStepUiState.NotAllowed
-    is PartialUiState.Success -> ChooseInsuranceToTerminateStepUiState.Success(
-      insuranceList,
-      selectedInsurance,
-      nextStep,
-    )
-  }
 }

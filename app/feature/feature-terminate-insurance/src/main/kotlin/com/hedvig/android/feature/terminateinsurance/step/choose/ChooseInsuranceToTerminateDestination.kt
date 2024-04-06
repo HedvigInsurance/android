@@ -14,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,10 +53,14 @@ internal fun ChooseInsuranceToTerminateDestination(
   ChooseInsuranceToTerminateScreen(
     uiState = uiState,
     navigateUp = navigateUp,
-    navigateToNextStep = navigateToNextStep,
+    navigateToNextStep = { step, insurance ->
+      viewModel.emit(ChooseInsuranceToTerminateEvent.ClearTerminationStep)
+      navigateToNextStep(step, insurance)
+    },
     openChat = openChat,
     closeTerminationFlow = closeTerminationFlow,
     reload = { viewModel.emit(ChooseInsuranceToTerminateEvent.RetryLoadData) },
+    fetchTerminationStep = { viewModel.emit(ChooseInsuranceToTerminateEvent.FetchTerminationStep) },
     selectInsurance = { viewModel.emit(ChooseInsuranceToTerminateEvent.SelectInsurance(it)) },
   )
 }
@@ -67,6 +72,7 @@ private fun ChooseInsuranceToTerminateScreen(
   reload: () -> Unit,
   openChat: () -> Unit,
   closeTerminationFlow: () -> Unit,
+  fetchTerminationStep: () -> Unit,
   selectInsurance: (insurance: TerminatableInsurance) -> Unit,
   navigateToNextStep: (step: TerminateInsuranceStep, terminatableInsurance: TerminatableInsurance) -> Unit,
 ) {
@@ -94,7 +100,14 @@ private fun ChooseInsuranceToTerminateScreen(
     }
 
     ChooseInsuranceToTerminateStepUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
+
     is ChooseInsuranceToTerminateStepUiState.Success -> {
+      LaunchedEffect(uiState.nextStepWithInsurance) {
+        if (uiState.nextStepWithInsurance != null) {
+          navigateToNextStep(uiState.nextStepWithInsurance.first, uiState.nextStepWithInsurance.second)
+        }
+      }
+
       TerminationScaffold(
         navigateUp = navigateUp,
         closeTerminationFlow = closeTerminationFlow,
@@ -151,17 +164,14 @@ private fun ChooseInsuranceToTerminateScreen(
         Spacer(Modifier.height(12.dp))
         HedvigContainedButton(
           stringResource(id = R.string.general_continue_button),
-          enabled = uiState.selectedInsurance != null && uiState.nextStep != null,
+          enabled = uiState.selectedInsurance != null,
           modifier = Modifier.padding(horizontal = 16.dp),
           colors = ButtonDefaults.buttonColors(
             disabledContainerColor = MaterialTheme.colorScheme.surface,
             disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
           ),
-          onClick = {
-            if (uiState.selectedInsurance != null && uiState.nextStep != null) {
-              navigateToNextStep(uiState.nextStep, uiState.selectedInsurance)
-            }
-          },
+          onClick = fetchTerminationStep,
+          isLoading = uiState.isNavigationStepLoading,
         )
         Spacer(Modifier.height(16.dp))
       }
@@ -185,6 +195,7 @@ private fun PreviewChooseInsuranceToTerminateScreen(
         {},
         {},
         {},
+        {},
         { step, insurance -> },
       )
     }
@@ -195,7 +206,7 @@ private class ChooseInsuranceToTerminateStepUiStateProvider :
   CollectionPreviewParameterProvider<ChooseInsuranceToTerminateStepUiState>(
     listOf(
       ChooseInsuranceToTerminateStepUiState.Success(
-        nextStep = TerminateInsuranceStep.UnknownStep(""),
+        nextStepWithInsurance = null,
         insuranceList = listOf(
           TerminatableInsurance(
             id = "1",
@@ -213,9 +224,10 @@ private class ChooseInsuranceToTerminateStepUiStateProvider :
           ),
         ),
         selectedInsurance = null,
+        isNavigationStepLoading = false,
       ),
       ChooseInsuranceToTerminateStepUiState.Success(
-        nextStep = TerminateInsuranceStep.UnknownStep(""),
+        nextStepWithInsurance = null,
         insuranceList = listOf(
           TerminatableInsurance(
             id = "1",
@@ -239,6 +251,7 @@ private class ChooseInsuranceToTerminateStepUiStateProvider :
           contractGroup = ContractGroup.HOUSE,
           activateFrom = LocalDate(2024, 6, 27),
         ),
+        isNavigationStepLoading = true,
       ),
       ChooseInsuranceToTerminateStepUiState.Failure,
       ChooseInsuranceToTerminateStepUiState.NotAllowed,

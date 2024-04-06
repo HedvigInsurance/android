@@ -56,6 +56,7 @@ import coil.ImageLoader
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
+import com.hedvig.android.core.designsystem.component.information.HedvigInformationSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.core.designsystem.material3.onTypeContainer
@@ -216,24 +217,31 @@ private fun ColumnScope.InsuranceScreenContent(
   navigateToCancelledInsurances: () -> Unit,
   quantityOfCancelledInsurances: Int,
 ) {
-  for ((index, contract) in contracts.withIndex()) {
-    InsuranceCard(
-      backgroundImageUrl = null,
-      chips = contract.createChips(),
-      topText = contract.currentInsuranceAgreement.productVariant.displayName,
-      bottomText = contract.exposureDisplayName,
-      imageLoader = imageLoader,
-      modifier = Modifier
-        .padding(horizontal = 16.dp)
-        .clip(MaterialTheme.shapes.squircleMedium)
-        .clickable {
-          onInsuranceCardClick(contract.id)
-        },
-      shape = MaterialTheme.shapes.squircleMedium,
-      fallbackPainter = contract.createPainter(),
+  if (contracts.isEmpty()) {
+    HedvigInformationSection(
+      title = stringResource(id = R.string.INSURANCES_NO_ACTIVE),
+      withDefaultVerticalSpacing = true,
     )
-    if (index != contracts.lastIndex) {
-      Spacer(Modifier.height(8.dp))
+  } else {
+    for ((index, contract) in contracts.withIndex()) {
+      InsuranceCard(
+        backgroundImageUrl = null,
+        chips = contract.createChips(),
+        topText = contract.currentInsuranceAgreement.productVariant.displayName,
+        bottomText = contract.exposureDisplayName,
+        imageLoader = imageLoader,
+        modifier = Modifier
+          .padding(horizontal = 16.dp)
+          .clip(MaterialTheme.shapes.squircleMedium)
+          .clickable {
+            onInsuranceCardClick(contract.id)
+          },
+        shape = MaterialTheme.shapes.squircleMedium,
+        fallbackPainter = contract.createPainter(),
+      )
+      if (index != contracts.lastIndex) {
+        Spacer(Modifier.height(8.dp))
+      }
     }
   }
   if (crossSells.isNotEmpty()) {
@@ -358,6 +366,39 @@ private fun TerminatedContractsButton(text: String, onClick: () -> Unit, modifie
         .fillMaxWidth(),
     ) {
       Text(text)
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewInsuranceScreenEmptyList() {
+  HedvigTheme {
+    Surface(color = MaterialTheme.colorScheme.background) {
+      InsuranceScreen(
+        InsuranceUiState(
+          contracts = persistentListOf(),
+          crossSells = persistentListOf(
+            CrossSell(
+              id = "1",
+              title = "Pet".repeat(5),
+              subtitle = "Unlimited FirstVet calls".repeat(2),
+              storeUrl = "",
+              type = CrossSell.CrossSellType.HOME,
+            ),
+          ),
+          showNotificationBadge = false,
+          quantityOfCancelledInsurances = 1,
+          hasError = false,
+          isLoading = false,
+          isRetrying = false,
+        ),
+        {},
+        {},
+        {},
+        {},
+        rememberPreviewImageLoader(),
+      )
     }
   }
 }

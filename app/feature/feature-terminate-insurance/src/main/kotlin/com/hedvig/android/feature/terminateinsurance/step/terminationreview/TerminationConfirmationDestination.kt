@@ -121,7 +121,7 @@ private fun AreYouSureScreen(
     Spacer(Modifier.height(2.dp))
     val subtitle = when (type) {
       TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Deletion ->
-        stringResource(id = R.string.TERMINATION_FLOW_CONFIRMATION_SUBTITLE_DELETION)
+        stringResource(id = R.string.TERMINATION_FLOW_CONFIRMATION)
 
       is TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Termination ->
         stringResource(
