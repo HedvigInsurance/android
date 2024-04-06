@@ -362,67 +362,67 @@ private fun TerminatedContractsButton(text: String, onClick: () -> Unit, modifie
   }
 }
 
-@HedvigPreview
-@Composable
-private fun PreviewInsuranceScreen() {
-  HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
-      InsuranceScreen(
-        InsuranceUiState(
-          contracts = persistentListOf(
-            InsuranceContract(
-              "1",
-              "Test123",
-              exposureDisplayName = "Test exposure",
-              inceptionDate = LocalDate.fromEpochDays(200),
-              terminationDate = LocalDate.fromEpochDays(400),
-              currentInsuranceAgreement = InsuranceAgreement(
-                activeFrom = LocalDate.fromEpochDays(240),
-                activeTo = LocalDate.fromEpochDays(340),
-                displayItems = persistentListOf(),
-                productVariant = ProductVariant(
-                  displayName = "Variant",
-                  contractGroup = ContractGroup.RENTAL,
-                  contractType = ContractType.SE_APARTMENT_RENT,
-                  partner = null,
-                  perils = persistentListOf(),
-                  insurableLimits = persistentListOf(),
-                  documents = persistentListOf(),
-                ),
-                certificateUrl = null,
-                coInsured = persistentListOf(),
-                creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
-              ),
-              upcomingInsuranceAgreement = null,
-              renewalDate = LocalDate.fromEpochDays(500),
-              supportsAddressChange = false,
-              supportsEditCoInsured = true,
-              isTerminated = false,
-              contractHolderDisplayName = "Hugo Linder",
-              contractHolderSSN = "19910113-1093",
-            ),
-          ),
-          crossSells = persistentListOf(
-            CrossSell(
-              id = "1",
-              title = "Pet".repeat(5),
-              subtitle = "Unlimited FirstVet calls".repeat(2),
-              storeUrl = "",
-              type = CrossSell.CrossSellType.HOME,
-            ),
-          ),
-          showNotificationBadge = false,
-          quantityOfCancelledInsurances = 1,
-          hasError = false,
-          isLoading = false,
-          isRetrying = false,
-        ),
-        {},
-        {},
-        {},
-        {},
-        rememberPreviewImageLoader(),
-      )
-    }
-  }
-}
+//@HedvigPreview
+//@Composable
+//private fun PreviewInsuranceScreen() {
+//  HedvigTheme {
+//    Surface(color = MaterialTheme.colorScheme.background) {
+//      InsuranceScreen(
+//        InsuranceUiState(
+//          contracts = persistentListOf(
+//            InsuranceContract(
+//              "1",
+//              "Test123",
+//              exposureDisplayName = "Test exposure",
+//              inceptionDate = LocalDate.fromEpochDays(200),
+//              terminationDate = LocalDate.fromEpochDays(400),
+//              currentInsuranceAgreement = InsuranceAgreement(
+//                activeFrom = LocalDate.fromEpochDays(240),
+//                activeTo = LocalDate.fromEpochDays(340),
+//                displayItems = persistentListOf(),
+//                productVariant = ProductVariant(
+//                  displayName = "Variant",
+//                  contractGroup = ContractGroup.RENTAL,
+//                  contractType = ContractType.SE_APARTMENT_RENT,
+//                  partner = null,
+//                  perils = persistentListOf(),
+//                  insurableLimits = persistentListOf(),
+//                  documents = persistentListOf(),
+//                ),
+//                certificateUrl = null,
+//                coInsured = persistentListOf(),
+//                creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
+//              ),
+//              upcomingInsuranceAgreement = null,
+//              renewalDate = LocalDate.fromEpochDays(500),
+//              supportsAddressChange = false,
+//              supportsEditCoInsured = true,
+//              isTerminated = false,
+//              contractHolderDisplayName = "Hugo Linder",
+//              contractHolderSSN = "19910113-1093",
+//            ),
+//          ),
+//          crossSells = persistentListOf(
+//            CrossSell(
+//              id = "1",
+//              title = "Pet".repeat(5),
+//              subtitle = "Unlimited FirstVet calls".repeat(2),
+//              storeUrl = "",
+//              type = CrossSell.CrossSellType.HOME,
+//            ),
+//          ),
+//          showNotificationBadge = false,
+//          quantityOfCancelledInsurances = 1,
+//          hasError = false,
+//          isLoading = false,
+//          isRetrying = false,
+//        ),
+//        {},
+//        {},
+//        {},
+//        {},
+//        rememberPreviewImageLoader(),
+//      )
+//    }
+//  }
+//}

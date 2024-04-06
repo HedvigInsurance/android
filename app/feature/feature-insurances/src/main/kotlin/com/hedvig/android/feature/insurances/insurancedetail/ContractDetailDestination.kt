@@ -296,58 +296,58 @@ private fun PagerSelector(pagerState: PagerState) {
   }
 }
 
-@HedvigPreview
-@Composable
-private fun PreviewContractDetailScreen() {
-  HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
-      ContractDetailScreen(
-        uiState = ContractDetailsUiState.Success(
-          InsuranceContract(
-            "1",
-            "Test123",
-            exposureDisplayName = "Test exposure",
-            inceptionDate = LocalDate.fromEpochDays(200),
-            terminationDate = LocalDate.fromEpochDays(400),
-            currentInsuranceAgreement = InsuranceAgreement(
-              activeFrom = LocalDate.fromEpochDays(240),
-              activeTo = LocalDate.fromEpochDays(340),
-              displayItems = persistentListOf(),
-              productVariant = ProductVariant(
-                displayName = "Variant",
-                contractGroup = ContractGroup.RENTAL,
-                contractType = ContractType.SE_APARTMENT_RENT,
-                partner = null,
-                perils = persistentListOf(),
-                insurableLimits = persistentListOf(),
-                documents = persistentListOf(),
-              ),
-              certificateUrl = null,
-              coInsured = persistentListOf(),
-              creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
-            ),
-            upcomingInsuranceAgreement = null,
-            renewalDate = LocalDate.fromEpochDays(500),
-            supportsAddressChange = false,
-            supportsEditCoInsured = true,
-            isTerminated = false,
-            contractHolderDisplayName = "Hugo Linder",
-            contractHolderSSN = "199101131093",
-          ),
-          true,
-        ),
-        imageLoader = rememberPreviewImageLoader(),
-        retry = {},
-        onEditCoInsuredClick = {},
-        onChangeAddressClick = {},
-        onCancelInsuranceClick = {
-        },
-        navigateUp = {},
-        navigateBack = {},
-        openChat = {},
-        onMissingInfoClick = {},
-        openUrl = {},
-      )
-    }
-  }
-}
+//@HedvigPreview
+//@Composable
+//private fun PreviewContractDetailScreen() {
+//  HedvigTheme {
+//    Surface(color = MaterialTheme.colorScheme.background) {
+//      ContractDetailScreen(
+//        uiState = ContractDetailsUiState.Success(
+//          InsuranceContract(
+//            "1",
+//            "Test123",
+//            exposureDisplayName = "Test exposure",
+//            inceptionDate = LocalDate.fromEpochDays(200),
+//            terminationDate = LocalDate.fromEpochDays(400),
+//            currentInsuranceAgreement = InsuranceAgreement(
+//              activeFrom = LocalDate.fromEpochDays(240),
+//              activeTo = LocalDate.fromEpochDays(340),
+//              displayItems = persistentListOf(),
+//              productVariant = ProductVariant(
+//                displayName = "Variant",
+//                contractGroup = ContractGroup.RENTAL,
+//                contractType = ContractType.SE_APARTMENT_RENT,
+//                partner = null,
+//                perils = persistentListOf(),
+//                insurableLimits = persistentListOf(),
+//                documents = persistentListOf(),
+//              ),
+//              certificateUrl = null,
+//              coInsured = persistentListOf(),
+//              creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
+//            ),
+//            upcomingInsuranceAgreement = null,
+//            renewalDate = LocalDate.fromEpochDays(500),
+//            supportsAddressChange = false,
+//            supportsEditCoInsured = true,
+//            isTerminated = false,
+//            contractHolderDisplayName = "Hugo Linder",
+//            contractHolderSSN = "199101131093",
+//          ),
+//          true,
+//        ),
+//        imageLoader = rememberPreviewImageLoader(),
+//        retry = {},
+//        onEditCoInsuredClick = {},
+//        onChangeAddressClick = {},
+//        onCancelInsuranceClick = {
+//        },
+//        navigateUp = {},
+//        navigateBack = {},
+//        openChat = {},
+//        onMissingInfoClick = {},
+//        openUrl = {},
+//      )
+//    }
+//  }
+//}
