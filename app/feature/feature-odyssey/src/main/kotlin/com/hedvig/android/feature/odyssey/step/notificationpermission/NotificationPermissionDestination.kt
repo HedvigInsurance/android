@@ -1,5 +1,7 @@
 package com.hedvig.android.feature.odyssey.step.notificationpermission
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -9,7 +11,6 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
@@ -21,10 +22,10 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.isGranted
+import com.hedvig.android.core.designsystem.HedvigPreviewLayout
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.scaffold.ClaimFlowScaffold
 import com.hedvig.android.notification.permission.NotificationPermissionDialog
@@ -34,7 +35,8 @@ import com.hedvig.android.notification.permission.rememberPreviewNotificationPer
 import hedvig.resources.R
 
 @Composable
-internal fun NotificationPermissionDestination(
+internal fun SharedTransitionScope.NotificationPermissionDestination(
+  animatedContentScope: AnimatedContentScope,
   windowSizeClass: WindowSizeClass,
   onNotificationPermissionDecided: () -> Unit,
   openAppSettings: () -> Unit,
@@ -45,6 +47,7 @@ internal fun NotificationPermissionDestination(
     onNotificationGranted = onNotificationPermissionDecided,
   )
   NotificationPermissionScreen(
+    animatedContentScope = animatedContentScope,
     windowSizeClass = windowSizeClass,
     notificationPermissionState = notificationPermissionState,
     onNotificationPermissionDecided = onNotificationPermissionDecided,
@@ -55,7 +58,8 @@ internal fun NotificationPermissionDestination(
 }
 
 @Composable
-private fun NotificationPermissionScreen(
+private fun SharedTransitionScope.NotificationPermissionScreen(
+  animatedContentScope: AnimatedContentScope,
   windowSizeClass: WindowSizeClass,
   notificationPermissionState: NotificationPermissionState,
   onNotificationPermissionDecided: () -> Unit,
@@ -64,6 +68,7 @@ private fun NotificationPermissionScreen(
   closeClaimFlow: () -> Unit,
 ) {
   ClaimFlowScaffold(
+    animatedContentScope = animatedContentScope,
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
     closeClaimFlow = closeClaimFlow,
@@ -99,6 +104,7 @@ private fun NotificationPermissionScreen(
       is PermissionStatus.Granted -> {
         stringResource(R.string.general_continue_button) to onNotificationPermissionDecided
       }
+
       is PermissionStatus.Denied -> {
         Pair(
           stringResource(R.string.CLAIMS_ACTIVATE_NOTIFICATIONS_CTA),
@@ -122,20 +128,19 @@ private fun PreviewNotificationPermissionScreen(
   @PreviewParameter(PermissionStatusCollectionPreviewParameterProvider::class)
   previewPermissionState: PreviewPermissionState,
 ) {
-  HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
-      NotificationPermissionScreen(
-        WindowSizeClass.calculateForPreview(),
-        rememberPreviewNotificationPermissionState(
-          previewPermissionState.permissionStatus,
-          previewPermissionState.isDialogShowing,
-        ),
-        {},
-        {},
-        {},
-        {},
-      )
-    }
+  HedvigPreviewLayout { animatedContentScope ->
+    NotificationPermissionScreen(
+      animatedContentScope,
+      WindowSizeClass.calculateForPreview(),
+      rememberPreviewNotificationPermissionState(
+        previewPermissionState.permissionStatus,
+        previewPermissionState.isDialogShowing,
+      ),
+      {},
+      {},
+      {},
+      {},
+    )
   }
 }
 

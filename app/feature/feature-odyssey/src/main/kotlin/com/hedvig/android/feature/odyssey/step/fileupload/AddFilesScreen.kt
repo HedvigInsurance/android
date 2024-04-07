@@ -1,5 +1,7 @@
 package com.hedvig.android.feature.odyssey.step.fileupload
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -8,17 +10,16 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.material3.Surface
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.ImageLoader
+import com.hedvig.android.core.designsystem.HedvigPreviewLayout
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigSecondaryContainedButton
 import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.DynamicFilesGridBetweenOtherThings
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
@@ -28,7 +29,8 @@ import com.hedvig.android.core.uidata.UiFile
 import hedvig.resources.R
 
 @Composable
-internal fun AddFilesScreen(
+internal fun SharedTransitionScope.AddFilesScreen(
+  animatedContentScope: AnimatedContentScope,
   uiState: FileUploadUiState,
   windowSizeClass: WindowSizeClass,
   onContinue: () -> Unit,
@@ -40,6 +42,7 @@ internal fun AddFilesScreen(
   imageLoader: ImageLoader,
 ) {
   ClaimFlowScaffold(
+    animatedContentScope = animatedContentScope,
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
     closeClaimFlow = closeClaimFlow,
@@ -95,29 +98,28 @@ private fun BelowContent(
 @HedvigMultiScreenPreview
 @Composable
 private fun AddFilesScreenPreview() {
-  HedvigTheme {
-    Surface {
-      AddFilesScreen(
-        uiState = FileUploadUiState(
-          localFiles = List(25) {
-            UiFile(
-              "$it",
-              "",
-              "",
-              "$it",
-              "$it",
-            )
-          },
-        ),
-        windowSizeClass = WindowSizeClass.calculateForPreview(),
-        onContinue = {},
-        onAddMoreFiles = {},
-        showedError = {},
-        navigateUp = {},
-        closeClaimFlow = {},
-        onRemoveFile = {},
-        imageLoader = rememberPreviewImageLoader(),
-      )
-    }
+  HedvigPreviewLayout { animatedContentScope ->
+    AddFilesScreen(
+      animatedContentScope = animatedContentScope,
+      uiState = FileUploadUiState(
+        localFiles = List(25) {
+          UiFile(
+            "$it",
+            "",
+            "",
+            "$it",
+            "$it",
+          )
+        },
+      ),
+      windowSizeClass = WindowSizeClass.calculateForPreview(),
+      onContinue = {},
+      onAddMoreFiles = {},
+      showedError = {},
+      navigateUp = {},
+      closeClaimFlow = {},
+      onRemoveFile = {},
+      imageLoader = rememberPreviewImageLoader(),
+    )
   }
 }

@@ -1,6 +1,8 @@
 package com.hedvig.android.feature.odyssey.step.informdeflect
 
+import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -21,7 +23,6 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
@@ -34,9 +35,9 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.core.designsystem.HedvigPreviewLayout
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.HedvigChip
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.scaffold.ClaimFlowScaffold
@@ -49,7 +50,8 @@ import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
 
 @Composable
-internal fun ConfirmEmergencyDestination(
+internal fun SharedTransitionScope.ConfirmEmergencyDestination(
+  animatedContentScope: AnimatedContentScope,
   viewModel: ConfirmEmergencyViewModel,
   navigateToNextStep: (ClaimFlowStep) -> Unit,
   windowSizeClass: WindowSizeClass,
@@ -64,6 +66,7 @@ internal fun ConfirmEmergencyDestination(
     }
   }
   ConfirmEmergencyScreen(
+    animatedContentScope = animatedContentScope,
     uiState = uiState,
     windowSizeClass = windowSizeClass,
     onSubmit = viewModel::submitIsUrgentEmergency,
@@ -75,7 +78,8 @@ internal fun ConfirmEmergencyDestination(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun ConfirmEmergencyScreen(
+private fun SharedTransitionScope.ConfirmEmergencyScreen(
+  animatedContentScope: AnimatedContentScope,
   uiState: ConfirmEmergencyUiState,
   windowSizeClass: WindowSizeClass,
   navigateUp: () -> Unit,
@@ -84,6 +88,7 @@ private fun ConfirmEmergencyScreen(
   onSubmit: () -> Unit,
 ) {
   ClaimFlowScaffold(
+    animatedContentScope = animatedContentScope,
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
     closeClaimFlow = closeClaimFlow,
@@ -104,9 +109,9 @@ private fun ConfirmEmergencyScreen(
       Column {
         WarningTextWithIcon(
           modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .fillMaxWidth()
-            .wrapContentWidth(),
+              .padding(horizontal = 16.dp)
+              .fillMaxWidth()
+              .wrapContentWidth(),
           text = stringResource(R.string.CLAIMS_SELECT_CATEGORY),
         )
         Spacer(Modifier.height(16.dp))
@@ -116,8 +121,8 @@ private fun ConfirmEmergencyScreen(
       horizontalArrangement = Arrangement.spacedBy(8.dp),
       maxItemsInEachRow = 2,
       modifier = Modifier
-        .padding(horizontal = 16.dp)
-        .fillMaxWidth(),
+          .padding(horizontal = 16.dp)
+          .fillMaxWidth(),
     ) {
       for (item in uiState.options) {
         key(item) {
@@ -161,30 +166,29 @@ private fun ConfirmEmergencyScreen(
 @Composable
 @HedvigPreview
 private fun ConfirmEmergencyScreenPreview() {
-  HedvigTheme {
-    Surface {
-      ConfirmEmergencyScreen(
-        uiState = ConfirmEmergencyUiState(
-          "Är du på en resa och behöver akut vård eller assistans?",
-          options = listOf(
-            EmergencyOption(
-              displayName = "Yes",
-              value = false,
-            ),
-            EmergencyOption(
-              displayName = "No",
-              value = true,
-            ),
+  HedvigPreviewLayout { animatedContentScope ->
+    ConfirmEmergencyScreen(
+      animatedContentScope = animatedContentScope,
+      uiState = ConfirmEmergencyUiState(
+        "Är du på en resa och behöver akut vård eller assistans?",
+        options = listOf(
+          EmergencyOption(
+            displayName = "Yes",
+            value = false,
           ),
-          selectedOption = null,
-          isLoading = false,
+          EmergencyOption(
+            displayName = "No",
+            value = true,
+          ),
         ),
-        windowSizeClass = WindowSizeClass.calculateForPreview(),
-        navigateUp = {},
-        closeClaimFlow = {},
-        onSubmit = {},
-        onSelectOption = {},
-      )
-    }
+        selectedOption = null,
+        isLoading = false,
+      ),
+      windowSizeClass = WindowSizeClass.calculateForPreview(),
+      navigateUp = {},
+      closeClaimFlow = {},
+      onSubmit = {},
+      onSelectOption = {},
+    )
   }
 }

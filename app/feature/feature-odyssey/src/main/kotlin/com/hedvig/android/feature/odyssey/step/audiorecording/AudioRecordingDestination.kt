@@ -1,6 +1,8 @@
 package com.hedvig.android.feature.odyssey.step.audiorecording
 
 import android.Manifest
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -11,7 +13,6 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
@@ -29,10 +30,10 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
+import com.hedvig.android.core.designsystem.HedvigPreviewLayout
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.card.HedvigCardElevation
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.permission.PermissionDialog
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.scaffold.ClaimFlowScaffold
@@ -45,7 +46,8 @@ import java.io.File
 import kotlinx.datetime.Clock
 
 @Composable
-internal fun AudioRecordingDestination(
+internal fun SharedTransitionScope.AudioRecordingDestination(
+  animatedContentScope: AnimatedContentScope,
   viewModel: AudioRecordingViewModel,
   windowSizeClass: WindowSizeClass,
   questions: List<String>,
@@ -63,6 +65,7 @@ internal fun AudioRecordingDestination(
     }
   }
   AudioRecordingScreen(
+    animatedContentScope = animatedContentScope,
     uiState = uiState,
     windowSizeClass = windowSizeClass,
     questions = questions,
@@ -81,7 +84,8 @@ internal fun AudioRecordingDestination(
 }
 
 @Composable
-private fun AudioRecordingScreen(
+private fun SharedTransitionScope.AudioRecordingScreen(
+  animatedContentScope: AnimatedContentScope,
   uiState: AudioRecordingUiState,
   windowSizeClass: WindowSizeClass,
   questions: List<String>,
@@ -98,6 +102,7 @@ private fun AudioRecordingScreen(
   closeClaimFlow: () -> Unit,
 ) {
   ClaimFlowScaffold(
+    animatedContentScope = animatedContentScope,
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
     closeClaimFlow = closeClaimFlow,
@@ -193,28 +198,27 @@ private fun AudioRecordingSection(
 @HedvigPreview
 @Composable
 private fun PreviewAudioRecordingScreen() {
-  HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
-      AudioRecordingScreen(
-        AudioRecordingUiState.NotRecording,
-        WindowSizeClass.calculateForPreview(),
-        listOf(
-          "Perfect, now you need to make a voice recording. Try and answer the questions with as much detail as",
-          "What happened?",
-          "How did it happen?",
-        ),
-        Clock.System,
-        { false },
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-      )
-    }
+  HedvigPreviewLayout { animatedContentScope ->
+    AudioRecordingScreen(
+      animatedContentScope,
+      AudioRecordingUiState.NotRecording,
+      WindowSizeClass.calculateForPreview(),
+      listOf(
+        "Perfect, now you need to make a voice recording. Try and answer the questions with as much detail as",
+        "What happened?",
+        "How did it happen?",
+      ),
+      Clock.System,
+      { false },
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+    )
   }
 }

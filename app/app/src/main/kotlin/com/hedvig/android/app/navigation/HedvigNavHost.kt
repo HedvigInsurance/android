@@ -103,6 +103,7 @@ internal fun SharedTransitionScope.HedvigNavHost(
     homeGraph(
       nestedGraphs = {
         nestedHomeGraphs(
+          sharedTransitionScope = this@HedvigNavHost,
           density = density,
           hedvigAppState = hedvigAppState,
           hedvigBuildConstants = hedvigBuildConstants,
@@ -288,6 +289,7 @@ internal fun SharedTransitionScope.HedvigNavHost(
 }
 
 private fun NavGraphBuilder.nestedHomeGraphs(
+  sharedTransitionScope: SharedTransitionScope,
   density: Density,
   hedvigAppState: HedvigAppState,
   hedvigBuildConstants: HedvigBuildConstants,
@@ -326,6 +328,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     applicationId = BuildConfig.APPLICATION_ID,
   )
   claimFlowGraph(
+    sharedTransitionScope = sharedTransitionScope,
     windowSizeClass = hedvigAppState.windowSizeClass,
     navigator = navigator,
     shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
@@ -340,6 +343,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     },
     nestedGraphs = {
       claimTriagingDestinations(
+        sharedTransitionScope = sharedTransitionScope,
         navigator = navigator,
         windowSizeClass = hedvigAppState.windowSizeClass,
         startClaimFlow = { backStackEntry, claimFlowStep: ClaimFlowStep ->

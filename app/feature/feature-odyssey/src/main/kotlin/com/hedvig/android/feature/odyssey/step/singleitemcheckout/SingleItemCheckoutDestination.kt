@@ -1,5 +1,7 @@
 package com.hedvig.android.feature.odyssey.step.singleitemcheckout
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -16,7 +18,6 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
@@ -35,11 +36,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.NonEmptyList
 import arrow.core.toNonEmptyListOrNull
+import com.hedvig.android.core.designsystem.HedvigPreviewLayout
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.SelectIndicationCircle
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
@@ -51,7 +52,8 @@ import hedvig.resources.R
 import octopus.type.CurrencyCode
 
 @Composable
-internal fun SingleItemCheckoutDestination(
+internal fun SharedTransitionScope.SingleItemCheckoutDestination(
+  animatedContentScope: AnimatedContentScope,
   viewModel: SingleItemCheckoutViewModel,
   windowSizeClass: WindowSizeClass,
   navigateToAppUpdateStep: () -> Unit,
@@ -67,8 +69,10 @@ internal fun SingleItemCheckoutDestination(
       }
       HedvigFullScreenCenterAlignedProgress()
     }
+
     is SingleItemCheckoutUiState.Content -> {
       SingleItemCheckoutScreen(
+        animatedContentScope = animatedContentScope,
         uiState = state,
         windowSizeClass = windowSizeClass,
         selectCheckoutMethod = viewModel::selectCheckoutMethod,
@@ -81,7 +85,8 @@ internal fun SingleItemCheckoutDestination(
 }
 
 @Composable
-private fun SingleItemCheckoutScreen(
+private fun SharedTransitionScope.SingleItemCheckoutScreen(
+  animatedContentScope: AnimatedContentScope,
   uiState: SingleItemCheckoutUiState.Content,
   windowSizeClass: WindowSizeClass,
   selectCheckoutMethod: (CheckoutMethod.Known) -> Unit,
@@ -90,6 +95,7 @@ private fun SingleItemCheckoutScreen(
   closeClaimFlow: () -> Unit,
 ) {
   ClaimFlowScaffold(
+    animatedContentScope = animatedContentScope,
     topAppBarText = stringResource(R.string.claims_payout_payout_label),
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
@@ -109,7 +115,9 @@ private fun SingleItemCheckoutScreen(
         text = uiState.payoutAmount.toString(),
         style = MaterialTheme.typography.displayMedium,
         textAlign = TextAlign.Center,
-        modifier = Modifier.fillMaxWidth().padding(6.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(6.dp),
       )
     }
     Spacer(Modifier.height(24.dp))
@@ -220,28 +228,27 @@ private fun PreviewSingleItemCheckoutScreen(
     UiMoney(2499.0, CurrencyCode.SEK),
   )
   var selected: CheckoutMethod.Known by remember { mutableStateOf(checkoutNr1) }
-  HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
-      SingleItemCheckoutScreen(
-        SingleItemCheckoutUiState.Content(
-          UiMoney(3999.0, CurrencyCode.SEK),
-          UiMoney(500.0, CurrencyCode.SEK),
-          UiMoney(1000.0, CurrencyCode.SEK),
-          UiMoney(2499.0, CurrencyCode.SEK),
-          buildList {
-            add(checkoutNr1)
-            if (withMultiplePayoutMethods) {
-              add(checkoutNr2)
-            }
-          }.toNonEmptyListOrNull()!!,
-          selected,
-        ),
-        WindowSizeClass.calculateForPreview(),
-        { selected = it },
-        {},
-        {},
-        {},
-      )
-    }
+  HedvigPreviewLayout { animatedContentScope ->
+    SingleItemCheckoutScreen(
+      animatedContentScope,
+      SingleItemCheckoutUiState.Content(
+        UiMoney(3999.0, CurrencyCode.SEK),
+        UiMoney(500.0, CurrencyCode.SEK),
+        UiMoney(1000.0, CurrencyCode.SEK),
+        UiMoney(2499.0, CurrencyCode.SEK),
+        buildList {
+          add(checkoutNr1)
+          if (withMultiplePayoutMethods) {
+            add(checkoutNr2)
+          }
+        }.toNonEmptyListOrNull()!!,
+        selected,
+      ),
+      WindowSizeClass.calculateForPreview(),
+      { selected = it },
+      {},
+      {},
+      {},
+    )
   }
 }

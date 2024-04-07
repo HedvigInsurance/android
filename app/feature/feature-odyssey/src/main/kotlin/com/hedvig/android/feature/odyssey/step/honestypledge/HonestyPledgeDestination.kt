@@ -1,5 +1,9 @@
 package com.hedvig.android.feature.odyssey.step.honestypledge
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -12,7 +16,6 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.systemGestureExclusion
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
@@ -20,16 +23,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.HedvigPreviewLayout
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.scaffold.ClaimFlowScaffold
 import com.hedvig.android.notification.permission.rememberNotificationPermissionStatus
 import hedvig.resources.R
 
 @Composable
-internal fun HonestyPledgeDestination(
+internal fun SharedTransitionScope.HonestyPledgeDestination(
+  animatedContentScope: AnimatedContentScope,
   windowSizeClass: WindowSizeClass,
   openNotificationPermissionStep: () -> Unit,
   pledgeAccepted: () -> Unit,
@@ -37,6 +41,7 @@ internal fun HonestyPledgeDestination(
   closeClaimFlow: () -> Unit,
 ) {
   HonestyPledgeScreen(
+    animatedContentScope = animatedContentScope,
     windowSizeClass = windowSizeClass,
     openNotificationPermissionStep = openNotificationPermissionStep,
     pledgeAccepted = pledgeAccepted,
@@ -46,7 +51,8 @@ internal fun HonestyPledgeDestination(
 }
 
 @Composable
-private fun HonestyPledgeScreen(
+private fun SharedTransitionScope.HonestyPledgeScreen(
+  animatedContentScope: AnimatedContentScope,
   windowSizeClass: WindowSizeClass,
   openNotificationPermissionStep: () -> Unit,
   pledgeAccepted: () -> Unit,
@@ -55,6 +61,7 @@ private fun HonestyPledgeScreen(
 ) {
   val hasNotificationPermission = rememberNotificationPermissionStatus()
   ClaimFlowScaffold(
+    animatedContentScope = animatedContentScope,
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
     closeClaimFlow = closeClaimFlow,
@@ -102,9 +109,7 @@ private fun HonestyPledgeScreen(
 @HedvigPreview
 @Composable
 private fun PreviewHonestyPledgeScreen() {
-  HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
-      HonestyPledgeScreen(WindowSizeClass.calculateForPreview(), {}, {}, {}, {})
-    }
+  HedvigPreviewLayout { animatedContentScope ->
+    HonestyPledgeScreen(animatedContentScope, WindowSizeClass.calculateForPreview(), {}, {}, {}, {})
   }
 }

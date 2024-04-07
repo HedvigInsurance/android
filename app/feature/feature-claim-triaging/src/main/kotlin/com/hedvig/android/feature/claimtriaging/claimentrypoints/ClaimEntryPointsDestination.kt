@@ -1,6 +1,8 @@
 package com.hedvig.android.feature.claimtriaging.claimentrypoints
 
+import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Column
@@ -15,7 +17,6 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
@@ -26,9 +27,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.core.designsystem.HedvigPreviewLayout
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.dialog.ErrorDialog
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.scaffold.ClaimFlowScaffold
@@ -44,7 +45,8 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
-internal fun ClaimEntryPointsDestination(
+internal fun SharedTransitionScope.ClaimEntryPointsDestination(
+  animatedContentScope: AnimatedContentScope,
   viewModel: ClaimEntryPointsViewModel,
   windowSizeClass: WindowSizeClass,
   onEntryPointWithOptionsSubmit: (EntryPointId, ImmutableList<EntryPointOption>) -> Unit,
@@ -60,6 +62,7 @@ internal fun ClaimEntryPointsDestination(
     }
   }
   ClaimEntryPointsScreen(
+    animatedContentScope = animatedContentScope,
     uiState = uiState,
     onSelectEntryPoint = viewModel::onSelectEntryPoint,
     onContinue = {
@@ -83,7 +86,8 @@ internal fun ClaimEntryPointsDestination(
 }
 
 @Composable
-private fun ClaimEntryPointsScreen(
+private fun SharedTransitionScope.ClaimEntryPointsScreen(
+  animatedContentScope: AnimatedContentScope,
   uiState: ClaimEntryPointsUiState,
   windowSizeClass: WindowSizeClass,
   onSelectEntryPoint: (EntryPoint) -> Unit,
@@ -100,6 +104,7 @@ private fun ClaimEntryPointsScreen(
     )
   }
   ClaimFlowScaffold(
+    animatedContentScope = animatedContentScope,
     navigateUp = navigateUp,
     modifier = Modifier.fillMaxWidth(),
     windowSizeClass = windowSizeClass,
@@ -156,27 +161,26 @@ private fun ClaimEntryPointsScreen(
 @HedvigPreview
 @Composable
 private fun PreviewClaimEntryPointsScreen() {
-  HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
-      val entryPoints = remember {
-        List(12) {
-          val displayName = buildString { repeat((4..14).random()) { append(('a'..'z').random()) } }
-          EntryPoint(EntryPointId(it.toString()), displayName, persistentListOf())
-        }.toImmutableList()
-      }
-      ClaimEntryPointsScreen(
-        uiState = ClaimEntryPointsUiState(
-          entryPoints = entryPoints,
-          selectedEntryPoint = entryPoints[3],
-          startClaimErrorMessage = "",
-        ),
-        onSelectEntryPoint = {},
-        onContinue = {},
-        showedStartClaimError = {},
-        navigateUp = {},
-        closeClaimFlow = {},
-        windowSizeClass = WindowSizeClass.calculateForPreview(),
-      )
+  HedvigPreviewLayout { animatedContentScope ->
+    val entryPoints = remember {
+      List(12) {
+        val displayName = buildString { repeat((4..14).random()) { append(('a'..'z').random()) } }
+        EntryPoint(EntryPointId(it.toString()), displayName, persistentListOf())
+      }.toImmutableList()
     }
+    ClaimEntryPointsScreen(
+      animatedContentScope = animatedContentScope,
+      uiState = ClaimEntryPointsUiState(
+        entryPoints = entryPoints,
+        selectedEntryPoint = entryPoints[3],
+        startClaimErrorMessage = "",
+      ),
+      onSelectEntryPoint = {},
+      onContinue = {},
+      showedStartClaimError = {},
+      navigateUp = {},
+      closeClaimFlow = {},
+      windowSizeClass = WindowSizeClass.calculateForPreview(),
+    )
   }
 }

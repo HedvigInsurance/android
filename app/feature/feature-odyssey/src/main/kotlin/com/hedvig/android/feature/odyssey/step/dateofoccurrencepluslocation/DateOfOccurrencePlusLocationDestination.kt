@@ -1,5 +1,7 @@
 package com.hedvig.android.feature.odyssey.step.dateofoccurrencepluslocation
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -9,7 +11,6 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
@@ -20,9 +21,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.core.designsystem.HedvigPreviewLayout
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.scaffold.ClaimFlowScaffold
@@ -36,7 +37,8 @@ import hedvig.resources.R
 import java.util.Locale
 
 @Composable
-internal fun DateOfOccurrencePlusLocationDestination(
+internal fun SharedTransitionScope.DateOfOccurrencePlusLocationDestination(
+  animatedContentScope: AnimatedContentScope,
   viewModel: DateOfOccurrencePlusLocationViewModel,
   windowSizeClass: WindowSizeClass,
   navigateToNextStep: (ClaimFlowStep) -> Unit,
@@ -51,6 +53,7 @@ internal fun DateOfOccurrencePlusLocationDestination(
     }
   }
   DateOfOccurrencePlusLocationScreen(
+    animatedContentScope = animatedContentScope,
     uiState = uiState,
     windowSizeClass = windowSizeClass,
     selectLocationOption = viewModel::selectLocationOption,
@@ -62,7 +65,8 @@ internal fun DateOfOccurrencePlusLocationDestination(
 }
 
 @Composable
-private fun DateOfOccurrencePlusLocationScreen(
+private fun SharedTransitionScope.DateOfOccurrencePlusLocationScreen(
+  animatedContentScope: AnimatedContentScope,
   uiState: DateOfOccurrencePlusLocationUiState,
   windowSizeClass: WindowSizeClass,
   selectLocationOption: (LocationOption) -> Unit,
@@ -72,6 +76,7 @@ private fun DateOfOccurrencePlusLocationScreen(
   closeClaimFlow: () -> Unit,
 ) {
   ClaimFlowScaffold(
+    animatedContentScope = animatedContentScope,
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
     closeClaimFlow = closeClaimFlow,
@@ -137,21 +142,20 @@ private fun Location(
 @HedvigMultiScreenPreview
 @Composable
 private fun PreviewDateOfOccurrencePlusLocationScreen() {
-  HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
-      DateOfOccurrencePlusLocationScreen(
-        uiState = DateOfOccurrencePlusLocationUiState(
-          datePickerUiState = remember { DatePickerUiState(Locale.ENGLISH, null) },
-          locationOptions = emptyList(),
-          selectedLocation = null,
-        ),
-        windowSizeClass = WindowSizeClass.calculateForPreview(),
-        selectLocationOption = {},
-        submitDateOfOccurrenceAndLocation = {},
-        showedError = {},
-        navigateUp = {},
-        closeClaimFlow = {},
-      )
-    }
+  HedvigPreviewLayout { animatedContentScope ->
+    DateOfOccurrencePlusLocationScreen(
+      animatedContentScope = animatedContentScope,
+      uiState = DateOfOccurrencePlusLocationUiState(
+        datePickerUiState = remember { DatePickerUiState(Locale.ENGLISH, null) },
+        locationOptions = emptyList(),
+        selectedLocation = null,
+      ),
+      windowSizeClass = WindowSizeClass.calculateForPreview(),
+      selectLocationOption = {},
+      submitDateOfOccurrenceAndLocation = {},
+      showedError = {},
+      navigateUp = {},
+      closeClaimFlow = {},
+    )
   }
 }

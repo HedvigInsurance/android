@@ -1,6 +1,8 @@
 package com.hedvig.android.feature.claimtriaging.claimgroups
 
+import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Column
@@ -15,7 +17,6 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
@@ -27,10 +28,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.core.designsystem.HedvigPreviewLayout
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.dialog.ErrorDialog
 import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.ui.preview.calculateForPreview
@@ -45,7 +46,8 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
-internal fun ClaimGroupsDestination(
+internal fun SharedTransitionScope.ClaimGroupsDestination(
+  animatedContentScope: AnimatedContentScope,
   viewModel: ClaimGroupsViewModel,
   windowSizeClass: WindowSizeClass,
   onClaimGroupWithEntryPointsSubmit: (ClaimGroup) -> Unit,
@@ -61,6 +63,7 @@ internal fun ClaimGroupsDestination(
     }
   }
   ClaimGroupsScreen(
+    animatedContentScope = animatedContentScope,
     uiState = uiState,
     loadClaimGroups = viewModel::loadClaimGroups,
     onSelectClaimGroup = viewModel::onSelectClaimGroup,
@@ -84,7 +87,8 @@ internal fun ClaimGroupsDestination(
 }
 
 @Composable
-private fun ClaimGroupsScreen(
+private fun SharedTransitionScope.ClaimGroupsScreen(
+  animatedContentScope: AnimatedContentScope,
   uiState: ClaimGroupsUiState,
   windowSizeClass: WindowSizeClass,
   loadClaimGroups: () -> Unit,
@@ -103,6 +107,7 @@ private fun ClaimGroupsScreen(
   }
 
   ClaimFlowScaffold(
+    animatedContentScope = animatedContentScope,
     navigateUp = navigateUp,
     modifier = Modifier.fillMaxWidth(),
     windowSizeClass = windowSizeClass,
@@ -116,8 +121,8 @@ private fun ClaimGroupsScreen(
         text = stringResource(R.string.CLAIM_TRIAGING_NAVIGATION_TITLE),
         style = MaterialTheme.typography.headlineMedium,
         modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
       )
       Spacer(Modifier.height(32.dp))
       Spacer(Modifier.weight(1f))
@@ -129,9 +134,9 @@ private fun ClaimGroupsScreen(
         Column {
           WarningTextWithIcon(
             modifier = Modifier
-              .padding(horizontal = 16.dp)
-              .fillMaxWidth()
-              .wrapContentWidth(),
+                .padding(horizontal = 16.dp)
+                .fillMaxWidth()
+                .wrapContentWidth(),
             text = stringResource(R.string.CLAIMS_SELECT_CATEGORY),
           )
           Spacer(Modifier.height(16.dp))
@@ -163,30 +168,29 @@ private fun ClaimGroupsScreen(
 private fun PreviewClaimGroupsScreen(
   @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) hasError: Boolean,
 ) {
-  HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
-      val claimGroups = remember {
-        List(12) {
-          val displayName = buildString { repeat((4..14).random()) { append(('a'..'z').random()) } }
-          ClaimGroup(ClaimGroupId(it.toString()), displayName, persistentListOf())
-        }.toImmutableList()
-      }
-      ClaimGroupsScreen(
-        uiState = ClaimGroupsUiState(
-          claimGroups = claimGroups,
-          selectedClaimGroup = claimGroups[3],
-          haveTriedContinuingWithoutSelection = true,
-          chipLoadingErrorMessage = if (hasError) "" else null,
-          isLoading = false,
-        ),
-        loadClaimGroups = {},
-        onSelectClaimGroup = {},
-        onContinue = {},
-        showedStartClaimError = {},
-        navigateUp = {},
-        closeClaimFlow = {},
-        windowSizeClass = WindowSizeClass.calculateForPreview(),
-      )
+  HedvigPreviewLayout { animatedContentScope ->
+    val claimGroups = remember {
+      List(12) {
+        val displayName = buildString { repeat((4..14).random()) { append(('a'..'z').random()) } }
+        ClaimGroup(ClaimGroupId(it.toString()), displayName, persistentListOf())
+      }.toImmutableList()
     }
+    ClaimGroupsScreen(
+      animatedContentScope = animatedContentScope,
+      uiState = ClaimGroupsUiState(
+        claimGroups = claimGroups,
+        selectedClaimGroup = claimGroups[3],
+        haveTriedContinuingWithoutSelection = true,
+        chipLoadingErrorMessage = if (hasError) "" else null,
+        isLoading = false,
+      ),
+      loadClaimGroups = {},
+      onSelectClaimGroup = {},
+      onContinue = {},
+      showedStartClaimError = {},
+      navigateUp = {},
+      closeClaimFlow = {},
+      windowSizeClass = WindowSizeClass.calculateForPreview(),
+    )
   }
 }

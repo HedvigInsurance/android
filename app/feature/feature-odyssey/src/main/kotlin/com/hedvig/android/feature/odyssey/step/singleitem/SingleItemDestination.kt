@@ -1,5 +1,7 @@
 package com.hedvig.android.feature.odyssey.step.singleitem
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -13,7 +15,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
@@ -38,11 +39,11 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.nonEmptyListOf
+import com.hedvig.android.core.designsystem.HedvigPreviewLayout
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.card.HedvigBigCard
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.dialog.MultiSelectDialog
 import com.hedvig.android.core.ui.dialog.SingleSelectDialog
@@ -62,7 +63,8 @@ import java.util.Locale
 import octopus.type.CurrencyCode
 
 @Composable
-internal fun SingleItemDestination(
+internal fun SharedTransitionScope.SingleItemDestination(
+  animatedContentScope: AnimatedContentScope,
   viewModel: SingleItemViewModel,
   windowSizeClass: WindowSizeClass,
   navigateToNextStep: (ClaimFlowStep) -> Unit,
@@ -77,6 +79,7 @@ internal fun SingleItemDestination(
     }
   }
   SingleItemScreen(
+    animatedContentScope = animatedContentScope,
     uiState = uiState,
     windowSizeClass = windowSizeClass,
     submitSelections = viewModel::submitSelections,
@@ -90,7 +93,8 @@ internal fun SingleItemDestination(
 }
 
 @Composable
-private fun SingleItemScreen(
+private fun SharedTransitionScope.SingleItemScreen(
+  animatedContentScope: AnimatedContentScope,
   uiState: SingleItemUiState,
   windowSizeClass: WindowSizeClass,
   submitSelections: () -> Unit,
@@ -102,6 +106,7 @@ private fun SingleItemScreen(
   closeClaimFlow: () -> Unit,
 ) {
   ClaimFlowScaffold(
+    animatedContentScope = animatedContentScope,
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
     closeClaimFlow = closeClaimFlow,
@@ -146,6 +151,7 @@ private fun SingleItemScreen(
         )
         Spacer(Modifier.height(2.dp))
       }
+
       ModelUi.JustModelDialog -> {
         ModelPicker(
           uiState = uiState,
@@ -153,6 +159,7 @@ private fun SingleItemScreen(
           modifier = sideSpacingModifier,
         )
       }
+
       is ModelUi.BothDialogAndCustom -> {
         ModelPicker(
           uiState = uiState,
@@ -266,9 +273,9 @@ private fun SelectDialogWithFreeTextField(
     title = stringResource(R.string.claims_item_screen_model_button),
     optionsList = uiState.availableItemModels,
     onSelected =
-      { selectedModel ->
-        selectModel(selectedModel)
-      },
+    { selectedModel ->
+      selectModel(selectedModel)
+    },
     getDisplayText = { it.displayName(resources) },
     getIsSelected = { it: ItemModel -> it == uiState.selectedItemModel },
     getId = { it.asKnown()?.itemModelId ?: "id" },
@@ -402,40 +409,39 @@ private fun PreviewSingleItemScreen(
   @PreviewParameter(SingleItemScreenStatePreviewProvider::class) state: Pair<Boolean, Boolean>,
 ) {
   val (isLoading: Boolean, hasPriceInput: Boolean) = state
-  HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
-      SingleItemScreen(
-        SingleItemUiState(
-          datePickerUiState = remember { DatePickerUiState(Locale.ENGLISH, null) },
-          purchasePriceUiState = PurchasePriceUiState(if (hasPriceInput) 299.90 else null, CurrencyCode.SEK),
-          itemBrandsUiState = ItemBrandsUiState.Content(
-            nonEmptyListOf(ItemBrand.Known("Item Brand", "", "")),
-            ItemBrand.Known("Item Brand #1", "", ""),
-          ),
-          itemModelsUiState = ItemModelsUiState(
-            nonEmptyListOf(ItemModel.Known("Item Model", "", "", "")),
-            ItemModel.Known("Item Model #2", "", "", ""),
-            modelUi = ModelUi.BothDialogAndCustom,
-            initialCustomValue = "",
-          ),
-          itemProblemsUiState = ItemProblemsUiState.Content(
-            nonEmptyListOf(ItemProblem("Item Problem", "")),
-            listOf(ItemProblem("Item Problem #3", "")),
-          ),
-          isLoading = isLoading,
-          hasError = false,
-          nextStep = null,
+  HedvigPreviewLayout { animatedContentScope ->
+    SingleItemScreen(
+      animatedContentScope = animatedContentScope,
+      SingleItemUiState(
+        datePickerUiState = remember { DatePickerUiState(Locale.ENGLISH, null) },
+        purchasePriceUiState = PurchasePriceUiState(if (hasPriceInput) 299.90 else null, CurrencyCode.SEK),
+        itemBrandsUiState = ItemBrandsUiState.Content(
+          nonEmptyListOf(ItemBrand.Known("Item Brand", "", "")),
+          ItemBrand.Known("Item Brand #1", "", ""),
         ),
-        WindowSizeClass.calculateForPreview(),
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-      )
-    }
+        itemModelsUiState = ItemModelsUiState(
+          nonEmptyListOf(ItemModel.Known("Item Model", "", "", "")),
+          ItemModel.Known("Item Model #2", "", "", ""),
+          modelUi = ModelUi.BothDialogAndCustom,
+          initialCustomValue = "",
+        ),
+        itemProblemsUiState = ItemProblemsUiState.Content(
+          nonEmptyListOf(ItemProblem("Item Problem", "")),
+          listOf(ItemProblem("Item Problem #3", "")),
+        ),
+        isLoading = isLoading,
+        hasError = false,
+        nextStep = null,
+      ),
+      WindowSizeClass.calculateForPreview(),
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+    )
   }
 }
 
