@@ -16,6 +16,7 @@ internal class HelpCenterViewModel(
       questions = commonQuestions,
       quickLinks = persistentListOf(),
       selectedQuickAction = null,
+      isLoadingQuickLinks = true,
     ),
     presenter = HelpCenterPresenter(
       getCommonClaimsUseCase = getCommonClaimsUseCase,

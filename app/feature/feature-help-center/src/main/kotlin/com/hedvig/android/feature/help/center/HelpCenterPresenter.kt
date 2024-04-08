@@ -18,6 +18,9 @@ import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
 
 internal sealed interface HelpCenterEvent {
   data class OnQuickActionSelected(val quickAction: QuickAction) : HelpCenterEvent
@@ -29,6 +32,7 @@ internal data class HelpCenterUiState(
   val topics: ImmutableList<Topic>,
   val questions: ImmutableList<Question>,
   val quickLinks: ImmutableList<QuickLinkType>,
+  val isLoadingQuickLinks: Boolean,
   val selectedQuickAction: QuickAction?,
 ) {
   sealed interface QuickLinkType {
@@ -55,6 +59,7 @@ internal class HelpCenterPresenter(
       )
     }
     var selectedQuickAction by remember { mutableStateOf<QuickAction?>(null) }
+    var isLoadingQuickLinks by remember { mutableStateOf(lastState.quickLinks.isEmpty()) }
 
     CollectEvents { event ->
       selectedQuickAction = when (event) {
@@ -64,15 +69,21 @@ internal class HelpCenterPresenter(
     }
 
     LaunchedEffect(Unit) {
-      getQuickLinksUseCase.invoke().fold(
-        ifLeft = { quickActions = persistentListOf() },
-        ifRight = { quickActions = it },
-      )
-
-      getCommonClaimsUseCase.invoke().fold(
-        ifLeft = { commonClaims = persistentListOf() },
-        ifRight = { commonClaims = it },
-      )
+      isLoadingQuickLinks = true
+      combine(
+        flow { emit(getQuickLinksUseCase.invoke()) },
+        flow { emit(getCommonClaimsUseCase.invoke()) },
+      ) { quickLinksResult, commonClaimsResult ->
+        quickLinksResult.fold(
+          ifLeft = { quickActions = persistentListOf() },
+          ifRight = { quickActions = it },
+        )
+        commonClaimsResult.fold(
+          ifLeft = { commonClaims = persistentListOf() },
+          ifRight = { commonClaims = it },
+        )
+        isLoadingQuickLinks = false
+      }.collectLatest {}
     }
 
     return HelpCenterUiState(
@@ -83,6 +94,7 @@ internal class HelpCenterPresenter(
         *commonClaims.map { HelpCenterUiState.QuickLinkType.CommonClaimType(it) }.toTypedArray(),
       ),
       selectedQuickAction = selectedQuickAction,
+      isLoadingQuickLinks = isLoadingQuickLinks,
     )
   }
 }

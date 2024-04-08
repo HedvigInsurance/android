@@ -1,10 +1,5 @@
 package com.hedvig.android.feature.help.center.home
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,6 +14,7 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -57,6 +53,9 @@ import com.hedvig.android.feature.help.center.model.Topic
 import com.hedvig.android.feature.help.center.ui.HelpCenterSection
 import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
 import com.hedvig.android.feature.help.center.ui.StillNeedHelpSection
+import com.hedvig.android.placeholder.PlaceholderHighlight
+import com.hedvig.android.placeholder.placeholder
+import com.hedvig.android.placeholder.shimmer
 import com.kiwi.navigationcompose.typed.Destination
 import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
@@ -79,6 +78,7 @@ internal fun HelpCenterHomeDestination(
     topics = uiState.topics,
     questions = uiState.questions,
     quickLinks = uiState.quickLinks,
+    isLoadingQuickLinks = uiState.isLoadingQuickLinks,
     selectedQuickAction = uiState.selectedQuickAction,
     onNavigateToTopic = onNavigateToTopic,
     onNavigateToQuestion = onNavigateToQuestion,
@@ -100,6 +100,7 @@ private fun HelpCenterHomeScreen(
   topics: ImmutableList<Topic>,
   questions: ImmutableList<Question>,
   quickLinks: ImmutableList<HelpCenterUiState.QuickLinkType>,
+  isLoadingQuickLinks: Boolean,
   selectedQuickAction: QuickAction?,
   onNavigateToTopic: (topic: Topic) -> Unit,
   onNavigateToQuestion: (question: Question) -> Unit,
@@ -166,32 +167,17 @@ private fun HelpCenterHomeScreen(
           )
         }
         Spacer(Modifier.height(40.dp))
-        AnimatedVisibility(
-          visible = quickLinks.isNotEmpty(),
-          enter = fadeIn() + expandVertically(clip = false, expandFrom = Alignment.CenterVertically),
-          exit = fadeOut() + shrinkVertically(clip = false, shrinkTowards = Alignment.CenterVertically),
-        ) {
-          HelpCenterSection(
-            title = stringResource(R.string.HC_QUICK_ACTIONS_TITLE),
-            chipContainerColor = MaterialTheme.colorScheme.typeContainer,
-            contentColor = MaterialTheme.colorScheme.onTypeContainer,
-            content = {
-              Column(
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-              ) {
-                for (quickLink in quickLinks) {
+        HelpCenterSection(
+          title = stringResource(R.string.HC_QUICK_ACTIONS_TITLE),
+          chipContainerColor = MaterialTheme.colorScheme.typeContainer,
+          contentColor = MaterialTheme.colorScheme.onTypeContainer,
+          content = {
+            Column(
+              verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+              if (isLoadingQuickLinks) {
+                List(5) {
                   HedvigCard(
-                    onClick = {
-                      when (quickLink) {
-                        is HelpCenterUiState.QuickLinkType.CommonClaimType -> onNavigateToCommonClaim(
-                          quickLink.commonClaim,
-                        )
-
-                        is HelpCenterUiState.QuickLinkType.QuickActionType -> onQuickActionsSelected(
-                          quickLink.quickAction,
-                        )
-                      }
-                    },
                     modifier = Modifier
                       .fillMaxWidth()
                       .padding(horizontal = 16.dp)
@@ -201,40 +187,83 @@ private fun HelpCenterHomeScreen(
                       verticalArrangement = Arrangement.Center,
                     ) {
                       Spacer(modifier = Modifier.height(12.dp))
-                      Text(
-                        text = when (quickLink) {
-                          is HelpCenterUiState.QuickLinkType.CommonClaimType -> quickLink.commonClaim.title
-                          is HelpCenterUiState.QuickLinkType.QuickActionType -> stringResource(
-                            quickLink.quickAction.titleRes,
-                          )
-                        },
-                        textAlign = TextAlign.Start,
-                        modifier = Modifier.padding(horizontal = 16.dp),
+                      Spacer(
+                        modifier = Modifier
+                          .height(24.dp)
+                          .padding(horizontal = 16.dp)
+                          .width(80.dp)
+                          .placeholder(true, highlight = PlaceholderHighlight.shimmer()),
                       )
                       Spacer(modifier = Modifier.height(4.dp))
-                      Text(
-                        text = when (quickLink) {
-                          is HelpCenterUiState.QuickLinkType.CommonClaimType -> {
-                            val hintTextRes = quickLink.commonClaim.hintTextRes
-                            if (hintTextRes != null) stringResource(hintTextRes) else ""
-                          }
-                          is HelpCenterUiState.QuickLinkType.QuickActionType -> stringResource(
-                            quickLink.quickAction.hintTextRes,
-                          )
-                        },
-                        textAlign = TextAlign.Start,
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        style = MaterialTheme.typography.titleSmall,
+                      Spacer(
+                        modifier = Modifier
+                          .height(20.dp)
+                          .padding(horizontal = 16.dp)
+                          .width(240.dp)
+                          .placeholder(true, highlight = PlaceholderHighlight.shimmer()),
                       )
                       Spacer(modifier = Modifier.height(12.dp))
                     }
                   }
                 }
               }
-            },
-          )
-        }
+              for (quickLink in quickLinks) {
+                HedvigCard(
+                  onClick = {
+                    when (quickLink) {
+                      is HelpCenterUiState.QuickLinkType.CommonClaimType -> onNavigateToCommonClaim(
+                        quickLink.commonClaim,
+                      )
+
+                      is HelpCenterUiState.QuickLinkType.QuickActionType -> onQuickActionsSelected(
+                        quickLink.quickAction,
+                      )
+                    }
+                  },
+                  modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+                ) {
+                  Column(
+                    verticalArrangement = Arrangement.Center,
+                  ) {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                      text = when (quickLink) {
+                        is HelpCenterUiState.QuickLinkType.CommonClaimType -> quickLink.commonClaim.title
+                        is HelpCenterUiState.QuickLinkType.QuickActionType -> stringResource(
+                          quickLink.quickAction.titleRes,
+                        )
+                      },
+                      textAlign = TextAlign.Start,
+                      modifier = Modifier.padding(horizontal = 16.dp),
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                      text = when (quickLink) {
+                        is HelpCenterUiState.QuickLinkType.CommonClaimType -> {
+                          val hintTextRes = quickLink.commonClaim.hintTextRes
+                          if (hintTextRes != null) stringResource(hintTextRes) else ""
+                        }
+
+                        is HelpCenterUiState.QuickLinkType.QuickActionType -> stringResource(
+                          quickLink.quickAction.hintTextRes,
+                        )
+                      },
+                      textAlign = TextAlign.Start,
+                      modifier = Modifier.padding(horizontal = 16.dp),
+                      color = MaterialTheme.colorScheme.onSurfaceVariant,
+                      style = MaterialTheme.typography.titleSmall,
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                  }
+                }
+              }
+            }
+          },
+        )
+
         Spacer(Modifier.height(48.dp))
         HelpCenterSection(
           title = stringResource(id = R.string.HC_COMMON_TOPICS_TITLE),
@@ -306,6 +335,7 @@ private fun PreviewHelpCenterHomeScreen() {
         onDismissQuickActionDialog = {},
         openChat = {},
         onNavigateUp = {},
+        isLoadingQuickLinks = false,
       )
     }
   }
