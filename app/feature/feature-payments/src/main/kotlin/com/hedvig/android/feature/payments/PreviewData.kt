@@ -3,6 +3,7 @@ package com.hedvig.android.feature.payments
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.payments.data.Discount
 import com.hedvig.android.feature.payments.data.MemberCharge
+import com.hedvig.android.feature.payments.data.MemberChargeShortInfo
 import com.hedvig.android.feature.payments.data.PaymentConnection
 import com.hedvig.android.feature.payments.data.PaymentOverview
 import kotlinx.collections.immutable.persistentListOf
@@ -207,9 +208,8 @@ internal val chargeHistoryPreviewData = listOf(
 )
 
 internal val paymentOverViewPreviewData = PaymentOverview(
-  memberCharge = MemberCharge(
+  memberChargeShortInfo = MemberChargeShortInfo(
     grossAmount = UiMoney(200.0, CurrencyCode.SEK),
-    netAmount = UiMoney(200.0, CurrencyCode.SEK),
     id = "123",
     status = MemberCharge.MemberChargeStatus.FAILED,
     dueDate = LocalDate.fromEpochDays(400),
@@ -217,26 +217,38 @@ internal val paymentOverViewPreviewData = PaymentOverview(
       fromDate = LocalDate.fromEpochDays(200),
       toDate = LocalDate.fromEpochDays(201),
     ),
-    chargeBreakdowns = persistentListOf(
-      MemberCharge.ChargeBreakdown(
-        contractDisplayName = "Bilforsakring",
-        contractDetails = "ABH 234",
-        grossAmount = UiMoney(200.0, CurrencyCode.SEK),
-        periods = periodsPreviewData,
-      ),
-      MemberCharge.ChargeBreakdown(
-        contractDisplayName = "Hemforsakring Bostad",
-        contractDetails = "Bellmansgatan 19A",
-        grossAmount = UiMoney(200.0, CurrencyCode.SEK),
-        periods = periodsPreviewData,
-      ),
-    ),
-    discounts = discountsPreviewData,
-    carriedAdjustment = UiMoney(200.0, CurrencyCode.SEK),
-    settlementAdjustment = UiMoney(200.0, CurrencyCode.SEK),
   ),
   paymentConnection = PaymentConnection.Active(
     displayName = "Nordea",
     displayValue = "31489*****",
   ),
+)
+
+internal val paymentDetailsPreviewData = MemberCharge(
+  grossAmount = UiMoney(200.0, CurrencyCode.SEK),
+  netAmount = UiMoney(200.0, CurrencyCode.SEK),
+  id = "123",
+  status = MemberCharge.MemberChargeStatus.FAILED,
+  dueDate = LocalDate.fromEpochDays(400),
+  failedCharge = MemberCharge.FailedCharge(
+    fromDate = LocalDate.fromEpochDays(200),
+    toDate = LocalDate.fromEpochDays(201),
+  ),
+  chargeBreakdowns = persistentListOf(
+    MemberCharge.ChargeBreakdown(
+      contractDisplayName = "Bilforsakring",
+      contractDetails = "ABH 234",
+      grossAmount = UiMoney(200.0, CurrencyCode.SEK),
+      periods = periodsPreviewData,
+    ),
+    MemberCharge.ChargeBreakdown(
+      contractDisplayName = "Hemforsakring Bostad",
+      contractDetails = "Bellmansgatan 19A",
+      grossAmount = UiMoney(200.0, CurrencyCode.SEK),
+      periods = periodsPreviewData,
+    ),
+  ),
+  discounts = discountsPreviewData,
+  carriedAdjustment = UiMoney(200.0, CurrencyCode.SEK),
+  settlementAdjustment = UiMoney(200.0, CurrencyCode.SEK),
 )

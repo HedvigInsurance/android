@@ -63,6 +63,7 @@ import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.PaymentConnection
 import com.hedvig.android.feature.payments.data.PaymentDetails
 import com.hedvig.android.feature.payments.discounts.DiscountRows
+import com.hedvig.android.feature.payments.paymentDetailsPreviewData
 import com.hedvig.android.feature.payments.paymentOverViewPreviewData
 import hedvig.resources.R
 import kotlinx.datetime.toJavaLocalDate
@@ -387,7 +388,7 @@ private fun PaymentDetailsScreenPreview() {
       MemberChargeDetailsScreen(
         uiState = PaymentDetailsUiState.Success(
           PaymentDetails(
-            memberCharge = paymentOverViewPreviewData.memberCharge!!,
+            memberCharge = paymentDetailsPreviewData,
             pastCharges = chargeHistoryPreviewData,
             paymentConnection = paymentOverViewPreviewData.paymentConnection,
           ),

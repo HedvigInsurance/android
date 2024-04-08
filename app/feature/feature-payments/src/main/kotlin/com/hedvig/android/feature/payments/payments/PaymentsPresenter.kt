@@ -11,13 +11,13 @@ import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.PaymentConnection
-import com.hedvig.android.feature.payments.overview.data.GetPaymentOverviewDataUseCase
+import com.hedvig.android.feature.payments.overview.data.GetUpcomingPaymentUseCase
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import kotlinx.datetime.LocalDate
 
 internal class PaymentsPresenter(
-  val getPaymentOverviewDataUseCase: Provider<GetPaymentOverviewDataUseCase>,
+  val getUpcomingPaymentUseCase: Provider<GetUpcomingPaymentUseCase>,
 ) : MoleculePresenter<PaymentsEvent, PaymentsUiState> {
   @Composable
   override fun MoleculePresenterScope<PaymentsEvent>.present(lastState: PaymentsUiState): PaymentsUiState {
@@ -37,14 +37,14 @@ internal class PaymentsPresenter(
       } else {
         PaymentsUiState.Loading
       }
-      getPaymentOverviewDataUseCase.provide().invoke().fold(
+      getUpcomingPaymentUseCase.provide().invoke().fold(
         ifLeft = {
           paymentUiState = PaymentsUiState.Error
         },
-        ifRight = { paymentOverviewData ->
+        ifRight = { paymentOverview ->
           paymentUiState = PaymentsUiState.Content(
             isLoading = false,
-            upcomingPayment = paymentOverviewData.paymentOverview.memberCharge?.let { memberCharge ->
+            upcomingPayment = paymentOverview.memberChargeShortInfo?.let { memberCharge ->
               PaymentsUiState.Content.UpcomingPayment(
                 grossAmount = memberCharge.grossAmount,
                 dueDate = memberCharge.dueDate,
@@ -52,7 +52,7 @@ internal class PaymentsPresenter(
               )
             },
             upcomingPaymentInfo = run {
-              val memberCharge = paymentOverviewData.paymentOverview.memberCharge
+              val memberCharge = paymentOverview.memberChargeShortInfo
               if (memberCharge?.status == MemberCharge.MemberChargeStatus.PENDING) {
                 return@run PaymentsUiState.Content.UpcomingPaymentInfo.InProgress
               }
@@ -64,7 +64,7 @@ internal class PaymentsPresenter(
               }
             },
             connectedPaymentInfo = run {
-              when (val paymentConnection = paymentOverviewData.paymentOverview.paymentConnection) {
+              when (val paymentConnection = paymentOverview.paymentConnection) {
                 is PaymentConnection.Active -> PaymentsUiState.Content.ConnectedPaymentInfo.Connected(
                   displayName = paymentConnection.displayName,
                   maskedAccountNumber = paymentConnection.displayValue,
@@ -72,7 +72,7 @@ internal class PaymentsPresenter(
 
                 PaymentConnection.Pending -> PaymentsUiState.Content.ConnectedPaymentInfo.Pending
                 else -> PaymentsUiState.Content.ConnectedPaymentInfo.NotConnected(
-                  paymentOverviewData.paymentOverview.memberCharge?.dueDate,
+                  paymentOverview.memberChargeShortInfo?.dueDate,
                 )
               }
             },

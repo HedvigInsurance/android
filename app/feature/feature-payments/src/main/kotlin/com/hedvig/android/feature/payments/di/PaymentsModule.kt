@@ -19,15 +19,13 @@ import com.hedvig.android.feature.payments.overview.data.AddDiscountUseCase
 import com.hedvig.android.feature.payments.overview.data.AddDiscountUseCaseImpl
 import com.hedvig.android.feature.payments.overview.data.GetForeverInformationUseCase
 import com.hedvig.android.feature.payments.overview.data.GetForeverInformationUseCaseImpl
-import com.hedvig.android.feature.payments.overview.data.GetPaymentOverviewDataUseCaseDemo
-import com.hedvig.android.feature.payments.overview.data.GetPaymentOverviewDataUseCaseImpl
-import com.hedvig.android.feature.payments.overview.data.GetPaymentOverviewDataUseCaseProvider
 import com.hedvig.android.feature.payments.overview.data.GetUpcomingPaymentUseCase
+import com.hedvig.android.feature.payments.overview.data.GetUpcomingPaymentUseCaseDemo
 import com.hedvig.android.feature.payments.overview.data.GetUpcomingPaymentUseCaseImpl
+import com.hedvig.android.feature.payments.overview.data.GetUpcomingPaymentUseCaseProvider
 import com.hedvig.android.feature.payments.payments.PaymentsViewModel
 import kotlinx.datetime.Clock
 import org.koin.androidx.viewmodel.dsl.viewModel
-import org.koin.core.module.Module
 import org.koin.dsl.module
 
 val paymentsModule = module {
@@ -74,11 +72,9 @@ val paymentsModule = module {
     )
   }
 
-  provideGetPaymentOverviewDataUseCase()
-
   viewModel<PaymentsViewModel> {
     PaymentsViewModel(
-      get<GetPaymentOverviewDataUseCaseProvider>(),
+      get<GetUpcomingPaymentUseCaseProvider>(),
     )
   }
 
@@ -101,27 +97,24 @@ val paymentsModule = module {
       get<GetPaymentsHistoryUseCase>(),
     )
   }
-}
-
-// todo: should I do this Provider thing for the new usecases?
-private fun Module.provideGetPaymentOverviewDataUseCase() {
-  single<GetPaymentOverviewDataUseCaseImpl> {
-    GetPaymentOverviewDataUseCaseImpl(
-      getUpcomingPaymentUseCase = get<GetUpcomingPaymentUseCase>(),
-      getForeverInformationUseCase = get<GetForeverInformationUseCase>(),
-      getOnlyHasNonPayingContractsUseCase = get<GetOnlyHasNonPayingContractsUseCaseProvider>().prodImpl,
+  single<GetUpcomingPaymentUseCaseProvider> {
+    GetUpcomingPaymentUseCaseProvider(
+      demoManager = get<DemoManager>(),
+      demoImpl = get<GetUpcomingPaymentUseCaseDemo>(),
+      prodImpl = get<GetUpcomingPaymentUseCaseImpl>(),
     )
   }
-  single<GetPaymentOverviewDataUseCaseDemo> {
-    GetPaymentOverviewDataUseCaseDemo(
+  single<GetUpcomingPaymentUseCaseImpl> {
+    GetUpcomingPaymentUseCaseImpl(
+      get<ApolloClient>(),
       clock = get<Clock>(),
     )
   }
-  single<GetPaymentOverviewDataUseCaseProvider> {
-    GetPaymentOverviewDataUseCaseProvider(
-      demoManager = get<DemoManager>(),
-      demoImpl = get<GetPaymentOverviewDataUseCaseDemo>(),
-      prodImpl = get<GetPaymentOverviewDataUseCaseImpl>(),
+  single<GetUpcomingPaymentUseCaseDemo> {
+    GetUpcomingPaymentUseCaseDemo(
+      clock = get<Clock>(),
     )
   }
 }
+
+// todo: should I do this Provider thing for the new usecases?

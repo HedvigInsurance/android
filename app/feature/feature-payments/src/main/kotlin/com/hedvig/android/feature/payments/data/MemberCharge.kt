@@ -149,7 +149,7 @@ internal fun MemberChargeFragment.toMemberCharge(
   carriedAdjustment = carriedAdjustment?.let(UiMoney::fromMoneyFragment),
 )
 
-private fun MemberChargeFragment.toFailedCharge(): MemberCharge.FailedCharge? {
+internal fun MemberChargeFragment.toFailedCharge(): MemberCharge.FailedCharge? {
   val previousChargesPeriods = contractsChargeBreakdown
     .flatMap { it.periods }
     .filter { it.isPreviouslyFailedCharge }
