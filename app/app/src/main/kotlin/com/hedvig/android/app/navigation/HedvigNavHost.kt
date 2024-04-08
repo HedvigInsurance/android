@@ -46,6 +46,7 @@ import com.hedvig.android.feature.odyssey.navigation.navigateToClaimFlowDestinat
 import com.hedvig.android.feature.odyssey.navigation.terminalClaimFlowStepDestinations
 import com.hedvig.android.feature.payments.navigation.paymentsGraph
 import com.hedvig.android.feature.profile.tab.profileGraph
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceGraphDestination
 import com.hedvig.android.feature.terminateinsurance.navigation.terminateInsuranceGraph
 import com.hedvig.android.feature.travelcertificate.navigation.travelCertificateGraph
 import com.hedvig.android.language.LanguageService
@@ -151,6 +152,7 @@ internal fun HedvigNavHost(
           hedvigDeepLinkContainer = hedvigDeepLinkContainer,
           closeTerminationFlow = {
             hedvigAppState.navController.popBackStack<AppDestination.TerminationFlow>(inclusive = true)
+            hedvigAppState.navController.popBackStack<TerminateInsuranceGraphDestination>(inclusive = true)
           },
         )
       },
@@ -168,10 +170,9 @@ internal fun HedvigNavHost(
       },
       startTerminationFlow = { backStackEntry: NavBackStackEntry, data: CancelInsuranceData ->
         with(navigator) {
-          val destination = AppDestination.TerminationFlow(
-            insuranceId = data.contractId,
+          backStackEntry.navigate(
+            TerminateInsuranceGraphDestination(insuranceId = data.contractId),
           )
-          backStackEntry.navigate(destination)
         }
       },
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
@@ -248,32 +249,20 @@ internal fun HedvigNavHost(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       navigator = navigator,
       onNavigateToQuickLink = { backStackEntry, quickLinkDestination ->
+        val destination = when (quickLinkDestination) {
+          is QuickLinkDestination.QuickLinkCoInsuredAddInfo ->
+            AppDestination.CoInsuredAddInfo(quickLinkDestination.contractId)
+
+          is QuickLinkDestination.QuickLinkCoInsuredAddOrRemove ->
+            AppDestination.CoInsuredAddOrRemove(quickLinkDestination.contractId)
+
+          QuickLinkDestination.QuickLinkChangeAddress -> AppDestination.ChangeAddress
+          QuickLinkDestination.QuickLinkConnectPayment -> AppDestination.ConnectPayment
+          QuickLinkDestination.QuickLinkTermination -> TerminateInsuranceGraphDestination(null)
+          QuickLinkDestination.QuickLinkTravelCertificate -> AppDestination.TravelCertificate
+        }
         with(navigator) {
-          when (quickLinkDestination) {
-            is QuickLinkDestination.QuickLinkCoInsuredAddInfo -> {
-              backStackEntry.navigate(AppDestination.CoInsuredAddInfo(quickLinkDestination.contractId))
-            }
-
-            is QuickLinkDestination.QuickLinkCoInsuredAddOrRemove -> {
-              backStackEntry.navigate(AppDestination.CoInsuredAddOrRemove(quickLinkDestination.contractId))
-            }
-
-            QuickLinkDestination.QuickLinkChangeAddress -> {
-              backStackEntry.navigate(AppDestination.ChangeAddress)
-            }
-
-            QuickLinkDestination.QuickLinkConnectPayment -> {
-              backStackEntry.navigate(AppDestination.ConnectPayment)
-            }
-
-            QuickLinkDestination.QuickLinkTermination -> {
-              backStackEntry.navigate(AppDestination.TerminationFlow(null))
-            }
-
-            QuickLinkDestination.QuickLinkTravelCertificate -> {
-              backStackEntry.navigate(AppDestination.TravelCertificate)
-            }
-          }
+          backStackEntry.navigate(destination)
         }
       },
       openChat = { backStackEntry, chatContext ->
