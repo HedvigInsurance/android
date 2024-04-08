@@ -1,5 +1,6 @@
 package com.hedvig.android.core.ui.scaffold
 
+import android.util.Log
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Box
@@ -75,12 +76,13 @@ fun SharedTransitionScope.ClaimFlowScaffold(
           onClose = { showCloseClaimsFlowDialog = true },
           title = topAppBarText ?: "",
           scrollBehavior = topAppBarScrollBehavior,
+          windowInsets = WindowInsets(0.dp),
           modifier = Modifier
             .sharedElement(
-            rememberSharedContentState("com.hedvig.android.core.ui.scaffold.ClaimFlowScaffold.TopAppBar"),
-            animatedContentScope,
-          )
-            .skipToLookaheadSize(),
+              rememberSharedContentState("com.hedvig.android.core.ui.scaffold.ClaimFlowScaffold.TopAppBar"),
+              animatedContentScope.also { Log.d("Stelios", "shar:${it.hashCode()}") },
+            ),
+//            .skipToLookaheadSize(),
         )
         Column(
           horizontalAlignment = itemsColumnHorizontalAlignment,
