@@ -23,13 +23,13 @@ internal class ChooseInsuranceToTerminateViewModel(
   getTerminatableContractsUseCase: GetTerminatableContractsUseCase,
   terminateInsuranceRepository: TerminateInsuranceRepository,
 ) : MoleculeViewModel<ChooseInsuranceToTerminateEvent, ChooseInsuranceToTerminateStepUiState>(
-    initialState = ChooseInsuranceToTerminateStepUiState.Loading,
-    presenter = ChooseInsuranceToTerminatePresenter(
-      insuranceId = insuranceId,
-      getTerminatableContractsUseCase = getTerminatableContractsUseCase,
-      terminateInsuranceRepository = terminateInsuranceRepository,
-    ),
-  )
+  initialState = ChooseInsuranceToTerminateStepUiState.Loading,
+  presenter = ChooseInsuranceToTerminatePresenter(
+    insuranceId = insuranceId,
+    getTerminatableContractsUseCase = getTerminatableContractsUseCase,
+    terminateInsuranceRepository = terminateInsuranceRepository,
+  ),
+)
 
 private class ChooseInsuranceToTerminatePresenter(
   private val insuranceId: String?,
@@ -69,12 +69,12 @@ private class ChooseInsuranceToTerminatePresenter(
         }
 
         ChooseInsuranceToTerminateEvent.ClearTerminationStep -> {
-          if (currentState is ChooseInsuranceToTerminateStepUiState.Success) {
-            currentState =
-              (currentState as ChooseInsuranceToTerminateStepUiState.Success).copy(
-                nextStepWithInsurance = null,
-                isNavigationStepLoading = false,
-              )
+          val currentStateValue = currentState
+          if (currentStateValue is ChooseInsuranceToTerminateStepUiState.Success) {
+            currentState = currentStateValue.copy(
+              nextStepWithInsurance = null,
+              isNavigationStepLoading = false,
+            )
           }
         }
       }
