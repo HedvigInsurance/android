@@ -14,6 +14,9 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
@@ -36,8 +39,9 @@ import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.material3.squircleLargeTop
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.hedvig.normal.Info
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBackAndClose
-import com.hedvig.android.core.ui.appbar.TopAppBarWithInfoAndClose
 import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
 import hedvig.resources.R
 import kotlinx.coroutines.launch
@@ -78,32 +82,34 @@ internal fun TerminationScaffold(
   ) {
     Column {
       val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-      if (textForInfoIcon != null) {
-        TopAppBarWithInfoAndClose(
-          onInfoClick = { showExplanationBottomSheet = true },
-          onClose = closeTerminationFlow,
-          title = "",
-          scrollBehavior = topAppBarScrollBehavior,
-        )
-      } else {
-        TopAppBarWithBackAndClose(
-          onNavigateUp = navigateUp,
-          onClose = closeTerminationFlow,
-          title = "",
-          scrollBehavior = topAppBarScrollBehavior,
-        )
-      }
+      TopAppBarWithBackAndClose(
+        onNavigateUp = navigateUp,
+        onClose = closeTerminationFlow,
+        title = "",
+        scrollBehavior = topAppBarScrollBehavior,
+        extraActions = {
+          IconButton(
+            onClick = { showExplanationBottomSheet = true },
+            content = {
+              Icon(
+                imageVector = Icons.Hedvig.Info,
+                contentDescription = null,
+              )
+            },
+          )
+        },
+      )
 
       Column(
         modifier = Modifier
-          .fillMaxSize()
-          .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
-          .verticalScroll(rememberScrollState())
-          .windowInsetsPadding(
-            WindowInsets.safeDrawing.only(
-              WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom,
+            .fillMaxSize()
+            .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
+            .verticalScroll(rememberScrollState())
+            .windowInsetsPadding(
+                WindowInsets.safeDrawing.only(
+                    WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom,
+                ),
             ),
-          ),
       ) {
         Spacer(modifier = Modifier.height(8.dp))
         Text(
@@ -177,16 +183,16 @@ internal fun ExplanationBottomSheet(onDismiss: () -> Unit, sheetState: SheetStat
     Text(
       text = stringResource(id = R.string.TERMINATION_FLOW_CANCEL_INFO_TITLE),
       modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 24.dp),
+          .fillMaxWidth()
+          .padding(horizontal = 24.dp),
     )
     Spacer(Modifier.height(8.dp))
     Text(
       text = text,
       color = MaterialTheme.colorScheme.onSurfaceVariant,
       modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 24.dp),
+          .fillMaxWidth()
+          .padding(horizontal = 24.dp),
     )
     Spacer(Modifier.height(32.dp))
     HedvigTextButton(

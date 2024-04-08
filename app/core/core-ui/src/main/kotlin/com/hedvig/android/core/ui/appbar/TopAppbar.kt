@@ -1,5 +1,6 @@
 package com.hedvig.android.core.ui.appbar
 
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.displayCutout
@@ -96,6 +97,7 @@ fun TopAppBarWithBackAndClose(
     scrolledContainerColor = MaterialTheme.colorScheme.surface,
   ),
   scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+  extraActions: @Composable RowScope.() -> Unit = {},
 ) {
   TopAppBar(
     modifier = modifier,
@@ -117,56 +119,7 @@ fun TopAppBarWithBackAndClose(
       )
     },
     actions = {
-      IconButton(
-        onClick = onClose,
-        content = {
-          Icon(
-            imageVector = Icons.Hedvig.X,
-            contentDescription = null,
-          )
-        },
-      )
-    },
-    windowInsets = windowInsets,
-    colors = colors,
-    scrollBehavior = scrollBehavior,
-  )
-}
-
-@Composable
-fun TopAppBarWithInfoAndClose(
-  title: String,
-  onClose: () -> Unit,
-  onInfoClick: () -> Unit,
-  modifier: Modifier = Modifier,
-  windowInsets: WindowInsets = TopAppBarDefaults.windowInsets
-    .union(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)),
-  colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(
-    containerColor = MaterialTheme.colorScheme.background,
-    scrolledContainerColor = MaterialTheme.colorScheme.surface,
-  ),
-  scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-) {
-  TopAppBar(
-    modifier = modifier,
-    title = {
-      Text(
-        text = title,
-        style = MaterialTheme.typography.titleLarge,
-      )
-    },
-    navigationIcon = {
-      IconButton(
-        onClick = onInfoClick,
-        content = {
-          Icon(
-            imageVector = Icons.Hedvig.Info,
-            contentDescription = null,
-          )
-        },
-      )
-    },
-    actions = {
+      extraActions()
       IconButton(
         onClick = onClose,
         content = {
