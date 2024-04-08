@@ -13,10 +13,6 @@ query TravelCertificateSpecificationsQuery {
         minStartDate
         numberOfCoInsured
       }
-      infoSpecifications {
-        title
-        body
-      }
     }
   }
 }
