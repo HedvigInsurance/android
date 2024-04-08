@@ -41,13 +41,11 @@ internal class GetChargeDetailsUseCaseImpl(
       result.currentMember.redeemedCampaigns,
       result.currentMember.referralInformation,
       clock,
-      // todo: see if we need this referrals here at all
     ).takeIf { it?.id == id }
     val pastMemberCharge = pastCharges.firstOrNull { it.id == id }
     PaymentDetails(
       memberCharge = futureMemberCharge ?: pastMemberCharge ?: raise(ErrorMessage()),
       pastCharges = pastCharges,
-      // todo: take a look if we need paymentConnection
       paymentConnection = run {
         val paymentInformation = result.currentMember.paymentInformation
         when (paymentInformation.status) {
