@@ -1,5 +1,8 @@
 package com.hedvig.android.feature.terminateinsurance.step.choose
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -8,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -34,6 +38,7 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.SelectIndicationCircle
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
+import com.hedvig.android.core.ui.text.WarningTextWithIcon
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.termination.data.TerminatableInsurance
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
@@ -63,7 +68,7 @@ internal fun ChooseInsuranceToTerminateDestination(
     openChat = openChat,
     closeTerminationFlow = closeTerminationFlow,
     reload = { viewModel.emit(ChooseInsuranceToTerminateEvent.RetryLoadData) },
-    fetchTerminationStep = { viewModel.emit(ChooseInsuranceToTerminateEvent.FetchTerminationStep) },
+    fetchTerminationStep = { viewModel.emit(ChooseInsuranceToTerminateEvent.SubmitSelectedInsuranceToTerminate(it)) },
     selectInsurance = { viewModel.emit(ChooseInsuranceToTerminateEvent.SelectInsurance(it)) },
   )
 }
@@ -75,7 +80,7 @@ private fun ChooseInsuranceToTerminateScreen(
   reload: () -> Unit,
   openChat: () -> Unit,
   closeTerminationFlow: () -> Unit,
-  fetchTerminationStep: () -> Unit,
+  fetchTerminationStep: (insurance: TerminatableInsurance) -> Unit,
   selectInsurance: (insurance: TerminatableInsurance) -> Unit,
 ) {
   when (uiState) {
@@ -119,6 +124,22 @@ private fun ChooseInsuranceToTerminateScreen(
         )
         Spacer(Modifier.weight(1f))
         Spacer(Modifier.height(16.dp))
+        AnimatedVisibility(
+          visible = uiState.navigationStepFailedToLoad,
+          enter = fadeIn(),
+          exit = fadeOut(),
+        ) {
+          Column {
+            WarningTextWithIcon(
+              modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .fillMaxWidth()
+                .wrapContentWidth(),
+              text = stringResource(R.string.something_went_wrong),
+            )
+            Spacer(Modifier.height(16.dp))
+          }
+        }
         for (insurance in uiState.insuranceList) {
           HedvigCard(
             onClick = { selectInsurance(insurance) },
@@ -166,7 +187,11 @@ private fun ChooseInsuranceToTerminateScreen(
             disabledContainerColor = MaterialTheme.colorScheme.surface,
             disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
           ),
-          onClick = fetchTerminationStep,
+          onClick = {
+            uiState.selectedInsurance?.let { selectedInsurance ->
+              fetchTerminationStep(selectedInsurance)
+            }
+          },
           isLoading = uiState.isNavigationStepLoading,
         )
         Spacer(Modifier.height(16.dp))
@@ -220,6 +245,7 @@ private class ChooseInsuranceToTerminateStepUiStateProvider :
         ),
         selectedInsurance = null,
         isNavigationStepLoading = false,
+        navigationStepFailedToLoad = false,
       ),
       ChooseInsuranceToTerminateStepUiState.Success(
         nextStepWithInsurance = null,
@@ -247,6 +273,7 @@ private class ChooseInsuranceToTerminateStepUiStateProvider :
           activateFrom = LocalDate(2024, 6, 27),
         ),
         isNavigationStepLoading = true,
+        navigationStepFailedToLoad = true,
       ),
       ChooseInsuranceToTerminateStepUiState.Failure,
       ChooseInsuranceToTerminateStepUiState.NotAllowed,
