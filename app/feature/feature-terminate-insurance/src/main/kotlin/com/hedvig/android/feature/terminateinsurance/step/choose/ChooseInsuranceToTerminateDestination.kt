@@ -50,13 +50,16 @@ internal fun ChooseInsuranceToTerminateDestination(
   navigateToNextStep: (step: TerminateInsuranceStep, terminatableInsurance: TerminatableInsurance) -> Unit,
 ) {
   val uiState: ChooseInsuranceToTerminateStepUiState by viewModel.uiState.collectAsStateWithLifecycle()
+  LaunchedEffect(uiState) {
+    val uiStateValue = uiState as? ChooseInsuranceToTerminateStepUiState.Success ?: return@LaunchedEffect
+    if (uiStateValue.nextStepWithInsurance != null) {
+      viewModel.emit(ChooseInsuranceToTerminateEvent.ClearTerminationStep)
+      navigateToNextStep(uiStateValue.nextStepWithInsurance.first, uiStateValue.nextStepWithInsurance.second)
+    }
+  }
   ChooseInsuranceToTerminateScreen(
     uiState = uiState,
     navigateUp = navigateUp,
-    navigateToNextStep = { step, insurance ->
-      viewModel.emit(ChooseInsuranceToTerminateEvent.ClearTerminationStep)
-      navigateToNextStep(step, insurance)
-    },
     openChat = openChat,
     closeTerminationFlow = closeTerminationFlow,
     reload = { viewModel.emit(ChooseInsuranceToTerminateEvent.RetryLoadData) },
@@ -74,7 +77,6 @@ private fun ChooseInsuranceToTerminateScreen(
   closeTerminationFlow: () -> Unit,
   fetchTerminationStep: () -> Unit,
   selectInsurance: (insurance: TerminatableInsurance) -> Unit,
-  navigateToNextStep: (step: TerminateInsuranceStep, terminatableInsurance: TerminatableInsurance) -> Unit,
 ) {
   when (uiState) {
     ChooseInsuranceToTerminateStepUiState.NotAllowed -> {
@@ -102,12 +104,6 @@ private fun ChooseInsuranceToTerminateScreen(
     ChooseInsuranceToTerminateStepUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
 
     is ChooseInsuranceToTerminateStepUiState.Success -> {
-      LaunchedEffect(uiState.nextStepWithInsurance) {
-        if (uiState.nextStepWithInsurance != null) {
-          navigateToNextStep(uiState.nextStepWithInsurance.first, uiState.nextStepWithInsurance.second)
-        }
-      }
-
       TerminationScaffold(
         navigateUp = navigateUp,
         closeTerminationFlow = closeTerminationFlow,
@@ -196,7 +192,6 @@ private fun PreviewChooseInsuranceToTerminateScreen(
         {},
         {},
         {},
-        { step, insurance -> },
       )
     }
   }
