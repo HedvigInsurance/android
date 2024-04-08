@@ -51,7 +51,7 @@ internal class HedvigDeepLinkContainerImpl(
   override val contractWithoutContractId: String = "$baseDeepLinkDomain/contract"
   override val contract: String = "$baseDeepLinkDomain/contract?contractId={contractId}"
 
-  override val terminateInsurance: String = "$baseDeepLinkDomain/terminateInsurance?insuranceId={insuranceId}"
+  override val terminateInsurance: String = "$baseDeepLinkDomain/terminate-contract?contractId={contractId}"
 
   override val forever: String = "$baseDeepLinkDomain/forever"
 
