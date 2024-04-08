@@ -68,7 +68,6 @@ internal data class MemberCharge(
   }
 }
 
-// year,dueDate,id, netAmount, status
 @Serializable
 internal data class PaymentHistoryItem(
   val netAmount: UiMoney,
