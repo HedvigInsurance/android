@@ -4,6 +4,7 @@ import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavOptions
 import androidx.navigation.navDeepLink
 import androidx.navigation.navOptions
 import com.hedvig.android.core.common.ErrorMessage
@@ -38,13 +39,23 @@ fun NavGraphBuilder.terminateInsuranceGraph(
   openChat: (NavBackStackEntry) -> Unit,
   openUrl: (String) -> Unit,
   openPlayStore: () -> Unit,
+  navigateToInsurances: (NavOptions) -> Unit,
   closeTerminationFlow: () -> Unit,
 ) {
   composable<TerminateInsuranceDestination.TerminationSuccess> { backStackEntry ->
     TerminationSuccessDestination(
       terminationDate = terminationDate,
       onSurveyClicked = { openUrl(surveyUrl) },
-      navigateBack = navigator::popBackStack,
+      onDone = {
+        if (!navController.popBackStack()) {
+          // In the deep link situation, we want to navigate to Insurances when we're successfully done with this flow
+          navigateToInsurances(
+            navOptions {
+              popUpTo<TerminateInsuranceDestination.TerminationSuccess> { inclusive = true }
+            },
+          )
+        }
+      },
     )
   }
   composable<TerminateInsuranceDestination.TerminationFailure> { backStackEntry ->
@@ -70,8 +81,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       navDeepLink { uriPattern = hedvigDeepLinkContainer.terminateInsurance },
     ),
   ) {
-    composable<TerminateInsuranceDestination.StartStep>(
-    ) { backStackEntry ->
+    composable<TerminateInsuranceDestination.StartStep> { backStackEntry ->
       val terminateInsuranceGraphDestination = navController
         .getRouteFromBackStack<TerminateInsuranceGraphDestination>(backStackEntry)
       val viewModel: ChooseInsuranceToTerminateViewModel = koinViewModel {
