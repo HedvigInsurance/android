@@ -1,0 +1,28 @@
+query MemberActions {
+  currentMember {
+    memberActions {
+      firstVetAction {
+        sections {
+          buttonTitle
+          description
+          title
+          url
+        }
+      }
+      isCancelInsuranceEnabled
+      isConnectPaymentEnabled
+      isEditCoInsuredEnabled
+      isMovingEnabled
+      isTravelCertificateEnabled
+      memberId
+      sickAbroadAction {
+        partners {
+          id
+          imageUrl
+          phoneNumber
+          url
+        }
+      }
+    }
+  }
+}
