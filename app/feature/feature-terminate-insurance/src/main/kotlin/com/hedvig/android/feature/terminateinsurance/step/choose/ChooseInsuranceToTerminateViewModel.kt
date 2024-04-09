@@ -23,13 +23,13 @@ internal class ChooseInsuranceToTerminateViewModel(
   getTerminatableContractsUseCase: GetTerminatableContractsUseCase,
   terminateInsuranceRepository: TerminateInsuranceRepository,
 ) : MoleculeViewModel<ChooseInsuranceToTerminateEvent, ChooseInsuranceToTerminateStepUiState>(
-  initialState = ChooseInsuranceToTerminateStepUiState.Loading,
-  presenter = ChooseInsuranceToTerminatePresenter(
-    insuranceId = insuranceId,
-    getTerminatableContractsUseCase = getTerminatableContractsUseCase,
-    terminateInsuranceRepository = terminateInsuranceRepository,
-  ),
-)
+    initialState = ChooseInsuranceToTerminateStepUiState.Loading,
+    presenter = ChooseInsuranceToTerminatePresenter(
+      insuranceId = insuranceId,
+      getTerminatableContractsUseCase = getTerminatableContractsUseCase,
+      terminateInsuranceRepository = terminateInsuranceRepository,
+    ),
+  )
 
 private class ChooseInsuranceToTerminatePresenter(
   private val insuranceId: String?,
@@ -139,7 +139,7 @@ private class ChooseInsuranceToTerminatePresenter(
                 false,
               )
             }
-          }
+          },
         )
       }
     }

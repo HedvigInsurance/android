@@ -10,9 +10,7 @@ import com.kiwi.navigationcompose.typed.decodeArguments
 import kotlinx.serialization.serializer
 
 @Composable
-inline fun <reified T : Destination> NavController.getRouteFromBackStack(
-  backStackEntry: NavBackStackEntry,
-): T {
+inline fun <reified T : Destination> NavController.getRouteFromBackStack(backStackEntry: NavBackStackEntry): T {
   return remember(this, backStackEntry) {
     decodeArguments(serializer<T>(), getBackStackEntry(createRoutePattern<T>()))
   }

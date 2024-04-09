@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.ArrowBack
-import com.hedvig.android.core.icons.hedvig.normal.Info
 import com.hedvig.android.core.icons.hedvig.normal.X
 
 @Composable
