@@ -27,6 +27,7 @@ dependencies {
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
+  implementation(libs.apollo.normalizedCache)
   implementation(projects.authAndroid)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
@@ -34,6 +35,7 @@ dependencies {
   implementation(projects.coreDesignSystem)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
+  implementation(projects.coreUiData)
   implementation(projects.dataContractAndroid)
   implementation(projects.dataContractPublic)
   implementation(projects.languageCore)
@@ -42,4 +44,7 @@ dependencies {
   implementation(projects.navigationActivity)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
+  implementation(projects.featureFlagsPublic)
+  implementation(projects.dataTermination)
+
 }
