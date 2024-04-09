@@ -170,7 +170,7 @@ private fun CommonQuestions(modifier: Modifier = Modifier) {
 }
 
 @Composable
-internal fun ExplanationBottomSheet(onDismiss: () -> Unit, sheetState: SheetState, text: String) {
+private fun ExplanationBottomSheet(onDismiss: () -> Unit, sheetState: SheetState, text: String) {
   ModalBottomSheet(
     containerColor = MaterialTheme.colorScheme.background,
     onDismissRequest = {
