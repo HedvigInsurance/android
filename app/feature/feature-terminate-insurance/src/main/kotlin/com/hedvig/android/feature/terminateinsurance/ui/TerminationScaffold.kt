@@ -88,28 +88,30 @@ internal fun TerminationScaffold(
         title = "",
         scrollBehavior = topAppBarScrollBehavior,
         extraActions = {
-          IconButton(
-            onClick = { showExplanationBottomSheet = true },
-            content = {
-              Icon(
-                imageVector = Icons.Hedvig.Info,
-                contentDescription = null,
-              )
-            },
-          )
+          if (textForInfoIcon != null) {
+            IconButton(
+              onClick = { showExplanationBottomSheet = true },
+              content = {
+                Icon(
+                  imageVector = Icons.Hedvig.Info,
+                  contentDescription = null,
+                )
+              },
+            )
+          }
         },
       )
 
       Column(
         modifier = Modifier
-            .fillMaxSize()
-            .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
-            .verticalScroll(rememberScrollState())
-            .windowInsetsPadding(
-                WindowInsets.safeDrawing.only(
-                    WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom,
-                ),
+          .fillMaxSize()
+          .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
+          .verticalScroll(rememberScrollState())
+          .windowInsetsPadding(
+            WindowInsets.safeDrawing.only(
+              WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom,
             ),
+          ),
       ) {
         Spacer(modifier = Modifier.height(8.dp))
         Text(
@@ -183,16 +185,16 @@ private fun ExplanationBottomSheet(onDismiss: () -> Unit, sheetState: SheetState
     Text(
       text = stringResource(id = R.string.TERMINATION_FLOW_CANCEL_INFO_TITLE),
       modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 24.dp),
+        .fillMaxWidth()
+        .padding(horizontal = 24.dp),
     )
     Spacer(Modifier.height(8.dp))
     Text(
       text = text,
       color = MaterialTheme.colorScheme.onSurfaceVariant,
       modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 24.dp),
+        .fillMaxWidth()
+        .padding(horizontal = 24.dp),
     )
     Spacer(Modifier.height(32.dp))
     HedvigTextButton(
