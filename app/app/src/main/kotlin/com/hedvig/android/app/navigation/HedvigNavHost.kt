@@ -297,7 +297,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
   openUrl: (String) -> Unit,
 ) {
   claimDetailsGraph(
-    navController = hedvigAppState.navController,
+    navigator = navigator,
     imageLoader = imageLoader,
     openUrl = openUrl,
     navigateUp = navigator::navigateUp,
