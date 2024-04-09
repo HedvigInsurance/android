@@ -1,5 +1,7 @@
 package com.hedvig.android.feature.odyssey.step.dateofoccurrence
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -9,7 +11,6 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
@@ -19,9 +20,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.core.designsystem.HedvigPreviewLayout
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.scaffold.ClaimFlowScaffold
@@ -33,7 +34,8 @@ import hedvig.resources.R
 import java.util.Locale
 
 @Composable
-internal fun DateOfOccurrenceDestination(
+internal fun SharedTransitionScope.DateOfOccurrenceDestination(
+  animatedContentScope: AnimatedContentScope,
   viewModel: DateOfOccurrenceViewModel,
   windowSizeClass: WindowSizeClass,
   navigateToNextStep: (ClaimFlowStep) -> Unit,
@@ -48,6 +50,7 @@ internal fun DateOfOccurrenceDestination(
     }
   }
   DateOfOccurrenceScreen(
+    animatedContentScope = animatedContentScope,
     uiState = uiState,
     windowSizeClass = windowSizeClass,
     submitSelectedDate = viewModel::submitSelectedDate,
@@ -58,7 +61,8 @@ internal fun DateOfOccurrenceDestination(
 }
 
 @Composable
-private fun DateOfOccurrenceScreen(
+private fun SharedTransitionScope.DateOfOccurrenceScreen(
+  animatedContentScope: AnimatedContentScope,
   uiState: DateOfOccurrenceUiState,
   windowSizeClass: WindowSizeClass,
   submitSelectedDate: () -> Unit,
@@ -67,6 +71,7 @@ private fun DateOfOccurrenceScreen(
   closeClaimFlow: () -> Unit,
 ) {
   ClaimFlowScaffold(
+    animatedContentScope = animatedContentScope,
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
     closeClaimFlow = closeClaimFlow,
@@ -110,21 +115,20 @@ private fun DateOfOccurrenceScreen(
 @HedvigPreview
 @Composable
 private fun PreviewDateOfOccurrenceScreen() {
-  HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
-      DateOfOccurrenceScreen(
-        uiState = DateOfOccurrenceUiState(
-          datePickerUiState = DatePickerUiState(Locale.ENGLISH, null),
-          dateSubmissionError = false,
-          nextStep = null,
-          isLoading = false,
-        ),
-        windowSizeClass = WindowSizeClass.calculateForPreview(),
-        submitSelectedDate = {},
-        showedError = {},
-        navigateUp = {},
-        closeClaimFlow = {},
-      )
-    }
+  HedvigPreviewLayout { animatedContentScope ->
+    DateOfOccurrenceScreen(
+      animatedContentScope = animatedContentScope,
+      uiState = DateOfOccurrenceUiState(
+        datePickerUiState = DatePickerUiState(Locale.ENGLISH, null),
+        dateSubmissionError = false,
+        nextStep = null,
+        isLoading = false,
+      ),
+      windowSizeClass = WindowSizeClass.calculateForPreview(),
+      submitSelectedDate = {},
+      showedError = {},
+      navigateUp = {},
+      closeClaimFlow = {},
+    )
   }
 }

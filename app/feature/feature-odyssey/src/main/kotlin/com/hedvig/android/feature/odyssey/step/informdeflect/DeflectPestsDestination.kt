@@ -1,5 +1,7 @@
 package com.hedvig.android.feature.odyssey.step.informdeflect
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,6 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.ImageLoader
 import coil.compose.AsyncImage
+import com.hedvig.android.core.designsystem.HedvigPreviewLayout
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
@@ -36,7 +39,8 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
 @Composable
-internal fun DeflectPestsDestination(
+internal fun SharedTransitionScope.DeflectPestsDestination(
+  animatedContentScope: AnimatedContentScope,
   deflectPests: ClaimFlowDestination.DeflectPests,
   openChat: () -> Unit,
   closeClaimFlow: () -> Unit,
@@ -46,6 +50,7 @@ internal fun DeflectPestsDestination(
   openUrl: (String) -> Unit,
 ) {
   DeflectPestsScreen(
+    animatedContentScope = animatedContentScope,
     partners = deflectPests.partners,
     openChat = openChat,
     closeClaimFlow = closeClaimFlow,
@@ -57,7 +62,8 @@ internal fun DeflectPestsDestination(
 }
 
 @Composable
-private fun DeflectPestsScreen(
+private fun SharedTransitionScope.DeflectPestsScreen(
+  animatedContentScope: AnimatedContentScope,
   partners: ImmutableList<DeflectPartner>,
   openChat: () -> Unit,
   closeClaimFlow: () -> Unit,
@@ -67,6 +73,7 @@ private fun DeflectPestsScreen(
   openUrl: (String) -> Unit,
 ) {
   ClaimFlowScaffold(
+    animatedContentScope = animatedContentScope,
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
     closeClaimFlow = closeClaimFlow,
@@ -91,7 +98,9 @@ private fun DeflectPestsScreen(
           containerColor = MaterialTheme.colorScheme.surfaceVariant,
           contentColor = MaterialTheme.colorScheme.onSurface,
         ),
-        modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .fillMaxWidth(),
       ) {
         Column(Modifier.padding(16.dp)) {
           AsyncImage(
@@ -100,9 +109,9 @@ private fun DeflectPestsScreen(
             imageLoader = imageLoader,
             placeholder = rememberShapedColorPainter(MaterialTheme.colorScheme.surface),
             modifier = Modifier
-              .padding(16.dp)
-              .fillMaxWidth()
-              .height(40.dp),
+                .padding(16.dp)
+                .fillMaxWidth()
+                .height(40.dp),
           )
           Spacer(Modifier.height(8.dp))
           Text(
@@ -146,22 +155,25 @@ private fun DeflectPestsScreen(
       text = stringResource(R.string.SUBMIT_CLAIM_NEED_HELP_TITLE),
       textAlign = TextAlign.Center,
       modifier = Modifier
-        .padding(horizontal = 16.dp)
-        .fillMaxWidth(),
+          .padding(horizontal = 16.dp)
+          .fillMaxWidth(),
     )
     Text(
       text = stringResource(R.string.SUBMIT_CLAIM_NEED_HELP_LABEL),
       textAlign = TextAlign.Center,
       color = MaterialTheme.colorScheme.onSurfaceVariant,
       modifier = Modifier
-        .padding(horizontal = 16.dp)
-        .fillMaxWidth(),
+          .padding(horizontal = 16.dp)
+          .fillMaxWidth(),
     )
     Spacer(Modifier.height(24.dp))
     HedvigContainedSmallButton(
       text = stringResource(R.string.open_chat),
       onClick = openChat,
-      modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth().wrapContentWidth(Alignment.CenterHorizontally),
+      modifier = Modifier
+          .padding(horizontal = 16.dp)
+          .fillMaxWidth()
+          .wrapContentWidth(Alignment.CenterHorizontally),
     )
     Spacer(Modifier.height(16.dp))
   }
@@ -170,20 +182,23 @@ private fun DeflectPestsScreen(
 @HedvigPreview
 @Composable
 private fun DeflectPestsScreenPreview() {
-  DeflectPestsScreen(
-    partners = persistentListOf(
-      DeflectPartner(
-        id = "1",
-        imageUrl = "test",
-        phoneNumber = "1234",
-        url = "test",
+  HedvigPreviewLayout { animatedContentScope ->
+    DeflectPestsScreen(
+      animatedContentScope = animatedContentScope,
+      partners = persistentListOf(
+        DeflectPartner(
+          id = "1",
+          imageUrl = "test",
+          phoneNumber = "1234",
+          url = "test",
+        ),
       ),
-    ),
-    openChat = {},
-    closeClaimFlow = {},
-    windowSizeClass = WindowSizeClass.calculateForPreview(),
-    navigateUp = {},
-    imageLoader = rememberPreviewImageLoader(),
-    openUrl = {},
-  )
+      openChat = {},
+      closeClaimFlow = {},
+      windowSizeClass = WindowSizeClass.calculateForPreview(),
+      navigateUp = {},
+      imageLoader = rememberPreviewImageLoader(),
+      openUrl = {},
+    )
+  }
 }

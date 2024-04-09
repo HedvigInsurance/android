@@ -10,6 +10,7 @@ plugins {
 dependencies {
   implementation(libs.accompanist.permissions)
   implementation(libs.androidx.activity.compose)
+  implementation(libs.androidx.compose.animation)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.compose.material3.windowSizeClass)
@@ -17,6 +18,7 @@ dependencies {
   implementation(libs.androidx.compose.uiCore)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.androidx.navigation.common)
+  implementation(libs.androidx.navigation.compose)
   implementation(libs.androidx.navigation.runtime)
   implementation(libs.arrow.core)
   implementation(libs.coil.coil)

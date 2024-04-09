@@ -1,5 +1,7 @@
 package com.hedvig.android.feature.odyssey.step.phonenumber
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -11,7 +13,6 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
@@ -23,10 +24,10 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.core.designsystem.HedvigPreviewLayout
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.scaffold.ClaimFlowScaffold
@@ -35,7 +36,8 @@ import com.hedvig.android.data.claimflow.ClaimFlowStep
 import hedvig.resources.R
 
 @Composable
-internal fun PhoneNumberDestination(
+internal fun SharedTransitionScope.PhoneNumberDestination(
+  animatedContentScope: AnimatedContentScope,
   viewModel: PhoneNumberViewModel,
   windowSizeClass: WindowSizeClass,
   navigateToNextStep: (ClaimFlowStep) -> Unit,
@@ -50,6 +52,7 @@ internal fun PhoneNumberDestination(
     }
   }
   PhoneNumberScreen(
+    animatedContentScope = animatedContentScope,
     uiState = uiState,
     windowSizeClass = windowSizeClass,
     updatePhoneNumber = viewModel::updatePhoneNumber,
@@ -61,7 +64,8 @@ internal fun PhoneNumberDestination(
 }
 
 @Composable
-private fun PhoneNumberScreen(
+private fun SharedTransitionScope.PhoneNumberScreen(
+  animatedContentScope: AnimatedContentScope,
   uiState: PhoneNumberUiState,
   windowSizeClass: WindowSizeClass,
   updatePhoneNumber: (String) -> Unit,
@@ -71,6 +75,7 @@ private fun PhoneNumberScreen(
   closeClaimFlow: () -> Unit,
 ) {
   ClaimFlowScaffold(
+    animatedContentScope = animatedContentScope,
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
     closeClaimFlow = closeClaimFlow,
@@ -122,20 +127,19 @@ private fun PhoneNumberScreen(
 @HedvigPreview
 @Composable
 private fun PreviewPhoneNumberScreen() {
-  HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
-      PhoneNumberScreen(
-        uiState = PhoneNumberUiState(
-          phoneNumber = "24670",
-          status = PhoneNumberUiState.Status.IDLE,
-        ),
-        windowSizeClass = WindowSizeClass.calculateForPreview(),
-        updatePhoneNumber = {},
-        submitPhoneNumber = {},
-        showedError = {},
-        navigateUp = {},
-        closeClaimFlow = {},
-      )
-    }
+  HedvigPreviewLayout { animatedContentScope ->
+    PhoneNumberScreen(
+      animatedContentScope = animatedContentScope,
+      uiState = PhoneNumberUiState(
+        phoneNumber = "24670",
+        status = PhoneNumberUiState.Status.IDLE,
+      ),
+      windowSizeClass = WindowSizeClass.calculateForPreview(),
+      updatePhoneNumber = {},
+      submitPhoneNumber = {},
+      showedError = {},
+      navigateUp = {},
+      closeClaimFlow = {},
+    )
   }
 }

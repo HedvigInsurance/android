@@ -1,5 +1,8 @@
 package com.hedvig.android.core.ui.scaffold
 
+import android.util.Log
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -40,7 +43,8 @@ import hedvig.resources.R
  * Sets up a top app bar with a back button, the X button and scrollable content and error/loading visuals.
  */
 @Composable
-fun ClaimFlowScaffold(
+fun SharedTransitionScope.ClaimFlowScaffold(
+  animatedContentScope: AnimatedContentScope,
   windowSizeClass: WindowSizeClass,
   navigateUp: () -> Unit,
   closeClaimFlow: () -> Unit,
@@ -72,6 +76,13 @@ fun ClaimFlowScaffold(
           onClose = { showCloseClaimsFlowDialog = true },
           title = topAppBarText ?: "",
           scrollBehavior = topAppBarScrollBehavior,
+          windowInsets = WindowInsets(0.dp),
+          modifier = Modifier
+            .sharedElement(
+              rememberSharedContentState("com.hedvig.android.core.ui.scaffold.ClaimFlowScaffold.TopAppBar"),
+              animatedContentScope.also { Log.d("Stelios", "shar:${it.hashCode()}") },
+            ),
+//            .skipToLookaheadSize(),
         )
         Column(
           horizontalAlignment = itemsColumnHorizontalAlignment,

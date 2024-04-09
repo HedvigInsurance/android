@@ -1,5 +1,7 @@
 package com.hedvig.android.feature.odyssey.step.informdeflect
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -15,7 +17,6 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
@@ -30,13 +31,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.ImageLoader
 import coil.compose.AsyncImage
+import com.hedvig.android.core.designsystem.HedvigPreviewLayout
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.material3.alwaysBlackContainer
 import com.hedvig.android.core.designsystem.material3.onAlwaysBlackContainer
 import com.hedvig.android.core.designsystem.material3.rememberShapedColorPainter
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.card.ExpandablePlusCard
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.preview.calculateForPreview
@@ -51,7 +52,8 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
 @Composable
-internal fun DeflectGlassDamageDestination(
+internal fun SharedTransitionScope.DeflectGlassDamageDestination(
+  animatedContentScope: AnimatedContentScope,
   deflectGlassDamage: ClaimFlowDestination.DeflectGlassDamage,
   openChat: () -> Unit,
   closeClaimFlow: () -> Unit,
@@ -61,6 +63,7 @@ internal fun DeflectGlassDamageDestination(
   imageLoader: ImageLoader,
 ) {
   DeflectGlassDamageScreen(
+    animatedContentScope = animatedContentScope,
     partners = deflectGlassDamage.partners,
     openChat = openChat,
     closeClaimFlow = closeClaimFlow,
@@ -72,7 +75,8 @@ internal fun DeflectGlassDamageDestination(
 }
 
 @Composable
-private fun DeflectGlassDamageScreen(
+private fun SharedTransitionScope.DeflectGlassDamageScreen(
+  animatedContentScope: AnimatedContentScope,
   partners: ImmutableList<DeflectPartner>,
   openChat: () -> Unit,
   closeClaimFlow: () -> Unit,
@@ -82,6 +86,7 @@ private fun DeflectGlassDamageScreen(
   imageLoader: ImageLoader,
 ) {
   ClaimFlowScaffold(
+    animatedContentScope = animatedContentScope,
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
     closeClaimFlow = closeClaimFlow,
@@ -108,8 +113,8 @@ private fun DeflectGlassDamageScreen(
           contentColor = MaterialTheme.colorScheme.onAlwaysBlackContainer,
         ),
         modifier = Modifier
-          .padding(horizontal = 16.dp)
-          .fillMaxWidth(),
+            .padding(horizontal = 16.dp)
+            .fillMaxWidth(),
       ) {
         Column(Modifier.padding(16.dp)) {
           AsyncImage(
@@ -118,9 +123,9 @@ private fun DeflectGlassDamageScreen(
             imageLoader = imageLoader,
             placeholder = rememberShapedColorPainter(MaterialTheme.colorScheme.surface),
             modifier = Modifier
-              .padding(16.dp)
-              .fillMaxWidth()
-              .height(40.dp),
+                .padding(16.dp)
+                .fillMaxWidth()
+                .height(40.dp),
           )
           Spacer(Modifier.height(16.dp))
           Text(
@@ -174,25 +179,25 @@ private fun DeflectGlassDamageScreen(
       text = stringResource(R.string.SUBMIT_CLAIM_NEED_HELP_TITLE),
       textAlign = TextAlign.Center,
       modifier = Modifier
-        .padding(horizontal = 16.dp)
-        .fillMaxWidth(),
+          .padding(horizontal = 16.dp)
+          .fillMaxWidth(),
     )
     Text(
       text = stringResource(R.string.SUBMIT_CLAIM_NEED_HELP_LABEL),
       textAlign = TextAlign.Center,
       color = MaterialTheme.colorScheme.onSurfaceVariant,
       modifier = Modifier
-        .padding(horizontal = 16.dp)
-        .fillMaxWidth(),
+          .padding(horizontal = 16.dp)
+          .fillMaxWidth(),
     )
     Spacer(Modifier.height(24.dp))
     HedvigContainedSmallButton(
       text = stringResource(R.string.open_chat),
       onClick = openChat,
       modifier = Modifier
-        .padding(horizontal = 16.dp)
-        .fillMaxWidth()
-        .wrapContentWidth(Alignment.CenterHorizontally),
+          .padding(horizontal = 16.dp)
+          .fillMaxWidth()
+          .wrapContentWidth(Alignment.CenterHorizontally),
     )
     Spacer(Modifier.height(16.dp))
     Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
@@ -234,30 +239,29 @@ private fun QuestionsAndAnswers(modifier: Modifier = Modifier) {
 @HedvigPreview
 @Composable
 private fun PreviewDeflectGlassDamageScreen() {
-  HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
-      DeflectGlassDamageScreen(
-        partners = persistentListOf(
-          DeflectPartner(
-            id = "1",
-            imageUrl = "test",
-            phoneNumber = "1234",
-            url = "test",
-          ),
-          DeflectPartner(
-            id = "2",
-            imageUrl = "test2",
-            phoneNumber = "4321",
-            url = "test2",
-          ),
+  HedvigPreviewLayout { animatedContentScope ->
+    DeflectGlassDamageScreen(
+      animatedContentScope = animatedContentScope,
+      partners = persistentListOf(
+        DeflectPartner(
+          id = "1",
+          imageUrl = "test",
+          phoneNumber = "1234",
+          url = "test",
         ),
-        openChat = {},
-        closeClaimFlow = {},
-        windowSizeClass = WindowSizeClass.calculateForPreview(),
-        navigateUp = {},
-        imageLoader = rememberPreviewImageLoader(),
-        openUrl = {},
-      )
-    }
+        DeflectPartner(
+          id = "2",
+          imageUrl = "test2",
+          phoneNumber = "4321",
+          url = "test2",
+        ),
+      ),
+      openChat = {},
+      closeClaimFlow = {},
+      windowSizeClass = WindowSizeClass.calculateForPreview(),
+      navigateUp = {},
+      imageLoader = rememberPreviewImageLoader(),
+      openUrl = {},
+    )
   }
 }

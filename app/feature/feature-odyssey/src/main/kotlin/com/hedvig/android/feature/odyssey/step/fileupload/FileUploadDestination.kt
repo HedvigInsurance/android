@@ -4,6 +4,8 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -15,13 +17,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import com.hedvig.android.compose.photo.capture.state.rememberPhotoCaptureState
+import com.hedvig.android.core.designsystem.HedvigPreviewLayout
 import com.hedvig.android.core.fileupload.ui.FilePickerBottomSheet
 import com.hedvig.android.core.ui.dialog.HedvigAlertDialog
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import hedvig.resources.R
 
 @Composable
-internal fun FileUploadDestination(
+internal fun SharedTransitionScope.FileUploadDestination(
+  animatedContentScope: AnimatedContentScope,
   viewModel: FileUploadViewModel,
   navigateUp: () -> Unit,
   windowSizeClass: WindowSizeClass,
@@ -95,6 +99,7 @@ internal fun FileUploadDestination(
 
   if (uiState.hasFiles) {
     AddFilesScreen(
+      animatedContentScope = animatedContentScope,
       uiState = uiState,
       windowSizeClass = windowSizeClass,
       onContinue = viewModel::onContinue,
@@ -111,6 +116,7 @@ internal fun FileUploadDestination(
     )
   } else {
     FileUploadScreen(
+      animatedContentScope = animatedContentScope,
       uiState = uiState,
       windowSizeClass = windowSizeClass,
       submitFiles = {

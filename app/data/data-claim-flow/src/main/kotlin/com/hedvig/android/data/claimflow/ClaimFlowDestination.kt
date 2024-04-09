@@ -45,9 +45,9 @@ sealed interface ClaimFlowDestination : Destination {
 
   @Serializable
   data class DateOfOccurrencePlusLocation(
-    val dateOfOccurrence: LocalDate?,
+    val dateOfOccurrence: LocalDate? = null,
     val maxDate: LocalDate,
-    val selectedLocation: String?,
+    val selectedLocation: String? = null,
     val locationOptions: List<LocationOption>,
   ) : ClaimFlowDestination
 

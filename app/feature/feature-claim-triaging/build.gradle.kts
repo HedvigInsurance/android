@@ -8,8 +8,10 @@ plugins {
 }
 
 dependencies {
+  implementation(libs.androidx.compose.animation)
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.lifecycle.compose)
+  implementation(libs.androidx.navigation.compose)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.koin.compose)
   implementation(libs.koin.core)

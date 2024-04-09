@@ -13,6 +13,7 @@ dependencies {
   api(libs.arrow.core)
   api(projects.coreIcons)
 
+  implementation(libs.androidx.compose.animation)
   implementation(libs.androidx.compose.material3.windowSizeClass)
   implementation(libs.androidx.compose.materialIconsExtended)
   implementation(libs.androidx.compose.uiUtil)

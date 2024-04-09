@@ -1,5 +1,7 @@
 package com.hedvig.android.feature.odyssey.step.informdeflect
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -13,7 +15,6 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
@@ -21,9 +22,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.HedvigPreviewLayout
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.small.hedvig.ArrowNorthEast
 import com.hedvig.android.core.ui.preview.calculateForPreview
@@ -34,7 +35,8 @@ import com.hedvig.android.logger.logcat
 import hedvig.resources.R
 
 @Composable
-internal fun DeflectCarOtherDamageDestination(
+internal fun SharedTransitionScope.DeflectCarOtherDamageDestination(
+  animatedContentScope: AnimatedContentScope,
   deflectCarOtherDamage: ClaimFlowDestination.DeflectCarOtherDamage,
   closeClaimFlow: () -> Unit,
   windowSizeClass: WindowSizeClass,
@@ -42,6 +44,7 @@ internal fun DeflectCarOtherDamageDestination(
   openUrl: (String) -> Unit,
 ) {
   DeflectCarOtherDamageScreen(
+    animatedContentScope = animatedContentScope,
     closeClaimFlow = closeClaimFlow,
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
@@ -57,13 +60,15 @@ internal fun DeflectCarOtherDamageDestination(
 }
 
 @Composable
-private fun DeflectCarOtherDamageScreen(
+private fun SharedTransitionScope.DeflectCarOtherDamageScreen(
+  animatedContentScope: AnimatedContentScope,
   closeClaimFlow: () -> Unit,
   windowSizeClass: WindowSizeClass,
   navigateUp: () -> Unit,
   openUrl: () -> Unit,
 ) {
   ClaimFlowScaffold(
+    animatedContentScope = animatedContentScope,
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
     closeClaimFlow = closeClaimFlow,
@@ -108,14 +113,13 @@ private fun DeflectCarOtherDamageScreen(
 @HedvigPreview
 @Composable
 private fun PreviewDeflectCarOtherDamageScreen() {
-  HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
-      DeflectCarOtherDamageScreen(
-        {},
-        windowSizeClass = WindowSizeClass.calculateForPreview(),
-        {},
-        {},
-      )
-    }
+  HedvigPreviewLayout { animatedContentScope ->
+    DeflectCarOtherDamageScreen(
+      animatedContentScope = animatedContentScope,
+      {},
+      windowSizeClass = WindowSizeClass.calculateForPreview(),
+      {},
+      {},
+    )
   }
 }

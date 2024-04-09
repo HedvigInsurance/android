@@ -1,5 +1,7 @@
 package com.hedvig.android.feature.odyssey.step.summary
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -11,7 +13,6 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
@@ -29,9 +30,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import com.hedvig.android.audio.player.HedvigAudioPlayer
 import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
+import com.hedvig.android.core.designsystem.HedvigPreviewLayout
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.DynamicFilesGridBetweenOtherThings
 import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
@@ -53,7 +54,8 @@ import kotlinx.datetime.LocalDate
 import octopus.type.CurrencyCode
 
 @Composable
-internal fun ClaimSummaryDestination(
+internal fun SharedTransitionScope.ClaimSummaryDestination(
+  animatedContentScope: AnimatedContentScope,
   viewModel: ClaimSummaryViewModel,
   navigateToNextStep: (ClaimFlowStep) -> Unit,
   navigateUp: () -> Unit,
@@ -69,6 +71,7 @@ internal fun ClaimSummaryDestination(
     }
   }
   ClaimSummaryScreen(
+    animatedContentScope = animatedContentScope,
     uiState = uiState,
     showedError = viewModel::showedError,
     submitSummary = viewModel::submitSummary,
@@ -80,7 +83,8 @@ internal fun ClaimSummaryDestination(
 }
 
 @Composable
-private fun ClaimSummaryScreen(
+private fun SharedTransitionScope.ClaimSummaryScreen(
+  animatedContentScope: AnimatedContentScope,
   uiState: ClaimSummaryUiState,
   showedError: () -> Unit,
   submitSummary: () -> Unit,
@@ -90,6 +94,7 @@ private fun ClaimSummaryScreen(
   windowSizeClass: WindowSizeClass,
 ) {
   ClaimFlowScaffold(
+    animatedContentScope = animatedContentScope,
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
     closeClaimFlow = closeClaimFlow,
@@ -178,58 +183,57 @@ private fun AfterGridContent(uiState: ClaimSummaryUiState, submitSummary: () -> 
 @HedvigMultiScreenPreview
 @Composable
 private fun PreviewClaimSummaryScreen() {
-  HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
-      ClaimSummaryScreen(
-        ClaimSummaryUiState(
-          claimSummaryInfoUiState = ClaimSummaryInfoUiState(
-            claimTypeTitle = "Broken Phone",
-            dateOfIncident = LocalDate.parse("2023-03-24"),
-            locationOption = LocationOption(
-              value = "IN_HOME_COUNTRY",
-              displayName = "Sweden",
-            ),
-            itemType = ClaimSummaryInfoUiState.ItemType.Model(
-              itemModel = ItemModel.Known(
-                displayName = "Apple iPhone 14 Pro",
-                itemTypeId = "PHONE",
-                itemBrandId = "APPLE_IPHONE",
-                itemModelId = "",
-              ),
-            ),
-            dateOfPurchase = LocalDate.parse("2015-03-26"),
-            priceOfPurchase = UiNullableMoney(
-              amount = 3990.0,
-              currencyCode = CurrencyCode.SEK,
-            ),
-            itemProblems = listOf(
-              ItemProblem(displayName = "Other", itemProblemId = ""),
-              ItemProblem(displayName = "Water", itemProblemId = ""),
-            ),
-            files = List(20) {
-              UiFile(
-                id = "$it",
-                name = "$it",
-                mimeType = "",
-                localPath = "$it",
-                url = "$it",
-              )
-            },
-            submittedContent = null,
+  HedvigPreviewLayout { animatedContentScope ->
+    ClaimSummaryScreen(
+      animatedContentScope = animatedContentScope,
+      ClaimSummaryUiState(
+        claimSummaryInfoUiState = ClaimSummaryInfoUiState(
+          claimTypeTitle = "Broken Phone",
+          dateOfIncident = LocalDate.parse("2023-03-24"),
+          locationOption = LocationOption(
+            value = "IN_HOME_COUNTRY",
+            displayName = "Sweden",
           ),
-          claimSummaryStatusUiState = ClaimSummaryStatusUiState(
-            isLoading = false,
-            hasError = false,
-            nextStep = null,
+          itemType = ClaimSummaryInfoUiState.ItemType.Model(
+            itemModel = ItemModel.Known(
+              displayName = "Apple iPhone 14 Pro",
+              itemTypeId = "PHONE",
+              itemBrandId = "APPLE_IPHONE",
+              itemModelId = "",
+            ),
           ),
+          dateOfPurchase = LocalDate.parse("2015-03-26"),
+          priceOfPurchase = UiNullableMoney(
+            amount = 3990.0,
+            currencyCode = CurrencyCode.SEK,
+          ),
+          itemProblems = listOf(
+            ItemProblem(displayName = "Other", itemProblemId = ""),
+            ItemProblem(displayName = "Water", itemProblemId = ""),
+          ),
+          files = List(20) {
+            UiFile(
+              id = "$it",
+              name = "$it",
+              mimeType = "",
+              localPath = "$it",
+              url = "$it",
+            )
+          },
+          submittedContent = null,
         ),
-        {},
-        {},
-        {},
-        {},
-        imageLoader = rememberPreviewImageLoader(),
-        windowSizeClass = WindowSizeClass.calculateForPreview(),
-      )
-    }
+        claimSummaryStatusUiState = ClaimSummaryStatusUiState(
+          isLoading = false,
+          hasError = false,
+          nextStep = null,
+        ),
+      ),
+      {},
+      {},
+      {},
+      {},
+      imageLoader = rememberPreviewImageLoader(),
+      windowSizeClass = WindowSizeClass.calculateForPreview(),
+    )
   }
 }

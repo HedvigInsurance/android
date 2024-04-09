@@ -1,5 +1,7 @@
 package com.hedvig.android.feature.odyssey.step.location
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -9,7 +11,6 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
@@ -19,9 +20,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.core.designsystem.HedvigPreviewLayout
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.scaffold.ClaimFlowScaffold
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
@@ -31,7 +32,8 @@ import com.hedvig.android.feature.odyssey.ui.LocationWithDialog
 import hedvig.resources.R
 
 @Composable
-internal fun LocationDestination(
+internal fun SharedTransitionScope.LocationDestination(
+  animatedContentScope: AnimatedContentScope,
   viewModel: LocationViewModel,
   windowSizeClass: WindowSizeClass,
   navigateToNextStep: (ClaimFlowStep) -> Unit,
@@ -46,6 +48,7 @@ internal fun LocationDestination(
     }
   }
   LocationScreen(
+    animatedContentScope = animatedContentScope,
     uiState = uiState,
     windowSizeClass = windowSizeClass,
     selectLocation = viewModel::selectLocationOption,
@@ -57,7 +60,8 @@ internal fun LocationDestination(
 }
 
 @Composable
-private fun LocationScreen(
+private fun SharedTransitionScope.LocationScreen(
+  animatedContentScope: AnimatedContentScope,
   uiState: LocationUiState,
   windowSizeClass: WindowSizeClass,
   selectLocation: (LocationOption) -> Unit,
@@ -67,6 +71,7 @@ private fun LocationScreen(
   closeClaimFlow: () -> Unit,
 ) {
   ClaimFlowScaffold(
+    animatedContentScope = animatedContentScope,
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
     closeClaimFlow = closeClaimFlow,
@@ -106,22 +111,21 @@ private fun LocationScreen(
 @HedvigPreview
 @Composable
 private fun PreviewLocationScreen() {
-  HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
-      LocationScreen(
-        uiState = LocationUiState(
-          locationOptions = List(3) {
-            LocationOption("#$it", "Location #$it")
-          },
-          selectedLocation = LocationOption("#1", "Location #1"),
-        ),
-        windowSizeClass = WindowSizeClass.calculateForPreview(),
-        selectLocation = {},
-        submitLocation = {},
-        showedError = {},
-        navigateUp = {},
-        closeClaimFlow = {},
-      )
-    }
+  HedvigPreviewLayout { animatedContentScope ->
+    LocationScreen(
+      animatedContentScope = animatedContentScope,
+      uiState = LocationUiState(
+        locationOptions = List(3) {
+          LocationOption("#$it", "Location #$it")
+        },
+        selectedLocation = LocationOption("#1", "Location #1"),
+      ),
+      windowSizeClass = WindowSizeClass.calculateForPreview(),
+      selectLocation = {},
+      submitLocation = {},
+      showedError = {},
+      navigateUp = {},
+      closeClaimFlow = {},
+    )
   }
 }

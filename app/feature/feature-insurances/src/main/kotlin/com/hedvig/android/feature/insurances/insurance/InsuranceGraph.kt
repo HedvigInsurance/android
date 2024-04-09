@@ -24,7 +24,6 @@ import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContr
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
 import com.kiwi.navigationcompose.typed.Destination
-import com.kiwi.navigationcompose.typed.composable
 import com.kiwi.navigationcompose.typed.createNavArguments
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.decodeArguments
