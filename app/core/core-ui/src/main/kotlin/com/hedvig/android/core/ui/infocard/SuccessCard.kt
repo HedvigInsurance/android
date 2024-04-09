@@ -62,37 +62,14 @@ fun VectorSuccessCard(
   ),
   underTextContent: @Composable (ColumnScope.() -> Unit)?,
 ) {
-  HedvigInfoCard(
+  VectorInfoCard(
+    text = text,
     modifier = modifier,
-    contentPadding = PaddingValues(
-      start = 12.dp,
-      top = 12.dp,
-      end = 16.dp,
-      bottom = 12.dp,
-    ),
+    icon = icon,
+    iconColor = iconColor,
     colors = colors,
-  ) {
-    Icon(
-      imageVector = icon,
-      contentDescription = "info",
-      modifier = Modifier
-        .padding(top = 2.dp)
-        .size(16.dp),
-      tint = iconColor,
-    )
-    Spacer(Modifier.width(8.dp))
-    Column {
-      Text(
-        text = text,
-        style = MaterialTheme.typography.bodyMedium,
-      )
-      if (underTextContent != null) {
-        Spacer(Modifier.height(12.dp))
-        underTextContent()
-        Spacer(Modifier.height(4.dp))
-      }
-    }
-  }
+    underTextContent = underTextContent,
+  )
 }
 
 @HedvigPreview
