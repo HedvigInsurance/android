@@ -3,7 +3,17 @@ package com.hedvig.android.feature.terminateinsurance.navigation
 import com.hedvig.android.data.contract.ContractGroup
 import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.datetime.LocalDate
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+
+@Serializable
+data class TerminateInsuranceGraphDestination(
+  /**
+   * The ID to the contract which needs to be pre-selected in the termination flow
+   */
+  @SerialName("contractId")
+  val insuranceId: String?,
+) : Destination
 
 internal sealed interface TerminateInsuranceDestination : Destination {
   @Serializable

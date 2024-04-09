@@ -14,6 +14,9 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
@@ -36,8 +39,9 @@ import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.material3.squircleLargeTop
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.hedvig.normal.Info
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBackAndClose
-import com.hedvig.android.core.ui.appbar.TopAppBarWithInfoAndClose
 import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
 import hedvig.resources.R
 import kotlinx.coroutines.launch
@@ -78,21 +82,25 @@ internal fun TerminationScaffold(
   ) {
     Column {
       val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-      if (textForInfoIcon != null) {
-        TopAppBarWithInfoAndClose(
-          onInfoClick = { showExplanationBottomSheet = true },
-          onClose = closeTerminationFlow,
-          title = "",
-          scrollBehavior = topAppBarScrollBehavior,
-        )
-      } else {
-        TopAppBarWithBackAndClose(
-          onNavigateUp = navigateUp,
-          onClose = closeTerminationFlow,
-          title = "",
-          scrollBehavior = topAppBarScrollBehavior,
-        )
-      }
+      TopAppBarWithBackAndClose(
+        onNavigateUp = navigateUp,
+        onClose = closeTerminationFlow,
+        title = "",
+        scrollBehavior = topAppBarScrollBehavior,
+        extraActions = {
+          if (textForInfoIcon != null) {
+            IconButton(
+              onClick = { showExplanationBottomSheet = true },
+              content = {
+                Icon(
+                  imageVector = Icons.Hedvig.Info,
+                  contentDescription = null,
+                )
+              },
+            )
+          }
+        },
+      )
 
       Column(
         modifier = Modifier
@@ -164,7 +172,7 @@ private fun CommonQuestions(modifier: Modifier = Modifier) {
 }
 
 @Composable
-internal fun ExplanationBottomSheet(onDismiss: () -> Unit, sheetState: SheetState, text: String) {
+private fun ExplanationBottomSheet(onDismiss: () -> Unit, sheetState: SheetState, text: String) {
   ModalBottomSheet(
     containerColor = MaterialTheme.colorScheme.background,
     onDismissRequest = {

@@ -41,11 +41,13 @@ import com.hedvig.android.feature.home.home.navigation.HomeDestination
 import com.hedvig.android.feature.home.home.navigation.homeGraph
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
 import com.hedvig.android.feature.insurances.insurance.insuranceGraph
+import com.hedvig.android.feature.insurances.navigation.InsurancesDestination
 import com.hedvig.android.feature.odyssey.navigation.claimFlowGraph
 import com.hedvig.android.feature.odyssey.navigation.navigateToClaimFlowDestination
 import com.hedvig.android.feature.odyssey.navigation.terminalClaimFlowStepDestinations
 import com.hedvig.android.feature.payments.navigation.paymentsGraph
 import com.hedvig.android.feature.profile.tab.profileGraph
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceGraphDestination
 import com.hedvig.android.feature.terminateinsurance.navigation.terminateInsuranceGraph
 import com.hedvig.android.feature.travelcertificate.navigation.travelCertificateGraph
 import com.hedvig.android.language.LanguageService
@@ -149,8 +151,19 @@ internal fun HedvigNavHost(
           openUrl = openUrl,
           openPlayStore = { activityNavigator.tryOpenPlayStore(context) },
           hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+          navigateToInsurances = { navOptions ->
+            hedvigAppState.navController.navigate(InsurancesDestination.Graph, navOptions)
+          },
           closeTerminationFlow = {
-            hedvigAppState.navController.popBackStack<AppDestination.TerminationFlow>(inclusive = true)
+            /**
+             * If we fail to pop the backstack including TerminateInsuranceGraphDestination here it means we were deep
+             * linked into this screen only, and they do not wish to continue with the flow they were deep linked to.
+             * The right way to handle this is to simply finish the app as per the docs:
+             * https://developer.android.com/guide/navigation/backstack#handle-failure
+             */
+            if (!hedvigAppState.navController.popBackStack<TerminateInsuranceGraphDestination>(inclusive = true)) {
+              finishApp()
+            }
           },
         )
       },
@@ -168,10 +181,9 @@ internal fun HedvigNavHost(
       },
       startTerminationFlow = { backStackEntry: NavBackStackEntry, data: CancelInsuranceData ->
         with(navigator) {
-          val destination = AppDestination.TerminationFlow(
-            insuranceId = data.contractId,
+          backStackEntry.navigate(
+            TerminateInsuranceGraphDestination(insuranceId = data.contractId),
           )
-          backStackEntry.navigate(destination)
         }
       },
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
@@ -248,32 +260,20 @@ internal fun HedvigNavHost(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       navigator = navigator,
       onNavigateToQuickLink = { backStackEntry, quickLinkDestination ->
+        val destination = when (quickLinkDestination) {
+          is QuickLinkDestination.QuickLinkCoInsuredAddInfo ->
+            AppDestination.CoInsuredAddInfo(quickLinkDestination.contractId)
+
+          is QuickLinkDestination.QuickLinkCoInsuredAddOrRemove ->
+            AppDestination.CoInsuredAddOrRemove(quickLinkDestination.contractId)
+
+          QuickLinkDestination.QuickLinkChangeAddress -> AppDestination.ChangeAddress
+          QuickLinkDestination.QuickLinkConnectPayment -> AppDestination.ConnectPayment
+          QuickLinkDestination.QuickLinkTermination -> TerminateInsuranceGraphDestination(null)
+          QuickLinkDestination.QuickLinkTravelCertificate -> AppDestination.TravelCertificate
+        }
         with(navigator) {
-          when (quickLinkDestination) {
-            is QuickLinkDestination.QuickLinkCoInsuredAddInfo -> {
-              backStackEntry.navigate(AppDestination.CoInsuredAddInfo(quickLinkDestination.contractId))
-            }
-
-            is QuickLinkDestination.QuickLinkCoInsuredAddOrRemove -> {
-              backStackEntry.navigate(AppDestination.CoInsuredAddOrRemove(quickLinkDestination.contractId))
-            }
-
-            QuickLinkDestination.QuickLinkChangeAddress -> {
-              backStackEntry.navigate(AppDestination.ChangeAddress)
-            }
-
-            QuickLinkDestination.QuickLinkConnectPayment -> {
-              backStackEntry.navigate(AppDestination.ConnectPayment)
-            }
-
-            QuickLinkDestination.QuickLinkTermination -> {
-              backStackEntry.navigate(AppDestination.TerminationFlow(null))
-            }
-
-            QuickLinkDestination.QuickLinkTravelCertificate -> {
-              backStackEntry.navigate(AppDestination.TravelCertificate)
-            }
-          }
+          backStackEntry.navigate(destination)
         }
       },
       openChat = { backStackEntry, chatContext ->

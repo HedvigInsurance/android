@@ -1,11 +1,10 @@
 package com.hedvig.android.feature.terminateinsurance.navigation
 
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavOptions
 import androidx.navigation.navDeepLink
 import androidx.navigation.navOptions
 import com.hedvig.android.core.common.ErrorMessage
@@ -21,12 +20,11 @@ import com.hedvig.android.feature.terminateinsurance.step.terminationreview.Term
 import com.hedvig.android.feature.terminateinsurance.step.terminationreview.TerminationConfirmationViewModel
 import com.hedvig.android.feature.terminateinsurance.step.terminationsuccess.TerminationSuccessDestination
 import com.hedvig.android.feature.terminateinsurance.step.unknown.UnknownScreenDestination
-import com.hedvig.android.navigation.core.AppDestination
+import com.hedvig.android.navigation.compose.typed.getRouteFromBackStack
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
 import com.kiwi.navigationcompose.typed.composable
 import com.kiwi.navigationcompose.typed.createRoutePattern
-import com.kiwi.navigationcompose.typed.decodeArguments
 import com.kiwi.navigationcompose.typed.navigate
 import com.kiwi.navigationcompose.typed.navigation
 import com.kiwi.navigationcompose.typed.popUpTo
@@ -41,13 +39,23 @@ fun NavGraphBuilder.terminateInsuranceGraph(
   openChat: (NavBackStackEntry) -> Unit,
   openUrl: (String) -> Unit,
   openPlayStore: () -> Unit,
+  navigateToInsurances: (NavOptions) -> Unit,
   closeTerminationFlow: () -> Unit,
 ) {
   composable<TerminateInsuranceDestination.TerminationSuccess> { backStackEntry ->
     TerminationSuccessDestination(
       terminationDate = terminationDate,
       onSurveyClicked = { openUrl(surveyUrl) },
-      navigateBack = navigator::popBackStack,
+      onDone = {
+        if (!navController.popBackStack()) {
+          // In the deep link situation, we want to navigate to Insurances when we're successfully done with this flow
+          navigateToInsurances(
+            navOptions {
+              popUpTo<TerminateInsuranceDestination.TerminationSuccess> { inclusive = true }
+            },
+          )
+        }
+      },
     )
   }
   composable<TerminateInsuranceDestination.TerminationFailure> { backStackEntry ->
@@ -67,16 +75,18 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       navigateBack = navigator::popBackStack,
     )
   }
-  navigation<AppDestination.TerminationFlow>(
+  navigation<TerminateInsuranceGraphDestination>(
     startDestination = createRoutePattern<TerminateInsuranceDestination.StartStep>(),
     deepLinks = listOf(
       navDeepLink { uriPattern = hedvigDeepLinkContainer.terminateInsurance },
     ),
   ) {
     composable<TerminateInsuranceDestination.StartStep> { backStackEntry ->
-      val terminateInsurance = getTerminateInsuranceDataFromParentBackstack(navController, backStackEntry)
-      val insuranceId = terminateInsurance.insuranceId
-      val viewModel: ChooseInsuranceToTerminateViewModel = koinViewModel { parametersOf(insuranceId) }
+      val terminateInsuranceGraphDestination = navController
+        .getRouteFromBackStack<TerminateInsuranceGraphDestination>(backStackEntry)
+      val viewModel: ChooseInsuranceToTerminateViewModel = koinViewModel {
+        parametersOf(terminateInsuranceGraphDestination.insuranceId)
+      }
       ChooseInsuranceToTerminateDestination(
         viewModel = viewModel,
         navigateUp = navigator::navigateUp,
@@ -174,19 +184,6 @@ fun NavGraphBuilder.terminateInsuranceGraph(
   }
 }
 
-@Composable
-private fun getTerminateInsuranceDataFromParentBackstack(
-  navController: NavController,
-  backStackEntry: NavBackStackEntry,
-): AppDestination.TerminationFlow {
-  return remember(navController, backStackEntry) {
-    val terminateInsuranceEntry = navController.getBackStackEntry(
-      createRoutePattern<AppDestination.TerminationFlow>(),
-    )
-    decodeArguments(AppDestination.TerminationFlow.serializer(), terminateInsuranceEntry)
-  }
-}
-
 /**
  * If we're going to a terminal destination, pop the termination flow backstack completely before going there.
  */
@@ -197,7 +194,7 @@ private fun <T : TerminateInsuranceDestination> Navigator.navigateToTerminateFlo
       is TerminateInsuranceDestination.TerminationFailure,
       is TerminateInsuranceDestination.UnknownScreen,
       -> {
-        popUpTo<TerminateInsuranceDestination.StartStep> {
+        popUpTo<TerminateInsuranceGraphDestination> {
           inclusive = true
         }
       }
