@@ -10,7 +10,7 @@ lintGradlePlugin = "8.3.0"
 
 # gradlePlugin versions
 androidGradlePlugin = "8.3.0"
-apollo = "3.8.2"
+apollo = "3.8.3"
 cacheFix = "3.0.1"
 crashlytics = "2.9.9"
 datadogPlugin = "1.12.0"
