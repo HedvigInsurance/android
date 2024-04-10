@@ -36,7 +36,6 @@ import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.di.coreCommonModule
 import com.hedvig.android.core.common.di.datastoreFileQualifier
 import com.hedvig.android.core.datastore.di.dataStoreModule
-import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.di.demoModule
 import com.hedvig.android.core.fileupload.fileUploadModule
 import com.hedvig.android.data.chat.read.timestamp.di.chatReadTimestampModule
@@ -260,7 +259,6 @@ private val useCaseModule = module {
       get<AuthTokenService>(),
       get<SelfServiceCompletedEventManager>(),
       get<ApplicationScope>(),
-      get<DemoManager>(),
     )
   }
 }
