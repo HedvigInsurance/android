@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.insurances.insurance
 
-import android.net.Uri
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
@@ -25,7 +24,6 @@ import org.koin.core.parameter.parametersOf
 fun NavGraphBuilder.insuranceGraph(
   nestedGraphs: NavGraphBuilder.() -> Unit,
   navigator: Navigator,
-  openWebsite: (Uri) -> Unit,
   openChat: (NavBackStackEntry) -> Unit,
   openUrl: (String) -> Unit,
   startMovingFlow: (NavBackStackEntry) -> Unit,
@@ -53,7 +51,7 @@ fun NavGraphBuilder.insuranceGraph(
         onInsuranceCardClick = { contractId: String ->
           with(navigator) { backStackEntry.navigate(InsurancesDestinations.InsuranceContractDetail(contractId)) }
         },
-        onCrossSellClick = { uri -> openWebsite(uri) },
+        onCrossSellClick = openUrl,
         navigateToCancelledInsurances = {
           with(navigator) { backStackEntry.navigate(InsurancesDestinations.TerminatedInsurances) }
         },
@@ -78,7 +76,6 @@ fun NavGraphBuilder.insuranceGraph(
             cancelInsuranceData,
           )
         },
-        openWebsite = openWebsite,
         openChat = { openChat(backStackEntry) },
         openUrl = openUrl,
         navigateUp = navigator::navigateUp,

@@ -347,7 +347,9 @@ private fun PaymentsListItems(
             textAlign = TextAlign.End,
           )
         },
-        modifier = listItemsSideSpacingModifier.padding(vertical = 16.dp).fillMaxWidth(),
+        modifier = listItemsSideSpacingModifier
+          .padding(vertical = 16.dp)
+          .fillMaxWidth(),
       )
     }
   }
@@ -406,7 +408,10 @@ private fun PaymentsListItem(
 ) {
   HorizontalItemsWithMaximumSpaceTaken(
     startSlot = {
-      Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+      ) {
         icon()
         Text(text)
       }

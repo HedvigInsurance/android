@@ -206,7 +206,7 @@ private fun MemberChargeDetailsScreen(
 
       when (memberCharge.status) {
         MemberCharge.MemberChargeStatus.UPCOMING -> {}
-        MemberCharge.MemberChargeStatus.SUCCESS -> PaymentStatusCard(
+        MemberCharge.MemberChargeStatus.SUCCESS -> VectorInfoCard(
           text = stringResource(id = R.string.PAYMENTS_PAYMENT_SUCCESSFUL),
           icon = Icons.Hedvig.Checkmark,
           iconColor = MaterialTheme.colorScheme.onTypeContainer,
@@ -217,7 +217,7 @@ private fun MemberChargeDetailsScreen(
           underTextContent = null,
         )
 
-        MemberCharge.MemberChargeStatus.PENDING -> PaymentStatusCard(
+        MemberCharge.MemberChargeStatus.PENDING -> VectorInfoCard(
           text = stringResource(id = R.string.PAYMENTS_IN_PROGRESS),
           icon = Icons.Hedvig.InfoFilled,
           iconColor = MaterialTheme.colorScheme.infoElement,
@@ -228,7 +228,7 @@ private fun MemberChargeDetailsScreen(
           underTextContent = null,
         )
 
-        MemberCharge.MemberChargeStatus.FAILED -> PaymentStatusCard(
+        MemberCharge.MemberChargeStatus.FAILED -> VectorInfoCard(
           text = stringResource(
             id = R.string.PAYMENTS_PAYMENT_FAILED,
             paymentOverview?.getNextCharge(memberCharge)?.let {

@@ -119,7 +119,7 @@ private fun HedvigContainedSmallButton(
   enabled: Boolean,
   colors: ButtonColors,
   modifier: Modifier = Modifier,
-  elevation: ButtonElevation? = ButtonDefaults.buttonElevation(),
+  elevation: ButtonElevation? = ButtonDefaults.elevatedButtonElevation(),
   contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
   content: @Composable RowScope.() -> Unit,
 ) {

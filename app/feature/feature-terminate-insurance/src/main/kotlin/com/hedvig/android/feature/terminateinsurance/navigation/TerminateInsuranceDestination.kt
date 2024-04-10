@@ -3,15 +3,16 @@ package com.hedvig.android.feature.terminateinsurance.navigation
 import com.hedvig.android.data.contract.ContractGroup
 import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.datetime.LocalDate
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class TerminateInsuranceFeatureDestination(
-  val contractId: String,
-  val insuranceDisplayName: String,
-  val exposureName: String,
-  val contractGroup: ContractGroup,
-  val activeFrom: LocalDate,
+data class TerminateInsuranceGraphDestination(
+  /**
+   * The ID to the contract which needs to be pre-selected in the termination flow
+   */
+  @SerialName("contractId")
+  val insuranceId: String?,
 ) : Destination
 
 internal sealed interface TerminateInsuranceDestination : Destination {
@@ -22,13 +23,20 @@ internal sealed interface TerminateInsuranceDestination : Destination {
   data class TerminationDate(
     val minDate: LocalDate,
     val maxDate: LocalDate,
+    val insuranceDisplayName: String,
+    val exposureName: String,
+    val activeFrom: LocalDate,
+    val contractGroup: ContractGroup,
   ) : TerminateInsuranceDestination
 
   /**
    * The screen to review the termination situation before submitting the final request
    */
   @Serializable
-  data class TerminationReview(val terminationType: TerminationType) : TerminateInsuranceDestination {
+  data class TerminationConfirmation(
+    val terminationType: TerminationType,
+    val parameters: TerminationConfirmationParameters,
+  ) : TerminateInsuranceDestination {
     @Serializable
     sealed interface TerminationType {
       @Serializable
@@ -49,7 +57,10 @@ internal sealed interface TerminateInsuranceDestination : Destination {
 
   @Serializable
   data class InsuranceDeletion(
-    val disclaimer: String,
+    val insuranceDisplayName: String,
+    val exposureName: String,
+    val activeFrom: LocalDate,
+    val contractGroup: ContractGroup,
   ) : TerminateInsuranceDestination
 
   @Serializable
@@ -60,3 +71,19 @@ internal sealed interface TerminateInsuranceDestination : Destination {
   @Serializable
   data object UnknownScreen : TerminateInsuranceDestination
 }
+
+@Serializable
+internal data class TerminationDataParameters(
+  val minDate: LocalDate,
+  val maxDate: LocalDate,
+  val insuranceDisplayName: String,
+  val exposureName: String,
+)
+
+@Serializable
+internal data class TerminationConfirmationParameters(
+  val insuranceDisplayName: String,
+  val exposureName: String,
+  val activeFrom: LocalDate,
+  val contractGroup: ContractGroup,
+)

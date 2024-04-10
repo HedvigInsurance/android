@@ -171,6 +171,7 @@ internal fun darkHedvigColorScheme(hedvigTonalPalette: HedvigTonalPalette, color
     onPinkContainer = hedvigTonalPalette.pink900,
     purpleContainer = hedvigTonalPalette.purple300,
     onPurpleContainer = hedvigTonalPalette.purple900,
+    borderSecondary = hedvigTonalPalette.greyscale700,
   )
 
 internal fun lightHedvigColorScheme(hedvigTonalPalette: HedvigTonalPalette, colorScheme: ColorScheme) =
@@ -238,4 +239,5 @@ internal fun lightHedvigColorScheme(hedvigTonalPalette: HedvigTonalPalette, colo
     onPinkContainer = hedvigTonalPalette.pink900,
     purpleContainer = hedvigTonalPalette.purple100,
     onPurpleContainer = hedvigTonalPalette.purple900,
+    borderSecondary = hedvigTonalPalette.greyscale400,
   )

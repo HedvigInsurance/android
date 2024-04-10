@@ -24,6 +24,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.datadog.android.compose.ExperimentalTrackingApi
 import com.datadog.android.compose.NavigationViewTrackingEffect
+import com.hedvig.android.app.ui.SafeAndroidUriHandler
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -70,6 +71,7 @@ class MarketingActivity : AppCompatActivity() {
         finish()
       }
     }
+    val safeAndroidUriHandler = SafeAndroidUriHandler(this)
     setContent {
       HedvigTheme {
         val navController = rememberNavController()
@@ -85,7 +87,7 @@ class MarketingActivity : AppCompatActivity() {
             navigator = navigator,
             appVersionName = hedvigBuildConstants.appVersionName,
             urlBaseWeb = hedvigBuildConstants.urlBaseWeb,
-            openWebsite = { activityNavigator.openWebsite(this@MarketingActivity, it) },
+            openUrl = { safeAndroidUriHandler.openUri(it) },
             startLoggedInActivity = {
               activityNavigator.navigateToLoggedInScreen(this@MarketingActivity, false)
               finish()

@@ -6,7 +6,6 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLayoutResult
@@ -22,6 +21,7 @@ import com.hedvig.android.core.designsystem.material3.infoElement
 @Composable
 internal fun TextWithClickableUrls(
   text: String,
+  onUrlClicked: (url: String) -> Unit,
   modifier: Modifier = Modifier,
   style: TextStyle = TextStyle.Default,
   softWrap: Boolean = true,
@@ -33,9 +33,6 @@ internal fun TextWithClickableUrls(
     textDecoration = TextDecoration.Underline,
   ),
   linkMatcher: Regex = Patterns.WEB_URL.toRegex(),
-  onClick: (url: String) -> Unit = with(LocalUriHandler.current) {
-    { url -> this.openUri(url) }
-  },
 ) {
   val annotatedText = buildAnnotatedString {
     val offset = linkMatcher.findAll(text).fold(0) { offset: Int, match: MatchResult ->
@@ -67,8 +64,9 @@ internal fun TextWithClickableUrls(
     maxLines = maxLines,
     onTextLayout = onTextLayout,
     onClick = { offset: Int ->
-      annotatedText.getStringAnnotations(tag = "URL", start = offset, end = offset).firstOrNull()
-        ?.let { onClick(it.item) }
+      annotatedText
+        .getStringAnnotations(tag = "URL", start = offset, end = offset)
+        .firstOrNull()?.let { onUrlClicked(it.item) }
     },
   )
 }

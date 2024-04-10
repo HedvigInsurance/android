@@ -19,6 +19,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.core.content.getSystemService
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -35,6 +36,7 @@ import com.google.android.play.core.review.ReviewException
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.hedvig.android.app.ui.DeepLinkFirstUriHandler
 import com.hedvig.android.app.ui.HedvigApp
+import com.hedvig.android.app.ui.SafeAndroidUriHandler
 import com.hedvig.android.app.ui.rememberHedvigAppState
 import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
@@ -191,15 +193,19 @@ class LoggedInActivity : AppCompatActivity() {
       )
       val darkTheme = hedvigAppState.darkTheme
       EnableEdgeToEdgeSideEffect(darkTheme)
-      CompositionLocalProvider(
-        LocalUriHandler provides DeepLinkFirstUriHandler(hedvigAppState.navController, LocalUriHandler.current),
-      ) {
+      val deepLinkFirstUriHandler = DeepLinkFirstUriHandler(
+        navController = hedvigAppState.navController,
+        delegate = SafeAndroidUriHandler(LocalContext.current),
+      )
+      CompositionLocalProvider(LocalUriHandler provides deepLinkFirstUriHandler) {
         HedvigTheme(darkTheme = darkTheme) {
           HedvigApp(
             hedvigAppState = hedvigAppState,
             hedvigDeepLinkContainer = hedvigDeepLinkContainer,
             activityNavigator = activityNavigator,
             shouldShowRequestPermissionRationale = ::shouldShowRequestPermissionRationale,
+            openUrl = deepLinkFirstUriHandler::openUri,
+            finishApp = ::finish,
             market = market,
             imageLoader = imageLoader,
             languageService = languageService,
