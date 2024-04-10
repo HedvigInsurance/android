@@ -2,7 +2,6 @@ package com.hedvig.android.feature.chat.ui
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
@@ -11,9 +10,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.unit.dp
 import com.halilibo.richtext.markdown.Markdown
 import com.halilibo.richtext.ui.material3.RichText
@@ -25,6 +26,7 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.InfoFilled
+import com.hedvig.android.core.ui.layout.LayoutWithoutPlacement
 
 @Composable
 internal fun ChatBanner(text: String, onBannerLinkClicked: (String) -> Unit, modifier: Modifier = Modifier) {
@@ -42,16 +44,19 @@ internal fun ChatBanner(text: String, onBannerLinkClicked: (String) -> Unit, mod
       contentColor = MaterialTheme.colorScheme.onInfoContainer,
     ),
   ) {
-    Icon(
-      imageVector = Icons.Hedvig.InfoFilled,
-      contentDescription = "info",
-      modifier = Modifier
-        .padding(top = 2.dp)
-        .size(16.dp),
-      tint = MaterialTheme.colorScheme.infoElement,
-    )
-    Spacer(Modifier.width(8.dp))
     ProvideTextStyle(MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onInfoContainer)) {
+      // Lays out the info icon in a way that is reliably center aligned with the text next to it
+      LayoutWithoutPlacement(
+        sizeAdjustingContent = { Text("H") },
+      ) {
+        Icon(
+          imageVector = Icons.Hedvig.InfoFilled,
+          contentDescription = "info",
+          tint = MaterialTheme.colorScheme.infoElement,
+          modifier = Modifier.size(16.dp),
+        )
+      }
+      Spacer(Modifier.width(8.dp))
       RichText {
         Markdown(content = text, onLinkClicked = onBannerLinkClicked)
       }
@@ -60,6 +65,7 @@ internal fun ChatBanner(text: String, onBannerLinkClicked: (String) -> Unit, mod
 }
 
 @HedvigPreview
+@PreviewFontScale
 @Composable
 private fun PreviewChatBanner() {
   HedvigTheme {

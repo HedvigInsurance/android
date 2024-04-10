@@ -28,10 +28,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.OffsetMapping
+import androidx.compose.ui.text.input.TransformedText
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
@@ -186,7 +193,8 @@ private fun FetchFromSsnFields(
   onContinue: () -> Unit,
 ) {
   var ssnInput by remember { mutableStateOf("") }
-
+  val mask = stringResource(id = R.string.edit_coinsured_ssn_placeholder)
+  val maskColor = MaterialTheme.colorScheme.onSurfaceVariant
   Column {
     HedvigTextField(
       value = ssnInput,
@@ -194,10 +202,13 @@ private fun FetchFromSsnFields(
         Text(stringResource(id = R.string.CONTRACT_PERSONAL_IDENTITY))
       },
       onValueChange = {
-        onSsnChanged(it)
-        ssnInput = it
+        if (it.length <= 12) {
+          onSsnChanged(it)
+          ssnInput = it
+        }
       },
       errorText = errorMessage,
+      visualTransformation = PersonalNumberVisualTransformation(mask, maskColor),
       keyboardOptions = KeyboardOptions(
         keyboardType = KeyboardType.Number,
         imeAction = ImeAction.Done,
@@ -223,6 +234,45 @@ private fun FetchFromSsnFields(
         modifier = Modifier.fillMaxWidth(),
       )
     }
+  }
+}
+
+private class PersonalNumberVisualTransformation(
+  private val mask: String,
+  private val maskColor: Color,
+) : VisualTransformation {
+  override fun filter(text: AnnotatedString): TransformedText {
+    val trimmed = if (text.text.length >= 12) text.text.substring(0..11) else text.text
+
+    val annotatedString = buildAnnotatedString {
+      for (i in trimmed.indices) {
+        append(trimmed[i])
+        if (i == 7) {
+          append("-")
+        }
+      }
+      withStyle(SpanStyle(color = maskColor)) {
+        append(mask.takeLast(mask.length - length))
+      }
+    }
+
+    val personalNumberOffsetTranslator = object : OffsetMapping {
+      override fun originalToTransformed(offset: Int): Int {
+        return when {
+          offset < 8 -> offset
+          offset <= 12 -> offset + 1
+          else -> 13
+        }
+      }
+
+      override fun transformedToOriginal(offset: Int): Int {
+        return when {
+          offset <= 8 -> offset
+          else -> offset - 1
+        }.coerceAtMost(text.length)
+      }
+    }
+    return TransformedText(annotatedString, personalNumberOffsetTranslator)
   }
 }
 

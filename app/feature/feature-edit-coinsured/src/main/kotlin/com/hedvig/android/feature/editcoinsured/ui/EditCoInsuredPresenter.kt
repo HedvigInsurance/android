@@ -117,12 +117,14 @@ internal class EditCoInsuredPresenter(
         }
 
         is EditCoInsuredEvent.OnSsnChanged ->
-          addBottomSheetState = addBottomSheetState.copy(
-            ssn = event.ssn,
-            errorMessage = null,
-            firstName = null,
-            lastName = null,
-          )
+          if (event.ssn.length <= 12) {
+            addBottomSheetState = addBottomSheetState.copy(
+              ssn = event.ssn,
+              errorMessage = null,
+              firstName = null,
+              lastName = null,
+            )
+          }
 
         is EditCoInsuredEvent.OnBirthDateChanged ->
           addBottomSheetState =
@@ -406,7 +408,7 @@ internal sealed interface EditCoInsuredState {
       fun canPickExistingCoInsured() = !selectableCoInsured.isNullOrEmpty()
 
       fun canContinue() = (showManualInput && firstName != null && lastName != null && birthDate != null) ||
-        (!showManualInput && ssn != null) ||
+        (!showManualInput && ssn?.length == 12) ||
         (selectedCoInsured != null)
 
       fun shouldFetchInfo() = !showManualInput && ssn != null && firstName == null && lastName == null

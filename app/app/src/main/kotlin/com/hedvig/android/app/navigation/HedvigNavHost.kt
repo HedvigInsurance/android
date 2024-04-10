@@ -2,7 +2,9 @@ package com.hedvig.android.app.navigation
 
 import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -32,18 +34,20 @@ import com.hedvig.android.feature.deleteaccount.navigation.DeleteAccountDestinat
 import com.hedvig.android.feature.deleteaccount.navigation.deleteAccountGraph
 import com.hedvig.android.feature.editcoinsured.navigation.editCoInsuredGraph
 import com.hedvig.android.feature.forever.navigation.foreverGraph
+import com.hedvig.android.feature.help.center.data.QuickLinkDestination
 import com.hedvig.android.feature.help.center.helpCenterGraph
 import com.hedvig.android.feature.help.center.navigation.HelpCenterDestination
 import com.hedvig.android.feature.home.home.navigation.HomeDestination
 import com.hedvig.android.feature.home.home.navigation.homeGraph
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
 import com.hedvig.android.feature.insurances.insurance.insuranceGraph
+import com.hedvig.android.feature.insurances.navigation.InsurancesDestination
 import com.hedvig.android.feature.odyssey.navigation.claimFlowGraph
 import com.hedvig.android.feature.odyssey.navigation.navigateToClaimFlowDestination
 import com.hedvig.android.feature.odyssey.navigation.terminalClaimFlowStepDestinations
 import com.hedvig.android.feature.payments.navigation.paymentsGraph
 import com.hedvig.android.feature.profile.tab.profileGraph
-import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceFeatureDestination
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceGraphDestination
 import com.hedvig.android.feature.terminateinsurance.navigation.terminateInsuranceGraph
 import com.hedvig.android.feature.travelcertificate.navigation.travelCertificateGraph
 import com.hedvig.android.language.LanguageService
@@ -65,6 +69,7 @@ internal fun HedvigNavHost(
   hedvigAppState: HedvigAppState,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   activityNavigator: ActivityNavigator,
+  finishApp: () -> Unit,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   openUrl: (String) -> Unit,
   imageLoader: ImageLoader,
@@ -76,7 +81,7 @@ internal fun HedvigNavHost(
   LocalConfiguration.current
   val context = LocalContext.current
   val density = LocalDensity.current
-  val navigator: Navigator = rememberNavigator(hedvigAppState.navController)
+  val navigator: Navigator = rememberNavigator(hedvigAppState.navController, finishApp)
 
   val navigateToConnectPayment = {
     when (market) {
@@ -139,7 +144,6 @@ internal fun HedvigNavHost(
           windowSizeClass = hedvigAppState.windowSizeClass,
           navigator = navigator,
           navController = hedvigAppState.navController,
-          imageLoader = imageLoader,
           openChat = { backStackEntry ->
             with(navigator) {
               backStackEntry.navigate(AppDestination.Chat())
@@ -147,6 +151,21 @@ internal fun HedvigNavHost(
           },
           openUrl = openUrl,
           openPlayStore = { activityNavigator.tryOpenPlayStore(context) },
+          hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+          navigateToInsurances = { navOptions ->
+            hedvigAppState.navController.navigate(InsurancesDestination.Graph, navOptions)
+          },
+          closeTerminationFlow = {
+            /**
+             * If we fail to pop the backstack including TerminateInsuranceGraphDestination here it means we were deep
+             * linked into this screen only, and they do not wish to continue with the flow they were deep linked to.
+             * The right way to handle this is to simply finish the app as per the docs:
+             * https://developer.android.com/guide/navigation/backstack#handle-failure
+             */
+            if (!hedvigAppState.navController.popBackStack<TerminateInsuranceGraphDestination>(inclusive = true)) {
+              finishApp()
+            }
+          },
         )
       },
       navigator = navigator,
@@ -163,14 +182,9 @@ internal fun HedvigNavHost(
       },
       startTerminationFlow = { backStackEntry: NavBackStackEntry, data: CancelInsuranceData ->
         with(navigator) {
-          val destination = TerminateInsuranceFeatureDestination(
-            contractId = data.contractId,
-            insuranceDisplayName = data.contractDisplayName,
-            exposureName = data.contractExposure,
-            contractGroup = data.contractGroup,
-            activeFrom = data.activateFrom,
+          backStackEntry.navigate(
+            TerminateInsuranceGraphDestination(insuranceId = data.contractId),
           )
-          backStackEntry.navigate(destination)
         }
       },
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
@@ -249,11 +263,29 @@ internal fun HedvigNavHost(
     helpCenterGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       navigator = navigator,
-    ) { backStackEntry, chatContext ->
-      with(navigator) {
-        backStackEntry.navigate(AppDestination.Chat(chatContext))
-      }
-    }
+      onNavigateToQuickLink = { backStackEntry, quickLinkDestination ->
+        val destination = when (quickLinkDestination) {
+          is QuickLinkDestination.QuickLinkCoInsuredAddInfo ->
+            AppDestination.CoInsuredAddInfo(quickLinkDestination.contractId)
+
+          is QuickLinkDestination.QuickLinkCoInsuredAddOrRemove ->
+            AppDestination.CoInsuredAddOrRemove(quickLinkDestination.contractId)
+
+          QuickLinkDestination.QuickLinkChangeAddress -> AppDestination.ChangeAddress
+          QuickLinkDestination.QuickLinkConnectPayment -> AppDestination.ConnectPayment
+          QuickLinkDestination.QuickLinkTermination -> TerminateInsuranceGraphDestination(null)
+          QuickLinkDestination.QuickLinkTravelCertificate -> AppDestination.TravelCertificate
+        }
+        with(navigator) {
+          backStackEntry.navigate(destination)
+        }
+      },
+      openChat = { backStackEntry, chatContext ->
+        with(navigator) {
+          backStackEntry.navigate(AppDestination.Chat(chatContext))
+        }
+      },
+    )
   }
 }
 
@@ -269,7 +301,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
   openUrl: (String) -> Unit,
 ) {
   claimDetailsGraph(
-    navController = hedvigAppState.navController,
+    navigator = navigator,
     imageLoader = imageLoader,
     openUrl = openUrl,
     navigateUp = navigator::navigateUp,
@@ -346,7 +378,8 @@ private fun NavGraphBuilder.nestedHomeGraphs(
 }
 
 @Composable
-private fun rememberNavigator(navController: NavController): Navigator {
+private fun rememberNavigator(navController: NavController, finishApp: () -> Unit): Navigator {
+  val updatedFinishApp by rememberUpdatedState(finishApp)
   return remember(navController) {
     object : Navigator {
       override fun NavBackStackEntry.navigate(
@@ -372,7 +405,9 @@ private fun rememberNavigator(navController: NavController): Navigator {
       }
 
       override fun popBackStack() {
-        navController.popBackStack()
+        if (!navController.popBackStack()) {
+          updatedFinishApp()
+        }
       }
     }
   }

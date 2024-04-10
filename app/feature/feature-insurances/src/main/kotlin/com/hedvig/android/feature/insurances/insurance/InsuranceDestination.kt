@@ -48,6 +48,7 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -56,6 +57,7 @@ import coil.ImageLoader
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
+import com.hedvig.android.core.designsystem.component.information.HedvigInformationSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.core.designsystem.material3.onTypeContainer
@@ -64,6 +66,7 @@ import com.hedvig.android.core.designsystem.material3.typeContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.card.InsuranceCard
+import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
@@ -216,24 +219,31 @@ private fun ColumnScope.InsuranceScreenContent(
   navigateToCancelledInsurances: () -> Unit,
   quantityOfCancelledInsurances: Int,
 ) {
-  for ((index, contract) in contracts.withIndex()) {
-    InsuranceCard(
-      backgroundImageUrl = null,
-      chips = contract.createChips(),
-      topText = contract.currentInsuranceAgreement.productVariant.displayName,
-      bottomText = contract.exposureDisplayName,
-      imageLoader = imageLoader,
-      modifier = Modifier
-        .padding(horizontal = 16.dp)
-        .clip(MaterialTheme.shapes.squircleMedium)
-        .clickable {
-          onInsuranceCardClick(contract.id)
-        },
-      shape = MaterialTheme.shapes.squircleMedium,
-      fallbackPainter = contract.createPainter(),
+  if (contracts.isEmpty()) {
+    HedvigInformationSection(
+      title = stringResource(id = R.string.INSURANCES_NO_ACTIVE),
+      withDefaultVerticalSpacing = true,
     )
-    if (index != contracts.lastIndex) {
-      Spacer(Modifier.height(8.dp))
+  } else {
+    for ((index, contract) in contracts.withIndex()) {
+      InsuranceCard(
+        backgroundImageUrl = null,
+        chips = contract.createChips(),
+        topText = contract.currentInsuranceAgreement.productVariant.displayName,
+        bottomText = contract.exposureDisplayName,
+        imageLoader = imageLoader,
+        modifier = Modifier
+          .padding(horizontal = 16.dp)
+          .clip(MaterialTheme.shapes.squircleMedium)
+          .clickable {
+            onInsuranceCardClick(contract.id)
+          },
+        shape = MaterialTheme.shapes.squircleMedium,
+        fallbackPainter = contract.createPainter(),
+      )
+      if (index != contracts.lastIndex) {
+        Spacer(Modifier.height(8.dp))
+      }
     }
   }
   if (crossSells.isNotEmpty()) {
@@ -364,44 +374,50 @@ private fun TerminatedContractsButton(text: String, onClick: () -> Unit, modifie
 
 @HedvigPreview
 @Composable
-private fun PreviewInsuranceScreen() {
+private fun PreviewInsuranceScreen(
+  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) withContracts: Boolean,
+) {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       InsuranceScreen(
         InsuranceUiState(
-          contracts = persistentListOf(
-            InsuranceContract(
-              "1",
-              "Test123",
-              exposureDisplayName = "Test exposure",
-              inceptionDate = LocalDate.fromEpochDays(200),
-              terminationDate = LocalDate.fromEpochDays(400),
-              currentInsuranceAgreement = InsuranceAgreement(
-                activeFrom = LocalDate.fromEpochDays(240),
-                activeTo = LocalDate.fromEpochDays(340),
-                displayItems = persistentListOf(),
-                productVariant = ProductVariant(
-                  displayName = "Variant",
-                  contractGroup = ContractGroup.RENTAL,
-                  contractType = ContractType.SE_APARTMENT_RENT,
-                  partner = null,
-                  perils = persistentListOf(),
-                  insurableLimits = persistentListOf(),
-                  documents = persistentListOf(),
+          contracts = if (withContracts) {
+            persistentListOf(
+              InsuranceContract(
+                "1",
+                "Test123",
+                exposureDisplayName = "Test exposure",
+                inceptionDate = LocalDate.fromEpochDays(200),
+                terminationDate = LocalDate.fromEpochDays(400),
+                currentInsuranceAgreement = InsuranceAgreement(
+                  activeFrom = LocalDate.fromEpochDays(240),
+                  activeTo = LocalDate.fromEpochDays(340),
+                  displayItems = persistentListOf(),
+                  productVariant = ProductVariant(
+                    displayName = "Variant",
+                    contractGroup = ContractGroup.RENTAL,
+                    contractType = ContractType.SE_APARTMENT_RENT,
+                    partner = null,
+                    perils = persistentListOf(),
+                    insurableLimits = persistentListOf(),
+                    documents = persistentListOf(),
+                  ),
+                  certificateUrl = null,
+                  coInsured = persistentListOf(),
+                  creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
                 ),
-                certificateUrl = null,
-                coInsured = persistentListOf(),
-                creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
+                upcomingInsuranceAgreement = null,
+                renewalDate = LocalDate.fromEpochDays(500),
+                supportsAddressChange = false,
+                supportsEditCoInsured = true,
+                isTerminated = false,
+                contractHolderDisplayName = "Hugo Linder",
+                contractHolderSSN = "19910113-1093",
               ),
-              upcomingInsuranceAgreement = null,
-              renewalDate = LocalDate.fromEpochDays(500),
-              supportsAddressChange = false,
-              supportsEditCoInsured = true,
-              isTerminated = false,
-              contractHolderDisplayName = "Hugo Linder",
-              contractHolderSSN = "19910113-1093",
-            ),
-          ),
+            )
+          } else {
+            persistentListOf()
+          },
           crossSells = persistentListOf(
             CrossSell(
               id = "1",
