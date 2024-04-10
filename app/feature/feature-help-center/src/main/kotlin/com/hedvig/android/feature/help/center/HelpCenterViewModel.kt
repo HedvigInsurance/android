@@ -5,7 +5,6 @@ import com.hedvig.android.feature.help.center.data.GetQuickLinksUseCase
 import com.hedvig.android.feature.help.center.model.commonQuestions
 import com.hedvig.android.feature.help.center.model.commonTopics
 import com.hedvig.android.molecule.android.MoleculeViewModel
-import kotlinx.collections.immutable.persistentListOf
 
 internal class HelpCenterViewModel(
   getCommonClaimsUseCase: GetCommonClaimsUseCase,
@@ -14,12 +13,10 @@ internal class HelpCenterViewModel(
     initialState = HelpCenterUiState(
       topics = commonTopics,
       questions = commonQuestions,
-      quickLinks = persistentListOf(),
       selectedQuickAction = null,
-      isLoadingQuickLinks = true,
+      quickLinksUiState = HelpCenterUiState.QuickLinkUiState.Loading,
     ),
     presenter = HelpCenterPresenter(
-      getCommonClaimsUseCase = getCommonClaimsUseCase,
       getQuickLinksUseCase = getQuickLinksUseCase,
     ),
   )

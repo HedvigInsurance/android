@@ -44,11 +44,11 @@ internal class GetMemberActionsUseCaseImpl(
 }
 
 internal data class MemberAction(
-  val isCancelInsuranceEnabled: Boolean?,
-  val isConnectPaymentEnabled: Boolean?,
-  val isEditCoInsuredEnabled: Boolean?,
-  val isMovingEnabled: Boolean?,
-  val isTravelCertificateEnabled: Boolean?,
+  val isCancelInsuranceEnabled: Boolean,
+  val isConnectPaymentEnabled: Boolean,
+  val isEditCoInsuredEnabled: Boolean,
+  val isMovingEnabled: Boolean,
+  val isTravelCertificateEnabled: Boolean,
   val sickAbroadAction: MemberActionWithDetails.SickAbroadAction?,
   val firstVetAction: MemberActionWithDetails.FirstVetAction?,
 )
