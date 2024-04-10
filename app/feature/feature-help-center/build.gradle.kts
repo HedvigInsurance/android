@@ -16,6 +16,7 @@ dependencies {
   implementation(libs.apollo.normalizedCache)
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
+  implementation(libs.arrow.fx)
   implementation(libs.coil.coil)
   implementation(libs.coil.compose)
   implementation(libs.compose.richtext)
@@ -52,4 +53,3 @@ apollo {
     generateDataBuilders.set(true)
   }
 }
-

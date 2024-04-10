@@ -50,7 +50,6 @@ import com.hedvig.android.core.ui.dialog.MultiSelectDialog
 import com.hedvig.android.feature.help.center.HelpCenterEvent
 import com.hedvig.android.feature.help.center.HelpCenterUiState
 import com.hedvig.android.feature.help.center.HelpCenterViewModel
-import com.hedvig.android.feature.help.center.commonclaim.CommonClaim
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination
 import com.hedvig.android.feature.help.center.model.Question
 import com.hedvig.android.feature.help.center.model.QuickAction
@@ -58,7 +57,6 @@ import com.hedvig.android.feature.help.center.model.Topic
 import com.hedvig.android.feature.help.center.ui.HelpCenterSection
 import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
 import com.hedvig.android.feature.help.center.ui.StillNeedHelpSection
-import com.hedvig.android.logger.logcat
 import com.hedvig.android.placeholder.PlaceholderHighlight
 import com.hedvig.android.placeholder.fade
 import com.hedvig.android.placeholder.placeholder
@@ -73,7 +71,6 @@ internal fun HelpCenterHomeDestination(
   onNavigateToTopic: (topic: Topic) -> Unit,
   onNavigateToQuestion: (question: Question) -> Unit,
   onNavigateToQuickLink: (QuickLinkDestination) -> Unit,
-  onNavigateToCommonClaim: (CommonClaim) -> Unit,
   onNavigateUp: () -> Unit,
   openChat: () -> Unit,
 ) {
@@ -87,9 +84,7 @@ internal fun HelpCenterHomeDestination(
     onNavigateToTopic = onNavigateToTopic,
     onNavigateToQuestion = onNavigateToQuestion,
     onNavigateToQuickLink = onNavigateToQuickLink,
-    onNavigateToCommonClaim = onNavigateToCommonClaim,
     onQuickActionsSelected = {
-      logcat { "mariia: viewModel.emit(HelpCenterEvent.OnQuickActionSelected($it))" }
       viewModel.emit(HelpCenterEvent.OnQuickActionSelected(it))
     },
     onDismissQuickActionDialog = {
@@ -110,12 +105,10 @@ private fun HelpCenterHomeScreen(
   onNavigateToQuestion: (question: Question) -> Unit,
   onNavigateToQuickLink: (QuickLinkDestination) -> Unit,
   onQuickActionsSelected: (QuickAction) -> Unit,
-  onNavigateToCommonClaim: (CommonClaim) -> Unit,
   onDismissQuickActionDialog: () -> Unit,
   openChat: () -> Unit,
   onNavigateUp: () -> Unit,
 ) {
-  logcat { "mariia: HelpCenterHomeScreen selectedQuickAction is $selectedQuickAction" }
   when (selectedQuickAction) {
     is QuickAction.MultiSelectQuickLink -> MultiSelectDialog(
       onDismissRequest = onDismissQuickActionDialog,
@@ -132,7 +125,6 @@ private fun HelpCenterHomeScreen(
 
     is QuickAction.StandaloneQuickLink -> {
       onDismissQuickActionDialog()
-      logcat { "mariia: onNavigateToQuickLink(selectedQuickAction.quickLinkDestination)" }
       onNavigateToQuickLink(selectedQuickAction.quickLinkDestination)
     }
 
@@ -214,15 +206,7 @@ private fun HelpCenterHomeScreen(
                     for (quickLink in it.quickLinks) {
                       HedvigCard(
                         onClick = {
-                          when (quickLink) {
-                            is HelpCenterUiState.QuickLinkType.CommonClaimType -> onNavigateToCommonClaim(
-                              quickLink.commonClaim, // todo: remove along with commonClaim
-                            )
-
-                            is HelpCenterUiState.QuickLinkType.QuickActionType -> onQuickActionsSelected(
-                              quickLink.quickAction,
-                            )
-                          }
+                          onQuickActionsSelected(quickLink.quickAction)
                         },
                         modifier = Modifier
                           .fillMaxWidth()
@@ -234,27 +218,17 @@ private fun HelpCenterHomeScreen(
                         ) {
                           Spacer(modifier = Modifier.height(12.dp))
                           Text(
-                            text = when (quickLink) {
-                              is HelpCenterUiState.QuickLinkType.CommonClaimType -> quickLink.commonClaim.title // todo: remove along with commonClaim
-                              is HelpCenterUiState.QuickLinkType.QuickActionType -> stringResource(
-                                quickLink.quickAction.titleRes,
-                              )
-                            },
+                            text = stringResource(
+                              quickLink.quickAction.titleRes,
+                            ),
                             textAlign = TextAlign.Start,
                             modifier = Modifier.padding(horizontal = 16.dp),
                           )
                           Spacer(modifier = Modifier.height(4.dp))
                           Text(
-                            text = when (quickLink) {
-                              is HelpCenterUiState.QuickLinkType.CommonClaimType -> { // todo: remove along with commonClaim
-                                val hintTextRes = quickLink.commonClaim.hintTextRes
-                                if (hintTextRes != null) stringResource(hintTextRes) else ""
-                              }
-
-                              is HelpCenterUiState.QuickLinkType.QuickActionType -> stringResource(
-                                quickLink.quickAction.hintTextRes,
-                              )
-                            },
+                            text = stringResource(
+                              quickLink.quickAction.hintTextRes,
+                            ),
                             textAlign = TextAlign.Start,
                             modifier = Modifier.padding(horizontal = 16.dp),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -361,21 +335,27 @@ private fun PreviewHelpCenterHomeScreen() {
         onNavigateToQuestion = {},
         onNavigateToQuickLink = {},
         onQuickActionsSelected = {},
-        onNavigateToCommonClaim = {},
         onDismissQuickActionDialog = {},
         openChat = {},
         onNavigateUp = {},
         quickLinksUiState = HelpCenterUiState.QuickLinkUiState.QuickLinks(
           List(3) {
-            HelpCenterUiState.QuickLinkType.CommonClaimType(
-              CommonClaim.Generic(
-                "$it",
-                "Long displayName 1234567",
-                12,
-                emptyList(),
+            HelpCenterUiState.QuickLink(
+              QuickAction.StandaloneQuickLink(
+                R.string.HC_QUICK_ACTIONS_CANCELLATION_TITLE,
+                R.string.HC_QUICK_ACTIONS_CANCELLATION_SUBTITLE,
+                QuickLinkDestination.OuterDestination.QuickLinkTermination,
               ),
             )
-          }.plus(HelpCenterUiState.QuickLinkType.QuickActionType(QuickAction.MultiSelectQuickLink(0, 0, emptyList())))
+          }.plus(
+            HelpCenterUiState.QuickLink(
+              QuickAction.MultiSelectQuickLink(
+                R.string.HC_QUICK_ACTIONS_CO_INSURED_TITLE,
+                R.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
+                emptyList(),
+              ),
+            ),
+          )
             .toPersistentList(),
         ),
       )

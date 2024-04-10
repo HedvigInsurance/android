@@ -2,6 +2,7 @@ package com.hedvig.android.feature.help.center.data
 
 import arrow.core.Either
 import arrow.core.raise.either
+import arrow.fx.coroutines.parZip
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
@@ -23,22 +24,26 @@ internal class GetMemberActionsUseCaseImpl(
 ) : GetMemberActionsUseCase {
   override suspend fun invoke(): Either<ErrorMessage, MemberAction> {
     return either {
-      val result = apolloClient.query(MemberActionsQuery())
-        .safeExecute().toEither(::ErrorMessage).onLeft {
-          logcat { "Cannot load memberActions" }
-        }.bind()
-      val isCoInsuredFeatureOn = featureManager.isFeatureEnabled(Feature.EDIT_COINSURED).first()
-      val isMovingFeatureOn = featureManager.isFeatureEnabled(Feature.MOVING_FLOW).first()
-      val isConnectPaymentFeatureOn = featureManager.isFeatureEnabled(Feature.PAYMENT_SCREEN).first()
-      MemberAction(
-        isCancelInsuranceEnabled = result.currentMember.memberActions?.isCancelInsuranceEnabled ?: false,
-        isConnectPaymentEnabled = isConnectPaymentFeatureOn && result.currentMember.memberActions?.isConnectPaymentEnabled ?: false,
-        isEditCoInsuredEnabled = isCoInsuredFeatureOn && result.currentMember.memberActions?.isEditCoInsuredEnabled ?: false,
-        isMovingEnabled = isMovingFeatureOn && result.currentMember.memberActions?.isMovingEnabled ?: false,
-        isTravelCertificateEnabled = result.currentMember.memberActions?.isTravelCertificateEnabled ?: false,
-        sickAbroadAction = result.currentMember.memberActions?.sickAbroadAction.toSickAbroadAction(),
-        firstVetAction = result.currentMember.memberActions?.firstVetAction?.toVetAction(),
-      )
+      parZip(
+        { featureManager.isFeatureEnabled(Feature.EDIT_COINSURED).first() },
+        { featureManager.isFeatureEnabled(Feature.MOVING_FLOW).first() },
+        { featureManager.isFeatureEnabled(Feature.PAYMENT_SCREEN).first() },
+        {
+          apolloClient.query(MemberActionsQuery()).safeExecute().toEither(::ErrorMessage)
+            .onLeft { logcat { "Cannot load memberActions" } }
+            .bind().currentMember.memberActions
+        },
+      ) { isCoInsuredFeatureOn, isMovingFeatureOn, isConnectPaymentFeatureOn, memberActions ->
+        MemberAction(
+          isCancelInsuranceEnabled = memberActions?.isCancelInsuranceEnabled ?: false,
+          isConnectPaymentEnabled = isConnectPaymentFeatureOn && memberActions?.isConnectPaymentEnabled ?: false,
+          isEditCoInsuredEnabled = isCoInsuredFeatureOn && memberActions?.isEditCoInsuredEnabled ?: false,
+          isMovingEnabled = isMovingFeatureOn && memberActions?.isMovingEnabled ?: false,
+          isTravelCertificateEnabled = memberActions?.isTravelCertificateEnabled ?: false,
+          sickAbroadAction = memberActions?.sickAbroadAction.toSickAbroadAction(),
+          firstVetAction = memberActions?.firstVetAction?.toVetAction(),
+        )
+      }
     }
   }
 }
@@ -63,8 +68,7 @@ internal sealed interface MemberActionWithDetails {
   ) : MemberActionWithDetails
 }
 
-@Serializable
-data class DeflectPartner(
+internal data class DeflectPartner(
   val id: String,
   val imageUrl: String?,
   val phoneNumber: String?,

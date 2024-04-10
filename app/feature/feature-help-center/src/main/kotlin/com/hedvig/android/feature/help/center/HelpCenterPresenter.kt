@@ -6,7 +6,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.hedvig.android.feature.help.center.commonclaim.CommonClaim
 import com.hedvig.android.feature.help.center.data.GetQuickLinksUseCase
 import com.hedvig.android.feature.help.center.model.Question
 import com.hedvig.android.feature.help.center.model.QuickAction
@@ -28,18 +27,14 @@ internal data class HelpCenterUiState(
   val quickLinksUiState: QuickLinkUiState,
   val selectedQuickAction: QuickAction?,
 ) {
-  sealed interface QuickLinkType {
-    data class QuickActionType(val quickAction: QuickAction) : QuickLinkType
-
-    data class CommonClaimType(val commonClaim: CommonClaim) : QuickLinkType
-  }
+  data class QuickLink(val quickAction: QuickAction)
 
   sealed interface QuickLinkUiState {
     data object Loading : QuickLinkUiState
 
     data object NoQuickLinks : QuickLinkUiState
 
-    data class QuickLinks(val quickLinks: ImmutableList<QuickLinkType>) : QuickLinkUiState
+    data class QuickLinks(val quickLinks: ImmutableList<QuickLink>) : QuickLinkUiState
   }
 }
 
@@ -72,7 +67,7 @@ internal class HelpCenterPresenter(
         },
         ifRight = {
           val list = it.map { action ->
-            HelpCenterUiState.QuickLinkType.QuickActionType(action)
+            HelpCenterUiState.QuickLink(action)
           }.toImmutableList()
           currentUiState = currentUiState.copy(
             quickLinksUiState = HelpCenterUiState.QuickLinkUiState.QuickLinks(list),
