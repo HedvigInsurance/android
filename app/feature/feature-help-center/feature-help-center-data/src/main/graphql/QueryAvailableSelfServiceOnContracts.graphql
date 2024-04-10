@@ -1,0 +1,18 @@
+query AvailableSelfServiceOnContracts {
+  currentMember {
+    activeContracts {
+      id
+      currentAgreement {
+        productVariant {
+          typeOfContract
+          displayName
+        }
+      }
+      supportsCoInsured
+      supportsMoving
+      coInsured {
+        hasMissingInfo
+      }
+    }
+  }
+}
