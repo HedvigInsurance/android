@@ -59,6 +59,14 @@ fun NavGraphBuilder.claimDetailsGraph(
         },
       )
     }
+    /**
+     * ClaimDetailDestinations.AddFilesDestination is:
+     * @Serializable
+     * data class AddFilesDestination(
+     *   val targetUploadUrl: String,
+     *   val initialFilesUri: List<String>,
+     * ) : ClaimDetailDestinations
+     */
     composable<ClaimDetailDestinations.AddFilesDestination>(
       typeMap = mapOf(typeOf<ArrayList<String>>() to StringArrayListType),
     ) { _, destination ->
