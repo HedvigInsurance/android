@@ -28,11 +28,11 @@ import com.hedvig.android.app.ui.SafeAndroidUriHandler
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.feature.login.navigation.LoginDestination
 import com.hedvig.android.feature.login.navigation.loginGraph
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.navigation.activity.ActivityNavigator
-import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.Navigator
 import com.hedvig.app.feature.genericauth.GenericAuthActivity
 import com.hedvig.app.feature.sunsetting.ForceUpgradeActivity
@@ -79,7 +79,7 @@ class MarketingActivity : AppCompatActivity() {
         val navigator = rememberNavigator(navController)
         NavHost(
           navController = navController,
-          startDestination = createRoutePattern<AppDestination.Login>(),
+          startDestination = createRoutePattern<LoginDestination>(),
           route = "marketing-root",
           modifier = Modifier.semantics { testTagsAsResourceId = true },
         ) {

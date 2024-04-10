@@ -11,7 +11,6 @@ import com.hedvig.android.language.Language
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.Market
-import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.Navigator
 import com.kiwi.navigationcompose.typed.composable
 import com.kiwi.navigationcompose.typed.createRoutePattern
@@ -28,7 +27,7 @@ fun NavGraphBuilder.loginGraph(
   startNOLogin: () -> Unit,
   startOtpLogin: () -> Unit,
 ) {
-  navigation<AppDestination.Login>(
+  navigation<LoginDestination>(
     startDestination = createRoutePattern<LoginDestinations.Marketing>(),
   ) {
     composable<LoginDestinations.Marketing> { backStackEntry ->
