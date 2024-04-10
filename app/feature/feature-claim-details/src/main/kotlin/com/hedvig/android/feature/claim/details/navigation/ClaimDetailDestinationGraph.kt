@@ -9,9 +9,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.navigation
-import androidx.navigation.serialization.generateRouteWithArgs
 import androidx.navigation.toRoute
-import kotlin.collections.ArrayList
 import coil.ImageLoader
 import com.hedvig.android.core.common.android.sharePDF
 import com.hedvig.android.feature.claim.details.ui.AddFilesDestination
@@ -21,13 +19,6 @@ import com.hedvig.android.feature.claim.details.ui.ClaimDetailsViewModel
 import com.hedvig.android.navigation.compose.typed.composable
 import com.hedvig.android.navigation.core.AppDestination
 import kotlin.reflect.typeOf
-import kotlinx.collections.immutable.toPersistentList
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.encoding.Encoder
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonEncoder
-import kotlinx.serialization.serializer
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -69,7 +60,7 @@ fun NavGraphBuilder.claimDetailsGraph(
       )
     }
     composable<ClaimDetailDestinations.AddFilesDestination>(
-//      typeMap = mapOf(typeOf<ClaimDetailDestinations.AddFilesDestination>() to AddFilesDestinationNavType),
+      typeMap = mapOf(typeOf<ArrayList<String>>() to StringListType),
     ) { _, destination ->
       val viewModel: AddFilesViewModel = koinViewModel {
         parametersOf(destination.targetUploadUrl, destination.initialFilesUri)
@@ -84,20 +75,37 @@ fun NavGraphBuilder.claimDetailsGraph(
   }
 }
 
-internal val AddFilesDestinationNavType = object : NavType<ClaimDetailDestinations.AddFilesDestination>(false) {
-  val serializer = serializer<ClaimDetailDestinations.AddFilesDestination>()
-  override fun put(bundle: Bundle, key: String, value: ClaimDetailDestinations.AddFilesDestination) {
-//    bundle.putString(key, Json.encodeToString(serializer, value))
-    bundle.putString(key, Json.encodeToString(value))
+private val StringListType: NavType<List<String>> = object : CollectionNavType<List<String>>(false) {
+  override fun put(bundle: Bundle, key: String, value: List<String>) {
+    error("")
+//    bundle.putStringArrayList(key, ArrayList(value))
+    bundle.putStringArray(key, value.toTypedArray())
   }
-  override fun get(bundle: Bundle, key: String): ClaimDetailDestinations.AddFilesDestination? {
-    val encodedString = bundle.getString(key) ?: return null
-    return Json.decodeFromString<ClaimDetailDestinations.AddFilesDestination>(encodedString)
+
+  @Suppress("UNCHECKED_CAST", "DEPRECATION")
+  override fun get(bundle: Bundle, key: String): List<String>? {
+    error("")
+//    return bundle[key] as ArrayList<String>
+    return bundle.getStringArray(key)?.toList()
   }
-  override fun parseValue(value: String): ClaimDetailDestinations.AddFilesDestination {
-    return Json.decodeFromString(serializer, value)
+
+  override fun parseValue(value: String): List<String> {
+    error("")
+    return listOf(value)
   }
-  override fun serializeAsValue(value: ClaimDetailDestinations.AddFilesDestination): String {
-    return Json.encodeToString(serializer, value)
+
+  override fun parseValue(value: String, previousValue: List<String>): List<String> {
+    error("")
+    return previousValue + value
+  }
+
+  override fun valueEquals(value: List<String>, other: List<String>): Boolean {
+    error("")
+    return value == other
+  }
+
+  override fun serializeAsValues(value: List<String>): List<String> {
+    error("")
+    return value
   }
 }
