@@ -25,13 +25,10 @@ import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.auth.listeners.di.apolloAuthListenersModule
 import com.hedvig.android.apollo.auth.listeners.di.languageAuthListenersModule
 import com.hedvig.android.app.di.appModule
-import com.hedvig.android.auth.AuthTokenService
-import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.auth.di.authModule
 import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
 import com.hedvig.android.core.appreview.di.coreAppReviewModule
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
-import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.di.coreCommonModule
 import com.hedvig.android.core.common.di.datastoreFileQualifier
 import com.hedvig.android.core.datastore.di.dataStoreModule
@@ -80,7 +77,6 @@ import com.hedvig.android.notification.badge.data.di.notificationBadgeModule
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.firebase.di.firebaseNotificationModule
 import com.hedvig.android.tracking.datadog.di.trackingDatadogModule
-import com.hedvig.app.authenticate.LogoutUseCaseImpl
 import com.hedvig.app.feature.chat.service.ChatNotificationSender
 import com.hedvig.app.feature.chat.service.ReplyWorker
 import com.hedvig.app.feature.genericauth.GenericAuthViewModel
@@ -252,15 +248,6 @@ private val clockModule = module {
   single<kotlinx.datetime.TimeZone> { kotlinx.datetime.TimeZone.currentSystemDefault() }
 }
 
-private val useCaseModule = module {
-  single<LogoutUseCase> {
-    LogoutUseCaseImpl(
-      get<AuthTokenService>(),
-      get<ApplicationScope>(),
-    )
-  }
-}
-
 private val cacheManagerModule = module {
   single<NetworkCacheManager> { NetworkCacheManagerImpl(get<ApolloClient>()) }
 }
@@ -373,7 +360,6 @@ val applicationModule = module {
       trackingDatadogModule,
       travelCertificateDataModule,
       travelCertificateModule,
-      useCaseModule,
       viewModelModule,
       workManagerModule,
       terminationDataModule,
