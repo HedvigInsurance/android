@@ -29,7 +29,6 @@ import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.auth.di.authModule
 import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
-import com.hedvig.android.core.appreview.SelfServiceCompletedEventManager
 import com.hedvig.android.core.appreview.di.coreAppReviewModule
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.ApplicationScope
@@ -257,7 +256,6 @@ private val useCaseModule = module {
   single<LogoutUseCase> {
     LogoutUseCaseImpl(
       get<AuthTokenService>(),
-      get<SelfServiceCompletedEventManager>(),
       get<ApplicationScope>(),
     )
   }
