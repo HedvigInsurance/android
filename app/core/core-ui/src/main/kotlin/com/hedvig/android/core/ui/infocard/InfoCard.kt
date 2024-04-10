@@ -77,7 +77,7 @@ fun VectorInfoCard(
       sizeAdjustingContent = {
         Text(
           text = "H",
-          style = MaterialTheme.typography.headlineMedium,
+          style = MaterialTheme.typography.bodyMedium,
         )
       },
     ) {
