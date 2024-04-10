@@ -60,6 +60,10 @@ internal class HelpCenterPresenter(
       }
     }
 
+    LaunchedEffect(selectedQuickAction) {
+      currentUiState = currentUiState.copy(selectedQuickAction = selectedQuickAction)
+    }
+
     LaunchedEffect(Unit) {
       currentUiState = currentUiState.copy(quickLinksUiState = HelpCenterUiState.QuickLinkUiState.Loading)
       getQuickLinksUseCase.invoke().fold(

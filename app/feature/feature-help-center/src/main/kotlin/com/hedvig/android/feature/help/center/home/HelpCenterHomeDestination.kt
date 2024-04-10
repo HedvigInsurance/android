@@ -1,8 +1,9 @@
 package com.hedvig.android.feature.help.center.home
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -57,10 +58,10 @@ import com.hedvig.android.feature.help.center.model.Topic
 import com.hedvig.android.feature.help.center.ui.HelpCenterSection
 import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
 import com.hedvig.android.feature.help.center.ui.StillNeedHelpSection
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.placeholder.PlaceholderHighlight
+import com.hedvig.android.placeholder.fade
 import com.hedvig.android.placeholder.placeholder
-import com.hedvig.android.placeholder.shimmer
-import com.kiwi.navigationcompose.typed.Destination
 import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -88,6 +89,7 @@ internal fun HelpCenterHomeDestination(
     onNavigateToQuickLink = onNavigateToQuickLink,
     onNavigateToCommonClaim = onNavigateToCommonClaim,
     onQuickActionsSelected = {
+      logcat { "mariia: viewModel.emit(HelpCenterEvent.OnQuickActionSelected($it))" }
       viewModel.emit(HelpCenterEvent.OnQuickActionSelected(it))
     },
     onDismissQuickActionDialog = {
@@ -113,6 +115,7 @@ private fun HelpCenterHomeScreen(
   openChat: () -> Unit,
   onNavigateUp: () -> Unit,
 ) {
+  logcat { "mariia: HelpCenterHomeScreen selectedQuickAction is $selectedQuickAction" }
   when (selectedQuickAction) {
     is QuickAction.MultiSelectQuickLink -> MultiSelectDialog(
       onDismissRequest = onDismissQuickActionDialog,
@@ -129,6 +132,7 @@ private fun HelpCenterHomeScreen(
 
     is QuickAction.StandaloneQuickLink -> {
       onDismissQuickActionDialog()
+      logcat { "mariia: onNavigateToQuickLink(selectedQuickAction.quickLinkDestination)" }
       onNavigateToQuickLink(selectedQuickAction.quickLinkDestination)
     }
 
@@ -173,8 +177,10 @@ private fun HelpCenterHomeScreen(
           targetState = quickLinksUiState,
           transitionSpec = {
             (
-              expandVertically(clip = false, expandFrom = Alignment.CenterVertically) { -it }
-                togetherWith shrinkVertically(clip = false, shrinkTowards = Alignment.CenterVertically) { it }
+              fadeIn(animationSpec = tween(300))
+                .togetherWith(
+                  fadeOut(animationSpec = tween(300)),
+                )
             )
           },
         ) {
@@ -212,6 +218,7 @@ private fun HelpCenterHomeScreen(
                             is HelpCenterUiState.QuickLinkType.CommonClaimType -> onNavigateToCommonClaim(
                               quickLink.commonClaim, // todo: remove along with commonClaim
                             )
+
                             is HelpCenterUiState.QuickLinkType.QuickActionType -> onQuickActionsSelected(
                               quickLink.quickAction,
                             )
@@ -325,7 +332,7 @@ private fun PlaceholderQuickLinks() {
             .padding(horizontal = 16.dp)
             .placeholder(
               visible = true,
-              highlight = PlaceholderHighlight.shimmer(),
+              highlight = PlaceholderHighlight.fade(),
             ),
         )
         Spacer(modifier = Modifier.height(4.dp))
@@ -333,7 +340,7 @@ private fun PlaceholderQuickLinks() {
           text = "HHHHHHHHHHHHHHHHHH",
           modifier = Modifier
             .padding(horizontal = 16.dp)
-            .placeholder(true, highlight = PlaceholderHighlight.shimmer()),
+            .placeholder(true, highlight = PlaceholderHighlight.fade()),
         )
         Spacer(modifier = Modifier.height(12.dp))
       }
