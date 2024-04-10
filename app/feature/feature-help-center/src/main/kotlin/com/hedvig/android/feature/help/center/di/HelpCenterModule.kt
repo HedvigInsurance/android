@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.help.center.di
 
+import com.hedvig.android.data.termination.data.GetTerminatableContractsUseCase
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.data.travelcertificate.CheckTravelCertificateDestinationAvailabilityUseCase
 import com.hedvig.android.feature.help.center.HelpCenterViewModel
@@ -22,6 +23,7 @@ val helpCenterModule = module {
       apolloClient = get(),
       featureManager = get(),
       get<CheckTravelCertificateDestinationAvailabilityUseCase>(),
+      get<GetTerminatableContractsUseCase>(),
     )
   }
 

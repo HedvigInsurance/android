@@ -95,7 +95,7 @@ private fun HedvigInformationSectionPreview() {
       HedvigInformationSection(
         title = "Test",
         buttonText = "Click",
-        onButtonClick = { /*TODO*/ },
+        onButtonClick = { },
       )
     }
   }

@@ -1,6 +1,6 @@
 package com.hedvig.android.feature.help.center.model
 
-import com.kiwi.navigationcompose.typed.Destination
+import com.hedvig.android.feature.help.center.data.QuickLinkDestination
 
 sealed interface QuickAction {
   val titleRes: Int
@@ -9,13 +9,17 @@ sealed interface QuickAction {
   data class MultiSelectQuickLink(
     override val titleRes: Int,
     override val hintTextRes: Int,
-    val links: List<QuickLink>,
-  ) : QuickAction
+    val links: List<QuickLinkForMultiSelect>,
+  ) : QuickAction {
+    data class QuickLinkForMultiSelect(
+      val displayName: String,
+      val quickLinkDestination: QuickLinkDestination,
+    )
+  }
 
-  data class QuickLink(
+  data class StandaloneQuickLink(
     override val titleRes: Int,
-    val displayName: String?,
     override val hintTextRes: Int,
-    val destination: Destination,
+    val quickLinkDestination: QuickLinkDestination,
   ) : QuickAction
 }

@@ -43,6 +43,7 @@ dependencies {
   implementation(projects.uiEmergency)
   implementation(projects.dataTravelCertificatePublic)
   implementation(project(":placeholder"))
+  implementation(projects.dataTermination)
 }
 
 apollo {

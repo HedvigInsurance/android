@@ -18,6 +18,8 @@ interface HedvigDeepLinkContainer {
   val contractWithoutContractId: String
   val contract: String // A specific contract destination with a contractId. If none match, an empty screen is shown
 
+  val terminateInsurance: String // The screen with a list of insurances eligible for self-service cancellation
+
   val forever: String // The forever/referrals destination, showing the existing discount and the unique code
 
   val profile: String // The profile screen, which acts as a gateway to several app settings
@@ -48,6 +50,8 @@ internal class HedvigDeepLinkContainerImpl(
   override val insurances: String = "$baseDeepLinkDomain/insurances"
   override val contractWithoutContractId: String = "$baseDeepLinkDomain/contract"
   override val contract: String = "$baseDeepLinkDomain/contract?contractId={contractId}"
+
+  override val terminateInsurance: String = "$baseDeepLinkDomain/terminate-contract?contractId={contractId}"
 
   override val forever: String = "$baseDeepLinkDomain/forever"
 
