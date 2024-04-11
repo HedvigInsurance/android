@@ -20,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.core.text.isDigitsOnly
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
@@ -37,6 +38,7 @@ fun SSNInputScreen(
   emailInput: String,
   error: String?,
   loading: Boolean,
+  canSubmitSsn: Boolean,
 ) {
   Column(
     modifier = Modifier
@@ -72,6 +74,7 @@ fun SSNInputScreen(
         text = stringResource(R.string.login_continue_button),
         onClick = onSubmitSSN,
         isLoading = loading,
+        enabled = canSubmitSsn,
       )
       Spacer(Modifier.height(16.dp))
     }
@@ -88,14 +91,15 @@ private fun SSNTextField(
 ) {
   HedvigTextField(
     value = input,
-    onValueChange = { newInput ->
+    onValueChange = onValueChange@{ newInput ->
+      if (!newInput.isDigitsOnly()) return@onValueChange
       val maxLengthAllowed = when (market) {
         Market.NO -> 11
         Market.DK -> 10
         Market.SE -> error("Should not be able to login with SSN in SE")
       }
       if (newInput.length > maxLengthAllowed) {
-        return@HedvigTextField
+        return@onValueChange
       }
       onInputChanged(newInput)
     },
@@ -152,6 +156,7 @@ private fun PreviewEmailInputScreenValid() {
         error = null,
         loading = false,
         market = Market.DK,
+        canSubmitSsn = true,
       )
     }
   }
@@ -170,6 +175,7 @@ private fun PreviewEmailInputScreenInvalid() {
         error = "Invalid email",
         loading = false,
         market = Market.DK,
+        canSubmitSsn = true,
       )
     }
   }
