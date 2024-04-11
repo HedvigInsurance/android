@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.genericauth
+package com.hedvig.android.feature.login.genericauth
 
 import app.cash.turbine.test
 import assertk.assertThat
@@ -11,8 +11,8 @@ import com.hedvig.android.auth.event.AuthEvent
 import com.hedvig.android.auth.test.FakeAuthRepository
 import com.hedvig.android.auth.test.TestAuthTokenService
 import com.hedvig.android.core.common.test.MainCoroutineRule
+import com.hedvig.android.feature.login.otpinput.OtpInputViewModel
 import com.hedvig.android.logger.TestLogcatLoggingRule
-import com.hedvig.app.feature.genericauth.otpinput.OtpInputViewModel
 import com.hedvig.authlib.AccessToken
 import com.hedvig.authlib.AuthTokenResult
 import com.hedvig.authlib.AuthorizationCodeGrant
@@ -24,7 +24,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 
-class OtpInputViewModelTest {
+class OtpInformationViewModelTest {
   @get:Rule
   val mainCoroutineRule = MainCoroutineRule()
 

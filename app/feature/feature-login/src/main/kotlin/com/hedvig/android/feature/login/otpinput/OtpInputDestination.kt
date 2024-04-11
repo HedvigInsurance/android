@@ -1,10 +1,10 @@
-package com.hedvig.app.feature.genericauth.otpinput
+package com.hedvig.android.feature.login.otpinput
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
@@ -29,9 +29,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.text.isDigitsOnly
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
@@ -52,7 +53,46 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.RestartTwoArrows
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
+import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.isActive
+
+@Composable
+fun OtpInputDestination(
+  viewModel: OtpInputViewModel,
+  navigateUp: () -> Unit,
+  startLoggedInActivity: () -> Unit,
+  onOpenEmailApp: () -> Unit,
+) {
+  val snackbarHostState = remember { SnackbarHostState() }
+  val snackbarResendMessage = stringResource(hedvig.resources.R.string.login_snackbar_code_resent)
+  LaunchedEffect(viewModel) {
+    viewModel.events.collectLatest { event ->
+      when (event) {
+        is OtpInputViewModel.Event.Success -> startLoggedInActivity()
+        OtpInputViewModel.Event.CodeResent -> {
+          delay(1.seconds)
+          snackbarHostState.showSnackbar(snackbarResendMessage)
+        }
+      }
+    }
+  }
+  val viewState by viewModel.viewState.collectAsStateWithLifecycle()
+  OtpInputScreen(
+    onInputChanged = viewModel::setInput,
+    onOpenEmailApp = onOpenEmailApp,
+    onSubmitCode = viewModel::submitCode,
+    onResendCode = viewModel::resendCode,
+    navigateUp = navigateUp,
+    inputValue = viewState.input,
+    credential = viewState.credential,
+    networkErrorMessage = viewState.networkErrorMessage,
+    loadingResend = viewState.loadingResend,
+    loadingCode = viewState.loadingCode,
+    snackbarHostState = snackbarHostState,
+  )
+}
 
 @Composable
 fun OtpInputScreen(
@@ -60,7 +100,7 @@ fun OtpInputScreen(
   onOpenEmailApp: () -> Unit,
   onSubmitCode: (String) -> Unit,
   onResendCode: () -> Unit,
-  onBackPressed: () -> Unit,
+  navigateUp: () -> Unit,
   inputValue: String,
   credential: String,
   networkErrorMessage: String?,
@@ -72,7 +112,7 @@ fun OtpInputScreen(
   Scaffold(
     topBar = {
       TopAppBarWithBack(
-        onClick = onBackPressed,
+        onClick = navigateUp,
         title = stringResource(hedvig.resources.R.string.login_navigation_bar_center_element_title),
       )
     },
@@ -81,26 +121,25 @@ fun OtpInputScreen(
     },
     modifier = modifier.fillMaxSize(),
   ) { paddingValues ->
-    AnimatedContent(targetState = loadingCode) { loading ->
-      when (loading) {
-        true -> HedvigFullScreenCenterAlignedProgress(show = loadingCode)
-        false -> OtpInputScreenContents(
-          credential,
-          inputValue,
-          onInputChanged,
-          onSubmitCode,
-          networkErrorMessage,
-          onResendCode,
-          loadingResend,
-          onOpenEmailApp,
-          Modifier.padding(paddingValues),
-        )
+    Box(Modifier.fillMaxSize(), propagateMinConstraints = true) {
+      OtpInputScreenContents(
+        credential,
+        inputValue,
+        onInputChanged,
+        onSubmitCode,
+        networkErrorMessage,
+        onResendCode,
+        loadingResend,
+        onOpenEmailApp,
+        Modifier.padding(paddingValues),
+      )
+      if (loadingCode) {
+        HedvigFullScreenCenterAlignedProgress(show = loadingCode)
       }
     }
   }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun OtpInputScreenContents(
   credential: String,
@@ -147,7 +186,6 @@ private fun OtpInputScreenContents(
   }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun ColumnScope.SixDigitCodeInputField(
   inputValue: String,
@@ -194,7 +232,6 @@ private fun ColumnScope.SixDigitCodeInputField(
   }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun ResendCodeItem(
   onResendCode: () -> Unit,
@@ -237,6 +274,7 @@ private fun RotatingIcon(isLoading: Boolean) {
       if (angle.value != 0f) {
         // Finish the rotation if it was already ongoing.
         angle.animateTo(360f)
+        angle.snapTo(0f)
       }
       angle.snapTo(0f)
     }
@@ -258,7 +296,7 @@ private fun PreviewOtpInputScreenValid() {
         onOpenEmailApp = {},
         onSubmitCode = {},
         onResendCode = {},
-        onBackPressed = {},
+        navigateUp = {},
         inputValue = "0123456",
         credential = "john@doe.com",
         networkErrorMessage = null,

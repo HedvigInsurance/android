@@ -24,10 +24,10 @@ internal sealed interface LoginDestinations : Destination {
    */
   @Serializable
   data class OtpInput(
-    val otpInput: OtpInput,
+    val otpInformation: OtpInformation,
   ) : LoginDestinations {
     @Serializable
-    data class OtpInput(
+    data class OtpInformation(
       val verifyUrl: String,
       val resendUrl: String,
       val credential: String,

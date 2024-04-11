@@ -7,6 +7,8 @@ import com.hedvig.android.feature.login.genericauth.GenericAuthDestination
 import com.hedvig.android.feature.login.genericauth.GenericAuthViewModel
 import com.hedvig.android.feature.login.marketing.MarketingDestination
 import com.hedvig.android.feature.login.marketing.MarketingViewModel
+import com.hedvig.android.feature.login.otpinput.OtpInputDestination
+import com.hedvig.android.feature.login.otpinput.OtpInputViewModel
 import com.hedvig.android.feature.login.swedishlogin.SwedishLoginDestination
 import com.hedvig.android.feature.login.swedishlogin.SwedishLoginViewModel
 import com.hedvig.android.language.Language
@@ -18,12 +20,14 @@ import com.kiwi.navigationcompose.typed.composable
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigation
 import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 fun NavGraphBuilder.loginGraph(
   navigator: Navigator,
   appVersionName: String,
   urlBaseWeb: String,
   openUrl: (String) -> Unit,
+  onOpenEmailApp: () -> Unit,
   startLoggedInActivity: () -> Unit,
 ) {
   navigation<LoginDestination>(
@@ -74,13 +78,21 @@ fun NavGraphBuilder.loginGraph(
         onStartOtpInput = { verifyUrl: String, resendUrl: String, email: String ->
           with(navigator) {
             backStackEntry.navigate(
-              LoginDestinations.OtpInput(LoginDestinations.OtpInput.OtpInput(verifyUrl, resendUrl, email)),
+              LoginDestinations.OtpInput(LoginDestinations.OtpInput.OtpInformation(verifyUrl, resendUrl, email)),
             )
           }
         },
       )
     }
     composable<LoginDestinations.OtpInput> {
+      val otpInputInformation: LoginDestinations.OtpInput.OtpInformation = this.otpInformation
+      val viewModel: OtpInputViewModel = koinViewModel { parametersOf(otpInputInformation) }
+      OtpInputDestination(
+        viewModel = viewModel,
+        navigateUp = navigator::navigateUp,
+        startLoggedInActivity = startLoggedInActivity,
+        onOpenEmailApp = onOpenEmailApp,
+      )
     }
   }
 }

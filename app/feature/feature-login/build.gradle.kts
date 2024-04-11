@@ -46,7 +46,9 @@ dependencies {
   testImplementation(projects.authCoreTest)
   testImplementation(projects.authEventCore)
   testImplementation(projects.authEventFake)
+  testImplementation(projects.coreCommonTest)
   testImplementation(projects.coreDatastoreTest)
   testImplementation(projects.loggingTest)
+  testImplementation(projects.marketTest)
   testImplementation(projects.moleculeTest)
 }

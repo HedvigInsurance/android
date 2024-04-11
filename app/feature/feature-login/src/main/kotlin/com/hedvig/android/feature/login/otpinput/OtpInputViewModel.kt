@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.genericauth.otpinput
+package com.hedvig.android.feature.login.otpinput
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

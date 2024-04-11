@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class GenericAuthViewModel(
+internal class GenericAuthViewModel(
   private val marketManager: MarketManager,
   private val authRepository: AuthRepository,
 ) : ViewModel() {

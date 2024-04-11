@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.os.Build
-import androidx.core.content.ContextCompat.startActivity
 import androidx.work.WorkerParameters
 import coil.ImageLoader
 import coil.decode.GifDecoder
@@ -79,8 +78,6 @@ import com.hedvig.android.notification.firebase.di.firebaseNotificationModule
 import com.hedvig.android.tracking.datadog.di.trackingDatadogModule
 import com.hedvig.app.feature.chat.service.ChatNotificationSender
 import com.hedvig.app.feature.chat.service.ReplyWorker
-import com.hedvig.app.feature.genericauth.GenericAuthViewModel
-import com.hedvig.app.feature.genericauth.otpinput.OtpInputViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.marketing.MarketingActivity
 import com.hedvig.app.service.push.senders.CrossSellNotificationSender
@@ -94,7 +91,6 @@ import com.hedvig.app.util.apollo.SunsettingInterceptor
 import java.io.File
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.androidx.workmanager.dsl.worker
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
@@ -181,19 +177,6 @@ fun makeUserAgent(languageBCP47: String): String = buildString {
   append("; ")
   append(languageBCP47)
   append(")")
-}
-
-private val viewModelModule = module {
-  viewModel<GenericAuthViewModel> { GenericAuthViewModel(get(), get()) }
-  viewModel<OtpInputViewModel> { (verifyUrl: String, resendUrl: String, credential: String) ->
-    OtpInputViewModel(
-      verifyUrl,
-      resendUrl,
-      credential,
-      get(),
-      get(),
-    )
-  }
 }
 
 private val activityNavigatorModule = module {
@@ -360,7 +343,6 @@ val applicationModule = module {
       trackingDatadogModule,
       travelCertificateDataModule,
       travelCertificateModule,
-      viewModelModule,
       workManagerModule,
       terminationDataModule,
     ),
