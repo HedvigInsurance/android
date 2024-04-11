@@ -34,7 +34,6 @@ import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.navigation.activity.ActivityNavigator
 import com.hedvig.android.navigation.core.Navigator
-import com.hedvig.app.feature.genericauth.GenericAuthActivity
 import com.hedvig.app.feature.sunsetting.ForceUpgradeActivity
 import com.kiwi.navigationcompose.typed.Destination
 import com.kiwi.navigationcompose.typed.createRoutePattern
@@ -91,15 +90,6 @@ class MarketingActivity : AppCompatActivity() {
             startLoggedInActivity = {
               activityNavigator.navigateToLoggedInScreen(this@MarketingActivity, false)
               finish()
-            },
-            startDKLogin = {
-              startActivity(GenericAuthActivity.newInstance(this@MarketingActivity))
-            },
-            startNOLogin = {
-              startActivity(GenericAuthActivity.newInstance(this@MarketingActivity))
-            },
-            startOtpLogin = {
-              startActivity(GenericAuthActivity.newInstance(this@MarketingActivity))
             },
           )
         }

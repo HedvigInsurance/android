@@ -23,6 +23,7 @@ dependencies {
   implementation(projects.apolloCore)
   implementation(projects.authCorePublic)
   implementation(projects.authCoreTest)
+  implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDemoMode)
   implementation(projects.coreDesignSystem)
