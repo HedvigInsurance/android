@@ -8,6 +8,4 @@ internal class UploadLanguagePreferenceToBackendAuthListener(
   override suspend fun loggedIn(accessToken: String) {
     uploadLanguagePreferenceToBackendUseCase.invoke()
   }
-
-  override suspend fun loggedOut() {}
 }

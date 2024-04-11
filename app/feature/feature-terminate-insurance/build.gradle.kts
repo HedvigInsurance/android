@@ -28,7 +28,6 @@ dependencies {
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
   implementation(libs.apollo.normalizedCache)
-  implementation(projects.authAndroid)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDatastorePublic)
@@ -46,5 +45,4 @@ dependencies {
   implementation(projects.navigationCore)
   implementation(projects.featureFlagsPublic)
   implementation(projects.dataTermination)
-
 }

@@ -38,7 +38,6 @@ dependencies {
   implementation(projects.apolloOctopusPublic)
   implementation(projects.audioPlayerUi)
   implementation(projects.audioPlayerData)
-  implementation(projects.authAndroid)
   implementation(projects.claimStatus)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)

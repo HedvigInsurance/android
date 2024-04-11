@@ -6,6 +6,8 @@ import com.hedvig.android.auth.AccessTokenProvider
 import com.hedvig.android.auth.AndroidAccessTokenProvider
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.AuthTokenServiceImpl
+import com.hedvig.android.auth.LogoutUseCase
+import com.hedvig.android.auth.LogoutUseCaseImpl
 import com.hedvig.android.auth.MemberIdService
 import com.hedvig.android.auth.event.AuthEventBroadcaster
 import com.hedvig.android.auth.event.AuthEventListener
@@ -74,6 +76,13 @@ val authModule = module {
       },
       additionalHttpHeadersProvider = { emptyMap() },
       okHttpClientBuilder = get<OkHttpClient.Builder>().addInterceptor(get<AuthTokenRefreshingInterceptor>()),
+    )
+  }
+
+  single<LogoutUseCase> {
+    LogoutUseCaseImpl(
+      get<AuthTokenService>(),
+      get<ApplicationScope>(),
     )
   }
 }
