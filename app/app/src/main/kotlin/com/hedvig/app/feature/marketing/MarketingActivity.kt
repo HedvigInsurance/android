@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.marketing
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.content.pm.LabeledIntent
 import android.content.pm.PackageManager
@@ -16,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.platform.LocalDensity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -29,6 +29,7 @@ import com.datadog.android.compose.NavigationViewTrackingEffect
 import com.hedvig.android.app.ui.SafeAndroidUriHandler
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
+import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.feature.login.navigation.LoginDestination
 import com.hedvig.android.feature.login.navigation.loginGraph
@@ -83,10 +84,15 @@ class MarketingActivity : AppCompatActivity() {
         val navController = rememberNavController()
         NavigationViewTrackingEffect(navController = navController)
         val navigator = rememberNavigator(navController)
+        val density = LocalDensity.current
         NavHost(
           navController = navController,
           startDestination = createRoutePattern<LoginDestination>(),
           route = "marketing-root",
+          enterTransition = { MotionDefaults.sharedXAxisEnter(density) },
+          exitTransition = { MotionDefaults.sharedXAxisExit(density) },
+          popEnterTransition = { MotionDefaults.sharedXAxisPopEnter(density) },
+          popExitTransition = { MotionDefaults.sharedXAxisPopExit(density) },
         ) {
           loginGraph(
             navigator = navigator,
@@ -101,13 +107,6 @@ class MarketingActivity : AppCompatActivity() {
           )
         }
       }
-    }
-  }
-
-  companion object {
-    fun newInstance(context: Context): Intent = Intent(context, MarketingActivity::class.java).apply {
-      addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-      addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
     }
   }
 }
