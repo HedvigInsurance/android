@@ -31,17 +31,14 @@ import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.colored.hedvig.FirstVet
 import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
+import com.hedvig.android.feature.help.center.data.FirstVetSection
 import hedvig.resources.R
 
 @Composable
-internal fun CommonClaimDestination(
-  commonClaim: CommonClaim.Generic,
-  navigateUp: () -> Unit,
-  navigateBack: () -> Unit,
-) {
+internal fun FirstVetDestination(sections: List<FirstVetSection>, navigateUp: () -> Unit, navigateBack: () -> Unit) {
   val context = LocalContext.current
   HedvigScaffold(
-    topAppBarText = commonClaim.title,
+    topAppBarText = stringResource(id = R.string.HC_QUICK_ACTIONS_FIRSTVET_TITLE),
     navigateUp = navigateUp,
   ) {
     Spacer(modifier = Modifier.height(8.dp))
@@ -49,33 +46,30 @@ internal fun CommonClaimDestination(
       verticalArrangement = Arrangement.spacedBy(8.dp),
       modifier = Modifier.padding(horizontal = 16.dp),
     ) {
-      for (bulletPoint in commonClaim.bulletPoints) {
-        val isFirstVet = commonClaim.isFirstVet
+      for (section in sections) {
         HedvigCard(Modifier.fillMaxWidth()) {
           Column(Modifier.padding(16.dp)) {
             Row(
               horizontalArrangement = Arrangement.spacedBy(8.dp),
               verticalAlignment = Alignment.CenterVertically,
             ) {
-              if (isFirstVet) {
-                Image(Icons.Hedvig.FirstVet, null, Modifier.size(28.dp))
-              }
-              Text(text = bulletPoint.title)
+              Image(Icons.Hedvig.FirstVet, null, Modifier.size(28.dp))
+              Text(text = section.title ?: "${sections.indexOf(section)}")
             }
             Spacer(modifier = Modifier.height(16.dp))
-            Text(text = bulletPoint.description, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            if (isFirstVet) {
-              Spacer(modifier = Modifier.height(16.dp))
-              HedvigContainedSmallButton(
-                text = stringResource(R.string.SUBMIT_CLAIM_GLASS_DAMAGE_ONLINE_BOOKING_BUTTON),
-                onClick = {
-                  context.startActivity(
-                    Intent(Intent.ACTION_VIEW, Uri.parse("https://app.adjust.com/11u5tuxu")),
-                  )
-                },
-                modifier = Modifier.fillMaxWidth(),
-              )
-            }
+            Text(text = section.description ?: "", color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Spacer(modifier = Modifier.height(16.dp))
+            HedvigContainedSmallButton(
+              text = section.buttonTitle
+                ?: stringResource(R.string.SUBMIT_CLAIM_GLASS_DAMAGE_ONLINE_BOOKING_BUTTON),
+              onClick = {
+                val url = section.url ?: "https://app.adjust.com/11u5tuxu"
+                context.startActivity(
+                  Intent(Intent.ACTION_VIEW, Uri.parse(url)),
+                )
+              },
+              modifier = Modifier.fillMaxWidth(),
+            )
           }
         }
       }
@@ -98,14 +92,19 @@ private fun PreviewCommonClaimDestination(
 ) {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      CommonClaimDestination(
-        CommonClaim.Generic(
-          if (isManyPets) "30" else "29",
-          "Title",
-          hintTextRes = 1,
-          listOf(
-            CommonClaim.Generic.BulletPoint("Title", "Description"),
-            CommonClaim.Generic.BulletPoint("Title#2", "Description#2"),
+      FirstVetDestination(
+        sections = listOf(
+          FirstVetSection(
+            buttonTitle = "Button title 1",
+            description = "Description 1",
+            title = "Title 1",
+            url = null,
+          ),
+          FirstVetSection(
+            buttonTitle = "Button title 2",
+            description = "Description 2",
+            title = "Title 2",
+            url = null,
           ),
         ),
         {},

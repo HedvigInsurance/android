@@ -22,7 +22,6 @@ internal fun DeflectEmergencyDestination(
 @Composable
 private fun DeflectEmergencyScreen(partners: ImmutableList<DeflectPartner>, navigateUp: () -> Unit) {
   EmergencyScreen(
-    title = null,
     emergencyNumber = partners.firstNotNullOfOrNull { it.phoneNumber },
     navigateUp = navigateUp,
   )

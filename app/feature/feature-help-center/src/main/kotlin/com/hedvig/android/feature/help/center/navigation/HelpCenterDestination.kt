@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.help.center.navigation
 
+import com.hedvig.android.feature.help.center.data.FirstVetSection
 import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.serialization.Serializable
 
@@ -23,10 +24,10 @@ internal sealed interface HelpCenterDestinations : Destination {
   ) : HelpCenterDestinations
 
   @Serializable
-  data class Emergency(val emergency: com.hedvig.android.feature.help.center.commonclaim.CommonClaim.Emergency) :
+  data class Emergency(val emergencyNumber: String?) :
     HelpCenterDestinations
 
   @Serializable
-  data class CommonClaim(val commonClaim: com.hedvig.android.feature.help.center.commonclaim.CommonClaim.Generic) :
+  data class FirstVet(val sections: List<FirstVetSection>) :
     HelpCenterDestinations
 }

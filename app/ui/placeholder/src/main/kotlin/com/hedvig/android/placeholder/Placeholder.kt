@@ -138,6 +138,7 @@ fun Modifier.placeholder(
       initialValue = 0f,
       targetValue = 1f,
       animationSpec = animationSpec,
+      label = "highlightProgress",
     ).value
   }
 
