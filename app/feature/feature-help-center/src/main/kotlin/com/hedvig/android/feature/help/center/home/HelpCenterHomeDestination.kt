@@ -1,9 +1,15 @@
 package com.hedvig.android.feature.help.center.home
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -27,6 +33,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -34,6 +43,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
@@ -165,86 +176,18 @@ private fun HelpCenterHomeScreen(
           )
         }
         Spacer(Modifier.height(40.dp))
-        AnimatedContent(
-          targetState = quickLinksUiState,
-          transitionSpec = {
-            (
-              fadeIn(animationSpec = tween(300))
-                .togetherWith(
-                  fadeOut(animationSpec = tween(300)),
-                )
-            )
-          },
+        AnimatedVisibility(
+          visible = quickLinksUiState !is HelpCenterUiState.QuickLinkUiState.NoQuickLinks,
+          enter = fadeIn(spring(stiffness = Spring.StiffnessMedium)) +
+            expandVertically(expandFrom = Alignment.Top),
+          exit = fadeOut(spring(stiffness = Spring.StiffnessMedium)) +
+            shrinkVertically(shrinkTowards = Alignment.Top),
         ) {
-          when (it) {
-            HelpCenterUiState.QuickLinkUiState.Loading -> {
-              HelpCenterSection(
-                title = stringResource(R.string.HC_QUICK_ACTIONS_TITLE),
-                chipContainerColor = MaterialTheme.colorScheme.typeContainer,
-                contentColor = MaterialTheme.colorScheme.onTypeContainer,
-                content = {
-                  Column(
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
-                  ) {
-                    PlaceholderQuickLinks()
-                  }
-                },
-              )
-            }
-
-            HelpCenterUiState.QuickLinkUiState.NoQuickLinks -> {}
-
-            is HelpCenterUiState.QuickLinkUiState.QuickLinks -> {
-              HelpCenterSection(
-                title = stringResource(R.string.HC_QUICK_ACTIONS_TITLE),
-                chipContainerColor = MaterialTheme.colorScheme.typeContainer,
-                contentColor = MaterialTheme.colorScheme.onTypeContainer,
-                content = {
-                  Column(
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
-                  ) {
-                    for (quickLink in it.quickLinks) {
-                      HedvigCard(
-                        onClick = {
-                          onQuickActionsSelected(quickLink.quickAction)
-                        },
-                        modifier = Modifier
-                          .fillMaxWidth()
-                          .padding(horizontal = 16.dp)
-                          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-                      ) {
-                        Column(
-                          verticalArrangement = Arrangement.Center,
-                        ) {
-                          Spacer(modifier = Modifier.height(12.dp))
-                          Text(
-                            text = stringResource(
-                              quickLink.quickAction.titleRes,
-                            ),
-                            textAlign = TextAlign.Start,
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                          )
-                          Spacer(modifier = Modifier.height(4.dp))
-                          Text(
-                            text = stringResource(
-                              quickLink.quickAction.hintTextRes,
-                            ),
-                            textAlign = TextAlign.Start,
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            style = MaterialTheme.typography.titleSmall,
-                          )
-                          Spacer(modifier = Modifier.height(12.dp))
-                        }
-                      }
-                    }
-                  }
-                },
-              )
-            }
+          Column {
+            QuickLinksSection(quickLinksUiState, onQuickActionsSelected)
+            Spacer(Modifier.height(48.dp))
           }
         }
-        Spacer(Modifier.height(48.dp))
         HelpCenterSection(
           title = stringResource(id = R.string.HC_COMMON_TOPICS_TITLE),
           chipContainerColor = MaterialTheme.colorScheme.yellowContainer,
@@ -288,43 +231,114 @@ private fun HelpCenterHomeScreen(
 }
 
 @Composable
-private fun PlaceholderQuickLinks() {
-  List(5) {
-    HedvigCard(
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp)
-        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-    ) {
-      Column(
-        verticalArrangement = Arrangement.Center,
-      ) {
-        Spacer(modifier = Modifier.height(12.dp))
-        Text(
-          text = "HHHHHH",
-          modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .placeholder(
-              visible = true,
-              highlight = PlaceholderHighlight.fade(),
-            ),
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-          text = "HHHHHHHHHHHHHHHHHH",
-          modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .placeholder(true, highlight = PlaceholderHighlight.fade()),
-        )
-        Spacer(modifier = Modifier.height(12.dp))
+private fun QuickLinksSection(
+  quickLinksUiState: HelpCenterUiState.QuickLinkUiState,
+  onQuickActionsClick: (QuickAction) -> Unit,
+) {
+  HelpCenterSection(
+    title = stringResource(R.string.HC_QUICK_ACTIONS_TITLE),
+    chipContainerColor = MaterialTheme.colorScheme.typeContainer,
+    contentColor = MaterialTheme.colorScheme.onTypeContainer,
+    content = {
+      val isQuickLinks = quickLinksUiState as? HelpCenterUiState.QuickLinkUiState.QuickLinks
+      AnimatedContent(
+        targetState = isQuickLinks,
+        transitionSpec = { EnterTransition.None togetherWith ExitTransition.None },
+      ) { quickLinks: HelpCenterUiState.QuickLinkUiState.QuickLinks? ->
+        if (quickLinks != null) {
+          Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            for (quickLink in quickLinks.quickLinks) {
+              QuickLinkCard(
+                topText = {
+                  Text(
+                    text = stringResource(
+                      quickLink.quickAction.titleRes,
+                    ),
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                  )
+                },
+                bottomText = {
+                  Text(
+                    text = stringResource(
+                      quickLink.quickAction.hintTextRes,
+                    ),
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.titleSmall,
+                  )
+                },
+                onClick = {
+                  onQuickActionsClick(quickLink.quickAction)
+                },
+              )
+            }
+          }
+        } else {
+          PlaceholderQuickLinks()
+        }
       }
+    },
+  )
+}
+
+@Composable
+private fun PlaceholderQuickLinks() {
+  Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    List(5) {
+      QuickLinkCard(
+        topText = {
+          Text(
+            text = "HHHHHH",
+            modifier = Modifier
+              .padding(horizontal = 16.dp)
+              .placeholder(visible = true, highlight = PlaceholderHighlight.fade()),
+          )
+        },
+        bottomText = {
+          Text(
+            text = "HHHHHHHHHHHHHHHHHH",
+            style = MaterialTheme.typography.titleSmall,
+            modifier = Modifier
+              .padding(horizontal = 16.dp)
+              .placeholder(true, highlight = PlaceholderHighlight.fade()),
+          )
+        },
+      )
+    }
+  }
+}
+
+@Composable
+private fun QuickLinkCard(
+  topText: @Composable () -> Unit,
+  bottomText: @Composable () -> Unit,
+  modifier: Modifier = Modifier,
+  onClick: (() -> Unit)? = null,
+) {
+  HedvigCard(
+    onClick = onClick,
+    modifier = modifier
+      .fillMaxWidth()
+      .padding(horizontal = 16.dp)
+      .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+  ) {
+    Column(
+      verticalArrangement = Arrangement.spacedBy(8.dp),
+      modifier = Modifier.padding(start = 16.dp, bottom = 14.dp, top = 12.dp, end = 12.dp),
+    ) {
+      topText()
+      bottomText()
     }
   }
 }
 
 @HedvigPreview
 @Composable
-private fun PreviewHelpCenterHomeScreen() {
+private fun PreviewHelpCenterHomeScreen(
+  @PreviewParameter(QuickLinkUiStatePreviewProvider::class) quickLinksUiState: HelpCenterUiState.QuickLinkUiState,
+) {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       HelpCenterHomeScreen(
@@ -338,7 +352,51 @@ private fun PreviewHelpCenterHomeScreen() {
         onDismissQuickActionDialog = {},
         openChat = {},
         onNavigateUp = {},
-        quickLinksUiState = HelpCenterUiState.QuickLinkUiState.QuickLinks(
+        quickLinksUiState = quickLinksUiState,
+      )
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewQuickLinkAnimations() {
+  val quickLinkUiStateList: List<HelpCenterUiState.QuickLinkUiState> = remember {
+    val provider = QuickLinkUiStatePreviewProvider()
+    provider.values.toList() + provider.values.drop(1).toList()
+  }
+  var quickLinksUiStateIndex by remember { mutableIntStateOf(0) }
+  HedvigTheme {
+    Surface(
+      onClick = {
+        quickLinksUiStateIndex = quickLinksUiStateIndex + 1
+      },
+      color = MaterialTheme.colorScheme.background,
+    ) {
+      HelpCenterHomeScreen(
+        topics = persistentListOf(Topic.PAYMENTS, Topic.PAYMENTS),
+        questions = persistentListOf(Question.CLAIMS_Q1, Question.CLAIMS_Q1),
+        selectedQuickAction = null,
+        onNavigateToTopic = {},
+        onNavigateToQuestion = {},
+        onNavigateToQuickLink = {},
+        onQuickActionsSelected = {},
+        onDismissQuickActionDialog = {},
+        openChat = {},
+        onNavigateUp = {},
+        quickLinksUiState = quickLinkUiStateList[quickLinksUiStateIndex % quickLinkUiStateList.size],
+      )
+    }
+  }
+}
+
+private class QuickLinkUiStatePreviewProvider : CollectionPreviewParameterProvider<HelpCenterUiState.QuickLinkUiState>(
+  listOf(
+    HelpCenterUiState.QuickLinkUiState.NoQuickLinks,
+    HelpCenterUiState.QuickLinkUiState.Loading,
+    HelpCenterUiState.QuickLinkUiState.QuickLinks(
+      buildList {
+        addAll(
           List(3) {
             HelpCenterUiState.QuickLink(
               QuickAction.StandaloneQuickLink(
@@ -347,18 +405,18 @@ private fun PreviewHelpCenterHomeScreen() {
                 QuickLinkDestination.OuterDestination.QuickLinkTermination,
               ),
             )
-          }.plus(
-            HelpCenterUiState.QuickLink(
-              QuickAction.MultiSelectQuickLink(
-                R.string.HC_QUICK_ACTIONS_CO_INSURED_TITLE,
-                R.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
-                emptyList(),
-              ),
+          },
+        )
+        add(
+          HelpCenterUiState.QuickLink(
+            QuickAction.MultiSelectQuickLink(
+              R.string.HC_QUICK_ACTIONS_CO_INSURED_TITLE,
+              R.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
+              emptyList(),
             ),
-          )
-            .toPersistentList(),
-        ),
-      )
-    }
-  }
-}
+          ),
+        )
+      }.toPersistentList(),
+    ),
+  ),
+)
