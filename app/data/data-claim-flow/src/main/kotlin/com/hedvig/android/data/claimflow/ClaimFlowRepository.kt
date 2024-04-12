@@ -412,6 +412,7 @@ private suspend fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(
         deductible,
         payoutAmount,
         availableCheckoutMethods,
+        repairCostAmount,
       )
     }
 

@@ -76,6 +76,7 @@ sealed interface ClaimFlowStep {
     val deductible: MoneyFragment,
     val payoutAmount: MoneyFragment,
     val availableCheckoutMethods: List<CheckoutMethodFragment>,
+    val repairCostAmount: MoneyFragment?,
   ) : ClaimFlowStep
 
   data class ClaimSummaryStep(

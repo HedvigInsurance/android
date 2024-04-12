@@ -102,6 +102,9 @@ fragment FlowClaimSingleItemCheckoutStepFragment on FlowClaimSingleItemCheckoutS
   payoutAmount {
     ...MoneyFragment
   }
+  repairCostAmount {
+    ...MoneyFragment
+  }
   availableCheckoutMethods {
     id
     ...CheckoutMethodFragment

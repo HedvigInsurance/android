@@ -35,6 +35,7 @@ internal sealed interface SingleItemCheckoutUiState {
     val payoutAmount: UiMoney,
     val availableCheckoutMethods: NonEmptyList<CheckoutMethod.Known>,
     val selectedCheckoutMethod: CheckoutMethod.Known,
+    val repairCostAmount: UiMoney?,
   ) : SingleItemCheckoutUiState
 
   /**
@@ -57,6 +58,7 @@ internal sealed interface SingleItemCheckoutUiState {
         payoutAmount = singleItemCheckout.payoutAmount,
         availableCheckoutMethods = availableCheckoutMethods,
         selectedCheckoutMethod = initiallySelectedCheckoutMethod,
+        repairCostAmount = singleItemCheckout.repairCostAmount,
       )
     }
   }
