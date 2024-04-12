@@ -5,8 +5,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
-import com.hedvig.android.feature.help.center.commonclaim.CommonClaim
-import com.hedvig.android.feature.help.center.commonclaim.CommonClaimDestination
+import com.hedvig.android.feature.help.center.commonclaim.FirstVetDestination
 import com.hedvig.android.feature.help.center.commonclaim.emergency.EmergencyDestination
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination
 import com.hedvig.android.feature.help.center.home.HelpCenterHomeDestination
@@ -27,7 +26,7 @@ import org.koin.androidx.compose.koinViewModel
 fun NavGraphBuilder.helpCenterGraph(
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   navigator: Navigator,
-  onNavigateToQuickLink: (NavBackStackEntry, QuickLinkDestination) -> Unit,
+  onNavigateToQuickLink: (NavBackStackEntry, QuickLinkDestination.OuterDestination) -> Unit,
   openChat: (NavBackStackEntry, AppDestination.Chat.ChatContext?) -> Unit,
 ) {
   navigation<HelpCenterDestination>(
@@ -49,16 +48,23 @@ fun NavGraphBuilder.helpCenterGraph(
           navigateToQuestion(resources, question, navigator, backStackEntry)
         },
         onNavigateToQuickLink = { destination ->
-          onNavigateToQuickLink(backStackEntry, destination)
-        },
-        onNavigateToCommonClaim = { commonClaim ->
-          when (commonClaim) {
-            is CommonClaim.Emergency -> {
-              with(navigator) { backStackEntry.navigate(HelpCenterDestinations.Emergency(commonClaim)) }
+          when (destination) {
+            is QuickLinkDestination.OuterDestination -> {
+              onNavigateToQuickLink(backStackEntry, destination)
             }
-
-            is CommonClaim.Generic -> {
-              with(navigator) { backStackEntry.navigate(HelpCenterDestinations.CommonClaim(commonClaim)) }
+            is QuickLinkDestination.InnerHelpCenterDestination -> {
+              when (destination) {
+                is QuickLinkDestination.InnerHelpCenterDestination.FirstVet -> {
+                  with(navigator) {
+                    backStackEntry.navigate(HelpCenterDestinations.FirstVet(destination.sections))
+                  }
+                }
+                is QuickLinkDestination.InnerHelpCenterDestination.QuickLinkSickAbroad -> {
+                  with(navigator) {
+                    backStackEntry.navigate(HelpCenterDestinations.Emergency(destination.emergencyNumber))
+                  }
+                }
+              }
             }
           }
         },
@@ -96,16 +102,16 @@ fun NavGraphBuilder.helpCenterGraph(
         },
       )
     }
-    composable<HelpCenterDestinations.CommonClaim> {
-      CommonClaimDestination(
-        commonClaim = commonClaim,
+    composable<HelpCenterDestinations.FirstVet> {
+      FirstVetDestination(
+        sections = sections,
         navigateUp = navigator::navigateUp,
         navigateBack = navigator::popBackStack,
       )
     }
     composable<HelpCenterDestinations.Emergency> {
       EmergencyDestination(
-        emergencyData = emergency,
+        emergencyNumber = emergencyNumber,
         navigateUp = navigator::navigateUp,
       )
     }

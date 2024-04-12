@@ -3,10 +3,13 @@ package com.hedvig.android.feature.login.navigation
 import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.serialization.Serializable
 
-internal sealed interface LoginDestination : Destination {
+@Serializable
+data object LoginDestination : Destination
+
+internal sealed interface LoginDestinations : Destination {
   @Serializable
-  object Marketing : LoginDestination
+  object Marketing : LoginDestinations
 
   @Serializable
-  object SwedishLogin : LoginDestination
+  object SwedishLogin : LoginDestinations
 }

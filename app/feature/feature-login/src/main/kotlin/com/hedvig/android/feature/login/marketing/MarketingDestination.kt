@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.login.marketing
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,7 +26,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -88,7 +86,6 @@ internal fun MarketingDestination(
   )
 }
 
-@ExperimentalMaterial3Api
 @Composable
 private fun MarketingScreen(
   uiState: MarketingUiState,
@@ -219,7 +216,6 @@ private fun MarketingScreen(
 }
 
 @Suppress("UnusedReceiverParameter")
-@ExperimentalFoundationApi
 @Composable
 private fun ColumnScope.PreferencesSheetContent(
   chosenMarket: Market,

@@ -44,9 +44,9 @@ import com.hedvig.android.logger.logcat
 import hedvig.resources.R
 
 @Composable
-fun EmergencyScreen(title: String?, emergencyNumber: String?, navigateUp: () -> Unit, modifier: Modifier = Modifier) {
+fun EmergencyScreen(emergencyNumber: String?, navigateUp: () -> Unit, modifier: Modifier = Modifier) {
   HedvigScaffold(
-    topAppBarText = title,
+    topAppBarText = stringResource(id = R.string.HC_QUICK_ACTIONS_SICK_ABROAD_TITLE),
     navigateUp = navigateUp,
     modifier = modifier,
   ) {
@@ -163,10 +163,10 @@ private fun QuestionsAndAnswers(modifier: Modifier = Modifier) {
       ExpandablePlusCard(
         isExpanded = expandedItem == index,
         onClick = {
-          if (expandedItem == index) {
-            expandedItem = -1
+          expandedItem = if (expandedItem == index) {
+            -1
           } else {
-            expandedItem = index
+            index
           }
         },
         titleText = faqItem.first,
@@ -182,7 +182,6 @@ private fun PreviewEmergencyScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       EmergencyScreen(
-        title = "Title",
         emergencyNumber = "123456",
         navigateUp = {},
       )

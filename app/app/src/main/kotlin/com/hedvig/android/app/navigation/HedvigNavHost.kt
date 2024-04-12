@@ -265,16 +265,16 @@ internal fun HedvigNavHost(
       navigator = navigator,
       onNavigateToQuickLink = { backStackEntry, quickLinkDestination ->
         val destination = when (quickLinkDestination) {
-          is QuickLinkDestination.QuickLinkCoInsuredAddInfo ->
+          QuickLinkDestination.OuterDestination.QuickLinkChangeAddress -> AppDestination.ChangeAddress
+          is QuickLinkDestination.OuterDestination.QuickLinkCoInsuredAddInfo ->
             AppDestination.CoInsuredAddInfo(quickLinkDestination.contractId)
 
-          is QuickLinkDestination.QuickLinkCoInsuredAddOrRemove ->
+          is QuickLinkDestination.OuterDestination.QuickLinkCoInsuredAddOrRemove ->
             AppDestination.CoInsuredAddOrRemove(quickLinkDestination.contractId)
 
-          QuickLinkDestination.QuickLinkChangeAddress -> AppDestination.ChangeAddress
-          QuickLinkDestination.QuickLinkConnectPayment -> AppDestination.ConnectPayment
-          QuickLinkDestination.QuickLinkTermination -> TerminateInsuranceGraphDestination(null)
-          QuickLinkDestination.QuickLinkTravelCertificate -> AppDestination.TravelCertificate
+          QuickLinkDestination.OuterDestination.QuickLinkConnectPayment -> AppDestination.ConnectPayment
+          QuickLinkDestination.OuterDestination.QuickLinkTermination -> TerminateInsuranceGraphDestination(null)
+          QuickLinkDestination.OuterDestination.QuickLinkTravelCertificate -> AppDestination.TravelCertificate
         }
         with(navigator) {
           backStackEntry.navigate(destination)

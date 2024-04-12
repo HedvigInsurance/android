@@ -74,6 +74,7 @@ val HedvigDeepLinkContainer.allDeepLinkUriPatterns: List<String>
     insurances,
     contract,
     contractWithoutContractId,
+    terminateInsurance,
     forever,
     profile,
     connectPayment,
