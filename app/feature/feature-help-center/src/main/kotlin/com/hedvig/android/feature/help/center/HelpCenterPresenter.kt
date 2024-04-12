@@ -43,10 +43,8 @@ internal class HelpCenterPresenter(
 ) : MoleculePresenter<HelpCenterEvent, HelpCenterUiState> {
   @Composable
   override fun MoleculePresenterScope<HelpCenterEvent>.present(lastState: HelpCenterUiState): HelpCenterUiState {
-    var currentUiState by remember {
-      mutableStateOf(lastState)
-    }
     var selectedQuickAction by remember { mutableStateOf<QuickAction?>(null) }
+    var quickLinksUiState by remember { mutableStateOf(lastState.quickLinksUiState) }
 
     CollectEvents { event ->
       selectedQuickAction = when (event) {
@@ -55,27 +53,26 @@ internal class HelpCenterPresenter(
       }
     }
 
-    LaunchedEffect(selectedQuickAction) {
-      currentUiState = currentUiState.copy(selectedQuickAction = selectedQuickAction)
-    }
-
     LaunchedEffect(Unit) {
-      currentUiState = currentUiState.copy(quickLinksUiState = HelpCenterUiState.QuickLinkUiState.Loading)
-      getQuickLinksUseCase.invoke().fold(
+      if (quickLinksUiState !is HelpCenterUiState.QuickLinkUiState.QuickLinks) {
+        quickLinksUiState = HelpCenterUiState.QuickLinkUiState.Loading
+      }
+      quickLinksUiState = getQuickLinksUseCase.invoke().fold(
         ifLeft = {
-          currentUiState = currentUiState.copy(quickLinksUiState = HelpCenterUiState.QuickLinkUiState.NoQuickLinks)
+          HelpCenterUiState.QuickLinkUiState.NoQuickLinks
         },
         ifRight = {
           val list = it.map { action ->
             HelpCenterUiState.QuickLink(action)
           }.toImmutableList()
-          currentUiState = currentUiState.copy(
-            quickLinksUiState = HelpCenterUiState.QuickLinkUiState.QuickLinks(list),
-          )
+          HelpCenterUiState.QuickLinkUiState.QuickLinks(list)
         },
       )
     }
 
-    return currentUiState
+    return lastState.copy(
+      quickLinksUiState = quickLinksUiState,
+      selectedQuickAction = selectedQuickAction,
+    )
   }
 }
