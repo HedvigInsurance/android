@@ -267,7 +267,6 @@ private fun QuickLinksSection(
                       quickLink.quickAction.titleRes,
                     ),
                     textAlign = TextAlign.Start,
-                    modifier = Modifier.padding(horizontal = 16.dp),
                   )
                 },
                 bottomText = {
@@ -276,7 +275,6 @@ private fun QuickLinksSection(
                       quickLink.quickAction.hintTextRes,
                     ),
                     textAlign = TextAlign.Start,
-                    modifier = Modifier.padding(horizontal = 16.dp),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     style = MaterialTheme.typography.titleSmall,
                   )
@@ -304,7 +302,6 @@ private fun PlaceholderQuickLinks() {
           Text(
             text = "HHHHHH",
             modifier = Modifier
-              .padding(horizontal = 16.dp)
               .placeholder(visible = true, highlight = PlaceholderHighlight.fade()),
           )
         },
@@ -313,7 +310,6 @@ private fun PlaceholderQuickLinks() {
             text = "HHHHHHHHHHHHHHHHHH",
             style = MaterialTheme.typography.titleSmall,
             modifier = Modifier
-              .padding(horizontal = 16.dp)
               .placeholder(true, highlight = PlaceholderHighlight.fade()),
           )
         },
