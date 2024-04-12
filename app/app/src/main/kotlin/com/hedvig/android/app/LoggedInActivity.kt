@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.loggedin.ui
+package com.hedvig.android.app
 
 import android.app.UiModeManager
 import android.app.UiModeManager.MODE_NIGHT_CUSTOM

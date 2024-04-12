@@ -32,7 +32,7 @@
     android:supportsRtl="true"
     android:theme="@style/Hedvig.Theme">
     <activity
-      android:name=".feature.loggedin.ui.LoggedInActivity"
+      android:name="com.hedvig.android.app.LoggedInActivity"
       android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode|layoutDirection"
       android:exported="true"
       android:theme="@style/Hedvig.Theme.Splash"
