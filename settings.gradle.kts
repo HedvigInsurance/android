@@ -23,7 +23,7 @@ dependencyResolutionManagement {
       credentials(PasswordCredentials::class)
     }
     maven("https://jitpack.io")
-    maven(url = "https://androidx.dev/snapshots/builds/11678588/artifacts/repository")
+    maven(url = "https://androidx.dev/snapshots/builds/11704531/artifacts/repository")
   }
 }
 

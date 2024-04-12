@@ -68,7 +68,8 @@ fun NavGraphBuilder.claimDetailsGraph(
      * ) : ClaimDetailDestinations
      */
     composable<ClaimDetailDestinations.AddFilesDestination>(
-      typeMap = mapOf(typeOf<ArrayList<String>>() to StringArrayListType),
+//      typeMap = mapOf(typeOf<ArrayList<String>>() to StringArrayListType),
+      typeMap = mapOf(typeOf<ArrayList<String>>() to StringListType),
     ) { _, destination ->
       val viewModel: AddFilesViewModel = koinViewModel {
         parametersOf(destination.targetUploadUrl, destination.initialFilesUri)
@@ -83,29 +84,57 @@ fun NavGraphBuilder.claimDetailsGraph(
   }
 }
 
-private val StringArrayListType: NavType<ArrayList<String>> = object : CollectionNavType<ArrayList<String>>(false) {
-  override fun put(bundle: Bundle, key: String, value: ArrayList<String>) {
-    bundle.putStringArrayList(key, value)
+private val StringListType: NavType<List<String>> = object : CollectionNavType<List<String>>(false) {
+  override fun put(bundle: Bundle, key: String, value: List<String>) {
+    bundle.putStringArrayList(key, ArrayList(value))
   }
 
-  @Suppress("UNCHECKED_CAST", "DEPRECATION")
-  override fun get(bundle: Bundle, key: String): ArrayList<String>? {
+//  @Suppress("UNCHECKED_CAST", "DEPRECATION")
+  override fun get(bundle: Bundle, key: String): List<String>? {
     return bundle.getStringArrayList(key)
+//    return bundle[key] as ArrayList<String>
   }
 
-  override fun parseValue(value: String): ArrayList<String> {
-    return arrayListOf(value)
+  override fun parseValue(value: String): List<String> {
+    return listOf(value)
   }
 
-  override fun parseValue(value: String, previousValue: ArrayList<String>): ArrayList<String> {
-    return ArrayList(previousValue.toList() + value)
+  override fun parseValue(value: String, previousValue: List<String>): List<String> {
+    return previousValue + value
   }
 
-  override fun valueEquals(value: ArrayList<String>, other: ArrayList<String>): Boolean {
+  override fun valueEquals(value: List<String>, other: List<String>): Boolean {
     return value == other
   }
 
-  override fun serializeAsValues(value: ArrayList<String>): List<String> {
-    return value.toList()
+  override fun serializeAsValues(value: List<String>): List<String> {
+    return value
   }
 }
+
+// private val StringArrayListType: NavType<ArrayList<String>> = object : CollectionNavType<ArrayList<String>>(false) {
+//  override fun put(bundle: Bundle, key: String, value: ArrayList<String>) {
+//    bundle.putStringArrayList(key, value)
+//  }
+//
+//  @Suppress("UNCHECKED_CAST", "DEPRECATION")
+//  override fun get(bundle: Bundle, key: String): ArrayList<String>? {
+//    return bundle.getStringArrayList(key)
+//  }
+//
+//  override fun parseValue(value: String): ArrayList<String> {
+//    return arrayListOf(value)
+//  }
+//
+//  override fun parseValue(value: String, previousValue: ArrayList<String>): ArrayList<String> {
+//    return ArrayList(previousValue.toList() + value)
+//  }
+//
+//  override fun valueEquals(value: ArrayList<String>, other: ArrayList<String>): Boolean {
+//    return value == other
+//  }
+//
+//  override fun serializeAsValues(value: ArrayList<String>): List<String> {
+//    return value.toList()
+//  }
+// }
