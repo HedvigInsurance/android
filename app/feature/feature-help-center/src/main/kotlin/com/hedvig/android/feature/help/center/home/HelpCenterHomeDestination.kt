@@ -2,9 +2,8 @@ package com.hedvig.android.feature.help.center.home
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.VisibilityThreshold
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -45,6 +44,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
@@ -178,10 +178,8 @@ private fun HelpCenterHomeScreen(
         Spacer(Modifier.height(40.dp))
         AnimatedVisibility(
           visible = quickLinksUiState !is HelpCenterUiState.QuickLinkUiState.NoQuickLinks,
-          enter = fadeIn(spring(stiffness = Spring.StiffnessMedium)) +
-            expandVertically(expandFrom = Alignment.Top),
-          exit = fadeOut(spring(stiffness = Spring.StiffnessMedium)) +
-            shrinkVertically(shrinkTowards = Alignment.Top),
+          enter = QuickLinksSectionEnterTransition,
+          exit = QuickLinksSectionExitTransition,
         ) {
           Column {
             QuickLinksSection(quickLinksUiState, onQuickActionsSelected)
@@ -230,6 +228,21 @@ private fun HelpCenterHomeScreen(
   }
 }
 
+private val QuickLinksSectionEnterTransition = fadeIn() + expandVertically(
+  animationSpec = spring(
+    stiffness = Spring.StiffnessLow,
+    visibilityThreshold = IntSize.VisibilityThreshold,
+  ),
+  expandFrom = Alignment.Top,
+)
+private val QuickLinksSectionExitTransition = fadeOut() + shrinkVertically(
+  animationSpec = spring(
+    stiffness = Spring.StiffnessLow,
+    visibilityThreshold = IntSize.VisibilityThreshold,
+  ),
+  shrinkTowards = Alignment.Top,
+)
+
 @Composable
 private fun QuickLinksSection(
   quickLinksUiState: HelpCenterUiState.QuickLinkUiState,
@@ -240,12 +253,11 @@ private fun QuickLinksSection(
     chipContainerColor = MaterialTheme.colorScheme.typeContainer,
     contentColor = MaterialTheme.colorScheme.onTypeContainer,
     content = {
-      val isQuickLinks = quickLinksUiState as? HelpCenterUiState.QuickLinkUiState.QuickLinks
       AnimatedContent(
-        targetState = isQuickLinks,
-        transitionSpec = { EnterTransition.None togetherWith ExitTransition.None },
-      ) { quickLinks: HelpCenterUiState.QuickLinkUiState.QuickLinks? ->
-        if (quickLinks != null) {
+        targetState = quickLinksUiState,
+        transitionSpec = { fadeIn() togetherWith fadeOut() },
+      ) { quickLinks: HelpCenterUiState.QuickLinkUiState ->
+        if (quickLinks is HelpCenterUiState.QuickLinkUiState.QuickLinks) {
           Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
             for (quickLink in quickLinks.quickLinks) {
               QuickLinkCard(
