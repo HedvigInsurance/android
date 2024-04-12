@@ -88,7 +88,7 @@ internal class GetQuickLinksUseCase(
         val contracts = apolloClient.query(AvailableSelfServiceOnContractsQuery())
           .safeExecute()
           .toEither(::ErrorMessage)
-          .onLeft { logcat(LogPriority.ERROR) { it.message ?: "Could not fetch common claims" } }
+          .onLeft { logcat(LogPriority.ERROR) { "Could not fetch common claims ${it.message}" } }
           .bind()
           .currentMember
           .activeContracts
