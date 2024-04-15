@@ -180,36 +180,6 @@ class MainActivity : AppCompatActivity() {
     openEmail(getString(R.string.login_bottom_sheet_view_code))
   }
 
-  private fun tryShowAppStoreReviewDialog() {
-    val tag = "PlayStoreReview"
-    val manager = ReviewManagerFactory.create(this@MainActivity)
-    logcat(LogPriority.INFO) { "$tag: requestReviewFlow" }
-    manager.requestReviewFlow().apply {
-      addOnFailureListener { logcat(LogPriority.INFO, it) { "$tag: requestReviewFlow failed:${it.message}" } }
-      addOnCanceledListener { logcat(LogPriority.INFO) { "$tag: requestReviewFlow cancelled" } }
-      addOnCompleteListener { task ->
-        if (task.isSuccessful) {
-          logcat(LogPriority.INFO) { "$tag: requestReviewFlow completed" }
-          val reviewInfo = task.result
-          logcat(LogPriority.INFO) { "$tag: launchReviewFlow with ReviewInfo:$reviewInfo" }
-          manager.launchReviewFlow(this@MainActivity, reviewInfo).apply {
-            addOnFailureListener { logcat(LogPriority.INFO, it) { "$tag: launchReviewFlow failed:${it.message}" } }
-            addOnCanceledListener { logcat(LogPriority.INFO) { "$tag: launchReviewFlow canceled" } }
-            addOnCompleteListener { logcat(LogPriority.INFO) { "$tag: launchReviewFlow completed" } }
-          }
-        } else {
-          val exception = task.exception
-          val errorMessage = if (exception != null && exception is ReviewException) {
-            "ReviewException:${exception.message}. ReviewException::errorCode:${exception.errorCode}"
-          } else {
-            "Unknown error with message: ${exception?.message}"
-          }
-          logcat(LogPriority.INFO, exception) { "$tag: requestReviewFlow failed. Error:$errorMessage" }
-        }
-      }
-    }
-  }
-
   companion object {
     fun newInstance(context: Context, withoutHistory: Boolean = false): Intent =
       Intent(context, MainActivity::class.java).apply {
@@ -251,6 +221,36 @@ private fun applyTheme(theme: Theme?, uiModeManager: UiModeManager?) {
       }
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         uiModeManager?.setApplicationNightMode(MODE_NIGHT_CUSTOM)
+      }
+    }
+  }
+}
+
+private fun Activity.tryShowAppStoreReviewDialog() {
+  val tag = "PlayStoreReview"
+  val manager = ReviewManagerFactory.create(this)
+  logcat(LogPriority.INFO) { "$tag: requestReviewFlow" }
+  manager.requestReviewFlow().apply {
+    addOnFailureListener { logcat(LogPriority.INFO, it) { "$tag: requestReviewFlow failed:${it.message}" } }
+    addOnCanceledListener { logcat(LogPriority.INFO) { "$tag: requestReviewFlow cancelled" } }
+    addOnCompleteListener { task ->
+      if (task.isSuccessful) {
+        logcat(LogPriority.INFO) { "$tag: requestReviewFlow completed" }
+        val reviewInfo = task.result
+        logcat(LogPriority.INFO) { "$tag: launchReviewFlow with ReviewInfo:$reviewInfo" }
+        manager.launchReviewFlow(this@tryShowAppStoreReviewDialog, reviewInfo).apply {
+          addOnFailureListener { logcat(LogPriority.INFO, it) { "$tag: launchReviewFlow failed:${it.message}" } }
+          addOnCanceledListener { logcat(LogPriority.INFO) { "$tag: launchReviewFlow canceled" } }
+          addOnCompleteListener { logcat(LogPriority.INFO) { "$tag: launchReviewFlow completed" } }
+        }
+      } else {
+        val exception = task.exception
+        val errorMessage = if (exception != null && exception is ReviewException) {
+          "ReviewException:${exception.message}. ReviewException::errorCode:${exception.errorCode}"
+        } else {
+          "Unknown error with message: ${exception?.message}"
+        }
+        logcat(LogPriority.INFO, exception) { "$tag: requestReviewFlow failed. Error:$errorMessage" }
       }
     }
   }
