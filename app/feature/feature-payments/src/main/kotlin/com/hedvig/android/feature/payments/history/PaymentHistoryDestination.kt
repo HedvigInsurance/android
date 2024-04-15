@@ -97,9 +97,6 @@ private fun PaymentHistoryScreen(
             showInfoAboutOlderCharges = uiState.paymentHistory.size > 11,
           ) to { chargeId: String ->
             updatedOnChargeClicked(uiState.paymentHistory.first { it.id == chargeId }.id)
-            // todo: I must say I'm a bit confused here :) but if understand correctly,
-            // we don't really need to update it anymore now that we have String as the parameter,
-            // we can just pass down onChargeClicked?
           }
         }
       }
