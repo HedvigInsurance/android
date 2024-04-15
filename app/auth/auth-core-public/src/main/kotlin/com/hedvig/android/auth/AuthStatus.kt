@@ -9,5 +9,5 @@ sealed interface AuthStatus {
     val refreshToken: LocalRefreshToken,
   ) : AuthStatus
 
-  object LoggedOut : AuthStatus
+  data object LoggedOut : AuthStatus
 }

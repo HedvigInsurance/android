@@ -18,6 +18,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navOptions
 import com.datadog.android.compose.ExperimentalTrackingApi
 import com.datadog.android.compose.NavigationViewTrackingEffect
+import com.hedvig.android.app.navigation.RootGraph
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
@@ -25,6 +26,7 @@ import com.hedvig.android.feature.forever.navigation.ForeverDestination
 import com.hedvig.android.feature.home.home.navigation.HomeDestination
 import com.hedvig.android.feature.insurances.navigation.InsurancesDestination
 import com.hedvig.android.feature.insurances.navigation.insurancesBottomNavPermittedDestinations
+import com.hedvig.android.feature.login.navigation.LoginDestination
 import com.hedvig.android.feature.payments.navigation.PaymentsDestination
 import com.hedvig.android.feature.profile.navigation.ProfileDestination
 import com.hedvig.android.feature.profile.navigation.profileBottomNavPermittedDestinations
@@ -36,6 +38,7 @@ import com.hedvig.android.theme.Theme
 import com.kiwi.navigationcompose.typed.Destination
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigate
+import com.kiwi.navigationcompose.typed.popUpTo
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.PersistentSet
@@ -173,6 +176,29 @@ internal class HedvigAppState(
       TopLevelGraph.Forever -> navController.navigate(ForeverDestination.Graph, topLevelNavOptions)
       TopLevelGraph.Payments -> navController.navigate(PaymentsDestination.Graph, topLevelNavOptions)
       TopLevelGraph.Profile -> navController.navigate(ProfileDestination.Graph, topLevelNavOptions)
+    }
+  }
+
+  /**
+   * These should also save/restore state when it's possible to do so.
+   * Should also try to find a way to *not* save the state when explicitly logging out. The backstack saving should
+   * only happen in scenarios where the logout was due to token expiration. The most common scenario there would be
+   * when coming into the app from a deep link while not having valid cretentials lying around already.
+   * https://issuetracker.google.com/issues/334413738
+   */
+  fun navigateToLoggedIn() {
+    navController.navigate(RootGraph.route) {
+      popUpTo<LoginDestination> {
+        inclusive = true
+      }
+    }
+  }
+
+  fun navigateToLoggedOut() {
+    navController.navigate(LoginDestination) {
+      popUpTo(RootGraph.route) {
+        inclusive = true
+      }
     }
   }
 
