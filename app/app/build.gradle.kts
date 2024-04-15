@@ -227,15 +227,6 @@ dependencies {
   debugImplementation(libs.androidx.compose.uiTestManifest)
   debugImplementation(libs.androidx.compose.uiTooling)
   debugImplementation(libs.leakCanary)
-
-  testImplementation(libs.assertK)
-  testImplementation(libs.coroutines.test)
-  testImplementation(libs.koin.test)
-  testImplementation(libs.turbine)
-  testImplementation(projects.authCoreTest)
-  testImplementation(projects.coreCommonTest)
-  testImplementation(projects.loggingTest)
-  testImplementation(projects.marketTest)
 }
 
 easylauncher {
