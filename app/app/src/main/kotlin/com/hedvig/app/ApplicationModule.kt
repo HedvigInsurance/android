@@ -25,6 +25,10 @@ import com.hedvig.android.apollo.auth.listeners.di.languageAuthListenersModule
 import com.hedvig.android.app.chat.service.ChatNotificationSender
 import com.hedvig.android.app.chat.service.ReplyWorker
 import com.hedvig.android.app.di.appModule
+import com.hedvig.android.app.notification.senders.CrossSellNotificationSender
+import com.hedvig.android.app.notification.senders.GenericNotificationSender
+import com.hedvig.android.app.notification.senders.PaymentNotificationSender
+import com.hedvig.android.app.notification.senders.ReferralsNotificationSender
 import com.hedvig.android.auth.di.authModule
 import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
 import com.hedvig.android.core.appreview.di.coreAppReviewModule
@@ -77,10 +81,6 @@ import com.hedvig.android.notification.badge.data.di.notificationBadgeModule
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.firebase.di.firebaseNotificationModule
 import com.hedvig.android.tracking.datadog.di.trackingDatadogModule
-import com.hedvig.app.service.push.senders.CrossSellNotificationSender
-import com.hedvig.app.service.push.senders.GenericNotificationSender
-import com.hedvig.app.service.push.senders.PaymentNotificationSender
-import com.hedvig.app.service.push.senders.ReferralsNotificationSender
 import com.hedvig.app.util.apollo.DatadogInterceptor
 import com.hedvig.app.util.apollo.DeviceIdInterceptor
 import com.hedvig.app.util.apollo.NetworkCacheManagerImpl
