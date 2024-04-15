@@ -1,4 +1,3 @@
-
 query ShortPaymentHistory {
   currentMember {
     pastCharges {
