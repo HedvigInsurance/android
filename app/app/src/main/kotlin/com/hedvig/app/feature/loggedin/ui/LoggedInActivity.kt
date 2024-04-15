@@ -42,12 +42,14 @@ import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.appreview.WaitUntilAppReviewDialogShouldBeOpenedUseCase
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCaseProvider
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
+import com.hedvig.android.language.LanguageAndMarketLaunchCheckUseCase
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
@@ -73,6 +75,7 @@ import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
 class LoggedInActivity : AppCompatActivity() {
+  private val applicationScope: ApplicationScope by inject()
   private val authTokenService: AuthTokenService by inject()
   private val demoManager: DemoManager by inject()
   private val featureManager: FeatureManager by inject()
@@ -85,6 +88,7 @@ class LoggedInActivity : AppCompatActivity() {
   private val settingsDataStore: SettingsDataStore by inject()
   private val tabNotificationBadgeService: TabNotificationBadgeService by inject()
   private val waitUntilAppReviewDialogShouldBeOpenedUseCase: WaitUntilAppReviewDialogShouldBeOpenedUseCase by inject()
+  private val languageAndMarketLaunchCheckUseCase: LanguageAndMarketLaunchCheckUseCase by inject()
 
   private val activityNavigator: ActivityNavigator by inject()
   private var navController: NavController? = null
@@ -115,6 +119,9 @@ class LoggedInActivity : AppCompatActivity() {
       navigationBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT),
     )
     super.onCreate(savedInstanceState)
+    applicationScope.launch {
+      languageAndMarketLaunchCheckUseCase.invoke()
+    }
     val uiModeManager = getSystemService<UiModeManager>()
 
     lifecycleScope.launch {
