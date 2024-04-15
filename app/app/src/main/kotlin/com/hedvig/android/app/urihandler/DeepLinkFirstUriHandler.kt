@@ -1,4 +1,4 @@
-package com.hedvig.android.app.ui
+package com.hedvig.android.app.urihandler
 
 import androidx.compose.ui.platform.UriHandler
 import androidx.core.net.toUri

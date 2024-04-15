@@ -1,4 +1,4 @@
-package com.hedvig.android.app.ui
+package com.hedvig.android.app.urihandler
 
 import android.content.Context
 import android.content.Intent
