@@ -118,7 +118,7 @@
       android:exported="false"
       tools:node="merge">
       <meta-data
-        android:name="com.hedvig.app.feature.di.KoinInitializer"
+        android:name="com.hedvig.android.app.di.KoinInitializer"
         android:value="androidx.startup" />
       <meta-data
         android:name="com.hedvig.app.startup.DatadogInitializerImpl"
