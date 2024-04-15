@@ -8,13 +8,8 @@
 -dontwarn java.beans.ConstructorProperties
 -dontwarn java.beans.Transient
 
-# Crashlytics
--keep class com.crashlytics.** { *; }
--dontwarn com.crashlytics.**
--keepattributes *Annotation*
--keepattributes SourceFile,LineNumberTable
--keep public class * extends java.lang.Exception
--printmapping mapping.txt
+# Crashlytics https://firebase.google.com/docs/crashlytics/get-deobfuscated-reports?platform=android#config-r8-proguard-dexguard
+-keepattributes SourceFile,LineNumberTable        # Keep file names and line numbers.
 
 # Keep `Companion` object fields of serializable classes.
 # This avoids serializer lookup through `getDeclaredClasses` as done for named companion objects.
