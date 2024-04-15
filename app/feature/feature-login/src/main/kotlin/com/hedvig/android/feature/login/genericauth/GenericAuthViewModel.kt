@@ -149,11 +149,12 @@ data class GenericAuthViewState(
   val emailInputWithoutWhitespaces: EmailAddressWithTrimmedWhitespaces
     get() = EmailAddressWithTrimmedWhitespaces(emailInput)
 
-  val canSubmitSsn: Boolean = when (market) {
-    Market.SE -> error("Should not be able to enter SSN for generic auth for SE")
-    Market.NO -> ssnInput.length == 11
-    Market.DK -> ssnInput.length == 10
-  }
+  val canSubmitSsn: Boolean
+    get() = when (market) {
+      Market.SE -> error("Should not be able to enter SSN for generic auth for SE")
+      Market.NO -> ssnInput.length == 11
+      Market.DK -> ssnInput.length == 10
+    }
 
   sealed interface TextFieldError {
     data class Message(val message: String) : TextFieldError
