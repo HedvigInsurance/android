@@ -1,8 +1,7 @@
-package com.hedvig.app.feature.genericauth
+package com.hedvig.android.feature.login.genericauth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.core.common.android.EmailAddressWithTrimmedWhitespaces
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
 import com.hedvig.authlib.AuthAttemptResult
@@ -14,11 +13,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class GenericAuthViewModel(
-  val marketManager: MarketManager,
+internal class GenericAuthViewModel(
+  private val marketManager: MarketManager,
   private val authRepository: AuthRepository,
 ) : ViewModel() {
-  private val _viewState = MutableStateFlow(GenericAuthViewState())
+  private val _viewState = MutableStateFlow(GenericAuthViewState(marketManager.market.value))
   val viewState = _viewState.asStateFlow()
 
   fun setEmailInput(value: String) {
@@ -40,7 +39,7 @@ class GenericAuthViewModel(
   }
 
   fun clear() {
-    _viewState.update { GenericAuthViewState() }
+    _viewState.update { GenericAuthViewState(marketManager.market.value) }
   }
 
   fun submitEmail() {
@@ -139,6 +138,7 @@ class GenericAuthViewModel(
 }
 
 data class GenericAuthViewState(
+  val market: Market,
   val emailInput: String = "",
   val ssnInput: String = "",
   val error: TextFieldError? = null,

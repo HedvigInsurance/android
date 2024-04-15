@@ -1,4 +1,4 @@
-package com.hedvig.android.core.common.android
+package com.hedvig.android.feature.login.genericauth
 
 import com.hedvig.android.core.common.android.validation.validateEmail
 

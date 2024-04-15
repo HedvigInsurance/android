@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.genericauth
+package com.hedvig.android.feature.login.genericauth
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo

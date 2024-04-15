@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.genericauth
+package com.hedvig.android.feature.login.genericauth
 
 import android.view.KeyEvent
 import androidx.compose.foundation.layout.Column

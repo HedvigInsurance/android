@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.genericauth
+package com.hedvig.android.feature.login.genericauth
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

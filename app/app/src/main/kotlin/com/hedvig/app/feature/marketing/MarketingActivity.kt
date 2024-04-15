@@ -1,8 +1,12 @@
 package com.hedvig.app.feature.marketing
 
-import android.content.Context
+import android.app.Activity
 import android.content.Intent
+import android.content.pm.LabeledIntent
+import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
@@ -11,9 +15,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.testTagsAsResourceId
+import androidx.compose.ui.platform.LocalDensity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -27,18 +29,21 @@ import com.datadog.android.compose.NavigationViewTrackingEffect
 import com.hedvig.android.app.ui.SafeAndroidUriHandler
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
+import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.feature.login.navigation.LoginDestination
 import com.hedvig.android.feature.login.navigation.loginGraph
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.activity.ActivityNavigator
 import com.hedvig.android.navigation.core.Navigator
-import com.hedvig.app.feature.genericauth.GenericAuthActivity
 import com.hedvig.app.feature.sunsetting.ForceUpgradeActivity
 import com.kiwi.navigationcompose.typed.Destination
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigate
+import hedvig.resources.R
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
@@ -67,50 +72,41 @@ class MarketingActivity : AppCompatActivity() {
       }
       lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
         demoManager.isDemoMode().first { it == true }
-        activityNavigator.navigateToLoggedInScreen(this@MarketingActivity, false)
+        activityNavigator.navigateToLoggedInScreen(this@MarketingActivity, true)
         finish()
       }
     }
     val safeAndroidUriHandler = SafeAndroidUriHandler(this)
+    val openEmailSheetTitle = getString(R.string.login_bottom_sheet_view_code)
+    val openEmailApp = { openEmail(openEmailSheetTitle) }
     setContent {
       HedvigTheme {
         val navController = rememberNavController()
         NavigationViewTrackingEffect(navController = navController)
         val navigator = rememberNavigator(navController)
+        val density = LocalDensity.current
         NavHost(
           navController = navController,
           startDestination = createRoutePattern<LoginDestination>(),
           route = "marketing-root",
-          modifier = Modifier.semantics { testTagsAsResourceId = true },
+          enterTransition = { MotionDefaults.sharedXAxisEnter(density) },
+          exitTransition = { MotionDefaults.sharedXAxisExit(density) },
+          popEnterTransition = { MotionDefaults.sharedXAxisPopEnter(density) },
+          popExitTransition = { MotionDefaults.sharedXAxisPopExit(density) },
         ) {
           loginGraph(
             navigator = navigator,
             appVersionName = hedvigBuildConstants.appVersionName,
             urlBaseWeb = hedvigBuildConstants.urlBaseWeb,
             openUrl = { safeAndroidUriHandler.openUri(it) },
+            onOpenEmailApp = openEmailApp,
             startLoggedInActivity = {
-              activityNavigator.navigateToLoggedInScreen(this@MarketingActivity, false)
+              activityNavigator.navigateToLoggedInScreen(this@MarketingActivity, true)
               finish()
-            },
-            startDKLogin = {
-              startActivity(GenericAuthActivity.newInstance(this@MarketingActivity))
-            },
-            startNOLogin = {
-              startActivity(GenericAuthActivity.newInstance(this@MarketingActivity))
-            },
-            startOtpLogin = {
-              startActivity(GenericAuthActivity.newInstance(this@MarketingActivity))
             },
           )
         }
       }
-    }
-  }
-
-  companion object {
-    fun newInstance(context: Context): Intent = Intent(context, MarketingActivity::class.java).apply {
-      addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-      addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
     }
   }
 }
@@ -147,3 +143,36 @@ private fun rememberNavigator(navController: NavController): Navigator {
     }
   }
 }
+
+private fun Activity.openEmail(title: String) {
+  val emailIntent = Intent(Intent.ACTION_VIEW, Uri.parse("mailto:"))
+
+  val resInfo = packageManager.queryIntentActivities(emailIntent, 0)
+  if (resInfo.isNotEmpty()) {
+    // First create an intent with only the package name of the first registered email app
+    // and build a picked based on it
+    val intentChooser = packageManager.getLaunchIntentForPackage(
+      resInfo.first().activityInfo.packageName,
+    )
+    val openInChooser = Intent.createChooser(intentChooser, title)
+
+    try {
+      // Then create a list of LabeledIntent for the rest of the registered email apps and add to the picker selection
+      val emailApps = resInfo.toLabeledIntentArray(packageManager)
+      openInChooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, emailApps)
+    } catch (_: NullPointerException) {
+      // OnePlus crash prevention. Simply go with the initial email app found, don't give more options.
+      // console.firebase.google.com/u/0/project/hedvig-app/crashlytics/app/android:com.hedvig.app/issues/06823149a4ff8a411f4508e0cbfae9f4
+    }
+
+    startActivity(openInChooser)
+  } else {
+    logcat(LogPriority.ERROR) { "No email app found" }
+  }
+}
+
+private fun List<ResolveInfo>.toLabeledIntentArray(packageManager: PackageManager): Array<LabeledIntent> = map {
+  val packageName = it.activityInfo.packageName
+  val intent = packageManager.getLaunchIntentForPackage(packageName)
+  LabeledIntent(intent, packageName, it.loadLabel(packageManager), it.icon)
+}.toTypedArray()
