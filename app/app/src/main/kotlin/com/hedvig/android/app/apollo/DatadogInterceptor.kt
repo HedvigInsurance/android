@@ -1,4 +1,4 @@
-package com.hedvig.app.util.apollo
+package com.hedvig.android.app.apollo
 
 import com.apollographql.apollo3.api.ApolloRequest
 import com.apollographql.apollo3.api.ApolloResponse

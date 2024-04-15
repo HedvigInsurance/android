@@ -22,6 +22,8 @@ import com.apollographql.apollo3.network.okHttpClient
 import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.auth.listeners.di.apolloAuthListenersModule
 import com.hedvig.android.apollo.auth.listeners.di.languageAuthListenersModule
+import com.hedvig.android.app.apollo.DatadogInterceptor
+import com.hedvig.android.app.apollo.DeviceIdInterceptor
 import com.hedvig.android.app.chat.service.ChatNotificationSender
 import com.hedvig.android.app.chat.service.ReplyWorker
 import com.hedvig.android.app.notification.senders.CrossSellNotificationSender
@@ -82,8 +84,6 @@ import com.hedvig.android.notification.firebase.di.firebaseNotificationModule
 import com.hedvig.android.tracking.datadog.di.trackingDatadogModule
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
-import com.hedvig.app.util.apollo.DatadogInterceptor
-import com.hedvig.app.util.apollo.DeviceIdInterceptor
 import com.hedvig.app.util.apollo.NetworkCacheManagerImpl
 import java.io.File
 import okhttp3.OkHttpClient
