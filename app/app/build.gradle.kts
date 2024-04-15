@@ -155,6 +155,7 @@ dependencies {
   implementation(libs.kotlin.reflect)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.immutable.collections)
+  implementation(libs.kotlinx.serialization.core)
   implementation(libs.moneta)
   implementation(libs.navigationRecentsUrlSharing)
   implementation(libs.okhttp.core)
