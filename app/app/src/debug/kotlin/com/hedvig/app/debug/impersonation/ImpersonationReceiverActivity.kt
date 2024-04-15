@@ -16,7 +16,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.app.LoggedInActivity
+import com.hedvig.android.app.MainActivity
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.authlib.AuthRepository
@@ -54,7 +54,7 @@ class ImpersonationReceiverActivity : ComponentActivity() {
       .events
       .flowWithLifecycle(lifecycle)
       .onEach {
-        startActivity(LoggedInActivity.newInstance(this, withoutHistory = true))
+        startActivity(MainActivity.newInstance(this, withoutHistory = true))
         finish()
       }
       .launchIn(lifecycleScope)

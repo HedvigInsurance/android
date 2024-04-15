@@ -6,7 +6,7 @@ import android.content.Context
 import androidx.core.app.NotificationCompat
 import androidx.core.app.TaskStackBuilder
 import com.google.firebase.messaging.RemoteMessage
-import com.hedvig.android.app.LoggedInActivity
+import com.hedvig.android.app.MainActivity
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.android.notification.setupNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
@@ -59,7 +59,7 @@ class CrossSellNotificationSender(
   private fun createInsuranceTabIntent(context: Context): PendingIntent? {
     val builder = TaskStackBuilder.create(context)
     // todo: Consider opening some cross sell detail screen here instead
-    val intent = LoggedInActivity.newInstance(context = context)
+    val intent = MainActivity.newInstance(context = context)
     builder.addNextIntent(intent)
     return builder.getPendingIntent(0, getImmutablePendingIntentFlags())
   }
