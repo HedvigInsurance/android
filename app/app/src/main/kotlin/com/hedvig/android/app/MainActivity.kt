@@ -18,52 +18,27 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.platform.LocalUriHandler
-import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
 import androidx.core.content.getSystemService
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleStartEffect
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
-import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import arrow.fx.coroutines.raceN
 import coil.ImageLoader
 import com.google.android.play.core.review.ReviewException
 import com.google.android.play.core.review.ReviewManagerFactory
-import com.hedvig.android.app.ui.DeepLinkFirstUriHandler
 import com.hedvig.android.app.ui.HedvigApp
-import com.hedvig.android.app.ui.HedvigAppState
-import com.hedvig.android.app.ui.SafeAndroidUriHandler
-import com.hedvig.android.app.ui.rememberHedvigAppState
-import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.appreview.WaitUntilAppReviewDialogShouldBeOpenedUseCase
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.demomode.DemoManager
-import com.hedvig.android.core.demomode.Provider
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCaseProvider
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
-import com.hedvig.android.feature.force.upgrade.ForceUpgradeBlockingScreen
-import com.hedvig.android.feature.login.navigation.LoginDestination
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.language.LanguageAndMarketLaunchCheckUseCase
 import com.hedvig.android.language.LanguageService
@@ -75,19 +50,12 @@ import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.allDeepLinkUriPatterns
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
 import com.hedvig.android.theme.Theme
-import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.stylianosgakis.navigation.recents.url.sharing.provideAssistContent
 import hedvig.resources.R
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
@@ -141,7 +109,6 @@ class MainActivity : AppCompatActivity() {
       languageAndMarketLaunchCheckUseCase.invoke()
     }
     val uiModeManager = getSystemService<UiModeManager>()
-
     lifecycleScope.launch {
       launch {
         lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
@@ -159,14 +126,6 @@ class MainActivity : AppCompatActivity() {
           showSplash.update { false }
         }
       }
-      launch {
-        lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-          authTokenService.authStatus.first { it is AuthStatus.LoggedIn }
-          waitUntilAppReviewDialogShouldBeOpenedUseCase.invoke()
-          delay(REVIEW_DIALOG_DELAY_MILLIS)
-          tryShowAppStoreReviewDialog()
-        }
-      }
     }
 
     setContent {
@@ -179,7 +138,6 @@ class MainActivity : AppCompatActivity() {
         }
       }
       HedvigApp(
-        windowSizeClass = windowSizeClass,
         navHostController = navHostController,
         tabNotificationBadgeService = tabNotificationBadgeService,
         settingsDataStore = settingsDataStore,
@@ -194,6 +152,7 @@ class MainActivity : AppCompatActivity() {
         imageLoader = imageLoader,
         languageService = languageService,
         hedvigBuildConstants = hedvigBuildConstants,
+        waitUntilAppReviewDialogShouldBeOpenedUseCase = waitUntilAppReviewDialogShouldBeOpenedUseCase,
         enableEdgeToEdge = { systemBarStyle ->
           enableEdgeToEdge(
             statusBarStyle = systemBarStyle,
@@ -201,8 +160,11 @@ class MainActivity : AppCompatActivity() {
           )
         },
         shouldShowRequestPermissionRationale = ::shouldShowRequestPermissionRationale,
+        goToPlayStore = { activityNavigator.tryOpenPlayStore(this) },
         openEmailApp = ::openEmailApp,
         finishApp = ::finish,
+        tryShowAppStoreReviewDialog = ::tryShowAppStoreReviewDialog,
+        windowSizeClass = windowSizeClass,
       )
     }
   }
@@ -213,6 +175,10 @@ class MainActivity : AppCompatActivity() {
     outContent.webUri?.let {
       logcat { "Providing a deep link to current screen: $it" }
     }
+  }
+
+  private fun openEmailApp() {
+    openEmail(getString(R.string.login_bottom_sheet_view_code))
   }
 
   private fun tryShowAppStoreReviewDialog() {
@@ -245,13 +211,7 @@ class MainActivity : AppCompatActivity() {
     }
   }
 
-  private fun openEmailApp() {
-    openEmail(getString(R.string.login_bottom_sheet_view_code))
-  }
-
   companion object {
-    private const val REVIEW_DIALOG_DELAY_MILLIS = 2000L
-
     fun newInstance(context: Context, withoutHistory: Boolean = false): Intent =
       Intent(context, MainActivity::class.java).apply {
         logcat(LogPriority.INFO) { "LoggedInActivity.newInstance was called. withoutHistory:$withoutHistory" }
@@ -260,137 +220,6 @@ class MainActivity : AppCompatActivity() {
           addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
         }
       }
-  }
-}
-
-@Composable
-private fun HedvigApp(
-  windowSizeClass: WindowSizeClass,
-  navHostController: NavHostController,
-  tabNotificationBadgeService: TabNotificationBadgeService,
-  settingsDataStore: SettingsDataStore,
-  getOnlyHasNonPayingContractsUseCase: Provider<GetOnlyHasNonPayingContractsUseCase>,
-  featureManager: FeatureManager,
-  splashIsRemovedSignal: Channel<Unit>,
-  activityNavigator: ActivityNavigator,
-  authTokenService: AuthTokenService,
-  demoManager: DemoManager,
-  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
-  marketManager: MarketManager,
-  imageLoader: ImageLoader,
-  languageService: LanguageService,
-  hedvigBuildConstants: HedvigBuildConstants,
-  enableEdgeToEdge: (SystemBarStyle) -> Unit,
-  shouldShowRequestPermissionRationale: (String) -> Boolean,
-  openEmailApp: () -> Unit,
-  finishApp: () -> Unit,
-) {
-  val hedvigAppState = rememberHedvigAppState(
-    windowSizeClass = windowSizeClass,
-    tabNotificationBadgeService = tabNotificationBadgeService,
-    settingsDataStore = settingsDataStore,
-    getOnlyHasNonPayingContractsUseCase = getOnlyHasNonPayingContractsUseCase,
-    featureManager = featureManager,
-    navHostController = navHostController,
-  )
-  val darkTheme = hedvigAppState.darkTheme
-  HedvigTheme(darkTheme = darkTheme) {
-    EnableEdgeToEdgeSideEffect(darkTheme, splashIsRemovedSignal, enableEdgeToEdge)
-    val mustForceUpdate by hedvigAppState.mustForceUpdate.collectAsStateWithLifecycle()
-    if (mustForceUpdate) {
-      ForceUpgradeBlockingScreen(
-        goToPlayStore = { activityNavigator.tryOpenPlayStore(this) },
-      )
-    } else {
-      LogoutOnInvalidCredentialsEffect(hedvigAppState, authTokenService, demoManager)
-      val deepLinkFirstUriHandler = DeepLinkFirstUriHandler(
-        navController = hedvigAppState.navController,
-        delegate = SafeAndroidUriHandler(LocalContext.current),
-      )
-      CompositionLocalProvider(LocalUriHandler provides deepLinkFirstUriHandler) {
-        HedvigApp(
-          hedvigAppState = hedvigAppState,
-          hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-          activityNavigator = activityNavigator,
-          shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-          openUrl = deepLinkFirstUriHandler::openUri,
-          onOpenEmailApp = openEmailApp,
-          finishApp = finishApp,
-          market = marketManager.market.collectAsStateWithLifecycle().value,
-          imageLoader = imageLoader,
-          languageService = languageService,
-          hedvigBuildConstants = hedvigBuildConstants,
-        )
-      }
-    }
-  }
-}
-
-@Composable
-private fun EnableEdgeToEdgeSideEffect(
-  darkTheme: Boolean,
-  splashIsRemovedSignal: Channel<Unit>,
-  enableEdgeToEdge: (SystemBarStyle) -> Unit,
-) {
-  val splashIsRemovedIndex by produceState(0) {
-    splashIsRemovedSignal.receiveAsFlow().collectLatest { value = value + 1 }
-  }
-  DisposableEffect(darkTheme, splashIsRemovedIndex) {
-    enableEdgeToEdge(
-      when (darkTheme) {
-        true -> SystemBarStyle.dark(Color.TRANSPARENT)
-        false -> SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
-      },
-    )
-    onDispose {}
-  }
-}
-
-/**
- * Automatically logs out when we are no longer in demo mode and we are also not considered to have active tokens
- */
-@Composable
-private fun LogoutOnInvalidCredentialsEffect(
-  hedvigAppState: HedvigAppState,
-  authTokenService: AuthTokenService,
-  demoManager: DemoManager,
-) {
-  val authStatusLog: (AuthStatus?) -> Unit = { authStatus ->
-    logcat {
-      buildString {
-        append("Owner: LoggedInActivity | Received authStatus: ")
-        append(
-          when (authStatus) {
-            is AuthStatus.LoggedIn -> "LoggedIn"
-            AuthStatus.LoggedOut -> "LoggedOut"
-            null -> "null"
-          },
-        )
-      }
-    }
-  }
-  val lifecycle = LocalLifecycleOwner.current.lifecycle
-  LaunchedEffect(lifecycle, hedvigAppState, authTokenService, demoManager) {
-    val loginGraphRoute = createRoutePattern<LoginDestination>()
-    lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-      combine(
-        authTokenService.authStatus.onEach(authStatusLog).filterNotNull().distinctUntilChanged(),
-        demoManager.isDemoMode().distinctUntilChanged(),
-      ) { authStatus: AuthStatus, isDemoMode: Boolean ->
-        authStatus to isDemoMode
-      }.collect { (authStatus, isDemoMode) ->
-        val navBackStackEntry: NavBackStackEntry = hedvigAppState.navController.currentBackStackEntryFlow.first()
-        val isLoggedOut = navBackStackEntry.destination.hierarchy.any { navDestination ->
-          navDestination.route?.contains(loginGraphRoute) == true
-        }
-        if (isLoggedOut) {
-          return@collect
-        }
-        if (!isDemoMode && authStatus !is AuthStatus.LoggedIn) {
-          hedvigAppState.navigateToLoggedOut()
-        }
-      }
-    }
   }
 }
 
