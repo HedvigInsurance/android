@@ -84,7 +84,6 @@ import com.hedvig.app.service.push.senders.ReferralsNotificationSender
 import com.hedvig.app.util.apollo.DatadogInterceptor
 import com.hedvig.app.util.apollo.DeviceIdInterceptor
 import com.hedvig.app.util.apollo.NetworkCacheManagerImpl
-import com.hedvig.app.util.apollo.SunsettingInterceptor
 import java.io.File
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -141,7 +140,6 @@ private val networkModule = module {
     val okHttpBuilder = get<OkHttpClient.Builder>().addInterceptor(get<AuthTokenRefreshingInterceptor>())
     okHttpBuilder.build()
   }
-  single<SunsettingInterceptor> { SunsettingInterceptor(get()) } bind ApolloInterceptor::class
   single<DatadogInterceptor> { DatadogInterceptor() } bind ApolloInterceptor::class
   single<ApolloClient.Builder> {
     val interceptors = getAll<ApolloInterceptor>().distinct()
