@@ -139,8 +139,10 @@ class LoggedInActivity : AppCompatActivity() {
 
     lifecycleScope.launch {
       launch {
-        settingsDataStore.observeTheme().collectLatest { theme ->
-          applyTheme(theme, uiModeManager)
+        lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
+          settingsDataStore.observeTheme().collectLatest { theme ->
+            applyTheme(theme, uiModeManager)
+          }
         }
       }
       launch {
@@ -153,7 +155,7 @@ class LoggedInActivity : AppCompatActivity() {
         }
       }
       launch {
-        lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+        lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
           authTokenService.authStatus.first { it is AuthStatus.LoggedIn }
           waitUntilAppReviewDialogShouldBeOpenedUseCase.invoke()
           delay(REVIEW_DIALOG_DELAY_MILLIS)
