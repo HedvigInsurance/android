@@ -10,8 +10,3 @@
 
 # Crashlytics https://firebase.google.com/docs/crashlytics/get-deobfuscated-reports?platform=android#config-r8-proguard-dexguard
 -keepattributes SourceFile,LineNumberTable        # Keep file names and line numbers.
-
-# Datastore - https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:datastore/datastore-preferences/proguard-rules.pro;l=1
--keepclassmembers class * extends androidx.datastore.preferences.protobuf.GeneratedMessageLite {
-    <fields>;
-}
