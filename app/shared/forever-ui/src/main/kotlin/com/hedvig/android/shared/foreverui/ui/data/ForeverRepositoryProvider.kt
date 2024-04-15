@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.forever.data
+package com.hedvig.android.shared.foreverui.ui.data
 
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.ProdOrDemoProvider

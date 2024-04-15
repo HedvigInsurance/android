@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.forever.ui
+package com.hedvig.android.shared.foreverui.ui.ui
 
 import android.content.Intent
 import android.net.Uri
@@ -71,20 +71,15 @@ import com.hedvig.android.core.icons.hedvig.normal.Copy
 import com.hedvig.android.core.icons.hedvig.normal.Info
 import com.hedvig.android.core.ui.snackbar.HedvigSnackbar
 import com.hedvig.android.core.uidata.UiMoney
-import com.hedvig.android.feature.forever.ForeverEvent
-import com.hedvig.android.feature.forever.ForeverUiState
-import com.hedvig.android.feature.forever.ForeverViewModel
-import com.hedvig.android.feature.forever.copyToClipboard
-import com.hedvig.android.feature.forever.data.ForeverData
-import com.hedvig.android.feature.forever.data.Referral
-import com.hedvig.android.feature.forever.data.ReferralState
-import com.hedvig.android.feature.forever.showShareSheet
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.pullrefresh.PullRefreshDefaults
 import com.hedvig.android.pullrefresh.PullRefreshIndicator
 import com.hedvig.android.pullrefresh.PullRefreshState
 import com.hedvig.android.pullrefresh.pullRefresh
 import com.hedvig.android.pullrefresh.rememberPullRefreshState
+import com.hedvig.android.shared.foreverui.ui.data.ForeverData
+import com.hedvig.android.shared.foreverui.ui.data.Referral
+import com.hedvig.android.shared.foreverui.ui.data.ReferralState
 import hedvig.resources.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
@@ -94,7 +89,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 
 @Composable
-internal fun ForeverDestination(
+fun ForeverDestination(
   viewModel: ForeverViewModel,
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,

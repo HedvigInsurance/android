@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.forever.ui
+package com.hedvig.android.shared.foreverui.ui.ui
 
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Spacer
@@ -29,7 +29,7 @@ import com.hedvig.android.core.designsystem.component.button.HedvigContainedButt
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
 import com.hedvig.android.core.designsystem.material3.squircleLargeTop
-import com.hedvig.android.feature.forever.data.ForeverRepository
+import com.hedvig.android.shared.foreverui.ui.data.ForeverRepository
 import hedvig.resources.R
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.drop

@@ -1,4 +1,4 @@
-query Referrals {
+query FullReferrals {
   currentMember {
     insuranceCost {
       monthlyGross {

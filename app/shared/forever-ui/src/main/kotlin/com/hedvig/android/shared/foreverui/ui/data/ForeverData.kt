@@ -1,10 +1,10 @@
-package com.hedvig.android.feature.forever.data
+package com.hedvig.android.shared.foreverui.ui.data
 
 import com.hedvig.android.core.uidata.UiMoney
-import octopus.ReferralsQuery
+import octopus.FullReferralsQuery
 import octopus.type.MemberReferralStatus
 
-internal data class ForeverData(
+data class ForeverData(
   val campaignCode: String?,
   val incentive: UiMoney?,
   val currentDiscountAmountExcludingReferrals: UiMoney?,
@@ -14,7 +14,7 @@ internal data class ForeverData(
   val referrals: List<Referral>,
 ) {
   constructor(
-    referralsData: ReferralsQuery.Data,
+    referralsData: FullReferralsQuery.Data,
   ) : this(
     campaignCode = referralsData.currentMember.referralInformation.code,
     incentive = UiMoney.fromMoneyFragment(referralsData.currentMember.referralInformation.monthlyDiscountPerReferral),
@@ -39,13 +39,13 @@ internal data class ForeverData(
   )
 }
 
-internal data class Referral(
+data class Referral(
   val name: String?,
   val state: ReferralState,
   val discount: UiMoney?,
 )
 
-internal enum class ReferralState {
+enum class ReferralState {
   ACTIVE,
   IN_PROGRESS,
   TERMINATED,

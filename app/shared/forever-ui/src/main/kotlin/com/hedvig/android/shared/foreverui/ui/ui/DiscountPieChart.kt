@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.forever.ui
+package com.hedvig.android.shared.foreverui.ui.ui
 
 import androidx.annotation.FloatRange
 import androidx.compose.animation.core.FastOutSlowInEasing

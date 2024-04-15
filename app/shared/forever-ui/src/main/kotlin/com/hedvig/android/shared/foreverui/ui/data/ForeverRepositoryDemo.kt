@@ -1,63 +1,63 @@
-package com.hedvig.android.feature.forever.data
+package com.hedvig.android.shared.foreverui.ui.data
 
 import arrow.core.Either
 import arrow.core.raise.either
 import arrow.core.right
 import com.hedvig.android.core.common.ErrorMessage
-import octopus.ReferralsQuery
+import octopus.FullReferralsQuery
 import octopus.type.CurrencyCode
 import octopus.type.MemberReferralStatus
 
 internal class ForeverRepositoryDemo : ForeverRepository {
   private var code: String = "code"
 
-  override suspend fun getReferralsData(): Either<ErrorMessage, ReferralsQuery.Data> = either {
+  override suspend fun getReferralsData(): Either<ErrorMessage, FullReferralsQuery.Data> = either {
     @Suppress("ktlint:standard:max-line-length")
-    ReferralsQuery.Data(
-      currentMember = ReferralsQuery.Data.CurrentMember(
-        insuranceCost = ReferralsQuery.Data.CurrentMember.InsuranceCost(
-          monthlyGross = ReferralsQuery.Data.CurrentMember.InsuranceCost.MonthlyGross(
+    FullReferralsQuery.Data(
+      currentMember = FullReferralsQuery.Data.CurrentMember(
+        insuranceCost = FullReferralsQuery.Data.CurrentMember.InsuranceCost(
+          monthlyGross = FullReferralsQuery.Data.CurrentMember.InsuranceCost.MonthlyGross(
             __typename = "",
             amount = 60.0,
             currencyCode = CurrencyCode.SEK,
           ),
-          ReferralsQuery.Data.CurrentMember.InsuranceCost.MonthlyNet(
+          FullReferralsQuery.Data.CurrentMember.InsuranceCost.MonthlyNet(
             __typename = "",
             amount = 40.0,
             currencyCode = CurrencyCode.SEK,
           ),
-          ReferralsQuery.Data.CurrentMember.InsuranceCost.MonthlyDiscount(
+          FullReferralsQuery.Data.CurrentMember.InsuranceCost.MonthlyDiscount(
             __typename = "",
             amount = 20.0,
             currencyCode = CurrencyCode.SEK,
           ),
         ),
-        referralInformation = ReferralsQuery.Data.CurrentMember.ReferralInformation(
+        referralInformation = FullReferralsQuery.Data.CurrentMember.ReferralInformation(
           code = "DEMOCODE",
-          monthlyDiscountExcludingReferrals = ReferralsQuery.Data.CurrentMember.ReferralInformation.MonthlyDiscountExcludingReferrals(
+          monthlyDiscountExcludingReferrals = FullReferralsQuery.Data.CurrentMember.ReferralInformation.MonthlyDiscountExcludingReferrals(
             __typename = "",
             amount = 120.0,
             currencyCode = CurrencyCode.SEK,
           ),
-          monthlyDiscountPerReferral = ReferralsQuery.Data.CurrentMember.ReferralInformation.MonthlyDiscountPerReferral(
+          monthlyDiscountPerReferral = FullReferralsQuery.Data.CurrentMember.ReferralInformation.MonthlyDiscountPerReferral(
             __typename = "",
             amount = 10.0,
             currencyCode = CurrencyCode.SEK,
           ),
           referrals = listOf(
-            ReferralsQuery.Data.CurrentMember.ReferralInformation.Referral(
+            FullReferralsQuery.Data.CurrentMember.ReferralInformation.Referral(
               name = "Adam",
               status = MemberReferralStatus.ACTIVE,
-              activeDiscount = ReferralsQuery.Data.CurrentMember.ReferralInformation.Referral.ActiveDiscount(
+              activeDiscount = FullReferralsQuery.Data.CurrentMember.ReferralInformation.Referral.ActiveDiscount(
                 __typename = "",
                 amount = 10.0,
                 currencyCode = CurrencyCode.SEK,
               ),
             ),
-            ReferralsQuery.Data.CurrentMember.ReferralInformation.Referral(
+            FullReferralsQuery.Data.CurrentMember.ReferralInformation.Referral(
               name = "Claire",
               status = MemberReferralStatus.PENDING,
-              activeDiscount = ReferralsQuery.Data.CurrentMember.ReferralInformation.Referral.ActiveDiscount(
+              activeDiscount = FullReferralsQuery.Data.CurrentMember.ReferralInformation.Referral.ActiveDiscount(
                 __typename = "",
                 amount = 10.0,
                 currencyCode = CurrencyCode.SEK,

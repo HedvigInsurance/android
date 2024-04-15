@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.forever
+package com.hedvig.android.shared.foreverui.ui.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -10,13 +10,13 @@ import androidx.compose.runtime.setValue
 import arrow.core.raise.either
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.demomode.Provider
-import com.hedvig.android.feature.forever.data.ForeverData
-import com.hedvig.android.feature.forever.data.ForeverRepository
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import com.hedvig.android.shared.foreverui.ui.data.ForeverData
+import com.hedvig.android.shared.foreverui.ui.data.ForeverRepository
 
-internal class ForeverViewModel(
+class ForeverViewModel(
   foreverRepositoryProvider: Provider<ForeverRepository>,
 ) : MoleculeViewModel<ForeverEvent, ForeverUiState>(
     ForeverUiState.Loading,
@@ -97,7 +97,7 @@ sealed interface ForeverEvent {
   data object RetryLoadReferralData : ForeverEvent
 }
 
-internal data class ForeverUiState(
+data class ForeverUiState(
   val foreverData: ForeverData?,
   val isLoadingForeverData: Boolean,
   val foreverDataErrorMessage: ErrorMessage?,

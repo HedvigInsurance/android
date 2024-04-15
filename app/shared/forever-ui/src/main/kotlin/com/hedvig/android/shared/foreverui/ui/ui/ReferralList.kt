@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.forever.ui
+package com.hedvig.android.shared.foreverui.ui.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -29,8 +29,8 @@ import com.hedvig.android.core.designsystem.material3.warningElement
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.uidata.UiMoney
-import com.hedvig.android.feature.forever.data.Referral
-import com.hedvig.android.feature.forever.data.ReferralState
+import com.hedvig.android.shared.foreverui.ui.data.Referral
+import com.hedvig.android.shared.foreverui.ui.data.ReferralState
 import hedvig.resources.R
 import octopus.type.CurrencyCode
 
