@@ -78,6 +78,7 @@ private fun GenericAuthScreen(
           emailInput = uiState.ssnInput,
           error = uiState.error?.let { errorMessage(it) },
           loading = uiState.loading,
+          canSubmitSsn = uiState.canSubmitSsn,
         )
       }
     }
