@@ -42,10 +42,10 @@ internal class HedvigDeepLinkContainerImpl(
   override val helpCenter: String = "$baseDeepLinkDomain/help-center"
 
   // Sample url: https://hedvigdevelop.page.link/help-center/topic?id=1
-  override val helpCenterCommonTopic: String = "$baseDeepLinkDomain/help-center/topic&id={id}"
+  override val helpCenterCommonTopic: String = "$baseDeepLinkDomain/help-center/topic?id={id}"
 
   // Sample url: https://hedvigdevelop.page.link/help-center/question?id=2
-  override val helpCenterQuestion: String = "$baseDeepLinkDomain/help-center/question&id={id}"
+  override val helpCenterQuestion: String = "$baseDeepLinkDomain/help-center/question?id={id}"
 
   override val insurances: String = "$baseDeepLinkDomain/insurances"
   override val contractWithoutContractId: String = "$baseDeepLinkDomain/contract"
