@@ -221,12 +221,11 @@ private fun ForeverSection(
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
         HedvigCard(
-          shape = MaterialTheme.shapes.squircleSmall,
           colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.secondaryContainedButtonContainer,
             contentColor = MaterialTheme.colorScheme.onSecondaryContainedButtonContainer,
           ),
-          modifier = Modifier.wrapContentSize(Alignment.TopStart).clickable {
+          modifier = Modifier.wrapContentSize(Alignment.TopStart).clip(MaterialTheme.shapes.squircleSmall).clickable {
             context.getSystemService<ClipboardManager>()?.setPrimaryClip(
               ClipData.newPlainText(null, foreverInformation.foreverCode),
             )
