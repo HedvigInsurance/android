@@ -85,7 +85,7 @@
       </intent-filter>
     </service>
 
-    <receiver android:name=".feature.chat.service.ChatMessageNotificationReceiver" />
+    <receiver android:name="com.hedvig.android.app.chat.service.ChatMessageNotificationReceiver" />
 
     <service
       android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"

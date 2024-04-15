@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.chat.service
+package com.hedvig.android.app.chat.service
 
 import android.app.NotificationManager
 import android.app.PendingIntent
