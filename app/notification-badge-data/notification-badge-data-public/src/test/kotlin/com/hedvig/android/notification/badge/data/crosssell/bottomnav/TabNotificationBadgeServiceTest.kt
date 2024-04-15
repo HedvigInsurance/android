@@ -37,7 +37,7 @@ class TabNotificationBadgeServiceTest {
 
   @Test
   fun `When backend returns no cross sells, show no badge`() = runTest {
-    val notificationBadgeService = FakeNotificationBadgeStorage(this)
+    val notificationBadgeService = FakeNotificationBadgeStorage(backgroundScope)
     val getCrossSellsContractTypeIdentifiersUseCase = FakeGetCrossSellIdentifiersUseCase()
     val service = tabNotificationBadgeService(
       notificationBadgeStorage = notificationBadgeService,
@@ -52,7 +52,7 @@ class TabNotificationBadgeServiceTest {
   @Test
   fun `When backend returns a cross sell and it's not seen, show insurance badge`() = runTest {
     val seAccident = CrossSellIdentifier("SE_ACCIDENT")
-    val notificationBadgeService = FakeNotificationBadgeStorage(this)
+    val notificationBadgeService = FakeNotificationBadgeStorage(backgroundScope)
     val getCrossSellsContractTypesUseCase = FakeGetCrossSellIdentifiersUseCase {
       setOf(seAccident)
     }
@@ -69,7 +69,7 @@ class TabNotificationBadgeServiceTest {
   @Test
   fun `When backend returns a cross sell but it's seen, show no badge`() = runTest {
     val seAccident = CrossSellIdentifier("SE_ACCIDENT")
-    val notificationBadgeService = FakeNotificationBadgeStorage(this).apply {
+    val notificationBadgeService = FakeNotificationBadgeStorage(backgroundScope).apply {
       setValue(
         NotificationBadge.BottomNav.CrossSellOnInsuranceScreen,
         setOf(seAccident.rawValue),
@@ -92,7 +92,7 @@ class TabNotificationBadgeServiceTest {
   fun `When backend returns two cross sells but they're both seen, show no badge`() = runTest {
     val seAccident = CrossSellIdentifier("SE_ACCIDENT")
     val seCarFull = CrossSellIdentifier("SE_CAR_FULL")
-    val notificationBadgeService = FakeNotificationBadgeStorage(this).apply {
+    val notificationBadgeService = FakeNotificationBadgeStorage(backgroundScope).apply {
       setValue(
         NotificationBadge.BottomNav.CrossSellOnInsuranceScreen,
         setOf(
@@ -118,7 +118,7 @@ class TabNotificationBadgeServiceTest {
   fun `When backend returns two cross sells but only one is seen, still show insurance badge`() = runTest {
     val seAccident = CrossSellIdentifier("SE_ACCIDENT")
     val seCarFull = CrossSellIdentifier("SE_CAR_FULL")
-    val notificationBadgeService = FakeNotificationBadgeStorage(this).apply {
+    val notificationBadgeService = FakeNotificationBadgeStorage(backgroundScope).apply {
       setValue(
         NotificationBadge.BottomNav.CrossSellOnInsuranceScreen,
         setOf(seAccident.rawValue),
@@ -144,7 +144,7 @@ class TabNotificationBadgeServiceTest {
     val seHouse = CrossSellIdentifier("SE_HOUSE")
     val seCarFull = CrossSellIdentifier("SE_CAR_FULL")
     val seQasaShortTermRental = CrossSellIdentifier("SE_QASA_SHORT_TERM_RENTAL")
-    val notificationBadgeService = FakeNotificationBadgeStorage(this).apply {
+    val notificationBadgeService = FakeNotificationBadgeStorage(backgroundScope).apply {
       setValue(
         NotificationBadge.BottomNav.CrossSellOnInsuranceScreen,
         setOf(
@@ -171,7 +171,7 @@ class TabNotificationBadgeServiceTest {
   @Test
   fun `When a notification is shown, when it is marked as seen it no longer shows`() = runTest {
     val seAccident = CrossSellIdentifier("SE_ACCIDENT")
-    val notificationBadgeService = FakeNotificationBadgeStorage(this)
+    val notificationBadgeService = FakeNotificationBadgeStorage(backgroundScope)
     val getCrossSellsContractTypesUseCase = FakeGetCrossSellIdentifiersUseCase {
       setOf(seAccident)
     }
@@ -190,7 +190,7 @@ class TabNotificationBadgeServiceTest {
   @Test
   fun `When two notifications are shown, they get cleared one by one when visiting the tabs`() = runTest {
     val seAccident = CrossSellIdentifier("SE_ACCIDENT")
-    val notificationBadgeService = FakeNotificationBadgeStorage(this)
+    val notificationBadgeService = FakeNotificationBadgeStorage(backgroundScope)
     val getCrossSellsContractTypesUseCase = FakeGetCrossSellIdentifiersUseCase {
       setOf(seAccident)
     }
