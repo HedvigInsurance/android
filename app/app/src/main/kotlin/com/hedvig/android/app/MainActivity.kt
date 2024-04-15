@@ -183,14 +183,19 @@ class MainActivity : AppCompatActivity() {
       )
       val darkTheme = hedvigAppState.darkTheme
       HedvigTheme(darkTheme = darkTheme) {
-        EnableEdgeToEdgeSideEffect(darkTheme)
+        EnableEdgeToEdgeSideEffect(darkTheme, splashIsRemovedSignal) { systemBarStyle ->
+          enableEdgeToEdge(
+            statusBarStyle = systemBarStyle,
+            navigationBarStyle = systemBarStyle,
+          )
+        }
         val mustForceUpdate by hedvigAppState.mustForceUpdate.collectAsStateWithLifecycle()
         if (mustForceUpdate) {
           ForceUpgradeBlockingScreen(
             goToPlayStore = { activityNavigator.tryOpenPlayStore(this) },
           )
         } else {
-          LogoutOnInvalidCredentialsEffect(hedvigAppState)
+          LogoutOnInvalidCredentialsEffect(hedvigAppState, authTokenService, demoManager)
           val deepLinkFirstUriHandler = DeepLinkFirstUriHandler(
             navController = hedvigAppState.navController,
             delegate = SafeAndroidUriHandler(LocalContext.current),
@@ -220,70 +225,6 @@ class MainActivity : AppCompatActivity() {
     navController?.provideAssistContent(outContent, hedvigDeepLinkContainer.allDeepLinkUriPatterns)
     outContent.webUri?.let {
       logcat { "Providing a deep link to current screen: $it" }
-    }
-  }
-
-  @Composable
-  private fun EnableEdgeToEdgeSideEffect(darkTheme: Boolean) {
-    val splashIsRemovedIndex by produceState(0) {
-      splashIsRemovedSignal.receiveAsFlow().collectLatest { value = value + 1 }
-    }
-    DisposableEffect(darkTheme, splashIsRemovedIndex) {
-      enableEdgeToEdge(
-        statusBarStyle = when (darkTheme) {
-          true -> SystemBarStyle.dark(Color.TRANSPARENT)
-          false -> SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
-        },
-        navigationBarStyle = when (darkTheme) {
-          true -> SystemBarStyle.dark(Color.TRANSPARENT)
-          false -> SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
-        },
-      )
-      onDispose {}
-    }
-  }
-
-  /**
-   * Automatically logs out when we are no longer in demo mode and we are also not considered to have active tokens
-   */
-  @Composable
-  private fun LogoutOnInvalidCredentialsEffect(hedvigAppState: HedvigAppState) {
-    val authStatusLog: (AuthStatus?) -> Unit = { authStatus ->
-      logcat {
-        buildString {
-          append("Owner: LoggedInActivity | Received authStatus: ")
-          append(
-            when (authStatus) {
-              is AuthStatus.LoggedIn -> "LoggedIn"
-              AuthStatus.LoggedOut -> "LoggedOut"
-              null -> "null"
-            },
-          )
-        }
-      }
-    }
-    val lifecycle = LocalLifecycleOwner.current.lifecycle
-    LaunchedEffect(lifecycle, hedvigAppState, authTokenService, demoManager) {
-      val loginGraphRoute = createRoutePattern<LoginDestination>()
-      lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-        combine(
-          authTokenService.authStatus.onEach(authStatusLog).filterNotNull().distinctUntilChanged(),
-          demoManager.isDemoMode().distinctUntilChanged(),
-        ) { authStatus: AuthStatus, isDemoMode: Boolean ->
-          authStatus to isDemoMode
-        }.collect { (authStatus, isDemoMode) ->
-          val navBackStackEntry: NavBackStackEntry = hedvigAppState.navController.currentBackStackEntryFlow.first()
-          val isLoggedOut = navBackStackEntry.destination.hierarchy.any { navDestination ->
-            navDestination.route?.contains(loginGraphRoute) == true
-          }
-          if (isLoggedOut) {
-            return@collect
-          }
-          if (!isDemoMode && authStatus !is AuthStatus.LoggedIn) {
-            hedvigAppState.navigateToLoggedOut()
-          }
-        }
-      }
     }
   }
 
@@ -332,6 +273,74 @@ class MainActivity : AppCompatActivity() {
           addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
         }
       }
+  }
+}
+
+@Composable
+private fun EnableEdgeToEdgeSideEffect(
+  darkTheme: Boolean,
+  splashIsRemovedSignal: Channel<Unit>,
+  enableEdgeToEdge: (SystemBarStyle) -> Unit,
+) {
+  val splashIsRemovedIndex by produceState(0) {
+    splashIsRemovedSignal.receiveAsFlow().collectLatest { value = value + 1 }
+  }
+  DisposableEffect(darkTheme, splashIsRemovedIndex) {
+    enableEdgeToEdge(
+      when (darkTheme) {
+        true -> SystemBarStyle.dark(Color.TRANSPARENT)
+        false -> SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
+      },
+    )
+    onDispose {}
+  }
+}
+
+/**
+ * Automatically logs out when we are no longer in demo mode and we are also not considered to have active tokens
+ */
+@Composable
+private fun LogoutOnInvalidCredentialsEffect(
+  hedvigAppState: HedvigAppState,
+  authTokenService: AuthTokenService,
+  demoManager: DemoManager,
+) {
+  val authStatusLog: (AuthStatus?) -> Unit = { authStatus ->
+    logcat {
+      buildString {
+        append("Owner: LoggedInActivity | Received authStatus: ")
+        append(
+          when (authStatus) {
+            is AuthStatus.LoggedIn -> "LoggedIn"
+            AuthStatus.LoggedOut -> "LoggedOut"
+            null -> "null"
+          },
+        )
+      }
+    }
+  }
+  val lifecycle = LocalLifecycleOwner.current.lifecycle
+  LaunchedEffect(lifecycle, hedvigAppState, authTokenService, demoManager) {
+    val loginGraphRoute = createRoutePattern<LoginDestination>()
+    lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+      combine(
+        authTokenService.authStatus.onEach(authStatusLog).filterNotNull().distinctUntilChanged(),
+        demoManager.isDemoMode().distinctUntilChanged(),
+      ) { authStatus: AuthStatus, isDemoMode: Boolean ->
+        authStatus to isDemoMode
+      }.collect { (authStatus, isDemoMode) ->
+        val navBackStackEntry: NavBackStackEntry = hedvigAppState.navController.currentBackStackEntryFlow.first()
+        val isLoggedOut = navBackStackEntry.destination.hierarchy.any { navDestination ->
+          navDestination.route?.contains(loginGraphRoute) == true
+        }
+        if (isLoggedOut) {
+          return@collect
+        }
+        if (!isDemoMode && authStatus !is AuthStatus.LoggedIn) {
+          hedvigAppState.navigateToLoggedOut()
+        }
+      }
+    }
   }
 }
 
