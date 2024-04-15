@@ -1,5 +1,7 @@
 package com.hedvig.android.feature.payments.discounts
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -32,10 +34,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.core.content.getSystemService
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.bottomsheet.HedvigInfoBottomSheet
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
@@ -63,13 +67,16 @@ import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.payments.data.Discount
 import com.hedvig.android.feature.payments.overview.data.ForeverInformation
-import com.hedvig.android.feature.payments.paymentOverViewPreviewData
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 import octopus.type.CurrencyCode
 
 @Composable
-internal fun DiscountsDestination(viewModel: DiscountsViewModel, navigateUp: () -> Unit) {
+internal fun DiscountsDestination(
+  viewModel: DiscountsViewModel,
+  navigateUp: () -> Unit,
+  navigateToForever: () -> Unit,
+) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   DiscountsScreen(
     uiState = uiState,
@@ -77,6 +84,7 @@ internal fun DiscountsDestination(viewModel: DiscountsViewModel, navigateUp: () 
     onShowBottomSheet = { viewModel.emit(DiscountsEvent.ShowBottomSheet) },
     onSubmitDiscountCode = { viewModel.emit(DiscountsEvent.OnSubmitDiscountCode(it)) },
     navigateUp = navigateUp,
+    navigateToForever = navigateToForever,
   )
 }
 
@@ -87,6 +95,7 @@ private fun DiscountsScreen(
   onShowBottomSheet: () -> Unit,
   onDismissBottomSheet: () -> Unit,
   onSubmitDiscountCode: (String) -> Unit,
+  navigateToForever: () -> Unit,
 ) {
   HedvigScaffold(
     topAppBarText = stringResource(R.string.PAYMENTS_DISCOUNTS_SECTION_TITLE),
@@ -141,8 +150,8 @@ private fun DiscountsScreen(
         },
       )
 
-      val discounts = uiState.paymentOverview?.discounts
-      if (discounts.isNullOrEmpty()) {
+      val discounts = uiState.discounts
+      if (discounts.isEmpty()) {
         Spacer(modifier = Modifier.height(16.dp))
         Text(
           text = stringResource(id = R.string.PAYMENTS_NO_CAMPAIGN_CODE_ADDED),
@@ -160,7 +169,7 @@ private fun DiscountsScreen(
       )
       if (uiState.foreverInformation != null) {
         Spacer(modifier = Modifier.height(32.dp))
-        ForeverSection(uiState.foreverInformation, Modifier)
+        ForeverSection(uiState.foreverInformation, navigateToForever, Modifier)
       }
       Spacer(modifier = Modifier.height(16.dp))
       Spacer(
@@ -171,7 +180,11 @@ private fun DiscountsScreen(
 }
 
 @Composable
-private fun ForeverSection(foreverInformation: ForeverInformation, modifier: Modifier = Modifier) {
+private fun ForeverSection(
+  foreverInformation: ForeverInformation,
+  navigateToForever: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
   Column(modifier) {
     val incentive = foreverInformation.potentialDiscountAmountPerNewReferral.toString()
     var showForeverInfoBottomSheet by remember { mutableStateOf(false) }
@@ -204,6 +217,7 @@ private fun ForeverSection(foreverInformation: ForeverInformation, modifier: Mod
       },
     )
     Spacer(modifier = Modifier.height(16.dp))
+    val context = LocalContext.current
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
         HedvigCard(
@@ -212,7 +226,11 @@ private fun ForeverSection(foreverInformation: ForeverInformation, modifier: Mod
             containerColor = MaterialTheme.colorScheme.secondaryContainedButtonContainer,
             contentColor = MaterialTheme.colorScheme.onSecondaryContainedButtonContainer,
           ),
-          modifier = Modifier.wrapContentSize(Alignment.TopStart),
+          modifier = Modifier.wrapContentSize(Alignment.TopStart).clickable {
+            context.getSystemService<ClipboardManager>()?.setPrimaryClip(
+              ClipData.newPlainText(null, foreverInformation.foreverCode),
+            )
+          },
         ) {
           Text(
             text = foreverInformation.foreverCode,
@@ -250,7 +268,7 @@ private fun ForeverSection(foreverInformation: ForeverInformation, modifier: Mod
           ),
           textStyle = MaterialTheme.typography.bodyMedium,
           text = stringResource(R.string.important_message_read_more),
-          onClick = { showForeverInfoBottomSheet = true },
+          onClick = navigateToForever,
         )
       },
     )
@@ -266,46 +284,44 @@ private fun PaymentDetailsScreenPreview(
     Surface(color = MaterialTheme.colorScheme.background) {
       DiscountsScreen(
         uiState = DiscountsUiState(
-          paymentOverview = paymentOverViewPreviewData.copy(
-            discounts = if (hasForeverAndDiscounts) {
-              listOf(
-                Discount(
-                  "MYDISCOUNT1",
-                  "display name of referral",
-                  "description",
-                  Discount.ExpiredState.NotExpired,
-                  UiMoney(10.0, CurrencyCode.SEK),
-                  true,
-                ),
-                Discount(
-                  "MYDISCOUNT2",
-                  "display name of non referral",
-                  "description",
-                  Discount.ExpiredState.NotExpired,
-                  UiMoney(10.0, CurrencyCode.SEK),
-                  false,
-                ),
-                Discount(
-                  "MYDISCOUNT3",
-                  "display name of expiring soon",
-                  "description",
-                  Discount.ExpiredState.ExpiringInTheFuture(LocalDate(2124, 12, 14)),
-                  UiMoney(10.0, CurrencyCode.SEK),
-                  false,
-                ),
-                Discount(
-                  "MYDISCOUNT3",
-                  "display name of expired",
-                  "description",
-                  Discount.ExpiredState.AlreadyExpired(LocalDate(2014, 12, 14)),
-                  UiMoney(10.0, CurrencyCode.SEK),
-                  false,
-                ),
-              )
-            } else {
-              emptyList()
-            },
-          ),
+          discounts = if (hasForeverAndDiscounts) {
+            listOf(
+              Discount(
+                "MYDISCOUNT1",
+                "display name of referral",
+                "description",
+                Discount.ExpiredState.NotExpired,
+                UiMoney(10.0, CurrencyCode.SEK),
+                true,
+              ),
+              Discount(
+                "MYDISCOUNT2",
+                "display name of non referral",
+                "description",
+                Discount.ExpiredState.NotExpired,
+                UiMoney(10.0, CurrencyCode.SEK),
+                false,
+              ),
+              Discount(
+                "MYDISCOUNT3",
+                "display name of expiring soon",
+                "description",
+                Discount.ExpiredState.ExpiringInTheFuture(LocalDate(2124, 12, 14)),
+                UiMoney(10.0, CurrencyCode.SEK),
+                false,
+              ),
+              Discount(
+                "MYDISCOUNT3",
+                "display name of expired",
+                "description",
+                Discount.ExpiredState.AlreadyExpired(LocalDate(2014, 12, 14)),
+                UiMoney(10.0, CurrencyCode.SEK),
+                false,
+              ),
+            )
+          } else {
+            emptyList()
+          },
           foreverInformation = ForeverInformation(
             "MYDISCOUNT1",
             UiMoney(23.0, CurrencyCode.SEK),
@@ -316,6 +332,7 @@ private fun PaymentDetailsScreenPreview(
         onShowBottomSheet = {},
         onDismissBottomSheet = {},
         onSubmitDiscountCode = {},
+        navigateToForever = {},
       )
     }
   }
