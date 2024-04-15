@@ -232,16 +232,16 @@ private fun MemberChargeDetailsScreen(
               underTextContent = null,
             )
 
-        MemberCharge.MemberChargeStatus.PENDING -> VectorInfoCard(
-          text = stringResource(id = R.string.PAYMENTS_IN_PROGRESS),
-          icon = Icons.Hedvig.InfoFilled,
-          iconColor = MaterialTheme.colorScheme.infoElement,
-          colors = CardDefaults.outlinedCardColors(
-            containerColor = MaterialTheme.colorScheme.infoContainer,
-            contentColor = MaterialTheme.colorScheme.onInfoContainer,
-          ),
-          underTextContent = null,
-        )
+            MemberCharge.MemberChargeStatus.PENDING -> VectorInfoCard(
+              text = stringResource(id = R.string.PAYMENTS_IN_PROGRESS),
+              icon = Icons.Hedvig.InfoFilled,
+              iconColor = MaterialTheme.colorScheme.infoElement,
+              colors = CardDefaults.outlinedCardColors(
+                containerColor = MaterialTheme.colorScheme.infoContainer,
+                contentColor = MaterialTheme.colorScheme.onInfoContainer,
+              ),
+              underTextContent = null,
+            )
 
             MemberCharge.MemberChargeStatus.FAILED -> VectorInfoCard(
               text = stringResource(
