@@ -21,7 +21,7 @@
     tools:node="remove" />
 
   <application
-    android:name=".HedvigApplication"
+    android:name="com.hedvig.android.app.HedvigApplication"
     android:allowBackup="true"
     android:enableOnBackInvokedCallback="true"
     android:fullBackupOnly="true"

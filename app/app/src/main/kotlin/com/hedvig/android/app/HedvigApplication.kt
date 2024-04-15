@@ -1,8 +1,7 @@
-package com.hedvig.app
+package com.hedvig.android.app
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
-import com.hedvig.android.app.AppInitializers
 import org.koin.android.ext.android.inject
 
 open class HedvigApplication : Application() {
