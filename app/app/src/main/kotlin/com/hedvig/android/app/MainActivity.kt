@@ -160,7 +160,7 @@ class MainActivity : AppCompatActivity() {
         },
         shouldShowRequestPermissionRationale = ::shouldShowRequestPermissionRationale,
         goToPlayStore = { activityNavigator.tryOpenPlayStore(this) },
-        openEmailApp = ::openEmailApp,
+        openEmailApp = { openEmail(getString(R.string.login_bottom_sheet_view_code)) },
         finishApp = ::finish,
         tryShowAppStoreReviewDialog = ::tryShowAppStoreReviewDialog,
         windowSizeClass = windowSizeClass,
@@ -174,10 +174,6 @@ class MainActivity : AppCompatActivity() {
     outContent.webUri?.let {
       logcat { "Providing a deep link to current screen: $it" }
     }
-  }
-
-  private fun openEmailApp() {
-    openEmail(getString(R.string.login_bottom_sheet_view_code))
   }
 
   companion object {
