@@ -42,6 +42,7 @@ import com.hedvig.android.feature.home.home.navigation.homeGraph
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
 import com.hedvig.android.feature.insurances.insurance.insuranceGraph
 import com.hedvig.android.feature.insurances.navigation.InsurancesDestination
+import com.hedvig.android.feature.login.navigation.loginGraph
 import com.hedvig.android.feature.odyssey.navigation.claimFlowGraph
 import com.hedvig.android.feature.odyssey.navigation.navigateToClaimFlowDestination
 import com.hedvig.android.feature.odyssey.navigation.terminalClaimFlowStepDestinations
@@ -72,6 +73,7 @@ internal fun HedvigNavHost(
   finishApp: () -> Unit,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   openUrl: (String) -> Unit,
+  onOpenEmailApp: () -> Unit,
   imageLoader: ImageLoader,
   market: Market,
   languageService: LanguageService,
@@ -95,13 +97,21 @@ internal fun HedvigNavHost(
   NavHost(
     navController = hedvigAppState.navController,
     startDestination = createRoutePattern<HomeDestination.Graph>(),
-    route = "root",
+    route = RootGraph.route,
     modifier = modifier,
     enterTransition = { MotionDefaults.sharedXAxisEnter(density) },
     exitTransition = { MotionDefaults.sharedXAxisExit(density) },
     popEnterTransition = { MotionDefaults.sharedXAxisPopEnter(density) },
     popExitTransition = { MotionDefaults.sharedXAxisPopExit(density) },
   ) {
+    loginGraph(
+      navigator = navigator,
+      appVersionName = hedvigBuildConstants.appVersionName,
+      urlBaseWeb = hedvigBuildConstants.urlBaseWeb,
+      openUrl = openUrl,
+      onOpenEmailApp = onOpenEmailApp,
+      startLoggedInActivity = hedvigAppState::navigateToLoggedIn,
+    )
     homeGraph(
       nestedGraphs = {
         nestedHomeGraphs(

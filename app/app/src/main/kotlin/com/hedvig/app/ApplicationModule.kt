@@ -2,7 +2,6 @@
 
 package com.hedvig.app
 
-import android.app.Application
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
@@ -78,8 +77,6 @@ import com.hedvig.android.notification.firebase.di.firebaseNotificationModule
 import com.hedvig.android.tracking.datadog.di.trackingDatadogModule
 import com.hedvig.app.feature.chat.service.ChatNotificationSender
 import com.hedvig.app.feature.chat.service.ReplyWorker
-import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.feature.marketing.MarketingActivity
 import com.hedvig.app.service.push.senders.CrossSellNotificationSender
 import com.hedvig.app.service.push.senders.GenericNotificationSender
 import com.hedvig.app.service.push.senders.PaymentNotificationSender
@@ -181,16 +178,7 @@ fun makeUserAgent(languageBCP47: String): String = buildString {
 
 private val activityNavigatorModule = module {
   single<ActivityNavigator> {
-    ActivityNavigatorImpl(
-      application = get<Application>(),
-      loggedOutActivityClass = MarketingActivity::class.java,
-      buildConfigApplicationId = BuildConfig.APPLICATION_ID,
-      navigateToLoggedInActivity = { clearBackstack ->
-        startActivity(
-          LoggedInActivity.newInstance(this, clearBackstack),
-        )
-      },
-    )
+    ActivityNavigatorImpl(buildConfigApplicationId = BuildConfig.APPLICATION_ID)
   }
 }
 
