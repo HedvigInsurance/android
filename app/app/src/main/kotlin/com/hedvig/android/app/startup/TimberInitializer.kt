@@ -1,4 +1,4 @@
-package com.hedvig.app.startup
+package com.hedvig.android.app.startup
 
 import android.content.Context
 import androidx.startup.Initializer

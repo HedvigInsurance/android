@@ -121,10 +121,10 @@
         android:name="com.hedvig.android.app.di.KoinInitializer"
         android:value="androidx.startup" />
       <meta-data
-        android:name="com.hedvig.app.startup.DatadogInitializerImpl"
+        android:name="com.hedvig.android.app.startup.DatadogInitializerImpl"
         android:value="androidx.startup" />
       <meta-data
-        android:name="com.hedvig.app.startup.TimberInitializer"
+        android:name="com.hedvig.android.app.startup.TimberInitializer"
         android:value="androidx.startup" />
 
       <!-- Remove automatic WorkManager initialization as Koin does it for us  -->

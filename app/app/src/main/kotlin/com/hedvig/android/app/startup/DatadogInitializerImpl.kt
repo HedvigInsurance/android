@@ -1,4 +1,4 @@
-package com.hedvig.app.startup
+package com.hedvig.android.app.startup
 
 import androidx.startup.Initializer
 import com.hedvig.android.app.di.KoinInitializer
