@@ -16,19 +16,6 @@
 -keep public class * extends java.lang.Exception
 -printmapping mapping.txt
 
-# Adyen
--keep class com.adyen.checkout.core.model.** { * ;}
--keep class com.adyen.checkout.components.model.** { *; }
--keep class com.adyen.threeds2.** { *; }
--keepclassmembers public class * implements com.adyen.checkout.components.PaymentComponent {
-   public <init>(...);
-}
--keepclassmembers public class * implements com.adyen.checkout.components.ActionComponent {
-   public <init>(...);
-}
-# More Adyen - https://github.com/Adyen/adyen-android/issues/1172
--dontwarn org.slf4j.impl.StaticLoggerBinder
-
 # Keep `Companion` object fields of serializable classes.
 # This avoids serializer lookup through `getDeclaredClasses` as done for named companion objects.
 -if @kotlinx.serialization.Serializable class **
