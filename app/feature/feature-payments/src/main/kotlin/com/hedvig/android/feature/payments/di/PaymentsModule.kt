@@ -116,5 +116,3 @@ val paymentsModule = module {
     )
   }
 }
-
-// todo: should I do this Provider thing for the new usecases?
