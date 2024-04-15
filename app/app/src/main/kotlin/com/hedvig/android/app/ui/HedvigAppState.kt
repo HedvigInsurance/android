@@ -30,6 +30,8 @@ import com.hedvig.android.feature.login.navigation.LoginDestination
 import com.hedvig.android.feature.payments.navigation.PaymentsDestination
 import com.hedvig.android.feature.profile.navigation.ProfileDestination
 import com.hedvig.android.feature.profile.navigation.profileBottomNavPermittedDestinations
+import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.notification.badge.data.tab.BottomNavTab
@@ -60,6 +62,7 @@ internal fun rememberHedvigAppState(
   tabNotificationBadgeService: TabNotificationBadgeService,
   settingsDataStore: SettingsDataStore,
   getOnlyHasNonPayingContractsUseCase: Provider<GetOnlyHasNonPayingContractsUseCase>,
+  featureManager: FeatureManager,
   navHostController: NavHostController,
   coroutineScope: CoroutineScope = rememberCoroutineScope(),
 ): HedvigAppState {
@@ -72,6 +75,7 @@ internal fun rememberHedvigAppState(
     tabNotificationBadgeService,
     settingsDataStore,
     getOnlyHasNonPayingContractsUseCase,
+    featureManager,
   ) {
     HedvigAppState(
       navController = navHostController,
@@ -80,6 +84,7 @@ internal fun rememberHedvigAppState(
       tabNotificationBadgeService = tabNotificationBadgeService,
       settingsDataStore = settingsDataStore,
       getOnlyHasNonPayingContractsUseCase = getOnlyHasNonPayingContractsUseCase,
+      featureManager = featureManager,
     )
   }
 }
@@ -92,6 +97,7 @@ internal class HedvigAppState(
   tabNotificationBadgeService: TabNotificationBadgeService,
   private val settingsDataStore: SettingsDataStore,
   getOnlyHasNonPayingContractsUseCase: Provider<GetOnlyHasNonPayingContractsUseCase>,
+  featureManager: FeatureManager,
 ) {
   val currentDestination: NavDestination?
     @Composable get() = navController.currentBackStackEntryAsState().value?.destination
@@ -113,6 +119,17 @@ internal class HedvigAppState(
         NavigationSuiteType.NavigationRail
       }
     }
+
+  /**
+   * App kill-switch. If this is enabled we must show nothing in the app but a button to try to update the app
+   */
+  val mustForceUpdate: StateFlow<Boolean> = featureManager
+    .isFeatureEnabled(Feature.UPDATE_NECESSARY)
+    .stateIn(
+      coroutineScope,
+      SharingStarted.WhileSubscribed(5.seconds),
+      false,
+    )
 
   val topLevelGraphs: StateFlow<ImmutableSet<TopLevelGraph>> = flow {
     val onlyHasNonPayingContracts = getOnlyHasNonPayingContractsUseCase.provide().invoke().getOrNull()

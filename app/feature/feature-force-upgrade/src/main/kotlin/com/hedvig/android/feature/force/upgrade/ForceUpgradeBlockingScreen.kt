@@ -1,10 +1,5 @@
-package com.hedvig.app.feature.sunsetting
+package com.hedvig.android.feature.force.upgrade
 
-import android.content.Context
-import android.content.Intent
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -18,30 +13,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.common.android.tryOpenPlayStore
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import hedvig.resources.R
 
-class ForceUpgradeActivity : ComponentActivity() {
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-
-    setContent {
-      HedvigTheme {
-        UpgradeApp(goToPlayStore = { tryOpenPlayStore() })
-      }
-    }
-  }
-
-  companion object {
-    fun newInstance(context: Context) = Intent(context, ForceUpgradeActivity::class.java).apply {
-      addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-      addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-    }
-  }
+@Composable
+fun ForceUpgradeBlockingScreen(goToPlayStore: () -> Unit) {
+  UpgradeApp(goToPlayStore)
 }
 
 @Composable
@@ -54,18 +36,20 @@ private fun UpgradeApp(goToPlayStore: () -> Unit) {
       .padding(16.dp),
   ) {
     Text(
-      text = stringResource(hedvig.resources.R.string.EMBARK_UPDATE_APP_TITLE),
+      text = stringResource(R.string.EMBARK_UPDATE_APP_TITLE),
       style = MaterialTheme.typography.headlineMedium,
     )
     Spacer(Modifier.height(16.dp))
     Text(
-      text = stringResource(hedvig.resources.R.string.EMBARK_UPDATE_APP_BODY),
+      text = stringResource(R.string.EMBARK_UPDATE_APP_BODY),
       textAlign = TextAlign.Center,
-      style = MaterialTheme.typography.bodyLarge,
+      style = MaterialTheme.typography.bodyLarge.copy(
+        lineBreak = LineBreak.Heading,
+      ),
     )
     Spacer(Modifier.height(16.dp))
     HedvigContainedSmallButton(
-      text = stringResource(hedvig.resources.R.string.EMBARK_UPDATE_APP_BUTTON),
+      text = stringResource(R.string.EMBARK_UPDATE_APP_BUTTON),
       onClick = goToPlayStore,
     )
   }

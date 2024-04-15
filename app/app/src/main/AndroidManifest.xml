@@ -54,7 +54,6 @@
           android:scheme="https" />
       </intent-filter>
     </activity>
-    <activity android:name=".feature.sunsetting.ForceUpgradeActivity" />
 
     <meta-data
       android:name="com.google.firebase.messaging.default_notification_icon"
