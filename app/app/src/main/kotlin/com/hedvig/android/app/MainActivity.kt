@@ -75,8 +75,8 @@ class MainActivity : AppCompatActivity() {
   private val tabNotificationBadgeService: TabNotificationBadgeService by inject()
   private val waitUntilAppReviewDialogShouldBeOpenedUseCase: WaitUntilAppReviewDialogShouldBeOpenedUseCase by inject()
   private val languageAndMarketLaunchCheckUseCase: LanguageAndMarketLaunchCheckUseCase by inject()
-
   private val activityNavigator: ActivityNavigator by inject()
+
   private var navController: NavController? = null
 
   // Shows the splash screen as long as the auth status or the demo mode status is still undetermined
@@ -110,21 +110,20 @@ class MainActivity : AppCompatActivity() {
     }
     val uiModeManager = getSystemService<UiModeManager>()
     lifecycleScope.launch {
-      launch {
-        lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
-          settingsDataStore.observeTheme().collectLatest { theme ->
-            applyTheme(theme, uiModeManager)
-          }
+      lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
+        settingsDataStore.observeTheme().collectLatest { theme ->
+          applyTheme(theme, uiModeManager)
         }
       }
-      launch {
-        lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
-          raceN(
-            { authTokenService.authStatus.first { it != null } },
-            { demoManager.isDemoMode().first { it == true } },
-          )
-          showSplash.update { false }
-        }
+    }
+    lifecycleScope.launch {
+      lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
+        if (showSplash.value == false) return@repeatOnLifecycle
+        raceN(
+          { authTokenService.authStatus.first { it != null } },
+          { demoManager.isDemoMode().first { it == true } },
+        )
+        showSplash.update { false }
       }
     }
 
