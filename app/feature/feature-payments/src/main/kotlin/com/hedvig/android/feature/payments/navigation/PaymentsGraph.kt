@@ -97,9 +97,6 @@ fun NavGraphBuilder.paymentsGraph(
     }
 
     composable<PaymentsDestinations.Forever>(
-      deepLinks = listOf(
-        navDeepLink { uriPattern = hedvigDeepLinkContainer.forever },
-      ),
       enterTransition = { MotionDefaults.fadeThroughEnter },
       exitTransition = { MotionDefaults.fadeThroughExit },
     ) {
