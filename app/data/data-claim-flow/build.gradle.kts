@@ -18,6 +18,7 @@ dependencies {
   implementation(libs.retrofitArrow)
   implementation(libs.retrofitKotlinxSerializationConverter)
   implementation(projects.apolloCore)
+  implementation(projects.apolloNetworkCacheManager)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.audioPlayerData)
   implementation(projects.coreAppReview)

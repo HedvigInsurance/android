@@ -4,12 +4,10 @@ query AvailableSelfServiceOnContracts {
       id
       currentAgreement {
         productVariant {
-          typeOfContract
           displayName
         }
       }
       supportsCoInsured
-      supportsMoving
       coInsured {
         hasMissingInfo
       }

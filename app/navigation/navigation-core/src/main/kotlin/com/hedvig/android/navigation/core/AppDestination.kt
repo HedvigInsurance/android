@@ -5,9 +5,6 @@ import kotlinx.serialization.Serializable
 
 sealed interface AppDestination : Destination {
   @Serializable
-  data object Login : AppDestination
-
-  @Serializable
   data class Chat(
     val chatContext: ChatContext? = null,
   ) : AppDestination {

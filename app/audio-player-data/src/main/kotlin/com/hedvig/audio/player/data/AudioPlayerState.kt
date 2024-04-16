@@ -1,7 +1,5 @@
 package com.hedvig.audio.player.data
 
-import com.hedvig.android.core.common.android.ProgressPercentage
-
 sealed interface AudioPlayerState {
   object Preparing : AudioPlayerState
 

@@ -31,6 +31,7 @@ dependencies {
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.moneta)
   implementation(projects.apolloCore)
+  implementation(projects.apolloNetworkCacheManager)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.authCorePublic)
   implementation(projects.composeWebview)

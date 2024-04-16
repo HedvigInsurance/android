@@ -5,7 +5,6 @@ import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 import androidx.core.content.getSystemService
-import com.hedvig.android.core.common.android.whenApiVersion
 
 fun setupNotificationChannel(
   context: Context,
@@ -13,8 +12,8 @@ fun setupNotificationChannel(
   channelName: String,
   channelDescription: String? = null,
 ) {
-  whenApiVersion(Build.VERSION_CODES.O) {
-    val notificationManager = context.getSystemService<NotificationManager>() ?: return@whenApiVersion
+  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+    val notificationManager = context.getSystemService<NotificationManager>() ?: return
     notificationManager.createNotificationChannel(
       NotificationChannel(
         channelId,

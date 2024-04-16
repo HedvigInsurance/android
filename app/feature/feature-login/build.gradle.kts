@@ -23,6 +23,7 @@ dependencies {
   implementation(projects.apolloCore)
   implementation(projects.authCorePublic)
   implementation(projects.authCoreTest)
+  implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDemoMode)
   implementation(projects.coreDesignSystem)
@@ -45,7 +46,9 @@ dependencies {
   testImplementation(projects.authCoreTest)
   testImplementation(projects.authEventCore)
   testImplementation(projects.authEventFake)
+  testImplementation(projects.coreCommonTest)
   testImplementation(projects.coreDatastoreTest)
   testImplementation(projects.loggingTest)
+  testImplementation(projects.marketTest)
   testImplementation(projects.moleculeTest)
 }

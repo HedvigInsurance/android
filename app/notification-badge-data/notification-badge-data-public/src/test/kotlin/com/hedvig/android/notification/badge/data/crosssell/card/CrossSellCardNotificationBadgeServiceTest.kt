@@ -29,7 +29,7 @@ class CrossSellCardNotificationBadgeServiceTest {
 
   @Test
   fun `When backend returns no cross sells, show no badge`() = runTest {
-    val notificationBadgeService = FakeNotificationBadgeStorage(this)
+    val notificationBadgeService = FakeNotificationBadgeStorage(backgroundScope)
     val getCrossSellsContractTypesUseCase = FakeGetCrossSellIdentifiersUseCase()
     val service = crossSellCardNotificationBadgeService(
       notificationBadgeStorage = notificationBadgeService,
@@ -43,7 +43,7 @@ class CrossSellCardNotificationBadgeServiceTest {
 
   @Test
   fun `When backend returns a cross sell and it's not seen, show card badge`() = runTest {
-    val notificationBadgeService = FakeNotificationBadgeStorage(this)
+    val notificationBadgeService = FakeNotificationBadgeStorage(backgroundScope)
     val getCrossSellsContractTypesUseCase = FakeGetCrossSellIdentifiersUseCase {
       setOf(CrossSellIdentifier("SE_ACCIDENT"))
     }
@@ -60,7 +60,7 @@ class CrossSellCardNotificationBadgeServiceTest {
   @Test
   fun `When backend returns a cross sell but it's seen, show no badge`() = runTest {
     val seAccident = CrossSellIdentifier("SE_ACCIDENT")
-    val notificationBadgeService = FakeNotificationBadgeStorage(this).apply {
+    val notificationBadgeService = FakeNotificationBadgeStorage(backgroundScope).apply {
       setValue(
         NotificationBadge.CrossSellInsuranceFragmentCard,
         setOf(seAccident.rawValue),
@@ -83,7 +83,7 @@ class CrossSellCardNotificationBadgeServiceTest {
   fun `When backend returns two cross sells but they're both seen, show no badge`() = runTest {
     val seAccident = CrossSellIdentifier("SE_ACCIDENT")
     val seCarFull = CrossSellIdentifier("SE_CAR_FULL")
-    val notificationBadgeService = FakeNotificationBadgeStorage(this).apply {
+    val notificationBadgeService = FakeNotificationBadgeStorage(backgroundScope).apply {
       setValue(
         NotificationBadge.CrossSellInsuranceFragmentCard,
         setOf(
@@ -109,7 +109,7 @@ class CrossSellCardNotificationBadgeServiceTest {
   fun `When backend returns two cross sells but only one is seen, show badge`() = runTest {
     val seAccident = CrossSellIdentifier("SE_ACCIDENT")
     val seCarFull = CrossSellIdentifier("SE_CAR_FULL")
-    val notificationBadgeService = FakeNotificationBadgeStorage(this).apply {
+    val notificationBadgeService = FakeNotificationBadgeStorage(backgroundScope).apply {
       setValue(
         NotificationBadge.CrossSellInsuranceFragmentCard,
         setOf(seAccident.rawValue),
@@ -133,7 +133,7 @@ class CrossSellCardNotificationBadgeServiceTest {
     val seAccident = CrossSellIdentifier("SE_ACCIDENT")
     val seCarFull = CrossSellIdentifier("SE_CAR_FULL")
     val seApartmentRent = CrossSellIdentifier("SE_APARTMENT_RENT")
-    val notificationBadgeService = FakeNotificationBadgeStorage(this).apply {
+    val notificationBadgeService = FakeNotificationBadgeStorage(backgroundScope).apply {
       setValue(
         NotificationBadge.CrossSellInsuranceFragmentCard,
         setOf(
@@ -162,7 +162,7 @@ class CrossSellCardNotificationBadgeServiceTest {
     val seCarFull = CrossSellIdentifier("SE_CAR_FULL")
     val seHouse = CrossSellIdentifier("SE_HOUSE")
     val seQasaShortTermRental = CrossSellIdentifier("SE_QASA_SHORT_TERM_RENTAL")
-    val notificationBadgeService = FakeNotificationBadgeStorage(this).apply {
+    val notificationBadgeService = FakeNotificationBadgeStorage(backgroundScope).apply {
       setValue(
         NotificationBadge.BottomNav.CrossSellOnInsuranceScreen,
         setOf(
@@ -189,7 +189,7 @@ class CrossSellCardNotificationBadgeServiceTest {
   @Test
   fun `When a notification is shown, when it is marked as seen it no longer shows`() = runTest {
     val seAccident = CrossSellIdentifier("SE_ACCIDENT")
-    val notificationBadgeService = FakeNotificationBadgeStorage(this)
+    val notificationBadgeService = FakeNotificationBadgeStorage(backgroundScope)
     val getCrossSellsContractTypesUseCase = FakeGetCrossSellIdentifiersUseCase {
       setOf(seAccident)
     }
@@ -210,7 +210,7 @@ class CrossSellCardNotificationBadgeServiceTest {
   @Test
   fun `When an unknown cross sell exists, the notification still does not show`() = runTest {
     val unknownCrossSellIdentifier = CrossSellIdentifier("UNKNOWN__")
-    val notificationBadgeService = FakeNotificationBadgeStorage(this)
+    val notificationBadgeService = FakeNotificationBadgeStorage(backgroundScope)
     val getCrossSellsContractTypesUseCase = FakeGetCrossSellIdentifiersUseCase {
       setOf(unknownCrossSellIdentifier)
     }

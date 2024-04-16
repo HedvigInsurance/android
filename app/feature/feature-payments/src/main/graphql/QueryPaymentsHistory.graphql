@@ -1,0 +1,29 @@
+query PaymentHistoryWithDetails {
+  currentMember {
+    pastCharges {
+      ...MemberChargeFragment
+    }
+    futureCharge {
+      ...MemberChargeFragment
+    }
+    redeemedCampaigns {
+      code
+      description
+      expiresAt
+      id
+      onlyApplicableToContracts {
+        exposureDisplayName
+      }
+    }
+    referralInformation {
+      code
+    }
+    paymentInformation {
+      status
+      connection {
+        displayName
+        descriptor
+      }
+    }
+  }
+}

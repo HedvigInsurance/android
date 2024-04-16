@@ -13,7 +13,6 @@ import com.hedvig.android.feature.chat.data.ChatRepositoryDemo
 import com.hedvig.android.feature.chat.data.ChatRepositoryImpl
 import com.hedvig.android.feature.chat.data.GetChatRepositoryProvider
 import com.hedvig.android.navigation.core.AppDestination
-import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.datetime.Clock
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -21,6 +20,7 @@ import okhttp3.OkHttpClient
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import retrofit2.Retrofit
+import retrofit2.converter.kotlinx.serialization.asConverterFactory
 
 val chatModule = module {
   viewModel<ChatViewModel> { parametersHolder ->

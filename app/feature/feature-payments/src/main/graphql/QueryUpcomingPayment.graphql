@@ -2,41 +2,6 @@ query UpcomingPayment {
   currentMember {
     futureCharge {
       ...MemberChargeFragment
-    }    pastCharges {
-      ...MemberChargeFragment
-    }
-    referralInformation {
-      code
-      monthlyDiscountPerReferral {
-        amount
-        currencyCode
-      }
-      referrals {
-        name
-        status
-        activeDiscount {
-          amount
-          currencyCode
-        }
-      }
-      referredBy {
-        name
-        status
-        activeDiscount {
-          amount
-          currencyCode
-        }
-      }
-    }
-    redeemedCampaigns {
-      code
-      description
-      expiresAt
-      id
-      onlyApplicableToContracts {
-        exposureDisplayName
-      }
-      type
     }
     paymentInformation {
       status
@@ -71,9 +36,6 @@ fragment MemberChargeFragment on MemberCharge {
     }
   }
   date
-  discount {
-    ...MoneyFragment
-  }
   discountBreakdown {
     code
     isReferral
@@ -88,7 +50,6 @@ fragment MemberChargeFragment on MemberCharge {
   net {
     ...MoneyFragment
   }
-  pastFailedChargeIds
   status
   carriedAdjustment {
    ...MoneyFragment

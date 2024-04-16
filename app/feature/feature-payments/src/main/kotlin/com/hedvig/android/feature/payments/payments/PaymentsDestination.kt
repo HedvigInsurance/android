@@ -64,9 +64,6 @@ import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
 import com.hedvig.android.core.ui.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.uidata.UiMoney
-import com.hedvig.android.feature.payments.data.Discount
-import com.hedvig.android.feature.payments.data.MemberCharge
-import com.hedvig.android.feature.payments.data.PaymentOverview
 import com.hedvig.android.pullrefresh.PullRefreshDefaults
 import com.hedvig.android.pullrefresh.PullRefreshIndicator
 import com.hedvig.android.pullrefresh.rememberPullRefreshState
@@ -81,9 +78,9 @@ import octopus.type.CurrencyCode
 @Composable
 internal fun PaymentsDestination(
   viewModel: PaymentsViewModel,
-  onUpcomingPaymentClicked: (MemberCharge, PaymentOverview) -> Unit,
-  onDiscountClicked: (List<Discount>) -> Unit,
-  onPaymentHistoryClicked: (PaymentOverview) -> Unit,
+  onUpcomingPaymentClicked: (memberChargeId: String) -> Unit,
+  onDiscountClicked: () -> Unit,
+  onPaymentHistoryClicked: () -> Unit,
   onChangeBankAccount: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -100,10 +97,10 @@ internal fun PaymentsDestination(
 @Composable
 private fun PaymentsScreen(
   uiState: PaymentsUiState,
-  onUpcomingPaymentClicked: (MemberCharge, PaymentOverview) -> Unit,
+  onUpcomingPaymentClicked: (memberChargeId: String) -> Unit,
   onChangeBankAccount: () -> Unit,
-  onDiscountClicked: (List<Discount>) -> Unit,
-  onPaymentHistoryClicked: (PaymentOverview) -> Unit,
+  onDiscountClicked: () -> Unit,
+  onPaymentHistoryClicked: () -> Unit,
   onRetry: () -> Unit,
 ) {
   val systemBarInsetTopDp = with(LocalDensity.current) {
@@ -144,13 +141,12 @@ private fun PaymentsScreen(
                 onUpcomingPaymentClicked(
                   // `onUpcomingPaymentClicked` is never called with a null memberCharge
                   //  Can be improved by not getting all the content here and passing it as args to the other screens
-                  uiState.contentForOtherScreens.memberCharge!!,
-                  uiState.contentForOtherScreens.paymentOverview,
+                  uiState.upcomingPayment!!.id,
                 )
               },
               onChangeBankAccount = onChangeBankAccount,
-              onDiscountClicked = { onDiscountClicked(uiState.contentForOtherScreens.discountList) },
-              onPaymentHistoryClicked = { onPaymentHistoryClicked(uiState.contentForOtherScreens.paymentOverview) },
+              onDiscountClicked = onDiscountClicked,
+              onPaymentHistoryClicked = onPaymentHistoryClicked,
             )
             Spacer(Modifier.height(16.dp))
           }
@@ -430,7 +426,7 @@ private fun PreviewPaymentScreen(
     Surface(color = MaterialTheme.colorScheme.background) {
       PaymentsScreen(
         uiState = uiState,
-        { _, _ -> },
+        { _ -> },
         {},
         {},
         {},
@@ -442,11 +438,6 @@ private fun PreviewPaymentScreen(
 
 private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<PaymentsUiState>(
   buildList {
-    val contentForOtherScreens = PaymentsUiState.Content.ContentForOtherScreens(
-      PaymentOverview(null, null, emptyList(), null),
-      null,
-      emptyList(),
-    )
     add(PaymentsUiState.Error)
     add(
       PaymentsUiState.Content(
@@ -454,7 +445,6 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         upcomingPayment = null,
         upcomingPaymentInfo = null,
         connectedPaymentInfo = PaymentsUiState.Content.ConnectedPaymentInfo.Connected("Card", "****1234"),
-        contentForOtherScreens,
       ),
     )
     add(
@@ -463,10 +453,10 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         upcomingPayment = PaymentsUiState.Content.UpcomingPayment(
           UiMoney(100.0, CurrencyCode.SEK),
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
+          "rdg",
         ),
         upcomingPaymentInfo = null,
         connectedPaymentInfo = PaymentsUiState.Content.ConnectedPaymentInfo.Connected("Card", "****1234"),
-        contentForOtherScreens,
       ),
     )
     add(
@@ -475,10 +465,10 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         upcomingPayment = PaymentsUiState.Content.UpcomingPayment(
           UiMoney(100.0, CurrencyCode.SEK),
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
+          "iky",
         ),
         upcomingPaymentInfo = PaymentsUiState.Content.UpcomingPaymentInfo.InProgress,
         connectedPaymentInfo = PaymentsUiState.Content.ConnectedPaymentInfo.Connected("Card", "****1234"),
-        contentForOtherScreens,
       ),
     )
     add(
@@ -487,13 +477,13 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         upcomingPayment = PaymentsUiState.Content.UpcomingPayment(
           UiMoney(100.0, CurrencyCode.SEK),
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
+          "pwe",
         ),
         upcomingPaymentInfo = PaymentsUiState.Content.UpcomingPaymentInfo.PaymentFailed(
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
           Clock.System.now().minus(30.days).toLocalDateTime(TimeZone.UTC).date,
         ),
         connectedPaymentInfo = PaymentsUiState.Content.ConnectedPaymentInfo.Connected("Card", "****1234"),
-        contentForOtherScreens,
       ),
     )
     add(
@@ -502,10 +492,10 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         upcomingPayment = PaymentsUiState.Content.UpcomingPayment(
           UiMoney(100.0, CurrencyCode.SEK),
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
+          "fkjse",
         ),
         upcomingPaymentInfo = null,
         connectedPaymentInfo = PaymentsUiState.Content.ConnectedPaymentInfo.Pending,
-        contentForOtherScreens,
       ),
     )
     add(
@@ -514,10 +504,10 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         upcomingPayment = PaymentsUiState.Content.UpcomingPayment(
           UiMoney(100.0, CurrencyCode.SEK),
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
+          "qrdfgeth",
         ),
         upcomingPaymentInfo = null,
         connectedPaymentInfo = PaymentsUiState.Content.ConnectedPaymentInfo.NotConnected(null),
-        contentForOtherScreens,
       ),
     )
     add(
@@ -526,13 +516,13 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         upcomingPayment = PaymentsUiState.Content.UpcomingPayment(
           UiMoney(100.0, CurrencyCode.SEK),
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
+          "w345423t6",
         ),
         upcomingPaymentInfo = PaymentsUiState.Content.UpcomingPaymentInfo.PaymentFailed(
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
           Clock.System.now().minus(30.days).toLocalDateTime(TimeZone.UTC).date,
         ),
         connectedPaymentInfo = PaymentsUiState.Content.ConnectedPaymentInfo.NotConnected(null),
-        contentForOtherScreens,
       ),
     )
     add(
@@ -541,6 +531,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         upcomingPayment = PaymentsUiState.Content.UpcomingPayment(
           UiMoney(100.0, CurrencyCode.SEK),
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
+          "42345",
         ),
         upcomingPaymentInfo = PaymentsUiState.Content.UpcomingPaymentInfo.PaymentFailed(
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
@@ -549,7 +540,6 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         connectedPaymentInfo = PaymentsUiState.Content.ConnectedPaymentInfo.NotConnected(
           Clock.System.now().plus(30.days).toLocalDateTime(TimeZone.UTC).date,
         ),
-        contentForOtherScreens,
       ),
     )
   },

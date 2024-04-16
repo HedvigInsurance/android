@@ -1,20 +1,20 @@
 package com.hedvig.android.feature.payments.data
 
+import com.hedvig.android.core.uidata.UiMoney
+import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
 @Serializable
 internal data class PaymentOverview(
-  val memberCharge: MemberCharge?,
-  val pastCharges: List<MemberCharge>?,
-  val discounts: List<Discount>,
+  val memberChargeShortInfo: MemberChargeShortInfo?,
   val paymentConnection: PaymentConnection?,
-) {
-  fun getNextCharge(selectedMemberCharge: MemberCharge): MemberCharge? {
-    val index = (pastCharges?.indexOf(selectedMemberCharge) ?: 0) + 1
-    return if (pastCharges != null && index > pastCharges.size - 1) {
-      memberCharge
-    } else {
-      pastCharges?.get(index)
-    }
-  }
-}
+)
+
+@Serializable
+internal data class MemberChargeShortInfo(
+  val grossAmount: UiMoney,
+  val dueDate: LocalDate,
+  val id: String,
+  val status: MemberCharge.MemberChargeStatus,
+  val failedCharge: MemberCharge.FailedCharge?,
+)

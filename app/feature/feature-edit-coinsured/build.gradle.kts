@@ -30,6 +30,7 @@ dependencies {
   implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.apolloCore)
+  implementation(projects.apolloNetworkCacheManager)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDemoMode)
@@ -44,7 +45,7 @@ dependencies {
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
   implementation(projects.coreAppReview)
-  
+
   testImplementation(libs.apollo.testingSupport)
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
@@ -61,7 +62,6 @@ dependencies {
   testImplementation(projects.memberRemindersTest)
   testImplementation(projects.moleculeTest)
   testImplementation(projects.testClock)
-
 }
 
 apollo {

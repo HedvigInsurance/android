@@ -11,12 +11,12 @@ import com.hedvig.android.data.claimflow.ClaimFlowContextStorage
 import com.hedvig.android.data.claimflow.ClaimFlowRepository
 import com.hedvig.android.data.claimflow.ClaimFlowRepositoryImpl
 import com.hedvig.android.data.claimflow.OdysseyService
-import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import org.koin.dsl.module
 import retrofit2.Retrofit
+import retrofit2.converter.kotlinx.serialization.asConverterFactory
 
 val claimFlowDataModule = module {
   single<ClaimFlowRepository> {
