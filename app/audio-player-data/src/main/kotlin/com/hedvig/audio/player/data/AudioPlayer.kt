@@ -1,6 +1,5 @@
 package com.hedvig.audio.player.data
 
-import com.hedvig.android.core.common.android.ProgressPercentage
 import java.io.Closeable
 import kotlinx.coroutines.flow.StateFlow
 

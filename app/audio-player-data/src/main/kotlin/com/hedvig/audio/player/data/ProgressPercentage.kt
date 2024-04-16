@@ -1,7 +1,6 @@
-package com.hedvig.android.core.common.android
+package com.hedvig.audio.player.data
 
 import androidx.annotation.FloatRange
-import androidx.compose.ui.unit.Dp
 
 @JvmInline
 value class ProgressPercentage(
@@ -23,7 +22,7 @@ value class ProgressPercentage(
       return ProgressPercentage(float.coerceIn(0f, 1f))
     }
 
-    fun of(current: Dp, target: Dp): ProgressPercentage {
+    fun of(current: Float, target: Float): ProgressPercentage {
       return ProgressPercentage(
         (current / target).coerceIn(0f, 1f),
       )

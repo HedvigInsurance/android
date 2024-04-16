@@ -5,7 +5,6 @@ import android.os.Build
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import arrow.core.Either
-import com.hedvig.android.core.common.android.whenApiVersion
 import com.hedvig.android.feature.chat.data.ChatRepository
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
@@ -39,7 +38,7 @@ class ReplyWorker(
       is Either.Right -> {
         val notificationId = inputData.getInt(ChatMessageNotificationReceiver.NOTIFICATION_ID, 0)
 
-        whenApiVersion(Build.VERSION_CODES.N) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
           chatNotificationSender.addReplyToExistingChatNotification(
             context,
             notificationId,
