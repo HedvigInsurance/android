@@ -231,7 +231,7 @@ private fun ForeverSection(
               ClipData.newPlainText(null, foreverInformation.foreverCode),
             )
           },
-          modifier = Modifier.wrapContentSize(Alignment.TopStart)
+          modifier = Modifier.wrapContentSize(Alignment.TopStart),
         ) {
           Text(
             text = foreverInformation.foreverCode,
