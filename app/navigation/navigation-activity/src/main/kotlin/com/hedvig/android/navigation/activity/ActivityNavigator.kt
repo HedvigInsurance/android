@@ -1,36 +1,20 @@
 package com.hedvig.android.navigation.activity
 
-import android.app.Application
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
-import com.hedvig.android.core.common.android.tryOpenPlayStore
+import android.widget.Toast
+import hedvig.resources.R
 
 interface ActivityNavigator {
-  fun navigateToMarketingActivity()
-
   fun openAppSettings(context: Context)
-
-  fun navigateToLoggedInScreen(context: Context, clearBackstack: Boolean = true)
 
   fun tryOpenPlayStore(context: Context)
 }
 
-class ActivityNavigatorImpl(
-  private val application: Application,
-  private val loggedOutActivityClass: Class<*>,
-  private val buildConfigApplicationId: String,
-  private val navigateToLoggedInActivity: Context.(clearBackstack: Boolean) -> Unit,
-) : ActivityNavigator {
-  override fun navigateToMarketingActivity() {
-    application.startActivity(
-      Intent(application, loggedOutActivityClass)
-        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK),
-    )
-  }
-
+class ActivityNavigatorImpl(private val buildConfigApplicationId: String) : ActivityNavigator {
   override fun openAppSettings(context: Context) {
     val permissionActivity = Intent(
       Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
@@ -43,11 +27,34 @@ class ActivityNavigatorImpl(
     context.startActivity(Intent(Intent(Settings.ACTION_SETTINGS)))
   }
 
-  override fun navigateToLoggedInScreen(context: Context, clearBackstack: Boolean) {
-    context.navigateToLoggedInActivity(clearBackstack)
-  }
-
   override fun tryOpenPlayStore(context: Context) {
     context.tryOpenPlayStore()
   }
+}
+
+private fun Context.tryOpenPlayStore() {
+  if (canOpenPlayStore()) {
+    openPlayStore()
+  } else {
+    Toast.makeText(
+      this,
+      getString(R.string.TOAST_PLAY_STORE_MISSING_ON_DEVICE),
+      Toast.LENGTH_LONG,
+    ).show()
+  }
+}
+
+@SuppressLint("QueryPermissionsNeeded")
+private fun Context.canOpenPlayStore() = playStoreIntent().resolveActivity(packageManager) != null
+
+private fun Context.playStoreIntent() = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$packageName"))
+
+private fun Context.openPlayStore() {
+  val intent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$packageName"))
+  intent.flags = (
+    Intent.FLAG_ACTIVITY_NO_HISTORY
+      or Intent.FLAG_ACTIVITY_MULTIPLE_TASK
+      or Intent.FLAG_ACTIVITY_NEW_DOCUMENT
+  )
+  startActivity(intent)
 }
