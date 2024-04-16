@@ -19,12 +19,11 @@ import com.apollographql.apollo3.cache.normalized.api.NormalizedCacheFactory
 import com.apollographql.apollo3.cache.normalized.normalizedCache
 import com.apollographql.apollo3.interceptor.ApolloInterceptor
 import com.apollographql.apollo3.network.okHttpClient
-import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.auth.listeners.di.apolloAuthListenersModule
 import com.hedvig.android.apollo.auth.listeners.di.languageAuthListenersModule
+import com.hedvig.android.apollo.di.networkCacheManagerModule
 import com.hedvig.android.app.apollo.DatadogInterceptor
 import com.hedvig.android.app.apollo.DeviceIdInterceptor
-import com.hedvig.android.app.apollo.NetworkCacheManagerImpl
 import com.hedvig.android.app.chat.service.ChatNotificationSender
 import com.hedvig.android.app.chat.service.ReplyWorker
 import com.hedvig.android.app.notification.senders.CrossSellNotificationSender
@@ -218,10 +217,6 @@ private val clockModule = module {
   single<kotlinx.datetime.TimeZone> { kotlinx.datetime.TimeZone.currentSystemDefault() }
 }
 
-private val cacheManagerModule = module {
-  single<NetworkCacheManager> { NetworkCacheManagerImpl(get<ApolloClient>()) }
-}
-
 private val sharedPreferencesModule = module {
   single<SharedPreferences> {
     get<Context>().getSharedPreferences(
@@ -283,7 +278,6 @@ val applicationModule = module {
       appModule,
       authModule,
       buildConstantsModule,
-      cacheManagerModule,
       changeAddressModule,
       chatModule,
       chatReadTimestampModule,
@@ -317,6 +311,7 @@ val applicationModule = module {
       loginModule,
       marketManagerModule,
       memberRemindersModule,
+      networkCacheManagerModule,
       networkModule,
       notificationBadgeModule,
       notificationModule,
@@ -327,11 +322,11 @@ val applicationModule = module {
       settingsDatastoreModule,
       sharedPreferencesModule,
       terminateInsuranceModule,
+      terminationDataModule,
       trackingDatadogModule,
       travelCertificateDataModule,
       travelCertificateModule,
       workManagerModule,
-      terminationDataModule,
     ),
   )
 }

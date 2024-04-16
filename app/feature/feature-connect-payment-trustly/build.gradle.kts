@@ -24,6 +24,7 @@ dependencies {
   implementation(libs.koin.compose)
   implementation(libs.koin.core)
   implementation(projects.apolloCore)
+  implementation(projects.apolloNetworkCacheManager)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.composeWebview)
   implementation(projects.coreBuildConstants)
