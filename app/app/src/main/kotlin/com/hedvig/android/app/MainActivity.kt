@@ -6,11 +6,7 @@ import android.app.UiModeManager.MODE_NIGHT_CUSTOM
 import android.app.assist.AssistContent
 import android.content.Context
 import android.content.Intent
-import android.content.pm.LabeledIntent
-import android.content.pm.PackageManager
-import android.content.pm.ResolveInfo
 import android.graphics.Color
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.SystemBarStyle
@@ -31,6 +27,7 @@ import arrow.fx.coroutines.raceN
 import coil.ImageLoader
 import com.google.android.play.core.review.ReviewException
 import com.google.android.play.core.review.ReviewManagerFactory
+import com.hedvig.android.app.externalnavigator.ExternalNavigatorImpl
 import com.hedvig.android.app.ui.HedvigApp
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.appreview.WaitUntilAppReviewDialogShouldBeOpenedUseCase
@@ -45,13 +42,12 @@ import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.MarketManager
-import com.hedvig.android.navigation.activity.ExternalNavigator
+import com.hedvig.android.navigation.activity.ExternalNavigatorImpl
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.allDeepLinkUriPatterns
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
 import com.hedvig.android.theme.Theme
 import com.stylianosgakis.navigation.recents.url.sharing.provideAssistContent
-import hedvig.resources.R
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -75,7 +71,6 @@ class MainActivity : AppCompatActivity() {
   private val tabNotificationBadgeService: TabNotificationBadgeService by inject()
   private val waitUntilAppReviewDialogShouldBeOpenedUseCase: WaitUntilAppReviewDialogShouldBeOpenedUseCase by inject()
   private val languageAndMarketLaunchCheckUseCase: LanguageAndMarketLaunchCheckUseCase by inject()
-  private val externalNavigator: ExternalNavigator by inject()
 
   private var navController: NavController? = null
 
@@ -127,6 +122,7 @@ class MainActivity : AppCompatActivity() {
       }
     }
 
+    val externalNavigator = ExternalNavigatorImpl(this, hedvigBuildConstants.appId)
     setContent {
       val windowSizeClass = calculateWindowSizeClass(this)
       val navHostController = rememberNavController().also { navController = it }
@@ -138,12 +134,12 @@ class MainActivity : AppCompatActivity() {
       }
       HedvigApp(
         navHostController = navHostController,
+        windowSizeClass = windowSizeClass,
         tabNotificationBadgeService = tabNotificationBadgeService,
         settingsDataStore = settingsDataStore,
         getOnlyHasNonPayingContractsUseCase = getOnlyHasNonPayingContractsUseCase,
         featureManager = featureManager,
         splashIsRemovedSignal = splashIsRemovedSignal,
-        externalNavigator = externalNavigator,
         authTokenService = authTokenService,
         demoManager = demoManager,
         hedvigDeepLinkContainer = hedvigDeepLinkContainer,
@@ -160,10 +156,9 @@ class MainActivity : AppCompatActivity() {
         },
         shouldShowRequestPermissionRationale = ::shouldShowRequestPermissionRationale,
         goToPlayStore = { externalNavigator.tryOpenPlayStore(this) },
-        openEmailApp = { openEmail(getString(R.string.login_bottom_sheet_view_code)) },
         finishApp = ::finish,
         tryShowAppStoreReviewDialog = ::tryShowAppStoreReviewDialog,
-        windowSizeClass = windowSizeClass,
+        externalNavigator = externalNavigator,
       )
     }
   }
@@ -251,36 +246,3 @@ private fun Activity.tryShowAppStoreReviewDialog() {
     }
   }
 }
-
-private fun Activity.openEmail(title: String) {
-  val emailIntent = Intent(Intent.ACTION_VIEW, Uri.parse("mailto:"))
-
-  val resInfo = packageManager.queryIntentActivities(emailIntent, 0)
-  if (resInfo.isNotEmpty()) {
-    // First create an intent with only the package name of the first registered email app
-    // and build a picked based on it
-    val intentChooser = packageManager.getLaunchIntentForPackage(
-      resInfo.first().activityInfo.packageName,
-    )
-    val openInChooser = Intent.createChooser(intentChooser, title)
-
-    try {
-      // Then create a list of LabeledIntent for the rest of the registered email apps and add to the picker selection
-      val emailApps = resInfo.toLabeledIntentArray(packageManager)
-      openInChooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, emailApps)
-    } catch (_: NullPointerException) {
-      // OnePlus crash prevention. Simply go with the initial email app found, don't give more options.
-      // console.firebase.google.com/u/0/project/hedvig-app/crashlytics/app/android:com.hedvig.app/issues/06823149a4ff8a411f4508e0cbfae9f4
-    }
-
-    startActivity(openInChooser)
-  } else {
-    logcat(LogPriority.ERROR) { "No email app found" }
-  }
-}
-
-private fun List<ResolveInfo>.toLabeledIntentArray(packageManager: PackageManager): Array<LabeledIntent> = map {
-  val packageName = it.activityInfo.packageName
-  val intent = packageManager.getLaunchIntentForPackage(packageName)
-  LabeledIntent(intent, packageName, it.loadLabel(packageManager), it.icon)
-}.toTypedArray()

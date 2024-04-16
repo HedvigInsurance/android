@@ -53,12 +53,12 @@ import kotlinx.coroutines.flow.receiveAsFlow
 @Composable
 internal fun HedvigApp(
   navHostController: NavHostController,
+  windowSizeClass: WindowSizeClass,
   tabNotificationBadgeService: TabNotificationBadgeService,
   settingsDataStore: SettingsDataStore,
   getOnlyHasNonPayingContractsUseCase: Provider<GetOnlyHasNonPayingContractsUseCase>,
   featureManager: FeatureManager,
   splashIsRemovedSignal: Channel<Unit>,
-  externalNavigator: ExternalNavigator,
   authTokenService: AuthTokenService,
   demoManager: DemoManager,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
@@ -70,10 +70,9 @@ internal fun HedvigApp(
   enableEdgeToEdge: (SystemBarStyle) -> Unit,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   goToPlayStore: () -> Unit,
-  openEmailApp: () -> Unit,
   finishApp: () -> Unit,
   tryShowAppStoreReviewDialog: () -> Unit,
-  windowSizeClass: WindowSizeClass,
+  externalNavigator: ExternalNavigator,
 ) {
   val hedvigAppState = rememberHedvigAppState(
     windowSizeClass = windowSizeClass,
@@ -109,7 +108,6 @@ internal fun HedvigApp(
           externalNavigator = externalNavigator,
           shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
           openUrl = deepLinkFirstUriHandler::openUri,
-          onOpenEmailApp = openEmailApp,
           finishApp = finishApp,
           market = marketManager.market.collectAsStateWithLifecycle().value,
           imageLoader = imageLoader,

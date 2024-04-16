@@ -65,7 +65,6 @@ internal fun HedvigNavHost(
   finishApp: () -> Unit,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   openUrl: (String) -> Unit,
-  onOpenEmailApp: () -> Unit,
   imageLoader: ImageLoader,
   market: Market,
   languageService: LanguageService,
@@ -101,7 +100,7 @@ internal fun HedvigNavHost(
       appVersionName = hedvigBuildConstants.appVersionName,
       urlBaseWeb = hedvigBuildConstants.urlBaseWeb,
       openUrl = openUrl,
-      onOpenEmailApp = onOpenEmailApp,
+      onOpenEmailApp = externalNavigator::openEmailApp,
       startLoggedInActivity = hedvigAppState::navigateToLoggedIn,
     )
     homeGraph(
