@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.forever.data
+package com.hedvig.android.shared.foreverui.ui.data
 
 import arrow.core.Either
 import arrow.core.raise.either
@@ -8,16 +8,16 @@ import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.feature.forever.data.ForeverRepository.ReferralError
+import com.hedvig.android.shared.foreverui.ui.data.ForeverRepository.ReferralError
+import octopus.FullReferralsQuery
 import octopus.MemberReferralInformationCodeUpdateMutation
-import octopus.ReferralsQuery
 
 internal class ForeverRepositoryImpl(
   private val apolloClient: ApolloClient,
 ) : ForeverRepository {
-  private val referralsQuery = ReferralsQuery()
+  private val referralsQuery = FullReferralsQuery()
 
-  override suspend fun getReferralsData(): Either<ErrorMessage, ReferralsQuery.Data> = apolloClient
+  override suspend fun getReferralsData(): Either<ErrorMessage, FullReferralsQuery.Data> = apolloClient
     .query(referralsQuery)
     .fetchPolicy(FetchPolicy.NetworkOnly)
     .safeExecute()

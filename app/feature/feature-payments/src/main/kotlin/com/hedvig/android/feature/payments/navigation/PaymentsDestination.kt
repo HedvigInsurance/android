@@ -22,4 +22,7 @@ internal sealed interface PaymentsDestinations : Destination {
 
   @Serializable
   data object Discounts : PaymentsDestinations
+
+  @Serializable
+  data object Forever : PaymentsDestinations
 }

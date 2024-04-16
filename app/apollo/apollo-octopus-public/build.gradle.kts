@@ -40,7 +40,10 @@ apollo { // Octopus client
       "ChatMessage",
       "ChatMessageSender",
       "MemberChargeContractBreakdownItem",
-      "MemberCharge"
+      "MemberCharge",
+      "MemberInsuranceCost",
+      "MemberReferral",
+      "MemberReferralInformation"
     ))
 
     // https://www.apollographql.com/docs/android/advanced/operation-variables/#make-nullable-variables-non-optional

@@ -51,7 +51,6 @@ import com.hedvig.android.navigation.activity.ActivityNavigator
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
-import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.app.BuildConfig
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigate
@@ -212,9 +211,8 @@ internal fun HedvigNavHost(
       navigator = navigator,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       navigateToConnectPayment = navigateToConnectPayment,
-      navigateToForever = {
-        hedvigAppState.navigateToTopLevelGraph(TopLevelGraph.Forever)
-      },
+      languageService = languageService,
+      hedvigBuildConstants = hedvigBuildConstants,
     )
     profileGraph(
       nestedGraphs = {},

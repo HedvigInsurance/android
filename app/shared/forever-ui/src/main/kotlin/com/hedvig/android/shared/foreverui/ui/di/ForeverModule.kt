@@ -1,11 +1,11 @@
-package com.hedvig.android.feature.forever.di
+package com.hedvig.android.shared.foreverui.ui.di
 
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.core.demomode.DemoManager
-import com.hedvig.android.feature.forever.ForeverViewModel
-import com.hedvig.android.feature.forever.data.ForeverRepositoryDemo
-import com.hedvig.android.feature.forever.data.ForeverRepositoryImpl
-import com.hedvig.android.feature.forever.data.ForeverRepositoryProvider
+import com.hedvig.android.shared.foreverui.ui.data.ForeverRepositoryDemo
+import com.hedvig.android.shared.foreverui.ui.data.ForeverRepositoryImpl
+import com.hedvig.android.shared.foreverui.ui.data.ForeverRepositoryProvider
+import com.hedvig.android.shared.foreverui.ui.ui.ForeverViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 

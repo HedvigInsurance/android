@@ -224,6 +224,7 @@ dependencies {
   implementation(projects.trackingDatadog)
   implementation(projects.coreAppReview)
   implementation(projects.dataTermination)
+  implementation(projects.foreverUi)
 
   debugImplementation(libs.androidx.compose.uiTestManifest)
   debugImplementation(libs.androidx.compose.uiTooling)

@@ -1,11 +1,11 @@
-package com.hedvig.android.feature.forever.data
+package com.hedvig.android.shared.foreverui.ui.data
 
 import arrow.core.Either
 import com.hedvig.android.core.common.ErrorMessage
-import octopus.ReferralsQuery
+import octopus.FullReferralsQuery
 
-internal interface ForeverRepository {
-  suspend fun getReferralsData(): Either<ErrorMessage, ReferralsQuery.Data>
+interface ForeverRepository {
+  suspend fun getReferralsData(): Either<ErrorMessage, FullReferralsQuery.Data>
 
   suspend fun updateCode(newCode: String): Either<ReferralError, String>
 

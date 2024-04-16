@@ -62,6 +62,7 @@ dependencies {
   implementation(projects.placeholder)
   implementation(projects.pullrefresh)
   implementation(projects.theme)
+  implementation(projects.foreverUi)
 
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
@@ -75,6 +76,7 @@ dependencies {
   testImplementation(projects.marketTest)
   testImplementation(projects.memberRemindersTest)
   testImplementation(projects.moleculeTest)
+
 }
 
 apollo {

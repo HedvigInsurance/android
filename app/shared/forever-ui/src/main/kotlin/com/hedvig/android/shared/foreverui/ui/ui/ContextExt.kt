@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.forever
+package com.hedvig.android.shared.foreverui.ui.ui
 
 import android.content.ClipData
 import android.content.ClipboardManager
