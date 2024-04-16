@@ -1,10 +1,8 @@
 package com.hedvig.android.app.navigation
 
-import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.navigation.NavBackStackEntry
@@ -72,7 +70,6 @@ internal fun HedvigNavHost(
   modifier: Modifier = Modifier,
 ) {
   LocalConfiguration.current
-  val context = LocalContext.current
   val density = LocalDensity.current
   val navigator: Navigator = rememberNavigator(hedvigAppState.navController, finishApp)
 
@@ -109,7 +106,6 @@ internal fun HedvigNavHost(
           density = density,
           hedvigAppState = hedvigAppState,
           hedvigBuildConstants = hedvigBuildConstants,
-          context = context,
           navigator = navigator,
           shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
           externalNavigator = externalNavigator,
@@ -136,7 +132,7 @@ internal fun HedvigNavHost(
       navigateToHelpCenter = { backStackEntry ->
         with(navigator) { backStackEntry.navigate(HelpCenterDestination) }
       },
-      openAppSettings = { externalNavigator.openAppSettings(context) },
+      openAppSettings = externalNavigator::openAppSettings,
       openUrl = openUrl,
     )
     insuranceGraph(
@@ -151,7 +147,7 @@ internal fun HedvigNavHost(
             }
           },
           openUrl = openUrl,
-          openPlayStore = { externalNavigator.tryOpenPlayStore(context) },
+          openPlayStore = externalNavigator::tryOpenPlayStore,
           hedvigDeepLinkContainer = hedvigDeepLinkContainer,
           navigateToInsurances = { navOptions ->
             hedvigAppState.navController.navigate(InsurancesDestination.Graph, navOptions)
@@ -230,7 +226,7 @@ internal fun HedvigNavHost(
       navigateToDeleteAccountFeature = { backStackEntry: NavBackStackEntry ->
         with(navigator) { backStackEntry.navigate(DeleteAccountDestination) }
       },
-      openAppSettings = { externalNavigator.openAppSettings(context) },
+      openAppSettings = externalNavigator::openAppSettings,
       openUrl = openUrl,
     )
     chatGraph(
@@ -293,7 +289,6 @@ private fun NavGraphBuilder.nestedHomeGraphs(
   density: Density,
   hedvigAppState: HedvigAppState,
   hedvigBuildConstants: HedvigBuildConstants,
-  context: Context,
   navigator: Navigator,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   externalNavigator: ExternalNavigator,
@@ -334,9 +329,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     navigateToTriaging = {
       navigator.navigateUnsafe(ClaimTriagingDestination.ClaimGroups)
     },
-    openAppSettings = {
-      externalNavigator.openAppSettings(context)
-    },
+    openAppSettings = externalNavigator::openAppSettings,
     closeClaimFlow = {
       hedvigAppState.navController.popBackStack<AppDestination.ClaimsFlow>(inclusive = true)
     },
@@ -365,7 +358,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     navigator = navigator,
     openPlayStore = {
       navigator.popBackStack()
-      externalNavigator.tryOpenPlayStore(context)
+      externalNavigator.tryOpenPlayStore()
     },
     openChat = { backStackEntry ->
       with(navigator) {
