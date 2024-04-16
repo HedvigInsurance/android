@@ -97,8 +97,6 @@ fun NavGraphBuilder.paymentsGraph(
     }
 
     composable<PaymentsDestinations.Forever>(
-      enterTransition = { MotionDefaults.fadeThroughEnter },
-      exitTransition = { MotionDefaults.fadeThroughExit },
     ) {
       val viewModel: ForeverViewModel = koinViewModel()
       ForeverDestination(
