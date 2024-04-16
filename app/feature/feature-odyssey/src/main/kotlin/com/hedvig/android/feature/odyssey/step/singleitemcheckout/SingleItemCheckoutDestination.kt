@@ -175,8 +175,10 @@ private fun SingleItemCheckoutScreen(
       Column(sideSpacingModifier) {
         val pairs = if (uiState.repairCostAmount != null) {
           listOf(
-            // TODO: here! wait till we have SingleItemStepModel from the step
-            stringResource(R.string.CLAIMS_CHECKOUT_REPAIR_TITLE, "modelName") to uiState.repairCostAmount.toString(),
+            stringResource(
+              R.string.CLAIMS_CHECKOUT_REPAIR_TITLE,
+              uiState.modelDisplayName,
+            ) to uiState.repairCostAmount.toString(),
             stringResource(R.string.claims_payout_age_deductable) to "-" + uiState.deductible.toString(),
           )
         } else {
@@ -390,6 +392,7 @@ private fun PreviewSingleItemCheckoutScreenWithRepairCost() {
           }.toNonEmptyListOrNull()!!,
           selected,
           UiMoney(4000.0, CurrencyCode.SEK),
+          "IPhone 12",
         ),
         WindowSizeClass.calculateForPreview(),
         { selected = it },
@@ -433,6 +436,7 @@ private fun PreviewSingleItemCheckoutScreen(
           }.toNonEmptyListOrNull()!!,
           selected,
           null,
+          "IPhone 12",
         ),
         WindowSizeClass.calculateForPreview(),
         { selected = it },

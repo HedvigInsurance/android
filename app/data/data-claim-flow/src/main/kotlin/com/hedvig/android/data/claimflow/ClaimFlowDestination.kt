@@ -134,6 +134,9 @@ sealed interface ClaimFlowDestination : Destination {
     val payoutAmount: UiMoney,
     val availableCheckoutMethods: List<CheckoutMethod.Known>,
     val repairCostAmount: UiMoney?,
+    val modelName: String?,
+    val brandName: String?,
+    val customName: String?,
   ) : ClaimFlowDestination
 
   // Local-only destination, not matching to a flow step, used to handle payout logic

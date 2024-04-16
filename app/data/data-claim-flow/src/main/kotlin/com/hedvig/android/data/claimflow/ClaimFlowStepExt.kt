@@ -98,6 +98,9 @@ fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
         UiMoney.fromMoneyFragment(payoutAmount),
         availableCheckoutMethods.map(CheckoutMethodFragment::toCheckoutMethod).filterIsInstance<CheckoutMethod.Known>(),
         repairCostAmount?.let { UiMoney.fromMoneyFragment(it) },
+        modelName = singleItemStep?.selectedItemModel,
+        brandName = singleItemStep?.selectedItemBrand,
+        customName = singleItemStep?.customName,
       )
     }
 

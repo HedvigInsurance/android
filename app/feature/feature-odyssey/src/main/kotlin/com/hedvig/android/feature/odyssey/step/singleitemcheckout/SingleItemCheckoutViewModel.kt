@@ -36,6 +36,7 @@ internal sealed interface SingleItemCheckoutUiState {
     val availableCheckoutMethods: NonEmptyList<CheckoutMethod.Known>,
     val selectedCheckoutMethod: CheckoutMethod.Known,
     val repairCostAmount: UiMoney?,
+    val modelDisplayName: String,
   ) : SingleItemCheckoutUiState
 
   /**
@@ -51,6 +52,7 @@ internal sealed interface SingleItemCheckoutUiState {
       val availableCheckoutMethods = singleItemCheckout.availableCheckoutMethods.toNonEmptyListOrNull()
       val initiallySelectedCheckoutMethod =
         availableCheckoutMethods?.firstOrNull() ?: return Unavailable
+      val modelName = singleItemCheckout.modelName ?: singleItemCheckout.customName ?: singleItemCheckout.brandName ?: "-"
       return Content(
         price = singleItemCheckout.price,
         depreciation = singleItemCheckout.depreciation,
@@ -59,6 +61,7 @@ internal sealed interface SingleItemCheckoutUiState {
         availableCheckoutMethods = availableCheckoutMethods,
         selectedCheckoutMethod = initiallySelectedCheckoutMethod,
         repairCostAmount = singleItemCheckout.repairCostAmount,
+        modelDisplayName = modelName,
       )
     }
   }
