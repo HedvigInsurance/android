@@ -87,7 +87,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
-class LoggedInActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() {
   private val applicationScope: ApplicationScope by inject()
   private val authTokenService: AuthTokenService by inject()
   private val demoManager: DemoManager by inject()
@@ -289,7 +289,7 @@ class LoggedInActivity : AppCompatActivity() {
 
   private fun tryShowAppStoreReviewDialog() {
     val tag = "PlayStoreReview"
-    val manager = ReviewManagerFactory.create(this@LoggedInActivity)
+    val manager = ReviewManagerFactory.create(this@MainActivity)
     logcat(LogPriority.INFO) { "$tag: requestReviewFlow" }
     manager.requestReviewFlow().apply {
       addOnFailureListener { logcat(LogPriority.INFO, it) { "$tag: requestReviewFlow failed:${it.message}" } }
@@ -299,7 +299,7 @@ class LoggedInActivity : AppCompatActivity() {
           logcat(LogPriority.INFO) { "$tag: requestReviewFlow completed" }
           val reviewInfo = task.result
           logcat(LogPriority.INFO) { "$tag: launchReviewFlow with ReviewInfo:$reviewInfo" }
-          manager.launchReviewFlow(this@LoggedInActivity, reviewInfo).apply {
+          manager.launchReviewFlow(this@MainActivity, reviewInfo).apply {
             addOnFailureListener { logcat(LogPriority.INFO, it) { "$tag: launchReviewFlow failed:${it.message}" } }
             addOnCanceledListener { logcat(LogPriority.INFO) { "$tag: launchReviewFlow canceled" } }
             addOnCompleteListener { logcat(LogPriority.INFO) { "$tag: launchReviewFlow completed" } }
@@ -325,7 +325,7 @@ class LoggedInActivity : AppCompatActivity() {
     private const val REVIEW_DIALOG_DELAY_MILLIS = 2000L
 
     fun newInstance(context: Context, withoutHistory: Boolean = false): Intent =
-      Intent(context, LoggedInActivity::class.java).apply {
+      Intent(context, MainActivity::class.java).apply {
         logcat(LogPriority.INFO) { "LoggedInActivity.newInstance was called. withoutHistory:$withoutHistory" }
         if (withoutHistory) {
           addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

@@ -7,7 +7,7 @@ import android.net.Uri
 import androidx.core.app.NotificationCompat
 import androidx.core.app.TaskStackBuilder
 import com.google.firebase.messaging.RemoteMessage
-import com.hedvig.android.app.LoggedInActivity
+import com.hedvig.android.app.MainActivity
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.android.notification.setupNotificationChannel
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
@@ -77,7 +77,7 @@ class PaymentNotificationSender(
       .addNextIntent(
         Intent(
           context,
-          LoggedInActivity::class.java,
+          MainActivity::class.java,
         ),
       )
       .getPendingIntent(0, getImmutablePendingIntentFlags())
