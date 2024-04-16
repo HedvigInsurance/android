@@ -45,7 +45,7 @@ import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.MarketManager
-import com.hedvig.android.navigation.activity.ActivityNavigator
+import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.allDeepLinkUriPatterns
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
@@ -75,7 +75,7 @@ class MainActivity : AppCompatActivity() {
   private val tabNotificationBadgeService: TabNotificationBadgeService by inject()
   private val waitUntilAppReviewDialogShouldBeOpenedUseCase: WaitUntilAppReviewDialogShouldBeOpenedUseCase by inject()
   private val languageAndMarketLaunchCheckUseCase: LanguageAndMarketLaunchCheckUseCase by inject()
-  private val activityNavigator: ActivityNavigator by inject()
+  private val externalNavigator: ExternalNavigator by inject()
 
   private var navController: NavController? = null
 
@@ -143,7 +143,7 @@ class MainActivity : AppCompatActivity() {
         getOnlyHasNonPayingContractsUseCase = getOnlyHasNonPayingContractsUseCase,
         featureManager = featureManager,
         splashIsRemovedSignal = splashIsRemovedSignal,
-        activityNavigator = activityNavigator,
+        externalNavigator = externalNavigator,
         authTokenService = authTokenService,
         demoManager = demoManager,
         hedvigDeepLinkContainer = hedvigDeepLinkContainer,
@@ -159,7 +159,7 @@ class MainActivity : AppCompatActivity() {
           )
         },
         shouldShowRequestPermissionRationale = ::shouldShowRequestPermissionRationale,
-        goToPlayStore = { activityNavigator.tryOpenPlayStore(this) },
+        goToPlayStore = { externalNavigator.tryOpenPlayStore(this) },
         openEmailApp = { openEmail(getString(R.string.login_bottom_sheet_view_code)) },
         finishApp = ::finish,
         tryShowAppStoreReviewDialog = ::tryShowAppStoreReviewDialog,

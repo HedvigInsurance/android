@@ -36,7 +36,7 @@ import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.MarketManager
-import com.hedvig.android.navigation.activity.ActivityNavigator
+import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
 import com.kiwi.navigationcompose.typed.createRoutePattern
@@ -58,7 +58,7 @@ internal fun HedvigApp(
   getOnlyHasNonPayingContractsUseCase: Provider<GetOnlyHasNonPayingContractsUseCase>,
   featureManager: FeatureManager,
   splashIsRemovedSignal: Channel<Unit>,
-  activityNavigator: ActivityNavigator,
+  externalNavigator: ExternalNavigator,
   authTokenService: AuthTokenService,
   demoManager: DemoManager,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
@@ -106,7 +106,7 @@ internal fun HedvigApp(
         HedvigAppUi(
           hedvigAppState = hedvigAppState,
           hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-          activityNavigator = activityNavigator,
+          externalNavigator = externalNavigator,
           shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
           openUrl = deepLinkFirstUriHandler::openUri,
           onOpenEmailApp = openEmailApp,

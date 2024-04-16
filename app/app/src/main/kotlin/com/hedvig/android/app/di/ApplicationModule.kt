@@ -73,8 +73,8 @@ import com.hedvig.android.language.di.languageModule
 import com.hedvig.android.market.di.marketManagerModule
 import com.hedvig.android.market.di.setMarketModule
 import com.hedvig.android.memberreminders.di.memberRemindersModule
-import com.hedvig.android.navigation.activity.ActivityNavigator
-import com.hedvig.android.navigation.activity.ActivityNavigatorImpl
+import com.hedvig.android.navigation.activity.ExternalNavigator
+import com.hedvig.android.navigation.activity.ExternalNavigatorImpl
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.di.deepLinkModule
 import com.hedvig.android.notification.badge.data.di.notificationBadgeModule
@@ -174,9 +174,9 @@ fun makeUserAgent(languageBCP47: String): String = buildString {
   append(")")
 }
 
-private val activityNavigatorModule = module {
-  single<ActivityNavigator> {
-    ActivityNavigatorImpl(buildConfigApplicationId = BuildConfig.APPLICATION_ID)
+private val externalNavigatorModule = module {
+  single<ExternalNavigator> {
+    ExternalNavigatorImpl(buildConfigApplicationId = BuildConfig.APPLICATION_ID)
   }
 }
 
@@ -272,7 +272,7 @@ private val workManagerModule = module {
 val applicationModule = module {
   includes(
     listOf(
-      activityNavigatorModule,
+      externalNavigatorModule,
       adyenFeatureModule,
       apolloAuthListenersModule,
       appModule,

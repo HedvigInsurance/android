@@ -8,13 +8,13 @@ import android.provider.Settings
 import android.widget.Toast
 import hedvig.resources.R
 
-interface ActivityNavigator {
+interface ExternalNavigator {
   fun openAppSettings(context: Context)
 
   fun tryOpenPlayStore(context: Context)
 }
 
-class ActivityNavigatorImpl(private val buildConfigApplicationId: String) : ActivityNavigator {
+class ExternalNavigatorImpl(private val buildConfigApplicationId: String) : ExternalNavigator {
   override fun openAppSettings(context: Context) {
     val permissionActivity = Intent(
       Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
