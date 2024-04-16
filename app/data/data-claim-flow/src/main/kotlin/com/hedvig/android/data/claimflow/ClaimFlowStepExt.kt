@@ -91,7 +91,9 @@ fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
     }
 
     is ClaimFlowStep.ClaimResolutionSingleItemStep -> {
-      val modelName = singleItemStep?.availableItemModels?.firstOrNull{it.itemModelId==singleItemStep.selectedItemModel}?.displayName
+      val modelName = singleItemStep?.availableItemModels?.firstOrNull {
+        it.itemModelId == singleItemStep.selectedItemModel
+      }?.displayName
       ClaimFlowDestination.SingleItemCheckout(
         UiMoney.fromMoneyFragment(price),
         UiMoney.fromMoneyFragment(depreciation),
