@@ -5,6 +5,8 @@
 # Unleash
 -keep public class io.getunleash.** {*;}
 -keep class com.fasterxml.** {*;}
+-dontwarn java.beans.ConstructorProperties
+-dontwarn java.beans.Transient
 
 # Crashlytics https://firebase.google.com/docs/crashlytics/get-deobfuscated-reports?platform=android#config-r8-proguard-dexguard
 -keepattributes SourceFile,LineNumberTable        # Keep file names and line numbers.
