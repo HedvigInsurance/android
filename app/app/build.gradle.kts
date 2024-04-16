@@ -164,6 +164,7 @@ dependencies {
   implementation(libs.timber)
   implementation(projects.apolloAuthListeners)
   implementation(projects.apolloCore)
+  implementation(projects.apolloNetworkCacheManager)
   implementation(projects.authCorePublic)
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonAndroidPublic)
