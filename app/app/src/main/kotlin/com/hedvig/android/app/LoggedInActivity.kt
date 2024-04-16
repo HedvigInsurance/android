@@ -57,9 +57,9 @@ import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCaseProvider
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
+import com.hedvig.android.feature.force.upgrade.ForceUpgradeBlockingScreen
 import com.hedvig.android.feature.login.navigation.LoginDestination
 import com.hedvig.android.featureflags.FeatureManager
-import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.language.LanguageAndMarketLaunchCheckUseCase
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.LogPriority
@@ -70,11 +70,9 @@ import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.allDeepLinkUriPatterns
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
 import com.hedvig.android.theme.Theme
-import com.hedvig.app.feature.sunsetting.ForceUpgradeActivity
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.stylianosgakis.navigation.recents.url.sharing.provideAssistContent
 import hedvig.resources.R
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -141,17 +139,10 @@ class LoggedInActivity : AppCompatActivity() {
 
     lifecycleScope.launch {
       launch {
-        featureManager.isFeatureEnabled(Feature.UPDATE_NECESSARY).collectLatest {
-          if (it) {
-            applicationContext.startActivity(ForceUpgradeActivity.newInstance(applicationContext))
-            finish()
-            cancel()
+        lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
+          settingsDataStore.observeTheme().collectLatest { theme ->
+            applyTheme(theme, uiModeManager)
           }
-        }
-      }
-      launch {
-        settingsDataStore.observeTheme().collectLatest { theme ->
-          applyTheme(theme, uiModeManager)
         }
       }
       launch {
@@ -164,7 +155,7 @@ class LoggedInActivity : AppCompatActivity() {
         }
       }
       launch {
-        lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+        lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
           authTokenService.authStatus.first { it is AuthStatus.LoggedIn }
           waitUntilAppReviewDialogShouldBeOpenedUseCase.invoke()
           delay(REVIEW_DIALOG_DELAY_MILLIS)
@@ -174,7 +165,6 @@ class LoggedInActivity : AppCompatActivity() {
     }
 
     setContent {
-      val market by marketManager.market.collectAsStateWithLifecycle()
       val windowSizeClass = calculateWindowSizeClass(this)
       val navHostController = rememberNavController().also { navController = it }
       LifecycleStartEffect(navHostController) {
@@ -188,30 +178,38 @@ class LoggedInActivity : AppCompatActivity() {
         tabNotificationBadgeService = tabNotificationBadgeService,
         settingsDataStore = settingsDataStore,
         getOnlyHasNonPayingContractsUseCase = getOnlyHasNonPayingContractsUseCase,
+        featureManager = featureManager,
         navHostController = navHostController,
       )
-      LogoutOnInvalidCredentialsEffect(hedvigAppState)
       val darkTheme = hedvigAppState.darkTheme
-      EnableEdgeToEdgeSideEffect(darkTheme)
-      val deepLinkFirstUriHandler = DeepLinkFirstUriHandler(
-        navController = hedvigAppState.navController,
-        delegate = SafeAndroidUriHandler(LocalContext.current),
-      )
-      CompositionLocalProvider(LocalUriHandler provides deepLinkFirstUriHandler) {
-        HedvigTheme(darkTheme = darkTheme) {
-          HedvigApp(
-            hedvigAppState = hedvigAppState,
-            hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-            activityNavigator = activityNavigator,
-            shouldShowRequestPermissionRationale = ::shouldShowRequestPermissionRationale,
-            openUrl = deepLinkFirstUriHandler::openUri,
-            onOpenEmailApp = ::openEmailApp,
-            finishApp = ::finish,
-            market = market,
-            imageLoader = imageLoader,
-            languageService = languageService,
-            hedvigBuildConstants = hedvigBuildConstants,
+      HedvigTheme(darkTheme = darkTheme) {
+        EnableEdgeToEdgeSideEffect(darkTheme)
+        val mustForceUpdate by hedvigAppState.mustForceUpdate.collectAsStateWithLifecycle()
+        if (mustForceUpdate) {
+          ForceUpgradeBlockingScreen(
+            goToPlayStore = { activityNavigator.tryOpenPlayStore(this) },
           )
+        } else {
+          LogoutOnInvalidCredentialsEffect(hedvigAppState)
+          val deepLinkFirstUriHandler = DeepLinkFirstUriHandler(
+            navController = hedvigAppState.navController,
+            delegate = SafeAndroidUriHandler(LocalContext.current),
+          )
+          CompositionLocalProvider(LocalUriHandler provides deepLinkFirstUriHandler) {
+            HedvigApp(
+              hedvigAppState = hedvigAppState,
+              hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+              activityNavigator = activityNavigator,
+              shouldShowRequestPermissionRationale = ::shouldShowRequestPermissionRationale,
+              openUrl = deepLinkFirstUriHandler::openUri,
+              onOpenEmailApp = ::openEmailApp,
+              finishApp = ::finish,
+              market = marketManager.market.collectAsStateWithLifecycle().value,
+              imageLoader = imageLoader,
+              languageService = languageService,
+              hedvigBuildConstants = hedvigBuildConstants,
+            )
+          }
         }
       }
     }

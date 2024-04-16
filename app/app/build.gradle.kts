@@ -192,6 +192,7 @@ dependencies {
   implementation(projects.featureDeleteAccount)
   implementation(projects.featureEditCoinsured)
   implementation(projects.featureFlagsPublic)
+  implementation(projects.featureForceUpgrade)
   implementation(projects.featureForever)
   implementation(projects.featureHelpCenter)
   implementation(projects.featureHome)
