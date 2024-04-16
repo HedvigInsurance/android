@@ -36,7 +36,7 @@ import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.MarketManager
-import com.hedvig.android.navigation.activity.ActivityNavigator
+import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
 import com.kiwi.navigationcompose.typed.createRoutePattern
@@ -53,12 +53,12 @@ import kotlinx.coroutines.flow.receiveAsFlow
 @Composable
 internal fun HedvigApp(
   navHostController: NavHostController,
+  windowSizeClass: WindowSizeClass,
   tabNotificationBadgeService: TabNotificationBadgeService,
   settingsDataStore: SettingsDataStore,
   getOnlyHasNonPayingContractsUseCase: Provider<GetOnlyHasNonPayingContractsUseCase>,
   featureManager: FeatureManager,
   splashIsRemovedSignal: Channel<Unit>,
-  activityNavigator: ActivityNavigator,
   authTokenService: AuthTokenService,
   demoManager: DemoManager,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
@@ -69,11 +69,9 @@ internal fun HedvigApp(
   waitUntilAppReviewDialogShouldBeOpenedUseCase: WaitUntilAppReviewDialogShouldBeOpenedUseCase,
   enableEdgeToEdge: (SystemBarStyle) -> Unit,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
-  goToPlayStore: () -> Unit,
-  openEmailApp: () -> Unit,
   finishApp: () -> Unit,
   tryShowAppStoreReviewDialog: () -> Unit,
-  windowSizeClass: WindowSizeClass,
+  externalNavigator: ExternalNavigator,
 ) {
   val hedvigAppState = rememberHedvigAppState(
     windowSizeClass = windowSizeClass,
@@ -89,7 +87,7 @@ internal fun HedvigApp(
     val mustForceUpdate by hedvigAppState.mustForceUpdate.collectAsStateWithLifecycle()
     if (mustForceUpdate) {
       ForceUpgradeBlockingScreen(
-        goToPlayStore = goToPlayStore,
+        goToPlayStore = externalNavigator::tryOpenPlayStore,
       )
     } else {
       TryShowAppStoreReviewDialogEffect(
@@ -106,10 +104,9 @@ internal fun HedvigApp(
         HedvigAppUi(
           hedvigAppState = hedvigAppState,
           hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-          activityNavigator = activityNavigator,
+          externalNavigator = externalNavigator,
           shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
           openUrl = deepLinkFirstUriHandler::openUri,
-          onOpenEmailApp = openEmailApp,
           finishApp = finishApp,
           market = marketManager.market.collectAsStateWithLifecycle().value,
           imageLoader = imageLoader,

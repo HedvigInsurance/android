@@ -1,10 +1,8 @@
 package com.hedvig.android.app.navigation
 
-import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.navigation.NavBackStackEntry
@@ -47,7 +45,7 @@ import com.hedvig.android.feature.terminateinsurance.navigation.terminateInsuran
 import com.hedvig.android.feature.travelcertificate.navigation.travelCertificateGraph
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.Market
-import com.hedvig.android.navigation.activity.ActivityNavigator
+import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
@@ -61,11 +59,10 @@ import com.kiwi.navigationcompose.typed.popUpTo
 internal fun HedvigNavHost(
   hedvigAppState: HedvigAppState,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
-  activityNavigator: ActivityNavigator,
+  externalNavigator: ExternalNavigator,
   finishApp: () -> Unit,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   openUrl: (String) -> Unit,
-  onOpenEmailApp: () -> Unit,
   imageLoader: ImageLoader,
   market: Market,
   languageService: LanguageService,
@@ -73,7 +70,6 @@ internal fun HedvigNavHost(
   modifier: Modifier = Modifier,
 ) {
   LocalConfiguration.current
-  val context = LocalContext.current
   val density = LocalDensity.current
   val navigator: Navigator = rememberNavigator(hedvigAppState.navController, finishApp)
 
@@ -101,7 +97,7 @@ internal fun HedvigNavHost(
       appVersionName = hedvigBuildConstants.appVersionName,
       urlBaseWeb = hedvigBuildConstants.urlBaseWeb,
       openUrl = openUrl,
-      onOpenEmailApp = onOpenEmailApp,
+      onOpenEmailApp = externalNavigator::openEmailApp,
       startLoggedInActivity = hedvigAppState::navigateToLoggedIn,
     )
     homeGraph(
@@ -110,10 +106,9 @@ internal fun HedvigNavHost(
           density = density,
           hedvigAppState = hedvigAppState,
           hedvigBuildConstants = hedvigBuildConstants,
-          context = context,
           navigator = navigator,
           shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-          activityNavigator = activityNavigator,
+          externalNavigator = externalNavigator,
           imageLoader = imageLoader,
           openUrl = openUrl,
         )
@@ -137,7 +132,7 @@ internal fun HedvigNavHost(
       navigateToHelpCenter = { backStackEntry ->
         with(navigator) { backStackEntry.navigate(HelpCenterDestination) }
       },
-      openAppSettings = { activityNavigator.openAppSettings(context) },
+      openAppSettings = externalNavigator::openAppSettings,
       openUrl = openUrl,
     )
     insuranceGraph(
@@ -152,7 +147,7 @@ internal fun HedvigNavHost(
             }
           },
           openUrl = openUrl,
-          openPlayStore = { activityNavigator.tryOpenPlayStore(context) },
+          openPlayStore = externalNavigator::tryOpenPlayStore,
           hedvigDeepLinkContainer = hedvigDeepLinkContainer,
           navigateToInsurances = { navOptions ->
             hedvigAppState.navController.navigate(InsurancesDestination.Graph, navOptions)
@@ -231,7 +226,7 @@ internal fun HedvigNavHost(
       navigateToDeleteAccountFeature = { backStackEntry: NavBackStackEntry ->
         with(navigator) { backStackEntry.navigate(DeleteAccountDestination) }
       },
-      openAppSettings = { activityNavigator.openAppSettings(context) },
+      openAppSettings = externalNavigator::openAppSettings,
       openUrl = openUrl,
     )
     chatGraph(
@@ -294,10 +289,9 @@ private fun NavGraphBuilder.nestedHomeGraphs(
   density: Density,
   hedvigAppState: HedvigAppState,
   hedvigBuildConstants: HedvigBuildConstants,
-  context: Context,
   navigator: Navigator,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
-  activityNavigator: ActivityNavigator,
+  externalNavigator: ExternalNavigator,
   imageLoader: ImageLoader,
   openUrl: (String) -> Unit,
 ) {
@@ -335,9 +329,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     navigateToTriaging = {
       navigator.navigateUnsafe(ClaimTriagingDestination.ClaimGroups)
     },
-    openAppSettings = {
-      activityNavigator.openAppSettings(context)
-    },
+    openAppSettings = externalNavigator::openAppSettings,
     closeClaimFlow = {
       hedvigAppState.navController.popBackStack<AppDestination.ClaimsFlow>(inclusive = true)
     },
@@ -366,7 +358,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     navigator = navigator,
     openPlayStore = {
       navigator.popBackStack()
-      activityNavigator.tryOpenPlayStore(context)
+      externalNavigator.tryOpenPlayStore()
     },
     openChat = { backStackEntry ->
       with(navigator) {

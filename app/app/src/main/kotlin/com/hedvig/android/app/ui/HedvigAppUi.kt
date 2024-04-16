@@ -32,18 +32,17 @@ import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.designsystem.material3.motion.MotionTokens
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.Market
-import com.hedvig.android.navigation.activity.ActivityNavigator
+import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 
 @Composable
 internal fun HedvigAppUi(
   hedvigAppState: HedvigAppState,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
-  activityNavigator: ActivityNavigator,
+  externalNavigator: ExternalNavigator,
   finishApp: () -> Unit,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   openUrl: (String) -> Unit,
-  onOpenEmailApp: () -> Unit,
   market: Market,
   imageLoader: ImageLoader,
   languageService: LanguageService,
@@ -64,11 +63,10 @@ internal fun HedvigAppUi(
       HedvigNavHost(
         hedvigAppState = hedvigAppState,
         hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-        activityNavigator = activityNavigator,
+        externalNavigator = externalNavigator,
         finishApp = finishApp,
         shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
         openUrl = openUrl,
-        onOpenEmailApp = onOpenEmailApp,
         imageLoader = imageLoader,
         market = market,
         languageService = languageService,
