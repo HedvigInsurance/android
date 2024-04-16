@@ -1,11 +1,11 @@
-package com.hedvig.app.startup
+package com.hedvig.android.app.startup
 
 import android.content.Context
 import androidx.startup.Initializer
+import com.hedvig.android.app.firebase.FirebaseBreadcrumbTimberTree
+import com.hedvig.android.app.firebase.FirebaseCrashlyticsLogExceptionTree
 import com.hedvig.android.logger.AndroidLogcatLogger
 import com.hedvig.app.BuildConfig
-import com.hedvig.app.util.firebase.FirebaseBreadcrumbTimberTree
-import com.hedvig.app.util.firebase.FirebaseCrashlyticsLogExceptionTree
 import timber.log.Timber
 
 class TimberInitializer : Initializer<Unit> {

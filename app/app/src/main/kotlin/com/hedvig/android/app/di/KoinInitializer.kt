@@ -1,9 +1,8 @@
-package com.hedvig.app.feature.di
+package com.hedvig.android.app.di
 
 import android.content.Context
 import androidx.startup.Initializer
-import com.hedvig.app.applicationModule
-import com.hedvig.app.startup.TimberInitializer
+import com.hedvig.android.app.startup.TimberInitializer
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.androidx.workmanager.koin.workManagerFactory

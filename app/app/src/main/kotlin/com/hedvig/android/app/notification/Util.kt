@@ -1,4 +1,4 @@
-package com.hedvig.app.service.push
+package com.hedvig.android.app.notification
 
 import android.app.PendingIntent
 import android.os.Build

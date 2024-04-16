@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.chat.service
+package com.hedvig.android.app.chat.service
 
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -15,13 +15,13 @@ import androidx.core.app.TaskStackBuilder
 import androidx.core.content.getSystemService
 import androidx.core.graphics.drawable.IconCompat
 import com.google.firebase.messaging.RemoteMessage
+import com.hedvig.android.app.notification.getMutablePendingIntentFlags
 import com.hedvig.android.core.common.android.notification.setupNotificationChannel
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
-import com.hedvig.app.service.push.getMutablePendingIntentFlags
 import hedvig.resources.R
 import kotlinx.datetime.Instant
 

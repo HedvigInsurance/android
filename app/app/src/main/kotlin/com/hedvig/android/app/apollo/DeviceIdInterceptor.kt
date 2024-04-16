@@ -1,4 +1,4 @@
-package com.hedvig.app.util.apollo
+package com.hedvig.android.app.apollo
 
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.datastore.DeviceIdDataStore

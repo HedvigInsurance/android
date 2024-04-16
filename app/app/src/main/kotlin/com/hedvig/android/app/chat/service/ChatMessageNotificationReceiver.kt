@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.chat.service
+package com.hedvig.android.app.chat.service
 
 import android.app.RemoteInput
 import android.content.BroadcastReceiver
@@ -10,8 +10,8 @@ import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
-import com.hedvig.app.feature.chat.service.ChatNotificationSender.Companion.CHAT_REPLY_DATA_NOTIFICATION_ID
-import com.hedvig.app.feature.chat.service.ChatNotificationSender.Companion.CHAT_REPLY_KEY
+import com.hedvig.android.app.chat.service.ChatNotificationSender.Companion.CHAT_REPLY_DATA_NOTIFICATION_ID
+import com.hedvig.android.app.chat.service.ChatNotificationSender.Companion.CHAT_REPLY_KEY
 import java.util.concurrent.TimeUnit
 
 class ChatMessageNotificationReceiver : BroadcastReceiver() {
