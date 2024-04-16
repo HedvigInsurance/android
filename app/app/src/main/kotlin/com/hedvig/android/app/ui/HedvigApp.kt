@@ -69,7 +69,6 @@ internal fun HedvigApp(
   waitUntilAppReviewDialogShouldBeOpenedUseCase: WaitUntilAppReviewDialogShouldBeOpenedUseCase,
   enableEdgeToEdge: (SystemBarStyle) -> Unit,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
-  goToPlayStore: () -> Unit,
   finishApp: () -> Unit,
   tryShowAppStoreReviewDialog: () -> Unit,
   externalNavigator: ExternalNavigator,
@@ -88,7 +87,7 @@ internal fun HedvigApp(
     val mustForceUpdate by hedvigAppState.mustForceUpdate.collectAsStateWithLifecycle()
     if (mustForceUpdate) {
       ForceUpgradeBlockingScreen(
-        goToPlayStore = goToPlayStore,
+        goToPlayStore = externalNavigator::tryOpenPlayStore,
       )
     } else {
       TryShowAppStoreReviewDialogEffect(

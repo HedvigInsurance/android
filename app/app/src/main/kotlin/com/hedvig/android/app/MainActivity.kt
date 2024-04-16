@@ -42,7 +42,6 @@ import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.MarketManager
-import com.hedvig.android.navigation.activity.ExternalNavigatorImpl
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.allDeepLinkUriPatterns
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
@@ -155,7 +154,6 @@ class MainActivity : AppCompatActivity() {
           )
         },
         shouldShowRequestPermissionRationale = ::shouldShowRequestPermissionRationale,
-        goToPlayStore = { externalNavigator.tryOpenPlayStore(this) },
         finishApp = ::finish,
         tryShowAppStoreReviewDialog = ::tryShowAppStoreReviewDialog,
         externalNavigator = externalNavigator,
