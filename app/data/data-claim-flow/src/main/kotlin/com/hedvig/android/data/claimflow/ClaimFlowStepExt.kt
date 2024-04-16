@@ -91,6 +91,7 @@ fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
     }
 
     is ClaimFlowStep.ClaimResolutionSingleItemStep -> {
+      val modelName = singleItemStep?.availableItemModels?.firstOrNull{it.itemModelId==singleItemStep.selectedItemModel}?.displayName
       ClaimFlowDestination.SingleItemCheckout(
         UiMoney.fromMoneyFragment(price),
         UiMoney.fromMoneyFragment(depreciation),
@@ -98,7 +99,7 @@ fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
         UiMoney.fromMoneyFragment(payoutAmount),
         availableCheckoutMethods.map(CheckoutMethodFragment::toCheckoutMethod).filterIsInstance<CheckoutMethod.Known>(),
         repairCostAmount?.let { UiMoney.fromMoneyFragment(it) },
-        modelName = singleItemStep?.selectedItemModel,
+        modelName = modelName,
         brandName = singleItemStep?.selectedItemBrand,
         customName = singleItemStep?.customName,
       )
