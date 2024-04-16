@@ -19,46 +19,26 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.core.content.getSystemService
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleStartEffect
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
-import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.rememberNavController
 import arrow.fx.coroutines.raceN
 import coil.ImageLoader
 import com.google.android.play.core.review.ReviewException
 import com.google.android.play.core.review.ReviewManagerFactory
-import com.hedvig.android.app.ui.DeepLinkFirstUriHandler
 import com.hedvig.android.app.ui.HedvigApp
-import com.hedvig.android.app.ui.HedvigAppState
-import com.hedvig.android.app.ui.SafeAndroidUriHandler
-import com.hedvig.android.app.ui.rememberHedvigAppState
-import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.appreview.WaitUntilAppReviewDialogShouldBeOpenedUseCase
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.demomode.DemoManager
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCaseProvider
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
-import com.hedvig.android.feature.force.upgrade.ForceUpgradeBlockingScreen
-import com.hedvig.android.feature.login.navigation.LoginDestination
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.language.LanguageAndMarketLaunchCheckUseCase
 import com.hedvig.android.language.LanguageService
@@ -70,19 +50,12 @@ import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.allDeepLinkUriPatterns
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
 import com.hedvig.android.theme.Theme
-import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.stylianosgakis.navigation.recents.url.sharing.provideAssistContent
 import hedvig.resources.R
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
@@ -102,8 +75,8 @@ class MainActivity : AppCompatActivity() {
   private val tabNotificationBadgeService: TabNotificationBadgeService by inject()
   private val waitUntilAppReviewDialogShouldBeOpenedUseCase: WaitUntilAppReviewDialogShouldBeOpenedUseCase by inject()
   private val languageAndMarketLaunchCheckUseCase: LanguageAndMarketLaunchCheckUseCase by inject()
-
   private val activityNavigator: ActivityNavigator by inject()
+
   private var navController: NavController? = null
 
   // Shows the splash screen as long as the auth status or the demo mode status is still undetermined
@@ -136,31 +109,21 @@ class MainActivity : AppCompatActivity() {
       languageAndMarketLaunchCheckUseCase.invoke()
     }
     val uiModeManager = getSystemService<UiModeManager>()
-
     lifecycleScope.launch {
-      launch {
-        lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
-          settingsDataStore.observeTheme().collectLatest { theme ->
-            applyTheme(theme, uiModeManager)
-          }
+      lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
+        settingsDataStore.observeTheme().collectLatest { theme ->
+          applyTheme(theme, uiModeManager)
         }
       }
-      launch {
-        lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
-          raceN(
-            { authTokenService.authStatus.first { it != null } },
-            { demoManager.isDemoMode().first { it == true } },
-          )
-          showSplash.update { false }
-        }
-      }
-      launch {
-        lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-          authTokenService.authStatus.first { it is AuthStatus.LoggedIn }
-          waitUntilAppReviewDialogShouldBeOpenedUseCase.invoke()
-          delay(REVIEW_DIALOG_DELAY_MILLIS)
-          tryShowAppStoreReviewDialog()
-        }
+    }
+    lifecycleScope.launch {
+      lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
+        if (showSplash.value == false) return@repeatOnLifecycle
+        raceN(
+          { authTokenService.authStatus.first { it != null } },
+          { demoManager.isDemoMode().first { it == true } },
+        )
+        showSplash.update { false }
       }
     }
 
@@ -173,45 +136,35 @@ class MainActivity : AppCompatActivity() {
           navController = null
         }
       }
-      val hedvigAppState = rememberHedvigAppState(
-        windowSizeClass = windowSizeClass,
+      HedvigApp(
+        navHostController = navHostController,
         tabNotificationBadgeService = tabNotificationBadgeService,
         settingsDataStore = settingsDataStore,
         getOnlyHasNonPayingContractsUseCase = getOnlyHasNonPayingContractsUseCase,
         featureManager = featureManager,
-        navHostController = navHostController,
+        splashIsRemovedSignal = splashIsRemovedSignal,
+        activityNavigator = activityNavigator,
+        authTokenService = authTokenService,
+        demoManager = demoManager,
+        hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+        marketManager = marketManager,
+        imageLoader = imageLoader,
+        languageService = languageService,
+        hedvigBuildConstants = hedvigBuildConstants,
+        waitUntilAppReviewDialogShouldBeOpenedUseCase = waitUntilAppReviewDialogShouldBeOpenedUseCase,
+        enableEdgeToEdge = { systemBarStyle ->
+          enableEdgeToEdge(
+            statusBarStyle = systemBarStyle,
+            navigationBarStyle = systemBarStyle,
+          )
+        },
+        shouldShowRequestPermissionRationale = ::shouldShowRequestPermissionRationale,
+        goToPlayStore = { activityNavigator.tryOpenPlayStore(this) },
+        openEmailApp = { openEmail(getString(R.string.login_bottom_sheet_view_code)) },
+        finishApp = ::finish,
+        tryShowAppStoreReviewDialog = ::tryShowAppStoreReviewDialog,
+        windowSizeClass = windowSizeClass,
       )
-      val darkTheme = hedvigAppState.darkTheme
-      HedvigTheme(darkTheme = darkTheme) {
-        EnableEdgeToEdgeSideEffect(darkTheme)
-        val mustForceUpdate by hedvigAppState.mustForceUpdate.collectAsStateWithLifecycle()
-        if (mustForceUpdate) {
-          ForceUpgradeBlockingScreen(
-            goToPlayStore = { activityNavigator.tryOpenPlayStore(this) },
-          )
-        } else {
-          LogoutOnInvalidCredentialsEffect(hedvigAppState)
-          val deepLinkFirstUriHandler = DeepLinkFirstUriHandler(
-            navController = hedvigAppState.navController,
-            delegate = SafeAndroidUriHandler(LocalContext.current),
-          )
-          CompositionLocalProvider(LocalUriHandler provides deepLinkFirstUriHandler) {
-            HedvigApp(
-              hedvigAppState = hedvigAppState,
-              hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-              activityNavigator = activityNavigator,
-              shouldShowRequestPermissionRationale = ::shouldShowRequestPermissionRationale,
-              openUrl = deepLinkFirstUriHandler::openUri,
-              onOpenEmailApp = ::openEmailApp,
-              finishApp = ::finish,
-              market = marketManager.market.collectAsStateWithLifecycle().value,
-              imageLoader = imageLoader,
-              languageService = languageService,
-              hedvigBuildConstants = hedvigBuildConstants,
-            )
-          }
-        }
-      }
     }
   }
 
@@ -223,107 +176,7 @@ class MainActivity : AppCompatActivity() {
     }
   }
 
-  @Composable
-  private fun EnableEdgeToEdgeSideEffect(darkTheme: Boolean) {
-    val splashIsRemovedIndex by produceState(0) {
-      splashIsRemovedSignal.receiveAsFlow().collectLatest { value = value + 1 }
-    }
-    DisposableEffect(darkTheme, splashIsRemovedIndex) {
-      enableEdgeToEdge(
-        statusBarStyle = when (darkTheme) {
-          true -> SystemBarStyle.dark(Color.TRANSPARENT)
-          false -> SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
-        },
-        navigationBarStyle = when (darkTheme) {
-          true -> SystemBarStyle.dark(Color.TRANSPARENT)
-          false -> SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
-        },
-      )
-      onDispose {}
-    }
-  }
-
-  /**
-   * Automatically logs out when we are no longer in demo mode and we are also not considered to have active tokens
-   */
-  @Composable
-  private fun LogoutOnInvalidCredentialsEffect(hedvigAppState: HedvigAppState) {
-    val authStatusLog: (AuthStatus?) -> Unit = { authStatus ->
-      logcat {
-        buildString {
-          append("Owner: LoggedInActivity | Received authStatus: ")
-          append(
-            when (authStatus) {
-              is AuthStatus.LoggedIn -> "LoggedIn"
-              AuthStatus.LoggedOut -> "LoggedOut"
-              null -> "null"
-            },
-          )
-        }
-      }
-    }
-    val lifecycle = LocalLifecycleOwner.current.lifecycle
-    LaunchedEffect(lifecycle, hedvigAppState, authTokenService, demoManager) {
-      val loginGraphRoute = createRoutePattern<LoginDestination>()
-      lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-        combine(
-          authTokenService.authStatus.onEach(authStatusLog).filterNotNull().distinctUntilChanged(),
-          demoManager.isDemoMode().distinctUntilChanged(),
-        ) { authStatus: AuthStatus, isDemoMode: Boolean ->
-          authStatus to isDemoMode
-        }.collect { (authStatus, isDemoMode) ->
-          val navBackStackEntry: NavBackStackEntry = hedvigAppState.navController.currentBackStackEntryFlow.first()
-          val isLoggedOut = navBackStackEntry.destination.hierarchy.any { navDestination ->
-            navDestination.route?.contains(loginGraphRoute) == true
-          }
-          if (isLoggedOut) {
-            return@collect
-          }
-          if (!isDemoMode && authStatus !is AuthStatus.LoggedIn) {
-            hedvigAppState.navigateToLoggedOut()
-          }
-        }
-      }
-    }
-  }
-
-  private fun tryShowAppStoreReviewDialog() {
-    val tag = "PlayStoreReview"
-    val manager = ReviewManagerFactory.create(this@MainActivity)
-    logcat(LogPriority.INFO) { "$tag: requestReviewFlow" }
-    manager.requestReviewFlow().apply {
-      addOnFailureListener { logcat(LogPriority.INFO, it) { "$tag: requestReviewFlow failed:${it.message}" } }
-      addOnCanceledListener { logcat(LogPriority.INFO) { "$tag: requestReviewFlow cancelled" } }
-      addOnCompleteListener { task ->
-        if (task.isSuccessful) {
-          logcat(LogPriority.INFO) { "$tag: requestReviewFlow completed" }
-          val reviewInfo = task.result
-          logcat(LogPriority.INFO) { "$tag: launchReviewFlow with ReviewInfo:$reviewInfo" }
-          manager.launchReviewFlow(this@MainActivity, reviewInfo).apply {
-            addOnFailureListener { logcat(LogPriority.INFO, it) { "$tag: launchReviewFlow failed:${it.message}" } }
-            addOnCanceledListener { logcat(LogPriority.INFO) { "$tag: launchReviewFlow canceled" } }
-            addOnCompleteListener { logcat(LogPriority.INFO) { "$tag: launchReviewFlow completed" } }
-          }
-        } else {
-          val exception = task.exception
-          val errorMessage = if (exception != null && exception is ReviewException) {
-            "ReviewException:${exception.message}. ReviewException::errorCode:${exception.errorCode}"
-          } else {
-            "Unknown error with message: ${exception?.message}"
-          }
-          logcat(LogPriority.INFO, exception) { "$tag: requestReviewFlow failed. Error:$errorMessage" }
-        }
-      }
-    }
-  }
-
-  private fun openEmailApp() {
-    openEmail(getString(R.string.login_bottom_sheet_view_code))
-  }
-
   companion object {
-    private const val REVIEW_DIALOG_DELAY_MILLIS = 2000L
-
     fun newInstance(context: Context, withoutHistory: Boolean = false): Intent =
       Intent(context, MainActivity::class.java).apply {
         logcat(LogPriority.INFO) { "LoggedInActivity.newInstance was called. withoutHistory:$withoutHistory" }
@@ -364,6 +217,36 @@ private fun applyTheme(theme: Theme?, uiModeManager: UiModeManager?) {
       }
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         uiModeManager?.setApplicationNightMode(MODE_NIGHT_CUSTOM)
+      }
+    }
+  }
+}
+
+private fun Activity.tryShowAppStoreReviewDialog() {
+  val tag = "PlayStoreReview"
+  val manager = ReviewManagerFactory.create(this)
+  logcat(LogPriority.INFO) { "$tag: requestReviewFlow" }
+  manager.requestReviewFlow().apply {
+    addOnFailureListener { logcat(LogPriority.INFO, it) { "$tag: requestReviewFlow failed:${it.message}" } }
+    addOnCanceledListener { logcat(LogPriority.INFO) { "$tag: requestReviewFlow cancelled" } }
+    addOnCompleteListener { task ->
+      if (task.isSuccessful) {
+        logcat(LogPriority.INFO) { "$tag: requestReviewFlow completed" }
+        val reviewInfo = task.result
+        logcat(LogPriority.INFO) { "$tag: launchReviewFlow with ReviewInfo:$reviewInfo" }
+        manager.launchReviewFlow(this@tryShowAppStoreReviewDialog, reviewInfo).apply {
+          addOnFailureListener { logcat(LogPriority.INFO, it) { "$tag: launchReviewFlow failed:${it.message}" } }
+          addOnCanceledListener { logcat(LogPriority.INFO) { "$tag: launchReviewFlow canceled" } }
+          addOnCompleteListener { logcat(LogPriority.INFO) { "$tag: launchReviewFlow completed" } }
+        }
+      } else {
+        val exception = task.exception
+        val errorMessage = if (exception != null && exception is ReviewException) {
+          "ReviewException:${exception.message}. ReviewException::errorCode:${exception.errorCode}"
+        } else {
+          "Unknown error with message: ${exception?.message}"
+        }
+        logcat(LogPriority.INFO, exception) { "$tag: requestReviewFlow failed. Error:$errorMessage" }
       }
     }
   }
