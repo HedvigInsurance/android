@@ -181,7 +181,6 @@ dependencies {
   implementation(projects.dataContractPublic)
   implementation(projects.dataPayingMember)
   implementation(projects.dataSettingsDatastorePublic)
-  implementation(projects.dataTravelCertificatePublic)
   implementation(projects.datadogCore)
   implementation(projects.datadogDemoTracking)
   implementation(projects.featureChangeaddress)

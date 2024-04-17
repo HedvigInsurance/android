@@ -30,7 +30,7 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.SelectIndicationCircle
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
-import com.hedvig.android.data.travelcertificate.ContractEligibleWithAddress
+import com.hedvig.android.feature.travelcertificate.data.ContractEligibleWithAddress
 import hedvig.resources.R
 
 @Composable

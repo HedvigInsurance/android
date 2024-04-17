@@ -96,8 +96,7 @@ fun NavGraphBuilder.paymentsGraph(
       )
     }
 
-    composable<PaymentsDestinations.Forever>(
-    ) {
+    composable<PaymentsDestinations.Forever> {
       val viewModel: ForeverViewModel = koinViewModel()
       ForeverDestination(
         viewModel = viewModel,

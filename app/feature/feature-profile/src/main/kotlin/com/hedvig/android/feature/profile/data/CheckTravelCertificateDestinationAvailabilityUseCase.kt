@@ -20,7 +20,6 @@ internal class CheckTravelCertificateDestinationAvailabilityUseCaseImpl(
 ) : CheckTravelCertificateDestinationAvailabilityUseCase {
   override suspend fun invoke(): Either<TravelCertificateAvailabilityError, Unit> {
     return either {
-
       val isTravelCertificateEnabledResult = apolloClient.query(TravelCertificateAvailabilityQuery())
         .safeExecute()
         .toEither { message, _ ->
@@ -30,7 +29,9 @@ internal class CheckTravelCertificateDestinationAvailabilityUseCaseImpl(
           it.currentMember.memberActions?.isTravelCertificateEnabled
         }
         .onLeft { errorMessage ->
-          logcat(priority = LogPriority.ERROR) { "CheckTravelCertificateAvailability error. Message: ${errorMessage.message}" }
+          logcat(
+            priority = LogPriority.ERROR,
+          ) { "CheckTravelCertificateAvailability error. Message: ${errorMessage.message}" }
           raise(TravelCertificateAvailabilityError.Error(errorMessage))
         }
       val isTravelCertificateEnabled = isTravelCertificateEnabledResult.getOrNull() == true
