@@ -14,7 +14,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.design.system.hedvig.HedvigTheme
 
 @Suppress("UnusedReceiverParameter")
 val HedvigIcons.CircleFilled: ImageVector
@@ -29,31 +28,33 @@ val HedvigIcons.CircleFilled: ImageVector
       viewportWidth = 24.0f,
       viewportHeight = 24.0f,
     ).apply {
-      // M12 2.5 A9.5 9.5 0 1 0 12 21.5 9.5 9.5 0 1 0 12 2.5z
+      // <circle cx="12.0" cy="12.0" radius="9.5" fill="#121212" />
       path(
         fill = SolidColor(Color(0xFF121212)),
       ) {
-        // M 12 2.5
-        moveTo(x = 12.0f, y = 2.5f)
-        // A 9.5 9.5 0 1 0 12 21.5
-        arcTo(
-          horizontalEllipseRadius = 9.5f,
-          verticalEllipseRadius = 9.5f,
+        // M 12 12
+        moveTo(x = 12.0f, y = 12.0f)
+        // m -9.5 0
+        moveToRelative(dx = -9.5f, dy = 0.0f)
+        // a 9.5 9.5 0 1 1 19 0
+        arcToRelative(
+          a = 9.5f,
+          b = 9.5f,
           theta = 0.0f,
           isMoreThanHalf = true,
-          isPositiveArc = false,
-          x1 = 12.0f,
-          y1 = 21.5f,
+          isPositiveArc = true,
+          dx1 = 19.0f,
+          dy1 = 0.0f,
         )
-        // A 9.5 9.5 0 1 0 12 2.5z
-        arcTo(
-          horizontalEllipseRadius = 9.5f,
-          verticalEllipseRadius = 9.5f,
+        // a 9.5 9.5 0 1 1 -19 0z
+        arcToRelative(
+          a = 9.5f,
+          b = 9.5f,
           theta = 0.0f,
           isMoreThanHalf = true,
-          isPositiveArc = false,
-          x1 = 12.0f,
-          y1 = 2.5f,
+          isPositiveArc = true,
+          dx1 = -19.0f,
+          dy1 = 0.0f,
         )
         close()
       }
@@ -63,7 +64,7 @@ val HedvigIcons.CircleFilled: ImageVector
 @Preview
 @Composable
 private fun IconPreview() {
-  HedvigTheme {
+  com.hedvig.android.design.system.hedvig.HedvigTheme {
     Column(
       verticalArrangement = Arrangement.spacedBy(8.dp),
       horizontalAlignment = Alignment.CenterHorizontally,

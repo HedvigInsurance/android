@@ -14,7 +14,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.design.system.hedvig.HedvigTheme
 
 @Suppress("UnusedReceiverParameter")
 val HedvigIcons.Minus: ImageVector
@@ -29,46 +28,53 @@ val HedvigIcons.Minus: ImageVector
       viewportWidth = 24.0f,
       viewportHeight = 24.0f,
     ).apply {
-      // M5.25 12 A.75 .75 0 0 1 6 11.25 h12 a.75 .75 0 0 1 0 1.5 H6 A.75 .75 0 0 1 5.25 12
+      // M5.25 12 C5.25 11.5858 5.58579 11.25 6 11.25 L18 11.25 C18.4142 11.25 18.75 11.5858 18.75 12 C18.75 12.4142 18.4142 12.75 18 12.75 L6 12.75 C5.58579 12.75 5.25 12.4142 5.25 12Z
       path(
         fill = SolidColor(Color(0xFF121212)),
       ) {
         // M 5.25 12
         moveTo(x = 5.25f, y = 12.0f)
-        // A 0.75 0.75 0 0 1 6 11.25
-        arcTo(
-          horizontalEllipseRadius = 0.75f,
-          verticalEllipseRadius = 0.75f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = true,
-          x1 = 6.0f,
-          y1 = 11.25f,
-        )
-        // h 12
-        horizontalLineToRelative(dx = 12.0f)
-        // a 0.75 0.75 0 0 1 0 1.5
-        arcToRelative(
-          a = 0.75f,
-          b = 0.75f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = true,
-          dx1 = 0.0f,
-          dy1 = 1.5f,
-        )
-        // H 6
-        horizontalLineTo(x = 6.0f)
-        // A 0.75 0.75 0 0 1 5.25 12
-        arcTo(
-          horizontalEllipseRadius = 0.75f,
-          verticalEllipseRadius = 0.75f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = true,
+        // C 5.25 11.5858 5.58579 11.25 6 11.25
+        curveTo(
           x1 = 5.25f,
-          y1 = 12.0f,
+          y1 = 11.5858f,
+          x2 = 5.58579f,
+          y2 = 11.25f,
+          x3 = 6.0f,
+          y3 = 11.25f,
         )
+        // L 18 11.25
+        lineTo(x = 18.0f, y = 11.25f)
+        // C 18.4142 11.25 18.75 11.5858 18.75 12
+        curveTo(
+          x1 = 18.4142f,
+          y1 = 11.25f,
+          x2 = 18.75f,
+          y2 = 11.5858f,
+          x3 = 18.75f,
+          y3 = 12.0f,
+        )
+        // C 18.75 12.4142 18.4142 12.75 18 12.75
+        curveTo(
+          x1 = 18.75f,
+          y1 = 12.4142f,
+          x2 = 18.4142f,
+          y2 = 12.75f,
+          x3 = 18.0f,
+          y3 = 12.75f,
+        )
+        // L 6 12.75
+        lineTo(x = 6.0f, y = 12.75f)
+        // C 5.58579 12.75 5.25 12.4142 5.25 12z
+        curveTo(
+          x1 = 5.58579f,
+          y1 = 12.75f,
+          x2 = 5.25f,
+          y2 = 12.4142f,
+          x3 = 5.25f,
+          y3 = 12.0f,
+        )
+        close()
       }
     }.build().also { _minus = it }
   }
@@ -76,7 +82,7 @@ val HedvigIcons.Minus: ImageVector
 @Preview
 @Composable
 private fun IconPreview() {
-  HedvigTheme {
+  com.hedvig.android.design.system.hedvig.HedvigTheme {
     Column(
       verticalArrangement = Arrangement.spacedBy(8.dp),
       horizontalAlignment = Alignment.CenterHorizontally,

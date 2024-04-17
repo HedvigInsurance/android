@@ -14,7 +14,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.design.system.hedvig.HedvigTheme
 
 @Suppress("UnusedReceiverParameter")
 val HedvigIcons.Notification: ImageVector
@@ -29,128 +28,132 @@ val HedvigIcons.Notification: ImageVector
       viewportWidth = 24.0f,
       viewportHeight = 24.0f,
     ).apply {
-      // M13.67 3.83 c1.14 .14 2.2 .48 2.9 1.3 a6 6 0 0 1 1.27 2.83 l2.12 8.02 c.22 .98 -.53 1.86 -1.48 1.76 H5.63 c-1.06 0 -1.8 -.88 -1.6 -1.76 l2.13 -8.02 a6.5 6.5 0 0 1 1.29 -2.8 c.69 -.84 1.74 -1.19 2.87 -1.32 .23 -.65 .91 -1.09 1.68 -1.09 s1.45 .44 1.67 1.08 m.08 15.89 c0 .88 -.82 1.53 -1.75 1.53 s-1.75 -.65 -1.75 -1.53 c0 -.3 .26 -.47 .5 -.47 h2.5 c.24 0 .5 .18 .5 .47
+      // M13.6746 3.83285 C14.8084 3.96818 15.8703 4.31011 16.5629 5.13666 C17.2573 5.96521 17.6554 6.99419 17.8399 7.95755 L19.9635 15.9812 C20.1759 16.9597 19.4326 17.8404 18.477 17.7425 H5.62904 C4.56723 17.7425 3.82396 16.8619 4.03632 15.9812 L6.15995 7.95755 C6.34555 7.04531 6.74746 6.00019 7.44968 5.15126 C8.13626 4.32124 9.19342 3.974 10.3245 3.8355 C10.5464 3.19089 11.2349 2.75 12 2.75 C12.7641 2.75 13.4518 3.18968 13.6746 3.83285Z M13.75 19.7167 C13.75 20.5961 12.9318 21.25 12 21.25 C11.0682 21.25 10.25 20.5961 10.25 19.7167 C10.25 19.4263 10.511 19.25 10.7556 19.25 H13.2444 C13.489 19.25 13.75 19.4263 13.75 19.7167Z
       path(
         fill = SolidColor(Color(0xFF121212)),
       ) {
-        // M 13.67 3.83
-        moveTo(x = 13.67f, y = 3.83f)
-        // c 1.14 0.14 2.2 0.48 2.9 1.3
-        curveToRelative(
-          dx1 = 1.14f,
-          dy1 = 0.14f,
-          dx2 = 2.2f,
-          dy2 = 0.48f,
-          dx3 = 2.9f,
-          dy3 = 1.3f,
+        // M 13.6746 3.83285
+        moveTo(x = 13.6746f, y = 3.83285f)
+        // C 14.8084 3.96818 15.8703 4.31011 16.5629 5.13666
+        curveTo(
+          x1 = 14.8084f,
+          y1 = 3.96818f,
+          x2 = 15.8703f,
+          y2 = 4.31011f,
+          x3 = 16.5629f,
+          y3 = 5.13666f,
         )
-        // a 6 6 0 0 1 1.27 2.83
-        arcToRelative(
-          a = 6.0f,
-          b = 6.0f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = true,
-          dx1 = 1.27f,
-          dy1 = 2.83f,
+        // C 17.2573 5.96521 17.6554 6.99419 17.8399 7.95755
+        curveTo(
+          x1 = 17.2573f,
+          y1 = 5.96521f,
+          x2 = 17.6554f,
+          y2 = 6.99419f,
+          x3 = 17.8399f,
+          y3 = 7.95755f,
         )
-        // l 2.12 8.02
-        lineToRelative(dx = 2.12f, dy = 8.02f)
-        // c 0.22 0.98 -0.53 1.86 -1.48 1.76
-        curveToRelative(
-          dx1 = 0.22f,
-          dy1 = 0.98f,
-          dx2 = -0.53f,
-          dy2 = 1.86f,
-          dx3 = -1.48f,
-          dy3 = 1.76f,
+        // L 19.9635 15.9812
+        lineTo(x = 19.9635f, y = 15.9812f)
+        // C 20.1759 16.9597 19.4326 17.8404 18.477 17.7425
+        curveTo(
+          x1 = 20.1759f,
+          y1 = 16.9597f,
+          x2 = 19.4326f,
+          y2 = 17.8404f,
+          x3 = 18.477f,
+          y3 = 17.7425f,
         )
-        // H 5.63
-        horizontalLineTo(x = 5.63f)
-        // c -1.06 0 -1.8 -0.88 -1.6 -1.76
-        curveToRelative(
-          dx1 = -1.06f,
-          dy1 = 0.0f,
-          dx2 = -1.8f,
-          dy2 = -0.88f,
-          dx3 = -1.6f,
-          dy3 = -1.76f,
+        // H 5.62904
+        horizontalLineTo(x = 5.62904f)
+        // C 4.56723 17.7425 3.82396 16.8619 4.03632 15.9812
+        curveTo(
+          x1 = 4.56723f,
+          y1 = 17.7425f,
+          x2 = 3.82396f,
+          y2 = 16.8619f,
+          x3 = 4.03632f,
+          y3 = 15.9812f,
         )
-        // l 2.13 -8.02
-        lineToRelative(dx = 2.13f, dy = -8.02f)
-        // a 6.5 6.5 0 0 1 1.29 -2.8
-        arcToRelative(
-          a = 6.5f,
-          b = 6.5f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = true,
-          dx1 = 1.29f,
-          dy1 = -2.8f,
+        // L 6.15995 7.95755
+        lineTo(x = 6.15995f, y = 7.95755f)
+        // C 6.34555 7.04531 6.74746 6.00019 7.44968 5.15126
+        curveTo(
+          x1 = 6.34555f,
+          y1 = 7.04531f,
+          x2 = 6.74746f,
+          y2 = 6.00019f,
+          x3 = 7.44968f,
+          y3 = 5.15126f,
         )
-        // c 0.69 -0.84 1.74 -1.19 2.87 -1.32
-        curveToRelative(
-          dx1 = 0.69f,
-          dy1 = -0.84f,
-          dx2 = 1.74f,
-          dy2 = -1.19f,
-          dx3 = 2.87f,
-          dy3 = -1.32f,
+        // C 8.13626 4.32124 9.19342 3.974 10.3245 3.8355
+        curveTo(
+          x1 = 8.13626f,
+          y1 = 4.32124f,
+          x2 = 9.19342f,
+          y2 = 3.974f,
+          x3 = 10.3245f,
+          y3 = 3.8355f,
         )
-        // c 0.23 -0.65 0.91 -1.09 1.68 -1.09
-        curveToRelative(
-          dx1 = 0.23f,
-          dy1 = -0.65f,
-          dx2 = 0.91f,
-          dy2 = -1.09f,
-          dx3 = 1.68f,
-          dy3 = -1.09f,
+        // C 10.5464 3.19089 11.2349 2.75 12 2.75
+        curveTo(
+          x1 = 10.5464f,
+          y1 = 3.19089f,
+          x2 = 11.2349f,
+          y2 = 2.75f,
+          x3 = 12.0f,
+          y3 = 2.75f,
         )
-        // s 1.45 0.44 1.67 1.08
-        reflectiveCurveToRelative(
-          dx1 = 1.45f,
-          dy1 = 0.44f,
-          dx2 = 1.67f,
-          dy2 = 1.08f,
+        // C 12.7641 2.75 13.4518 3.18968 13.6746 3.83285z
+        curveTo(
+          x1 = 12.7641f,
+          y1 = 2.75f,
+          x2 = 13.4518f,
+          y2 = 3.18968f,
+          x3 = 13.6746f,
+          y3 = 3.83285f,
         )
-        // m 0.08 15.89
-        moveToRelative(dx = 0.08f, dy = 15.89f)
-        // c 0 0.88 -0.82 1.53 -1.75 1.53
-        curveToRelative(
-          dx1 = 0.0f,
-          dy1 = 0.88f,
-          dx2 = -0.82f,
-          dy2 = 1.53f,
-          dx3 = -1.75f,
-          dy3 = 1.53f,
+        close()
+        // M 13.75 19.7167
+        moveTo(x = 13.75f, y = 19.7167f)
+        // C 13.75 20.5961 12.9318 21.25 12 21.25
+        curveTo(
+          x1 = 13.75f,
+          y1 = 20.5961f,
+          x2 = 12.9318f,
+          y2 = 21.25f,
+          x3 = 12.0f,
+          y3 = 21.25f,
         )
-        // s -1.75 -0.65 -1.75 -1.53
-        reflectiveCurveToRelative(
-          dx1 = -1.75f,
-          dy1 = -0.65f,
-          dx2 = -1.75f,
-          dy2 = -1.53f,
+        // C 11.0682 21.25 10.25 20.5961 10.25 19.7167
+        curveTo(
+          x1 = 11.0682f,
+          y1 = 21.25f,
+          x2 = 10.25f,
+          y2 = 20.5961f,
+          x3 = 10.25f,
+          y3 = 19.7167f,
         )
-        // c 0 -0.3 0.26 -0.47 0.5 -0.47
-        curveToRelative(
-          dx1 = 0.0f,
-          dy1 = -0.3f,
-          dx2 = 0.26f,
-          dy2 = -0.47f,
-          dx3 = 0.5f,
-          dy3 = -0.47f,
+        // C 10.25 19.4263 10.511 19.25 10.7556 19.25
+        curveTo(
+          x1 = 10.25f,
+          y1 = 19.4263f,
+          x2 = 10.511f,
+          y2 = 19.25f,
+          x3 = 10.7556f,
+          y3 = 19.25f,
         )
-        // h 2.5
-        horizontalLineToRelative(dx = 2.5f)
-        // c 0.24 0 0.5 0.18 0.5 0.47
-        curveToRelative(
-          dx1 = 0.24f,
-          dy1 = 0.0f,
-          dx2 = 0.5f,
-          dy2 = 0.18f,
-          dx3 = 0.5f,
-          dy3 = 0.47f,
+        // H 13.2444
+        horizontalLineTo(x = 13.2444f)
+        // C 13.489 19.25 13.75 19.4263 13.75 19.7167z
+        curveTo(
+          x1 = 13.489f,
+          y1 = 19.25f,
+          x2 = 13.75f,
+          y2 = 19.4263f,
+          x3 = 13.75f,
+          y3 = 19.7167f,
         )
+        close()
       }
     }.build().also { _notification = it }
   }
@@ -158,7 +161,7 @@ val HedvigIcons.Notification: ImageVector
 @Preview
 @Composable
 private fun IconPreview() {
-  HedvigTheme {
+  com.hedvig.android.design.system.hedvig.HedvigTheme {
     Column(
       verticalArrangement = Arrangement.spacedBy(8.dp),
       horizontalAlignment = Alignment.CenterHorizontally,

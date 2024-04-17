@@ -14,7 +14,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.design.system.hedvig.HedvigTheme
 
 @Suppress("UnusedReceiverParameter")
 val HedvigIcons.ChevronRightSmall: ImageVector
@@ -29,70 +28,75 @@ val HedvigIcons.ChevronRightSmall: ImageVector
       viewportWidth = 24.0f,
       viewportHeight = 24.0f,
     ).apply {
-      // M9.47 17.53 a.75 .75 0 0 1 0 -1.06 l4.3 -4.3 a.25 .25 0 0 0 0 -.35 l-4.3 -4.29 a.75 .75 0 0 1 1.06 -1.06 l4.3 4.3 a1.75 1.75 0 0 1 0 2.47 l-4.3 4.29 a.75 .75 0 0 1 -1.06 0
+      // M9.46967 17.5303 C9.17678 17.2374 9.17678 16.7626 9.46967 16.4697 L13.7626 12.1768 C13.8602 12.0791 13.8602 11.9209 13.7626 11.8232 L9.46967 7.53033 C9.17678 7.23744 9.17678 6.76256 9.46967 6.46967 C9.76256 6.17678 10.2374 6.17678 10.5303 6.46967 L14.8232 10.7626 C15.5066 11.446 15.5066 12.554 14.8232 13.2374 L10.5303 17.5303 C10.2374 17.8232 9.76256 17.8232 9.46967 17.5303Z
       path(
         fill = SolidColor(Color(0xFF121212)),
       ) {
-        // M 9.47 17.53
-        moveTo(x = 9.47f, y = 17.53f)
-        // a 0.75 0.75 0 0 1 0 -1.06
-        arcToRelative(
-          a = 0.75f,
-          b = 0.75f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = true,
-          dx1 = 0.0f,
-          dy1 = -1.06f,
+        // M 9.46967 17.5303
+        moveTo(x = 9.46967f, y = 17.5303f)
+        // C 9.17678 17.2374 9.17678 16.7626 9.46967 16.4697
+        curveTo(
+          x1 = 9.17678f,
+          y1 = 17.2374f,
+          x2 = 9.17678f,
+          y2 = 16.7626f,
+          x3 = 9.46967f,
+          y3 = 16.4697f,
         )
-        // l 4.3 -4.3
-        lineToRelative(dx = 4.3f, dy = -4.3f)
-        // a 0.25 0.25 0 0 0 0 -0.35
-        arcToRelative(
-          a = 0.25f,
-          b = 0.25f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = false,
-          dx1 = 0.0f,
-          dy1 = -0.35f,
+        // L 13.7626 12.1768
+        lineTo(x = 13.7626f, y = 12.1768f)
+        // C 13.8602 12.0791 13.8602 11.9209 13.7626 11.8232
+        curveTo(
+          x1 = 13.8602f,
+          y1 = 12.0791f,
+          x2 = 13.8602f,
+          y2 = 11.9209f,
+          x3 = 13.7626f,
+          y3 = 11.8232f,
         )
-        // l -4.3 -4.29
-        lineToRelative(dx = -4.3f, dy = -4.29f)
-        // a 0.75 0.75 0 0 1 1.06 -1.06
-        arcToRelative(
-          a = 0.75f,
-          b = 0.75f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = true,
-          dx1 = 1.06f,
-          dy1 = -1.06f,
+        // L 9.46967 7.53033
+        lineTo(x = 9.46967f, y = 7.53033f)
+        // C 9.17678 7.23744 9.17678 6.76256 9.46967 6.46967
+        curveTo(
+          x1 = 9.17678f,
+          y1 = 7.23744f,
+          x2 = 9.17678f,
+          y2 = 6.76256f,
+          x3 = 9.46967f,
+          y3 = 6.46967f,
         )
-        // l 4.3 4.3
-        lineToRelative(dx = 4.3f, dy = 4.3f)
-        // a 1.75 1.75 0 0 1 0 2.47
-        arcToRelative(
-          a = 1.75f,
-          b = 1.75f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = true,
-          dx1 = 0.0f,
-          dy1 = 2.47f,
+        // C 9.76256 6.17678 10.2374 6.17678 10.5303 6.46967
+        curveTo(
+          x1 = 9.76256f,
+          y1 = 6.17678f,
+          x2 = 10.2374f,
+          y2 = 6.17678f,
+          x3 = 10.5303f,
+          y3 = 6.46967f,
         )
-        // l -4.3 4.29
-        lineToRelative(dx = -4.3f, dy = 4.29f)
-        // a 0.75 0.75 0 0 1 -1.06 0
-        arcToRelative(
-          a = 0.75f,
-          b = 0.75f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = true,
-          dx1 = -1.06f,
-          dy1 = 0.0f,
+        // L 14.8232 10.7626
+        lineTo(x = 14.8232f, y = 10.7626f)
+        // C 15.5066 11.446 15.5066 12.554 14.8232 13.2374
+        curveTo(
+          x1 = 15.5066f,
+          y1 = 11.446f,
+          x2 = 15.5066f,
+          y2 = 12.554f,
+          x3 = 14.8232f,
+          y3 = 13.2374f,
         )
+        // L 10.5303 17.5303
+        lineTo(x = 10.5303f, y = 17.5303f)
+        // C 10.2374 17.8232 9.76256 17.8232 9.46967 17.5303z
+        curveTo(
+          x1 = 10.2374f,
+          y1 = 17.8232f,
+          x2 = 9.76256f,
+          y2 = 17.8232f,
+          x3 = 9.46967f,
+          y3 = 17.5303f,
+        )
+        close()
       }
     }.build().also { _chevronRightSmall = it }
   }
@@ -100,7 +104,7 @@ val HedvigIcons.ChevronRightSmall: ImageVector
 @Preview
 @Composable
 private fun IconPreview() {
-  HedvigTheme {
+  com.hedvig.android.design.system.hedvig.HedvigTheme {
     Column(
       verticalArrangement = Arrangement.spacedBy(8.dp),
       horizontalAlignment = Alignment.CenterHorizontally,

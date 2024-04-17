@@ -14,7 +14,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.design.system.hedvig.HedvigTheme
 
 @Suppress("UnusedReceiverParameter")
 val HedvigIcons.Copy: ImageVector
@@ -29,188 +28,180 @@ val HedvigIcons.Copy: ImageVector
       viewportWidth = 24.0f,
       viewportHeight = 24.0f,
     ).apply {
-      // M10.89 1.75 A2.75 2.75 0 0 0 8.14 4.5 v.7 H7 a2.75 2.75 0 0 0 -2.75 2.75 V19.5 A2.75 2.75 0 0 0 7 22.25 h6.11 a2.75 2.75 0 0 0 2.75 -2.75 v-.7 H17 a2.75 2.75 0 0 0 2.75 -2.75 V4.5 A2.75 2.75 0 0 0 17 1.75z m4.97 15.55 H17 a1.25 1.25 0 0 0 1.25 -1.25 V4.5 A1.25 1.25 0 0 0 17 3.25 h-6.11 A1.25 1.25 0 0 0 9.64 4.5 v.7 h3.47 a2.75 2.75 0 0 1 2.75 2.75z M5.75 7.95 A1.25 1.25 0 0 1 7 6.7 h6.11 a1.25 1.25 0 0 1 1.25 1.25 V19.5 a1.25 1.25 0 0 1 -1.25 1.25 H7 a1.25 1.25 0 0 1 -1.25 -1.25z
+      // M10.8888 1.75 C9.37001 1.75 8.13879 2.98122 8.13879 4.5 V5.20459 H7 C5.48122 5.20459 4.25 6.43581 4.25 7.95459 V19.5 C4.25 21.0188 5.48122 22.25 7 22.25 H13.1111 C14.6299 22.25 15.8611 21.0188 15.8611 19.5 V18.7955 H16.9999 C18.5187 18.7955 19.7499 17.5642 19.7499 16.0455 V4.5 C19.7499 2.98122 18.5187 1.75 16.9999 1.75 H10.8888Z M15.8611 17.2955 H16.9999 C17.6903 17.2955 18.2499 16.7358 18.2499 16.0455 V4.5 C18.2499 3.80964 17.6903 3.25 16.9999 3.25 H10.8888 C10.1984 3.25 9.63879 3.80964 9.63879 4.5 V5.20459 H13.1111 C14.6299 5.20459 15.8611 6.43581 15.8611 7.95459 V17.2955Z M5.75 7.95459 C5.75 7.26424 6.30965 6.70459 7 6.70459 H13.1111 C13.8015 6.70459 14.3611 7.26423 14.3611 7.95459 V19.5 C14.3611 20.1904 13.8015 20.75 13.1111 20.75 H7 C6.30964 20.75 5.75 20.1904 5.75 19.5 V7.95459Z
       path(
         fill = SolidColor(Color(0xFF121212)),
       ) {
-        // M 10.89 1.75
-        moveTo(x = 10.89f, y = 1.75f)
-        // A 2.75 2.75 0 0 0 8.14 4.5
-        arcTo(
-          horizontalEllipseRadius = 2.75f,
-          verticalEllipseRadius = 2.75f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = false,
-          x1 = 8.14f,
-          y1 = 4.5f,
-        )
-        // v 0.7
-        verticalLineToRelative(dy = 0.7f)
-        // H 7
-        horizontalLineTo(x = 7.0f)
-        // a 2.75 2.75 0 0 0 -2.75 2.75
-        arcToRelative(
-          a = 2.75f,
-          b = 2.75f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = false,
-          dx1 = -2.75f,
-          dy1 = 2.75f,
-        )
-        // V 19.5
-        verticalLineTo(y = 19.5f)
-        // A 2.75 2.75 0 0 0 7 22.25
-        arcTo(
-          horizontalEllipseRadius = 2.75f,
-          verticalEllipseRadius = 2.75f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = false,
-          x1 = 7.0f,
-          y1 = 22.25f,
-        )
-        // h 6.11
-        horizontalLineToRelative(dx = 6.11f)
-        // a 2.75 2.75 0 0 0 2.75 -2.75
-        arcToRelative(
-          a = 2.75f,
-          b = 2.75f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = false,
-          dx1 = 2.75f,
-          dy1 = -2.75f,
-        )
-        // v -0.7
-        verticalLineToRelative(dy = -0.7f)
-        // H 17
-        horizontalLineTo(x = 17.0f)
-        // a 2.75 2.75 0 0 0 2.75 -2.75
-        arcToRelative(
-          a = 2.75f,
-          b = 2.75f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = false,
-          dx1 = 2.75f,
-          dy1 = -2.75f,
-        )
-        // V 4.5
-        verticalLineTo(y = 4.5f)
-        // A 2.75 2.75 0 0 0 17 1.75z
-        arcTo(
-          horizontalEllipseRadius = 2.75f,
-          verticalEllipseRadius = 2.75f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = false,
-          x1 = 17.0f,
+        // M 10.8888 1.75
+        moveTo(x = 10.8888f, y = 1.75f)
+        // C 9.37001 1.75 8.13879 2.98122 8.13879 4.5
+        curveTo(
+          x1 = 9.37001f,
           y1 = 1.75f,
+          x2 = 8.13879f,
+          y2 = 2.98122f,
+          x3 = 8.13879f,
+          y3 = 4.5f,
         )
-        close()
-        // m 4.97 15.55
-        moveToRelative(dx = 4.97f, dy = 15.55f)
-        // H 17
-        horizontalLineTo(x = 17.0f)
-        // a 1.25 1.25 0 0 0 1.25 -1.25
-        arcToRelative(
-          a = 1.25f,
-          b = 1.25f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = false,
-          dx1 = 1.25f,
-          dy1 = -1.25f,
-        )
-        // V 4.5
-        verticalLineTo(y = 4.5f)
-        // A 1.25 1.25 0 0 0 17 3.25
-        arcTo(
-          horizontalEllipseRadius = 1.25f,
-          verticalEllipseRadius = 1.25f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = false,
-          x1 = 17.0f,
-          y1 = 3.25f,
-        )
-        // h -6.11
-        horizontalLineToRelative(dx = -6.11f)
-        // A 1.25 1.25 0 0 0 9.64 4.5
-        arcTo(
-          horizontalEllipseRadius = 1.25f,
-          verticalEllipseRadius = 1.25f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = false,
-          x1 = 9.64f,
-          y1 = 4.5f,
-        )
-        // v 0.7
-        verticalLineToRelative(dy = 0.7f)
-        // h 3.47
-        horizontalLineToRelative(dx = 3.47f)
-        // a 2.75 2.75 0 0 1 2.75 2.75z
-        arcToRelative(
-          a = 2.75f,
-          b = 2.75f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = true,
-          dx1 = 2.75f,
-          dy1 = 2.75f,
-        )
-        close()
-        // M 5.75 7.95
-        moveTo(x = 5.75f, y = 7.95f)
-        // A 1.25 1.25 0 0 1 7 6.7
-        arcTo(
-          horizontalEllipseRadius = 1.25f,
-          verticalEllipseRadius = 1.25f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = true,
-          x1 = 7.0f,
-          y1 = 6.7f,
-        )
-        // h 6.11
-        horizontalLineToRelative(dx = 6.11f)
-        // a 1.25 1.25 0 0 1 1.25 1.25
-        arcToRelative(
-          a = 1.25f,
-          b = 1.25f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = true,
-          dx1 = 1.25f,
-          dy1 = 1.25f,
+        // V 5.20459
+        verticalLineTo(y = 5.20459f)
+        // H 7
+        horizontalLineTo(x = 7.0f)
+        // C 5.48122 5.20459 4.25 6.43581 4.25 7.95459
+        curveTo(
+          x1 = 5.48122f,
+          y1 = 5.20459f,
+          x2 = 4.25f,
+          y2 = 6.43581f,
+          x3 = 4.25f,
+          y3 = 7.95459f,
         )
         // V 19.5
         verticalLineTo(y = 19.5f)
-        // a 1.25 1.25 0 0 1 -1.25 1.25
-        arcToRelative(
-          a = 1.25f,
-          b = 1.25f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = true,
-          dx1 = -1.25f,
-          dy1 = 1.25f,
+        // C 4.25 21.0188 5.48122 22.25 7 22.25
+        curveTo(
+          x1 = 4.25f,
+          y1 = 21.0188f,
+          x2 = 5.48122f,
+          y2 = 22.25f,
+          x3 = 7.0f,
+          y3 = 22.25f,
+        )
+        // H 13.1111
+        horizontalLineTo(x = 13.1111f)
+        // C 14.6299 22.25 15.8611 21.0188 15.8611 19.5
+        curveTo(
+          x1 = 14.6299f,
+          y1 = 22.25f,
+          x2 = 15.8611f,
+          y2 = 21.0188f,
+          x3 = 15.8611f,
+          y3 = 19.5f,
+        )
+        // V 18.7955
+        verticalLineTo(y = 18.7955f)
+        // H 16.9999
+        horizontalLineTo(x = 16.9999f)
+        // C 18.5187 18.7955 19.7499 17.5642 19.7499 16.0455
+        curveTo(
+          x1 = 18.5187f,
+          y1 = 18.7955f,
+          x2 = 19.7499f,
+          y2 = 17.5642f,
+          x3 = 19.7499f,
+          y3 = 16.0455f,
+        )
+        // V 4.5
+        verticalLineTo(y = 4.5f)
+        // C 19.7499 2.98122 18.5187 1.75 16.9999 1.75
+        curveTo(
+          x1 = 19.7499f,
+          y1 = 2.98122f,
+          x2 = 18.5187f,
+          y2 = 1.75f,
+          x3 = 16.9999f,
+          y3 = 1.75f,
+        )
+        // H 10.8888z
+        horizontalLineTo(x = 10.8888f)
+        close()
+        // M 15.8611 17.2955
+        moveTo(x = 15.8611f, y = 17.2955f)
+        // H 16.9999
+        horizontalLineTo(x = 16.9999f)
+        // C 17.6903 17.2955 18.2499 16.7358 18.2499 16.0455
+        curveTo(
+          x1 = 17.6903f,
+          y1 = 17.2955f,
+          x2 = 18.2499f,
+          y2 = 16.7358f,
+          x3 = 18.2499f,
+          y3 = 16.0455f,
+        )
+        // V 4.5
+        verticalLineTo(y = 4.5f)
+        // C 18.2499 3.80964 17.6903 3.25 16.9999 3.25
+        curveTo(
+          x1 = 18.2499f,
+          y1 = 3.80964f,
+          x2 = 17.6903f,
+          y2 = 3.25f,
+          x3 = 16.9999f,
+          y3 = 3.25f,
+        )
+        // H 10.8888
+        horizontalLineTo(x = 10.8888f)
+        // C 10.1984 3.25 9.63879 3.80964 9.63879 4.5
+        curveTo(
+          x1 = 10.1984f,
+          y1 = 3.25f,
+          x2 = 9.63879f,
+          y2 = 3.80964f,
+          x3 = 9.63879f,
+          y3 = 4.5f,
+        )
+        // V 5.20459
+        verticalLineTo(y = 5.20459f)
+        // H 13.1111
+        horizontalLineTo(x = 13.1111f)
+        // C 14.6299 5.20459 15.8611 6.43581 15.8611 7.95459
+        curveTo(
+          x1 = 14.6299f,
+          y1 = 5.20459f,
+          x2 = 15.8611f,
+          y2 = 6.43581f,
+          x3 = 15.8611f,
+          y3 = 7.95459f,
+        )
+        // V 17.2955z
+        verticalLineTo(y = 17.2955f)
+        close()
+        // M 5.75 7.95459
+        moveTo(x = 5.75f, y = 7.95459f)
+        // C 5.75 7.26424 6.30965 6.70459 7 6.70459
+        curveTo(
+          x1 = 5.75f,
+          y1 = 7.26424f,
+          x2 = 6.30965f,
+          y2 = 6.70459f,
+          x3 = 7.0f,
+          y3 = 6.70459f,
+        )
+        // H 13.1111
+        horizontalLineTo(x = 13.1111f)
+        // C 13.8015 6.70459 14.3611 7.26423 14.3611 7.95459
+        curveTo(
+          x1 = 13.8015f,
+          y1 = 6.70459f,
+          x2 = 14.3611f,
+          y2 = 7.26423f,
+          x3 = 14.3611f,
+          y3 = 7.95459f,
+        )
+        // V 19.5
+        verticalLineTo(y = 19.5f)
+        // C 14.3611 20.1904 13.8015 20.75 13.1111 20.75
+        curveTo(
+          x1 = 14.3611f,
+          y1 = 20.1904f,
+          x2 = 13.8015f,
+          y2 = 20.75f,
+          x3 = 13.1111f,
+          y3 = 20.75f,
         )
         // H 7
         horizontalLineTo(x = 7.0f)
-        // a 1.25 1.25 0 0 1 -1.25 -1.25z
-        arcToRelative(
-          a = 1.25f,
-          b = 1.25f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = true,
-          dx1 = -1.25f,
-          dy1 = -1.25f,
+        // C 6.30964 20.75 5.75 20.1904 5.75 19.5
+        curveTo(
+          x1 = 6.30964f,
+          y1 = 20.75f,
+          x2 = 5.75f,
+          y2 = 20.1904f,
+          x3 = 5.75f,
+          y3 = 19.5f,
         )
+        // V 7.95459z
+        verticalLineTo(y = 7.95459f)
         close()
       }
     }.build().also { _copy = it }
@@ -219,7 +210,7 @@ val HedvigIcons.Copy: ImageVector
 @Preview
 @Composable
 private fun IconPreview() {
-  HedvigTheme {
+  com.hedvig.android.design.system.hedvig.HedvigTheme {
     Column(
       verticalArrangement = Arrangement.spacedBy(8.dp),
       horizontalAlignment = Alignment.CenterHorizontally,

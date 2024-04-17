@@ -14,7 +14,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.design.system.hedvig.HedvigTheme
 
 @Suppress("UnusedReceiverParameter")
 val HedvigIcons.Plus: ImageVector
@@ -29,66 +28,100 @@ val HedvigIcons.Plus: ImageVector
       viewportWidth = 24.0f,
       viewportHeight = 24.0f,
     ).apply {
-      // M18 12.75 a.75 .75 0 0 0 0 -1.5 h-5.25 V6 a.75 .75 0 0 0 -1.5 0 v5.25 H6 a.75 .75 0 0 0 0 1.5 h5.25 V18 a.75 .75 0 0 0 1.5 0 v-5.25z
+      // M18 12.75 C18.4142 12.75 18.75 12.4142 18.75 12 C18.75 11.5858 18.4142 11.25 18 11.25 L12.75 11.25 L12.75 6 C12.75 5.58579 12.4142 5.25 12 5.25 C11.5858 5.25 11.25 5.58579 11.25 6 L11.25 11.25 L6 11.25 C5.58579 11.25 5.25 11.5858 5.25 12 C5.25 12.4142 5.58579 12.75 6 12.75 L11.25 12.75 L11.25 18 C11.25 18.4142 11.5858 18.75 12 18.75 C12.4142 18.75 12.75 18.4142 12.75 18 L12.75 12.75 L18 12.75Z
       path(
         fill = SolidColor(Color(0xFF121212)),
       ) {
         // M 18 12.75
         moveTo(x = 18.0f, y = 12.75f)
-        // a 0.75 0.75 0 0 0 0 -1.5
-        arcToRelative(
-          a = 0.75f,
-          b = 0.75f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = false,
-          dx1 = 0.0f,
-          dy1 = -1.5f,
+        // C 18.4142 12.75 18.75 12.4142 18.75 12
+        curveTo(
+          x1 = 18.4142f,
+          y1 = 12.75f,
+          x2 = 18.75f,
+          y2 = 12.4142f,
+          x3 = 18.75f,
+          y3 = 12.0f,
         )
-        // h -5.25
-        horizontalLineToRelative(dx = -5.25f)
-        // V 6
-        verticalLineTo(y = 6.0f)
-        // a 0.75 0.75 0 0 0 -1.5 0
-        arcToRelative(
-          a = 0.75f,
-          b = 0.75f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = false,
-          dx1 = -1.5f,
-          dy1 = 0.0f,
+        // C 18.75 11.5858 18.4142 11.25 18 11.25
+        curveTo(
+          x1 = 18.75f,
+          y1 = 11.5858f,
+          x2 = 18.4142f,
+          y2 = 11.25f,
+          x3 = 18.0f,
+          y3 = 11.25f,
         )
-        // v 5.25
-        verticalLineToRelative(dy = 5.25f)
-        // H 6
-        horizontalLineTo(x = 6.0f)
-        // a 0.75 0.75 0 0 0 0 1.5
-        arcToRelative(
-          a = 0.75f,
-          b = 0.75f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = false,
-          dx1 = 0.0f,
-          dy1 = 1.5f,
+        // L 12.75 11.25
+        lineTo(x = 12.75f, y = 11.25f)
+        // L 12.75 6
+        lineTo(x = 12.75f, y = 6.0f)
+        // C 12.75 5.58579 12.4142 5.25 12 5.25
+        curveTo(
+          x1 = 12.75f,
+          y1 = 5.58579f,
+          x2 = 12.4142f,
+          y2 = 5.25f,
+          x3 = 12.0f,
+          y3 = 5.25f,
         )
-        // h 5.25
-        horizontalLineToRelative(dx = 5.25f)
-        // V 18
-        verticalLineTo(y = 18.0f)
-        // a 0.75 0.75 0 0 0 1.5 0
-        arcToRelative(
-          a = 0.75f,
-          b = 0.75f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = false,
-          dx1 = 1.5f,
-          dy1 = 0.0f,
+        // C 11.5858 5.25 11.25 5.58579 11.25 6
+        curveTo(
+          x1 = 11.5858f,
+          y1 = 5.25f,
+          x2 = 11.25f,
+          y2 = 5.58579f,
+          x3 = 11.25f,
+          y3 = 6.0f,
         )
-        // v -5.25z
-        verticalLineToRelative(dy = -5.25f)
+        // L 11.25 11.25
+        lineTo(x = 11.25f, y = 11.25f)
+        // L 6 11.25
+        lineTo(x = 6.0f, y = 11.25f)
+        // C 5.58579 11.25 5.25 11.5858 5.25 12
+        curveTo(
+          x1 = 5.58579f,
+          y1 = 11.25f,
+          x2 = 5.25f,
+          y2 = 11.5858f,
+          x3 = 5.25f,
+          y3 = 12.0f,
+        )
+        // C 5.25 12.4142 5.58579 12.75 6 12.75
+        curveTo(
+          x1 = 5.25f,
+          y1 = 12.4142f,
+          x2 = 5.58579f,
+          y2 = 12.75f,
+          x3 = 6.0f,
+          y3 = 12.75f,
+        )
+        // L 11.25 12.75
+        lineTo(x = 11.25f, y = 12.75f)
+        // L 11.25 18
+        lineTo(x = 11.25f, y = 18.0f)
+        // C 11.25 18.4142 11.5858 18.75 12 18.75
+        curveTo(
+          x1 = 11.25f,
+          y1 = 18.4142f,
+          x2 = 11.5858f,
+          y2 = 18.75f,
+          x3 = 12.0f,
+          y3 = 18.75f,
+        )
+        // C 12.4142 18.75 12.75 18.4142 12.75 18
+        curveTo(
+          x1 = 12.4142f,
+          y1 = 18.75f,
+          x2 = 12.75f,
+          y2 = 18.4142f,
+          x3 = 12.75f,
+          y3 = 18.0f,
+        )
+        // L 12.75 12.75
+        lineTo(x = 12.75f, y = 12.75f)
+        // L 18 12.75z
+        lineTo(x = 18.0f, y = 12.75f)
         close()
       }
     }.build().also { _plus = it }
@@ -97,7 +130,7 @@ val HedvigIcons.Plus: ImageVector
 @Preview
 @Composable
 private fun IconPreview() {
-  HedvigTheme {
+  com.hedvig.android.design.system.hedvig.HedvigTheme {
     Column(
       verticalArrangement = Arrangement.spacedBy(8.dp),
       horizontalAlignment = Alignment.CenterHorizontally,

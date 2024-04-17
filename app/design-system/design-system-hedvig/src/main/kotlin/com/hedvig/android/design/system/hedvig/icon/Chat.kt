@@ -14,7 +14,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.design.system.hedvig.HedvigTheme
 
 @Suppress("UnusedReceiverParameter")
 val HedvigIcons.Chat: ImageVector
@@ -29,66 +28,89 @@ val HedvigIcons.Chat: ImageVector
       viewportWidth = 24.0f,
       viewportHeight = 24.0f,
     ).apply {
-      // M21.5 12 a9.5 9.5 0 0 1 -13.38 8.67 1 1 0 0 0 -.76 -.05 l-4.01 1.29 a1 1 0 0 1 -1.26 -1.26 l1.29 -4.01 a1 1 0 0 0 -.05 -.76 A9.5 9.5 0 1 1 21.5 12
+      // M21.5 12 C21.5 17.2467 17.2467 21.5 12 21.5 C10.6182 21.5 9.30527 21.205 8.12082 20.6745 C7.88245 20.5677 7.61343 20.5445 7.36467 20.6241 L3.34833 21.9088 C2.5741 22.1564 1.84356 21.4259 2.09121 20.6517 L3.37588 16.6353 C3.45545 16.3866 3.43227 16.1175 3.32551 15.8792 C2.79502 14.6947 2.5 13.3818 2.5 12 C2.5 6.75329 6.7533 2.5 12 2.5 C17.2467 2.5 21.5 6.75329 21.5 12Z
       path(
         fill = SolidColor(Color(0xFF121212)),
       ) {
         // M 21.5 12
         moveTo(x = 21.5f, y = 12.0f)
-        // a 9.5 9.5 0 0 1 -13.38 8.67
-        arcToRelative(
-          a = 9.5f,
-          b = 9.5f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = true,
-          dx1 = -13.38f,
-          dy1 = 8.67f,
-        )
-        // a 1 1 0 0 0 -0.76 -0.05
-        arcToRelative(
-          a = 1.0f,
-          b = 1.0f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = false,
-          dx1 = -0.76f,
-          dy1 = -0.05f,
-        )
-        // l -4.01 1.29
-        lineToRelative(dx = -4.01f, dy = 1.29f)
-        // a 1 1 0 0 1 -1.26 -1.26
-        arcToRelative(
-          a = 1.0f,
-          b = 1.0f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = true,
-          dx1 = -1.26f,
-          dy1 = -1.26f,
-        )
-        // l 1.29 -4.01
-        lineToRelative(dx = 1.29f, dy = -4.01f)
-        // a 1 1 0 0 0 -0.05 -0.76
-        arcToRelative(
-          a = 1.0f,
-          b = 1.0f,
-          theta = 0.0f,
-          isMoreThanHalf = false,
-          isPositiveArc = false,
-          dx1 = -0.05f,
-          dy1 = -0.76f,
-        )
-        // A 9.5 9.5 0 1 1 21.5 12
-        arcTo(
-          horizontalEllipseRadius = 9.5f,
-          verticalEllipseRadius = 9.5f,
-          theta = 0.0f,
-          isMoreThanHalf = true,
-          isPositiveArc = true,
+        // C 21.5 17.2467 17.2467 21.5 12 21.5
+        curveTo(
           x1 = 21.5f,
-          y1 = 12.0f,
+          y1 = 17.2467f,
+          x2 = 17.2467f,
+          y2 = 21.5f,
+          x3 = 12.0f,
+          y3 = 21.5f,
         )
+        // C 10.6182 21.5 9.30527 21.205 8.12082 20.6745
+        curveTo(
+          x1 = 10.6182f,
+          y1 = 21.5f,
+          x2 = 9.30527f,
+          y2 = 21.205f,
+          x3 = 8.12082f,
+          y3 = 20.6745f,
+        )
+        // C 7.88245 20.5677 7.61343 20.5445 7.36467 20.6241
+        curveTo(
+          x1 = 7.88245f,
+          y1 = 20.5677f,
+          x2 = 7.61343f,
+          y2 = 20.5445f,
+          x3 = 7.36467f,
+          y3 = 20.6241f,
+        )
+        // L 3.34833 21.9088
+        lineTo(x = 3.34833f, y = 21.9088f)
+        // C 2.5741 22.1564 1.84356 21.4259 2.09121 20.6517
+        curveTo(
+          x1 = 2.5741f,
+          y1 = 22.1564f,
+          x2 = 1.84356f,
+          y2 = 21.4259f,
+          x3 = 2.09121f,
+          y3 = 20.6517f,
+        )
+        // L 3.37588 16.6353
+        lineTo(x = 3.37588f, y = 16.6353f)
+        // C 3.45545 16.3866 3.43227 16.1175 3.32551 15.8792
+        curveTo(
+          x1 = 3.45545f,
+          y1 = 16.3866f,
+          x2 = 3.43227f,
+          y2 = 16.1175f,
+          x3 = 3.32551f,
+          y3 = 15.8792f,
+        )
+        // C 2.79502 14.6947 2.5 13.3818 2.5 12
+        curveTo(
+          x1 = 2.79502f,
+          y1 = 14.6947f,
+          x2 = 2.5f,
+          y2 = 13.3818f,
+          x3 = 2.5f,
+          y3 = 12.0f,
+        )
+        // C 2.5 6.75329 6.7533 2.5 12 2.5
+        curveTo(
+          x1 = 2.5f,
+          y1 = 6.75329f,
+          x2 = 6.7533f,
+          y2 = 2.5f,
+          x3 = 12.0f,
+          y3 = 2.5f,
+        )
+        // C 17.2467 2.5 21.5 6.75329 21.5 12z
+        curveTo(
+          x1 = 17.2467f,
+          y1 = 2.5f,
+          x2 = 21.5f,
+          y2 = 6.75329f,
+          x3 = 21.5f,
+          y3 = 12.0f,
+        )
+        close()
       }
     }.build().also { _chat = it }
   }
@@ -96,7 +118,7 @@ val HedvigIcons.Chat: ImageVector
 @Preview
 @Composable
 private fun IconPreview() {
-  HedvigTheme {
+  com.hedvig.android.design.system.hedvig.HedvigTheme {
     Column(
       verticalArrangement = Arrangement.spacedBy(8.dp),
       horizontalAlignment = Alignment.CenterHorizontally,
