@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
@@ -31,6 +32,7 @@ val HedvigIcons.ArrowUp: ImageVector
       // M17.9697 12.5302 C18.2626 12.8231 18.7374 12.8231 19.0303 12.5302 C19.3232 12.2373 19.3232 11.7624 19.0303 11.4695 L13.2374 5.67663 C12.554 4.99321 11.446 4.99321 10.7626 5.67662 L4.96967 11.4695 C4.67678 11.7624 4.67678 12.2373 4.96967 12.5302 C5.26256 12.8231 5.73744 12.8231 6.03033 12.5302 L11.25 7.31051 L11.25 18.9999 C11.25 19.4141 11.5858 19.7499 12 19.7499 C12.4142 19.7499 12.75 19.4141 12.75 18.9999 L12.75 7.31051 L17.9697 12.5302Z
       path(
         fill = SolidColor(Color(0xFF121212)),
+        pathFillType = PathFillType.EvenOdd,
       ) {
         // M 17.9697 12.5302
         moveTo(x = 17.9697f, y = 12.5302f)

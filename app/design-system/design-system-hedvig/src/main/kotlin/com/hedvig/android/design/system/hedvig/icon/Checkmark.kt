@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
@@ -31,6 +32,7 @@ val HedvigIcons.Checkmark: ImageVector
       // M19.5303 6.96967 C19.8232 7.26256 19.8232 7.73744 19.5303 8.03033 L11.091 16.4697 C10.2123 17.3483 8.78769 17.3484 7.90901 16.4697 L4.46967 13.0303 C4.17678 12.7374 4.17678 12.2626 4.46967 11.9697 C4.76256 11.6768 5.23744 11.6768 5.53033 11.9697 L8.96967 15.409 C9.26256 15.7019 9.73744 15.7019 10.0303 15.409 L18.4697 6.96967 C18.7626 6.67678 19.2374 6.67678 19.5303 6.96967Z
       path(
         fill = SolidColor(Color(0xFF121212)),
+        pathFillType = PathFillType.EvenOdd,
       ) {
         // M 19.5303 6.96967
         moveTo(x = 19.5303f, y = 6.96967f)

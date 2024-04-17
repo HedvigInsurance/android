@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
@@ -31,6 +32,7 @@ val HedvigIcons.Document: ImageVector
       // M7.5 3.75 C6.80964 3.75 6.25 4.30964 6.25 5 V19 C6.25 19.6904 6.80964 20.25 7.5 20.25 H16.5 C17.1904 20.25 17.75 19.6904 17.75 19 V5 C17.75 4.30964 17.1904 3.75 16.5 3.75 H7.5Z M4.75 5 C4.75 3.48122 5.98122 2.25 7.5 2.25 H16.5 C18.0188 2.25 19.25 3.48122 19.25 5 V19 C19.25 20.5188 18.0188 21.75 16.5 21.75 H7.5 C5.98122 21.75 4.75 20.5188 4.75 19 V5Z M15.75 10.5 C15.75 10.0858 15.4142 9.75 15 9.75 H9 C8.58579 9.75 8.25 10.0858 8.25 10.5 C8.25 10.9142 8.58579 11.25 9 11.25 H15 C15.4142 11.25 15.75 10.9142 15.75 10.5Z M15 7.25 C15.4142 7.25 15.75 7.58579 15.75 8 C15.75 8.41421 15.4142 8.75 15 8.75 H9 C8.58579 8.75 8.25 8.41421 8.25 8 C8.25 7.58579 8.58579 7.25 9 7.25 H15Z M15.75 13 C15.75 12.5858 15.4142 12.25 15 12.25 H9 C8.58579 12.25 8.25 12.5858 8.25 13 C8.25 13.4142 8.58579 13.75 9 13.75 H15 C15.4142 13.75 15.75 13.4142 15.75 13Z M11.5 14.75 C11.9142 14.75 12.25 15.0858 12.25 15.5 C12.25 15.9142 11.9142 16.25 11.5 16.25 H9 C8.58579 16.25 8.25 15.9142 8.25 15.5 C8.25 15.0858 8.58579 14.75 9 14.75 H11.5Z
       path(
         fill = SolidColor(Color(0xFF121212)),
+        pathFillType = PathFillType.EvenOdd,
       ) {
         // M 7.5 3.75
         moveTo(x = 7.5f, y = 3.75f)

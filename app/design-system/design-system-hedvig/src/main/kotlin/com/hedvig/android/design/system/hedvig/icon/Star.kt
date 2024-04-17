@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
@@ -31,6 +32,7 @@ val HedvigIcons.Star: ImageVector
       // M10.3171 3.00707 C11.0683 1.66431 12.9317 1.66431 13.6829 3.00707 L15.5557 6.35426 C15.8309 6.84614 16.292 7.19493 16.8264 7.31541 L20.463 8.13521 C21.9219 8.46408 22.4977 10.309 21.5031 11.4677 L19.0239 14.3562 C18.6596 14.7807 18.4835 15.345 18.5385 15.9114 L18.9134 19.7652 C19.0637 21.3112 17.5562 22.4515 16.1903 21.8248 L12.7854 20.2628 C12.285 20.0333 11.715 20.0333 11.2146 20.2628 L7.80969 21.8248 C6.44377 22.4514 4.93627 21.3112 5.08663 19.7652 L5.46145 15.9114 C5.51653 15.345 5.34039 14.7807 4.97607 14.3562 L2.49688 11.4677 C1.50233 10.309 2.07814 8.46409 3.53699 8.13521 L7.17358 7.31541 C7.70799 7.19493 8.16914 6.84614 8.44434 6.35427 L10.3171 3.00707Z
       path(
         fill = SolidColor(Color(0xFF121212)),
+        pathFillType = PathFillType.EvenOdd,
       ) {
         // M 10.3171 3.00707
         moveTo(x = 10.3171f, y = 3.00707f)
