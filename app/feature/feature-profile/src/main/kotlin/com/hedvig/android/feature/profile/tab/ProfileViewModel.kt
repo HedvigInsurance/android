@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.core.common.RetryChannel
-import com.hedvig.android.data.travelcertificate.CheckTravelCertificateDestinationAvailabilityUseCase
+import com.hedvig.android.feature.profile.data.CheckTravelCertificateDestinationAvailabilityUseCase
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.memberreminders.EnableNotificationsReminderManager
@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
 internal class ProfileViewModel(
   private val getEuroBonusStatusUseCase: GetEurobonusStatusUseCase,
   private val checkTravelCertificateDestinationAvailabilityUseCase:
-    CheckTravelCertificateDestinationAvailabilityUseCase,
+  CheckTravelCertificateDestinationAvailabilityUseCase,
   private val getMemberRemindersUseCase: GetMemberRemindersUseCase,
   private val enableNotificationsReminderManager: EnableNotificationsReminderManager,
   private val featureManager: FeatureManager,
