@@ -311,7 +311,7 @@ private fun IconPreview() {
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       Image(
-        imageVector = Travel,
+        imageVector = HedvigIcons.Travel,
         contentDescription = null,
         modifier = Modifier
           .width((24.0).dp)

@@ -162,7 +162,7 @@ private fun IconPreview() {
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       Image(
-        imageVector = ShieldFilled,
+        imageVector = HedvigIcons.ShieldFilled,
         contentDescription = null,
         modifier = Modifier
           .width((24.0).dp)

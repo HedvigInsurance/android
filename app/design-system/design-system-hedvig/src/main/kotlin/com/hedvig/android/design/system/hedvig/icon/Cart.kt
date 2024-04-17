@@ -205,7 +205,7 @@ private fun IconPreview() {
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       Image(
-        imageVector = Cart,
+        imageVector = HedvigIcons.Cart,
         contentDescription = null,
         modifier = Modifier
           .width((24.0).dp)

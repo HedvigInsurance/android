@@ -178,7 +178,7 @@ private fun IconPreview() {
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       Image(
-        imageVector = WarningOutline,
+        imageVector = HedvigIcons.WarningOutline,
         contentDescription = null,
         modifier = Modifier
           .width((24.0).dp)

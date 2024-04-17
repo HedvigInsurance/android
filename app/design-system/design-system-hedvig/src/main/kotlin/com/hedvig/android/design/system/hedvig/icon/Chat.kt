@@ -101,7 +101,7 @@ private fun IconPreview() {
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       Image(
-        imageVector = Chat,
+        imageVector = HedvigIcons.Chat,
         contentDescription = null,
         modifier = Modifier
           .width((24.0).dp)

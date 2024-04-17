@@ -114,7 +114,7 @@ private fun IconPreview() {
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       Image(
-        imageVector = HelipadOutline,
+        imageVector = HedvigIcons.HelipadOutline,
         contentDescription = null,
         modifier = Modifier
           .width((24.0).dp)
