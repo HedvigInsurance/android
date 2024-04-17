@@ -15,7 +15,8 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-val ChevronLeftIOS: ImageVector
+@Suppress("UnusedReceiverParameter")
+val HedvigIcons.ChevronLeftIOS: ImageVector
   get() {
     val current = _chevronLeftIOS
     if (current != null) return current

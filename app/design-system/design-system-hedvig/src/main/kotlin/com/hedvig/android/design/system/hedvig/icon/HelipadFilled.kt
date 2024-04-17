@@ -15,7 +15,8 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-val HelipadFilled: ImageVector
+@Suppress("UnusedReceiverParameter")
+val HedvigIcons.HelipadFilled: ImageVector
   get() {
     val current = _helipadFilled
     if (current != null) return current

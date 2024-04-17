@@ -15,7 +15,8 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-val EQ: ImageVector
+@Suppress("UnusedReceiverParameter")
+val HedvigIcons.EQ: ImageVector
   get() {
     val current = _eQ
     if (current != null) return current

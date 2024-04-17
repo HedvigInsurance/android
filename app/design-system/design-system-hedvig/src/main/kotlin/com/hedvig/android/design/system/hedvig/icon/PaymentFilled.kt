@@ -15,7 +15,8 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-val PaymentFilled: ImageVector
+@Suppress("UnusedReceiverParameter")
+val HedvigIcons.PaymentFilled: ImageVector
   get() {
     val current = _paymentFilled
     if (current != null) return current

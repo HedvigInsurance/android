@@ -15,7 +15,8 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-val CircleFilled: ImageVector
+@Suppress("UnusedReceiverParameter")
+val HedvigIcons.CircleFilled: ImageVector
   get() {
     val current = _circleFilled
     if (current != null) return current

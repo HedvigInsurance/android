@@ -15,7 +15,8 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-val CheckOutline: ImageVector
+@Suppress("UnusedReceiverParameter")
+val HedvigIcons.CheckOutline: ImageVector
   get() {
     val current = _checkOutline
     if (current != null) return current

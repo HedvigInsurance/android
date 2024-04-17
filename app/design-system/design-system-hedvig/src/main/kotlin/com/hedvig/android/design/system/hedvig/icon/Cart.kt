@@ -14,7 +14,8 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-val Cart: ImageVector
+@Suppress("UnusedReceiverParameter")
+val HedvigIcons.Cart: ImageVector
   get() {
     val current = _cart
     if (current != null) return current

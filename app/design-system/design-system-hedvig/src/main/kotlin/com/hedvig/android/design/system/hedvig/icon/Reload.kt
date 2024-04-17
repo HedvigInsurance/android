@@ -15,7 +15,8 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-val Reload: ImageVector
+@Suppress("UnusedReceiverParameter")
+val HedvigIcons.Reload: ImageVector
   get() {
     val current = _reload
     if (current != null) return current

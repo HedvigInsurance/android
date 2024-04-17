@@ -15,7 +15,8 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-val Dots: ImageVector
+@Suppress("UnusedReceiverParameter")
+val HedvigIcons.Dots: ImageVector
   get() {
     val current = _dots
     if (current != null) return current

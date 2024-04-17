@@ -15,7 +15,8 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-val Mic: ImageVector
+@Suppress("UnusedReceiverParameter")
+val HedvigIcons.Mic: ImageVector
   get() {
     val current = _mic
     if (current != null) return current

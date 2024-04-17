@@ -15,7 +15,8 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-val Copy: ImageVector
+@Suppress("UnusedReceiverParameter")
+val HedvigIcons.Copy: ImageVector
   get() {
     val current = _copy
     if (current != null) return current

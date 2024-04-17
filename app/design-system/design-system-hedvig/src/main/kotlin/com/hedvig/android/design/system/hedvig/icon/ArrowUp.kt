@@ -15,7 +15,8 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-val ArrowUp: ImageVector
+@Suppress("UnusedReceiverParameter")
+val HedvigIcons.ArrowUp: ImageVector
   get() {
     val current = _arrowUp
     if (current != null) return current

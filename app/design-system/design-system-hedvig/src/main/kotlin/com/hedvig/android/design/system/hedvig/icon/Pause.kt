@@ -15,7 +15,8 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-val Pause: ImageVector
+@Suppress("UnusedReceiverParameter")
+val HedvigIcons.Pause: ImageVector
   get() {
     val current = _pause
     if (current != null) return current

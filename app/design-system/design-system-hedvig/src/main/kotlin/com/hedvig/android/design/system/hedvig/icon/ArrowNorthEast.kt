@@ -15,7 +15,8 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-val ArrowNorthEast: ImageVector
+@Suppress("UnusedReceiverParameter")
+val HedvigIcons.ArrowNorthEast: ImageVector
   get() {
     val current = _arrowNorthEast
     if (current != null) return current

@@ -15,7 +15,8 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-val Checkmark: ImageVector
+@Suppress("UnusedReceiverParameter")
+val HedvigIcons.Checkmark: ImageVector
   get() {
     val current = _checkmark
     if (current != null) return current

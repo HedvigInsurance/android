@@ -15,7 +15,8 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-val Attach: ImageVector
+@Suppress("UnusedReceiverParameter")
+val HedvigIcons.Attach: ImageVector
   get() {
     val current = _attach
     if (current != null) return current

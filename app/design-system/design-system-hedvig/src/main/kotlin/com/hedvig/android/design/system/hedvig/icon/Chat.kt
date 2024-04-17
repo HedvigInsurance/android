@@ -15,7 +15,8 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-val Chat: ImageVector
+@Suppress("UnusedReceiverParameter")
+val HedvigIcons.Chat: ImageVector
   get() {
     val current = _chat
     if (current != null) return current

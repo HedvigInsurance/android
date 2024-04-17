@@ -15,7 +15,8 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-val Close: ImageVector
+@Suppress("UnusedReceiverParameter")
+val HedvigIcons.Close: ImageVector
   get() {
     val current = _close
     if (current != null) return current
