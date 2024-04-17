@@ -101,8 +101,8 @@ private fun IconPreview() {
         imageVector = HedvigIcons.CartAdded,
         contentDescription = null,
         modifier = Modifier
-            .width((24.0).dp)
-            .height((24.0).dp),
+          .width((24.0).dp)
+          .height((24.0).dp),
       )
     }
   }
