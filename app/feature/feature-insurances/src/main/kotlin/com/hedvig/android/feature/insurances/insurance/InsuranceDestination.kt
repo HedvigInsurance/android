@@ -634,7 +634,22 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
     ),
     InsuranceUiState(
       contracts = persistentListOf(),
-      crossSells = persistentListOf(),
+      crossSells = persistentListOf(
+        CrossSell(
+          id = "1",
+          title = "Home",
+          subtitle = "Unlimited home",
+          storeUrl = "",
+          type = CrossSell.CrossSellType.HOME,
+        ),
+        CrossSell(
+          id = "2",
+          title = "Pet",
+          subtitle = "Unlimited FirstVet calls".repeat(2),
+          storeUrl = "",
+          type = CrossSell.CrossSellType.PET,
+        ),
+      ),
       hasError = false,
       isLoading = false,
       isRetrying = false,
