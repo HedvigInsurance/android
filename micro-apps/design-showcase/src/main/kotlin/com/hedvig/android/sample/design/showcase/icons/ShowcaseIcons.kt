@@ -82,7 +82,7 @@ import com.hedvig.android.design.system.hedvig.icon.WarningOutline
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ShowcaseIcons(modifier: Modifier = Modifier) {
-  CompositionLocalProvider(LocalContentColor provides Color.Magenta) {
+  CompositionLocalProvider(LocalContentColor provides Color.Black) {
     Box(modifier) {
       FlowRow(
         verticalArrangement = Arrangement.spacedBy(8.dp),
