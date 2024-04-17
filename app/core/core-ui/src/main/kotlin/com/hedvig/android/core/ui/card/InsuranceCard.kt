@@ -1,5 +1,6 @@
 package com.hedvig.android.core.ui.card
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,6 +40,9 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.Hedvig
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
+import com.hedvig.android.placeholder.PlaceholderHighlight
+import com.hedvig.android.placeholder.fade
+import com.hedvig.android.placeholder.placeholder
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
@@ -117,6 +121,45 @@ private fun Chip(text: String, modifier: Modifier = Modifier) {
   }
 }
 
+@Composable
+fun InsuranceCardPlaceHolder(modifier: Modifier = Modifier) {
+  Box(modifier.clip(MaterialTheme.shapes.squircleMedium)) {
+    Image(
+      painter = ColorPainter(Color.Black.copy(alpha = 0.3f)),
+      modifier = Modifier
+        .matchParentSize()
+        .placeholder(visible = true, highlight = PlaceholderHighlight.fade()),
+      contentDescription = null,
+    )
+    HedvigTheme {
+      Column(Modifier.padding(16.dp)) {
+        Row(Modifier.heightIn(86.dp)) {
+          Spacer(Modifier.weight(1f))
+          Icon(
+            imageVector = Icons.Hedvig.Hedvig,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.size(24.dp).padding(top = 2.dp),
+          )
+        }
+        Spacer(Modifier.height(8.dp))
+        Text(
+          text = "HHHHHH",
+          color = Color.Black.copy(alpha = 0.3f),
+          modifier = Modifier.placeholder(visible = true, highlight = PlaceholderHighlight.fade()),
+        )
+        Spacer(Modifier.height(4.dp))
+        Text(
+          text = "HHHHHHHH",
+          color = Color.Black.copy(alpha = 0.3f),
+          style = MaterialTheme.typography.bodyMedium,
+          modifier = Modifier.placeholder(visible = true, highlight = PlaceholderHighlight.fade()),
+        )
+      }
+    }
+  }
+}
+
 @Preview
 @Composable
 private fun PreviewInsuranceCard() {
@@ -128,6 +171,16 @@ private fun PreviewInsuranceCard() {
         bottomText = "Bellmansgatan 19A ∙ You +1",
         imageLoader = rememberPreviewImageLoader(),
       )
+    }
+  }
+}
+
+@Preview
+@Composable
+private fun PreviewInsuranceCardPlaceholder() {
+  HedvigTheme {
+    Surface(color = MaterialTheme.colorScheme.background) {
+      InsuranceCardPlaceHolder()
     }
   }
 }

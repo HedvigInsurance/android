@@ -63,6 +63,7 @@ dependencies {
   testImplementation(projects.loggingTest)
   testImplementation(projects.moleculeTest)
   testImplementation(projects.notificationBadgeDataFake)
+  implementation(project(":placeholder"))
 }
 
 apollo {
