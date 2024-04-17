@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.vector.group
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.design.system.hedvig.HedvigTheme
 
 @Suppress("UnusedReceiverParameter")
 val HedvigIcons.CartAdded: ImageVector
@@ -94,7 +95,7 @@ val HedvigIcons.CartAdded: ImageVector
 @Preview
 @Composable
 private fun IconPreview() {
-  com.hedvig.android.design.system.hedvig.HedvigTheme {
+  HedvigTheme {
     Column(
       verticalArrangement = Arrangement.spacedBy(8.dp),
       horizontalAlignment = Alignment.CenterHorizontally,
