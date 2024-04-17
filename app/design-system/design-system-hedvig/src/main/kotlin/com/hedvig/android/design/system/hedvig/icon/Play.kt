@@ -23,7 +23,7 @@ val HedvigIcons.Play: ImageVector
     if (current != null) return current
 
     return ImageVector.Builder(
-      name = "com.hedvig.android.design.system.hedvig.HedvigTheme.Play",
+      name = "com.hedvig.android.design.system.hedvig.icon.Play",
       defaultWidth = 24.0.dp,
       defaultHeight = 24.0.dp,
       viewportWidth = 24.0f,

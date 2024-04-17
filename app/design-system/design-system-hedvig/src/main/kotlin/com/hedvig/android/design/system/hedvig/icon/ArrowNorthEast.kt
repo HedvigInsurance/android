@@ -23,7 +23,7 @@ val HedvigIcons.ArrowNorthEast: ImageVector
     if (current != null) return current
 
     return ImageVector.Builder(
-      name = "com.hedvig.android.design.system.hedvig.HedvigTheme.ArrowNorthEast",
+      name = "com.hedvig.android.design.system.hedvig.icon.ArrowNorthEast",
       defaultWidth = 24.0.dp,
       defaultHeight = 24.0.dp,
       viewportWidth = 24.0f,

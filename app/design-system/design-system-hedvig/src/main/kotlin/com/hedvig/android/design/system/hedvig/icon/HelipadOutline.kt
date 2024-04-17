@@ -23,7 +23,7 @@ val HedvigIcons.HelipadOutline: ImageVector
     if (current != null) return current
 
     return ImageVector.Builder(
-      name = "com.hedvig.android.design.system.hedvig.HedvigTheme.HelipadOutline",
+      name = "com.hedvig.android.design.system.hedvig.icon.HelipadOutline",
       defaultWidth = 24.0.dp,
       defaultHeight = 24.0.dp,
       viewportWidth = 24.0f,

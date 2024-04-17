@@ -23,7 +23,7 @@ val HedvigIcons.Settings: ImageVector
     if (current != null) return current
 
     return ImageVector.Builder(
-      name = "com.hedvig.android.design.system.hedvig.HedvigTheme.Settings",
+      name = "com.hedvig.android.design.system.hedvig.icon.Settings",
       defaultWidth = 24.0.dp,
       defaultHeight = 24.0.dp,
       viewportWidth = 24.0f,

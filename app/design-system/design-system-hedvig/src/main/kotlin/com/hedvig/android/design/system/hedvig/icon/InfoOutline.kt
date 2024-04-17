@@ -23,7 +23,7 @@ val HedvigIcons.InfoOutline: ImageVector
     if (current != null) return current
 
     return ImageVector.Builder(
-      name = "com.hedvig.android.design.system.hedvig.HedvigTheme.InfoOutline",
+      name = "com.hedvig.android.design.system.hedvig.icon.InfoOutline",
       defaultWidth = 24.0.dp,
       defaultHeight = 24.0.dp,
       viewportWidth = 24.0f,

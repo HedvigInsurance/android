@@ -23,7 +23,7 @@ val HedvigIcons.Mic: ImageVector
     if (current != null) return current
 
     return ImageVector.Builder(
-      name = "com.hedvig.android.design.system.hedvig.HedvigTheme.Mic",
+      name = "com.hedvig.android.design.system.hedvig.icon.Mic",
       defaultWidth = 24.0.dp,
       defaultHeight = 24.0.dp,
       viewportWidth = 24.0f,

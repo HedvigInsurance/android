@@ -23,7 +23,7 @@ val HedvigIcons.Camera: ImageVector
     if (current != null) return current
 
     return ImageVector.Builder(
-      name = "com.hedvig.android.design.system.hedvig.HedvigTheme.Camera",
+      name = "com.hedvig.android.design.system.hedvig.icon.Camera",
       defaultWidth = 24.0.dp,
       defaultHeight = 24.0.dp,
       viewportWidth = 24.0f,

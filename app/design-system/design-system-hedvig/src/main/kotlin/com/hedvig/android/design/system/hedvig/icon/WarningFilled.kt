@@ -23,7 +23,7 @@ val HedvigIcons.WarningFilled: ImageVector
     if (current != null) return current
 
     return ImageVector.Builder(
-      name = "com.hedvig.android.design.system.hedvig.HedvigTheme.WarningFilled",
+      name = "com.hedvig.android.design.system.hedvig.icon.WarningFilled",
       defaultWidth = 24.0.dp,
       defaultHeight = 24.0.dp,
       viewportWidth = 24.0f,

@@ -23,7 +23,7 @@ val HedvigIcons.ShieldFilled: ImageVector
     if (current != null) return current
 
     return ImageVector.Builder(
-      name = "com.hedvig.android.design.system.hedvig.HedvigTheme.ShieldFilled",
+      name = "com.hedvig.android.design.system.hedvig.icon.ShieldFilled",
       defaultWidth = 24.0.dp,
       defaultHeight = 24.0.dp,
       viewportWidth = 24.0f,
