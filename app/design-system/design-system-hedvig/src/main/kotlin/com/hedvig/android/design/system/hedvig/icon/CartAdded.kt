@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.group
@@ -33,6 +34,7 @@ val HedvigIcons.CartAdded: ImageVector
         // M24 12 c0 -8.6 -3.77 -12 -12.01 -12 S0 3.26 0 12 s3.74 12 11.99 12 S24 20.6 24 12
         path(
           fill = SolidColor(Color(0xFF121212)),
+          pathFillType = PathFillType.EvenOdd,
         ) {
           // M 24 12
           moveTo(x = 24.0f, y = 12.0f)
@@ -66,11 +68,7 @@ val HedvigIcons.CartAdded: ImageVector
             x2 = 24.0f,
             y2 = 12.0f,
           )
-        }
-        // M12.1 17 V8.5 l-2.46 2.23 V9.29 l2.47 -2.09 h1.28 V17z
-        path(
-          fill = SolidColor(Color(0xFFFAFAFA)),
-        ) {
+          // M12.1 17 V8.5 l-2.46 2.23 V9.29 l2.47 -2.09 h1.28 V17z
           // M 12.1 17
           moveTo(x = 12.1f, y = 17.0f)
           // V 8.5
@@ -103,8 +101,8 @@ private fun IconPreview() {
         imageVector = HedvigIcons.CartAdded,
         contentDescription = null,
         modifier = Modifier
-          .width((24.0).dp)
-          .height((24.0).dp),
+            .width((24.0).dp)
+            .height((24.0).dp),
       )
     }
   }
