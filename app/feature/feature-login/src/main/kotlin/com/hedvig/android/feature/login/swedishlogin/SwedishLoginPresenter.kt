@@ -111,7 +111,10 @@ internal class SwedishLoginPresenter(
 
         SwedishLoginEvent.DidOpenBankIDApp -> allowOpeningBankId = false
         SwedishLoginEvent.DidNavigateToLoginScreen -> navigateToLoginScreen = false
-        SwedishLoginEvent.StartDemoMode -> launch { demoManager.setDemoMode(true) }
+        SwedishLoginEvent.StartDemoMode -> launch {
+          demoManager.setDemoMode(true)
+          navigateToLoginScreen = true
+        }
       }
     }
 
