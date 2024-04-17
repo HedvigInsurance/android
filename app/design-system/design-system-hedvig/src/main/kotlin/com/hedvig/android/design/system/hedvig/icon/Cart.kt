@@ -17,7 +17,8 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-val Cart: ImageVector
+@Suppress("UnusedReceiverParameter")
+val HedvigIcons.Cart: ImageVector
   get() {
     val current = _cart
     if (current != null) return current
@@ -213,7 +214,7 @@ private fun IconPreview() {
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       Image(
-        imageVector = Cart,
+        imageVector = HedvigIcons.Cart,
         contentDescription = null,
         modifier = Modifier
           .width((24.0).dp)

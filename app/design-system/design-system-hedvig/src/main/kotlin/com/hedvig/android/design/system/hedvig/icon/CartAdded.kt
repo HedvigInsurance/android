@@ -16,7 +16,8 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-val CartAdded: ImageVector
+@Suppress("UnusedReceiverParameter")
+val HedvigIcons.CartAdded: ImageVector
   get() {
     val current = _cartAdded
     if (current != null) return current
@@ -99,7 +100,7 @@ private fun IconPreview() {
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       Image(
-        imageVector = CartAdded,
+        imageVector = HedvigIcons.CartAdded,
         contentDescription = null,
         modifier = Modifier
           .width((24.0).dp)
@@ -109,5 +110,5 @@ private fun IconPreview() {
   }
 }
 
-@Suppress("ObjectPropertyName")
+@Suppress("ObjectPropertyName", "ktlint:standard:backing-property-naming")
 private var _cartAdded: ImageVector? = null
