@@ -14,7 +14,7 @@ import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.chat.read.timestamp.ChatLastMessageReadRepository
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
-import com.hedvig.android.feature.home.home.data.ImportantMessagesSeer
+import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorage
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -38,7 +38,7 @@ internal class HomePresenter(
     var successData: SuccessData? by remember { mutableStateOf(SuccessData.fromLastState(lastState)) }
     var loadIteration by remember { mutableIntStateOf(0) }
     var importantMessagesIteration by remember {
-      mutableStateOf(0)
+      mutableIntStateOf(0)
     }
     val hasUnseenChatMessages by produceState(
       lastState.safeCast<HomeUiState.Success>()?.hasUnseenChatMessages ?: false,
@@ -53,7 +53,7 @@ internal class HomePresenter(
       when (homeEvent) {
         HomeEvent.RefreshData -> loadIteration++
         is HomeEvent.MarkMessageAsSeen -> {
-          importantMessagesSeer.markMessageAsSeen(homeEvent.messageId)
+          seenImportantMessagesStorage.markMessageAsSeen(homeEvent.messageId)
           importantMessagesIteration++
         }
       }
@@ -64,7 +64,7 @@ internal class HomePresenter(
       if (currentSuccessData != null) {
         successData = currentSuccessData.copy(
           veryImportantMessages = currentSuccessData.veryImportantMessages
-            .filter { !importantMessagesSeer.hasSeenMessage(it.id) }.toImmutableList(),
+            .filter { !seenImportantMessagesStorage.hasSeenMessage(it.id) }.toImmutableList(),
         )
       }
     }
@@ -91,7 +91,7 @@ internal class HomePresenter(
             successData = SuccessData.fromHomeData(
               homeData,
             ) { messageId ->
-              importantMessagesSeer.hasSeenMessage(messageId)
+              seenImportantMessagesStorage.hasSeenMessage(messageId)
             }
           }
         }
