@@ -67,7 +67,7 @@ internal class GetHomeDataUseCaseImpl(
           HomeData.VeryImportantMessage(
             id = it.id,
             message = it.message,
-            link = it.link,
+            link = it.link.ifEmpty { null },
           )
         }
         val showChatIcon = !shouldHideChatButton(
@@ -78,7 +78,7 @@ internal class GetHomeDataUseCaseImpl(
         HomeData(
           contractStatus = contractStatus,
           claimStatusCardsData = homeQueryData.claimStatusCards(),
-          veryImportantMessages = veryImportantMessages.toPersistentList(),
+          veryImportantMessages = veryImportantMessages .toPersistentList(),
           memberReminders = memberReminders,
           showChatIcon = showChatIcon,
           showHelpCenter = isHelpCenterEnabled,
@@ -226,7 +226,7 @@ internal data class HomeData(
   data class VeryImportantMessage(
     val id: String,
     val message: String,
-    val link: String,
+    val link: String?,
   )
 
   sealed interface ContractStatus {

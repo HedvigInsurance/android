@@ -2,7 +2,11 @@ package com.hedvig.android.feature.home.home.ui
 
 import android.content.Context
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -123,6 +127,7 @@ internal fun HomeDestination(
     openUrl = openUrl,
     openAppSettings = openAppSettings,
     navigateToMissingInfo = navigateToMissingInfo,
+    markMessageAsSeen = { viewModel.emit(HomeEvent.MarkMessageAsSeen(it)) },
   )
 }
 
@@ -137,6 +142,7 @@ private fun HomeScreen(
   onStartClaim: () -> Unit,
   navigateToHelpCenter: () -> Unit,
   openUrl: (String) -> Unit,
+  markMessageAsSeen: (String) -> Unit,
   openAppSettings: () -> Unit,
   navigateToMissingInfo: (String) -> Unit,
 ) {
@@ -188,6 +194,7 @@ private fun HomeScreen(
             openAppSettings = openAppSettings,
             openUrl = openUrl,
             navigateToMissingInfo = navigateToMissingInfo,
+            markMessageAsSeen = markMessageAsSeen,
           )
         }
       }
@@ -247,6 +254,7 @@ private fun HomeScreenSuccess(
   onStartClaimClicked: () -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
+  markMessageAsSeen: (String) -> Unit,
   navigateToMissingInfo: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -294,8 +302,19 @@ private fun HomeScreenSuccess(
               .padding(horizontal = 16.dp)
               .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
           ) {
-            for (veryImportantMessage in uiState.veryImportantMessages) {
-              VeryImportantMessageCard(openUrl, veryImportantMessage)
+            AnimatedContent(
+              targetState = uiState.veryImportantMessages,
+              transitionSpec = {
+                (fadeIn(animationSpec = tween(300)).togetherWith(fadeOut()))
+              },
+            ) { list ->
+              for (veryImportantMessage in list) {
+                VeryImportantMessageCard(
+                  openUrl = openUrl,
+                  veryImportantMessage = veryImportantMessage,
+                  hideImportantMessage = markMessageAsSeen,
+                )
+              }
             }
           }
         },
@@ -358,6 +377,7 @@ private fun HomeScreenSuccess(
 @Composable
 private fun VeryImportantMessageCard(
   openUrl: (String) -> Unit,
+  hideImportantMessage: (id: String) -> Unit,
   veryImportantMessage: HomeData.VeryImportantMessage,
   modifier: Modifier = Modifier,
 ) {
@@ -373,8 +393,18 @@ private fun VeryImportantMessageCard(
       modifier = modifier,
     ) {
       HedvigContainedSmallButton(
-        text = stringResource(R.string.important_message_read_more),
-        onClick = { openUrl(veryImportantMessage.link) },
+        text = if (veryImportantMessage.link != null) {
+          stringResource(R.string.important_message_read_more)
+        } else {
+          stringResource(R.string.important_message_hide)
+        },
+        onClick = {
+          if (veryImportantMessage.link != null) {
+            openUrl(veryImportantMessage.link)
+          } else {
+            hideImportantMessage(veryImportantMessage.id)
+          }
+        },
         colors = ButtonDefaults.buttonColors(
           containerColor = MaterialTheme.colorScheme.containedButtonContainer,
           contentColor = MaterialTheme.colorScheme.onContainedButtonContainer,
@@ -438,14 +468,23 @@ private fun PreviewHomeScreen(
                 id = "id",
                 pillTypes = listOf(ClaimPillType.Open, ClaimPillType.Closed.NotCompensated),
                 claimProgressItemsUiState = listOf(
-                  ClaimProgressSegment(ClaimProgressSegment.SegmentText.Closed, ClaimProgressSegment.SegmentType.PAID),
+                  ClaimProgressSegment(
+                    ClaimProgressSegment.SegmentText.Closed,
+                    ClaimProgressSegment.SegmentType.PAID,
+                  ),
                 ),
                 claimType = "Broken item",
                 insuranceDisplayName = "Home Insurance Homeowner",
               ),
             ),
           ),
-          veryImportantMessages = persistentListOf(HomeData.VeryImportantMessage("id", "Beware of the earthquake", "")),
+          veryImportantMessages = persistentListOf(
+            HomeData.VeryImportantMessage(
+              "id",
+              "Beware of the earthquake",
+              "",
+            ),
+          ),
           memberReminders = MemberReminders(
             connectPayment = MemberReminder.ConnectPayment(),
           ),
@@ -463,6 +502,7 @@ private fun PreviewHomeScreen(
         openUrl = {},
         openAppSettings = {},
         navigateToMissingInfo = {},
+        markMessageAsSeen = {},
       )
     }
   }

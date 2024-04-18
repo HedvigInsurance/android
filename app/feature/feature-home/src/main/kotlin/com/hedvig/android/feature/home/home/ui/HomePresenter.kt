@@ -14,11 +14,13 @@ import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.chat.read.timestamp.ChatLastMessageReadRepository
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
+import com.hedvig.android.feature.home.home.data.ImportantMessagesSeer
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.isActive
@@ -27,6 +29,7 @@ import kotlinx.datetime.LocalDate
 internal class HomePresenter(
   private val getHomeDataUseCaseProvider: Provider<GetHomeDataUseCase>,
   private val chatLastMessageReadRepository: ChatLastMessageReadRepository,
+  private val importantMessagesSeer: ImportantMessagesSeer,
 ) : MoleculePresenter<HomeEvent, HomeUiState> {
   @Composable
   override fun MoleculePresenterScope<HomeEvent>.present(lastState: HomeUiState): HomeUiState {
@@ -34,6 +37,9 @@ internal class HomePresenter(
     var isReloading by remember { mutableStateOf(lastState.isReloading) }
     var successData: SuccessData? by remember { mutableStateOf(SuccessData.fromLastState(lastState)) }
     var loadIteration by remember { mutableIntStateOf(0) }
+    var importantMessagesIteration by remember {
+      mutableStateOf(0)
+    }
     val hasUnseenChatMessages by produceState(
       lastState.safeCast<HomeUiState.Success>()?.hasUnseenChatMessages ?: false,
     ) {
@@ -46,6 +52,20 @@ internal class HomePresenter(
     CollectEvents { homeEvent: HomeEvent ->
       when (homeEvent) {
         HomeEvent.RefreshData -> loadIteration++
+        is HomeEvent.MarkMessageAsSeen -> {
+          importantMessagesSeer.markMessageAsSeen(homeEvent.messageId)
+          importantMessagesIteration++
+        }
+      }
+    }
+
+    LaunchedEffect(importantMessagesIteration) {
+      val currentSuccessData = successData
+      if (currentSuccessData != null) {
+        successData = currentSuccessData.copy(
+          veryImportantMessages = currentSuccessData.veryImportantMessages
+            .filter { !importantMessagesSeer.hasSeenMessage(it.id) }.toImmutableList(),
+        )
       }
     }
 
@@ -64,14 +84,17 @@ internal class HomePresenter(
               successData = null
             }
           },
-          ifRight = { homeData: HomeData ->
-            Snapshot.withMutableSnapshot {
-              hasError = false
-              isReloading = false
-              successData = SuccessData.fromHomeData(homeData)
+        ) { homeData: HomeData ->
+          Snapshot.withMutableSnapshot {
+            hasError = false
+            isReloading = false
+            successData = SuccessData.fromHomeData(
+              homeData,
+            ) { messageId ->
+              importantMessagesSeer.hasSeenMessage(messageId)
             }
-          },
-        )
+          }
+        }
       }
     }
 
@@ -100,6 +123,8 @@ internal class HomePresenter(
 
 internal sealed interface HomeEvent {
   data object RefreshData : HomeEvent
+
+  data class MarkMessageAsSeen(val messageId: String) : HomeEvent
 }
 
 internal sealed interface HomeUiState {
@@ -152,7 +177,7 @@ private data class SuccessData(
       )
     }
 
-    fun fromHomeData(homeData: HomeData): SuccessData {
+    fun fromHomeData(homeData: HomeData, checkIfWasSeen: (id: String) -> Boolean): SuccessData {
       return SuccessData(
         homeText = when (homeData.contractStatus) {
           HomeData.ContractStatus.Active -> HomeText.Active
@@ -166,7 +191,7 @@ private data class SuccessData(
           HomeData.ContractStatus.Unknown -> HomeText.Active
         },
         claimStatusCardsData = homeData.claimStatusCardsData,
-        veryImportantMessages = homeData.veryImportantMessages,
+        veryImportantMessages = homeData.veryImportantMessages.filter { !checkIfWasSeen(it.id) }.toImmutableList(),
         memberReminders = homeData.memberReminders.copy(enableNotifications = null),
         showChatIcon = homeData.showChatIcon,
         showHelpCenter = homeData.showHelpCenter,
