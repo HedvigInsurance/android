@@ -37,4 +37,5 @@ public val HedvigIcons.ChevronLeft: ImageVector
     return _chevronLeft!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _chevronLeft: ImageVector? = null

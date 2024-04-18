@@ -80,4 +80,5 @@ public val HedvigIcons.Sound: ImageVector
     return _sound!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _sound: ImageVector? = null

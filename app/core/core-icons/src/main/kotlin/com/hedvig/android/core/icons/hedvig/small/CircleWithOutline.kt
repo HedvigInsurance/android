@@ -65,4 +65,5 @@ public val HedvigIcons.CircleWithOutline: ImageVector
     return _circleWithOutline!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _circleWithOutline: ImageVector? = null

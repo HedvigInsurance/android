@@ -58,4 +58,5 @@ public val HedvigIcons.ArrowNorthEast: ImageVector
     return _arrowNorthEast!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _arrowNorthEast: ImageVector? = null

@@ -7,8 +7,8 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.hedvig.android.data.travelcertificate.ContractEligibleWithAddress
-import com.hedvig.android.data.travelcertificate.GetEligibleContractsWithAddressUseCase
+import com.hedvig.android.feature.travelcertificate.data.ContractEligibleWithAddress
+import com.hedvig.android.feature.travelcertificate.data.GetEligibleContractsWithAddressUseCase
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel

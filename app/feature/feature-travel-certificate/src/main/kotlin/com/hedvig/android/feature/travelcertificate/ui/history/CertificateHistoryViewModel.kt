@@ -9,10 +9,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import arrow.fx.coroutines.parZip
 import com.hedvig.android.core.fileupload.DownloadPdfUseCase
-import com.hedvig.android.data.travelcertificate.CheckTravelCertificateAvailabilityForCurrentContractsUseCase
-import com.hedvig.android.data.travelcertificate.GetEligibleContractsWithAddressUseCase
-import com.hedvig.android.data.travelcertificate.GetTravelCertificatesHistoryUseCase
-import com.hedvig.android.data.travelcertificate.TravelCertificate
+import com.hedvig.android.feature.travelcertificate.data.CheckTravelCertificateAvailabilityForCurrentContractsUseCase
+import com.hedvig.android.feature.travelcertificate.data.GetEligibleContractsWithAddressUseCase
+import com.hedvig.android.feature.travelcertificate.data.GetTravelCertificatesHistoryUseCase
+import com.hedvig.android.feature.travelcertificate.data.TravelCertificate
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel

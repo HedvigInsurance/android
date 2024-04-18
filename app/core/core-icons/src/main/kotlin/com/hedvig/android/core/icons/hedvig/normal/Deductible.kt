@@ -232,4 +232,5 @@ public val HedvigIcons.Deductible: ImageVector
     return _deductible!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _deductible: ImageVector? = null
