@@ -1,5 +1,11 @@
 package com.hedvig.android.feature.insurances.insurance
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
@@ -44,6 +50,7 @@ fun NavGraphBuilder.insuranceGraph(
       ),
       enterTransition = { MotionDefaults.fadeThroughEnter },
       exitTransition = { MotionDefaults.fadeThroughExit },
+      // exitTransition = noExitTransition
     ) { backStackEntry ->
       val viewModel: InsuranceViewModel = koinViewModel()
       InsuranceDestination(
@@ -62,6 +69,7 @@ fun NavGraphBuilder.insuranceGraph(
       deepLinks = listOf(
         navDeepLink { uriPattern = hedvigDeepLinkContainer.contract },
       ),
+      enterTransition = noEnterTransition,
     ) { backStackEntry ->
       val contractDetail = this
       val viewModel: ContractDetailViewModel = koinViewModel { parametersOf(contractDetail.contractId) }
@@ -95,4 +103,18 @@ fun NavGraphBuilder.insuranceGraph(
       )
     }
   }
+}
+
+private val noEnterTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition = {
+  fadeIn(
+    animationSpec = tween(durationMillis = 300),
+    initialAlpha = 0.99f,
+  )
+}
+
+private val noExitTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition = {
+  fadeOut(
+    animationSpec = tween(durationMillis = 300),
+    targetAlpha = 0.99f,
+  )
 }

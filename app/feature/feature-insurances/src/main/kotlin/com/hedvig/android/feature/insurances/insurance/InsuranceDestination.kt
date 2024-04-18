@@ -160,7 +160,6 @@ private fun InsuranceScreen(
         .verticalScroll(rememberScrollState())
         .windowInsetsPadding(WindowInsets.safeDrawing),
     ) {
-      Spacer(Modifier.height(16.dp))
       Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -237,6 +236,7 @@ private fun ColumnScope.InsuranceScreenContent(
       withDefaultVerticalSpacing = true,
     )
   } else {
+    Spacer(Modifier.height(16.dp))
     for ((index, contract) in contracts.withIndex()) {
       InsuranceCard(
         backgroundImageUrl = null,
@@ -337,24 +337,27 @@ private fun CrossSellItem(crossSell: CrossSell, onCrossSellClick: (String) -> Un
 
 @Composable
 private fun InsuranceScreenWithPlaceholders() {
-  InsuranceCardPlaceHolder(
-    modifier = Modifier
-      .padding(horizontal = 16.dp)
-      .clip(MaterialTheme.shapes.squircleMedium),
-  )
-  Spacer(Modifier.height(32.dp))
-  NotificationSubheading(
-    text = stringResource(R.string.insurance_tab_cross_sells_title),
-    showNotification = false,
-    modifier = Modifier.padding(horizontal = 16.dp),
-  )
-  Spacer(Modifier.height(16.dp))
-  HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-  Spacer(Modifier.height(16.dp))
-  List(5) {
-    CrossSellItemPlaceHolder(
+  Column {
+    Spacer(Modifier.height(16.dp))
+    InsuranceCardPlaceHolder(
+      modifier = Modifier
+        .padding(horizontal = 16.dp)
+        .clip(MaterialTheme.shapes.squircleMedium),
+    )
+    Spacer(Modifier.height(32.dp))
+    NotificationSubheading(
+      text = stringResource(R.string.insurance_tab_cross_sells_title),
+      showNotification = false,
       modifier = Modifier.padding(horizontal = 16.dp),
     )
+    Spacer(Modifier.height(16.dp))
+    HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+    Spacer(Modifier.height(16.dp))
+    List(5) {
+      CrossSellItemPlaceHolder(
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
+    }
   }
 }
 

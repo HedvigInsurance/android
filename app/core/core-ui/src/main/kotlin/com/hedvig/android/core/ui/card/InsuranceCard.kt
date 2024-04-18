@@ -122,13 +122,16 @@ private fun Chip(text: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun InsuranceCardPlaceHolder(modifier: Modifier = Modifier) {
+fun InsuranceCardPlaceHolder(
+  modifier: Modifier = Modifier,
+  highlight: PlaceholderHighlight = PlaceholderHighlight.fade(),
+) {
   Box(modifier.clip(MaterialTheme.shapes.squircleMedium)) {
     Image(
       painter = ColorPainter(Color.Black.copy(alpha = 0.3f)),
       modifier = Modifier
         .matchParentSize()
-        .placeholder(visible = true, highlight = PlaceholderHighlight.fade()),
+        .placeholder(visible = true, highlight = highlight),
       contentDescription = null,
     )
     HedvigTheme {
@@ -146,14 +149,14 @@ fun InsuranceCardPlaceHolder(modifier: Modifier = Modifier) {
         Text(
           text = "HHHHHH",
           color = Color.Black.copy(alpha = 0.3f),
-          modifier = Modifier.placeholder(visible = true, highlight = PlaceholderHighlight.fade()),
+          modifier = Modifier.placeholder(visible = true, highlight = highlight),
         )
         Spacer(Modifier.height(4.dp))
         Text(
           text = "HHHHHHHH",
           color = Color.Black.copy(alpha = 0.3f),
           style = MaterialTheme.typography.bodyMedium,
-          modifier = Modifier.placeholder(visible = true, highlight = PlaceholderHighlight.fade()),
+          modifier = Modifier.placeholder(visible = true, highlight = highlight),
         )
       }
     }
