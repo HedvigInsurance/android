@@ -148,6 +148,7 @@ private fun ContractDetailScreen(
           Column(Modifier.fillMaxSize()) {
             Spacer(Modifier.height(16.dp))
             InsuranceCardPlaceHolder(
+              withTexts = false,
               modifier = Modifier
                 .padding(horizontal = 16.dp)
                 .clip(MaterialTheme.shapes.squircleMedium),

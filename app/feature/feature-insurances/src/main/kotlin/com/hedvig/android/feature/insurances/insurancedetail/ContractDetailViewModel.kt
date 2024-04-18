@@ -34,7 +34,6 @@ internal class ContractDetailViewModel(
         },
         ifRight = { contract ->
           val noTerminationDateYet = contract.terminationDate == null
-          // todo  delay(300)
           ContractDetailsUiState.Success(
             insuranceContract = contract,
             allowTerminatingInsurance = isTerminationFlowEnabled && noTerminationDateYet,

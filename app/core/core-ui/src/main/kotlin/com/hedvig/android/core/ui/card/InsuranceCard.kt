@@ -124,6 +124,7 @@ private fun Chip(text: String, modifier: Modifier = Modifier) {
 @Composable
 fun InsuranceCardPlaceHolder(
   modifier: Modifier = Modifier,
+  withTexts: Boolean = true,
   highlight: PlaceholderHighlight = PlaceholderHighlight.fade(),
 ) {
   Box(modifier.clip(MaterialTheme.shapes.squircleMedium)) {
@@ -147,13 +148,13 @@ fun InsuranceCardPlaceHolder(
         }
         Spacer(Modifier.height(8.dp))
         Text(
-          text = "HHHHHH",
+          text = if (withTexts) "HHHHHH" else "",
           color = Color.Black.copy(alpha = 0.3f),
           modifier = Modifier.placeholder(visible = true, highlight = highlight),
         )
         Spacer(Modifier.height(4.dp))
         Text(
-          text = "HHHHHHHH",
+          text = if (withTexts) "HHHHHH" else "",
           color = Color.Black.copy(alpha = 0.3f),
           style = MaterialTheme.typography.bodyMedium,
           modifier = Modifier.placeholder(visible = true, highlight = highlight),
