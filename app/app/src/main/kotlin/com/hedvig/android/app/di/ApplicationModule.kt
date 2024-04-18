@@ -44,7 +44,6 @@ import com.hedvig.android.data.claimflow.di.claimFlowDataModule
 import com.hedvig.android.data.paying.member.di.dataPayingMemberModule
 import com.hedvig.android.data.settings.datastore.di.settingsDatastoreModule
 import com.hedvig.android.data.termination.di.terminationDataModule
-import com.hedvig.android.data.travelcertificate.di.travelCertificateDataModule
 import com.hedvig.android.datadog.core.addDatadogConfiguration
 import com.hedvig.android.datadog.core.di.datadogModule
 import com.hedvig.android.datadog.demo.tracking.di.datadogDemoTrackingModule
@@ -315,7 +314,6 @@ val applicationModule = module {
       terminateInsuranceModule,
       terminationDataModule,
       trackingDatadogModule,
-      travelCertificateDataModule,
       travelCertificateModule,
       workManagerModule,
     ),

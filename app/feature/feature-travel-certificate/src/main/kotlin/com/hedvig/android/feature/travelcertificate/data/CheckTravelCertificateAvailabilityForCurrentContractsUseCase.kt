@@ -1,4 +1,4 @@
-package com.hedvig.android.data.travelcertificate
+package com.hedvig.android.feature.travelcertificate.data
 
 import arrow.core.Either
 import arrow.core.raise.either

@@ -5,6 +5,7 @@ plugins {
   id("hedvig.android.library.compose")
   alias(libs.plugins.serialization)
   alias(libs.plugins.squareSortDependencies)
+  alias(libs.plugins.apollo)
 }
 
 dependencies {
@@ -20,6 +21,11 @@ dependencies {
   implementation(libs.koin.compose)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
+  implementation(project(":data-contract-public"))
+  apolloMetadata(projects.apolloOctopusPublic)
+  implementation(libs.apollo.runtime)
+  implementation(libs.apollo.normalizedCache)
+
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.coreCommonPublic)
@@ -27,7 +33,6 @@ dependencies {
   implementation(projects.coreIcons)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
-  implementation(projects.dataTravelCertificatePublic)
   implementation(projects.languageCore)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
@@ -36,4 +41,22 @@ dependencies {
   implementation(projects.moleculePublic)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreFileUpload)
+
+  testImplementation(libs.apollo.testingSupport)
+  testImplementation(libs.assertK)
+  testImplementation(libs.coroutines.test)
+  testImplementation(libs.junit)
+  testImplementation(libs.testParameterInjector)
+  testImplementation(libs.turbine)
+  testImplementation(projects.apolloOctopusTest)
+  testImplementation(projects.apolloTest)
+  testImplementation(projects.coreCommonTest)
+  testImplementation(projects.featureFlagsTest)
+  testImplementation(projects.loggingTest)
+}
+
+apollo {
+  service("octopus") {
+    packageName.set("octopus")
+  }
 }

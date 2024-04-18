@@ -42,7 +42,6 @@ dependencies {
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
   implementation(projects.uiEmergency)
-  implementation(projects.dataTravelCertificatePublic)
   implementation(project(":placeholder"))
   implementation(projects.dataTermination)
 }
