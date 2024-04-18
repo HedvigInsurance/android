@@ -50,4 +50,5 @@ public val HedvigIcons.Checkmark: ImageVector
     return _tick!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _tick: ImageVector? = null

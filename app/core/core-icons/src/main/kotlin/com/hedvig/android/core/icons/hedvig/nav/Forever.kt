@@ -63,4 +63,5 @@ public val HedvigIcons.Forever: ImageVector
     return _forever!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _forever: ImageVector? = null

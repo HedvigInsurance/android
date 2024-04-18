@@ -136,4 +136,5 @@ public val HedvigIcons.FlagDenmark: ImageVector
     return _flagDenmark!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _flagDenmark: ImageVector? = null

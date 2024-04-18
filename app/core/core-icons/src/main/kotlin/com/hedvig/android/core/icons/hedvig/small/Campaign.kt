@@ -64,4 +64,5 @@ public val HedvigIcons.Campaign: ImageVector
     return _campaign!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _campaign: ImageVector? = null

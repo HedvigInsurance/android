@@ -99,4 +99,5 @@ public val HedvigIcons.Payments: ImageVector
     return _payments!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _payments: ImageVector? = null
