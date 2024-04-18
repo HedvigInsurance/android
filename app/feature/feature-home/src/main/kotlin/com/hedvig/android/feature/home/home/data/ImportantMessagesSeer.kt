@@ -16,8 +16,6 @@ internal class ImportantMessagesSeerImpl : ImportantMessagesSeer {
   }
 
   override fun markMessageAsSeen(id: String) {
-    val currentList = storedSeenMessages.value.toMutableList()
-    currentList.add(id)
-    storedSeenMessages.value = currentList.toList()
+    storedSeenMessages.update { it.plus(id) }
   }
 }
