@@ -1,11 +1,9 @@
-
 package com.hedvig.android.feature.profile.tab
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,7 +33,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -49,12 +46,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.ContactInformation
 import com.hedvig.android.core.icons.hedvig.normal.Eurobonus
@@ -63,9 +60,14 @@ import com.hedvig.android.core.icons.hedvig.normal.MultipleDocuments
 import com.hedvig.android.core.icons.hedvig.normal.Settings
 import com.hedvig.android.core.ui.dialog.HedvigAlertDialog
 import com.hedvig.android.core.ui.plus
+import com.hedvig.android.core.ui.preview.HedvigPreviewWithProvidedParametersAnimation
 import com.hedvig.android.memberreminders.ui.MemberReminderCards
 import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
+import com.hedvig.android.placeholder.PlaceholderHighlight
+import com.hedvig.android.placeholder.fade
+import com.hedvig.android.placeholder.placeholder
+import com.hedvig.android.placeholder.shimmer
 import com.hedvig.android.pullrefresh.PullRefreshDefaults
 import com.hedvig.android.pullrefresh.PullRefreshIndicator
 import com.hedvig.android.pullrefresh.pullRefresh
@@ -160,13 +162,13 @@ private fun ProfileScreen(
         )
       }
       Spacer(Modifier.height(16.dp))
-      ProfileItemRows(
-        profileUiState = uiState,
-        showMyInfo = navigateToMyInfo,
-        showSettings = navigateToSettings,
-        showAboutApp = navigateToAboutApp,
-        navigateToEurobonus = navigateToEurobonus,
-        navigateToTravelCertificate = navigateToTravelCertificate,
+      ProfileRowsWithPlaceholders(
+        uiState,
+        navigateToMyInfo,
+        navigateToSettings,
+        navigateToAboutApp,
+        navigateToEurobonus,
+        navigateToTravelCertificate,
       )
       Spacer(Modifier.height(16.dp))
       Spacer(Modifier.weight(1f))
@@ -200,7 +202,9 @@ private fun ProfileScreen(
         onClick = {
           showLogoutDialog = true
         },
-        modifier = Modifier.padding(horizontal = 16.dp).testTag("logout"),
+        modifier = Modifier
+          .padding(horizontal = 16.dp)
+          .testTag("logout"),
       )
       Spacer(Modifier.height(16.dp))
       Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
@@ -210,6 +214,73 @@ private fun ProfileScreen(
       state = pullRefreshState,
       scale = true,
       modifier = Modifier.align(Alignment.TopCenter),
+    )
+  }
+}
+
+@Composable
+private fun ColumnScope.ProfileRowsWithPlaceholders(
+  profileUiState: ProfileUiState,
+  showMyInfo: () -> Unit,
+  showSettings: () -> Unit,
+  showAboutApp: () -> Unit,
+  navigateToEurobonus: () -> Unit,
+  navigateToTravelCertificate: () -> Unit,
+) {
+  AnimatedContent(
+    targetState = profileUiState.isLoading,
+    transitionSpec = { fadeIn() togetherWith fadeOut() },
+  ) { isLoading ->
+    Column(Modifier.fillMaxSize()) {
+      when (isLoading) {
+        true -> {
+          ProfileItemRowsPlaceholders()
+        }
+
+        false -> {
+          ProfileItemRows(
+            profileUiState = profileUiState,
+            showMyInfo = showMyInfo,
+            showSettings = showSettings,
+            showAboutApp = showAboutApp,
+            navigateToEurobonus = navigateToEurobonus,
+            navigateToTravelCertificate = navigateToTravelCertificate,
+          )
+        }
+      }
+    }
+  }
+}
+
+@Composable
+private fun ColumnScope.ProfileItemRowsPlaceholders() {
+  ProfileRowPlaceholder(stringResource(R.string.PROFILE_MY_INFO_ROW_TITLE))
+  ProfileRowPlaceholder(stringResource(R.string.PROFILE_ROW_TRAVEL_CERTIFICATE))
+  ProfileRowPlaceholder(stringResource(R.string.PROFILE_ABOUT_ROW))
+  ProfileRowPlaceholder(stringResource(R.string.profile_appSettingsSection_row_headline))
+}
+
+@Composable
+private fun ProfileRowPlaceholder(title: String) {
+  Row(
+    verticalAlignment = Alignment.CenterVertically,
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(16.dp),
+  ) {
+    Icon(
+      imageVector = Icons.Hedvig.Info,
+      contentDescription = null,
+      modifier = Modifier
+        .size(24.dp)
+        .placeholder(true, highlight = PlaceholderHighlight.fade()),
+    )
+    Spacer(Modifier.width(16.dp))
+    Text(
+      text = title,
+      style = MaterialTheme.typography.bodyLarge,
+      modifier = Modifier
+        .placeholder(true, highlight = PlaceholderHighlight.shimmer()),
     )
   }
 }
@@ -228,24 +299,14 @@ private fun ColumnScope.ProfileItemRows(
     icon = Icons.Hedvig.ContactInformation,
     onClick = showMyInfo,
   )
-  AnimatedVisibility(
-    visible = profileUiState.travelCertificateAvailable,
-    enter = fadeIn() + expandVertically(expandFrom = Alignment.CenterVertically, clip = false),
-    exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.CenterVertically, clip = false),
-    label = "Travel",
-  ) {
+  if (profileUiState.travelCertificateAvailable) {
     ProfileRow(
       title = stringResource(R.string.PROFILE_ROW_TRAVEL_CERTIFICATE),
       icon = Icons.Hedvig.MultipleDocuments,
       onClick = navigateToTravelCertificate,
     )
   }
-  AnimatedVisibility(
-    visible = profileUiState.euroBonus != null,
-    enter = fadeIn() + expandVertically(expandFrom = Alignment.CenterVertically, clip = false),
-    exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.CenterVertically, clip = false),
-    label = "Eurobonus",
-  ) {
+  if (profileUiState.euroBonus != null) {
     ProfileRow(
       title = stringResource(R.string.sas_integration_title),
       icon = Icons.Hedvig.Eurobonus,
@@ -288,23 +349,50 @@ private fun ProfileRow(title: String, icon: ImageVector, onClick: () -> Unit, mo
 
 @HedvigPreview
 @Composable
-private fun PreviewProfileSuccessScreen() {
-  HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
-      ProfileScreen(
-        uiState = ProfileUiState(euroBonus = EuroBonus("ABC-12345678")),
-        reload = {},
-        navigateToEurobonus = {},
-        navigateToMyInfo = {},
-        navigateToAboutApp = {},
-        navigateToSettings = {},
-        navigateToTravelCertificate = {},
-        navigateToConnectPayment = {},
-        navigateToAddMissingInfo = {},
-        openAppSettings = {},
-        openUrl = {},
-        snoozeNotificationPermission = {},
-      ) {}
+private fun PreviewProfileItemRows() {
+  HedvigPreviewWithProvidedParametersAnimation(
+    ProfileUiStateProvider(),
+  ) { uiState ->
+    Column {
+      ProfileRowsWithPlaceholders(
+        uiState,
+        {},
+        {},
+        {},
+        {},
+        {},
+      )
     }
   }
 }
+
+private class ProfileUiStateProvider : CollectionPreviewParameterProvider<ProfileUiState>(
+  listOf(
+    ProfileUiState(
+      isLoading = true,
+    ),
+    ProfileUiState(
+      isLoading = false,
+      travelCertificateAvailable = true,
+    ),
+    ProfileUiState(
+      isLoading = true,
+    ),
+    ProfileUiState(
+      isLoading = false,
+      euroBonus = EuroBonus("jsdhgwmehg"),
+      travelCertificateAvailable = true,
+    ),
+    ProfileUiState(
+      isLoading = true,
+    ),
+    ProfileUiState(
+      isLoading = false,
+      euroBonus = EuroBonus("jsdhgwmehg"),
+      travelCertificateAvailable = false,
+    ),
+    ProfileUiState(
+      isLoading = true,
+    ),
+  ),
+)

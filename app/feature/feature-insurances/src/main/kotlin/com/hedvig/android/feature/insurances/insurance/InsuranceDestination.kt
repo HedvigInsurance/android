@@ -8,7 +8,6 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,7 +37,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -72,6 +70,7 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.card.InsuranceCard
 import com.hedvig.android.core.ui.card.InsuranceCardPlaceHolder
 import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
+import com.hedvig.android.core.ui.preview.HedvigPreviewWithProvidedParametersAnimation
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
@@ -538,30 +537,16 @@ private fun PreviewInsuranceScreen(
 @HedvigPreview
 @Composable
 private fun PreviewInsuranceDestinationAnimation() {
-  val uiStateList: List<InsuranceUiState> = remember {
-    val provider = InsuranceUiStateProvider()
-    provider.values.toList() + provider.values.drop(1).toList()
-  }
-  var uiStateIndex by remember { mutableIntStateOf(0) }
-  HedvigTheme {
-    Surface(
-      color = MaterialTheme.colorScheme.background,
-      modifier = Modifier.clickable(
-        indication = null,
-        interactionSource = remember { MutableInteractionSource() },
-      ) {
-        uiStateIndex += 1
-      },
-    ) {
-      InsuranceScreen(
-        uiState = uiStateList[uiStateIndex % uiStateList.size],
-        imageLoader = rememberPreviewImageLoader(),
-        reload = {},
-        onInsuranceCardClick = {},
-        onCrossSellClick = {},
-        navigateToCancelledInsurances = {},
-      )
-    }
+  val provider = InsuranceUiStateProvider()
+  HedvigPreviewWithProvidedParametersAnimation(provider) { insuranceUiState ->
+    InsuranceScreen(
+      uiState = insuranceUiState,
+      imageLoader = rememberPreviewImageLoader(),
+      reload = {},
+      onInsuranceCardClick = {},
+      onCrossSellClick = {},
+      navigateToCancelledInsurances = {},
+    )
   }
 }
 

@@ -32,9 +32,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -58,6 +55,7 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.dialog.MultiSelectDialog
+import com.hedvig.android.core.ui.preview.HedvigPreviewWithProvidedParametersAnimation
 import com.hedvig.android.feature.help.center.HelpCenterEvent
 import com.hedvig.android.feature.help.center.HelpCenterUiState
 import com.hedvig.android.feature.help.center.HelpCenterViewModel
@@ -369,32 +367,21 @@ private fun PreviewHelpCenterHomeScreen(
 @HedvigPreview
 @Composable
 private fun PreviewQuickLinkAnimations() {
-  val quickLinkUiStateList: List<HelpCenterUiState.QuickLinkUiState> = remember {
-    val provider = QuickLinkUiStatePreviewProvider()
-    provider.values.toList() + provider.values.drop(1).toList()
-  }
-  var quickLinksUiStateIndex by remember { mutableIntStateOf(0) }
-  HedvigTheme {
-    Surface(
-      onClick = {
-        quickLinksUiStateIndex = quickLinksUiStateIndex + 1
-      },
-      color = MaterialTheme.colorScheme.background,
-    ) {
-      HelpCenterHomeScreen(
-        topics = persistentListOf(Topic.PAYMENTS, Topic.PAYMENTS),
-        questions = persistentListOf(Question.CLAIMS_Q1, Question.CLAIMS_Q1),
-        selectedQuickAction = null,
-        onNavigateToTopic = {},
-        onNavigateToQuestion = {},
-        onNavigateToQuickLink = {},
-        onQuickActionsSelected = {},
-        onDismissQuickActionDialog = {},
-        openChat = {},
-        onNavigateUp = {},
-        quickLinksUiState = quickLinkUiStateList[quickLinksUiStateIndex % quickLinkUiStateList.size],
-      )
-    }
+  val provider = QuickLinkUiStatePreviewProvider()
+  HedvigPreviewWithProvidedParametersAnimation(provider) { quickLinkUiState ->
+    HelpCenterHomeScreen(
+      topics = persistentListOf(Topic.PAYMENTS, Topic.PAYMENTS),
+      questions = persistentListOf(Question.CLAIMS_Q1, Question.CLAIMS_Q1),
+      selectedQuickAction = null,
+      onNavigateToTopic = {},
+      onNavigateToQuestion = {},
+      onNavigateToQuickLink = {},
+      onQuickActionsSelected = {},
+      onDismissQuickActionDialog = {},
+      openChat = {},
+      onNavigateUp = {},
+      quickLinksUiState = quickLinkUiState,
+    )
   }
 }
 
