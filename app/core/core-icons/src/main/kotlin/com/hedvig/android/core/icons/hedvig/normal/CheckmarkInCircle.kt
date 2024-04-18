@@ -45,4 +45,5 @@ public val HedvigIcons.CircleWithCheckmark: ImageVector
     return _circleWithCheckmark!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _circleWithCheckmark: ImageVector? = null

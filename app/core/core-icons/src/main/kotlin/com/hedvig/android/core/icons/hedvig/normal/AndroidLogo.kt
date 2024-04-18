@@ -87,4 +87,5 @@ public val HedvigIcons.AndroidLogo: ImageVector
     return _androidLogo!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _androidLogo: ImageVector? = null

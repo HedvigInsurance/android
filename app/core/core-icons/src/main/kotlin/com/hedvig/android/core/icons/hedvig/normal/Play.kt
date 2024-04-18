@@ -27,4 +27,5 @@ public val HedvigIcons.Play: ImageVector
     return _play!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _play: ImageVector? = null

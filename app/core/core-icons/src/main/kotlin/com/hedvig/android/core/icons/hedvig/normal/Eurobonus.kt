@@ -169,4 +169,5 @@ public val HedvigIcons.Eurobonus: ImageVector
     return _eurobonus!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _eurobonus: ImageVector? = null

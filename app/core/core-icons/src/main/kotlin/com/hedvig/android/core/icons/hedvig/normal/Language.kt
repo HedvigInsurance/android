@@ -118,4 +118,5 @@ public val HedvigIcons.Language: ImageVector
     return _language!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _language: ImageVector? = null
