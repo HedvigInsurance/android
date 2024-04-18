@@ -29,7 +29,7 @@ import kotlinx.datetime.LocalDate
 internal class HomePresenter(
   private val getHomeDataUseCaseProvider: Provider<GetHomeDataUseCase>,
   private val chatLastMessageReadRepository: ChatLastMessageReadRepository,
-  private val importantMessagesSeer: ImportantMessagesSeer,
+  private val seenImportantMessagesStorage: SeenImportantMessagesStorage,
 ) : MoleculePresenter<HomeEvent, HomeUiState> {
   @Composable
   override fun MoleculePresenterScope<HomeEvent>.present(lastState: HomeUiState): HomeUiState {
