@@ -1,24 +1,14 @@
 package com.hedvig.android.placeholder
 
-import androidx.compose.animation.core.FiniteAnimationSpec
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.InfiniteRepeatableSpec
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.Transition
-import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.updateTransition
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
-import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.toRect
 import androidx.compose.ui.graphics.Color
@@ -27,11 +17,16 @@ import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.drawOutline
+import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
-import androidx.compose.ui.node.Ref
-import androidx.compose.ui.platform.debugInspectorInfo
+import androidx.compose.ui.node.DrawModifierNode
+import androidx.compose.ui.node.ModifierNodeElement
+import androidx.compose.ui.node.invalidateDraw
+import androidx.compose.ui.platform.InspectorInfo
 import androidx.compose.ui.unit.LayoutDirection
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 /**
  * Contains default values used by [Modifier.placeholder] and [PlaceholderHighlight].
@@ -68,8 +63,8 @@ internal object PlaceholderDefaults {
  * The [shimmer] and [fade] implementations are provided for easy usage.
  *
  * A cross-fade transition will be applied to the content and placeholder UI when the [visible]
- * value changes. The transition can be customized via the [contentFadeTransitionSpec] and
- * [placeholderFadeTransitionSpec] parameters.
+ * value changes. The transition can be customized via the [contentFadeAnimationSpec] and
+ * [placeholderFadeAnimationSpec] parameters.
  *
  * You can find more information on the pattern at the Material Theming
  * [Placeholder UI](https://material.io/design/communication/launch-screen.html#placeholder-ui)
@@ -81,117 +76,227 @@ internal object PlaceholderDefaults {
  * @param color the color used to draw the placeholder UI.
  * @param shape desired shape of the placeholder. Defaults to [RectangleShape].
  * @param highlight optional highlight animation.
- * @param placeholderFadeTransitionSpec The transition spec to use when fading the placeholder
+ * @param placeholderFadeAnimationSpec The transition spec to use when fading the placeholder
  * on/off screen. The boolean parameter defined for the transition is [visible].
- * @param contentFadeTransitionSpec The transition spec to use when fading the content
+ * @param contentFadeAnimationSpec The transition spec to use when fading the content
  * on/off screen. The boolean parameter defined for the transition is [visible].
  */
-fun Modifier.placeholder(
+
+fun Modifier.placeHolder(
   visible: Boolean,
   color: Color,
   shape: Shape = RectangleShape,
   highlight: PlaceholderHighlight? = null,
-  placeholderFadeTransitionSpec: @Composable Transition.Segment<Boolean>.() -> FiniteAnimationSpec<Float> = {
-    spring()
-  },
-  contentFadeTransitionSpec: @Composable Transition.Segment<Boolean>.() -> FiniteAnimationSpec<Float> = { spring() },
-): Modifier = composed(
-  inspectorInfo = debugInspectorInfo {
+  placeholderFadeAnimationSpec: AnimationSpec<Float> = spring(),
+  contentFadeAnimationSpec: AnimationSpec<Float> = spring(),
+): Modifier = this then PlaceholderElement(
+  visible = visible,
+  color = color,
+  shape = shape,
+  highlight = highlight,
+  placeholderFadeAnimationSpec = placeholderFadeAnimationSpec,
+  contentFadeAnimationSpec = contentFadeAnimationSpec,
+)
+
+private data class PlaceholderElement(
+  private val visible: Boolean,
+  private val color: Color,
+  private val shape: Shape,
+  private val highlight: PlaceholderHighlight?,
+  private val placeholderFadeAnimationSpec: AnimationSpec<Float>,
+  private val contentFadeAnimationSpec: AnimationSpec<Float>,
+) : ModifierNodeElement<PlaceholderNode>() {
+  override fun create(): PlaceholderNode = PlaceholderNode(
+    visible = visible,
+    color = color,
+    shape = shape,
+    highlight = highlight,
+    placeholderFadeAnimationSpec = placeholderFadeAnimationSpec,
+    contentFadeAnimationSpec = contentFadeAnimationSpec,
+  )
+
+  override fun update(node: PlaceholderNode) {
+    node.apply {
+      updateVisible(visible)
+      updateColor(color)
+      updateShape(shape)
+      updateHighlight(highlight)
+      updatePlaceholderFadeAnimationSpec(placeholderFadeAnimationSpec)
+      updateContentFadeAnimationSpec(contentFadeAnimationSpec)
+    }
+  }
+
+  override fun InspectorInfo.inspectableProperties() {
     name = "placeholder"
     value = visible
     properties["visible"] = visible
     properties["color"] = color
     properties["highlight"] = highlight
     properties["shape"] = shape
-  },
-) {
-  // Values used for caching purposes
-  val lastSize = remember { Ref<Size>() }
-  val lastLayoutDirection = remember { Ref<LayoutDirection>() }
-  val lastOutline = remember { Ref<Outline>() }
+  }
+}
 
-  // The current highlight animation progress
-  var highlightProgress: Float by remember { mutableFloatStateOf(0f) }
-
-  // This is our crossfade transition
-  val transitionState = remember { MutableTransitionState(visible) }.apply {
+private class PlaceholderNode(
+  private var visible: Boolean,
+  private var color: Color,
+  private var shape: Shape = RectangleShape,
+  private var highlight: PlaceholderHighlight? = null,
+  private var placeholderFadeAnimationSpec: AnimationSpec<Float>,
+  private var contentFadeAnimationSpec: AnimationSpec<Float>,
+) : DrawModifierNode, Modifier.Node() {
+  private val crossfadeTransitionState = MutableTransitionState(visible).apply {
     targetState = visible
   }
-  val transition = updateTransition(transitionState, "placeholder_crossfade")
 
-  val placeholderAlpha by transition.animateFloat(
-    transitionSpec = placeholderFadeTransitionSpec,
-    label = "placeholder_fade",
-    targetValueByState = { placeholderVisible -> if (placeholderVisible) 1f else 0f },
-  )
-  val contentAlpha by transition.animateFloat(
-    transitionSpec = contentFadeTransitionSpec,
-    label = "content_fade",
-    targetValueByState = { placeholderVisible -> if (placeholderVisible) 0f else 1f },
-  )
+  private val paint: Paint = Paint()
 
-  // Run the optional animation spec and update the progress if the placeholder is visible
-  val animationSpec = highlight?.animationSpec
-  if (animationSpec != null && (visible || placeholderAlpha >= 0.01f)) {
-    val infiniteTransition = rememberInfiniteTransition()
-    highlightProgress = infiniteTransition.animateFloat(
-      initialValue = 0f,
-      targetValue = 1f,
-      animationSpec = animationSpec,
-      label = "highlightProgress",
-    ).value
+  private var contentAlpha: Float = if (visible) 0F else 1F
+  private var placeholderAlpha: Float = if (visible) 1F else 0F
+
+  // The current highlight animation progress
+  private var highlightProgress: Float = 0F
+
+  // Values used for caching purposes
+  private var lastSize: Size = Size.Unspecified
+  private var lastLayoutDirection: LayoutDirection? = null
+  private var lastOutline: Outline? = null
+
+  fun updateVisible(visible: Boolean) {
+    if (this.visible != visible) {
+      this.visible = visible
+      crossfadeTransitionState.targetState = visible
+      coroutineScope.runAlphaAnimations()
+      coroutineScope.runHighlightAnimation()
+    }
   }
 
-  val paint = remember { Paint() }
-  remember(color, shape, highlight) {
-    drawWithContent {
-      // Draw the composable content first
-      if (contentAlpha in 0.01f..0.99f) {
-        // If the content alpha is between 1% and 99%, draw it in a layer with
-        // the alpha applied
-        paint.alpha = contentAlpha
-        withLayer(paint) {
-          with(this@drawWithContent) {
-            drawContent()
-          }
+  fun updateColor(color: Color) {
+    if (this.color != color) {
+      this.color = color
+    }
+  }
+
+  fun updateShape(shape: Shape) {
+    if (this.shape != shape) {
+      this.shape = shape
+    }
+  }
+
+  fun updateHighlight(highlight: PlaceholderHighlight?) {
+    if (this.highlight != highlight) {
+      this.highlight = highlight
+      coroutineScope.runHighlightAnimation()
+    }
+  }
+
+  fun updatePlaceholderFadeAnimationSpec(placeholderFadeAnimationSpec: AnimationSpec<Float>) {
+    if (this.placeholderFadeAnimationSpec != placeholderFadeAnimationSpec) {
+      this.placeholderFadeAnimationSpec = placeholderFadeAnimationSpec
+    }
+  }
+
+  fun updateContentFadeAnimationSpec(contentFadeAnimationSpec: AnimationSpec<Float>) {
+    if (this.contentFadeAnimationSpec != contentFadeAnimationSpec) {
+      this.contentFadeAnimationSpec = contentFadeAnimationSpec
+    }
+  }
+
+  override fun onAttach() {
+    coroutineScope.runAlphaAnimations()
+    coroutineScope.runHighlightAnimation()
+  }
+
+  private val placeholderAnimation = Animatable(placeholderAlpha)
+  private val contentAnimation = Animatable(contentAlpha)
+
+  private fun CoroutineScope.runAlphaAnimations() {
+    launch {
+      placeholderAnimation.animateTo(
+        targetValue = if (visible) 1F else 0F,
+        placeholderFadeAnimationSpec,
+      ) {
+        val placeholderAlphaWas0 = placeholderAlpha < 0.01F
+        placeholderAlpha = value
+        if (placeholderAlphaWas0 && placeholderAlpha >= 0.01F && !visible) {
+          coroutineScope.runHighlightAnimation()
         }
-      } else if (contentAlpha >= 0.99f) {
-        // If the content alpha is > 99%, draw it with no alpha
+        invalidateDraw()
+      }
+    }
+
+    launch {
+      contentAnimation.animateTo(
+        targetValue = if (visible) 0F else 1F,
+        contentFadeAnimationSpec,
+      ) {
+        contentAlpha = value
+        invalidateDraw()
+      }
+    }
+  }
+
+  private val infiniteAnimation = Animatable(0F)
+
+  private fun CoroutineScope.runHighlightAnimation() {
+    val isEffectivelyVisible = visible || placeholderAlpha >= 0.01F
+    val animationSpec = highlight?.animationSpec
+    if (isEffectivelyVisible && animationSpec != null) {
+      launch {
+        infiniteAnimation.animateTo(1F, animationSpec) {
+          highlightProgress = value
+          invalidateDraw()
+        }
+      }
+    }
+  }
+
+  override fun ContentDrawScope.draw() {
+    val drawContent = ::drawContent
+
+    // Draw the composable content first
+    if (contentAlpha in 0.01F..0.99F) {
+      // If the content alpha is between 1% and 99%, draw it in a layer with
+      // the alpha applied
+      paint.alpha = contentAlpha
+      withLayer(paint) {
         drawContent()
       }
+    } else if (contentAlpha >= 0.99F) {
+      // If the content alpha is > 99%, draw it with no alpha
+      drawContent()
+    }
 
-      if (placeholderAlpha in 0.01f..0.99f) {
-        // If the placeholder alpha is between 1% and 99%, draw it in a layer with
-        // the alpha applied
-        paint.alpha = placeholderAlpha
-        withLayer(paint) {
-          lastOutline.value = drawPlaceholder(
-            shape = shape,
-            color = color,
-            highlight = highlight,
-            progress = highlightProgress,
-            lastOutline = lastOutline.value,
-            lastLayoutDirection = lastLayoutDirection.value,
-            lastSize = lastSize.value,
-          )
-        }
-      } else if (placeholderAlpha >= 0.99f) {
-        // If the placeholder alpha is > 99%, draw it with no alpha
-        lastOutline.value = drawPlaceholder(
+    if (placeholderAlpha in 0.01F..0.99F) {
+      // If the placeholder alpha is between 1% and 99%, draw it in a layer with
+      // the alpha applied
+      paint.alpha = placeholderAlpha
+      withLayer(paint) {
+        lastOutline = drawPlaceholder(
           shape = shape,
           color = color,
           highlight = highlight,
           progress = highlightProgress,
-          lastOutline = lastOutline.value,
-          lastLayoutDirection = lastLayoutDirection.value,
-          lastSize = lastSize.value,
+          lastOutline = lastOutline,
+          lastLayoutDirection = lastLayoutDirection,
+          lastSize = lastSize,
         )
       }
-
-      // Keep track of the last size & layout direction
-      lastSize.value = size
-      lastLayoutDirection.value = layoutDirection
+    } else if (placeholderAlpha >= 0.99F) {
+      // If the placeholder alpha is > 99%, draw it with no alpha
+      lastOutline = drawPlaceholder(
+        shape = shape,
+        color = color,
+        highlight = highlight,
+        progress = highlightProgress,
+        lastOutline = lastOutline,
+        lastLayoutDirection = lastLayoutDirection,
+        lastSize = lastSize,
+      )
     }
+
+    // Keep track of the last size & layout direction
+    lastSize = size
+    lastLayoutDirection = layoutDirection
   }
 }
 
@@ -238,6 +343,115 @@ private fun DrawScope.drawPlaceholder(
   // Return the outline we used
   return outline
 }
+
+// fun Modifier.placeholder(
+//  visible: Boolean,
+//  color: Color,
+//  shape: Shape = RectangleShape,
+//  highlight: PlaceholderHighlight? = null,
+//  placeholderFadeTransitionSpec: @Composable Transition.Segment<Boolean>.() -> FiniteAnimationSpec<Float> = {
+//    spring()
+//  },
+//  contentFadeTransitionSpec: @Composable Transition.Segment<Boolean>.() -> FiniteAnimationSpec<Float> = { spring() },
+// ): Modifier = composed(
+//  inspectorInfo = debugInspectorInfo {
+//    name = "placeholder"
+//    value = visible
+//    properties["visible"] = visible
+//    properties["color"] = color
+//    properties["highlight"] = highlight
+//    properties["shape"] = shape
+//  },
+// ) {
+//  // Values used for caching purposes
+//  val lastSize = remember { Ref<Size>() }
+//  val lastLayoutDirection = remember { Ref<LayoutDirection>() }
+//  val lastOutline = remember { Ref<Outline>() }
+//
+//  // The current highlight animation progress
+//  var highlightProgress: Float by remember { mutableFloatStateOf(0f) }
+//
+//  // This is our crossfade transition
+//  val transitionState = remember { MutableTransitionState(visible) }.apply {
+//    targetState = visible
+//  }
+//  val transition = updateTransition(transitionState, "placeholder_crossfade")
+//
+//  val placeholderAlpha by transition.animateFloat(
+//    transitionSpec = placeholderFadeTransitionSpec,
+//    label = "placeholder_fade",
+//    targetValueByState = { placeholderVisible -> if (placeholderVisible) 1f else 0f },
+//  )
+//  val contentAlpha by transition.animateFloat(
+//    transitionSpec = contentFadeTransitionSpec,
+//    label = "content_fade",
+//    targetValueByState = { placeholderVisible -> if (placeholderVisible) 0f else 1f },
+//  )
+//
+//  // Run the optional animation spec and update the progress if the placeholder is visible
+//  val animationSpec = highlight?.animationSpec
+//  if (animationSpec != null && (visible || placeholderAlpha >= 0.01f)) {
+//    val infiniteTransition = rememberInfiniteTransition()
+//    highlightProgress = infiniteTransition.animateFloat(
+//      initialValue = 0f,
+//      targetValue = 1f,
+//      animationSpec = animationSpec,
+//      label = "highlightProgress",
+//    ).value
+//  }
+//
+//  val paint = remember { Paint() }
+//  remember(color, shape, highlight) {
+//    drawWithContent {
+//      // Draw the composable content first
+//      if (contentAlpha in 0.01f..0.99f) {
+//        // If the content alpha is between 1% and 99%, draw it in a layer with
+//        // the alpha applied
+//        paint.alpha = contentAlpha
+//        withLayer(paint) {
+//          with(this@drawWithContent) {
+//            drawContent()
+//          }
+//        }
+//      } else if (contentAlpha >= 0.99f) {
+//        // If the content alpha is > 99%, draw it with no alpha
+//        drawContent()
+//      }
+//
+//      if (placeholderAlpha in 0.01f..0.99f) {
+//        // If the placeholder alpha is between 1% and 99%, draw it in a layer with
+//        // the alpha applied
+//        paint.alpha = placeholderAlpha
+//        withLayer(paint) {
+//          lastOutline.value = drawPlaceholder(
+//            shape = shape,
+//            color = color,
+//            highlight = highlight,
+//            progress = highlightProgress,
+//            lastOutline = lastOutline.value,
+//            lastLayoutDirection = lastLayoutDirection.value,
+//            lastSize = lastSize.value,
+//          )
+//        }
+//      } else if (placeholderAlpha >= 0.99f) {
+//        // If the placeholder alpha is > 99%, draw it with no alpha
+//        lastOutline.value = drawPlaceholder(
+//          shape = shape,
+//          color = color,
+//          highlight = highlight,
+//          progress = highlightProgress,
+//          lastOutline = lastOutline.value,
+//          lastLayoutDirection = lastLayoutDirection.value,
+//          lastSize = lastSize.value,
+//        )
+//      }
+//
+//      // Keep track of the last size & layout direction
+//      lastSize.value = size
+//      lastLayoutDirection.value = layoutDirection
+//    }
+//  }
+// }
 
 private inline fun DrawScope.withLayer(paint: Paint, drawBlock: DrawScope.() -> Unit) = drawIntoCanvas { canvas ->
   canvas.saveLayer(size.toRect(), paint)
