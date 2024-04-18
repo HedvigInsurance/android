@@ -43,4 +43,5 @@ public val HedvigIcons.StopSign: ImageVector
     return _stopSign!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _stopSign: ImageVector? = null

@@ -180,6 +180,7 @@ internal class InsurancePresenterTest {
       { getInsuranceContractsUseCase },
       { getCrossSellsUseCase },
       { FakeCrossSellCardNotificationBadgeService() },
+      backgroundScope,
     )
     presenter.test(InsuranceUiState.initialState) {
       awaitItem().also { uiState ->
@@ -213,6 +214,7 @@ internal class InsurancePresenterTest {
       { getInsuranceContractsUseCase },
       { getCrossSellsUseCase },
       { FakeCrossSellCardNotificationBadgeService() },
+      backgroundScope,
     )
     presenter.test(InsuranceUiState.initialState) {
       skipItems(1)
@@ -236,6 +238,7 @@ internal class InsurancePresenterTest {
       { getInsuranceContractsUseCase },
       { getCrossSellsUseCase },
       { FakeCrossSellCardNotificationBadgeService() },
+      backgroundScope,
     )
     presenter.test(InsuranceUiState.initialState) {
       skipItems(1)
@@ -259,6 +262,7 @@ internal class InsurancePresenterTest {
       { getInsuranceContractsUseCase },
       { getCrossSellsUseCase },
       { FakeCrossSellCardNotificationBadgeService() },
+      backgroundScope,
     )
     presenter.test(InsuranceUiState.initialState) {
       skipItems(1)
@@ -300,6 +304,7 @@ internal class InsurancePresenterTest {
       { getInsuranceContractsUseCase },
       { getCrossSellsUseCase },
       { FakeCrossSellCardNotificationBadgeService() },
+      backgroundScope,
     )
     val allContracts = validContracts + terminatedContracts
     presenter.test(InsuranceUiState.initialState) {
@@ -327,6 +332,7 @@ internal class InsurancePresenterTest {
       { getInsuranceContractsUseCase },
       { getCrossSellsUseCase },
       { crossSellCardNotificationBadgeService },
+      backgroundScope,
     )
     presenter.test(InsuranceUiState.initialState) {
       assertThat(awaitItem().showNotificationBadge).isEqualTo(InsuranceUiState.initialState.showNotificationBadge)
@@ -352,6 +358,7 @@ internal class InsurancePresenterTest {
       { getInsuranceContractsUseCase },
       { getCrossSellsUseCase },
       { crossSellCardNotificationBadgeService },
+      backgroundScope,
     )
     val initialState = InsuranceUiState(
       contracts = persistentListOf(),

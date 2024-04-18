@@ -77,4 +77,5 @@ public val HedvigIcons.Warning: ImageVector
     return _warning!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _warning: ImageVector? = null

@@ -66,4 +66,5 @@ public val HedvigIcons.Chat: ImageVector
     return _chat!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _chat: ImageVector? = null

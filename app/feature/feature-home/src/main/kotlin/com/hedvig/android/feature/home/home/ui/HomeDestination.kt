@@ -50,7 +50,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.nonEmptyListOf
 import com.google.accompanist.permissions.isGranted
-import com.hedvig.android.core.common.android.SHARED_PREFERENCE_NAME
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigSecondaryContainedButton
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
@@ -409,6 +408,8 @@ private fun Context.setLastEpochDayWhenChatTooltipWasShown(epochDay: Long) =
 
 private fun Context.getLastEpochDayWhenChatTooltipWasShown() =
   getSharedPreferences().getLong(SHARED_PREFERENCE_LAST_OPEN, 0)
+
+private const val SHARED_PREFERENCE_NAME = "hedvig_shared_preference"
 
 private fun Context.getSharedPreferences() = this.getSharedPreferences(SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE)
 

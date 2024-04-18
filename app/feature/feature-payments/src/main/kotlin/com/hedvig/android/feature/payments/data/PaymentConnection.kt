@@ -3,23 +3,19 @@ package com.hedvig.android.feature.payments.data
 import kotlinx.serialization.Serializable
 
 @Serializable
-internal data class PaymentConnection(
-  val connectionInfo: ConnectionInfo?,
-  val status: PaymentConnectionStatus,
-) {
+internal sealed interface PaymentConnection {
   @Serializable
-  data class ConnectionInfo(
+  data class Active(
     val displayName: String,
     val displayValue: String,
-  )
+  ) : PaymentConnection
 
   @Serializable
-  enum class PaymentConnectionStatus {
-    ACTIVE,
-    PENDING,
-    NEEDS_SETUP,
-    UNKNOWN,
-  }
+  data object Pending : PaymentConnection
 
-  val hasConnectedPayment: Boolean = status == PaymentConnectionStatus.ACTIVE
+  @Serializable
+  data object NeedsSetup : PaymentConnection
+
+  @Serializable
+  data object Unknown : PaymentConnection
 }

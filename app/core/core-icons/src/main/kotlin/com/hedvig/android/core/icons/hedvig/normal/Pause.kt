@@ -39,4 +39,5 @@ public val HedvigIcons.Pause: ImageVector
     return _pause!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _pause: ImageVector? = null

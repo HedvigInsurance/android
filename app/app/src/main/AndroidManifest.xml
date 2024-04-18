@@ -21,9 +21,9 @@
     tools:node="remove" />
 
   <application
-    android:name=".HedvigApplication"
+    android:name="com.hedvig.android.app.HedvigApplication"
     android:allowBackup="true"
-    android:enableOnBackInvokedCallback="false"
+    android:enableOnBackInvokedCallback="true"
     android:fullBackupOnly="true"
     android:icon="@mipmap/ic_launcher"
     android:label="@string/APP_NAME"
@@ -32,7 +32,7 @@
     android:supportsRtl="true"
     android:theme="@style/Hedvig.Theme">
     <activity
-      android:name=".feature.loggedin.ui.LoggedInActivity"
+      android:name="com.hedvig.android.app.MainActivity"
       android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode|layoutDirection"
       android:exported="true"
       android:theme="@style/Hedvig.Theme.Splash"
@@ -54,21 +54,6 @@
           android:scheme="https" />
       </intent-filter>
     </activity>
-    <activity android:name=".feature.sunsetting.ForceUpgradeActivity" />
-    <activity
-      android:name=".feature.genericauth.GenericAuthActivity"
-      android:theme="@style/Hedvig.Theme"
-      android:windowSoftInputMode="adjustResize" />
-    <activity
-      android:name=".feature.genericauth.otpinput.OtpInputActivity"
-      android:exported="true"
-      android:theme="@style/Hedvig.Theme"
-      android:windowSoftInputMode="adjustResize" />
-    <activity
-      android:name=".feature.marketing.MarketingActivity"
-      android:configChanges="keyboard|keyboardHidden|orientation|screenSize|layoutDirection"
-      android:theme="@style/Hedvig.Theme"
-      android:windowSoftInputMode="adjustResize" />
 
     <meta-data
       android:name="com.google.firebase.messaging.default_notification_icon"
@@ -100,7 +85,7 @@
       </intent-filter>
     </service>
 
-    <receiver android:name=".feature.chat.service.ChatMessageNotificationReceiver" />
+    <receiver android:name="com.hedvig.android.app.chat.service.ChatMessageNotificationReceiver" />
 
     <service
       android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"
@@ -133,13 +118,13 @@
       android:exported="false"
       tools:node="merge">
       <meta-data
-        android:name="com.hedvig.app.feature.di.KoinInitializer"
+        android:name="com.hedvig.android.app.di.KoinInitializer"
         android:value="androidx.startup" />
       <meta-data
-        android:name="com.hedvig.app.startup.DatadogInitializerImpl"
+        android:name="com.hedvig.android.app.startup.DatadogInitializerImpl"
         android:value="androidx.startup" />
       <meta-data
-        android:name="com.hedvig.app.startup.TimberInitializer"
+        android:name="com.hedvig.android.app.startup.TimberInitializer"
         android:value="androidx.startup" />
 
       <!-- Remove automatic WorkManager initialization as Koin does it for us  -->

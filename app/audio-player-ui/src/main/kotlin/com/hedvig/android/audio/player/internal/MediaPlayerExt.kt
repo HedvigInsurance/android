@@ -1,7 +1,7 @@
 package com.hedvig.android.audio.player.internal
 
 import android.media.MediaPlayer
-import com.hedvig.android.core.common.android.ProgressPercentage
+import com.hedvig.audio.player.data.ProgressPercentage
 import kotlin.coroutines.resume
 import kotlinx.coroutines.suspendCancellableCoroutine
 

@@ -45,4 +45,6 @@ internal enum class HedvigColorSchemeKeyTokens {
   TypeContainer,
   OnTypeContainer,
   TypeHighlight,
+
+  BorderSecondary,
 }

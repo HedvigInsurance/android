@@ -25,7 +25,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "12.5.6"
+    versionName = "12.6.3"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -155,13 +155,16 @@ dependencies {
   implementation(libs.kotlin.reflect)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.immutable.collections)
+  implementation(libs.kotlinx.serialization.core)
   implementation(libs.moneta)
+  implementation(libs.navigationRecentsUrlSharing)
   implementation(libs.okhttp.core)
   implementation(libs.okhttp.loggingInterceptor)
   implementation(libs.playReview)
   implementation(libs.timber)
   implementation(projects.apolloAuthListeners)
   implementation(projects.apolloCore)
+  implementation(projects.apolloNetworkCacheManager)
   implementation(projects.authCorePublic)
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonAndroidPublic)
@@ -190,6 +193,7 @@ dependencies {
   implementation(projects.featureDeleteAccount)
   implementation(projects.featureEditCoinsured)
   implementation(projects.featureFlagsPublic)
+  implementation(projects.featureForceUpgrade)
   implementation(projects.featureForever)
   implementation(projects.featureHelpCenter)
   implementation(projects.featureHome)
@@ -219,19 +223,12 @@ dependencies {
   implementation(projects.trackingCore)
   implementation(projects.trackingDatadog)
   implementation(projects.coreAppReview)
+  implementation(projects.dataTermination)
+  implementation(projects.foreverUi)
 
   debugImplementation(libs.androidx.compose.uiTestManifest)
   debugImplementation(libs.androidx.compose.uiTooling)
   debugImplementation(libs.leakCanary)
-
-  testImplementation(libs.assertK)
-  testImplementation(libs.coroutines.test)
-  testImplementation(libs.koin.test)
-  testImplementation(libs.turbine)
-  testImplementation(projects.authCoreTest)
-  testImplementation(projects.coreCommonTest)
-  testImplementation(projects.loggingTest)
-  testImplementation(projects.marketTest)
 }
 
 easylauncher {

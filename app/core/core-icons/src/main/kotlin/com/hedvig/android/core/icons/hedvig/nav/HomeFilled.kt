@@ -57,4 +57,5 @@ public val HedvigIcons.HomeFilled: ImageVector
     return _homeFilled!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _homeFilled: ImageVector? = null

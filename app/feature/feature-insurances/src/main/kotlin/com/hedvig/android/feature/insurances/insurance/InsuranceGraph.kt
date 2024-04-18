@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.insurances.insurance
 
-import android.net.Uri
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
@@ -11,12 +10,11 @@ import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceVie
 import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailDestination
 import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailViewModel
 import com.hedvig.android.feature.insurances.navigation.InsurancesDestination
+import com.hedvig.android.feature.insurances.navigation.InsurancesDestinations
 import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContractsDestination
 import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContractsViewModel
-import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
-import com.hedvig.android.navigation.core.TopLevelGraph
 import com.kiwi.navigationcompose.typed.composable
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigation
@@ -26,7 +24,6 @@ import org.koin.core.parameter.parametersOf
 fun NavGraphBuilder.insuranceGraph(
   nestedGraphs: NavGraphBuilder.() -> Unit,
   navigator: Navigator,
-  openWebsite: (Uri) -> Unit,
   openChat: (NavBackStackEntry) -> Unit,
   openUrl: (String) -> Unit,
   startMovingFlow: (NavBackStackEntry) -> Unit,
@@ -36,15 +33,15 @@ fun NavGraphBuilder.insuranceGraph(
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   imageLoader: ImageLoader,
 ) {
-  navigation<TopLevelGraph.INSURANCE>(
-    startDestination = createRoutePattern<AppDestination.TopLevelDestination.Insurance>(),
-    deepLinks = listOf(
-      navDeepLink { uriPattern = hedvigDeepLinkContainer.insurances },
-      navDeepLink { uriPattern = hedvigDeepLinkContainer.contractWithoutContractId },
-    ),
+  navigation<InsurancesDestination.Graph>(
+    startDestination = createRoutePattern<InsurancesDestination.Insurances>(),
   ) {
     nestedGraphs()
-    composable<AppDestination.TopLevelDestination.Insurance>(
+    composable<InsurancesDestination.Insurances>(
+      deepLinks = listOf(
+        navDeepLink { uriPattern = hedvigDeepLinkContainer.insurances },
+        navDeepLink { uriPattern = hedvigDeepLinkContainer.contractWithoutContractId },
+      ),
       enterTransition = { MotionDefaults.fadeThroughEnter },
       exitTransition = { MotionDefaults.fadeThroughExit },
     ) { backStackEntry ->
@@ -52,16 +49,16 @@ fun NavGraphBuilder.insuranceGraph(
       InsuranceDestination(
         viewModel = viewModel,
         onInsuranceCardClick = { contractId: String ->
-          with(navigator) { backStackEntry.navigate(InsurancesDestination.InsuranceContractDetail(contractId)) }
+          with(navigator) { backStackEntry.navigate(InsurancesDestinations.InsuranceContractDetail(contractId)) }
         },
-        onCrossSellClick = { uri -> openWebsite(uri) },
+        onCrossSellClick = openUrl,
         navigateToCancelledInsurances = {
-          with(navigator) { backStackEntry.navigate(InsurancesDestination.TerminatedInsurances) }
+          with(navigator) { backStackEntry.navigate(InsurancesDestinations.TerminatedInsurances) }
         },
         imageLoader = imageLoader,
       )
     }
-    composable<InsurancesDestination.InsuranceContractDetail>(
+    composable<InsurancesDestinations.InsuranceContractDetail>(
       deepLinks = listOf(
         navDeepLink { uriPattern = hedvigDeepLinkContainer.contract },
       ),
@@ -79,7 +76,6 @@ fun NavGraphBuilder.insuranceGraph(
             cancelInsuranceData,
           )
         },
-        openWebsite = openWebsite,
         openChat = { openChat(backStackEntry) },
         openUrl = openUrl,
         navigateUp = navigator::navigateUp,
@@ -87,12 +83,12 @@ fun NavGraphBuilder.insuranceGraph(
         imageLoader = imageLoader,
       )
     }
-    composable<InsurancesDestination.TerminatedInsurances> { backStackEntry ->
+    composable<InsurancesDestinations.TerminatedInsurances> { backStackEntry ->
       val viewModel: TerminatedContractsViewModel = koinViewModel()
       TerminatedContractsDestination(
         viewModel = viewModel,
         navigateToContractDetail = { contractId: String ->
-          with(navigator) { backStackEntry.navigate(InsurancesDestination.InsuranceContractDetail(contractId)) }
+          with(navigator) { backStackEntry.navigate(InsurancesDestinations.InsuranceContractDetail(contractId)) }
         },
         navigateUp = navigator::navigateUp,
         imageLoader = imageLoader,

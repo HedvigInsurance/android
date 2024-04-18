@@ -20,7 +20,6 @@ import octopus.TravelCertificateSpecificationsQuery
 import octopus.type.buildContract
 import octopus.type.buildMember
 import octopus.type.buildTravelCertificateContractSpecification
-import octopus.type.buildTravelCertificateInfoSpecification
 import octopus.type.buildTravelCertificateSpecification
 import org.junit.Rule
 import org.junit.Test
@@ -101,12 +100,6 @@ internal class GetTravelCertificateSpecificationsUseCaseTest {
                 numberOfCoInsured = 2
               },
             )
-            infoSpecifications = listOf(
-              buildTravelCertificateInfoSpecification {
-                title = "infoTitle"
-                body = "infoBody"
-              },
-            )
           }
         }
       },
@@ -122,7 +115,6 @@ internal class GetTravelCertificateSpecificationsUseCaseTest {
           dateRange = LocalDate.parse("2023-02-02")..LocalDate.parse("2023-03-02"),
           numberOfCoInsured = 2,
         ),
-        listOf(TravelCertificateData.InfoSection("infoTitle", "infoBody")),
       ),
     )
   }
@@ -146,12 +138,6 @@ internal class GetTravelCertificateSpecificationsUseCaseTest {
                 maxStartDate = LocalDate.parse("2023-03-02")
                 maxDurationDays = 1
                 numberOfCoInsured = 2
-              },
-            )
-            infoSpecifications = listOf(
-              buildTravelCertificateInfoSpecification {
-                title = "infoTitle"
-                body = "infoBody"
               },
             )
           }
@@ -192,12 +178,6 @@ internal class GetTravelCertificateSpecificationsUseCaseTest {
                 numberOfCoInsured = 2
               },
             )
-            infoSpecifications = listOf(
-              buildTravelCertificateInfoSpecification {
-                title = "infoTitle"
-                body = "infoBody"
-              },
-            )
           }
         }
       },
@@ -214,7 +194,6 @@ internal class GetTravelCertificateSpecificationsUseCaseTest {
             dateRange = LocalDate.parse("2023-02-02")..LocalDate.parse("2023-03-02"),
             numberOfCoInsured = 2,
           ),
-          listOf(TravelCertificateData.InfoSection("infoTitle", "infoBody")),
         ),
       )
     } else {

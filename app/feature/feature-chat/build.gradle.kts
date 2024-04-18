@@ -37,7 +37,6 @@ dependencies {
   implementation(libs.retrofitKotlinxSerializationConverter)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
-  implementation(projects.authAndroid)
   implementation(projects.composePhotoCaptureState)
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonAndroidPublic)

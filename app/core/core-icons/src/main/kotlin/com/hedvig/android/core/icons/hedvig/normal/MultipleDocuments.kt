@@ -130,4 +130,5 @@ public val HedvigIcons.MultipleDocuments: ImageVector
     return _multipleDocuments!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _multipleDocuments: ImageVector? = null

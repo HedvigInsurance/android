@@ -29,7 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBackAndClose
+import com.hedvig.android.core.ui.appbar.TopAppBarWithBackAndClose
 import com.hedvig.android.core.ui.dialog.HedvigAlertDialog
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbar
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState

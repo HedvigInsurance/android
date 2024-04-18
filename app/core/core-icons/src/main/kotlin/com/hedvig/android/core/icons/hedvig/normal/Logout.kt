@@ -43,4 +43,5 @@ public val HedvigIcons.Logout: ImageVector
     return _logout!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _logout: ImageVector? = null

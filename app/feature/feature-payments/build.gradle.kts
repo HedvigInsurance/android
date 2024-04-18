@@ -31,6 +31,7 @@ dependencies {
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.moneta)
   implementation(projects.apolloCore)
+  implementation(projects.apolloNetworkCacheManager)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.authCorePublic)
   implementation(projects.coreBuildConstants)
@@ -61,6 +62,7 @@ dependencies {
   implementation(projects.placeholder)
   implementation(projects.pullrefresh)
   implementation(projects.theme)
+  implementation(projects.foreverUi)
 
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
@@ -74,6 +76,7 @@ dependencies {
   testImplementation(projects.marketTest)
   testImplementation(projects.memberRemindersTest)
   testImplementation(projects.moleculeTest)
+
 }
 
 apollo {

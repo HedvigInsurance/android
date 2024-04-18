@@ -37,4 +37,5 @@ public val HedvigIcons.X: ImageVector
     return _x!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _x: ImageVector? = null

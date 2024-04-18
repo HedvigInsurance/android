@@ -17,7 +17,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
@@ -27,8 +26,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.ArrowBack
 import com.hedvig.android.core.icons.hedvig.normal.X
@@ -79,30 +76,6 @@ fun TopAppBarWithBack(
   )
 }
 
-@Suppress("unused")
-@Composable
-fun TopAppBarWithClose(
-  title: String,
-  onClick: () -> Unit,
-  modifier: Modifier = Modifier,
-  windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
-  colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(
-    containerColor = MaterialTheme.colorScheme.background,
-    scrolledContainerColor = MaterialTheme.colorScheme.surface,
-  ),
-  scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-) {
-  TopAppBar(
-    title = title,
-    onClick = onClick,
-    actionType = TopAppBarActionType.CLOSE,
-    colors = colors,
-    scrollBehavior = scrollBehavior,
-    modifier = modifier,
-    windowInsets = windowInsets,
-  )
-}
-
 enum class TopAppBarActionType {
   BACK,
   CLOSE,
@@ -146,64 +119,4 @@ fun TopAppBar(
     scrollBehavior = scrollBehavior,
     actions = actions,
   )
-}
-
-@Composable
-fun TopAppBarWithBackAndClose(
-  title: String,
-  onNavigateUp: () -> Unit,
-  onClose: () -> Unit,
-  modifier: Modifier = Modifier,
-  windowInsets: WindowInsets = TopAppBarDefaults.windowInsets
-    .union(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)),
-  colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(
-    containerColor = MaterialTheme.colorScheme.background,
-    scrolledContainerColor = MaterialTheme.colorScheme.surface,
-  ),
-  scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-) {
-  TopAppBar(
-    modifier = modifier,
-    title = {
-      Text(
-        text = title,
-        style = MaterialTheme.typography.titleLarge,
-      )
-    },
-    navigationIcon = {
-      IconButton(
-        onClick = onNavigateUp,
-        content = {
-          Icon(
-            imageVector = Icons.Hedvig.ArrowBack,
-            contentDescription = null,
-          )
-        },
-      )
-    },
-    actions = {
-      IconButton(
-        onClick = onClose,
-        content = {
-          Icon(
-            imageVector = Icons.Hedvig.X,
-            contentDescription = null,
-          )
-        },
-      )
-    },
-    windowInsets = windowInsets,
-    colors = colors,
-    scrollBehavior = scrollBehavior,
-  )
-}
-
-@HedvigPreview
-@Composable
-private fun PreviewTopAppBarWithBackAndClose() {
-  HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
-      TopAppBarWithBackAndClose("title", {}, {})
-    }
-  }
 }

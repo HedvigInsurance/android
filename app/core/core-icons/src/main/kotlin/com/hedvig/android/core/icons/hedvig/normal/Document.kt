@@ -103,4 +103,5 @@ public val HedvigIcons.Document: ImageVector
     return _document!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _document: ImageVector? = null

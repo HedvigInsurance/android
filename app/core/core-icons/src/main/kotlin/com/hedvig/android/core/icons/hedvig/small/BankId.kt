@@ -240,4 +240,5 @@ public val HedvigIcons.BankId: ImageVector
     return _bankId!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _bankId: ImageVector? = null

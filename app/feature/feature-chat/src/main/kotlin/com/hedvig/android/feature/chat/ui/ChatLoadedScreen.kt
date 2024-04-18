@@ -381,6 +381,7 @@ private fun ChatBubble(
           ) {
             TextWithClickableUrls(
               text = chatMessage.text,
+              onUrlClicked = openUrl,
               style = LocalTextStyle.current.copy(color = LocalContentColor.current),
               modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
             )

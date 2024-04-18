@@ -1,8 +1,5 @@
 package com.hedvig.android.feature.travelcertificate.ui.generatewho
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -12,12 +9,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -26,8 +20,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -38,12 +30,10 @@ import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.designsystem.material3.onSecondaryContainedButtonContainer
 import com.hedvig.android.core.designsystem.material3.secondaryContainedButtonContainer
-import com.hedvig.android.core.designsystem.material3.squircleExtraSmall
 import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.hedvig.small.hedvig.Checkmark
+import com.hedvig.android.core.ui.RoundedCornerCheckBox
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
@@ -135,7 +125,8 @@ private fun TravelCertificateTravellersInput(
               Spacer(Modifier.width(8.dp))
               RoundedCornerCheckBox(
                 isChecked = uiState.isMemberIncluded,
-              ) { changeMemberChecked() }
+                onCheckedChange = { changeMemberChecked() },
+              )
             }
           }
           for (i in uiState.coInsuredList) {
@@ -213,38 +204,6 @@ private fun TravelCertificateTravellersInput(
           Spacer(Modifier.height(16.dp))
         }
       }
-    }
-  }
-}
-
-@Composable
-private fun RoundedCornerCheckBox(isChecked: Boolean, onCheckedChange: ((Boolean) -> Unit)?) {
-  val checkMarkColor = MaterialTheme.colorScheme.onPrimary
-  val checkColor = MaterialTheme.colorScheme.primary
-  val uncheckedColor = MaterialTheme.colorScheme.outlineVariant
-
-  Box(
-    modifier = Modifier
-      .size(24.dp)
-      .background(
-        color = if (isChecked) checkColor else Color.Transparent,
-        shape = MaterialTheme.shapes.squircleExtraSmall,
-      )
-      .border(
-        width = 1.dp,
-        color = if (isChecked) checkColor else uncheckedColor,
-        shape = MaterialTheme.shapes.squircleExtraSmall,
-      )
-      .clip(MaterialTheme.shapes.squircleExtraSmall)
-      .clickable {
-        if (onCheckedChange != null) {
-          onCheckedChange(isChecked)
-        }
-      },
-    contentAlignment = Alignment.Center,
-  ) {
-    if (isChecked) {
-      Icon(Icons.Hedvig.Checkmark, contentDescription = null, tint = checkMarkColor)
     }
   }
 }

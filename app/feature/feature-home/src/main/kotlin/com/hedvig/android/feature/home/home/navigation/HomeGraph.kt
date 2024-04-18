@@ -6,9 +6,7 @@ import androidx.navigation.navDeepLink
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.feature.home.home.ui.HomeDestination
 import com.hedvig.android.feature.home.home.ui.HomeViewModel
-import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import com.hedvig.android.navigation.core.TopLevelGraph
 import com.kiwi.navigationcompose.typed.composable
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigation
@@ -26,13 +24,13 @@ fun NavGraphBuilder.homeGraph(
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
 ) {
-  navigation<TopLevelGraph.HOME>(
-    startDestination = createRoutePattern<AppDestination.TopLevelDestination.Home>(),
-    deepLinks = listOf(
-      navDeepLink { uriPattern = hedvigDeepLinkContainer.home },
-    ),
+  navigation<HomeDestination.Graph>(
+    startDestination = createRoutePattern<HomeDestination.Home>(),
   ) {
-    composable<AppDestination.TopLevelDestination.Home>(
+    composable<HomeDestination.Home>(
+      deepLinks = listOf(
+        navDeepLink { uriPattern = hedvigDeepLinkContainer.home },
+      ),
       enterTransition = { MotionDefaults.fadeThroughEnter },
       exitTransition = { MotionDefaults.fadeThroughExit },
     ) { backStackEntry ->

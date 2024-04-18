@@ -48,4 +48,5 @@ public val HedvigIcons.AppleLogo: ImageVector
     return _appleLogo!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _appleLogo: ImageVector? = null

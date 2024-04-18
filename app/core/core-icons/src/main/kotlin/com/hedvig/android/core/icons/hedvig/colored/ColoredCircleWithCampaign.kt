@@ -75,4 +75,5 @@ public val HedvigIcons.ColoredCircleWithCampaign: ImageVector
     return _coloredCircleWithCampaign!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _coloredCircleWithCampaign: ImageVector? = null

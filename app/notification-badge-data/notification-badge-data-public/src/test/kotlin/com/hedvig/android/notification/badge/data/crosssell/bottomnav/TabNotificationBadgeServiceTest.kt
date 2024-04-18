@@ -36,8 +36,8 @@ class TabNotificationBadgeServiceTest {
   }
 
   @Test
-  fun `When backend returns no cross sells and the referral campaign is off, show no badge`() = runTest {
-    val notificationBadgeService = FakeNotificationBadgeStorage(this)
+  fun `When backend returns no cross sells, show no badge`() = runTest {
+    val notificationBadgeService = FakeNotificationBadgeStorage(backgroundScope)
     val getCrossSellsContractTypeIdentifiersUseCase = FakeGetCrossSellIdentifiersUseCase()
     val service = tabNotificationBadgeService(
       notificationBadgeStorage = notificationBadgeService,
@@ -46,27 +46,13 @@ class TabNotificationBadgeServiceTest {
 
     val unseenBadges = service.unseenTabNotificationBadges().first()
 
-    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.REFERRALS))
-  }
-
-  @Test
-  fun `When backend returns no cross sells and the referral campaign is on, show referral badge`() = runTest {
-    val notificationBadgeService = FakeNotificationBadgeStorage(this)
-    val getCrossSellsContractTypeIdentifiersUseCase = FakeGetCrossSellIdentifiersUseCase()
-    val service = tabNotificationBadgeService(
-      notificationBadgeStorage = notificationBadgeService,
-      getCrossSellIdentifiersUseCase = getCrossSellsContractTypeIdentifiersUseCase,
-    )
-
-    val unseenBadges = service.unseenTabNotificationBadges().first()
-
-    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.REFERRALS))
+    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.FOREVER))
   }
 
   @Test
   fun `When backend returns a cross sell and it's not seen, show insurance badge`() = runTest {
     val seAccident = CrossSellIdentifier("SE_ACCIDENT")
-    val notificationBadgeService = FakeNotificationBadgeStorage(this)
+    val notificationBadgeService = FakeNotificationBadgeStorage(backgroundScope)
     val getCrossSellsContractTypesUseCase = FakeGetCrossSellIdentifiersUseCase {
       setOf(seAccident)
     }
@@ -77,13 +63,13 @@ class TabNotificationBadgeServiceTest {
 
     val unseenBadges = service.unseenTabNotificationBadges().first()
 
-    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.INSURANCE, BottomNavTab.REFERRALS))
+    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.INSURANCE, BottomNavTab.FOREVER))
   }
 
   @Test
   fun `When backend returns a cross sell but it's seen, show no badge`() = runTest {
     val seAccident = CrossSellIdentifier("SE_ACCIDENT")
-    val notificationBadgeService = FakeNotificationBadgeStorage(this).apply {
+    val notificationBadgeService = FakeNotificationBadgeStorage(backgroundScope).apply {
       setValue(
         NotificationBadge.BottomNav.CrossSellOnInsuranceScreen,
         setOf(seAccident.rawValue),
@@ -99,14 +85,14 @@ class TabNotificationBadgeServiceTest {
 
     val unseenBadges = service.unseenTabNotificationBadges().first()
 
-    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.REFERRALS))
+    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.FOREVER))
   }
 
   @Test
   fun `When backend returns two cross sells but they're both seen, show no badge`() = runTest {
     val seAccident = CrossSellIdentifier("SE_ACCIDENT")
     val seCarFull = CrossSellIdentifier("SE_CAR_FULL")
-    val notificationBadgeService = FakeNotificationBadgeStorage(this).apply {
+    val notificationBadgeService = FakeNotificationBadgeStorage(backgroundScope).apply {
       setValue(
         NotificationBadge.BottomNav.CrossSellOnInsuranceScreen,
         setOf(
@@ -125,14 +111,14 @@ class TabNotificationBadgeServiceTest {
 
     val unseenBadges = service.unseenTabNotificationBadges().first()
 
-    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.REFERRALS))
+    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.FOREVER))
   }
 
   @Test
   fun `When backend returns two cross sells but only one is seen, still show insurance badge`() = runTest {
     val seAccident = CrossSellIdentifier("SE_ACCIDENT")
     val seCarFull = CrossSellIdentifier("SE_CAR_FULL")
-    val notificationBadgeService = FakeNotificationBadgeStorage(this).apply {
+    val notificationBadgeService = FakeNotificationBadgeStorage(backgroundScope).apply {
       setValue(
         NotificationBadge.BottomNav.CrossSellOnInsuranceScreen,
         setOf(seAccident.rawValue),
@@ -148,7 +134,7 @@ class TabNotificationBadgeServiceTest {
 
     val unseenBadges = service.unseenTabNotificationBadges().first()
 
-    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.INSURANCE, BottomNavTab.REFERRALS))
+    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.INSURANCE, BottomNavTab.FOREVER))
   }
 
   @Test
@@ -158,7 +144,7 @@ class TabNotificationBadgeServiceTest {
     val seHouse = CrossSellIdentifier("SE_HOUSE")
     val seCarFull = CrossSellIdentifier("SE_CAR_FULL")
     val seQasaShortTermRental = CrossSellIdentifier("SE_QASA_SHORT_TERM_RENTAL")
-    val notificationBadgeService = FakeNotificationBadgeStorage(this).apply {
+    val notificationBadgeService = FakeNotificationBadgeStorage(backgroundScope).apply {
       setValue(
         NotificationBadge.BottomNav.CrossSellOnInsuranceScreen,
         setOf(
@@ -179,13 +165,13 @@ class TabNotificationBadgeServiceTest {
 
     val unseenBadges = service.unseenTabNotificationBadges().first()
 
-    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.INSURANCE, BottomNavTab.REFERRALS))
+    assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.INSURANCE, BottomNavTab.FOREVER))
   }
 
   @Test
   fun `When a notification is shown, when it is marked as seen it no longer shows`() = runTest {
     val seAccident = CrossSellIdentifier("SE_ACCIDENT")
-    val notificationBadgeService = FakeNotificationBadgeStorage(this)
+    val notificationBadgeService = FakeNotificationBadgeStorage(backgroundScope)
     val getCrossSellsContractTypesUseCase = FakeGetCrossSellIdentifiersUseCase {
       setOf(seAccident)
     }
@@ -194,9 +180,9 @@ class TabNotificationBadgeServiceTest {
       getCrossSellIdentifiersUseCase = getCrossSellsContractTypesUseCase,
     )
     service.unseenTabNotificationBadges().test {
-      assertThat(awaitItem()).isEqualTo(setOf(BottomNavTab.INSURANCE, BottomNavTab.REFERRALS))
+      assertThat(awaitItem()).isEqualTo(setOf(BottomNavTab.INSURANCE, BottomNavTab.FOREVER))
       service.visitTab(BottomNavTab.INSURANCE)
-      assertThat(awaitItem()).isEqualTo(setOf(BottomNavTab.REFERRALS))
+      assertThat(awaitItem()).isEqualTo(setOf(BottomNavTab.FOREVER))
       ensureAllEventsConsumed()
     }
   }
@@ -204,7 +190,7 @@ class TabNotificationBadgeServiceTest {
   @Test
   fun `When two notifications are shown, they get cleared one by one when visiting the tabs`() = runTest {
     val seAccident = CrossSellIdentifier("SE_ACCIDENT")
-    val notificationBadgeService = FakeNotificationBadgeStorage(this)
+    val notificationBadgeService = FakeNotificationBadgeStorage(backgroundScope)
     val getCrossSellsContractTypesUseCase = FakeGetCrossSellIdentifiersUseCase {
       setOf(seAccident)
     }
@@ -214,10 +200,10 @@ class TabNotificationBadgeServiceTest {
     )
 
     service.unseenTabNotificationBadges().test {
-      assertThat(awaitItem()).isEqualTo(setOf(BottomNavTab.INSURANCE, BottomNavTab.REFERRALS))
+      assertThat(awaitItem()).isEqualTo(setOf(BottomNavTab.INSURANCE, BottomNavTab.FOREVER))
       service.visitTab(BottomNavTab.INSURANCE)
-      assertThat(awaitItem()).isEqualTo(setOf(BottomNavTab.REFERRALS))
-      service.visitTab(BottomNavTab.REFERRALS)
+      assertThat(awaitItem()).isEqualTo(setOf(BottomNavTab.FOREVER))
+      service.visitTab(BottomNavTab.FOREVER)
       assertThat(awaitItem()).isEqualTo(emptySet())
       ensureAllEventsConsumed()
     }

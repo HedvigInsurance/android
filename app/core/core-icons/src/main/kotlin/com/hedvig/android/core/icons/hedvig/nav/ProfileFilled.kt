@@ -20,8 +20,7 @@ public val HedvigIcons.ProfileFilled: ImageVector
     _profileFilled = Builder(
       name = "Profile tab selected",
       defaultWidth = 24.0.dp,
-      defaultHeight =
-        24.0.dp,
+      defaultHeight = 24.0.dp,
       viewportWidth = 24.0f,
       viewportHeight = 24.0f,
     ).apply {
@@ -51,4 +50,5 @@ public val HedvigIcons.ProfileFilled: ImageVector
     return _profileFilled!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _profileFilled: ImageVector? = null

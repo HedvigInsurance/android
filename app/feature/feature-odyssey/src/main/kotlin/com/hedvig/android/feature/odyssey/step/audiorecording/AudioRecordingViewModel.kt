@@ -103,12 +103,12 @@ internal class AudioRecordingViewModel(
     if (recorder == null) {
       recorder = MediaRecorder().apply {
         setAudioSource(MediaRecorder.AudioSource.VOICE_RECOGNITION)
-        setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS)
+        setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
         setAudioSamplingRate(96_000)
         setAudioEncodingBitRate(128_000)
         val filePath = File.createTempFile(
           "claim_android_recording_${UUID.randomUUID()}",
-          ".aac",
+          ".mp4",
         ).absolutePath
         setOutputFile(filePath)
         setAudioEncoder(MediaRecorder.AudioEncoder.AAC)

@@ -4,23 +4,6 @@ import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.serialization.Serializable
 
 sealed interface AppDestination : Destination {
-  sealed interface TopLevelDestination : AppDestination {
-    @Serializable
-    data object Home : TopLevelDestination
-
-    @Serializable
-    data object Insurance : TopLevelDestination
-
-    @Serializable
-    data object Profile : TopLevelDestination
-
-    @Serializable
-    data object Forever : TopLevelDestination
-  }
-
-  @Serializable
-  data object Login : AppDestination
-
   @Serializable
   data class Chat(
     val chatContext: ChatContext? = null,
@@ -45,9 +28,6 @@ sealed interface AppDestination : Destination {
 
   @Serializable
   data object ClaimsFlow : AppDestination
-
-  @Serializable
-  data object PaymentInfo : AppDestination
 
   // Handles connecting payment with Trustly. Auto-navigates to Adyen for NO/DK
   @Serializable

@@ -91,7 +91,7 @@ internal fun ClaimDetailsDestination(
   appPackageId: String,
   navigateUp: () -> Unit,
   onChatClick: () -> Unit,
-  onUri: (List<Uri>, targetUploadUrl: String) -> Unit,
+  onFilesToUploadSelected: (List<Uri>, targetUploadUrl: String) -> Unit,
   openUrl: (String) -> Unit,
   sharePdf: (File) -> Unit,
 ) {
@@ -105,7 +105,7 @@ internal fun ClaimDetailsDestination(
     retry = { viewModel.emit(ClaimDetailsEvent.Retry) },
     navigateUp = navigateUp,
     onChatClick = onChatClick,
-    onUri = onUri,
+    onFilesToUploadSelected = onFilesToUploadSelected,
     downloadFromUrl = { viewModel.emit(ClaimDetailsEvent.DownloadPdf(it)) },
     sharePdf = {
       viewModel.emit(ClaimDetailsEvent.HandledSharingPdfFile)
@@ -125,7 +125,7 @@ private fun ClaimDetailScreen(
   retry: () -> Unit,
   navigateUp: () -> Unit,
   onChatClick: () -> Unit,
-  onUri: (files: List<Uri>, uploadUri: String) -> Unit,
+  onFilesToUploadSelected: (files: List<Uri>, uploadUri: String) -> Unit,
   downloadFromUrl: (String) -> Unit,
   sharePdf: (File) -> Unit,
   onDismissDownloadError: () -> Unit,
@@ -142,18 +142,20 @@ private fun ClaimDetailScreen(
       when (uiState) {
         is ClaimDetailUiState.Content -> {
           val photoCaptureState = rememberPhotoCaptureState(appPackageId = appPackageId) { uri ->
-            logcat { "ChatFileState sending uri:$uri" }
-            onUri(listOf(uri), uiState.uploadUri)
+            logcat { "ChatFileState sending photoCaptureState uri:$uri" }
+            onFilesToUploadSelected(listOf(uri), uiState.uploadUri)
           }
           val photoPicker = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.PickMultipleVisualMedia(),
           ) { resultingUriList: List<Uri> ->
-            onUri(resultingUriList, uiState.uploadUri)
+            logcat { "ChatFileState sending photoPicker uris:$resultingUriList" }
+            onFilesToUploadSelected(resultingUriList, uiState.uploadUri)
           }
           val filePicker = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.GetMultipleContents(),
           ) { resultingUriList: List<Uri> ->
-            onUri(resultingUriList, uiState.uploadUri)
+            logcat { "ChatFileState sending filePicker uris:$resultingUriList" }
+            onFilesToUploadSelected(resultingUriList, uiState.uploadUri)
           }
           ClaimDetailScreen(
             uiState = uiState,

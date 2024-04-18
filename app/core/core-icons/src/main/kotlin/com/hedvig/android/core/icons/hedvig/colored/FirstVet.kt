@@ -88,4 +88,5 @@ public val HedvigIcons.FirstVet: ImageVector
     return _firstvet!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _firstvet: ImageVector? = null
