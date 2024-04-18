@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.vector.group
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 
 @Suppress("UnusedReceiverParameter")
@@ -151,7 +152,7 @@ private var _flagSweden: ImageVector? = null
 @Preview
 @Composable
 private fun IconPreview() {
-  com.hedvig.android.design.system.hedvig.HedvigTheme {
+  HedvigTheme {
     Column(
       verticalArrangement = Arrangement.spacedBy(8.dp),
       horizontalAlignment = Alignment.CenterHorizontally,
@@ -160,8 +161,8 @@ private fun IconPreview() {
         imageVector = HedvigIcons.FlagSweden,
         contentDescription = null,
         modifier = Modifier
-            .width((40.0).dp)
-            .height((40.0).dp),
+          .width((40.0).dp)
+          .height((40.0).dp),
       )
     }
   }

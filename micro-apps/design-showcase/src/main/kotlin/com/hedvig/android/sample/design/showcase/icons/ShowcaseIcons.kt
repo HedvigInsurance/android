@@ -77,16 +77,16 @@ import com.hedvig.android.design.system.hedvig.icon.Swap
 import com.hedvig.android.design.system.hedvig.icon.Travel
 import com.hedvig.android.design.system.hedvig.icon.WarningFilled
 import com.hedvig.android.design.system.hedvig.icon.WarningOutline
-import com.hedvig.android.design.system.hedvig.icon.flag.FlagDenmark
-import com.hedvig.android.design.system.hedvig.icon.flag.FlagNorway
-import com.hedvig.android.design.system.hedvig.icon.flag.FlagSweden
-import com.hedvig.android.design.system.hedvig.icon.flag.FlagUk
 import com.hedvig.android.design.system.hedvig.icon.colored.ColoredCampaign
 import com.hedvig.android.design.system.hedvig.icon.colored.ColoredCampaignWithDot
 import com.hedvig.android.design.system.hedvig.icon.colored.ColoredChat
 import com.hedvig.android.design.system.hedvig.icon.colored.ColoredChatWithDot
 import com.hedvig.android.design.system.hedvig.icon.colored.ColoredFirstVet
 import com.hedvig.android.design.system.hedvig.icon.colored.ColoredFirstVetWithDot
+import com.hedvig.android.design.system.hedvig.icon.flag.FlagDenmark
+import com.hedvig.android.design.system.hedvig.icon.flag.FlagNorway
+import com.hedvig.android.design.system.hedvig.icon.flag.FlagSweden
+import com.hedvig.android.design.system.hedvig.icon.flag.FlagUk
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
