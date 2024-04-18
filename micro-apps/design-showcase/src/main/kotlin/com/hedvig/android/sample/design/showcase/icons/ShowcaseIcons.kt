@@ -1,7 +1,6 @@
 package com.hedvig.android.sample.design.showcase.icons
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -10,7 +9,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.LocalContentColor
@@ -79,6 +77,10 @@ import com.hedvig.android.design.system.hedvig.icon.Swap
 import com.hedvig.android.design.system.hedvig.icon.Travel
 import com.hedvig.android.design.system.hedvig.icon.WarningFilled
 import com.hedvig.android.design.system.hedvig.icon.WarningOutline
+import com.hedvig.android.design.system.hedvig.icon.flag.FlagDenmark
+import com.hedvig.android.design.system.hedvig.icon.flag.FlagNorway
+import com.hedvig.android.design.system.hedvig.icon.flag.FlagSweden
+import com.hedvig.android.design.system.hedvig.icon.flag.FlagUk
 import com.hedvig.android.design.system.hedvig.icon.colored.ColoredCampaign
 import com.hedvig.android.design.system.hedvig.icon.colored.ColoredCampaignWithDot
 import com.hedvig.android.design.system.hedvig.icon.colored.ColoredChat
@@ -156,6 +158,12 @@ fun ShowcaseIcons(modifier: Modifier = Modifier) {
         Icon(HedvigIcons.Travel, null)
         Icon(HedvigIcons.WarningFilled, null)
         Icon(HedvigIcons.WarningOutline, null)
+      }
+      FlowRow {
+        Image(HedvigIcons.FlagDenmark, null)
+        Image(HedvigIcons.FlagNorway, null)
+        Image(HedvigIcons.FlagSweden, null)
+        Image(HedvigIcons.FlagUk, null)
       }
       FlowRow {
         Image(HedvigIcons.ColoredCampaign, null)

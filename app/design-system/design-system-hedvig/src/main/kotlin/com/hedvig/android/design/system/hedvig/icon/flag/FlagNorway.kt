@@ -1,5 +1,13 @@
 package com.hedvig.android.design.system.hedvig.icon.flag
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathFillType.Companion.NonZero
 import androidx.compose.ui.graphics.SolidColor
@@ -9,6 +17,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.ImageVector.Builder
 import androidx.compose.ui.graphics.vector.group
 import androidx.compose.ui.graphics.vector.path
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 
@@ -208,3 +217,22 @@ public val HedvigIcons.FlagNorway: ImageVector
 
 @Suppress("ktlint:standard:backing-property-naming")
 private var _flagNorway: ImageVector? = null
+
+@Preview
+@Composable
+private fun IconPreview() {
+  com.hedvig.android.design.system.hedvig.HedvigTheme {
+    Column(
+      verticalArrangement = Arrangement.spacedBy(8.dp),
+      horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+      Image(
+        imageVector = HedvigIcons.FlagNorway,
+        contentDescription = null,
+        modifier = Modifier
+          .width((40.0).dp)
+          .height((40.0).dp),
+      )
+    }
+  }
+}
