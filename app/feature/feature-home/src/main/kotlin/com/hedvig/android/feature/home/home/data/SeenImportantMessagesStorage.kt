@@ -5,7 +5,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
 interface SeenImportantMessagesStorage {
-
   val seenMessages: Flow<List<String>>
 
   fun markMessageAsSeen(id: String)
