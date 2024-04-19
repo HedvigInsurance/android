@@ -52,6 +52,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.ContactInformation
 import com.hedvig.android.core.icons.hedvig.normal.Eurobonus
@@ -60,7 +61,7 @@ import com.hedvig.android.core.icons.hedvig.normal.MultipleDocuments
 import com.hedvig.android.core.icons.hedvig.normal.Settings
 import com.hedvig.android.core.ui.dialog.HedvigAlertDialog
 import com.hedvig.android.core.ui.plus
-import com.hedvig.android.core.ui.preview.HedvigPreviewWithProvidedParametersAnimation
+import com.hedvig.android.core.ui.preview.PreviewSurfaceWithProvidedParametersOnClickAnimation
 import com.hedvig.android.memberreminders.ui.MemberReminderCards
 import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
@@ -163,12 +164,12 @@ private fun ProfileScreen(
       }
       Spacer(Modifier.height(16.dp))
       ProfileRowsWithPlaceholders(
-        uiState,
-        navigateToMyInfo,
-        navigateToSettings,
-        navigateToAboutApp,
-        navigateToEurobonus,
-        navigateToTravelCertificate,
+        profileUiState = uiState,
+        showMyInfo = navigateToMyInfo,
+        showSettings = navigateToSettings,
+        showAboutApp = navigateToAboutApp,
+        navigateToEurobonus = navigateToEurobonus,
+        navigateToTravelCertificate = navigateToTravelCertificate,
       )
       Spacer(Modifier.height(16.dp))
       Spacer(Modifier.weight(1f))
@@ -219,7 +220,7 @@ private fun ProfileScreen(
 }
 
 @Composable
-private fun ColumnScope.ProfileRowsWithPlaceholders(
+private fun ProfileRowsWithPlaceholders(
   profileUiState: ProfileUiState,
   showMyInfo: () -> Unit,
   showSettings: () -> Unit,
@@ -285,6 +286,7 @@ private fun ProfileRowPlaceholder(title: String) {
   }
 }
 
+@Suppress("UnusedReceiverParameter")
 @Composable
 private fun ColumnScope.ProfileItemRows(
   profileUiState: ProfileUiState,
@@ -350,18 +352,21 @@ private fun ProfileRow(title: String, icon: ImageVector, onClick: () -> Unit, mo
 @HedvigPreview
 @Composable
 private fun PreviewProfileItemRows() {
-  HedvigPreviewWithProvidedParametersAnimation(
-    ProfileUiStateProvider().values.toList(),
-  ) { uiState ->
-    Column {
-      ProfileRowsWithPlaceholders(
-        uiState,
-        {},
-        {},
-        {},
-        {},
-        {},
-      )
+  HedvigTheme {
+    PreviewSurfaceWithProvidedParametersOnClickAnimation(
+      ProfileUiStateProvider().values.toList(),
+      surfaceColor = MaterialTheme.colorScheme.background,
+    ) { uiState ->
+      Column {
+        ProfileRowsWithPlaceholders(
+          uiState,
+          {},
+          {},
+          {},
+          {},
+          {},
+        )
+      }
     }
   }
 }

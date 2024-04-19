@@ -42,7 +42,6 @@ fun PlaceholderHighlight.Companion.shimmer(
 ): PlaceholderHighlight = PlaceholderHighlight.shimmer(
   highlightColor = PlaceholderDefaults.shimmerHighlightColor(
     backgroundColor = MaterialTheme.colorScheme.surface,
-    alpha = 1f,
   ),
   animationSpec = animationSpec,
   progressForMaxAlpha = progressForMaxAlpha,

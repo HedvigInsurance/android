@@ -29,7 +29,6 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import coil.ImageLoader
@@ -37,6 +36,7 @@ import coil.compose.AsyncImage
 import com.hedvig.android.core.designsystem.material3.DisabledAlpha
 import com.hedvig.android.core.designsystem.material3.squircleExtraSmall
 import com.hedvig.android.core.designsystem.material3.squircleMedium
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.Hedvig
@@ -142,51 +142,7 @@ private fun Chip(text: String, modifier: Modifier = Modifier) {
   }
 }
 
-// @Composable
-// fun InsuranceCardPlaceHolder(
-//  modifier: Modifier = Modifier,
-//  highlight: PlaceholderHighlight = PlaceholderHighlight.fade(),
-// ) {
-//  Box(modifier.clip(MaterialTheme.shapes.squircleMedium)) {
-//    Image(
-//      painter = ColorPainter(Color.Black.copy(alpha = 0.3f)),
-//      modifier = Modifier
-//        .matchParentSize()
-//        .placeholder(visible = true, highlight = highlight),
-//      contentDescription = null,
-//    )
-//    HedvigTheme {
-//      Column(Modifier.padding(16.dp)) {
-//        Row(Modifier.heightIn(86.dp)) {
-//          Spacer(Modifier.weight(1f))
-//          Icon(
-//            imageVector = Icons.Hedvig.Hedvig,
-//            contentDescription = null,
-//            tint = MaterialTheme.colorScheme.onBackground,
-//            modifier = Modifier
-//              .size(24.dp)
-//              .padding(top = 2.dp),
-//          )
-//        }
-//        Spacer(Modifier.height(8.dp))
-//        Text(
-//          text = "",
-//          color = Color.Black.copy(alpha = 0.3f),
-//          modifier = Modifier.placeholder(visible = true, highlight = highlight),
-//        )
-//        Spacer(Modifier.height(4.dp))
-//        Text(
-//          text = "",
-//          color = Color.Black.copy(alpha = 0.3f),
-//          style = MaterialTheme.typography.bodyMedium,
-//          modifier = Modifier.placeholder(visible = true, highlight = highlight),
-//        )
-//      }
-//    }
-//  }
-// }
-
-@Preview
+@HedvigPreview
 @Composable
 private fun PreviewInsuranceCard(
   @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) isLoading: Boolean,

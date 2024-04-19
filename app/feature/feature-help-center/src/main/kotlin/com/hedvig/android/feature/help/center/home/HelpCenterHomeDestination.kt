@@ -55,7 +55,7 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.dialog.MultiSelectDialog
-import com.hedvig.android.core.ui.preview.HedvigPreviewWithProvidedParametersAnimation
+import com.hedvig.android.core.ui.preview.PreviewSurfaceWithProvidedParametersOnClickAnimation
 import com.hedvig.android.feature.help.center.HelpCenterEvent
 import com.hedvig.android.feature.help.center.HelpCenterUiState
 import com.hedvig.android.feature.help.center.HelpCenterViewModel
@@ -368,20 +368,25 @@ private fun PreviewHelpCenterHomeScreen(
 @Composable
 private fun PreviewQuickLinkAnimations() {
   val provider = QuickLinkUiStatePreviewProvider()
-  HedvigPreviewWithProvidedParametersAnimation(provider.values.toList()) { quickLinkUiState ->
-    HelpCenterHomeScreen(
-      topics = persistentListOf(Topic.PAYMENTS, Topic.PAYMENTS),
-      questions = persistentListOf(Question.CLAIMS_Q1, Question.CLAIMS_Q1),
-      selectedQuickAction = null,
-      onNavigateToTopic = {},
-      onNavigateToQuestion = {},
-      onNavigateToQuickLink = {},
-      onQuickActionsSelected = {},
-      onDismissQuickActionDialog = {},
-      openChat = {},
-      onNavigateUp = {},
-      quickLinksUiState = quickLinkUiState,
-    )
+  HedvigTheme {
+    PreviewSurfaceWithProvidedParametersOnClickAnimation(
+      provider.values.toList(),
+      surfaceColor = MaterialTheme.colorScheme.background,
+    ) { quickLinkUiState ->
+      HelpCenterHomeScreen(
+        topics = persistentListOf(Topic.PAYMENTS, Topic.PAYMENTS),
+        questions = persistentListOf(Question.CLAIMS_Q1, Question.CLAIMS_Q1),
+        selectedQuickAction = null,
+        onNavigateToTopic = {},
+        onNavigateToQuestion = {},
+        onNavigateToQuickLink = {},
+        onQuickActionsSelected = {},
+        onDismissQuickActionDialog = {},
+        openChat = {},
+        onNavigateUp = {},
+        quickLinksUiState = quickLinkUiState,
+      )
+    }
   }
 }
 

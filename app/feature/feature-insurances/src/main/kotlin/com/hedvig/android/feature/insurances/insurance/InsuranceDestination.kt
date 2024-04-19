@@ -69,7 +69,7 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.card.InsuranceCard
 import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
-import com.hedvig.android.core.ui.preview.HedvigPreviewWithProvidedParametersAnimation
+import com.hedvig.android.core.ui.preview.PreviewSurfaceWithProvidedParametersOnClickAnimation
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
@@ -311,11 +311,13 @@ private fun CrossSellItem(
     Image(
       painter = painterResource(crossSell.type.iconRes()),
       contentDescription = null,
-      modifier = Modifier.size(48.dp).placeholder(
-        visible = isLoading,
-        highlight = PlaceholderHighlight.fade(),
-        shape = MaterialTheme.shapes.squircleLarge,
-      ),
+      modifier = Modifier
+        .size(48.dp)
+        .placeholder(
+          visible = isLoading,
+          highlight = PlaceholderHighlight.fade(),
+          shape = MaterialTheme.shapes.squircleLarge,
+        ),
     )
     Spacer(Modifier.width(16.dp))
     Column(
@@ -490,15 +492,20 @@ private fun PreviewInsuranceScreen(
 @Composable
 private fun PreviewInsuranceDestinationAnimation() {
   val values = InsuranceUiStateProvider().values.toList()
-  HedvigPreviewWithProvidedParametersAnimation(values) { insuranceUiState ->
-    InsuranceScreen(
-      uiState = insuranceUiState,
-      imageLoader = rememberPreviewImageLoader(),
-      reload = {},
-      onInsuranceCardClick = {},
-      onCrossSellClick = {},
-      navigateToCancelledInsurances = {},
-    )
+  HedvigTheme {
+    PreviewSurfaceWithProvidedParametersOnClickAnimation(
+      values,
+      surfaceColor = MaterialTheme.colorScheme.background,
+    ) { insuranceUiState ->
+      InsuranceScreen(
+        uiState = insuranceUiState,
+        imageLoader = rememberPreviewImageLoader(),
+        reload = {},
+        onInsuranceCardClick = {},
+        onCrossSellClick = {},
+        navigateToCancelledInsurances = {},
+      )
+    }
   }
 }
 
