@@ -61,6 +61,7 @@ dependencies {
   implementation(projects.notificationPermission)
   implementation(projects.pullrefresh)
   implementation(projects.uiEmergency)
+  implementation(libs.accompanist.pagerIndicators)
 
   testImplementation(libs.apollo.testingSupport)
   testImplementation(libs.assertK)

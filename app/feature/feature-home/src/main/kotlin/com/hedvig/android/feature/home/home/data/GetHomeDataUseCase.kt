@@ -78,7 +78,13 @@ internal class GetHomeDataUseCaseImpl(
         HomeData(
           contractStatus = contractStatus,
           claimStatusCardsData = homeQueryData.claimStatusCards(),
-          veryImportantMessages = veryImportantMessages .toPersistentList(),
+          veryImportantMessages = (
+            veryImportantMessages + listOf( // todo: remove mock!
+              HomeData.VeryImportantMessage("sfnmwef", "Annoying msg 1!", null),
+              HomeData.VeryImportantMessage("sukftdkjef", "Annoying msg 2!", null),
+              HomeData.VeryImportantMessage("ewegxcvmef", "Annoying msg 3!", null),
+            )
+          ).toPersistentList(),
           memberReminders = memberReminders,
           showChatIcon = showChatIcon,
           showHelpCenter = isHelpCenterEnabled,

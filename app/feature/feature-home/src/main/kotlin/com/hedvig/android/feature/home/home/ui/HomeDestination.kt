@@ -2,12 +2,7 @@ package com.hedvig.android.feature.home.home.ui
 
 import android.content.Context
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -25,12 +20,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.systemGestureExclusion
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -54,6 +53,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.nonEmptyListOf
+import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
@@ -295,28 +295,44 @@ private fun HomeScreenSuccess(
           }
         },
         veryImportantMessages = {
-          Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier
-              .fillMaxWidth()
-              .padding(horizontal = 16.dp)
-              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-          ) {
-            AnimatedContent(
-              targetState = uiState.veryImportantMessages,
-              transitionSpec = {
-                (fadeIn(animationSpec = tween(300)).togetherWith(fadeOut()))
-              },
-            ) { list ->
-              for (veryImportantMessage in list) {
-                VeryImportantMessageCard(
-                  openUrl = openUrl,
-                  veryImportantMessage = veryImportantMessage,
-                  hideImportantMessage = markMessageAsSeen,
-                )
-              }
-            }
-          }
+          ImportantMessages(
+            list = uiState.veryImportantMessages,
+            openUrl = openUrl,
+            hideImportantMessage = markMessageAsSeen,
+          )
+
+//          Column(
+//            verticalArrangement = Arrangement.spacedBy(8.dp),
+//            modifier = Modifier
+//              .fillMaxWidth()
+//              .padding(horizontal = 16.dp)
+//              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+//          ) {
+//            AnimatedContent(
+//              targetState = uiState.veryImportantMessages,
+//              transitionSpec = {
+//                ((fadeIn(animationSpec = tween(300)) + scaleIn())
+//                  .togetherWith(fadeOut(animationSpec = tween(300)) + scaleOut()))
+//              },
+//            ) { list ->
+//              LazyColumn(
+//                state = lazyListState,
+//                modifier = Modifier.height(300.dp),
+//              ) {
+//                items(
+//                  items = list,
+//                  key = { it.id },
+//                ) { veryImportantMessage ->
+//                  VeryImportantMessageCard(
+//                    openUrl = openUrl,
+//                    veryImportantMessage = veryImportantMessage,
+//                    hideImportantMessage = markMessageAsSeen,
+//                    modifier = Modifier.padding(bottom = 4.dp),
+//                  )
+//                }
+//              }
+//            }
+//          }
         },
         memberReminderCards = {
           val memberReminders =
@@ -370,6 +386,61 @@ private fun HomeScreenSuccess(
           )
         },
       )
+    }
+  }
+}
+
+@Composable
+private fun ImportantMessages(
+  list: List<HomeData.VeryImportantMessage>,
+  openUrl: (String) -> Unit,
+  hideImportantMessage: (id: String) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  AnimatedContent(targetState = list) { animatedList ->
+    var consumedWindowInsets by remember { mutableStateOf(WindowInsets(0.dp)) }
+    val contentPadding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
+      .exclude(consumedWindowInsets)
+      .only(WindowInsetsSides.Horizontal)
+      .asPaddingValues()
+    val updatedModifier = Modifier.onConsumedWindowInsetsChanged { consumedWindowInsets = it }
+    if (animatedList.size == 1) {
+      VeryImportantMessageCard(
+        openUrl = openUrl,
+        hideImportantMessage = hideImportantMessage,
+        veryImportantMessage = animatedList.first(),
+        modifier = updatedModifier.padding(contentPadding),
+      )
+    } else {
+      val pagerState = rememberPagerState(pageCount = { animatedList.size })
+      Column(modifier) {
+        HorizontalPager(
+          state = pagerState,
+          contentPadding = contentPadding,
+          beyondBoundsPageCount = 1,
+          pageSpacing = 8.dp,
+          modifier = updatedModifier
+            .fillMaxWidth()
+            .systemGestureExclusion(),
+        ) { page: Int ->
+          val currentMessage = animatedList[page]
+          VeryImportantMessageCard(
+            openUrl = openUrl,
+            hideImportantMessage = hideImportantMessage,
+            veryImportantMessage = currentMessage,
+            modifier = updatedModifier,
+          )
+        }
+        Spacer(Modifier.height(16.dp))
+        HorizontalPagerIndicator(
+          pagerState = pagerState,
+          pageCount = animatedList.size,
+          activeColor = LocalContentColor.current,
+          modifier = Modifier
+            .padding(contentPadding)
+            .align(Alignment.CenterHorizontally),
+        )
+      }
     }
   }
 }

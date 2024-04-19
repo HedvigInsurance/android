@@ -37,7 +37,7 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       FakeChatLastMessageReadRepository(),
-      SeenImportantMessagesStorageImpl()
+      SeenImportantMessagesStorageImpl(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -62,7 +62,7 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       FakeChatLastMessageReadRepository(),
-      SeenImportantMessagesStorageImpl()
+      SeenImportantMessagesStorageImpl(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -85,7 +85,7 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       FakeChatLastMessageReadRepository(),
-      SeenImportantMessagesStorageImpl()
+      SeenImportantMessagesStorageImpl(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -142,7 +142,7 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       FakeChatLastMessageReadRepository(),
-      SeenImportantMessagesStorageImpl()
+      SeenImportantMessagesStorageImpl(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -183,7 +183,7 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       FakeChatLastMessageReadRepository(),
-      SeenImportantMessagesStorageImpl()
+      SeenImportantMessagesStorageImpl(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -206,7 +206,7 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       chatLastMessageReadRepository,
-      SeenImportantMessagesStorageImpl()
+      SeenImportantMessagesStorageImpl(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
