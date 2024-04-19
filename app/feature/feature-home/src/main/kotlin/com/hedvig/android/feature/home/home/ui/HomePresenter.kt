@@ -2,6 +2,7 @@ package com.hedvig.android.feature.home.home.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -20,7 +21,7 @@ import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.isActive
@@ -37,9 +38,9 @@ internal class HomePresenter(
     var isReloading by remember { mutableStateOf(lastState.isReloading) }
     var successData: SuccessData? by remember { mutableStateOf(SuccessData.fromLastState(lastState)) }
     var loadIteration by remember { mutableIntStateOf(0) }
-    var importantMessagesIteration by remember {
-      mutableIntStateOf(0)
-    }
+    val alreadySeenImportantMessages: List<String>
+      by seenImportantMessagesStorage.seenMessages.collectAsState(initial = emptyList())
+
     val hasUnseenChatMessages by produceState(
       lastState.safeCast<HomeUiState.Success>()?.hasUnseenChatMessages ?: false,
     ) {
@@ -54,18 +55,7 @@ internal class HomePresenter(
         HomeEvent.RefreshData -> loadIteration++
         is HomeEvent.MarkMessageAsSeen -> {
           seenImportantMessagesStorage.markMessageAsSeen(homeEvent.messageId)
-          importantMessagesIteration++
         }
-      }
-    }
-
-    LaunchedEffect(importantMessagesIteration) {
-      val currentSuccessData = successData
-      if (currentSuccessData != null) {
-        successData = currentSuccessData.copy(
-          veryImportantMessages = currentSuccessData.veryImportantMessages
-            .filter { !seenImportantMessagesStorage.hasSeenMessage(it.id) }.toImmutableList(),
-        )
       }
     }
 
@@ -90,9 +80,7 @@ internal class HomePresenter(
             isReloading = false
             successData = SuccessData.fromHomeData(
               homeData,
-            ) { messageId ->
-              seenImportantMessagesStorage.hasSeenMessage(messageId)
-            }
+            )
           }
         }
       }
@@ -111,7 +99,9 @@ internal class HomePresenter(
           homeText = successData.homeText,
           claimStatusCardsData = successData.claimStatusCardsData,
           memberReminders = successData.memberReminders,
-          veryImportantMessages = successData.veryImportantMessages,
+          veryImportantMessages = successData.veryImportantMessages.filter {
+            !alreadySeenImportantMessages.contains(it.id)
+          }.toPersistentList(),
           isHelpCenterEnabled = successData.showHelpCenter,
           showChatIcon = successData.showChatIcon,
           hasUnseenChatMessages = hasUnseenChatMessages,
@@ -177,7 +167,7 @@ private data class SuccessData(
       )
     }
 
-    fun fromHomeData(homeData: HomeData, checkIfWasSeen: (id: String) -> Boolean): SuccessData {
+    fun fromHomeData(homeData: HomeData): SuccessData {
       return SuccessData(
         homeText = when (homeData.contractStatus) {
           HomeData.ContractStatus.Active -> HomeText.Active
@@ -191,7 +181,7 @@ private data class SuccessData(
           HomeData.ContractStatus.Unknown -> HomeText.Active
         },
         claimStatusCardsData = homeData.claimStatusCardsData,
-        veryImportantMessages = homeData.veryImportantMessages.filter { !checkIfWasSeen(it.id) }.toImmutableList(),
+        veryImportantMessages = homeData.veryImportantMessages,
         memberReminders = homeData.memberReminders.copy(enableNotifications = null),
         showChatIcon = homeData.showChatIcon,
         showHelpCenter = homeData.showHelpCenter,
