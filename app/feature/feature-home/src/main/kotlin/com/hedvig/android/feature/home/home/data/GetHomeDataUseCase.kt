@@ -81,7 +81,7 @@ internal class GetHomeDataUseCaseImpl(
           veryImportantMessages = (
             veryImportantMessages + listOf( // todo: remove mock!
               HomeData.VeryImportantMessage("sfnmwef", "Annoying msg 1!", null),
-              HomeData.VeryImportantMessage("sukftdkjef", "Annoying msg 2!", null),
+              HomeData.VeryImportantMessage("sukftdkjef", "Annoying msg 2!", "http://www.google.com"),
               HomeData.VeryImportantMessage("ewegxcvmef", "Annoying msg 3!", null),
             )
           ).toPersistentList(),

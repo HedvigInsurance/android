@@ -3,9 +3,11 @@ package com.hedvig.android.feature.home.home.ui
 import android.content.Context
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -19,6 +21,7 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -461,28 +464,36 @@ private fun VeryImportantMessageCard(
         containerColor = MaterialTheme.colorScheme.warningContainer,
         contentColor = MaterialTheme.colorScheme.onWarningContainer,
       ),
-      modifier = modifier,
+      modifier = modifier.fillMaxSize(),
     ) {
-      HedvigContainedSmallButton(
-        text = if (veryImportantMessage.link != null) {
-          stringResource(R.string.important_message_read_more)
-        } else {
-          stringResource(R.string.important_message_hide)
-        },
-        onClick = {
-          if (veryImportantMessage.link != null) {
-            openUrl(veryImportantMessage.link)
-          } else {
-            hideImportantMessage(veryImportantMessage.id)
-          }
-        },
-        colors = ButtonDefaults.buttonColors(
-          containerColor = MaterialTheme.colorScheme.containedButtonContainer,
-          contentColor = MaterialTheme.colorScheme.onContainedButtonContainer,
-        ),
-        textStyle = MaterialTheme.typography.bodyMedium,
-        modifier = Modifier.fillMaxWidth(),
-      )
+      Row(
+        horizontalArrangement = Arrangement.Center,
+        modifier = Modifier.fillMaxSize(),
+      ) {
+        if (veryImportantMessage.link != null) {
+          HedvigContainedSmallButton(
+            text = stringResource(R.string.important_message_read_more),
+            onClick = { openUrl(veryImportantMessage.link) },
+            colors = ButtonDefaults.buttonColors(
+              containerColor = MaterialTheme.colorScheme.containedButtonContainer,
+              contentColor = MaterialTheme.colorScheme.onContainedButtonContainer,
+            ),
+            textStyle = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.weight(1f),
+          )
+          Spacer(modifier = Modifier.width(8.dp))
+        }
+        HedvigContainedSmallButton(
+          text = stringResource(R.string.important_message_hide),
+          onClick = { hideImportantMessage(veryImportantMessage.id) },
+          colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.containedButtonContainer,
+            contentColor = MaterialTheme.colorScheme.onContainedButtonContainer,
+          ),
+          textStyle = MaterialTheme.typography.bodyMedium,
+          modifier = Modifier.weight(1f),
+        )
+      }
     }
   }
 }
