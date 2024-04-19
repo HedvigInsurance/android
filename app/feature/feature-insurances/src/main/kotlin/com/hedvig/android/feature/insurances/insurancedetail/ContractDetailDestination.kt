@@ -35,7 +35,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -44,12 +43,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import com.hedvig.android.core.designsystem.animation.animateContentHeight
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
-import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.card.InsuranceCard
-import com.hedvig.android.core.ui.card.InsuranceCardPlaceHolder
 import com.hedvig.android.core.ui.plus
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.data.contract.ContractGroup
@@ -59,13 +56,12 @@ import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceContract
+import com.hedvig.android.feature.insurances.insurance.placeholderInsurance
 import com.hedvig.android.feature.insurances.insurancedetail.coverage.CoverageTab
 import com.hedvig.android.feature.insurances.insurancedetail.documents.DocumentsTab
 import com.hedvig.android.feature.insurances.insurancedetail.yourinfo.YourInfoTab
 import com.hedvig.android.feature.insurances.ui.createChips
 import com.hedvig.android.feature.insurances.ui.createPainter
-import com.hedvig.android.placeholder.PlaceholderHighlight
-import com.hedvig.android.placeholder.shimmer
 import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -145,14 +141,23 @@ private fun ContractDetailScreen(
       when (state) {
         ContractDetailsUiState.Error -> HedvigErrorSection(onButtonClick = retry, modifier = Modifier.fillMaxSize())
         ContractDetailsUiState.Loading -> {
-          Column(Modifier.fillMaxSize()) {
-            Spacer(Modifier.height(16.dp))
-            InsuranceCardPlaceHolder(
-              withTexts = false,
-              modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .clip(MaterialTheme.shapes.squircleMedium),
-              highlight = PlaceholderHighlight.shimmer(),
+          Column(
+            Modifier.fillMaxSize().padding(
+              WindowInsets
+                .safeDrawing
+                .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
+                .asPaddingValues()
+                .plus(PaddingValues(top = 16.dp)),
+            ),
+          ) {
+            InsuranceCard(
+              chips = placeholderInsurance.createChips(),
+              topText = placeholderInsurance.currentInsuranceAgreement.productVariant.displayName,
+              bottomText = placeholderInsurance.exposureDisplayName,
+              imageLoader = imageLoader,
+              modifier = Modifier.padding(horizontal = 16.dp),
+              fallbackPainter = placeholderInsurance.createPainter(),
+              isLoading = true,
             )
           }
         }
@@ -186,6 +191,7 @@ private fun ContractDetailScreen(
                 imageLoader = imageLoader,
                 modifier = Modifier.padding(horizontal = 16.dp),
                 fallbackPainter = contract.createPainter(),
+                isLoading = false,
               )
             }
             item(key = 2, contentType = "space") { Spacer(Modifier.height(16.dp)) }

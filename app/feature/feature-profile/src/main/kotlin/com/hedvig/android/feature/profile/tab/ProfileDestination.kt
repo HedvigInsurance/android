@@ -351,7 +351,7 @@ private fun ProfileRow(title: String, icon: ImageVector, onClick: () -> Unit, mo
 @Composable
 private fun PreviewProfileItemRows() {
   HedvigPreviewWithProvidedParametersAnimation(
-    ProfileUiStateProvider(),
+    ProfileUiStateProvider().values.toList(),
   ) { uiState ->
     Column {
       ProfileRowsWithPlaceholders(

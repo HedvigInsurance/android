@@ -99,7 +99,7 @@ public fun Modifier.placeholder(
   placeholderFadeAnimationSpec: AnimationSpec<Float> = spring(),
   contentFadeAnimationSpec: AnimationSpec<Float> = spring(),
 ): Modifier = this.composed {
-  Modifier.placeHolder(
+  Modifier.placeholder(
     visible = visible,
     color = if (color.isSpecified) color else PlaceholderDefaults.color(),
     shape = shape ?: MaterialTheme.shapes.small,

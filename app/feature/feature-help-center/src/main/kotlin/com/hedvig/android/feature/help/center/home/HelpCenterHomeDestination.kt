@@ -368,7 +368,7 @@ private fun PreviewHelpCenterHomeScreen(
 @Composable
 private fun PreviewQuickLinkAnimations() {
   val provider = QuickLinkUiStatePreviewProvider()
-  HedvigPreviewWithProvidedParametersAnimation(provider) { quickLinkUiState ->
+  HedvigPreviewWithProvidedParametersAnimation(provider.values.toList()) { quickLinkUiState ->
     HelpCenterHomeScreen(
       topics = persistentListOf(Topic.PAYMENTS, Topic.PAYMENTS),
       questions = persistentListOf(Question.CLAIMS_Q1, Question.CLAIMS_Q1),
