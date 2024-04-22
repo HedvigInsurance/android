@@ -78,7 +78,7 @@ internal class GetHomeDataUseCaseImpl(
         HomeData(
           contractStatus = contractStatus,
           claimStatusCardsData = homeQueryData.claimStatusCards(),
-          veryImportantMessages = (veryImportantMessages).toPersistentList(),
+          veryImportantMessages = veryImportantMessages.toPersistentList(),
           memberReminders = memberReminders,
           showChatIcon = showChatIcon,
           showHelpCenter = isHelpCenterEnabled,
