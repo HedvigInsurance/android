@@ -2,14 +2,14 @@ package com.hedvig.android.core.ui.preview
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.material3.Surface
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 
 class BooleanCollectionPreviewParameterProvider : CollectionPreviewParameterProvider<Boolean>(
@@ -40,16 +40,15 @@ class DoubleBooleanCollectionPreviewParameterProvider : CollectionPreviewParamet
  * to see the transition between different states.
  */
 @Composable
-fun <T> PreviewSurfaceWithProvidedParametersOnClickAnimation(
+fun <T> PreviewContentWithProvidedParametersAnimatedOnClick(
   parametersList: List<T>,
-  surfaceColor: Color,
   content: @Composable (parameterState: T) -> Unit,
+  modifier: Modifier = Modifier,
 ) {
   var parameterStateIndex by remember { mutableIntStateOf(0) }
   val interactionSource = remember { MutableInteractionSource() }
-  Surface(
-    color = surfaceColor,
-    modifier = Modifier.clickable(
+  Column(
+    modifier = modifier.fillMaxSize().clickable(
       interactionSource = interactionSource,
       indication = null,
       onClick = { parameterStateIndex += 1 },

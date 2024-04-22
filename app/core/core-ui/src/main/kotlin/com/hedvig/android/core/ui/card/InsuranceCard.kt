@@ -142,6 +142,18 @@ private fun Chip(text: String, modifier: Modifier = Modifier) {
   }
 }
 
+@Composable
+internal fun InsuranceCardPlaceholder(imageLoader: ImageLoader, modifier: Modifier = Modifier) {
+  InsuranceCard(
+    persistentListOf(),
+    topText = "HHHHHHHH",
+    bottomText = "HHHHHHHHHHHHHHHH",
+    imageLoader = imageLoader,
+    isLoading = true,
+    modifier = modifier,
+  )
+}
+
 @HedvigPreview
 @Composable
 private fun PreviewInsuranceCard(

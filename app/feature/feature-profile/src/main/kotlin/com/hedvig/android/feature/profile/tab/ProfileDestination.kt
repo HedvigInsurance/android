@@ -33,6 +33,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -61,7 +62,7 @@ import com.hedvig.android.core.icons.hedvig.normal.MultipleDocuments
 import com.hedvig.android.core.icons.hedvig.normal.Settings
 import com.hedvig.android.core.ui.dialog.HedvigAlertDialog
 import com.hedvig.android.core.ui.plus
-import com.hedvig.android.core.ui.preview.PreviewSurfaceWithProvidedParametersOnClickAnimation
+import com.hedvig.android.core.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
 import com.hedvig.android.memberreminders.ui.MemberReminderCards
 import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
@@ -364,20 +365,23 @@ private fun ProfileRow(
 @Composable
 private fun PreviewProfileItemRows() {
   HedvigTheme {
-    PreviewSurfaceWithProvidedParametersOnClickAnimation(
-      ProfileUiStateProvider().values.toList(),
-      surfaceColor = MaterialTheme.colorScheme.background,
-    ) { uiState ->
-      Column {
-        ProfileRows(
-          uiState,
-          {},
-          {},
-          {},
-          {},
-          {},
-        )
-      }
+    Surface(color = MaterialTheme.colorScheme.background) {
+      PreviewContentWithProvidedParametersAnimatedOnClick(
+        parametersList = ProfileUiStateProvider().values.toList(),
+        content = {
+            uiState ->
+          Column {
+            ProfileRows(
+              uiState,
+              {},
+              {},
+              {},
+              {},
+              {},
+            )
+          }
+        },
+      )
     }
   }
 }

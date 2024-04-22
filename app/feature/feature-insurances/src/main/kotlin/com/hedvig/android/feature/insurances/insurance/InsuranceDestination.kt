@@ -69,7 +69,7 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.card.InsuranceCard
 import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
-import com.hedvig.android.core.ui.preview.PreviewSurfaceWithProvidedParametersOnClickAnimation
+import com.hedvig.android.core.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
@@ -179,18 +179,18 @@ private fun InsuranceScreen(
         label = "uiState",
       ) { state ->
         val contractsOrPlaceholders = if (!state.isLoading) {
-          uiState.contracts
+          state.contracts
         } else {
           persistentListOf(
             placeholderInsurance,
           )
         }
-        val crossSellsOrPlaceholders = if (!state.isLoading) uiState.crossSells else placeHolderCrossSells
+        val crossSellsOrPlaceholders = if (!state.isLoading) state.crossSells else placeHolderCrossSells
         Column(
           Modifier
             .fillMaxSize(),
         ) {
-          if (uiState.hasError) {
+          if (state.hasError) {
             HedvigErrorSection(onButtonClick = reload)
           } else {
             InsuranceScreenContent(
@@ -198,11 +198,11 @@ private fun InsuranceScreen(
               imageLoader = imageLoader,
               contracts = contractsOrPlaceholders,
               crossSells = crossSellsOrPlaceholders,
-              showNotificationBadge = uiState.showNotificationBadge,
+              showNotificationBadge = state.showNotificationBadge,
               onInsuranceCardClick = onInsuranceCardClick,
               onCrossSellClick = onCrossSellClick,
               navigateToCancelledInsurances = navigateToCancelledInsurances,
-              quantityOfCancelledInsurances = uiState.quantityOfCancelledInsurances,
+              quantityOfCancelledInsurances = state.quantityOfCancelledInsurances,
             )
           }
         }
@@ -409,8 +409,8 @@ private fun TerminatedContractsButton(text: String, onClick: () -> Unit, modifie
 
 internal val placeholderInsurance = InsuranceContract(
   "1",
-  "Test123",
-  exposureDisplayName = "",
+  "Insurance",
+  exposureDisplayName = "Insurance display",
   inceptionDate = LocalDate.fromEpochDays(200),
   terminationDate = LocalDate.fromEpochDays(400),
   currentInsuranceAgreement = InsuranceAgreement(
@@ -493,17 +493,20 @@ private fun PreviewInsuranceScreen(
 private fun PreviewInsuranceDestinationAnimation() {
   val values = InsuranceUiStateProvider().values.toList()
   HedvigTheme {
-    PreviewSurfaceWithProvidedParametersOnClickAnimation(
-      values,
-      surfaceColor = MaterialTheme.colorScheme.background,
-    ) { insuranceUiState ->
-      InsuranceScreen(
-        uiState = insuranceUiState,
-        imageLoader = rememberPreviewImageLoader(),
-        reload = {},
-        onInsuranceCardClick = {},
-        onCrossSellClick = {},
-        navigateToCancelledInsurances = {},
+    Surface(color = MaterialTheme.colorScheme.background) {
+      PreviewContentWithProvidedParametersAnimatedOnClick(
+        parametersList = values,
+        content = {
+            insuranceUiState ->
+          InsuranceScreen(
+            uiState = insuranceUiState,
+            imageLoader = rememberPreviewImageLoader(),
+            reload = {},
+            onInsuranceCardClick = {},
+            onCrossSellClick = {},
+            navigateToCancelledInsurances = {},
+          )
+        },
       )
     }
   }
@@ -522,7 +525,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
     ),
     InsuranceUiState(
       contracts =
-        persistentListOf(placeholderInsurance),
+        persistentListOf(previewInsurance),
       crossSells = persistentListOf(
         CrossSell(
           id = "1",

@@ -55,7 +55,7 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.dialog.MultiSelectDialog
-import com.hedvig.android.core.ui.preview.PreviewSurfaceWithProvidedParametersOnClickAnimation
+import com.hedvig.android.core.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
 import com.hedvig.android.feature.help.center.HelpCenterEvent
 import com.hedvig.android.feature.help.center.HelpCenterUiState
 import com.hedvig.android.feature.help.center.HelpCenterViewModel
@@ -369,22 +369,24 @@ private fun PreviewHelpCenterHomeScreen(
 private fun PreviewQuickLinkAnimations() {
   val provider = QuickLinkUiStatePreviewProvider()
   HedvigTheme {
-    PreviewSurfaceWithProvidedParametersOnClickAnimation(
-      provider.values.toList(),
-      surfaceColor = MaterialTheme.colorScheme.background,
-    ) { quickLinkUiState ->
-      HelpCenterHomeScreen(
-        topics = persistentListOf(Topic.PAYMENTS, Topic.PAYMENTS),
-        questions = persistentListOf(Question.CLAIMS_Q1, Question.CLAIMS_Q1),
-        selectedQuickAction = null,
-        onNavigateToTopic = {},
-        onNavigateToQuestion = {},
-        onNavigateToQuickLink = {},
-        onQuickActionsSelected = {},
-        onDismissQuickActionDialog = {},
-        openChat = {},
-        onNavigateUp = {},
-        quickLinksUiState = quickLinkUiState,
+    Surface(color = MaterialTheme.colorScheme.background) {
+      PreviewContentWithProvidedParametersAnimatedOnClick(
+        parametersList = provider.values.toList(),
+        content = { quickLinkUiState ->
+          HelpCenterHomeScreen(
+            topics = persistentListOf(Topic.PAYMENTS, Topic.PAYMENTS),
+            questions = persistentListOf(Question.CLAIMS_Q1, Question.CLAIMS_Q1),
+            selectedQuickAction = null,
+            onNavigateToTopic = {},
+            onNavigateToQuestion = {},
+            onNavigateToQuickLink = {},
+            onQuickActionsSelected = {},
+            onDismissQuickActionDialog = {},
+            openChat = {},
+            onNavigateUp = {},
+            quickLinksUiState = quickLinkUiState,
+          )
+        },
       )
     }
   }
