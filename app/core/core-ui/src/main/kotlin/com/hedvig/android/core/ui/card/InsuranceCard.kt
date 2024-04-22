@@ -143,11 +143,11 @@ private fun Chip(text: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-internal fun InsuranceCardPlaceholder(imageLoader: ImageLoader, modifier: Modifier = Modifier) {
+fun InsuranceCardPlaceholder(imageLoader: ImageLoader, modifier: Modifier = Modifier) {
   InsuranceCard(
-    persistentListOf(),
-    topText = "HHHHHHHH",
-    bottomText = "HHHHHHHHHHHHHHHH",
+    chips = persistentListOf(),
+    topText = "",
+    bottomText = "",
     imageLoader = imageLoader,
     isLoading = true,
     modifier = modifier,

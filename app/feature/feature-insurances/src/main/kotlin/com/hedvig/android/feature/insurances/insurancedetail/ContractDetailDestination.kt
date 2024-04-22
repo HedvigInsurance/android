@@ -47,6 +47,7 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.card.InsuranceCard
+import com.hedvig.android.core.ui.card.InsuranceCardPlaceholder
 import com.hedvig.android.core.ui.plus
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.data.contract.ContractGroup
@@ -56,7 +57,6 @@ import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceContract
-import com.hedvig.android.feature.insurances.insurance.placeholderInsurance
 import com.hedvig.android.feature.insurances.insurancedetail.coverage.CoverageTab
 import com.hedvig.android.feature.insurances.insurancedetail.documents.DocumentsTab
 import com.hedvig.android.feature.insurances.insurancedetail.yourinfo.YourInfoTab
@@ -153,14 +153,9 @@ private fun ContractDetailScreen(
                   .plus(PaddingValues(top = 16.dp)),
               ),
           ) {
-            InsuranceCard(
-              chips = placeholderInsurance.createChips(),
-              topText = placeholderInsurance.currentInsuranceAgreement.productVariant.displayName,
-              bottomText = placeholderInsurance.exposureDisplayName,
+            InsuranceCardPlaceholder(
               imageLoader = imageLoader,
               modifier = Modifier.padding(horizontal = 16.dp),
-              fallbackPainter = placeholderInsurance.createPainter(),
-              isLoading = true,
             )
           }
         }

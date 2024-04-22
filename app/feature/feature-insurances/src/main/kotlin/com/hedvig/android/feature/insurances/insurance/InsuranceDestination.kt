@@ -68,6 +68,7 @@ import com.hedvig.android.core.designsystem.material3.typeContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.card.InsuranceCard
+import com.hedvig.android.core.ui.card.InsuranceCardPlaceholder
 import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
@@ -178,14 +179,6 @@ private fun InsuranceScreen(
         },
         label = "uiState",
       ) { state ->
-        val contractsOrPlaceholders = if (!state.isLoading) {
-          state.contracts
-        } else {
-          persistentListOf(
-            placeholderInsurance,
-          )
-        }
-        val crossSellsOrPlaceholders = if (!state.isLoading) state.crossSells else placeHolderCrossSells
         Column(
           Modifier
             .fillMaxSize(),
@@ -194,10 +187,8 @@ private fun InsuranceScreen(
             HedvigErrorSection(onButtonClick = reload)
           } else {
             InsuranceScreenContent(
-              isLoading = state.isLoading,
+              uiState = state,
               imageLoader = imageLoader,
-              contracts = contractsOrPlaceholders,
-              crossSells = crossSellsOrPlaceholders,
               showNotificationBadge = state.showNotificationBadge,
               onInsuranceCardClick = onInsuranceCardClick,
               onCrossSellClick = onCrossSellClick,
@@ -222,15 +213,77 @@ private fun InsuranceScreen(
 @Suppress("UnusedReceiverParameter")
 @Composable
 private fun ColumnScope.InsuranceScreenContent(
+  uiState: InsuranceUiState,
   imageLoader: ImageLoader,
-  contracts: ImmutableList<InsuranceContract>,
-  crossSells: ImmutableList<CrossSell>,
   showNotificationBadge: Boolean,
   onInsuranceCardClick: (contractId: String) -> Unit,
   onCrossSellClick: (String) -> Unit,
   navigateToCancelledInsurances: () -> Unit,
   quantityOfCancelledInsurances: Int,
-  isLoading: Boolean,
+) {
+  val insuranceCardModifier = Modifier
+    .padding(horizontal = 16.dp)
+    .clip(MaterialTheme.shapes.squircleMedium)
+  if (uiState.isLoading) {
+    Spacer(Modifier.height(16.dp))
+    InsuranceCardPlaceholder(
+      imageLoader = imageLoader,
+      modifier = insuranceCardModifier,
+    )
+  } else {
+    ContractsSection(
+      imageLoader = imageLoader,
+      modifier = insuranceCardModifier,
+      onInsuranceCardClick = onInsuranceCardClick,
+      contracts = uiState.contracts,
+    )
+  }
+  if (uiState.isLoading) {
+    CrossSellItemPlaceholder()
+  } else {
+    if (uiState.crossSells.isNotEmpty()) {
+      CrossSellsSection(
+        showNotificationBadge = showNotificationBadge,
+        crossSells = uiState.crossSells,
+        onCrossSellClick = onCrossSellClick,
+      )
+    }
+  }
+  if (!uiState.isLoading) {
+    if (quantityOfCancelledInsurances > 0) {
+      Spacer(Modifier.height(24.dp))
+      TerminatedContractsButton(
+        text = pluralStringResource(
+          R.plurals.insurances_tab_terminated_insurance_subtitile,
+          quantityOfCancelledInsurances,
+          quantityOfCancelledInsurances,
+        ),
+        onClick = navigateToCancelledInsurances,
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
+    }
+  }
+}
+
+@Composable
+private fun ColumnScope.CrossSellsSubHeaderWithDivider(showNotificationBadge: Boolean) {
+  Spacer(Modifier.height(32.dp))
+  NotificationSubheading(
+    text = stringResource(R.string.insurance_tab_cross_sells_title),
+    showNotification = showNotificationBadge,
+    modifier = Modifier.padding(horizontal = 16.dp),
+  )
+  Spacer(Modifier.height(16.dp))
+  HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+  Spacer(Modifier.height(16.dp))
+}
+
+@Composable
+private fun ColumnScope.ContractsSection(
+  contracts: ImmutableList<InsuranceContract>,
+  imageLoader: ImageLoader,
+  onInsuranceCardClick: (contractId: String) -> Unit,
+  modifier: Modifier = Modifier,
 ) {
   if (contracts.isEmpty()) {
     HedvigInformationSection(
@@ -246,60 +299,64 @@ private fun ColumnScope.InsuranceScreenContent(
         topText = contract.currentInsuranceAgreement.productVariant.displayName,
         bottomText = contract.exposureDisplayName,
         imageLoader = imageLoader,
-        modifier = Modifier
-          .padding(horizontal = 16.dp)
-          .clip(MaterialTheme.shapes.squircleMedium)
+        modifier = modifier
           .clickable {
             onInsuranceCardClick(contract.id)
           },
         shape = MaterialTheme.shapes.squircleMedium,
         fallbackPainter = contract.createPainter(),
-        isLoading = isLoading,
+        isLoading = false,
       )
       if (index != contracts.lastIndex) {
         Spacer(Modifier.height(8.dp))
       }
     }
   }
-  if (crossSells.isNotEmpty()) {
-    Spacer(Modifier.height(32.dp))
-    NotificationSubheading(
-      text = stringResource(R.string.insurance_tab_cross_sells_title),
-      showNotification = showNotificationBadge,
+}
+
+@Composable
+private fun ColumnScope.CrossSellsSection(
+  showNotificationBadge: Boolean,
+  crossSells: ImmutableList<CrossSell>,
+  onCrossSellClick: (String) -> Unit,
+) {
+  CrossSellsSubHeaderWithDivider(showNotificationBadge)
+  for ((index, crossSell) in crossSells.withIndex()) {
+    CrossSellItem(
+      crossSellTitle = crossSell.title,
+      crossSellSubtitle = crossSell.subtitle,
+      storeUrl = crossSell.storeUrl,
+      type = crossSell.type,
+      onCrossSellClick = onCrossSellClick,
       modifier = Modifier.padding(horizontal = 16.dp),
+      isLoading = false,
     )
-    Spacer(Modifier.height(16.dp))
-    HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-    Spacer(Modifier.height(16.dp))
-    for ((index, crossSell) in crossSells.withIndex()) {
-      CrossSellItem(
-        crossSell = crossSell,
-        onCrossSellClick = onCrossSellClick,
-        modifier = Modifier.padding(horizontal = 16.dp),
-        isLoading = isLoading,
-      )
-      if (index != crossSells.lastIndex) {
-        Spacer(Modifier.height(16.dp))
-      }
+    if (index != crossSells.lastIndex) {
+      Spacer(Modifier.height(16.dp))
     }
-  }
-  if (quantityOfCancelledInsurances > 0) {
-    Spacer(Modifier.height(24.dp))
-    TerminatedContractsButton(
-      text = pluralStringResource(
-        R.plurals.insurances_tab_terminated_insurance_subtitile,
-        quantityOfCancelledInsurances,
-        quantityOfCancelledInsurances,
-      ),
-      onClick = navigateToCancelledInsurances,
-      modifier = Modifier.padding(horizontal = 16.dp),
-    )
   }
 }
 
 @Composable
+private fun ColumnScope.CrossSellItemPlaceholder() {
+  CrossSellsSubHeaderWithDivider(false)
+  CrossSellItem(
+    crossSellTitle = "Hhhh",
+    crossSellSubtitle = "Hhhhhhhhh\nhhhhhhhhhhhhhhh",
+    storeUrl = "",
+    type = CrossSell.CrossSellType.HOME,
+    onCrossSellClick = {},
+    isLoading = true,
+    modifier = Modifier.padding(horizontal = 16.dp),
+  )
+}
+
+@Composable
 private fun CrossSellItem(
-  crossSell: CrossSell,
+  crossSellTitle: String,
+  crossSellSubtitle: String,
+  storeUrl: String,
+  type: CrossSell.CrossSellType,
   onCrossSellClick: (String) -> Unit,
   isLoading: Boolean,
   modifier: Modifier = Modifier,
@@ -309,7 +366,7 @@ private fun CrossSellItem(
     verticalAlignment = Alignment.CenterVertically,
   ) {
     Image(
-      painter = painterResource(crossSell.type.iconRes()),
+      painter = painterResource(id = type.iconRes()),
       contentDescription = null,
       modifier = Modifier
         .size(48.dp)
@@ -325,13 +382,13 @@ private fun CrossSellItem(
       verticalArrangement = Arrangement.Center,
     ) {
       Text(
-        text = crossSell.title,
+        text = crossSellTitle,
         style = MaterialTheme.typography.bodyLarge,
         modifier = Modifier.placeholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer()),
       )
       Spacer(Modifier.height(4.dp))
       Text(
-        text = crossSell.subtitle,
+        text = crossSellSubtitle,
         style = MaterialTheme.typography.bodyMedium.copy(
           color = MaterialTheme.colorScheme.onSurfaceVariant,
         ),
@@ -342,7 +399,7 @@ private fun CrossSellItem(
     HedvigContainedSmallButton(
       text = stringResource(R.string.cross_sell_get_price),
       onClick = {
-        onCrossSellClick(crossSell.storeUrl)
+        onCrossSellClick(storeUrl)
       },
       colors = ButtonDefaults.buttonColors(
         containerColor = MaterialTheme.colorScheme.typeContainer,
@@ -353,6 +410,7 @@ private fun CrossSellItem(
         highlight = PlaceholderHighlight.shimmer(),
         shape = MaterialTheme.shapes.squircleLarge,
       ),
+      enabled = !isLoading,
     )
   }
 }
@@ -407,47 +465,47 @@ private fun TerminatedContractsButton(text: String, onClick: () -> Unit, modifie
   }
 }
 
-internal val placeholderInsurance = InsuranceContract(
-  "1",
-  "Insurance",
-  exposureDisplayName = "Insurance display",
-  inceptionDate = LocalDate.fromEpochDays(200),
-  terminationDate = LocalDate.fromEpochDays(400),
-  currentInsuranceAgreement = InsuranceAgreement(
-    activeFrom = LocalDate.fromEpochDays(240),
-    activeTo = LocalDate.fromEpochDays(340),
-    displayItems = persistentListOf(),
-    productVariant = ProductVariant(
-      displayName = "",
-      contractGroup = ContractGroup.RENTAL,
-      contractType = ContractType.SE_APARTMENT_RENT,
-      partner = null,
-      perils = persistentListOf(),
-      insurableLimits = persistentListOf(),
-      documents = persistentListOf(),
-    ),
-    certificateUrl = null,
-    coInsured = persistentListOf(),
-    creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
-  ),
-  upcomingInsuranceAgreement = null,
-  renewalDate = LocalDate.fromEpochDays(500),
-  supportsAddressChange = false,
-  supportsEditCoInsured = true,
-  isTerminated = false,
-  contractHolderDisplayName = "Hhhhh Hhhhh",
-  contractHolderSSN = "19910913-1893",
-)
-
-private val placeHolderCrossSells = persistentListOf(
-  CrossSell(
-    id = "1",
-    title = "Home",
-    subtitle = "Unlimited home insurance",
-    storeUrl = "",
-    type = CrossSell.CrossSellType.HOME,
-  ),
-)
+// internal val placeholderInsurance = InsuranceContract(
+//  "1",
+//  "Insurance",
+//  exposureDisplayName = "Insurance display",
+//  inceptionDate = LocalDate.fromEpochDays(200),
+//  terminationDate = LocalDate.fromEpochDays(400),
+//  currentInsuranceAgreement = InsuranceAgreement(
+//    activeFrom = LocalDate.fromEpochDays(240),
+//    activeTo = LocalDate.fromEpochDays(340),
+//    displayItems = persistentListOf(),
+//    productVariant = ProductVariant(
+//      displayName = "",
+//      contractGroup = ContractGroup.RENTAL,
+//      contractType = ContractType.SE_APARTMENT_RENT,
+//      partner = null,
+//      perils = persistentListOf(),
+//      insurableLimits = persistentListOf(),
+//      documents = persistentListOf(),
+//    ),
+//    certificateUrl = null,
+//    coInsured = persistentListOf(),
+//    creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
+//  ),
+//  upcomingInsuranceAgreement = null,
+//  renewalDate = LocalDate.fromEpochDays(500),
+//  supportsAddressChange = false,
+//  supportsEditCoInsured = true,
+//  isTerminated = false,
+//  contractHolderDisplayName = "Hhhhh Hhhhh",
+//  contractHolderSSN = "19910913-1893",
+// )
+//
+// private val placeHolderCrossSells = persistentListOf(
+//  CrossSell(
+//    id = "1",
+//    title = "Home",
+//    subtitle = "Unlimited home insurance",
+//    storeUrl = "",
+//    type = CrossSell.CrossSellType.HOME,
+//  ),
+// )
 
 @HedvigPreview
 @Composable
