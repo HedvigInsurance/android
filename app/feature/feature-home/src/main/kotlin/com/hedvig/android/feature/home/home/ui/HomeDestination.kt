@@ -303,39 +303,6 @@ private fun HomeScreenSuccess(
             openUrl = openUrl,
             hideImportantMessage = markMessageAsSeen,
           )
-
-//          Column(
-//            verticalArrangement = Arrangement.spacedBy(8.dp),
-//            modifier = Modifier
-//              .fillMaxWidth()
-//              .padding(horizontal = 16.dp)
-//              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-//          ) {
-//            AnimatedContent(
-//              targetState = uiState.veryImportantMessages,
-//              transitionSpec = {
-//                ((fadeIn(animationSpec = tween(300)) + scaleIn())
-//                  .togetherWith(fadeOut(animationSpec = tween(300)) + scaleOut()))
-//              },
-//            ) { list ->
-//              LazyColumn(
-//                state = lazyListState,
-//                modifier = Modifier.height(300.dp),
-//              ) {
-//                items(
-//                  items = list,
-//                  key = { it.id },
-//                ) { veryImportantMessage ->
-//                  VeryImportantMessageCard(
-//                    openUrl = openUrl,
-//                    veryImportantMessage = veryImportantMessage,
-//                    hideImportantMessage = markMessageAsSeen,
-//                    modifier = Modifier.padding(bottom = 4.dp),
-//                  )
-//                }
-//              }
-//            }
-//          }
         },
         memberReminderCards = {
           val memberReminders =
@@ -400,29 +367,31 @@ private fun ImportantMessages(
   hideImportantMessage: (id: String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  AnimatedContent(targetState = list) { animatedList ->
-    var consumedWindowInsets by remember { mutableStateOf(WindowInsets(0.dp)) }
-    val contentPadding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
-      .exclude(consumedWindowInsets)
-      .only(WindowInsetsSides.Horizontal)
-      .asPaddingValues()
-    val updatedModifier = Modifier.onConsumedWindowInsetsChanged { consumedWindowInsets = it }
+  var consumedWindowInsets by remember { mutableStateOf(WindowInsets(0.dp)) }
+  val contentPadding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
+    .exclude(consumedWindowInsets)
+    .only(WindowInsetsSides.Horizontal)
+    .asPaddingValues()
+  val updatedModifier = modifier.onConsumedWindowInsetsChanged { consumedWindowInsets = it }
+  AnimatedContent(
+    targetState = list,
+    modifier = updatedModifier.padding(contentPadding),
+  ) { animatedList ->
     if (animatedList.size == 1) {
       VeryImportantMessageCard(
         openUrl = openUrl,
         hideImportantMessage = hideImportantMessage,
         veryImportantMessage = animatedList.first(),
-        modifier = updatedModifier.padding(contentPadding),
       )
     } else {
       val pagerState = rememberPagerState(pageCount = { animatedList.size })
-      Column(modifier) {
+      Column {
         HorizontalPager(
           state = pagerState,
-          contentPadding = contentPadding,
+          contentPadding = PaddingValues(),
           beyondBoundsPageCount = 1,
           pageSpacing = 8.dp,
-          modifier = updatedModifier
+          modifier = Modifier
             .fillMaxWidth()
             .systemGestureExclusion(),
         ) { page: Int ->
@@ -431,7 +400,6 @@ private fun ImportantMessages(
             openUrl = openUrl,
             hideImportantMessage = hideImportantMessage,
             veryImportantMessage = currentMessage,
-            modifier = updatedModifier,
           )
         }
         Spacer(Modifier.height(16.dp))
@@ -470,19 +438,6 @@ private fun VeryImportantMessageCard(
         horizontalArrangement = Arrangement.Center,
         modifier = Modifier.fillMaxSize(),
       ) {
-        if (veryImportantMessage.link != null) {
-          HedvigContainedSmallButton(
-            text = stringResource(R.string.important_message_read_more),
-            onClick = { openUrl(veryImportantMessage.link) },
-            colors = ButtonDefaults.buttonColors(
-              containerColor = MaterialTheme.colorScheme.containedButtonContainer,
-              contentColor = MaterialTheme.colorScheme.onContainedButtonContainer,
-            ),
-            textStyle = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.weight(1f),
-          )
-          Spacer(modifier = Modifier.width(8.dp))
-        }
         HedvigContainedSmallButton(
           text = stringResource(R.string.important_message_hide),
           onClick = { hideImportantMessage(veryImportantMessage.id) },
@@ -493,6 +448,19 @@ private fun VeryImportantMessageCard(
           textStyle = MaterialTheme.typography.bodyMedium,
           modifier = Modifier.weight(1f),
         )
+        if (veryImportantMessage.link != null) {
+          Spacer(modifier = Modifier.width(8.dp))
+          HedvigContainedSmallButton(
+            text = stringResource(R.string.important_message_read_more),
+            onClick = { openUrl(veryImportantMessage.link) },
+            colors = ButtonDefaults.buttonColors(
+              containerColor = MaterialTheme.colorScheme.containedButtonContainer,
+              contentColor = MaterialTheme.colorScheme.onContainedButtonContainer,
+            ),
+            textStyle = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.weight(1f),
+          )
+        }
       }
     }
   }

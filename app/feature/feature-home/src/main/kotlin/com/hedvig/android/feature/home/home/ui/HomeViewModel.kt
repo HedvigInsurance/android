@@ -9,8 +9,8 @@ import com.hedvig.android.molecule.android.MoleculeViewModel
 internal class HomeViewModel(
   getHomeDataUseCaseProvider: Provider<GetHomeDataUseCase>,
   chatLastMessageReadRepository: ChatLastMessageReadRepository,
-  importantMessagesSeer: SeenImportantMessagesStorage,
+  seenImportantMessagesStorage: SeenImportantMessagesStorage,
 ) : MoleculeViewModel<HomeEvent, HomeUiState>(
     HomeUiState.Loading,
-    HomePresenter(getHomeDataUseCaseProvider, chatLastMessageReadRepository, importantMessagesSeer),
+    HomePresenter(getHomeDataUseCaseProvider, chatLastMessageReadRepository, seenImportantMessagesStorage),
   )

@@ -39,7 +39,7 @@ internal class HomePresenter(
     var successData: SuccessData? by remember { mutableStateOf(SuccessData.fromLastState(lastState)) }
     var loadIteration by remember { mutableIntStateOf(0) }
     val alreadySeenImportantMessages: List<String>
-      by seenImportantMessagesStorage.seenMessages.collectAsState(initial = emptyList())
+      by seenImportantMessagesStorage.seenMessages.collectAsState()
 
     val hasUnseenChatMessages by produceState(
       lastState.safeCast<HomeUiState.Success>()?.hasUnseenChatMessages ?: false,
