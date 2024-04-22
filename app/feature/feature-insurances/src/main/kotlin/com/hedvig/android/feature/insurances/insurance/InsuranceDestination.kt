@@ -465,48 +465,6 @@ private fun TerminatedContractsButton(text: String, onClick: () -> Unit, modifie
   }
 }
 
-// internal val placeholderInsurance = InsuranceContract(
-//  "1",
-//  "Insurance",
-//  exposureDisplayName = "Insurance display",
-//  inceptionDate = LocalDate.fromEpochDays(200),
-//  terminationDate = LocalDate.fromEpochDays(400),
-//  currentInsuranceAgreement = InsuranceAgreement(
-//    activeFrom = LocalDate.fromEpochDays(240),
-//    activeTo = LocalDate.fromEpochDays(340),
-//    displayItems = persistentListOf(),
-//    productVariant = ProductVariant(
-//      displayName = "",
-//      contractGroup = ContractGroup.RENTAL,
-//      contractType = ContractType.SE_APARTMENT_RENT,
-//      partner = null,
-//      perils = persistentListOf(),
-//      insurableLimits = persistentListOf(),
-//      documents = persistentListOf(),
-//    ),
-//    certificateUrl = null,
-//    coInsured = persistentListOf(),
-//    creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
-//  ),
-//  upcomingInsuranceAgreement = null,
-//  renewalDate = LocalDate.fromEpochDays(500),
-//  supportsAddressChange = false,
-//  supportsEditCoInsured = true,
-//  isTerminated = false,
-//  contractHolderDisplayName = "Hhhhh Hhhhh",
-//  contractHolderSSN = "19910913-1893",
-// )
-//
-// private val placeHolderCrossSells = persistentListOf(
-//  CrossSell(
-//    id = "1",
-//    title = "Home",
-//    subtitle = "Unlimited home insurance",
-//    storeUrl = "",
-//    type = CrossSell.CrossSellType.HOME,
-//  ),
-// )
-
 @HedvigPreview
 @Composable
 private fun PreviewInsuranceScreen(
