@@ -46,7 +46,7 @@ internal fun EditInsuranceBottomSheetContent(
         .fillMaxWidth()
         .padding(horizontal = 24.dp),
     )
-    Spacer(modifier = Modifier.height(32.dp))
+    Spacer(modifier = Modifier.height(24.dp))
     Column(
       verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {

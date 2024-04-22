@@ -91,7 +91,7 @@ fun InsuranceCard(
         Text(
           text = bottomText,
           color = MaterialTheme.colorScheme.onSurfaceVariant,
-          style = MaterialTheme.typography.bodyMedium,
+          style = MaterialTheme.typography.bodyLarge,
         )
       }
     }
