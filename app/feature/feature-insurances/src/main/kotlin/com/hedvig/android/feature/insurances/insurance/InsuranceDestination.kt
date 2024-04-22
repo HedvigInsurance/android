@@ -59,10 +59,11 @@ import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.information.HedvigInformationSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.core.designsystem.material3.lightTypeContainer
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
-import com.hedvig.android.core.designsystem.material3.onTypeContainer
+import com.hedvig.android.core.designsystem.material3.onLightTypeContainer
 import com.hedvig.android.core.designsystem.material3.squircleMedium
-import com.hedvig.android.core.designsystem.material3.typeContainer
+import com.hedvig.android.core.designsystem.material3.squircleSmall
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.card.InsuranceCard
@@ -163,7 +164,6 @@ private fun InsuranceScreen(
               .verticalScroll(rememberScrollState())
               .windowInsetsPadding(WindowInsets.safeDrawing),
           ) {
-            Spacer(Modifier.height(16.dp))
             Row(
               verticalAlignment = Alignment.CenterVertically,
               modifier = Modifier
@@ -315,9 +315,10 @@ private fun CrossSellItem(crossSell: CrossSell, onCrossSellClick: (String) -> Un
         onCrossSellClick(crossSell.storeUrl)
       },
       colors = ButtonDefaults.buttonColors(
-        containerColor = MaterialTheme.colorScheme.typeContainer,
-        contentColor = MaterialTheme.colorScheme.onTypeContainer,
+        containerColor = MaterialTheme.colorScheme.lightTypeContainer,
+        contentColor = MaterialTheme.colorScheme.onLightTypeContainer,
       ),
+      shape = MaterialTheme.shapes.squircleSmall,
     )
   }
 }

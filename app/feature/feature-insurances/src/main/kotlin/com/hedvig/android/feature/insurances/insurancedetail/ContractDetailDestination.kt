@@ -135,6 +135,7 @@ private fun ContractDetailScreen(
           show = state is ContractDetailsUiState.Loading,
           modifier = Modifier.fillMaxSize(),
         )
+
         ContractDetailsUiState.NoContractFound -> {
           HedvigErrorSection(
             subTitle = stringResource(R.string.CONTRACT_DETAILS_ERROR),
@@ -150,7 +151,7 @@ private fun ContractDetailScreen(
               .safeDrawing
               .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
               .asPaddingValues()
-              .plus(PaddingValues(top = 16.dp)),
+              .plus(PaddingValues(top = 8.dp)),
             modifier = Modifier
               .fillMaxSize()
               .consumeWindowInsets(

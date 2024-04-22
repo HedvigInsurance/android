@@ -1,7 +1,7 @@
 package com.hedvig.android.sample.design.showcase.icons
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.runtime.Composable
@@ -9,7 +9,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.LocalContentColor
@@ -78,16 +77,23 @@ import com.hedvig.android.design.system.hedvig.icon.Swap
 import com.hedvig.android.design.system.hedvig.icon.Travel
 import com.hedvig.android.design.system.hedvig.icon.WarningFilled
 import com.hedvig.android.design.system.hedvig.icon.WarningOutline
+import com.hedvig.android.design.system.hedvig.icon.colored.ColoredCampaign
+import com.hedvig.android.design.system.hedvig.icon.colored.ColoredCampaignWithDot
+import com.hedvig.android.design.system.hedvig.icon.colored.ColoredChat
+import com.hedvig.android.design.system.hedvig.icon.colored.ColoredChatWithDot
+import com.hedvig.android.design.system.hedvig.icon.colored.ColoredFirstVet
+import com.hedvig.android.design.system.hedvig.icon.colored.ColoredFirstVetWithDot
+import com.hedvig.android.design.system.hedvig.icon.flag.FlagDenmark
+import com.hedvig.android.design.system.hedvig.icon.flag.FlagNorway
+import com.hedvig.android.design.system.hedvig.icon.flag.FlagSweden
+import com.hedvig.android.design.system.hedvig.icon.flag.FlagUk
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ShowcaseIcons(modifier: Modifier = Modifier) {
   CompositionLocalProvider(LocalContentColor provides Color.Black) {
-    Box(modifier) {
-      FlowRow(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-      ) {
+    Column(modifier) {
+      FlowRow {
         Icon(HedvigIcons.ArrowDown, null)
         Icon(HedvigIcons.ArrowLeft, null)
         Icon(HedvigIcons.ArrowNorthEast, null)
@@ -152,6 +158,20 @@ fun ShowcaseIcons(modifier: Modifier = Modifier) {
         Icon(HedvigIcons.Travel, null)
         Icon(HedvigIcons.WarningFilled, null)
         Icon(HedvigIcons.WarningOutline, null)
+      }
+      FlowRow {
+        Image(HedvigIcons.FlagDenmark, null)
+        Image(HedvigIcons.FlagNorway, null)
+        Image(HedvigIcons.FlagSweden, null)
+        Image(HedvigIcons.FlagUk, null)
+      }
+      FlowRow {
+        Image(HedvigIcons.ColoredCampaign, null)
+        Image(HedvigIcons.ColoredCampaignWithDot, null)
+        Image(HedvigIcons.ColoredChat, null)
+        Image(HedvigIcons.ColoredChatWithDot, null)
+        Image(HedvigIcons.ColoredFirstVet, null)
+        Image(HedvigIcons.ColoredFirstVetWithDot, null)
       }
     }
   }

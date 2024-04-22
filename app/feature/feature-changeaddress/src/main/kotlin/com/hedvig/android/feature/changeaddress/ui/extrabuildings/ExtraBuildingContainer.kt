@@ -26,8 +26,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
-import com.hedvig.android.core.designsystem.material3.onTypeContainer
-import com.hedvig.android.core.designsystem.material3.typeContainer
+import com.hedvig.android.core.designsystem.material3.lightTypeContainer
+import com.hedvig.android.core.designsystem.material3.onLightTypeContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
@@ -106,8 +106,8 @@ internal fun ExtraBuildingContainer(
         text = stringResource(id = R.string.CHANGE_ADDRESS_EXTRA_BUILDINGS_BOTTOM_SHEET_TITLE),
         onClick = onAddExtraBuildingClicked,
         colors = ButtonDefaults.buttonColors(
-          containerColor = MaterialTheme.colorScheme.typeContainer,
-          contentColor = MaterialTheme.colorScheme.onTypeContainer,
+          containerColor = MaterialTheme.colorScheme.lightTypeContainer,
+          contentColor = MaterialTheme.colorScheme.onLightTypeContainer,
         ),
         modifier = Modifier.padding(vertical = 12.dp, horizontal = 16.dp),
       )
