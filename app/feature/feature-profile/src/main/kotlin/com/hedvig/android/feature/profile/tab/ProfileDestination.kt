@@ -66,7 +66,6 @@ import com.hedvig.android.memberreminders.ui.MemberReminderCards
 import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
 import com.hedvig.android.placeholder.PlaceholderHighlight
-import com.hedvig.android.placeholder.fade
 import com.hedvig.android.placeholder.placeholder
 import com.hedvig.android.placeholder.shimmer
 import com.hedvig.android.pullrefresh.PullRefreshDefaults
@@ -126,7 +125,7 @@ private fun ProfileScreen(
     WindowInsets.systemBars.getTop(this).toDp()
   }
   val pullRefreshState = rememberPullRefreshState(
-    refreshing = uiState.isLoading,
+    refreshing = uiState is ProfileUiState.Loading,
     onRefresh = reload,
     refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
   )
@@ -163,7 +162,7 @@ private fun ProfileScreen(
         )
       }
       Spacer(Modifier.height(16.dp))
-      ProfileRowsWithPlaceholders(
+      ProfileRows(
         profileUiState = uiState,
         showMyInfo = navigateToMyInfo,
         showSettings = navigateToSettings,
@@ -174,26 +173,28 @@ private fun ProfileScreen(
       Spacer(Modifier.height(16.dp))
       Spacer(Modifier.weight(1f))
       val notificationPermissionState = rememberNotificationPermissionState()
-      val memberReminders =
-        uiState.memberReminders.onlyApplicableReminders(notificationPermissionState.status.isGranted)
+
       NotificationPermissionDialog(notificationPermissionState, openAppSettings)
       var consumedWindowInsets by remember { mutableStateOf(WindowInsets(0.dp)) }
-
-      MemberReminderCards(
-        memberReminders = memberReminders,
-        navigateToConnectPayment = navigateToConnectPayment,
-        navigateToAddMissingInfo = navigateToAddMissingInfo,
-        openUrl = openUrl,
-        notificationPermissionState = notificationPermissionState,
-        snoozeNotificationPermissionReminder = snoozeNotificationPermission,
-        contentPadding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
-          .exclude(consumedWindowInsets)
-          .only(WindowInsetsSides.Horizontal)
-          .asPaddingValues(),
-        modifier = Modifier.onConsumedWindowInsetsChanged { consumedWindowInsets = it },
-      )
-      if (memberReminders.isNotEmpty()) {
-        Spacer(Modifier.height(16.dp))
+      if (uiState is ProfileUiState.Success) {
+        val memberReminders =
+          uiState.memberReminders.onlyApplicableReminders(notificationPermissionState.status.isGranted)
+        MemberReminderCards(
+          memberReminders = memberReminders,
+          navigateToConnectPayment = navigateToConnectPayment,
+          navigateToAddMissingInfo = navigateToAddMissingInfo,
+          openUrl = openUrl,
+          notificationPermissionState = notificationPermissionState,
+          snoozeNotificationPermissionReminder = snoozeNotificationPermission,
+          contentPadding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
+            .exclude(consumedWindowInsets)
+            .only(WindowInsetsSides.Horizontal)
+            .asPaddingValues(),
+          modifier = Modifier.onConsumedWindowInsetsChanged { consumedWindowInsets = it },
+        )
+        if (memberReminders.isNotEmpty()) {
+          Spacer(Modifier.height(16.dp))
+        }
       }
       HedvigTextButton(
         text = stringResource(R.string.LOGOUT_BUTTON),
@@ -211,7 +212,7 @@ private fun ProfileScreen(
       Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
     }
     PullRefreshIndicator(
-      refreshing = uiState.isLoading,
+      refreshing = uiState is ProfileUiState.Loading,
       state = pullRefreshState,
       scale = true,
       modifier = Modifier.align(Alignment.TopCenter),
@@ -220,7 +221,7 @@ private fun ProfileScreen(
 }
 
 @Composable
-private fun ProfileRowsWithPlaceholders(
+private fun ProfileRows(
   profileUiState: ProfileUiState,
   showMyInfo: () -> Unit,
   showSettings: () -> Unit,
@@ -229,18 +230,18 @@ private fun ProfileRowsWithPlaceholders(
   navigateToTravelCertificate: () -> Unit,
 ) {
   AnimatedContent(
-    targetState = profileUiState.isLoading,
+    targetState = profileUiState,
     transitionSpec = { fadeIn() togetherWith fadeOut() },
-  ) { isLoading ->
+  ) { state ->
     Column(Modifier.fillMaxSize()) {
-      when (isLoading) {
-        true -> {
+      when (state) {
+        is ProfileUiState.Loading -> {
           ProfileItemRowsPlaceholders()
         }
 
-        false -> {
+        is ProfileUiState.Success -> {
           ProfileItemRows(
-            profileUiState = profileUiState,
+            profileUiState = state,
             showMyInfo = showMyInfo,
             showSettings = showSettings,
             showAboutApp = showAboutApp,
@@ -255,41 +256,36 @@ private fun ProfileRowsWithPlaceholders(
 
 @Composable
 private fun ColumnScope.ProfileItemRowsPlaceholders() {
-  ProfileRowPlaceholder(stringResource(R.string.PROFILE_MY_INFO_ROW_TITLE))
-  ProfileRowPlaceholder(stringResource(R.string.PROFILE_ROW_TRAVEL_CERTIFICATE))
-  ProfileRowPlaceholder(stringResource(R.string.PROFILE_ABOUT_ROW))
-  ProfileRowPlaceholder(stringResource(R.string.profile_appSettingsSection_row_headline))
-}
-
-@Composable
-private fun ProfileRowPlaceholder(title: String) {
-  Row(
-    verticalAlignment = Alignment.CenterVertically,
-    modifier = Modifier
-      .fillMaxWidth()
-      .padding(16.dp),
-  ) {
-    Icon(
-      imageVector = Icons.Hedvig.Info,
-      contentDescription = null,
-      modifier = Modifier
-        .size(24.dp)
-        .placeholder(true, highlight = PlaceholderHighlight.fade()),
-    )
-    Spacer(Modifier.width(16.dp))
-    Text(
-      text = title,
-      style = MaterialTheme.typography.bodyLarge,
-      modifier = Modifier
-        .placeholder(true, highlight = PlaceholderHighlight.shimmer()),
-    )
-  }
+  ProfileRow(
+    title = stringResource(R.string.PROFILE_MY_INFO_ROW_TITLE),
+    icon = Icons.Hedvig.Info,
+    isLoading = true,
+    onClick = {},
+  )
+  ProfileRow(
+    title = stringResource(R.string.PROFILE_ROW_TRAVEL_CERTIFICATE),
+    icon = Icons.Hedvig.Info,
+    isLoading = true,
+    onClick = {},
+  )
+  ProfileRow(
+    title = stringResource(R.string.PROFILE_ABOUT_ROW),
+    icon = Icons.Hedvig.Info,
+    isLoading = true,
+    onClick = {},
+  )
+  ProfileRow(
+    title = stringResource(R.string.profile_appSettingsSection_row_headline),
+    icon = Icons.Hedvig.Info,
+    isLoading = true,
+    onClick = {},
+  )
 }
 
 @Suppress("UnusedReceiverParameter")
 @Composable
 private fun ColumnScope.ProfileItemRows(
-  profileUiState: ProfileUiState,
+  profileUiState: ProfileUiState.Success,
   showMyInfo: () -> Unit,
   showSettings: () -> Unit,
   showAboutApp: () -> Unit,
@@ -300,12 +296,14 @@ private fun ColumnScope.ProfileItemRows(
     title = stringResource(R.string.PROFILE_MY_INFO_ROW_TITLE),
     icon = Icons.Hedvig.ContactInformation,
     onClick = showMyInfo,
+    isLoading = false,
   )
   if (profileUiState.travelCertificateAvailable) {
     ProfileRow(
       title = stringResource(R.string.PROFILE_ROW_TRAVEL_CERTIFICATE),
       icon = Icons.Hedvig.MultipleDocuments,
       onClick = navigateToTravelCertificate,
+      isLoading = false,
     )
   }
   if (profileUiState.euroBonus != null) {
@@ -313,38 +311,51 @@ private fun ColumnScope.ProfileItemRows(
       title = stringResource(R.string.sas_integration_title),
       icon = Icons.Hedvig.Eurobonus,
       onClick = navigateToEurobonus,
+      isLoading = false,
     )
   }
   ProfileRow(
     title = stringResource(R.string.PROFILE_ABOUT_ROW),
     icon = Icons.Hedvig.Info,
     onClick = showAboutApp,
+    isLoading = false,
   )
   ProfileRow(
     title = stringResource(R.string.profile_appSettingsSection_row_headline),
     icon = Icons.Hedvig.Settings,
     onClick = showSettings,
+    isLoading = false,
   )
 }
 
 @Composable
-private fun ProfileRow(title: String, icon: ImageVector, onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun ProfileRow(
+  title: String,
+  icon: ImageVector,
+  onClick: () -> Unit,
+  isLoading: Boolean,
+  modifier: Modifier = Modifier,
+) {
   Row(
     verticalAlignment = Alignment.CenterVertically,
     modifier = modifier
       .fillMaxWidth()
-      .clickable(onClick = onClick)
+      .clickable(onClick = onClick, enabled = !isLoading)
       .padding(16.dp),
   ) {
     Icon(
       imageVector = icon,
       contentDescription = null,
-      modifier = Modifier.size(24.dp),
+      modifier = Modifier
+        .size(24.dp)
+        .placeholder(isLoading, highlight = PlaceholderHighlight.shimmer()),
     )
     Spacer(Modifier.width(16.dp))
     Text(
       text = title,
       style = MaterialTheme.typography.bodyLarge,
+      modifier = Modifier
+        .placeholder(isLoading, highlight = PlaceholderHighlight.shimmer()),
     )
   }
 }
@@ -358,7 +369,7 @@ private fun PreviewProfileItemRows() {
       surfaceColor = MaterialTheme.colorScheme.background,
     ) { uiState ->
       Column {
-        ProfileRowsWithPlaceholders(
+        ProfileRows(
           uiState,
           {},
           {},
@@ -373,31 +384,20 @@ private fun PreviewProfileItemRows() {
 
 private class ProfileUiStateProvider : CollectionPreviewParameterProvider<ProfileUiState>(
   listOf(
-    ProfileUiState(
-      isLoading = true,
-    ),
-    ProfileUiState(
-      isLoading = false,
+    ProfileUiState.Loading,
+    ProfileUiState.Success(
       travelCertificateAvailable = true,
     ),
-    ProfileUiState(
-      isLoading = true,
-    ),
-    ProfileUiState(
-      isLoading = false,
+    ProfileUiState.Loading,
+    ProfileUiState.Success(
       euroBonus = EuroBonus("jsdhgwmehg"),
       travelCertificateAvailable = true,
     ),
-    ProfileUiState(
-      isLoading = true,
-    ),
-    ProfileUiState(
-      isLoading = false,
+    ProfileUiState.Loading,
+    ProfileUiState.Success(
       euroBonus = EuroBonus("jsdhgwmehg"),
       travelCertificateAvailable = false,
     ),
-    ProfileUiState(
-      isLoading = true,
-    ),
+    ProfileUiState.Loading,
   ),
 )

@@ -136,19 +136,22 @@ private fun ContractDetailScreen(
         }
       },
       label = "contract detail screen fade animated content",
+      modifier = Modifier.weight(1f),
       transitionSpec = { fadeIn() togetherWith fadeOut() },
     ) { state ->
       when (state) {
         ContractDetailsUiState.Error -> HedvigErrorSection(onButtonClick = retry, modifier = Modifier.fillMaxSize())
         ContractDetailsUiState.Loading -> {
           Column(
-            Modifier.fillMaxSize().padding(
-              WindowInsets
-                .safeDrawing
-                .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
-                .asPaddingValues()
-                .plus(PaddingValues(top = 16.dp)),
-            ),
+            Modifier
+              .fillMaxSize()
+              .padding(
+                WindowInsets
+                  .safeDrawing
+                  .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
+                  .asPaddingValues()
+                  .plus(PaddingValues(top = 16.dp)),
+              ),
           ) {
             InsuranceCard(
               chips = placeholderInsurance.createChips(),
@@ -178,6 +181,11 @@ private fun ContractDetailScreen(
               .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
               .asPaddingValues()
               .plus(PaddingValues(top = 16.dp)),
+            modifier = Modifier
+              .fillMaxSize()
+              .consumeWindowInsets(
+                WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
+              ),
           ) {
             item(
               key = 1,
