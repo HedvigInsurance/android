@@ -81,6 +81,7 @@ import com.hedvig.android.feature.insurances.data.iconRes
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceScreenEvent
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceUiState
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceViewModel
+import com.hedvig.android.feature.insurances.ui.InsurancePlaceholderProvider
 import com.hedvig.android.feature.insurances.ui.createChips
 import com.hedvig.android.feature.insurances.ui.createPainter
 import com.hedvig.android.placeholder.PlaceholderHighlight
@@ -181,11 +182,13 @@ private fun InsuranceScreen(
         val contractsOrPlaceholders = if (!state.isLoading) {
           state.contracts
         } else {
-          persistentListOf(
-            placeholderInsurance,
-          )
+          InsurancePlaceholderProvider.providePlaceholderInsuranceList()
         }
-        val crossSellsOrPlaceholders = if (!state.isLoading) state.crossSells else placeHolderCrossSells
+        val crossSellsOrPlaceholders = if (!state.isLoading) {
+          state.crossSells
+        } else {
+          InsurancePlaceholderProvider.providePlaceholderCrossSells()
+        }
         Column(
           Modifier
             .fillMaxSize(),
@@ -407,48 +410,6 @@ private fun TerminatedContractsButton(text: String, onClick: () -> Unit, modifie
   }
 }
 
-internal val placeholderInsurance = InsuranceContract(
-  "1",
-  "Insurance",
-  exposureDisplayName = "Insurance display",
-  inceptionDate = LocalDate.fromEpochDays(200),
-  terminationDate = LocalDate.fromEpochDays(400),
-  currentInsuranceAgreement = InsuranceAgreement(
-    activeFrom = LocalDate.fromEpochDays(240),
-    activeTo = LocalDate.fromEpochDays(340),
-    displayItems = persistentListOf(),
-    productVariant = ProductVariant(
-      displayName = "",
-      contractGroup = ContractGroup.RENTAL,
-      contractType = ContractType.SE_APARTMENT_RENT,
-      partner = null,
-      perils = persistentListOf(),
-      insurableLimits = persistentListOf(),
-      documents = persistentListOf(),
-    ),
-    certificateUrl = null,
-    coInsured = persistentListOf(),
-    creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
-  ),
-  upcomingInsuranceAgreement = null,
-  renewalDate = LocalDate.fromEpochDays(500),
-  supportsAddressChange = false,
-  supportsEditCoInsured = true,
-  isTerminated = false,
-  contractHolderDisplayName = "Hhhhh Hhhhh",
-  contractHolderSSN = "19910913-1893",
-)
-
-private val placeHolderCrossSells = persistentListOf(
-  CrossSell(
-    id = "1",
-    title = "Home",
-    subtitle = "Unlimited home insurance",
-    storeUrl = "",
-    type = CrossSell.CrossSellType.HOME,
-  ),
-)
-
 @HedvigPreview
 @Composable
 private fun PreviewInsuranceScreen(
@@ -496,8 +457,7 @@ private fun PreviewInsuranceDestinationAnimation() {
     Surface(color = MaterialTheme.colorScheme.background) {
       PreviewContentWithProvidedParametersAnimatedOnClick(
         parametersList = values,
-        content = {
-            insuranceUiState ->
+        content = { insuranceUiState ->
           InsuranceScreen(
             uiState = insuranceUiState,
             imageLoader = rememberPreviewImageLoader(),

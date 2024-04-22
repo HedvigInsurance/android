@@ -56,10 +56,10 @@ import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceContract
-import com.hedvig.android.feature.insurances.insurance.placeholderInsurance
 import com.hedvig.android.feature.insurances.insurancedetail.coverage.CoverageTab
 import com.hedvig.android.feature.insurances.insurancedetail.documents.DocumentsTab
 import com.hedvig.android.feature.insurances.insurancedetail.yourinfo.YourInfoTab
+import com.hedvig.android.feature.insurances.ui.InsurancePlaceholderProvider
 import com.hedvig.android.feature.insurances.ui.createChips
 import com.hedvig.android.feature.insurances.ui.createPainter
 import hedvig.resources.R
@@ -153,13 +153,14 @@ private fun ContractDetailScreen(
                   .plus(PaddingValues(top = 16.dp)),
               ),
           ) {
+            val placeholder = InsurancePlaceholderProvider.providePlaceholderInsurance()
             InsuranceCard(
-              chips = placeholderInsurance.createChips(),
-              topText = placeholderInsurance.currentInsuranceAgreement.productVariant.displayName,
-              bottomText = placeholderInsurance.exposureDisplayName,
+              chips = placeholder.createChips(),
+              topText = placeholder.currentInsuranceAgreement.productVariant.displayName,
+              bottomText = placeholder.exposureDisplayName,
               imageLoader = imageLoader,
               modifier = Modifier.padding(horizontal = 16.dp),
-              fallbackPainter = placeholderInsurance.createPainter(),
+              fallbackPainter = placeholder.createPainter(),
               isLoading = true,
             )
           }
