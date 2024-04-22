@@ -69,4 +69,5 @@ public val HedvigIcons.RestartTwoArrows: ImageVector
     return _restartTwoArrows!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _restartTwoArrows: ImageVector? = null

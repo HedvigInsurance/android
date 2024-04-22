@@ -18,6 +18,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navOptions
 import com.datadog.android.compose.ExperimentalTrackingApi
 import com.datadog.android.compose.NavigationViewTrackingEffect
+import com.hedvig.android.app.navigation.RootGraph
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
@@ -25,9 +26,12 @@ import com.hedvig.android.feature.forever.navigation.ForeverDestination
 import com.hedvig.android.feature.home.home.navigation.HomeDestination
 import com.hedvig.android.feature.insurances.navigation.InsurancesDestination
 import com.hedvig.android.feature.insurances.navigation.insurancesBottomNavPermittedDestinations
+import com.hedvig.android.feature.login.navigation.LoginDestination
 import com.hedvig.android.feature.payments.navigation.PaymentsDestination
 import com.hedvig.android.feature.profile.navigation.ProfileDestination
 import com.hedvig.android.feature.profile.navigation.profileBottomNavPermittedDestinations
+import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.notification.badge.data.tab.BottomNavTab
@@ -36,6 +40,7 @@ import com.hedvig.android.theme.Theme
 import com.kiwi.navigationcompose.typed.Destination
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigate
+import com.kiwi.navigationcompose.typed.popUpTo
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.PersistentSet
@@ -57,6 +62,7 @@ internal fun rememberHedvigAppState(
   tabNotificationBadgeService: TabNotificationBadgeService,
   settingsDataStore: SettingsDataStore,
   getOnlyHasNonPayingContractsUseCase: Provider<GetOnlyHasNonPayingContractsUseCase>,
+  featureManager: FeatureManager,
   navHostController: NavHostController,
   coroutineScope: CoroutineScope = rememberCoroutineScope(),
 ): HedvigAppState {
@@ -69,6 +75,7 @@ internal fun rememberHedvigAppState(
     tabNotificationBadgeService,
     settingsDataStore,
     getOnlyHasNonPayingContractsUseCase,
+    featureManager,
   ) {
     HedvigAppState(
       navController = navHostController,
@@ -77,6 +84,7 @@ internal fun rememberHedvigAppState(
       tabNotificationBadgeService = tabNotificationBadgeService,
       settingsDataStore = settingsDataStore,
       getOnlyHasNonPayingContractsUseCase = getOnlyHasNonPayingContractsUseCase,
+      featureManager = featureManager,
     )
   }
 }
@@ -89,6 +97,7 @@ internal class HedvigAppState(
   tabNotificationBadgeService: TabNotificationBadgeService,
   private val settingsDataStore: SettingsDataStore,
   getOnlyHasNonPayingContractsUseCase: Provider<GetOnlyHasNonPayingContractsUseCase>,
+  featureManager: FeatureManager,
 ) {
   val currentDestination: NavDestination?
     @Composable get() = navController.currentBackStackEntryAsState().value?.destination
@@ -110,6 +119,17 @@ internal class HedvigAppState(
         NavigationSuiteType.NavigationRail
       }
     }
+
+  /**
+   * App kill-switch. If this is enabled we must show nothing in the app but a button to try to update the app
+   */
+  val mustForceUpdate: StateFlow<Boolean> = featureManager
+    .isFeatureEnabled(Feature.UPDATE_NECESSARY)
+    .stateIn(
+      coroutineScope,
+      SharingStarted.WhileSubscribed(5.seconds),
+      false,
+    )
 
   val topLevelGraphs: StateFlow<ImmutableSet<TopLevelGraph>> = flow {
     val onlyHasNonPayingContracts = getOnlyHasNonPayingContractsUseCase.provide().invoke().getOrNull()
@@ -173,6 +193,29 @@ internal class HedvigAppState(
       TopLevelGraph.Forever -> navController.navigate(ForeverDestination.Graph, topLevelNavOptions)
       TopLevelGraph.Payments -> navController.navigate(PaymentsDestination.Graph, topLevelNavOptions)
       TopLevelGraph.Profile -> navController.navigate(ProfileDestination.Graph, topLevelNavOptions)
+    }
+  }
+
+  /**
+   * These should also save/restore state when it's possible to do so.
+   * Should also try to find a way to *not* save the state when explicitly logging out. The backstack saving should
+   * only happen in scenarios where the logout was due to token expiration. The most common scenario there would be
+   * when coming into the app from a deep link while not having valid cretentials lying around already.
+   * https://issuetracker.google.com/issues/334413738
+   */
+  fun navigateToLoggedIn() {
+    navController.navigate(RootGraph.route) {
+      popUpTo<LoginDestination> {
+        inclusive = true
+      }
+    }
+  }
+
+  fun navigateToLoggedOut() {
+    navController.navigate(LoginDestination) {
+      popUpTo(RootGraph.route) {
+        inclusive = true
+      }
     }
   }
 

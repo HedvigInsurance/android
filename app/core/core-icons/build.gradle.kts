@@ -6,6 +6,7 @@ plugins {
 }
 
 dependencies {
+  implementation(libs.androidx.annotation)
   implementation(libs.androidx.compose.materialIconsCore)
   implementation(libs.androidx.compose.uiCore)
 }

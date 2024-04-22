@@ -104,4 +104,5 @@ public val HedvigIcons.Watch: ImageVector
     return _watch!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _watch: ImageVector? = null

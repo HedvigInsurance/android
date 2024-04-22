@@ -27,10 +27,10 @@ import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
-import com.hedvig.android.core.common.android.ProgressPercentage
 import com.hedvig.android.core.designsystem.material3.DisabledAlpha
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.audio.player.data.ProgressPercentage
 import kotlin.math.abs
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
@@ -63,7 +63,7 @@ internal fun FakeAudioWaves(
         .pointerInput(Unit) {
           detectTapGestures { offset ->
             updatedWaveInteraction.onInteraction(
-              ProgressPercentage.of(current = offset.x.toDp(), target = maxWidth),
+              ProgressPercentage.of(current = offset.x.toDp().value, target = maxWidth.value),
             )
           }
         }
@@ -72,7 +72,7 @@ internal fun FakeAudioWaves(
             // Do not trigger on minuscule movements
             if (dragAmount.absoluteValue < 1f) return@detectHorizontalDragGestures
             updatedWaveInteraction.onInteraction(
-              ProgressPercentage.of(current = change.position.x.toDp(), target = maxWidth),
+              ProgressPercentage.of(current = change.position.x.toDp().value, target = maxWidth.value),
             )
           }
         },

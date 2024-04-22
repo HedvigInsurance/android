@@ -51,4 +51,5 @@ public val HedvigIcons.CircleWithXFilled: ImageVector // todo get right filled i
     return _circleWithXFilled!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _circleWithXFilled: ImageVector? = null

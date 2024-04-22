@@ -1,20 +1,12 @@
 package com.hedvig.android.app.navigation
 
-import android.content.Context
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
-import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.navOptions
 import coil.ImageLoader
@@ -42,6 +34,7 @@ import com.hedvig.android.feature.home.home.navigation.homeGraph
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
 import com.hedvig.android.feature.insurances.insurance.insuranceGraph
 import com.hedvig.android.feature.insurances.navigation.InsurancesDestination
+import com.hedvig.android.feature.login.navigation.loginGraph
 import com.hedvig.android.feature.odyssey.navigation.claimFlowGraph
 import com.hedvig.android.feature.odyssey.navigation.navigateToClaimFlowDestination
 import com.hedvig.android.feature.odyssey.navigation.terminalClaimFlowStepDestinations
@@ -52,12 +45,11 @@ import com.hedvig.android.feature.terminateinsurance.navigation.terminateInsuran
 import com.hedvig.android.feature.travelcertificate.navigation.travelCertificateGraph
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.Market
-import com.hedvig.android.navigation.activity.ActivityNavigator
+import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
 import com.hedvig.app.BuildConfig
-import com.kiwi.navigationcompose.typed.Destination
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigate
 import com.kiwi.navigationcompose.typed.popBackStack
@@ -67,7 +59,7 @@ import com.kiwi.navigationcompose.typed.popUpTo
 internal fun HedvigNavHost(
   hedvigAppState: HedvigAppState,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
-  activityNavigator: ActivityNavigator,
+  externalNavigator: ExternalNavigator,
   finishApp: () -> Unit,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   openUrl: (String) -> Unit,
@@ -78,7 +70,6 @@ internal fun HedvigNavHost(
   modifier: Modifier = Modifier,
 ) {
   LocalConfiguration.current
-  val context = LocalContext.current
   val density = LocalDensity.current
   val navigator: Navigator = rememberNavigator(hedvigAppState.navController, finishApp)
 
@@ -94,23 +85,30 @@ internal fun HedvigNavHost(
   NavHost(
     navController = hedvigAppState.navController,
     startDestination = createRoutePattern<HomeDestination.Graph>(),
-    route = "root",
+    route = RootGraph.route,
     modifier = modifier,
     enterTransition = { MotionDefaults.sharedXAxisEnter(density) },
     exitTransition = { MotionDefaults.sharedXAxisExit(density) },
     popEnterTransition = { MotionDefaults.sharedXAxisPopEnter(density) },
     popExitTransition = { MotionDefaults.sharedXAxisPopExit(density) },
   ) {
+    loginGraph(
+      navigator = navigator,
+      appVersionName = hedvigBuildConstants.appVersionName,
+      urlBaseWeb = hedvigBuildConstants.urlBaseWeb,
+      openUrl = openUrl,
+      onOpenEmailApp = externalNavigator::openEmailApp,
+      startLoggedInActivity = hedvigAppState::navigateToLoggedIn,
+    )
     homeGraph(
       nestedGraphs = {
         nestedHomeGraphs(
           density = density,
           hedvigAppState = hedvigAppState,
           hedvigBuildConstants = hedvigBuildConstants,
-          context = context,
           navigator = navigator,
           shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-          activityNavigator = activityNavigator,
+          externalNavigator = externalNavigator,
           imageLoader = imageLoader,
           openUrl = openUrl,
         )
@@ -134,7 +132,7 @@ internal fun HedvigNavHost(
       navigateToHelpCenter = { backStackEntry ->
         with(navigator) { backStackEntry.navigate(HelpCenterDestination) }
       },
-      openAppSettings = { activityNavigator.openAppSettings(context) },
+      openAppSettings = externalNavigator::openAppSettings,
       openUrl = openUrl,
     )
     insuranceGraph(
@@ -149,7 +147,7 @@ internal fun HedvigNavHost(
             }
           },
           openUrl = openUrl,
-          openPlayStore = { activityNavigator.tryOpenPlayStore(context) },
+          openPlayStore = externalNavigator::tryOpenPlayStore,
           hedvigDeepLinkContainer = hedvigDeepLinkContainer,
           navigateToInsurances = { navOptions ->
             hedvigAppState.navController.navigate(InsurancesDestination.Graph, navOptions)
@@ -208,6 +206,8 @@ internal fun HedvigNavHost(
       navigator = navigator,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       navigateToConnectPayment = navigateToConnectPayment,
+      languageService = languageService,
+      hedvigBuildConstants = hedvigBuildConstants,
     )
     profileGraph(
       nestedGraphs = {},
@@ -226,7 +226,7 @@ internal fun HedvigNavHost(
       navigateToDeleteAccountFeature = { backStackEntry: NavBackStackEntry ->
         with(navigator) { backStackEntry.navigate(DeleteAccountDestination) }
       },
-      openAppSettings = { activityNavigator.openAppSettings(context) },
+      openAppSettings = externalNavigator::openAppSettings,
       openUrl = openUrl,
     )
     chatGraph(
@@ -289,10 +289,9 @@ private fun NavGraphBuilder.nestedHomeGraphs(
   density: Density,
   hedvigAppState: HedvigAppState,
   hedvigBuildConstants: HedvigBuildConstants,
-  context: Context,
   navigator: Navigator,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
-  activityNavigator: ActivityNavigator,
+  externalNavigator: ExternalNavigator,
   imageLoader: ImageLoader,
   openUrl: (String) -> Unit,
 ) {
@@ -330,9 +329,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     navigateToTriaging = {
       navigator.navigateUnsafe(ClaimTriagingDestination.ClaimGroups)
     },
-    openAppSettings = {
-      activityNavigator.openAppSettings(context)
-    },
+    openAppSettings = externalNavigator::openAppSettings,
     closeClaimFlow = {
       hedvigAppState.navController.popBackStack<AppDestination.ClaimsFlow>(inclusive = true)
     },
@@ -361,7 +358,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     navigator = navigator,
     openPlayStore = {
       navigator.popBackStack()
-      activityNavigator.tryOpenPlayStore(context)
+      externalNavigator.tryOpenPlayStore()
     },
     openChat = { backStackEntry ->
       with(navigator) {
@@ -371,40 +368,4 @@ private fun NavGraphBuilder.nestedHomeGraphs(
       }
     },
   )
-}
-
-@Composable
-private fun rememberNavigator(navController: NavController, finishApp: () -> Unit): Navigator {
-  val updatedFinishApp by rememberUpdatedState(finishApp)
-  return remember(navController) {
-    object : Navigator {
-      override fun NavBackStackEntry.navigate(
-        destination: Destination,
-        navOptions: NavOptions?,
-        navigatorExtras: androidx.navigation.Navigator.Extras?,
-      ) {
-        if (lifecycle.currentState == Lifecycle.State.RESUMED) {
-          navigateUnsafe(destination, navOptions, navigatorExtras)
-        }
-      }
-
-      override fun navigateUnsafe(
-        destination: Destination,
-        navOptions: NavOptions?,
-        navigatorExtras: androidx.navigation.Navigator.Extras?,
-      ) {
-        navController.navigate(destination, navOptions, navigatorExtras)
-      }
-
-      override fun navigateUp() {
-        navController.navigateUp()
-      }
-
-      override fun popBackStack() {
-        if (!navController.popBackStack()) {
-          updatedFinishApp()
-        }
-      }
-    }
-  }
 }

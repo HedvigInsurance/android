@@ -100,4 +100,5 @@ public val HedvigIcons.Copy: ImageVector
     return _copy!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _copy: ImageVector? = null

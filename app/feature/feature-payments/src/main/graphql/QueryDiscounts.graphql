@@ -1,0 +1,23 @@
+query Discounts {
+  currentMember {
+    redeemedCampaigns {
+      code
+      description
+      expiresAt
+      id
+      onlyApplicableToContracts {
+        exposureDisplayName
+      }
+      type
+    }
+    referralInformation {
+      code
+      referrals {
+        activeDiscount {
+          amount
+          currencyCode
+        }
+      }
+    }
+  }
+}

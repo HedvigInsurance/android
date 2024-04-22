@@ -128,4 +128,5 @@ public val HedvigIcons.Certificate: ImageVector
     return _certificate!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _certificate: ImageVector? = null

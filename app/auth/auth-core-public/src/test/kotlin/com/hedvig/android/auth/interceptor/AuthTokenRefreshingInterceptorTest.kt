@@ -16,16 +16,23 @@ import com.hedvig.android.test.clock.TestClock
 import com.hedvig.authlib.AccessToken
 import com.hedvig.authlib.AuthTokenResult
 import com.hedvig.authlib.RefreshToken
+import java.io.IOException
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.Clock
+import okhttp3.Call
+import okhttp3.Callback
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.Response
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
@@ -47,7 +54,7 @@ class AuthTokenRefreshingInterceptorTest {
       AuthTokenRefreshingInterceptor(accessTokenProvider = { "token" }),
     )
 
-    okHttpClient.newCall(webServer.testRequest()).execute()
+    okHttpClient.newCall(webServer.testRequest()).enqueueAndSuspendUntilCallbackIgnoringResponse()
     val requestSent: RecordedRequest = webServer.takeRequest()
 
     assertThat(requestSent.headers["Authorization"]).isEqualTo("Bearer token")
@@ -67,7 +74,7 @@ class AuthTokenRefreshingInterceptorTest {
     val okHttpClient = testOkHttpClient(interceptor)
     runCurrent()
 
-    okHttpClient.newCall(webServer.testRequest()).execute()
+    okHttpClient.newCall(webServer.testRequest()).enqueueAndSuspendUntilCallbackIgnoringResponse()
     val requestSent: RecordedRequest = webServer.takeRequest()
 
     assertThat(requestSent.headers["Authorization"]).isEqualTo("Bearer token")
@@ -95,7 +102,7 @@ class AuthTokenRefreshingInterceptorTest {
         RefreshToken("refreshedRefreshToken", 0),
       ),
     )
-    okHttpClient.newCall(webServer.testRequest()).execute()
+    okHttpClient.newCall(webServer.testRequest()).enqueueAndSuspendUntilCallbackIgnoringResponse()
     val requestSent: RecordedRequest = webServer.takeRequest()
 
     val storedAuthTokens = authTokenStorage.getTokens().first()!!
@@ -120,7 +127,7 @@ class AuthTokenRefreshingInterceptorTest {
     runCurrent()
 
     clock.advanceTimeBy(1.hours)
-    okHttpClient.newCall(webServer.testRequest()).execute()
+    okHttpClient.newCall(webServer.testRequest()).enqueueAndSuspendUntilCallbackIgnoringResponse()
     val requestSent: RecordedRequest = webServer.takeRequest()
 
     val storedAuthTokens = authTokenStorage.getTokens().first()
@@ -152,8 +159,8 @@ class AuthTokenRefreshingInterceptorTest {
         RefreshToken("refreshedRefreshToken", 0),
       ),
     )
-    okHttpClient.newCall(webServer.testRequest()).execute()
-    okHttpClient.newCall(webServer.testRequest()).execute()
+    okHttpClient.newCall(webServer.testRequest()).enqueueAndSuspendUntilCallbackIgnoringResponse()
+    okHttpClient.newCall(webServer.testRequest()).enqueueAndSuspendUntilCallbackIgnoringResponse()
     runCurrent()
     val requestSent1: RecordedRequest = webServer.takeRequest()
     val requestSent2: RecordedRequest = webServer.takeRequest()
@@ -190,11 +197,11 @@ class AuthTokenRefreshingInterceptorTest {
           RefreshToken("refreshedRefreshToken", 0),
         ),
       )
-      okHttpClient.newCall(webServer.testRequest()).execute()
-      okHttpClient.newCall(webServer.testRequest()).execute()
+      okHttpClient.newCall(webServer.testRequest()).enqueueAndSuspendUntilCallbackIgnoringResponse()
+      okHttpClient.newCall(webServer.testRequest()).enqueueAndSuspendUntilCallbackIgnoringResponse()
       runCurrent()
 
-      okHttpClient.newCall(webServer.testRequest()).execute()
+      okHttpClient.newCall(webServer.testRequest()).enqueueAndSuspendUntilCallbackIgnoringResponse()
 
       val requestSent1: RecordedRequest = webServer.takeRequest()
       val requestSent2: RecordedRequest = webServer.takeRequest()
@@ -240,4 +247,26 @@ class AuthTokenRefreshingInterceptorTest {
     .Builder()
     .addInterceptor(interceptor)
     .build()
+}
+
+/**
+ * Without this, just doing .execute() makes the tests running with `runTest` in combination with having a datastore
+ * running on their `backgroundScope` hang indefinitely. Using `enqueue` stops this problem.
+ * Not sure about the details of this and can't find a public issue.
+ * If removing this function suddenly makes tests still pass feel free to remove it in the future.
+ */
+private suspend fun Call.enqueueAndSuspendUntilCallbackIgnoringResponse() {
+  suspendCancellableCoroutine<Unit> { cont ->
+    enqueue(
+      object : Callback {
+        override fun onFailure(call: Call, e: IOException) {
+          cont.resumeWithException(e)
+        }
+
+        override fun onResponse(call: Call, response: Response) {
+          cont.resume(Unit)
+        }
+      },
+    )
+  }
 }

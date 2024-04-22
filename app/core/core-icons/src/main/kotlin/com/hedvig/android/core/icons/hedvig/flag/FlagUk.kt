@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.icons.HedvigIcons
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _flagUk: ImageVector? = null
 
 @Suppress("UnusedReceiverParameter")

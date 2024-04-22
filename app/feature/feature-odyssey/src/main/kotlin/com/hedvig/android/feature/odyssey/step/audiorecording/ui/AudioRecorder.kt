@@ -45,7 +45,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.audio.player.HedvigAudioPlayer
 import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
-import com.hedvig.android.core.common.android.ProgressPercentage
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.material3.motion.MotionTokens
@@ -59,6 +58,7 @@ import com.hedvig.android.feature.odyssey.step.audiorecording.AudioRecordingUiSt
 import com.hedvig.audio.player.data.AudioPlayer
 import com.hedvig.audio.player.data.AudioPlayerState
 import com.hedvig.audio.player.data.PlayableAudioSource
+import com.hedvig.audio.player.data.ProgressPercentage
 import com.hedvig.audio.player.data.SignedAudioUrl
 import hedvig.resources.R
 import java.io.File
@@ -183,7 +183,7 @@ internal fun AudioRecorder(
           } else {
             Text(
               text = stringResource(R.string.EMBARK_START_RECORDING),
-              style = MaterialTheme.typography.bodySmall,
+              style = MaterialTheme.typography.bodyLarge,
               textAlign = TextAlign.Center,
               modifier = Modifier.padding(bottom = 16.dp),
             )

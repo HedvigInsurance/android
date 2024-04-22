@@ -101,4 +101,5 @@ public val HedvigIcons.Mail: ImageVector
     return _mail!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _mail: ImageVector? = null

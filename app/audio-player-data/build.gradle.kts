@@ -5,6 +5,7 @@ plugins {
 }
 
 dependencies {
+  implementation(libs.androidx.annotation)
   implementation(libs.coroutines.core)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)

@@ -3,13 +3,13 @@ package com.hedvig.android.core.fileupload
 import android.content.Context
 import arrow.retrofit.adapter.either.EitherCallAdapterFactory
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
-import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.datetime.Clock
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import org.koin.dsl.module
 import retrofit2.Retrofit
+import retrofit2.converter.kotlinx.serialization.asConverterFactory
 
 val fileUploadModule = module {
   single<FileService> { FileService(get<Context>().contentResolver) }
