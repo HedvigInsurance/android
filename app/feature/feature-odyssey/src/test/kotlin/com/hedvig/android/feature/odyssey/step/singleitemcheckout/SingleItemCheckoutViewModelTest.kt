@@ -74,18 +74,20 @@ class SingleItemCheckoutViewModelTest {
       depreciation: UiMoney = UiMoney(100.0, CurrencyCode.SEK),
       deductible: UiMoney = UiMoney(100.0, CurrencyCode.SEK),
       payoutAmount: UiMoney = UiMoney(100.0, CurrencyCode.SEK),
-      repairCostAmount: UiMoney = UiMoney(200.0, CurrencyCode.SEK),
       modelName: String? = "IPhone 12",
       brandName: String? = null,
       customName: String? = null,
     ) = ClaimFlowDestination.SingleItemCheckout(
-      price,
-      depreciation,
-      deductible,
-      payoutAmount,
+      compensation = ClaimFlowDestination.Compensation.Known.ValueCompensation(
+        price,
+        depreciation,
+        deductible,
+        payoutAmount,
+      ),
       availableCheckoutMethods,
-      repairCostAmount = repairCostAmount,
-      modelName, brandName, customName,
+      modelName,
+      brandName,
+      customName,
     )
   }
 }
