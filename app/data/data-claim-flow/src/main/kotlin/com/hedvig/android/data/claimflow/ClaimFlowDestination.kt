@@ -128,16 +128,38 @@ sealed interface ClaimFlowDestination : Destination {
 
   @Serializable
   data class SingleItemCheckout(
-    val price: UiMoney,
-    val depreciation: UiMoney,
-    val deductible: UiMoney,
-    val payoutAmount: UiMoney,
+    val compensation: Compensation,
     val availableCheckoutMethods: List<CheckoutMethod.Known>,
-    val repairCostAmount: UiMoney?,
     val modelName: String?,
     val brandName: String?,
     val customName: String?,
   ) : ClaimFlowDestination
+
+  @Serializable
+  sealed interface Compensation {
+    sealed interface Known : Compensation {
+      val deductible: UiMoney
+      val payoutAmount: UiMoney
+
+      @Serializable
+      data class ValueCompensation(
+        val price: UiMoney,
+        val depreciation: UiMoney,
+        override val deductible: UiMoney,
+        override val payoutAmount: UiMoney,
+      ) : Known
+
+      @Serializable
+      data class RepairCompensation(
+        val repairCost: UiMoney,
+        override val deductible: UiMoney,
+        override val payoutAmount: UiMoney,
+      ) : Known
+    }
+
+    @Serializable
+    data object UnKnown : Compensation
+  }
 
   // Local-only destination, not matching to a flow step, used to handle payout logic
   @Serializable

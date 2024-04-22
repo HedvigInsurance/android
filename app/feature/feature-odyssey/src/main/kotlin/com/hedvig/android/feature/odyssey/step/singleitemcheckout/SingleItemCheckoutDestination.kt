@@ -61,6 +61,7 @@ import com.hedvig.android.core.ui.scaffold.ClaimFlowScaffold
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.claimflow.CheckoutMethod
+import com.hedvig.android.data.claimflow.ClaimFlowDestination
 import hedvig.resources.R
 import octopus.type.CurrencyCode
 
@@ -81,6 +82,7 @@ internal fun SingleItemCheckoutDestination(
       }
       HedvigFullScreenCenterAlignedProgress()
     }
+
     is SingleItemCheckoutUiState.Content -> {
       SingleItemCheckoutScreen(
         uiState = state,
@@ -124,7 +126,7 @@ private fun SingleItemCheckoutScreen(
       modifier = sideSpacingModifier,
     ) {
       Text(
-        text = uiState.payoutAmount.toString(),
+        text = uiState.compensation.payoutAmount.toString(),
         style = MaterialTheme.typography.displayMedium,
         textAlign = TextAlign.Center,
         modifier = Modifier
@@ -148,10 +150,13 @@ private fun SingleItemCheckoutScreen(
             Arrangement.End,
           verticalAlignment = Alignment.CenterVertically,
         ) {
-          val explanationText = if (uiState.repairCostAmount != null) {
-            stringResource(id = R.string.CLAIMS_CHECKOUT_REPAIR_CALCULATION_TEXT)
-          } else {
-            stringResource(id = R.string.CLAIMS_CHECKOUT_NO_REPAIR_CALCULATION_TEXT)
+          val explanationText = when (uiState.compensation) {
+            is ClaimFlowDestination.Compensation.Known.RepairCompensation -> stringResource(
+              id = R.string.CLAIMS_CHECKOUT_REPAIR_CALCULATION_TEXT,
+            )
+            is ClaimFlowDestination.Compensation.Known.ValueCompensation -> stringResource(
+              id = R.string.CLAIMS_CHECKOUT_NO_REPAIR_CALCULATION_TEXT,
+            )
           }
           val title = stringResource(R.string.CLAIMS_CHECKOUT_COUNT_TITLE)
           IconButton(
@@ -173,19 +178,20 @@ private fun SingleItemCheckoutScreen(
     )
     CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
       Column(sideSpacingModifier) {
-        val pairs = if (uiState.repairCostAmount != null) {
-          listOf(
+        val pairs = when (uiState.compensation) {
+          is ClaimFlowDestination.Compensation.Known.RepairCompensation,
+          -> listOf(
             stringResource(
               R.string.CLAIMS_CHECKOUT_REPAIR_TITLE,
               uiState.modelDisplayName,
-            ) to uiState.repairCostAmount.toString(),
-            stringResource(R.string.claims_payout_age_deductable) to "-" + uiState.deductible.toString(),
+            ) to uiState.compensation.repairCost.toString(),
+            stringResource(R.string.claims_payout_age_deductable) to "-" + uiState.compensation.deductible.toString(),
           )
-        } else {
-          listOf(
-            stringResource(R.string.KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE) to uiState.price.toString(),
-            stringResource(R.string.claims_payout_age_deduction) to "-" + uiState.depreciation.toString(),
-            stringResource(R.string.claims_payout_age_deductable) to "-" + uiState.deductible.toString(),
+
+          is ClaimFlowDestination.Compensation.Known.ValueCompensation -> listOf(
+            stringResource(R.string.KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE) to uiState.compensation.price.toString(),
+            stringResource(R.string.claims_payout_age_deduction) to "-" + uiState.compensation.depreciation.toString(),
+            stringResource(R.string.claims_payout_age_deductable) to "-" + uiState.compensation.deductible.toString(),
           )
         }
         for ((left, right) in pairs) {
@@ -217,7 +223,7 @@ private fun SingleItemCheckoutScreen(
           verticalAlignment = Alignment.CenterVertically,
         ) {
           Text(
-            text = uiState.payoutAmount.toString(),
+            text = uiState.compensation.payoutAmount.toString(),
             modifier = Modifier.padding(end = 16.dp),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
           )
@@ -225,12 +231,15 @@ private fun SingleItemCheckoutScreen(
       },
     )
     Spacer(Modifier.height(16.dp))
-    if (uiState.repairCostAmount != null) {
-      VectorInfoCard(stringResource(R.string.CLAIMS_CHECKOUT_REPAIR_INFO_TEXT), sideSpacingModifier)
-      Spacer(Modifier.height(16.dp))
-    } else {
-      HorizontalDivider(sideSpacingModifier, thickness = Dp.Hairline)
-      Spacer(Modifier.height(16.dp))
+    when (uiState.compensation) {
+      is ClaimFlowDestination.Compensation.Known.RepairCompensation -> {
+        VectorInfoCard(stringResource(R.string.CLAIMS_CHECKOUT_REPAIR_INFO_TEXT), sideSpacingModifier)
+        Spacer(Modifier.height(16.dp))
+      }
+      is ClaimFlowDestination.Compensation.Known.ValueCompensation -> {
+        HorizontalDivider(sideSpacingModifier, thickness = Dp.Hairline)
+        Spacer(Modifier.height(16.dp))
+      }
     }
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
@@ -274,13 +283,13 @@ private fun SingleItemCheckoutScreen(
     )
     Spacer(Modifier.height(16.dp))
     Spacer(Modifier.weight(1f))
-    if (uiState.repairCostAmount == null) {
+    if (uiState.compensation is ClaimFlowDestination.Compensation.Known.ValueCompensation) {
       VectorInfoCard(stringResource(R.string.CLAIMS_CHECKOUT_NOTICE), sideSpacingModifier)
     }
     Spacer(Modifier.height(16.dp))
     HedvigContainedButton(
       onClick = { submitSelectedCheckoutMethod(uiState.selectedCheckoutMethod) },
-      text = stringResource(R.string.claims_payout_button_label, uiState.payoutAmount.toString()),
+      text = stringResource(R.string.claims_payout_button_label, uiState.compensation.payoutAmount.toString()),
       modifier = sideSpacingModifier,
     )
     Spacer(Modifier.height(16.dp))
@@ -372,7 +381,7 @@ internal fun SingleItemCheckoutInfoBottomSheet(
 
 @HedvigPreview
 @Composable
-private fun PreviewSingleItemCheckoutScreenWithRepairCost() {
+private fun PreviewSingleItemCheckoutScreenWithRepair() {
   val checkoutNr1 = CheckoutMethod.Known.AutomaticAutogiro(
     "#1",
     "Fancy payment method",
@@ -382,23 +391,23 @@ private fun PreviewSingleItemCheckoutScreenWithRepairCost() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       SingleItemCheckoutScreen(
-        SingleItemCheckoutUiState.Content(
-          UiMoney(3999.0, CurrencyCode.SEK),
-          UiMoney(500.0, CurrencyCode.SEK),
-          UiMoney(1000.0, CurrencyCode.SEK),
-          UiMoney(3000.0, CurrencyCode.SEK),
-          buildList {
+        uiState = SingleItemCheckoutUiState.Content(
+          compensation = ClaimFlowDestination.Compensation.Known.RepairCompensation(
+            repairCost = UiMoney(3999.0, CurrencyCode.SEK),
+            deductible = UiMoney(1000.0, CurrencyCode.SEK),
+            payoutAmount = UiMoney(2999.0, CurrencyCode.SEK),
+          ),
+          availableCheckoutMethods = buildList {
             add(checkoutNr1)
           }.toNonEmptyListOrNull()!!,
-          selected,
-          UiMoney(4000.0, CurrencyCode.SEK),
+          selectedCheckoutMethod = selected,
           "IPhone 12",
         ),
-        WindowSizeClass.calculateForPreview(),
-        { selected = it },
-        {},
-        {},
-        {},
+        windowSizeClass = WindowSizeClass.calculateForPreview(),
+        selectCheckoutMethod = { selected = it },
+        submitSelectedCheckoutMethod = {},
+        navigateUp = {},
+        closeClaimFlow = {},
       )
     }
   }
@@ -406,7 +415,7 @@ private fun PreviewSingleItemCheckoutScreenWithRepairCost() {
 
 @HedvigPreview
 @Composable
-private fun PreviewSingleItemCheckoutScreen(
+private fun PreviewSingleItemCheckoutScreenValueCompensation(
   @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) withMultiplePayoutMethods: Boolean,
 ) {
   val checkoutNr1 = CheckoutMethod.Known.AutomaticAutogiro(
@@ -424,10 +433,12 @@ private fun PreviewSingleItemCheckoutScreen(
     Surface(color = MaterialTheme.colorScheme.background) {
       SingleItemCheckoutScreen(
         SingleItemCheckoutUiState.Content(
-          UiMoney(3999.0, CurrencyCode.SEK),
-          UiMoney(500.0, CurrencyCode.SEK),
-          UiMoney(1000.0, CurrencyCode.SEK),
-          UiMoney(2499.0, CurrencyCode.SEK),
+          ClaimFlowDestination.Compensation.Known.ValueCompensation(
+            price = UiMoney(3999.0, CurrencyCode.SEK),
+            depreciation = UiMoney(500.0, CurrencyCode.SEK),
+            deductible = UiMoney(1000.0, CurrencyCode.SEK),
+            payoutAmount = UiMoney(2499.0, CurrencyCode.SEK),
+          ),
           buildList {
             add(checkoutNr1)
             if (withMultiplePayoutMethods) {
@@ -435,7 +446,6 @@ private fun PreviewSingleItemCheckoutScreen(
             }
           }.toNonEmptyListOrNull()!!,
           selected,
-          null,
           "IPhone 12",
         ),
         WindowSizeClass.calculateForPreview(),

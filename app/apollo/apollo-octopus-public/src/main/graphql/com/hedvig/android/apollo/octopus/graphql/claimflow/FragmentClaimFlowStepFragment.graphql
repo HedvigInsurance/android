@@ -90,21 +90,6 @@ fragment FlowClaimSingleItemStepFragment on FlowClaimSingleItemStep {
 
 fragment FlowClaimSingleItemCheckoutStepFragment on FlowClaimSingleItemCheckoutStep {
   id
-  price {
-    ...MoneyFragment
-  }
-  depreciation {
-    ...MoneyFragment
-  }
-  deductible {
-    ...MoneyFragment
-  }
-  payoutAmount {
-    ...MoneyFragment
-  }
-  repairCostAmount {
-    ...MoneyFragment
-  }
   singleItemStep {
     ...FlowClaimSingleItemStepFragment
   }
@@ -112,7 +97,42 @@ fragment FlowClaimSingleItemCheckoutStepFragment on FlowClaimSingleItemCheckoutS
     id
     ...CheckoutMethodFragment
   }
+  compensation {
+    ...CompensationFragment
+  }
+}
 
+fragment CompensationFragment on FlowClaimSingleItemCheckoutCompensation {
+  id
+  ...CheckoutRepairCompensationFragment
+  ...CheckoutValueCompensationFragment
+}
+
+fragment CheckoutRepairCompensationFragment on FlowClaimSingleItemCheckoutRepairCompensation {
+  deductible {
+    ...MoneyFragment
+  }
+  payoutAmount {
+    ...MoneyFragment
+  }
+  repairCost {
+    ...MoneyFragment
+  }
+}
+
+fragment CheckoutValueCompensationFragment on FlowClaimSingleItemCheckoutValueCompensation {
+  deductible {
+    ...MoneyFragment
+  }
+  depreciation {
+    ...MoneyFragment
+  }
+  payoutAmount {
+    ...MoneyFragment
+  }
+  price {
+    ...MoneyFragment
+  }
 }
 
 fragment FlowClaimSummaryStepFragment on FlowClaimSummaryStep {

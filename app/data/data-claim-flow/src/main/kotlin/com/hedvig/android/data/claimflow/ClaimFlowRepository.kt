@@ -407,12 +407,8 @@ private suspend fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(
     is ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep -> {
       ClaimFlowStep.ClaimResolutionSingleItemStep(
         flowId,
-        price,
-        depreciation,
-        deductible,
-        payoutAmount,
+        compensation,
         availableCheckoutMethods,
-        repairCostAmount,
         singleItemStep,
       )
     }

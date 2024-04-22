@@ -9,7 +9,10 @@ import kotlinx.collections.immutable.toPersistentList
 import octopus.fragment.AudioContentFragment
 import octopus.fragment.AutomaticAutogiroPayoutFragment
 import octopus.fragment.CheckoutMethodFragment
+import octopus.fragment.CheckoutRepairCompensationFragment
+import octopus.fragment.CheckoutValueCompensationFragment
 import octopus.fragment.ClaimFlowStepFragment
+import octopus.fragment.CompensationFragment
 import octopus.fragment.FlowClaimContractSelectStepFragment
 import octopus.fragment.FlowClaimDeflectPartnerFragment
 import octopus.fragment.FlowClaimFileUploadFragment
@@ -95,12 +98,9 @@ fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
         it.itemModelId == singleItemStep.selectedItemModel
       }?.displayName
       ClaimFlowDestination.SingleItemCheckout(
-        UiMoney.fromMoneyFragment(price),
-        UiMoney.fromMoneyFragment(depreciation),
-        UiMoney.fromMoneyFragment(deductible),
-        UiMoney.fromMoneyFragment(payoutAmount),
-        availableCheckoutMethods.map(CheckoutMethodFragment::toCheckoutMethod).filterIsInstance<CheckoutMethod.Known>(),
-        repairCostAmount?.let { UiMoney.fromMoneyFragment(it) },
+        compensation = compensation.toCompensation(),
+        availableCheckoutMethods = availableCheckoutMethods.map(CheckoutMethodFragment::toCheckoutMethod)
+          .filterIsInstance<CheckoutMethod.Known>(),
         modelName = modelName,
         brandName = singleItemStep?.selectedItemBrand,
         customName = singleItemStep?.customName,
@@ -175,6 +175,28 @@ private fun CheckoutMethodFragment.toCheckoutMethod(): CheckoutMethod {
     }
 
     else -> CheckoutMethod.Unknown
+  }
+}
+
+private fun CompensationFragment.toCompensation(): ClaimFlowDestination.Compensation {
+  return when (this) {
+    is CheckoutRepairCompensationFragment -> {
+      ClaimFlowDestination.Compensation.Known.RepairCompensation(
+        repairCost = UiMoney.fromMoneyFragment(repairCost),
+        deductible = UiMoney.fromMoneyFragment(deductible),
+        payoutAmount = UiMoney.fromMoneyFragment(payoutAmount),
+      )
+    }
+    is CheckoutValueCompensationFragment -> {
+      ClaimFlowDestination.Compensation.Known.ValueCompensation(
+        price = UiMoney.fromMoneyFragment(price),
+        deductible = UiMoney.fromMoneyFragment(deductible),
+        depreciation = UiMoney.fromMoneyFragment(depreciation),
+        payoutAmount = UiMoney.fromMoneyFragment(payoutAmount),
+      )
+    }
+
+    else -> ClaimFlowDestination.Compensation.UnKnown
   }
 }
 
