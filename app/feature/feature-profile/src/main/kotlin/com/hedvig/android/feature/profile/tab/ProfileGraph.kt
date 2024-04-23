@@ -35,6 +35,7 @@ fun NavGraphBuilder.profileGraph(
   navigateToAddMissingInfo: (navBackStackEntry: NavBackStackEntry, contractId: String) -> Unit,
   navigateToDeleteAccountFeature: (navBackStackEntry: NavBackStackEntry) -> Unit,
   openAppSettings: () -> Unit,
+  openChat: (navBackStackEntry: NavBackStackEntry) -> Unit,
   openUrl: (String) -> Unit,
 ) {
   navigation<ProfileDestination.Graph>(
@@ -71,7 +72,9 @@ fun NavGraphBuilder.profileGraph(
         openAppSettings = openAppSettings,
         openUrl = openUrl,
         viewModel = viewModel,
-        openChat = openChat
+        openChat = {
+          openChat(backStackEntry)
+        },
       )
     }
     composable<ProfileDestinations.Eurobonus>(

@@ -55,6 +55,6 @@ sealed interface ConnectPaymentReminderError {
 
 sealed interface PaymentReminder {
   data object ShowConnectPaymentReminder : PaymentReminder
+
   data class ShowMissingPaymentsReminder(val terminationDate: LocalDate) : PaymentReminder
 }
-

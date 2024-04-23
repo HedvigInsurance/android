@@ -51,7 +51,7 @@ fun NavGraphBuilder.homeGraph(
         openAppSettings = openAppSettings,
         openChat = {
           openChat(backStackEntry, null)
-        }
+        },
       )
     }
     nestedGraphs()

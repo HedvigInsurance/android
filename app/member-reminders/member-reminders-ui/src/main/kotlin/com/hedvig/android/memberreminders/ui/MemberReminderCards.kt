@@ -70,7 +70,7 @@ fun MemberReminderCards(
   openUrl: (String) -> Unit,
   navigateToAddMissingInfo: (String) -> Unit,
   snoozeNotificationPermissionReminder: () -> Unit,
-  openChat: () -> Unit, //todo!!!
+  openChat: () -> Unit,
   notificationPermissionState: NotificationPermissionState?,
   contentPadding: PaddingValues,
   modifier: Modifier = Modifier,
@@ -82,6 +82,7 @@ fun MemberReminderCards(
         navigateToAddMissingInfo = navigateToAddMissingInfo,
         navigateToConnectPayment = navigateToConnectPayment,
         openUrl = openUrl,
+        openChat = openChat,
         snoozeNotificationPermissionReminder = snoozeNotificationPermissionReminder,
         notificationPermissionState = notificationPermissionState,
         modifier = modifier.padding(contentPadding),
@@ -103,6 +104,7 @@ fun MemberReminderCards(
           navigateToAddMissingInfo = navigateToAddMissingInfo,
           navigateToConnectPayment = navigateToConnectPayment,
           openUrl = openUrl,
+          openChat = openChat,
           snoozeNotificationPermissionReminder = snoozeNotificationPermissionReminder,
           notificationPermissionState = notificationPermissionState,
           modifier = modifier.fillMaxWidth(),
@@ -130,6 +132,7 @@ private fun ColumnScope.MemberReminderCard(
   navigateToConnectPayment: () -> Unit,
   openUrl: (String) -> Unit,
   snoozeNotificationPermissionReminder: () -> Unit,
+  openChat: () -> Unit,
   notificationPermissionState: NotificationPermissionState?,
   modifier: Modifier = Modifier,
 ) {
@@ -146,7 +149,11 @@ private fun ColumnScope.MemberReminderCard(
       modifier = modifier,
     )
 
-    is MemberReminder.PaymentReminder.TerminationDueToMissedPayments -> TODO()
+    is MemberReminder.PaymentReminder.TerminationDueToMissedPayments -> ReminderCardMissingPayment(
+      terminationDate = memberReminder.terminationDate,
+      openChat = openChat,
+      modifier = modifier,
+    )
 
     is MemberReminder.UpcomingRenewal -> ReminderCardUpcomingRenewals(
       upcomingRenewal = memberReminder,
@@ -217,6 +224,24 @@ private fun ReminderCardConnectPayment(navigateToConnectPayment: () -> Unit, mod
     InfoCardTextButton(
       onClick = navigateToConnectPayment,
       text = stringResource(R.string.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON),
+      modifier = Modifier.fillMaxWidth(),
+    )
+  }
+}
+
+@Composable
+private fun ReminderCardMissingPayment(
+  terminationDate: LocalDate,
+  openChat: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  VectorWarningCard(
+    text = stringResource(R.string.info_card_missing_payment_missing_payments_body, terminationDate),
+    modifier = modifier,
+  ) {
+    InfoCardTextButton(
+      onClick = openChat,
+      text = stringResource(R.string.open_chat),
       modifier = Modifier.fillMaxWidth(),
     )
   }
