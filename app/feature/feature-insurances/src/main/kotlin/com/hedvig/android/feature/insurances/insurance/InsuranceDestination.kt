@@ -45,6 +45,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
@@ -276,18 +277,10 @@ private fun ColumnScope.ContractsSection(
     Spacer(Modifier.height(16.dp))
     for ((index, contract) in contracts.withIndex()) {
       InsuranceCard(
-        backgroundImageUrl = null,
-        chips = contract.createChips(),
-        topText = contract.currentInsuranceAgreement.productVariant.displayName,
-        bottomText = contract.exposureDisplayName,
+        contract = contract,
         imageLoader = imageLoader,
-        modifier = modifier
-          .clickable {
-            onInsuranceCardClick(contract.id)
-          },
-        shape = MaterialTheme.shapes.squircleMedium,
-        fallbackPainter = contract.createPainter(),
-        isLoading = false,
+        modifier = modifier,
+        onInsuranceCardClick = onInsuranceCardClick,
       )
       if (index != contracts.lastIndex) {
         Spacer(Modifier.height(8.dp))
@@ -304,15 +297,7 @@ private fun ColumnScope.CrossSellsSection(
 ) {
   CrossSellsSubHeaderWithDivider(showNotificationBadge)
   for ((index, crossSell) in crossSells.withIndex()) {
-    CrossSellItem(
-      crossSellTitle = crossSell.title,
-      crossSellSubtitle = crossSell.subtitle,
-      storeUrl = crossSell.storeUrl,
-      type = crossSell.type,
-      onCrossSellClick = onCrossSellClick,
-      modifier = Modifier.padding(horizontal = 16.dp),
-      isLoading = false,
-    )
+    CrossSellItem(crossSell, onCrossSellClick, Modifier.padding(horizontal = 16.dp))
     if (index != crossSells.lastIndex) {
       Spacer(Modifier.height(16.dp))
     }
@@ -344,6 +329,46 @@ private fun ColumnScope.CrossSellsSubHeaderWithDivider(showNotificationBadge: Bo
   Spacer(Modifier.height(16.dp))
   HorizontalDivider(Modifier.padding(horizontal = 16.dp))
   Spacer(Modifier.height(16.dp))
+}
+
+@Composable
+private fun CrossSellItem(
+  crossSell: CrossSell,
+  onCrossSellClick: (String) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  CrossSellItem(
+    crossSellTitle = crossSell.title,
+    crossSellSubtitle = crossSell.subtitle,
+    storeUrl = crossSell.storeUrl,
+    type = crossSell.type,
+    onCrossSellClick = onCrossSellClick,
+    modifier = modifier,
+    isLoading = false,
+  )
+}
+
+@Composable
+fun InsuranceCard(
+  contract: InsuranceContract,
+  imageLoader: ImageLoader,
+  modifier: Modifier = Modifier,
+  onInsuranceCardClick: (contractId: String) -> Unit,
+) {
+  InsuranceCard(
+    backgroundImageUrl = null,
+    chips = contract.createChips(),
+    topText = contract.currentInsuranceAgreement.productVariant.displayName,
+    bottomText = contract.exposureDisplayName,
+    imageLoader = imageLoader,
+    modifier = modifier
+      .clickable {
+        onInsuranceCardClick(contract.id)
+      },
+    shape = MaterialTheme.shapes.squircleMedium,
+    fallbackPainter = contract.createPainter(),
+    isLoading = false,
+  )
 }
 
 @Composable
