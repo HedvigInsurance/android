@@ -39,4 +39,5 @@ public val HedvigIcons.MinusInCircle: ImageVector
     return _minusInCircle!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _minusInCircle: ImageVector? = null

@@ -49,4 +49,5 @@ public val HedvigIcons.RestartOneArrow: ImageVector
     return _restartOneArrow!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _restartOneArrow: ImageVector? = null

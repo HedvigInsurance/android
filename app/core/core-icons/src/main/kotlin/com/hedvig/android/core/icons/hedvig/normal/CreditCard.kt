@@ -71,4 +71,5 @@ public val HedvigIcons.CreditCard: ImageVector
     return _creditCard!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _creditCard: ImageVector? = null

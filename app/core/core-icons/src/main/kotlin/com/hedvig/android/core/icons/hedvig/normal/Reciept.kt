@@ -111,4 +111,5 @@ public val HedvigIcons.Reciept: ImageVector
     return _reciept!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _reciept: ImageVector? = null

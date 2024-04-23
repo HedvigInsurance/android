@@ -57,4 +57,5 @@ public val HedvigIcons.SquircleWithCheckmark: ImageVector
     return _squircleWithCheckmark!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _squircleWithCheckmark: ImageVector? = null

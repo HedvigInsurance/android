@@ -79,6 +79,11 @@ private fun TerminatedContractsScreen(
         )
       }
       is TerminatedContractsUiState.Success -> {
+        VectorInfoCard(
+          text = stringResource(R.string.insurances_tab_cancelled_insurances_note),
+          modifier = Modifier.padding(horizontal = 16.dp),
+        )
+        Spacer(Modifier.height(16.dp))
         for ((index, contract) in uiState.insuranceContracts.withIndex()) {
           InsuranceCard(
             chips = contract.createChips(),
@@ -98,12 +103,7 @@ private fun TerminatedContractsScreen(
             Spacer(Modifier.height(8.dp))
           }
         }
-        Spacer(Modifier.height(16.dp))
         Spacer(Modifier.weight(1f))
-        VectorInfoCard(
-          text = stringResource(R.string.insurances_tab_cancelled_insurances_note),
-          modifier = Modifier.padding(horizontal = 16.dp),
-        )
         Spacer(Modifier.height(16.dp))
       }
     }

@@ -20,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -27,7 +28,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.animation.ThreeDotsLoading
-import com.hedvig.android.core.designsystem.material3.squircleMedium
+import com.hedvig.android.core.designsystem.material3.squircleExtraSmall
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 
@@ -38,6 +39,7 @@ fun HedvigContainedSmallButton(
   modifier: Modifier = Modifier,
   textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
   enabled: Boolean = true,
+  shape: Shape = MaterialTheme.shapes.squircleExtraSmall,
   colors: ButtonColors = ButtonDefaults.buttonColors(
     containerColor = MaterialTheme.colorScheme.primary,
     contentColor = MaterialTheme.colorScheme.onPrimary,
@@ -54,6 +56,7 @@ fun HedvigContainedSmallButton(
     contentPadding = contentPadding,
     colors = colors,
     modifier = modifier,
+    shape = shape,
   ) {
     ButtonText(text = text, textStyle = textStyle)
   }
@@ -65,6 +68,7 @@ fun HedvigContainedSmallButton(
   onClick: () -> Unit,
   isLoading: Boolean,
   modifier: Modifier = Modifier,
+  shape: Shape = MaterialTheme.shapes.squircleExtraSmall,
   textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
   enabled: Boolean = true,
   colors: ButtonColors = ButtonDefaults.buttonColors(
@@ -83,6 +87,7 @@ fun HedvigContainedSmallButton(
     contentPadding = contentPadding,
     colors = colors,
     modifier = modifier,
+    shape = shape,
   ) {
     val loadingTransition = updateTransition(isLoading)
     loadingTransition.AnimatedContent(
@@ -120,6 +125,7 @@ private fun HedvigContainedSmallButton(
   colors: ButtonColors,
   modifier: Modifier = Modifier,
   elevation: ButtonElevation? = ButtonDefaults.elevatedButtonElevation(),
+  shape: Shape = MaterialTheme.shapes.squircleExtraSmall,
   contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
   content: @Composable RowScope.() -> Unit,
 ) {
@@ -127,7 +133,7 @@ private fun HedvigContainedSmallButton(
     onClick = onClick,
     modifier = modifier,
     enabled = enabled,
-    shape = MaterialTheme.shapes.squircleMedium,
+    shape = shape,
     colors = colors,
     elevation = elevation,
     contentPadding = contentPadding,

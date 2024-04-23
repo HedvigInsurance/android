@@ -111,4 +111,5 @@ public val HedvigIcons.Calendar: ImageVector
     return _calendar!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _calendar: ImageVector? = null

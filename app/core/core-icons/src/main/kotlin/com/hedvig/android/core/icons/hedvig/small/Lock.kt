@@ -60,4 +60,5 @@ public val HedvigIcons.Lock: ImageVector
     return _lock!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _lock: ImageVector? = null

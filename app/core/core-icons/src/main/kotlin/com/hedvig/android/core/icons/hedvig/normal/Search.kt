@@ -40,4 +40,5 @@ public val HedvigIcons.Search: ImageVector
     return _search!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _search: ImageVector? = null

@@ -12,8 +12,8 @@ import assertk.assertions.isNull
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.test.MainCoroutineRule
-import com.hedvig.android.data.travelcertificate.CheckTravelCertificateDestinationAvailabilityUseCase
-import com.hedvig.android.data.travelcertificate.TravelCertificateAvailabilityError
+import com.hedvig.android.feature.profile.data.CheckTravelCertificateDestinationAvailabilityUseCase
+import com.hedvig.android.feature.profile.data.TravelCertificateAvailabilityError
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.featureflags.test.FakeFeatureManager
 import com.hedvig.android.featureflags.test.FakeFeatureManager2
