@@ -26,12 +26,12 @@ internal class GetConnectPaymentReminderUseCaseImpl(
         .toEither(::ErrorMessage)
         .mapLeft(ConnectPaymentReminderError::NetworkError)
         .bind()
-      val missingPayments = result.currentMember.activeContracts
+      val missingPaymentsContractTerminationDate = result.currentMember.activeContracts
         .filter { it.terminationDueToMissedPayments }
         .sortedBy { it.terminationDate }
         .firstOrNull()?.terminationDate
-      if (missingPayments != null) {
-        PaymentReminder.ShowMissingPaymentsReminder(missingPayments)
+      if (missingPaymentsContractTerminationDate != null) {
+        PaymentReminder.ShowMissingPaymentsReminder(missingPaymentsContractTerminationDate)
       } else {
         val payStatus = result.currentMember.paymentInformation.status
         ensure(payStatus == MemberPaymentConnectionStatus.NEEDS_SETUP) {
