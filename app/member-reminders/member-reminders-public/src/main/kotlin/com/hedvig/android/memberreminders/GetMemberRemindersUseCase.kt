@@ -30,7 +30,16 @@ internal class GetMemberRemindersUseCaseImpl(
         }
       },
       flow {
-        emit(getConnectPaymentReminderUseCase.invoke().getOrNull()?.let { MemberReminder.ConnectPayment() })
+        emit(
+          getConnectPaymentReminderUseCase.invoke().getOrNull()?.let { paymentReminder ->
+            when (paymentReminder) {
+              PaymentReminder.ShowConnectPaymentReminder -> MemberReminder.PaymentReminder.ConnectPayment()
+              is PaymentReminder.ShowMissingPaymentsReminder -> MemberReminder.PaymentReminder.TerminationDueToMissedPayments(
+                terminationDate = paymentReminder.terminationDate,
+              )
+            }
+          },
+        )
       },
       flow {
         val upcomingRenewals = getUpcomingRenewalRemindersUseCase.invoke().getOrNull()
@@ -42,7 +51,7 @@ internal class GetMemberRemindersUseCaseImpl(
       },
     ) {
         enableNotifications: MemberReminder.EnableNotifications?,
-        connectPayment: MemberReminder.ConnectPayment?,
+        connectPayment: MemberReminder.PaymentReminder?,
         upcomingRenewalReminders: NonEmptyList<MemberReminder.UpcomingRenewal>?,
         coInsuredInfo: NonEmptyList<MemberReminder.CoInsuredInfo>?,
       ->
@@ -57,7 +66,7 @@ internal class GetMemberRemindersUseCaseImpl(
 }
 
 data class MemberReminders(
-  val connectPayment: MemberReminder.ConnectPayment? = null,
+  val connectPayment: MemberReminder.PaymentReminder? = null,
   val upcomingRenewals: List<MemberReminder.UpcomingRenewal>? = null,
   val enableNotifications: MemberReminder.EnableNotifications? = null,
   val coInsuredInfo: List<MemberReminder.CoInsuredInfo>? = null,
@@ -90,9 +99,16 @@ data class MemberReminders(
 sealed interface MemberReminder {
   val id: String
 
-  data class ConnectPayment(
-    override val id: String = UUID.randomUUID().toString(),
-  ) : MemberReminder
+  sealed interface PaymentReminder : MemberReminder {
+    data class TerminationDueToMissedPayments(
+      override val id: String = UUID.randomUUID().toString(),
+      val terminationDate: LocalDate,
+    ) : PaymentReminder
+
+    data class ConnectPayment(
+      override val id: String = UUID.randomUUID().toString(),
+    ) : PaymentReminder
+  }
 
   data class UpcomingRenewal(
     val contractDisplayName: String,

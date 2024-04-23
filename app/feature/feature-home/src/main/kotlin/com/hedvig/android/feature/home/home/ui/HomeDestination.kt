@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavBackStackEntry
 import arrow.core.nonEmptyListOf
 import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
@@ -73,6 +74,7 @@ import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.memberreminders.ui.MemberReminderCardsWithoutNotification
+import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.NotificationPermissionState
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
@@ -105,6 +107,7 @@ internal fun HomeDestination(
   openUrl: (String) -> Unit,
   openAppSettings: () -> Unit,
   navigateToMissingInfo: (String) -> Unit,
+  openChat: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val notificationPermissionState = rememberNotificationPermissionState()
@@ -120,6 +123,7 @@ internal fun HomeDestination(
     openUrl = openUrl,
     openAppSettings = openAppSettings,
     navigateToMissingInfo = navigateToMissingInfo,
+    openChat = openChat
   )
 }
 
@@ -136,6 +140,7 @@ private fun HomeScreen(
   openUrl: (String) -> Unit,
   openAppSettings: () -> Unit,
   navigateToMissingInfo: (String) -> Unit,
+  openChat: () -> Unit,
 ) {
   val context = LocalContext.current
   val systemBarInsetTopDp = with(LocalDensity.current) {
@@ -185,6 +190,7 @@ private fun HomeScreen(
             openAppSettings = openAppSettings,
             openUrl = openUrl,
             navigateToMissingInfo = navigateToMissingInfo,
+            openChat = openChat
           )
         }
       }
@@ -245,6 +251,7 @@ private fun HomeScreenSuccess(
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
   navigateToMissingInfo: (String) -> Unit,
+  openChat: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   var fullScreenSize: IntSize? by remember { mutableStateOf(null) }
@@ -305,6 +312,7 @@ private fun HomeScreenSuccess(
             memberReminders = memberReminders,
             navigateToConnectPayment = navigateToConnectPayment,
             navigateToAddMissingInfo = navigateToMissingInfo,
+            openChat = openChat,
             openUrl = openUrl,
             contentPadding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
               .exclude(consumedWindowInsets)
@@ -439,7 +447,7 @@ private fun PreviewHomeScreen(
           ),
           veryImportantMessages = persistentListOf(HomeData.VeryImportantMessage("id", "Beware of the earthquake", "")),
           memberReminders = MemberReminders(
-            connectPayment = MemberReminder.ConnectPayment(),
+            connectPayment = MemberReminder.PaymentReminder.ConnectPayment(),
           ),
           isHelpCenterEnabled = true,
           showChatIcon = true,
@@ -455,6 +463,7 @@ private fun PreviewHomeScreen(
         openUrl = {},
         openAppSettings = {},
         navigateToMissingInfo = {},
+        openChat = {}
       )
     }
   }

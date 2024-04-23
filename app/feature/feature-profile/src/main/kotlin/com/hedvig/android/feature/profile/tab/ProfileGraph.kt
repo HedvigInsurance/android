@@ -71,6 +71,7 @@ fun NavGraphBuilder.profileGraph(
         openAppSettings = openAppSettings,
         openUrl = openUrl,
         viewModel = viewModel,
+        openChat = openChat
       )
     }
     composable<ProfileDestinations.Eurobonus>(

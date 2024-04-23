@@ -46,6 +46,7 @@ fun MemberReminderCardsWithoutNotification(
   navigateToConnectPayment: () -> Unit,
   openUrl: (String) -> Unit,
   navigateToAddMissingInfo: (String) -> Unit,
+  openChat: () -> Unit,
   contentPadding: PaddingValues,
   modifier: Modifier = Modifier,
 ) {
@@ -54,6 +55,7 @@ fun MemberReminderCardsWithoutNotification(
     navigateToConnectPayment = navigateToConnectPayment,
     openUrl = openUrl,
     navigateToAddMissingInfo = navigateToAddMissingInfo,
+    openChat = openChat,
     snoozeNotificationPermissionReminder = {},
     notificationPermissionState = null,
     contentPadding = contentPadding,
@@ -68,6 +70,7 @@ fun MemberReminderCards(
   openUrl: (String) -> Unit,
   navigateToAddMissingInfo: (String) -> Unit,
   snoozeNotificationPermissionReminder: () -> Unit,
+  openChat: () -> Unit, //todo!!!
   notificationPermissionState: NotificationPermissionState?,
   contentPadding: PaddingValues,
   modifier: Modifier = Modifier,
@@ -138,10 +141,12 @@ private fun ColumnScope.MemberReminderCard(
       modifier = modifier,
     )
 
-    is MemberReminder.ConnectPayment -> ReminderCardConnectPayment(
+    is MemberReminder.PaymentReminder.ConnectPayment -> ReminderCardConnectPayment(
       navigateToConnectPayment = navigateToConnectPayment,
       modifier = modifier,
     )
+
+    is MemberReminder.PaymentReminder.TerminationDueToMissedPayments -> TODO()
 
     is MemberReminder.UpcomingRenewal -> ReminderCardUpcomingRenewals(
       upcomingRenewal = memberReminder,
