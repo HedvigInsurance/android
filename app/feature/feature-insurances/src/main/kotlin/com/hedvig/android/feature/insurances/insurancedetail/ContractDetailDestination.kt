@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.insurances.insurancedetail
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn

@@ -61,14 +61,10 @@ import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmal
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.information.HedvigInformationSection
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.core.designsystem.material3.lightTypeContainer
-import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.core.designsystem.material3.onLightTypeContainer
-import com.hedvig.android.core.designsystem.material3.onTypeContainer
 import com.hedvig.android.core.designsystem.material3.squircleLarge
 import com.hedvig.android.core.designsystem.material3.squircleMedium
-import com.hedvig.android.core.designsystem.material3.squircleSmall
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.card.InsuranceCard
@@ -234,6 +230,7 @@ private fun ColumnScope.InsuranceScreenContent(
       imageLoader = imageLoader,
       modifier = insuranceCardModifier,
     )
+    CrossSellItemPlaceholder()
   } else {
     ContractsSection(
       imageLoader = imageLoader,
@@ -241,10 +238,6 @@ private fun ColumnScope.InsuranceScreenContent(
       onInsuranceCardClick = onInsuranceCardClick,
       contracts = uiState.contracts,
     )
-  }
-  if (uiState.isLoading) {
-    CrossSellItemPlaceholder()
-  } else {
     if (uiState.crossSells.isNotEmpty()) {
       CrossSellsSection(
         showNotificationBadge = showNotificationBadge,
@@ -252,8 +245,6 @@ private fun ColumnScope.InsuranceScreenContent(
         onCrossSellClick = onCrossSellClick,
       )
     }
-  }
-  if (!uiState.isLoading) {
     if (quantityOfCancelledInsurances > 0) {
       Spacer(Modifier.height(24.dp))
       TerminatedContractsButton(
@@ -267,19 +258,6 @@ private fun ColumnScope.InsuranceScreenContent(
       )
     }
   }
-}
-
-@Composable
-private fun ColumnScope.CrossSellsSubHeaderWithDivider(showNotificationBadge: Boolean) {
-  Spacer(Modifier.height(32.dp))
-  NotificationSubheading(
-    text = stringResource(R.string.insurance_tab_cross_sells_title),
-    showNotification = showNotificationBadge,
-    modifier = Modifier.padding(horizontal = 16.dp),
-  )
-  Spacer(Modifier.height(16.dp))
-  HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-  Spacer(Modifier.height(16.dp))
 }
 
 @Composable
@@ -346,13 +324,26 @@ private fun ColumnScope.CrossSellItemPlaceholder() {
   CrossSellsSubHeaderWithDivider(false)
   CrossSellItem(
     crossSellTitle = "Hhhh",
-    crossSellSubtitle = "Hhhhhhhhh\nhhhhhhhhhhhhhhh",
+    crossSellSubtitle = "Hhhhhhhhh\nhhhhhhhhhhhh",
     storeUrl = "",
     type = CrossSell.CrossSellType.HOME,
     onCrossSellClick = {},
     isLoading = true,
     modifier = Modifier.padding(horizontal = 16.dp),
   )
+}
+
+@Composable
+private fun ColumnScope.CrossSellsSubHeaderWithDivider(showNotificationBadge: Boolean) {
+  Spacer(Modifier.height(32.dp))
+  NotificationSubheading(
+    text = stringResource(R.string.insurance_tab_cross_sells_title),
+    showNotification = showNotificationBadge,
+    modifier = Modifier.padding(horizontal = 16.dp),
+  )
+  Spacer(Modifier.height(16.dp))
+  HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+  Spacer(Modifier.height(16.dp))
 }
 
 @Composable
@@ -516,8 +507,7 @@ private fun PreviewInsuranceDestinationAnimation() {
     Surface(color = MaterialTheme.colorScheme.background) {
       PreviewContentWithProvidedParametersAnimatedOnClick(
         parametersList = values,
-        content = {
-            insuranceUiState ->
+        content = { insuranceUiState ->
           InsuranceScreen(
             uiState = insuranceUiState,
             imageLoader = rememberPreviewImageLoader(),
