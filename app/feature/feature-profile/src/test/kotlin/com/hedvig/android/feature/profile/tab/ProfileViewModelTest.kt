@@ -57,7 +57,7 @@ class ProfileViewModelTest {
     )
 
     viewModel.data.test {
-      assertThat(viewModel.data.value).isInstanceOf<ProfileUiState>() // todo: or not loading?
+      assertThat(viewModel.data.value).isInstanceOf<ProfileUiState.Loading>()
       runCurrent()
       val profileUiState: ProfileUiState = viewModel.data.value
       assertThat(profileUiState).isEqualTo(
@@ -92,7 +92,7 @@ class ProfileViewModelTest {
     )
 
     viewModel.data.test {
-      assertThat(viewModel.data.value).isInstanceOf<ProfileUiState>()
+      assertThat(viewModel.data.value).isInstanceOf<ProfileUiState.Loading>()
       runCurrent()
       val profileUiState: ProfileUiState = viewModel.data.value
       assertThat(profileUiState).isEqualTo(
@@ -118,9 +118,9 @@ class ProfileViewModelTest {
       FakeFeatureManager(noopFeatureManager = true),
       noopLogoutUseCase,
     )
-// todo: this test was in contradiction to its name.
+
     viewModel.data.test {
-      assertThat(viewModel.data.value).isInstanceOf<ProfileUiState>()
+      assertThat(viewModel.data.value).isInstanceOf<ProfileUiState.Loading>()
       runCurrent()
       val profileUiState: ProfileUiState = viewModel.data.value
       assertThat(profileUiState).isEqualTo(
@@ -148,7 +148,7 @@ class ProfileViewModelTest {
     )
 
     viewModel.data.test {
-      assertThat(viewModel.data.value).isInstanceOf<ProfileUiState>()
+      assertThat(viewModel.data.value).isInstanceOf<ProfileUiState.Loading>()
       runCurrent()
       val profileUiState: ProfileUiState = viewModel.data.value
       assertThat(profileUiState).isEqualTo(
@@ -176,7 +176,7 @@ class ProfileViewModelTest {
     )
 
     viewModel.data.test {
-      assertThat(viewModel.data.value).isInstanceOf<ProfileUiState>()
+      assertThat(viewModel.data.value).isInstanceOf<ProfileUiState.Loading>()
       runCurrent()
       val profileUiState: ProfileUiState = viewModel.data.value
       assertThat(profileUiState).isEqualTo(
@@ -203,7 +203,7 @@ class ProfileViewModelTest {
       noopLogoutUseCase,
     )
     viewModel.data.test {
-      assertThat(viewModel.data.value).isInstanceOf<ProfileUiState>()
+      assertThat(viewModel.data.value).isInstanceOf<ProfileUiState.Loading>()
       runCurrent()
       val profileUiState: ProfileUiState = viewModel.data.value
       assertThat(profileUiState).isEqualTo(
@@ -232,7 +232,7 @@ class ProfileViewModelTest {
       noopLogoutUseCase,
     )
     viewModel.data.test {
-      assertThat(viewModel.data.value).isInstanceOf<ProfileUiState>()
+      assertThat(viewModel.data.value).isInstanceOf<ProfileUiState.Loading>()
       runCurrent()
       val profileUiState: ProfileUiState = viewModel.data.value
       assertThat(profileUiState).isEqualTo(
@@ -266,7 +266,7 @@ class ProfileViewModelTest {
     )
 
     viewModel.data.test {
-      assertThat(viewModel.data.value).isInstanceOf<ProfileUiState>()
+      assertThat(viewModel.data.value).isInstanceOf<ProfileUiState.Loading>()
       runCurrent()
       assertThat(viewModel.data.value).isEqualTo(ProfileUiState.Loading)
       euroBonusStatusUseCase.turbine.add(EuroBonus("1234").right())
@@ -309,7 +309,7 @@ class ProfileViewModelTest {
     )
 
     viewModel.data.test {
-      assertThat(viewModel.data.value).isInstanceOf<ProfileUiState>()
+      assertThat(viewModel.data.value).isInstanceOf<ProfileUiState.Loading>()
       runCurrent()
 
       getMemberRemindersUseCase.memberReminders.add(MemberReminders())
@@ -343,7 +343,7 @@ class ProfileViewModelTest {
     )
 
     viewModel.data.test {
-      assertThat(viewModel.data.value).isInstanceOf<ProfileUiState>()
+      assertThat(viewModel.data.value).isInstanceOf<ProfileUiState.Loading>()
       runCurrent()
 
       getMemberRemindersUseCase.memberReminders.add(
@@ -380,7 +380,7 @@ class ProfileViewModelTest {
     val testId = "test"
 
     viewModel.data.test {
-      assertThat(viewModel.data.value).isInstanceOf<ProfileUiState>()
+      assertThat(viewModel.data.value).isInstanceOf<ProfileUiState.Loading>()
       runCurrent()
       travelCertificateAvailabilityUseCase.turbine.add(
         TravelCertificateAvailabilityError.TravelCertificateNotAvailable.left(),
