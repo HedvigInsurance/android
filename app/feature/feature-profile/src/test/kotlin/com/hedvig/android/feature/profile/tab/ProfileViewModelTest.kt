@@ -5,10 +5,11 @@ import app.cash.turbine.test
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
+import assertk.assertAll
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotNull
-import assertk.assertions.isNull
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.test.MainCoroutineRule
@@ -56,10 +57,17 @@ class ProfileViewModelTest {
     )
 
     viewModel.data.test {
-      assertThat(viewModel.data.value).isEqualTo(ProfileUiState())
+      assertThat(viewModel.data.value).isInstanceOf<ProfileUiState.Loading>()
       runCurrent()
       val profileUiState: ProfileUiState = viewModel.data.value
-      assertThat(profileUiState.showPaymentScreen).isEqualTo(false)
+      assertThat(profileUiState).isEqualTo(
+        ProfileUiState.Success(
+          euroBonus = null,
+          travelCertificateAvailable = true,
+          showPaymentScreen = false,
+          memberReminders = MemberReminders(),
+        ),
+      )
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -84,10 +92,17 @@ class ProfileViewModelTest {
     )
 
     viewModel.data.test {
-      assertThat(viewModel.data.value).isEqualTo(ProfileUiState())
+      assertThat(viewModel.data.value).isInstanceOf<ProfileUiState.Loading>()
       runCurrent()
       val profileUiState: ProfileUiState = viewModel.data.value
-      assertThat(profileUiState.showPaymentScreen).isEqualTo(true)
+      assertThat(profileUiState).isEqualTo(
+        ProfileUiState.Success(
+          euroBonus = null,
+          travelCertificateAvailable = true,
+          showPaymentScreen = true,
+          memberReminders = MemberReminders(),
+        ),
+      )
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -100,22 +115,22 @@ class ProfileViewModelTest {
       travelCertificateAvailabilityUseCase.apply { turbine.add(Unit.right()) },
       TestGetMemberRemindersUseCase().apply { memberReminders.add(MemberReminders()) },
       TestEnableNotificationsReminderManager(),
-      FakeFeatureManager(
-        featureMap = {
-          mapOf(
-            Feature.PAYMENT_SCREEN to true,
-            Feature.HELP_CENTER to true,
-          )
-        },
-      ),
+      FakeFeatureManager(noopFeatureManager = true),
       noopLogoutUseCase,
     )
 
     viewModel.data.test {
-      assertThat(viewModel.data.value).isEqualTo(ProfileUiState())
+      assertThat(viewModel.data.value).isInstanceOf<ProfileUiState.Loading>()
       runCurrent()
       val profileUiState: ProfileUiState = viewModel.data.value
-      assertThat(profileUiState.showPaymentScreen).isEqualTo(true)
+      assertThat(profileUiState).isEqualTo(
+        ProfileUiState.Success(
+          euroBonus = null,
+          travelCertificateAvailable = true,
+          showPaymentScreen = false,
+          memberReminders = MemberReminders(),
+        ),
+      )
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -133,10 +148,17 @@ class ProfileViewModelTest {
     )
 
     viewModel.data.test {
-      assertThat(viewModel.data.value).isEqualTo(ProfileUiState())
+      assertThat(viewModel.data.value).isInstanceOf<ProfileUiState.Loading>()
       runCurrent()
       val profileUiState: ProfileUiState = viewModel.data.value
-      assertThat(profileUiState.euroBonus).isNull()
+      assertThat(profileUiState).isEqualTo(
+        ProfileUiState.Success(
+          euroBonus = null,
+          travelCertificateAvailable = true,
+          showPaymentScreen = false,
+          memberReminders = MemberReminders(),
+        ),
+      )
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -154,10 +176,17 @@ class ProfileViewModelTest {
     )
 
     viewModel.data.test {
-      assertThat(viewModel.data.value).isEqualTo(ProfileUiState())
+      assertThat(viewModel.data.value).isInstanceOf<ProfileUiState.Loading>()
       runCurrent()
       val profileUiState: ProfileUiState = viewModel.data.value
-      assertThat(profileUiState.euroBonus).isEqualTo(EuroBonus("code1234"))
+      assertThat(profileUiState).isEqualTo(
+        ProfileUiState.Success(
+          euroBonus = EuroBonus("code1234"),
+          travelCertificateAvailable = true,
+          showPaymentScreen = false,
+          memberReminders = MemberReminders(),
+        ),
+      )
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -174,10 +203,17 @@ class ProfileViewModelTest {
       noopLogoutUseCase,
     )
     viewModel.data.test {
-      assertThat(viewModel.data.value).isEqualTo(ProfileUiState())
+      assertThat(viewModel.data.value).isInstanceOf<ProfileUiState.Loading>()
       runCurrent()
       val profileUiState: ProfileUiState = viewModel.data.value
-      assertThat(profileUiState.travelCertificateAvailable).isEqualTo(true)
+      assertThat(profileUiState).isEqualTo(
+        ProfileUiState.Success(
+          euroBonus = EuroBonus("code1234"),
+          travelCertificateAvailable = true,
+          showPaymentScreen = false,
+          memberReminders = MemberReminders(),
+        ),
+      )
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -196,10 +232,17 @@ class ProfileViewModelTest {
       noopLogoutUseCase,
     )
     viewModel.data.test {
-      assertThat(viewModel.data.value).isEqualTo(ProfileUiState())
+      assertThat(viewModel.data.value).isInstanceOf<ProfileUiState.Loading>()
       runCurrent()
       val profileUiState: ProfileUiState = viewModel.data.value
-      assertThat(profileUiState.travelCertificateAvailable).isEqualTo(false)
+      assertThat(profileUiState).isEqualTo(
+        ProfileUiState.Success(
+          euroBonus = EuroBonus("code1234"),
+          travelCertificateAvailable = false,
+          showPaymentScreen = false,
+          memberReminders = MemberReminders(),
+        ),
+      )
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -223,28 +266,29 @@ class ProfileViewModelTest {
     )
 
     viewModel.data.test {
-      assertThat(viewModel.data.value).isEqualTo(ProfileUiState())
+      assertThat(viewModel.data.value).isInstanceOf<ProfileUiState.Loading>()
       runCurrent()
-
-      assertThat(viewModel.data.value.euroBonus).isNull()
+      assertThat(viewModel.data.value).isEqualTo(ProfileUiState.Loading)
       euroBonusStatusUseCase.turbine.add(EuroBonus("1234").right())
       getMemberRemindersUseCase.memberReminders.add(MemberReminders())
       travelCertificateAvailabilityUseCase.turbine.add(Unit.right())
-
       runCurrent()
-      assertThat(viewModel.data.value.euroBonus).isEqualTo(EuroBonus("1234"))
-      assertThat(viewModel.data.value.travelCertificateAvailable).isEqualTo(true)
-      assertThat(viewModel.data.value.showPaymentScreen).isEqualTo(true)
-      assertThat(viewModel.data.value.memberReminders.connectPayment).isNull()
-      assertThat(viewModel.data.value.memberReminders.upcomingRenewals).isNull()
-      assertThat(viewModel.data.value.memberReminders.enableNotifications).isNull()
-
+      assertThat(viewModel.data.value).isEqualTo(
+        ProfileUiState.Success(
+          euroBonus = EuroBonus("1234"),
+          travelCertificateAvailable = true,
+          memberReminders = MemberReminders(
+            connectPayment = null,
+            upcomingRenewals = null,
+            enableNotifications = null,
+          ),
+          showPaymentScreen = true,
+        ),
+      )
       getMemberRemindersUseCase.memberReminders.add(MemberReminders(connectPayment = MemberReminder.ConnectPayment()))
       runCurrent()
-      assertThat(viewModel.data.value.memberReminders.connectPayment).isNotNull()
-      assertThat(viewModel.data.value.memberReminders.upcomingRenewals).isNull()
-      assertThat(viewModel.data.value.memberReminders.enableNotifications).isNull()
-
+      val connectPayment = (viewModel.data.value as ProfileUiState.Success).memberReminders.connectPayment
+      assertThat(connectPayment).isNotNull()
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -265,14 +309,19 @@ class ProfileViewModelTest {
     )
 
     viewModel.data.test {
-      assertThat(viewModel.data.value).isEqualTo(ProfileUiState())
+      assertThat(viewModel.data.value).isInstanceOf<ProfileUiState.Loading>()
       runCurrent()
 
       getMemberRemindersUseCase.memberReminders.add(MemberReminders())
       runCurrent()
-      assertThat(viewModel.data.value.memberReminders.connectPayment).isNull()
-      assertThat(viewModel.data.value.memberReminders.upcomingRenewals).isNull()
-      assertThat(viewModel.data.value.memberReminders.enableNotifications).isNull()
+      assertThat(viewModel.data.value).isEqualTo(
+        ProfileUiState.Success(
+          euroBonus = null,
+          travelCertificateAvailable = false,
+          memberReminders = MemberReminders(),
+          showPaymentScreen = false,
+        ),
+      )
 
       cancelAndIgnoreRemainingEvents()
     }
@@ -294,7 +343,7 @@ class ProfileViewModelTest {
     )
 
     viewModel.data.test {
-      assertThat(viewModel.data.value).isEqualTo(ProfileUiState())
+      assertThat(viewModel.data.value).isInstanceOf<ProfileUiState.Loading>()
       runCurrent()
 
       getMemberRemindersUseCase.memberReminders.add(
@@ -304,10 +353,12 @@ class ProfileViewModelTest {
         ),
       )
       runCurrent()
-      assertThat(viewModel.data.value.memberReminders.connectPayment).isNotNull()
-      assertThat(viewModel.data.value.memberReminders.upcomingRenewals).isNull()
-      assertThat(viewModel.data.value.memberReminders.enableNotifications).isNotNull()
-
+      assertAll {
+        val connectPayment = (viewModel.data.value as ProfileUiState.Success).memberReminders.connectPayment
+        val enableNotifications = (viewModel.data.value as ProfileUiState.Success).memberReminders.enableNotifications
+        assertThat(connectPayment).isNotNull()
+        assertThat(enableNotifications).isNotNull()
+      }
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -329,7 +380,7 @@ class ProfileViewModelTest {
     val testId = "test"
 
     viewModel.data.test {
-      assertThat(viewModel.data.value).isEqualTo(ProfileUiState())
+      assertThat(viewModel.data.value).isInstanceOf<ProfileUiState.Loading>()
       runCurrent()
       travelCertificateAvailabilityUseCase.turbine.add(
         TravelCertificateAvailabilityError.TravelCertificateNotAvailable.left(),
@@ -339,12 +390,11 @@ class ProfileViewModelTest {
       featureManager.featureTurbine.add(Feature.PAYMENT_SCREEN to false)
       runCurrent()
       assertThat(viewModel.data.value).isEqualTo(
-        ProfileUiState(
+        ProfileUiState.Success(
           euroBonus = null,
           travelCertificateAvailable = false,
           showPaymentScreen = false,
           memberReminders = MemberReminders(),
-          isLoading = false,
         ),
       )
 
@@ -358,15 +408,13 @@ class ProfileViewModelTest {
       )
       runCurrent()
       assertThat(viewModel.data.value).isEqualTo(
-        ProfileUiState(
+        ProfileUiState.Success(
           euroBonus = EuroBonus("abc"),
           travelCertificateAvailable = true,
           showPaymentScreen = true,
           memberReminders = MemberReminders(connectPayment = MemberReminder.ConnectPayment(id = testId)),
-          isLoading = false,
         ),
       )
-
       cancelAndIgnoreRemainingEvents()
     }
   }

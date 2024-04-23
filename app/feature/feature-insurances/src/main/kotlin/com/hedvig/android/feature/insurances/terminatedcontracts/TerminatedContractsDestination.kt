@@ -97,6 +97,7 @@ private fun TerminatedContractsScreen(
               .clickable {
                 onContractClick(contract.id)
               },
+            isLoading = false,
           )
           if (index != uiState.insuranceContracts.lastIndex) {
             Spacer(Modifier.height(8.dp))
