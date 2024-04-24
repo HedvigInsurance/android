@@ -209,7 +209,7 @@ internal val chargeHistoryPreviewData = listOf(
 
 internal val paymentOverViewPreviewData = PaymentOverview(
   memberChargeShortInfo = MemberChargeShortInfo(
-    grossAmount = UiMoney(200.0, CurrencyCode.SEK),
+    netAmount = UiMoney(200.0, CurrencyCode.SEK),
     id = "123",
     status = MemberCharge.MemberChargeStatus.FAILED,
     dueDate = LocalDate.fromEpochDays(400),
