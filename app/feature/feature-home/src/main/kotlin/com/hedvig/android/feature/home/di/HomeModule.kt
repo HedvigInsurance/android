@@ -5,6 +5,8 @@ import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.data.chat.read.timestamp.ChatLastMessageReadRepository
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCaseDemo
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCaseImpl
+import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorage
+import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorageImpl
 import com.hedvig.android.feature.home.home.ui.HomeViewModel
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.memberreminders.GetMemberRemindersUseCase
@@ -23,6 +25,9 @@ val homeModule = module {
       get<TimeZone>(),
     )
   }
+  single<SeenImportantMessagesStorage> {
+    SeenImportantMessagesStorageImpl()
+  }
   single<GetHomeDataUseCaseDemo> {
     GetHomeDataUseCaseDemo()
   }
@@ -37,6 +42,7 @@ val homeModule = module {
     HomeViewModel(
       get<GetHomeDataUseCaseProvider>(),
       get<ChatLastMessageReadRepository>(),
+      get<SeenImportantMessagesStorage>(),
     )
   }
 }
