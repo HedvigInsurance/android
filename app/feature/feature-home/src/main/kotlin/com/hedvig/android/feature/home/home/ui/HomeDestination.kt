@@ -365,27 +365,27 @@ private fun ImportantMessages(
   modifier: Modifier = Modifier,
 ) {
   var consumedWindowInsets by remember { mutableStateOf(WindowInsets(0.dp)) }
-  val contentPadding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
-    .exclude(consumedWindowInsets)
-    .only(WindowInsetsSides.Horizontal)
-    .asPaddingValues()
-  val updatedModifier = modifier.onConsumedWindowInsetsChanged { consumedWindowInsets = it }
   AnimatedContent(
     targetState = list,
-    modifier = updatedModifier.padding(contentPadding),
+    modifier = modifier.onConsumedWindowInsetsChanged { consumedWindowInsets = it },
   ) { animatedList ->
+    val contentPadding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
+      .exclude(consumedWindowInsets)
+      .only(WindowInsetsSides.Horizontal)
+      .asPaddingValues()
     if (animatedList.size == 1) {
       VeryImportantMessageCard(
         openUrl = openUrl,
         hideImportantMessage = hideImportantMessage,
         veryImportantMessage = animatedList.first(),
+        modifier = Modifier.padding(contentPadding),
       )
     } else {
       val pagerState = rememberPagerState(pageCount = { animatedList.size })
       Column {
         HorizontalPager(
           state = pagerState,
-          contentPadding = PaddingValues(),
+          contentPadding = contentPadding,
           beyondBoundsPageCount = 1,
           pageSpacing = 8.dp,
           modifier = Modifier
@@ -405,8 +405,7 @@ private fun ImportantMessages(
           pageCount = animatedList.size,
           activeColor = LocalContentColor.current,
           modifier = Modifier
-            .padding(contentPadding)
-            .align(Alignment.CenterHorizontally),
+            .align(Alignment.CenterHorizontally).padding(contentPadding),
         )
       }
     }
