@@ -3,6 +3,9 @@ package com.hedvig.android.design.system.hedvig.tokens
 import androidx.compose.ui.graphics.Color
 
 internal object PaletteTokens {
+  val Black = Color(0xFF121212)
+  val White = Color(0xFFFAFAFA)
+
   val G50 = Color(0xFFF5F5F5)
   val G100 = Color(0xFFF0F0F0)
   val G200 = Color(0xFFEAEAEA)
@@ -15,8 +18,32 @@ internal object PaletteTokens {
   val G750 = Color(0xFF606060)
   val G800 = Color(0xFF505050)
   val G900 = Color(0xFF303030)
-  val GBlack = Color(0xFF121212)
-  val GWhite = Color(0xFFFAFAFA)
+
+  val G50TL = Color(0x05121212)
+  val G100TL = Color(0x0B121212)
+  val G200TL = Color(0x12121212)
+  val G300TL = Color(0x1C121212)
+  val G400TL = Color(0x2F121212)
+  val G450TL = Color(0x3B121212)
+  val G500TL = Color(0x4D121212)
+  val G600TL = Color(0x6E121212)
+  val G700TL = Color(0x98121212)
+  val G750TL = Color(0xA9121212)
+  val G800TL = Color(0xBB121212)
+  val G900TL = Color(0xDE121212)
+
+  val G50TD = Color(0xFAFAFAFA)
+  val G100TD = Color(0xF4FAFAFA)
+  val G200TD = Color(0xEDFAFAFA)
+  val G300TD = Color(0xE3FAFAFA)
+  val G400TD = Color(0xD0FAFAFA)
+  val G450TD = Color(0xC4FAFAFA)
+  val G500TD = Color(0xB3FAFAFA)
+  val G600TD = Color(0x8FFAFAFA)
+  val G700TD = Color(0x67FAFAFA)
+  val G750TD = Color(0x55FAFAFA)
+  val G800TD = Color(0x44FAFAFA)
+  val G900TD = Color(0x21FAFAFA)
 
   val Red50 = Color(0xFFFFEEEB)
   val Red100 = Color(0xFFFEE2DE)
