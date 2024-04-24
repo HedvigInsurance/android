@@ -293,7 +293,14 @@ private fun PreviewHomeLayout(
 ) {
   HomeLayout(
     fullScreenSize = IntSize(maxWidth, maxHeight),
-    welcomeMessage = { Text("Welcome!", Modifier.fillMaxWidth().wrapContentWidth(Alignment.CenterHorizontally)) },
+    welcomeMessage = {
+      Text(
+        "Welcome!",
+        Modifier
+          .fillMaxWidth()
+          .wrapContentWidth(Alignment.CenterHorizontally),
+      )
+    },
     claimStatusCards = claimStatusCards,
     veryImportantMessages = veryImportantMessages,
     memberReminderCards = memberReminderCards,
@@ -312,10 +319,18 @@ private fun PreviewHomeLayout(
       )
     },
     topSpacer = {
-      Spacer(Modifier.height(64.dp).windowInsetsTopHeight(WindowInsets.safeDrawing))
+      Spacer(
+        Modifier
+          .height(64.dp)
+          .windowInsetsTopHeight(WindowInsets.safeDrawing),
+      )
     },
     bottomSpacer = {
-      Spacer(Modifier.height(16.dp).windowInsetsBottomHeight(WindowInsets.safeDrawing))
+      Spacer(
+        Modifier
+          .height(16.dp)
+          .windowInsetsBottomHeight(WindowInsets.safeDrawing),
+      )
     },
     modifier = modifier,
   )
@@ -323,7 +338,12 @@ private fun PreviewHomeLayout(
 
 @Composable
 private fun PreviewBox(index: Int = 0, content: @Composable () -> Unit = {}) {
-  Box(Modifier.fillMaxWidth().height(80.dp).background(Color(0xFF0066FF + (index * 0xFF001100)))) {
+  Box(
+    Modifier
+      .fillMaxWidth()
+      .height(80.dp)
+      .background(Color(0xFF0066FF + (index * 0xFF001100))),
+  ) {
     content()
   }
 }

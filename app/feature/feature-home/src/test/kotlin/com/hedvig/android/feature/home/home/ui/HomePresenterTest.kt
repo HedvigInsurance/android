@@ -17,6 +17,7 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.chat.read.timestamp.FakeChatLastMessageReadRepository
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
+import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorageImpl
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.test.test
@@ -36,6 +37,7 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       FakeChatLastMessageReadRepository(),
+      SeenImportantMessagesStorageImpl(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -60,6 +62,7 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       FakeChatLastMessageReadRepository(),
+      SeenImportantMessagesStorageImpl(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -82,6 +85,7 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       FakeChatLastMessageReadRepository(),
+      SeenImportantMessagesStorageImpl(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -138,6 +142,7 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       FakeChatLastMessageReadRepository(),
+      SeenImportantMessagesStorageImpl(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -178,6 +183,7 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       FakeChatLastMessageReadRepository(),
+      SeenImportantMessagesStorageImpl(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -200,6 +206,7 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       chatLastMessageReadRepository,
+      SeenImportantMessagesStorageImpl(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
