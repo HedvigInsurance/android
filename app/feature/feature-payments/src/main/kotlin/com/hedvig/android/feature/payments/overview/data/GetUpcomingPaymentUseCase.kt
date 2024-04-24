@@ -70,7 +70,7 @@ internal data class GetUpcomingPaymentUseCaseImpl(
 
 private fun MemberChargeFragment.toMemberChargeShortInfo() = MemberChargeShortInfo(
   id = id ?: "",
-  grossAmount = UiMoney.fromMoneyFragment(gross),
+  netAmount = UiMoney.fromMoneyFragment(net),
   dueDate = date,
   failedCharge = toFailedCharge(),
   status = when (status) {
@@ -88,7 +88,7 @@ internal class GetUpcomingPaymentUseCaseDemo(
   override suspend fun invoke(): Either<ErrorMessage, PaymentOverview> {
     return PaymentOverview(
       MemberChargeShortInfo(
-        grossAmount = UiMoney(100.0, CurrencyCode.SEK),
+        netAmount = UiMoney(100.0, CurrencyCode.SEK),
         id = "id",
         status = MemberCharge.MemberChargeStatus.SUCCESS,
         dueDate = (clock.now() + 10.days).toLocalDateTime(TimeZone.UTC).date,

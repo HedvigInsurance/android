@@ -46,7 +46,7 @@ internal class PaymentsPresenter(
             isLoading = false,
             upcomingPayment = paymentOverview.memberChargeShortInfo?.let { memberCharge ->
               PaymentsUiState.Content.UpcomingPayment(
-                grossAmount = memberCharge.grossAmount,
+                netAmount = memberCharge.netAmount,
                 dueDate = memberCharge.dueDate,
                 id = memberCharge.id,
               )
@@ -100,7 +100,7 @@ internal sealed interface PaymentsUiState {
     val connectedPaymentInfo: ConnectedPaymentInfo,
   ) : PaymentsUiState {
     data class UpcomingPayment(
-      val grossAmount: UiMoney,
+      val netAmount: UiMoney,
       val dueDate: LocalDate,
       val id: String,
     )
