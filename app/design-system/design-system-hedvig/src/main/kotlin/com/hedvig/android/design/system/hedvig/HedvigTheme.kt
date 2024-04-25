@@ -1,6 +1,7 @@
 package com.hedvig.android.design.system.hedvig
 
 import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.runtime.Composable
@@ -9,7 +10,15 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
 
 @Composable
-fun HedvigTheme(
+fun HedvigTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
+  HedvigTheme(
+    colorScheme = if (darkTheme) darkColorScheme else lightColorScheme,
+    content = content,
+  )
+}
+
+@Composable
+private fun HedvigTheme(
   colorScheme: ColorScheme = HedvigTheme.colorScheme,
   shapes: Shapes = HedvigTheme.shapes,
   typography: Typography = HedvigTheme.typography,

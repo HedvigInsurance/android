@@ -8,15 +8,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.compose.ui.LayoutWithoutPlacement
@@ -25,38 +20,30 @@ import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.sample.design.showcase.util.dashedBorder
-import com.hedvig.android.sample.design.showcase.util.freeScroll
-import com.hedvig.android.sample.design.showcase.util.rememberFreeScrollState
+import com.hedvig.android.sample.design.showcase.util.ShowcaseLayout
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
 @Composable
 internal fun ShowcaseButton() {
-  Column(
-    verticalArrangement = Arrangement.spacedBy(80.dp),
-    modifier = Modifier
-      .freeScroll(rememberFreeScrollState())
-      .windowInsetsPadding(WindowInsets.safeDrawing)
-      .padding(16.dp)
-      .dashedBorder(Color(0xFF9747FF), HedvigTheme.shapes.cornerXXLarge)
-      .padding(8.dp),
-  ) {
-    for ((index, size) in ButtonDefaults.ButtonSize.entries.withIndex()) {
-      Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        Box(modifier = Modifier.align(Alignment.CenterVertically)) {
-          LayoutWithoutPlacement(
-            sizeAdjustingContent = {
-              HedvigText(
-                text = ButtonDefaults.ButtonSize.entries.map { it.name }.maxBy { it.length },
-                style = HedvigTheme.typography.bodyMedium,
-              )
-            },
-          ) {
-            HedvigText(text = size.name, style = HedvigTheme.typography.bodyMedium)
+  ShowcaseLayout {
+    Column(verticalArrangement = Arrangement.spacedBy(80.dp)) {
+      for ((index, size) in ButtonDefaults.ButtonSize.entries.withIndex()) {
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+          Box(modifier = Modifier.align(Alignment.CenterVertically)) {
+            LayoutWithoutPlacement(
+              sizeAdjustingContent = {
+                HedvigText(
+                  text = ButtonDefaults.ButtonSize.entries.map { it.name }.maxBy { it.length },
+                  style = HedvigTheme.typography.bodyMedium,
+                )
+              },
+            ) {
+              HedvigText(text = size.name, style = HedvigTheme.typography.bodyMedium)
+            }
           }
+          ButtonSizesRow(size, index == 0)
         }
-        ButtonSizesRow(size, index == 0)
       }
     }
   }
