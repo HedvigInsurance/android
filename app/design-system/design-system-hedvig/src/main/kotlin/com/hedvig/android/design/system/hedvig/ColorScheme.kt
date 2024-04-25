@@ -7,6 +7,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.takeOrElse
+import com.hedvig.android.design.system.hedvig.tokens.ColorDarkTokens
 import com.hedvig.android.design.system.hedvig.tokens.ColorLightTokens
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens
 
@@ -187,13 +188,106 @@ internal val lightColorScheme: ColorScheme = ColorScheme(
   transparent = ColorLightTokens.Transparent,
 )
 
-internal val darkColorScheme: ColorScheme = lightColorScheme
-//  ColorScheme() todo dark mode
+internal val darkColorScheme: ColorScheme = ColorScheme(
+  textPrimary = ColorDarkTokens.TextPrimary,
+  textNegative = ColorDarkTokens.TextNegative,
+  textSecondary = ColorDarkTokens.TextSecondary,
+  textAccordion = ColorDarkTokens.TextAccordion,
+  textTertiary = ColorDarkTokens.TextTertiary,
+  textDisabled = ColorDarkTokens.TextDisabled,
+  textBlack = ColorDarkTokens.TextBlack,
+  textWhite = ColorDarkTokens.TextWhite,
+  action = ColorDarkTokens.Action,
+  link = ColorDarkTokens.Link,
+  buttonPrimaryResting = ColorDarkTokens.ButtonPrimaryResting,
+  buttonPrimaryHover = ColorDarkTokens.ButtonPrimaryHover,
+  buttonPrimaryDisabled = ColorDarkTokens.ButtonPrimaryDisabled,
+  buttonPrimaryAltResting = ColorDarkTokens.ButtonPrimaryAltResting,
+  buttonPrimaryAltHover = ColorDarkTokens.ButtonPrimaryAltHover,
+  buttonPrimaryAltDisabled = ColorDarkTokens.ButtonPrimaryAltDisabled,
+  buttonSecondaryResting = ColorDarkTokens.ButtonSecondaryResting,
+  buttonSecondaryHover = ColorDarkTokens.ButtonSecondaryHover,
+  buttonSecondaryDisabled = ColorDarkTokens.ButtonSecondaryDisabled,
+  buttonSecondaryAltResting = ColorDarkTokens.ButtonSecondaryAltResting,
+  buttonSecondaryAltHover = ColorDarkTokens.ButtonSecondaryAltHover,
+  buttonSecondaryAltDisabled = ColorDarkTokens.ButtonSecondaryAltDisabled,
+  buttonGhostResting = ColorDarkTokens.ButtonGhostResting,
+  buttonGhostHover = ColorDarkTokens.ButtonGhostHover,
+  buttonGhostDisabled = ColorDarkTokens.ButtonGhostDisabled,
+  fillPrimary = ColorDarkTokens.FillPrimary,
+  fillSecondary = ColorDarkTokens.FillSecondary,
+  fillTertiary = ColorDarkTokens.FillTertiary,
+  fillDisabled = ColorDarkTokens.FillDisabled,
+  fillNegative = ColorDarkTokens.FillNegative,
+  fillBlack = ColorDarkTokens.FillBlack,
+  fillWhite = ColorDarkTokens.FillWhite,
+  fillPrimaryTransparent = ColorDarkTokens.FillPrimaryTransparent,
+  fillSecondaryTransparent = ColorDarkTokens.FillSecondaryTransparent,
+  fillTertiaryTransparent = ColorDarkTokens.FillTertiaryTransparent,
+  fillDisabledTransparent = ColorDarkTokens.FillDisabledTransparent,
+  fillNegativeTransparent = ColorDarkTokens.FillNegativeTransparent,
+  fillBlackTransparent = ColorDarkTokens.FillBlackTransparent,
+  fillWhiteTransparent = ColorDarkTokens.FillWhiteTransparent,
+  surfacePrimary = ColorDarkTokens.SurfacePrimary,
+  surfaceSecondary = ColorDarkTokens.SurfaceSecondary,
+  surfacePrimaryTransparent = ColorDarkTokens.SurfacePrimaryTransparent,
+  surfaceSecondaryTransparent = ColorDarkTokens.SurfaceSecondaryTransparent,
+  backgroundPrimary = ColorDarkTokens.BackgroundPrimary,
+  backgroundNegative = ColorDarkTokens.BackgroundNegative,
+  backgroundBlack = ColorDarkTokens.BackgroundBlack,
+  backgroundWhite = ColorDarkTokens.BackgroundWhite,
+  borderPrimary = ColorDarkTokens.BorderPrimary,
+  borderSecondary = ColorDarkTokens.BorderSecondary,
+  borderHighlight = ColorDarkTokens.BorderHighlight,
+  signalRedFill = ColorDarkTokens.SignalRedFill,
+  signalRedHighlight = ColorDarkTokens.SignalRedHighlight,
+  signalRedElement = ColorDarkTokens.SignalRedElement,
+  signalRedText = ColorDarkTokens.SignalRedText,
+  signalAmberFill = ColorDarkTokens.SignalAmberFill,
+  signalAmberHighlight = ColorDarkTokens.SignalAmberHighlight,
+  signalAmberElement = ColorDarkTokens.SignalAmberElement,
+  signalAmberText = ColorDarkTokens.SignalAmberText,
+  signalGreenFill = ColorDarkTokens.SignalGreenFill,
+  signalGreenHighlight = ColorDarkTokens.SignalGreenHighlight,
+  signalGreenElement = ColorDarkTokens.SignalGreenElement,
+  signalGreenText = ColorDarkTokens.SignalGreenText,
+  signalBlueFill = ColorDarkTokens.SignalBlueFill,
+  signalBlueHighlight = ColorDarkTokens.SignalBlueHighlight,
+  signalBlueElement = ColorDarkTokens.SignalBlueElement,
+  signalBlueText = ColorDarkTokens.SignalBlueText,
+  highlightPinkFill1 = ColorDarkTokens.HighlightPinkFill1,
+  highlightPinkFill2 = ColorDarkTokens.HighlightPinkFill2,
+  highlightPinkFill3 = ColorDarkTokens.HighlightPinkFill3,
+  highlightYellowFill1 = ColorDarkTokens.HighlightYellowFill1,
+  highlightYellowFill2 = ColorDarkTokens.HighlightYellowFill2,
+  highlightYellowFill3 = ColorDarkTokens.HighlightYellowFill3,
+  highlightGreenFill1 = ColorDarkTokens.HighlightGreenFill1,
+  highlightGreenFill2 = ColorDarkTokens.HighlightGreenFill2,
+  highlightGreenFill3 = ColorDarkTokens.HighlightGreenFill3,
+  highlightTealFill1 = ColorDarkTokens.HighlightTealFill1,
+  highlightTealFill2 = ColorDarkTokens.HighlightTealFill2,
+  highlightTealFill3 = ColorDarkTokens.HighlightTealFill3,
+  highlightBlueFill1 = ColorDarkTokens.HighlightBlueFill1,
+  highlightBlueFill2 = ColorDarkTokens.HighlightBlueFill2,
+  highlightBlueFill3 = ColorDarkTokens.HighlightBlueFill3,
+  highlightPurpleFill1 = ColorDarkTokens.HighlightPurpleFill1,
+  highlightPurpleFill2 = ColorDarkTokens.HighlightPurpleFill2,
+  highlightPurpleFill3 = ColorDarkTokens.HighlightPurpleFill3,
+  transparent = ColorDarkTokens.Transparent,
+)
 
 @Stable
 internal fun ColorScheme.contentColorFor(backgroundColor: Color): Color {
   // todo more colors here, and check if this makes sense at all for us here
   return when (backgroundColor) {
+    backgroundPrimary -> textPrimary
+    backgroundNegative -> textNegative
+    backgroundBlack -> textWhite
+    backgroundWhite -> textBlack
+    surfacePrimary -> textPrimary
+    surfaceSecondary -> textPrimary
+    surfacePrimaryTransparent -> textPrimary
+    surfaceSecondaryTransparent -> textPrimary
     else -> Color.Unspecified
   }
 }
