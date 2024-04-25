@@ -9,6 +9,8 @@ internal object PrimaryStyleButtonTokens {
   val HoverContentColor = ColorSchemeKeyTokens.TextNegative
   val DisabledContainerColor = ColorSchemeKeyTokens.ButtonPrimaryDisabled
   val DisabledContentColor = ColorSchemeKeyTokens.TextTertiary
+  val ActiveLoadingIndicatorColor = ColorSchemeKeyTokens.FillNegative
+  val InactiveLoadingIndicatorColor = ColorSchemeKeyTokens.SurfaceSecondaryTransparent
 }
 
 internal object PrimaryAltStyleButtonTokens {
@@ -18,6 +20,8 @@ internal object PrimaryAltStyleButtonTokens {
   val HoverContentColor = ColorSchemeKeyTokens.TextBlack
   val DisabledContainerColor = ColorSchemeKeyTokens.ButtonPrimaryAltDisabled
   val DisabledContentColor = ColorSchemeKeyTokens.TextTertiary
+  val ActiveLoadingIndicatorColor = ColorSchemeKeyTokens.FillBlack
+  val InactiveLoadingIndicatorColor = ColorSchemeKeyTokens.SurfaceSecondaryTransparent
 }
 
 internal object SecondaryStyleButtonTokens {
@@ -27,6 +31,8 @@ internal object SecondaryStyleButtonTokens {
   val HoverContentColor = ColorSchemeKeyTokens.TextPrimary
   val DisabledContainerColor = ColorSchemeKeyTokens.ButtonSecondaryDisabled
   val DisabledContentColor = ColorSchemeKeyTokens.TextTertiary
+  val ActiveLoadingIndicatorColor = ColorSchemeKeyTokens.FillPrimary
+  val InactiveLoadingIndicatorColor = ColorSchemeKeyTokens.SurfaceSecondaryTransparent
 }
 
 internal object SecondaryAltStyleButtonTokens {
@@ -36,6 +42,8 @@ internal object SecondaryAltStyleButtonTokens {
   val HoverContentColor = ColorSchemeKeyTokens.TextPrimary
   val DisabledContainerColor = ColorSchemeKeyTokens.ButtonSecondaryAltDisabled
   val DisabledContentColor = ColorSchemeKeyTokens.TextTertiary
+  val ActiveLoadingIndicatorColor = ColorSchemeKeyTokens.FillPrimary
+  val InactiveLoadingIndicatorColor = ColorSchemeKeyTokens.SurfaceSecondaryTransparent
 }
 
 internal object GhostStyleButtonTokens {
@@ -45,6 +53,8 @@ internal object GhostStyleButtonTokens {
   val HoverContentColor = ColorSchemeKeyTokens.TextPrimary
   val DisabledContainerColor = ColorSchemeKeyTokens.ButtonGhostDisabled
   val DisabledContentColor = ColorSchemeKeyTokens.TextTertiary
+  val ActiveLoadingIndicatorColor = ColorSchemeKeyTokens.FillPrimary
+  val InactiveLoadingIndicatorColor = ColorSchemeKeyTokens.SurfaceSecondaryTransparent
 }
 
 internal object LargeSizeButtonTokens {

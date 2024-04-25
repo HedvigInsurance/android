@@ -10,7 +10,6 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -61,6 +60,7 @@ fun HedvigButton(
     buttonSize = buttonSize,
     interactionSource = interactionSource,
   ) {
+    val buttonColors = buttonStyle.style.buttonColors
     val loadingTransition = updateTransition(isLoading, label = "loading transition")
     loadingTransition.AnimatedContent(
       transitionSpec = {
@@ -72,7 +72,11 @@ fun HedvigButton(
         LayoutWithoutPlacement(
           sizeAdjustingContent = { HedvigText(text = text, modifier = Modifier.withoutPlacement()) },
         ) {
-          ThreeDotsLoading(Modifier.align(Alignment.Center))
+          ThreeDotsLoading(
+            stableColor = buttonColors.activeLoadingIndicatorColor,
+            temporaryColor = buttonColors.inactiveLoadingIndicatorColor,
+            modifier = Modifier.align(Alignment.Center),
+          )
         }
       } else {
         HedvigText(text = text)
@@ -170,6 +174,8 @@ private data class ButtonColors(
   val disabledContentColor: Color,
   val hoverContainerColor: Color,
   val hoverContentColor: Color,
+  val activeLoadingIndicatorColor: Color,
+  val inactiveLoadingIndicatorColor: Color,
 ) {
   @Stable
   internal fun containerColor(enabled: Boolean): Color = when {
@@ -291,6 +297,8 @@ private sealed interface Style {
             disabledContentColor = fromToken(PrimaryStyleButtonTokens.DisabledContentColor),
             hoverContainerColor = fromToken(PrimaryStyleButtonTokens.HoverContainerColor),
             hoverContentColor = fromToken(PrimaryStyleButtonTokens.HoverContentColor),
+            activeLoadingIndicatorColor = fromToken(PrimaryStyleButtonTokens.ActiveLoadingIndicatorColor),
+            inactiveLoadingIndicatorColor = fromToken(PrimaryStyleButtonTokens.InactiveLoadingIndicatorColor),
           )
         }
       }
@@ -308,6 +316,8 @@ private sealed interface Style {
             disabledContentColor = fromToken(PrimaryAltStyleButtonTokens.DisabledContentColor),
             hoverContainerColor = fromToken(PrimaryAltStyleButtonTokens.HoverContainerColor),
             hoverContentColor = fromToken(PrimaryAltStyleButtonTokens.HoverContentColor),
+            activeLoadingIndicatorColor = fromToken(PrimaryAltStyleButtonTokens.ActiveLoadingIndicatorColor),
+            inactiveLoadingIndicatorColor = fromToken(PrimaryAltStyleButtonTokens.InactiveLoadingIndicatorColor),
           )
         }
       }
@@ -325,6 +335,8 @@ private sealed interface Style {
             disabledContentColor = fromToken(SecondaryStyleButtonTokens.DisabledContentColor),
             hoverContainerColor = fromToken(SecondaryStyleButtonTokens.HoverContainerColor),
             hoverContentColor = fromToken(SecondaryStyleButtonTokens.HoverContentColor),
+            activeLoadingIndicatorColor = fromToken(SecondaryStyleButtonTokens.ActiveLoadingIndicatorColor),
+            inactiveLoadingIndicatorColor = fromToken(SecondaryStyleButtonTokens.InactiveLoadingIndicatorColor),
           )
         }
       }
@@ -342,6 +354,8 @@ private sealed interface Style {
             disabledContentColor = fromToken(SecondaryAltStyleButtonTokens.DisabledContentColor),
             hoverContainerColor = fromToken(SecondaryAltStyleButtonTokens.HoverContainerColor),
             hoverContentColor = fromToken(SecondaryAltStyleButtonTokens.HoverContentColor),
+            activeLoadingIndicatorColor = fromToken(SecondaryAltStyleButtonTokens.ActiveLoadingIndicatorColor),
+            inactiveLoadingIndicatorColor = fromToken(SecondaryAltStyleButtonTokens.InactiveLoadingIndicatorColor),
           )
         }
       }
@@ -359,6 +373,8 @@ private sealed interface Style {
             disabledContentColor = fromToken(GhostStyleButtonTokens.DisabledContentColor),
             hoverContainerColor = fromToken(GhostStyleButtonTokens.HoverContainerColor),
             hoverContentColor = fromToken(GhostStyleButtonTokens.HoverContentColor),
+            activeLoadingIndicatorColor = fromToken(GhostStyleButtonTokens.ActiveLoadingIndicatorColor),
+            inactiveLoadingIndicatorColor = fromToken(GhostStyleButtonTokens.InactiveLoadingIndicatorColor),
           )
         }
       }
