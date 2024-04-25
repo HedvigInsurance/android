@@ -134,11 +134,6 @@ internal fun HedvigNavHost(
       },
       openAppSettings = externalNavigator::openAppSettings,
       openUrl = openUrl,
-      openChat = { backStackEntry, chatContext ->
-        with(navigator) {
-          backStackEntry.navigate(AppDestination.Chat(chatContext))
-        }
-      },
     )
     insuranceGraph(
       nestedGraphs = {

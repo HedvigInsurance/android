@@ -32,14 +32,13 @@ internal class GetConnectPaymentReminderUseCaseImpl(
         .firstOrNull()
         ?.terminationDate
       if (missingPaymentsContractTerminationDate != null) {
-        PaymentReminder.ShowMissingPaymentsReminder(missingPaymentsContractTerminationDate)
-      } else {
-        val payStatus = result.currentMember.paymentInformation.status
-        ensure(payStatus == MemberPaymentConnectionStatus.NEEDS_SETUP) {
-          ConnectPaymentReminderError.AlreadySetup
-        }
-        PaymentReminder.ShowConnectPaymentReminder
+        return@either PaymentReminder.ShowMissingPaymentsReminder(missingPaymentsContractTerminationDate)
       }
+      val payStatus = result.currentMember.paymentInformation.status
+      ensure(payStatus == MemberPaymentConnectionStatus.NEEDS_SETUP) {
+        ConnectPaymentReminderError.AlreadySetup
+      }
+      PaymentReminder.ShowConnectPaymentReminder
     }.onLeft {
       logcat { "GetConnectPaymentReminderUseCase failed with error:$it" }
     }

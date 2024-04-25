@@ -112,7 +112,6 @@ internal fun HomeDestination(
   openUrl: (String) -> Unit,
   openAppSettings: () -> Unit,
   navigateToMissingInfo: (String) -> Unit,
-  openChat: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val notificationPermissionState = rememberNotificationPermissionState()
@@ -128,7 +127,6 @@ internal fun HomeDestination(
     openUrl = openUrl,
     openAppSettings = openAppSettings,
     navigateToMissingInfo = navigateToMissingInfo,
-    openChat = openChat,
     markMessageAsSeen = { viewModel.emit(HomeEvent.MarkMessageAsSeen(it)) },
   )
 }
@@ -147,7 +145,6 @@ private fun HomeScreen(
   markMessageAsSeen: (String) -> Unit,
   openAppSettings: () -> Unit,
   navigateToMissingInfo: (String) -> Unit,
-  openChat: () -> Unit,
 ) {
   val context = LocalContext.current
   val systemBarInsetTopDp = with(LocalDensity.current) {
@@ -197,7 +194,7 @@ private fun HomeScreen(
             openAppSettings = openAppSettings,
             openUrl = openUrl,
             navigateToMissingInfo = navigateToMissingInfo,
-            openChat = openChat,
+            openChat = onStartChat,
             markMessageAsSeen = markMessageAsSeen,
           )
         }
@@ -545,7 +542,6 @@ private fun PreviewHomeScreen(
         openAppSettings = {},
         navigateToMissingInfo = {},
         markMessageAsSeen = {},
-        openChat = {},
       )
     }
   }

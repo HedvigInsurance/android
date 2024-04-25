@@ -6,7 +6,6 @@ import androidx.navigation.navDeepLink
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.feature.home.home.ui.HomeDestination
 import com.hedvig.android.feature.home.home.ui.HomeViewModel
-import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.kiwi.navigationcompose.typed.composable
 import com.kiwi.navigationcompose.typed.createRoutePattern
@@ -24,7 +23,6 @@ fun NavGraphBuilder.homeGraph(
   navigateToHelpCenter: (NavBackStackEntry) -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
-  openChat: (NavBackStackEntry, AppDestination.Chat.ChatContext?) -> Unit,
 ) {
   navigation<HomeDestination.Graph>(
     startDestination = createRoutePattern<HomeDestination.Home>(),
@@ -49,9 +47,6 @@ fun NavGraphBuilder.homeGraph(
         navigateToHelpCenter = { navigateToHelpCenter(backStackEntry) },
         openUrl = openUrl,
         openAppSettings = openAppSettings,
-        openChat = {
-          openChat(backStackEntry, null)
-        },
       )
     }
     nestedGraphs()
