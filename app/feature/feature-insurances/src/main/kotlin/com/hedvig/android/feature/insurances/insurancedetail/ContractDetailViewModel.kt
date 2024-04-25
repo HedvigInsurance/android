@@ -45,7 +45,9 @@ internal class ContractDetailPresenter(
     }
 
     LaunchedEffect(dataLoadIteration) {
-      currentState = ContractDetailsUiState.Loading
+      if (lastState !is ContractDetailsUiState.Success) {
+        currentState = ContractDetailsUiState.Loading
+      }
       combine(
         getContractForContractIdUseCase.invoke(contractId),
         featureManager.isFeatureEnabled(Feature.TERMINATION_FLOW),
