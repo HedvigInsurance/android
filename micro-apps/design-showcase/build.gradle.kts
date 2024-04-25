@@ -48,6 +48,7 @@ dependencies {
   implementation(libs.androidx.graphicsShapes)
   implementation(libs.coil.coil)
   implementation(libs.datadog.sdk.core)
+  implementation(libs.timber)
   implementation(libs.zoomable)
   implementation(projects.composeUi)
   implementation(projects.designSystemHedvig)
