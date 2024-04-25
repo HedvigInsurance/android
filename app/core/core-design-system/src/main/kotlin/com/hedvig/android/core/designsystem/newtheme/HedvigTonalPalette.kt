@@ -16,6 +16,7 @@ internal interface HedvigTonalPalette {
   val greyscale900: Color
   val greyscale1000: Color
 
+  val green50: Color
   val green100: Color
   val green300: Color
   val green500: Color

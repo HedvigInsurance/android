@@ -41,4 +41,5 @@ public val HedvigIcons.MoreIos: ImageVector
     return _moreIos!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _moreIos: ImageVector? = null

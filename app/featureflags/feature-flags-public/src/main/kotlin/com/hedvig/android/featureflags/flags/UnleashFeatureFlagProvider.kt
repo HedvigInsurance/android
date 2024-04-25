@@ -18,7 +18,7 @@ internal class UnleashFeatureFlagProvider(
         Feature.TERMINATION_FLOW -> hedvigUnleashClient.client.isEnabled("termination_flow", true)
         Feature.UPDATE_NECESSARY -> hedvigUnleashClient.client.isEnabled("update_necessary", false)
         Feature.EDIT_COINSURED -> hedvigUnleashClient.client.isEnabled("edit_coinsured", false)
-        Feature.HELP_CENTER -> hedvigUnleashClient.client.isEnabled("help_center", false)
+        Feature.HELP_CENTER -> hedvigUnleashClient.client.isEnabled("help_center", true)
       }
     }.distinctUntilChanged()
   }

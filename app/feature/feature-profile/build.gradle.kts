@@ -46,7 +46,6 @@ dependencies {
   implementation(projects.coreUi)
   implementation(projects.coreUiData)
   implementation(projects.dataSettingsDatastorePublic)
-  implementation(projects.dataTravelCertificatePublic)
   implementation(projects.featureFlagsPublic)
   implementation(projects.languageCore)
   implementation(projects.languageData)

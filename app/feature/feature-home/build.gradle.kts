@@ -48,7 +48,6 @@ dependencies {
   implementation(projects.coreResources)
   implementation(projects.coreUi)
   implementation(projects.dataChatReadTimestampPublic)
-  implementation(projects.dataTravelCertificatePublic)
   implementation(projects.featureFlagsPublic)
   implementation(projects.languageCore)
   implementation(projects.marketCore)
@@ -62,6 +61,7 @@ dependencies {
   implementation(projects.notificationPermission)
   implementation(projects.pullrefresh)
   implementation(projects.uiEmergency)
+  implementation(libs.accompanist.pagerIndicators)
 
   testImplementation(libs.apollo.testingSupport)
   testImplementation(libs.assertK)
@@ -73,7 +73,6 @@ dependencies {
   testImplementation(projects.apolloTest)
   testImplementation(projects.coreCommonTest)
   testImplementation(projects.dataChatReadTimestampTest)
-  testImplementation(projects.dataTravelCertificateTest)
   testImplementation(projects.featureFlagsTest)
   testImplementation(projects.languageTest)
   testImplementation(projects.loggingTest)

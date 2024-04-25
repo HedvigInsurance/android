@@ -197,7 +197,15 @@ private fun PreviewChangeAddressEnterNewAddressScreen() {
     Surface(color = MaterialTheme.colorScheme.background) {
       ChangeAddressEnterNewAddressScreen(
         ChangeAddressUiState(datePickerUiState = DatePickerUiState(Locale.ENGLISH, null)),
-        {}, {}, {}, {}, {}, {}, {}, {}, {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
       )
     }
   }

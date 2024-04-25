@@ -42,4 +42,5 @@ public val HedvigIcons.CircleFilled: ImageVector
     return _circleFilled!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _circleFilled: ImageVector? = null

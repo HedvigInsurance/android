@@ -3,6 +3,7 @@ package com.hedvig.android.placeholder
 import androidx.annotation.FloatRange
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.InfiniteRepeatableSpec
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 
 /**
@@ -39,7 +40,9 @@ fun PlaceholderHighlight.Companion.shimmer(
   animationSpec: InfiniteRepeatableSpec<Float> = PlaceholderDefaults.shimmerAnimationSpec,
   @FloatRange(from = 0.0, to = 1.0) progressForMaxAlpha: Float = 0.6f,
 ): PlaceholderHighlight = PlaceholderHighlight.shimmer(
-  highlightColor = PlaceholderDefaults.shimmerHighlightColor(),
+  highlightColor = PlaceholderDefaults.shimmerHighlightColor(
+    backgroundColor = MaterialTheme.colorScheme.surface,
+  ),
   animationSpec = animationSpec,
   progressForMaxAlpha = progressForMaxAlpha,
 )

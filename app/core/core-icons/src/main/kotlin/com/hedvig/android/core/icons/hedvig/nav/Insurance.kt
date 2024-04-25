@@ -105,4 +105,5 @@ public val HedvigIcons.Insurance: ImageVector
     return _insurance!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _insurance: ImageVector? = null

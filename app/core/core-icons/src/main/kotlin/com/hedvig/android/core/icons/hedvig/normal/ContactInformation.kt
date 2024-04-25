@@ -147,4 +147,5 @@ public val HedvigIcons.ContactInformation: ImageVector
     return _contactInformation!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _contactInformation: ImageVector? = null

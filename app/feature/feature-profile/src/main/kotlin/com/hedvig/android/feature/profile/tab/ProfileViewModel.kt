@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.core.common.RetryChannel
-import com.hedvig.android.data.travelcertificate.CheckTravelCertificateDestinationAvailabilityUseCase
+import com.hedvig.android.feature.profile.data.CheckTravelCertificateDestinationAvailabilityUseCase
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.memberreminders.EnableNotificationsReminderManager
@@ -37,18 +37,17 @@ internal class ProfileViewModel(
       flow { emit(getEuroBonusStatusUseCase.invoke()) },
       flow { emit(checkTravelCertificateDestinationAvailabilityUseCase.invoke()) },
     ) { memberReminders, isPaymentScreenFeatureEnabled, eurobonusResponse, travelCertificateAvailability ->
-      ProfileUiState(
+      ProfileUiState.Success(
         euroBonus = eurobonusResponse.getOrNull(),
         showPaymentScreen = isPaymentScreenFeatureEnabled,
         memberReminders = memberReminders,
-        isLoading = false,
         travelCertificateAvailable = travelCertificateAvailability.isRight(),
       )
     }
   }.stateIn(
     viewModelScope,
     SharingStarted.WhileSubscribed(5.seconds),
-    ProfileUiState(),
+    ProfileUiState.Loading,
   )
 
   fun reload() {
@@ -66,10 +65,13 @@ internal class ProfileViewModel(
   }
 }
 
-internal data class ProfileUiState(
-  val euroBonus: EuroBonus? = null,
-  val travelCertificateAvailable: Boolean = true,
-  val showPaymentScreen: Boolean = false,
-  val memberReminders: MemberReminders = MemberReminders(),
-  val isLoading: Boolean = true,
-)
+internal sealed interface ProfileUiState {
+  data class Success(
+    val euroBonus: EuroBonus? = null,
+    val travelCertificateAvailable: Boolean = true,
+    val showPaymentScreen: Boolean = false,
+    val memberReminders: MemberReminders = MemberReminders(),
+  ) : ProfileUiState
+
+  data object Loading : ProfileUiState
+}

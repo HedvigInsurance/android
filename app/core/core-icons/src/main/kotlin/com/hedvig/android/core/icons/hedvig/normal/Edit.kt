@@ -59,4 +59,5 @@ public val HedvigIcons.Edit: ImageVector
     return _edit!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _edit: ImageVector? = null

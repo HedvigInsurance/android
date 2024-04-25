@@ -193,4 +193,5 @@ public val HedvigIcons.Apartment: ImageVector
     return _apartment!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _apartment: ImageVector? = null

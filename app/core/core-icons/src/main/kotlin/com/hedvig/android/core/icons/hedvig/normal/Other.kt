@@ -197,4 +197,5 @@ public val HedvigIcons.Other: ImageVector
     return _other!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _other: ImageVector? = null

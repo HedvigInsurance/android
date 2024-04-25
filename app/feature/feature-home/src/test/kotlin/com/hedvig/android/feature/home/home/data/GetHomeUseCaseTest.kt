@@ -85,7 +85,7 @@ internal class GetHomeUseCaseTest {
 
     testGetMemberRemindersUseCase.memberReminders.add(
       MemberReminders(
-        MemberReminder.ConnectPayment(id = testId),
+        MemberReminder.PaymentReminder.ConnectPayment(id = testId),
         listOf(MemberReminder.UpcomingRenewal("", LocalDate.parse("2023-01-01"), "", testId)),
         MemberReminder.EnableNotifications(id = testId),
       ),
@@ -98,7 +98,7 @@ internal class GetHomeUseCaseTest {
       .prop(HomeData::memberReminders)
       .isEqualTo(
         MemberReminders(
-          MemberReminder.ConnectPayment(id = testId),
+          MemberReminder.PaymentReminder.ConnectPayment(id = testId),
           listOf(MemberReminder.UpcomingRenewal("", LocalDate.parse("2023-01-01"), "", testId)),
           MemberReminder.EnableNotifications(id = testId),
         ),

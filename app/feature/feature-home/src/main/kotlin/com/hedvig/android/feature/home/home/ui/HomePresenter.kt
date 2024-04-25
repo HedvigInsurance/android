@@ -2,6 +2,7 @@ package com.hedvig.android.feature.home.home.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -14,11 +15,13 @@ import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.chat.read.timestamp.ChatLastMessageReadRepository
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
+import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorage
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.isActive
@@ -27,6 +30,7 @@ import kotlinx.datetime.LocalDate
 internal class HomePresenter(
   private val getHomeDataUseCaseProvider: Provider<GetHomeDataUseCase>,
   private val chatLastMessageReadRepository: ChatLastMessageReadRepository,
+  private val seenImportantMessagesStorage: SeenImportantMessagesStorage,
 ) : MoleculePresenter<HomeEvent, HomeUiState> {
   @Composable
   override fun MoleculePresenterScope<HomeEvent>.present(lastState: HomeUiState): HomeUiState {
@@ -34,6 +38,9 @@ internal class HomePresenter(
     var isReloading by remember { mutableStateOf(lastState.isReloading) }
     var successData: SuccessData? by remember { mutableStateOf(SuccessData.fromLastState(lastState)) }
     var loadIteration by remember { mutableIntStateOf(0) }
+    val alreadySeenImportantMessages: List<String>
+      by seenImportantMessagesStorage.seenMessages.collectAsState()
+
     val hasUnseenChatMessages by produceState(
       lastState.safeCast<HomeUiState.Success>()?.hasUnseenChatMessages ?: false,
     ) {
@@ -46,6 +53,9 @@ internal class HomePresenter(
     CollectEvents { homeEvent: HomeEvent ->
       when (homeEvent) {
         HomeEvent.RefreshData -> loadIteration++
+        is HomeEvent.MarkMessageAsSeen -> {
+          seenImportantMessagesStorage.markMessageAsSeen(homeEvent.messageId)
+        }
       }
     }
 
@@ -64,14 +74,15 @@ internal class HomePresenter(
               successData = null
             }
           },
-          ifRight = { homeData: HomeData ->
-            Snapshot.withMutableSnapshot {
-              hasError = false
-              isReloading = false
-              successData = SuccessData.fromHomeData(homeData)
-            }
-          },
-        )
+        ) { homeData: HomeData ->
+          Snapshot.withMutableSnapshot {
+            hasError = false
+            isReloading = false
+            successData = SuccessData.fromHomeData(
+              homeData,
+            )
+          }
+        }
       }
     }
 
@@ -88,7 +99,9 @@ internal class HomePresenter(
           homeText = successData.homeText,
           claimStatusCardsData = successData.claimStatusCardsData,
           memberReminders = successData.memberReminders,
-          veryImportantMessages = successData.veryImportantMessages,
+          veryImportantMessages = successData.veryImportantMessages.filter {
+            !alreadySeenImportantMessages.contains(it.id)
+          }.toPersistentList(),
           isHelpCenterEnabled = successData.showHelpCenter,
           showChatIcon = successData.showChatIcon,
           hasUnseenChatMessages = hasUnseenChatMessages,
@@ -100,6 +113,8 @@ internal class HomePresenter(
 
 internal sealed interface HomeEvent {
   data object RefreshData : HomeEvent
+
+  data class MarkMessageAsSeen(val messageId: String) : HomeEvent
 }
 
 internal sealed interface HomeUiState {

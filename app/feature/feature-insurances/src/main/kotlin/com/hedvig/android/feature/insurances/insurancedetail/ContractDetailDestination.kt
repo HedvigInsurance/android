@@ -1,7 +1,11 @@
 package com.hedvig.android.feature.insurances.insurancedetail
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -37,14 +41,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
-import com.hedvig.android.core.designsystem.animation.FadeAnimatedContent
 import com.hedvig.android.core.designsystem.animation.animateContentHeight
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.card.InsuranceCard
+import com.hedvig.android.core.ui.card.InsuranceCardPlaceholder
 import com.hedvig.android.core.ui.plus
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.data.contract.ContractGroup
@@ -110,13 +113,19 @@ private fun ContractDetailScreen(
   openChat: () -> Unit,
   openUrl: (String) -> Unit,
 ) {
-  Column(Modifier.fillMaxSize()) {
+  Column(
+    Modifier
+      .fillMaxSize()
+      .consumeWindowInsets(
+        WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
+      ),
+  ) {
     TopAppBarWithBack(
       title = stringResource(R.string.insurance_details_view_title),
       onClick = navigateUp,
     )
     val pagerState = rememberPagerState(pageCount = { 3 })
-    FadeAnimatedContent(
+    AnimatedContent(
       targetState = uiState,
       contentKey = { uiState ->
         when (uiState) {
@@ -128,13 +137,29 @@ private fun ContractDetailScreen(
       },
       label = "contract detail screen fade animated content",
       modifier = Modifier.weight(1f),
+      transitionSpec = { fadeIn() togetherWith fadeOut() },
     ) { state ->
       when (state) {
         ContractDetailsUiState.Error -> HedvigErrorSection(onButtonClick = retry, modifier = Modifier.fillMaxSize())
-        ContractDetailsUiState.Loading -> HedvigFullScreenCenterAlignedProgressDebounced(
-          show = state is ContractDetailsUiState.Loading,
-          modifier = Modifier.fillMaxSize(),
-        )
+        ContractDetailsUiState.Loading -> {
+          Column(
+            Modifier
+              .fillMaxSize()
+              .padding(
+                WindowInsets
+                  .safeDrawing
+                  .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
+                  .asPaddingValues()
+                  .plus(PaddingValues(top = 16.dp)),
+              ),
+          ) {
+            InsuranceCardPlaceholder(
+              imageLoader = imageLoader,
+              modifier = Modifier.padding(horizontal = 16.dp),
+            )
+          }
+        }
+
         ContractDetailsUiState.NoContractFound -> {
           HedvigErrorSection(
             subTitle = stringResource(R.string.CONTRACT_DETAILS_ERROR),
@@ -169,6 +194,7 @@ private fun ContractDetailScreen(
                 imageLoader = imageLoader,
                 modifier = Modifier.padding(horizontal = 16.dp),
                 fallbackPainter = contract.createPainter(),
+                isLoading = false,
               )
             }
             item(key = 2, contentType = "space") { Spacer(Modifier.height(16.dp)) }

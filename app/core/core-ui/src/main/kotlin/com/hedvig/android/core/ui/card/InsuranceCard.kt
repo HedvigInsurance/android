@@ -1,5 +1,6 @@
 package com.hedvig.android.core.ui.card
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,17 +29,22 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import com.hedvig.android.core.designsystem.material3.DisabledAlpha
 import com.hedvig.android.core.designsystem.material3.squircleExtraSmall
 import com.hedvig.android.core.designsystem.material3.squircleMedium
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.Hedvig
+import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
+import com.hedvig.android.placeholder.PlaceholderHighlight
+import com.hedvig.android.placeholder.placeholder
+import com.hedvig.android.placeholder.shimmer
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
@@ -49,22 +55,33 @@ fun InsuranceCard(
   topText: String,
   bottomText: String,
   imageLoader: ImageLoader,
+  isLoading: Boolean,
   modifier: Modifier = Modifier,
   shape: Shape = MaterialTheme.shapes.squircleMedium,
   fallbackPainter: Painter = ColorPainter(Color.Black.copy(alpha = 0.7f)),
   backgroundImageUrl: String? = null,
 ) {
   Box(modifier.clip(shape)) {
-    AsyncImage(
-      model = backgroundImageUrl,
-      contentDescription = null,
-      placeholder = fallbackPainter,
-      error = fallbackPainter,
-      fallback = fallbackPainter,
-      imageLoader = imageLoader,
-      contentScale = ContentScale.Crop,
-      modifier = Modifier.matchParentSize(),
-    )
+    if (isLoading) {
+      Image(
+        painter = ColorPainter(Color.Black.copy(alpha = 0.3f)),
+        modifier = Modifier
+          .matchParentSize()
+          .placeholder(visible = true, highlight = PlaceholderHighlight.shimmer()),
+        contentDescription = null,
+      )
+    } else {
+      AsyncImage(
+        model = backgroundImageUrl,
+        contentDescription = null,
+        placeholder = fallbackPainter,
+        error = fallbackPainter,
+        fallback = fallbackPainter,
+        imageLoader = imageLoader,
+        contentScale = ContentScale.Crop,
+        modifier = Modifier.matchParentSize(),
+      )
+    }
     HedvigTheme(darkTheme = true) {
       Column(Modifier.padding(16.dp)) {
         Row(Modifier.heightIn(86.dp)) {
@@ -73,8 +90,10 @@ fun InsuranceCard(
             verticalArrangement = Arrangement.Top,
             modifier = Modifier.weight(1f),
           ) {
-            for (chipText in chips) {
-              Chip(chipText, Modifier.padding(bottom = 8.dp))
+            if (!isLoading) {
+              for (chipText in chips) {
+                Chip(chipText, Modifier.padding(bottom = 8.dp))
+              }
             }
           }
           Spacer(Modifier.width(8.dp))
@@ -82,16 +101,22 @@ fun InsuranceCard(
             imageVector = Icons.Hedvig.Hedvig,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onBackground,
-            modifier = Modifier.size(24.dp).padding(top = 2.dp),
+            modifier = Modifier
+              .size(24.dp)
+              .padding(top = 2.dp),
           )
         }
         Spacer(Modifier.height(8.dp))
-        Text(topText)
+        Text(
+          topText,
+          modifier = modifier.placeholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer()),
+        )
         Spacer(Modifier.height(4.dp))
         Text(
           text = bottomText,
           color = MaterialTheme.colorScheme.onSurfaceVariant,
           style = MaterialTheme.typography.bodyMedium,
+          modifier = modifier.placeholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer()),
         )
       }
     }
@@ -117,9 +142,23 @@ private fun Chip(text: String, modifier: Modifier = Modifier) {
   }
 }
 
-@Preview
 @Composable
-private fun PreviewInsuranceCard() {
+fun InsuranceCardPlaceholder(imageLoader: ImageLoader, modifier: Modifier = Modifier) {
+  InsuranceCard(
+    chips = persistentListOf(),
+    topText = "",
+    bottomText = "",
+    imageLoader = imageLoader,
+    isLoading = true,
+    modifier = modifier,
+  )
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewInsuranceCard(
+  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) isLoading: Boolean,
+) {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       InsuranceCard(
@@ -127,6 +166,7 @@ private fun PreviewInsuranceCard() {
         topText = "Home Insurance",
         bottomText = "Bellmansgatan 19A ∙ You +1",
         imageLoader = rememberPreviewImageLoader(),
+        isLoading = isLoading,
       )
     }
   }

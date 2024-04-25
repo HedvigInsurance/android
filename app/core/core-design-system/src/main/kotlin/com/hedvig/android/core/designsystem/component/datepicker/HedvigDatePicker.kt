@@ -12,8 +12,9 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import com.hedvig.android.core.designsystem.material3.lightTypeContainer
+import com.hedvig.android.core.designsystem.material3.onLightTypeContainer
 import com.hedvig.android.core.designsystem.material3.onTypeContainer
-import com.hedvig.android.core.designsystem.material3.typeContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import kotlin.time.Duration.Companion.days
@@ -29,8 +30,8 @@ fun HedvigDatePicker(
   modifier: Modifier = Modifier,
   dateFormatter: DatePickerFormatter = remember { DatePickerDefaults.dateFormatter() },
   colors: DatePickerColors = DatePickerDefaults.colors(
-    selectedDayContainerColor = MaterialTheme.colorScheme.typeContainer,
-    selectedDayContentColor = MaterialTheme.colorScheme.onTypeContainer,
+    selectedDayContainerColor = MaterialTheme.colorScheme.lightTypeContainer,
+    selectedDayContentColor = MaterialTheme.colorScheme.onLightTypeContainer,
     todayDateBorderColor = MaterialTheme.colorScheme.onTypeContainer,
   ),
 ) {
