@@ -29,7 +29,8 @@ internal class GetConnectPaymentReminderUseCaseImpl(
       val missingPaymentsContractTerminationDate = result.currentMember.activeContracts
         .filter { it.terminationDueToMissedPayments }
         .sortedBy { it.terminationDate }
-        .firstOrNull()?.terminationDate
+        .firstOrNull()
+        ?.terminationDate
       if (missingPaymentsContractTerminationDate != null) {
         PaymentReminder.ShowMissingPaymentsReminder(missingPaymentsContractTerminationDate)
       } else {
