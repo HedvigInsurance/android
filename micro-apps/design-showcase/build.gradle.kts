@@ -49,6 +49,7 @@ dependencies {
   implementation(libs.coil.coil)
   implementation(libs.datadog.sdk.core)
   implementation(libs.zoomable)
+  implementation(projects.composeUi)
   implementation(projects.designSystemHedvig)
   implementation(projects.loggingAndroid)
   implementation(projects.trackingCore)

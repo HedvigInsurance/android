@@ -6,8 +6,7 @@ plugins {
 }
 
 dependencies {
-  implementation(libs.androidx.compose.uiGraphics)
   implementation(libs.androidx.compose.foundation)
-  implementation(libs.androidx.compose.foundationLayout)
-  implementation(projects.composeUi)
+  implementation(libs.androidx.compose.runtime)
+  implementation(libs.androidx.compose.uiCore)
 }
