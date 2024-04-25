@@ -86,6 +86,7 @@ internal fun ProfileDestination(
   navigateToAddMissingInfo: (contractId: String) -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
+  openChat: () -> Unit,
   viewModel: ProfileViewModel,
 ) {
   val uiState by viewModel.data.collectAsStateWithLifecycle()
@@ -103,6 +104,7 @@ internal fun ProfileDestination(
     openUrl = openUrl,
     snoozeNotificationPermission = viewModel::snoozeNotificationPermission,
     onLogout = viewModel::onLogout,
+    openChat = openChat,
   )
 }
 
@@ -119,6 +121,7 @@ private fun ProfileScreen(
   navigateToAddMissingInfo: (contractId: String) -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
+  openChat: () -> Unit,
   snoozeNotificationPermission: () -> Unit,
   onLogout: () -> Unit,
 ) {
@@ -192,6 +195,7 @@ private fun ProfileScreen(
             .only(WindowInsetsSides.Horizontal)
             .asPaddingValues(),
           modifier = Modifier.onConsumedWindowInsetsChanged { consumedWindowInsets = it },
+          openChat = openChat,
         )
         if (memberReminders.isNotEmpty()) {
           Spacer(Modifier.height(16.dp))

@@ -285,7 +285,11 @@ class ProfileViewModelTest {
           showPaymentScreen = true,
         ),
       )
-      getMemberRemindersUseCase.memberReminders.add(MemberReminders(connectPayment = MemberReminder.ConnectPayment()))
+      getMemberRemindersUseCase.memberReminders.add(
+        MemberReminders(
+          connectPayment = MemberReminder.PaymentReminder.ConnectPayment(),
+        ),
+      )
       runCurrent()
       val connectPayment = (viewModel.data.value as ProfileUiState.Success).memberReminders.connectPayment
       assertThat(connectPayment).isNotNull()
@@ -348,7 +352,7 @@ class ProfileViewModelTest {
 
       getMemberRemindersUseCase.memberReminders.add(
         MemberReminders(
-          connectPayment = MemberReminder.ConnectPayment(),
+          connectPayment = MemberReminder.PaymentReminder.ConnectPayment(),
           enableNotifications = MemberReminder.EnableNotifications(),
         ),
       )
@@ -404,7 +408,7 @@ class ProfileViewModelTest {
       travelCertificateAvailabilityUseCase.apply { turbine.add(Unit.right()) }
       featureManager.featureTurbine.add(Feature.PAYMENT_SCREEN to true)
       getMemberRemindersUseCase.memberReminders.add(
-        MemberReminders(connectPayment = MemberReminder.ConnectPayment(id = testId)),
+        MemberReminders(connectPayment = MemberReminder.PaymentReminder.ConnectPayment(id = testId)),
       )
       runCurrent()
       assertThat(viewModel.data.value).isEqualTo(
@@ -412,7 +416,9 @@ class ProfileViewModelTest {
           euroBonus = EuroBonus("abc"),
           travelCertificateAvailable = true,
           showPaymentScreen = true,
-          memberReminders = MemberReminders(connectPayment = MemberReminder.ConnectPayment(id = testId)),
+          memberReminders = MemberReminders(
+            connectPayment = MemberReminder.PaymentReminder.ConnectPayment(id = testId),
+          ),
         ),
       )
       cancelAndIgnoreRemainingEvents()

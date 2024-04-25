@@ -8,28 +8,37 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.logger.logcat
+import kotlinx.datetime.LocalDate
 import octopus.GetPayinMethodStatusQuery
 import octopus.type.MemberPaymentConnectionStatus
 
 internal interface GetConnectPaymentReminderUseCase {
-  suspend fun invoke(): Either<ConnectPaymentReminderError, ShowConnectPaymentReminder>
+  suspend fun invoke(): Either<ConnectPaymentReminderError, PaymentReminder>
 }
 
 internal class GetConnectPaymentReminderUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : GetConnectPaymentReminderUseCase {
-  override suspend fun invoke(): Either<ConnectPaymentReminderError, ShowConnectPaymentReminder> {
+  override suspend fun invoke(): Either<ConnectPaymentReminderError, PaymentReminder> {
     return either {
-      val payinStatus = apolloClient.query(GetPayinMethodStatusQuery())
+      val result = apolloClient.query(GetPayinMethodStatusQuery())
         .safeExecute()
         .toEither(::ErrorMessage)
         .mapLeft(ConnectPaymentReminderError::NetworkError)
         .bind()
-
-      ensure(payinStatus.currentMember.paymentInformation.status == MemberPaymentConnectionStatus.NEEDS_SETUP) {
+      val missingPaymentsContractTerminationDate = result.currentMember.activeContracts
+        .filter { it.terminationDueToMissedPayments }
+        .sortedBy { it.terminationDate }
+        .firstOrNull()
+        ?.terminationDate
+      if (missingPaymentsContractTerminationDate != null) {
+        return@either PaymentReminder.ShowMissingPaymentsReminder(missingPaymentsContractTerminationDate)
+      }
+      val payStatus = result.currentMember.paymentInformation.status
+      ensure(payStatus == MemberPaymentConnectionStatus.NEEDS_SETUP) {
         ConnectPaymentReminderError.AlreadySetup
       }
-      ShowConnectPaymentReminder
+      PaymentReminder.ShowConnectPaymentReminder
     }.onLeft {
       logcat { "GetConnectPaymentReminderUseCase failed with error:$it" }
     }
@@ -44,4 +53,8 @@ sealed interface ConnectPaymentReminderError {
   data class NetworkError(val errorMessage: ErrorMessage) : ConnectPaymentReminderError, ErrorMessage by errorMessage
 }
 
-object ShowConnectPaymentReminder
+sealed interface PaymentReminder {
+  data object ShowConnectPaymentReminder : PaymentReminder
+
+  data class ShowMissingPaymentsReminder(val terminationDate: LocalDate) : PaymentReminder
+}

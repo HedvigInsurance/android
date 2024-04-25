@@ -194,6 +194,7 @@ private fun HomeScreen(
             openAppSettings = openAppSettings,
             openUrl = openUrl,
             navigateToMissingInfo = navigateToMissingInfo,
+            openChat = onStartChat,
             markMessageAsSeen = markMessageAsSeen,
           )
         }
@@ -256,6 +257,7 @@ private fun HomeScreenSuccess(
   openUrl: (String) -> Unit,
   markMessageAsSeen: (String) -> Unit,
   navigateToMissingInfo: (String) -> Unit,
+  openChat: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   var fullScreenSize: IntSize? by remember { mutableStateOf(null) }
@@ -310,6 +312,7 @@ private fun HomeScreenSuccess(
             memberReminders = memberReminders,
             navigateToConnectPayment = navigateToConnectPayment,
             navigateToAddMissingInfo = navigateToMissingInfo,
+            openChat = openChat,
             openUrl = openUrl,
             contentPadding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
               .exclude(consumedWindowInsets)
@@ -522,7 +525,7 @@ private fun PreviewHomeScreen(
             ),
           ),
           memberReminders = MemberReminders(
-            connectPayment = MemberReminder.ConnectPayment(),
+            connectPayment = MemberReminder.PaymentReminder.ConnectPayment(),
           ),
           isHelpCenterEnabled = true,
           showChatIcon = true,
