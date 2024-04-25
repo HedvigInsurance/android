@@ -43,6 +43,8 @@ internal fun InsuranceContract.createChips(): ImmutableList<String> {
     inceptionDate.let { inceptionDate ->
       if (inceptionDate > today) {
         stringResource(R.string.CONTRACT_STATUS_ACTIVE_IN_FUTURE, inceptionDate)
+      } else if (terminationDate == null) {
+        stringResource(id = R.string.DASHBOARD_INSURANCE_STATUS_ACTIVE)
       } else {
         null
       }

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -20,13 +21,17 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.systemGestureExclusion
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -50,14 +55,12 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.nonEmptyListOf
+import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.button.HedvigSecondaryContainedButton
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
-import com.hedvig.android.core.designsystem.material3.containedButtonContainer
-import com.hedvig.android.core.designsystem.material3.onContainedButtonContainer
 import com.hedvig.android.core.designsystem.material3.onWarningContainer
 import com.hedvig.android.core.designsystem.material3.warningContainer
 import com.hedvig.android.core.designsystem.material3.warningElement
@@ -68,6 +71,7 @@ import com.hedvig.android.core.icons.hedvig.compose.notificationCircle
 import com.hedvig.android.core.icons.hedvig.normal.WarningFilled
 import com.hedvig.android.core.ui.appbar.m3.ToolbarChatIcon
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarLayoutForActions
+import com.hedvig.android.core.ui.infocard.InfoCardTextButton
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.plus
 import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
@@ -123,6 +127,7 @@ internal fun HomeDestination(
     openUrl = openUrl,
     openAppSettings = openAppSettings,
     navigateToMissingInfo = navigateToMissingInfo,
+    markMessageAsSeen = { viewModel.emit(HomeEvent.MarkMessageAsSeen(it)) },
   )
 }
 
@@ -137,6 +142,7 @@ private fun HomeScreen(
   onStartClaim: () -> Unit,
   navigateToHelpCenter: () -> Unit,
   openUrl: (String) -> Unit,
+  markMessageAsSeen: (String) -> Unit,
   openAppSettings: () -> Unit,
   navigateToMissingInfo: (String) -> Unit,
 ) {
@@ -188,6 +194,8 @@ private fun HomeScreen(
             openAppSettings = openAppSettings,
             openUrl = openUrl,
             navigateToMissingInfo = navigateToMissingInfo,
+            openChat = onStartChat,
+            markMessageAsSeen = markMessageAsSeen,
           )
         }
       }
@@ -247,7 +255,9 @@ private fun HomeScreenSuccess(
   onStartClaimClicked: () -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
+  markMessageAsSeen: (String) -> Unit,
   navigateToMissingInfo: (String) -> Unit,
+  openChat: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   var fullScreenSize: IntSize? by remember { mutableStateOf(null) }
@@ -287,17 +297,11 @@ private fun HomeScreenSuccess(
           }
         },
         veryImportantMessages = {
-          Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier
-              .fillMaxWidth()
-              .padding(horizontal = 16.dp)
-              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-          ) {
-            for (veryImportantMessage in uiState.veryImportantMessages) {
-              VeryImportantMessageCard(openUrl, veryImportantMessage)
-            }
-          }
+          ImportantMessages(
+            list = uiState.veryImportantMessages,
+            openUrl = openUrl,
+            hideImportantMessage = markMessageAsSeen,
+          )
         },
         memberReminderCards = {
           val memberReminders =
@@ -308,6 +312,7 @@ private fun HomeScreenSuccess(
             memberReminders = memberReminders,
             navigateToConnectPayment = navigateToConnectPayment,
             navigateToAddMissingInfo = navigateToMissingInfo,
+            openChat = openChat,
             openUrl = openUrl,
             contentPadding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
               .exclude(consumedWindowInsets)
@@ -356,8 +361,64 @@ private fun HomeScreenSuccess(
 }
 
 @Composable
+private fun ImportantMessages(
+  list: List<HomeData.VeryImportantMessage>,
+  openUrl: (String) -> Unit,
+  hideImportantMessage: (id: String) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  var consumedWindowInsets by remember { mutableStateOf(WindowInsets(0.dp)) }
+  AnimatedContent(
+    targetState = list,
+    modifier = modifier.onConsumedWindowInsetsChanged { consumedWindowInsets = it },
+  ) { animatedList ->
+    val contentPadding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
+      .exclude(consumedWindowInsets)
+      .only(WindowInsetsSides.Horizontal)
+      .asPaddingValues()
+    if (animatedList.size == 1) {
+      VeryImportantMessageCard(
+        openUrl = openUrl,
+        hideImportantMessage = hideImportantMessage,
+        veryImportantMessage = animatedList.first(),
+        modifier = Modifier.padding(contentPadding),
+      )
+    } else {
+      val pagerState = rememberPagerState(pageCount = { animatedList.size })
+      Column {
+        HorizontalPager(
+          state = pagerState,
+          contentPadding = contentPadding,
+          beyondBoundsPageCount = 1,
+          pageSpacing = 8.dp,
+          modifier = Modifier
+            .fillMaxWidth()
+            .systemGestureExclusion(),
+        ) { page: Int ->
+          val currentMessage = animatedList[page]
+          VeryImportantMessageCard(
+            openUrl = openUrl,
+            hideImportantMessage = hideImportantMessage,
+            veryImportantMessage = currentMessage,
+          )
+        }
+        Spacer(Modifier.height(16.dp))
+        HorizontalPagerIndicator(
+          pagerState = pagerState,
+          pageCount = animatedList.size,
+          activeColor = LocalContentColor.current,
+          modifier = Modifier
+            .align(Alignment.CenterHorizontally).padding(contentPadding),
+        )
+      }
+    }
+  }
+}
+
+@Composable
 private fun VeryImportantMessageCard(
   openUrl: (String) -> Unit,
+  hideImportantMessage: (id: String) -> Unit,
   veryImportantMessage: HomeData.VeryImportantMessage,
   modifier: Modifier = Modifier,
 ) {
@@ -370,18 +431,26 @@ private fun VeryImportantMessageCard(
         containerColor = MaterialTheme.colorScheme.warningContainer,
         contentColor = MaterialTheme.colorScheme.onWarningContainer,
       ),
-      modifier = modifier,
+      modifier = modifier.fillMaxSize(),
     ) {
-      HedvigContainedSmallButton(
-        text = stringResource(R.string.important_message_read_more),
-        onClick = { openUrl(veryImportantMessage.link) },
-        colors = ButtonDefaults.buttonColors(
-          containerColor = MaterialTheme.colorScheme.containedButtonContainer,
-          contentColor = MaterialTheme.colorScheme.onContainedButtonContainer,
-        ),
-        textStyle = MaterialTheme.typography.bodyMedium,
-        modifier = Modifier.fillMaxWidth(),
-      )
+      Row(
+        horizontalArrangement = Arrangement.Center,
+        modifier = Modifier.fillMaxSize(),
+      ) {
+        InfoCardTextButton(
+          text = stringResource(R.string.important_message_hide),
+          onClick = { hideImportantMessage(veryImportantMessage.id) },
+          modifier = Modifier.weight(1f),
+        )
+        if (veryImportantMessage.link != null) {
+          Spacer(modifier = Modifier.width(8.dp))
+          InfoCardTextButton(
+            text = stringResource(R.string.important_message_read_more),
+            onClick = { openUrl(veryImportantMessage.link) },
+            modifier = Modifier.weight(1f),
+          )
+        }
+      }
     }
   }
 }
@@ -438,16 +507,25 @@ private fun PreviewHomeScreen(
                 id = "id",
                 pillTypes = listOf(ClaimPillType.Open, ClaimPillType.Closed.NotCompensated),
                 claimProgressItemsUiState = listOf(
-                  ClaimProgressSegment(ClaimProgressSegment.SegmentText.Closed, ClaimProgressSegment.SegmentType.PAID),
+                  ClaimProgressSegment(
+                    ClaimProgressSegment.SegmentText.Closed,
+                    ClaimProgressSegment.SegmentType.PAID,
+                  ),
                 ),
                 claimType = "Broken item",
                 insuranceDisplayName = "Home Insurance Homeowner",
               ),
             ),
           ),
-          veryImportantMessages = persistentListOf(HomeData.VeryImportantMessage("id", "Beware of the earthquake", "")),
+          veryImportantMessages = persistentListOf(
+            HomeData.VeryImportantMessage(
+              "id",
+              "Beware of the earthquake",
+              "",
+            ),
+          ),
           memberReminders = MemberReminders(
-            connectPayment = MemberReminder.ConnectPayment(),
+            connectPayment = MemberReminder.PaymentReminder.ConnectPayment(),
           ),
           isHelpCenterEnabled = true,
           showChatIcon = true,
@@ -463,6 +541,7 @@ private fun PreviewHomeScreen(
         openUrl = {},
         openAppSettings = {},
         navigateToMissingInfo = {},
+        markMessageAsSeen = {},
       )
     }
   }

@@ -374,7 +374,7 @@ private fun PaymentAmountCard(
             verticalAlignment = Alignment.CenterVertically,
           ) {
             Text(
-              text = upcomingPayment.grossAmount.toString(),
+              text = upcomingPayment.netAmount.toString(),
               textAlign = TextAlign.End,
             )
             Spacer(Modifier.width(8.dp))

@@ -4,7 +4,6 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -76,7 +75,6 @@ import com.hedvig.android.ui.claimstatus.ClaimStatusCard
 import com.hedvig.android.ui.claimstatus.model.ClaimPillType
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
-import com.hedvig.audio.player.data.AudioPlayerState
 import com.hedvig.audio.player.data.PlayableAudioSource
 import com.hedvig.audio.player.data.SignedAudioUrl
 import hedvig.resources.R
@@ -487,15 +485,6 @@ private fun ClaimDetailHedvigAudioPlayerItem(signedAudioUrl: SignedAudioUrl, mod
   Column(modifier) {
     val audioPlayer = rememberAudioPlayer(playableAudioSource = PlayableAudioSource.RemoteUrl(signedAudioUrl))
     HedvigAudioPlayer(audioPlayer = audioPlayer)
-    Spacer(Modifier.height(8.dp))
-    val audioPlayerState by audioPlayer.audioPlayerState.collectAsStateWithLifecycle()
-    AnimatedVisibility(visible = audioPlayerState !is AudioPlayerState.Failed) {
-      Text(
-        text = stringResource(R.string.claim_status_files_claim_audio_footer),
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-      )
-    }
   }
 }
 
