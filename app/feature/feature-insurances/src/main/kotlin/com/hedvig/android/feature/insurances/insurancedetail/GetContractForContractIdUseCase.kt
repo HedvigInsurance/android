@@ -13,10 +13,14 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
-internal class GetContractForContractIdUseCase(
+internal interface GetContractForContractIdUseCase {
+  fun invoke(contractId: String): Flow<Either<GetContractForContractIdError, InsuranceContract>>
+}
+
+internal class GetContractForContractIdUseCaseImpl(
   private val getInsuranceContractsUseCaseProvider: Provider<GetInsuranceContractsUseCase>,
-) {
-  fun invoke(contractId: String): Flow<Either<GetContractForContractIdError, InsuranceContract>> {
+) : GetContractForContractIdUseCase {
+  override fun invoke(contractId: String): Flow<Either<GetContractForContractIdError, InsuranceContract>> {
     return flow {
       getInsuranceContractsUseCaseProvider
         .provide()
