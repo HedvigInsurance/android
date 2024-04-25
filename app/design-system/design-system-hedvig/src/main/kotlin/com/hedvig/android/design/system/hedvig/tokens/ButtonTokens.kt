@@ -3,48 +3,48 @@ package com.hedvig.android.design.system.hedvig.tokens
 import androidx.compose.ui.unit.dp
 
 internal object PrimaryStyleButtonTokens {
-  val ContainerColor = ColorSchemeKeyTokens.Primary
-  val ContentColor = ColorSchemeKeyTokens.Negative
-  val HoverContainerColor = ColorSchemeKeyTokens.Primary
-  val HoverContentColor = ColorSchemeKeyTokens.Negative
-  val DisabledContainerColor = ColorSchemeKeyTokens.Disabled
-  val DisabledContentColor = ColorSchemeKeyTokens.Tertiary
+  val ContainerColor = ColorSchemeKeyTokens.ButtonPrimaryResting
+  val ContentColor = ColorSchemeKeyTokens.TextNegative
+  val HoverContainerColor = ColorSchemeKeyTokens.ButtonPrimaryHover
+  val HoverContentColor = ColorSchemeKeyTokens.TextNegative
+  val DisabledContainerColor = ColorSchemeKeyTokens.ButtonPrimaryDisabled
+  val DisabledContentColor = ColorSchemeKeyTokens.TextTertiary
 }
 
 internal object PrimaryAltStyleButtonTokens {
-  val ContainerColor = ColorSchemeKeyTokens.SignalGreenFill
-  val ContentColor = ColorSchemeKeyTokens.Primary
-  val HoverContainerColor = ColorSchemeKeyTokens.SignalGreenHighlight
-  val HoverContentColor = ColorSchemeKeyTokens.Primary
-  val DisabledContainerColor = ColorSchemeKeyTokens.Disabled
-  val DisabledContentColor = ColorSchemeKeyTokens.Tertiary
+  val ContainerColor = ColorSchemeKeyTokens.ButtonPrimaryAltResting
+  val ContentColor = ColorSchemeKeyTokens.TextBlack
+  val HoverContainerColor = ColorSchemeKeyTokens.ButtonPrimaryAltHover
+  val HoverContentColor = ColorSchemeKeyTokens.TextBlack
+  val DisabledContainerColor = ColorSchemeKeyTokens.ButtonPrimaryAltDisabled
+  val DisabledContentColor = ColorSchemeKeyTokens.TextTertiary
 }
 
 internal object SecondaryStyleButtonTokens {
-  val ContainerColor = ColorSchemeKeyTokens.SurfacePrimary
-  val ContentColor = ColorSchemeKeyTokens.Primary
-  val HoverContainerColor = ColorSchemeKeyTokens.SurfacePrimary // todo look into if this needs to be darker
-  val HoverContentColor = ColorSchemeKeyTokens.Primary
-  val DisabledContainerColor = ColorSchemeKeyTokens.Disabled
-  val DisabledContentColor = ColorSchemeKeyTokens.Tertiary
+  val ContainerColor = ColorSchemeKeyTokens.ButtonSecondaryResting
+  val ContentColor = ColorSchemeKeyTokens.TextPrimary
+  val HoverContainerColor = ColorSchemeKeyTokens.ButtonSecondaryHover
+  val HoverContentColor = ColorSchemeKeyTokens.TextPrimary
+  val DisabledContainerColor = ColorSchemeKeyTokens.ButtonSecondaryDisabled
+  val DisabledContentColor = ColorSchemeKeyTokens.TextTertiary
 }
 
 internal object SecondaryAltStyleButtonTokens {
-  val ContainerColor = ColorSchemeKeyTokens.Transparent
-  val ContentColor = ColorSchemeKeyTokens.Primary
-  val HoverContainerColor = ColorSchemeKeyTokens.Transparent
-  val HoverContentColor = ColorSchemeKeyTokens.Primary
-  val DisabledContainerColor = ColorSchemeKeyTokens.Disabled
-  val DisabledContentColor = ColorSchemeKeyTokens.Tertiary
+  val ContainerColor = ColorSchemeKeyTokens.ButtonSecondaryAltResting
+  val ContentColor = ColorSchemeKeyTokens.TextPrimary
+  val HoverContainerColor = ColorSchemeKeyTokens.ButtonSecondaryAltHover
+  val HoverContentColor = ColorSchemeKeyTokens.TextPrimary
+  val DisabledContainerColor = ColorSchemeKeyTokens.ButtonSecondaryAltDisabled
+  val DisabledContentColor = ColorSchemeKeyTokens.TextTertiary
 }
 
 internal object GhostStyleButtonTokens {
-  val ContainerColor = ColorSchemeKeyTokens.Transparent
-  val ContentColor = ColorSchemeKeyTokens.Primary
-  val HoverContainerColor = ColorSchemeKeyTokens.SurfacePrimary
-  val HoverContentColor = ColorSchemeKeyTokens.Primary
-  val DisabledContainerColor = ColorSchemeKeyTokens.Transparent
-  val DisabledContentColor = ColorSchemeKeyTokens.Tertiary
+  val ContainerColor = ColorSchemeKeyTokens.ButtonGhostResting
+  val ContentColor = ColorSchemeKeyTokens.TextPrimary
+  val HoverContainerColor = ColorSchemeKeyTokens.ButtonGhostHover
+  val HoverContentColor = ColorSchemeKeyTokens.TextPrimary
+  val DisabledContainerColor = ColorSchemeKeyTokens.ButtonGhostDisabled
+  val DisabledContentColor = ColorSchemeKeyTokens.TextTertiary
 }
 
 internal object LargeSizeButtonTokens {
