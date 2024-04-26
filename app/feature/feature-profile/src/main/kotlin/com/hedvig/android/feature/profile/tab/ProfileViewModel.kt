@@ -1,25 +1,46 @@
 package com.hedvig.android.feature.profile.tab
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import com.hedvig.android.auth.LogoutUseCase
-import com.hedvig.android.core.common.RetryChannel
 import com.hedvig.android.feature.profile.data.CheckTravelCertificateDestinationAvailabilityUseCase
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.memberreminders.EnableNotificationsReminderManager
 import com.hedvig.android.memberreminders.GetMemberRemindersUseCase
 import com.hedvig.android.memberreminders.MemberReminders
-import kotlin.time.Duration.Companion.seconds
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.WhileSubscribed
+import com.hedvig.android.molecule.android.MoleculeViewModel
+import com.hedvig.android.molecule.public.MoleculePresenter
+import com.hedvig.android.molecule.public.MoleculePresenterScope
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 
 internal class ProfileViewModel(
+  getEuroBonusStatusUseCase: GetEurobonusStatusUseCase,
+  checkTravelCertificateDestinationAvailabilityUseCase: CheckTravelCertificateDestinationAvailabilityUseCase,
+  getMemberRemindersUseCase: GetMemberRemindersUseCase,
+  enableNotificationsReminderManager: EnableNotificationsReminderManager,
+  featureManager: FeatureManager,
+  logoutUseCase: LogoutUseCase,
+) : MoleculeViewModel<ProfileUiEvent, ProfileUiState>(
+    initialState = ProfileUiState.Loading,
+    presenter = ProfilePresenter(
+      getEuroBonusStatusUseCase = getEuroBonusStatusUseCase,
+      checkTravelCertificateDestinationAvailabilityUseCase = checkTravelCertificateDestinationAvailabilityUseCase,
+      getMemberRemindersUseCase = getMemberRemindersUseCase,
+      enableNotificationsReminderManager = enableNotificationsReminderManager,
+      featureManager = featureManager,
+      logoutUseCase = logoutUseCase,
+    ),
+  )
+
+internal class ProfilePresenter(
   private val getEuroBonusStatusUseCase: GetEurobonusStatusUseCase,
   private val checkTravelCertificateDestinationAvailabilityUseCase:
     CheckTravelCertificateDestinationAvailabilityUseCase,
@@ -27,41 +48,47 @@ internal class ProfileViewModel(
   private val enableNotificationsReminderManager: EnableNotificationsReminderManager,
   private val featureManager: FeatureManager,
   private val logoutUseCase: LogoutUseCase,
-) : ViewModel() {
-  private val retryChannel = RetryChannel()
+) : MoleculePresenter<ProfileUiEvent, ProfileUiState> {
+  @Composable
+  override fun MoleculePresenterScope<ProfileUiEvent>.present(lastState: ProfileUiState): ProfileUiState {
+    var dataLoadIteration by remember { mutableIntStateOf(0) }
+    var currentState by remember { mutableStateOf(lastState) }
+    var snoozeNotificationReminder by remember { mutableStateOf(false) }
 
-  val data: StateFlow<ProfileUiState> = retryChannel.flatMapLatest {
-    combine(
-      getMemberRemindersUseCase.invoke(),
-      featureManager.isFeatureEnabled(Feature.PAYMENT_SCREEN),
-      flow { emit(getEuroBonusStatusUseCase.invoke()) },
-      flow { emit(checkTravelCertificateDestinationAvailabilityUseCase.invoke()) },
-    ) { memberReminders, isPaymentScreenFeatureEnabled, eurobonusResponse, travelCertificateAvailability ->
-      ProfileUiState.Success(
-        euroBonus = eurobonusResponse.getOrNull(),
-        showPaymentScreen = isPaymentScreenFeatureEnabled,
-        memberReminders = memberReminders,
-        travelCertificateAvailable = travelCertificateAvailability.isRight(),
-      )
+    CollectEvents { event ->
+      when (event) {
+        ProfileUiEvent.Logout -> logoutUseCase.invoke()
+        ProfileUiEvent.SnoozeNotificationPermission -> snoozeNotificationReminder = true
+        ProfileUiEvent.Reload -> dataLoadIteration++
+      }
     }
-  }.stateIn(
-    viewModelScope,
-    SharingStarted.WhileSubscribed(5.seconds),
-    ProfileUiState.Loading,
-  )
 
-  fun reload() {
-    retryChannel.retry()
-  }
-
-  fun snoozeNotificationPermission() {
-    viewModelScope.launch {
-      enableNotificationsReminderManager.snoozeNotificationReminder()
+    LaunchedEffect(dataLoadIteration) {
+      if (lastState !is ProfileUiState.Success) {
+        currentState = ProfileUiState.Loading
+      }
+      combine(
+        getMemberRemindersUseCase.invoke(),
+        featureManager.isFeatureEnabled(Feature.PAYMENT_SCREEN),
+        flow { emit(getEuroBonusStatusUseCase.invoke()) },
+        flow { emit(checkTravelCertificateDestinationAvailabilityUseCase.invoke()) },
+      ) { memberReminders, isPaymentScreenFeatureEnabled, eurobonusResponse, travelCertificateAvailability ->
+        currentState = ProfileUiState.Success(
+          euroBonus = eurobonusResponse.getOrNull(),
+          showPaymentScreen = isPaymentScreenFeatureEnabled,
+          memberReminders = memberReminders,
+          travelCertificateAvailable = travelCertificateAvailability.isRight(),
+        )
+      }.collectLatest { }
     }
-  }
 
-  fun onLogout() {
-    logoutUseCase.invoke()
+    LaunchedEffect(snoozeNotificationReminder) {
+      if (snoozeNotificationReminder) {
+        enableNotificationsReminderManager.snoozeNotificationReminder()
+      }
+    }
+
+    return currentState
   }
 }
 
@@ -74,4 +101,12 @@ internal sealed interface ProfileUiState {
   ) : ProfileUiState
 
   data object Loading : ProfileUiState
+}
+
+internal sealed interface ProfileUiEvent {
+  data object Logout : ProfileUiEvent
+
+  data object SnoozeNotificationPermission : ProfileUiEvent
+
+  data object Reload : ProfileUiEvent
 }

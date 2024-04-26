@@ -89,10 +89,10 @@ internal fun ProfileDestination(
   openChat: () -> Unit,
   viewModel: ProfileViewModel,
 ) {
-  val uiState by viewModel.data.collectAsStateWithLifecycle()
+  val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   ProfileScreen(
     uiState = uiState,
-    reload = viewModel::reload,
+    reload = { viewModel.emit(ProfileUiEvent.Reload) },
     navigateToEurobonus = navigateToEurobonus,
     navigateToMyInfo = navigateToMyInfo,
     navigateToAboutApp = navigateToAboutApp,
@@ -102,8 +102,8 @@ internal fun ProfileDestination(
     navigateToAddMissingInfo = navigateToAddMissingInfo,
     openAppSettings = openAppSettings,
     openUrl = openUrl,
-    snoozeNotificationPermission = viewModel::snoozeNotificationPermission,
-    onLogout = viewModel::onLogout,
+    snoozeNotificationPermission = { viewModel.emit(ProfileUiEvent.SnoozeNotificationPermission) },
+    onLogout = { viewModel.emit(ProfileUiEvent.Logout) },
     openChat = openChat,
   )
 }

@@ -15,8 +15,8 @@ internal class SettingsViewModel(
   languageService: LanguageService,
   settingsDataStore: SettingsDataStore,
   enableNotificationsReminderManager: EnableNotificationsReminderManager,
-  private val cacheManager: NetworkCacheManager,
-  private val uploadLanguagePreferenceToBackendUseCase: UploadLanguagePreferenceToBackendUseCase,
+  cacheManager: NetworkCacheManager,
+  uploadLanguagePreferenceToBackendUseCase: UploadLanguagePreferenceToBackendUseCase,
 ) : MoleculeViewModel<SettingsEvent, SettingsUiState>(
     SettingsUiState.Loading(
       selectedLanguage = languageService.getLanguage(),
