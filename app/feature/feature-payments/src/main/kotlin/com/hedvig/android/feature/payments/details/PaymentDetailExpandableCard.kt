@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
@@ -66,12 +67,15 @@ internal fun PaymentDetailExpandableCard(
         .fillMaxWidth()
         .clickable(
           interactionSource = remember { MutableInteractionSource() },
-          indication = null,
+          indication = rememberRipple(
+            bounded = false,
+            radius = 1000.dp),
           onClick = onClick,
         ),
     ) {
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = { Text(displayName) },
+        spaceBetween = 8.dp,
         endSlot = {
           Row(
             Modifier.fillMaxWidth(),
