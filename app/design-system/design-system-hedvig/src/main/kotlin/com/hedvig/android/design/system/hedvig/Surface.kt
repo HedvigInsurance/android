@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -72,7 +73,7 @@ fun Surface(
           border = border,
         )
         .clickable(
-          interactionSource = interactionSource,
+          interactionSource = interactionSource ?: remember { MutableInteractionSource() },
           indication = LocalIndication.current,
           enabled = enabled,
           onClick = onClick,

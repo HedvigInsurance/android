@@ -4,6 +4,7 @@ import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
@@ -27,7 +28,7 @@ private fun HedvigTheme(
   val selectionColors = rememberTextSelectionColors(colorScheme)
   CompositionLocalProvider(
     LocalColorScheme provides colorScheme,
-    LocalIndication provides ripple(),
+    LocalIndication provides rememberRipple(),
     LocalShapes provides shapes,
     LocalTextSelectionColors provides selectionColors,
     LocalTypography provides typography,

@@ -239,7 +239,7 @@ private fun ColumnScope.PreferencesSheetContent(
   HorizontalPager(
     state = pagerState,
     contentPadding = PaddingValues(horizontal = 16.dp),
-    beyondViewportPageCount = 1,
+    beyondBoundsPageCount = 1,
     pageSpacing = 32.dp,
     key = { it },
   ) { pageIndex ->

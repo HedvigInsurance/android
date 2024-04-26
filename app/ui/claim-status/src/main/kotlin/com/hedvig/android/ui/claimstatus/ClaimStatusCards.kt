@@ -46,7 +46,7 @@ fun ClaimStatusCards(
       HorizontalPager(
         state = pagerState,
         contentPadding = contentPadding,
-        beyondViewportPageCount = 1,
+        beyondBoundsPageCount = 1,
         pageSpacing = 8.dp,
         modifier = Modifier.fillMaxWidth().systemGestureExclusion(),
       ) { page: Int ->
