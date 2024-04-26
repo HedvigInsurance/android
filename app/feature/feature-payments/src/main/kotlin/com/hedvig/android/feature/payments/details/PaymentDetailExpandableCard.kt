@@ -58,7 +58,6 @@ internal fun PaymentDetailExpandableCard(
 ) {
   val dateTimeFormatter = rememberHedvigMonthDateTimeFormatter()
   HedvigCard(
-    onClick = null,
     modifier = modifier,
   ) {
     Column(
