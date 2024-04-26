@@ -11,6 +11,14 @@ internal object ColorLightTokens {
   val TextDisabled: Color = PaletteTokens.G400
   val TextBlack: Color = PaletteTokens.Black
   val TextWhite: Color = PaletteTokens.White
+  val TextPrimaryTranslucent: Color = PaletteTokens.BlackTransparent
+  val TextNegativeTranslucent: Color = PaletteTokens.WhiteTransparent
+  val TextSecondaryTranslucent: Color = PaletteTokens.G700TLight
+  val TextAccordionTranslucent: Color = PaletteTokens.G750TLight
+  val TextTertiaryTranslucent: Color = PaletteTokens.G500TLight
+  val TextDisabledTranslucent: Color = PaletteTokens.G400TLight
+  val TextBlackTranslucent: Color = PaletteTokens.BlackTransparent
+  val TextWhiteTranslucent: Color = PaletteTokens.WhiteTransparent
   val Action: Color = PaletteTokens.Red600
   val Link: Color = PaletteTokens.Blue600
   val ButtonPrimaryResting: Color = PaletteTokens.Black

@@ -21,6 +21,14 @@ data class ColorScheme(
   val textDisabled: Color,
   val textBlack: Color,
   val textWhite: Color,
+  val textPrimaryTranslucent: Color,
+  val textNegativeTranslucent: Color,
+  val textSecondaryTranslucent: Color,
+  val textAccordionTranslucent: Color,
+  val textTertiaryTranslucent: Color,
+  val textDisabledTranslucent: Color,
+  val textBlackTranslucent: Color,
+  val textWhiteTranslucent: Color,
   val action: Color,
   val link: Color,
   val buttonPrimaryResting: Color,
@@ -109,6 +117,14 @@ internal val lightColorScheme: ColorScheme = ColorScheme(
   textDisabled = ColorLightTokens.TextDisabled,
   textBlack = ColorLightTokens.TextBlack,
   textWhite = ColorLightTokens.TextWhite,
+  textPrimaryTranslucent = ColorLightTokens.TextPrimaryTranslucent,
+  textNegativeTranslucent = ColorLightTokens.TextNegativeTranslucent,
+  textSecondaryTranslucent = ColorLightTokens.TextSecondaryTranslucent,
+  textAccordionTranslucent = ColorLightTokens.TextAccordionTranslucent,
+  textTertiaryTranslucent = ColorLightTokens.TextTertiaryTranslucent,
+  textDisabledTranslucent = ColorLightTokens.TextDisabledTranslucent,
+  textBlackTranslucent = ColorLightTokens.TextBlackTranslucent,
+  textWhiteTranslucent = ColorLightTokens.TextWhiteTranslucent,
   action = ColorLightTokens.Action,
   link = ColorLightTokens.Link,
   buttonPrimaryResting = ColorLightTokens.ButtonPrimaryResting,
@@ -197,6 +213,14 @@ internal val darkColorScheme: ColorScheme = ColorScheme(
   textDisabled = ColorDarkTokens.TextDisabled,
   textBlack = ColorDarkTokens.TextBlack,
   textWhite = ColorDarkTokens.TextWhite,
+  textPrimaryTranslucent = ColorDarkTokens.TextPrimaryTranslucent,
+  textNegativeTranslucent = ColorDarkTokens.TextNegativeTranslucent,
+  textSecondaryTranslucent = ColorDarkTokens.TextSecondaryTranslucent,
+  textAccordionTranslucent = ColorDarkTokens.TextAccordionTranslucent,
+  textTertiaryTranslucent = ColorDarkTokens.TextTertiaryTranslucent,
+  textDisabledTranslucent = ColorDarkTokens.TextDisabledTranslucent,
+  textBlackTranslucent = ColorDarkTokens.TextBlackTranslucent,
+  textWhiteTranslucent = ColorDarkTokens.TextWhiteTranslucent,
   action = ColorDarkTokens.Action,
   link = ColorDarkTokens.Link,
   buttonPrimaryResting = ColorDarkTokens.ButtonPrimaryResting,
@@ -311,6 +335,14 @@ internal fun ColorScheme.fromToken(value: ColorSchemeKeyTokens): Color {
     ColorSchemeKeyTokens.TextDisabled -> textDisabled
     ColorSchemeKeyTokens.TextBlack -> textBlack
     ColorSchemeKeyTokens.TextWhite -> textWhite
+    ColorSchemeKeyTokens.TextPrimaryTranslucent -> textPrimaryTranslucent
+    ColorSchemeKeyTokens.TextNegativeTranslucent -> textNegativeTranslucent
+    ColorSchemeKeyTokens.TextSecondaryTranslucent -> textSecondaryTranslucent
+    ColorSchemeKeyTokens.TextAccordionTranslucent -> textAccordionTranslucent
+    ColorSchemeKeyTokens.TextTertiaryTranslucent -> textTertiaryTranslucent
+    ColorSchemeKeyTokens.TextDisabledTranslucent -> textDisabledTranslucent
+    ColorSchemeKeyTokens.TextBlackTranslucent -> textBlackTranslucent
+    ColorSchemeKeyTokens.TextWhiteTranslucent -> textWhiteTranslucent
     ColorSchemeKeyTokens.Action -> action
     ColorSchemeKeyTokens.Link -> link
     ColorSchemeKeyTokens.ButtonPrimaryResting -> buttonPrimaryResting
