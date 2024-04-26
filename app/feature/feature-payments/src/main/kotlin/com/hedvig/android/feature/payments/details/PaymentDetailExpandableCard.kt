@@ -69,7 +69,9 @@ internal fun PaymentDetailExpandableCard(
           interactionSource = remember { MutableInteractionSource() },
           indication = rememberRipple(
             bounded = false,
-            radius = 1000.dp),
+            // This fixes the problem of the ripple not properly resizing as the card expands
+            radius = 1000.dp
+          ),
           onClick = onClick,
         ),
     ) {
