@@ -13,6 +13,7 @@ import androidx.compose.runtime.snapshots.Snapshot
 import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.chat.read.timestamp.ChatLastMessageReadRepository
+import com.hedvig.android.data.contract.android.CrossSell
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorage
@@ -103,8 +104,8 @@ internal class HomePresenter(
             !alreadySeenImportantMessages.contains(it.id)
           }.toPersistentList(),
           isHelpCenterEnabled = successData.showHelpCenter,
-          showChatIcon = successData.showChatIcon,
           hasUnseenChatMessages = hasUnseenChatMessages,
+          topBarActions = successData.topBarActions
         )
       }
     }
@@ -121,14 +122,14 @@ internal sealed interface HomeUiState {
   val isReloading: Boolean
     get() = false
 
-  val showChatIcon: Boolean
-    get() = false
-
   val isHelpCenterEnabled: Boolean
     get() = false
 
   val hasUnseenChatMessages: Boolean
     get() = false
+
+  val topBarActions: List<HomeTopBarAction>
+    get() = listOf()
 
   data class Success(
     override val isReloading: Boolean = false,
@@ -137,13 +138,13 @@ internal sealed interface HomeUiState {
     val veryImportantMessages: ImmutableList<HomeData.VeryImportantMessage>,
     val memberReminders: MemberReminders,
     override val isHelpCenterEnabled: Boolean,
-    override val showChatIcon: Boolean,
+    override val topBarActions: List<HomeTopBarAction>,
     override val hasUnseenChatMessages: Boolean,
   ) : HomeUiState
 
   data class Error(val message: String?) : HomeUiState
 
-  object Loading : HomeUiState
+  data object Loading : HomeUiState
 }
 
 private data class SuccessData(
@@ -151,8 +152,8 @@ private data class SuccessData(
   val claimStatusCardsData: HomeData.ClaimStatusCardsData?,
   val veryImportantMessages: ImmutableList<HomeData.VeryImportantMessage>,
   val memberReminders: MemberReminders,
-  val showChatIcon: Boolean,
   val showHelpCenter: Boolean,
+  val topBarActions: List<HomeTopBarAction>
 ) {
   companion object {
     fun fromLastState(lastState: HomeUiState): SuccessData? {
@@ -162,12 +163,16 @@ private data class SuccessData(
         claimStatusCardsData = lastState.claimStatusCardsData,
         veryImportantMessages = lastState.veryImportantMessages,
         memberReminders = lastState.memberReminders,
-        showChatIcon = lastState.showChatIcon,
         showHelpCenter = lastState.isHelpCenterEnabled,
+        topBarActions = lastState.topBarActions
       )
     }
 
     fun fromHomeData(homeData: HomeData): SuccessData {
+      val actionsList = mutableListOf<HomeTopBarAction>()
+      if (homeData.crossSells.isNotEmpty()) actionsList.add(HomeTopBarAction.CrossSellsAction(homeData.crossSells))
+      if (homeData.showFirstVetIcon) actionsList.add(HomeTopBarAction.FirstVetAction)
+      if (homeData.showChatIcon) actionsList.add(HomeTopBarAction.ChatAction)
       return SuccessData(
         homeText = when (homeData.contractStatus) {
           HomeData.ContractStatus.Active -> HomeText.Active
@@ -183,8 +188,9 @@ private data class SuccessData(
         claimStatusCardsData = homeData.claimStatusCardsData,
         veryImportantMessages = homeData.veryImportantMessages,
         memberReminders = homeData.memberReminders.copy(enableNotifications = null),
-        showChatIcon = homeData.showChatIcon,
         showHelpCenter = homeData.showHelpCenter,
+        topBarActions = actionsList.toList()
+
       )
     }
   }
@@ -200,4 +206,12 @@ sealed interface HomeText {
   data object Pending : HomeText
 
   data object Switching : HomeText
+}
+
+sealed interface HomeTopBarAction {
+  data object ChatAction: HomeTopBarAction
+  data object FirstVetAction: HomeTopBarAction
+  data class CrossSellsAction(
+    val crossSells: ImmutableList<CrossSell>
+  ): HomeTopBarAction
 }

@@ -9,4 +9,8 @@ sealed interface HomeDestination {
 
   @Serializable
   data object Home : HomeDestination, Destination
+
+  @Serializable
+  data class FirstVet(val sections: List<FirstVetSection>)
+    : HomeDestination, Destination
 }

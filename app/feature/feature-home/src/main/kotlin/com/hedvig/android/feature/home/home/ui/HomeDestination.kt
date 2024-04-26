@@ -70,11 +70,14 @@ import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.compose.notificationCircle
 import com.hedvig.android.core.icons.hedvig.normal.WarningFilled
 import com.hedvig.android.core.ui.appbar.m3.ToolbarChatIcon
+import com.hedvig.android.core.ui.appbar.m3.ToolbarCrossSellsIcon
+import com.hedvig.android.core.ui.appbar.m3.ToolbarFirstVetIcon
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarLayoutForActions
 import com.hedvig.android.core.ui.infocard.InfoCardTextButton
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.plus
 import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
+import com.hedvig.android.data.contract.android.CrossSell
 import com.hedvig.android.feature.home.home.ChatTooltip
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.memberreminders.MemberReminder
@@ -112,6 +115,7 @@ internal fun HomeDestination(
   openUrl: (String) -> Unit,
   openAppSettings: () -> Unit,
   navigateToMissingInfo: (String) -> Unit,
+  navigateToFirstVet: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val notificationPermissionState = rememberNotificationPermissionState()
@@ -128,6 +132,7 @@ internal fun HomeDestination(
     openAppSettings = openAppSettings,
     navigateToMissingInfo = navigateToMissingInfo,
     markMessageAsSeen = { viewModel.emit(HomeEvent.MarkMessageAsSeen(it)) },
+    navigateToFirstVet = navigateToFirstVet
   )
 }
 
@@ -145,6 +150,7 @@ private fun HomeScreen(
   markMessageAsSeen: (String) -> Unit,
   openAppSettings: () -> Unit,
   navigateToMissingInfo: (String) -> Unit,
+  navigateToFirstVet: () -> Unit,
 ) {
   val context = LocalContext.current
   val systemBarInsetTopDp = with(LocalDensity.current) {
@@ -167,8 +173,8 @@ private fun HomeScreen(
         HomeUiState.Loading -> {
           HedvigFullScreenCenterAlignedProgressDebounced(
             modifier = Modifier
-              .fillMaxSize()
-              .windowInsetsPadding(WindowInsets.safeDrawing),
+                .fillMaxSize()
+                .windowInsetsPadding(WindowInsets.safeDrawing),
           )
         }
 
@@ -176,8 +182,8 @@ private fun HomeScreen(
           HedvigErrorSection(
             onButtonClick = reload,
             modifier = Modifier
-              .padding(16.dp)
-              .windowInsetsPadding(WindowInsets.safeDrawing),
+                .padding(16.dp)
+                .windowInsetsPadding(WindowInsets.safeDrawing),
           )
         }
 
@@ -200,14 +206,32 @@ private fun HomeScreen(
         }
       }
     }
-    if (uiState.showChatIcon) {
-      Column {
-        TopAppBarLayoutForActions {
-          ToolbarChatIcon(
-            onClick = onStartChat,
-            modifier = Modifier.notificationCircle(uiState.hasUnseenChatMessages),
-          )
+
+    Column {
+      TopAppBarLayoutForActions {
+        for (action in uiState.topBarActions) {
+          when (action) {
+            HomeTopBarAction.ChatAction -> ToolbarChatIcon(
+              onClick = onStartChat,
+              modifier = Modifier.notificationCircle(uiState.hasUnseenChatMessages),
+            )
+
+            is HomeTopBarAction.CrossSellsAction -> ToolbarCrossSellsIcon(
+              onClick = {
+                //todo!
+              },
+            )
+
+            HomeTopBarAction.FirstVetAction -> ToolbarFirstVetIcon(
+              onClick = navigateToFirstVet,
+            )
+          }
+          if (uiState.topBarActions.indexOf(action) != uiState.topBarActions.lastIndex) {
+            Spacer(modifier = Modifier.width(8.dp))
+          }
         }
+      }
+      if (uiState.topBarActions.contains(HomeTopBarAction.ChatAction)) {
         val shouldShowTooltip by produceState(false) {
           val daysSinceLastTooltipShown = daysSinceLastTooltipShown(context)
           value = daysSinceLastTooltipShown
@@ -218,8 +242,8 @@ private fun HomeScreen(
             context.setLastEpochDayWhenChatTooltipWasShown(java.time.LocalDate.now().toEpochDay())
           },
           modifier = Modifier
-            .align(Alignment.End)
-            .padding(horizontal = 16.dp),
+              .align(Alignment.End)
+              .padding(horizontal = 16.dp),
         )
       }
     }
@@ -263,10 +287,10 @@ private fun HomeScreenSuccess(
   var fullScreenSize: IntSize? by remember { mutableStateOf(null) }
   Box(
     modifier = modifier
-      .fillMaxSize()
-      .onSizeChanged { fullScreenSize = it }
-      .pullRefresh(pullRefreshState)
-      .verticalScroll(rememberScrollState()),
+        .fillMaxSize()
+        .onSizeChanged { fullScreenSize = it }
+        .pullRefresh(pullRefreshState)
+        .verticalScroll(rememberScrollState()),
   ) {
     NotificationPermissionDialog(notificationPermissionState, openAppSettings)
     val fullScreenSizeValue = fullScreenSize
@@ -277,9 +301,9 @@ private fun HomeScreenSuccess(
           WelcomeMessage(
             homeText = uiState.homeText,
             modifier = Modifier
-              .padding(horizontal = 24.dp)
-              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
-              .testTag("welcome_message"),
+                .padding(horizontal = 24.dp)
+                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+                .testTag("welcome_message"),
           )
         },
         claimStatusCards = {
@@ -326,8 +350,8 @@ private fun HomeScreenSuccess(
             text = stringResource(R.string.home_tab_claim_button_text),
             onClick = onStartClaimClicked,
             modifier = Modifier
-              .padding(horizontal = 16.dp)
-              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+                .padding(horizontal = 16.dp)
+                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
           )
         },
         helpCenterButton = {
@@ -336,23 +360,23 @@ private fun HomeScreenSuccess(
               text = stringResource(R.string.home_tab_get_help),
               onClick = navigateToHelpCenter,
               modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+                  .padding(horizontal = 16.dp)
+                  .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
             )
           }
         },
         topSpacer = {
           Spacer(
-            Modifier
-              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top))
-              .height(toolbarHeight),
+              Modifier
+                  .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top))
+                  .height(toolbarHeight),
           )
         },
         bottomSpacer = {
           Spacer(
-            Modifier
-              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom))
-              .height(16.dp),
+              Modifier
+                  .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom))
+                  .height(16.dp),
           )
         },
       )
@@ -392,8 +416,8 @@ private fun ImportantMessages(
           beyondBoundsPageCount = 1,
           pageSpacing = 8.dp,
           modifier = Modifier
-            .fillMaxWidth()
-            .systemGestureExclusion(),
+              .fillMaxWidth()
+              .systemGestureExclusion(),
         ) { page: Int ->
           val currentMessage = animatedList[page]
           VeryImportantMessageCard(
@@ -408,7 +432,8 @@ private fun ImportantMessages(
           pageCount = animatedList.size,
           activeColor = LocalContentColor.current,
           modifier = Modifier
-            .align(Alignment.CenterHorizontally).padding(contentPadding),
+              .align(Alignment.CenterHorizontally)
+              .padding(contentPadding),
         )
       }
     }
@@ -528,8 +553,14 @@ private fun PreviewHomeScreen(
             connectPayment = MemberReminder.PaymentReminder.ConnectPayment(),
           ),
           isHelpCenterEnabled = true,
-          showChatIcon = true,
           hasUnseenChatMessages = hasUnseenChatMessages,
+          topBarActions = listOf(
+              HomeTopBarAction.CrossSellsAction(
+                  persistentListOf(CrossSell("rf", "erf", "", "", CrossSell.CrossSellType.ACCIDENT)),
+              ),
+              HomeTopBarAction.FirstVetAction,
+              HomeTopBarAction.ChatAction,
+          ),
         ),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
         reload = {},

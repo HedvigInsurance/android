@@ -14,6 +14,7 @@ android {
 }
 
 dependencies {
+  implementation(project(":notification-badge-data-public"))
   apolloMetadata(projects.apolloOctopusPublic)
 
   implementation(libs.accompanist.permissions)
@@ -61,6 +62,7 @@ dependencies {
   implementation(projects.notificationPermission)
   implementation(projects.pullrefresh)
   implementation(projects.uiEmergency)
+  implementation(projects.dataContractAndroid)
   implementation(libs.accompanist.pagerIndicators)
 
   testImplementation(libs.apollo.testingSupport)

@@ -47,6 +47,11 @@ fun NavGraphBuilder.homeGraph(
         navigateToHelpCenter = { navigateToHelpCenter(backStackEntry) },
         openUrl = openUrl,
         openAppSettings = openAppSettings,
+        navigateToFirstVet = {
+          with(navigator) {
+            backStackEntry.navigate(HelpCenterDestinations.Emergency(destination.emergencyNumber))
+          }
+        }
       )
     }
     nestedGraphs()

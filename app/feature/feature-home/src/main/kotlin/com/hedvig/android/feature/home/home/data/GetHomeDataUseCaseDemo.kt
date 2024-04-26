@@ -21,6 +21,8 @@ internal class GetHomeDataUseCaseDemo : GetHomeDataUseCase {
       ),
       showChatIcon = true,
       showHelpCenter = true,
+      showFirstVetIcon = true,
+      crossSells = persistentListOf()
     ).right(),
   )
 }

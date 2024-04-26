@@ -16,6 +16,7 @@ import com.apollographql.apollo3.exception.ApolloCompositeException
 import com.apollographql.apollo3.exception.CacheMissException
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.data.contract.android.CrossSell
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
@@ -38,6 +39,8 @@ import kotlinx.datetime.atStartOfDayIn
 import octopus.HomeQuery
 import octopus.NumberOfChatMessagesQuery
 import octopus.type.ChatMessageSender
+import octopus.type.CrossSellType
+
 
 internal interface GetHomeDataUseCase {
   fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, HomeData>>
@@ -70,11 +73,27 @@ internal class GetHomeDataUseCaseImpl(
             link = it.link.ifEmpty { null },
           )
         }
+        val crossSells = homeQueryData.currentMember.crossSells.map {crossSell ->
+          CrossSell(
+            id = crossSell.id,
+          title = crossSell.title,
+          subtitle = crossSell.description,
+          storeUrl = crossSell.storeUrl,
+          type = when (crossSell.type) {
+            CrossSellType.CAR -> CrossSell.CrossSellType.CAR
+            CrossSellType.HOME -> CrossSell.CrossSellType.HOME
+            CrossSellType.ACCIDENT -> CrossSell.CrossSellType.ACCIDENT
+            CrossSellType.PET -> CrossSell.CrossSellType.PET
+            CrossSellType.UNKNOWN__ -> CrossSell.CrossSellType.UNKNOWN
+          },
+          )
+        }.toPersistentList()
         val showChatIcon = !shouldHideChatButton(
           isChatDisabledFromKillSwitch = isChatDisabled,
           isEligibleToShowTheChatIcon = isEligibleToShowTheChatIconResult.bind(),
           isHelpCenterEnabled = isHelpCenterEnabled,
         )
+        val showFirstVetIcon = homeQueryData.currentMember.memberActions?.firstVetAction?.sections != null
         HomeData(
           contractStatus = contractStatus,
           claimStatusCardsData = homeQueryData.claimStatusCards(),
@@ -82,6 +101,8 @@ internal class GetHomeDataUseCaseImpl(
           memberReminders = memberReminders,
           showChatIcon = showChatIcon,
           showHelpCenter = isHelpCenterEnabled,
+          showFirstVetIcon = showFirstVetIcon,
+          crossSells = crossSells
         )
       }.onLeft { errorMessage ->
         logcat(throwable = errorMessage.throwable) { "GetHomeDataUseCase failed with ${errorMessage.message}" }
@@ -217,6 +238,8 @@ internal data class HomeData(
   val memberReminders: MemberReminders,
   val showChatIcon: Boolean,
   val showHelpCenter: Boolean,
+  val showFirstVetIcon: Boolean,
+  val crossSells: ImmutableList<CrossSell>
 ) {
   @Immutable
   data class ClaimStatusCardsData(
