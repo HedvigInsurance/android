@@ -20,6 +20,7 @@ import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorage
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import com.hedvig.android.ui.emergency.FirstVetSection
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
@@ -105,7 +106,7 @@ internal class HomePresenter(
           }.toPersistentList(),
           isHelpCenterEnabled = successData.showHelpCenter,
           hasUnseenChatMessages = hasUnseenChatMessages,
-          topBarActions = successData.topBarActions
+          topBarActions = successData.topBarActions,
         )
       }
     }
@@ -153,7 +154,7 @@ private data class SuccessData(
   val veryImportantMessages: ImmutableList<HomeData.VeryImportantMessage>,
   val memberReminders: MemberReminders,
   val showHelpCenter: Boolean,
-  val topBarActions: List<HomeTopBarAction>
+  val topBarActions: List<HomeTopBarAction>,
 ) {
   companion object {
     fun fromLastState(lastState: HomeUiState): SuccessData? {
@@ -164,14 +165,20 @@ private data class SuccessData(
         veryImportantMessages = lastState.veryImportantMessages,
         memberReminders = lastState.memberReminders,
         showHelpCenter = lastState.isHelpCenterEnabled,
-        topBarActions = lastState.topBarActions
+        topBarActions = lastState.topBarActions,
       )
     }
 
     fun fromHomeData(homeData: HomeData): SuccessData {
       val actionsList = mutableListOf<HomeTopBarAction>()
       if (homeData.crossSells.isNotEmpty()) actionsList.add(HomeTopBarAction.CrossSellsAction(homeData.crossSells))
-      if (homeData.showFirstVetIcon) actionsList.add(HomeTopBarAction.FirstVetAction)
+      if (homeData.firstVetSections.isNotEmpty()) {
+        actionsList.add(
+          HomeTopBarAction.FirstVetAction(
+            homeData.firstVetSections,
+          ),
+        )
+      }
       if (homeData.showChatIcon) actionsList.add(HomeTopBarAction.ChatAction)
       return SuccessData(
         homeText = when (homeData.contractStatus) {
@@ -189,8 +196,7 @@ private data class SuccessData(
         veryImportantMessages = homeData.veryImportantMessages,
         memberReminders = homeData.memberReminders.copy(enableNotifications = null),
         showHelpCenter = homeData.showHelpCenter,
-        topBarActions = actionsList.toList()
-
+        topBarActions = actionsList.toList(),
       )
     }
   }
@@ -209,9 +215,13 @@ sealed interface HomeText {
 }
 
 sealed interface HomeTopBarAction {
-  data object ChatAction: HomeTopBarAction
-  data object FirstVetAction: HomeTopBarAction
+  data object ChatAction : HomeTopBarAction
+
+  data class FirstVetAction(
+    val sections: List<FirstVetSection>,
+  ) : HomeTopBarAction
+
   data class CrossSellsAction(
-    val crossSells: ImmutableList<CrossSell>
-  ): HomeTopBarAction
+    val crossSells: ImmutableList<CrossSell>,
+  ) : HomeTopBarAction
 }

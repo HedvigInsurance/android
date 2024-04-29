@@ -24,6 +24,7 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.memberreminders.GetMemberRemindersUseCase
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
+import com.hedvig.android.ui.emergency.FirstVetSection
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
@@ -40,7 +41,6 @@ import octopus.HomeQuery
 import octopus.NumberOfChatMessagesQuery
 import octopus.type.ChatMessageSender
 import octopus.type.CrossSellType
-
 
 internal interface GetHomeDataUseCase {
   fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, HomeData>>
@@ -73,19 +73,19 @@ internal class GetHomeDataUseCaseImpl(
             link = it.link.ifEmpty { null },
           )
         }
-        val crossSells = homeQueryData.currentMember.crossSells.map {crossSell ->
+        val crossSells = homeQueryData.currentMember.crossSells.map { crossSell ->
           CrossSell(
             id = crossSell.id,
-          title = crossSell.title,
-          subtitle = crossSell.description,
-          storeUrl = crossSell.storeUrl,
-          type = when (crossSell.type) {
-            CrossSellType.CAR -> CrossSell.CrossSellType.CAR
-            CrossSellType.HOME -> CrossSell.CrossSellType.HOME
-            CrossSellType.ACCIDENT -> CrossSell.CrossSellType.ACCIDENT
-            CrossSellType.PET -> CrossSell.CrossSellType.PET
-            CrossSellType.UNKNOWN__ -> CrossSell.CrossSellType.UNKNOWN
-          },
+            title = crossSell.title,
+            subtitle = crossSell.description,
+            storeUrl = crossSell.storeUrl,
+            type = when (crossSell.type) {
+              CrossSellType.CAR -> CrossSell.CrossSellType.CAR
+              CrossSellType.HOME -> CrossSell.CrossSellType.HOME
+              CrossSellType.ACCIDENT -> CrossSell.CrossSellType.ACCIDENT
+              CrossSellType.PET -> CrossSell.CrossSellType.PET
+              CrossSellType.UNKNOWN__ -> CrossSell.CrossSellType.UNKNOWN
+            },
           )
         }.toPersistentList()
         val showChatIcon = !shouldHideChatButton(
@@ -93,7 +93,15 @@ internal class GetHomeDataUseCaseImpl(
           isEligibleToShowTheChatIcon = isEligibleToShowTheChatIconResult.bind(),
           isHelpCenterEnabled = isHelpCenterEnabled,
         )
-        val showFirstVetIcon = homeQueryData.currentMember.memberActions?.firstVetAction?.sections != null
+        val firstVetActions = homeQueryData.currentMember.memberActions
+          ?.firstVetAction?.sections?.map { section ->
+            FirstVetSection(
+              section.buttonTitle,
+              section.description,
+              section.title,
+              section.url,
+            )
+          } ?: listOf()
         HomeData(
           contractStatus = contractStatus,
           claimStatusCardsData = homeQueryData.claimStatusCards(),
@@ -101,8 +109,8 @@ internal class GetHomeDataUseCaseImpl(
           memberReminders = memberReminders,
           showChatIcon = showChatIcon,
           showHelpCenter = isHelpCenterEnabled,
-          showFirstVetIcon = showFirstVetIcon,
-          crossSells = crossSells
+          firstVetSections = firstVetActions,
+          crossSells = crossSells,
         )
       }.onLeft { errorMessage ->
         logcat(throwable = errorMessage.throwable) { "GetHomeDataUseCase failed with ${errorMessage.message}" }
@@ -238,8 +246,8 @@ internal data class HomeData(
   val memberReminders: MemberReminders,
   val showChatIcon: Boolean,
   val showHelpCenter: Boolean,
-  val showFirstVetIcon: Boolean,
-  val crossSells: ImmutableList<CrossSell>
+  val firstVetSections: List<FirstVetSection>,
+  val crossSells: ImmutableList<CrossSell>,
 ) {
   @Immutable
   data class ClaimStatusCardsData(

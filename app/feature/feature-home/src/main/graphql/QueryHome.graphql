@@ -27,6 +27,9 @@ query Home {
       firstVetAction {
         sections {
           title
+          buttonTitle
+          description
+          url
         }
       }
     }

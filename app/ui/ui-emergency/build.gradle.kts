@@ -2,6 +2,7 @@ plugins {
   id("hedvig.android.ktlint")
   id("hedvig.android.library")
   id("hedvig.android.library.compose")
+  alias(libs.plugins.serialization)
   alias(libs.plugins.squareSortDependencies)
 }
 
@@ -15,4 +16,5 @@ dependencies {
   implementation(projects.coreResources)
   implementation(projects.coreUi)
   implementation(projects.coreUiData)
+  implementation(libs.kotlinx.serialization.core)
 }

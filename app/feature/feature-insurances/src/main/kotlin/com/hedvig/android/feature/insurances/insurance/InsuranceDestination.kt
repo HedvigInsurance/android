@@ -74,11 +74,11 @@ import com.hedvig.android.core.ui.preview.PreviewContentWithProvidedParametersAn
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
-import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.data.contract.android.CrossSell
+import com.hedvig.android.data.contract.android.iconRes
+import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceContract
-import com.hedvig.android.data.contract.android.iconRes
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceScreenEvent
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceUiState
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceViewModel

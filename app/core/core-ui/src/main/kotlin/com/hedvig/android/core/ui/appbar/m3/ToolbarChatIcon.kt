@@ -22,7 +22,6 @@ import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.colored.hedvig.Chat
 import com.hedvig.android.core.icons.hedvig.colored.hedvig.ColoredCircleWithCampaign
 import com.hedvig.android.core.icons.hedvig.colored.hedvig.FirstVet
-import com.hedvig.android.core.icons.hedvig.small.hedvig.Campaign
 import hedvig.resources.R
 
 @Composable
@@ -64,7 +63,6 @@ fun ToolbarCrossSellsIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
   )
 }
 
-
 @HedvigPreview
 @Composable
 private fun PreviewToolbarChatIcon() {
@@ -76,7 +74,6 @@ private fun PreviewToolbarChatIcon() {
         ToolbarFirstVetIcon(onClick = {})
         Spacer(modifier = Modifier.width(8.dp))
         ToolbarChatIcon({})
-
       }
     }
   }

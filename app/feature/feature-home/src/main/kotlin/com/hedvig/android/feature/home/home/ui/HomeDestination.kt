@@ -96,6 +96,7 @@ import com.hedvig.android.ui.claimstatus.ClaimStatusCards
 import com.hedvig.android.ui.claimstatus.model.ClaimPillType
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
+import com.hedvig.android.ui.emergency.FirstVetSection
 import hedvig.resources.R
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -115,7 +116,7 @@ internal fun HomeDestination(
   openUrl: (String) -> Unit,
   openAppSettings: () -> Unit,
   navigateToMissingInfo: (String) -> Unit,
-  navigateToFirstVet: () -> Unit,
+  navigateToFirstVet: (List<FirstVetSection>) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val notificationPermissionState = rememberNotificationPermissionState()
@@ -132,7 +133,7 @@ internal fun HomeDestination(
     openAppSettings = openAppSettings,
     navigateToMissingInfo = navigateToMissingInfo,
     markMessageAsSeen = { viewModel.emit(HomeEvent.MarkMessageAsSeen(it)) },
-    navigateToFirstVet = navigateToFirstVet
+    navigateToFirstVet = navigateToFirstVet,
   )
 }
 
@@ -150,7 +151,7 @@ private fun HomeScreen(
   markMessageAsSeen: (String) -> Unit,
   openAppSettings: () -> Unit,
   navigateToMissingInfo: (String) -> Unit,
-  navigateToFirstVet: () -> Unit,
+  navigateToFirstVet: (List<FirstVetSection>) -> Unit,
 ) {
   val context = LocalContext.current
   val systemBarInsetTopDp = with(LocalDensity.current) {
@@ -173,8 +174,8 @@ private fun HomeScreen(
         HomeUiState.Loading -> {
           HedvigFullScreenCenterAlignedProgressDebounced(
             modifier = Modifier
-                .fillMaxSize()
-                .windowInsetsPadding(WindowInsets.safeDrawing),
+              .fillMaxSize()
+              .windowInsetsPadding(WindowInsets.safeDrawing),
           )
         }
 
@@ -182,8 +183,8 @@ private fun HomeScreen(
           HedvigErrorSection(
             onButtonClick = reload,
             modifier = Modifier
-                .padding(16.dp)
-                .windowInsetsPadding(WindowInsets.safeDrawing),
+              .padding(16.dp)
+              .windowInsetsPadding(WindowInsets.safeDrawing),
           )
         }
 
@@ -218,13 +219,16 @@ private fun HomeScreen(
 
             is HomeTopBarAction.CrossSellsAction -> ToolbarCrossSellsIcon(
               onClick = {
-                //todo!
+                TODO()
               },
             )
 
-            HomeTopBarAction.FirstVetAction -> ToolbarFirstVetIcon(
-              onClick = navigateToFirstVet,
-            )
+            is HomeTopBarAction.FirstVetAction -> {
+              val sections = action.sections
+              ToolbarFirstVetIcon(
+                onClick = { navigateToFirstVet(sections) },
+              )
+            }
           }
           if (uiState.topBarActions.indexOf(action) != uiState.topBarActions.lastIndex) {
             Spacer(modifier = Modifier.width(8.dp))
@@ -242,8 +246,8 @@ private fun HomeScreen(
             context.setLastEpochDayWhenChatTooltipWasShown(java.time.LocalDate.now().toEpochDay())
           },
           modifier = Modifier
-              .align(Alignment.End)
-              .padding(horizontal = 16.dp),
+            .align(Alignment.End)
+            .padding(horizontal = 16.dp),
         )
       }
     }
@@ -287,10 +291,10 @@ private fun HomeScreenSuccess(
   var fullScreenSize: IntSize? by remember { mutableStateOf(null) }
   Box(
     modifier = modifier
-        .fillMaxSize()
-        .onSizeChanged { fullScreenSize = it }
-        .pullRefresh(pullRefreshState)
-        .verticalScroll(rememberScrollState()),
+      .fillMaxSize()
+      .onSizeChanged { fullScreenSize = it }
+      .pullRefresh(pullRefreshState)
+      .verticalScroll(rememberScrollState()),
   ) {
     NotificationPermissionDialog(notificationPermissionState, openAppSettings)
     val fullScreenSizeValue = fullScreenSize
@@ -301,9 +305,9 @@ private fun HomeScreenSuccess(
           WelcomeMessage(
             homeText = uiState.homeText,
             modifier = Modifier
-                .padding(horizontal = 24.dp)
-                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
-                .testTag("welcome_message"),
+              .padding(horizontal = 24.dp)
+              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+              .testTag("welcome_message"),
           )
         },
         claimStatusCards = {
@@ -350,8 +354,8 @@ private fun HomeScreenSuccess(
             text = stringResource(R.string.home_tab_claim_button_text),
             onClick = onStartClaimClicked,
             modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+              .padding(horizontal = 16.dp)
+              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
           )
         },
         helpCenterButton = {
@@ -360,23 +364,23 @@ private fun HomeScreenSuccess(
               text = stringResource(R.string.home_tab_get_help),
               onClick = navigateToHelpCenter,
               modifier = Modifier
-                  .padding(horizontal = 16.dp)
-                  .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+                .padding(horizontal = 16.dp)
+                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
             )
           }
         },
         topSpacer = {
           Spacer(
-              Modifier
-                  .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top))
-                  .height(toolbarHeight),
+            Modifier
+              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top))
+              .height(toolbarHeight),
           )
         },
         bottomSpacer = {
           Spacer(
-              Modifier
-                  .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom))
-                  .height(16.dp),
+            Modifier
+              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom))
+              .height(16.dp),
           )
         },
       )
@@ -416,8 +420,8 @@ private fun ImportantMessages(
           beyondBoundsPageCount = 1,
           pageSpacing = 8.dp,
           modifier = Modifier
-              .fillMaxWidth()
-              .systemGestureExclusion(),
+            .fillMaxWidth()
+            .systemGestureExclusion(),
         ) { page: Int ->
           val currentMessage = animatedList[page]
           VeryImportantMessageCard(
@@ -432,8 +436,8 @@ private fun ImportantMessages(
           pageCount = animatedList.size,
           activeColor = LocalContentColor.current,
           modifier = Modifier
-              .align(Alignment.CenterHorizontally)
-              .padding(contentPadding),
+            .align(Alignment.CenterHorizontally)
+            .padding(contentPadding),
         )
       }
     }
@@ -555,11 +559,20 @@ private fun PreviewHomeScreen(
           isHelpCenterEnabled = true,
           hasUnseenChatMessages = hasUnseenChatMessages,
           topBarActions = listOf(
-              HomeTopBarAction.CrossSellsAction(
-                  persistentListOf(CrossSell("rf", "erf", "", "", CrossSell.CrossSellType.ACCIDENT)),
+            HomeTopBarAction.CrossSellsAction(
+              persistentListOf(CrossSell("rf", "erf", "", "", CrossSell.CrossSellType.ACCIDENT)),
+            ),
+            HomeTopBarAction.FirstVetAction(
+              listOf(
+                FirstVetSection(
+                  "",
+                  "",
+                  "",
+                  "",
+                ),
               ),
-              HomeTopBarAction.FirstVetAction,
-              HomeTopBarAction.ChatAction,
+            ),
+            HomeTopBarAction.ChatAction,
           ),
         ),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
@@ -573,6 +586,7 @@ private fun PreviewHomeScreen(
         openAppSettings = {},
         navigateToMissingInfo = {},
         markMessageAsSeen = {},
+        navigateToFirstVet = {},
       )
     }
   }
