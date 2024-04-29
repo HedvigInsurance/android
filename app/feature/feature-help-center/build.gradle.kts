@@ -41,7 +41,7 @@ dependencies {
   implementation(projects.moleculePublic)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
-  implementation(projects.uiEmergency)
+  implementation(projects.uiScreens)
   implementation(project(":placeholder"))
   implementation(projects.dataTermination)
 }

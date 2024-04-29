@@ -50,7 +50,7 @@ dependencies {
   implementation(projects.navigationCore)
   implementation(projects.notificationBadgeDataPublic)
   implementation(projects.pullrefresh)
-  implementation(projects.uiEmergency)
+  implementation(projects.uiScreens)
   implementation(projects.placeholder)
 
   testImplementation(libs.assertK)

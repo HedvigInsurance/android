@@ -61,7 +61,7 @@ dependencies {
   implementation(projects.navigationCore)
   implementation(projects.notificationPermission)
   implementation(projects.pullrefresh)
-  implementation(projects.uiEmergency)
+  implementation(projects.uiScreens)
   implementation(projects.dataContractAndroid)
   implementation(libs.accompanist.pagerIndicators)
 

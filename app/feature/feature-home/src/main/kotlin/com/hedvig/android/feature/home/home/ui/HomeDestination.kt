@@ -137,6 +137,7 @@ internal fun HomeDestination(
     navigateToMissingInfo = navigateToMissingInfo,
     markMessageAsSeen = { viewModel.emit(HomeEvent.MarkMessageAsSeen(it)) },
     navigateToFirstVet = navigateToFirstVet,
+    markCrossSellsNotificationAsSeen = { viewModel.emit(HomeEvent.MarkCardCrossSellsAsSeen) },
   )
 }
 
@@ -155,6 +156,7 @@ private fun HomeScreen(
   openAppSettings: () -> Unit,
   navigateToMissingInfo: (String) -> Unit,
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
+  markCrossSellsNotificationAsSeen: () -> Unit,
 ) {
   val context = LocalContext.current
   val systemBarInsetTopDp = with(LocalDensity.current) {
@@ -169,6 +171,7 @@ private fun HomeScreen(
   if (crossSellsForBottomSheet != null) {
     val list = crossSellsForBottomSheet
     if (list != null) {
+      markCrossSellsNotificationAsSeen()
       CrossSellBottomSheet(
         crossSells = list,
         onDismissed = { crossSellsForBottomSheet = null },
@@ -620,6 +623,7 @@ private fun PreviewHomeScreen(
         navigateToMissingInfo = {},
         markMessageAsSeen = {},
         navigateToFirstVet = {},
+        markCrossSellsNotificationAsSeen = {}
       )
     }
   }

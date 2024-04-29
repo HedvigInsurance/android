@@ -117,7 +117,7 @@ internal class HomePresenterTest {
           showChatIcon = false,
           showHelpCenter = false,
           crossSells = persistentListOf(),
-          firstVetSections = listOf()
+          firstVetSections = listOf(),
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -170,7 +170,7 @@ internal class HomePresenterTest {
           showChatIcon = false,
           crossSells = persistentListOf(),
           firstVetSections = listOf(),
-          showHelpCenter = false
+          showHelpCenter = false,
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -241,7 +241,7 @@ internal class HomePresenterTest {
           showChatIcon = false,
           showHelpCenter = false,
           firstVetSections = listOf(),
-          crossSells = persistentListOf()
+          crossSells = persistentListOf(),
         ).right(),
       )
       assertThat(awaitItem())
@@ -269,6 +269,6 @@ internal class HomePresenterTest {
     showChatIcon = false,
     showHelpCenter = false,
     firstVetSections = listOf(),
-    crossSells = persistentListOf()
+    crossSells = persistentListOf(),
   )
 }
