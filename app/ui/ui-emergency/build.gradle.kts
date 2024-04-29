@@ -17,4 +17,8 @@ dependencies {
   implementation(projects.coreUi)
   implementation(projects.coreUiData)
   implementation(libs.kotlinx.serialization.core)
+  implementation(libs.androidx.lifecycle.compose)
+  implementation(projects.placeholder)
+  implementation(projects.dataContractAndroid)
+  implementation(libs.kotlinx.immutable.collections)
 }

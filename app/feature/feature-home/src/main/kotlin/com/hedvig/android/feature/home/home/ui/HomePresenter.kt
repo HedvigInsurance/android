@@ -20,19 +20,24 @@ import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorage
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import com.hedvig.android.notification.badge.data.crosssell.card.CrossSellCardNotificationBadgeService
 import com.hedvig.android.ui.emergency.FirstVetSection
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 
 internal class HomePresenter(
   private val getHomeDataUseCaseProvider: Provider<GetHomeDataUseCase>,
   private val chatLastMessageReadRepository: ChatLastMessageReadRepository,
   private val seenImportantMessagesStorage: SeenImportantMessagesStorage,
+  private val crossSellCardNotificationBadgeServiceProvider: Provider<CrossSellCardNotificationBadgeService>,
+  private val applicationScope: CoroutineScope,
 ) : MoleculePresenter<HomeEvent, HomeUiState> {
   @Composable
   override fun MoleculePresenterScope<HomeEvent>.present(lastState: HomeUiState): HomeUiState {
@@ -57,6 +62,9 @@ internal class HomePresenter(
         HomeEvent.RefreshData -> loadIteration++
         is HomeEvent.MarkMessageAsSeen -> {
           seenImportantMessagesStorage.markMessageAsSeen(homeEvent.messageId)
+        }
+        HomeEvent.MarkCardCrossSellsAsSeen -> {
+          applicationScope.launch { crossSellCardNotificationBadgeServiceProvider.provide().markAsSeen() }
         }
       }
     }
@@ -117,6 +125,8 @@ internal sealed interface HomeEvent {
   data object RefreshData : HomeEvent
 
   data class MarkMessageAsSeen(val messageId: String) : HomeEvent
+
+  data object MarkCardCrossSellsAsSeen : HomeEvent
 }
 
 internal sealed interface HomeUiState {

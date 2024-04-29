@@ -81,6 +81,7 @@ dependencies {
   testImplementation(projects.memberRemindersTest)
   testImplementation(projects.moleculeTest)
   testImplementation(projects.testClock)
+  testImplementation(projects.notificationBadgeDataFake)
 }
 
 apollo {

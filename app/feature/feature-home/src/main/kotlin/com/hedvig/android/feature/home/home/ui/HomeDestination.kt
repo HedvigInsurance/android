@@ -57,6 +57,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.nonEmptyListOf
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.permissions.isGranted
+import com.hedvig.android.core.designsystem.component.bottomsheet.HedvigBottomSheet
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigSecondaryContainedButton
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
@@ -96,10 +97,12 @@ import com.hedvig.android.ui.claimstatus.ClaimStatusCards
 import com.hedvig.android.ui.claimstatus.model.ClaimPillType
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
+import com.hedvig.android.ui.emergency.CrossSellsSection
 import com.hedvig.android.ui.emergency.FirstVetSection
 import hedvig.resources.R
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -162,7 +165,17 @@ private fun HomeScreen(
     onRefresh = reload,
     refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
   )
-
+  var crossSellsForBottomSheet by remember { mutableStateOf<ImmutableList<CrossSell>?>(null) }
+  if (crossSellsForBottomSheet != null) {
+    val list = crossSellsForBottomSheet
+    if (list != null) {
+      CrossSellBottomSheet(
+        crossSells = list,
+        onDismissed = { crossSellsForBottomSheet = null },
+        onCrossSellClick = openUrl,
+      )
+    }
+  }
   Box(Modifier.fillMaxSize()) {
     val toolbarHeight = 64.dp
     val transition = updateTransition(targetState = uiState, label = "home ui state")
@@ -219,7 +232,7 @@ private fun HomeScreen(
 
             is HomeTopBarAction.CrossSellsAction -> ToolbarCrossSellsIcon(
               onClick = {
-                TODO()
+                crossSellsForBottomSheet = action.crossSells
               },
             )
 
@@ -504,6 +517,26 @@ private fun WelcomeMessage(homeText: HomeText, modifier: Modifier = Modifier) {
     text = headlineText,
     style = MaterialTheme.typography.headlineMedium,
     modifier = modifier.fillMaxWidth(),
+  )
+}
+
+@Composable
+private fun CrossSellBottomSheet(
+  crossSells: ImmutableList<CrossSell>,
+  onDismissed: () -> Unit,
+  onCrossSellClick: (String) -> Unit,
+) {
+  HedvigBottomSheet(
+    onDismissed = onDismissed,
+    content = {
+      Column {
+        CrossSellsSection(
+          showNotificationBadge = false,
+          crossSells = crossSells,
+          onCrossSellClick = onCrossSellClick,
+        )
+      }
+    },
   )
 }
 

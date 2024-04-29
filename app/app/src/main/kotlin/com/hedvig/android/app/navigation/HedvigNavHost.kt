@@ -134,7 +134,7 @@ internal fun HedvigNavHost(
       },
       openAppSettings = externalNavigator::openAppSettings,
       openUrl = openUrl,
-      navigator = navigator
+      navigator = navigator,
     )
     insuranceGraph(
       nestedGraphs = {
