@@ -11,8 +11,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -20,9 +22,9 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.compose.ui.LayoutWithoutPlacement
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextField
+import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.TextFieldDefaults
 import com.hedvig.android.sample.design.showcase.util.ShowcaseLayout
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -33,7 +35,22 @@ import kotlinx.coroutines.isActive
 internal fun ShowcaseTextField() {
   ShowcaseLayout {
     Column(verticalArrangement = Arrangement.spacedBy(80.dp)) {
-      for ((index, type) in ShowcaseTextFieldType.entries.withIndex()) {
+      Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Box(modifier = Modifier.align(Alignment.Bottom)) {
+          LayoutWithoutPlacement(
+            sizeAdjustingContent = {
+              HedvigText(
+                text = ShowcaseTextFieldType.entries.map { it.name }.maxBy { it.length },
+                style = HedvigTheme.typography.bodyMedium,
+              )
+            },
+          ) {
+            HedvigText(text = "Interactive", style = HedvigTheme.typography.bodyMedium)
+          }
+        }
+        InteractiveTextFieldWithAllSizes()
+      }
+      for (type in ShowcaseTextFieldType.entries) {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
           Box(modifier = Modifier.align(Alignment.CenterVertically)) {
             LayoutWithoutPlacement(
@@ -47,7 +64,7 @@ internal fun ShowcaseTextField() {
               HedvigText(text = type.name, style = HedvigTheme.typography.bodyMedium)
             }
           }
-          TextFieldTypeRowWithAllSizes(type, index == 0)
+          TextFieldTypeRowWithAllSizes(type)
         }
       }
     }
@@ -55,25 +72,36 @@ internal fun ShowcaseTextField() {
 }
 
 @Composable
-private fun TextFieldTypeRowWithAllSizes(type: ShowcaseTextFieldType, isFirst: Boolean) {
-  Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-    for (size in TextFieldDefaults.TextFieldSize.entries) {
+fun InteractiveTextFieldWithAllSizes(modifier: Modifier = Modifier) {
+  Row(modifier, horizontalArrangement = Arrangement.spacedBy(20.dp)) {
+    for (size in HedvigTextFieldDefaults.TextFieldSize.entries) {
       Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        if (isFirst) {
-          HedvigText(
-            text = type.name,
-            style = HedvigTheme.typography.bodyMedium,
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-          )
-        }
-        TextFieldWithAndWithoutInputColumn(type, size)
+        HedvigText(
+          text = size.name,
+          style = HedvigTheme.typography.bodyMedium,
+          modifier = Modifier.align(Alignment.CenterHorizontally),
+        )
+        var text by remember { mutableStateOf("") }
+        HedvigTextField(text, { text = it }, size)
       }
     }
   }
 }
 
 @Composable
-private fun TextFieldWithAndWithoutInputColumn(type: ShowcaseTextFieldType, size: TextFieldDefaults.TextFieldSize) {
+private fun TextFieldTypeRowWithAllSizes(type: ShowcaseTextFieldType) {
+  Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
+    for (size in HedvigTextFieldDefaults.TextFieldSize.entries) {
+      TextFieldWithAndWithoutInputColumn(type, size)
+    }
+  }
+}
+
+@Composable
+private fun TextFieldWithAndWithoutInputColumn(
+  type: ShowcaseTextFieldType,
+  size: HedvigTextFieldDefaults.TextFieldSize,
+) {
   Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
     ShowcaseTextField("", type, size)
     ShowcaseTextField("Text Input", type, size)
@@ -81,7 +109,7 @@ private fun TextFieldWithAndWithoutInputColumn(type: ShowcaseTextFieldType, size
 }
 
 @Composable
-private fun ShowcaseTextField(input: String, type: ShowcaseTextFieldType, size: TextFieldDefaults.TextFieldSize) {
+private fun ShowcaseTextField(input: String, type: ShowcaseTextFieldType, size: HedvigTextFieldDefaults.TextFieldSize) {
   val inputValue = if (type == ShowcaseTextFieldType.ErrorPulsating || type == ShowcaseTextFieldType.TypePulsating) {
     val blinkingInput by produceState(input) {
       while (isActive) {
@@ -134,7 +162,7 @@ private fun ShowcaseTextField(input: String, type: ShowcaseTextFieldType, size: 
         }
       }
     } else {
-      remember { MutableInteractionSource() }
+      null
     },
   )
 }

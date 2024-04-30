@@ -6,7 +6,11 @@ internal object TextFieldTokens {
   val ContainerColor = ColorSchemeKeyTokens.SurfacePrimary
   val ContainerPulsatingColor = ColorSchemeKeyTokens.SurfaceSecondary
   val TextColor = ColorSchemeKeyTokens.TextPrimary
+  val TextDisabledColor = ColorSchemeKeyTokens.TextSecondaryTranslucent
   val TextLabelColor = ColorSchemeKeyTokens.TextSecondaryTranslucent
+  val TextDisabledLabelColor = ColorSchemeKeyTokens.TextDisabledTranslucent
+  val SupportingTextColor = ColorSchemeKeyTokens.TextSecondaryTranslucent
+  val SupportingTextStyle = TypographyKeyTokens.Label
   val ErrorPulsatingContainerColor = ColorSchemeKeyTokens.SignalAmberFill
   val ErrorPulsatingTextColor = ColorSchemeKeyTokens.SignalAmberText
   val ErrorPulsatingTextLabelColor = ColorSchemeKeyTokens.SignalAmberText
@@ -14,10 +18,10 @@ internal object TextFieldTokens {
   val LockIconColor = ColorSchemeKeyTokens.FillSecondary
   val WarningIconColor = ColorSchemeKeyTokens.SignalAmberElement
   val BorderColor = ColorSchemeKeyTokens.BorderSecondary
-  val BorderShape = ShapeKeyTokens.CornerLarge
   val BorderWidth = 0.dp
   val FocusedBorderWidth = 1.dp
   val ErrorBorderWidth = 1.dp
+  val Shape = ShapeKeyTokens.CornerLarge
 }
 
 internal object LargeSizeTextFieldTokens {
@@ -29,7 +33,7 @@ internal object LargeSizeTextFieldTokens {
   val LabelToTextOverlap = 3.dp
   val TopPaddingWithLabel = 10.dp
   val BottomPaddingWithLabel = 9.dp
-  val LabelTopPadding = 4.dp
-  val LabelBottomPadding = 8.dp
-  val LabelHorizontalPadding = 16.dp
+  val SupportingTextTopPadding = 4.dp
+  val SupportingTextBottomPadding = 8.dp
+  val SupportingTextHorizontalPadding = 16.dp
 }
