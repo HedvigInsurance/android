@@ -11,7 +11,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -46,10 +45,10 @@ import kotlinx.coroutines.flow.drop
 fun HedvigTextField(
   text: String,
   onValueChange: (String) -> Unit,
+  labelText: String,
   textFieldSize: HedvigTextFieldDefaults.TextFieldSize,
   modifier: Modifier = Modifier,
-  errorMessage: String? = null,
-  labelText: String? = null,
+  errorState: HedvigTextFieldDefaults.ErrorState = HedvigTextFieldDefaults.ErrorState.NoError,
   enabled: Boolean = true,
   readOnly: Boolean = false,
   keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
@@ -63,25 +62,36 @@ fun HedvigTextField(
 ) {
   @Suppress("NAME_SHADOWING")
   val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
-  // todo impl
+  val configuration = HedvigTextFieldDefaults.configuration()
+  val size = textFieldSize.size
   HedvigTextField(
     value = text,
     onValueChange = onValueChange,
     colors = HedvigTextFieldDefaults.colors(),
-    configuration = HedvigTextFieldDefaults.configuration(),
-    size = textFieldSize.size,
+    configuration = configuration,
+    size = size,
     modifier = modifier,
-//    errorMessage = errorMessage,
-//    labelText = labelText,
     enabled = enabled,
     readOnly = readOnly,
+    label = { HedvigText(text = labelText) },
+//    placeholder = placeholder,
+//    leadingIcon = leadingIcon,
+//    trailingIcon = trailingIcon,
+//    prefix = prefix,
+//    suffix = suffix,
+    supportingText = if (errorState is HedvigTextFieldDefaults.ErrorState.ErrorWithMessage) {
+      { HedvigText(text = errorState.message) }
+    } else {
+      null
+    },
+    isError = errorState !is HedvigTextFieldDefaults.ErrorState.NoError,
+    visualTransformation = visualTransformation,
+    onTextLayout = onTextLayout,
     keyboardOptions = keyboardOptions,
     keyboardActions = keyboardActions,
     singleLine = singleLine,
     maxLines = maxLines,
     minLines = minLines,
-    visualTransformation = visualTransformation,
-    onTextLayout = onTextLayout,
     interactionSource = interactionSource,
   )
 }
@@ -93,6 +103,14 @@ object HedvigTextFieldDefaults {
     Large,
     Medium,
     Small,
+  }
+
+  sealed interface ErrorState {
+    data object NoError : ErrorState
+
+    data object Error : ErrorState
+
+    data class ErrorWithMessage(val message: String) : ErrorState
   }
 }
 
@@ -271,7 +289,7 @@ private val HedvigTextFieldDefaults.TextFieldSize.size: HedvigTextFieldSize
 
 internal sealed interface HedvigTextFieldSize {
   @Composable
-  fun contentPadding(value: String): PaddingValues
+  fun contentPadding(value: String, isFocused: Boolean): PaddingValues
 
   val supportingTextPadding: PaddingValues
 
@@ -285,17 +303,17 @@ internal sealed interface HedvigTextFieldSize {
 
   object Large : HedvigTextFieldSize {
     @Composable
-    override fun contentPadding(value: String): PaddingValues {
+    override fun contentPadding(value: String, isFocused: Boolean): PaddingValues {
       val hasInput = value.isNotEmpty()
       val topPadding by animateDpAsState(
         when {
-          hasInput -> LargeSizeTextFieldTokens.TopPaddingWithLabel
+          hasInput || isFocused -> LargeSizeTextFieldTokens.TopPaddingWithLabel
           else -> LargeSizeTextFieldTokens.TopPadding
         },
       )
       val bottomPadding by animateDpAsState(
         when {
-          hasInput -> LargeSizeTextFieldTokens.BottomPaddingWithLabel
+          hasInput || isFocused -> LargeSizeTextFieldTokens.BottomPaddingWithLabel
           else -> LargeSizeTextFieldTokens.BottomPadding
         },
       )
@@ -402,22 +420,6 @@ private fun HedvigTextField(
   }
 }
 
-// @Composable
-// private fun ErrorRow(text: String) {
-//  Row(
-//    verticalAlignment = Alignment.CenterVertically,
-//  ) {
-//    Icon(
-//      imageVector = Icons.Hedvig.Info,
-//      contentDescription = null,
-//      modifier = Modifier.size(16.dp),
-//      tint = MaterialTheme.colorScheme.warningElement,
-//    )
-//    Spacer(Modifier.width(6.dp))
-//    Text(text)
-//  }
-// }
-
 @Composable
 private fun HedvigTextFieldDecorationBox(
   value: String,
@@ -459,7 +461,7 @@ private fun HedvigTextFieldDecorationBox(
     enabled = enabled,
     isError = isError,
     interactionSource = interactionSource,
-    contentPadding = size.contentPadding(value),
+    contentPadding = size.contentPadding(value, interactionSource.collectIsFocusedAsState().value),
     container = container,
   )
 }

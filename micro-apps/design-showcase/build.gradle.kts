@@ -25,7 +25,7 @@ android {
       isDebuggable = true
     }
     val release by getting {
-      signingConfig = debug.signingConfig // uncomment to run release build locally
+      signingConfig = debug.signingConfig
       applicationIdSuffix = ".app"
       isMinifyEnabled = true
       isShrinkResources = true

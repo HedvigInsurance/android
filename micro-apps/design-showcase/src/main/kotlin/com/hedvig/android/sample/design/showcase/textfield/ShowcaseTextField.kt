@@ -82,7 +82,7 @@ fun InteractiveTextFieldWithAllSizes(modifier: Modifier = Modifier) {
           modifier = Modifier.align(Alignment.CenterHorizontally),
         )
         var text by remember { mutableStateOf("") }
-        HedvigTextField(text, { text = it }, size)
+        HedvigTextField(text, { text = it }, "Label", size)
       }
     }
   }
@@ -113,10 +113,11 @@ private fun ShowcaseTextField(input: String, type: ShowcaseTextFieldType, size: 
   val inputValue = if (type == ShowcaseTextFieldType.ErrorPulsating || type == ShowcaseTextFieldType.TypePulsating) {
     val blinkingInput by produceState(input) {
       while (isActive) {
-        value = input
-        delay(200)
-        value = input + " "
-        delay(200)
+        val textWithAtLeastOneChar = input.takeIf { it.isNotEmpty() } ?: "A"
+        value = textWithAtLeastOneChar
+        delay(400 - 10)
+        value = textWithAtLeastOneChar + " "
+        delay(400 - 10)
       }
     }
     blinkingInput
@@ -128,8 +129,12 @@ private fun ShowcaseTextField(input: String, type: ShowcaseTextFieldType, size: 
     onValueChange = {},
     textFieldSize = size,
     labelText = "Label",
-    errorMessage = "Something went wrong".takeIf {
-      type == ShowcaseTextFieldType.Error || type == ShowcaseTextFieldType.ErrorPulsating
+    errorState = when (type) {
+      ShowcaseTextFieldType.Error -> HedvigTextFieldDefaults.ErrorState.Error
+      ShowcaseTextFieldType.ErrorPulsating -> HedvigTextFieldDefaults.ErrorState.ErrorWithMessage(
+        "Something went wrong",
+      )
+      else -> HedvigTextFieldDefaults.ErrorState.NoError
     },
     enabled = type == ShowcaseTextFieldType.Disabled,
     readOnly = type == ShowcaseTextFieldType.ReadOnly,

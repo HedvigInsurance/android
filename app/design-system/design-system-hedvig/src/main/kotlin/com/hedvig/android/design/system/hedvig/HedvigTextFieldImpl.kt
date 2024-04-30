@@ -356,6 +356,5 @@ internal val SupportingTopPadding = 4.dp
 internal val PrefixSuffixTextPadding = 2.dp
 internal val MinTextLineHeight = 24.dp
 internal val MinFocusedLabelLineHeight = 16.dp
-internal val MinSupportingTextLineHeight = 16.dp
 
 internal val IconDefaultSizeModifier = Modifier.defaultMinSize(48.dp, 48.dp)

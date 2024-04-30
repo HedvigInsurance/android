@@ -163,7 +163,6 @@ internal fun HedvigTextFieldLayout(
           .layoutId(SupportingId)
           .animateContentHeight()
           .then(if (supporting == null) Modifier.requiredSize(0.dp) else Modifier)
-          .heightIn(min = MinSupportingTextLineHeight)
           .wrapContentHeight()
           .padding(size.supportingTextPadding),
       ) {
