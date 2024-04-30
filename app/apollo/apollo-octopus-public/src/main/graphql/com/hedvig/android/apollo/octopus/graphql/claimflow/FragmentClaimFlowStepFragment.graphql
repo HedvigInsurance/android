@@ -98,40 +98,31 @@ fragment FlowClaimSingleItemCheckoutStepFragment on FlowClaimSingleItemCheckoutS
     ...CheckoutMethodFragment
   }
   compensation {
-    ...CompensationFragment
-  }
-}
-
-fragment CompensationFragment on FlowClaimSingleItemCheckoutCompensation {
-  id
-  ...CheckoutRepairCompensationFragment
-  ...CheckoutValueCompensationFragment
-}
-
-fragment CheckoutRepairCompensationFragment on FlowClaimSingleItemCheckoutRepairCompensation {
-  deductible {
-    ...MoneyFragment
-  }
-  payoutAmount {
-    ...MoneyFragment
-  }
-  repairCost {
-    ...MoneyFragment
-  }
-}
-
-fragment CheckoutValueCompensationFragment on FlowClaimSingleItemCheckoutValueCompensation {
-  deductible {
-    ...MoneyFragment
-  }
-  depreciation {
-    ...MoneyFragment
-  }
-  payoutAmount {
-    ...MoneyFragment
-  }
-  price {
-    ...MoneyFragment
+    ... on FlowClaimSingleItemCheckoutRepairCompensation {
+      deductible {
+        ...MoneyFragment
+      }
+      payoutAmount {
+        ...MoneyFragment
+      }
+      repairCost {
+        ...MoneyFragment
+      }
+    }
+    ... on FlowClaimSingleItemCheckoutValueCompensation {
+      deductible {
+        ...MoneyFragment
+      }
+      depreciation {
+        ...MoneyFragment
+      }
+      payoutAmount {
+        ...MoneyFragment
+      }
+      price {
+        ...MoneyFragment
+      }
+    }
   }
 }
 

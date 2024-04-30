@@ -9,10 +9,7 @@ import kotlinx.collections.immutable.toPersistentList
 import octopus.fragment.AudioContentFragment
 import octopus.fragment.AutomaticAutogiroPayoutFragment
 import octopus.fragment.CheckoutMethodFragment
-import octopus.fragment.CheckoutRepairCompensationFragment
-import octopus.fragment.CheckoutValueCompensationFragment
 import octopus.fragment.ClaimFlowStepFragment
-import octopus.fragment.CompensationFragment
 import octopus.fragment.FlowClaimContractSelectStepFragment
 import octopus.fragment.FlowClaimDeflectPartnerFragment
 import octopus.fragment.FlowClaimFileUploadFragment
@@ -97,6 +94,8 @@ fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
       val modelName = singleItemStep?.availableItemModels?.firstOrNull {
         it.itemModelId == singleItemStep.selectedItemModel
       }?.displayName
+      val compensation: ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep.Compensation =
+        this.compensation
       ClaimFlowDestination.SingleItemCheckout(
         compensation = compensation.toCompensation(),
         availableCheckoutMethods = availableCheckoutMethods.map(CheckoutMethodFragment::toCheckoutMethod)
@@ -178,16 +177,21 @@ private fun CheckoutMethodFragment.toCheckoutMethod(): CheckoutMethod {
   }
 }
 
-private fun CompensationFragment.toCompensation(): ClaimFlowDestination.Compensation {
+private fun ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep.Compensation.toCompensation(): ClaimFlowDestination.Compensation {
   return when (this) {
-    is CheckoutRepairCompensationFragment -> {
+    is ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep
+      .FlowClaimSingleItemCheckoutRepairCompensationCompensation,
+    -> {
       ClaimFlowDestination.Compensation.Known.RepairCompensation(
         repairCost = UiMoney.fromMoneyFragment(repairCost),
         deductible = UiMoney.fromMoneyFragment(deductible),
         payoutAmount = UiMoney.fromMoneyFragment(payoutAmount),
       )
     }
-    is CheckoutValueCompensationFragment -> {
+
+    is ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep
+      .FlowClaimSingleItemCheckoutValueCompensationCompensation,
+    -> {
       ClaimFlowDestination.Compensation.Known.ValueCompensation(
         price = UiMoney.fromMoneyFragment(price),
         deductible = UiMoney.fromMoneyFragment(deductible),
@@ -196,7 +200,7 @@ private fun CompensationFragment.toCompensation(): ClaimFlowDestination.Compensa
       )
     }
 
-    else -> ClaimFlowDestination.Compensation.UnKnown
+    else -> ClaimFlowDestination.Compensation.Unknown
   }
 }
 

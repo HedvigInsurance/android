@@ -21,7 +21,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -44,11 +43,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.NonEmptyList
 import arrow.core.toNonEmptyListOrNull
+import com.hedvig.android.core.designsystem.component.bottomsheet.HedvigBottomSheet
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
-import com.hedvig.android.core.designsystem.material3.squircleLargeTop
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
@@ -107,11 +106,12 @@ private fun SingleItemCheckoutScreen(
 ) {
   var bottomSheetText by remember { mutableStateOf<Pair<String, String>?>(null) }
   val explanationSheetState = rememberModalBottomSheetState(true)
-  if (bottomSheetText != null) {
+  val bottomSheetTextValue = bottomSheetText
+  if (bottomSheetTextValue != null) {
     SingleItemCheckoutInfoBottomSheet(
       onDismiss = { bottomSheetText = null },
       sheetState = explanationSheetState,
-      explanationTitleAndText = bottomSheetText ?: Pair("", ""), // todo: do I like it here?
+      explanationTitleAndText = bottomSheetTextValue,
     )
   }
 
@@ -144,6 +144,7 @@ private fun SingleItemCheckoutScreen(
           )
         }
       },
+      spaceBetween = 8.dp,
       endSlot = {
         Row(
           horizontalArrangement =
@@ -154,6 +155,7 @@ private fun SingleItemCheckoutScreen(
             is ClaimFlowDestination.Compensation.Known.RepairCompensation -> stringResource(
               id = R.string.CLAIMS_CHECKOUT_REPAIR_CALCULATION_TEXT,
             )
+
             is ClaimFlowDestination.Compensation.Known.ValueCompensation -> stringResource(
               id = R.string.CLAIMS_CHECKOUT_NO_REPAIR_CALCULATION_TEXT,
             )
@@ -179,8 +181,7 @@ private fun SingleItemCheckoutScreen(
     CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
       Column(sideSpacingModifier) {
         val pairs = when (uiState.compensation) {
-          is ClaimFlowDestination.Compensation.Known.RepairCompensation,
-          -> listOf(
+          is ClaimFlowDestination.Compensation.Known.RepairCompensation -> listOf(
             stringResource(
               R.string.CLAIMS_CHECKOUT_REPAIR_TITLE,
               uiState.modelDisplayName,
@@ -199,6 +200,7 @@ private fun SingleItemCheckoutScreen(
             startSlot = {
               Text(left)
             },
+            spaceBetween = 8.dp,
             endSlot = {
               Text(right, textAlign = TextAlign.End)
             },
@@ -236,6 +238,7 @@ private fun SingleItemCheckoutScreen(
         VectorInfoCard(stringResource(R.string.CLAIMS_CHECKOUT_REPAIR_INFO_TEXT), sideSpacingModifier)
         Spacer(Modifier.height(16.dp))
       }
+
       is ClaimFlowDestination.Compensation.Known.ValueCompensation -> {
         HorizontalDivider(sideSpacingModifier, thickness = Dp.Hairline)
         Spacer(Modifier.height(16.dp))
@@ -285,8 +288,8 @@ private fun SingleItemCheckoutScreen(
     Spacer(Modifier.weight(1f))
     if (uiState.compensation is ClaimFlowDestination.Compensation.Known.ValueCompensation) {
       VectorInfoCard(stringResource(R.string.CLAIMS_CHECKOUT_NOTICE), sideSpacingModifier)
+      Spacer(Modifier.height(16.dp))
     }
-    Spacer(Modifier.height(16.dp))
     HedvigContainedButton(
       onClick = { submitSelectedCheckoutMethod(uiState.selectedCheckoutMethod) },
       text = stringResource(R.string.claims_payout_button_label, uiState.compensation.payoutAmount.toString()),
@@ -347,36 +350,32 @@ internal fun SingleItemCheckoutInfoBottomSheet(
   sheetState: SheetState,
   explanationTitleAndText: Pair<String, String>,
 ) {
-  ModalBottomSheet(
-    containerColor = MaterialTheme.colorScheme.background,
-    onDismissRequest = {
-      onDismiss()
-    },
-    shape = MaterialTheme.shapes.squircleLargeTop,
+  HedvigBottomSheet(
+    onDismissed = onDismiss,
     sheetState = sheetState,
-    tonalElevation = 0.dp,
-  ) {
-    Text(
-      text = explanationTitleAndText.first,
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 24.dp),
-    )
-    Spacer(Modifier.height(8.dp))
-    Text(
-      text = explanationTitleAndText.second,
-      color = MaterialTheme.colorScheme.onSurfaceVariant,
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 24.dp),
-    )
-    Spacer(Modifier.height(32.dp))
-    HedvigTextButton(
-      text = stringResource(id = R.string.general_close_button),
-      onClick = { onDismiss() },
-      modifier = Modifier.padding(start = 24.dp, end = 24.dp, bottom = 16.dp),
-    )
-  }
+    content = {
+      Text(
+        text = explanationTitleAndText.first,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 24.dp),
+      )
+      Spacer(Modifier.height(8.dp))
+      Text(
+        text = explanationTitleAndText.second,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 24.dp),
+      )
+      Spacer(Modifier.height(32.dp))
+      HedvigTextButton(
+        text = stringResource(id = R.string.general_close_button),
+        onClick = { onDismiss() },
+        modifier = Modifier.padding(start = 24.dp, end = 24.dp, bottom = 16.dp),
+      )
+    },
+  )
 }
 
 @HedvigPreview

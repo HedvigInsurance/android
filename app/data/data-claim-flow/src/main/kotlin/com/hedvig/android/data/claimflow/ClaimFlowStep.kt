@@ -5,7 +5,6 @@ import kotlinx.datetime.LocalDate
 import octopus.fragment.AudioContentFragment
 import octopus.fragment.CheckoutMethodFragment
 import octopus.fragment.ClaimFlowStepFragment
-import octopus.fragment.CompensationFragment
 import octopus.fragment.FlowClaimContractSelectStepFragment
 import octopus.fragment.FlowClaimDeflectPartnerFragment
 import octopus.fragment.FlowClaimFileUploadFragment
@@ -72,7 +71,7 @@ sealed interface ClaimFlowStep {
 
   data class ClaimResolutionSingleItemStep(
     override val flowId: FlowId,
-    val compensation: CompensationFragment,
+    val compensation: ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep.Compensation,
     val availableCheckoutMethods: List<CheckoutMethodFragment>,
     val singleItemStep: ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep.SingleItemStep?,
   ) : ClaimFlowStep
