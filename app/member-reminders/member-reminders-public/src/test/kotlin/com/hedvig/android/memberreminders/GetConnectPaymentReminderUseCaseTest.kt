@@ -80,7 +80,6 @@ class GetConnectPaymentReminderUseCaseTest {
       apolloClient,
       onlyHasNonPayingContractsUseCaseProvider,
     )
-    apolloClient.enqueueTestNetworkError()
 
     val result = getConnectPaymentReminderUseCase.invoke()
 
