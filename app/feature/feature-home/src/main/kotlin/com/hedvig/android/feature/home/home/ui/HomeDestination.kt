@@ -36,6 +36,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -78,6 +79,7 @@ import com.hedvig.android.core.ui.infocard.InfoCardTextButton
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.plus
 import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
+import com.hedvig.android.crosssells.CrossSellsSection
 import com.hedvig.android.data.contract.android.CrossSell
 import com.hedvig.android.feature.home.home.ChatTooltip
 import com.hedvig.android.feature.home.home.data.HomeData
@@ -97,7 +99,6 @@ import com.hedvig.android.ui.claimstatus.ClaimStatusCards
 import com.hedvig.android.ui.claimstatus.model.ClaimPillType
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
-import com.hedvig.android.ui.emergency.CrossSellsSection
 import com.hedvig.android.ui.emergency.FirstVetSection
 import hedvig.resources.R
 import java.time.format.DateTimeFormatter
@@ -171,7 +172,9 @@ private fun HomeScreen(
   if (crossSellsForBottomSheet != null) {
     val list = crossSellsForBottomSheet
     if (list != null) {
-      markCrossSellsNotificationAsSeen()
+      LaunchedEffect(Unit) {
+        markCrossSellsNotificationAsSeen()
+      }
       CrossSellBottomSheet(
         crossSells = list,
         onDismissed = { crossSellsForBottomSheet = null },
@@ -623,7 +626,7 @@ private fun PreviewHomeScreen(
         navigateToMissingInfo = {},
         markMessageAsSeen = {},
         navigateToFirstVet = {},
-        markCrossSellsNotificationAsSeen = {}
+        markCrossSellsNotificationAsSeen = {},
       )
     }
   }

@@ -54,6 +54,8 @@ import com.hedvig.android.core.ui.card.InsuranceCardPlaceholder
 import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
+import com.hedvig.android.crosssells.CrossSellItemPlaceholder
+import com.hedvig.android.crosssells.CrossSellsSection
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.contract.android.CrossSell
@@ -69,8 +71,6 @@ import com.hedvig.android.pullrefresh.PullRefreshDefaults
 import com.hedvig.android.pullrefresh.PullRefreshIndicator
 import com.hedvig.android.pullrefresh.pullRefresh
 import com.hedvig.android.pullrefresh.rememberPullRefreshState
-import com.hedvig.android.ui.emergency.CrossSellItemPlaceholder
-import com.hedvig.android.ui.emergency.CrossSellsSection
 import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf

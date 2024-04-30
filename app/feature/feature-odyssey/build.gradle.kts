@@ -45,7 +45,7 @@ dependencies {
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
   implementation(projects.notificationPermission)
-  implementation(projects.uiScreens)
+  implementation(projects.uiEmergency)
 
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)

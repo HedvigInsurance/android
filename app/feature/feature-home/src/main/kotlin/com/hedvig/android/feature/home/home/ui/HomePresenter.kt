@@ -180,16 +180,18 @@ private data class SuccessData(
     }
 
     fun fromHomeData(homeData: HomeData): SuccessData {
-      val actionsList = mutableListOf<HomeTopBarAction>()
-      if (homeData.crossSells.isNotEmpty()) actionsList.add(HomeTopBarAction.CrossSellsAction(homeData.crossSells))
-      if (homeData.firstVetSections.isNotEmpty()) {
-        actionsList.add(
-          HomeTopBarAction.FirstVetAction(
-            homeData.firstVetSections,
-          ),
-        )
+      val actionsList = buildList {
+        if (homeData.crossSells.isNotEmpty()) add(HomeTopBarAction.CrossSellsAction(homeData.crossSells))
+        if (homeData.firstVetSections.isNotEmpty()) {
+          add(
+            HomeTopBarAction.FirstVetAction(
+              homeData.firstVetSections,
+            ),
+          )
+        }
+        if (homeData.showChatIcon) add(HomeTopBarAction.ChatAction)
       }
-      if (homeData.showChatIcon) actionsList.add(HomeTopBarAction.ChatAction)
+
       return SuccessData(
         homeText = when (homeData.contractStatus) {
           HomeData.ContractStatus.Active -> HomeText.Active

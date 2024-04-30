@@ -101,7 +101,7 @@ internal class GetHomeDataUseCaseImpl(
               section.title,
               section.url,
             )
-          } ?: listOf()
+          } ?: emptyList()
         HomeData(
           contractStatus = contractStatus,
           claimStatusCardsData = homeQueryData.claimStatusCards(),

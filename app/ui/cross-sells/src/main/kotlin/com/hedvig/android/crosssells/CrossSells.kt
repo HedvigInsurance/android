@@ -1,4 +1,4 @@
-package com.hedvig.android.ui.emergency
+package com.hedvig.android.crosssells
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Canvas
@@ -65,8 +65,8 @@ fun ColumnScope.CrossSellsSection(
 fun ColumnScope.CrossSellItemPlaceholder() {
   CrossSellsSubHeaderWithDivider(false)
   CrossSellItem(
-    crossSellTitle = "Hhhh",
-    crossSellSubtitle = "Hhhhhhhhh\nhhhhhhhhhhhh",
+    crossSellTitle = "HHHH",
+    crossSellSubtitle = "HHHHHHHH\nHHHHHHHHHHH",
     storeUrl = "",
     type = CrossSell.CrossSellType.HOME,
     onCrossSellClick = {},
