@@ -158,7 +158,7 @@ sealed interface ClaimFlowDestination : Destination {
     }
 
     @Serializable
-    data object UnKnown : Compensation
+    data object Unknown : Compensation
   }
 
   // Local-only destination, not matching to a flow step, used to handle payout logic
