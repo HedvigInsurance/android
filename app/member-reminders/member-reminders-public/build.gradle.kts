@@ -25,6 +25,8 @@ dependencies {
   implementation(projects.apolloOctopusPublic)
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)
+  implementation(projects.coreDemoMode)
+  implementation(projects.dataPayingMember)
   implementation(projects.featureFlagsPublic)
 
   testImplementation(libs.apollo.annotations)
