@@ -39,8 +39,6 @@ internal fun HedvigTextFieldLayout(
   label: @Composable (() -> Unit)?,
   placeholder: @Composable ((Modifier) -> Unit)?,
   trailing: @Composable (() -> Unit)?,
-  prefix: @Composable (() -> Unit)?,
-  suffix: @Composable (() -> Unit)?,
   singleLine: Boolean,
   animationProgress: Float,
   container: @Composable () -> Unit,
@@ -80,29 +78,6 @@ internal fun HedvigTextFieldLayout(
         endTextFieldPadding
       }
 
-      if (prefix != null) {
-        Box(
-          Modifier
-            .layoutId(PrefixId)
-            .heightIn(min = MinTextLineHeight)
-            .wrapContentHeight()
-            .padding(start = startPadding, end = PrefixSuffixTextPadding),
-        ) {
-          prefix()
-        }
-      }
-      if (suffix != null) {
-        Box(
-          Modifier
-            .layoutId(SuffixId)
-            .heightIn(min = MinTextLineHeight)
-            .wrapContentHeight()
-            .padding(start = PrefixSuffixTextPadding, end = endPadding),
-        ) {
-          suffix()
-        }
-      }
-
       if (label != null) {
         Box(
           Modifier
@@ -122,10 +97,6 @@ internal fun HedvigTextFieldLayout(
       val textPadding = Modifier
         .heightIn(min = MinTextLineHeight)
         .wrapContentHeight()
-        .padding(
-          start = if (prefix == null) startPadding else 0.dp,
-          end = if (suffix == null) endPadding else 0.dp,
-        )
 
       if (placeholder != null) {
         placeholder(
@@ -180,18 +151,6 @@ private class TextFieldMeasurePolicy(
     occupiedSpaceHorizontally += widthOrZero(trailingPlaceable)
     occupiedSpaceVertically = max(occupiedSpaceVertically, heightOrZero(trailingPlaceable))
 
-    // measure prefix
-    val prefixPlaceable = measurables.find { it.layoutId == PrefixId }
-      ?.measure(looseConstraints.offset(horizontal = -occupiedSpaceHorizontally))
-    occupiedSpaceHorizontally += widthOrZero(prefixPlaceable)
-    occupiedSpaceVertically = max(occupiedSpaceVertically, heightOrZero(prefixPlaceable))
-
-    // measure suffix
-    val suffixPlaceable = measurables.find { it.layoutId == SuffixId }
-      ?.measure(looseConstraints.offset(horizontal = -occupiedSpaceHorizontally))
-    occupiedSpaceHorizontally += widthOrZero(suffixPlaceable)
-    occupiedSpaceVertically = max(occupiedSpaceVertically, heightOrZero(suffixPlaceable))
-
     // measure label
     val labelConstraints = looseConstraints
       .offset(
@@ -236,8 +195,6 @@ private class TextFieldMeasurePolicy(
 
     val width = calculateWidth(
       trailingWidth = widthOrZero(trailingPlaceable),
-      prefixWidth = widthOrZero(prefixPlaceable),
-      suffixWidth = widthOrZero(suffixPlaceable),
       textFieldWidth = textFieldPlaceable.width,
       labelWidth = widthOrZero(labelPlaceable),
       placeholderWidth = widthOrZero(placeholderPlaceable),
@@ -247,8 +204,6 @@ private class TextFieldMeasurePolicy(
       textFieldHeight = textFieldPlaceable.height,
       labelHeight = heightOrZero(labelPlaceable),
       trailingHeight = heightOrZero(trailingPlaceable),
-      prefixHeight = heightOrZero(prefixPlaceable),
-      suffixHeight = heightOrZero(suffixPlaceable),
       placeholderHeight = heightOrZero(placeholderPlaceable),
       supportingHeight = heightOrZero(supportingPlaceable),
       isLabelFocused = animationProgress == 1f,
@@ -276,8 +231,6 @@ private class TextFieldMeasurePolicy(
           labelPlaceable = labelPlaceable,
           placeholderPlaceable = placeholderPlaceable,
           trailingPlaceable = trailingPlaceable,
-          prefixPlaceable = prefixPlaceable,
-          suffixPlaceable = suffixPlaceable,
           containerPlaceable = containerPlaceable,
           supportingPlaceable = supportingPlaceable,
           singleLine = singleLine,
@@ -293,8 +246,6 @@ private class TextFieldMeasurePolicy(
           textPlaceable = textFieldPlaceable,
           placeholderPlaceable = placeholderPlaceable,
           trailingPlaceable = trailingPlaceable,
-          prefixPlaceable = prefixPlaceable,
-          suffixPlaceable = suffixPlaceable,
           containerPlaceable = containerPlaceable,
           supportingPlaceable = supportingPlaceable,
           singleLine = singleLine,
@@ -342,19 +293,11 @@ private class TextFieldMeasurePolicy(
     val trailingWidth = measurables.find { it.layoutId == TrailingId }?.let {
       intrinsicMeasurer(it, height)
     } ?: 0
-    val prefixWidth = measurables.find { it.layoutId == PrefixId }?.let {
-      intrinsicMeasurer(it, height)
-    } ?: 0
-    val suffixWidth = measurables.find { it.layoutId == SuffixId }?.let {
-      intrinsicMeasurer(it, height)
-    } ?: 0
     val placeholderWidth = measurables.find { it.layoutId == PlaceholderId }?.let {
       intrinsicMeasurer(it, height)
     } ?: 0
     return calculateWidth(
       trailingWidth = trailingWidth,
-      prefixWidth = prefixWidth,
-      suffixWidth = suffixWidth,
       textFieldWidth = textFieldWidth,
       labelWidth = labelWidth,
       placeholderWidth = placeholderWidth,
@@ -375,12 +318,6 @@ private class TextFieldMeasurePolicy(
     val trailingHeight = measurables.find { it.layoutId == TrailingId }?.let {
       intrinsicMeasurer(it, width)
     } ?: 0
-    val prefixHeight = measurables.find { it.layoutId == PrefixId }?.let {
-      intrinsicMeasurer(it, width)
-    } ?: 0
-    val suffixHeight = measurables.find { it.layoutId == SuffixId }?.let {
-      intrinsicMeasurer(it, width)
-    } ?: 0
     val placeholderHeight = measurables.find { it.layoutId == PlaceholderId }?.let {
       intrinsicMeasurer(it, width)
     } ?: 0
@@ -391,8 +328,6 @@ private class TextFieldMeasurePolicy(
       textFieldHeight = textFieldHeight,
       labelHeight = labelHeight,
       trailingHeight = trailingHeight,
-      prefixHeight = prefixHeight,
-      suffixHeight = suffixHeight,
       placeholderHeight = placeholderHeight,
       supportingHeight = supportingHeight,
       isLabelFocused = animationProgress == 1f,
@@ -405,18 +340,14 @@ private class TextFieldMeasurePolicy(
 
 private fun calculateWidth(
   trailingWidth: Int,
-  prefixWidth: Int,
-  suffixWidth: Int,
   textFieldWidth: Int,
   labelWidth: Int,
   placeholderWidth: Int,
   constraints: Constraints,
 ): Int {
-  val affixTotalWidth = prefixWidth + suffixWidth
   val middleSection = maxOf(
-    textFieldWidth + affixTotalWidth,
-    placeholderWidth + affixTotalWidth,
-    // Prefix/suffix does not get applied to label
+    textFieldWidth,
+    placeholderWidth,
     labelWidth,
   )
   val wrappedWidth = middleSection + trailingWidth
@@ -427,8 +358,6 @@ private fun calculateHeight(
   textFieldHeight: Int,
   labelHeight: Int,
   trailingHeight: Int,
-  prefixHeight: Int,
-  suffixHeight: Int,
   placeholderHeight: Int,
   supportingHeight: Int,
   isLabelFocused: Boolean,
@@ -454,8 +383,6 @@ private fun calculateHeight(
     constraints.minHeight,
     maxOf(
       trailingHeight,
-      prefixHeight,
-      suffixHeight,
       middleSectionHeight.roundToInt(),
     ) + supportingHeight,
   )
@@ -473,8 +400,6 @@ private fun Placeable.PlacementScope.placeWithLabel(
   labelPlaceable: Placeable?,
   placeholderPlaceable: Placeable?,
   trailingPlaceable: Placeable?,
-  prefixPlaceable: Placeable?,
-  suffixPlaceable: Placeable?,
   containerPlaceable: Placeable,
   supportingPlaceable: Placeable?,
   singleLine: Boolean,
@@ -520,13 +445,7 @@ private fun Placeable.PlacementScope.placeWithLabel(
     it.placeRelative(0, positionY)
   }
 
-  prefixPlaceable?.placeRelative(0, textPosition)
-  suffixPlaceable?.placeRelative(
-    width - widthOrZero(trailingPlaceable) - suffixPlaceable.width,
-    textPosition,
-  )
-
-  val textHorizontalPosition = 0 + widthOrZero(prefixPlaceable)
+  val textHorizontalPosition = 0
   textfieldPlaceable.placeRelative(textHorizontalPosition, textPosition)
   placeholderPlaceable?.placeRelative(textHorizontalPosition, textPosition)
 
@@ -543,8 +462,6 @@ private fun Placeable.PlacementScope.placeWithoutLabel(
   textPlaceable: Placeable,
   placeholderPlaceable: Placeable?,
   trailingPlaceable: Placeable?,
-  prefixPlaceable: Placeable?,
-  suffixPlaceable: Placeable?,
   containerPlaceable: Placeable,
   supportingPlaceable: Placeable?,
   singleLine: Boolean,
@@ -574,18 +491,7 @@ private fun Placeable.PlacementScope.placeWithoutLabel(
     }
   }
 
-  prefixPlaceable?.placeRelative(
-    0,
-    calculateVerticalPosition(prefixPlaceable),
-  )
-
-  suffixPlaceable?.placeRelative(
-    width - widthOrZero(trailingPlaceable) - suffixPlaceable.width,
-    calculateVerticalPosition(suffixPlaceable),
-  )
-
-  val textHorizontalPosition = 0 + widthOrZero(prefixPlaceable)
-
+  val textHorizontalPosition = 0
   textPlaceable.placeRelative(textHorizontalPosition, calculateVerticalPosition(textPlaceable))
 
   placeholderPlaceable?.placeRelative(
