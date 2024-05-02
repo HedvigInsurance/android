@@ -35,6 +35,9 @@ import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.Dp
+import com.hedvig.android.design.system.hedvig.internal.HedvigDecorationBox
+import com.hedvig.android.design.system.hedvig.internal.SignalAnimationDuration
+import com.hedvig.android.design.system.hedvig.internal.TextFieldLabelAnimationDuration
 import com.hedvig.android.design.system.hedvig.tokens.LargeSizeTextFieldTokens
 import com.hedvig.android.design.system.hedvig.tokens.TextFieldTokens
 import kotlinx.coroutines.delay
@@ -309,12 +312,14 @@ internal sealed interface HedvigTextFieldSize {
           hasInput || isFocused -> LargeSizeTextFieldTokens.TopPaddingWithLabel
           else -> LargeSizeTextFieldTokens.TopPadding
         },
+        tween(TextFieldLabelAnimationDuration),
       )
       val bottomPadding by animateDpAsState(
         when {
           hasInput || isFocused -> LargeSizeTextFieldTokens.BottomPaddingWithLabel
           else -> LargeSizeTextFieldTokens.BottomPadding
         },
+        tween(TextFieldLabelAnimationDuration),
       )
       return PaddingValues(
         start = LargeSizeTextFieldTokens.HorizontalPadding,

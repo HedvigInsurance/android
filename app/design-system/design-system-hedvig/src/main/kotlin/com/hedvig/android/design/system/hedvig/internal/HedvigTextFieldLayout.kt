@@ -1,10 +1,9 @@
-package com.hedvig.android.design.system.hedvig
+package com.hedvig.android.design.system.hedvig.internal
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -27,7 +26,9 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.offset
+import androidx.compose.ui.util.lerp
 import com.hedvig.android.compose.ui.animateContentHeight
+import com.hedvig.android.design.system.hedvig.HedvigTextFieldSize
 import kotlin.math.max
 import kotlin.math.roundToInt
 
@@ -59,9 +60,7 @@ internal fun HedvigTextFieldLayout(
 
       if (leading != null) {
         Box(
-          modifier = Modifier
-            .layoutId(LeadingId)
-            .then(IconDefaultSizeModifier),
+          modifier = Modifier.layoutId(LeadingId),
           contentAlignment = Alignment.Center,
         ) {
           leading()
@@ -69,9 +68,7 @@ internal fun HedvigTextFieldLayout(
       }
       if (trailing != null) {
         Box(
-          modifier = Modifier
-            .layoutId(TrailingId)
-            .then(IconDefaultSizeModifier),
+          modifier = Modifier.layoutId(TrailingId),
           contentAlignment = Alignment.Center,
         ) {
           trailing()
@@ -82,13 +79,15 @@ internal fun HedvigTextFieldLayout(
       val endTextFieldPadding = paddingValues.calculateEndPadding(layoutDirection)
 
       // todo look into if this padding is the right if there is a leading icon
-      val startPadding = if (leading != null) {
-        (startTextFieldPadding - HorizontalIconPadding).coerceAtLeast(0.dp)
+      val labelStartPadding = if (leading != null) {
+        // if there is leading content, apply no padding to the label, should be padded by that content instead
+        0.dp
       } else {
         startTextFieldPadding
       }
       val endPadding = if (trailing != null) {
-        (endTextFieldPadding - HorizontalIconPadding).coerceAtLeast(0.dp)
+        // if there is trailing content, apply no padding to the label, should be padded by that content instead
+        0.dp
       } else {
         endTextFieldPadding
       }
@@ -97,20 +96,20 @@ internal fun HedvigTextFieldLayout(
         Box(
           Modifier
             .layoutId(LabelId)
-            .heightIn(
-              min = lerp(
-                MinTextLineHeight,
-                MinFocusedLabelLineHeight,
-                animationProgress,
-              ),
-            )
+//            .heightIn( // todo might need this to make the animation play properly without resizing container
+//              min = lerp(
+//                MinTextLineHeight,
+//                MinFocusedLabelLineHeight,
+//                animationProgress,
+//              ),
+//            )
             .wrapContentHeight()
-            .padding(start = startPadding, end = endPadding),
+            .padding(start = labelStartPadding, end = endPadding),
         ) { label() }
       }
 
       val textPadding = Modifier
-        .heightIn(min = MinTextLineHeight)
+//        .heightIn(min = MinTextLineHeight)  // todo might need this to make the animation play properly without resizing container
         .wrapContentHeight()
 
       Box(
@@ -154,8 +153,7 @@ private class TextFieldMeasurePolicy(
     val looseConstraints = constraints.copy(minWidth = 0, minHeight = 0)
 
     // measure leading icon
-    val leadingPlaceable =
-      measurables.find { it.layoutId == LeadingId }?.measure(looseConstraints)
+    val leadingPlaceable = measurables.find { it.layoutId == LeadingId }?.measure(looseConstraints)
     occupiedSpaceHorizontally += widthOrZero(leadingPlaceable)
     occupiedSpaceVertically = max(occupiedSpaceVertically, heightOrZero(leadingPlaceable))
 
@@ -167,20 +165,17 @@ private class TextFieldMeasurePolicy(
 
     // measure label
     val labelConstraints = looseConstraints
-      .offset(
-        vertical = -bottomPaddingValue,
-        horizontal = -occupiedSpaceHorizontally,
-      )
-    val labelPlaceable =
-      measurables.find { it.layoutId == LabelId }?.measure(labelConstraints)
+//      .offset(vertical = -bottomPaddingValue, horizontal = -occupiedSpaceHorizontally) // todo do we want top too?
+      .offset(vertical = -(bottomPaddingValue + topPaddingValue), horizontal = -occupiedSpaceHorizontally)
+    val labelPlaceable = measurables.find { it.layoutId == LabelId }?.measure(labelConstraints)
 
     // measure input field
     val effectiveTopOffset = topPaddingValue + heightOrZero(labelPlaceable)
-    val verticalConstraintOffset = -effectiveTopOffset - bottomPaddingValue
+    val verticalConstraintOffset = effectiveTopOffset + bottomPaddingValue
     val textFieldConstraints = constraints
       .copy(minHeight = 0)
       .offset(
-        vertical = verticalConstraintOffset,
+        vertical = -verticalConstraintOffset,
         horizontal = -occupiedSpaceHorizontally,
       )
     val textFieldPlaceable = measurables
@@ -193,11 +188,8 @@ private class TextFieldMeasurePolicy(
     )
 
     // measure supporting text
-    val supportingConstraints = looseConstraints.offset(
-      vertical = -occupiedSpaceVertically,
-    ).copy(minHeight = 0)
-    val supportingPlaceable =
-      measurables.find { it.layoutId == SupportingId }?.measure(supportingConstraints)
+    val supportingConstraints = looseConstraints.offset(vertical = -occupiedSpaceVertically).copy(minHeight = 0)
+    val supportingPlaceable = measurables.find { it.layoutId == SupportingId }?.measure(supportingConstraints)
     val supportingHeight = heightOrZero(supportingPlaceable)
 
     val width = calculateWidth(
@@ -213,7 +205,7 @@ private class TextFieldMeasurePolicy(
       leadingHeight = heightOrZero(leadingPlaceable),
       trailingHeight = heightOrZero(trailingPlaceable),
       supportingHeight = heightOrZero(supportingPlaceable),
-      isLabelFocused = animationProgress == 1f,
+      animationProgress = animationProgress,
       constraints = constraints,
       density = density,
       paddingValues = paddingValues,
@@ -292,8 +284,7 @@ private class TextFieldMeasurePolicy(
     height: Int,
     intrinsicMeasurer: (IntrinsicMeasurable, Int) -> Int,
   ): Int {
-    val textFieldWidth =
-      intrinsicMeasurer(measurables.first { it.layoutId == TextFieldId }, height)
+    val textFieldWidth = intrinsicMeasurer(measurables.first { it.layoutId == TextFieldId }, height)
     val labelWidth = measurables.find { it.layoutId == LabelId }?.let {
       intrinsicMeasurer(it, height)
     } ?: 0
@@ -317,8 +308,7 @@ private class TextFieldMeasurePolicy(
     width: Int,
     intrinsicMeasurer: (IntrinsicMeasurable, Int) -> Int,
   ): Int {
-    val textFieldHeight =
-      intrinsicMeasurer(measurables.first { it.layoutId == TextFieldId }, width)
+    val textFieldHeight = intrinsicMeasurer(measurables.first { it.layoutId == TextFieldId }, width)
     val labelHeight = measurables.find { it.layoutId == LabelId }?.let {
       intrinsicMeasurer(it, width)
     } ?: 0
@@ -337,7 +327,7 @@ private class TextFieldMeasurePolicy(
       leadingHeight = leadingHeight,
       trailingHeight = trailingHeight,
       supportingHeight = supportingHeight,
-      isLabelFocused = animationProgress == 1f,
+      animationProgress = animationProgress,
       constraints = ZeroConstraints,
       density = density,
       paddingValues = paddingValues,
@@ -363,25 +353,23 @@ private fun calculateHeight(
   leadingHeight: Int,
   trailingHeight: Int,
   supportingHeight: Int,
-  isLabelFocused: Boolean,
+  animationProgress: Float,
   constraints: Constraints,
   density: Float,
   paddingValues: PaddingValues,
 ): Int {
   val hasLabel = labelHeight > 0
-  // Even though the padding is defined by the developer, if there's a label, it only affects the
-  // text field in the focused state. Otherwise, we use the default value.
-  val verticalPadding = density * if (!hasLabel || isLabelFocused) {
-    (paddingValues.calculateTopPadding() + paddingValues.calculateBottomPadding()).value
-  } else {
-    (TextFieldPadding * 2).value
-  }
+  val verticalDpPadding = paddingValues.calculateTopPadding() + paddingValues.calculateBottomPadding()
+  val verticalPadding = density * verticalDpPadding.value
 
-  val middleSectionHeight = if (hasLabel && isLabelFocused) {
-    verticalPadding + labelHeight + textFieldHeight
-  } else {
-    verticalPadding + maxOf(labelHeight, textFieldHeight)
-  }
+  val small = verticalPadding + labelHeight + textFieldHeight
+  val big = verticalPadding + maxOf(labelHeight, textFieldHeight)
+  val middleSectionHeight = lerp(big, small, animationProgress)
+//  val middleSectionHeight = if (hasLabel && isLabelFocused) {
+//    verticalPadding + labelHeight + textFieldHeight
+//  } else {
+//    verticalPadding + maxOf(labelHeight, textFieldHeight)
+//  }
   return max(
     constraints.minHeight,
     maxOf(
@@ -446,7 +434,8 @@ private fun Placeable.PlacementScope.placeWithLabel(
     } else {
       // Even though the padding is defined by the developer, it only affects the text field
       // when the text field is focused. Otherwise, we use the default value.
-      (TextFieldPadding.value * density).roundToInt()
+//      (TextFieldPadding.value * density).roundToInt() // todo bring back this line, delete next line
+      Alignment.CenterVertically.align(it.height, height)
     }
     val distance = startPosition - labelEndPosition
     val positionY = startPosition - (distance * animationProgress).roundToInt()

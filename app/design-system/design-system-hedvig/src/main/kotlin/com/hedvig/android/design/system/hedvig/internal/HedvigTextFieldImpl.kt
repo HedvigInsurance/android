@@ -1,4 +1,4 @@
-package com.hedvig.android.design.system.hedvig
+package com.hedvig.android.design.system.hedvig.internal
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.animateColor
@@ -9,7 +9,6 @@ import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -28,7 +27,11 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.lerp
 import androidx.compose.ui.unit.Constraints
-import androidx.compose.ui.unit.dp
+import com.hedvig.android.design.system.hedvig.HedvigTextFieldColors
+import com.hedvig.android.design.system.hedvig.HedvigTextFieldConfiguration
+import com.hedvig.android.design.system.hedvig.HedvigTextFieldSize
+import com.hedvig.android.design.system.hedvig.LocalContentColor
+import com.hedvig.android.design.system.hedvig.ProvideTextStyle
 
 @Composable
 internal fun HedvigDecorationBox(
@@ -69,7 +72,6 @@ internal fun HedvigDecorationBox(
     focusedTextStyleColor = labelColor,
     unfocusedTextStyleColor = labelColor,
     contentColor = labelColor,
-    showLabel = label != null,
   ) { labelProgress, labelTextStyleColor, labelContentColor ->
     val decoratedLabel: @Composable (() -> Unit)? = label?.let {
       @Composable {
@@ -167,7 +169,6 @@ private object TextFieldTransitionScope {
     focusedTextStyleColor: Color,
     unfocusedTextStyleColor: Color,
     contentColor: Color,
-    showLabel: Boolean,
     content: @Composable (
       labelProgress: Float,
       labelTextStyleColor: Color,
@@ -181,7 +182,7 @@ private object TextFieldTransitionScope {
 
     val labelProgress by transition.animateFloat(
       label = "LabelProgress",
-      transitionSpec = { tween(durationMillis = AnimationDuration) },
+      transitionSpec = { tween(durationMillis = TextFieldLabelAnimationDuration) },
     ) {
       when (it) {
         InputPhase.Focused -> 1f
@@ -191,7 +192,7 @@ private object TextFieldTransitionScope {
     }
 
     val labelTextStyleColor by transition.animateColor(
-      transitionSpec = { tween(durationMillis = AnimationDuration) },
+      transitionSpec = { tween(durationMillis = TextFieldLabelAnimationDuration) },
       label = "LabelTextStyleColor",
     ) {
       when (it) {
@@ -234,11 +235,4 @@ internal const val ContainerId = "Container"
 internal val ZeroConstraints = Constraints(0, 0, 0, 0)
 
 internal const val SignalAnimationDuration = 400L
-internal const val AnimationDuration = 150
-
-internal val TextFieldPadding = 16.dp
-internal val HorizontalIconPadding = 12.dp
-internal val MinTextLineHeight = 24.dp
-internal val MinFocusedLabelLineHeight = 16.dp
-
-internal val IconDefaultSizeModifier = Modifier.defaultMinSize(48.dp, 48.dp)
+internal const val TextFieldLabelAnimationDuration = 150
