@@ -358,6 +358,7 @@ private fun HedvigTextField(
   enabled: Boolean = true,
   readOnly: Boolean = false,
   label: @Composable (() -> Unit)? = null,
+  leadingIcon: @Composable (() -> Unit)? = null,
   trailingIcon: @Composable (() -> Unit)? = null,
   supportingText: @Composable (() -> Unit)? = null,
   isError: Boolean = false,
@@ -388,6 +389,7 @@ private fun HedvigTextField(
       interactionSource = interactionSource,
       cursorBrush = SolidColor(colors.cursorColor),
       decorationBox = @Composable { innerTextField ->
+        // places leading icon, text field with label, trailing icon
         HedvigTextFieldDecorationBox(
           value = value,
           colors = colors,
@@ -396,6 +398,7 @@ private fun HedvigTextField(
           visualTransformation = visualTransformation,
           innerTextField = innerTextField,
           label = label,
+          leadingIcon = leadingIcon,
           trailingIcon = trailingIcon,
           supportingText = supportingText,
           singleLine = true,
@@ -421,6 +424,7 @@ private fun HedvigTextFieldDecorationBox(
   size: HedvigTextFieldSize,
   isError: Boolean = false,
   label: @Composable (() -> Unit)? = null,
+  leadingIcon: @Composable (() -> Unit)? = null,
   trailingIcon: @Composable (() -> Unit)? = null,
   supportingText: @Composable (() -> Unit)? = null,
   container: @Composable () -> Unit = {
@@ -435,6 +439,7 @@ private fun HedvigTextFieldDecorationBox(
     innerTextField = innerTextField,
     visualTransformation = visualTransformation,
     label = label,
+    leadingIcon = leadingIcon,
     trailingIcon = trailingIcon,
     supportingText = supportingText,
     singleLine = singleLine,

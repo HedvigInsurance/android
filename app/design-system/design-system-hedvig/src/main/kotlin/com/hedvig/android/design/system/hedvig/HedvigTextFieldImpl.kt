@@ -39,6 +39,7 @@ internal fun HedvigDecorationBox(
   innerTextField: @Composable () -> Unit,
   visualTransformation: VisualTransformation,
   label: @Composable (() -> Unit)?,
+  leadingIcon: @Composable (() -> Unit)? = null,
   trailingIcon: @Composable (() -> Unit)? = null,
   supportingText: @Composable (() -> Unit)? = null,
   singleLine: Boolean = false,
@@ -90,6 +91,14 @@ internal fun HedvigDecorationBox(
     val defaultErrorMessage = stringResource(androidx.compose.ui.R.string.default_error_message)
     val decorationBoxModifier = Modifier.semantics { if (isError) error(defaultErrorMessage) }
 
+    // todo add leading icon color.
+    val leadingIconColor = colors.trailingIconColor(enabled, isError, interactionSource).value
+    val decoratedLeading: @Composable (() -> Unit)? = leadingIcon?.let {
+      @Composable {
+        Decoration(contentColor = leadingIconColor, content = it)
+      }
+    }
+
     val trailingIconColor = colors.trailingIconColor(enabled, isError, interactionSource).value
     val decoratedTrailing: @Composable (() -> Unit)? = trailingIcon?.let {
       @Composable {
@@ -122,6 +131,7 @@ internal fun HedvigDecorationBox(
       size = size,
       textField = innerTextField,
       label = decoratedLabel,
+      leading = decoratedLeading,
       trailing = decoratedTrailing,
       container = containerWithId,
       supporting = decoratedSupporting,
@@ -217,6 +227,7 @@ internal val IntrinsicMeasurable.layoutId: Any?
 
 internal const val TextFieldId = "TextField"
 internal const val LabelId = "Label"
+internal const val LeadingId = "Leading"
 internal const val TrailingId = "Trailing"
 internal const val SupportingId = "Supporting"
 internal const val ContainerId = "Container"
