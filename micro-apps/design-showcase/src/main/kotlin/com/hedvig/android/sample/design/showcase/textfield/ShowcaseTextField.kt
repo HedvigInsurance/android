@@ -1,6 +1,7 @@
 package com.hedvig.android.sample.design.showcase.textfield
 
 import android.content.res.Configuration
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.interaction.FocusInteraction
 import androidx.compose.foundation.interaction.HoverInteraction
 import androidx.compose.foundation.interaction.Interaction
@@ -26,7 +27,10 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.icon.Cart
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.sample.design.showcase.util.ShowcaseLayout
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -107,7 +111,25 @@ private fun LabelAnimation(modifier: Modifier = Modifier) {
           delay(delay)
         }
       }
-      HedvigTextField(text, {}, "Label", size)
+      Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        HedvigTextField(text, {}, "Label", size)
+        HedvigTextField(
+          text = text,
+          onValueChange = {},
+          labelText = "Label",
+          textFieldSize = size,
+          leadingIcon = {
+            IconButton({}) {
+              Image(HedvigIcons.Cart, null)
+            }
+          },
+          trailingIcon = {
+            IconButton({}) {
+              Image(HedvigIcons.Cart, null)
+            }
+          },
+        )
+      }
     }
   }
 }

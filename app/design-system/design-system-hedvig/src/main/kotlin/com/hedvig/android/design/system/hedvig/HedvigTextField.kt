@@ -48,6 +48,8 @@ fun HedvigTextField(
   labelText: String,
   textFieldSize: HedvigTextFieldDefaults.TextFieldSize,
   modifier: Modifier = Modifier,
+  leadingIcon: @Composable (() -> Unit)? = null,
+  trailingIcon: @Composable (() -> Unit)? = null,
   errorState: HedvigTextFieldDefaults.ErrorState = HedvigTextFieldDefaults.ErrorState.NoError,
   enabled: Boolean = true,
   readOnly: Boolean = false,
@@ -74,8 +76,8 @@ fun HedvigTextField(
     enabled = enabled,
     readOnly = readOnly,
     label = { HedvigText(text = labelText) },
-//    leadingIcon = leadingIcon,
-//    trailingIcon = trailingIcon,
+    leadingIcon = leadingIcon,
+    trailingIcon = trailingIcon,
     supportingText = if (errorState is HedvigTextFieldDefaults.ErrorState.ErrorWithMessage) {
       { HedvigText(text = errorState.message) }
     } else {
