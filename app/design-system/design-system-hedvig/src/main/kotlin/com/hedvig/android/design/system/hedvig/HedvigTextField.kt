@@ -74,11 +74,8 @@ fun HedvigTextField(
     enabled = enabled,
     readOnly = readOnly,
     label = { HedvigText(text = labelText) },
-//    placeholder = placeholder,
 //    leadingIcon = leadingIcon,
 //    trailingIcon = trailingIcon,
-//    prefix = prefix,
-//    suffix = suffix,
     supportingText = if (errorState is HedvigTextFieldDefaults.ErrorState.ErrorWithMessage) {
       { HedvigText(text = errorState.message) }
     } else {
@@ -361,7 +358,6 @@ private fun HedvigTextField(
   enabled: Boolean = true,
   readOnly: Boolean = false,
   label: @Composable (() -> Unit)? = null,
-  placeholder: @Composable (() -> Unit)? = null,
   trailingIcon: @Composable (() -> Unit)? = null,
   supportingText: @Composable (() -> Unit)? = null,
   isError: Boolean = false,
@@ -399,7 +395,6 @@ private fun HedvigTextField(
           size = size,
           visualTransformation = visualTransformation,
           innerTextField = innerTextField,
-          placeholder = placeholder,
           label = label,
           trailingIcon = trailingIcon,
           supportingText = supportingText,
@@ -426,7 +421,6 @@ private fun HedvigTextFieldDecorationBox(
   size: HedvigTextFieldSize,
   isError: Boolean = false,
   label: @Composable (() -> Unit)? = null,
-  placeholder: @Composable (() -> Unit)? = null,
   trailingIcon: @Composable (() -> Unit)? = null,
   supportingText: @Composable (() -> Unit)? = null,
   container: @Composable () -> Unit = {
@@ -440,7 +434,6 @@ private fun HedvigTextFieldDecorationBox(
     size = size,
     innerTextField = innerTextField,
     visualTransformation = visualTransformation,
-    placeholder = placeholder,
     label = label,
     trailingIcon = trailingIcon,
     supportingText = supportingText,

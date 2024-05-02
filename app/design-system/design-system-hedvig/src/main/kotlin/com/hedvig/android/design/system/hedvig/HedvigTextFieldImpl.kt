@@ -2,9 +2,7 @@ package com.hedvig.android.design.system.hedvig
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.animateColor
-import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.interaction.InteractionSource
@@ -17,7 +15,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.IntrinsicMeasurable
 import androidx.compose.ui.layout.LayoutIdParentData
@@ -42,7 +39,6 @@ internal fun HedvigDecorationBox(
   innerTextField: @Composable () -> Unit,
   visualTransformation: VisualTransformation,
   label: @Composable (() -> Unit)?,
-  placeholder: @Composable (() -> Unit)? = null,
   trailingIcon: @Composable (() -> Unit)? = null,
   supportingText: @Composable (() -> Unit)? = null,
   singleLine: Boolean = false,
@@ -73,7 +69,7 @@ internal fun HedvigDecorationBox(
     unfocusedTextStyleColor = labelColor,
     contentColor = labelColor,
     showLabel = label != null,
-  ) { labelProgress, labelTextStyleColor, labelContentColor, placeholderAlphaProgress ->
+  ) { labelProgress, labelTextStyleColor, labelContentColor ->
     val decoratedLabel: @Composable (() -> Unit)? = label?.let {
       @Composable {
         val labelTextStyle = lerp(
@@ -86,23 +82,6 @@ internal fun HedvigDecorationBox(
         Decoration(labelContentColor, labelTextStyle, it)
       }
     }
-
-    // Transparent components interfere with Talkback (b/261061240), so if any components below
-    // have alpha == 0, we set the component to null instead.
-    val decoratedPlaceholder: @Composable ((Modifier) -> Unit)? =
-      if (placeholder != null && transformedText.isEmpty() && placeholderAlphaProgress > 0f) {
-        @Composable { modifier ->
-          Box(modifier.alpha(placeholderAlphaProgress)) {
-            Decoration(
-              contentColor = colors.labelColor(value, enabled, isError).value,
-              typography = size.textStyle,
-              content = placeholder,
-            )
-          }
-        }
-      } else {
-        null
-      }
 
     // Developers need to handle invalid input manually. But since we don't provide error
     // message slot API, we can set the default error message in case developers forget about
@@ -142,7 +121,6 @@ internal fun HedvigDecorationBox(
       modifier = decorationBoxModifier,
       size = size,
       textField = innerTextField,
-      placeholder = decoratedPlaceholder,
       label = decoratedLabel,
       trailing = decoratedTrailing,
       container = containerWithId,
@@ -184,7 +162,6 @@ private object TextFieldTransitionScope {
       labelProgress: Float,
       labelTextStyleColor: Color,
       labelContentColor: Color,
-      placeholderOpacity: Float,
     ) -> Unit,
   ) {
     // Transitions from/to InputPhase.Focused are the most critical in the transition below.
@@ -203,34 +180,6 @@ private object TextFieldTransitionScope {
       }
     }
 
-    val placeholderOpacity by transition.animateFloat(
-      label = "PlaceholderOpacity",
-      transitionSpec = {
-        if (InputPhase.Focused isTransitioningTo InputPhase.UnfocusedEmpty) {
-          tween(
-            durationMillis = PlaceholderAnimationDelayOrDuration,
-            easing = LinearEasing,
-          )
-        } else if (InputPhase.UnfocusedEmpty isTransitioningTo InputPhase.Focused ||
-          InputPhase.UnfocusedNotEmpty isTransitioningTo InputPhase.UnfocusedEmpty
-        ) {
-          tween(
-            durationMillis = PlaceholderAnimationDuration,
-            delayMillis = PlaceholderAnimationDelayOrDuration,
-            easing = LinearEasing,
-          )
-        } else {
-          spring()
-        }
-      },
-    ) {
-      when (it) {
-        InputPhase.Focused -> 1f
-        InputPhase.UnfocusedEmpty -> if (showLabel) 0f else 1f
-        InputPhase.UnfocusedNotEmpty -> 0f
-      }
-    }
-
     val labelTextStyleColor by transition.animateColor(
       transitionSpec = { tween(durationMillis = AnimationDuration) },
       label = "LabelTextStyleColor",
@@ -245,7 +194,6 @@ private object TextFieldTransitionScope {
       labelProgress,
       labelTextStyleColor,
       contentColor,
-      placeholderOpacity,
     )
   }
 }
@@ -268,7 +216,6 @@ internal val IntrinsicMeasurable.layoutId: Any?
   get() = (parentData as? LayoutIdParentData)?.layoutId
 
 internal const val TextFieldId = "TextField"
-internal const val PlaceholderId = "Hint"
 internal const val LabelId = "Label"
 internal const val TrailingId = "Trailing"
 internal const val SupportingId = "Supporting"
@@ -277,8 +224,6 @@ internal val ZeroConstraints = Constraints(0, 0, 0, 0)
 
 internal const val SignalAnimationDuration = 400L
 internal const val AnimationDuration = 150
-private const val PlaceholderAnimationDuration = 83
-private const val PlaceholderAnimationDelayOrDuration = 67
 
 internal val TextFieldPadding = 16.dp
 internal val HorizontalIconPadding = 12.dp
