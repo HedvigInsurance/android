@@ -7,8 +7,10 @@ import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,30 +39,34 @@ internal fun ShowcaseTextField() {
     Column(verticalArrangement = Arrangement.spacedBy(80.dp)) {
       Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         Box(modifier = Modifier.align(Alignment.Bottom)) {
-          LayoutWithoutPlacement(
-            sizeAdjustingContent = {
+          WithWidthOfTypeLabel {
+            WithHeightOfTextField {
               HedvigText(
-                text = ShowcaseTextFieldType.entries.map { it.name }.maxBy { it.length },
+                text = "Interactive",
                 style = HedvigTheme.typography.bodyMedium,
+                modifier = Modifier.align(Alignment.CenterStart),
               )
-            },
-          ) {
-            HedvigText(text = "Interactive", style = HedvigTheme.typography.bodyMedium)
+            }
           }
         }
         InteractiveTextFieldWithAllSizes()
       }
+      Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Box(modifier = Modifier.align(Alignment.CenterVertically)) {
+          WithWidthOfTypeLabel {
+            HedvigText(
+              text = "Animation",
+              style = HedvigTheme.typography.bodyMedium,
+              modifier = Modifier.align(Alignment.CenterStart),
+            )
+          }
+        }
+        LabelAnimation()
+      }
       for (type in ShowcaseTextFieldType.entries) {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
           Box(modifier = Modifier.align(Alignment.CenterVertically)) {
-            LayoutWithoutPlacement(
-              sizeAdjustingContent = {
-                HedvigText(
-                  text = ShowcaseTextFieldType.entries.map { it.name }.maxBy { it.length },
-                  style = HedvigTheme.typography.bodyMedium,
-                )
-              },
-            ) {
+            WithWidthOfTypeLabel {
               HedvigText(text = type.name, style = HedvigTheme.typography.bodyMedium)
             }
           }
@@ -84,6 +90,24 @@ fun InteractiveTextFieldWithAllSizes(modifier: Modifier = Modifier) {
         var text by remember { mutableStateOf("") }
         HedvigTextField(text, { text = it }, "Label", size)
       }
+    }
+  }
+}
+
+@Composable
+private fun LabelAnimation(modifier: Modifier = Modifier) {
+  Row(modifier, horizontalArrangement = Arrangement.spacedBy(20.dp)) {
+    for (size in HedvigTextFieldDefaults.TextFieldSize.entries) {
+      val text by produceState("") {
+        val delay: Long = 2000
+        while (isActive) {
+          value = "Input"
+          delay(delay)
+          value = ""
+          delay(delay)
+        }
+      }
+      HedvigTextField(text, {}, "Label", size)
     }
   }
 }
@@ -134,6 +158,7 @@ private fun ShowcaseTextField(input: String, type: ShowcaseTextFieldType, size: 
       ShowcaseTextFieldType.ErrorPulsating -> HedvigTextFieldDefaults.ErrorState.ErrorWithMessage(
         "Something went wrong",
       )
+
       else -> HedvigTextFieldDefaults.ErrorState.NoError
     },
     enabled = type == ShowcaseTextFieldType.Disabled,
@@ -181,6 +206,29 @@ private enum class ShowcaseTextFieldType {
   Hover,
   Error,
   ErrorPulsating,
+}
+
+@Composable
+private fun WithWidthOfTypeLabel(content: @Composable BoxScope.() -> Unit) {
+  LayoutWithoutPlacement(
+    sizeAdjustingContent = {
+      HedvigText(
+        text = ShowcaseTextFieldType.entries.map { it.name }.maxBy { it.length },
+        style = HedvigTheme.typography.bodyMedium,
+      )
+    },
+    content = content,
+  )
+}
+
+@Composable
+private fun WithHeightOfTextField(content: @Composable BoxScope.() -> Unit) {
+  LayoutWithoutPlacement(
+    sizeAdjustingContent = {
+      HedvigTextField("", {}, "", HedvigTextFieldDefaults.TextFieldSize.Large, Modifier.requiredWidth(1.dp))
+    },
+    content = content,
+  )
 }
 
 @Preview(
