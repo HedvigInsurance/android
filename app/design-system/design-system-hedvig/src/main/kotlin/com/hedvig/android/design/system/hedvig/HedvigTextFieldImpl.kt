@@ -43,7 +43,6 @@ internal fun HedvigDecorationBox(
   visualTransformation: VisualTransformation,
   label: @Composable (() -> Unit)?,
   placeholder: @Composable (() -> Unit)? = null,
-  leadingIcon: @Composable (() -> Unit)? = null,
   trailingIcon: @Composable (() -> Unit)? = null,
   prefix: @Composable (() -> Unit)? = null,
   suffix: @Composable (() -> Unit)? = null,
@@ -147,14 +146,6 @@ internal fun HedvigDecorationBox(
     val defaultErrorMessage = stringResource(androidx.compose.ui.R.string.default_error_message)
     val decorationBoxModifier = Modifier.semantics { if (isError) error(defaultErrorMessage) }
 
-    // remove leading?
-    val leadingIconColor = colors.trailingIconColor(enabled, isError, interactionSource).value
-    val decoratedLeading: @Composable (() -> Unit)? = leadingIcon?.let {
-      @Composable {
-        Decoration(contentColor = leadingIconColor, content = it)
-      }
-    }
-
     val trailingIconColor = colors.trailingIconColor(enabled, isError, interactionSource).value
     val decoratedTrailing: @Composable (() -> Unit)? = trailingIcon?.let {
       @Composable {
@@ -188,7 +179,6 @@ internal fun HedvigDecorationBox(
       textField = innerTextField,
       placeholder = decoratedPlaceholder,
       label = decoratedLabel,
-      leading = decoratedLeading,
       trailing = decoratedTrailing,
       prefix = decoratedPrefix,
       suffix = decoratedSuffix,
@@ -300,12 +290,6 @@ private object TextFieldTransitionScope {
       }
     }
 
-//    val labelContentColor by transition.animateColor(
-//      transitionSpec = { tween(durationMillis = AnimationDuration) },
-//      label = "LabelContentColor",
-//      targetValueByState = { _ -> contentColor },
-//    )
-
     content(
       labelProgress,
       labelTextStyleColor,
@@ -336,7 +320,6 @@ internal val IntrinsicMeasurable.layoutId: Any?
 internal const val TextFieldId = "TextField"
 internal const val PlaceholderId = "Hint"
 internal const val LabelId = "Label"
-internal const val LeadingId = "Leading"
 internal const val TrailingId = "Trailing"
 internal const val PrefixId = "Prefix"
 internal const val SuffixId = "Suffix"
@@ -351,8 +334,6 @@ private const val PlaceholderAnimationDelayOrDuration = 67
 
 internal val TextFieldPadding = 16.dp
 internal val HorizontalIconPadding = 12.dp
-internal val SupportingHorizontalPadding = 4.dp
-internal val SupportingTopPadding = 4.dp
 internal val PrefixSuffixTextPadding = 2.dp
 internal val MinTextLineHeight = 24.dp
 internal val MinFocusedLabelLineHeight = 16.dp
