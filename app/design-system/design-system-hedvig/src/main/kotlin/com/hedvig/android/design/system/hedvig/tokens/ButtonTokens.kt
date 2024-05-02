@@ -42,7 +42,7 @@ internal object SecondaryAltStyleButtonTokens {
   val HoverContentColor = ColorSchemeKeyTokens.TextPrimary
   val DisabledContainerColor = ColorSchemeKeyTokens.ButtonSecondaryAltDisabled
   val DisabledContentColor = ColorSchemeKeyTokens.TextTertiary
-  val ActiveLoadingIndicatorColor = ColorSchemeKeyTokens.FillPrimary
+  val ActiveLoadingIndicatorColor = ColorSchemeKeyTokens.FillNegative
   val InactiveLoadingIndicatorColor = ColorSchemeKeyTokens.SurfaceSecondaryTransparent
 }
 
@@ -67,7 +67,7 @@ internal object LargeSizeButtonTokens {
 
 internal object MediumSizeButtonTokens {
   val HorizontalPadding = 14.dp
-  val TopPadding = 7.dp
+  val TopPadding = 7.dp // todo look into if we use the right line heights to justify the offset introduced here
   val BottomPadding = 9.dp
   val ContainerShape = ShapeKeyTokens.CornerMedium
   val LabelTextFont = TypographyKeyTokens.BodySmall
