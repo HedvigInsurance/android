@@ -6,11 +6,13 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
-import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.FiniteAnimationSpec
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.HoverInteraction
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.InteractionSource
@@ -31,8 +33,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -125,14 +127,12 @@ internal fun HedvigDecorationBox(
   Column {
     AnimatedTextFieldContent(
       inputPhase = inputPhase,
-      value = value,
       configuration = configuration,
       size = size,
       innerTextField = innerTextField,
       label = decoratedLabel,
       leadingIcon = decoratedLeadingIcon,
       trailingIcon = decoratedTrailingIcon,
-      isFocused = isFocused,
     ) { modifier, containerContent ->
       ContainerBox(
         value = value,
@@ -177,14 +177,12 @@ private fun ContainerBox(
 @Composable
 private fun AnimatedTextFieldContent(
   inputPhase: InputPhase,
-  value: String,
   configuration: HedvigTextFieldConfiguration,
   size: HedvigTextFieldSize,
   innerTextField: @Composable () -> Unit,
   label: @Composable ((InputPhase) -> Unit)?,
   leadingIcon: @Composable (() -> Unit)?,
   trailingIcon: @Composable (() -> Unit)?,
-  isFocused: Boolean,
   container: @Composable (Modifier, @Composable BoxScope.() -> Unit) -> Unit,
 ) {
   SharedTransitionLayout {
@@ -261,32 +259,29 @@ private fun AnimatedTextFieldContent(
       ) {
         Row(
           verticalAlignment = Alignment.CenterVertically,
-          modifier = Modifier.padding(size.contentPadding(inputPhase == InputPhase.UnfocusedEmpty)),
+          modifier = Modifier.padding(size.contentPadding(inputPhase.onlyShowLabel)),
         ) {
           if (sharedLeadingIcon != null) {
             sharedLeadingIcon.invoke()
             Spacer(Modifier.width(configuration.iconToTextPadding))
           }
-          when (inputPhase) {
-            InputPhase.Focused,
-            InputPhase.UnfocusedNotEmpty,
-            -> {
-              Column(verticalArrangement = Arrangement.spacedBy(-size.labelToTextOverlap)) {
-                sharedLabel?.invoke()
-                sharedInnerTextField(Modifier)
-              }
-            }
-
-            InputPhase.UnfocusedEmpty -> {
-              Box {
+          when (inputPhase.onlyShowLabel) {
+            true -> {
+              Column {
                 sharedLabel?.invoke()
                 sharedInnerTextField(
                   Modifier
-                    .align(Alignment.Center)
-                    .alpha(0f)
                     .requiredHeight(0.dp)
-                    .wrapContentHeight(Alignment.Top),
+                    .wrapContentHeight(Alignment.Top)
+                    .border(1.dp, Color.Red),
                 )
+              }
+            }
+
+            false -> {
+              Column(verticalArrangement = Arrangement.spacedBy(-size.labelToTextOverlap)) {
+                sharedLabel?.invoke()
+                sharedInnerTextField(Modifier)
               }
             }
           }
@@ -309,6 +304,10 @@ internal enum class InputPhase {
 
   // Text field is not focused but input text is not empty
   UnfocusedNotEmpty,
+  ;
+
+  val onlyShowLabel: Boolean
+    get() = this == UnfocusedEmpty
 }
 
 @Preview
