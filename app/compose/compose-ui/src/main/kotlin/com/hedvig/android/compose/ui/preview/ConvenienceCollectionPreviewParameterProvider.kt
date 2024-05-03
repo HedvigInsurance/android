@@ -3,6 +3,7 @@ package com.hedvig.android.compose.ui.preview
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -47,7 +48,7 @@ fun <T> PreviewContentWithProvidedParametersAnimatedOnClick(
   var parameterStateIndex by remember { mutableIntStateOf(0) }
   val interactionSource = remember { MutableInteractionSource() }
   Box(
-    modifier = modifier.clickable(
+    modifier = modifier.fillMaxSize().clickable(
       interactionSource = interactionSource,
       indication = null,
       onClick = { parameterStateIndex += 1 },
