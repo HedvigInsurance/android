@@ -143,6 +143,7 @@ private fun LabelAnimation(modifier: Modifier = Modifier) {
         "Label",
 //          size,
         HedvigTextFieldDefaults.TextFieldSize.Large,
+        Modifier.requiredWidth(150.dp),
         interactionSource = interactionSource,
       )
 //        HedvigTextField(
