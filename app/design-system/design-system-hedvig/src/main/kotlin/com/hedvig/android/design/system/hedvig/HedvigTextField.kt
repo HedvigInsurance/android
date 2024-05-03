@@ -289,7 +289,7 @@ private val HedvigTextFieldDefaults.TextFieldSize.size: HedvigTextFieldSize
 
 internal sealed interface HedvigTextFieldSize {
   @Composable
-  fun contentPadding(value: String, isFocused: Boolean): PaddingValues
+  fun contentPadding(withSmallLabel: Boolean): PaddingValues
 
   val supportingTextPadding: PaddingValues
 
@@ -303,14 +303,13 @@ internal sealed interface HedvigTextFieldSize {
 
   object Large : HedvigTextFieldSize {
     @Composable
-    override fun contentPadding(value: String, isFocused: Boolean): PaddingValues {
-      val hasInput = value.isNotEmpty()
-      val topPadding = when {
-        hasInput || isFocused -> LargeSizeTextFieldTokens.TopPaddingWithLabel
-        else -> LargeSizeTextFieldTokens.TopPadding
+    override fun contentPadding(withSmallLabel: Boolean): PaddingValues {
+      val topPadding = when (withSmallLabel) {
+        true -> LargeSizeTextFieldTokens.TopPaddingWithLabel
+        false -> LargeSizeTextFieldTokens.TopPadding
       }
-      val bottomPadding = when {
-        hasInput || isFocused -> LargeSizeTextFieldTokens.BottomPaddingWithLabel
+      val bottomPadding = when (withSmallLabel) {
+        withSmallLabel -> LargeSizeTextFieldTokens.BottomPaddingWithLabel
         else -> LargeSizeTextFieldTokens.BottomPadding
       }
       return PaddingValues(

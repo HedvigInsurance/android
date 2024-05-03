@@ -6,9 +6,7 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
-import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.core.FiniteAnimationSpec
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.togetherWith
@@ -259,13 +257,11 @@ private fun AnimatedTextFieldContent(
         Modifier.sharedElement(
           state = rememberSharedContentState(ContainerId),
           animatedVisibilityScope = this,
-          boundsTransform = BoundsTransform { _, _ -> LabelTransitionAnimationSpec },
-          placeHolderSize = SharedTransitionScope.PlaceHolderSize.animatedSize,
         ),
       ) {
         Row(
           verticalAlignment = Alignment.CenterVertically,
-          modifier = Modifier.padding(size.contentPadding(value = value, isFocused = isFocused)),
+          modifier = Modifier.padding(size.contentPadding(inputPhase == InputPhase.UnfocusedEmpty)),
         ) {
           if (sharedLeadingIcon != null) {
             sharedLeadingIcon.invoke()
@@ -304,7 +300,7 @@ private fun AnimatedTextFieldContent(
   }
 }
 
-private enum class InputPhase {
+internal enum class InputPhase {
   // Text field is focused
   Focused,
 
@@ -380,4 +376,6 @@ private const val TrailingIconId = "TrailingIcon"
 private const val ContainerId = "Container"
 
 private const val TextFieldLabelAnimationDuration = 150
-private val LabelTransitionAnimationSpec: FiniteAnimationSpec<Rect> = tween<Rect>(TextFieldLabelAnimationDuration)
+
+// private val LabelTransitionAnimationSpec: FiniteAnimationSpec<Rect> = tween<Rect>(TextFieldLabelAnimationDuration)
+private val LabelTransitionAnimationSpec = spring<Rect>()
