@@ -15,8 +15,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.IntrinsicMeasurable
-import androidx.compose.ui.layout.LayoutIdParentData
 import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.res.stringResource
@@ -26,7 +24,6 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.lerp
-import androidx.compose.ui.unit.Constraints
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldColors
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldConfiguration
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldSize
@@ -209,9 +206,6 @@ private object TextFieldTransitionScope {
   }
 }
 
-/**
- * An internal state used to animate a label and an indicator.
- */
 private enum class InputPhase {
   // Text field is focused
   Focused,
@@ -222,17 +216,6 @@ private enum class InputPhase {
   // Text field is not focused but input text is not empty
   UnfocusedNotEmpty,
 }
-
-internal val IntrinsicMeasurable.layoutId: Any?
-  get() = (parentData as? LayoutIdParentData)?.layoutId
-
-internal const val TextFieldId = "TextField"
-internal const val LabelId = "Label"
-internal const val LeadingId = "Leading"
-internal const val TrailingId = "Trailing"
-internal const val SupportingId = "Supporting"
-internal const val ContainerId = "Container"
-internal val ZeroConstraints = Constraints(0, 0, 0, 0)
 
 internal const val SignalAnimationDuration = 400L
 internal const val TextFieldLabelAnimationDuration = 150
