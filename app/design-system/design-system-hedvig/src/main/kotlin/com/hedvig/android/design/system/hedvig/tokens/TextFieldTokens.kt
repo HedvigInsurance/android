@@ -32,8 +32,8 @@ internal object LargeSizeTextFieldTokens {
   val TopPadding = 16.dp
   val BottomPadding = 18.dp
   val LabelToTextOverlap = 3.dp
-  val TopPaddingWithLabel = 10.dp
-  val BottomPaddingWithLabel = 9.dp
+  val TopPaddingWithTextAndLabel = 10.dp
+  val BottomPaddingWithTextAndLabel = 9.dp
   val SupportingTextTopPadding = 4.dp
   val SupportingTextBottomPadding = 8.dp
   val SupportingTextHorizontalPadding = 16.dp
