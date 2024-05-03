@@ -36,6 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldColors
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldConfiguration
@@ -64,7 +65,6 @@ internal fun HedvigDecorationBox(
   leadingIcon: @Composable (() -> Unit)? = null,
   trailingIcon: @Composable (() -> Unit)? = null,
   supportingText: @Composable (() -> Unit)? = null,
-  singleLine: Boolean = false,
   enabled: Boolean = true,
   isError: Boolean = false,
   interactionSource: InteractionSource,
@@ -78,15 +78,6 @@ internal fun HedvigDecorationBox(
     isFocused -> InputPhase.Focused
     transformedText.isEmpty() -> InputPhase.UnfocusedEmpty
     else -> InputPhase.UnfocusedNotEmpty
-  }
-
-  val decoratedInnerTextField: @Composable () -> Unit = {
-    Decoration(
-      colors.textColor(value = value, enabled = enabled, isError = isError).value,
-      size.textStyle,
-    ) {
-      innerTextField()
-    }
   }
 
   val decoratedLabel: (@Composable (InputPhase) -> Unit)? = if (label != null) {
@@ -131,21 +122,20 @@ internal fun HedvigDecorationBox(
 
   Column {
     TextFieldContent(
-      inputPhase,
-      value,
-      configuration,
-      size,
-      decoratedInnerTextField,
-      decoratedLabel,
-      decoratedLeadingIcon,
-      decoratedTrailingIcon,
-      isFocused,
+      inputPhase = inputPhase,
+      value = value,
+      configuration = configuration,
+      size = size,
+      innerTextField = innerTextField,
+      label = decoratedLabel,
+      leadingIcon = decoratedLeadingIcon,
+      trailingIcon = decoratedTrailingIcon,
+      isFocused = isFocused,
     ) { modifier, containerContent ->
       ContainerBox(
         value = value,
         isError = isError,
         colors = colors,
-        size = size,
         configuration = configuration,
         modifier = modifier,
         content = containerContent,
@@ -275,7 +265,6 @@ private fun ContainerBox(
   value: String,
   isError: Boolean,
   colors: HedvigTextFieldColors,
-  size: HedvigTextFieldSize,
   configuration: HedvigTextFieldConfiguration,
   modifier: Modifier = Modifier,
   content: @Composable BoxScope.() -> Unit,
