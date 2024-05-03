@@ -9,8 +9,6 @@ import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.HoverInteraction
@@ -144,17 +142,6 @@ internal fun HedvigDecorationBox(
         modifier = modifier,
         content = containerContent,
       )
-    }
-    AnimatedContent(
-      targetState = decoratedSupportingText,
-      contentAlignment = Alignment.TopStart,
-      transitionSpec = { expandVertically() togetherWith shrinkVertically() },
-    ) { supportingText ->
-      if (supportingText != null) {
-        Box(Modifier.padding(size.supportingTextPadding)) {
-          supportingText()
-        }
-      }
     }
   }
 }
