@@ -3,13 +3,10 @@
 package com.hedvig.android.design.system.hedvig
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -37,7 +34,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.Dp
 import com.hedvig.android.design.system.hedvig.internal.HedvigDecorationBox
 import com.hedvig.android.design.system.hedvig.internal.SignalAnimationDuration
-import com.hedvig.android.design.system.hedvig.internal.TextFieldLabelAnimationDuration
 import com.hedvig.android.design.system.hedvig.tokens.LargeSizeTextFieldTokens
 import com.hedvig.android.design.system.hedvig.tokens.TextFieldTokens
 import kotlinx.coroutines.delay
@@ -117,7 +113,7 @@ object HedvigTextFieldDefaults {
 }
 
 @Composable
-private fun HedvigTextFieldDefaults.colors(
+internal fun HedvigTextFieldDefaults.colors(
   containerColor: Color = TextFieldTokens.ContainerColor.value,
   containerPulsatingColor: Color = TextFieldTokens.ContainerPulsatingColor.value,
   textColor: Color = TextFieldTokens.TextColor.value,
@@ -154,18 +150,20 @@ private fun HedvigTextFieldDefaults.colors(
 }
 
 @Composable
-private fun HedvigTextFieldDefaults.configuration(
+internal fun HedvigTextFieldDefaults.configuration(
   shape: Shape = TextFieldTokens.Shape.value,
   borderWidth: Dp = TextFieldTokens.BorderWidth,
   focusedBorderWidth: Dp = TextFieldTokens.FocusedBorderWidth,
   errorBorderWidth: Dp = TextFieldTokens.ErrorBorderWidth,
   supportingTextStyle: TextStyle = TextFieldTokens.SupportingTextStyle.value,
+  iconToTextPadding: Dp = TextFieldTokens.IconToTextPadding,
 ): HedvigTextFieldConfiguration = HedvigTextFieldConfiguration(
   shape = shape,
   borderWidth = borderWidth,
   focusedBorderWidth = focusedBorderWidth,
   errorBorderWidth = errorBorderWidth,
   supportingTextStyle = supportingTextStyle,
+  iconToTextPadding = iconToTextPadding,
 )
 
 @Immutable
@@ -175,6 +173,7 @@ internal data class HedvigTextFieldConfiguration(
   val focusedBorderWidth: Dp,
   val errorBorderWidth: Dp,
   val supportingTextStyle: TextStyle,
+  val iconToTextPadding: Dp,
 )
 
 @Immutable
@@ -307,20 +306,14 @@ internal sealed interface HedvigTextFieldSize {
     @Composable
     override fun contentPadding(value: String, isFocused: Boolean): PaddingValues {
       val hasInput = value.isNotEmpty()
-      val topPadding by animateDpAsState(
-        when {
-          hasInput || isFocused -> LargeSizeTextFieldTokens.TopPaddingWithLabel
-          else -> LargeSizeTextFieldTokens.TopPadding
-        },
-        tween(TextFieldLabelAnimationDuration),
-      )
-      val bottomPadding by animateDpAsState(
-        when {
-          hasInput || isFocused -> LargeSizeTextFieldTokens.BottomPaddingWithLabel
-          else -> LargeSizeTextFieldTokens.BottomPadding
-        },
-        tween(TextFieldLabelAnimationDuration),
-      )
+      val topPadding = when {
+        hasInput || isFocused -> LargeSizeTextFieldTokens.TopPaddingWithLabel
+        else -> LargeSizeTextFieldTokens.TopPadding
+      }
+      val bottomPadding = when {
+        hasInput || isFocused -> LargeSizeTextFieldTokens.BottomPaddingWithLabel
+        else -> LargeSizeTextFieldTokens.BottomPadding
+      }
       return PaddingValues(
         start = LargeSizeTextFieldTokens.HorizontalPadding,
         top = topPadding,
@@ -396,7 +389,6 @@ private fun HedvigTextField(
       interactionSource = interactionSource,
       cursorBrush = SolidColor(colors.cursorColor),
       decorationBox = @Composable { innerTextField ->
-        // places leading icon, text field with label, trailing icon
         HedvigTextFieldDecorationBox(
           value = value,
           colors = colors,
@@ -434,9 +426,6 @@ private fun HedvigTextFieldDecorationBox(
   leadingIcon: @Composable (() -> Unit)? = null,
   trailingIcon: @Composable (() -> Unit)? = null,
   supportingText: @Composable (() -> Unit)? = null,
-  container: @Composable () -> Unit = {
-    ContainerBox(value, isError, colors, configuration)
-  },
 ) {
   HedvigDecorationBox(
     value = value,
@@ -453,20 +442,5 @@ private fun HedvigTextFieldDecorationBox(
     enabled = enabled,
     isError = isError,
     interactionSource = interactionSource,
-    contentPadding = size.contentPadding(value, interactionSource.collectIsFocusedAsState().value),
-    container = container,
-  )
-}
-
-@Composable
-private fun ContainerBox(
-  value: String,
-  isError: Boolean,
-  colors: HedvigTextFieldColors,
-  configuration: HedvigTextFieldConfiguration,
-  modifier: Modifier = Modifier,
-) {
-  Box(
-    modifier.background(colors.containerColor(value, isError).value, configuration.shape),
   )
 }

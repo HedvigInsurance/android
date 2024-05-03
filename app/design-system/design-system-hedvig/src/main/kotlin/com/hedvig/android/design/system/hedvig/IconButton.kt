@@ -38,7 +38,7 @@ fun IconButton(
         enabled = enabled,
         role = Role.Button,
         interactionSource = interactionSource,
-        indication = rememberRipple(
+        indication = ripple(
           bounded = false,
           radius = IconButtonTokens.StateLayerSize / 2,
         ),

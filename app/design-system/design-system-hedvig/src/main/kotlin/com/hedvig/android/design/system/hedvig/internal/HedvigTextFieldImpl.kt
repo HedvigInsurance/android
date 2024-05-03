@@ -1,35 +1,52 @@
 package com.hedvig.android.design.system.hedvig.internal
 
-import android.annotation.SuppressLint
-import androidx.compose.animation.animateColor
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.HoverInteraction
+import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.InteractionSource
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.Placeable
-import androidx.compose.ui.layout.layoutId
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.error
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.lerp
+import androidx.compose.ui.tooling.preview.Preview
+import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
+import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldColors
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldConfiguration
+import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldSize
-import com.hedvig.android.design.system.hedvig.LocalContentColor
-import com.hedvig.android.design.system.hedvig.ProvideTextStyle
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.colors
+import com.hedvig.android.design.system.hedvig.configuration
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.Image
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun HedvigDecorationBox(
   value: String,
@@ -46,8 +63,6 @@ internal fun HedvigDecorationBox(
   enabled: Boolean = true,
   isError: Boolean = false,
   interactionSource: InteractionSource,
-  contentPadding: PaddingValues,
-  container: @Composable () -> Unit,
 ) {
   val transformedText = remember(value, visualTransformation) {
     visualTransformation.filter(AnnotatedString(value))
@@ -60,149 +75,128 @@ internal fun HedvigDecorationBox(
     else -> InputPhase.UnfocusedNotEmpty
   }
 
+  Column {
+    SharedTransitionLayout {
+      AnimatedContent(inputState) { inputPhase ->
+        this@SharedTransitionLayout.TextFieldContent(
+          this,
+          inputPhase,
+          value,
+          colors,
+          configuration,
+          size,
+          innerTextField,
+          visualTransformation,
+          label,
+          leadingIcon,
+          trailingIcon,
+          singleLine,
+          enabled,
+          isError,
+          interactionSource,
+          isFocused,
+        ) { modifier, containerContent ->
+          ContainerBox(
+            value = value,
+            isError = isError,
+            colors = colors,
+            size = size,
+            configuration = configuration,
+            modifier = modifier,
+            content = containerContent,
+          )
+        }
+      }
+    }
+    AnimatedContent(
+      targetState = supportingText,
+      contentAlignment = Alignment.TopCenter,
+      transitionSpec = { expandVertically() togetherWith shrinkVertically() },
+    ) { supportingText ->
+      if (supportingText != null) {
+        Box(Modifier.padding(size.supportingTextPadding)) {
+          supportingText()
+        }
+      }
+    }
+  }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+private fun SharedTransitionScope.TextFieldContent(
+  animatedContentScope: AnimatedContentScope,
+  inputPhase: InputPhase,
+  value: String,
+  colors: HedvigTextFieldColors,
+  configuration: HedvigTextFieldConfiguration,
+  size: HedvigTextFieldSize,
+  innerTextField: @Composable () -> Unit,
+  visualTransformation: VisualTransformation,
+  label: @Composable (() -> Unit)?,
+  leadingIcon: @Composable (() -> Unit)?,
+  trailingIcon: @Composable (() -> Unit)?,
+  singleLine: Boolean,
+  enabled: Boolean,
+  isError: Boolean,
+  interactionSource: InteractionSource,
+  isFocused: Boolean,
+  container: @Composable (Modifier, @Composable BoxScope.() -> Unit) -> Unit,
+) {
   val labelColor = colors.labelColor(value, enabled, isError).value
   val labelBigTypography = size.textStyle
   val labelSmallTypography = size.labelTextStyle
 
-  TextFieldTransitionScope.Transition(
-    inputState = inputState,
-    focusedTextStyleColor = labelColor,
-    unfocusedTextStyleColor = labelColor,
-    contentColor = labelColor,
-  ) { labelProgress, labelTextStyleColor, labelContentColor ->
-    val decoratedLabel: @Composable (() -> Unit)? = label?.let {
-      @Composable {
-        val labelTextStyle = lerp(
-          start = labelBigTypography,
-          stop = labelSmallTypography,
-          fraction = labelProgress,
-        ).let {
-          it.copy(color = labelTextStyleColor)
-        }
-        Decoration(labelContentColor, labelTextStyle, it)
-      }
-    }
-
-    // Developers need to handle invalid input manually. But since we don't provide error
-    // message slot API, we can set the default error message in case developers forget about
-    // it.
-    @SuppressLint("PrivateResource")
-    val defaultErrorMessage = stringResource(androidx.compose.ui.R.string.default_error_message)
-    val decorationBoxModifier = Modifier.semantics { if (isError) error(defaultErrorMessage) }
-
-    // todo add leading icon color.
-    val leadingIconColor = colors.trailingIconColor(enabled, isError, interactionSource).value
-    val decoratedLeading: @Composable (() -> Unit)? = leadingIcon?.let {
-      @Composable {
-        Decoration(contentColor = leadingIconColor, content = it)
-      }
-    }
-
-    val trailingIconColor = colors.trailingIconColor(enabled, isError, interactionSource).value
-    val decoratedTrailing: @Composable (() -> Unit)? = trailingIcon?.let {
-      @Composable {
-        Decoration(contentColor = trailingIconColor, content = it)
-      }
-    }
-
-    val supportingTextColor = colors.supportingTextColor()
-    val decoratedSupporting: @Composable (() -> Unit)? = supportingText?.let {
-      @Composable {
-        Decoration(
-          contentColor = supportingTextColor,
-          typography = configuration.supportingTextStyle,
-          content = it,
-        )
-      }
-    }
-
-    val containerWithId: @Composable () -> Unit = {
-      Box(
-        Modifier.layoutId(ContainerId),
-        propagateMinConstraints = true,
-      ) {
-        container()
-      }
-    }
-
-    HedvigTextFieldLayout(
-      modifier = decorationBoxModifier,
-      size = size,
-      textField = innerTextField,
-      label = decoratedLabel,
-      leading = decoratedLeading,
-      trailing = decoratedTrailing,
-      container = containerWithId,
-      supporting = decoratedSupporting,
-      singleLine = singleLine,
-      animationProgress = labelProgress,
-      paddingValues = contentPadding,
-    )
-  }
-}
-
-/**
- * Set content color, typography and emphasis for [content] composable
- */
-@Composable
-internal fun Decoration(contentColor: Color, typography: TextStyle? = null, content: @Composable () -> Unit) {
-  val contentWithColor: @Composable () -> Unit = @Composable {
-    CompositionLocalProvider(
-      LocalContentColor provides contentColor,
-      content = content,
-    )
-  }
-  if (typography != null) ProvideTextStyle(typography, contentWithColor) else contentWithColor()
-}
-
-internal fun widthOrZero(placeable: Placeable?) = placeable?.width ?: 0
-
-internal fun heightOrZero(placeable: Placeable?) = placeable?.height ?: 0
-
-private object TextFieldTransitionScope {
-  @Composable
-  fun Transition(
-    inputState: InputPhase,
-    focusedTextStyleColor: Color,
-    unfocusedTextStyleColor: Color,
-    contentColor: Color,
-    content: @Composable (
-      labelProgress: Float,
-      labelTextStyleColor: Color,
-      labelContentColor: Color,
-    ) -> Unit,
+  container(
+    Modifier.sharedElement(
+      state = rememberSharedContentState("container"),
+      animatedVisibilityScope = animatedContentScope,
+      renderInOverlayDuringTransition = false,
+    ),
   ) {
-    // Transitions from/to InputPhase.Focused are the most critical in the transition below.
-    // UnfocusedEmpty <-> UnfocusedNotEmpty are needed when a single state is used to control
-    // multiple text fields.
-    val transition = updateTransition(inputState, label = "TextFieldInputState")
-
-    val labelProgress by transition.animateFloat(
-      label = "LabelProgress",
-      transitionSpec = { tween(durationMillis = TextFieldLabelAnimationDuration) },
+    Row(
+      verticalAlignment = Alignment.CenterVertically,
+      modifier = Modifier.padding(size.contentPadding(value = value, isFocused = isFocused)),
     ) {
-      when (it) {
-        InputPhase.Focused -> 1f
-        InputPhase.UnfocusedEmpty -> 0f
-        InputPhase.UnfocusedNotEmpty -> 1f
+      if (leadingIcon != null) {
+        leadingIcon.invoke()
+        Spacer(Modifier.width(configuration.iconToTextPadding))
+      }
+      when (inputPhase) {
+        InputPhase.Focused,
+        InputPhase.UnfocusedNotEmpty,
+        -> {
+          Column(verticalArrangement = Arrangement.spacedBy(-size.labelToTextOverlap)) {
+            label?.invoke()
+            innerTextField()
+          }
+        }
+        InputPhase.UnfocusedEmpty -> {
+          label?.invoke()
+        }
+      }
+      if (trailingIcon != null) {
+        Spacer(Modifier.width(configuration.iconToTextPadding))
+        trailingIcon.invoke()
       }
     }
+  }
+}
 
-    val labelTextStyleColor by transition.animateColor(
-      transitionSpec = { tween(durationMillis = TextFieldLabelAnimationDuration) },
-      label = "LabelTextStyleColor",
-    ) {
-      when (it) {
-        InputPhase.Focused -> focusedTextStyleColor
-        else -> unfocusedTextStyleColor
-      }
-    }
-
-    content(
-      labelProgress,
-      labelTextStyleColor,
-      contentColor,
-    )
+@Composable
+private fun ContainerBox(
+  value: String,
+  isError: Boolean,
+  colors: HedvigTextFieldColors,
+  size: HedvigTextFieldSize,
+  configuration: HedvigTextFieldConfiguration,
+  modifier: Modifier = Modifier,
+  content: @Composable BoxScope.() -> Unit,
+) {
+  Box(
+    modifier.background(colors.containerColor(value, isError).value, configuration.shape),
+  ) {
+    content()
   }
 }
 
@@ -219,3 +213,59 @@ private enum class InputPhase {
 
 internal const val SignalAnimationDuration = 400L
 internal const val TextFieldLabelAnimationDuration = 150
+
+@Preview
+@Composable
+private fun PreviewHedvigDecorationBox() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      PreviewContentWithProvidedParametersAnimatedOnClick(
+        PreviewTextFieldInputState.entries.toList(),
+      ) { state ->
+        val value = "Text field".takeIf { !state.isEmpty }.orEmpty()
+        HedvigDecorationBox(
+          value = value,
+          colors = HedvigTextFieldDefaults.colors(),
+          configuration = HedvigTextFieldDefaults.configuration(),
+          size = HedvigTextFieldSize.Large,
+          innerTextField = { BasicTextField(value = value, onValueChange = {}) },
+          visualTransformation = VisualTransformation.None,
+          label = { HedvigText(text = "Label") },
+          leadingIcon = { Icon(HedvigIcons.Image, null) },
+          trailingIcon = { Icon(HedvigIcons.Image, null) },
+          interactionSource = remember {
+            if (state.isFocused) {
+              object : MutableInteractionSource {
+                override val interactions: Flow<Interaction>
+                  get() = flowOf(HoverInteraction.Enter())
+
+                override suspend fun emit(interaction: Interaction) {
+                }
+
+                override fun tryEmit(interaction: Interaction): Boolean {
+                  return false
+                }
+              }
+            } else {
+              MutableInteractionSource()
+            }
+          },
+        )
+      }
+    }
+  }
+}
+
+private enum class PreviewTextFieldInputState {
+  Focused,
+  FocusedEmpty,
+  Unfocused,
+  UnfocusedEmpty,
+  ;
+
+  val isFocused: Boolean
+    get() = this == PreviewTextFieldInputState.Focused || this == PreviewTextFieldInputState.Unfocused
+
+  val isEmpty: Boolean
+    get() = this == PreviewTextFieldInputState.FocusedEmpty || this == PreviewTextFieldInputState.UnfocusedEmpty
+}
