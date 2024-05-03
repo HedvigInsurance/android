@@ -1,6 +1,7 @@
 package com.hedvig.android.sample.design.showcase.textfield
 
 import android.content.res.Configuration
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.FocusInteraction
 import androidx.compose.foundation.interaction.HoverInteraction
 import androidx.compose.foundation.interaction.Interaction
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.runtime.Composable
@@ -20,6 +22,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.compose.ui.LayoutWithoutPlacement
@@ -101,30 +106,40 @@ fun InteractiveTextFieldWithAllSizes(modifier: Modifier = Modifier) {
   }
 }
 
+private fun Modifier.clearFocusOnTap(): Modifier = this.composed {
+  val focusManager = LocalFocusManager.current
+  Modifier.pointerInput(Unit) {
+    detectTapGestures(
+      onTap = { focusManager.clearFocus() },
+    )
+  }
+}
+
 @Composable
 private fun LabelAnimation(modifier: Modifier = Modifier) {
-  Row(modifier, horizontalArrangement = Arrangement.spacedBy(20.dp)) {
+  Row(modifier.fillMaxSize().clearFocusOnTap(), horizontalArrangement = Arrangement.spacedBy(20.dp)) {
 //    for (size in HedvigTextFieldDefaults.TextFieldSize.entries) {
     val interactionSource = remember {
       MutableInteractionSource()
     }
-    val text by produceState("") {
-      val delay: Long = 3000
-      while (isActive) {
-        value = "Input"
-        delay(delay)
-        value = ""
-        delay(delay)
-        val interaction = FocusInteraction.Focus()
-        interactionSource.emit(interaction)
-        delay(delay)
-        interactionSource.emit(FocusInteraction.Unfocus(interaction))
-      }
-    }
+    var text by remember { mutableStateOf("") }
+//    val text by produceState("") {
+//      val delay: Long = 3000
+//      while (isActive) {
+//        value = "Input"
+//        delay(delay)
+//        value = ""
+//        delay(delay)
+//        val interaction = FocusInteraction.Focus()
+//        interactionSource.emit(interaction)
+//        delay(delay)
+//        interactionSource.emit(FocusInteraction.Unfocus(interaction))
+//      }
+//    }
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
       HedvigTextField(
         text.takeIf { it != "-1" }.orEmpty(),
-        {},
+        { text = it },
         "Label",
 //          size,
         HedvigTextFieldDefaults.TextFieldSize.Large,

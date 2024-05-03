@@ -33,8 +33,9 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldColors
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldConfiguration
@@ -88,11 +89,12 @@ internal fun HedvigDecorationBox(
     }
   }
 
-  val decoratedLabel: (@Composable (isMainText: Boolean) -> Unit)? = if (label != null) {
-    @Composable { isMainText ->
+  val decoratedLabel: (@Composable (InputPhase) -> Unit)? = if (label != null) {
+    @Suppress("NAME_SHADOWING")
+    @Composable { inputPhase ->
       Decoration(
         colors.labelColor(enabled = enabled, isError = isError, value = value).value,
-        if (isMainText) size.textStyle else size.labelTextStyle,
+        if (inputPhase == InputPhase.UnfocusedEmpty) size.textStyle else size.labelTextStyle,
       ) { label() }
     }
   } else {
@@ -171,68 +173,98 @@ private fun TextFieldContent(
   configuration: HedvigTextFieldConfiguration,
   size: HedvigTextFieldSize,
   innerTextField: @Composable () -> Unit,
-  label: @Composable ((isMainText: Boolean) -> Unit)?,
+  label: @Composable ((InputPhase) -> Unit)?,
   leadingIcon: @Composable (() -> Unit)?,
   trailingIcon: @Composable (() -> Unit)?,
   isFocused: Boolean,
   container: @Composable (Modifier, @Composable BoxScope.() -> Unit) -> Unit,
 ) {
-  container(Modifier) {
-    Row(
-      verticalAlignment = Alignment.CenterVertically,
-      modifier = Modifier.padding(size.contentPadding(value = value, isFocused = isFocused)),
-    ) {
-      if (leadingIcon != null) {
-        leadingIcon.invoke()
-        Spacer(Modifier.width(configuration.iconToTextPadding))
+  SharedTransitionLayout {
+    AnimatedContent(
+      inputPhase,
+      transitionSpec = {
+        EnterTransition.None togetherWith ExitTransition.None
+      },
+    ) { inputPhase ->
+      val sharedInnerTextField: @Composable (Modifier) -> Unit = { modifier ->
+        Box(
+          modifier.sharedElement(
+            rememberSharedContentState(InnerTextFieldId),
+            this,
+          ),
+        ) { innerTextField() }
       }
-      SharedTransitionLayout {
-        AnimatedContent(
-          inputPhase,
-          transitionSpec = {
-            EnterTransition.None togetherWith ExitTransition.None
-          },
-        ) { inputPhase ->
-          val sharedInnerTextField: @Composable () -> Unit = {
-            Box(Modifier.sharedElement(rememberSharedContentState("innerTextField"), this)) { innerTextField() }
+      val sharedLabel: (@Composable () -> Unit)? = if (label != null) {
+        @Composable {
+          Box(Modifier.sharedBounds(rememberSharedContentState(LabelId), this)) {
+            label(inputPhase)
           }
-          val sharedLabel: (@Composable (isMainText: Boolean) -> Unit)? = if (label != null) {
-            @Composable {
-              Box(
-                Modifier
-                  .sharedBounds(rememberSharedContentState("label"), this)
-                  .skipToLookaheadSize(),
-              ) {
-                label(it)
-              }
-            }
-          } else {
-            null
+        }
+      } else {
+        null
+      }
+
+      val sharedLeadingIcon: (@Composable () -> Unit)? = if (leadingIcon != null) {
+        @Composable {
+          Box(Modifier.sharedElement(rememberSharedContentState(LeadingIconId), this)) {
+            leadingIcon()
+          }
+        }
+      } else {
+        null
+      }
+
+      val sharedTrailingIcon: (@Composable () -> Unit)? = if (trailingIcon != null) {
+        @Composable {
+          Box(Modifier.sharedElement(rememberSharedContentState(TrailingIconId), this)) {
+            trailingIcon()
+          }
+        }
+      } else {
+        null
+      }
+      container(
+        Modifier.sharedElement(
+          state = rememberSharedContentState(ContainerId),
+          animatedVisibilityScope = this,
+        ),
+      ) {
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+          modifier = Modifier.padding(size.contentPadding(value = value, isFocused = isFocused)),
+        ) {
+          if (sharedLeadingIcon != null) {
+            sharedLeadingIcon.invoke()
+            Spacer(Modifier.width(configuration.iconToTextPadding))
           }
           when (inputPhase) {
             InputPhase.Focused,
             InputPhase.UnfocusedNotEmpty,
             -> {
               Column(verticalArrangement = Arrangement.spacedBy(-size.labelToTextOverlap)) {
-                sharedLabel?.invoke(false)
-                sharedInnerTextField()
+                sharedLabel?.invoke()
+                sharedInnerTextField(Modifier)
               }
             }
 
             InputPhase.UnfocusedEmpty -> {
-              Column {
-                sharedLabel?.invoke(true)
-                Box(Modifier.alpha(0f).requiredHeight(0.dp).wrapContentHeight(Alignment.Top)) {
-                  sharedInnerTextField()
-                }
+              Box {
+                sharedLabel?.invoke()
+                sharedInnerTextField(
+                  Modifier
+                    .align(Alignment.Center)
+                    .alpha(0f)
+                    .requiredHeight(0.dp)
+                    .wrapContentHeight(Alignment.Top),
+                )
               }
             }
           }
+          if (sharedTrailingIcon != null) {
+            Spacer(Modifier.width(configuration.iconToTextPadding))
+            sharedTrailingIcon.invoke()
+          }
         }
-      }
-      if (trailingIcon != null) {
-        Spacer(Modifier.width(configuration.iconToTextPadding))
-        trailingIcon.invoke()
       }
     }
   }
@@ -271,45 +303,47 @@ internal const val TextFieldLabelAnimationDuration = 150
 
 @Preview
 @Composable
-private fun PreviewHedvigDecorationBox() {
+private fun PreviewHedvigDecorationBox(
+  @PreviewParameter(PreviewTextFieldInput::class) previewTextFieldInputState: PreviewTextFieldInputState,
+) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      PreviewContentWithProvidedParametersAnimatedOnClick(
-        PreviewTextFieldInputState.entries.toList(),
-      ) { state ->
-        val value = "Text field".takeIf { !state.isEmpty }.orEmpty()
-        HedvigDecorationBox(
-          value = value,
-          colors = HedvigTextFieldDefaults.colors(),
-          configuration = HedvigTextFieldDefaults.configuration(),
-          size = HedvigTextFieldSize.Large,
-          innerTextField = { BasicTextField(value = value, onValueChange = {}) },
-          visualTransformation = VisualTransformation.None,
-          label = { HedvigText(text = "Label") },
-          leadingIcon = { Icon(HedvigIcons.Image, null) },
-          trailingIcon = { Icon(HedvigIcons.Image, null) },
-          interactionSource = remember {
-            if (state.isFocused) {
-              object : MutableInteractionSource {
-                override val interactions: Flow<Interaction>
-                  get() = flowOf(HoverInteraction.Enter())
+      val value = "Text field".takeIf { !previewTextFieldInputState.isEmpty }.orEmpty()
+      HedvigDecorationBox(
+        value = value,
+        colors = HedvigTextFieldDefaults.colors(),
+        configuration = HedvigTextFieldDefaults.configuration(),
+        size = HedvigTextFieldSize.Large,
+        innerTextField = { BasicTextField(value = value, onValueChange = {}) },
+        visualTransformation = VisualTransformation.None,
+        label = { HedvigText(text = "Label") },
+        leadingIcon = { Icon(HedvigIcons.Image, null) },
+        trailingIcon = { Icon(HedvigIcons.Image, null) },
+        interactionSource = remember {
+          if (previewTextFieldInputState.isFocused) {
+            object : MutableInteractionSource {
+              override val interactions: Flow<Interaction>
+                get() = flowOf(HoverInteraction.Enter())
 
-                override suspend fun emit(interaction: Interaction) {
-                }
-
-                override fun tryEmit(interaction: Interaction): Boolean {
-                  return false
-                }
+              override suspend fun emit(interaction: Interaction) {
               }
-            } else {
-              MutableInteractionSource()
+
+              override fun tryEmit(interaction: Interaction): Boolean {
+                return false
+              }
             }
-          },
-        )
-      }
+          } else {
+            MutableInteractionSource()
+          }
+        },
+      )
     }
   }
 }
+
+private class PreviewTextFieldInput : CollectionPreviewParameterProvider<PreviewTextFieldInputState>(
+  PreviewTextFieldInputState.entries.toList(),
+)
 
 private enum class PreviewTextFieldInputState {
   Focused,
@@ -324,3 +358,9 @@ private enum class PreviewTextFieldInputState {
   val isEmpty: Boolean
     get() = this == PreviewTextFieldInputState.FocusedEmpty || this == PreviewTextFieldInputState.UnfocusedEmpty
 }
+
+private const val InnerTextFieldId = "InnerTextField"
+private const val LabelId = "Label"
+private const val LeadingIconId = "LeadingIcon"
+private const val TrailingIconId = "TrailingIcon"
+private const val ContainerId = "Container"
