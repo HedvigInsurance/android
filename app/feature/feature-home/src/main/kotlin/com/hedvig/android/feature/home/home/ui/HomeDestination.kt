@@ -57,6 +57,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.nonEmptyListOf
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.permissions.isGranted
+import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigSecondaryContainedButton
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
@@ -74,7 +75,6 @@ import com.hedvig.android.core.ui.appbar.m3.TopAppBarLayoutForActions
 import com.hedvig.android.core.ui.infocard.InfoCardTextButton
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.plus
-import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.feature.home.home.ChatTooltip
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.memberreminders.MemberReminder
@@ -493,7 +493,9 @@ private fun Context.getSharedPreferences() = this.getSharedPreferences(SHARED_PR
 @HedvigPreview
 @Composable
 private fun PreviewHomeScreen(
-  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) hasUnseenChatMessages: Boolean,
+  @PreviewParameter(
+    com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider::class,
+  ) hasUnseenChatMessages: Boolean,
 ) {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {

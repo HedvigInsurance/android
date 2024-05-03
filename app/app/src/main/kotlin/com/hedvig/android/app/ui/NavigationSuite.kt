@@ -19,8 +19,8 @@ import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.navigation.NavDestination
+import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.navigation.core.TopLevelGraph
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.toPersistentSet
@@ -74,7 +74,9 @@ internal fun NavigationSuite(
 @PreviewScreenSizes
 @Composable
 private fun PreviewNavigationSuite(
-  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) showBottomBar: Boolean,
+  @PreviewParameter(
+    com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider::class,
+  ) showBottomBar: Boolean,
 ) {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {

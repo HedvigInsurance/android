@@ -29,11 +29,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.core.text.isDigitsOnly
+import com.hedvig.android.compose.ui.preview.DoubleBooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
 import com.hedvig.android.core.designsystem.material3.DisabledAlpha
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.preview.DoubleBooleanCollectionPreviewParameterProvider
 
 /**
  * [onInput] guarantees that it either returns a valid [Int], or null
@@ -118,7 +118,9 @@ internal fun MonetaryAmountInput(
 @HedvigPreview
 @Composable
 private fun PreviewMonetaryAmountInput(
-  @PreviewParameter(DoubleBooleanCollectionPreviewParameterProvider::class) input: Pair<Boolean, Boolean>,
+  @PreviewParameter(
+    com.hedvig.android.compose.ui.preview.DoubleBooleanCollectionPreviewParameterProvider::class,
+  ) input: Pair<Boolean, Boolean>,
 ) {
   val (hasInput: Boolean, canInteract: Boolean) = input
   HedvigTheme {

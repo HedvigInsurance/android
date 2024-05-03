@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.NonEmptyList
 import arrow.core.toNonEmptyListOrNull
+import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
@@ -42,7 +43,6 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.SelectIndicationCircle
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
-import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.scaffold.ClaimFlowScaffold
 import com.hedvig.android.core.uidata.UiMoney
@@ -207,7 +207,9 @@ private fun ColumnScope.CheckoutMethods(
 @HedvigPreview
 @Composable
 private fun PreviewSingleItemCheckoutScreen(
-  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) withMultiplePayoutMethods: Boolean,
+  @PreviewParameter(
+    com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider::class,
+  ) withMultiplePayoutMethods: Boolean,
 ) {
   val checkoutNr1 = CheckoutMethod.Known.AutomaticAutogiro(
     "#1",

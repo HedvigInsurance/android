@@ -22,6 +22,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.compose.ui.preview.DoubleBooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.material3.infoContainer
 import com.hedvig.android.core.designsystem.material3.onInfoContainer
@@ -30,7 +31,6 @@ import com.hedvig.android.core.designsystem.material3.purpleContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
-import com.hedvig.android.core.ui.preview.DoubleBooleanCollectionPreviewParameterProvider
 import com.hedvig.android.feature.help.center.model.Question
 import com.hedvig.android.feature.help.center.model.Topic
 import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
@@ -160,7 +160,9 @@ private fun HelpCenterTopicScreen(
 @HedvigPreview
 @Composable
 private fun PreviewHelpCenterTopicScreen(
-  @PreviewParameter(DoubleBooleanCollectionPreviewParameterProvider::class) input: Pair<Boolean, Boolean>,
+  @PreviewParameter(
+    com.hedvig.android.compose.ui.preview.DoubleBooleanCollectionPreviewParameterProvider::class,
+  ) input: Pair<Boolean, Boolean>,
 ) {
   val hasTopic = input.first
   val hasQuestions = input.second

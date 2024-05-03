@@ -1,9 +1,8 @@
-package com.hedvig.android.core.ui.preview
+package com.hedvig.android.compose.ui.preview
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -42,19 +41,17 @@ class DoubleBooleanCollectionPreviewParameterProvider : CollectionPreviewParamet
 @Composable
 fun <T> PreviewContentWithProvidedParametersAnimatedOnClick(
   parametersList: List<T>,
-  content: @Composable (parameterState: T) -> Unit,
   modifier: Modifier = Modifier,
+  content: @Composable (parameterState: T) -> Unit,
 ) {
   var parameterStateIndex by remember { mutableIntStateOf(0) }
   val interactionSource = remember { MutableInteractionSource() }
   Box(
-    modifier = modifier
-      .fillMaxSize()
-      .clickable(
-        interactionSource = interactionSource,
-        indication = null,
-        onClick = { parameterStateIndex += 1 },
-      ),
+    modifier = modifier.clickable(
+      interactionSource = interactionSource,
+      indication = null,
+      onClick = { parameterStateIndex += 1 },
+    ),
   ) {
     content(parametersList[parameterStateIndex % parametersList.size])
   }

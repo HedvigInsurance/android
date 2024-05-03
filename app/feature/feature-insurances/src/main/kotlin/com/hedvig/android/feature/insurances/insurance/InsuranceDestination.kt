@@ -57,6 +57,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
+import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
+import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
@@ -69,8 +71,6 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.card.InsuranceCard
 import com.hedvig.android.core.ui.card.InsuranceCardPlaceholder
-import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
-import com.hedvig.android.core.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
@@ -483,7 +483,9 @@ private fun TerminatedContractsButton(text: String, onClick: () -> Unit, modifie
 @HedvigPreview
 @Composable
 private fun PreviewInsuranceScreen(
-  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) withContracts: Boolean,
+  @PreviewParameter(
+    com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider::class,
+  ) withContracts: Boolean,
 ) {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
@@ -525,7 +527,7 @@ private fun PreviewInsuranceDestinationAnimation() {
   val values = InsuranceUiStateProvider().values.toList()
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      PreviewContentWithProvidedParametersAnimatedOnClick(
+      com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick(
         parametersList = values,
         content = { insuranceUiState ->
           InsuranceScreen(
