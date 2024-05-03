@@ -6,6 +6,7 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
@@ -124,7 +125,7 @@ internal fun HedvigDecorationBox(
   }
 
   Column {
-    TextFieldContent(
+    AnimatedTextFieldContent(
       inputPhase = inputPhase,
       value = value,
       configuration = configuration,
@@ -158,9 +159,25 @@ internal fun HedvigDecorationBox(
   }
 }
 
+@Composable
+private fun ContainerBox(
+  value: String,
+  isError: Boolean,
+  colors: HedvigTextFieldColors,
+  configuration: HedvigTextFieldConfiguration,
+  modifier: Modifier = Modifier,
+  content: @Composable BoxScope.() -> Unit,
+) {
+  Box(
+    modifier.background(colors.containerColor(value, isError).value, configuration.shape),
+  ) {
+    content()
+  }
+}
+
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-private fun TextFieldContent(
+private fun AnimatedTextFieldContent(
   inputPhase: InputPhase,
   value: String,
   configuration: HedvigTextFieldConfiguration,
@@ -243,6 +260,7 @@ private fun TextFieldContent(
           state = rememberSharedContentState(ContainerId),
           animatedVisibilityScope = this,
           boundsTransform = BoundsTransform { _, _ -> LabelTransitionAnimationSpec },
+          placeHolderSize = SharedTransitionScope.PlaceHolderSize.animatedSize,
         ),
       ) {
         Row(
@@ -283,22 +301,6 @@ private fun TextFieldContent(
         }
       }
     }
-  }
-}
-
-@Composable
-private fun ContainerBox(
-  value: String,
-  isError: Boolean,
-  colors: HedvigTextFieldColors,
-  configuration: HedvigTextFieldConfiguration,
-  modifier: Modifier = Modifier,
-  content: @Composable BoxScope.() -> Unit,
-) {
-  Box(
-    modifier.background(colors.containerColor(value, isError).value, configuration.shape),
-  ) {
-    content()
   }
 }
 
