@@ -305,12 +305,12 @@ internal sealed interface HedvigTextFieldSize {
     @Composable
     override fun contentPadding(withSmallLabel: Boolean): PaddingValues {
       val topPadding = when (withSmallLabel) {
-        true -> LargeSizeTextFieldTokens.TopPaddingWithLabel
-        false -> LargeSizeTextFieldTokens.TopPadding
+        true -> LargeSizeTextFieldTokens.TopPadding
+        false -> LargeSizeTextFieldTokens.TopPaddingWithLabel
       }
       val bottomPadding = when (withSmallLabel) {
-        withSmallLabel -> LargeSizeTextFieldTokens.BottomPaddingWithLabel
-        else -> LargeSizeTextFieldTokens.BottomPadding
+        true -> LargeSizeTextFieldTokens.BottomPadding
+        false -> LargeSizeTextFieldTokens.BottomPaddingWithLabel
       }
       return PaddingValues(
         start = LargeSizeTextFieldTokens.HorizontalPadding,
