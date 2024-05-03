@@ -1,12 +1,10 @@
 package com.hedvig.android.design.system.hedvig.internal
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.togetherWith
@@ -23,16 +21,19 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldColors
@@ -72,7 +73,7 @@ internal fun HedvigDecorationBox(
   }.text.text
 
   val isFocused = interactionSource.collectIsFocusedAsState().value
-  val inputState = when {
+  val inputPhase = when {
     isFocused -> InputPhase.Focused
     transformedText.isEmpty() -> InputPhase.UnfocusedEmpty
     else -> InputPhase.UnfocusedNotEmpty
@@ -87,11 +88,11 @@ internal fun HedvigDecorationBox(
     }
   }
 
-  val decoratedLabel: (@Composable () -> Unit)? = if (label != null) {
-    @Composable {
+  val decoratedLabel: (@Composable (isMainText: Boolean) -> Unit)? = if (label != null) {
+    @Composable { isMainText ->
       Decoration(
         colors.labelColor(enabled = enabled, isError = isError, value = value).value,
-        size.labelTextStyle,
+        if (isMainText) size.textStyle else size.labelTextStyle,
       ) { label() }
     }
   } else {
@@ -127,40 +128,30 @@ internal fun HedvigDecorationBox(
   }
 
   Column {
-    SharedTransitionLayout {
-      AnimatedContent(
-        inputState,
-        transitionSpec = {
-          EnterTransition.None togetherWith ExitTransition.None
-        },
-      ) { inputPhase ->
-        this@SharedTransitionLayout.TextFieldContent(
-          this,
-          inputPhase,
-          value,
-          configuration,
-          size,
-          decoratedInnerTextField,
-          decoratedLabel,
-          decoratedLeadingIcon,
-          decoratedTrailingIcon,
-          isFocused,
-        ) { modifier, containerContent ->
-          ContainerBox(
-            value = value,
-            isError = isError,
-            colors = colors,
-            size = size,
-            configuration = configuration,
-            modifier = modifier,
-            content = containerContent,
-          )
-        }
-      }
+    TextFieldContent(
+      inputPhase,
+      value,
+      configuration,
+      size,
+      decoratedInnerTextField,
+      decoratedLabel,
+      decoratedLeadingIcon,
+      decoratedTrailingIcon,
+      isFocused,
+    ) { modifier, containerContent ->
+      ContainerBox(
+        value = value,
+        isError = isError,
+        colors = colors,
+        size = size,
+        configuration = configuration,
+        modifier = modifier,
+        content = containerContent,
+      )
     }
     AnimatedContent(
       targetState = decoratedSupportingText,
-      contentAlignment = Alignment.TopCenter,
+      contentAlignment = Alignment.TopStart,
       transitionSpec = { expandVertically() togetherWith shrinkVertically() },
     ) { supportingText ->
       if (supportingText != null) {
@@ -174,79 +165,74 @@ internal fun HedvigDecorationBox(
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-private fun SharedTransitionScope.TextFieldContent(
-  animatedContentScope: AnimatedContentScope,
+private fun TextFieldContent(
   inputPhase: InputPhase,
   value: String,
   configuration: HedvigTextFieldConfiguration,
   size: HedvigTextFieldSize,
   innerTextField: @Composable () -> Unit,
-  label: @Composable (() -> Unit)?,
+  label: @Composable ((isMainText: Boolean) -> Unit)?,
   leadingIcon: @Composable (() -> Unit)?,
   trailingIcon: @Composable (() -> Unit)?,
   isFocused: Boolean,
   container: @Composable (Modifier, @Composable BoxScope.() -> Unit) -> Unit,
 ) {
-  val sharedInnerTextField: @Composable () -> Unit = {
-    Box(Modifier.sharedElement(rememberSharedContentState("innerTextField"), animatedContentScope)) { innerTextField() }
-  }
-  val sharedLabel: (@Composable () -> Unit)? = if (label != null) {
-    @Composable {
-      Box(Modifier.sharedBounds(rememberSharedContentState("label"), animatedContentScope)) { label() }
-    }
-  } else {
-    null
-  }
-
-  val sharedLeadingIcon: (@Composable () -> Unit)? = if (leadingIcon != null) {
-    @Composable {
-      Box(Modifier.sharedElement(rememberSharedContentState("leadingIcon"), animatedContentScope)) { leadingIcon() }
-    }
-  } else {
-    null
-  }
-
-  val sharedTrailingIcon: (@Composable () -> Unit)? = if (trailingIcon != null) {
-    @Composable {
-      Box(
-        Modifier.sharedElement(rememberSharedContentState("sharedTrailingIcon"), animatedContentScope),
-      ) { trailingIcon() }
-    }
-  } else {
-    null
-  }
-  container(
-    Modifier.sharedElement(
-      state = rememberSharedContentState("container"),
-      animatedVisibilityScope = animatedContentScope,
-      renderInOverlayDuringTransition = false,
-    ),
-  ) {
+  container(Modifier) {
     Row(
       verticalAlignment = Alignment.CenterVertically,
       modifier = Modifier.padding(size.contentPadding(value = value, isFocused = isFocused)),
     ) {
-      if (sharedLeadingIcon != null) {
-        sharedLeadingIcon.invoke()
+      if (leadingIcon != null) {
+        leadingIcon.invoke()
         Spacer(Modifier.width(configuration.iconToTextPadding))
       }
-      when (inputPhase) {
-        InputPhase.Focused,
-        InputPhase.UnfocusedNotEmpty,
-        -> {
-          Column(verticalArrangement = Arrangement.spacedBy(-size.labelToTextOverlap)) {
-            sharedLabel?.invoke()
-            sharedInnerTextField()
+      SharedTransitionLayout {
+        AnimatedContent(
+          inputPhase,
+          transitionSpec = {
+            EnterTransition.None togetherWith ExitTransition.None
+          },
+        ) { inputPhase ->
+          val sharedInnerTextField: @Composable () -> Unit = {
+            Box(Modifier.sharedElement(rememberSharedContentState("innerTextField"), this)) { innerTextField() }
+          }
+          val sharedLabel: (@Composable (isMainText: Boolean) -> Unit)? = if (label != null) {
+            @Composable {
+              Box(
+                Modifier
+                  .sharedBounds(rememberSharedContentState("label"), this)
+                  .skipToLookaheadSize(),
+              ) {
+                label(it)
+              }
+            }
+          } else {
+            null
+          }
+          when (inputPhase) {
+            InputPhase.Focused,
+            InputPhase.UnfocusedNotEmpty,
+            -> {
+              Column(verticalArrangement = Arrangement.spacedBy(-size.labelToTextOverlap)) {
+                sharedLabel?.invoke(false)
+                sharedInnerTextField()
+              }
+            }
+
+            InputPhase.UnfocusedEmpty -> {
+              Column {
+                sharedLabel?.invoke(true)
+                Box(Modifier.alpha(0f).requiredHeight(0.dp).wrapContentHeight(Alignment.Top)) {
+                  sharedInnerTextField()
+                }
+              }
+            }
           }
         }
-
-        InputPhase.UnfocusedEmpty -> {
-          sharedLabel?.invoke()
-        }
       }
-      if (sharedTrailingIcon != null) {
+      if (trailingIcon != null) {
         Spacer(Modifier.width(configuration.iconToTextPadding))
-        sharedTrailingIcon.invoke()
+        trailingIcon.invoke()
       }
     }
   }

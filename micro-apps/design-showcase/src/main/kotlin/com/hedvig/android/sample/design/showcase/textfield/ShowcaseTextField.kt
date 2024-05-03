@@ -1,7 +1,6 @@
 package com.hedvig.android.sample.design.showcase.textfield
 
 import android.content.res.Configuration
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.interaction.FocusInteraction
 import androidx.compose.foundation.interaction.HoverInteraction
 import androidx.compose.foundation.interaction.Interaction
@@ -12,6 +11,7 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,18 +27,21 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.icon.Cart
-import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.sample.design.showcase.util.ShowcaseLayout
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.isActive
 
+val showcaseJustAnimation = true
+
 @Composable
 internal fun ShowcaseTextField() {
+  if (showcaseJustAnimation) {
+    LabelAnimation(Modifier.safeContentPadding())
+    return
+  }
   ShowcaseLayout {
     Column(verticalArrangement = Arrangement.spacedBy(80.dp)) {
       Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -101,35 +104,49 @@ fun InteractiveTextFieldWithAllSizes(modifier: Modifier = Modifier) {
 @Composable
 private fun LabelAnimation(modifier: Modifier = Modifier) {
   Row(modifier, horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-    for (size in HedvigTextFieldDefaults.TextFieldSize.entries) {
-      val text by produceState("") {
-        val delay: Long = 2000
-        while (isActive) {
-          value = "Input"
-          delay(delay)
-          value = ""
-          delay(delay)
-        }
+//    for (size in HedvigTextFieldDefaults.TextFieldSize.entries) {
+    val interactionSource = remember {
+      MutableInteractionSource()
+    }
+    val text by produceState("") {
+      val delay: Long = 3000
+      while (isActive) {
+        value = "Input"
+        delay(delay)
+        value = ""
+        delay(delay)
+        val interaction = FocusInteraction.Focus()
+        interactionSource.emit(interaction)
+        delay(delay)
+        interactionSource.emit(FocusInteraction.Unfocus(interaction))
       }
-      Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        HedvigTextField(text, {}, "Label", size)
-        HedvigTextField(
-          text = text,
-          onValueChange = {},
-          labelText = "Label",
-          textFieldSize = size,
-          leadingIcon = {
-            IconButton({}) {
-              Image(HedvigIcons.Cart, null)
-            }
-          },
-          trailingIcon = {
-            IconButton({}) {
-              Image(HedvigIcons.Cart, null)
-            }
-          },
-        )
-      }
+    }
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+      HedvigTextField(
+        text.takeIf { it != "-1" }.orEmpty(),
+        {},
+        "Label",
+//          size,
+        HedvigTextFieldDefaults.TextFieldSize.Large,
+        interactionSource = interactionSource,
+      )
+//        HedvigTextField(
+//          text = text,
+//          onValueChange = {},
+//          labelText = "Label",
+//          textFieldSize = size,
+//          leadingIcon = {
+//            IconButton({}) {
+//              Image(HedvigIcons.Cart, null)
+//            }
+//          },
+//          trailingIcon = {
+//            IconButton({}) {
+//              Image(HedvigIcons.Cart, null)
+//            }
+//          },
+//        )
+//      }
     }
   }
 }
