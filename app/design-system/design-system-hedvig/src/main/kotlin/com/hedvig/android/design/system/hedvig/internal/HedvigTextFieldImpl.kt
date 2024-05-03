@@ -375,6 +375,4 @@ private const val TrailingIconId = "TrailingIcon"
 private const val ContainerId = "Container"
 
 private const val TextFieldLabelAnimationDuration = 150
-
-// private val LabelTransitionAnimationSpec: FiniteAnimationSpec<Rect> = tween<Rect>(TextFieldLabelAnimationDuration)
-private val LabelTransitionAnimationSpec = spring<Rect>()
+private val LabelTransitionAnimationSpec: FiniteAnimationSpec<Rect> = tween<Rect>(TextFieldLabelAnimationDuration)
