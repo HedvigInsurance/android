@@ -389,7 +389,7 @@ private fun ImportantMessages(
         HorizontalPager(
           state = pagerState,
           contentPadding = contentPadding,
-          beyondBoundsPageCount = 1,
+          beyondViewportPageCount = 1,
           pageSpacing = 8.dp,
           modifier = Modifier
             .fillMaxWidth()

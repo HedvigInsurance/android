@@ -92,7 +92,7 @@ fun MemberReminderCards(
       HorizontalPager(
         state = pagerState,
         contentPadding = contentPadding,
-        beyondBoundsPageCount = 1,
+        beyondViewportPageCount = 1,
         pageSpacing = 8.dp,
         key = { index -> memberReminders[index].id },
         modifier = Modifier
