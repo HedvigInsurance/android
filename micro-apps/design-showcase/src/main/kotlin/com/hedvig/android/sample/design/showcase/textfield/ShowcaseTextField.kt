@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,7 +33,11 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.icon.Cart
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.sample.design.showcase.util.ShowcaseLayout
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -117,8 +122,14 @@ private fun Modifier.clearFocusOnTap(): Modifier = this.composed {
 
 @Composable
 private fun LabelAnimation(modifier: Modifier = Modifier) {
-  Row(modifier.fillMaxSize().clearFocusOnTap(), horizontalArrangement = Arrangement.spacedBy(20.dp)) {
+  Row(
+    modifier
+      .fillMaxSize()
+      .clearFocusOnTap(),
+    horizontalArrangement = Arrangement.spacedBy(20.dp),
+  ) {
 //    for (size in HedvigTextFieldDefaults.TextFieldSize.entries) {
+    val size = HedvigTextFieldDefaults.TextFieldSize.Large
     val interactionSource = remember {
       MutableInteractionSource()
     }
@@ -141,28 +152,26 @@ private fun LabelAnimation(modifier: Modifier = Modifier) {
         text.takeIf { it != "-1" }.orEmpty(),
         { text = it },
         "Label",
-//          size,
-        HedvigTextFieldDefaults.TextFieldSize.Large,
+        size,
         Modifier.requiredWidth(150.dp),
         interactionSource = interactionSource,
       )
-//        HedvigTextField(
-//          text = text,
-//          onValueChange = {},
-//          labelText = "Label",
-//          textFieldSize = size,
-//          leadingIcon = {
-//            IconButton({}) {
-//              Image(HedvigIcons.Cart, null)
-//            }
-//          },
-//          trailingIcon = {
-//            IconButton({}) {
-//              Image(HedvigIcons.Cart, null)
-//            }
-//          },
-//        )
-//      }
+      HedvigTextField(
+        text = text,
+        onValueChange = {},
+        labelText = "Label",
+        textFieldSize = size,
+        leadingIcon = {
+          IconButton({}, Modifier.size(24.dp)) {
+            Icon(HedvigIcons.Cart, null)
+          }
+        },
+        trailingIcon = {
+          IconButton({}, Modifier.size(24.dp)) {
+            Icon(HedvigIcons.Cart, null)
+          }
+        },
+      )
     }
   }
 }

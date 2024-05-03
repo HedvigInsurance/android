@@ -1,10 +1,13 @@
 package com.hedvig.android.design.system.hedvig.internal
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.BoundsTransform
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.core.FiniteAnimationSpec
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.togetherWith
@@ -30,13 +33,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldColors
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldConfiguration
@@ -179,14 +182,22 @@ private fun TextFieldContent(
       val sharedInnerTextField: @Composable (Modifier) -> Unit = { modifier ->
         Box(
           modifier.sharedElement(
-            rememberSharedContentState(InnerTextFieldId),
-            this,
+            state = rememberSharedContentState(InnerTextFieldId),
+            animatedVisibilityScope = this,
+            boundsTransform = BoundsTransform { _, _ -> LabelTransitionAnimationSpec },
+            renderInOverlayDuringTransition = false,
           ),
         ) { innerTextField() }
       }
       val sharedLabel: (@Composable () -> Unit)? = if (label != null) {
         @Composable {
-          Box(Modifier.sharedBounds(rememberSharedContentState(LabelId), this)) {
+          Box(
+            Modifier.sharedBounds(
+              sharedContentState = rememberSharedContentState(LabelId),
+              animatedVisibilityScope = this,
+              boundsTransform = BoundsTransform { _, _ -> LabelTransitionAnimationSpec },
+            ),
+          ) {
             label(inputPhase)
           }
         }
@@ -196,7 +207,14 @@ private fun TextFieldContent(
 
       val sharedLeadingIcon: (@Composable () -> Unit)? = if (leadingIcon != null) {
         @Composable {
-          Box(Modifier.sharedElement(rememberSharedContentState(LeadingIconId), this)) {
+          Box(
+            Modifier.sharedElement(
+              state = rememberSharedContentState(LeadingIconId),
+              animatedVisibilityScope = this,
+              boundsTransform = BoundsTransform { _, _ -> LabelTransitionAnimationSpec },
+              renderInOverlayDuringTransition = false,
+            ),
+          ) {
             leadingIcon()
           }
         }
@@ -206,7 +224,14 @@ private fun TextFieldContent(
 
       val sharedTrailingIcon: (@Composable () -> Unit)? = if (trailingIcon != null) {
         @Composable {
-          Box(Modifier.sharedElement(rememberSharedContentState(TrailingIconId), this)) {
+          Box(
+            Modifier.sharedElement(
+              state = rememberSharedContentState(TrailingIconId),
+              animatedVisibilityScope = this,
+              boundsTransform = BoundsTransform { _, _ -> LabelTransitionAnimationSpec },
+              renderInOverlayDuringTransition = false,
+            ),
+          ) {
             trailingIcon()
           }
         }
@@ -217,6 +242,7 @@ private fun TextFieldContent(
         Modifier.sharedElement(
           state = rememberSharedContentState(ContainerId),
           animatedVisibilityScope = this,
+          boundsTransform = BoundsTransform { _, _ -> LabelTransitionAnimationSpec },
         ),
       ) {
         Row(
@@ -287,9 +313,6 @@ private enum class InputPhase {
   UnfocusedNotEmpty,
 }
 
-internal const val SignalAnimationDuration = 400L
-internal const val TextFieldLabelAnimationDuration = 150
-
 @Preview
 @Composable
 private fun PreviewHedvigDecorationBox(
@@ -353,3 +376,6 @@ private const val LabelId = "Label"
 private const val LeadingIconId = "LeadingIcon"
 private const val TrailingIconId = "TrailingIcon"
 private const val ContainerId = "Container"
+
+private const val TextFieldLabelAnimationDuration = 150
+private val LabelTransitionAnimationSpec: FiniteAnimationSpec<Rect> = tween<Rect>(TextFieldLabelAnimationDuration)

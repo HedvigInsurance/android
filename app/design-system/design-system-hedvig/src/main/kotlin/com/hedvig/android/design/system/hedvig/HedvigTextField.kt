@@ -33,7 +33,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.Dp
 import com.hedvig.android.design.system.hedvig.internal.HedvigDecorationBox
-import com.hedvig.android.design.system.hedvig.internal.SignalAnimationDuration
 import com.hedvig.android.design.system.hedvig.tokens.LargeSizeTextFieldTokens
 import com.hedvig.android.design.system.hedvig.tokens.TextFieldTokens
 import kotlinx.coroutines.delay
@@ -441,3 +440,5 @@ private fun HedvigTextFieldDecorationBox(
     interactionSource = interactionSource,
   )
 }
+
+private const val SignalAnimationDuration = 400L
