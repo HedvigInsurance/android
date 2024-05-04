@@ -253,6 +253,7 @@ private fun AnimatedTextFieldContent(
         Modifier.sharedElement(
           state = rememberSharedContentState(ContainerId),
           animatedVisibilityScope = this,
+          boundsTransform = BoundsTransform { _, _ -> LabelTransitionAnimationSpec },
         ),
       ) {
         Row(
@@ -276,6 +277,8 @@ private fun AnimatedTextFieldContent(
             }
             Spacer(Modifier.height(textContentPadding.calculateBottomPadding()))
             if (inputPhase.onlyShowLabel) {
+              // Lay out the text at the *bottom* of the container, so it starts animating in from there towards its
+              // final position.
               sharedInnerTextField(
                 Modifier
                   .requiredHeight(0.dp)
@@ -288,9 +291,6 @@ private fun AnimatedTextFieldContent(
             sharedTrailingIcon.invoke()
           }
         }
-//        if (inputPhase.onlyShowLabel) {
-//          sharedInnerTextField(Modifier.matchParentSize().wrapContentHeight(Alignment.Bottom))
-//        }
       }
     }
   }
