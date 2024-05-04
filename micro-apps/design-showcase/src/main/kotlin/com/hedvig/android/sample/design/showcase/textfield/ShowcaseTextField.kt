@@ -44,7 +44,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.isActive
 
-val showcaseJustAnimation = true
+val showcaseJustAnimation = false
 
 @Composable
 internal fun ShowcaseTextField() {
@@ -67,18 +67,6 @@ internal fun ShowcaseTextField() {
           }
         }
         InteractiveTextFieldWithAllSizes()
-      }
-      Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        Box(modifier = Modifier.align(Alignment.CenterVertically)) {
-          WithWidthOfTypeLabel {
-            HedvigText(
-              text = "Animation",
-              style = HedvigTheme.typography.bodyMedium,
-              modifier = Modifier.align(Alignment.CenterStart),
-            )
-          }
-        }
-        LabelAnimation()
       }
       for (type in ShowcaseTextFieldType.entries) {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -133,24 +121,24 @@ private fun LabelAnimation(modifier: Modifier = Modifier) {
     val interactionSource = remember {
       MutableInteractionSource()
     }
-    var text by remember { mutableStateOf("") }
-//    val text by produceState("") {
-//      val delay: Long = 3000
-//      while (isActive) {
-//        value = "Input"
-//        delay(delay)
-//        value = ""
-//        delay(delay)
-//        val interaction = FocusInteraction.Focus()
-//        interactionSource.emit(interaction)
-//        delay(delay)
-//        interactionSource.emit(FocusInteraction.Unfocus(interaction))
-//      }
-//    }
+//    var text by remember { mutableStateOf("") }
+    val text by produceState("") {
+      val delay: Long = 3000
+      while (isActive) {
+        value = "Input"
+        delay(delay)
+        value = ""
+        delay(delay)
+        val interaction = FocusInteraction.Focus()
+        interactionSource.emit(interaction)
+        delay(delay)
+        interactionSource.emit(FocusInteraction.Unfocus(interaction))
+      }
+    }
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
       HedvigTextField(
         text.takeIf { it != "-1" }.orEmpty(),
-        { text = it },
+        { /*text = it*/ },
         "Label",
         size,
         Modifier.requiredWidth(150.dp),
@@ -158,7 +146,7 @@ private fun LabelAnimation(modifier: Modifier = Modifier) {
       )
       HedvigTextField(
         text = text,
-        onValueChange = { text = it },
+        onValueChange = { /*text = it*/ },
         labelText = "Label",
         textFieldSize = size,
         leadingIcon = {
