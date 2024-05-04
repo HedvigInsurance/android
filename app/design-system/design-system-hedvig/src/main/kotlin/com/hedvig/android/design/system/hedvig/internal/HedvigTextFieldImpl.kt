@@ -6,8 +6,6 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
-import androidx.compose.animation.SharedTransitionScope.OverlayClip
-import androidx.compose.animation.SharedTransitionScope.SharedContentState
 import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
@@ -36,14 +34,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldColors
@@ -202,17 +197,6 @@ private fun AnimatedTextFieldContent(
             state = rememberSharedContentState(InnerTextFieldId),
             animatedVisibilityScope = this,
             boundsTransform = BoundsTransform { _, _ -> LabelTransitionAnimationSpec },
-//            placeHolderSize = PlaceHolderSize.animatedSize,
-            clipInOverlayDuringTransition = object : OverlayClip {
-              override fun getClipPath(
-                state: SharedContentState,
-                bounds: Rect,
-                layoutDirection: LayoutDirection,
-                density: Density,
-              ): Path? {
-                return null
-              }
-            },
           ),
         ) { innerTextField() }
       }
@@ -280,15 +264,10 @@ private fun AnimatedTextFieldContent(
             sharedLeadingIcon.invoke()
             Spacer(Modifier.width(configuration.iconToTextPadding))
           }
-          Column {
+          Column(Modifier.weight(1f, fill = false)) {
             Spacer(Modifier.height(textContentPadding.calculateTopPadding()))
             if (inputPhase.onlyShowLabel) {
               sharedLabel?.invoke()
-              sharedInnerTextField(
-                Modifier
-                  .requiredHeight(0.dp)
-                  .wrapContentHeight(Alignment.Top, unbounded = true),
-              )
             } else {
               Column(verticalArrangement = Arrangement.spacedBy(-size.labelToTextOverlap)) {
                 sharedLabel?.invoke()
@@ -296,12 +275,22 @@ private fun AnimatedTextFieldContent(
               }
             }
             Spacer(Modifier.height(textContentPadding.calculateBottomPadding()))
+            if (inputPhase.onlyShowLabel) {
+              sharedInnerTextField(
+                Modifier
+                  .requiredHeight(0.dp)
+                  .wrapContentHeight(Alignment.Bottom, unbounded = true),
+              )
+            }
           }
           if (sharedTrailingIcon != null) {
             Spacer(Modifier.width(configuration.iconToTextPadding))
             sharedTrailingIcon.invoke()
           }
         }
+//        if (inputPhase.onlyShowLabel) {
+//          sharedInnerTextField(Modifier.matchParentSize().wrapContentHeight(Alignment.Bottom))
+//        }
       }
     }
   }

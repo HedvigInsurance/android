@@ -162,12 +162,12 @@ private fun LabelAnimation(modifier: Modifier = Modifier) {
         labelText = "Label",
         textFieldSize = size,
         leadingIcon = {
-          IconButton({}) {
+          IconButton({}, Modifier.size(32.dp)) {
             Icon(HedvigIcons.Cart, null)
           }
         },
         trailingIcon = {
-          IconButton({}) {
+          IconButton({}, Modifier.size(32.dp)) {
             Icon(HedvigIcons.Cart, null)
           }
         },
