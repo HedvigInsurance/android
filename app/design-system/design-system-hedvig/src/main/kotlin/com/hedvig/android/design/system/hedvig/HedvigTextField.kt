@@ -288,8 +288,15 @@ private val HedvigTextFieldDefaults.TextFieldSize.size: HedvigTextFieldSize
   }
 
 internal sealed interface HedvigTextFieldSize {
+  /**
+   * Padding values meant to be applied specifically above and below the text and the label.
+   * This is done so that when other items are taller than the text and the label, this padding does not push the
+   * container to expand according to those bigger items, but instead determines the height on the text+label.
+   */
   @Composable
-  fun contentPadding(onlyLabelShowing: Boolean): PaddingValues
+  fun textAndLabelVerticalPadding(onlyLabelShowing: Boolean): PaddingValues
+
+  fun horizontalPadding(): PaddingValues
 
   val supportingTextPadding: PaddingValues
 
@@ -303,7 +310,7 @@ internal sealed interface HedvigTextFieldSize {
 
   object Large : HedvigTextFieldSize {
     @Composable
-    override fun contentPadding(onlyLabelShowing: Boolean): PaddingValues {
+    override fun textAndLabelVerticalPadding(onlyLabelShowing: Boolean): PaddingValues {
       val topPadding = when (onlyLabelShowing) {
         true -> LargeSizeTextFieldTokens.TopPadding
         false -> LargeSizeTextFieldTokens.TopPaddingWithTextAndLabel
@@ -313,10 +320,14 @@ internal sealed interface HedvigTextFieldSize {
         false -> LargeSizeTextFieldTokens.BottomPaddingWithTextAndLabel
       }
       return PaddingValues(
-        start = LargeSizeTextFieldTokens.HorizontalPadding,
         top = topPadding,
-        end = LargeSizeTextFieldTokens.HorizontalPadding,
         bottom = bottomPadding,
+      )
+    }
+
+    override fun horizontalPadding(): PaddingValues {
+      return PaddingValues(
+        horizontal = LargeSizeTextFieldTokens.HorizontalPadding,
       )
     }
 

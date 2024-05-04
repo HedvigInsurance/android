@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.width
@@ -33,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -255,32 +257,32 @@ private fun AnimatedTextFieldContent(
           animatedVisibilityScope = this,
         ),
       ) {
+        val layoutDirection = LocalLayoutDirection.current
         Row(
           verticalAlignment = Alignment.CenterVertically,
-          modifier = Modifier.padding(size.contentPadding(inputPhase.onlyShowLabel)),
+          modifier = Modifier.padding(size.horizontalPadding()),
         ) {
+          val textContentPadding = size.textAndLabelVerticalPadding(inputPhase.onlyShowLabel)
           if (sharedLeadingIcon != null) {
             sharedLeadingIcon.invoke()
             Spacer(Modifier.width(configuration.iconToTextPadding))
           }
-          when (inputPhase.onlyShowLabel) {
-            true -> {
-              Column {
-                sharedLabel?.invoke()
-                sharedInnerTextField(
-                  Modifier
-                    .requiredHeight(0.dp)
-                    .wrapContentHeight(Alignment.Top),
-                )
-              }
-            }
-
-            false -> {
+          Column {
+            Spacer(Modifier.height(textContentPadding.calculateTopPadding()))
+            if (inputPhase.onlyShowLabel) {
+              sharedLabel?.invoke()
+              sharedInnerTextField(
+                Modifier
+                  .requiredHeight(0.dp)
+                  .wrapContentHeight(Alignment.Top),
+              )
+            } else {
               Column(verticalArrangement = Arrangement.spacedBy(-size.labelToTextOverlap)) {
                 sharedLabel?.invoke()
                 sharedInnerTextField(Modifier)
               }
             }
+            Spacer(Modifier.height(textContentPadding.calculateBottomPadding()))
           }
           if (sharedTrailingIcon != null) {
             Spacer(Modifier.width(configuration.iconToTextPadding))
