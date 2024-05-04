@@ -265,7 +265,7 @@ private fun AnimatedTextFieldContent(
             sharedLeadingIcon.invoke()
             Spacer(Modifier.width(configuration.iconToTextPadding))
           }
-          Column(Modifier.weight(1f, fill = false)) {
+          Column {
             Spacer(Modifier.height(textContentPadding.calculateTopPadding()))
             if (inputPhase.onlyShowLabel) {
               sharedLabel?.invoke()
