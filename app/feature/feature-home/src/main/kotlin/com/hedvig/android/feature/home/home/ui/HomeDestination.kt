@@ -236,7 +236,10 @@ private fun HomeScreen(
             if (currentState.firstVetAction != null) add(currentState.firstVetAction)
             if (currentState.chatAction != null) add(currentState.chatAction)
           }
-          for (action in actionsList) {
+          actionsList.forEachIndexed { index, action ->
+            if (index != 0) {
+              Spacer(modifier = Modifier.width(8.dp))
+            }
             when (action) {
               HomeTopBarAction.ChatAction -> ToolbarChatIcon(
                 onClick = onStartChat,
@@ -255,9 +258,6 @@ private fun HomeScreen(
                   onClick = { navigateToFirstVet(sections) },
                 )
               }
-            }
-            if (actionsList.indexOf(action) != actionsList.lastIndex) {
-              Spacer(modifier = Modifier.width(8.dp))
             }
           }
         }
