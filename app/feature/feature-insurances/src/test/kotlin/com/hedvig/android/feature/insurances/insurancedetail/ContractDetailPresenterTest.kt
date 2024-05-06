@@ -111,8 +111,6 @@ class ContractDetailPresenterTest {
       assertThat(awaitItem()).isInstanceOf<ContractDetailsUiState.Error>()
       getContractForContractIdUseCase.addInsuranceWithNoTerminationDateToResponseTurbine()
       assertThat(awaitItem()).isInstanceOf<ContractDetailsUiState.Loading>()
-      // todo: I don't understand why it shows loading in here,
-      // if we didn't emit eny event and didn't trigger dataLoadIteration
       assertThat(awaitItem()).isInstanceOf<ContractDetailsUiState.Success>()
     }
   }
