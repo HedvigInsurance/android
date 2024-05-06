@@ -1,6 +1,6 @@
 package com.hedvig.android.feature.help.center.navigation
 
-import com.hedvig.android.feature.help.center.data.FirstVetSection
+import com.hedvig.android.ui.emergency.FirstVetSection
 import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.serialization.Serializable
 

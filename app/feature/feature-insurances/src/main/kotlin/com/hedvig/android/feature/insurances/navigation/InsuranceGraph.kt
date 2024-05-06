@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.insurances.insurance
+package com.hedvig.android.feature.insurances.navigation
 
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
@@ -6,11 +6,10 @@ import androidx.navigation.navDeepLink
 import coil.ImageLoader
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
+import com.hedvig.android.feature.insurances.insurance.InsuranceDestination
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceViewModel
 import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailDestination
 import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailViewModel
-import com.hedvig.android.feature.insurances.navigation.InsurancesDestination
-import com.hedvig.android.feature.insurances.navigation.InsurancesDestinations
 import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContractsDestination
 import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContractsViewModel
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer

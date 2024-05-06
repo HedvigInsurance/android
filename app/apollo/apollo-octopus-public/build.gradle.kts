@@ -33,6 +33,8 @@ apollo { // Octopus client
     generateDataBuilders.set(true)
     // https://slack-chats.kotlinlang.org/t/16051277/so-speaking-of-more-multi-module-stuff-i-got-a-query-like-th#976bd846-3cb0-4815-80a1-f73a853fe962
     alwaysGenerateTypesMatching.set(listOf(
+      "FirstVetSection",
+      "FirstVetAction",
       "CrossSell",
       "CrossSellType",
       "MemberMutationOutput",

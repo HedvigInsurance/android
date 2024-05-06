@@ -11,6 +11,7 @@ import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.ui.emergency.FirstVetSection
 import hedvig.resources.R
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList

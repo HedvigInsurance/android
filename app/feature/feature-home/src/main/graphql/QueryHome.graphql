@@ -16,6 +16,23 @@ query Home {
       message
       link
     }
+    crossSells {
+      id
+      title
+      description
+      storeUrl
+      type
+    }
+    memberActions {
+      firstVetAction {
+        sections {
+          title
+          buttonTitle
+          description
+          url
+        }
+      }
+    }
     activeContracts {
       masterInceptionDate
       currentAgreement {
