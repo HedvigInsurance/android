@@ -116,7 +116,7 @@ internal class HomePresenter(
           hasUnseenChatMessages = hasUnseenChatMessages,
           chatAction = successData.chatAction,
           firstVetAction = successData.firstVetAction,
-          crossSellsAction = successData.crossSellsAction
+          crossSellsAction = successData.crossSellsAction,
         )
       }
     }
@@ -167,7 +167,7 @@ private data class SuccessData(
   val showHelpCenter: Boolean,
   val chatAction: HomeTopBarAction.ChatAction?,
   val firstVetAction: HomeTopBarAction.FirstVetAction?,
-  val crossSellsAction: HomeTopBarAction.CrossSellsAction?
+  val crossSellsAction: HomeTopBarAction.CrossSellsAction?,
 ) {
   companion object {
     fun fromLastState(lastState: HomeUiState): SuccessData? {
@@ -180,16 +180,22 @@ private data class SuccessData(
         showHelpCenter = lastState.isHelpCenterEnabled,
         chatAction = lastState.chatAction,
         crossSellsAction = lastState.crossSellsAction,
-        firstVetAction = lastState.firstVetAction
+        firstVetAction = lastState.firstVetAction,
       )
     }
 
     fun fromHomeData(homeData: HomeData): SuccessData {
-      val crossSellsAction = if (homeData.crossSells.isNotEmpty())
-        HomeTopBarAction.CrossSellsAction(homeData.crossSells) else null
+      val crossSellsAction = if (homeData.crossSells.isNotEmpty()) {
+        HomeTopBarAction.CrossSellsAction(homeData.crossSells)
+      } else {
+        null
+      }
       val chatAction = if (homeData.showChatIcon) HomeTopBarAction.ChatAction else null
-      val firstVetAction = if (homeData.firstVetSections.isNotEmpty())
-        HomeTopBarAction.FirstVetAction(homeData.firstVetSections) else null
+      val firstVetAction = if (homeData.firstVetSections.isNotEmpty()) {
+        HomeTopBarAction.FirstVetAction(homeData.firstVetSections)
+      } else {
+        null
+      }
       return SuccessData(
         homeText = when (homeData.contractStatus) {
           HomeData.ContractStatus.Active -> HomeText.Active
@@ -208,7 +214,7 @@ private data class SuccessData(
         showHelpCenter = homeData.showHelpCenter,
         chatAction = chatAction,
         firstVetAction = firstVetAction,
-        crossSellsAction = crossSellsAction
+        crossSellsAction = crossSellsAction,
       )
     }
   }

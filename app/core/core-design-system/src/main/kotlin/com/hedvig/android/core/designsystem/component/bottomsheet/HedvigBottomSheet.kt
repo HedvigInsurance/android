@@ -91,5 +91,5 @@ fun HedvigBottomSheet(
       )
       Spacer(Modifier.windowInsetsPadding(BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Bottom)))
     }
-   }
+  }
 }

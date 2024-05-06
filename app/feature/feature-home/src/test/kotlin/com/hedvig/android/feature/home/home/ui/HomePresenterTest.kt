@@ -190,7 +190,7 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           chatAction = null,
           firstVetAction = null,
-          crossSellsAction = null
+          crossSellsAction = null,
         ),
       )
     }
@@ -294,7 +294,7 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           chatAction = null,
           firstVetAction = null,
-          crossSellsAction = null
+          crossSellsAction = null,
         ),
       )
     }
@@ -310,11 +310,11 @@ internal class HomePresenterTest {
       { FakeCrossSellCardNotificationBadgeService() },
       backgroundScope,
     )
-    val firstVet =  FirstVetSection(
+    val firstVet = FirstVetSection(
       buttonTitle = "ButtonTitle",
       description = "description",
       title = "title",
-      url = null
+      url = null,
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -328,7 +328,7 @@ internal class HomePresenterTest {
           showChatIcon = false,
           crossSells = persistentListOf(),
           firstVetSections = listOf(
-            firstVet
+            firstVet,
           ),
           showHelpCenter = false,
         ).right(),
@@ -344,7 +344,7 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           chatAction = null,
           firstVetAction = HomeTopBarAction.FirstVetAction(listOf(firstVet)),
-          crossSellsAction = null
+          crossSellsAction = null,
         ),
       )
     }
@@ -360,12 +360,12 @@ internal class HomePresenterTest {
       { FakeCrossSellCardNotificationBadgeService() },
       backgroundScope,
     )
-    val crossSell =  CrossSell(
+    val crossSell = CrossSell(
       id = "id",
       title = "title",
       storeUrl = "url",
       subtitle = "subt",
-      type =  CrossSell.CrossSellType.HOME
+      type = CrossSell.CrossSellType.HOME,
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -393,7 +393,7 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           chatAction = null,
           firstVetAction = null,
-          crossSellsAction = HomeTopBarAction.CrossSellsAction(persistentListOf(crossSell))
+          crossSellsAction = HomeTopBarAction.CrossSellsAction(persistentListOf(crossSell)),
         ),
       )
     }
@@ -435,7 +435,7 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           chatAction = HomeTopBarAction.ChatAction,
           firstVetAction = null,
-          crossSellsAction = null
+          crossSellsAction = null,
         ),
       )
     }
@@ -477,7 +477,7 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           chatAction = null,
           firstVetAction = null,
-          crossSellsAction = null
+          crossSellsAction = null,
         ),
       )
     }
