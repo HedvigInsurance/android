@@ -154,11 +154,7 @@ private fun LabelAnimation(modifier: Modifier = Modifier) {
             Icon(HedvigIcons.Cart, null)
           }
         },
-        trailingIcon = {
-          IconButton({}, Modifier.size(32.dp)) {
-            Icon(HedvigIcons.Cart, null)
-          }
-        },
+        errorState = HedvigTextFieldDefaults.ErrorState.Error.WithoutMessage,
       )
     }
   }
@@ -206,11 +202,11 @@ private fun ShowcaseTextField(input: String, type: ShowcaseTextFieldType, size: 
     textFieldSize = size,
     labelText = "Label",
     errorState = when (type) {
-      ShowcaseTextFieldType.Error -> HedvigTextFieldDefaults.ErrorState.Error
-      ShowcaseTextFieldType.ErrorPulsating -> HedvigTextFieldDefaults.ErrorState.ErrorWithMessage(
+      ShowcaseTextFieldType.ErrorMessage -> HedvigTextFieldDefaults.ErrorState.Error.WithMessage(
         "Something went wrong",
       )
 
+      ShowcaseTextFieldType.ErrorPulsating -> HedvigTextFieldDefaults.ErrorState.Error.WithoutMessage
       else -> HedvigTextFieldDefaults.ErrorState.NoError
     },
     enabled = type == ShowcaseTextFieldType.Disabled,
@@ -254,10 +250,10 @@ private enum class ShowcaseTextFieldType {
   Focused,
   ReadOnly,
   Disabled,
-  TypePulsating,
   Hover,
-  Error,
+  TypePulsating,
   ErrorPulsating,
+  ErrorMessage,
 }
 
 @Composable

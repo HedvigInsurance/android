@@ -70,6 +70,7 @@ internal fun HedvigDecorationBox(
   supportingText: @Composable (() -> Unit)? = null,
   enabled: Boolean = true,
   isError: Boolean = false,
+  readOnly: Boolean = false,
   interactionSource: InteractionSource,
 ) {
   val transformedText = remember(value, visualTransformation) {
@@ -97,7 +98,7 @@ internal fun HedvigDecorationBox(
   val decoratedLeadingIcon: (@Composable () -> Unit)? = if (leadingIcon != null) {
     @Composable {
       Decoration(
-        colors.trailingIconColor(enabled = enabled, isError = isError, interactionSource = interactionSource).value,
+        colors.trailingIconColor(readOnly = readOnly, enabled = enabled, isError = isError).value,
       ) { leadingIcon() }
     }
   } else {
@@ -106,7 +107,7 @@ internal fun HedvigDecorationBox(
   val decoratedTrailingIcon: (@Composable () -> Unit)? = if (trailingIcon != null) {
     @Composable {
       Decoration(
-        colors.trailingIconColor(enabled = enabled, isError = isError, interactionSource = interactionSource).value,
+        colors.trailingIconColor(readOnly = readOnly, enabled = enabled, isError = isError).value,
       ) { trailingIcon() }
     }
   } else {

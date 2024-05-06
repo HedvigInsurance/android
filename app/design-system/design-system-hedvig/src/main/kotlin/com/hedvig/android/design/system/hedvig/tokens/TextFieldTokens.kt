@@ -15,6 +15,7 @@ internal object TextFieldTokens {
   val ErrorPulsatingTextColor = ColorSchemeKeyTokens.SignalAmberText
   val ErrorPulsatingTextLabelColor = ColorSchemeKeyTokens.SignalAmberText
   val XIconColor = ColorSchemeKeyTokens.FillPrimary
+  val DisabledXIconColor = ColorSchemeKeyTokens.FillSecondary
   val LockIconColor = ColorSchemeKeyTokens.FillSecondary
   val WarningIconColor = ColorSchemeKeyTokens.SignalAmberElement
   val IconToTextPadding = 8.dp

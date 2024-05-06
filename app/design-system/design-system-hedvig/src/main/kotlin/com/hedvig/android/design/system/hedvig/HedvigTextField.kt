@@ -6,8 +6,8 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -32,6 +32,11 @@ import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import com.hedvig.android.design.system.hedvig.icon.Close
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.Lock
+import com.hedvig.android.design.system.hedvig.icon.WarningFilled
 import com.hedvig.android.design.system.hedvig.internal.HedvigDecorationBox
 import com.hedvig.android.design.system.hedvig.tokens.LargeSizeTextFieldTokens
 import com.hedvig.android.design.system.hedvig.tokens.TextFieldTokens
@@ -47,7 +52,6 @@ fun HedvigTextField(
   textFieldSize: HedvigTextFieldDefaults.TextFieldSize,
   modifier: Modifier = Modifier,
   leadingIcon: @Composable (() -> Unit)? = null,
-  trailingIcon: @Composable (() -> Unit)? = null,
   errorState: HedvigTextFieldDefaults.ErrorState = HedvigTextFieldDefaults.ErrorState.NoError,
   enabled: Boolean = true,
   readOnly: Boolean = false,
@@ -64,10 +68,16 @@ fun HedvigTextField(
   val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
   val configuration = HedvigTextFieldDefaults.configuration()
   val size = textFieldSize.size
+  val colors = HedvigTextFieldDefaults.colors()
+  val trailingIconColor by colors.trailingIconColor(
+    readOnly = readOnly,
+    enabled = enabled,
+    isError = errorState is HedvigTextFieldDefaults.ErrorState.Error,
+  )
   HedvigTextField(
     value = text,
     onValueChange = onValueChange,
-    colors = HedvigTextFieldDefaults.colors(),
+    colors = colors,
     configuration = configuration,
     size = size,
     modifier = modifier,
@@ -75,13 +85,26 @@ fun HedvigTextField(
     readOnly = readOnly,
     label = { HedvigText(text = labelText) },
     leadingIcon = leadingIcon,
-    trailingIcon = trailingIcon,
-    supportingText = if (errorState is HedvigTextFieldDefaults.ErrorState.ErrorWithMessage) {
+    trailingIcon = when {
+      errorState.isError -> {
+        { ErrorTrailingIcon(trailingIconColor) }
+      }
+      readOnly -> {
+        { ReadOnlyTrailingIcon(trailingIconColor) }
+      }
+      text.isNotEmpty() -> {
+        { IsNotEmptyTrailingIcon(trailingIconColor, {}) }
+      }
+      else -> {
+        null
+      }
+    },
+    supportingText = if (errorState is HedvigTextFieldDefaults.ErrorState.Error.WithMessage) {
       { HedvigText(text = errorState.message) }
     } else {
       null
     },
-    isError = errorState !is HedvigTextFieldDefaults.ErrorState.NoError,
+    isError = errorState.isError,
     visualTransformation = visualTransformation,
     onTextLayout = onTextLayout,
     keyboardOptions = keyboardOptions,
@@ -103,11 +126,20 @@ object HedvigTextFieldDefaults {
   }
 
   sealed interface ErrorState {
-    data object NoError : ErrorState
+    val isError: Boolean
 
-    data object Error : ErrorState
+    data object NoError : ErrorState {
+      override val isError: Boolean = false
+    }
 
-    data class ErrorWithMessage(val message: String) : ErrorState
+    sealed interface Error : ErrorState {
+      override val isError: Boolean
+        get() = true
+
+      data object WithoutMessage : Error
+
+      data class WithMessage(val message: String) : Error
+    }
   }
 }
 
@@ -124,6 +156,7 @@ internal fun HedvigTextFieldDefaults.colors(
   errorPulsatingTextColor: Color = TextFieldTokens.ErrorPulsatingTextColor.value,
   errorPulsatingTextLabelColor: Color = TextFieldTokens.ErrorPulsatingTextLabelColor.value,
   xIconColor: Color = TextFieldTokens.XIconColor.value,
+  disabledXIconColor: Color = TextFieldTokens.DisabledXIconColor.value,
   lockIconColor: Color = TextFieldTokens.LockIconColor.value,
   warningIconColor: Color = TextFieldTokens.WarningIconColor.value,
   borderColor: Color = TextFieldTokens.BorderColor.value,
@@ -141,6 +174,7 @@ internal fun HedvigTextFieldDefaults.colors(
     errorPulsatingTextColor = errorPulsatingTextColor,
     errorPulsatingTextLabelColor = errorPulsatingTextLabelColor,
     xIconColor = xIconColor,
+    disabledXIconColor = disabledXIconColor,
     lockIconColor = lockIconColor,
     warningIconColor = warningIconColor,
     borderColor = borderColor,
@@ -188,25 +222,20 @@ internal data class HedvigTextFieldColors internal constructor(
   private val errorPulsatingTextColor: Color,
   private val errorPulsatingTextLabelColor: Color,
   private val xIconColor: Color,
+  private val disabledXIconColor: Color,
   private val lockIconColor: Color,
   private val warningIconColor: Color,
   private val borderColor: Color,
   private val textSelectionColors: TextSelectionColors,
 ) {
   @Composable
-  internal fun trailingIconColor(
-    enabled: Boolean,
-    isError: Boolean,
-    interactionSource: InteractionSource,
-  ): State<Color> {
-    val focused by interactionSource.collectIsFocusedAsState()
-
+  internal fun trailingIconColor(readOnly: Boolean, enabled: Boolean, isError: Boolean): State<Color> {
     return rememberUpdatedState(
       when {
         isError -> warningIconColor
-        !enabled -> lockIconColor
-        focused -> xIconColor
-        else -> Color.Unspecified
+        readOnly -> lockIconColor
+        !enabled -> disabledXIconColor
+        else -> xIconColor
       },
     )
   }
@@ -352,6 +381,23 @@ internal sealed interface HedvigTextFieldSize {
 
 // endregion
 
+@Composable
+private fun ErrorTrailingIcon(tint: Color) {
+  Icon(HedvigIcons.WarningFilled, null, Modifier.size(24.dp), tint)
+}
+
+@Composable
+private fun ReadOnlyTrailingIcon(tint: Color) {
+  Icon(HedvigIcons.Lock, null, Modifier.size(24.dp), tint)
+}
+
+@Composable
+private fun IsNotEmptyTrailingIcon(tint: Color, onClick: () -> Unit) {
+  IconButton(onClick, Modifier.size(24.dp)) {
+    Icon(HedvigIcons.Close, null, tint = tint)
+  }
+}
+
 /**
  * The raw HedvigTextField, with the same API as the [androidx.compose.material3.TextField], with our HedvigSpecific
  * HedvigTextFieldDefaults.
@@ -411,6 +457,7 @@ private fun HedvigTextField(
           supportingText = supportingText,
           enabled = enabled,
           isError = isError,
+          readOnly = readOnly,
           interactionSource = interactionSource,
         )
       },
@@ -429,6 +476,7 @@ private fun HedvigTextFieldDecorationBox(
   configuration: HedvigTextFieldConfiguration,
   size: HedvigTextFieldSize,
   isError: Boolean = false,
+  readOnly: Boolean = false,
   label: @Composable (() -> Unit)? = null,
   leadingIcon: @Composable (() -> Unit)? = null,
   trailingIcon: @Composable (() -> Unit)? = null,
@@ -447,6 +495,7 @@ private fun HedvigTextFieldDecorationBox(
     supportingText = supportingText,
     enabled = enabled,
     isError = isError,
+    readOnly = readOnly,
     interactionSource = interactionSource,
   )
 }
