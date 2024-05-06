@@ -109,8 +109,8 @@ class ContractDetailPresenterTest {
       ContractDetailsUiState.Error,
     ) {
       assertThat(awaitItem()).isInstanceOf<ContractDetailsUiState.Error>()
-      getContractForContractIdUseCase.addInsuranceWithNoTerminationDateToResponseTurbine()
       assertThat(awaitItem()).isInstanceOf<ContractDetailsUiState.Loading>()
+      getContractForContractIdUseCase.addInsuranceWithNoTerminationDateToResponseTurbine()
       assertThat(awaitItem()).isInstanceOf<ContractDetailsUiState.Success>()
     }
   }
