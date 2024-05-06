@@ -21,7 +21,6 @@ import com.hedvig.android.molecule.public.MoleculePresenterScope
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 
 internal class TerminatedContractsViewModel(
@@ -48,7 +47,7 @@ internal class TerminatedContractsPresenter(
     }
 
     LaunchedEffect(dataLoadIteration) {
-      if (lastState !is TerminatedContractsUiState.Success) {
+      if (currentState !is TerminatedContractsUiState.Success) {
         currentState = TerminatedContractsUiState.Loading
       }
       getInsuranceContractsUseCaseProvider

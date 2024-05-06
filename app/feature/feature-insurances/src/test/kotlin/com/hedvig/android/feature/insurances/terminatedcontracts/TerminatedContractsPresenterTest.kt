@@ -6,6 +6,7 @@ import arrow.core.left
 import arrow.core.right
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import assertk.assertions.isInstanceOf
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
@@ -40,6 +41,22 @@ class TerminatedContractsPresenterTest {
       )
     }
   }
+
+  @Test
+  fun `with an initial success state, if there is an error, we are able to retry and get back in success state again`() =
+    runTest {
+      val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
+      val presenter = TerminatedContractsPresenter { getInsuranceContractsUseCase }
+      presenter.test(TerminatedContractsUiState.Success(getInsuranceContractsUseCase.getTerminatedInsurances())) {
+        assertThat(awaitItem()).isInstanceOf<TerminatedContractsUiState.Success>()
+        getInsuranceContractsUseCase.addErrorToResponse()
+        assertThat(awaitItem()).isInstanceOf<TerminatedContractsUiState.Error>()
+        sendEvent(TerminatedContractsEvent.Retry)
+        assertThat(awaitItem()).isInstanceOf<TerminatedContractsUiState.Loading>()
+        getInsuranceContractsUseCase.addTerminatedInsurancesToResponse()
+        assertThat(awaitItem()).isInstanceOf<TerminatedContractsUiState.Success>()
+      }
+    }
 
   @Test
   fun `if there are terminated insurances they are all passed to success state`() = runTest {

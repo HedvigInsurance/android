@@ -51,6 +51,32 @@ class ContractDetailPresenterTest {
   }
 
   @Test
+  fun `with an initial success state, if there is an error, we are able to retry and get back in success state again`() =
+    runTest {
+      val getContractForContractIdUseCase = FakeGetContractForContractIdUseCase()
+      val featureManager = FakeFeatureManager(featureMap = { mapOf(Feature.TERMINATION_FLOW to true) })
+      val presenter = ContractDetailPresenter(
+        contractId = getContractForContractIdUseCase.getValIdWithoutTerminationDate(),
+        featureManager = featureManager,
+        getContractForContractIdUseCase = getContractForContractIdUseCase,
+      )
+      presenter.test(
+        ContractDetailsUiState.Success(
+          getContractForContractIdUseCase.getInsuranceWithOutTerminationDate(),
+          true,
+        ),
+      ) {
+        assertThat(awaitItem()).isInstanceOf<ContractDetailsUiState.Success>()
+        getContractForContractIdUseCase.addErrorToResponse()
+        assertThat(awaitItem()).isInstanceOf<ContractDetailsUiState.Error>()
+        sendEvent(ContractDetailsEvent.RetryLoadingContract)
+        assertThat(awaitItem()).isInstanceOf<ContractDetailsUiState.Loading>()
+        getContractForContractIdUseCase.addInsuranceWithNoTerminationDateToResponseTurbine()
+        assertThat(awaitItem()).isInstanceOf<ContractDetailsUiState.Success>()
+      }
+    }
+
+  @Test
   fun `if termination flow disabled not show cancel insurance button`() = runTest {
     val getContractForContractIdUseCase = FakeGetContractForContractIdUseCase()
     val featureManager = FakeFeatureManager(featureMap = { mapOf(Feature.TERMINATION_FLOW to false) })
@@ -217,6 +243,10 @@ class ContractDetailPresenterTest {
 
     fun addContractNotFoundToResponseTurbine() {
       responseTurbine.add(GetContractForContractIdError.NoContractFound(ErrorMessage()).left())
+    }
+
+    fun addErrorToResponse() {
+      responseTurbine.add(GetContractForContractIdError.GenericError(ErrorMessage()).left())
     }
   }
 }

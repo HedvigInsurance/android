@@ -45,7 +45,7 @@ internal class ContractDetailPresenter(
     }
 
     LaunchedEffect(dataLoadIteration) {
-      if (lastState !is ContractDetailsUiState.Success) {
+      if (currentState !is ContractDetailsUiState.Success) {
         currentState = ContractDetailsUiState.Loading
       }
       combine(
