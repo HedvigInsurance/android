@@ -51,7 +51,7 @@ class ContractDetailPresenterTest {
   }
 
   @Test
-  fun `with an initial success state, if there is an error, we are able to retry and get back in success state again`() =
+  fun `with an initial success, if there is an error, can retry and get back in success state again through loading`() =
     runTest {
       val getContractForContractIdUseCase = FakeGetContractForContractIdUseCase()
       val featureManager = FakeFeatureManager(featureMap = { mapOf(Feature.TERMINATION_FLOW to true) })
@@ -75,6 +75,96 @@ class ContractDetailPresenterTest {
         assertThat(awaitItem()).isInstanceOf<ContractDetailsUiState.Success>()
       }
     }
+
+  @Test
+  fun `with an initial error state, can retry and with a good response get success state through loading`() = runTest {
+    val getContractForContractIdUseCase = FakeGetContractForContractIdUseCase()
+    val featureManager = FakeFeatureManager(featureMap = { mapOf(Feature.TERMINATION_FLOW to true) })
+    val presenter = ContractDetailPresenter(
+      contractId = getContractForContractIdUseCase.getValIdWithoutTerminationDate(),
+      featureManager = featureManager,
+      getContractForContractIdUseCase = getContractForContractIdUseCase,
+    )
+    presenter.test(
+      ContractDetailsUiState.Error,
+    ) {
+      assertThat(awaitItem()).isInstanceOf<ContractDetailsUiState.Error>()
+      sendEvent(ContractDetailsEvent.RetryLoadingContract)
+      assertThat(awaitItem()).isInstanceOf<ContractDetailsUiState.Loading>()
+      getContractForContractIdUseCase.addInsuranceWithNoTerminationDateToResponseTurbine()
+      assertThat(awaitItem()).isInstanceOf<ContractDetailsUiState.Success>()
+    }
+  }
+
+  @Test
+  fun `with an initial error state, if a good response comes with the flow, show success state`() = runTest {
+    val getContractForContractIdUseCase = FakeGetContractForContractIdUseCase()
+    val featureManager = FakeFeatureManager(featureMap = { mapOf(Feature.TERMINATION_FLOW to true) })
+    val presenter = ContractDetailPresenter(
+      contractId = getContractForContractIdUseCase.getValIdWithoutTerminationDate(),
+      featureManager = featureManager,
+      getContractForContractIdUseCase = getContractForContractIdUseCase,
+    )
+    presenter.test(
+      ContractDetailsUiState.Error,
+    ) {
+      assertThat(awaitItem()).isInstanceOf<ContractDetailsUiState.Error>()
+      getContractForContractIdUseCase.addInsuranceWithNoTerminationDateToResponseTurbine()
+      assertThat(awaitItem()).isInstanceOf<ContractDetailsUiState.Loading>()
+      // todo: I don't understand why it shows loading in here,
+      // if we didn't emit eny event and didn't trigger dataLoadIteration
+      assertThat(awaitItem()).isInstanceOf<ContractDetailsUiState.Success>()
+    }
+  }
+
+  @Test
+  fun `with an initial success state do not show loading if get the same response`() = runTest {
+    val getContractForContractIdUseCase = FakeGetContractForContractIdUseCase()
+    val featureManager = FakeFeatureManager(featureMap = { mapOf(Feature.TERMINATION_FLOW to true) })
+    val presenter = ContractDetailPresenter(
+      contractId = getContractForContractIdUseCase.getValIdWithoutTerminationDate(),
+      featureManager = featureManager,
+      getContractForContractIdUseCase = getContractForContractIdUseCase,
+    )
+    val successState = ContractDetailsUiState.Success(
+      getContractForContractIdUseCase.getInsuranceWithOutTerminationDate(),
+      true,
+    )
+    presenter.test(
+      successState,
+    ) {
+      assertThat(awaitItem()).isInstanceOf<ContractDetailsUiState.Success>()
+      sendEvent(ContractDetailsEvent.RetryLoadingContract)
+      getContractForContractIdUseCase.addInsuranceWithNoTerminationDateToResponseTurbine()
+      awaitUnchanged()
+    }
+  }
+
+  @Test
+  fun `with an initial success state do not show loading if get the different successful response`() = runTest {
+    val getContractForContractIdUseCase = FakeGetContractForContractIdUseCase()
+    val featureManager = FakeFeatureManager(featureMap = { mapOf(Feature.TERMINATION_FLOW to true) })
+    val presenter = ContractDetailPresenter(
+      contractId = getContractForContractIdUseCase.getValIdWithoutTerminationDate(),
+      featureManager = featureManager,
+      getContractForContractIdUseCase = getContractForContractIdUseCase,
+    )
+    val successStateFirst = ContractDetailsUiState.Success(
+      getContractForContractIdUseCase.getInsuranceWithOutTerminationDate(),
+      true,
+    )
+    val successStateSecond = ContractDetailsUiState.Success(
+      getContractForContractIdUseCase.getInsuranceWithTerminationDate(),
+      false,
+    )
+    presenter.test(
+      successStateFirst,
+    ) {
+      assertThat(awaitItem()).isEqualTo(successStateFirst)
+      getContractForContractIdUseCase.addInsuranceWithTerminationDateToResponseTurbine()
+      assertThat(awaitItem()).isEqualTo(successStateSecond)
+    }
+  }
 
   @Test
   fun `if termination flow disabled not show cancel insurance button`() = runTest {

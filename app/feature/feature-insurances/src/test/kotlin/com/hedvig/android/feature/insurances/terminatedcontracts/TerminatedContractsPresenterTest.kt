@@ -59,6 +59,61 @@ class TerminatedContractsPresenterTest {
     }
 
   @Test
+  fun `with an initial error state, we are able to retry and if response is successful show success state`() = runTest {
+    val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
+    val presenter = TerminatedContractsPresenter { getInsuranceContractsUseCase }
+    presenter.test(TerminatedContractsUiState.Error) {
+      assertThat(awaitItem()).isInstanceOf<TerminatedContractsUiState.Error>()
+      sendEvent(TerminatedContractsEvent.Retry)
+      assertThat(awaitItem()).isInstanceOf<TerminatedContractsUiState.Loading>()
+      getInsuranceContractsUseCase.addTerminatedInsurancesToResponse()
+      assertThat(awaitItem()).isInstanceOf<TerminatedContractsUiState.Success>()
+    }
+  }
+
+  @Test
+  fun `with an initial error state, if there comes a successful response in flow, show success state`() = runTest {
+    val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
+    val presenter = TerminatedContractsPresenter { getInsuranceContractsUseCase }
+    presenter.test(TerminatedContractsUiState.Error) {
+      assertThat(awaitItem()).isInstanceOf<TerminatedContractsUiState.Error>()
+      getInsuranceContractsUseCase.addTerminatedInsurancesToResponse()
+      assertThat(awaitItem()).isInstanceOf<TerminatedContractsUiState.Loading>()
+      // todo: I don't understand why it shows loading in here,
+      // if we didn't emit eny event and didn't trigger dataLoadIteration
+      assertThat(awaitItem()).isInstanceOf<TerminatedContractsUiState.Success>()
+    }
+  }
+
+  @Test
+  fun `with an initial success state, if there comes the same response, do not show loading`() = runTest {
+    val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
+    val presenter = TerminatedContractsPresenter { getInsuranceContractsUseCase }
+    val successState = TerminatedContractsUiState.Success(getInsuranceContractsUseCase.getTerminatedInsurances())
+    presenter.test(successState) {
+      assertThat(awaitItem()).isInstanceOf<TerminatedContractsUiState.Success>()
+      sendEvent(TerminatedContractsEvent.Retry)
+      getInsuranceContractsUseCase.addTerminatedInsurancesToResponse()
+      awaitUnchanged()
+    }
+  }
+
+  @Test
+  fun `with an initial success state, if there comes a different successful response, do not show loading`() = runTest {
+    val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
+    val presenter = TerminatedContractsPresenter { getInsuranceContractsUseCase }
+    val successStateFirst = TerminatedContractsUiState.Success(getInsuranceContractsUseCase.getTerminatedInsurances())
+    val successStateSecond = TerminatedContractsUiState.Success(
+      getInsuranceContractsUseCase.getAnotherSetOfTerminatedInsurances(),
+    )
+    presenter.test(successStateFirst) {
+      assertThat(awaitItem()).isEqualTo(successStateFirst)
+      getInsuranceContractsUseCase.addAnotherSetOfTerminatedInsurances()
+      assertThat(awaitItem()).isEqualTo(successStateSecond)
+    }
+  }
+
+  @Test
   fun `if there are terminated insurances they are all passed to success state`() = runTest {
     val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
     val presenter = TerminatedContractsPresenter { getInsuranceContractsUseCase }
@@ -126,6 +181,13 @@ class TerminatedContractsPresenterTest {
 
     fun getTerminatedInsurances() = terminatedInsurances.toPersistentList()
 
+    fun addAnotherSetOfTerminatedInsurances() {
+      responseTurbine.add((terminatedInsurances + listOf(extraTerminatedInsurance)).right())
+    }
+
+    fun getAnotherSetOfTerminatedInsurances() =
+      (terminatedInsurances + listOf(extraTerminatedInsurance)).toPersistentList()
+
     private val terminatedInsurances = listOf(
       InsuranceContract(
         "contractId1",
@@ -190,6 +252,39 @@ class TerminatedContractsPresenterTest {
         contractHolderDisplayName = "",
       ),
     )
+
+    private val extraTerminatedInsurance = InsuranceContract(
+      "contractId3",
+      "displayName#3",
+      exposureDisplayName = "Test exposure 3",
+      inceptionDate = LocalDate.fromEpochDays(200),
+      terminationDate = LocalDate(2024, 5, 6),
+      currentInsuranceAgreement = InsuranceAgreement(
+        activeFrom = LocalDate.fromEpochDays(240),
+        activeTo = LocalDate.fromEpochDays(340),
+        displayItems = persistentListOf(),
+        productVariant = ProductVariant(
+          displayName = "Variant",
+          contractGroup = ContractGroup.RENTAL,
+          contractType = ContractType.SE_APARTMENT_RENT,
+          partner = null,
+          perils = persistentListOf(),
+          insurableLimits = persistentListOf(),
+          documents = persistentListOf(),
+        ),
+        certificateUrl = null,
+        coInsured = persistentListOf(),
+        creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
+      ),
+      upcomingInsuranceAgreement = null,
+      renewalDate = LocalDate.fromEpochDays(500),
+      supportsAddressChange = false,
+      supportsEditCoInsured = true,
+      isTerminated = true,
+      contractHolderSSN = "",
+      contractHolderDisplayName = "",
+    )
+
     private val activeInsurances = listOf(
       InsuranceContract(
         "contractId4",
