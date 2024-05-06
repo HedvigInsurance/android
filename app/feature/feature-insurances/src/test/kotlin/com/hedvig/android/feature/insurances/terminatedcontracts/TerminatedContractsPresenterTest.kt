@@ -77,8 +77,8 @@ class TerminatedContractsPresenterTest {
     val presenter = TerminatedContractsPresenter { getInsuranceContractsUseCase }
     presenter.test(TerminatedContractsUiState.Error) {
       assertThat(awaitItem()).isInstanceOf<TerminatedContractsUiState.Error>()
-      getInsuranceContractsUseCase.addTerminatedInsurancesToResponse()
       assertThat(awaitItem()).isInstanceOf<TerminatedContractsUiState.Loading>()
+      getInsuranceContractsUseCase.addTerminatedInsurancesToResponse()
       assertThat(awaitItem()).isInstanceOf<TerminatedContractsUiState.Success>()
     }
   }
