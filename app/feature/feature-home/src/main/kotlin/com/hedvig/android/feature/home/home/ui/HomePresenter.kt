@@ -114,7 +114,9 @@ internal class HomePresenter(
           }.toPersistentList(),
           isHelpCenterEnabled = successData.showHelpCenter,
           hasUnseenChatMessages = hasUnseenChatMessages,
-          topBarActions = successData.topBarActions,
+          chatAction = successData.chatAction,
+          firstVetAction = successData.firstVetAction,
+          crossSellsAction = successData.crossSellsAction
         )
       }
     }
@@ -139,17 +141,16 @@ internal sealed interface HomeUiState {
   val hasUnseenChatMessages: Boolean
     get() = false
 
-  val topBarActions: List<HomeTopBarAction>
-    get() = listOf()
-
   data class Success(
     override val isReloading: Boolean = false,
     val homeText: HomeText,
     val claimStatusCardsData: HomeData.ClaimStatusCardsData?,
     val veryImportantMessages: ImmutableList<HomeData.VeryImportantMessage>,
     val memberReminders: MemberReminders,
+    val chatAction: HomeTopBarAction.ChatAction?,
+    val firstVetAction: HomeTopBarAction.FirstVetAction?,
+    val crossSellsAction: HomeTopBarAction.CrossSellsAction?,
     override val isHelpCenterEnabled: Boolean,
-    override val topBarActions: List<HomeTopBarAction>,
     override val hasUnseenChatMessages: Boolean,
   ) : HomeUiState
 
@@ -164,7 +165,9 @@ private data class SuccessData(
   val veryImportantMessages: ImmutableList<HomeData.VeryImportantMessage>,
   val memberReminders: MemberReminders,
   val showHelpCenter: Boolean,
-  val topBarActions: List<HomeTopBarAction>,
+  val chatAction: HomeTopBarAction.ChatAction?,
+  val firstVetAction: HomeTopBarAction.FirstVetAction?,
+  val crossSellsAction: HomeTopBarAction.CrossSellsAction?
 ) {
   companion object {
     fun fromLastState(lastState: HomeUiState): SuccessData? {
@@ -175,23 +178,18 @@ private data class SuccessData(
         veryImportantMessages = lastState.veryImportantMessages,
         memberReminders = lastState.memberReminders,
         showHelpCenter = lastState.isHelpCenterEnabled,
-        topBarActions = lastState.topBarActions,
+        chatAction = lastState.chatAction,
+        crossSellsAction = lastState.crossSellsAction,
+        firstVetAction = lastState.firstVetAction
       )
     }
 
     fun fromHomeData(homeData: HomeData): SuccessData {
-      val actionsList = buildList {
-        if (homeData.crossSells.isNotEmpty()) add(HomeTopBarAction.CrossSellsAction(homeData.crossSells))
-        if (homeData.firstVetSections.isNotEmpty()) {
-          add(
-            HomeTopBarAction.FirstVetAction(
-              homeData.firstVetSections,
-            ),
-          )
-        }
-        if (homeData.showChatIcon) add(HomeTopBarAction.ChatAction)
-      }
-
+      val crossSellsAction = if (homeData.crossSells.isNotEmpty())
+        HomeTopBarAction.CrossSellsAction(homeData.crossSells) else null
+      val chatAction = if (homeData.showChatIcon) HomeTopBarAction.ChatAction else null
+      val firstVetAction = if (homeData.firstVetSections.isNotEmpty())
+        HomeTopBarAction.FirstVetAction(homeData.firstVetSections) else null
       return SuccessData(
         homeText = when (homeData.contractStatus) {
           HomeData.ContractStatus.Active -> HomeText.Active
@@ -208,7 +206,9 @@ private data class SuccessData(
         veryImportantMessages = homeData.veryImportantMessages,
         memberReminders = homeData.memberReminders.copy(enableNotifications = null),
         showHelpCenter = homeData.showHelpCenter,
-        topBarActions = actionsList.toList(),
+        chatAction = chatAction,
+        firstVetAction = firstVetAction,
+        crossSellsAction = crossSellsAction
       )
     }
   }

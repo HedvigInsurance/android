@@ -89,7 +89,7 @@ fun HedvigBottomSheet(
         },
         modifier = Modifier.padding(start = 24.dp, end = 24.dp, bottom = 16.dp),
       )
+      Spacer(Modifier.windowInsetsPadding(BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Bottom)))
     }
-    Spacer(Modifier.windowInsetsPadding(BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Bottom)))
-  }
+   }
 }

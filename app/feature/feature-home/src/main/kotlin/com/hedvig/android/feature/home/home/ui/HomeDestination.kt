@@ -193,8 +193,8 @@ private fun HomeScreen(
         HomeUiState.Loading -> {
           HedvigFullScreenCenterAlignedProgressDebounced(
             modifier = Modifier
-              .fillMaxSize()
-              .windowInsetsPadding(WindowInsets.safeDrawing),
+                .fillMaxSize()
+                .windowInsetsPadding(WindowInsets.safeDrawing),
           )
         }
 
@@ -202,8 +202,8 @@ private fun HomeScreen(
           HedvigErrorSection(
             onButtonClick = reload,
             modifier = Modifier
-              .padding(16.dp)
-              .windowInsetsPadding(WindowInsets.safeDrawing),
+                .padding(16.dp)
+                .windowInsetsPadding(WindowInsets.safeDrawing),
           )
         }
 
@@ -229,32 +229,40 @@ private fun HomeScreen(
 
     Column {
       TopAppBarLayoutForActions {
-        for (action in uiState.topBarActions) {
-          when (action) {
-            HomeTopBarAction.ChatAction -> ToolbarChatIcon(
-              onClick = onStartChat,
-              modifier = Modifier.notificationCircle(uiState.hasUnseenChatMessages),
-            )
-
-            is HomeTopBarAction.CrossSellsAction -> ToolbarCrossSellsIcon(
-              onClick = {
-                crossSellsForBottomSheet = action.crossSells
-              },
-            )
-
-            is HomeTopBarAction.FirstVetAction -> {
-              val sections = action.sections
-              ToolbarFirstVetIcon(
-                onClick = { navigateToFirstVet(sections) },
-              )
-            }
+        val currentState = uiState as? HomeUiState.Success
+        if (currentState != null) {
+          val actionsList = buildList {
+            if (currentState.crossSellsAction != null) add(currentState.crossSellsAction)
+            if (currentState.firstVetAction != null) add(currentState.firstVetAction)
+            if (currentState.chatAction != null) add(currentState.chatAction)
           }
-          if (uiState.topBarActions.indexOf(action) != uiState.topBarActions.lastIndex) {
-            Spacer(modifier = Modifier.width(8.dp))
+          for (action in actionsList) {
+            when (action) {
+              HomeTopBarAction.ChatAction -> ToolbarChatIcon(
+                onClick = onStartChat,
+                modifier = Modifier.notificationCircle(uiState.hasUnseenChatMessages),
+              )
+
+              is HomeTopBarAction.CrossSellsAction -> ToolbarCrossSellsIcon(
+                onClick = {
+                  crossSellsForBottomSheet = action.crossSells
+                },
+              )
+
+              is HomeTopBarAction.FirstVetAction -> {
+                val sections = action.sections
+                ToolbarFirstVetIcon(
+                  onClick = { navigateToFirstVet(sections) },
+                )
+              }
+            }
+            if (actionsList.indexOf(action) != actionsList.lastIndex) {
+              Spacer(modifier = Modifier.width(8.dp))
+            }
           }
         }
       }
-      if (uiState.topBarActions.contains(HomeTopBarAction.ChatAction)) {
+      if ((uiState as? HomeUiState.Success)?.chatAction != null) {
         val shouldShowTooltip by produceState(false) {
           val daysSinceLastTooltipShown = daysSinceLastTooltipShown(context)
           value = daysSinceLastTooltipShown
@@ -265,8 +273,8 @@ private fun HomeScreen(
             context.setLastEpochDayWhenChatTooltipWasShown(java.time.LocalDate.now().toEpochDay())
           },
           modifier = Modifier
-            .align(Alignment.End)
-            .padding(horizontal = 16.dp),
+              .align(Alignment.End)
+              .padding(horizontal = 16.dp),
         )
       }
     }
@@ -310,10 +318,10 @@ private fun HomeScreenSuccess(
   var fullScreenSize: IntSize? by remember { mutableStateOf(null) }
   Box(
     modifier = modifier
-      .fillMaxSize()
-      .onSizeChanged { fullScreenSize = it }
-      .pullRefresh(pullRefreshState)
-      .verticalScroll(rememberScrollState()),
+        .fillMaxSize()
+        .onSizeChanged { fullScreenSize = it }
+        .pullRefresh(pullRefreshState)
+        .verticalScroll(rememberScrollState()),
   ) {
     NotificationPermissionDialog(notificationPermissionState, openAppSettings)
     val fullScreenSizeValue = fullScreenSize
@@ -324,9 +332,9 @@ private fun HomeScreenSuccess(
           WelcomeMessage(
             homeText = uiState.homeText,
             modifier = Modifier
-              .padding(horizontal = 24.dp)
-              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
-              .testTag("welcome_message"),
+                .padding(horizontal = 24.dp)
+                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+                .testTag("welcome_message"),
           )
         },
         claimStatusCards = {
@@ -373,8 +381,8 @@ private fun HomeScreenSuccess(
             text = stringResource(R.string.home_tab_claim_button_text),
             onClick = onStartClaimClicked,
             modifier = Modifier
-              .padding(horizontal = 16.dp)
-              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+                .padding(horizontal = 16.dp)
+                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
           )
         },
         helpCenterButton = {
@@ -383,23 +391,23 @@ private fun HomeScreenSuccess(
               text = stringResource(R.string.home_tab_get_help),
               onClick = navigateToHelpCenter,
               modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+                  .padding(horizontal = 16.dp)
+                  .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
             )
           }
         },
         topSpacer = {
           Spacer(
-            Modifier
-              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top))
-              .height(toolbarHeight),
+              Modifier
+                  .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top))
+                  .height(toolbarHeight),
           )
         },
         bottomSpacer = {
           Spacer(
-            Modifier
-              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom))
-              .height(16.dp),
+              Modifier
+                  .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom))
+                  .height(16.dp),
           )
         },
       )
@@ -439,8 +447,8 @@ private fun ImportantMessages(
           beyondBoundsPageCount = 1,
           pageSpacing = 8.dp,
           modifier = Modifier
-            .fillMaxWidth()
-            .systemGestureExclusion(),
+              .fillMaxWidth()
+              .systemGestureExclusion(),
         ) { page: Int ->
           val currentMessage = animatedList[page]
           VeryImportantMessageCard(
@@ -455,8 +463,8 @@ private fun ImportantMessages(
           pageCount = animatedList.size,
           activeColor = LocalContentColor.current,
           modifier = Modifier
-            .align(Alignment.CenterHorizontally)
-            .padding(contentPadding),
+              .align(Alignment.CenterHorizontally)
+              .padding(contentPadding),
         )
       }
     }
@@ -597,22 +605,20 @@ private fun PreviewHomeScreen(
           ),
           isHelpCenterEnabled = true,
           hasUnseenChatMessages = hasUnseenChatMessages,
-          topBarActions = listOf(
-            HomeTopBarAction.CrossSellsAction(
-              persistentListOf(CrossSell("rf", "erf", "", "", CrossSell.CrossSellType.ACCIDENT)),
-            ),
-            HomeTopBarAction.FirstVetAction(
-              listOf(
-                FirstVetSection(
-                  "",
-                  "",
-                  "",
-                  "",
-                ),
+          crossSellsAction = HomeTopBarAction.CrossSellsAction(
+            persistentListOf(CrossSell("rf", "erf", "", "", CrossSell.CrossSellType.ACCIDENT)),
+          ),
+          firstVetAction = HomeTopBarAction.FirstVetAction(
+            listOf(
+              FirstVetSection(
+                "",
+                "",
+                "",
+                "",
               ),
             ),
-            HomeTopBarAction.ChatAction,
           ),
+          chatAction = HomeTopBarAction.ChatAction,
         ),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
         reload = {},
