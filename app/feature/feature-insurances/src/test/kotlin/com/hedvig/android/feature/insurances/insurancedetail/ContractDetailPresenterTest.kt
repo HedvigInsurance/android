@@ -14,7 +14,7 @@ import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceContract
 import com.hedvig.android.featureflags.flags.Feature
-import com.hedvig.android.featureflags.test.FakeFeatureManager
+import com.hedvig.android.featureflags.test.FakeFeatureManager2
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
 import kotlinx.collections.immutable.persistentListOf
@@ -32,7 +32,7 @@ class ContractDetailPresenterTest {
   @Test
   fun `if termination flow enabled and no termination date show cancel insurance button`() = runTest {
     val getContractForContractIdUseCase = FakeGetContractForContractIdUseCase()
-    val featureManager = FakeFeatureManager(featureMap = { mapOf(Feature.TERMINATION_FLOW to true) })
+    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TERMINATION_FLOW to true))
     val presenter = ContractDetailPresenter(
       contractId = getContractForContractIdUseCase.getValIdWithoutTerminationDate(),
       featureManager = featureManager,
@@ -54,7 +54,7 @@ class ContractDetailPresenterTest {
   fun `with an initial success, if there is an error, can retry and get back in success state again through loading`() =
     runTest {
       val getContractForContractIdUseCase = FakeGetContractForContractIdUseCase()
-      val featureManager = FakeFeatureManager(featureMap = { mapOf(Feature.TERMINATION_FLOW to true) })
+      val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TERMINATION_FLOW to true))
       val presenter = ContractDetailPresenter(
         contractId = getContractForContractIdUseCase.getValIdWithoutTerminationDate(),
         featureManager = featureManager,
@@ -79,7 +79,7 @@ class ContractDetailPresenterTest {
   @Test
   fun `with an initial error state, can retry and with a good response get success state through loading`() = runTest {
     val getContractForContractIdUseCase = FakeGetContractForContractIdUseCase()
-    val featureManager = FakeFeatureManager(featureMap = { mapOf(Feature.TERMINATION_FLOW to true) })
+    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TERMINATION_FLOW to true))
     val presenter = ContractDetailPresenter(
       contractId = getContractForContractIdUseCase.getValIdWithoutTerminationDate(),
       featureManager = featureManager,
@@ -99,7 +99,7 @@ class ContractDetailPresenterTest {
   @Test
   fun `with an initial error state, if a good response comes with the flow, show success state`() = runTest {
     val getContractForContractIdUseCase = FakeGetContractForContractIdUseCase()
-    val featureManager = FakeFeatureManager(featureMap = { mapOf(Feature.TERMINATION_FLOW to true) })
+    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TERMINATION_FLOW to true))
     val presenter = ContractDetailPresenter(
       contractId = getContractForContractIdUseCase.getValIdWithoutTerminationDate(),
       featureManager = featureManager,
@@ -118,7 +118,7 @@ class ContractDetailPresenterTest {
   @Test
   fun `with an initial success state do not show loading if get the same response`() = runTest {
     val getContractForContractIdUseCase = FakeGetContractForContractIdUseCase()
-    val featureManager = FakeFeatureManager(featureMap = { mapOf(Feature.TERMINATION_FLOW to true) })
+    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TERMINATION_FLOW to true))
     val presenter = ContractDetailPresenter(
       contractId = getContractForContractIdUseCase.getValIdWithoutTerminationDate(),
       featureManager = featureManager,
@@ -141,7 +141,7 @@ class ContractDetailPresenterTest {
   @Test
   fun `with an initial success state do not show loading if get the different successful response`() = runTest {
     val getContractForContractIdUseCase = FakeGetContractForContractIdUseCase()
-    val featureManager = FakeFeatureManager(featureMap = { mapOf(Feature.TERMINATION_FLOW to true) })
+    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TERMINATION_FLOW to true))
     val presenter = ContractDetailPresenter(
       contractId = getContractForContractIdUseCase.getValIdWithoutTerminationDate(),
       featureManager = featureManager,
@@ -167,7 +167,7 @@ class ContractDetailPresenterTest {
   @Test
   fun `if termination flow disabled not show cancel insurance button`() = runTest {
     val getContractForContractIdUseCase = FakeGetContractForContractIdUseCase()
-    val featureManager = FakeFeatureManager(featureMap = { mapOf(Feature.TERMINATION_FLOW to false) })
+    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TERMINATION_FLOW to false))
     val presenter = ContractDetailPresenter(
       contractId = getContractForContractIdUseCase.getValIdWithoutTerminationDate(),
       featureManager = featureManager,
@@ -188,7 +188,7 @@ class ContractDetailPresenterTest {
   @Test
   fun `if contractId is wrong show no contract found state`() = runTest {
     val getContractForContractIdUseCase = FakeGetContractForContractIdUseCase()
-    val featureManager = FakeFeatureManager(featureMap = { mapOf(Feature.TERMINATION_FLOW to false) })
+    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TERMINATION_FLOW to false))
     val presenter = ContractDetailPresenter(
       contractId = getContractForContractIdUseCase.getInvalidId(),
       featureManager = featureManager,
@@ -206,7 +206,7 @@ class ContractDetailPresenterTest {
   @Test
   fun `if contractId is okay show success state`() = runTest {
     val getContractForContractIdUseCase = FakeGetContractForContractIdUseCase()
-    val featureManager = FakeFeatureManager(featureMap = { mapOf(Feature.TERMINATION_FLOW to false) })
+    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TERMINATION_FLOW to false))
     val presenter = ContractDetailPresenter(
       contractId = getContractForContractIdUseCase.getValIdWithoutTerminationDate(),
       featureManager = featureManager,
@@ -222,7 +222,7 @@ class ContractDetailPresenterTest {
   @Test
   fun `if termination is enabled but contract has termination date not show cancel insurance button`() = runTest {
     val getContractForContractIdUseCase = FakeGetContractForContractIdUseCase()
-    val featureManager = FakeFeatureManager(featureMap = { mapOf(Feature.TERMINATION_FLOW to true) })
+    val featureManager = FakeFeatureManager2(fixedMap = mapOf(Feature.TERMINATION_FLOW to true))
     val presenter = ContractDetailPresenter(
       contractId = getContractForContractIdUseCase.getValIdWithTerminationDate(),
       featureManager = featureManager,
