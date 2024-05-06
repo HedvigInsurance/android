@@ -61,7 +61,7 @@ internal class TerminatedContractsPresenter(
             }
           }
         }
-        .map { insuranceContractResult ->
+        .collectLatest { insuranceContractResult ->
           either {
             val terminatedContracts = insuranceContractResult.bind().filter(InsuranceContract::isTerminated)
             if (terminatedContracts.isEmpty()) {
@@ -79,7 +79,6 @@ internal class TerminatedContractsPresenter(
             },
           )
         }
-        .collectLatest { }
     }
     return currentState
   }

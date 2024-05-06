@@ -52,6 +52,8 @@ internal class ContractDetailPresenter(
         getContractForContractIdUseCase.invoke(contractId),
         featureManager.isFeatureEnabled(Feature.TERMINATION_FLOW),
       ) { insuranceContractResult, isTerminationFlowEnabled ->
+        insuranceContractResult to isTerminationFlowEnabled
+      }.collectLatest { (insuranceContractResult, isTerminationFlowEnabled) ->
         insuranceContractResult.fold(
           ifLeft = { error ->
             currentState = when (error) {
@@ -67,7 +69,7 @@ internal class ContractDetailPresenter(
             )
           },
         )
-      }.collectLatest {}
+      }
     }
     return currentState
   }
