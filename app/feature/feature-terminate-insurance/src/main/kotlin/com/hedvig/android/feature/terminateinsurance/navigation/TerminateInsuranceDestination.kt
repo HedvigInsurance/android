@@ -1,7 +1,9 @@
 package com.hedvig.android.feature.terminateinsurance.navigation
 
 import com.hedvig.android.data.contract.ContractGroup
+import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
 import com.kiwi.navigationcompose.typed.Destination
+import java.io.Serial
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -18,6 +20,16 @@ data class TerminateInsuranceGraphDestination(
 internal sealed interface TerminateInsuranceDestination : Destination {
   @Serializable
   data object StartStep : TerminateInsuranceDestination
+
+  @Serializable
+  data class TerminationSurveyFirstStep(
+    val options: List<TerminationSurveyOption>
+  ): TerminateInsuranceDestination
+
+  @Serializable
+  data class TerminationSurveySecondStep(
+    val subOptions: List<TerminationSurveyOption>
+  ): TerminateInsuranceDestination
 
   @Serializable
   data class TerminationDate(

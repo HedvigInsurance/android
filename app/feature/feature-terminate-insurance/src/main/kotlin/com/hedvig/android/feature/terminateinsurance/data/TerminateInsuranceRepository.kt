@@ -49,6 +49,14 @@ internal class TerminateInsuranceRepository(
     }
   }
 
+  suspend fun submitReasonForCancelling(
+    reason: TerminationReason
+  ): Either<ErrorMessage, TerminateInsuranceStep> {
+    return either {
+      TODO()
+    }
+  }
+
   suspend fun confirmDeletion(): Either<ErrorMessage, TerminateInsuranceStep> {
     return either {
       val result = apolloClient

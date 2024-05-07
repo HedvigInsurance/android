@@ -13,6 +13,8 @@ import com.hedvig.android.feature.terminateinsurance.data.toTerminateInsuranceDe
 import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateDestination
 import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateViewModel
 import com.hedvig.android.feature.terminateinsurance.step.deletion.InsuranceDeletionDestination
+import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyDestination
+import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyViewModel
 import com.hedvig.android.feature.terminateinsurance.step.terminationdate.TerminationDateDestination
 import com.hedvig.android.feature.terminateinsurance.step.terminationdate.TerminationDateViewModel
 import com.hedvig.android.feature.terminateinsurance.step.terminationfailure.TerminationFailureDestination
@@ -94,6 +96,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
         closeTerminationFlow = closeTerminationFlow,
         navigateToNextStep = { step, insuranceForCancellation: TerminatableInsurance ->
           navigator.navigateToTerminateFlowDestination(
+            //todo: need refactoring, dragging too many parameters around
             destination = step.toTerminateInsuranceDestination(
               insuranceForCancellation.displayName,
               insuranceForCancellation.contractExposure,
@@ -107,6 +110,46 @@ fun NavGraphBuilder.terminateInsuranceGraph(
             ),
           )
         },
+      )
+    }
+
+    composable<TerminateInsuranceDestination.TerminationSurveyFirstStep> {backStackEntry ->
+      val viewModel: TerminationSurveyViewModel = koinViewModel {
+        parametersOf(options)
+      }
+      TerminationSurveyDestination(
+        viewModel,
+        navigateUp = navigator::navigateUp,
+        closeTerminationFlow = closeTerminationFlow,
+        openChat = { openChat(backStackEntry) },
+        navigateToSubOptions = {   subOptions ->
+          // todo
+        },
+        navigateToNextStep = { step ->
+          // todo
+        },
+        navigateToMovingFlow = {
+          //todo
+        }
+      )
+    }
+
+    composable<TerminateInsuranceDestination.TerminationSurveySecondStep> {backStackEntry ->
+      val viewModel: TerminationSurveyViewModel = koinViewModel {
+        parametersOf(subOptions)
+      }
+      TerminationSurveyDestination(
+        viewModel,
+        navigateUp = navigator::navigateUp,
+        closeTerminationFlow = closeTerminationFlow,
+        openChat = { openChat(backStackEntry) },
+        navigateToSubOptions = null,
+        navigateToNextStep = { step ->
+          // todo
+        },
+        navigateToMovingFlow = {
+          //todo
+        }
       )
     }
 
