@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -93,7 +94,7 @@ fun InteractiveTextFieldWithAllSizes(modifier: Modifier = Modifier) {
           modifier = Modifier.align(Alignment.CenterHorizontally),
         )
         var text by remember { mutableStateOf("") }
-        HedvigTextField(text, { text = it }, "Label", size)
+        HedvigTextField(text, { text = it }, "Label", size, Modifier.widthIn(max = 250.dp))
       }
     }
   }

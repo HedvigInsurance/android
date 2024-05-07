@@ -34,11 +34,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldColors
@@ -52,6 +55,7 @@ import com.hedvig.android.design.system.hedvig.colors
 import com.hedvig.android.design.system.hedvig.configuration
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Image
+import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
@@ -257,42 +261,112 @@ private fun AnimatedTextFieldContent(
           boundsTransform = BoundsTransform { _, _ -> LabelTransitionAnimationSpec },
         ),
       ) {
-        Row(
-          verticalAlignment = Alignment.CenterVertically,
+        RowTextFieldLayout(
           modifier = Modifier.padding(size.horizontalPadding()),
-        ) {
-          val textContentPadding = size.textAndLabelVerticalPadding(inputPhase.onlyShowLabel)
-          if (sharedLeadingIcon != null) {
-            sharedLeadingIcon.invoke()
-            Spacer(Modifier.width(configuration.iconToTextPadding))
-          }
-          Column {
-            Spacer(Modifier.height(textContentPadding.calculateTopPadding()))
-            if (inputPhase.onlyShowLabel) {
-              sharedLabel?.invoke()
-            } else {
-              Column(verticalArrangement = Arrangement.spacedBy(-size.labelToTextOverlap)) {
+          textFieldAndLabel = {
+            val textContentPadding = size.textAndLabelVerticalPadding(inputPhase.onlyShowLabel)
+            Column {
+              Spacer(Modifier.height(textContentPadding.calculateTopPadding()))
+              if (inputPhase.onlyShowLabel) {
                 sharedLabel?.invoke()
-                sharedInnerTextField(Modifier)
+              } else {
+                Column(verticalArrangement = Arrangement.spacedBy(-size.labelToTextOverlap)) {
+                  sharedLabel?.invoke()
+                  sharedInnerTextField(Modifier)
+                }
+              }
+              Spacer(Modifier.height(textContentPadding.calculateBottomPadding()))
+              if (inputPhase.onlyShowLabel) {
+                // Lay out the text at the *bottom* of the container, so it starts animating in from there towards its
+                // final position.
+                sharedInnerTextField(
+                  Modifier
+                    .requiredHeight(0.dp)
+                    .wrapContentHeight(Alignment.Bottom, unbounded = true),
+                )
               }
             }
-            Spacer(Modifier.height(textContentPadding.calculateBottomPadding()))
-            if (inputPhase.onlyShowLabel) {
-              // Lay out the text at the *bottom* of the container, so it starts animating in from there towards its
-              // final position.
-              sharedInnerTextField(
-                Modifier
-                  .requiredHeight(0.dp)
-                  .wrapContentHeight(Alignment.Bottom, unbounded = true),
-              )
+          },
+          leading = if (sharedLeadingIcon != null) {
+            {
+              Row {
+                sharedLeadingIcon.invoke()
+                Spacer(Modifier.width(configuration.iconToTextPadding))
+              }
             }
-          }
-          if (sharedTrailingIcon != null) {
-            Spacer(Modifier.width(configuration.iconToTextPadding))
-            sharedTrailingIcon.invoke()
-          }
-        }
+          } else {
+            null
+          },
+          trailing = if (sharedTrailingIcon != null) {
+            {
+              Row {
+                Spacer(Modifier.width(configuration.iconToTextPadding))
+                sharedTrailingIcon.invoke()
+              }
+            }
+          } else {
+            null
+          },
+        )
       }
+    }
+  }
+}
+
+/**
+ * Lays out the text along with the leading and trailing content, while always making sure that the text field does not
+ * swallow the trailing content and make it disappear, while at the same time not going to 0.dp width if we used a
+ * `weight(1f)` on it instead.
+ */
+@Composable
+private fun RowTextFieldLayout(
+  modifier: Modifier,
+  textFieldAndLabel: @Composable () -> Unit,
+  leading: (@Composable () -> Unit)?,
+  trailing: (@Composable () -> Unit)?,
+  alignment: Alignment.Vertical = Alignment.CenterVertically,
+) {
+  Layout(
+    modifier = modifier,
+    contents = listOf(
+      { textFieldAndLabel() },
+      { leading?.invoke() },
+      { trailing?.invoke() },
+    ),
+  ) { measurables: List<List<Measurable>>, constraints: Constraints ->
+    logcat { "Stelios: measurables.size:${measurables.size}" }
+    val textFieldAndLabelMeasurable = measurables[0].first()
+    val leadingMeasurable = measurables[1].firstOrNull()
+    val trailingMeasurable = measurables[2].firstOrNull()
+
+    val looseConstraints = constraints.copy(minWidth = 0, minHeight = 0)
+
+    val leadingPlaceable = leadingMeasurable?.measure(looseConstraints)
+    val trailingPlaceable = trailingMeasurable?.measure(looseConstraints)
+    val textFieldAndLabelPlaceable = textFieldAndLabelMeasurable.measure(
+      looseConstraints.copy(
+        maxWidth = if (looseConstraints.hasBoundedWidth) {
+          (looseConstraints.maxWidth - (trailingPlaceable?.width ?: 0) - (leadingPlaceable?.width ?: 0))
+            .coerceAtLeast(0)
+        } else {
+          looseConstraints.maxWidth
+        },
+      ),
+    )
+
+    val width = (leadingPlaceable?.width ?: 0) + (trailingPlaceable?.width ?: 0) + textFieldAndLabelPlaceable.width
+    val height = maxOf(
+      leadingPlaceable?.height ?: 0,
+      trailingPlaceable?.height ?: 0,
+      textFieldAndLabelPlaceable.height,
+    )
+    layout(width, height) {
+      leadingPlaceable?.place(0, alignment.align(leadingPlaceable.height, height))
+      trailingPlaceable?.place(width - trailingPlaceable.width, alignment.align(trailingPlaceable.height, height))
+      textFieldAndLabelPlaceable.place(
+        leadingPlaceable?.width ?: 0,
+        alignment.align(textFieldAndLabelPlaceable.height, height),
+      )
     }
   }
 }
