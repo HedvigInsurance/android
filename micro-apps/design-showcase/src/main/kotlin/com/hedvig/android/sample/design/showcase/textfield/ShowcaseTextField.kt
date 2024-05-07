@@ -12,12 +12,14 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
@@ -26,6 +28,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onPlaced
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -40,6 +44,7 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.Cart
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.sample.design.showcase.util.ShowcaseLayout
+import kotlin.math.max
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -175,14 +180,43 @@ private fun TextFieldWithAndWithoutInputColumn(
   type: ShowcaseTextFieldType,
   size: HedvigTextFieldDefaults.TextFieldSize,
 ) {
-  Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-    ShowcaseTextField("", type, size)
-    ShowcaseTextField("Text Input", type, size)
+  var maxWidth by remember { mutableIntStateOf(0) }
+  Column(
+    verticalArrangement = Arrangement.spacedBy(8.dp),
+    modifier = Modifier.then(
+      if (maxWidth != 0) {
+        with(LocalDensity.current) {
+          Modifier.requiredWidth(maxWidth.toDp())
+        }
+      } else {
+        Modifier
+      },
+    ),
+  ) {
+    if (maxWidth != 0) {
+      ShowcaseTextField(
+        "",
+        type,
+        size,
+        Modifier.fillMaxWidth(),
+      )
+    }
+    ShowcaseTextField(
+      "Text Input",
+      type,
+      size,
+      Modifier.onPlaced { maxWidth = max(maxWidth, it.size.width) },
+    )
   }
 }
 
 @Composable
-private fun ShowcaseTextField(input: String, type: ShowcaseTextFieldType, size: HedvigTextFieldDefaults.TextFieldSize) {
+private fun ShowcaseTextField(
+  input: String,
+  type: ShowcaseTextFieldType,
+  size: HedvigTextFieldDefaults.TextFieldSize,
+  modifier: Modifier = Modifier,
+) {
   val inputValue = if (type == ShowcaseTextFieldType.ErrorPulsating || type == ShowcaseTextFieldType.TypePulsating) {
     val blinkingInput by produceState(input) {
       while (isActive) {
@@ -202,6 +236,7 @@ private fun ShowcaseTextField(input: String, type: ShowcaseTextFieldType, size: 
     onValueChange = {},
     textFieldSize = size,
     labelText = "Label",
+    modifier = modifier,
     errorState = when (type) {
       ShowcaseTextFieldType.ErrorMessage -> HedvigTextFieldDefaults.ErrorState.Error.WithMessage(
         "Something went wrong",

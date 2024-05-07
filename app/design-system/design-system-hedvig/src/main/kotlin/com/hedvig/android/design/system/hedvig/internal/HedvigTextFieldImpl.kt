@@ -55,7 +55,7 @@ import com.hedvig.android.design.system.hedvig.colors
 import com.hedvig.android.design.system.hedvig.configuration
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Image
-import com.hedvig.android.logger.logcat
+import kotlin.math.max
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
@@ -334,7 +334,6 @@ private fun RowTextFieldLayout(
       { trailing?.invoke() },
     ),
   ) { measurables: List<List<Measurable>>, constraints: Constraints ->
-    logcat { "Stelios: measurables.size:${measurables.size}" }
     val textFieldAndLabelMeasurable = measurables[0].first()
     val leadingMeasurable = measurables[1].firstOrNull()
     val trailingMeasurable = measurables[2].firstOrNull()
@@ -354,7 +353,10 @@ private fun RowTextFieldLayout(
       ),
     )
 
-    val width = (leadingPlaceable?.width ?: 0) + (trailingPlaceable?.width ?: 0) + textFieldAndLabelPlaceable.width
+    val width = max(
+      (leadingPlaceable?.width ?: 0) + (trailingPlaceable?.width ?: 0) + textFieldAndLabelPlaceable.width,
+      constraints.minWidth,
+    )
     val height = maxOf(
       leadingPlaceable?.height ?: 0,
       trailingPlaceable?.height ?: 0,
