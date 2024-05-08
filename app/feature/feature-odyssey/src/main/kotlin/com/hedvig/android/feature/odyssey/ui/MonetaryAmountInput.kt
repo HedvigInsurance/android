@@ -119,7 +119,7 @@ internal fun MonetaryAmountInput(
 @Composable
 private fun PreviewMonetaryAmountInput(
   @PreviewParameter(
-    com.hedvig.android.compose.ui.preview.DoubleBooleanCollectionPreviewParameterProvider::class,
+    DoubleBooleanCollectionPreviewParameterProvider::class,
   ) input: Pair<Boolean, Boolean>,
 ) {
   val (hasInput: Boolean, canInteract: Boolean) = input
