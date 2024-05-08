@@ -155,7 +155,7 @@ private fun LabelAnimation(modifier: Modifier = Modifier) {
         onValueChange = { /*text = it*/ },
         labelText = "Label",
         textFieldSize = size,
-        leadingIcon = {
+        leadingContent = {
           IconButton({}, Modifier.size(32.dp)) {
             Icon(HedvigIcons.Cart, null)
           }

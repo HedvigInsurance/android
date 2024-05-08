@@ -18,7 +18,7 @@ internal object TextFieldTokens {
   val DisabledXIconColor = ColorSchemeKeyTokens.FillSecondary
   val LockIconColor = ColorSchemeKeyTokens.FillSecondary
   val WarningIconColor = ColorSchemeKeyTokens.SignalAmberElement
-  val IconToTextPadding = 8.dp
+  val TextFieldToOtherContentHorizontalPadding = 8.dp
   val BorderColor = ColorSchemeKeyTokens.BorderSecondary
   val BorderWidth = 0.dp
   val FocusedBorderWidth = 1.dp

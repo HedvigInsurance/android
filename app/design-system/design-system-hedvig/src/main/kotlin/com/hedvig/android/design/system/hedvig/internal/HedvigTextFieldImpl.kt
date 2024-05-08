@@ -69,8 +69,8 @@ internal fun HedvigDecorationBox(
   innerTextField: @Composable () -> Unit,
   visualTransformation: VisualTransformation,
   label: @Composable (() -> Unit)?,
-  leadingIcon: @Composable (() -> Unit)? = null,
-  trailingIcon: @Composable (() -> Unit)? = null,
+  leadingContent: @Composable (() -> Unit)? = null,
+  trailingContent: @Composable (() -> Unit)? = null,
   supportingText: @Composable (() -> Unit)? = null,
   enabled: Boolean = true,
   isError: Boolean = false,
@@ -99,20 +99,20 @@ internal fun HedvigDecorationBox(
   } else {
     null
   }
-  val decoratedLeadingIcon: (@Composable () -> Unit)? = if (leadingIcon != null) {
+  val decoratedLeadingContent: (@Composable () -> Unit)? = if (leadingContent != null) {
     @Composable {
       Decoration(
-        colors.trailingIconColor(readOnly = readOnly, enabled = enabled, isError = isError).value,
-      ) { leadingIcon() }
+        colors.trailingContentColor(readOnly = readOnly, enabled = enabled, isError = isError).value,
+      ) { leadingContent() }
     }
   } else {
     null
   }
-  val decoratedTrailingIcon: (@Composable () -> Unit)? = if (trailingIcon != null) {
+  val decoratedTrailingContent: (@Composable () -> Unit)? = if (trailingContent != null) {
     @Composable {
       Decoration(
-        colors.trailingIconColor(readOnly = readOnly, enabled = enabled, isError = isError).value,
-      ) { trailingIcon() }
+        colors.trailingContentColor(readOnly = readOnly, enabled = enabled, isError = isError).value,
+      ) { trailingContent() }
     }
   } else {
     null
@@ -135,8 +135,8 @@ internal fun HedvigDecorationBox(
       size = size,
       innerTextField = innerTextField,
       label = decoratedLabel,
-      leadingIcon = decoratedLeadingIcon,
-      trailingIcon = decoratedTrailingIcon,
+      leadingContent = decoratedLeadingContent,
+      trailingContent = decoratedTrailingContent,
     ) { modifier, containerContent ->
       ContainerBox(
         value = value,
@@ -185,8 +185,8 @@ private fun AnimatedTextFieldContent(
   size: HedvigTextFieldSize,
   innerTextField: @Composable () -> Unit,
   label: @Composable ((InputPhase) -> Unit)?,
-  leadingIcon: @Composable (() -> Unit)?,
-  trailingIcon: @Composable (() -> Unit)?,
+  leadingContent: @Composable (() -> Unit)?,
+  trailingContent: @Composable (() -> Unit)?,
   container: @Composable (Modifier, @Composable BoxScope.() -> Unit) -> Unit,
 ) {
   SharedTransitionLayout {
@@ -221,34 +221,34 @@ private fun AnimatedTextFieldContent(
         null
       }
 
-      val sharedLeadingIcon: (@Composable () -> Unit)? = if (leadingIcon != null) {
+      val sharedLeadingContent: (@Composable () -> Unit)? = if (leadingContent != null) {
         @Composable {
           Box(
             Modifier.sharedElement(
-              state = rememberSharedContentState(LeadingIconId),
+              state = rememberSharedContentState(LeadingContentId),
               animatedVisibilityScope = this,
               boundsTransform = BoundsTransform { _, _ -> LabelTransitionAnimationSpec },
               renderInOverlayDuringTransition = false,
             ),
           ) {
-            leadingIcon()
+            leadingContent()
           }
         }
       } else {
         null
       }
 
-      val sharedTrailingIcon: (@Composable () -> Unit)? = if (trailingIcon != null) {
+      val sharedTrailingContent: (@Composable () -> Unit)? = if (trailingContent != null) {
         @Composable {
           Box(
             Modifier.sharedElement(
-              state = rememberSharedContentState(TrailingIconId),
+              state = rememberSharedContentState(TrailingContentId),
               animatedVisibilityScope = this,
               boundsTransform = BoundsTransform { _, _ -> LabelTransitionAnimationSpec },
               renderInOverlayDuringTransition = false,
             ),
           ) {
-            trailingIcon()
+            trailingContent()
           }
         }
       } else {
@@ -287,21 +287,21 @@ private fun AnimatedTextFieldContent(
               }
             }
           },
-          leading = if (sharedLeadingIcon != null) {
+          leading = if (sharedLeadingContent != null) {
             {
               Row {
-                sharedLeadingIcon.invoke()
-                Spacer(Modifier.width(configuration.iconToTextPadding))
+                sharedLeadingContent.invoke()
+                Spacer(Modifier.width(configuration.textFieldToOtherContentHorizontalPadding))
               }
             }
           } else {
             null
           },
-          trailing = if (sharedTrailingIcon != null) {
+          trailing = if (sharedTrailingContent != null) {
             {
               Row {
-                Spacer(Modifier.width(configuration.iconToTextPadding))
-                sharedTrailingIcon.invoke()
+                Spacer(Modifier.width(configuration.textFieldToOtherContentHorizontalPadding))
+                sharedTrailingContent.invoke()
               }
             }
           } else {
@@ -388,6 +388,15 @@ internal enum class InputPhase {
     get() = this == UnfocusedEmpty
 }
 
+private const val InnerTextFieldId = "InnerTextField"
+private const val LabelId = "Label"
+private const val LeadingContentId = "LeadingContent"
+private const val TrailingContentId = "TrailingContent"
+private const val ContainerId = "Container"
+
+private const val TextFieldLabelAnimationDuration = 150
+private val LabelTransitionAnimationSpec: FiniteAnimationSpec<Rect> = tween<Rect>(TextFieldLabelAnimationDuration)
+
 @Preview
 @Composable
 private fun PreviewHedvigDecorationBox(
@@ -404,8 +413,8 @@ private fun PreviewHedvigDecorationBox(
         innerTextField = { BasicTextField(value = value, onValueChange = {}) },
         visualTransformation = VisualTransformation.None,
         label = { HedvigText(text = "Label") },
-        leadingIcon = { Icon(HedvigIcons.Image, null) },
-        trailingIcon = { Icon(HedvigIcons.Image, null) },
+        leadingContent = { Icon(HedvigIcons.Image, null) },
+        trailingContent = { Icon(HedvigIcons.Image, null) },
         interactionSource = remember {
           if (previewTextFieldInputState.isFocused) {
             object : MutableInteractionSource {
@@ -445,12 +454,3 @@ private enum class PreviewTextFieldInputState {
   val isEmpty: Boolean
     get() = this == PreviewTextFieldInputState.FocusedEmpty || this == PreviewTextFieldInputState.UnfocusedEmpty
 }
-
-private const val InnerTextFieldId = "InnerTextField"
-private const val LabelId = "Label"
-private const val LeadingIconId = "LeadingIcon"
-private const val TrailingIconId = "TrailingIcon"
-private const val ContainerId = "Container"
-
-private const val TextFieldLabelAnimationDuration = 150
-private val LabelTransitionAnimationSpec: FiniteAnimationSpec<Rect> = tween<Rect>(TextFieldLabelAnimationDuration)

@@ -51,7 +51,7 @@ fun HedvigTextField(
   labelText: String,
   textFieldSize: HedvigTextFieldDefaults.TextFieldSize,
   modifier: Modifier = Modifier,
-  leadingIcon: @Composable (() -> Unit)? = null,
+  leadingContent: @Composable (() -> Unit)? = null,
   errorState: HedvigTextFieldDefaults.ErrorState = HedvigTextFieldDefaults.ErrorState.NoError,
   enabled: Boolean = true,
   readOnly: Boolean = false,
@@ -69,7 +69,7 @@ fun HedvigTextField(
   val configuration = HedvigTextFieldDefaults.configuration()
   val size = textFieldSize.size
   val colors = HedvigTextFieldDefaults.colors()
-  val trailingIconColor by colors.trailingIconColor(
+  val trailingIconColor by colors.trailingContentColor(
     readOnly = readOnly,
     enabled = enabled,
     isError = errorState is HedvigTextFieldDefaults.ErrorState.Error,
@@ -84,8 +84,8 @@ fun HedvigTextField(
     enabled = enabled,
     readOnly = readOnly,
     label = { HedvigText(text = labelText) },
-    leadingIcon = leadingIcon,
-    trailingIcon = when {
+    leadingContent = leadingContent,
+    trailingContent = when {
       errorState.isError -> {
         { ErrorTrailingIcon(trailingIconColor) }
       }
@@ -189,14 +189,14 @@ internal fun HedvigTextFieldDefaults.configuration(
   focusedBorderWidth: Dp = TextFieldTokens.FocusedBorderWidth,
   errorBorderWidth: Dp = TextFieldTokens.ErrorBorderWidth,
   supportingTextStyle: TextStyle = TextFieldTokens.SupportingTextStyle.value,
-  iconToTextPadding: Dp = TextFieldTokens.IconToTextPadding,
+  textFieldToOtherContentHorizontalPadding: Dp = TextFieldTokens.TextFieldToOtherContentHorizontalPadding,
 ): HedvigTextFieldConfiguration = HedvigTextFieldConfiguration(
   shape = shape,
   borderWidth = borderWidth,
   focusedBorderWidth = focusedBorderWidth,
   errorBorderWidth = errorBorderWidth,
   supportingTextStyle = supportingTextStyle,
-  iconToTextPadding = iconToTextPadding,
+  textFieldToOtherContentHorizontalPadding = textFieldToOtherContentHorizontalPadding,
 )
 
 @Immutable
@@ -206,7 +206,7 @@ internal data class HedvigTextFieldConfiguration(
   val focusedBorderWidth: Dp,
   val errorBorderWidth: Dp,
   val supportingTextStyle: TextStyle,
-  val iconToTextPadding: Dp,
+  val textFieldToOtherContentHorizontalPadding: Dp,
 )
 
 @Immutable
@@ -229,7 +229,7 @@ internal data class HedvigTextFieldColors internal constructor(
   private val textSelectionColors: TextSelectionColors,
 ) {
   @Composable
-  internal fun trailingIconColor(readOnly: Boolean, enabled: Boolean, isError: Boolean): State<Color> {
+  internal fun trailingContentColor(readOnly: Boolean, enabled: Boolean, isError: Boolean): State<Color> {
     return rememberUpdatedState(
       when {
         isError -> warningIconColor
@@ -413,8 +413,8 @@ private fun HedvigTextField(
   enabled: Boolean = true,
   readOnly: Boolean = false,
   label: @Composable (() -> Unit)? = null,
-  leadingIcon: @Composable (() -> Unit)? = null,
-  trailingIcon: @Composable (() -> Unit)? = null,
+  leadingContent: @Composable (() -> Unit)? = null,
+  trailingContent: @Composable (() -> Unit)? = null,
   supportingText: @Composable (() -> Unit)? = null,
   isError: Boolean = false,
   visualTransformation: VisualTransformation = VisualTransformation.None,
@@ -452,8 +452,8 @@ private fun HedvigTextField(
           visualTransformation = visualTransformation,
           innerTextField = innerTextField,
           label = label,
-          leadingIcon = leadingIcon,
-          trailingIcon = trailingIcon,
+          leadingContent = leadingContent,
+          trailingContent = trailingContent,
           supportingText = supportingText,
           enabled = enabled,
           isError = isError,
@@ -478,8 +478,8 @@ private fun HedvigTextFieldDecorationBox(
   isError: Boolean = false,
   readOnly: Boolean = false,
   label: @Composable (() -> Unit)? = null,
-  leadingIcon: @Composable (() -> Unit)? = null,
-  trailingIcon: @Composable (() -> Unit)? = null,
+  leadingContent: @Composable (() -> Unit)? = null,
+  trailingContent: @Composable (() -> Unit)? = null,
   supportingText: @Composable (() -> Unit)? = null,
 ) {
   HedvigDecorationBox(
@@ -490,8 +490,8 @@ private fun HedvigTextFieldDecorationBox(
     innerTextField = innerTextField,
     visualTransformation = visualTransformation,
     label = label,
-    leadingIcon = leadingIcon,
-    trailingIcon = trailingIcon,
+    leadingContent = leadingContent,
+    trailingContent = trailingContent,
     supportingText = supportingText,
     enabled = enabled,
     isError = isError,

@@ -8,7 +8,7 @@ import com.hedvig.android.design.system.hedvig.LocalContentColor
 import com.hedvig.android.design.system.hedvig.ProvideTextStyle
 
 /**
- * Set content color, typography and emphasis for [content] composable
+ * Set content color and typography for [content] composable
  */
 @Composable
 internal fun Decoration(contentColor: Color, typography: TextStyle? = null, content: @Composable () -> Unit) {
