@@ -50,6 +50,7 @@ dependencies {
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
   implementation(projects.notificationBadgeDataPublic)
+  implementation(projects.placeholder)
   implementation(projects.pullrefresh)
 
   testImplementation(libs.assertK)
@@ -64,7 +65,6 @@ dependencies {
   testImplementation(projects.loggingTest)
   testImplementation(projects.moleculeTest)
   testImplementation(projects.notificationBadgeDataFake)
-  implementation(projects.placeholder)
 }
 
 apollo {

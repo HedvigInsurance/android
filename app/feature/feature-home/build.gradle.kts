@@ -16,6 +16,7 @@ android {
 dependencies {
   apolloMetadata(projects.apolloOctopusPublic)
 
+  implementation(libs.accompanist.pagerIndicators)
   implementation(libs.accompanist.permissions)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material3)
@@ -36,8 +37,8 @@ dependencies {
   implementation(libs.moneta)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
-  implementation(projects.audioPlayerUi)
   implementation(projects.audioPlayerData)
+  implementation(projects.audioPlayerUi)
   implementation(projects.claimStatus)
   implementation(projects.composeUi)
   implementation(projects.coreCommonAndroidPublic)
@@ -62,7 +63,6 @@ dependencies {
   implementation(projects.notificationPermission)
   implementation(projects.pullrefresh)
   implementation(projects.uiEmergency)
-  implementation(libs.accompanist.pagerIndicators)
 
   testImplementation(libs.apollo.testingSupport)
   testImplementation(libs.assertK)

@@ -9,6 +9,8 @@ plugins {
 }
 
 dependencies {
+  apolloMetadata(projects.apolloOctopusPublic)
+
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.apollo.normalizedCache)
@@ -38,9 +40,6 @@ dependencies {
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
   implementation(projects.pullrefresh)
-  apolloMetadata(projects.apolloOctopusPublic)
-  implementation(projects.apolloOctopusPublic)
-  implementation(projects.apolloCore)
 }
 
 apollo {

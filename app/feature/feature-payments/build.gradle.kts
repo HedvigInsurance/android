@@ -50,6 +50,7 @@ dependencies {
   implementation(projects.dataPayingMember)
   implementation(projects.dataSettingsDatastorePublic)
   implementation(projects.featureFlagsPublic)
+  implementation(projects.foreverUi)
   implementation(projects.languageCore)
   implementation(projects.languageData)
   implementation(projects.marketCore)
@@ -63,7 +64,6 @@ dependencies {
   implementation(projects.placeholder)
   implementation(projects.pullrefresh)
   implementation(projects.theme)
-  implementation(projects.foreverUi)
 
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)

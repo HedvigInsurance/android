@@ -37,14 +37,14 @@ dependencies {
   implementation(projects.coreResources)
   implementation(projects.coreUi)
   implementation(projects.dataContractPublic)
+  implementation(projects.dataTermination)
   implementation(projects.featureFlagsPublic)
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
+  implementation(projects.placeholder)
   implementation(projects.uiEmergency)
-  implementation(project(":placeholder"))
-  implementation(projects.dataTermination)
 }
 
 apollo {
