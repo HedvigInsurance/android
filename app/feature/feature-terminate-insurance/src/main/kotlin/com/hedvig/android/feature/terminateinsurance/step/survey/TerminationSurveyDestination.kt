@@ -25,6 +25,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -169,9 +170,11 @@ private fun TerminationSurveyScreen(
         Spacer(modifier = (Modifier.height(4.dp)))
         if (reason.surveyOption == uiState.selectedOption) {
           val suggestion = reason.surveyOption.suggestion
-          if (suggestion!=null) {
+          if (suggestion != null) {
             val text = when (suggestion) {
-              SurveyOptionSuggestion.Action.UPDATE_ADDRESS -> stringResource(id = R.string.TERMINATION_SURVEY_MOVING_SUGGESTION)
+              SurveyOptionSuggestion.Action.UPDATE_ADDRESS -> stringResource(
+                id = R.string.TERMINATION_SURVEY_MOVING_SUGGESTION,
+              )
               is SurveyOptionSuggestion.Redirect -> suggestion.description
             }
             VectorInfoCard(
@@ -183,7 +186,8 @@ private fun TerminationSurveyScreen(
               iconColor = MaterialTheme.colorScheme.typeElement,
               colors = CardDefaults.outlinedCardColors(
                 containerColor = MaterialTheme.colorScheme.typeContainer,
-                contentColor = MaterialTheme.colorScheme.onTypeContainer)
+                contentColor = MaterialTheme.colorScheme.onTypeContainer,
+              ),
             ) {
               Row(
                 horizontalArrangement = Arrangement.Center,
@@ -199,11 +203,62 @@ private fun TerminationSurveyScreen(
             Spacer(modifier = (Modifier.height(4.dp)))
           }
           if (reason.surveyOption.feedBackRequired) {
-            //todo
+            // todo: animated textField
+            val feedback = reason.feedBack
+            HedvigCard(
+              onClick = {
+                // todo: open animated textField instead of this
+//                if (reason.feedBack.length<=140) {
+//                  changeFeedbackForReason(reason.surveyOption, value)
+//                }
+              },
+              colors = CardDefaults.outlinedCardColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+              ),
+              modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(100.dp)
+                .padding(horizontal = 16.dp),
+            ) {
+              Column {
+                Row(
+                  verticalAlignment = Alignment.Top,
+                  modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, top = 10.dp, end = 16.dp),
+                ) {
+                  Text(
+                    text = feedback ?: stringResource(id = R.string.TERMINATION_SURVEY_FEEDBACK_HINT),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = if (feedback != null) {
+                      MaterialTheme.typography.bodyLarge.color
+                    } else {
+                      Color.Unspecified
+                    },
+                    // todo: color for placeholder!
+                    modifier = Modifier.weight(1f),
+                  )
+                }
+                Spacer(modifier = Modifier.weight(1f))
+                Row(
+                  horizontalArrangement = Arrangement.End,
+                  modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp, vertical = 4.dp),
+                ) {
+                  val length = feedback?.length ?: 0
+                  Text(
+                    text = "$length/140",
+                    style = MaterialTheme.typography.titleSmall,
+                    color = Color.Unspecified,
+                    // todo: color for placeholder!
+                  )
+                }
+              }
+            }
             Spacer(modifier = (Modifier.height(4.dp)))
           }
         }
-
       }
     }
     Spacer(Modifier.height(12.dp))
@@ -328,7 +383,7 @@ private val previewReason2 = TerminationReason(
     suggestion = null,
     feedBackRequired = true,
   ),
-  null,
+  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla nec nisi eget mi luctus suscipit. Donec at vestibulum turpis.",
 )
 
 private val previewReason2filled = TerminationReason(
