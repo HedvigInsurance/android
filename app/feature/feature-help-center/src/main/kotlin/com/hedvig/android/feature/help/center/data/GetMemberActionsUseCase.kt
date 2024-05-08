@@ -83,7 +83,8 @@ data class FirstVetSection(
   val url: String?,
 )
 
-private fun MemberActionsQuery.Data.CurrentMember.MemberActions.FirstVetAction.toVetAction(): MemberActionWithDetails.FirstVetAction {
+private fun MemberActionsQuery.Data.CurrentMember.MemberActions.FirstVetAction.toVetAction():
+  MemberActionWithDetails.FirstVetAction {
   val sections = this.sections.map {
     FirstVetSection(
       buttonTitle = it.buttonTitle,
@@ -97,7 +98,8 @@ private fun MemberActionsQuery.Data.CurrentMember.MemberActions.FirstVetAction.t
   )
 }
 
-private fun MemberActionsQuery.Data.CurrentMember.MemberActions.SickAbroadAction?.toSickAbroadAction(): MemberActionWithDetails.SickAbroadAction {
+private fun MemberActionsQuery.Data.CurrentMember.MemberActions.SickAbroadAction?.toSickAbroadAction():
+  MemberActionWithDetails.SickAbroadAction {
   val partners = this?.partners?.map {
     DeflectPartner(
       id = it.id,

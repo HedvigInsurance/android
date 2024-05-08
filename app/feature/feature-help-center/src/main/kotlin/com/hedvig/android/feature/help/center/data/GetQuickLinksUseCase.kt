@@ -104,7 +104,8 @@ internal class GetQuickLinksUseCase(
   }
 }
 
-private fun List<AvailableSelfServiceOnContractsQuery.Data.CurrentMember.ActiveContract>.createCoInsuredQuickLink(): QuickAction? {
+private fun List<AvailableSelfServiceOnContractsQuery.Data.CurrentMember.ActiveContract>.createCoInsuredQuickLink():
+  QuickAction? {
   if (this.size > 1) {
     val links = this.map { contract ->
       if (contract.coInsured?.any { it.hasMissingInfo } == true) {

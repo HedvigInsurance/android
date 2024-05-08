@@ -34,9 +34,11 @@ internal class GetMemberRemindersUseCaseImpl(
           getConnectPaymentReminderUseCase.invoke().getOrNull()?.let { paymentReminder ->
             when (paymentReminder) {
               PaymentReminder.ShowConnectPaymentReminder -> MemberReminder.PaymentReminder.ConnectPayment()
-              is PaymentReminder.ShowMissingPaymentsReminder -> MemberReminder.PaymentReminder.TerminationDueToMissedPayments(
-                terminationDate = paymentReminder.terminationDate,
-              )
+              is PaymentReminder.ShowMissingPaymentsReminder -> {
+                MemberReminder.PaymentReminder.TerminationDueToMissedPayments(
+                  terminationDate = paymentReminder.terminationDate,
+                )
+              }
             }
           },
         )
