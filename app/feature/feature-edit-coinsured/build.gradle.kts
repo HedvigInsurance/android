@@ -32,6 +32,7 @@ dependencies {
   implementation(projects.apolloCore)
   implementation(projects.apolloNetworkCacheManager)
   implementation(projects.apolloOctopusPublic)
+  implementation(projects.coreAppReview)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDemoMode)
   implementation(projects.coreDesignSystem)
@@ -43,7 +44,6 @@ dependencies {
   implementation(projects.moleculePublic)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
-  implementation(projects.coreAppReview)
 
   testImplementation(libs.apollo.testingSupport)
   testImplementation(libs.assertK)

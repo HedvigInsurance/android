@@ -31,6 +31,8 @@ internal sealed interface TerminateInsuranceStep {
    * screen
    */
   data class UnknownStep(val message: String? = "") : TerminateInsuranceStep
+
+  //todo: add TerminateInsuranceStep.Survey(val options: List<TerminationSurveyOption>)
 }
 
 internal fun TerminationFlowStepFragment.CurrentStep.toTerminateInsuranceStep(): TerminateInsuranceStep {
@@ -90,5 +92,7 @@ internal fun TerminateInsuranceStep.toTerminateInsuranceDestination(
     }
 
     is TerminateInsuranceStep.UnknownStep -> TerminateInsuranceDestination.UnknownScreen
+
+    //todo: add TerminateInsuranceStep.Survey
   }
 }

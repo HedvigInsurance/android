@@ -3,15 +3,18 @@ package com.hedvig.android.feature.terminateinsurance.step.survey
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -31,10 +34,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.material3.borderSecondary
+import com.hedvig.android.core.designsystem.material3.onTypeContainer
+import com.hedvig.android.core.designsystem.material3.typeContainer
 import com.hedvig.android.core.designsystem.material3.typeElement
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.hedvig.small.hedvig.Campaign
 import com.hedvig.android.core.ui.SelectIndicationCircle
+import com.hedvig.android.core.ui.infocard.InfoCardTextButton
+import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.text.WarningTextWithIcon
 import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
@@ -47,7 +56,6 @@ import hedvig.resources.R
 internal fun TerminationSurveyDestination(
   viewModel: TerminationSurveyViewModel,
   navigateUp: () -> Unit,
-  openChat: () -> Unit,
   navigateToMovingFlow: () -> Unit,
   closeTerminationFlow: () -> Unit,
   navigateToNextStep: (step: TerminateInsuranceStep) -> Unit,
@@ -62,6 +70,7 @@ internal fun TerminationSurveyDestination(
           viewModel.emit(TerminationSurveyEvent.ClearNextStep)
           navigateToNextStep(nextStep.step)
         }
+
         SurveyNavigationStep.NavigateToSubOptions -> {
           viewModel.emit(TerminationSurveyEvent.ClearNextStep)
           uiState.selectedOption?.let {
@@ -74,7 +83,6 @@ internal fun TerminationSurveyDestination(
   TerminationSurveyScreen(
     uiState = uiState,
     navigateUp = navigateUp,
-    openChat = openChat,
     navigateToMovingFlow = navigateToMovingFlow,
     closeTerminationFlow = closeTerminationFlow,
     onContinueClick = { viewModel.emit(TerminationSurveyEvent.Continue) },
@@ -92,7 +100,6 @@ private fun TerminationSurveyScreen(
   uiState: TerminationSurveyState,
   selectOption: (TerminationSurveyOption) -> Unit,
   navigateUp: () -> Unit,
-  openChat: () -> Unit,
   navigateToMovingFlow: () -> Unit,
   closeTerminationFlow: () -> Unit,
   changeFeedbackForReason: (option: TerminationSurveyOption, feedback: String) -> Unit,
@@ -129,36 +136,75 @@ private fun TerminationSurveyScreen(
       }
     }
     for (reason in uiState.reasons) {
-      HedvigCard(
-        onClick = { selectOption(reason.surveyOption) },
-        colors = CardDefaults.outlinedCardColors(
-          containerColor = MaterialTheme.colorScheme.surface,
-        ),
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
-      ) {
-        Row(
-          verticalAlignment = Alignment.CenterVertically,
+      Column {
+        HedvigCard(
+          onClick = { selectOption(reason.surveyOption) },
+          colors = CardDefaults.outlinedCardColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+          ),
           modifier = Modifier
-            .heightIn(64.dp)
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 10.dp),
+            .padding(horizontal = 16.dp),
         ) {
-          Text(
-            text = reason.surveyOption.title,
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.weight(1f),
-          )
-          Spacer(Modifier.width(8.dp))
-          SelectIndicationCircle(
-            uiState.selectedOption == reason.surveyOption,
-            selectedIndicationColor = MaterialTheme.colorScheme.typeElement,
-            unselectedCircleColor = MaterialTheme.colorScheme.borderSecondary,
-          )
+          Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+              .heightIn(64.dp)
+              .fillMaxWidth()
+              .padding(horizontal = 16.dp, vertical = 10.dp),
+          ) {
+            Text(
+              text = reason.surveyOption.title,
+              style = MaterialTheme.typography.bodyLarge,
+              modifier = Modifier.weight(1f),
+            )
+            Spacer(Modifier.width(8.dp))
+            SelectIndicationCircle(
+              uiState.selectedOption == reason.surveyOption,
+              selectedIndicationColor = MaterialTheme.colorScheme.typeElement,
+              unselectedCircleColor = MaterialTheme.colorScheme.borderSecondary,
+            )
+          }
         }
+        Spacer(modifier = (Modifier.height(4.dp)))
+        if (reason.surveyOption == uiState.selectedOption) {
+          val suggestion = reason.surveyOption.suggestion
+          if (suggestion!=null) {
+            val text = when (suggestion) {
+              SurveyOptionSuggestion.Action.UPDATE_ADDRESS -> stringResource(id = R.string.TERMINATION_SURVEY_MOVING_SUGGESTION)
+              is SurveyOptionSuggestion.Redirect -> suggestion.description
+            }
+            VectorInfoCard(
+              text = text,
+              icon = Icons.Hedvig.Campaign,
+              modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+              iconColor = MaterialTheme.colorScheme.typeElement,
+              colors = CardDefaults.outlinedCardColors(
+                containerColor = MaterialTheme.colorScheme.typeContainer,
+                contentColor = MaterialTheme.colorScheme.onTypeContainer)
+            ) {
+              Row(
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxSize(),
+              ) {
+                InfoCardTextButton(
+                  text = stringResource(R.string.TERMINATION_SURVEY_MOVING_BUTTON),
+                  onClick = navigateToMovingFlow,
+                  modifier = Modifier.weight(1f),
+                )
+              }
+            }
+            Spacer(modifier = (Modifier.height(4.dp)))
+          }
+          if (reason.surveyOption.feedBackRequired) {
+            //todo
+            Spacer(modifier = (Modifier.height(4.dp)))
+          }
+        }
+
       }
-      Spacer(modifier = (Modifier.height(4.dp)))
     }
     Spacer(Modifier.height(12.dp))
     HedvigContainedButton(
@@ -186,15 +232,14 @@ private fun ShowSurveyScreenPreview(
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       TerminationSurveyScreen(
-        uiState,
-        {},
-        {},
-        {},
-        {},
-        {},
-        { option, String ->
+        uiState = uiState,
+        selectOption = {},
+        navigateUp = {},
+        navigateToMovingFlow = {},
+        closeTerminationFlow = {},
+        changeFeedbackForReason = { option, String ->
         },
-        {},
+        onContinueClick = {},
       )
     }
   }
@@ -207,7 +252,7 @@ private class ShowSurveyUiStateProvider :
         nextNavigationStep = null,
         isNavigationStepLoading = false,
         feedbackEmptyWarning = false,
-        selectedOption = previewReason2.surveyOption,
+        selectedOption = previewReason1.surveyOption,
         reasons = listOf(previewReason1, previewReason2, previewReason3),
       ),
       TerminationSurveyState(
@@ -222,6 +267,13 @@ private class ShowSurveyUiStateProvider :
 //          isNavigationStepLoading = true,
 //          feedbackEmptyWarning = false,
 //          selectedOption = previewReason2.surveyOption,
+//          reasons = listOf(previewReason1, previewReason2filled, previewReason3),
+//      ),
+      //      TerminationSurveyState(
+//          nextNavigationStep = null,
+//          isNavigationStepLoading = false,
+//          feedbackEmptyWarning = false,
+//          selectedOption = null,
 //          reasons = listOf(previewReason1, previewReason2filled, previewReason3),
 //      ),
       TerminationSurveyState(

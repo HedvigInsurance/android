@@ -121,7 +121,6 @@ fun NavGraphBuilder.terminateInsuranceGraph(
         viewModel,
         navigateUp = navigator::navigateUp,
         closeTerminationFlow = closeTerminationFlow,
-        openChat = { openChat(backStackEntry) },
         navigateToSubOptions = { subOptions ->
           TODO()
         },
@@ -142,7 +141,6 @@ fun NavGraphBuilder.terminateInsuranceGraph(
         viewModel,
         navigateUp = navigator::navigateUp,
         closeTerminationFlow = closeTerminationFlow,
-        openChat = { openChat(backStackEntry) },
         navigateToSubOptions = null,
         navigateToNextStep = { step ->
           TODO()

@@ -16,7 +16,6 @@ internal sealed interface SurveyOptionSuggestion {
   @Serializable
   enum class Action : SurveyOptionSuggestion {
     UPDATE_ADDRESS,
-    MESSAGE,
   }
 
   @Serializable
