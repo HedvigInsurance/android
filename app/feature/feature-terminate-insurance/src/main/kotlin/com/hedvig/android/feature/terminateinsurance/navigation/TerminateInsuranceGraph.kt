@@ -96,7 +96,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
         closeTerminationFlow = closeTerminationFlow,
         navigateToNextStep = { step, insuranceForCancellation: TerminatableInsurance ->
           navigator.navigateToTerminateFlowDestination(
-            //todo: need refactoring, dragging too many parameters around
+            // todo: need refactoring, dragging too many parameters around
             destination = step.toTerminateInsuranceDestination(
               insuranceForCancellation.displayName,
               insuranceForCancellation.contractExposure,
@@ -113,7 +113,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       )
     }
 
-    composable<TerminateInsuranceDestination.TerminationSurveyFirstStep> {backStackEntry ->
+    composable<TerminateInsuranceDestination.TerminationSurveyFirstStep> { backStackEntry ->
       val viewModel: TerminationSurveyViewModel = koinViewModel {
         parametersOf(options)
       }
@@ -122,19 +122,19 @@ fun NavGraphBuilder.terminateInsuranceGraph(
         navigateUp = navigator::navigateUp,
         closeTerminationFlow = closeTerminationFlow,
         openChat = { openChat(backStackEntry) },
-        navigateToSubOptions = {   subOptions ->
+        navigateToSubOptions = { subOptions ->
           // todo
         },
         navigateToNextStep = { step ->
           // todo
         },
         navigateToMovingFlow = {
-          //todo
-        }
+          // todo
+        },
       )
     }
 
-    composable<TerminateInsuranceDestination.TerminationSurveySecondStep> {backStackEntry ->
+    composable<TerminateInsuranceDestination.TerminationSurveySecondStep> { backStackEntry ->
       val viewModel: TerminationSurveyViewModel = koinViewModel {
         parametersOf(subOptions)
       }
@@ -148,8 +148,8 @@ fun NavGraphBuilder.terminateInsuranceGraph(
           // todo
         },
         navigateToMovingFlow = {
-          //todo
-        }
+          // todo
+        },
       )
     }
 

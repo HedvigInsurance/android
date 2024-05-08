@@ -49,9 +49,7 @@ internal class TerminateInsuranceRepository(
     }
   }
 
-  suspend fun submitReasonForCancelling(
-    reason: TerminationReason
-  ): Either<ErrorMessage, TerminateInsuranceStep> {
+  suspend fun submitReasonForCancelling(reason: TerminationReason): Either<ErrorMessage, TerminateInsuranceStep> {
     return either {
       TODO()
     }
