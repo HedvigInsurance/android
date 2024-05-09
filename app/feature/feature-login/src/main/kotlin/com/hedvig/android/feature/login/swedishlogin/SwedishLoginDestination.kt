@@ -67,14 +67,16 @@ internal fun SwedishLoginDestination(
   startLoggedInActivity: () -> Unit,
 ) {
   val uiState by swedishLoginViewModel.uiState.collectAsStateWithLifecycle()
+  val navigateToLoginScreen = uiState.navigateToLoginScreen
+  LaunchedEffect(navigateToLoginScreen) {
+    if (!navigateToLoginScreen) return@LaunchedEffect
+    swedishLoginViewModel.emit(SwedishLoginEvent.DidNavigateToLoginScreen)
+    startLoggedInActivity()
+  }
   SwedishLoginScreen(
     uiState = uiState,
     navigateUp = navigateUp,
     loginWithEmail = navigateToEmailLogin,
-    startLoggedInActivity = {
-      swedishLoginViewModel.emit(SwedishLoginEvent.DidNavigateToLoginScreen)
-      startLoggedInActivity()
-    },
     enterDemoMode = { swedishLoginViewModel.emit(SwedishLoginEvent.StartDemoMode) },
     didOpenBankId = { swedishLoginViewModel.emit(SwedishLoginEvent.DidOpenBankIDApp) },
     retry = { swedishLoginViewModel.emit(SwedishLoginEvent.Retry) },
@@ -86,7 +88,6 @@ private fun SwedishLoginScreen(
   uiState: SwedishLoginUiState,
   navigateUp: () -> Unit,
   loginWithEmail: () -> Unit,
-  startLoggedInActivity: () -> Unit,
   enterDemoMode: () -> Unit,
   didOpenBankId: () -> Unit,
   retry: () -> Unit,
@@ -116,7 +117,7 @@ private fun SwedishLoginScreen(
       }
     }
     when (uiState) {
-      is SwedishLoginUiState.StartLoginAttemptFailed -> {
+      SwedishLoginUiState.StartLoginAttemptFailed -> {
         Box(
           contentAlignment = Alignment.Center,
           modifier = Modifier.weight(1f).fillMaxWidth(),
@@ -145,17 +146,11 @@ private fun SwedishLoginScreen(
         }
       }
 
-      SwedishLoginUiState.Loading -> {
+      is SwedishLoginUiState.Loading -> {
         HedvigFullScreenCenterAlignedProgress(Modifier.weight(1f).fillMaxWidth())
       }
 
       is SwedishLoginUiState.HandlingBankId -> {
-        val navigateToLoginScreen = uiState.navigateToLoginScreen
-        LaunchedEffect(navigateToLoginScreen) {
-          if (!navigateToLoginScreen) return@LaunchedEffect
-          startLoggedInActivity()
-        }
-
         val bankIdState = rememberBankIdState(uiState.autoStartToken)
         val allowOpeningBankId = uiState.allowOpeningBankId
         LaunchedEffect(allowOpeningBankId) {
@@ -205,11 +200,6 @@ private fun SwedishLoginScreen(
       }
 
       is SwedishLoginUiState.LoggedIn -> {
-        val navigateToLoginScreen = uiState.navigateToLoginScreen
-        LaunchedEffect(navigateToLoginScreen) {
-          if (!navigateToLoginScreen) return@LaunchedEffect
-          startLoggedInActivity()
-        }
         HedvigFullScreenCenterAlignedProgress(Modifier.weight(1f))
       }
     }

@@ -7,9 +7,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.Snapshot
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
+import androidx.lifecycle.viewmodel.compose.saveable
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.logger.LogPriority
@@ -22,24 +27,38 @@ import com.hedvig.authlib.AuthTokenResult
 import com.hedvig.authlib.LoginMethod
 import com.hedvig.authlib.LoginStatusResult
 import com.hedvig.authlib.OtpMarket
+import com.hedvig.authlib.StatusUrl
 import kotlinx.coroutines.launch
 
+@OptIn(SavedStateHandleSaveableApi::class)
 internal class SwedishLoginPresenter(
   private val authTokenService: AuthTokenService,
   private val authRepository: AuthRepository,
   private val demoManager: DemoManager,
+  private val savedStateHandle: SavedStateHandle,
 ) : MoleculePresenter<SwedishLoginEvent, SwedishLoginUiState> {
   @Composable
   override fun MoleculePresenterScope<SwedishLoginEvent>.present(lastState: SwedishLoginUiState): SwedishLoginUiState {
     var startLoginAttemptFailed: Boolean by remember { mutableStateOf(false) }
-    var bankIdProperties: AuthAttemptResult.BankIdProperties? by remember { mutableStateOf(null) }
+    var bankIdProperties: AuthAttemptResult.BankIdProperties? by remember(savedStateHandle) {
+      savedStateHandle.saveable(
+        key = BankIdPropertiesSaver.toString(),
+        stateSaver = BankIdPropertiesSaver,
+      ) {
+        mutableStateOf(null)
+      }
+    }
     var navigateToLoginScreen: Boolean by remember { mutableStateOf(false) }
     var retryIndex: Int by remember { mutableIntStateOf(0) }
 
     // Allow BankID the first time, and never again. This is so that users can fail the first attempt of logging in
     // with BankID, and then they should be able to login with the QR code directly, without being forced into BankID
     // again.
-    var allowOpeningBankId: Boolean by remember { mutableStateOf(true) }
+    var allowOpeningBankId: Boolean by remember(savedStateHandle) {
+      savedStateHandle.saveable("allowOpeningBankId") {
+        mutableStateOf(true)
+      }
+    }
     var loginStatusResult: LoginStatusResult? by remember { mutableStateOf(null) }
 
     LaunchedEffect(retryIndex) {
@@ -49,6 +68,7 @@ internal class SwedishLoginPresenter(
           return@collect
         }
         authRepository.observeLoginStatus(bankIdProperties.statusUrl).collect { latestLoginStatusResult ->
+          logcat { "Stelios:observed latestLoginStatusResult:$latestLoginStatusResult" }
           if (latestLoginStatusResult is LoginStatusResult.Completed) {
             when (val authTokenResult = authRepository.exchange(latestLoginStatusResult.authorizationCode)) {
               is AuthTokenResult.Error -> {
@@ -83,6 +103,9 @@ internal class SwedishLoginPresenter(
     }
 
     LaunchedEffect(retryIndex) {
+      if (bankIdProperties != null) {
+        return@LaunchedEffect
+      }
       val result = authRepository.startLoginAttempt(LoginMethod.SE_BANKID, OtpMarket.SE)
       when (result) {
         is AuthAttemptResult.BankIdProperties -> bankIdProperties = result
@@ -123,13 +146,13 @@ internal class SwedishLoginPresenter(
     }
     val bankIdPropertiesValue = bankIdProperties
     if (bankIdPropertiesValue == null) {
-      return SwedishLoginUiState.Loading
+      return SwedishLoginUiState.Loading(navigateToLoginScreen)
     }
     val loginStatusResultValue = loginStatusResult
     return when (loginStatusResultValue) {
-      null -> SwedishLoginUiState.Loading
-      is LoginStatusResult.Failed -> SwedishLoginUiState.BankIdError(loginStatusResultValue.localisedMessage)
-      is LoginStatusResult.Exception -> SwedishLoginUiState.BankIdError(loginStatusResultValue.message)
+      null -> SwedishLoginUiState.Loading(navigateToLoginScreen)
+      is LoginStatusResult.Failed -> SwedishLoginUiState.BankIdError(loginStatusResultValue.localisedMessage, navigateToLoginScreen)
+      is LoginStatusResult.Exception -> SwedishLoginUiState.BankIdError(loginStatusResultValue.message, navigateToLoginScreen)
       is LoginStatusResult.Completed -> SwedishLoginUiState.LoggedIn(navigateToLoginScreen)
       is LoginStatusResult.Pending -> {
         SwedishLoginUiState.HandlingBankId(
@@ -158,13 +181,15 @@ internal sealed interface SwedishLoginEvent {
 }
 
 internal sealed interface SwedishLoginUiState {
+  val navigateToLoginScreen: Boolean
+
   data class HandlingBankId(
     val statusMessage: String,
     val autoStartToken: AutoStartToken,
     val bankIdLiveQrCodeData: BankIdLiveQrCodeData?,
     val bankIdAppOpened: Boolean,
     val allowOpeningBankId: Boolean,
-    val navigateToLoginScreen: Boolean,
+    override val navigateToLoginScreen: Boolean,
   ) : SwedishLoginUiState {
     @JvmInline
     value class AutoStartToken(val token: String) {
@@ -177,11 +202,29 @@ internal sealed interface SwedishLoginUiState {
     value class BankIdLiveQrCodeData(val data: String)
   }
 
-  data object Loading : SwedishLoginUiState
+  data class Loading(override val navigateToLoginScreen: Boolean) : SwedishLoginUiState
 
-  data class LoggedIn(val navigateToLoginScreen: Boolean) : SwedishLoginUiState
+  data class LoggedIn(override val navigateToLoginScreen: Boolean) : SwedishLoginUiState
 
-  data class BankIdError(val message: String) : SwedishLoginUiState
+  data class BankIdError(val message: String, override val navigateToLoginScreen: Boolean) : SwedishLoginUiState
 
-  data object StartLoginAttemptFailed : SwedishLoginUiState
+  data object StartLoginAttemptFailed : SwedishLoginUiState {
+    override val navigateToLoginScreen: Boolean = false
+  }
 }
+
+private val BankIdPropertiesSaver: Saver<AuthAttemptResult.BankIdProperties?, Any> =
+  listSaver<AuthAttemptResult.BankIdProperties?, String>(
+    save = { properties ->
+      properties ?: return@listSaver emptyList()
+      listOf(properties.id, properties.statusUrl.url, properties.autoStartToken)
+    },
+    restore = { list ->
+      if (list.isEmpty()) return@listSaver null
+      AuthAttemptResult.BankIdProperties(
+        id = list[0],
+        statusUrl = StatusUrl(list[1]),
+        autoStartToken = list[2],
+      )
+    },
+  )
