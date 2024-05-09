@@ -98,8 +98,8 @@ fun InteractiveTextFieldWithAllSizes(modifier: Modifier = Modifier) {
           style = HedvigTheme.typography.bodyMedium,
           modifier = Modifier.align(Alignment.CenterHorizontally),
         )
-        var text by remember { mutableStateOf("") }
-        HedvigTextField(text, { text = it }, "Label", size, Modifier.widthIn(max = 250.dp))
+        var txt by remember { mutableStateOf("") }
+        HedvigTextField(txt, { txt = it }, "Label", size, Modifier.widthIn(max = 250.dp), { HedvigText(text = "kr") })
       }
     }
   }
@@ -236,6 +236,7 @@ private fun ShowcaseTextField(
     onValueChange = {},
     textFieldSize = size,
     labelText = "Label",
+    suffix = { HedvigText(text = "kr") },
     modifier = modifier,
     errorState = when (type) {
       ShowcaseTextFieldType.ErrorMessage -> HedvigTextFieldDefaults.ErrorState.Error.WithMessage(

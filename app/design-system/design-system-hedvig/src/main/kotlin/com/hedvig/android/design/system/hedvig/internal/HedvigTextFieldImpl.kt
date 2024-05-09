@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
@@ -69,6 +70,7 @@ internal fun HedvigDecorationBox(
   innerTextField: @Composable () -> Unit,
   visualTransformation: VisualTransformation,
   label: @Composable (() -> Unit)?,
+  suffix: @Composable (() -> Unit)? = null,
   leadingContent: @Composable (() -> Unit)? = null,
   trailingContent: @Composable (() -> Unit)? = null,
   supportingText: @Composable (() -> Unit)? = null,
@@ -93,8 +95,23 @@ internal fun HedvigDecorationBox(
     @Composable { inputPhase ->
       Decoration(
         colors.labelColor(enabled = enabled, isError = isError, value = value).value,
-        if (inputPhase == InputPhase.UnfocusedEmpty) size.textStyle else size.labelTextStyle,
+        if (inputPhase.onlyShowLabel) size.textStyle else size.labelTextStyle,
       ) { label() }
+    }
+  } else {
+    null
+  }
+  val decoratedSuffix: (@Composable (InputPhase) -> Unit)? = if (suffix != null) {
+    @Suppress("NAME_SHADOWING")
+    @Composable { inputPhase ->
+      Decoration(
+        if (inputPhase.onlyShowLabel) {
+          colors.labelColor(value, enabled, isError).value
+        } else {
+          colors.textColor(value, enabled, isError).value
+        },
+        if (inputPhase.onlyShowLabel) size.labelTextStyle else size.textStyle,
+      ) { suffix() }
     }
   } else {
     null
@@ -135,6 +152,7 @@ internal fun HedvigDecorationBox(
       size = size,
       innerTextField = innerTextField,
       label = decoratedLabel,
+      suffix = decoratedSuffix,
       leadingContent = decoratedLeadingContent,
       trailingContent = decoratedTrailingContent,
     ) { modifier, containerContent ->
@@ -185,6 +203,7 @@ private fun AnimatedTextFieldContent(
   size: HedvigTextFieldSize,
   innerTextField: @Composable () -> Unit,
   label: @Composable ((InputPhase) -> Unit)?,
+  suffix: @Composable ((InputPhase) -> Unit)?,
   leadingContent: @Composable (() -> Unit)?,
   trailingContent: @Composable (() -> Unit)?,
   container: @Composable (Modifier, @Composable BoxScope.() -> Unit) -> Unit,
@@ -215,6 +234,21 @@ private fun AnimatedTextFieldContent(
             ),
           ) {
             label(inputPhase)
+          }
+        }
+      } else {
+        null
+      }
+      val sharedSuffix: (@Composable (Modifier) -> Unit)? = if (suffix != null) {
+        @Composable { modifier ->
+          Box(
+            modifier.sharedBounds(
+              sharedContentState = rememberSharedContentState(SuffixId),
+              animatedVisibilityScope = this,
+              boundsTransform = BoundsTransform { _, _ -> LabelTransitionAnimationSpec },
+            ),
+          ) {
+            suffix(inputPhase)
           }
         }
       } else {
@@ -268,11 +302,20 @@ private fun AnimatedTextFieldContent(
             Column {
               Spacer(Modifier.height(textContentPadding.calculateTopPadding()))
               if (inputPhase.onlyShowLabel) {
-                sharedLabel?.invoke()
+                Row(Modifier.fillMaxWidth()) {
+                  sharedLabel?.invoke()
+                  sharedSuffix?.invoke(Modifier)
+                }
               } else {
                 Column(verticalArrangement = Arrangement.spacedBy(-size.labelToTextOverlap)) {
                   sharedLabel?.invoke()
-                  sharedInnerTextField(Modifier)
+                  Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                  ) {
+                    sharedInnerTextField(Modifier)
+                    sharedSuffix?.invoke(Modifier)
+                  }
                 }
               }
               Spacer(Modifier.height(textContentPadding.calculateBottomPadding()))
@@ -390,6 +433,7 @@ internal enum class InputPhase {
 
 private const val InnerTextFieldId = "InnerTextField"
 private const val LabelId = "Label"
+private const val SuffixId = "Suffix"
 private const val LeadingContentId = "LeadingContent"
 private const val TrailingContentId = "TrailingContent"
 private const val ContainerId = "Container"
