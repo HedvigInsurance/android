@@ -16,7 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -99,7 +99,7 @@ fun InteractiveTextFieldWithAllSizes(modifier: Modifier = Modifier) {
           modifier = Modifier.align(Alignment.CenterHorizontally),
         )
         var txt by remember { mutableStateOf("") }
-        HedvigTextField(txt, { txt = it }, "Label", size, Modifier.widthIn(max = 250.dp), { HedvigText(text = "kr") })
+        HedvigTextField(txt, { txt = it }, "Label", size, Modifier.width(250.dp), { HedvigText(text = "kr") })
       }
     }
   }
@@ -237,7 +237,7 @@ private fun ShowcaseTextField(
     textFieldSize = size,
     labelText = "Label",
     suffix = { HedvigText(text = "kr") },
-    modifier = modifier,
+    modifier = modifier.width(250.dp),
     errorState = when (type) {
       ShowcaseTextFieldType.ErrorMessage -> HedvigTextFieldDefaults.ErrorState.Error.WithMessage(
         "Something went wrong",

@@ -110,7 +110,7 @@ internal fun HedvigDecorationBox(
         } else {
           colors.textColor(value, enabled, isError).value
         },
-        if (inputPhase.onlyShowLabel) size.labelTextStyle else size.textStyle,
+        size.textStyle,
       ) { suffix() }
     }
   } else {
@@ -224,10 +224,10 @@ private fun AnimatedTextFieldContent(
           ),
         ) { innerTextField() }
       }
-      val sharedLabel: (@Composable () -> Unit)? = if (label != null) {
-        @Composable {
+      val sharedLabel: (@Composable (Modifier) -> Unit)? = if (label != null) {
+        @Composable { modifier ->
           Box(
-            Modifier.sharedBounds(
+            modifier.sharedBounds(
               sharedContentState = rememberSharedContentState(LabelId),
               animatedVisibilityScope = this,
               boundsTransform = BoundsTransform { _, _ -> LabelTransitionAnimationSpec },
@@ -295,65 +295,123 @@ private fun AnimatedTextFieldContent(
           boundsTransform = BoundsTransform { _, _ -> LabelTransitionAnimationSpec },
         ),
       ) {
-        RowTextFieldLayout(
-          modifier = Modifier.padding(size.horizontalPadding()),
-          textFieldAndLabel = {
-            val textContentPadding = size.textAndLabelVerticalPadding(inputPhase.onlyShowLabel)
-            Column {
-              Spacer(Modifier.height(textContentPadding.calculateTopPadding()))
-              if (inputPhase.onlyShowLabel) {
-                Row(Modifier.fillMaxWidth()) {
-                  sharedLabel?.invoke()
-                  sharedSuffix?.invoke(Modifier)
-                }
-              } else {
-                Column(verticalArrangement = Arrangement.spacedBy(-size.labelToTextOverlap)) {
-                  sharedLabel?.invoke()
-                  Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                  ) {
-                    sharedInnerTextField(Modifier)
-                    sharedSuffix?.invoke(Modifier)
-                  }
-                }
-              }
-              Spacer(Modifier.height(textContentPadding.calculateBottomPadding()))
-              if (inputPhase.onlyShowLabel) {
-                // Lay out the text at the *bottom* of the container, so it starts animating in from there towards its
-                // final position.
-                sharedInnerTextField(
-                  Modifier
-                    .requiredHeight(0.dp)
-                    .wrapContentHeight(Alignment.Bottom, unbounded = true),
-                )
-              }
-            }
-          },
-          leading = if (sharedLeadingContent != null) {
-            {
-              Row {
-                sharedLeadingContent.invoke()
-                Spacer(Modifier.width(configuration.textFieldToOtherContentHorizontalPadding))
-              }
-            }
-          } else {
-            null
-          },
-          trailing = if (sharedTrailingContent != null) {
-            {
-              Row {
-                Spacer(Modifier.width(configuration.textFieldToOtherContentHorizontalPadding))
-                sharedTrailingContent.invoke()
-              }
-            }
-          } else {
-            null
-          },
+        SharedTextFieldContent(
+          size,
+          inputPhase,
+          configuration,
+          sharedLabel,
+          sharedSuffix,
+          sharedInnerTextField,
+          sharedLeadingContent,
+          sharedTrailingContent,
         )
       }
     }
   }
+}
+
+@Composable
+private fun SharedTextFieldContent(
+  size: HedvigTextFieldSize,
+  inputPhase: InputPhase,
+  configuration: HedvigTextFieldConfiguration,
+  label: @Composable() ((Modifier) -> Unit)?,
+  suffix: @Composable() ((Modifier) -> Unit)?,
+  innerTextField: @Composable (Modifier) -> Unit,
+  leadingContent: @Composable() (() -> Unit)?,
+  trailingContent: @Composable() (() -> Unit)?,
+) {
+  val centerContent: @Composable () -> Unit = {
+    val textContentPadding = size.textAndLabelVerticalPadding(inputPhase.onlyShowLabel)
+    if (inputPhase.onlyShowLabel) {
+      Column {
+        Spacer(Modifier.height(textContentPadding.calculateTopPadding()))
+        Row(Modifier.fillMaxWidth()) {
+          label?.invoke(Modifier)
+          Spacer(Modifier.weight(1f).width(configuration.textFieldToOtherContentHorizontalPadding))
+          suffix?.invoke(Modifier)
+        }
+        Spacer(Modifier.height(textContentPadding.calculateBottomPadding()))
+        // Lay out the text at the *bottom* of the container, so it starts animating in from there towards its
+        // final position.
+        innerTextField(
+          Modifier
+            .requiredHeight(0.dp)
+            .wrapContentHeight(Alignment.Bottom, unbounded = true),
+        )
+      }
+    } else {
+      Column {
+        Spacer(Modifier.height(textContentPadding.calculateTopPadding()))
+        Column(verticalArrangement = Arrangement.spacedBy(-size.labelToTextOverlap)) {
+          label?.invoke(Modifier)
+          Row(modifier = Modifier.fillMaxWidth()) {
+            innerTextField(Modifier.weight(1f))
+            Spacer(Modifier.width(configuration.textFieldToOtherContentHorizontalPadding))
+            suffix?.invoke(Modifier)
+          }
+        }
+        Spacer(Modifier.height(textContentPadding.calculateBottomPadding()))
+      }
+    }
+//    Column {
+//      Spacer(Modifier.height(textContentPadding.calculateTopPadding()))
+//      if (inputPhase.onlyShowLabel) {
+//        Row(Modifier.fillMaxWidth()) {
+//          label?.invoke(Modifier)
+//          Spacer(
+//            Modifier
+//              .weight(1f)
+//              .width(configuration.textFieldToOtherContentHorizontalPadding),
+//          )
+//          suffix?.invoke(Modifier)
+//        }
+//      } else {
+//        Column(verticalArrangement = Arrangement.spacedBy(-size.labelToTextOverlap)) {
+//          label?.invoke(Modifier)
+//          Row(modifier = Modifier.fillMaxWidth()) {
+//            innerTextField(Modifier.weight(1f))
+//            Spacer(Modifier.width(configuration.textFieldToOtherContentHorizontalPadding))
+//            suffix?.invoke(Modifier)
+//          }
+//        }
+//      }
+//      Spacer(Modifier.height(textContentPadding.calculateBottomPadding()))
+//      if (inputPhase.onlyShowLabel) {
+//        // Lay out the text at the *bottom* of the container, so it starts animating in from there towards its
+//        // final position.
+//        innerTextField(
+//          Modifier
+//            .requiredHeight(0.dp)
+//            .wrapContentHeight(Alignment.Bottom, unbounded = true),
+//        )
+//      }
+//    }
+  }
+  RowTextFieldLayout(
+    modifier = Modifier.padding(size.horizontalPadding()),
+    centerContent = centerContent,
+    leading = if (leadingContent != null) {
+      {
+        Row {
+          leadingContent.invoke()
+          Spacer(Modifier.width(configuration.textFieldToOtherContentHorizontalPadding))
+        }
+      }
+    } else {
+      null
+    },
+    trailing = if (trailingContent != null) {
+      {
+        Row {
+          Spacer(Modifier.width(configuration.textFieldToOtherContentHorizontalPadding))
+          trailingContent.invoke()
+        }
+      }
+    } else {
+      null
+    },
+  )
 }
 
 /**
@@ -364,7 +422,7 @@ private fun AnimatedTextFieldContent(
 @Composable
 private fun RowTextFieldLayout(
   modifier: Modifier,
-  textFieldAndLabel: @Composable () -> Unit,
+  centerContent: @Composable () -> Unit,
   leading: (@Composable () -> Unit)?,
   trailing: (@Composable () -> Unit)?,
   alignment: Alignment.Vertical = Alignment.CenterVertically,
@@ -372,12 +430,12 @@ private fun RowTextFieldLayout(
   Layout(
     modifier = modifier,
     contents = listOf(
-      { textFieldAndLabel() },
+      { centerContent() },
       { leading?.invoke() },
       { trailing?.invoke() },
     ),
   ) { measurables: List<List<Measurable>>, constraints: Constraints ->
-    val textFieldAndLabelMeasurable = measurables[0].first()
+    val centerMeasurable = measurables[0].first()
     val leadingMeasurable = measurables[1].firstOrNull()
     val trailingMeasurable = measurables[2].firstOrNull()
 
@@ -385,7 +443,7 @@ private fun RowTextFieldLayout(
 
     val leadingPlaceable = leadingMeasurable?.measure(looseConstraints)
     val trailingPlaceable = trailingMeasurable?.measure(looseConstraints)
-    val textFieldAndLabelPlaceable = textFieldAndLabelMeasurable.measure(
+    val centerPlaceable = centerMeasurable.measure(
       looseConstraints.copy(
         maxWidth = if (looseConstraints.hasBoundedWidth) {
           (looseConstraints.maxWidth - (trailingPlaceable?.width ?: 0) - (leadingPlaceable?.width ?: 0))
@@ -397,20 +455,20 @@ private fun RowTextFieldLayout(
     )
 
     val width = max(
-      (leadingPlaceable?.width ?: 0) + (trailingPlaceable?.width ?: 0) + textFieldAndLabelPlaceable.width,
+      (leadingPlaceable?.width ?: 0) + (trailingPlaceable?.width ?: 0) + centerPlaceable.width,
       constraints.minWidth,
     )
     val height = maxOf(
       leadingPlaceable?.height ?: 0,
       trailingPlaceable?.height ?: 0,
-      textFieldAndLabelPlaceable.height,
+      centerPlaceable.height,
     )
     layout(width, height) {
       leadingPlaceable?.place(0, alignment.align(leadingPlaceable.height, height))
       trailingPlaceable?.place(width - trailingPlaceable.width, alignment.align(trailingPlaceable.height, height))
-      textFieldAndLabelPlaceable.place(
+      centerPlaceable.place(
         leadingPlaceable?.width ?: 0,
-        alignment.align(textFieldAndLabelPlaceable.height, height),
+        alignment.align(centerPlaceable.height, height),
       )
     }
   }
