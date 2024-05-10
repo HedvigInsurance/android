@@ -7,7 +7,6 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateMap
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 import com.hedvig.android.feature.terminateinsurance.data.TerminationReason
@@ -54,12 +53,11 @@ internal class TerminationSurveyPresenter(
     CollectEvents { event ->
       when (event) {
         is TerminationSurveyEvent.ChangeFeedbackForReason -> {
-          currentState = currentState.copy(feedbackEmptyWarning = false)
           currentReasonsWithFeedback[event.option] = event.newFeedback
         }
 
         is TerminationSurveyEvent.SelectOption -> {
-          currentState = currentState.copy(feedbackEmptyWarning = false, selectedOption = event.option)
+          currentState = currentState.copy(selectedOption = event.option)
         }
 
         is TerminationSurveyEvent.Continue -> {
@@ -67,8 +65,6 @@ internal class TerminationSurveyPresenter(
           val selectedOption = state.selectedOption ?: return@CollectEvents
           if (selectedOption.subOptions.isNotEmpty()) {
             currentState = state.copy(nextNavigationStep = SurveyNavigationStep.NavigateToSubOptions)
-          } else if (!isFeedbackValid(selectedOption, currentReasonsWithFeedback)) {
-            currentState = state.copy(feedbackEmptyWarning = true)
           } else {
             loadNextStep = true
           }
@@ -132,22 +128,10 @@ internal data class TerminationSurveyState(
   val reasons: List<TerminationReason> = listOf(),
   val selectedOption: TerminationSurveyOption? = null,
   val nextNavigationStep: SurveyNavigationStep? = null,
-  val feedbackEmptyWarning: Boolean = false,
   val isNavigationStepLoading: Boolean = false,
   val continueAllowed: Boolean = selectedOption != null,
-  // here we allow to press Continue button, but if feedback is not valid, we'll show a warning, not go further
   val errorWhileLoadingNextStep: Boolean = false,
 )
-
-private fun isFeedbackValid(
-  selectedOption: TerminationSurveyOption,
-  reasons: SnapshotStateMap<TerminationSurveyOption, String?>,
-): Boolean {
-  val feedbackRequired = selectedOption.feedBackRequired
-  val feedback = reasons[selectedOption]
-  val feedbackLengthValid = if (feedback != null) feedback.length > 1 else false
-  return feedbackRequired && feedbackLengthValid || !feedbackRequired
-}
 
 internal sealed interface SurveyNavigationStep {
   data class NavigateToNextTerminationStep(val step: TerminateInsuranceStep) : SurveyNavigationStep
