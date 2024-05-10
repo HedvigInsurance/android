@@ -25,7 +25,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -203,11 +202,10 @@ private fun TerminationSurveyScreen(
             Spacer(modifier = (Modifier.height(4.dp)))
           }
           if (reason.surveyOption.feedBackRequired) {
-            // todo: animated textField
             val feedback = reason.feedBack
             HedvigCard(
               onClick = {
-                // todo: open animated textField instead of this
+                // todo: open animated textField and do this:
 //                if (reason.feedBack.length<=140) {
 //                  changeFeedbackForReason(reason.surveyOption, value)
 //                }
@@ -233,9 +231,8 @@ private fun TerminationSurveyScreen(
                     color = if (feedback != null) {
                       MaterialTheme.typography.bodyLarge.color
                     } else {
-                      Color.Unspecified
+                      MaterialTheme.colorScheme.onSurfaceVariant
                     },
-                    // todo: color for placeholder!
                     modifier = Modifier.weight(1f),
                   )
                 }
@@ -244,14 +241,13 @@ private fun TerminationSurveyScreen(
                   horizontalArrangement = Arrangement.End,
                   modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
+                    .padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
                 ) {
                   val length = feedback?.length ?: 0
                   Text(
                     text = "$length/140",
                     style = MaterialTheme.typography.titleSmall,
-                    color = Color.Unspecified,
-                    // todo: color for placeholder!
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                   )
                 }
               }
@@ -370,7 +366,7 @@ private val previewReason1 = TerminationReason(
       ),
     ),
     suggestion = SurveyOptionSuggestion.Action.UPDATE_ADDRESS,
-    feedBackRequired = false,
+    feedBackRequired = true,
   ),
   null,
 )
