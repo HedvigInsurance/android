@@ -33,16 +33,16 @@ internal class TerminationSurveyPresenter(
   ): TerminationSurveyState {
     var loadNextStep by remember { mutableStateOf(false) }
 
-    val initialReasons = (
-      lastState.reasons.ifEmpty { // in initial state reasons are empty, so we take them from parameters
-        options.map { option ->
-          TerminationReason(option, null)
-        }
-      }
-    ).map {
-      it.surveyOption to it.feedBack
-    }
     val currentReasonsWithFeedback = remember {
+      val initialReasons = (
+        lastState.reasons.ifEmpty { // in initial state reasons are empty, so we take them from parameters
+          options.map { option ->
+            TerminationReason(option, null)
+          }
+        }
+      ).map {
+        it.surveyOption to it.feedBack
+      }
       mutableStateMapOf(*initialReasons.toTypedArray())
     }
 
