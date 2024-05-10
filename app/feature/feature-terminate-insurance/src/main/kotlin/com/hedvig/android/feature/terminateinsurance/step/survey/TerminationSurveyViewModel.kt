@@ -129,9 +129,10 @@ internal data class TerminationSurveyState(
   val selectedOption: TerminationSurveyOption? = null,
   val nextNavigationStep: SurveyNavigationStep? = null,
   val isNavigationStepLoading: Boolean = false,
-  val continueAllowed: Boolean = selectedOption != null,
   val errorWhileLoadingNextStep: Boolean = false,
-)
+) {
+  val continueAllowed: Boolean = selectedOption != null,
+}
 
 internal sealed interface SurveyNavigationStep {
   data class NavigateToNextTerminationStep(val step: TerminateInsuranceStep) : SurveyNavigationStep
