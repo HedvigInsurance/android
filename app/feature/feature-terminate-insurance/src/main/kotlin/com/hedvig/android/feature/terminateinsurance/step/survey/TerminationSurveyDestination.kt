@@ -302,14 +302,12 @@ private class ShowSurveyUiStateProvider :
       TerminationSurveyState(
         nextNavigationStep = null,
         isNavigationStepLoading = false,
-        feedbackEmptyWarning = false,
         selectedOption = previewReason1.surveyOption,
         reasons = listOf(previewReason1, previewReason2, previewReason3),
       ),
       TerminationSurveyState(
         nextNavigationStep = null,
         isNavigationStepLoading = false,
-        feedbackEmptyWarning = true,
         selectedOption = previewReason2.surveyOption,
         reasons = listOf(previewReason1, previewReason2, previewReason3),
       ),
@@ -331,7 +329,6 @@ private class ShowSurveyUiStateProvider :
         nextNavigationStep = null,
         isNavigationStepLoading = false,
         errorWhileLoadingNextStep = true,
-        feedbackEmptyWarning = false,
         selectedOption = previewReason2.surveyOption,
         reasons = listOf(previewReason1, previewReason2filled, previewReason3),
       ),
