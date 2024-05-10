@@ -3,6 +3,8 @@ package com.hedvig.android.feature.terminateinsurance.step.survey
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,9 +13,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
@@ -23,17 +27,28 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
+import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
+import com.hedvig.android.core.designsystem.component.textfield.HedvigTextFieldDefaults
+import com.hedvig.android.core.designsystem.material3.alwaysBlackContainer
 import com.hedvig.android.core.designsystem.material3.borderSecondary
+import com.hedvig.android.core.designsystem.material3.onAlwaysBlackContainer
 import com.hedvig.android.core.designsystem.material3.onTypeContainer
 import com.hedvig.android.core.designsystem.material3.typeContainer
 import com.hedvig.android.core.designsystem.material3.typeElement
@@ -276,6 +291,125 @@ private fun TerminationSurveyScreen(
   }
 }
 
+@Composable
+private fun FullScreenEditableText(
+  feedbackText: String?,
+  onSaveClick: (String?) -> Unit,
+  onCancelClick: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  val focusRequester = remember { FocusRequester() }
+  val hint = stringResource(id = R.string.TERMINATION_SURVEY_FEEDBACK_HINT)
+  var textValue by remember {
+    mutableStateOf(feedbackText ?: "")
+  }
+  LaunchedEffect(key1 = Unit, block = {
+    focusRequester.requestFocus()
+  })
+  Column(
+    modifier
+      .fillMaxSize()
+      .background(MaterialTheme.colorScheme.alwaysBlackContainer)
+      .imePadding(),
+  ) {
+    Column(
+      Modifier
+        .weight(1f)
+        .padding(8.dp),
+    ) {
+      BasicTextField(
+        value = textValue,
+        onValueChange = {
+          if (it.length <= 140) {
+            textValue = it
+          } else {
+            textValue = it.substring(0, 140)
+          }
+        },
+        modifier = Modifier
+          .weight(1f)
+          .focusRequester(focusRequester)
+          .background(
+            MaterialTheme.colorScheme.surface,
+            shape = HedvigTextFieldDefaults.shape,
+          ),
+        textStyle = MaterialTheme.typography.bodyLarge,
+        decorationBox = @Composable { innerTextField ->
+          Column {
+            Row(
+              verticalAlignment = Alignment.Top,
+              horizontalArrangement = Arrangement.Start,
+              modifier = Modifier.weight(1f),
+            ) {
+              HedvigTextFieldDefaults.DecorationBox(
+                value = textValue,
+                colors = HedvigTextFieldDefaults.colors(
+                  typingHighlightColor = Color.Transparent,
+                  focusedContainerColor = Color.Transparent,
+                  unfocusedContainerColor = Color.Transparent,
+                ),
+                placeholder = {
+                  Text(
+                    text = hint,
+                    Modifier.fillMaxSize(),
+                    fontSize = MaterialTheme.typography.bodyLarge.fontSize,
+                  )
+                },
+                innerTextField = innerTextField,
+                enabled = true,
+                singleLine = false,
+                interactionSource = remember { MutableInteractionSource() },
+                visualTransformation = VisualTransformation.None,
+              )
+            }
+            Row(
+              horizontalArrangement = Arrangement.End,
+              modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
+            ) {
+              Text(
+                text = "${textValue.length}/140",
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+              )
+            }
+          }
+        },
+      )
+      Spacer(modifier = Modifier.height(8.dp))
+      Row(
+        modifier = Modifier
+          .fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center,
+      ) {
+        HedvigContainedSmallButton(
+          text = stringResource(id = R.string.general_cancel_button),
+          onClick = onCancelClick,
+          modifier = Modifier.weight(1f),
+          colors = ButtonDefaults.buttonColors(
+            containerColor = Color.Transparent,
+            contentColor = MaterialTheme.colorScheme.onAlwaysBlackContainer,
+          ),
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        HedvigContainedSmallButton(
+          text = stringResource(id = R.string.general_save_button),
+          onClick = {
+            onSaveClick(textValue)
+          },
+          modifier = Modifier.weight(1f),
+          colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.onAlwaysBlackContainer,
+            contentColor = MaterialTheme.colorScheme.alwaysBlackContainer,
+          ),
+        )
+      }
+      Spacer(modifier = Modifier.height(8.dp))
+    }
+  }
+}
+
 @HedvigPreview
 @Composable
 private fun ShowSurveyScreenPreview(
@@ -294,6 +428,21 @@ private fun ShowSurveyScreenPreview(
         changeFeedbackForReason = { option, String ->
         },
         onContinueClick = {},
+      )
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun FullScreenEditableTextPreview() {
+  HedvigTheme {
+    Surface(color = MaterialTheme.colorScheme.background) {
+      FullScreenEditableText(
+        null,
+        {},
+        {},
+        Modifier.fillMaxSize(),
       )
     }
   }
