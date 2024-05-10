@@ -167,92 +167,95 @@ private fun TerminationSurveyScreen(
           }
         }
         Spacer(modifier = (Modifier.height(4.dp)))
-        if (reason.surveyOption == uiState.selectedOption) {
-          val suggestion = reason.surveyOption.suggestion
-          if (suggestion != null) {
-            val text = when (suggestion) {
-              SurveyOptionSuggestion.Action.UpdateAddress -> stringResource(
-                id = R.string.TERMINATION_SURVEY_MOVING_SUGGESTION,
-              )
-              is SurveyOptionSuggestion.Redirect -> suggestion.description
-            }
-            VectorInfoCard(
-              text = text,
-              icon = Icons.Hedvig.Campaign,
-              modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-              iconColor = MaterialTheme.colorScheme.typeElement,
-              colors = CardDefaults.outlinedCardColors(
-                containerColor = MaterialTheme.colorScheme.typeContainer,
-                contentColor = MaterialTheme.colorScheme.onTypeContainer,
-              ),
-            ) {
-              Row(
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxSize(),
-              ) {
-                InfoCardTextButton(
-                  text = stringResource(R.string.TERMINATION_SURVEY_MOVING_BUTTON),
-                  onClick = navigateToMovingFlow,
-                  modifier = Modifier.weight(1f),
+        AnimatedVisibility(visible = reason.surveyOption == uiState.selectedOption) {
+          Column {
+            val suggestion = reason.surveyOption.suggestion
+            if (suggestion != null) {
+              val text = when (suggestion) {
+                SurveyOptionSuggestion.Action.UpdateAddress -> stringResource(
+                  id = R.string.TERMINATION_SURVEY_MOVING_SUGGESTION,
                 )
+
+                is SurveyOptionSuggestion.Redirect -> suggestion.description
               }
-            }
-            Spacer(modifier = (Modifier.height(4.dp)))
-          }
-          if (reason.surveyOption.feedBackRequired) {
-            val feedback = reason.feedBack
-            HedvigCard(
-              onClick = {
-                // todo: open animated textField and do this:
-//                if (reason.feedBack.length<=140) {
-//                  changeFeedbackForReason(reason.surveyOption, value)
-//                }
-              },
-              colors = CardDefaults.outlinedCardColors(
-                containerColor = MaterialTheme.colorScheme.surface,
-              ),
-              modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(100.dp)
-                .padding(horizontal = 16.dp),
-            ) {
-              Column {
+              VectorInfoCard(
+                text = text,
+                icon = Icons.Hedvig.Campaign,
+                modifier = Modifier
+                  .fillMaxWidth()
+                  .padding(horizontal = 16.dp),
+                iconColor = MaterialTheme.colorScheme.typeElement,
+                colors = CardDefaults.outlinedCardColors(
+                  containerColor = MaterialTheme.colorScheme.typeContainer,
+                  contentColor = MaterialTheme.colorScheme.onTypeContainer,
+                ),
+              ) {
                 Row(
-                  verticalAlignment = Alignment.Top,
-                  modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, top = 10.dp, end = 16.dp),
+                  horizontalArrangement = Arrangement.Center,
+                  modifier = Modifier.fillMaxSize(),
                 ) {
-                  Text(
-                    text = feedback ?: stringResource(id = R.string.TERMINATION_SURVEY_FEEDBACK_HINT),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = if (feedback != null) {
-                      MaterialTheme.typography.bodyLarge.color
-                    } else {
-                      MaterialTheme.colorScheme.onSurfaceVariant
-                    },
+                  InfoCardTextButton(
+                    text = stringResource(R.string.TERMINATION_SURVEY_MOVING_BUTTON),
+                    onClick = navigateToMovingFlow,
                     modifier = Modifier.weight(1f),
                   )
                 }
-                Spacer(modifier = Modifier.weight(1f))
-                Row(
-                  horizontalArrangement = Arrangement.End,
-                  modifier = Modifier
-                    .fillMaxSize()
-                    .padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
-                ) {
-                  val length = feedback?.length ?: 0
-                  Text(
-                    text = "$length/140",
-                    style = MaterialTheme.typography.titleSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                  )
+              }
+              Spacer(modifier = (Modifier.height(4.dp)))
+            }
+            if (reason.surveyOption.feedBackRequired) {
+              val feedback = reason.feedBack
+              HedvigCard(
+                onClick = {
+                  // todo: open animated textField and do this:
+//                if (reason.feedBack.length<=140) {
+//                  changeFeedbackForReason(reason.surveyOption, value)
+//                }
+                },
+                colors = CardDefaults.outlinedCardColors(
+                  containerColor = MaterialTheme.colorScheme.surface,
+                ),
+                modifier = Modifier
+                  .fillMaxWidth()
+                  .heightIn(100.dp)
+                  .padding(horizontal = 16.dp),
+              ) {
+                Column {
+                  Row(
+                    verticalAlignment = Alignment.Top,
+                    modifier = Modifier
+                      .fillMaxWidth()
+                      .padding(start = 16.dp, top = 10.dp, end = 16.dp),
+                  ) {
+                    Text(
+                      text = feedback ?: stringResource(id = R.string.TERMINATION_SURVEY_FEEDBACK_HINT),
+                      style = MaterialTheme.typography.bodyLarge,
+                      color = if (feedback != null) {
+                        MaterialTheme.typography.bodyLarge.color
+                      } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                      },
+                      modifier = Modifier.weight(1f),
+                    )
+                  }
+                  Spacer(modifier = Modifier.weight(1f))
+                  Row(
+                    horizontalArrangement = Arrangement.End,
+                    modifier = Modifier
+                      .fillMaxSize()
+                      .padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
+                  ) {
+                    val length = feedback?.length ?: 0
+                    Text(
+                      text = "$length/140",
+                      style = MaterialTheme.typography.titleSmall,
+                      color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                  }
                 }
               }
+              Spacer(modifier = (Modifier.height(4.dp)))
             }
-            Spacer(modifier = (Modifier.height(4.dp)))
           }
         }
       }
