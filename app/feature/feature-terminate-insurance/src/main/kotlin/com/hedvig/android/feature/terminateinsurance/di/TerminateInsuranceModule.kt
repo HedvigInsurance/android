@@ -6,9 +6,11 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.data.termination.data.GetTerminatableContractsUseCase
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
 import com.hedvig.android.feature.terminateinsurance.data.TerminationFlowContextStorage
+import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationDataParameters
 import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateViewModel
+import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyViewModel
 import com.hedvig.android.feature.terminateinsurance.step.terminationdate.TerminationDateViewModel
 import com.hedvig.android.feature.terminateinsurance.step.terminationreview.TerminationConfirmationViewModel
 import com.hedvig.android.language.LanguageService
@@ -20,6 +22,12 @@ val terminateInsuranceModule = module {
     ChooseInsuranceToTerminateViewModel(
       insuranceId = insuranceId,
       getTerminatableContractsUseCase = get<GetTerminatableContractsUseCase>(),
+      terminateInsuranceRepository = get<TerminateInsuranceRepository>(),
+    )
+  }
+  viewModel<TerminationSurveyViewModel> { (options: List<TerminationSurveyOption>) ->
+    TerminationSurveyViewModel(
+      options = options,
       terminateInsuranceRepository = get<TerminateInsuranceRepository>(),
     )
   }

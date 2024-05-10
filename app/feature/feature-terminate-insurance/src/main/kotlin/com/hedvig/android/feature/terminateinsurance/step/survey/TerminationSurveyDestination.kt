@@ -171,7 +171,7 @@ private fun TerminationSurveyScreen(
           val suggestion = reason.surveyOption.suggestion
           if (suggestion != null) {
             val text = when (suggestion) {
-              SurveyOptionSuggestion.Action.UPDATE_ADDRESS -> stringResource(
+              SurveyOptionSuggestion.Action.UpdateAddress -> stringResource(
                 id = R.string.TERMINATION_SURVEY_MOVING_SUGGESTION,
               )
               is SurveyOptionSuggestion.Redirect -> suggestion.description
@@ -362,7 +362,7 @@ private val previewReason1 = TerminationReason(
         feedBackRequired = true,
       ),
     ),
-    suggestion = SurveyOptionSuggestion.Action.UPDATE_ADDRESS,
+    suggestion = SurveyOptionSuggestion.Action.UpdateAddress,
     feedBackRequired = true,
   ),
   null,
