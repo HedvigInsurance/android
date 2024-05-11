@@ -1,9 +1,11 @@
 package com.hedvig.android.feature.login.swedishlogin
 
+import androidx.lifecycle.SavedStateHandle
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotNull
+import assertk.assertions.isTrue
 import assertk.assertions.prop
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.event.AuthEvent
@@ -35,10 +37,10 @@ class SwedishLoginPresenterTest {
     val authRepository = FakeAuthRepository()
     val presenter: SwedishLoginPresenter = testSwedishLoginPresenter(authRepository)
 
-    presenter.test(SwedishLoginUiState.Loading) {
-      assertThat(awaitItem()).isInstanceOf<SwedishLoginUiState.Loading>()
+    presenter.test(SwedishLoginUiState(BankIdUiState.Loading, false)) {
+      assertThat(awaitItem().bankIdUiState).isInstanceOf<BankIdUiState.Loading>()
       authRepository.authAttemptResponse.add(AuthAttemptResult.Error.UnknownError("test error"))
-      assertThat(awaitItem()).isInstanceOf<SwedishLoginUiState.StartLoginAttemptFailed>()
+      assertThat(awaitItem().bankIdUiState).isInstanceOf<BankIdUiState.StartLoginAttemptFailed>()
     }
   }
 
@@ -48,49 +50,48 @@ class SwedishLoginPresenterTest {
     val authRepository = FakeAuthRepository()
     val presenter: SwedishLoginPresenter = testSwedishLoginPresenter(authRepository, authTokenService)
 
-    presenter.test(SwedishLoginUiState.Loading) {
-      assertThat(awaitItem()).isInstanceOf<SwedishLoginUiState.Loading>()
+    presenter.test(SwedishLoginUiState(BankIdUiState.Loading, false)) {
+      assertThat(awaitItem().bankIdUiState).isInstanceOf<BankIdUiState.Loading>()
       authRepository.authAttemptResponse.add(
         AuthAttemptResult.BankIdProperties("", StatusUrl(""), "autoStartToken"),
       )
       awaitUnchanged()
 
       authRepository.loginStatusResponse.add(LoginStatusResult.Pending("pending status message", null))
-      assertThat(awaitItem()).isEqualTo(
-        SwedishLoginUiState.HandlingBankId(
+      assertThat(awaitItem().bankIdUiState).isEqualTo(
+        BankIdUiState.HandlingBankId(
           statusMessage = "pending status message",
-          autoStartToken = SwedishLoginUiState.HandlingBankId.AutoStartToken("autoStartToken"),
+          autoStartToken = BankIdUiState.HandlingBankId.AutoStartToken("autoStartToken"),
           bankIdLiveQrCodeData = null,
           bankIdAppOpened = false,
           allowOpeningBankId = true,
-          navigateToLoginScreen = false,
         ),
       )
       authRepository.loginStatusResponse.add(LoginStatusResult.Completed(AuthorizationCodeGrant("grant")))
       // Before exchange resolves, still in pending state
       expectNoEvents()
       sendEvent(SwedishLoginEvent.DidOpenBankIDApp)
-      assertThat(awaitItem()).isEqualTo(
-        SwedishLoginUiState.HandlingBankId(
+      assertThat(awaitItem().bankIdUiState).isEqualTo(
+        BankIdUiState.HandlingBankId(
           statusMessage = "pending status message",
-          autoStartToken = SwedishLoginUiState.HandlingBankId.AutoStartToken("autoStartToken"),
+          autoStartToken = BankIdUiState.HandlingBankId.AutoStartToken("autoStartToken"),
           bankIdLiveQrCodeData = null,
           bankIdAppOpened = false,
           allowOpeningBankId = false,
-          navigateToLoginScreen = false,
         ),
       )
 
       // Exchange succeeds
       authRepository.exchangeResponse.add(AuthTokenResult.Success(AccessToken("123", 90), RefreshToken("456", 90)))
-      assertThat(awaitItem()).isEqualTo(
-        SwedishLoginUiState.HandlingBankId(
+      val item = awaitItem()
+      assertThat(item.navigateToLoginScreen).isTrue()
+      assertThat(item.bankIdUiState).isEqualTo(
+        BankIdUiState.HandlingBankId(
           statusMessage = "pending status message",
-          autoStartToken = SwedishLoginUiState.HandlingBankId.AutoStartToken("autoStartToken"),
+          autoStartToken = BankIdUiState.HandlingBankId.AutoStartToken("autoStartToken"),
           bankIdLiveQrCodeData = null,
           bankIdAppOpened = false,
           allowOpeningBankId = false,
-          navigateToLoginScreen = true,
         ),
       )
       val resultingTokens: AuthEvent = authTokenService.authEventTurbine.awaitItem()
@@ -98,18 +99,6 @@ class SwedishLoginPresenterTest {
         prop(AuthEvent.LoggedIn::accessToken).isEqualTo("123")
         prop(AuthEvent.LoggedIn::refreshToken).isEqualTo("456")
       }
-
-      sendEvent(SwedishLoginEvent.DidNavigateToLoginScreen)
-      assertThat(awaitItem()).isEqualTo(
-        SwedishLoginUiState.HandlingBankId(
-          statusMessage = "pending status message",
-          autoStartToken = SwedishLoginUiState.HandlingBankId.AutoStartToken("autoStartToken"),
-          bankIdLiveQrCodeData = null,
-          bankIdAppOpened = false,
-          allowOpeningBankId = false,
-          navigateToLoginScreen = false,
-        ),
-      )
     }
   }
 
@@ -119,8 +108,8 @@ class SwedishLoginPresenterTest {
     val authRepository = FakeAuthRepository()
     val presenter: SwedishLoginPresenter = testSwedishLoginPresenter(authRepository, authTokenService)
 
-    presenter.test(SwedishLoginUiState.Loading) {
-      assertThat(awaitItem()).isInstanceOf<SwedishLoginUiState.Loading>()
+    presenter.test(SwedishLoginUiState(BankIdUiState.Loading, false)) {
+      assertThat(awaitItem().bankIdUiState).isInstanceOf<BankIdUiState.Loading>()
       authRepository.authAttemptResponse.add(
         AuthAttemptResult.BankIdProperties("", StatusUrl(""), ""),
       )
@@ -130,20 +119,20 @@ class SwedishLoginPresenterTest {
           LoginStatusResult.Pending.BankIdProperties("", "bankIdLiveQrCodeData", false),
         ),
       )
-      assertThat(awaitItem())
-        .isInstanceOf<SwedishLoginUiState.HandlingBankId>()
+      assertThat(awaitItem().bankIdUiState)
+        .isInstanceOf<BankIdUiState.HandlingBankId>()
         .apply {
-          prop(SwedishLoginUiState.HandlingBankId::bankIdLiveQrCodeData)
+          prop(BankIdUiState.HandlingBankId::bankIdLiveQrCodeData)
             .isNotNull()
-            .prop(SwedishLoginUiState.HandlingBankId.BankIdLiveQrCodeData::data)
+            .prop(BankIdUiState.HandlingBankId.BankIdLiveQrCodeData::data)
             .isEqualTo("bankIdLiveQrCodeData")
-          prop(SwedishLoginUiState.HandlingBankId::statusMessage).isEqualTo("test")
+          prop(BankIdUiState.HandlingBankId::statusMessage).isEqualTo("test")
         }
       authRepository.loginStatusResponse.add(LoginStatusResult.Completed(AuthorizationCodeGrant("grant")))
       expectNoEvents()
       // Exchange fails
       authRepository.exchangeResponse.add(AuthTokenResult.Error.UnknownError("failed"))
-      assertThat(awaitItem()).isEqualTo(SwedishLoginUiState.BankIdError("failed"))
+      assertThat(awaitItem().bankIdUiState).isEqualTo(BankIdUiState.BankIdError("failed"))
       authTokenService.authEventTurbine.expectNoEvents()
     }
   }
@@ -154,8 +143,8 @@ class SwedishLoginPresenterTest {
     val authRepository = FakeAuthRepository()
     val presenter: SwedishLoginPresenter = testSwedishLoginPresenter(authRepository, authTokenService)
 
-    presenter.test(SwedishLoginUiState.Loading) {
-      assertThat(awaitItem()).isEqualTo(SwedishLoginUiState.Loading)
+    presenter.test(SwedishLoginUiState(BankIdUiState.Loading, false)) {
+      assertThat(awaitItem().bankIdUiState).isEqualTo(BankIdUiState.Loading)
       authRepository.authAttemptResponse.add(
         AuthAttemptResult.BankIdProperties("", StatusUrl(""), ""),
       )
@@ -165,17 +154,17 @@ class SwedishLoginPresenterTest {
           LoginStatusResult.Pending.BankIdProperties("", "bankIdLiveQrCodeData", false),
         ),
       )
-      assertThat(awaitItem())
-        .isInstanceOf<SwedishLoginUiState.HandlingBankId>()
+      assertThat(awaitItem().bankIdUiState)
+        .isInstanceOf<BankIdUiState.HandlingBankId>()
         .apply {
-          prop(SwedishLoginUiState.HandlingBankId::bankIdLiveQrCodeData)
+          prop(BankIdUiState.HandlingBankId::bankIdLiveQrCodeData)
             .isNotNull()
-            .prop(SwedishLoginUiState.HandlingBankId.BankIdLiveQrCodeData::data)
+            .prop(BankIdUiState.HandlingBankId.BankIdLiveQrCodeData::data)
             .isEqualTo("bankIdLiveQrCodeData")
-          prop(SwedishLoginUiState.HandlingBankId::statusMessage).isEqualTo("pending")
+          prop(BankIdUiState.HandlingBankId::statusMessage).isEqualTo("pending")
         }
       authRepository.loginStatusResponse.add(LoginStatusResult.Failed("failed"))
-      assertThat(awaitItem()).isEqualTo(SwedishLoginUiState.BankIdError("failed"))
+      assertThat(awaitItem().bankIdUiState).isEqualTo(BankIdUiState.BankIdError("failed"))
       authTokenService.authEventTurbine.expectNoEvents()
     }
   }
@@ -186,7 +175,7 @@ class SwedishLoginPresenterTest {
     val authRepository = FakeAuthRepository()
     val presenter: SwedishLoginPresenter = testSwedishLoginPresenter(authRepository, authTokenService)
 
-    presenter.test(SwedishLoginUiState.Loading) {
+    presenter.test(SwedishLoginUiState(BankIdUiState.Loading, false)) {
       authRepository.authAttemptResponse.add(
         AuthAttemptResult.BankIdProperties("", StatusUrl(""), ""),
       )
@@ -202,6 +191,7 @@ class SwedishLoginPresenterTest {
   private fun testSwedishLoginPresenter(
     authRepository: AuthRepository,
     authTokenService: AuthTokenService = TestAuthTokenService(),
+    savedStateHandle: SavedStateHandle = SavedStateHandle(),
   ): SwedishLoginPresenter {
     return SwedishLoginPresenter(
       authTokenService,
@@ -211,6 +201,7 @@ class SwedishLoginPresenterTest {
 
         override suspend fun setDemoMode(demoMode: Boolean) {}
       },
+      savedStateHandle,
     )
   }
 }

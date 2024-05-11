@@ -70,11 +70,10 @@ internal fun SwedishLoginDestination(
   val navigateToLoginScreen = uiState.navigateToLoginScreen
   LaunchedEffect(navigateToLoginScreen) {
     if (!navigateToLoginScreen) return@LaunchedEffect
-    swedishLoginViewModel.emit(SwedishLoginEvent.DidNavigateToLoginScreen)
     startLoggedInActivity()
   }
   SwedishLoginScreen(
-    uiState = uiState,
+    uiState = uiState.bankIdUiState,
     navigateUp = navigateUp,
     loginWithEmail = navigateToEmailLogin,
     enterDemoMode = { swedishLoginViewModel.emit(SwedishLoginEvent.StartDemoMode) },
@@ -85,7 +84,7 @@ internal fun SwedishLoginDestination(
 
 @Composable
 private fun SwedishLoginScreen(
-  uiState: SwedishLoginUiState,
+  uiState: BankIdUiState,
   navigateUp: () -> Unit,
   loginWithEmail: () -> Unit,
   enterDemoMode: () -> Unit,
@@ -117,7 +116,7 @@ private fun SwedishLoginScreen(
       }
     }
     when (uiState) {
-      SwedishLoginUiState.StartLoginAttemptFailed -> {
+      BankIdUiState.StartLoginAttemptFailed -> {
         Box(
           contentAlignment = Alignment.Center,
           modifier = Modifier.weight(1f).fillMaxWidth(),
@@ -129,7 +128,7 @@ private fun SwedishLoginScreen(
         }
       }
 
-      is SwedishLoginUiState.BankIdError -> {
+      is BankIdUiState.BankIdError -> {
         Box(
           Modifier.weight(1f).fillMaxWidth(),
           Alignment.Center,
@@ -146,11 +145,11 @@ private fun SwedishLoginScreen(
         }
       }
 
-      is SwedishLoginUiState.Loading -> {
+      is BankIdUiState.Loading -> {
         HedvigFullScreenCenterAlignedProgress(Modifier.weight(1f).fillMaxWidth())
       }
 
-      is SwedishLoginUiState.HandlingBankId -> {
+      is BankIdUiState.HandlingBankId -> {
         val bankIdState = rememberBankIdState(uiState.autoStartToken)
         val allowOpeningBankId = uiState.allowOpeningBankId
         LaunchedEffect(allowOpeningBankId) {
@@ -199,7 +198,7 @@ private fun SwedishLoginScreen(
         Spacer(Modifier.height(16.dp))
       }
 
-      is SwedishLoginUiState.LoggedIn -> {
+      is BankIdUiState.LoggedIn -> {
         HedvigFullScreenCenterAlignedProgress(Modifier.weight(1f))
       }
     }
@@ -208,7 +207,7 @@ private fun SwedishLoginScreen(
 
 @Composable
 internal fun QRCode(
-  autoStartToken: SwedishLoginUiState.HandlingBankId.BankIdLiveQrCodeData?,
+  autoStartToken: BankIdUiState.HandlingBankId.BankIdLiveQrCodeData?,
   modifier: Modifier = Modifier,
 ) {
   var intSize: IntSize? by remember { mutableStateOf(null) }
@@ -244,7 +243,7 @@ internal fun QRCode(
 }
 
 @Composable
-private fun rememberBankIdState(autoStartToken: SwedishLoginUiState.HandlingBankId.AutoStartToken): BankIdState {
+private fun rememberBankIdState(autoStartToken: BankIdUiState.HandlingBankId.AutoStartToken): BankIdState {
   val context = LocalContext.current
   return remember(context, autoStartToken) {
     BankIdStateImpl(autoStartToken, context).also {
@@ -262,7 +261,7 @@ private interface BankIdState {
 
 @Stable
 private class BankIdStateImpl(
-  val autoStartToken: SwedishLoginUiState.HandlingBankId.AutoStartToken,
+  val autoStartToken: BankIdUiState.HandlingBankId.AutoStartToken,
   val context: Context,
 ) : BankIdState {
   override var canOpenBankId: Boolean by mutableStateOf(false)

@@ -13,7 +13,7 @@ internal class SwedishLoginViewModel(
   demoManager: DemoManager,
   savedStateHandle: SavedStateHandle,
 ) : MoleculeViewModel<SwedishLoginEvent, SwedishLoginUiState>(
-    SwedishLoginUiState.Loading(false),
+    SwedishLoginUiState(BankIdUiState.Loading, false),
     SwedishLoginPresenter(authTokenService, authRepository, demoManager, savedStateHandle),
     SharingStarted.WhileSubscribed(),
   )
