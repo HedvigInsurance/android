@@ -47,8 +47,8 @@ internal class SwedishLoginPresenter(
     var startLoginAttemptFailed: Boolean by remember { mutableStateOf(false) }
     var bankIdProperties: AuthAttemptResult.BankIdProperties? by remember(savedStateHandle) {
       savedStateHandle.saveable(
-        key = "BankIdPropertiesSaver",
-        stateSaver = BankIdPropertiesSaver,
+        key = BankIdPropertiesSaver.ID,
+        stateSaver = BankIdPropertiesSaver(),
       ) {
         mutableStateOf(null)
       }
@@ -76,7 +76,6 @@ internal class SwedishLoginPresenter(
           return@collect
         }
         authRepository.observeLoginStatus(bankIdProperties.statusUrl).collect { latestLoginStatusResult ->
-          logcat { "Stelios:observed latestLoginStatusResult:$latestLoginStatusResult" }
           if (latestLoginStatusResult is LoginStatusResult.Completed) {
             when (val authTokenResult = authRepository.exchange(latestLoginStatusResult.authorizationCode)) {
               is AuthTokenResult.Error -> {
@@ -237,19 +236,23 @@ internal sealed interface BankIdUiState {
   data object StartLoginAttemptFailed : BankIdUiState
 }
 
-private val BankIdPropertiesSaver: Saver<AuthAttemptResult.BankIdProperties?, Any> =
-  listSaver<AuthAttemptResult.BankIdProperties?, String>(
-    save = { bankIdProperties: AuthAttemptResult.BankIdProperties? ->
-      logcat { "Stelios: save!" }
-      bankIdProperties ?: return@listSaver emptyList()
-      listOf(bankIdProperties.id, bankIdProperties.statusUrl.url, bankIdProperties.autoStartToken)
-    },
-    restore = { list ->
-      if (list.isEmpty()) return@listSaver null
-      AuthAttemptResult.BankIdProperties(
-        id = list[0],
-        statusUrl = StatusUrl(list[1]),
-        autoStartToken = list[2],
-      )
-    },
-  )
+internal class BankIdPropertiesSaver : Saver<AuthAttemptResult.BankIdProperties?, Any> by bankIdPropertiesListSaver {
+  companion object {
+    const val ID = "BankIdPropertiesSaver"
+  }
+}
+
+private val bankIdPropertiesListSaver = listSaver<AuthAttemptResult.BankIdProperties?, String>(
+  save = { bankIdProperties: AuthAttemptResult.BankIdProperties? ->
+    bankIdProperties ?: return@listSaver emptyList()
+    listOf(bankIdProperties.id, bankIdProperties.statusUrl.url, bankIdProperties.autoStartToken)
+  },
+  restore = { list ->
+    if (list.isEmpty()) return@listSaver null
+    AuthAttemptResult.BankIdProperties(
+      id = list[0],
+      statusUrl = StatusUrl(list[1]),
+      autoStartToken = list[2],
+    )
+  },
+)

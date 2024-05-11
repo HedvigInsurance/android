@@ -1,6 +1,9 @@
 package com.hedvig.android.feature.login.swedishlogin
 
+import androidx.compose.runtime.mutableStateOf
+import androidx.core.os.bundleOf
 import androidx.lifecycle.SavedStateHandle
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
@@ -24,10 +27,13 @@ import com.hedvig.authlib.RefreshToken
 import com.hedvig.authlib.StatusUrl
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
 
+@RunWith(AndroidJUnit4::class)
 class SwedishLoginPresenterTest {
   @get:Rule
   val testLogcatLogger = TestLogcatLoggingRule()
@@ -188,6 +194,102 @@ class SwedishLoginPresenterTest {
     }
   }
 
+  @Test
+  fun `pausing the collection and coming back after process death should continue the login process normally`() =
+    runTest {
+      val authRepository = FakeAuthRepository()
+      val authTokenService = TestAuthTokenService()
+
+      val successBankIdProperties = AuthAttemptResult.BankIdProperties("id", StatusUrl(""), "auto")
+      testSwedishLoginPresenter(authRepository, authTokenService).test(
+        SwedishLoginUiState(BankIdUiState.Loading, false),
+      ) {
+        assertThat(awaitItem().bankIdUiState).isInstanceOf<BankIdUiState.Loading>()
+        authRepository.authAttemptResponse.add(successBankIdProperties)
+        awaitUnchanged()
+        authRepository.loginStatusResponse.add(LoginStatusResult.Pending("status", null))
+        runCurrent()
+        val handlingBankIdState = BankIdUiState.HandlingBankId(
+          "status",
+          BankIdUiState.HandlingBankId.AutoStartToken("auto"),
+          null,
+          false,
+          true,
+        )
+        assertThat(awaitItem().bankIdUiState).isEqualTo(handlingBankIdState)
+        sendEvent(SwedishLoginEvent.DidOpenBankIDApp)
+        assertThat(awaitItem().bankIdUiState).isEqualTo(handlingBankIdState.copy(allowOpeningBankId = false))
+        expectNoEvents()
+      }
+
+      // Process death happening here, we get a brand new presenter, with the same SavedStateHandle.
+      // Note that with the SavedStateHandle.saveable APIs, the value is only saved into the handle when there is a
+      // real event of process death which instructs viewmodel-savedstate to trigger the save state. This is either not
+      // yet possible to do in unit tests, or is quite hard to get right, so we need to hack it a little but by
+      // manually populating the SavedStateHandle ourselves with the right values, simulating what would happen in a
+      // process death scenario.
+      // When that artifact goes KMP it will most likely provide a much easier way to integrate process death scenarios
+      // into our tests.
+      val savedStateHandleWithSavedBankIdData = savedStateHandlePopulatedWith(successBankIdProperties)
+      testSwedishLoginPresenter(authRepository, authTokenService, savedStateHandleWithSavedBankIdData).test(
+        SwedishLoginUiState(BankIdUiState.Loading, false),
+      ) {
+        assertThat(awaitItem().bankIdUiState).isInstanceOf<BankIdUiState.Loading>()
+        authRepository.loginStatusResponse.add(LoginStatusResult.Completed(AuthorizationCodeGrant("1234")))
+        expectNoEvents()
+        authRepository.exchangeResponse.add(AuthTokenResult.Success(AccessToken("123", 90), RefreshToken("456", 90)))
+        assertThat((authTokenService.authEventTurbine.awaitItem() as AuthEvent.LoggedIn).accessToken).isEqualTo("123")
+        val itemAfterSuccessfulResponse = awaitItem()
+        assertThat(itemAfterSuccessfulResponse.bankIdUiState).isInstanceOf<BankIdUiState.Loading>()
+        assertThat(itemAfterSuccessfulResponse.navigateToLoginScreen).isTrue()
+
+        // expect to never have asked for a new login attempt since we had an ongoing login attempt
+        authRepository.authAttemptResponse.expectNoEvents()
+      }
+    }
+
+  @Test
+  fun `coming from process death should continue polling for a success coming later`() = runTest {
+    val authRepository = FakeAuthRepository()
+    val authTokenService = TestAuthTokenService()
+
+    val successBankIdProperties = AuthAttemptResult.BankIdProperties("id", StatusUrl(""), "auto")
+    val savedStateHandleWithSavedBankIdData = savedStateHandlePopulatedWith(successBankIdProperties)
+    testSwedishLoginPresenter(authRepository, authTokenService, savedStateHandleWithSavedBankIdData).test(
+      SwedishLoginUiState(BankIdUiState.Loading, false),
+    ) {
+      assertThat(awaitItem().bankIdUiState).isInstanceOf<BankIdUiState.Loading>()
+      authRepository.loginStatusResponse.add(LoginStatusResult.Pending("status", null))
+      assertThat(awaitItem().bankIdUiState).isEqualTo(
+        BankIdUiState.HandlingBankId(
+          "status",
+          BankIdUiState.HandlingBankId.AutoStartToken(successBankIdProperties.autoStartToken),
+          null,
+          false,
+          true,
+        ),
+      )
+      authRepository.loginStatusResponse.add(LoginStatusResult.Completed(AuthorizationCodeGrant("1234")))
+      expectNoEvents()
+      authRepository.exchangeResponse.add(AuthTokenResult.Success(AccessToken("123", 90), RefreshToken("456", 90)))
+      assertThat((authTokenService.authEventTurbine.awaitItem() as AuthEvent.LoggedIn).accessToken).isEqualTo("123")
+      val itemAfterSuccessfulResponse = awaitItem()
+      assertThat(itemAfterSuccessfulResponse.bankIdUiState).isEqualTo(
+        BankIdUiState.HandlingBankId(
+          "status",
+          BankIdUiState.HandlingBankId.AutoStartToken(successBankIdProperties.autoStartToken),
+          null,
+          false,
+          true,
+        ),
+      )
+      assertThat(itemAfterSuccessfulResponse.navigateToLoginScreen).isTrue()
+
+      // expect to never have asked for a new login attempt since we had an ongoing login attempt
+      authRepository.authAttemptResponse.expectNoEvents()
+    }
+  }
+
   private fun testSwedishLoginPresenter(
     authRepository: AuthRepository,
     authTokenService: AuthTokenService = TestAuthTokenService(),
@@ -202,6 +304,28 @@ class SwedishLoginPresenterTest {
         override suspend fun setDemoMode(demoMode: Boolean) {}
       },
       savedStateHandle,
+    )
+  }
+
+  /**
+   * The saveable APIs expect the bundle inside the key we provide to be specifically
+   * `"value" to mutableStateof(...)`. The "value" part is hardcoded, and the second parameter needs to be
+   * `mutableState` which contains inside the raw information of how our saver knows to restore from.
+   * In our case the saver implementation is done by a listSaver saving the BankIdProperties in a list.
+   */
+  private fun savedStateHandlePopulatedWith(bankIdProperties: AuthAttemptResult.BankIdProperties): SavedStateHandle {
+    return SavedStateHandle(
+      mapOf(
+        BankIdPropertiesSaver.ID to bundleOf(
+          "value" to mutableStateOf(
+            listOf(
+              bankIdProperties.id,
+              bankIdProperties.statusUrl.url,
+              bankIdProperties.autoStartToken,
+            ),
+          ),
+        ),
+      ),
     )
   }
 }
