@@ -33,16 +33,16 @@ internal class TerminationSurveyPresenter(
   ): TerminationSurveyState {
     var loadNextStep by remember { mutableStateOf(false) }
 
-    val initialReasons = (
-      lastState.reasons.ifEmpty { // in initial state reasons are empty, so we take them from parameters
-        options.map { option ->
-          TerminationReason(option, null)
-        }
-      }
-    ).map {
-      it.surveyOption to it.feedBack
-    }
     val currentReasonsWithFeedback = remember {
+      val initialReasons = (
+        lastState.reasons.ifEmpty { // in initial state reasons are empty, so we take them from parameters
+          options.map { option ->
+            TerminationReason(option, null)
+          }
+        }
+      ).map {
+        it.surveyOption to it.feedBack
+      }
       mutableStateMapOf(*initialReasons.toTypedArray())
     }
 
@@ -62,14 +62,14 @@ internal class TerminationSurveyPresenter(
         }
 
         is TerminationSurveyEvent.SelectOption -> {
-          currentState = currentState.copy(selectedOption = event.option)
+          currentState = currentState.copy(selectedOption = event.option, errorWhileLoadingNextStep = false)
         }
 
         is TerminationSurveyEvent.Continue -> {
-          val state = currentState
-          val selectedOption = state.selectedOption ?: return@CollectEvents
+          val selectedOption = currentState.selectedOption ?: return@CollectEvents
+          currentState = currentState.copy(errorWhileLoadingNextStep = false)
           if (selectedOption.subOptions.isNotEmpty()) {
-            currentState = state.copy(nextNavigationStep = SurveyNavigationStep.NavigateToSubOptions)
+            currentState = currentState.copy(nextNavigationStep = SurveyNavigationStep.NavigateToSubOptions)
           } else {
             loadNextStep = true
           }

@@ -85,7 +85,7 @@ internal fun TerminationSurveyDestination(
   navigateToSubOptions: ((List<TerminationSurveyOption>) -> Unit)?,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  LaunchedEffect(uiState) {
+  LaunchedEffect(uiState.nextNavigationStep) {
     val nextStep = uiState.nextNavigationStep
     if (nextStep != null) {
       when (nextStep) {
