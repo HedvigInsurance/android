@@ -57,14 +57,14 @@ internal class TerminationSurveyPresenter(
         }
 
         is TerminationSurveyEvent.SelectOption -> {
-          currentState = currentState.copy(selectedOption = event.option)
+          currentState = currentState.copy(selectedOption = event.option, errorWhileLoadingNextStep = false)
         }
 
         is TerminationSurveyEvent.Continue -> {
-          val state = currentState
-          val selectedOption = state.selectedOption ?: return@CollectEvents
+          val selectedOption = currentState.selectedOption ?: return@CollectEvents
+          currentState = currentState.copy(errorWhileLoadingNextStep = false)
           if (selectedOption.subOptions.isNotEmpty()) {
-            currentState = state.copy(nextNavigationStep = SurveyNavigationStep.NavigateToSubOptions)
+            currentState = currentState.copy(nextNavigationStep = SurveyNavigationStep.NavigateToSubOptions)
           } else {
             loadNextStep = true
           }
