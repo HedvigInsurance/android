@@ -14,6 +14,7 @@ android {
 }
 
 dependencies {
+  implementation(projects.notificationBadgeDataPublic)
   apolloMetadata(projects.apolloOctopusPublic)
 
   implementation(libs.accompanist.pagerIndicators)
@@ -62,6 +63,9 @@ dependencies {
   implementation(projects.navigationCore)
   implementation(projects.notificationPermission)
   implementation(projects.pullrefresh)
+  implementation(projects.dataContractAndroid)
+  implementation(libs.accompanist.pagerIndicators)
+  implementation(projects.crossSells)
   implementation(projects.uiEmergency)
 
   testImplementation(libs.apollo.testingSupport)
@@ -80,6 +84,7 @@ dependencies {
   testImplementation(projects.memberRemindersTest)
   testImplementation(projects.moleculeTest)
   testImplementation(projects.testClock)
+  testImplementation(projects.notificationBadgeDataFake)
 }
 
 apollo {

@@ -4,9 +4,11 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
+import com.hedvig.android.feature.home.home.ui.FirstVetDestination
 import com.hedvig.android.feature.home.home.ui.HomeDestination
 import com.hedvig.android.feature.home.home.ui.HomeViewModel
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
+import com.hedvig.android.navigation.core.Navigator
 import com.kiwi.navigationcompose.typed.composable
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigation
@@ -15,6 +17,7 @@ import org.koin.androidx.compose.koinViewModel
 fun NavGraphBuilder.homeGraph(
   nestedGraphs: NavGraphBuilder.() -> Unit,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
+  navigator: Navigator,
   onStartChat: (NavBackStackEntry) -> Unit,
   onStartClaim: (NavBackStackEntry) -> Unit,
   navigateToClaimDetails: (NavBackStackEntry, claimId: String) -> Unit,
@@ -47,6 +50,18 @@ fun NavGraphBuilder.homeGraph(
         navigateToHelpCenter = { navigateToHelpCenter(backStackEntry) },
         openUrl = openUrl,
         openAppSettings = openAppSettings,
+        navigateToFirstVet = { sections ->
+          with(navigator) {
+            backStackEntry.navigate(HomeDestination.FirstVet(sections))
+          }
+        },
+      )
+    }
+    composable<HomeDestination.FirstVet> {
+      FirstVetDestination(
+        sections,
+        navigateUp = navigator::navigateUp,
+        navigateBack = navigator::popBackStack,
       )
     }
     nestedGraphs()

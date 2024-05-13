@@ -52,6 +52,9 @@ dependencies {
   implementation(projects.notificationBadgeDataPublic)
   implementation(projects.placeholder)
   implementation(projects.pullrefresh)
+  implementation(projects.uiEmergency)
+  implementation(projects.placeholder)
+  implementation(projects.crossSells)
 
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)

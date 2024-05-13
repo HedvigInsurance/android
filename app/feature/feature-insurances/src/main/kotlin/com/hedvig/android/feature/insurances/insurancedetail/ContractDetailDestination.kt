@@ -86,7 +86,7 @@ internal fun ContractDetailDestination(
   ContractDetailScreen(
     uiState = uiState,
     imageLoader = imageLoader,
-    retry = viewModel::retryLoadingContract,
+    retry = { viewModel.emit(ContractDetailsEvent.RetryLoadingContract) },
     onEditCoInsuredClick = onEditCoInsuredClick,
     onMissingInfoClick = onMissingInfoClick,
     onChangeAddressClick = onChangeAddressClick,

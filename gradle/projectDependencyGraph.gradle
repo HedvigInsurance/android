@@ -64,7 +64,7 @@ task generateProjectDependencyGraph {
 
 
                             def configLowerCaseName = config.name.toLowerCase()
-                            println "Stelios configLowerCaseName:${configLowerCaseName}"
+                            println "configLowerCaseName:${configLowerCaseName}"
                             if (configLowerCaseName.endsWith('implementation') || configLowerCaseName.endsWith('lintchecks')) {
                                 traits.add('style=dotted')
                             }

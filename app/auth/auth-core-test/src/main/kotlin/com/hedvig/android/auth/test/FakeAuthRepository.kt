@@ -13,7 +13,7 @@ import com.hedvig.authlib.RevokeResult
 import com.hedvig.authlib.StatusUrl
 import com.hedvig.authlib.SubmitOtpResult
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 
 class FakeAuthRepository : AuthRepository {
   val authAttemptResponse = Turbine<AuthAttemptResult>()
@@ -32,7 +32,7 @@ class FakeAuthRepository : AuthRepository {
   }
 
   override fun observeLoginStatus(statusUrl: StatusUrl): Flow<LoginStatusResult> {
-    return loginStatusResponse.asChannel().consumeAsFlow()
+    return loginStatusResponse.asChannel().receiveAsFlow()
   }
 
   override suspend fun submitOtp(verifyUrl: String, otp: String): SubmitOtpResult {
