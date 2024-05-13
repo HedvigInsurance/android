@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.login.swedishlogin
 
+import androidx.lifecycle.SavedStateHandle
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.molecule.android.MoleculeViewModel
@@ -10,11 +11,9 @@ internal class SwedishLoginViewModel(
   authTokenService: AuthTokenService,
   authRepository: AuthRepository,
   demoManager: DemoManager,
+  savedStateHandle: SavedStateHandle,
 ) : MoleculeViewModel<SwedishLoginEvent, SwedishLoginUiState>(
-    SwedishLoginUiState.Loading,
-    SwedishLoginPresenter(authTokenService, authRepository, demoManager),
-    // SharingStarted.Lazily is very important for this case, since we do want to explicitly keep the flow of the auth
-    // library alive even when the app goes to the background. On top of this, we also do want to start the exchange just
-    // once, and not again when we come back to the app.
-    SharingStarted.Lazily,
+    SwedishLoginUiState(BankIdUiState.Loading, false),
+    SwedishLoginPresenter(authTokenService, authRepository, demoManager, savedStateHandle),
+    SharingStarted.WhileSubscribed(),
   )

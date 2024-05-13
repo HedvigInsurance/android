@@ -69,7 +69,7 @@ internal fun PaymentDetailExpandableCard(
           indication = rememberRipple(
             bounded = false,
             // This fixes the problem of the ripple not properly resizing as the card expands
-            radius = 1000.dp
+            radius = 1000.dp,
           ),
           onClick = onClick,
         ),
