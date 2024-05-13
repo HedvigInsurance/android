@@ -44,6 +44,8 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -307,7 +309,7 @@ private fun TerminationSurveyScreen(
     AnimatedVisibility(
       visible = uiState.showFullScreenEditText != null,
       enter = fadeIn() + slideInVertically(initialOffsetY = { it / 2 }),
-      // exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut(),
+      exit = fadeOut(),
     ) {
       val reason = uiState.showFullScreenEditText
       if (reason != null) {
@@ -338,7 +340,12 @@ private fun FullScreenEditableText(
   val focusRequester = remember { FocusRequester() }
   val hint = stringResource(id = R.string.TERMINATION_SURVEY_FEEDBACK_HINT)
   var textValue by remember {
-    mutableStateOf(feedbackText ?: "")
+    mutableStateOf(
+      TextFieldValue(
+        text = feedbackText ?: "",
+        selection = TextRange((feedbackText ?: "").length),
+      ),
+    )
   }
   LaunchedEffect(Unit) {
     focusRequester.requestFocus()
@@ -357,10 +364,10 @@ private fun FullScreenEditableText(
       BasicTextField(
         value = textValue,
         onValueChange = {
-          if (it.length <= 140) {
+          if (it.text.length <= 140) {
             textValue = it
           } else {
-            textValue = it.substring(0, 140)
+            textValue = TextFieldValue(it.text.substring(0, 140))
           }
         },
         cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
@@ -380,7 +387,7 @@ private fun FullScreenEditableText(
               modifier = Modifier.weight(1f),
             ) {
               HedvigTextFieldDefaults.DecorationBox(
-                value = textValue,
+                value = textValue.text,
                 colors = HedvigTextFieldDefaults.colors(
                   typingHighlightColor = Color.Transparent,
                   focusedContainerColor = Color.Transparent,
@@ -409,7 +416,7 @@ private fun FullScreenEditableText(
                 .padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
             ) {
               Text(
-                text = "${textValue.length}/140",
+                text = "${textValue.text.length}/140",
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
               )
@@ -440,7 +447,7 @@ private fun FullScreenEditableText(
           text = stringResource(id = R.string.general_save_button),
           onClick = {
             focusRequester.freeFocus()
-            val valueToSave = textValue.ifEmpty { null }
+            val valueToSave = textValue.text.ifEmpty { null }
             onSaveClick(valueToSave)
           },
           modifier = Modifier.weight(1f),
