@@ -7,6 +7,8 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.demomode.Provider
+import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
 import com.hedvig.android.logger.logcat
 import kotlinx.datetime.LocalDate
 import octopus.GetPayinMethodStatusQuery
@@ -18,9 +20,14 @@ internal interface GetConnectPaymentReminderUseCase {
 
 internal class GetConnectPaymentReminderUseCaseImpl(
   private val apolloClient: ApolloClient,
+  private val getOnlyHasNonPayingContractsUseCaseProvider: Provider<GetOnlyHasNonPayingContractsUseCase>,
 ) : GetConnectPaymentReminderUseCase {
   override suspend fun invoke(): Either<ConnectPaymentReminderError, PaymentReminder> {
     return either {
+      val onlyHasNonPayingContracts = getOnlyHasNonPayingContractsUseCaseProvider.provide().invoke().getOrNull() == true
+      ensure(onlyHasNonPayingContracts == false) {
+        ConnectPaymentReminderError.NonPayingMember
+      }
       val result = apolloClient.query(GetPayinMethodStatusQuery())
         .safeExecute()
         .toEither(::ErrorMessage)
@@ -46,9 +53,9 @@ internal class GetConnectPaymentReminderUseCaseImpl(
 }
 
 sealed interface ConnectPaymentReminderError {
-  data object FeatureFlagNotEnabled : ConnectPaymentReminderError
-
   data object AlreadySetup : ConnectPaymentReminderError
+
+  data object NonPayingMember : ConnectPaymentReminderError
 
   data class NetworkError(val errorMessage: ErrorMessage) : ConnectPaymentReminderError, ErrorMessage by errorMessage
 }

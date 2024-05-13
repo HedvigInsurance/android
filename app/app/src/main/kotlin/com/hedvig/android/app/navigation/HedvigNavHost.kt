@@ -32,8 +32,8 @@ import com.hedvig.android.feature.help.center.navigation.HelpCenterDestination
 import com.hedvig.android.feature.home.home.navigation.HomeDestination
 import com.hedvig.android.feature.home.home.navigation.homeGraph
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
-import com.hedvig.android.feature.insurances.insurance.insuranceGraph
 import com.hedvig.android.feature.insurances.navigation.InsurancesDestination
+import com.hedvig.android.feature.insurances.navigation.insuranceGraph
 import com.hedvig.android.feature.login.navigation.loginGraph
 import com.hedvig.android.feature.odyssey.navigation.claimFlowGraph
 import com.hedvig.android.feature.odyssey.navigation.navigateToClaimFlowDestination
@@ -134,6 +134,7 @@ internal fun HedvigNavHost(
       },
       openAppSettings = externalNavigator::openAppSettings,
       openUrl = openUrl,
+      navigator = navigator,
     )
     insuranceGraph(
       nestedGraphs = {
