@@ -39,6 +39,7 @@ dependencies {
   implementation(projects.coreIcons)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
+  implementation(projects.crossSells)
   implementation(projects.dataContractAndroid)
   implementation(projects.dataContractPublic)
   implementation(projects.dataProductVariantAndroid)
@@ -53,8 +54,6 @@ dependencies {
   implementation(projects.placeholder)
   implementation(projects.pullrefresh)
   implementation(projects.uiEmergency)
-  implementation(projects.placeholder)
-  implementation(projects.crossSells)
 
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
