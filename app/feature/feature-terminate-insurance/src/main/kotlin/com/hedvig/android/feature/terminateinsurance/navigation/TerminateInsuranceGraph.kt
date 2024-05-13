@@ -50,7 +50,6 @@ fun NavGraphBuilder.terminateInsuranceGraph(
   composable<TerminateInsuranceDestination.TerminationSuccess> { backStackEntry ->
     TerminationSuccessDestination(
       terminationDate = terminationDate,
-      onSurveyClicked = { openUrl(surveyUrl) },
       onDone = {
         if (!navController.popBackStack()) {
           // In the deep link situation, we want to navigate to Insurances when we're successfully done with this flow
