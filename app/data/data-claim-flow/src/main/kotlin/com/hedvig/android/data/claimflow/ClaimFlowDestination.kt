@@ -64,6 +64,7 @@ sealed interface ClaimFlowDestination : Destination {
     val preferredCurrency: CurrencyCode,
     val purchaseDate: LocalDate?,
     val purchasePrice: UiNullableMoney?,
+    val purchasePriceApplicable: Boolean,
     val availableItemBrands: List<ItemBrand>?,
     val selectedItemBrand: String?,
     val availableItemModels: List<ItemModel>?,

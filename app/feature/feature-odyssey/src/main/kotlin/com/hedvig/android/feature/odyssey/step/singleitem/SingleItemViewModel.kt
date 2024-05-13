@@ -57,6 +57,7 @@ internal class SingleItemViewModel(
     SingleItemUiState(
       partialUiState.datePickerUiState,
       partialUiState.purchasePriceUiState,
+      partialUiState.purchasePriceApplicable,
       itemBrandsUiState,
       itemModelsUiState,
       partialUiState.itemProblemsUiState,
@@ -266,6 +267,7 @@ internal class SingleItemViewModel(
 internal data class PartialSingleItemUiState(
   val datePickerUiState: DatePickerUiState,
   val purchasePriceUiState: PurchasePriceUiState,
+  val purchasePriceApplicable: Boolean,
   val itemProblemsUiState: ItemProblemsUiState,
   val isLoading: Boolean = false,
   val hasError: Boolean = false,
@@ -285,6 +287,7 @@ internal data class PartialSingleItemUiState(
         ),
         purchasePriceUiState = PurchasePriceUiState(singleItem.purchasePrice?.amount, singleItem.preferredCurrency),
         itemProblemsUiState = ItemProblemsUiState.fromSingleItem(singleItem),
+        purchasePriceApplicable = singleItem.purchasePriceApplicable,
       )
     }
   }
@@ -293,6 +296,7 @@ internal data class PartialSingleItemUiState(
 internal data class SingleItemUiState(
   val datePickerUiState: DatePickerUiState,
   val purchasePriceUiState: PurchasePriceUiState,
+  val purchasePriceApplicable: Boolean,
   val itemBrandsUiState: ItemBrandsUiState,
   val itemModelsUiState: ItemModelsUiState,
   val itemProblemsUiState: ItemProblemsUiState,
@@ -316,6 +320,7 @@ internal data class SingleItemUiState(
           maxDate = clock.now().toLocalDateTime(TimeZone.UTC).date,
         ),
         purchasePriceUiState = PurchasePriceUiState(singleItem.purchasePrice?.amount, singleItem.preferredCurrency),
+        purchasePriceApplicable = singleItem.purchasePriceApplicable,
         itemBrandsUiState = ItemBrandsUiState.fromSingleItem(singleItem),
         itemModelsUiState = ItemModelsUiState.fromSingleItem(singleItem),
         itemProblemsUiState = ItemProblemsUiState.fromSingleItem(singleItem),

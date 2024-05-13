@@ -43,11 +43,13 @@ fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
     }
 
     is ClaimFlowStep.ClaimPhoneNumberStep -> ClaimFlowDestination.PhoneNumber(phoneNumber)
+
     is ClaimFlowStep.ClaimSingleItemStep -> {
       ClaimFlowDestination.SingleItem(
         preferredCurrency = preferredCurrency,
         purchaseDate = purchaseDate,
         purchasePrice = UiNullableMoney.fromMoneyFragment(purchasePrice),
+        purchasePriceApplicable = purchasePriceApplicable,
         availableItemBrands = availableItemBrands?.map { it.toItemBrand() },
         selectedItemBrand = selectedItemBrand,
         availableItemModels = availableItemModels?.map { it.toItemModel() },

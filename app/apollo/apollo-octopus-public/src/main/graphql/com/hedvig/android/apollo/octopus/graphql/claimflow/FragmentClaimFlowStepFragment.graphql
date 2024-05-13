@@ -66,6 +66,7 @@ fragment FlowClaimSingleItemStepFragment on FlowClaimSingleItemStep {
   purchasePrice {
     ...MoneyFragment
   }
+  purchasePriceApplicable
   purchaseDate
   selectedItemProblems
   availableItemProblems {

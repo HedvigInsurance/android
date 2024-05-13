@@ -394,6 +394,7 @@ private suspend fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(
         preferredCurrency,
         purchaseDate,
         purchasePrice,
+        purchasePriceApplicable,
         availableItemBrands,
         selectedItemBrand,
         availableItemModels,

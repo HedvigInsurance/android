@@ -175,13 +175,16 @@ private fun SingleItemScreen(
 
     Spacer(Modifier.height(2.dp))
     DateOfPurchase(uiState.datePickerUiState, uiState.canSubmit, sideSpacingModifier.fillMaxWidth())
-    Spacer(Modifier.height(4.dp))
-    PriceOfPurchase(
-      uiState = uiState.purchasePriceUiState,
-      canInteract = uiState.canSubmit,
-      modifier = sideSpacingModifier.fillMaxWidth(),
-    )
     Spacer(Modifier.height(2.dp))
+    if (uiState.purchasePriceApplicable) {
+      Spacer(Modifier.height(2.dp))
+      PriceOfPurchase(
+        uiState = uiState.purchasePriceUiState,
+        canInteract = uiState.canSubmit,
+        modifier = sideSpacingModifier.fillMaxWidth(),
+      )
+      Spacer(Modifier.height(2.dp))
+    }
     uiState.itemProblemsUiState.asContent()?.let { itemProblemsUiState ->
       Spacer(Modifier.height(2.dp))
       ItemProblems(
@@ -425,6 +428,7 @@ private fun PreviewSingleItemScreen(
           isLoading = isLoading,
           hasError = false,
           nextStep = null,
+          purchasePriceApplicable = true,
         ),
         WindowSizeClass.calculateForPreview(),
         {},
