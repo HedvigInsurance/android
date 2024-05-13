@@ -15,6 +15,8 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import okio.FileSystem
+import okio.Path.Companion.toPath
 import okio.buffer
 import okio.sink
 import okio.source
@@ -68,6 +70,7 @@ abstract class DownloadStringsTask @Inject constructor(
     logger.debug("$tag zip file path:${tempFileForZipFile.absolutePath}")
     dirRes.fillContentsByCopyingFromZipFile(tempFileForZipFile)
     logger.debug("$tag dirRes:${dirRes.asFileTree.map { it.absolutePath }}")
+    dirRes.fixPercentageSigns()
     tempFileForZipFile.delete()
   }
 
@@ -77,6 +80,7 @@ abstract class DownloadStringsTask @Inject constructor(
       put("export_sort", downloadConfig.get().stringsOrder.value)
       put("export_empty_as", downloadConfig.get().emptyTranslationStrategy.value)
       put("replace_breaks", true)
+      put("escape_percent", true)
       put(
         "filter_langs",
         buildJsonArray {
@@ -105,6 +109,30 @@ abstract class DownloadStringsTask @Inject constructor(
       ?: error("Lokalise response contained no bucket with the strings. Response was instead: $response")
     logger.debug("$tag amazonBucketUrl:$amazonBucketUrl")
     return amazonBucketUrl.jsonPrimitive.content
+  }
+
+  /**
+   * We fetch all raw percentage signs as `%%` from lokalise due to to `put("escape_percent", true)`.
+   * For this to work in all scenarios, we simply replace all those cases with \u0025 which is unicode for `%`.
+   */
+  private fun ConfigurableFileCollection.fixPercentageSigns() {
+    val allTranslationXmlFilePaths: List<okio.Path> = asFileTree
+      .map { it.path.toPath() }
+      .filter { it.name == """strings.xml""" }
+      .toList()
+
+    val fileSystem = FileSystem.SYSTEM
+    for (currentLanguageTranslationXmlFilePath in allTranslationXmlFilePaths) {
+      val content = fileSystem.read(currentLanguageTranslationXmlFilePath) { readUtf8() }
+      val updatedContent = content
+        .replace(
+          oldValue = """%%""",
+          newValue = """\u0025""",
+        )
+      fileSystem.write(currentLanguageTranslationXmlFilePath) {
+        writeUtf8(updatedContent)
+      }
+    }
   }
 
   private fun File.fillContentsByDownloadingFromUrl(bucketUrl: String) {
