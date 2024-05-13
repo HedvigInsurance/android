@@ -354,39 +354,6 @@ private fun SharedTextFieldContent(
         Spacer(Modifier.height(textContentPadding.calculateBottomPadding()))
       }
     }
-//    Column {
-//      Spacer(Modifier.height(textContentPadding.calculateTopPadding()))
-//      if (inputPhase.onlyShowLabel) {
-//        Row(Modifier.fillMaxWidth()) {
-//          label?.invoke(Modifier)
-//          Spacer(
-//            Modifier
-//              .weight(1f)
-//              .width(configuration.textFieldToOtherContentHorizontalPadding),
-//          )
-//          suffix?.invoke(Modifier)
-//        }
-//      } else {
-//        Column(verticalArrangement = Arrangement.spacedBy(-size.labelToTextOverlap)) {
-//          label?.invoke(Modifier)
-//          Row(modifier = Modifier.fillMaxWidth()) {
-//            innerTextField(Modifier.weight(1f))
-//            Spacer(Modifier.width(configuration.textFieldToOtherContentHorizontalPadding))
-//            suffix?.invoke(Modifier)
-//          }
-//        }
-//      }
-//      Spacer(Modifier.height(textContentPadding.calculateBottomPadding()))
-//      if (inputPhase.onlyShowLabel) {
-//        // Lay out the text at the *bottom* of the container, so it starts animating in from there towards its
-//        // final position.
-//        innerTextField(
-//          Modifier
-//            .requiredHeight(0.dp)
-//            .wrapContentHeight(Alignment.Bottom, unbounded = true),
-//        )
-//      }
-//    }
   }
   RowTextFieldLayout(
     modifier = Modifier.padding(size.horizontalPadding()),
