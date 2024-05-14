@@ -355,7 +355,9 @@ private fun FullScreenEditableText(
     onCancelClick()
   }
   HedvigTheme(darkTheme = true) {
-    Surface {
+    Surface(
+      color = MaterialTheme.colorScheme.background
+    ) {
       Column(
           modifier
               .fillMaxSize()
@@ -439,8 +441,8 @@ private fun FullScreenEditableText(
             },
             modifier = Modifier.weight(1f),
             colors = ButtonDefaults.buttonColors(
-              containerColor = Color.Transparent,
-              contentColor = MaterialTheme.colorScheme.onAlwaysBlackContainer,
+              containerColor = MaterialTheme.colorScheme.surface,
+              contentColor = MaterialTheme.colorScheme.onSurface,
             ),
           )
           Spacer(modifier = Modifier.width(8.dp))
