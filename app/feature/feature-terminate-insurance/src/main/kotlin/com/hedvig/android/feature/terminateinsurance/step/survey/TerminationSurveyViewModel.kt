@@ -46,6 +46,10 @@ internal class TerminationSurveyPresenter(
       mutableStateMapOf(*initialReasons.toTypedArray())
     }
 
+    var showFullScreenTextField by remember {
+      mutableStateOf<TerminationReason?>(null)
+    }
+
     var currentState by remember {
       mutableStateOf(lastState)
     }
@@ -53,6 +57,7 @@ internal class TerminationSurveyPresenter(
     CollectEvents { event ->
       when (event) {
         is TerminationSurveyEvent.ChangeFeedbackForReason -> {
+          showFullScreenTextField = null
           currentReasonsWithFeedback[event.option] = event.newFeedback
         }
 
@@ -73,6 +78,12 @@ internal class TerminationSurveyPresenter(
         TerminationSurveyEvent.ClearNextStep -> {
           currentState = currentState.copy(nextNavigationStep = null)
         }
+
+        is TerminationSurveyEvent.ShowFullScreenEditText -> {
+          showFullScreenTextField = TerminationReason(event.option, currentReasonsWithFeedback[event.option])
+        }
+
+        TerminationSurveyEvent.ClearFullScreenEditText -> showFullScreenTextField = null
       }
     }
 
@@ -107,6 +118,7 @@ internal class TerminationSurveyPresenter(
       reasons = currentReasonsWithFeedback.map {
         TerminationReason(it.key, it.value)
       },
+      showFullScreenEditText = showFullScreenTextField,
     )
   }
 }
@@ -115,6 +127,10 @@ internal sealed interface TerminationSurveyEvent {
   data class SelectOption(val option: TerminationSurveyOption) : TerminationSurveyEvent
 
   data object Continue : TerminationSurveyEvent
+
+  data class ShowFullScreenEditText(val option: TerminationSurveyOption) : TerminationSurveyEvent
+
+  data object ClearFullScreenEditText : TerminationSurveyEvent
 
   data class ChangeFeedbackForReason(
     val option: TerminationSurveyOption,
@@ -126,6 +142,7 @@ internal sealed interface TerminationSurveyEvent {
 
 internal data class TerminationSurveyState(
   val reasons: List<TerminationReason> = listOf(),
+  val showFullScreenEditText: TerminationReason? = null,
   val selectedOption: TerminationSurveyOption? = null,
   val nextNavigationStep: SurveyNavigationStep? = null,
   val isNavigationStepLoading: Boolean = false,

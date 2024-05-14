@@ -14,8 +14,9 @@ internal data class TerminationSurveyOption(
 @Serializable
 internal sealed interface SurveyOptionSuggestion {
   @Serializable
-  enum class Action : SurveyOptionSuggestion {
-    UPDATE_ADDRESS,
+  sealed interface Action : SurveyOptionSuggestion {
+    @Serializable
+    data object UpdateAddress : Action
   }
 
   @Serializable
