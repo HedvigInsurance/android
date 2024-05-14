@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.terminateinsurance.step.survey
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -161,9 +162,9 @@ private fun TerminationSurveyScreen(
         Column {
           WarningTextWithIcon(
             modifier = Modifier
-              .padding(horizontal = 16.dp)
-              .fillMaxWidth()
-              .wrapContentWidth(),
+                .padding(horizontal = 16.dp)
+                .fillMaxWidth()
+                .wrapContentWidth(),
             text = stringResource(R.string.something_went_wrong),
           )
           Spacer(Modifier.height(16.dp))
@@ -177,15 +178,15 @@ private fun TerminationSurveyScreen(
               containerColor = MaterialTheme.colorScheme.surface,
             ),
             modifier = Modifier
-              .fillMaxWidth()
-              .padding(horizontal = 16.dp),
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
           ) {
             Row(
               verticalAlignment = Alignment.CenterVertically,
               modifier = Modifier
-                .heightIn(64.dp)
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 10.dp),
+                  .heightIn(64.dp)
+                  .fillMaxWidth()
+                  .padding(horizontal = 16.dp, vertical = 10.dp),
             ) {
               Text(
                 text = reason.surveyOption.title,
@@ -216,8 +217,8 @@ private fun TerminationSurveyScreen(
                   text = text,
                   icon = Icons.Hedvig.Campaign,
                   modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                      .fillMaxWidth()
+                      .padding(horizontal = 16.dp),
                   iconColor = MaterialTheme.colorScheme.typeElement,
                   colors = CardDefaults.outlinedCardColors(
                     containerColor = MaterialTheme.colorScheme.typeContainer,
@@ -247,16 +248,16 @@ private fun TerminationSurveyScreen(
                     containerColor = MaterialTheme.colorScheme.surface,
                   ),
                   modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(100.dp)
-                    .padding(horizontal = 16.dp),
+                      .fillMaxWidth()
+                      .heightIn(100.dp)
+                      .padding(horizontal = 16.dp),
                 ) {
                   Column {
                     Row(
                       verticalAlignment = Alignment.Top,
                       modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 16.dp, top = 10.dp, end = 16.dp),
+                          .fillMaxWidth()
+                          .padding(start = 16.dp, top = 10.dp, end = 16.dp),
                     ) {
                       Text(
                         text = feedback ?: stringResource(id = R.string.TERMINATION_SURVEY_FEEDBACK_HINT),
@@ -273,8 +274,8 @@ private fun TerminationSurveyScreen(
                     Row(
                       horizontalArrangement = Arrangement.End,
                       modifier = Modifier
-                        .fillMaxSize()
-                        .padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
+                          .fillMaxSize()
+                          .padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
                     ) {
                       val length = feedback?.length ?: 0
                       Text(
@@ -316,10 +317,10 @@ private fun TerminationSurveyScreen(
         FullScreenEditableText(
           reason.feedBack,
           modifier = Modifier
-            .fillMaxSize()
-            .windowInsetsPadding(
-              WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Vertical),
-            ),
+              .fillMaxSize()
+              .windowInsetsPadding(
+                  WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Vertical),
+              ),
           onCancelClick = onCloseFullScreenEditText,
           onSaveClick = { newFeedback ->
             changeFeedbackForReason(reason.surveyOption, newFeedback)
@@ -350,114 +351,115 @@ private fun FullScreenEditableText(
   LaunchedEffect(Unit) {
     focusRequester.requestFocus()
   }
-  Column(
-    modifier
-      .fillMaxSize()
-      .background(Color.Black)
-      .imePadding(),
-  ) {
-    Column(
-      Modifier
-        .weight(1f)
-        .padding(8.dp),
-    ) {
-      BasicTextField(
-        value = textValue,
-        onValueChange = {
-          if (it.text.length <= 140) {
-            textValue = it
-          } else {
-            textValue = TextFieldValue(it.text.substring(0, 140))
-          }
-        },
-        cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
-        modifier = Modifier
-          .weight(1f)
-          .focusRequester(focusRequester)
-          .background(
-            MaterialTheme.colorScheme.surface,
-            shape = HedvigTextFieldDefaults.shape,
-          ),
-        textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
-        decorationBox = @Composable { innerTextField ->
-          Column {
-            Row(
-              verticalAlignment = Alignment.Top,
-              horizontalArrangement = Arrangement.Start,
-              modifier = Modifier.weight(1f),
-            ) {
-              HedvigTextFieldDefaults.DecorationBox(
-                value = textValue.text,
-                colors = HedvigTextFieldDefaults.colors(
-                  typingHighlightColor = Color.Transparent,
-                  focusedContainerColor = Color.Transparent,
-                  unfocusedContainerColor = Color.Transparent,
-                  focusedIndicatorColor = MaterialTheme.colorScheme.onSurface,
-                  unfocusedIndicatorColor = MaterialTheme.colorScheme.onSurface,
-                ),
-                placeholder = {
-                  Text(
-                    text = hint,
-                    Modifier.fillMaxSize(),
-                    fontSize = MaterialTheme.typography.bodyLarge.fontSize,
-                  )
-                },
-                innerTextField = innerTextField,
-                enabled = true,
-                singleLine = false,
-                interactionSource = remember { MutableInteractionSource() },
-                visualTransformation = VisualTransformation.None,
-              )
-            }
-            Row(
-              horizontalArrangement = Arrangement.End,
-              modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
-            ) {
-              Text(
-                text = "${textValue.text.length}/140",
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-              )
-            }
-          }
-        },
-      )
-      Spacer(modifier = Modifier.height(8.dp))
-      Row(
-        modifier = Modifier
-          .fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center,
+  BackHandler(true) {
+    onCancelClick()
+  }
+  HedvigTheme(darkTheme = true) {
+    Surface {
+      Column(
+          modifier
+              .fillMaxSize()
+              .imePadding()
+              .padding(8.dp),
       ) {
-        HedvigContainedSmallButton(
-          text = stringResource(id = R.string.general_cancel_button),
-          onClick = {
-            focusRequester.freeFocus()
-            onCancelClick()
+        BasicTextField(
+          value = textValue,
+          onValueChange = {
+            if (it.text.length <= 140) {
+              textValue = it
+            } else {
+              textValue = TextFieldValue(it.text.substring(0, 140))
+            }
           },
-          modifier = Modifier.weight(1f),
-          colors = ButtonDefaults.buttonColors(
-            containerColor = Color.Transparent,
-            contentColor = MaterialTheme.colorScheme.onAlwaysBlackContainer,
-          ),
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        HedvigContainedSmallButton(
-          text = stringResource(id = R.string.general_save_button),
-          onClick = {
-            focusRequester.freeFocus()
-            val valueToSave = textValue.text.ifEmpty { null }
-            onSaveClick(valueToSave)
+          cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
+          modifier = Modifier
+              .weight(1f)
+              .focusRequester(focusRequester)
+              .background(
+                  MaterialTheme.colorScheme.surface,
+                  shape = HedvigTextFieldDefaults.shape,
+              ),
+          textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
+          decorationBox = @Composable { innerTextField ->
+            Column {
+              Row(
+                verticalAlignment = Alignment.Top,
+                horizontalArrangement = Arrangement.Start,
+                modifier = Modifier.weight(1f),
+              ) {
+                HedvigTextFieldDefaults.DecorationBox(
+                  value = textValue.text,
+                  colors = HedvigTextFieldDefaults.colors(
+                    typingHighlightColor = Color.Transparent,
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    focusedIndicatorColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedIndicatorColor = MaterialTheme.colorScheme.onSurface,
+                  ),
+                  placeholder = {
+                    Text(
+                      text = hint,
+                      Modifier.fillMaxSize(),
+                      fontSize = MaterialTheme.typography.bodyLarge.fontSize,
+                    )
+                  },
+                  innerTextField = innerTextField,
+                  enabled = true,
+                  singleLine = false,
+                  interactionSource = remember { MutableInteractionSource() },
+                  visualTransformation = VisualTransformation.None,
+                )
+              }
+              Row(
+                horizontalArrangement = Arrangement.End,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
+              ) {
+                Text(
+                  text = "${textValue.text.length}/140",
+                  style = MaterialTheme.typography.titleSmall,
+                  color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+              }
+            }
           },
-          modifier = Modifier.weight(1f),
-          colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.onAlwaysBlackContainer,
-            contentColor = MaterialTheme.colorScheme.alwaysBlackContainer,
-          ),
         )
+        Spacer(modifier = Modifier.height(8.dp))
+        Row(
+          modifier = Modifier
+            .fillMaxWidth(),
+          horizontalArrangement = Arrangement.Center,
+        ) {
+          HedvigContainedSmallButton(
+            text = stringResource(id = R.string.general_cancel_button),
+            onClick = {
+              focusRequester.freeFocus()
+              onCancelClick()
+            },
+            modifier = Modifier.weight(1f),
+            colors = ButtonDefaults.buttonColors(
+              containerColor = Color.Transparent,
+              contentColor = MaterialTheme.colorScheme.onAlwaysBlackContainer,
+            ),
+          )
+          Spacer(modifier = Modifier.width(8.dp))
+          HedvigContainedSmallButton(
+            text = stringResource(id = R.string.general_save_button),
+            onClick = {
+              focusRequester.freeFocus()
+              val valueToSave = textValue.text.ifEmpty { null }
+              onSaveClick(valueToSave)
+            },
+            modifier = Modifier.weight(1f),
+            colors = ButtonDefaults.buttonColors(
+              containerColor = MaterialTheme.colorScheme.onAlwaysBlackContainer,
+              contentColor = MaterialTheme.colorScheme.alwaysBlackContainer,
+            ),
+          )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
       }
-      Spacer(modifier = Modifier.height(8.dp))
     }
   }
 }
