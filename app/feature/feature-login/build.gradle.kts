@@ -39,9 +39,13 @@ dependencies {
 
   testImplementation(libs.androidx.datastore.core)
   testImplementation(libs.androidx.datastore.preferencesCore)
+  testImplementation(libs.androidx.junit)
+  testImplementation(libs.androidx.test)
+  testImplementation(libs.androidx.testRunners)
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)
+  testImplementation(libs.robolectric)
   testImplementation(libs.turbine)
   testImplementation(projects.authCoreTest)
   testImplementation(projects.authEventCore)
