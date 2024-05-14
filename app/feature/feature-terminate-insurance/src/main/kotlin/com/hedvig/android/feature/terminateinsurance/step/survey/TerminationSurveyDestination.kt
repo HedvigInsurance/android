@@ -356,7 +356,7 @@ private fun FullScreenEditableText(
   }
   HedvigTheme(darkTheme = true) {
     Surface(
-      color = MaterialTheme.colorScheme.background
+      color = MaterialTheme.colorScheme.background,
     ) {
       Column(
           modifier
@@ -367,11 +367,7 @@ private fun FullScreenEditableText(
         BasicTextField(
           value = textValue,
           onValueChange = {
-            if (it.text.length <= 140) {
-              textValue = it
-            } else {
-              textValue = TextFieldValue(it.text.substring(0, 140))
-            }
+            textValue = it.ofMaxLength(140)
           },
           cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
           modifier = Modifier
@@ -463,6 +459,24 @@ private fun FullScreenEditableText(
         Spacer(modifier = Modifier.height(8.dp))
       }
     }
+  }
+}
+
+fun TextFieldValue.ofMaxLength(maxLength: Int): TextFieldValue {
+  val overLength = text.length - maxLength
+  return if (overLength > 0) {
+    val headIndex = selection.end - overLength
+    val trailIndex = selection.end
+    if (headIndex >= 0) {
+      copy(
+        text = text.substring(0, headIndex) + text.substring(trailIndex, text.length),
+        selection = TextRange(headIndex),
+      )
+    } else {
+      copy(text.take(maxLength), selection = TextRange(maxLength))
+    }
+  } else {
+    this
   }
 }
 
