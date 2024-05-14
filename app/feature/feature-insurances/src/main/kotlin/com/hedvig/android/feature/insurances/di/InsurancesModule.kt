@@ -10,6 +10,7 @@ import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCaseIm
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceViewModel
 import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailViewModel
 import com.hedvig.android.feature.insurances.insurancedetail.GetContractForContractIdUseCase
+import com.hedvig.android.feature.insurances.insurancedetail.GetContractForContractIdUseCaseImpl
 import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContractsViewModel
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.notification.badge.data.crosssell.CrossSellCardNotificationBadgeServiceProvider
@@ -33,7 +34,7 @@ val insurancesModule = module {
     ContractDetailViewModel(contractId, get<FeatureManager>(), get<GetContractForContractIdUseCase>())
   }
   single<GetContractForContractIdUseCase> {
-    GetContractForContractIdUseCase(get<GetInsuranceContractsUseCaseProvider>())
+    GetContractForContractIdUseCaseImpl(get<GetInsuranceContractsUseCaseProvider>())
   }
   provideGetContractsUseCase()
   provideGetCrossSellsUseCase()

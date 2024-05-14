@@ -40,6 +40,7 @@ apollo { // Octopus client
       "MemberMutationOutput",
       "Chat",
       "ChatMessage",
+      "ContractCoInsured",
       "ChatMessageSender",
       "MemberChargeContractBreakdownItem",
       "MemberCharge",
