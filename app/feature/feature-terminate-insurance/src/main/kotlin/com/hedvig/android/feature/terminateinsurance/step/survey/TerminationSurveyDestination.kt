@@ -83,6 +83,7 @@ internal fun TerminationSurveyDestination(
   navigateUp: () -> Unit,
   navigateToMovingFlow: () -> Unit,
   closeTerminationFlow: () -> Unit,
+  openUrl: (String) -> Unit,
   navigateToNextStep: (step: TerminateInsuranceStep) -> Unit,
   navigateToSubOptions: ((List<TerminationSurveyOption>) -> Unit)?,
 ) {
@@ -123,6 +124,7 @@ internal fun TerminationSurveyDestination(
     onLaunchFullScreenEditText = {
       viewModel.emit(TerminationSurveyEvent.ShowFullScreenEditText(it))
     },
+    openUrl = openUrl,
   )
 }
 
@@ -133,6 +135,7 @@ private fun TerminationSurveyScreen(
   navigateUp: () -> Unit,
   navigateToMovingFlow: () -> Unit,
   closeTerminationFlow: () -> Unit,
+  openUrl: (String) -> Unit,
   onCloseFullScreenEditText: () -> Unit,
   onLaunchFullScreenEditText: (option: TerminationSurveyOption) -> Unit,
   changeFeedbackForReason: (option: TerminationSurveyOption, feedback: String?) -> Unit,
@@ -212,6 +215,18 @@ private fun TerminationSurveyScreen(
 
                   is SurveyOptionSuggestion.Redirect -> suggestion.description
                 }
+                val buttonText = when (suggestion) {
+                  SurveyOptionSuggestion.Action.UpdateAddress -> stringResource(
+                    R.string.TERMINATION_SURVEY_MOVING_BUTTON,
+                  )
+
+                  is SurveyOptionSuggestion.Redirect -> suggestion.buttonTitle
+                }
+                val onSuggestionButtonClick: () -> Unit = when (suggestion) {
+                  SurveyOptionSuggestion.Action.UpdateAddress -> { -> navigateToMovingFlow() }
+
+                  is SurveyOptionSuggestion.Redirect -> { -> openUrl(suggestion.url) }
+                }
                 VectorInfoCard(
                   text = text,
                   icon = Icons.Hedvig.Campaign,
@@ -229,8 +244,8 @@ private fun TerminationSurveyScreen(
                     modifier = Modifier.fillMaxSize(),
                   ) {
                     InfoCardTextButton(
-                      text = stringResource(R.string.TERMINATION_SURVEY_MOVING_BUTTON),
-                      onClick = navigateToMovingFlow,
+                      text = buttonText,
+                      onClick = onSuggestionButtonClick,
                       modifier = Modifier.weight(1f),
                     )
                   }
@@ -482,6 +497,7 @@ private fun ShowSurveyScreenPreview(
         onContinueClick = {},
         onCloseFullScreenEditText = {},
         onLaunchFullScreenEditText = {},
+        openUrl = {},
       )
     }
   }

@@ -1,7 +1,7 @@
 package com.hedvig.android.feature.terminateinsurance.data
 
-import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
 import kotlinx.datetime.LocalDate
 import octopus.fragment.TerminationFlowStepFragment
 
@@ -13,12 +13,16 @@ internal sealed interface TerminateInsuranceStep {
 
   data class TerminateInsuranceSuccess(
     val terminationDate: LocalDate?,
-    val surveyUrl: String,
   ) : TerminateInsuranceStep
 
   data class InsuranceDeletion(
     val disclaimer: String,
   ) : TerminateInsuranceStep
+
+  // todo: add
+//  data class Survey(
+//    val options: List<TerminationSurveyOption>
+//  )
 
   /**
    * Note that this is not a network error, or trying to show an unknown screen. This is an explicitly returned
@@ -47,52 +51,45 @@ internal fun TerminationFlowStepFragment.CurrentStep.toTerminateInsuranceStep():
     }
 
     is TerminationFlowStepFragment.FlowTerminationSuccessStepCurrentStep -> {
-      TerminateInsuranceStep.TerminateInsuranceSuccess(terminationDate, surveyUrl)
+      TerminateInsuranceStep.TerminateInsuranceSuccess(terminationDate)
     }
+
+    // todo: add
+    // is TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep -> {
+    //      TerminateInsuranceStep.Survey(options)
+    //    }
 
     else -> TerminateInsuranceStep.UnknownStep()
   }
 }
 
 internal fun TerminateInsuranceStep.toTerminateInsuranceDestination(
-  insuranceDisplayName: String,
-  exposureName: String,
-  activeFrom: LocalDate,
-  contractGroup: ContractGroup,
+  commonParams: TerminationGraphParameters,
 ): TerminateInsuranceDestination {
   return when (this) {
     is TerminateInsuranceStep.Failure -> TerminateInsuranceDestination.TerminationFailure(message)
+
     is TerminateInsuranceStep.TerminateInsuranceDate -> {
       TerminateInsuranceDestination.TerminationDate(
         minDate = minDate,
         maxDate = maxDate,
-        insuranceDisplayName = insuranceDisplayName,
-        exposureName = exposureName,
-        activeFrom = activeFrom,
-        contractGroup = contractGroup,
+        commonParams = commonParams,
       )
     }
 
-    is TerminateInsuranceStep.InsuranceDeletion -> {
-      TerminateInsuranceDestination.InsuranceDeletion(
-        insuranceDisplayName = insuranceDisplayName,
-        exposureName = exposureName,
-        activeFrom = activeFrom,
-        contractGroup = contractGroup,
-      )
-    }
+    is TerminateInsuranceStep.InsuranceDeletion -> TerminateInsuranceDestination.InsuranceDeletion(
+      commonParams = commonParams,
+    )
 
-    is TerminateInsuranceStep.TerminateInsuranceSuccess -> {
-      TerminateInsuranceDestination.TerminationSuccess(
-        insuranceDisplayName = insuranceDisplayName,
-        exposureName = exposureName,
-        terminationDate = terminationDate,
-        surveyUrl = surveyUrl,
-      )
-    }
+    is TerminateInsuranceStep.TerminateInsuranceSuccess -> TerminateInsuranceDestination.TerminationSuccess(
+      terminationDate = terminationDate,
+    )
 
     is TerminateInsuranceStep.UnknownStep -> TerminateInsuranceDestination.UnknownScreen
 
-    // todo: add TerminateInsuranceStep.Survey
+    // todo: add
+    // is TerminateInsuranceStep.Survey -> TerminateInsuranceDestination.TerminationSurveyFirstStep(
+    // options = options,
+    // commonParams = commonParams)
   }
 }
