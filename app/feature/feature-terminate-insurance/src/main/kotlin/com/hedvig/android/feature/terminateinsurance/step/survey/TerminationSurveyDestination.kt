@@ -530,7 +530,7 @@ private class ShowSurveyUiStateProvider :
       TerminationSurveyState(
         nextNavigationStep = null,
         isNavigationStepLoading = false,
-        selectedOption = previewReason2.surveyOption,
+        selectedOption = previewReason3.surveyOption,
         reasons = listOf(previewReason1, previewReason2, previewReason3),
       ),
 //      TerminationSurveyState(
@@ -632,7 +632,10 @@ private val previewReason3 = TerminationReason(
         feedBackRequired = true,
       ),
     ),
-    suggestion = null,
+    suggestion = SurveyOptionSuggestion.Redirect(
+      "http://www.google.com",
+      "Do this action instead",
+      "Click here to do it"),
     feedBackRequired = false,
   ),
   null,
