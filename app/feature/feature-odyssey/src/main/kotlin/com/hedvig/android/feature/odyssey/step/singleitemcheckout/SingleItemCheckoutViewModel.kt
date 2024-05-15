@@ -3,7 +3,6 @@ package com.hedvig.android.feature.odyssey.step.singleitemcheckout
 import androidx.lifecycle.ViewModel
 import arrow.core.NonEmptyList
 import arrow.core.toNonEmptyListOrNull
-import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.claimflow.CheckoutMethod
 import com.hedvig.android.data.claimflow.ClaimFlowDestination
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,17 +28,16 @@ internal sealed interface SingleItemCheckoutUiState {
   fun asContent(): Content? = this as? Content
 
   data class Content(
-    val price: UiMoney,
-    val depreciation: UiMoney,
-    val deductible: UiMoney,
-    val payoutAmount: UiMoney,
+    val compensation: ClaimFlowDestination.Compensation.Known,
     val availableCheckoutMethods: NonEmptyList<CheckoutMethod.Known>,
     val selectedCheckoutMethod: CheckoutMethod.Known,
+    val modelDisplayName: String,
   ) : SingleItemCheckoutUiState
 
   /**
    * When we do not get any known checkout methods, we need to directly ask the member to update the app, as this screen
-   * can't work without a valid checkout method
+   * can't work without a valid checkout method.
+   * Same with if we don't get any known Compensation (value or repair).
    */
   object Unavailable : SingleItemCheckoutUiState
 
@@ -50,13 +48,15 @@ internal sealed interface SingleItemCheckoutUiState {
       val availableCheckoutMethods = singleItemCheckout.availableCheckoutMethods.toNonEmptyListOrNull()
       val initiallySelectedCheckoutMethod =
         availableCheckoutMethods?.firstOrNull() ?: return Unavailable
+      val checkedCompensation = singleItemCheckout.compensation as? ClaimFlowDestination.Compensation.Known
+        ?: return Unavailable
+      val modelName = singleItemCheckout.modelName ?: singleItemCheckout.customName
+        ?: singleItemCheckout.brandName ?: "-"
       return Content(
-        price = singleItemCheckout.price,
-        depreciation = singleItemCheckout.depreciation,
-        deductible = singleItemCheckout.deductible,
-        payoutAmount = singleItemCheckout.payoutAmount,
+        compensation = checkedCompensation,
         availableCheckoutMethods = availableCheckoutMethods,
         selectedCheckoutMethod = initiallySelectedCheckoutMethod,
+        modelDisplayName = modelName,
       )
     }
   }

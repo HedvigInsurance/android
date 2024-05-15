@@ -60,6 +60,7 @@ sealed interface ClaimFlowStep {
     val preferredCurrency: CurrencyCode,
     val purchaseDate: LocalDate?,
     val purchasePrice: MoneyFragment?,
+    val purchasePriceApplicable: Boolean,
     val availableItemBrands: List<FlowClaimSingleItemStepFragment.AvailableItemBrand>?,
     val selectedItemBrand: String?,
     val availableItemModels: List<FlowClaimSingleItemStepFragment.AvailableItemModel>?,
@@ -71,11 +72,9 @@ sealed interface ClaimFlowStep {
 
   data class ClaimResolutionSingleItemStep(
     override val flowId: FlowId,
-    val price: MoneyFragment,
-    val depreciation: MoneyFragment,
-    val deductible: MoneyFragment,
-    val payoutAmount: MoneyFragment,
+    val compensation: ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep.Compensation,
     val availableCheckoutMethods: List<CheckoutMethodFragment>,
+    val singleItemStep: ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep.SingleItemStep?,
   ) : ClaimFlowStep
 
   data class ClaimSummaryStep(
