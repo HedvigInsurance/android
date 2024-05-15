@@ -45,7 +45,6 @@ import arrow.core.NonEmptyList
 import arrow.core.toNonEmptyListOrNull
 import com.hedvig.android.core.designsystem.component.bottomsheet.HedvigBottomSheet
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
@@ -367,12 +366,6 @@ internal fun SingleItemCheckoutInfoBottomSheet(
         modifier = Modifier
           .fillMaxWidth()
           .padding(horizontal = 24.dp),
-      )
-      Spacer(Modifier.height(32.dp))
-      HedvigTextButton(
-        text = stringResource(id = R.string.general_close_button),
-        onClick = { onDismiss() },
-        modifier = Modifier.padding(start = 24.dp, end = 24.dp, bottom = 16.dp),
       )
     },
   )
