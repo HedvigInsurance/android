@@ -47,7 +47,7 @@ internal fun TerminatedContractsDestination(
     uiState = uiState,
     onContractClick = navigateToContractDetail,
     navigateUp = navigateUp,
-    retry = viewModel::retry,
+    retry = { viewModel.emit(TerminatedContractsEvent.Retry) },
     imageLoader = imageLoader,
   )
 }

@@ -9,6 +9,9 @@ import androidx.navigation.navDeepLink
 import androidx.navigation.navOptions
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.termination.data.TerminatableInsurance
+import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion
+import com.hedvig.android.feature.terminateinsurance.data.TerminationReason
+import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
 import com.hedvig.android.feature.terminateinsurance.data.toTerminateInsuranceDestination
 import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateDestination
 import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateViewModel
@@ -96,7 +99,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
         navigateUp = navigator::navigateUp,
         openChat = { openChat(backStackEntry) },
         closeTerminationFlow = closeTerminationFlow,
-//        // todo: remove fake navigation!!
+        // todo: remove fake navigation!!
 //        navigateToNextStep = { step, insuranceForCancellation: TerminatableInsurance ->
 //          navController.navigate(
 //            TerminateInsuranceDestination.TerminationSurveyFirstStep(

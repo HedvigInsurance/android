@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.login.di
 
+import androidx.lifecycle.SavedStateHandle
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.feature.login.genericauth.GenericAuthViewModel
@@ -19,7 +20,12 @@ val loginModule = module {
     MarketingViewModel(get<MarketManager>(), get<LanguageService>(), get<SetMarketUseCase>())
   }
   viewModel<SwedishLoginViewModel> {
-    SwedishLoginViewModel(get<AuthTokenService>(), get<AuthRepository>(), get<DemoManager>())
+    SwedishLoginViewModel(
+      authTokenService = get<AuthTokenService>(),
+      authRepository = get<AuthRepository>(),
+      demoManager = get<DemoManager>(),
+      savedStateHandle = get<SavedStateHandle>(),
+    )
   }
 
   viewModel<GenericAuthViewModel> {
