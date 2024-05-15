@@ -165,9 +165,9 @@ private fun TerminationSurveyScreen(
         Column {
           WarningTextWithIcon(
             modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .fillMaxWidth()
-                .wrapContentWidth(),
+              .padding(horizontal = 16.dp)
+              .fillMaxWidth()
+              .wrapContentWidth(),
             text = stringResource(R.string.something_went_wrong),
           )
           Spacer(Modifier.height(16.dp))
@@ -181,15 +181,15 @@ private fun TerminationSurveyScreen(
               containerColor = MaterialTheme.colorScheme.surface,
             ),
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+              .fillMaxWidth()
+              .padding(horizontal = 16.dp),
           ) {
             Row(
               verticalAlignment = Alignment.CenterVertically,
               modifier = Modifier
-                  .heightIn(64.dp)
-                  .fillMaxWidth()
-                  .padding(horizontal = 16.dp, vertical = 10.dp),
+                .heightIn(64.dp)
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 10.dp),
             ) {
               Text(
                 text = reason.surveyOption.title,
@@ -232,8 +232,8 @@ private fun TerminationSurveyScreen(
                   text = text,
                   icon = Icons.Hedvig.Campaign,
                   modifier = Modifier
-                      .fillMaxWidth()
-                      .padding(horizontal = 16.dp),
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
                   iconColor = MaterialTheme.colorScheme.typeElement,
                   colors = CardDefaults.outlinedCardColors(
                     containerColor = MaterialTheme.colorScheme.typeContainer,
@@ -263,16 +263,16 @@ private fun TerminationSurveyScreen(
                     containerColor = MaterialTheme.colorScheme.surface,
                   ),
                   modifier = Modifier
-                      .fillMaxWidth()
-                      .heightIn(100.dp)
-                      .padding(horizontal = 16.dp),
+                    .fillMaxWidth()
+                    .heightIn(100.dp)
+                    .padding(horizontal = 16.dp),
                 ) {
                   Column {
                     Row(
                       verticalAlignment = Alignment.Top,
                       modifier = Modifier
-                          .fillMaxWidth()
-                          .padding(start = 16.dp, top = 10.dp, end = 16.dp),
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, top = 10.dp, end = 16.dp),
                     ) {
                       Text(
                         text = feedback ?: stringResource(id = R.string.TERMINATION_SURVEY_FEEDBACK_HINT),
@@ -289,8 +289,8 @@ private fun TerminationSurveyScreen(
                     Row(
                       horizontalArrangement = Arrangement.End,
                       modifier = Modifier
-                          .fillMaxSize()
-                          .padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
+                        .fillMaxSize()
+                        .padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
                     ) {
                       val length = feedback?.length ?: 0
                       Text(
@@ -332,10 +332,10 @@ private fun TerminationSurveyScreen(
         FullScreenEditableText(
           reason.feedBack,
           modifier = Modifier
-              .fillMaxSize()
-              .windowInsetsPadding(
-                  WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Vertical),
-              ),
+            .fillMaxSize()
+            .windowInsetsPadding(
+              WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Vertical),
+            ),
           onCancelClick = onCloseFullScreenEditText,
           onSaveClick = { newFeedback ->
             changeFeedbackForReason(reason.surveyOption, newFeedback)
@@ -374,10 +374,10 @@ private fun FullScreenEditableText(
       color = MaterialTheme.colorScheme.background,
     ) {
       Column(
-          modifier
-              .fillMaxSize()
-              .imePadding()
-              .padding(8.dp),
+        modifier
+          .fillMaxSize()
+          .imePadding()
+          .padding(8.dp),
       ) {
         BasicTextField(
           value = textValue,
@@ -386,12 +386,12 @@ private fun FullScreenEditableText(
           },
           cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
           modifier = Modifier
-              .weight(1f)
-              .focusRequester(focusRequester)
-              .background(
-                  MaterialTheme.colorScheme.surface,
-                  shape = HedvigTextFieldDefaults.shape,
-              ),
+            .weight(1f)
+            .focusRequester(focusRequester)
+            .background(
+              MaterialTheme.colorScheme.surface,
+              shape = HedvigTextFieldDefaults.shape,
+            ),
           textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
           decorationBox = @Composable { innerTextField ->
             Column {
@@ -426,8 +426,8 @@ private fun FullScreenEditableText(
               Row(
                 horizontalArrangement = Arrangement.End,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
+                  .fillMaxWidth()
+                  .padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
               ) {
                 Text(
                   text = "${textValue.text.length}/140",
@@ -653,7 +653,8 @@ private val previewReason3 = TerminationReason(
     suggestion = SurveyOptionSuggestion.Redirect(
       "http://www.google.com",
       "Do this action instead",
-      "Click here to do it"),
+      "Click here to do it",
+    ),
     feedBackRequired = false,
   ),
   null,

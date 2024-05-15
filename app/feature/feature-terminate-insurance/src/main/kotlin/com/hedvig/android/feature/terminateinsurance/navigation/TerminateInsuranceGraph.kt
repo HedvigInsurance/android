@@ -100,22 +100,26 @@ fun NavGraphBuilder.terminateInsuranceGraph(
         openChat = { openChat(backStackEntry) },
         closeTerminationFlow = closeTerminationFlow,
         // todo: remove fake navigation!!
-//        navigateToNextStep = { step, insuranceForCancellation: TerminatableInsurance ->
-//          navController.navigate(
-//            TerminateInsuranceDestination.TerminationSurveyFirstStep(
-//              listOf(previewReason1.surveyOption, previewReason2.surveyOption, previewReason3.surveyOption),
-//            ),
-//          )
-//        },
         navigateToNextStep = { step, insuranceForCancellation: TerminatableInsurance ->
-          val commonParams = TerminationGraphParameters(
-            insuranceForCancellation.displayName,
-            insuranceForCancellation.contractExposure,
-          )
-          navigator.navigateToTerminateFlowDestination(
-            destination = step.toTerminateInsuranceDestination(commonParams),
+          navController.navigate(
+            TerminateInsuranceDestination.TerminationSurveyFirstStep(
+              listOf(previewReason1.surveyOption, previewReason2.surveyOption, previewReason3.surveyOption),
+              commonParams = TerminationGraphParameters(
+                insuranceForCancellation.displayName,
+                insuranceForCancellation.contractExposure,
+              ),
+            ),
           )
         },
+//        navigateToNextStep = { step, insuranceForCancellation: TerminatableInsurance ->
+//          val commonParams = TerminationGraphParameters(
+//            insuranceForCancellation.displayName,
+//            insuranceForCancellation.contractExposure,
+//          )
+//          navigator.navigateToTerminateFlowDestination(
+//            destination = step.toTerminateInsuranceDestination(commonParams),
+//          )
+//        },
       )
     }
 
@@ -248,72 +252,72 @@ private fun <T : TerminateInsuranceDestination> Navigator.navigateToTerminateFlo
 }
 
 // todo: remove!
-// private val previewReason1 = TerminationReason(
-//  TerminationSurveyOption(
-//    id = "1",
-//    title = "I'm moving",
-//    subOptions = listOf(
-//      TerminationSurveyOption(
-//        id = "11",
-//        title = "I'm moving in with someone else",
-//        subOptions = listOf(),
-//        suggestion = null,
-//        feedBackRequired = false,
-//      ),
-//      TerminationSurveyOption(
-//        id = "12",
-//        title = "I'm moving abroad",
-//        subOptions = listOf(),
-//        suggestion = null,
-//        feedBackRequired = false,
-//      ),
-//      TerminationSurveyOption(
-//        id = "23",
-//        title = "Other",
-//        subOptions = listOf(),
-//        suggestion = null,
-//        feedBackRequired = true,
-//      ),
-//    ),
-//    suggestion = SurveyOptionSuggestion.Action.UpdateAddress,
-//    feedBackRequired = true,
-//  ),
-//  null,
-// )
-//
-// private val previewReason2 = TerminationReason(
-//  TerminationSurveyOption(
-//    id = "2",
-//    title = "I got a better offer elsewhere",
-//    subOptions = listOf(),
-//    suggestion = null,
-//    feedBackRequired = true,
-//  ),
-//  null,
-// )
-//
-// private val previewReason3 = TerminationReason(
-//  TerminationSurveyOption(
-//    id = "3",
-//    title = "I am dissatisfied",
-//    subOptions = listOf(
-//      TerminationSurveyOption(
-//        id = "31",
-//        title = "I am dissatisfied with the coverage",
-//        subOptions = listOf(),
-//        suggestion = null,
-//        feedBackRequired = true,
-//      ),
-//      TerminationSurveyOption(
-//        id = "32",
-//        title = "I am dissatisfied with the service",
-//        subOptions = listOf(),
-//        suggestion = null,
-//        feedBackRequired = true,
-//      ),
-//    ),
-//    suggestion = null,
-//    feedBackRequired = false,
-//  ),
-//  null,
-// )
+private val previewReason1 = TerminationReason(
+  TerminationSurveyOption(
+    id = "1",
+    title = "I'm moving",
+    subOptions = listOf(
+      TerminationSurveyOption(
+        id = "11",
+        title = "I'm moving in with someone else",
+        subOptions = listOf(),
+        suggestion = null,
+        feedBackRequired = false,
+      ),
+      TerminationSurveyOption(
+        id = "12",
+        title = "I'm moving abroad",
+        subOptions = listOf(),
+        suggestion = null,
+        feedBackRequired = false,
+      ),
+      TerminationSurveyOption(
+        id = "23",
+        title = "Other",
+        subOptions = listOf(),
+        suggestion = null,
+        feedBackRequired = true,
+      ),
+    ),
+    suggestion = SurveyOptionSuggestion.Action.UpdateAddress,
+    feedBackRequired = true,
+  ),
+  null,
+)
+
+private val previewReason2 = TerminationReason(
+  TerminationSurveyOption(
+    id = "2",
+    title = "I got a better offer elsewhere",
+    subOptions = listOf(),
+    suggestion = null,
+    feedBackRequired = true,
+  ),
+  null,
+)
+
+private val previewReason3 = TerminationReason(
+  TerminationSurveyOption(
+    id = "3",
+    title = "I am dissatisfied",
+    subOptions = listOf(
+      TerminationSurveyOption(
+        id = "31",
+        title = "I am dissatisfied with the coverage",
+        subOptions = listOf(),
+        suggestion = null,
+        feedBackRequired = true,
+      ),
+      TerminationSurveyOption(
+        id = "32",
+        title = "I am dissatisfied with the service",
+        subOptions = listOf(),
+        suggestion = null,
+        feedBackRequired = true,
+      ),
+    ),
+    suggestion = null,
+    feedBackRequired = false,
+  ),
+  null,
+)
