@@ -80,6 +80,7 @@ internal class HelpCenterPresenter(
         is HelpCenterEvent.OnQuickActionSelected -> selectedQuickAction = event.quickAction
         is HelpCenterEvent.OnDismissQuickActionDialog -> selectedQuickAction = null
         HelpCenterEvent.ClearSearchQuery -> {
+          searchQuery = null
           currentState = currentState.copy(search = null)
         }
 

@@ -11,6 +11,9 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.InteractionSource
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -26,23 +29,32 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -54,6 +66,7 @@ import arrow.core.nonEmptyListOf
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
+import com.hedvig.android.core.designsystem.component.textfield.HedvigTextFieldDefaults
 import com.hedvig.android.core.designsystem.material3.infoContainer
 import com.hedvig.android.core.designsystem.material3.onInfoContainer
 import com.hedvig.android.core.designsystem.material3.onTypeContainer
@@ -158,7 +171,9 @@ private fun HelpCenterHomeScreen(
 
     null -> {}
   }
-
+  var searchQuery by remember {
+    mutableStateOf(search?.query)
+  }
   Surface(color = MaterialTheme.colorScheme.background) {
     Column(Modifier.fillMaxSize()) {
       TopAppBarWithBack(
@@ -192,32 +207,50 @@ private fun HelpCenterHomeScreen(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
           )
         }
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(40.dp))
         HedvigTextField(
           modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
-          value = search?.query ?: "",
+          value = searchQuery ?: "",
+          colors = HedvigTextFieldDefaults.colors(
+            typingHighlightColor = MaterialTheme.colorScheme.surface,
+          ),
+          keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+          keyboardActions = KeyboardActions(
+            onAny = {
+            searchQuery?.let { onSearchChange(it) }
+          }
+            ),
           onValueChange = {
             if (it.isEmpty()) {
+              searchQuery = null
               onClearSearch()
             } else {
-              onSearchChange(it)
+              searchQuery = it
             }
           },
           placeholder = {
-            Text(text = "Search...") //todo: remove hardcode
+            Text(text = "Search",
+              style = MaterialTheme.typography.bodyLarge.copy(color = LocalContentColor.current),
+              modifier = Modifier.alpha(0.60f),) //todo: remove hardcode
           },
           leadingIcon = {
-            Icon(Icons.Default.Search, contentDescription = null)
+            Icon(Icons.Default.Search, contentDescription = null,
+              modifier = Modifier.alpha(0.60f))
           },
           trailingIcon = {
             if (search?.query != null) {
-              Icon(Icons.Default.Clear, contentDescription = null)
+              Icon(Icons.Default.Clear, contentDescription = null,
+                modifier = Modifier.clickable {
+                  searchQuery = null
+                  onClearSearch()
+                }
+              )
             }
           },
         )
-        Spacer(Modifier.height(40.dp))
+        Spacer(Modifier.height(24.dp))
         AnimatedContent(targetState = search) { animatedSearch ->
           if (animatedSearch == null) {
             Column {
@@ -287,7 +320,9 @@ private fun HelpCenterHomeScreen(
                   verticalArrangement = Arrangement.Center,
                   horizontalAlignment = Alignment.CenterHorizontally) {
                   if (animatedSearch.activeSearchState.results.filteredQuickLinks!=null) {
-                    val searchQuickLinkUiState = HelpCenterUiState.QuickLinkUiState.QuickLinks(animatedSearch.activeSearchState.results.filteredQuickLinks.toPersistentList())
+                    val searchQuickLinkUiState = HelpCenterUiState.QuickLinkUiState.QuickLinks(
+                        animatedSearch.activeSearchState.results.filteredQuickLinks.toPersistentList()
+                    )
                     QuickLinksSection(searchQuickLinkUiState, onQuickActionsSelected)
                     Spacer(Modifier.height(32.dp))
                   }
