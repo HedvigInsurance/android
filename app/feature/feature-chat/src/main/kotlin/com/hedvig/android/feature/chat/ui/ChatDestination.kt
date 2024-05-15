@@ -53,6 +53,7 @@ internal fun ChatDestination(
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   openUrl: (String) -> Unit,
   onNavigateUp: () -> Unit,
+  modifier: Modifier = Modifier,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val onBannerLinkClicked: (String) -> Unit = { url: String ->
@@ -90,6 +91,7 @@ internal fun ChatDestination(
     onFetchMoreMessages = {
       viewModel.emit(ChatEvent.FetchMoreMessages)
     },
+    modifier = modifier,
   )
 }
 
@@ -107,10 +109,11 @@ private fun ChatScreen(
   onSendMedia: (Uri) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
   onFetchMoreMessages: () -> Unit,
+  modifier: Modifier = Modifier,
 ) {
   Surface(
     color = MaterialTheme.colorScheme.background,
-    modifier = Modifier.fillMaxSize(),
+    modifier = modifier.fillMaxSize(),
   ) {
     val topAppBarScrollBehavior = TopAppBarDefaults.chatScrollBehavior()
     Column {

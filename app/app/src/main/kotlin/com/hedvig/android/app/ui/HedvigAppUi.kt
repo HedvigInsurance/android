@@ -4,6 +4,7 @@ import androidx.compose.animation.core.AnimationVector4D
 import androidx.compose.animation.core.TwoWayConverter
 import androidx.compose.animation.core.animateValueAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
@@ -30,6 +31,7 @@ import coil.ImageLoader
 import com.hedvig.android.app.navigation.HedvigNavHost
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.designsystem.material3.motion.MotionTokens
+import com.hedvig.android.feature.chat.floating.FloatingBubbleChat
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.Market
 import com.hedvig.android.navigation.activity.ExternalNavigator
@@ -53,28 +55,36 @@ internal fun HedvigAppUi(
     contentColor = MaterialTheme.colorScheme.onBackground,
     modifier = Modifier.fillMaxSize(),
   ) {
-    NavigationSuite(
-      navigationSuiteType = hedvigAppState.navigationSuiteType,
-      topLevelGraphs = hedvigAppState.topLevelGraphs.collectAsState().value,
-      topLevelGraphsWithNotifications = hedvigAppState.topLevelGraphsWithNotifications.collectAsState().value,
-      currentDestination = hedvigAppState.currentDestination,
-      onNavigateToTopLevelGraph = hedvigAppState::navigateToTopLevelGraph,
-    ) {
-      HedvigNavHost(
-        hedvigAppState = hedvigAppState,
-        hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-        externalNavigator = externalNavigator,
-        finishApp = finishApp,
-        shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-        openUrl = openUrl,
+    Box(propagateMinConstraints = true) {
+      NavigationSuite(
+        navigationSuiteType = hedvigAppState.navigationSuiteType,
+        topLevelGraphs = hedvigAppState.topLevelGraphs.collectAsState().value,
+        topLevelGraphsWithNotifications = hedvigAppState.topLevelGraphsWithNotifications.collectAsState().value,
+        currentDestination = hedvigAppState.currentDestination,
+        onNavigateToTopLevelGraph = hedvigAppState::navigateToTopLevelGraph,
+      ) {
+        HedvigNavHost(
+          hedvigAppState = hedvigAppState,
+          hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+          externalNavigator = externalNavigator,
+          finishApp = finishApp,
+          shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+          openUrl = openUrl,
+          imageLoader = imageLoader,
+          market = market,
+          languageService = languageService,
+          hedvigBuildConstants = hedvigBuildConstants,
+          modifier = Modifier
+            .fillMaxHeight()
+            .weight(1f)
+            .animatedNavigationBarInsetsConsumption(hedvigAppState),
+        )
+      }
+      FloatingBubbleChat(
         imageLoader = imageLoader,
-        market = market,
-        languageService = languageService,
-        hedvigBuildConstants = hedvigBuildConstants,
-        modifier = Modifier
-          .fillMaxHeight()
-          .weight(1f)
-          .animatedNavigationBarInsetsConsumption(hedvigAppState),
+        appPackageId = hedvigBuildConstants.appId,
+        hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+        openUrl = openUrl,
       )
     }
   }
