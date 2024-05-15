@@ -33,9 +33,7 @@ internal data class HelpCenterUiState(
   val questions: ImmutableList<Question>,
   val quickLinksUiState: QuickLinkUiState,
   val selectedQuickAction: QuickAction?,
-  val searchQuery: String?,
-  val searchResults: HelpSearchResults?,
-  val searchResultLoading: Boolean,
+  val search: Search?,
 ) {
   data class QuickLink(val quickAction: QuickAction)
 
@@ -45,6 +43,17 @@ internal data class HelpCenterUiState(
     data object NoQuickLinks : QuickLinkUiState
 
     data class QuickLinks(val quickLinks: ImmutableList<QuickLink>) : QuickLinkUiState
+  }
+
+  data class Search(
+    val query: String,
+    val activeSearchState: ActiveSearchState,
+  )
+
+  sealed interface ActiveSearchState {
+    data object Loading : ActiveSearchState
+    data object Empty : ActiveSearchState
+    data class Success(val results: HelpSearchResults) : ActiveSearchState
   }
 
   data class HelpSearchResults(
@@ -61,7 +70,7 @@ internal class HelpCenterPresenter(
   override fun MoleculePresenterScope<HelpCenterEvent>.present(lastState: HelpCenterUiState): HelpCenterUiState {
     var selectedQuickAction by remember { mutableStateOf<QuickAction?>(null) }
     var quickLinksUiState by remember { mutableStateOf(lastState.quickLinksUiState) }
-    var search by remember { mutableStateOf<String?>(null) }
+    var searchQuery by remember { mutableStateOf<String?>(null) }
     var currentState by remember {
       mutableStateOf(lastState)
     }
@@ -71,29 +80,37 @@ internal class HelpCenterPresenter(
         is HelpCenterEvent.OnQuickActionSelected -> selectedQuickAction = event.quickAction
         is HelpCenterEvent.OnDismissQuickActionDialog -> selectedQuickAction = null
         HelpCenterEvent.ClearSearchQuery -> {
-          currentState = currentState.copy(searchQuery = null, searchResults = null)
+          currentState = currentState.copy(search = null)
         }
 
         is HelpCenterEvent.SearchForQuery -> {
-          search = event.query
+          searchQuery = event.query
         }
       }
     }
 
-    LaunchedEffect(search) {
-      val query = search
+    LaunchedEffect(searchQuery) {
+      val query = searchQuery
       if (query != null) {
-        val results = searchForQuery(
-            query.lowercase(),
-            currentState.quickLinksUiState,
-            context,
-        )
         currentState = currentState.copy(
-          searchQuery = query,
-          searchResults = results,
+            search = HelpCenterUiState.Search(query, HelpCenterUiState.ActiveSearchState.Loading),
         )
+        val results = searchForQuery(
+          query.lowercase(),
+          currentState.quickLinksUiState,
+          context,
+        )
+        currentState = if (results == null) {
+          currentState.copy(
+              search = HelpCenterUiState.Search(query, HelpCenterUiState.ActiveSearchState.Empty),
+          )
+        } else
+          currentState.copy(
+              search = HelpCenterUiState.Search(query, HelpCenterUiState.ActiveSearchState.Success(results)),
+          )
       }
     }
+
 
     LaunchedEffect(Unit) {
       if (quickLinksUiState !is HelpCenterUiState.QuickLinkUiState.QuickLinks) {

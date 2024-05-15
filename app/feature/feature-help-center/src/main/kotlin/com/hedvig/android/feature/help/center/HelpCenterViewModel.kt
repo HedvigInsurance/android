@@ -15,9 +15,7 @@ internal class HelpCenterViewModel(
       questions = commonQuestions,
       selectedQuickAction = null,
       quickLinksUiState = HelpCenterUiState.QuickLinkUiState.Loading,
-      searchResults = null,
-      searchQuery = null,
-      searchResultLoading = false
+      search = null
     ),
     presenter = HelpCenterPresenter(
       getQuickLinksUseCase = getQuickLinksUseCase,

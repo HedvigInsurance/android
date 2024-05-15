@@ -27,7 +27,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,7 +49,11 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import arrow.core.NonEmptyList
+import arrow.core.nonEmptyListOf
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
 import com.hedvig.android.core.designsystem.material3.infoContainer
 import com.hedvig.android.core.designsystem.material3.onInfoContainer
 import com.hedvig.android.core.designsystem.material3.onTypeContainer
@@ -101,11 +110,19 @@ internal fun HelpCenterHomeDestination(
     },
     openChat = openChat,
     onNavigateUp = onNavigateUp,
+    search = uiState.search,
+    onSearchChange = { query ->
+      viewModel.emit(HelpCenterEvent.SearchForQuery(query))
+    },
+    onClearSearch = {
+      viewModel.emit(HelpCenterEvent.ClearSearchQuery)
+    },
   )
 }
 
 @Composable
 private fun HelpCenterHomeScreen(
+  search: HelpCenterUiState.Search?,
   topics: ImmutableList<Topic>,
   questions: ImmutableList<Question>,
   quickLinksUiState: HelpCenterUiState.QuickLinkUiState,
@@ -117,6 +134,8 @@ private fun HelpCenterHomeScreen(
   onDismissQuickActionDialog: () -> Unit,
   openChat: () -> Unit,
   onNavigateUp: () -> Unit,
+  onSearchChange: (String) -> Unit,
+  onClearSearch: () -> Unit,
 ) {
   when (selectedQuickAction) {
     is QuickAction.MultiSelectQuickLink -> MultiSelectDialog(
@@ -173,48 +192,122 @@ private fun HelpCenterHomeScreen(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
           )
         }
-        Spacer(Modifier.height(40.dp))
-        AnimatedVisibility(
-          visible = quickLinksUiState !is HelpCenterUiState.QuickLinkUiState.NoQuickLinks,
-          enter = QuickLinksSectionEnterTransition,
-          exit = QuickLinksSectionExitTransition,
-        ) {
-          Column {
-            QuickLinksSection(quickLinksUiState, onQuickActionsSelected)
-            Spacer(Modifier.height(48.dp))
-          }
-        }
-        HelpCenterSection(
-          title = stringResource(id = R.string.HC_COMMON_TOPICS_TITLE),
-          chipContainerColor = MaterialTheme.colorScheme.yellowContainer,
-          contentColor = MaterialTheme.colorScheme.onYellowContainer,
-          content = {
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-              for (topic in topics) {
-                HedvigCard(
-                  onClick = { onNavigateToTopic(topic) },
-                  modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-                ) {
-                  Text(stringResource(topic.titleRes), Modifier.padding(16.dp))
-                }
-              }
+        Spacer(modifier = Modifier.height(16.dp))
+        HedvigTextField(
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+          value = search?.query ?: "",
+          onValueChange = {
+            if (it.isEmpty()) {
+              onClearSearch()
+            } else {
+              onSearchChange(it)
+            }
+          },
+          placeholder = {
+            Text(text = "Search...") //todo: remove hardcode
+          },
+          leadingIcon = {
+            Icon(Icons.Default.Search, contentDescription = null)
+          },
+          trailingIcon = {
+            if (search?.query != null) {
+              Icon(Icons.Default.Clear, contentDescription = null)
             }
           },
         )
-        Spacer(Modifier.height(56.dp))
-        LocalConfiguration.current
-        val resources = LocalContext.current.resources
-        HelpCenterSectionWithClickableRows(
-          title = stringResource(id = R.string.HC_COMMON_QUESTIONS_TITLE),
-          chipContainerColor = MaterialTheme.colorScheme.infoContainer,
-          contentColor = MaterialTheme.colorScheme.onInfoContainer,
-          items = questions,
-          itemText = { resources.getString(it.questionRes) },
-          onClickItem = { onNavigateToQuestion(it) },
-        )
+        Spacer(Modifier.height(40.dp))
+        AnimatedContent(targetState = search) { animatedSearch ->
+          if (animatedSearch == null) {
+            Column {
+              AnimatedVisibility(
+                visible = quickLinksUiState !is HelpCenterUiState.QuickLinkUiState.NoQuickLinks,
+                enter = QuickLinksSectionEnterTransition,
+                exit = QuickLinksSectionExitTransition,
+              ) {
+                Column {
+                  QuickLinksSection(quickLinksUiState, onQuickActionsSelected)
+                  Spacer(Modifier.height(48.dp))
+                }
+              }
+              HelpCenterSection(
+                title = stringResource(id = R.string.HC_COMMON_TOPICS_TITLE),
+                chipContainerColor = MaterialTheme.colorScheme.yellowContainer,
+                contentColor = MaterialTheme.colorScheme.onYellowContainer,
+                content = {
+                  Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    for (topic in topics) {
+                      HedvigCard(
+                        onClick = { onNavigateToTopic(topic) },
+                        modifier = Modifier
+                          .fillMaxWidth()
+                          .padding(horizontal = 16.dp)
+                          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+                      ) {
+                        Text(stringResource(topic.titleRes), Modifier.padding(16.dp))
+                      }
+                    }
+                  }
+                },
+              )
+              Spacer(Modifier.height(56.dp))
+              LocalConfiguration.current
+              val resources = LocalContext.current.resources
+              HelpCenterSectionWithClickableRows(
+                title = stringResource(id = R.string.HC_COMMON_QUESTIONS_TITLE),
+                chipContainerColor = MaterialTheme.colorScheme.infoContainer,
+                contentColor = MaterialTheme.colorScheme.onInfoContainer,
+                items = questions,
+                itemText = { resources.getString(it.questionRes) },
+                onClickItem = { onNavigateToQuestion(it) },
+              )
+            }
+          } else {
+            when (animatedSearch.activeSearchState) {
+              HelpCenterUiState.ActiveSearchState.Empty -> {
+                Column(
+                  verticalArrangement = Arrangement.Center,
+                  horizontalAlignment = Alignment.CenterHorizontally) {
+                  Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                    text = "Nothing found, sorry!") //todo: remove hardcode
+                }
+              }
+              HelpCenterUiState.ActiveSearchState.Loading -> {
+                Column(
+                  verticalArrangement = Arrangement.Center,
+                  horizontalAlignment = Alignment.CenterHorizontally) {
+                  HedvigFullScreenCenterAlignedProgress()
+                }
+              }
+              is HelpCenterUiState.ActiveSearchState.Success -> {
+                Column(
+                  verticalArrangement = Arrangement.Center,
+                  horizontalAlignment = Alignment.CenterHorizontally) {
+                  if (animatedSearch.activeSearchState.results.filteredQuickLinks!=null) {
+                    val searchQuickLinkUiState = HelpCenterUiState.QuickLinkUiState.QuickLinks(animatedSearch.activeSearchState.results.filteredQuickLinks.toPersistentList())
+                    QuickLinksSection(searchQuickLinkUiState, onQuickActionsSelected)
+                    Spacer(Modifier.height(32.dp))
+                  }
+                  if (animatedSearch.activeSearchState.results.filteredQuestions!=null) {
+                    LocalConfiguration.current
+                    val resources = LocalContext.current.resources
+                    HelpCenterSectionWithClickableRows(
+                      title = "Results in questions", //todo: hardcode
+                      chipContainerColor = MaterialTheme.colorScheme.infoContainer,
+                      contentColor = MaterialTheme.colorScheme.onInfoContainer,
+                      items = animatedSearch.activeSearchState.results.filteredQuestions.toPersistentList(),
+                      itemText = { resources.getString(it.questionRes) },
+                      onClickItem = { onNavigateToQuestion(it) },
+                    )
+                  }
+                }
+              }
+            }
+          }
+        }
         Spacer(Modifier.weight(1f))
         Spacer(Modifier.height(40.dp))
         StillNeedHelpSection(
@@ -359,6 +452,23 @@ private fun PreviewHelpCenterHomeScreen(
         openChat = {},
         onNavigateUp = {},
         quickLinksUiState = quickLinksUiState,
+        onClearSearch = {},
+        onSearchChange = {},
+        search = HelpCenterUiState.Search("dubadee",
+          HelpCenterUiState.ActiveSearchState.Success(
+            HelpCenterUiState.HelpSearchResults(
+              nonEmptyListOf(
+                HelpCenterUiState.QuickLink(QuickAction.StandaloneQuickLink(
+                  quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkTravelCertificate,
+                  titleRes = R.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE,
+                  hintTextRes = R.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE_SUBTITLE,
+                ))
+              ),
+              nonEmptyListOf(
+                Question.CLAIMS_Q6, Question.CLAIMS_Q9, Question.COVERAGE_Q5, Question.OTHER_Q4
+              )
+            )
+          )),
       )
     }
   }
@@ -385,6 +495,9 @@ private fun PreviewQuickLinkAnimations() {
             openChat = {},
             onNavigateUp = {},
             quickLinksUiState = quickLinkUiState,
+            onClearSearch = {},
+            onSearchChange = {},
+            search = null,
           )
         },
       )
@@ -392,33 +505,34 @@ private fun PreviewQuickLinkAnimations() {
   }
 }
 
-private class QuickLinkUiStatePreviewProvider : CollectionPreviewParameterProvider<HelpCenterUiState.QuickLinkUiState>(
-  listOf(
-    HelpCenterUiState.QuickLinkUiState.NoQuickLinks,
-    HelpCenterUiState.QuickLinkUiState.Loading,
-    HelpCenterUiState.QuickLinkUiState.QuickLinks(
-      buildList {
-        addAll(
-          List(3) {
+private class QuickLinkUiStatePreviewProvider :
+  CollectionPreviewParameterProvider<HelpCenterUiState.QuickLinkUiState>(
+    listOf(
+      HelpCenterUiState.QuickLinkUiState.NoQuickLinks,
+      HelpCenterUiState.QuickLinkUiState.Loading,
+      HelpCenterUiState.QuickLinkUiState.QuickLinks(
+        buildList {
+          addAll(
+            List(3) {
+              HelpCenterUiState.QuickLink(
+                QuickAction.StandaloneQuickLink(
+                  R.string.HC_QUICK_ACTIONS_CANCELLATION_TITLE,
+                  R.string.HC_QUICK_ACTIONS_CANCELLATION_SUBTITLE,
+                  QuickLinkDestination.OuterDestination.QuickLinkTermination,
+                ),
+              )
+            },
+          )
+          add(
             HelpCenterUiState.QuickLink(
-              QuickAction.StandaloneQuickLink(
-                R.string.HC_QUICK_ACTIONS_CANCELLATION_TITLE,
-                R.string.HC_QUICK_ACTIONS_CANCELLATION_SUBTITLE,
-                QuickLinkDestination.OuterDestination.QuickLinkTermination,
+              QuickAction.MultiSelectQuickLink(
+                R.string.HC_QUICK_ACTIONS_CO_INSURED_TITLE,
+                R.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
+                emptyList(),
               ),
-            )
-          },
-        )
-        add(
-          HelpCenterUiState.QuickLink(
-            QuickAction.MultiSelectQuickLink(
-              R.string.HC_QUICK_ACTIONS_CO_INSURED_TITLE,
-              R.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
-              emptyList(),
             ),
-          ),
-        )
-      }.toPersistentList(),
+          )
+        }.toPersistentList(),
+      ),
     ),
-  ),
-)
+  )
