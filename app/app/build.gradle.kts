@@ -111,7 +111,6 @@ dependencies {
   implementation(libs.androidx.compose.material3.windowSizeClass)
   implementation(libs.androidx.compose.materialIconsExtended)
   implementation(libs.androidx.compose.runtime)
-  implementation(libs.androidx.compose.runtime.livedata)
   implementation(libs.androidx.compose.uiCore)
   implementation(libs.androidx.compose.uiToolingPreview)
   implementation(libs.androidx.compose.uiUnit)
