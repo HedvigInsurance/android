@@ -219,6 +219,8 @@ private fun HelpCenterHomeScreen(
         SearchField(
           searchQuery = searchQuery,
           focusRequester = focusRequester,
+          modifier = Modifier
+            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
           onSearchChange = {
             if (it.isEmpty()) {
               searchQuery = null
