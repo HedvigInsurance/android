@@ -167,13 +167,13 @@ private fun Modifier.draggableBubble(floatingBubbleState: FloatingBubbleState, d
   this.composed {
     val offset = floatingBubbleState.offset
     var layoutCoordinates: LayoutCoordinates? by remember { mutableStateOf(null) }
-    MakeInitialPositionTopRightEffect(floatingBubbleState, layoutCoordinates, density)
+    SetInitialAndHomeOffsetsEffect(floatingBubbleState, layoutCoordinates, density)
     this
       .onPlaced { coordinates ->
         layoutCoordinates = coordinates
       }
       .then(
-        if (layoutCoordinates == null) {
+        if (layoutCoordinates == null || !floatingBubbleState.isReady) {
           Modifier.alpha(0f)
         } else {
           Modifier
@@ -233,11 +233,8 @@ private fun Modifier.draggableBubble(floatingBubbleState: FloatingBubbleState, d
       .systemGestureExclusion()
   }
 
-/**
- * If there was no offset already it means we just started the app so we want to move the offset to the top right
- */
 @Composable
-private fun MakeInitialPositionTopRightEffect(
+private fun SetInitialAndHomeOffsetsEffect(
   floatingBubbleState: FloatingBubbleState,
   layoutCoordinates: LayoutCoordinates?,
   density: Density,
@@ -248,10 +245,10 @@ private fun MakeInitialPositionTopRightEffect(
     if (floatingBubbleState.offset.value == Offset.Zero) {
       with(density) {
         val endOfScreen = layoutCoordinates.size.width - ChatCircleWidth.toPx()
-        val yPosition = ((TopActionsHeight - ChatCircleHeight) / 2).toPx()
-        val targetValueForHomeScreen = Offset(endOfScreen, yPosition)
+        val homeYPosition = ((TopActionsHeight - ChatCircleHeight) / 2).toPx()
+        val targetValueForHomeScreen = Offset(endOfScreen, homeYPosition)
         floatingBubbleState.saveHomeScreenOffset(targetValueForHomeScreen)
-        floatingBubbleState.offset.snapTo(targetValueForHomeScreen)
+        floatingBubbleState.offset.snapTo(Offset(endOfScreen, 0f))
       }
     }
   }

@@ -30,8 +30,11 @@ internal class FloatingBubbleState(
     Offset.VectorConverter,
     Offset.VisibilityThreshold,
   )
-  private var savedOffsetBeforeGoingToHomeScreen: Offset? = null
-  private var offsetForHomeScreen: Offset? = null
+  private var savedOffsetBeforeGoingToHomeScreen: Offset? by mutableStateOf(null)
+  private var offsetForHomeScreen: Offset? by mutableStateOf(null)
+
+  val isReady: Boolean
+    get() = offsetForHomeScreen != null
 
   fun minimize() {
     coroutineScope.launch {
@@ -120,7 +123,7 @@ internal class FloatingBubbleState(
 internal fun rememberFloatingBubbleState(isInHomeScreen: Boolean): FloatingBubbleState {
   val coroutineScope = rememberCoroutineScope()
   val floatingBubbleState = remember { FloatingBubbleState(coroutineScope) }
-  LaunchedEffect(isInHomeScreen) {
+  LaunchedEffect(floatingBubbleState.isReady, isInHomeScreen) {
     if (isInHomeScreen) {
       floatingBubbleState.enteredHomeScreen()
     } else {
