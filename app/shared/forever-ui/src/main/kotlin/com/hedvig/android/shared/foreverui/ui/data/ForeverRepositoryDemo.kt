@@ -15,6 +15,8 @@ internal class ForeverRepositoryDemo : ForeverRepository {
     @Suppress("ktlint:standard:max-line-length")
     FullReferralsQuery.Data(
       currentMember = FullReferralsQuery.Data.CurrentMember(
+        __typename = "",
+        id = "id",
         insuranceCost = FullReferralsQuery.Data.CurrentMember.InsuranceCost(
           monthlyGross = FullReferralsQuery.Data.CurrentMember.InsuranceCost.MonthlyGross(
             __typename = "",
