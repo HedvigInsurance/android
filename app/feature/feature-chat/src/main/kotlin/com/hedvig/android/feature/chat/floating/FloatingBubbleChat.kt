@@ -45,6 +45,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -135,6 +136,7 @@ private fun FloatingBubble(
       when (bubbleState) {
         FloatingBubbleState.BubbleState.Minimized -> {
           MinimizedBubble(
+            floatingBubbleState,
             this@AnimatedContent,
             chatIcon = { chatModifier ->
               sharedChatIcon(this@AnimatedContent, floatingBubbleState::expand, chatModifier)
@@ -160,29 +162,24 @@ private fun FloatingBubble(
 
 @Composable
 private fun SharedTransitionScope.MinimizedBubble(
+  floatingBubbleState: FloatingBubbleState,
   animatedContentScope: AnimatedContentScope,
   modifier: Modifier = Modifier,
   chatIcon: @Composable (Modifier) -> Unit,
 ) {
-  val offset: Animatable<Offset, AnimationVector2D> = remember {
-    Animatable(
-      Offset.Zero,
-      Offset.VectorConverter,
-      Offset.VisibilityThreshold,
-    )
-  }
   val density = LocalDensity.current
   chatIcon(
     modifier
       .fillMaxSize()
       .safeDrawingPadding()
-      .draggableBubble(offset, density)
+      .draggableBubble(floatingBubbleState, density)
       .sharedBounds(rememberSharedContentState(SharedSurfaceKey), animatedContentScope),
   )
 }
 
-private fun Modifier.draggableBubble(offset: Animatable<Offset, AnimationVector2D>, density: Density): Modifier =
+private fun Modifier.draggableBubble(floatingBubbleState: FloatingBubbleState, density: Density): Modifier =
   this.composed {
+    val offset = floatingBubbleState.offset
     var layoutCoordinates: LayoutCoordinates? by remember { mutableStateOf(null) }
     LaunchedEffect(layoutCoordinates) {
       @Suppress("NAME_SHADOWING")
@@ -330,6 +327,13 @@ private class FloatingBubbleState(
 ) {
   val seekableTransition = SeekableTransitionState<BubbleState>(BubbleState.Minimized)
 
+  // Offset position for the minimized version of the bubble
+  val offset: Animatable<Offset, AnimationVector2D> = Animatable(
+    Offset.Zero,
+    Offset.VectorConverter,
+    Offset.VisibilityThreshold,
+  )
+
   fun minimize() {
     coroutineScope.launch {
       seekableTransition.animateTo(BubbleState.Minimized)
@@ -348,14 +352,39 @@ private class FloatingBubbleState(
       seekableTransition.currentState == BubbleState.Minimized &&
         seekableTransition.targetState == BubbleState.Minimized
     )
-    PredictiveBackHandler(isBackHandlerEnabled) { progress ->
+    var progress by remember { mutableFloatStateOf(0f) }
+    var inPredictiveBack by remember { mutableStateOf(false) }
+    var finishedBack by remember { mutableStateOf(false) }
+    var cancelledBack by remember { mutableStateOf(false) }
+    PredictiveBackHandler(isBackHandlerEnabled) { backEvent ->
+      progress = 0f
+      cancelledBack = false
+      finishedBack = false
       try {
-        progress.collect { backEvent ->
-          seekableTransition.seekTo(backEvent.progress, BubbleState.Minimized)
+        backEvent.collect {
+          inPredictiveBack = true
+          progress = it.progress
         }
-        seekableTransition.animateTo(BubbleState.Minimized)
+        inPredictiveBack = false
+        finishedBack = true
       } catch (e: CancellationException) {
-        seekableTransition.animateTo(BubbleState.Expanded)
+        inPredictiveBack = false
+        cancelledBack = true
+      }
+    }
+    if (inPredictiveBack) {
+      LaunchedEffect(progress) {
+        seekableTransition.seekTo(progress, BubbleState.Minimized)
+      }
+    }
+    if (finishedBack) {
+      LaunchedEffect(Unit) {
+        seekableTransition.animateTo(BubbleState.Minimized)
+      }
+    }
+    if (cancelledBack) {
+      LaunchedEffect(Unit) {
+        seekableTransition.snapTo(BubbleState.Expanded)
       }
     }
   }
