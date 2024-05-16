@@ -243,12 +243,12 @@ private fun SetInitialAndHomeOffsetsEffect(
   LaunchedEffect(floatingBubbleState, layoutCoordinates, density) {
     @Suppress("NAME_SHADOWING")
     val layoutCoordinates = layoutCoordinates ?: return@LaunchedEffect
-    if (floatingBubbleState.offset.value == Offset.Zero) {
-      with(density) {
-        val endOfScreen = layoutCoordinates.size.width - ChatCircleWidth.toPx()
-        val homeYPosition = ((TopActionsHeight - ChatCircleHeight) / 2).toPx()
-        val targetValueForHomeScreen = Offset(endOfScreen, homeYPosition)
-        floatingBubbleState.saveHomeScreenOffset(targetValueForHomeScreen)
+    with(density) {
+      val endOfScreen = layoutCoordinates.size.width - ChatCircleWidth.toPx()
+      val homeYPosition = ((TopActionsHeight - ChatCircleHeight) / 2).toPx()
+      val targetValueForHomeScreen = Offset(endOfScreen, homeYPosition)
+      floatingBubbleState.saveHomeScreenOffset(targetValueForHomeScreen)
+      if (floatingBubbleState.offset.value == Offset.Zero) {
         floatingBubbleState.offset.snapTo(Offset(endOfScreen, 0f))
       }
     }
