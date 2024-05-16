@@ -181,12 +181,7 @@ private fun Modifier.draggableBubble(floatingBubbleState: FloatingBubbleState, d
   this.composed {
     val offset = floatingBubbleState.offset
     var layoutCoordinates: LayoutCoordinates? by remember { mutableStateOf(null) }
-    LaunchedEffect(layoutCoordinates) {
-      @Suppress("NAME_SHADOWING")
-      val layoutCoordinates = layoutCoordinates ?: return@LaunchedEffect
-      val endOfScreen = layoutCoordinates.size.width - with(density) { ChatCircleDiameter.toPx() }
-      offset.snapTo(Offset(endOfScreen, 0f))
-    }
+    MakeInitialPositionTopRightEffect(offset, layoutCoordinates, density)
     val spaceToEdges = 8.dp
     this
       .padding(spaceToEdges)
@@ -262,6 +257,25 @@ private fun Modifier.draggableBubble(floatingBubbleState: FloatingBubbleState, d
         ).inflate(with(density) { (spaceToEdges * 2).toPx() })
       }
   }
+
+/**
+ * If there was no offset already it means we just started the app so we want to move the offset to the top right
+ */
+@Composable
+private fun MakeInitialPositionTopRightEffect(
+  offset: Animatable<Offset, AnimationVector2D>,
+  layoutCoordinates: LayoutCoordinates?,
+  density: Density,
+) {
+  LaunchedEffect(offset, layoutCoordinates, density) {
+    @Suppress("NAME_SHADOWING")
+    val layoutCoordinates = layoutCoordinates ?: return@LaunchedEffect
+    if (offset.value == Offset.Zero) {
+      val endOfScreen = layoutCoordinates.size.width - with(density) { ChatCircleDiameter.toPx() }
+      offset.snapTo(Offset(endOfScreen, 0f))
+    }
+  }
+}
 
 @Composable
 private fun SharedTransitionScope.MaximizedBubble(
