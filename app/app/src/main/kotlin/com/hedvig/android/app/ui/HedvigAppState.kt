@@ -12,6 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -164,12 +165,14 @@ internal class HedvigAppState(
     ),
   )
 
-  val showChatBubble = combine(
+  val showChatBubble: StateFlow<Boolean> = combine(
     shouldShowChatButtonUseCase.invoke(),
     navController.currentBackStackEntryFlow,
   ) { showChatButton, currentBackStackEntry ->
-    // currentBackStackEntry // todo check only for logged in destinations and perhaps login status too
-    showChatButton
+    val isLoggedOut = currentBackStackEntry.destination.hierarchy.any { navDestination ->
+      navDestination.route == createRoutePattern<LoginDestination>()
+    }
+    !isLoggedOut && showChatButton
   }.stateIn(
     coroutineScope,
     SharingStarted.Eagerly,
