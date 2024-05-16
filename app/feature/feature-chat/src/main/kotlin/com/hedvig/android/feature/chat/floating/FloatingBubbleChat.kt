@@ -114,14 +114,6 @@ private fun FloatingBubble(
 ) {
   val transition = rememberTransition(floatingBubbleState.seekableTransition)
   floatingBubbleState.PredictiveBackHandler()
-//  val sharedChatIcon = movableContentWithReceiverOf<
-//    SharedTransitionScope,
-//    AnimatedContentScope,
-//    () -> Unit,
-//    Modifier,
-//  > { animatedContentScope, onClick, movableContentModifier ->
-//    ChatCircle(animatedContentScope, onClick, movableContentModifier)
-//  }
   val sharedChatIcon: @Composable SharedTransitionScope.(
     AnimatedContentScope,
     () -> Unit,
@@ -186,7 +178,6 @@ private fun Modifier.draggableBubble(floatingBubbleState: FloatingBubbleState, d
       }
       .then(
         if (layoutCoordinates == null) {
-//          Modifier.withoutPlacement() // This breaks with "Error: Placement happened before lookahead."
           Modifier.alpha(0f)
         } else {
           Modifier
