@@ -36,6 +36,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.systemGestureExclusion
 import androidx.compose.material.icons.Icons
@@ -54,8 +55,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.layout.LayoutCoordinates
@@ -276,8 +279,17 @@ private fun SharedTransitionScope.MaximizedBubble(
       .safeDrawingPadding()
       .padding(8.dp),
   ) {
-    chatIcon(Modifier)
-    Spacer(Modifier.height(8.dp)) // make arrow-like shape here instead
+    Column {
+      chatIcon(Modifier)
+      val arrowColor = MaterialTheme.colorScheme.background
+      Spacer(
+        Modifier
+          .align(Alignment.CenterHorizontally)
+          .height(8.dp)
+          .width(12.dp)
+          .drawChatBubbleArrow(arrowColor),
+      )
+    }
     Surface(
       Modifier.weight(1f),
       MaterialTheme.shapes.squircleLarge,
@@ -313,6 +325,18 @@ private fun SharedTransitionScope.ChatCircle(
       modifier = Modifier.size(ChatCircleDiameter),
     )
   }
+}
+
+private fun Modifier.drawChatBubbleArrow(color: Color): Modifier = drawBehind {
+  drawPath(
+    path = Path().apply {
+      moveTo(0f, size.height)
+      lineTo(size.width / 2, 0f)
+      lineTo(size.width, size.height)
+      close()
+    },
+    color = color,
+  )
 }
 
 @OptIn(ExperimentalTransitionApi::class)
