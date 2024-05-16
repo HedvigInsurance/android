@@ -62,7 +62,6 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import arrow.core.nonEmptyListOf
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
@@ -184,31 +183,31 @@ private fun HelpCenterHomeScreen(
       )
       Column(
         modifier = Modifier
-            .fillMaxSize()
-            .clickable(
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() },
-            ) {
-                focusManager.clearFocus() //clearing focus for search textField
-            }
-            .imePadding()
-            .verticalScroll(rememberScrollState()),
+          .fillMaxSize()
+          .clickable(
+            indication = null,
+            interactionSource = remember { MutableInteractionSource() },
+          ) {
+            focusManager.clearFocus() // clearing focus for search textField
+          }
+          .imePadding()
+          .verticalScroll(rememberScrollState()),
       ) {
         Spacer(Modifier.height(50.dp))
         Image(
           painter = painterResource(id = R.drawable.pillow_hedvig),
           contentDescription = null,
           modifier = Modifier
-              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
-              .size(170.dp)
-              .align(Alignment.CenterHorizontally),
+            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+            .size(170.dp)
+            .align(Alignment.CenterHorizontally),
         )
         Spacer(Modifier.height(50.dp))
         Column(
           verticalArrangement = Arrangement.spacedBy(8.dp),
           modifier = Modifier
-              .padding(horizontal = 20.dp)
-              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+            .padding(horizontal = 20.dp)
+            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
         ) {
           Text(stringResource(id = R.string.HC_HOME_VIEW_QUESTION))
           Text(
@@ -250,7 +249,7 @@ private fun HelpCenterHomeScreen(
               ) {
                 Column {
                   QuickLinksSection(quickLinksUiState, onQuickActionsSelected)
-                  Spacer(Modifier.height(48.dp))
+                  Spacer(Modifier.height(32.dp))
                 }
               }
               HelpCenterSection(
@@ -263,9 +262,9 @@ private fun HelpCenterHomeScreen(
                       HedvigCard(
                         onClick = { onNavigateToTopic(topic) },
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
-                            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+                          .fillMaxWidth()
+                          .padding(horizontal = 16.dp)
+                          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
                       ) {
                         Text(stringResource(topic.titleRes), Modifier.padding(16.dp))
                       }
@@ -273,7 +272,7 @@ private fun HelpCenterHomeScreen(
                   }
                 },
               )
-              Spacer(Modifier.height(56.dp))
+              Spacer(Modifier.height(32.dp))
               LocalConfiguration.current
               val resources = LocalContext.current.resources
               HelpCenterSectionWithClickableRows(
@@ -360,9 +359,9 @@ private fun SearchField(
 ) {
   HedvigTextField(
     modifier = modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp)
-        .focusRequester(focusRequester),
+      .fillMaxWidth()
+      .padding(horizontal = 16.dp)
+      .focusRequester(focusRequester),
     value = searchQuery ?: "",
     colors = HedvigTextFieldDefaults.colors(
       typingHighlightColor = MaterialTheme.colorScheme.surface,
@@ -502,9 +501,9 @@ private fun QuickLinkCard(
   HedvigCard(
     onClick = onClick,
     modifier = modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp)
-        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+      .fillMaxWidth()
+      .padding(horizontal = 16.dp)
+      .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
   ) {
     Column(
       verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -537,28 +536,29 @@ private fun PreviewHelpCenterHomeScreen(
         quickLinksUiState = quickLinksUiState,
         onClearSearch = {},
         onSearchChange = {},
-        search = HelpCenterUiState.Search(
-          "dubadee",
-          HelpCenterUiState.ActiveSearchState.Success(
-            HelpCenterUiState.HelpSearchResults(
-              nonEmptyListOf(
-                HelpCenterUiState.QuickLink(
-                  QuickAction.StandaloneQuickLink(
-                    quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkTravelCertificate,
-                    titleRes = R.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE,
-                    hintTextRes = R.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE_SUBTITLE,
-                  ),
-                ),
-              ),
-              nonEmptyListOf(
-                Question.CLAIMS_Q6,
-                Question.CLAIMS_Q9,
-                Question.COVERAGE_Q5,
-                Question.OTHER_Q4,
-              ),
-            ),
-          ),
-        ),
+        search = null,
+//        search = HelpCenterUiState.Search(
+//          "dubadee",
+//          HelpCenterUiState.ActiveSearchState.Success(
+//            HelpCenterUiState.HelpSearchResults(
+//              nonEmptyListOf(
+//                HelpCenterUiState.QuickLink(
+//                  QuickAction.StandaloneQuickLink(
+//                    quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkTravelCertificate,
+//                    titleRes = R.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE,
+//                    hintTextRes = R.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE_SUBTITLE,
+//                  ),
+//                ),
+//              ),
+//              nonEmptyListOf(
+//                Question.CLAIMS_Q6,
+//                Question.CLAIMS_Q9,
+//                Question.COVERAGE_Q5,
+//                Question.OTHER_Q4,
+//              ),
+//            ),
+//          ),
+//        ),
       )
     }
   }

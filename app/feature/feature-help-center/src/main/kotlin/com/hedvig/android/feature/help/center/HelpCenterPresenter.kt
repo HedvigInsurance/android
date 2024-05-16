@@ -155,15 +155,15 @@ private fun searchForQuery(
   context: Context,
 ): HelpCenterUiState.HelpSearchResults? {
   val resultsInQuickLinks =
-      buildList {
-        for (link in quickLinksForSearch) {
-          val title = context.getString(link.quickAction.titleRes).lowercase()
-          val hint = context.getString(link.quickAction.hintTextRes).lowercase()
-          if (title.contains(query) || hint.contains(query)) {
-            add(link)
-          }
+    buildList {
+      for (link in quickLinksForSearch) {
+        val title = context.getString(link.quickAction.titleRes).lowercase()
+        val hint = context.getString(link.quickAction.hintTextRes).lowercase()
+        if (title.contains(query) || hint.contains(query)) {
+          add(link)
         }
-      }.toNonEmptyListOrNull()
+      }
+    }.toNonEmptyListOrNull()
   val resultsInQuestions = buildList {
     Question.entries.forEach {
       val answer = context.getString(it.answerRes).lowercase()
@@ -173,9 +173,9 @@ private fun searchForQuery(
       }
     }
   }.toNonEmptyListOrNull()
-  if (resultsInQuestions == null && resultsInQuickLinks == null) {
-    return null
+  return if (resultsInQuestions == null && resultsInQuickLinks == null) {
+    null
   } else {
-    return HelpCenterUiState.HelpSearchResults(resultsInQuickLinks, resultsInQuestions)
+    HelpCenterUiState.HelpSearchResults(resultsInQuickLinks, resultsInQuestions)
   }
 }
