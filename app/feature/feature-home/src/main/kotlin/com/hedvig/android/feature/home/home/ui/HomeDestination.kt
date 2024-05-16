@@ -40,7 +40,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -71,7 +70,7 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.compose.notificationCircle
 import com.hedvig.android.core.icons.hedvig.normal.WarningFilled
-import com.hedvig.android.core.ui.appbar.m3.ToolbarChatIcon
+import com.hedvig.android.core.ui.appbar.m3.EmptySpaceIcon
 import com.hedvig.android.core.ui.appbar.m3.ToolbarCrossSellsIcon
 import com.hedvig.android.core.ui.appbar.m3.ToolbarFirstVetIcon
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarLayoutForActions
@@ -81,7 +80,6 @@ import com.hedvig.android.core.ui.plus
 import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.crosssells.CrossSellsSection
 import com.hedvig.android.data.contract.android.CrossSell
-import com.hedvig.android.feature.home.home.ChatTooltip
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminders
@@ -231,18 +229,18 @@ private fun HomeScreen(
       TopAppBarLayoutForActions {
         val currentState = uiState as? HomeUiState.Success
         if (currentState != null) {
-          val actionsList = buildList {
+          val actionsList: List<HomeTopBarAction> = buildList {
             if (currentState.crossSellsAction != null) add(currentState.crossSellsAction)
             if (currentState.firstVetAction != null) add(currentState.firstVetAction)
-            if (currentState.chatAction != null) add(currentState.chatAction)
+            add(HomeTopBarAction.EmptySpace)
           }
           actionsList.forEachIndexed { index, action ->
             if (index != 0) {
               Spacer(modifier = Modifier.width(8.dp))
             }
             when (action) {
-              HomeTopBarAction.ChatAction -> ToolbarChatIcon(
-                onClick = onStartChat,
+              HomeTopBarAction.EmptySpace -> EmptySpaceIcon(
+                // todo notification cirle to the floating chat icon instead
                 modifier = Modifier.notificationCircle(uiState.hasUnseenChatMessages),
               )
 
@@ -262,21 +260,22 @@ private fun HomeScreen(
           }
         }
       }
-      if ((uiState as? HomeUiState.Success)?.chatAction != null) {
-        val shouldShowTooltip by produceState(false) {
-          val daysSinceLastTooltipShown = daysSinceLastTooltipShown(context)
-          value = daysSinceLastTooltipShown
-        }
-        ChatTooltip(
-          showTooltip = shouldShowTooltip,
-          tooltipShown = {
-            context.setLastEpochDayWhenChatTooltipWasShown(java.time.LocalDate.now().toEpochDay())
-          },
-          modifier = Modifier
-            .align(Alignment.End)
-            .padding(horizontal = 16.dp),
-        )
-      }
+      // todo add tooltip to the floating chat icon instead
+//      if ((uiState as? HomeUiState.Success)?.chatAction != null) {
+//        val shouldShowTooltip by produceState(false) {
+//          val daysSinceLastTooltipShown = daysSinceLastTooltipShown(context)
+//          value = daysSinceLastTooltipShown
+//        }
+//        ChatTooltip(
+//          showTooltip = shouldShowTooltip,
+//          tooltipShown = {
+//            context.setLastEpochDayWhenChatTooltipWasShown(java.time.LocalDate.now().toEpochDay())
+//          },
+//          modifier = Modifier
+//            .align(Alignment.End)
+//            .padding(horizontal = 16.dp),
+//        )
+//      }
     }
     PullRefreshIndicator(
       refreshing = uiState.isReloading,
@@ -618,7 +617,6 @@ private fun PreviewHomeScreen(
               ),
             ),
           ),
-          chatAction = HomeTopBarAction.ChatAction,
         ),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
         reload = {},

@@ -39,9 +39,6 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import octopus.HomeQuery
 import octopus.NumberOfChatMessagesQuery
-import octopus.type.ChatMessageSender
-import octopus.type.buildChat
-import octopus.type.buildChatMessageText
 import octopus.type.buildClaim
 import octopus.type.buildContract
 import octopus.type.buildMember
@@ -373,122 +370,6 @@ internal class GetHomeUseCaseTest {
           isEqualTo(HomeData.ContractStatus.Switching)
         } else {
           isEqualTo(HomeData.ContractStatus.Pending)
-        }
-      }
-  }
-
-  @Test
-  fun `showing the chat button is true when there are any messages by the member, or more than 1 by Hedvig`(
-    @TestParameter hasAtLeastOneMessageByMember: Boolean,
-    @TestParameter("0", "1", "2") numberOfMessagesByHedvig: Int,
-  ) = runTest {
-    val featureManager = FakeFeatureManager2(
-      mapOf(
-        Feature.DISABLE_CHAT to false,
-        Feature.HELP_CENTER to true,
-      ),
-    )
-    val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)
-
-    apolloClient.registerTestResponse(
-      HomeQuery(),
-      HomeQuery.Data(OctopusFakeResolver),
-    )
-    apolloClient.registerTestResponse(
-      NumberOfChatMessagesQuery(),
-      NumberOfChatMessagesQuery.Data(OctopusFakeResolver) {
-        chat = buildChat {
-          messages = buildList {
-            if (hasAtLeastOneMessageByMember) {
-              add(
-                buildChatMessageText {
-                  sender = ChatMessageSender.MEMBER
-                },
-              )
-            }
-            addAll(
-              List(numberOfMessagesByHedvig) {
-                buildChatMessageText {
-                  sender = ChatMessageSender.HEDVIG
-                }
-              },
-            )
-          }
-        }
-      },
-    )
-    val result = getHomeDataUseCase.invoke(true).first()
-
-    assertThat(result)
-      .isNotNull()
-      .isRight()
-      .prop(HomeData::showChatIcon)
-      .apply {
-        if (hasAtLeastOneMessageByMember || numberOfMessagesByHedvig > 1) {
-          isTrue()
-        } else {
-          isFalse()
-        }
-      }
-  }
-
-  @Test
-  fun `showChatIcon depends on if there are existing messages, and on the help center and chat feature flags`(
-    @TestParameter chatIsKillSwitched: Boolean,
-    @TestParameter helpCenterIsEnabled: Boolean,
-    @TestParameter isEligibleToSeeTheChatButton: Boolean,
-  ) = runTest {
-    val featureManager = FakeFeatureManager2(
-      mapOf(
-        Feature.DISABLE_CHAT to chatIsKillSwitched,
-        Feature.HELP_CENTER to helpCenterIsEnabled,
-      ),
-    )
-    val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)
-
-    apolloClient.registerTestResponse(
-      HomeQuery(),
-      HomeQuery.Data(OctopusFakeResolver),
-    )
-    apolloClient.registerTestResponse(
-      NumberOfChatMessagesQuery(),
-      NumberOfChatMessagesQuery.Data(OctopusFakeResolver) {
-        chat = buildChat {
-          messages = if (isEligibleToSeeTheChatButton) {
-            listOf(
-              buildChatMessageText {
-                sender = ChatMessageSender.MEMBER
-              },
-            )
-          } else {
-            emptyList()
-          }
-        }
-      },
-    )
-    val result = getHomeDataUseCase.invoke(true).first()
-
-    assertThat(result)
-      .isNotNull()
-      .isRight()
-      .prop(HomeData::showChatIcon)
-      .apply {
-        if (chatIsKillSwitched) {
-          // No matter what, if the chat is disabled, we do not show the chat button
-          isFalse()
-        } else {
-          if (isEligibleToSeeTheChatButton) {
-            // If they are eligible to see the chat button, we just show it
-            isTrue()
-          } else {
-            if (helpCenterIsEnabled) {
-              isFalse()
-            } else {
-              // Despite not being eligible to see the chat button, if the help center is disabled, we must show the
-              // chat button to allow them to still get to the chat in some way
-              isTrue()
-            }
-          }
         }
       }
   }

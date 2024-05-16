@@ -19,22 +19,13 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.hedvig.colored.hedvig.Chat
 import com.hedvig.android.core.icons.hedvig.colored.hedvig.ColoredCircleWithCampaign
 import com.hedvig.android.core.icons.hedvig.colored.hedvig.FirstVet
 import hedvig.resources.R
 
 @Composable
-fun ToolbarChatIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
-  Image(
-    imageVector = Icons.Hedvig.Chat,
-    contentDescription = stringResource(R.string.DASHBOARD_OPEN_CHAT),
-    modifier = modifier
-      .size(40.dp)
-      .shadow(4.dp, CircleShape)
-      .clip(CircleShape)
-      .clickable(onClick = onClick),
-  )
+fun EmptySpaceIcon(modifier: Modifier = Modifier) {
+  Spacer(modifier = modifier.size(ToolbarItemSize))
 }
 
 @Composable
@@ -43,7 +34,7 @@ fun ToolbarFirstVetIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
     imageVector = Icons.Hedvig.FirstVet,
     contentDescription = stringResource(R.string.HC_QUICK_ACTIONS_FIRSTVET_TITLE),
     modifier = modifier
-      .size(40.dp)
+      .size(ToolbarItemSize)
       .shadow(4.dp, CircleShape)
       .clip(CircleShape)
       .clickable(onClick = onClick),
@@ -56,12 +47,14 @@ fun ToolbarCrossSellsIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
     imageVector = Icons.Hedvig.ColoredCircleWithCampaign,
     contentDescription = stringResource(R.string.insurance_tab_cross_sells_title),
     modifier = modifier
-      .size(40.dp)
+      .size(ToolbarItemSize)
       .shadow(4.dp, CircleShape)
       .clip(CircleShape)
       .clickable(onClick = onClick),
   )
 }
+
+private val ToolbarItemSize = 40.dp
 
 @HedvigPreview
 @Composable
@@ -73,7 +66,7 @@ private fun PreviewToolbarChatIcon() {
         Spacer(modifier = Modifier.width(8.dp))
         ToolbarFirstVetIcon(onClick = {})
         Spacer(modifier = Modifier.width(8.dp))
-        ToolbarChatIcon({})
+        EmptySpaceIcon()
       }
     }
   }

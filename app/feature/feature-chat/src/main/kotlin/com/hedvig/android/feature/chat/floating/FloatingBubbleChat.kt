@@ -11,8 +11,6 @@ import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.AnimationVector2D
 import androidx.compose.animation.core.ExperimentalAnimationSpecApi
 import androidx.compose.animation.core.ExperimentalTransitionApi
 import androidx.compose.animation.core.Spring
@@ -77,6 +75,8 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun FloatingBubbleChat(
+  showChatBubble: Boolean,
+  isInHomeScreen: Boolean,
   imageLoader: ImageLoader,
   appPackageId: String,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
@@ -84,19 +84,21 @@ fun FloatingBubbleChat(
   modifier: Modifier = Modifier,
 ) {
   val viewModel: ChatViewModel = koinViewModel()
-  val floatingBubbleState = rememberFloatingBubbleState()
-  FloatingBubble(modifier, floatingBubbleState) { expandedContentModifier ->
-    ChatDestination(
-      viewModel = viewModel,
-      imageLoader = imageLoader,
-      appPackageId = appPackageId,
-      hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-      openUrl = openUrl,
-      onNavigateUp = {
-        floatingBubbleState.minimize()
-      },
-      modifier = expandedContentModifier,
-    )
+  val floatingBubbleState = rememberFloatingBubbleState(isInHomeScreen)
+  if (showChatBubble) {
+    FloatingBubble(modifier, floatingBubbleState) { expandedContentModifier ->
+      ChatDestination(
+        viewModel = viewModel,
+        imageLoader = imageLoader,
+        appPackageId = appPackageId,
+        hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+        openUrl = openUrl,
+        onNavigateUp = {
+          floatingBubbleState.minimize()
+        },
+        modifier = expandedContentModifier,
+      )
+    }
   }
 }
 
@@ -165,7 +167,7 @@ private fun Modifier.draggableBubble(floatingBubbleState: FloatingBubbleState, d
   this.composed {
     val offset = floatingBubbleState.offset
     var layoutCoordinates: LayoutCoordinates? by remember { mutableStateOf(null) }
-    MakeInitialPositionTopRightEffect(offset, layoutCoordinates, density)
+    MakeInitialPositionTopRightEffect(floatingBubbleState, layoutCoordinates, density)
     this
       .onPlaced { coordinates ->
         layoutCoordinates = coordinates
@@ -182,8 +184,8 @@ private fun Modifier.draggableBubble(floatingBubbleState: FloatingBubbleState, d
       .pointerInput(layoutCoordinates, offset) {
         @Suppress("NAME_SHADOWING")
         val layoutCoordinates = layoutCoordinates ?: return@pointerInput
-        val chatCircleDiameter: Float = ChatCircleDiameter.toPx()
-        val halfChatCircleDiameter: Float = chatCircleDiameter / 2
+        val chatCircleWidth: Float = ChatCircleWidth.toPx()
+        val chatCircleHeight: Float = ChatCircleHeight.toPx()
         val decay = splineBasedDecay<Offset>(this)
         val velocityTracker = VelocityTracker()
         coroutineScope {
@@ -207,15 +209,15 @@ private fun Modifier.draggableBubble(floatingBubbleState: FloatingBubbleState, d
                 initialValue = offset.value,
                 initialVelocity = Offset(velocity.x, velocity.y), // maybe?
               )
-              val middleHorizontalPoint = layoutCoordinates.size.width / 2 - halfChatCircleDiameter
+              val middleHorizontalPoint = layoutCoordinates.size.width / 2 - chatCircleWidth / 2
               val targetX = if (targetOffsetAfterFlingEnd.x < middleHorizontalPoint) {
                 0f
               } else {
-                layoutCoordinates.size.width - chatCircleDiameter
+                layoutCoordinates.size.width - chatCircleWidth
               }
               val targetY = targetOffsetAfterFlingEnd.y.coerceIn(
                 0f,
-                layoutCoordinates.size.height - chatCircleDiameter,
+                layoutCoordinates.size.height - chatCircleHeight,
               )
               launch {
                 offset.animateTo(
@@ -236,16 +238,21 @@ private fun Modifier.draggableBubble(floatingBubbleState: FloatingBubbleState, d
  */
 @Composable
 private fun MakeInitialPositionTopRightEffect(
-  offset: Animatable<Offset, AnimationVector2D>,
+  floatingBubbleState: FloatingBubbleState,
   layoutCoordinates: LayoutCoordinates?,
   density: Density,
 ) {
-  LaunchedEffect(offset, layoutCoordinates, density) {
+  LaunchedEffect(floatingBubbleState, layoutCoordinates, density) {
     @Suppress("NAME_SHADOWING")
     val layoutCoordinates = layoutCoordinates ?: return@LaunchedEffect
-    if (offset.value == Offset.Zero) {
-      val endOfScreen = layoutCoordinates.size.width - with(density) { ChatCircleDiameter.toPx() }
-      offset.snapTo(Offset(endOfScreen, 0f))
+    if (floatingBubbleState.offset.value == Offset.Zero) {
+      with(density) {
+        val endOfScreen = layoutCoordinates.size.width - ChatCircleWidth.toPx()
+        val yPosition = ((TopActionsHeight - ChatCircleHeight) / 2).toPx()
+        val targetValueForHomeScreen = Offset(endOfScreen, yPosition)
+        floatingBubbleState.saveHomeScreenOffset(targetValueForHomeScreen)
+        floatingBubbleState.offset.snapTo(targetValueForHomeScreen)
+      }
     }
   }
 }
@@ -299,20 +306,20 @@ private fun SharedTransitionScope.ChatCircle(
 ) {
   Box(
     modifier
-      .size(ChatCircleDiameter)
+      .size(ChatCircleWidth, ChatCircleHeight)
       .clickable(
         interactionSource = null,
         indication = null,
         onClick = onClick,
       )
-      .padding(8.dp)
+      .padding(horizontal = SpaceFromScreenEdge)
       .sharedElement(rememberSharedContentState("ChatCircle"), animatedContentScope),
+    propagateMinConstraints = true,
   ) {
     Icon(
       imageVector = Icons.Hedvig.Chat,
       contentDescription = null,
       tint = Color.Unspecified,
-      modifier = Modifier.size(ChatCircleDiameter),
     )
   }
 }
@@ -331,4 +338,11 @@ private fun Modifier.drawChatBubbleArrow(color: Color): Modifier = drawBehind {
 
 private const val SharedSurfaceKey = "SharedSurfaceKey"
 
-private val ChatCircleDiameter: Dp = 64.dp
+private val SpaceFromScreenEdge = 16.dp
+private val ChatCircleHeight: Dp = 40.dp
+private val ChatCircleWidth: Dp = 72.dp
+
+/**
+ * The height that the icons in the home screen are centered in
+ */
+private val TopActionsHeight = 64.dp

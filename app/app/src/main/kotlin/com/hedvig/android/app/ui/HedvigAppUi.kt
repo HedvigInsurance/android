@@ -27,6 +27,7 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import com.hedvig.android.app.navigation.HedvigNavHost
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
@@ -80,7 +81,10 @@ internal fun HedvigAppUi(
             .animatedNavigationBarInsetsConsumption(hedvigAppState),
         )
       }
+      val showChatBubble by hedvigAppState.showChatBubble.collectAsStateWithLifecycle()
       FloatingBubbleChat(
+        showChatBubble = showChatBubble,
+        isInHomeScreen = hedvigAppState.isInHomeScreen,
         imageLoader = imageLoader,
         appPackageId = hedvigBuildConstants.appId,
         hedvigDeepLinkContainer = hedvigDeepLinkContainer,

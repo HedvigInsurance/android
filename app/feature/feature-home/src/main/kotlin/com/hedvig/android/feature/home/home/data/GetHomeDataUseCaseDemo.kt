@@ -19,7 +19,6 @@ internal class GetHomeDataUseCaseDemo : GetHomeDataUseCase {
         upcomingRenewals = null,
         enableNotifications = null,
       ),
-      showChatIcon = true,
       showHelpCenter = true,
       firstVetSections = listOf(),
       crossSells = persistentListOf(),

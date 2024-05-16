@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.chat.floating
 
+import androidx.activity.compose.PredictiveBackHandler
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector2D
 import androidx.compose.animation.core.SeekableTransitionState
@@ -29,6 +30,8 @@ internal class FloatingBubbleState(
     Offset.VectorConverter,
     Offset.VisibilityThreshold,
   )
+  private var savedOffsetBeforeGoingToHomeScreen: Offset? = null
+  private var offsetForHomeScreen: Offset? = null
 
   fun minimize() {
     coroutineScope.launch {
@@ -42,6 +45,28 @@ internal class FloatingBubbleState(
     }
   }
 
+  fun enteredHomeScreen() {
+    offsetForHomeScreen?.let { offsetForHomeScreen ->
+      coroutineScope.launch {
+        savedOffsetBeforeGoingToHomeScreen = offset.value
+        offset.animateTo(offsetForHomeScreen)
+      }
+    }
+  }
+
+  fun exitedHomeScreen() {
+    savedOffsetBeforeGoingToHomeScreen?.let { savedOffsetBeforeGoingToHomeScreen ->
+      coroutineScope.launch {
+        offset.animateTo(savedOffsetBeforeGoingToHomeScreen)
+        this@FloatingBubbleState.savedOffsetBeforeGoingToHomeScreen = null
+      }
+    }
+  }
+
+  fun saveHomeScreenOffset(offsetForHomeScreen: Offset) {
+    this.offsetForHomeScreen = offsetForHomeScreen
+  }
+
   @Composable
   fun PredictiveBackHandler() {
     val isBackHandlerEnabled = !(
@@ -52,7 +77,7 @@ internal class FloatingBubbleState(
     var inPredictiveBack by remember { mutableStateOf(false) }
     var finishedBack by remember { mutableStateOf(false) }
     var cancelledBack by remember { mutableStateOf(false) }
-    androidx.activity.compose.PredictiveBackHandler(isBackHandlerEnabled) { backEvent ->
+    PredictiveBackHandler(isBackHandlerEnabled) { backEvent ->
       progress = 0f
       cancelledBack = false
       finishedBack = false
@@ -92,7 +117,15 @@ internal class FloatingBubbleState(
 }
 
 @Composable
-internal fun rememberFloatingBubbleState(): FloatingBubbleState {
+internal fun rememberFloatingBubbleState(isInHomeScreen: Boolean): FloatingBubbleState {
   val coroutineScope = rememberCoroutineScope()
-  return remember { FloatingBubbleState(coroutineScope) }
+  val floatingBubbleState = remember { FloatingBubbleState(coroutineScope) }
+  LaunchedEffect(isInHomeScreen) {
+    if (isInHomeScreen) {
+      floatingBubbleState.enteredHomeScreen()
+    } else {
+      floatingBubbleState.exitedHomeScreen()
+    }
+  }
+  return floatingBubbleState
 }

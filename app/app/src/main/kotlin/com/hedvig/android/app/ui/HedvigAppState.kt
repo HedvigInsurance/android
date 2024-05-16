@@ -23,6 +23,7 @@ import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.feature.forever.navigation.ForeverDestination
+import com.hedvig.android.feature.home.home.data.ShouldShowChatButtonUseCase
 import com.hedvig.android.feature.home.home.navigation.HomeDestination
 import com.hedvig.android.feature.insurances.navigation.InsurancesDestination
 import com.hedvig.android.feature.insurances.navigation.insurancesBottomNavPermittedDestinations
@@ -50,6 +51,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -62,6 +64,7 @@ internal fun rememberHedvigAppState(
   tabNotificationBadgeService: TabNotificationBadgeService,
   settingsDataStore: SettingsDataStore,
   getOnlyHasNonPayingContractsUseCase: Provider<GetOnlyHasNonPayingContractsUseCase>,
+  shouldShowChatButtonUseCase: ShouldShowChatButtonUseCase,
   featureManager: FeatureManager,
   navHostController: NavHostController,
   coroutineScope: CoroutineScope = rememberCoroutineScope(),
@@ -75,6 +78,7 @@ internal fun rememberHedvigAppState(
     tabNotificationBadgeService,
     settingsDataStore,
     getOnlyHasNonPayingContractsUseCase,
+    shouldShowChatButtonUseCase,
     featureManager,
   ) {
     HedvigAppState(
@@ -84,6 +88,7 @@ internal fun rememberHedvigAppState(
       tabNotificationBadgeService = tabNotificationBadgeService,
       settingsDataStore = settingsDataStore,
       getOnlyHasNonPayingContractsUseCase = getOnlyHasNonPayingContractsUseCase,
+      shouldShowChatButtonUseCase = shouldShowChatButtonUseCase,
       featureManager = featureManager,
     )
   }
@@ -97,6 +102,7 @@ internal class HedvigAppState(
   tabNotificationBadgeService: TabNotificationBadgeService,
   private val settingsDataStore: SettingsDataStore,
   getOnlyHasNonPayingContractsUseCase: Provider<GetOnlyHasNonPayingContractsUseCase>,
+  shouldShowChatButtonUseCase: ShouldShowChatButtonUseCase,
   featureManager: FeatureManager,
 ) {
   val currentDestination: NavDestination?
@@ -119,6 +125,9 @@ internal class HedvigAppState(
         NavigationSuiteType.NavigationRail
       }
     }
+
+  val isInHomeScreen: Boolean
+    @Composable get() = currentDestination?.route == createRoutePattern<HomeDestination.Home>()
 
   /**
    * App kill-switch. If this is enabled we must show nothing in the app but a button to try to update the app
@@ -153,6 +162,18 @@ internal class HedvigAppState(
       TopLevelGraph.Payments,
       TopLevelGraph.Profile,
     ),
+  )
+
+  val showChatBubble = combine(
+    shouldShowChatButtonUseCase.invoke(),
+    navController.currentBackStackEntryFlow,
+  ) { showChatButton, currentBackStackEntry ->
+    // currentBackStackEntry // todo check only for logged in destinations and perhaps login status too
+    showChatButton
+  }.stateIn(
+    coroutineScope,
+    SharingStarted.Eagerly,
+    false,
   )
 
   val topLevelGraphsWithNotifications: StateFlow<PersistentSet<TopLevelGraph>> =

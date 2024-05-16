@@ -116,7 +116,6 @@ internal class HomePresenterTest {
           ),
           veryImportantMessages = persistentListOf(),
           memberReminders = MemberReminders(),
-          showChatIcon = true,
           showHelpCenter = false,
           crossSells = persistentListOf(),
           firstVetSections = listOf(),
@@ -142,7 +141,6 @@ internal class HomePresenterTest {
           isHelpCenterEnabled = false,
           firstVetAction = null,
           crossSellsAction = null,
-          chatAction = HomeTopBarAction.ChatAction,
           hasUnseenChatMessages = false,
         ),
       )
@@ -171,7 +169,6 @@ internal class HomePresenterTest {
           memberReminders = MemberReminders(
             enableNotifications = MemberReminder.EnableNotifications(),
           ),
-          showChatIcon = false,
           crossSells = persistentListOf(),
           firstVetSections = listOf(),
           showHelpCenter = false,
@@ -188,7 +185,6 @@ internal class HomePresenterTest {
           ),
           isHelpCenterEnabled = false,
           hasUnseenChatMessages = false,
-          chatAction = null,
           firstVetAction = null,
           crossSellsAction = null,
         ),
@@ -244,7 +240,6 @@ internal class HomePresenterTest {
           memberReminders = MemberReminders(
             enableNotifications = MemberReminder.EnableNotifications(),
           ),
-          showChatIcon = false,
           showHelpCenter = false,
           firstVetSections = listOf(),
           crossSells = persistentListOf(),
@@ -277,7 +272,6 @@ internal class HomePresenterTest {
           claimStatusCardsData = null,
           veryImportantMessages = persistentListOf(),
           memberReminders = MemberReminders(),
-          showChatIcon = false,
           crossSells = persistentListOf(),
           firstVetSections = listOf(),
           showHelpCenter = false,
@@ -292,7 +286,6 @@ internal class HomePresenterTest {
           memberReminders = MemberReminders(),
           isHelpCenterEnabled = false,
           hasUnseenChatMessages = false,
-          chatAction = null,
           firstVetAction = null,
           crossSellsAction = null,
         ),
@@ -325,7 +318,6 @@ internal class HomePresenterTest {
           claimStatusCardsData = null,
           veryImportantMessages = persistentListOf(),
           memberReminders = MemberReminders(),
-          showChatIcon = false,
           crossSells = persistentListOf(),
           firstVetSections = listOf(
             firstVet,
@@ -342,7 +334,6 @@ internal class HomePresenterTest {
           memberReminders = MemberReminders(),
           isHelpCenterEnabled = false,
           hasUnseenChatMessages = false,
-          chatAction = null,
           firstVetAction = HomeTopBarAction.FirstVetAction(listOf(firstVet)),
           crossSellsAction = null,
         ),
@@ -376,7 +367,6 @@ internal class HomePresenterTest {
           claimStatusCardsData = null,
           veryImportantMessages = persistentListOf(),
           memberReminders = MemberReminders(),
-          showChatIcon = false,
           crossSells = persistentListOf(crossSell),
           firstVetSections = listOf(),
           showHelpCenter = false,
@@ -391,93 +381,8 @@ internal class HomePresenterTest {
           memberReminders = MemberReminders(),
           isHelpCenterEnabled = false,
           hasUnseenChatMessages = false,
-          chatAction = null,
           firstVetAction = null,
           crossSellsAction = HomeTopBarAction.CrossSellsAction(persistentListOf(crossSell)),
-        ),
-      )
-    }
-  }
-
-  @Test
-  fun `if should show chat show chat icon`() = runTest {
-    val getHomeDataUseCase = TestGetHomeDataUseCase()
-    val homePresenter = HomePresenter(
-      { getHomeDataUseCase },
-      FakeChatLastMessageReadRepository(),
-      SeenImportantMessagesStorageImpl(),
-      { FakeCrossSellCardNotificationBadgeService() },
-      backgroundScope,
-    )
-    homePresenter.test(HomeUiState.Loading) {
-      assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
-
-      getHomeDataUseCase.responseTurbine.add(
-        HomeData(
-          contractStatus = HomeData.ContractStatus.Active,
-          claimStatusCardsData = null,
-          veryImportantMessages = persistentListOf(),
-          memberReminders = MemberReminders(),
-          showChatIcon = true,
-          crossSells = persistentListOf(),
-          firstVetSections = listOf(),
-          showHelpCenter = false,
-        ).right(),
-      )
-      assertThat(awaitItem()).isEqualTo(
-        HomeUiState.Success(
-          isReloading = false,
-          homeText = HomeText.Active,
-          claimStatusCardsData = null,
-          veryImportantMessages = persistentListOf(),
-          memberReminders = MemberReminders(),
-          isHelpCenterEnabled = false,
-          hasUnseenChatMessages = false,
-          chatAction = HomeTopBarAction.ChatAction,
-          firstVetAction = null,
-          crossSellsAction = null,
-        ),
-      )
-    }
-  }
-
-  @Test
-  fun `if shouldn't show chat do not show chat icon`() = runTest {
-    val getHomeDataUseCase = TestGetHomeDataUseCase()
-    val homePresenter = HomePresenter(
-      { getHomeDataUseCase },
-      FakeChatLastMessageReadRepository(),
-      SeenImportantMessagesStorageImpl(),
-      { FakeCrossSellCardNotificationBadgeService() },
-      backgroundScope,
-    )
-    homePresenter.test(HomeUiState.Loading) {
-      assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
-
-      getHomeDataUseCase.responseTurbine.add(
-        HomeData(
-          contractStatus = HomeData.ContractStatus.Active,
-          claimStatusCardsData = null,
-          veryImportantMessages = persistentListOf(),
-          memberReminders = MemberReminders(),
-          showChatIcon = false,
-          crossSells = persistentListOf(),
-          firstVetSections = listOf(),
-          showHelpCenter = false,
-        ).right(),
-      )
-      assertThat(awaitItem()).isEqualTo(
-        HomeUiState.Success(
-          isReloading = false,
-          homeText = HomeText.Active,
-          claimStatusCardsData = null,
-          veryImportantMessages = persistentListOf(),
-          memberReminders = MemberReminders(),
-          isHelpCenterEnabled = false,
-          hasUnseenChatMessages = false,
-          chatAction = null,
-          firstVetAction = null,
-          crossSellsAction = null,
         ),
       )
     }
@@ -498,7 +403,6 @@ internal class HomePresenterTest {
     claimStatusCardsData = null,
     veryImportantMessages = persistentListOf(),
     memberReminders = MemberReminders(),
-    showChatIcon = false,
     showHelpCenter = false,
     firstVetSections = listOf(),
     crossSells = persistentListOf(),
