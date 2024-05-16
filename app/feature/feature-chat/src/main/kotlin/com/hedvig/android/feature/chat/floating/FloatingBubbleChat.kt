@@ -85,7 +85,7 @@ fun FloatingBubbleChat(
 ) {
   val viewModel: ChatViewModel = koinViewModel()
   val floatingBubbleState = rememberFloatingBubbleState(isInHomeScreen)
-  FloatingBubble(modifier, floatingBubbleState) { expandedContentModifier ->
+  FloatingBubble(modifier, floatingBubbleState) {
     ChatDestination(
       viewModel = viewModel,
       imageLoader = imageLoader,
@@ -95,7 +95,6 @@ fun FloatingBubbleChat(
       onNavigateUp = {
         floatingBubbleState.minimize()
       },
-      modifier = expandedContentModifier,
     )
   }
 }
@@ -104,7 +103,7 @@ fun FloatingBubbleChat(
 private fun FloatingBubble(
   modifier: Modifier = Modifier,
   floatingBubbleState: FloatingBubbleState,
-  expandedContent: @Composable (Modifier) -> Unit,
+  expandedContent: @Composable () -> Unit,
 ) {
   val transition = rememberTransition(floatingBubbleState.seekableTransition)
   floatingBubbleState.PredictiveBackHandler()
@@ -148,14 +147,11 @@ private fun FloatingBubble(
 private fun SharedTransitionScope.MinimizedBubble(
   floatingBubbleState: FloatingBubbleState,
   animatedContentScope: AnimatedContentScope,
-  modifier: Modifier = Modifier,
   chatIcon: @Composable (Modifier) -> Unit,
 ) {
   val density = LocalDensity.current
   chatIcon(
-    modifier
-      .fillMaxSize()
-      .safeDrawingPadding()
+    Modifier
       .draggableBubble(floatingBubbleState, density)
       .sharedBounds(rememberSharedContentState(SharedSurfaceKey), animatedContentScope),
   )
@@ -167,6 +163,8 @@ private fun Modifier.draggableBubble(floatingBubbleState: FloatingBubbleState, d
     var layoutCoordinates: LayoutCoordinates? by remember { mutableStateOf(null) }
     SetInitialAndHomeOffsetsEffect(floatingBubbleState, layoutCoordinates, density)
     this
+      .fillMaxSize()
+      .safeDrawingPadding()
       .onPlaced { layoutCoordinates = it }
       .then(
         if (layoutCoordinates == null || !floatingBubbleState.isReady) {
@@ -256,7 +254,7 @@ private fun SharedTransitionScope.MaximizedBubble(
   onClickOutside: () -> Unit,
   modifier: Modifier = Modifier,
   chatIcon: @Composable (Modifier) -> Unit,
-  expandedContent: @Composable (Modifier) -> Unit,
+  expandedContent: @Composable () -> Unit,
 ) {
   Column(
     modifier
@@ -268,26 +266,23 @@ private fun SharedTransitionScope.MaximizedBubble(
       )
       .background(MaterialTheme.colorScheme.onBackground.copy(alpha = DisabledAlpha))
       .safeDrawingPadding()
-      .padding(8.dp),
+      .padding(8.dp)
+      .sharedBounds(rememberSharedContentState(SharedSurfaceKey), animatedContentScope),
   ) {
-    Column {
-      chatIcon(Modifier)
-      Spacer(Modifier.height(4.dp))
-      val arrowColor = MaterialTheme.colorScheme.background
-      Spacer(
-        Modifier
-          .align(Alignment.CenterHorizontally)
-          .size(height = 8.dp, width = 12.dp)
-          .drawChatBubbleArrow(arrowColor),
-      )
-    }
+    chatIcon(Modifier)
+    Spacer(Modifier.height(4.dp))
+    val arrowColor = MaterialTheme.colorScheme.background
+    Spacer(
+      Modifier
+        .align(Alignment.CenterHorizontally)
+        .size(height = 8.dp, width = 12.dp)
+        .drawChatBubbleArrow(arrowColor),
+    )
     Surface(
       Modifier.weight(1f),
       MaterialTheme.shapes.squircleLarge,
     ) {
-      expandedContent(
-        Modifier.sharedBounds(rememberSharedContentState(SharedSurfaceKey), animatedContentScope),
-      )
+      expandedContent()
     }
   }
 }
