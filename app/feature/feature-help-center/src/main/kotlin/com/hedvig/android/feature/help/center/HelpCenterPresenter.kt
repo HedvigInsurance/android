@@ -13,6 +13,7 @@ import com.hedvig.android.feature.help.center.data.GetQuickLinksUseCase
 import com.hedvig.android.feature.help.center.model.Question
 import com.hedvig.android.feature.help.center.model.QuickAction
 import com.hedvig.android.feature.help.center.model.Topic
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import kotlinx.collections.immutable.ImmutableList
@@ -76,6 +77,11 @@ internal class HelpCenterPresenter(
     var currentState by remember {
       mutableStateOf(lastState)
     }
+    var quickLinksForSearch by remember {
+      mutableStateOf<List<HelpCenterUiState.QuickLink>?>(null)
+    }
+    // Added this field, bc for some reason that I can't figure out if I take quickLinksState from currentState for search,
+    // it's always in previous state (like Loading)
 
     CollectEvents { event ->
       when (event) {
@@ -98,9 +104,11 @@ internal class HelpCenterPresenter(
         currentState = currentState.copy(
           search = HelpCenterUiState.Search(query, HelpCenterUiState.ActiveSearchState.Loading),
         )
+        val quickLinks = quickLinksForSearch
+        logcat { "mariia: ${currentState.quickLinksUiState}" }
         val results = searchForQuery(
           query.lowercase().trim(),
-          currentState.quickLinksUiState,
+          quickLinks ?: listOf(),
           context,
         )
         currentState = if (results == null) {
@@ -121,12 +129,14 @@ internal class HelpCenterPresenter(
       }
       quickLinksUiState = getQuickLinksUseCase.invoke().fold(
         ifLeft = {
+          quickLinksForSearch = null
           HelpCenterUiState.QuickLinkUiState.NoQuickLinks
         },
         ifRight = {
           val list = it.map { action ->
             HelpCenterUiState.QuickLink(action)
           }.toImmutableList()
+          quickLinksForSearch = list
           HelpCenterUiState.QuickLinkUiState.QuickLinks(list)
         },
       )
@@ -141,24 +151,19 @@ internal class HelpCenterPresenter(
 
 private fun searchForQuery(
   query: String,
-  quickLinksUiState: HelpCenterUiState.QuickLinkUiState,
+  quickLinksForSearch: List<HelpCenterUiState.QuickLink>,
   context: Context,
 ): HelpCenterUiState.HelpSearchResults? {
-  val resultsInQuickLinks = when (quickLinksUiState) {
-    HelpCenterUiState.QuickLinkUiState.Loading -> listOf()
-    HelpCenterUiState.QuickLinkUiState.NoQuickLinks -> listOf()
-    is HelpCenterUiState.QuickLinkUiState.QuickLinks -> {
+  val resultsInQuickLinks =
       buildList {
-        for (link in quickLinksUiState.quickLinks) {
+        for (link in quickLinksForSearch) {
           val title = context.getString(link.quickAction.titleRes).lowercase()
           val hint = context.getString(link.quickAction.hintTextRes).lowercase()
           if (title.contains(query) || hint.contains(query)) {
             add(link)
           }
         }
-      }
-    }
-  }.toNonEmptyListOrNull()
+      }.toNonEmptyListOrNull()
   val resultsInQuestions = buildList {
     Question.entries.forEach {
       val answer = context.getString(it.answerRes).lowercase()
