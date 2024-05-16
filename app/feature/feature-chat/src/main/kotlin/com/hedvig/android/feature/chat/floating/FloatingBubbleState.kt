@@ -4,8 +4,10 @@ import androidx.activity.compose.PredictiveBackHandler
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector2D
 import androidx.compose.animation.core.SeekableTransitionState
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.VisibilityThreshold
+import androidx.compose.animation.core.spring
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -51,17 +53,23 @@ internal class FloatingBubbleState(
   fun enteredHomeScreen() {
     offsetForHomeScreen?.let { offsetForHomeScreen ->
       coroutineScope.launch {
-        savedOffsetBeforeGoingToHomeScreen = offset.value
-        offset.animateTo(offsetForHomeScreen)
+        savedOffsetBeforeGoingToHomeScreen = offset.targetValue
+        offset.animateTo(offsetForHomeScreen, spring(stiffness = Spring.StiffnessLow))
       }
     }
   }
 
+  /**
+   * When exiting the home screen, if we have *not* moved from the new position, we want to animate back to the
+   * position we were at before coming to home
+   */
   fun exitedHomeScreen() {
     savedOffsetBeforeGoingToHomeScreen?.let { savedOffsetBeforeGoingToHomeScreen ->
-      coroutineScope.launch {
-        offset.animateTo(savedOffsetBeforeGoingToHomeScreen)
-        this@FloatingBubbleState.savedOffsetBeforeGoingToHomeScreen = null
+      if (offset.targetValue == offsetForHomeScreen) {
+        coroutineScope.launch {
+          offset.animateTo(savedOffsetBeforeGoingToHomeScreen, spring(stiffness = Spring.StiffnessLow))
+          this@FloatingBubbleState.savedOffsetBeforeGoingToHomeScreen = null
+        }
       }
     }
   }
