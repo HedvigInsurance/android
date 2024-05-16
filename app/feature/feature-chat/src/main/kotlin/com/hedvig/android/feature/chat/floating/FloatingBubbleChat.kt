@@ -55,12 +55,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.layout.LayoutCoordinates
-import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
@@ -182,9 +180,7 @@ private fun Modifier.draggableBubble(floatingBubbleState: FloatingBubbleState, d
     val offset = floatingBubbleState.offset
     var layoutCoordinates: LayoutCoordinates? by remember { mutableStateOf(null) }
     MakeInitialPositionTopRightEffect(offset, layoutCoordinates, density)
-    val spaceToEdges = 8.dp
     this
-      .padding(spaceToEdges)
       .onPlaced { coordinates ->
         layoutCoordinates = coordinates
       }
@@ -247,15 +243,7 @@ private fun Modifier.draggableBubble(floatingBubbleState: FloatingBubbleState, d
           )
         }
       }
-      .systemGestureExclusion { coordinates ->
-        val boundsInRoot = coordinates.boundsInRoot()
-        Rect(
-          boundsInRoot.left,
-          boundsInRoot.top,
-          boundsInRoot.right,
-          boundsInRoot.bottom,
-        ).inflate(with(density) { (spaceToEdges * 2).toPx() })
-      }
+      .systemGestureExclusion()
   }
 
 /**
@@ -318,12 +306,13 @@ private fun SharedTransitionScope.ChatCircle(
 ) {
   Box(
     modifier
+      .size(ChatCircleDiameter)
       .clickable(
         interactionSource = null,
         indication = null,
         onClick = onClick,
       )
-      .size(ChatCircleDiameter)
+      .padding(8.dp)
       .sharedElement(rememberSharedContentState("ChatCircle"), animatedContentScope),
   ) {
     Icon(
@@ -417,4 +406,4 @@ private fun rememberFloatingBubbleState(): FloatingBubbleState {
 
 private const val SharedSurfaceKey = "SharedSurfaceKey"
 
-private val ChatCircleDiameter: Dp = 48.dp
+private val ChatCircleDiameter: Dp = 64.dp
