@@ -76,7 +76,6 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun FloatingBubbleChat(
-  showChatBubble: Boolean,
   isInHomeScreen: Boolean,
   imageLoader: ImageLoader,
   appPackageId: String,
@@ -86,20 +85,18 @@ fun FloatingBubbleChat(
 ) {
   val viewModel: ChatViewModel = koinViewModel()
   val floatingBubbleState = rememberFloatingBubbleState(isInHomeScreen)
-  if (showChatBubble) {
-    FloatingBubble(modifier, floatingBubbleState) { expandedContentModifier ->
-      ChatDestination(
-        viewModel = viewModel,
-        imageLoader = imageLoader,
-        appPackageId = appPackageId,
-        hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-        openUrl = openUrl,
-        onNavigateUp = {
-          floatingBubbleState.minimize()
-        },
-        modifier = expandedContentModifier,
-      )
-    }
+  FloatingBubble(modifier, floatingBubbleState) { expandedContentModifier ->
+    ChatDestination(
+      viewModel = viewModel,
+      imageLoader = imageLoader,
+      appPackageId = appPackageId,
+      hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+      openUrl = openUrl,
+      onNavigateUp = {
+        floatingBubbleState.minimize()
+      },
+      modifier = expandedContentModifier,
+    )
   }
 }
 
@@ -170,9 +167,7 @@ private fun Modifier.draggableBubble(floatingBubbleState: FloatingBubbleState, d
     var layoutCoordinates: LayoutCoordinates? by remember { mutableStateOf(null) }
     SetInitialAndHomeOffsetsEffect(floatingBubbleState, layoutCoordinates, density)
     this
-      .onPlaced { coordinates ->
-        layoutCoordinates = coordinates
-      }
+      .onPlaced { layoutCoordinates = it }
       .then(
         if (layoutCoordinates == null || !floatingBubbleState.isReady) {
           Modifier.alpha(0f)

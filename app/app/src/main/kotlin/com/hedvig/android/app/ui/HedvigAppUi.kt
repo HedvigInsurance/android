@@ -82,14 +82,15 @@ internal fun HedvigAppUi(
         )
       }
       val showChatBubble by hedvigAppState.showChatBubble.collectAsStateWithLifecycle()
-      FloatingBubbleChat(
-        showChatBubble = showChatBubble,
-        isInHomeScreen = hedvigAppState.isInHomeScreen,
-        imageLoader = imageLoader,
-        appPackageId = hedvigBuildConstants.appId,
-        hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-        openUrl = openUrl,
-      )
+      if (showChatBubble) {
+        FloatingBubbleChat(
+          isInHomeScreen = hedvigAppState.isInHomeScreen,
+          imageLoader = imageLoader,
+          appPackageId = hedvigBuildConstants.appId,
+          hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+          openUrl = openUrl,
+        )
+      }
     }
   }
 }
