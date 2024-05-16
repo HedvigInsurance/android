@@ -99,7 +99,7 @@ internal class HelpCenterPresenter(
           search = HelpCenterUiState.Search(query, HelpCenterUiState.ActiveSearchState.Loading),
         )
         val results = searchForQuery(
-          query.lowercase(),
+          query.lowercase().trim(),
           currentState.quickLinksUiState,
           context,
         )
