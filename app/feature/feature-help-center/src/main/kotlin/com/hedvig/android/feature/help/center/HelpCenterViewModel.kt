@@ -8,17 +8,17 @@ import com.hedvig.android.molecule.android.MoleculeViewModel
 
 internal class HelpCenterViewModel(
   getQuickLinksUseCase: GetQuickLinksUseCase,
-  context: Context
+  context: Context,
 ) : MoleculeViewModel<HelpCenterEvent, HelpCenterUiState>(
     initialState = HelpCenterUiState(
       topics = commonTopics,
       questions = commonQuestions,
       selectedQuickAction = null,
       quickLinksUiState = HelpCenterUiState.QuickLinkUiState.Loading,
-      search = null
+      search = null,
     ),
     presenter = HelpCenterPresenter(
       getQuickLinksUseCase = getQuickLinksUseCase,
-      context = context
+      context = context,
     ),
   )

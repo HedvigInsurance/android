@@ -12,7 +12,6 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -38,7 +37,6 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -49,9 +47,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -61,7 +61,6 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import arrow.core.NonEmptyList
 import arrow.core.nonEmptyListOf
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
@@ -174,6 +173,8 @@ private fun HelpCenterHomeScreen(
   var searchQuery by remember {
     mutableStateOf(search?.query)
   }
+  val focusRequester = remember { FocusRequester() }
+  val focusManager = LocalFocusManager.current
   Surface(color = MaterialTheme.colorScheme.background) {
     Column(Modifier.fillMaxSize()) {
       TopAppBarWithBack(
@@ -182,24 +183,30 @@ private fun HelpCenterHomeScreen(
       )
       Column(
         modifier = Modifier
-          .fillMaxSize()
-          .verticalScroll(rememberScrollState()),
+            .fillMaxSize()
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() },
+            ) {
+                focusManager.clearFocus() //clearing focus for search textField
+            }
+            .verticalScroll(rememberScrollState()),
       ) {
         Spacer(Modifier.height(50.dp))
         Image(
           painter = painterResource(id = R.drawable.pillow_hedvig),
           contentDescription = null,
           modifier = Modifier
-            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
-            .size(170.dp)
-            .align(Alignment.CenterHorizontally),
+              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+              .size(170.dp)
+              .align(Alignment.CenterHorizontally),
         )
         Spacer(Modifier.height(50.dp))
         Column(
           verticalArrangement = Arrangement.spacedBy(8.dp),
           modifier = Modifier
-            .padding(horizontal = 20.dp)
-            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+              .padding(horizontal = 20.dp)
+              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
         ) {
           Text(stringResource(id = R.string.HC_HOME_VIEW_QUESTION))
           Text(
@@ -208,21 +215,10 @@ private fun HelpCenterHomeScreen(
           )
         }
         Spacer(modifier = Modifier.height(40.dp))
-        HedvigTextField(
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-          value = searchQuery ?: "",
-          colors = HedvigTextFieldDefaults.colors(
-            typingHighlightColor = MaterialTheme.colorScheme.surface,
-          ),
-          keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-          keyboardActions = KeyboardActions(
-            onAny = {
-            searchQuery?.let { onSearchChange(it) }
-          }
-            ),
-          onValueChange = {
+        SearchField(
+          searchQuery = searchQuery,
+          focusRequester = focusRequester,
+          onSearchChange = {
             if (it.isEmpty()) {
               searchQuery = null
               onClearSearch()
@@ -230,24 +226,15 @@ private fun HelpCenterHomeScreen(
               searchQuery = it
             }
           },
-          placeholder = {
-            Text(text = "Search",
-              style = MaterialTheme.typography.bodyLarge.copy(color = LocalContentColor.current),
-              modifier = Modifier.alpha(0.60f),) //todo: remove hardcode
-          },
-          leadingIcon = {
-            Icon(Icons.Default.Search, contentDescription = null,
-              modifier = Modifier.alpha(0.60f))
-          },
-          trailingIcon = {
-            if (search?.query != null) {
-              Icon(Icons.Default.Clear, contentDescription = null,
-                modifier = Modifier.clickable {
-                  searchQuery = null
-                  onClearSearch()
-                }
-              )
+          onKeyboardAction = {
+            searchQuery?.let {
+              focusManager.clearFocus()
+              onSearchChange(it)
             }
+          },
+          onClearSearch = {
+            searchQuery = null
+            onClearSearch()
           },
         )
         Spacer(Modifier.height(24.dp))
@@ -274,9 +261,9 @@ private fun HelpCenterHomeScreen(
                       HedvigCard(
                         onClick = { onNavigateToTopic(topic) },
                         modifier = Modifier
-                          .fillMaxWidth()
-                          .padding(horizontal = 16.dp)
-                          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
                       ) {
                         Text(stringResource(topic.titleRes), Modifier.padding(16.dp))
                       }
@@ -301,36 +288,42 @@ private fun HelpCenterHomeScreen(
               HelpCenterUiState.ActiveSearchState.Empty -> {
                 Column(
                   verticalArrangement = Arrangement.Center,
-                  horizontalAlignment = Alignment.CenterHorizontally) {
+                  horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
                   Text(
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center,
-                    text = "Nothing found, sorry!") //todo: remove hardcode
+                    text = "Nothing found, sorry!",
+                  ) // todo: remove hardcode
                 }
               }
+
               HelpCenterUiState.ActiveSearchState.Loading -> {
                 Column(
                   verticalArrangement = Arrangement.Center,
-                  horizontalAlignment = Alignment.CenterHorizontally) {
+                  horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
                   HedvigFullScreenCenterAlignedProgress()
                 }
               }
+
               is HelpCenterUiState.ActiveSearchState.Success -> {
                 Column(
                   verticalArrangement = Arrangement.Center,
-                  horizontalAlignment = Alignment.CenterHorizontally) {
-                  if (animatedSearch.activeSearchState.results.filteredQuickLinks!=null) {
+                  horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                  if (animatedSearch.activeSearchState.results.filteredQuickLinks != null) {
                     val searchQuickLinkUiState = HelpCenterUiState.QuickLinkUiState.QuickLinks(
-                        animatedSearch.activeSearchState.results.filteredQuickLinks.toPersistentList()
+                      animatedSearch.activeSearchState.results.filteredQuickLinks.toPersistentList(),
                     )
                     QuickLinksSection(searchQuickLinkUiState, onQuickActionsSelected)
                     Spacer(Modifier.height(32.dp))
                   }
-                  if (animatedSearch.activeSearchState.results.filteredQuestions!=null) {
+                  if (animatedSearch.activeSearchState.results.filteredQuestions != null) {
                     LocalConfiguration.current
                     val resources = LocalContext.current.resources
                     HelpCenterSectionWithClickableRows(
-                      title = "Results in questions", //todo: hardcode
+                      title = "Results in questions", // todo: hardcode
                       chipContainerColor = MaterialTheme.colorScheme.infoContainer,
                       contentColor = MaterialTheme.colorScheme.onInfoContainer,
                       items = animatedSearch.activeSearchState.results.filteredQuestions.toPersistentList(),
@@ -352,6 +345,59 @@ private fun HelpCenterHomeScreen(
       }
     }
   }
+}
+
+@Composable
+private fun SearchField(
+  searchQuery: String?,
+  focusRequester: FocusRequester,
+  onClearSearch: () -> Unit,
+  onKeyboardAction: () -> Unit,
+  onSearchChange: (String) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  HedvigTextField(
+    modifier = modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp)
+        .focusRequester(focusRequester),
+    value = searchQuery ?: "",
+    colors = HedvigTextFieldDefaults.colors(
+      typingHighlightColor = MaterialTheme.colorScheme.surface,
+    ),
+    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+    keyboardActions = KeyboardActions(
+      onAny = {
+        onKeyboardAction()
+      },
+    ),
+    onValueChange = onSearchChange,
+    placeholder = {
+      Text(
+        text = "Search",
+        style = MaterialTheme.typography.bodyLarge.copy(color = LocalContentColor.current),
+        modifier = Modifier.alpha(0.60f),
+      ) // todo: remove hardcode
+    },
+    leadingIcon = {
+      Icon(
+        Icons.Default.Search,
+        contentDescription = null,
+        modifier = Modifier.alpha(0.60f),
+      )
+    },
+    trailingIcon = {
+      if (searchQuery != null) {
+        Icon(
+          Icons.Default.Clear,
+          contentDescription = null,
+          modifier = Modifier.clickable {
+            onClearSearch()
+          },
+        )
+      }
+    },
+  )
 }
 
 private val QuickLinksSectionEnterTransition = fadeIn() + expandVertically(
@@ -454,9 +500,9 @@ private fun QuickLinkCard(
   HedvigCard(
     onClick = onClick,
     modifier = modifier
-      .fillMaxWidth()
-      .padding(horizontal = 16.dp)
-      .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp)
+        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
   ) {
     Column(
       verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -489,21 +535,28 @@ private fun PreviewHelpCenterHomeScreen(
         quickLinksUiState = quickLinksUiState,
         onClearSearch = {},
         onSearchChange = {},
-        search = HelpCenterUiState.Search("dubadee",
+        search = HelpCenterUiState.Search(
+          "dubadee",
           HelpCenterUiState.ActiveSearchState.Success(
             HelpCenterUiState.HelpSearchResults(
               nonEmptyListOf(
-                HelpCenterUiState.QuickLink(QuickAction.StandaloneQuickLink(
-                  quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkTravelCertificate,
-                  titleRes = R.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE,
-                  hintTextRes = R.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE_SUBTITLE,
-                ))
+                HelpCenterUiState.QuickLink(
+                  QuickAction.StandaloneQuickLink(
+                    quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkTravelCertificate,
+                    titleRes = R.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE,
+                    hintTextRes = R.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE_SUBTITLE,
+                  ),
+                ),
               ),
               nonEmptyListOf(
-                Question.CLAIMS_Q6, Question.CLAIMS_Q9, Question.COVERAGE_Q5, Question.OTHER_Q4
-              )
-            )
-          )),
+                Question.CLAIMS_Q6,
+                Question.CLAIMS_Q9,
+                Question.COVERAGE_Q5,
+                Question.OTHER_Q4,
+              ),
+            ),
+          ),
+        ),
       )
     }
   }

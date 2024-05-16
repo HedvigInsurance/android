@@ -52,7 +52,9 @@ internal data class HelpCenterUiState(
 
   sealed interface ActiveSearchState {
     data object Loading : ActiveSearchState
+
     data object Empty : ActiveSearchState
+
     data class Success(val results: HelpSearchResults) : ActiveSearchState
   }
 
@@ -94,7 +96,7 @@ internal class HelpCenterPresenter(
       val query = searchQuery
       if (query != null) {
         currentState = currentState.copy(
-            search = HelpCenterUiState.Search(query, HelpCenterUiState.ActiveSearchState.Loading),
+          search = HelpCenterUiState.Search(query, HelpCenterUiState.ActiveSearchState.Loading),
         )
         val results = searchForQuery(
           query.lowercase(),
@@ -103,15 +105,15 @@ internal class HelpCenterPresenter(
         )
         currentState = if (results == null) {
           currentState.copy(
-              search = HelpCenterUiState.Search(query, HelpCenterUiState.ActiveSearchState.Empty),
+            search = HelpCenterUiState.Search(query, HelpCenterUiState.ActiveSearchState.Empty),
           )
-        } else
+        } else {
           currentState.copy(
-              search = HelpCenterUiState.Search(query, HelpCenterUiState.ActiveSearchState.Success(results)),
+            search = HelpCenterUiState.Search(query, HelpCenterUiState.ActiveSearchState.Success(results)),
           )
+        }
       }
     }
-
 
     LaunchedEffect(Unit) {
       if (quickLinksUiState !is HelpCenterUiState.QuickLinkUiState.QuickLinks) {
@@ -137,7 +139,6 @@ internal class HelpCenterPresenter(
   }
 }
 
-
 private fun searchForQuery(
   query: String,
   quickLinksUiState: HelpCenterUiState.QuickLinkUiState,
@@ -156,7 +157,6 @@ private fun searchForQuery(
           }
         }
       }
-
     }
   }.toNonEmptyListOrNull()
   val resultsInQuestions = buildList {
@@ -168,7 +168,9 @@ private fun searchForQuery(
       }
     }
   }.toNonEmptyListOrNull()
-  if (resultsInQuestions == null && resultsInQuickLinks == null) return null else {
+  if (resultsInQuestions == null && resultsInQuickLinks == null) {
+    return null
+  } else {
     return HelpCenterUiState.HelpSearchResults(resultsInQuickLinks, resultsInQuestions)
   }
 }

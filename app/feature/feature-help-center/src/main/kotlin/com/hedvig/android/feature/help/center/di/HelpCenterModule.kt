@@ -29,7 +29,7 @@ val helpCenterModule = module {
   viewModel<HelpCenterViewModel> {
     HelpCenterViewModel(
       getQuickLinksUseCase = get<GetQuickLinksUseCase>(),
-      context = get<Context>()
+      context = get<Context>(),
     )
   }
 }
