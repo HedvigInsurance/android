@@ -6,7 +6,6 @@
 
 package com.hedvig.android.feature.chat.floating
 
-import androidx.activity.compose.PredictiveBackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -16,10 +15,8 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector2D
 import androidx.compose.animation.core.ExperimentalAnimationSpecApi
 import androidx.compose.animation.core.ExperimentalTransitionApi
-import androidx.compose.animation.core.SeekableTransitionState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.VectorConverter
-import androidx.compose.animation.core.VisibilityThreshold
 import androidx.compose.animation.core.calculateTargetValue
 import androidx.compose.animation.core.rememberTransition
 import androidx.compose.animation.core.spring
@@ -31,12 +28,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.systemGestureExclusion
 import androidx.compose.material.icons.Icons
@@ -46,10 +41,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -77,8 +70,6 @@ import com.hedvig.android.core.icons.hedvig.colored.hedvig.Chat
 import com.hedvig.android.feature.chat.ChatViewModel
 import com.hedvig.android.feature.chat.ui.ChatDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import kotlin.coroutines.cancellation.CancellationException
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -285,8 +276,7 @@ private fun SharedTransitionScope.MaximizedBubble(
       Spacer(
         Modifier
           .align(Alignment.CenterHorizontally)
-          .height(8.dp)
-          .width(12.dp)
+          .size(height = 8.dp, width = 12.dp)
           .drawChatBubbleArrow(arrowColor),
       )
     }
@@ -337,86 +327,6 @@ private fun Modifier.drawChatBubbleArrow(color: Color): Modifier = drawBehind {
     },
     color = color,
   )
-}
-
-@OptIn(ExperimentalTransitionApi::class)
-private class FloatingBubbleState(
-  private val coroutineScope: CoroutineScope,
-) {
-  val seekableTransition = SeekableTransitionState<BubbleState>(BubbleState.Minimized)
-
-  // Offset position for the minimized version of the bubble
-  val offset: Animatable<Offset, AnimationVector2D> = Animatable(
-    Offset.Zero,
-    Offset.VectorConverter,
-    Offset.VisibilityThreshold,
-  )
-
-  fun minimize() {
-    coroutineScope.launch {
-      seekableTransition.animateTo(BubbleState.Minimized)
-    }
-  }
-
-  fun expand() {
-    coroutineScope.launch {
-      seekableTransition.animateTo(BubbleState.Expanded)
-    }
-  }
-
-  @Composable
-  fun PredictiveBackHandler() {
-    val isBackHandlerEnabled = !(
-      seekableTransition.currentState == BubbleState.Minimized &&
-        seekableTransition.targetState == BubbleState.Minimized
-    )
-    var progress by remember { mutableFloatStateOf(0f) }
-    var inPredictiveBack by remember { mutableStateOf(false) }
-    var finishedBack by remember { mutableStateOf(false) }
-    var cancelledBack by remember { mutableStateOf(false) }
-    PredictiveBackHandler(isBackHandlerEnabled) { backEvent ->
-      progress = 0f
-      cancelledBack = false
-      finishedBack = false
-      try {
-        backEvent.collect {
-          inPredictiveBack = true
-          progress = it.progress
-        }
-        inPredictiveBack = false
-        finishedBack = true
-      } catch (e: CancellationException) {
-        inPredictiveBack = false
-        cancelledBack = true
-      }
-    }
-    if (inPredictiveBack) {
-      LaunchedEffect(progress) {
-        seekableTransition.seekTo(progress, BubbleState.Minimized)
-      }
-    }
-    if (finishedBack) {
-      LaunchedEffect(Unit) {
-        seekableTransition.animateTo(BubbleState.Minimized)
-      }
-    }
-    if (cancelledBack) {
-      LaunchedEffect(Unit) {
-        seekableTransition.snapTo(BubbleState.Expanded)
-      }
-    }
-  }
-
-  enum class BubbleState {
-    Minimized,
-    Expanded,
-  }
-}
-
-@Composable
-private fun rememberFloatingBubbleState(): FloatingBubbleState {
-  val coroutineScope = rememberCoroutineScope()
-  return remember { FloatingBubbleState(coroutineScope) }
 }
 
 private const val SharedSurfaceKey = "SharedSurfaceKey"
