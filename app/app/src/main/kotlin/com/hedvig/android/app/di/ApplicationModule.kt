@@ -17,6 +17,7 @@ import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.cache.normalized.api.MemoryCacheFactory
 import com.apollographql.apollo3.cache.normalized.api.NormalizedCacheFactory
 import com.apollographql.apollo3.cache.normalized.normalizedCache
+import com.apollographql.apollo3.cache.normalized.sql.SqlNormalizedCacheFactory
 import com.apollographql.apollo3.interceptor.ApolloInterceptor
 import com.apollographql.apollo3.network.okHttpClient
 import com.hedvig.android.apollo.auth.listeners.di.apolloAuthListenersModule
@@ -139,10 +140,18 @@ private val networkModule = module {
   }
   single<DatadogInterceptor> { DatadogInterceptor() } bind ApolloInterceptor::class
   single<ApolloClient.Builder> {
+    val hedvigBuildConstants = get<HedvigBuildConstants>()
     val interceptors = getAll<ApolloInterceptor>().distinct()
     ApolloClient.Builder()
       .okHttpClient(get<OkHttpClient>())
-      .normalizedCache(get<NormalizedCacheFactory>())
+      .apply {
+        val normalizedCacheFactory = get<NormalizedCacheFactory>().apply {
+          if (hedvigBuildConstants.isDebug) {
+            chain(SqlNormalizedCacheFactory(get<Context>(), "debug-apollo.db"))
+          }
+        }
+        normalizedCache(normalizedCacheFactory)
+      }
       .addInterceptors(interceptors)
   }
   single<ApolloClient> {

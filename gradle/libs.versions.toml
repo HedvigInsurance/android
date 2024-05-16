@@ -133,6 +133,7 @@ apollo-adapters = { module = "com.apollographql.apollo3:apollo-adapters", versio
 apollo-annotations = { module = "com.apollographql.apollo3:apollo-annotations", version.ref = "apollo" }
 apollo-api = { module = "com.apollographql.apollo3:apollo-api", version.ref = "apollo" }
 apollo-normalizedCache = { module = "com.apollographql.apollo3:apollo-normalized-cache", version.ref = "apollo" }
+apollo-normalizedCacheSql = { module = "com.apollographql.apollo3:apollo-normalized-cache-sqlite", version.ref = "apollo" }
 apollo-runtime = { module = "com.apollographql.apollo3:apollo-runtime", version.ref = "apollo" }
 apollo-testingSupport = { module = "com.apollographql.apollo3:apollo-testing-support", version.ref = "apollo" }
 arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
