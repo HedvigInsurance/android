@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
@@ -276,6 +277,7 @@ private fun SharedTransitionScope.MaximizedBubble(
   ) {
     Column {
       chatIcon(Modifier)
+      Spacer(Modifier.height(4.dp))
       val arrowColor = MaterialTheme.colorScheme.background
       Spacer(
         Modifier
