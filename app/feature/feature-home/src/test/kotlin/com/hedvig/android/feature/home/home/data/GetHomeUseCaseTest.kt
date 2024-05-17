@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.home.home.data
 
+import arrow.core.Either
 import arrow.core.NonEmptyList
 import assertk.Assert
 import assertk.assertThat
@@ -21,6 +22,7 @@ import com.hedvig.android.apollo.octopus.test.OctopusFakeResolver
 import com.hedvig.android.apollo.octopus.test.OctopusFakeResolverWithFilledLists
 import com.hedvig.android.apollo.test.TestApolloClientRule
 import com.hedvig.android.apollo.test.TestNetworkTransportType
+import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.test.isRight
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
@@ -32,13 +34,14 @@ import com.hedvig.android.memberreminders.test.TestGetMemberRemindersUseCase
 import com.hedvig.android.test.clock.TestClock
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import kotlin.time.Duration.Companion.days
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import octopus.HomeQuery
-import octopus.NumberOfChatMessagesQuery
 import octopus.type.buildClaim
 import octopus.type.buildContract
 import octopus.type.buildMember
@@ -68,12 +71,9 @@ internal class GetHomeUseCaseTest {
           HomeQuery(),
           HomeQuery.Data(OctopusFakeResolver),
         )
-        registerTestResponse(
-          NumberOfChatMessagesQuery(),
-          NumberOfChatMessagesQuery.Data(OctopusFakeResolver),
-        )
       },
       testGetMemberRemindersUseCase,
+      TestShouldShowChatButtonUseCase(true),
       FakeFeatureManager2(true),
       TestClock(),
       TimeZone.UTC,
@@ -90,7 +90,6 @@ internal class GetHomeUseCaseTest {
     val result = getHomeDataUseCase.invoke(true).first()
 
     assertThat(result)
-      .isNotNull()
       .isRight()
       .prop(HomeData::memberReminders)
       .isEqualTo(
@@ -111,12 +110,9 @@ internal class GetHomeUseCaseTest {
           HomeQuery(),
           HomeQuery.Data(OctopusFakeResolver),
         )
-        registerTestResponse(
-          NumberOfChatMessagesQuery(),
-          NumberOfChatMessagesQuery.Data(OctopusFakeResolver),
-        )
       },
       testGetMemberRemindersUseCase,
+      TestShouldShowChatButtonUseCase(true),
       FakeFeatureManager2(true),
       TestClock(),
       TimeZone.UTC,
@@ -126,7 +122,6 @@ internal class GetHomeUseCaseTest {
     val result = getHomeDataUseCase.invoke(true).first()
 
     assertThat(result)
-      .isNotNull()
       .isRight()
       .prop(HomeData::memberReminders)
       .isEqualTo(MemberReminders(null, null, null))
@@ -150,14 +145,9 @@ internal class GetHomeUseCaseTest {
         }
       },
     )
-    apolloClient.registerTestResponse(
-      NumberOfChatMessagesQuery(),
-      NumberOfChatMessagesQuery.Data(OctopusFakeResolver),
-    )
     val result = getHomeDataUseCase.invoke(true).first()
 
     assertThat(result)
-      .isNotNull()
       .isRight()
       .prop(HomeData::veryImportantMessages)
       .containsExactly(
@@ -179,14 +169,9 @@ internal class GetHomeUseCaseTest {
         }
       },
     )
-    apolloClient.registerTestResponse(
-      NumberOfChatMessagesQuery(),
-      NumberOfChatMessagesQuery.Data(OctopusFakeResolver),
-    )
     val result = getHomeDataUseCase.invoke(true).first()
 
     assertThat(result)
-      .isNotNull()
       .isRight()
       .prop(HomeData::veryImportantMessages)
       .isEmpty()
@@ -211,14 +196,9 @@ internal class GetHomeUseCaseTest {
         }
       },
     )
-    apolloClient.registerTestResponse(
-      NumberOfChatMessagesQuery(),
-      NumberOfChatMessagesQuery.Data(OctopusFakeResolver),
-    )
     val result = getHomeDataUseCase.invoke(true).first()
 
     val claimStatusCardsUiState: Assert<NonEmptyList<ClaimStatusCardUiState>> = assertThat(result)
-      .isNotNull()
       .isRight()
       .prop(HomeData::claimStatusCardsData)
       .isNotNull()
@@ -242,14 +222,9 @@ internal class GetHomeUseCaseTest {
         }
       },
     )
-    apolloClient.registerTestResponse(
-      NumberOfChatMessagesQuery(),
-      NumberOfChatMessagesQuery.Data(OctopusFakeResolver),
-    )
     val result = getHomeDataUseCase.invoke(true).first()
 
     assertThat(result)
-      .isNotNull()
       .isRight()
       .prop(HomeData::claimStatusCardsData)
       .isNull()
@@ -273,14 +248,9 @@ internal class GetHomeUseCaseTest {
         }
       },
     )
-    apolloClient.registerTestResponse(
-      NumberOfChatMessagesQuery(),
-      NumberOfChatMessagesQuery.Data(OctopusFakeResolver),
-    )
     val result = getHomeDataUseCase.invoke(true).first()
 
     assertThat(result)
-      .isNotNull()
       .isRight()
       .prop(HomeData::contractStatus)
       .isEqualTo(HomeData.ContractStatus.Terminated)
@@ -314,14 +284,9 @@ internal class GetHomeUseCaseTest {
         }
       },
     )
-    apolloClient.registerTestResponse(
-      NumberOfChatMessagesQuery(),
-      NumberOfChatMessagesQuery.Data(OctopusFakeResolver),
-    )
     val result = getHomeDataUseCase.invoke(true).first()
 
     assertThat(result)
-      .isNotNull()
       .isRight()
       .prop(HomeData::contractStatus)
       .apply {
@@ -355,14 +320,9 @@ internal class GetHomeUseCaseTest {
         }
       },
     )
-    apolloClient.registerTestResponse(
-      NumberOfChatMessagesQuery(),
-      NumberOfChatMessagesQuery.Data(OctopusFakeResolver),
-    )
     val result = getHomeDataUseCase.invoke(true).first()
 
     assertThat(result)
-      .isNotNull()
       .isRight()
       .prop(HomeData::contractStatus)
       .apply {
@@ -390,18 +350,40 @@ internal class GetHomeUseCaseTest {
       HomeQuery(),
       HomeQuery.Data(OctopusFakeResolver),
     )
-    apolloClient.registerTestResponse(
-      NumberOfChatMessagesQuery(),
-      NumberOfChatMessagesQuery.Data(OctopusFakeResolver),
-    )
     val result = getHomeDataUseCase.invoke(true).first()
 
     assertThat(result)
-      .isNotNull()
       .isRight()
       .prop(HomeData::showHelpCenter)
       .apply {
         if (helpCenterIsEnabled) {
+          isTrue()
+        } else {
+          isFalse()
+        }
+      }
+  }
+
+  @Test
+  fun `home data adjusts according to if the chat button should show or not`(
+    @TestParameter showChatButton: Boolean,
+  ) = runTest {
+    val getHomeDataUseCase = testUseCaseWithoutReminders(withChatButtonShowing = showChatButton)
+
+    apolloClient.apply {
+      registerTestResponse(
+        HomeQuery(),
+        HomeQuery.Data(OctopusFakeResolver),
+      )
+    }
+
+    val result: Either<ErrorMessage, HomeData> = getHomeDataUseCase.invoke(true).first()
+
+    assertThat(result)
+      .isRight()
+      .prop(HomeData::showChatIcon)
+      .apply {
+        if (showChatButton) {
           isTrue()
         } else {
           isFalse()
@@ -415,13 +397,21 @@ internal class GetHomeUseCaseTest {
     faetureManager: FeatureManager = FakeFeatureManager2(true),
     testClock: TestClock = TestClock(),
     timeZone: TimeZone = TimeZone.UTC,
+    withChatButtonShowing: Boolean = true,
   ): GetHomeDataUseCase {
     return GetHomeDataUseCaseImpl(
       apolloClient,
       TestGetMemberRemindersUseCase().apply { memberReminders.add(MemberReminders()) },
+      TestShouldShowChatButtonUseCase(withChatButtonShowing),
       faetureManager,
       testClock,
       timeZone,
     )
+  }
+
+  private fun TestShouldShowChatButtonUseCase(response: Boolean) = object : ShouldShowChatButtonUseCase {
+    override fun invoke(): Flow<Boolean> {
+      return flowOf(response)
+    }
   }
 }

@@ -21,11 +21,15 @@ import kotlinx.coroutines.flow.retryWhen
 import octopus.NumberOfChatMessagesQuery
 import octopus.type.ChatMessageSender
 
-class ShouldShowChatButtonUseCase(
+interface ShouldShowChatButtonUseCase {
+  fun invoke(): Flow<Boolean>
+}
+
+internal class ShouldShowChatButtonUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,
-) {
-  fun invoke(): Flow<Boolean> {
+) : ShouldShowChatButtonUseCase {
+  override fun invoke(): Flow<Boolean> {
     return combine(
       isEligibleToShowTheChatIcon(),
       featureManager.isFeatureEnabled(Feature.DISABLE_CHAT),

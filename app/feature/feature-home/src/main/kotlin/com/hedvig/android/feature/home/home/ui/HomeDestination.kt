@@ -232,14 +232,14 @@ private fun HomeScreen(
           val actionsList: List<HomeTopBarAction> = buildList {
             if (currentState.crossSellsAction != null) add(currentState.crossSellsAction)
             if (currentState.firstVetAction != null) add(currentState.firstVetAction)
-            add(HomeTopBarAction.EmptySpace)
+            if (currentState.chatAction != null) add(HomeTopBarAction.ChatAction)
           }
           actionsList.forEachIndexed { index, action ->
             if (index != 0) {
               Spacer(modifier = Modifier.width(8.dp))
             }
             when (action) {
-              HomeTopBarAction.EmptySpace -> EmptySpaceIcon(
+              HomeTopBarAction.ChatAction -> EmptySpaceIcon(
                 // todo notification cirle to the floating chat icon instead
                 modifier = Modifier.notificationCircle(uiState.hasUnseenChatMessages),
               )
@@ -260,7 +260,7 @@ private fun HomeScreen(
           }
         }
       }
-      // todo add tooltip to the floating chat icon instead
+      // todo(makerdays) add tooltip to the floating chat icon instead of here
 //      if ((uiState as? HomeUiState.Success)?.chatAction != null) {
 //        val shouldShowTooltip by produceState(false) {
 //          val daysSinceLastTooltipShown = daysSinceLastTooltipShown(context)
@@ -286,6 +286,7 @@ private fun HomeScreen(
   }
 }
 
+// todo(makerdays) move this check into the chat bubble code instead
 private suspend fun daysSinceLastTooltipShown(context: Context): Boolean {
   val currentEpochDay = java.time.LocalDate.now().toEpochDay()
   val lastEpochDayOpened = withContext(Dispatchers.IO) {
@@ -607,6 +608,7 @@ private fun PreviewHomeScreen(
           crossSellsAction = HomeTopBarAction.CrossSellsAction(
             persistentListOf(CrossSell("rf", "erf", "", "", CrossSell.CrossSellType.ACCIDENT)),
           ),
+          chatAction = null,
           firstVetAction = HomeTopBarAction.FirstVetAction(
             listOf(
               FirstVetSection(

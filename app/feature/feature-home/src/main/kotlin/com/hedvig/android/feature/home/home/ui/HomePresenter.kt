@@ -114,6 +114,7 @@ internal class HomePresenter(
           }.toPersistentList(),
           isHelpCenterEnabled = successData.showHelpCenter,
           hasUnseenChatMessages = hasUnseenChatMessages,
+          chatAction = successData.chatAction,
           firstVetAction = successData.firstVetAction,
           crossSellsAction = successData.crossSellsAction,
         )
@@ -146,6 +147,7 @@ internal sealed interface HomeUiState {
     val claimStatusCardsData: HomeData.ClaimStatusCardsData?,
     val veryImportantMessages: ImmutableList<HomeData.VeryImportantMessage>,
     val memberReminders: MemberReminders,
+    val chatAction: HomeTopBarAction.ChatAction?,
     val firstVetAction: HomeTopBarAction.FirstVetAction?,
     val crossSellsAction: HomeTopBarAction.CrossSellsAction?,
     override val isHelpCenterEnabled: Boolean,
@@ -163,6 +165,7 @@ private data class SuccessData(
   val veryImportantMessages: ImmutableList<HomeData.VeryImportantMessage>,
   val memberReminders: MemberReminders,
   val showHelpCenter: Boolean,
+  val chatAction: HomeTopBarAction.ChatAction?,
   val firstVetAction: HomeTopBarAction.FirstVetAction?,
   val crossSellsAction: HomeTopBarAction.CrossSellsAction?,
 ) {
@@ -175,6 +178,7 @@ private data class SuccessData(
         veryImportantMessages = lastState.veryImportantMessages,
         memberReminders = lastState.memberReminders,
         showHelpCenter = lastState.isHelpCenterEnabled,
+        chatAction = lastState.chatAction,
         crossSellsAction = lastState.crossSellsAction,
         firstVetAction = lastState.firstVetAction,
       )
@@ -186,6 +190,7 @@ private data class SuccessData(
       } else {
         null
       }
+      val chatAction = if (homeData.showChatIcon) HomeTopBarAction.ChatAction else null
       val firstVetAction = if (homeData.firstVetSections.isNotEmpty()) {
         HomeTopBarAction.FirstVetAction(homeData.firstVetSections)
       } else {
@@ -207,6 +212,7 @@ private data class SuccessData(
         veryImportantMessages = homeData.veryImportantMessages,
         memberReminders = homeData.memberReminders.copy(enableNotifications = null),
         showHelpCenter = homeData.showHelpCenter,
+        chatAction = chatAction,
         firstVetAction = firstVetAction,
         crossSellsAction = crossSellsAction,
       )
@@ -227,7 +233,7 @@ sealed interface HomeText {
 }
 
 sealed interface HomeTopBarAction {
-  data object EmptySpace : HomeTopBarAction
+  data object ChatAction : HomeTopBarAction
 
   data class FirstVetAction(
     val sections: List<FirstVetSection>,

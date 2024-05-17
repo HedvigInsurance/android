@@ -137,6 +137,6 @@ class ShouldShowChatButtonUseCaseTest {
   }
 
   private fun testUseCase(featureManager: FeatureManager = FakeFeatureManager2(true)): ShouldShowChatButtonUseCase {
-    return ShouldShowChatButtonUseCase(apolloClient, featureManager)
+    return ShouldShowChatButtonUseCaseImpl(apolloClient, featureManager)
   }
 }

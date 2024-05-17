@@ -38,6 +38,7 @@ internal interface GetHomeDataUseCase {
 internal class GetHomeDataUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val getMemberRemindersUseCase: GetMemberRemindersUseCase,
+  private val shouldShowChatButtonUseCase: ShouldShowChatButtonUseCase,
   private val featureManager: FeatureManager,
   private val clock: Clock,
   private val timeZone: TimeZone,
@@ -48,8 +49,9 @@ internal class GetHomeDataUseCaseImpl(
         .fetchPolicy(if (forceNetworkFetch) FetchPolicy.NetworkOnly else FetchPolicy.CacheFirst)
         .safeFlow(::ErrorMessage),
       getMemberRemindersUseCase.invoke(),
+      shouldShowChatButtonUseCase.invoke(),
       featureManager.isFeatureEnabled(Feature.HELP_CENTER),
-    ) { homeQueryDataResult, memberReminders, isHelpCenterEnabled ->
+    ) { homeQueryDataResult, memberReminders, showChatIcon, isHelpCenterEnabled ->
       either {
         val homeQueryData: HomeQuery.Data = homeQueryDataResult.bind()
         val contractStatus = homeQueryData.currentMember.toContractStatus()
@@ -89,6 +91,7 @@ internal class GetHomeDataUseCaseImpl(
           claimStatusCardsData = homeQueryData.claimStatusCards(),
           veryImportantMessages = veryImportantMessages.toPersistentList(),
           memberReminders = memberReminders,
+          showChatIcon = showChatIcon,
           showHelpCenter = isHelpCenterEnabled,
           firstVetSections = firstVetActions,
           crossSells = crossSells,
@@ -174,6 +177,7 @@ internal data class HomeData(
   val claimStatusCardsData: ClaimStatusCardsData?,
   val veryImportantMessages: ImmutableList<VeryImportantMessage>,
   val memberReminders: MemberReminders,
+  val showChatIcon: Boolean,
   val showHelpCenter: Boolean,
   val firstVetSections: List<FirstVetSection>,
   val crossSells: ImmutableList<CrossSell>,

@@ -9,6 +9,7 @@ import com.hedvig.android.feature.home.home.data.GetHomeDataUseCaseImpl
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorage
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorageImpl
 import com.hedvig.android.feature.home.home.data.ShouldShowChatButtonUseCase
+import com.hedvig.android.feature.home.home.data.ShouldShowChatButtonUseCaseImpl
 import com.hedvig.android.feature.home.home.ui.HomeViewModel
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.memberreminders.GetMemberRemindersUseCase
@@ -23,6 +24,7 @@ val homeModule = module {
     GetHomeDataUseCaseImpl(
       get<ApolloClient>(),
       get<GetMemberRemindersUseCase>(),
+      get<ShouldShowChatButtonUseCase>(),
       get<FeatureManager>(),
       get<Clock>(),
       get<TimeZone>(),
@@ -42,7 +44,7 @@ val homeModule = module {
     )
   }
   single<ShouldShowChatButtonUseCase> {
-    ShouldShowChatButtonUseCase(get<ApolloClient>(), get<FeatureManager>())
+    ShouldShowChatButtonUseCaseImpl(get<ApolloClient>(), get<FeatureManager>())
   }
   viewModel<HomeViewModel> {
     HomeViewModel(
