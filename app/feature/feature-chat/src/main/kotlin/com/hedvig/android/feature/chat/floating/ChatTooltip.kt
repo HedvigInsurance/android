@@ -48,7 +48,7 @@ internal fun ChatTooltip(showTooltip: Boolean, tooltipShown: () -> Unit, modifie
     transientShowTooltip = showTooltip
     tooltipShown()
     delay(5.seconds)
-//    transientShowTooltip = false
+    transientShowTooltip = false
   }
   InnerChatTooltip(
     show = transientShowTooltip,
