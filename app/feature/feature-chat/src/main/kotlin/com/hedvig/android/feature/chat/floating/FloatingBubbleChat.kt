@@ -220,7 +220,7 @@ private fun Modifier.draggableBubble(floatingBubbleState: FloatingBubbleState, d
               val offsetValue = offset.value
               val targetValue = Offset(
                 offsetValue.x + dragAmount.x,
-                offset.value.y + dragAmount.y,
+                offsetValue.y + dragAmount.y,
               )
               velocityTracker.addPosition(change.uptimeMillis, targetValue)
               launch(Dispatchers.Unconfined) {
@@ -229,11 +229,12 @@ private fun Modifier.draggableBubble(floatingBubbleState: FloatingBubbleState, d
             },
             onDragEnd = {
               val velocity: Velocity = velocityTracker.calculateVelocity()
+              val initialVelocity = Offset(velocity.x, velocity.y)
               velocityTracker.resetTracking()
               val targetOffsetAfterFlingEnd = decay.calculateTargetValue(
                 typeConverter = Offset.VectorConverter,
                 initialValue = offset.value,
-                initialVelocity = Offset(velocity.x, velocity.y), // maybe?
+                initialVelocity = initialVelocity,
               )
               val middleHorizontalPoint = layoutCoordinates.size.width / 2 - chatCircleWidth / 2
               val targetX = if (targetOffsetAfterFlingEnd.x < middleHorizontalPoint) {
@@ -249,7 +250,7 @@ private fun Modifier.draggableBubble(floatingBubbleState: FloatingBubbleState, d
                 offset.animateTo(
                   targetValue = Offset(targetX, targetY),
                   animationSpec = spring(stiffness = Spring.StiffnessVeryLow),
-                  initialVelocity = Offset(velocity.x, velocity.y),
+                  initialVelocity = initialVelocity,
                 )
               }
             },
