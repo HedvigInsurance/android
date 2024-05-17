@@ -77,6 +77,6 @@ val chatModule = module {
     ChatTooltipStorage(get<DataStore<Preferences>>())
   }
   viewModel<FloatingBubbleViewModel> {
-    FloatingBubbleViewModel(get<ChatTooltipStorage>(), get<Clock>())
+    FloatingBubbleViewModel(get<ChatTooltipStorage>(), get<ChatLastMessageReadRepository>(), get<Clock>())
   }
 }

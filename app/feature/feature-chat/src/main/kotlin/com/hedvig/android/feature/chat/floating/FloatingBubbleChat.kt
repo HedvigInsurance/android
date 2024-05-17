@@ -67,6 +67,7 @@ import com.hedvig.android.core.designsystem.material3.DisabledAlpha
 import com.hedvig.android.core.designsystem.material3.squircleLarge
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.colored.hedvig.Chat
+import com.hedvig.android.core.icons.hedvig.compose.notificationCircle
 import com.hedvig.android.feature.chat.ChatViewModel
 import com.hedvig.android.feature.chat.ui.ChatDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
@@ -93,6 +94,7 @@ fun FloatingBubbleChat(
     floatingBubbleState = floatingBubbleState,
     showWelcomeTooltip = floatingBubbleUiState.showWelcomeTooltip,
     onWelcomeTooltipShown = { floatingBubbleViewModel.emit(FloatingBubbleEvent.SeenTooltip) },
+    hasUnseenChatMessages = floatingBubbleUiState.hasUnseenChatMessages,
   ) {
     ChatDestination(
       viewModel = viewModel,
@@ -113,6 +115,7 @@ private fun FloatingBubble(
   floatingBubbleState: FloatingBubbleState,
   showWelcomeTooltip: Boolean,
   onWelcomeTooltipShown: () -> Unit,
+  hasUnseenChatMessages: Boolean,
   expandedContent: @Composable () -> Unit,
 ) {
   val transition = rememberTransition(floatingBubbleState.seekableTransition)
@@ -133,6 +136,7 @@ private fun FloatingBubble(
             animatedContentScope = this@AnimatedContent,
             showWelcomeTooltip = showWelcomeTooltip,
             onWelcomeTooltipShown = onWelcomeTooltipShown,
+            hasUnseenChatMessages = hasUnseenChatMessages,
             chatIcon = { chatModifier ->
               sharedChatIcon(this@AnimatedContent, floatingBubbleState::expand, chatModifier)
             },
@@ -161,13 +165,18 @@ private fun SharedTransitionScope.MinimizedBubble(
   animatedContentScope: AnimatedContentScope,
   showWelcomeTooltip: Boolean,
   onWelcomeTooltipShown: () -> Unit,
+  hasUnseenChatMessages: Boolean,
   chatIcon: @Composable (Modifier) -> Unit,
 ) {
   val density = LocalDensity.current
   Column(
     Modifier.draggableBubble(floatingBubbleState, density),
   ) {
-    chatIcon(Modifier.sharedBounds(rememberSharedContentState(SharedSurfaceKey), animatedContentScope))
+    chatIcon(
+      Modifier
+        .notificationCircle(hasUnseenChatMessages)
+        .sharedBounds(rememberSharedContentState(SharedSurfaceKey), animatedContentScope),
+    )
     if (showWelcomeTooltip) {
       ChatTooltip(
         showTooltip = showWelcomeTooltip,

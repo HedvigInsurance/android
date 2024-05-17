@@ -67,7 +67,6 @@ import com.hedvig.android.core.designsystem.material3.warningElement
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.hedvig.compose.notificationCircle
 import com.hedvig.android.core.icons.hedvig.normal.WarningFilled
 import com.hedvig.android.core.ui.appbar.m3.EmptySpaceIcon
 import com.hedvig.android.core.ui.appbar.m3.ToolbarCrossSellsIcon
@@ -236,10 +235,7 @@ private fun HomeScreen(
               Spacer(modifier = Modifier.width(8.dp))
             }
             when (action) {
-              HomeTopBarAction.ChatAction -> EmptySpaceIcon(
-                // todo notification cirle to the floating chat icon instead
-                modifier = Modifier.notificationCircle(uiState.hasUnseenChatMessages),
-              )
+              HomeTopBarAction.ChatAction -> EmptySpaceIcon()
 
               is HomeTopBarAction.CrossSellsAction -> ToolbarCrossSellsIcon(
                 onClick = {
