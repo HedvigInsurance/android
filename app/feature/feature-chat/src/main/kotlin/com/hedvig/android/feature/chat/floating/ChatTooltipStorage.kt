@@ -12,8 +12,7 @@ class ChatTooltipStorage(
 ) {
   suspend fun setLastEpochDayWhenChatTooltipWasShown(epochDay: Long) {
     dataStore.edit { preferences ->
-      // todo uncomment to actually report the seen status
-//      preferences.set(SHARED_PREFERENCE_LAST_OPEN, epochDay)
+      preferences.set(SHARED_PREFERENCE_LAST_OPEN, epochDay)
     }
   }
 
