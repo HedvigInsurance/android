@@ -6,11 +6,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
-import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.chat.read.timestamp.ChatLastMessageReadRepository
 import com.hedvig.android.data.contract.android.CrossSell
@@ -22,13 +20,10 @@ import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.notification.badge.data.crosssell.card.CrossSellCardNotificationBadgeService
 import com.hedvig.android.ui.emergency.FirstVetSection
-import kotlin.time.Duration.Companion.seconds
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 
@@ -45,17 +40,7 @@ internal class HomePresenter(
     var isReloading by remember { mutableStateOf(lastState.isReloading) }
     var successData: SuccessData? by remember { mutableStateOf(SuccessData.fromLastState(lastState)) }
     var loadIteration by remember { mutableIntStateOf(0) }
-    val alreadySeenImportantMessages: List<String>
-      by seenImportantMessagesStorage.seenMessages.collectAsState()
-
-    val hasUnseenChatMessages by produceState(
-      lastState.safeCast<HomeUiState.Success>()?.hasUnseenChatMessages ?: false,
-    ) {
-      while (isActive) {
-        value = chatLastMessageReadRepository.isNewestMessageNewerThanLastReadTimestamp()
-        delay(10.seconds)
-      }
-    }
+    val alreadySeenImportantMessages: List<String> by seenImportantMessagesStorage.seenMessages.collectAsState()
 
     CollectEvents { homeEvent: HomeEvent ->
       when (homeEvent) {
@@ -63,6 +48,7 @@ internal class HomePresenter(
         is HomeEvent.MarkMessageAsSeen -> {
           seenImportantMessagesStorage.markMessageAsSeen(homeEvent.messageId)
         }
+
         HomeEvent.MarkCardCrossSellsAsSeen -> {
           applicationScope.launch { crossSellCardNotificationBadgeServiceProvider.provide().markAsSeen() }
         }
@@ -113,7 +99,6 @@ internal class HomePresenter(
             !alreadySeenImportantMessages.contains(it.id)
           }.toPersistentList(),
           isHelpCenterEnabled = successData.showHelpCenter,
-          hasUnseenChatMessages = hasUnseenChatMessages,
           chatAction = successData.chatAction,
           firstVetAction = successData.firstVetAction,
           crossSellsAction = successData.crossSellsAction,
@@ -138,9 +123,6 @@ internal sealed interface HomeUiState {
   val isHelpCenterEnabled: Boolean
     get() = false
 
-  val hasUnseenChatMessages: Boolean
-    get() = false
-
   data class Success(
     override val isReloading: Boolean = false,
     val homeText: HomeText,
@@ -151,7 +133,6 @@ internal sealed interface HomeUiState {
     val firstVetAction: HomeTopBarAction.FirstVetAction?,
     val crossSellsAction: HomeTopBarAction.CrossSellsAction?,
     override val isHelpCenterEnabled: Boolean,
-    override val hasUnseenChatMessages: Boolean,
   ) : HomeUiState
 
   data class Error(val message: String?) : HomeUiState

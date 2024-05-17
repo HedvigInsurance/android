@@ -44,11 +44,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -75,7 +73,6 @@ import com.hedvig.android.core.ui.appbar.m3.TopAppBarLayoutForActions
 import com.hedvig.android.core.ui.infocard.InfoCardTextButton
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.plus
-import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.crosssells.CrossSellsSection
 import com.hedvig.android.data.contract.android.CrossSell
 import com.hedvig.android.feature.home.home.data.HomeData
@@ -153,7 +150,6 @@ private fun HomeScreen(
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
   markCrossSellsNotificationAsSeen: () -> Unit,
 ) {
-  val context = LocalContext.current
   val systemBarInsetTopDp = with(LocalDensity.current) {
     WindowInsets.systemBars.getTop(this).toDp()
   }
@@ -522,9 +518,7 @@ private fun CrossSellBottomSheet(
 
 @HedvigPreview
 @Composable
-private fun PreviewHomeScreen(
-  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) hasUnseenChatMessages: Boolean,
-) {
+private fun PreviewHomeScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       HomeScreen(
@@ -558,7 +552,6 @@ private fun PreviewHomeScreen(
             connectPayment = MemberReminder.PaymentReminder.ConnectPayment(),
           ),
           isHelpCenterEnabled = true,
-          hasUnseenChatMessages = hasUnseenChatMessages,
           crossSellsAction = HomeTopBarAction.CrossSellsAction(
             persistentListOf(CrossSell("rf", "erf", "", "", CrossSell.CrossSellType.ACCIDENT)),
           ),
