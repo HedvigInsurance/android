@@ -174,7 +174,7 @@ private fun SharedTransitionScope.MinimizedBubble(
   ) {
     chatIcon(
       Modifier
-        .notificationCircle(hasUnseenChatMessages)
+        .notificationCircle(-SpaceFromScreenEdge, hasUnseenChatMessages)
         .sharedBounds(rememberSharedContentState(SharedSurfaceKey), animatedContentScope),
     )
     if (showWelcomeTooltip) {
