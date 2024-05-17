@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.home.home.ui
 
 import com.hedvig.android.core.demomode.Provider
-import com.hedvig.android.data.chat.read.timestamp.ChatLastMessageReadRepository
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorage
 import com.hedvig.android.molecule.android.MoleculeViewModel
@@ -10,7 +9,6 @@ import kotlinx.coroutines.CoroutineScope
 
 internal class HomeViewModel(
   getHomeDataUseCaseProvider: Provider<GetHomeDataUseCase>,
-  chatLastMessageReadRepository: ChatLastMessageReadRepository,
   seenImportantMessagesStorage: SeenImportantMessagesStorage,
   crossSellCardNotificationBadgeServiceProvider: Provider<CrossSellCardNotificationBadgeService>,
   applicationScope: CoroutineScope,
@@ -18,7 +16,6 @@ internal class HomeViewModel(
     HomeUiState.Loading,
     HomePresenter(
       getHomeDataUseCaseProvider,
-      chatLastMessageReadRepository,
       seenImportantMessagesStorage,
       crossSellCardNotificationBadgeServiceProvider,
       applicationScope,
