@@ -61,6 +61,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.round
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import com.hedvig.android.core.designsystem.material3.DisabledAlpha
 import com.hedvig.android.core.designsystem.material3.squircleLarge
@@ -84,8 +85,15 @@ fun FloatingBubbleChat(
   modifier: Modifier = Modifier,
 ) {
   val viewModel: ChatViewModel = koinViewModel()
+  val floatingBubbleViewModel: FloatingBubbleViewModel = koinViewModel()
+  val floatingBubbleUiState by floatingBubbleViewModel.uiState.collectAsStateWithLifecycle()
   val floatingBubbleState = rememberFloatingBubbleState(isInHomeScreen)
-  FloatingBubble(modifier, floatingBubbleState) {
+  FloatingBubble(
+    modifier = modifier,
+    floatingBubbleState = floatingBubbleState,
+    showWelcomeTooltip = floatingBubbleUiState.showWelcomeTooltip,
+    onWelcomeTooltipShown = { floatingBubbleViewModel.emit(FloatingBubbleEvent.SeenTooltip) },
+  ) {
     ChatDestination(
       viewModel = viewModel,
       imageLoader = imageLoader,
@@ -103,6 +111,8 @@ fun FloatingBubbleChat(
 private fun FloatingBubble(
   modifier: Modifier = Modifier,
   floatingBubbleState: FloatingBubbleState,
+  showWelcomeTooltip: Boolean,
+  onWelcomeTooltipShown: () -> Unit,
   expandedContent: @Composable () -> Unit,
 ) {
   val transition = rememberTransition(floatingBubbleState.seekableTransition)
@@ -119,8 +129,10 @@ private fun FloatingBubble(
       when (bubbleState) {
         FloatingBubbleState.BubbleState.Minimized -> {
           MinimizedBubble(
-            floatingBubbleState,
-            this@AnimatedContent,
+            floatingBubbleState = floatingBubbleState,
+            animatedContentScope = this@AnimatedContent,
+            showWelcomeTooltip = showWelcomeTooltip,
+            onWelcomeTooltipShown = onWelcomeTooltipShown,
             chatIcon = { chatModifier ->
               sharedChatIcon(this@AnimatedContent, floatingBubbleState::expand, chatModifier)
             },
@@ -147,14 +159,25 @@ private fun FloatingBubble(
 private fun SharedTransitionScope.MinimizedBubble(
   floatingBubbleState: FloatingBubbleState,
   animatedContentScope: AnimatedContentScope,
+  showWelcomeTooltip: Boolean,
+  onWelcomeTooltipShown: () -> Unit,
   chatIcon: @Composable (Modifier) -> Unit,
 ) {
   val density = LocalDensity.current
-  chatIcon(
-    Modifier
-      .draggableBubble(floatingBubbleState, density)
-      .sharedBounds(rememberSharedContentState(SharedSurfaceKey), animatedContentScope),
-  )
+  Column(
+    Modifier.draggableBubble(floatingBubbleState, density),
+  ) {
+    chatIcon(Modifier.sharedBounds(rememberSharedContentState(SharedSurfaceKey), animatedContentScope))
+    if (showWelcomeTooltip) {
+      ChatTooltip(
+        showTooltip = showWelcomeTooltip,
+        tooltipShown = { onWelcomeTooltipShown() },
+        modifier = Modifier
+          .align(Alignment.End)
+          .padding(horizontal = 16.dp),
+      )
+    }
+  }
 }
 
 private fun Modifier.draggableBubble(floatingBubbleState: FloatingBubbleState, density: Density): Modifier =

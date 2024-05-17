@@ -1,5 +1,7 @@
 package com.hedvig.android.feature.chat.di
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import arrow.retrofit.adapter.either.EitherCallAdapterFactory
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
@@ -12,6 +14,8 @@ import com.hedvig.android.feature.chat.data.ChatRepository
 import com.hedvig.android.feature.chat.data.ChatRepositoryDemo
 import com.hedvig.android.feature.chat.data.ChatRepositoryImpl
 import com.hedvig.android.feature.chat.data.GetChatRepositoryProvider
+import com.hedvig.android.feature.chat.floating.ChatTooltipStorage
+import com.hedvig.android.feature.chat.floating.FloatingBubbleViewModel
 import com.hedvig.android.navigation.core.AppDestination
 import kotlinx.datetime.Clock
 import kotlinx.serialization.json.Json
@@ -67,5 +71,12 @@ val chatModule = module {
    */
   single<ChatRepository> {
     get<ChatRepositoryImpl>()
+  }
+
+  single<ChatTooltipStorage> {
+    ChatTooltipStorage(get<DataStore<Preferences>>())
+  }
+  viewModel<FloatingBubbleViewModel> {
+    FloatingBubbleViewModel(get<ChatTooltipStorage>(), get<Clock>())
   }
 }

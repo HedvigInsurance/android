@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.home.home
+package com.hedvig.android.feature.chat.floating
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Box
@@ -48,7 +48,7 @@ internal fun ChatTooltip(showTooltip: Boolean, tooltipShown: () -> Unit, modifie
     transientShowTooltip = showTooltip
     tooltipShown()
     delay(5.seconds)
-    transientShowTooltip = false
+//    transientShowTooltip = false
   }
   InnerChatTooltip(
     show = transientShowTooltip,
@@ -67,7 +67,7 @@ private fun InnerChatTooltip(show: Boolean, onClick: () -> Unit, modifier: Modif
       .size(width = 40.dp, height = 0.dp)
       .wrapContentHeight(Alignment.Top, true)
       .wrapContentWidth(Alignment.End, true)
-      .offset(y = -arrowHeightDp),
+      .offset(y = arrowHeightDp / 2),
   ) {
     Crossfade(show, label = "chat tooltip") { crossfadeShow ->
       if (crossfadeShow) {

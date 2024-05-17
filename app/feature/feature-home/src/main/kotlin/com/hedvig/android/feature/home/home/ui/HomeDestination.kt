@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.home.home.ui
 
-import android.content.Context
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.layout.Arrangement
@@ -103,8 +102,6 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import kotlinx.datetime.toJavaLocalDate
 
 @Composable
@@ -260,22 +257,6 @@ private fun HomeScreen(
           }
         }
       }
-      // todo(makerdays) add tooltip to the floating chat icon instead of here
-//      if ((uiState as? HomeUiState.Success)?.chatAction != null) {
-//        val shouldShowTooltip by produceState(false) {
-//          val daysSinceLastTooltipShown = daysSinceLastTooltipShown(context)
-//          value = daysSinceLastTooltipShown
-//        }
-//        ChatTooltip(
-//          showTooltip = shouldShowTooltip,
-//          tooltipShown = {
-//            context.setLastEpochDayWhenChatTooltipWasShown(java.time.LocalDate.now().toEpochDay())
-//          },
-//          modifier = Modifier
-//            .align(Alignment.End)
-//            .padding(horizontal = 16.dp),
-//        )
-//      }
     }
     PullRefreshIndicator(
       refreshing = uiState.isReloading,
@@ -284,17 +265,6 @@ private fun HomeScreen(
       modifier = Modifier.align(Alignment.TopCenter),
     )
   }
-}
-
-// todo(makerdays) move this check into the chat bubble code instead
-private suspend fun daysSinceLastTooltipShown(context: Context): Boolean {
-  val currentEpochDay = java.time.LocalDate.now().toEpochDay()
-  val lastEpochDayOpened = withContext(Dispatchers.IO) {
-    context.getLastEpochDayWhenChatTooltipWasShown()
-  }
-  val diff = currentEpochDay - lastEpochDayOpened
-  val daysSinceLastTooltipShown = diff >= 30
-  return daysSinceLastTooltipShown
 }
 
 @ExperimentalMaterial3Api
@@ -553,18 +523,6 @@ private fun CrossSellBottomSheet(
     },
   )
 }
-
-private const val SHARED_PREFERENCE_LAST_OPEN = "shared_preference_last_open"
-
-private fun Context.setLastEpochDayWhenChatTooltipWasShown(epochDay: Long) =
-  getSharedPreferences().edit().putLong(SHARED_PREFERENCE_LAST_OPEN, epochDay).commit()
-
-private fun Context.getLastEpochDayWhenChatTooltipWasShown() =
-  getSharedPreferences().getLong(SHARED_PREFERENCE_LAST_OPEN, 0)
-
-private const val SHARED_PREFERENCE_NAME = "hedvig_shared_preference"
-
-private fun Context.getSharedPreferences() = this.getSharedPreferences(SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE)
 
 @HedvigPreview
 @Composable
