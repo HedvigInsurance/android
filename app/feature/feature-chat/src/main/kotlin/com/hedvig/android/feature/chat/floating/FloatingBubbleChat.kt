@@ -140,7 +140,7 @@ private fun FloatingBubble(
         }
 
         FloatingBubbleState.BubbleState.Expanded -> {
-          MaximizedBubble(
+          ExpandedBubble(
             this@AnimatedContent,
             onClickOutside = floatingBubbleState::minimize,
             modifier = modifier,
@@ -272,7 +272,7 @@ private fun SetInitialAndHomeOffsetsEffect(
 }
 
 @Composable
-private fun SharedTransitionScope.MaximizedBubble(
+private fun SharedTransitionScope.ExpandedBubble(
   animatedContentScope: AnimatedContentScope,
   onClickOutside: () -> Unit,
   modifier: Modifier = Modifier,
@@ -292,15 +292,16 @@ private fun SharedTransitionScope.MaximizedBubble(
       .padding(8.dp)
       .sharedBounds(rememberSharedContentState(SharedSurfaceKey), animatedContentScope),
   ) {
-    chatIcon(Modifier)
-    Spacer(Modifier.height(4.dp))
-    val arrowColor = MaterialTheme.colorScheme.background
-    Spacer(
-      Modifier
-        .align(Alignment.CenterHorizontally)
-        .size(height = 8.dp, width = 12.dp)
-        .drawChatBubbleArrow(arrowColor),
-    )
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+      chatIcon(Modifier)
+      Spacer(Modifier.height(4.dp))
+      val arrowColor = MaterialTheme.colorScheme.background
+      Spacer(
+        Modifier
+          .size(height = 8.dp, width = 12.dp)
+          .drawChatBubbleArrow(arrowColor),
+      )
+    }
     Surface(
       Modifier.weight(1f),
       MaterialTheme.shapes.squircleLarge,
