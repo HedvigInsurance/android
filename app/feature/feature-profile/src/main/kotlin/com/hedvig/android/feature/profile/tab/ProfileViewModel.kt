@@ -7,8 +7,10 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import arrow.core.Either
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.feature.profile.data.CheckTravelCertificateDestinationAvailabilityUseCase
+import com.hedvig.android.feature.profile.data.TravelCertificateAvailabilityError
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.memberreminders.EnableNotificationsReminderManager
@@ -73,13 +75,17 @@ internal class ProfilePresenter(
         flow { emit(getEuroBonusStatusUseCase.invoke()) },
         flow { emit(checkTravelCertificateDestinationAvailabilityUseCase.invoke()) },
       ) { memberReminders, isPaymentScreenFeatureEnabled, eurobonusResponse, travelCertificateAvailability ->
-        currentState = ProfileUiState.Success(
-          euroBonus = eurobonusResponse.getOrNull(),
-          showPaymentScreen = isPaymentScreenFeatureEnabled,
-          memberReminders = memberReminders,
-          travelCertificateAvailable = travelCertificateAvailability.isRight(),
-        )
-      }.collectLatest { }
+        ProfileData(memberReminders, isPaymentScreenFeatureEnabled, eurobonusResponse, travelCertificateAvailability)
+      }.collectLatest { profileData ->
+        with(profileData) {
+          currentState = ProfileUiState.Success(
+            euroBonus = eurobonusResponse.getOrNull(),
+            showPaymentScreen = isPaymentScreenFeatureEnabled,
+            memberReminders = memberReminders,
+            travelCertificateAvailable = travelCertificateAvailability.isRight(),
+          )
+        }
+      }
     }
 
     LaunchedEffect(snoozeNotificationReminder) {
@@ -110,3 +116,10 @@ internal sealed interface ProfileUiEvent {
 
   data object Reload : ProfileUiEvent
 }
+
+private data class ProfileData(
+  val memberReminders: MemberReminders,
+  val isPaymentScreenFeatureEnabled: Boolean,
+  val eurobonusResponse: Either<GetEurobonusError, EuroBonus>,
+  val travelCertificateAvailability: Either<TravelCertificateAvailabilityError, Unit>,
+)

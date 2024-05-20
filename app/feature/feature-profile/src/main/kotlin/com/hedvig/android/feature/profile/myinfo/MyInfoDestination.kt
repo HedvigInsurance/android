@@ -17,6 +17,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -36,6 +39,7 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
+import com.hedvig.android.logger.logcat
 import hedvig.resources.R
 
 @Composable
@@ -43,10 +47,18 @@ internal fun MyInfoDestination(viewModel: MyInfoViewModel, navigateUp: () -> Uni
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   MyInfoScreen(
     uiState = uiState,
-    emailChanged = viewModel::emailChanged,
-    phoneNumberChanged = viewModel::phoneNumberChanged,
-    updateEmailAndPhoneNumber = viewModel::updateEmailAndPhoneNumber,
-    dismissError = viewModel::dismissError,
+    emailChanged = {
+      viewModel.emit(MyInfoEvent.EmailChanged(it))
+    },
+    phoneNumberChanged = {
+      viewModel.emit(MyInfoEvent.PhoneNumberChanged(it))
+    },
+    updateEmailAndPhoneNumber = {
+      viewModel.emit(MyInfoEvent.UpdateEmailAndPhoneNumber)
+    },
+    reload = {
+      viewModel.emit(MyInfoEvent.Reload)
+    },
     navigateUp = navigateUp,
   )
 }
@@ -59,7 +71,7 @@ private fun MyInfoScreen(
   navigateUp: () -> Unit,
   emailChanged: (String) -> Unit,
   phoneNumberChanged: (String) -> Unit,
-  dismissError: () -> Unit,
+  reload: () -> Unit,
 ) {
   val localSoftwareKeyboardController = LocalSoftwareKeyboardController.current
   Box(
@@ -74,25 +86,38 @@ private fun MyInfoScreen(
         targetState = uiState,
         contentKey = { it::class },
         modifier = Modifier.weight(1f),
-      ) { uiState ->
+      ) { animatedUiState ->
         Column(Modifier.fillMaxSize()) {
-          when {
-            uiState.isLoading -> {
+          when (animatedUiState) {
+            MyInfoUiState.Loading -> {
               HedvigFullScreenCenterAlignedProgressDebounced()
             }
-            uiState.errorMessage != null -> {
+            MyInfoUiState.Error -> {
               Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                HedvigErrorSection(onButtonClick = dismissError)
+                HedvigErrorSection(onButtonClick = reload)
               }
             }
-            else -> {
+            is MyInfoUiState.Success -> {
+              logcat { "mariia: got a nice uiState! $animatedUiState" }
+              val initialEmail = animatedUiState.member.email.input ?: ""
+              var emailInput by remember {
+                mutableStateOf(initialEmail)
+              }
+              val initialPhone = animatedUiState.member.phoneNumber.input ?: ""
+              var phoneInput by remember {
+                mutableStateOf(initialPhone)
+              }
               Spacer(Modifier.height(16.dp))
-              val errorText = uiState.member?.phoneNumber?.errorMessageRes?.let { stringResource(id = it) }
+              val errorText = animatedUiState.member.phoneNumber.errorMessageRes?.let { stringResource(id = it) }
               HedvigTextField(
-                value = uiState.member?.phoneNumber?.input ?: "",
+                value = phoneInput,
                 onValueChange = { newInput ->
-                  if (newInput.indices.all { newInput[it].isWhitespace().not() }) {
+                  if (newInput.indices.all {
+                      newInput[it].isWhitespace().not()
+                    }
+                  ) {
                     phoneNumberChanged(newInput)
+                    phoneInput = newInput
                   }
                 },
                 label = { Text(stringResource(R.string.PHONE_NUMBER_ROW_TITLE)) },
@@ -111,14 +136,15 @@ private fun MyInfoScreen(
               }
               Spacer(Modifier.height(4.dp))
               HedvigTextField(
-                value = uiState.member?.email?.input ?: "",
+                value = emailInput,
                 onValueChange = { newInput ->
                   if (newInput.indices.all { newInput[it].isWhitespace().not() }) {
                     emailChanged(newInput)
+                    emailInput = newInput
                   }
                 },
                 label = { Text(stringResource(R.string.PROFILE_MY_INFO_EMAIL_LABEL)) },
-                errorText = uiState.member?.email?.errorMessageRes?.let { stringResource(id = it) },
+                errorText = animatedUiState.member.email.errorMessageRes?.let { stringResource(id = it) },
                 keyboardOptions = KeyboardOptions(
                   keyboardType = KeyboardType.Email,
                   imeAction = ImeAction.Done,
@@ -136,18 +162,18 @@ private fun MyInfoScreen(
               )
               Spacer(Modifier.height(16.dp))
               AnimatedVisibility(
-                visible = uiState.canSubmit || uiState.isSubmitting,
+                visible = animatedUiState.canSubmit || animatedUiState.isSubmitting,
                 enter = fadeIn(),
                 exit = fadeOut(),
               ) {
                 HedvigContainedButton(
                   text = stringResource(R.string.general_save_button),
-                  enabled = uiState.canSubmit,
+                  enabled = animatedUiState.canSubmit,
                   onClick = {
-                    updateEmailAndPhoneNumber()
                     localSoftwareKeyboardController?.hide()
+                    updateEmailAndPhoneNumber()
                   },
-                  isLoading = uiState.isSubmitting,
+                  isLoading = animatedUiState.isSubmitting,
                   modifier = Modifier.padding(horizontal = 16.dp),
                 )
                 Spacer(Modifier.height(16.dp))
@@ -166,18 +192,17 @@ private fun PreviewMyInfoScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       MyInfoScreen(
-        uiState = MyInfoUiState(
+        uiState = MyInfoUiState.Success(
           member = MyInfoMember(
             ValidatedInput("email@email.com"),
             ValidatedInput("072102103"),
           ),
-          isLoading = false,
         ),
         updateEmailAndPhoneNumber = {},
         navigateUp = {},
         emailChanged = {},
         phoneNumberChanged = {},
-        dismissError = {},
+        reload = {},
       )
     }
   }
