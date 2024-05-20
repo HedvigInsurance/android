@@ -66,6 +66,7 @@ fragment FlowClaimSingleItemStepFragment on FlowClaimSingleItemStep {
   purchasePrice {
     ...MoneyFragment
   }
+  purchasePriceApplicable
   purchaseDate
   selectedItemProblems
   availableItemProblems {
@@ -90,21 +91,39 @@ fragment FlowClaimSingleItemStepFragment on FlowClaimSingleItemStep {
 
 fragment FlowClaimSingleItemCheckoutStepFragment on FlowClaimSingleItemCheckoutStep {
   id
-  price {
-    ...MoneyFragment
-  }
-  depreciation {
-    ...MoneyFragment
-  }
-  deductible {
-    ...MoneyFragment
-  }
-  payoutAmount {
-    ...MoneyFragment
+  singleItemStep {
+    ...FlowClaimSingleItemStepFragment
   }
   availableCheckoutMethods {
     id
     ...CheckoutMethodFragment
+  }
+  compensation {
+    ... on FlowClaimSingleItemCheckoutRepairCompensation {
+      deductible {
+        ...MoneyFragment
+      }
+      payoutAmount {
+        ...MoneyFragment
+      }
+      repairCost {
+        ...MoneyFragment
+      }
+    }
+    ... on FlowClaimSingleItemCheckoutValueCompensation {
+      deductible {
+        ...MoneyFragment
+      }
+      depreciation {
+        ...MoneyFragment
+      }
+      payoutAmount {
+        ...MoneyFragment
+      }
+      price {
+        ...MoneyFragment
+      }
+    }
   }
 }
 

@@ -394,6 +394,7 @@ private suspend fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(
         preferredCurrency,
         purchaseDate,
         purchasePrice,
+        purchasePriceApplicable,
         availableItemBrands,
         selectedItemBrand,
         availableItemModels,
@@ -407,11 +408,9 @@ private suspend fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(
     is ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep -> {
       ClaimFlowStep.ClaimResolutionSingleItemStep(
         flowId,
-        price,
-        depreciation,
-        deductible,
-        payoutAmount,
+        compensation,
         availableCheckoutMethods,
+        singleItemStep,
       )
     }
 
