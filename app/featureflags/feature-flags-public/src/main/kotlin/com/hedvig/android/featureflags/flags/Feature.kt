@@ -16,4 +16,5 @@ enum class Feature(
   ),
   EDIT_COINSURED("Let member edit co insured"),
   HELP_CENTER("Enable the help center screens"),
+  CHAT_BUBBLE("Make the chat icon a movable bubble"),
 }

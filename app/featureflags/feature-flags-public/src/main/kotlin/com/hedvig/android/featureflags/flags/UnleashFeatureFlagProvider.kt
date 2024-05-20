@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.map
 
 internal class UnleashFeatureFlagProvider(
   private val hedvigUnleashClient: HedvigUnleashClient,
+  private val defaultChatBubbleState: Boolean,
 ) : FeatureManager {
   override fun isFeatureEnabled(feature: Feature): Flow<Boolean> {
     return hedvigUnleashClient.featureUpdatedFlow.map {
@@ -19,6 +20,7 @@ internal class UnleashFeatureFlagProvider(
         Feature.UPDATE_NECESSARY -> hedvigUnleashClient.client.isEnabled("update_necessary", false)
         Feature.EDIT_COINSURED -> hedvigUnleashClient.client.isEnabled("edit_coinsured", false)
         Feature.HELP_CENTER -> hedvigUnleashClient.client.isEnabled("help_center", true)
+        Feature.CHAT_BUBBLE -> hedvigUnleashClient.client.isEnabled("chat_bubble", defaultChatBubbleState)
       }
     }.distinctUntilChanged()
   }
