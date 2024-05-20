@@ -128,7 +128,7 @@ internal class HedvigAppState(
     }
 
   val chatBubbleState: ChatBubbleState
-    @Composable get() = rememberChatBubbleState(currentDestination, shouldShowChatButtonUseCase)
+    @Composable get() = rememberChatBubbleState(currentDestination, shouldShowChatButtonUseCase, settingsDataStore)
 
   /**
    * App kill-switch. If this is enabled we must show nothing in the app but a button to try to update the app
@@ -346,6 +346,7 @@ private sealed interface TopLevelDestination {
 private fun rememberChatBubbleState(
   currentDestination: NavDestination?,
   shouldShowChatButtonUseCase: ShouldShowChatButtonUseCase,
+  settingsDataStore: SettingsDataStore,
 ): ChatBubbleState {
   val showChatButton by remember(shouldShowChatButtonUseCase) {
     shouldShowChatButtonUseCase.invoke()
@@ -361,9 +362,10 @@ private fun rememberChatBubbleState(
       navDestination.route == createRoutePattern<LoginDestination>()
     } == true
   }
+  val userPreferenceAllowsChatBubble by remember { settingsDataStore.chatBubbleSetting() }.collectAsState(false)
   return ChatBubbleState(
     currentDestination,
-    !isLoggedOut,
+    userPreferenceAllowsChatBubble && !isLoggedOut,
   )
 }
 
