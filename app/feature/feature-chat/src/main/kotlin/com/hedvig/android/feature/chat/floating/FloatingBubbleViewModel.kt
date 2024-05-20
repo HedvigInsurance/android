@@ -39,7 +39,7 @@ private class FloatingBubblePresenter(
     val hasUnseenChatMessages by produceState(lastState.hasUnseenChatMessages) {
       while (isActive) {
         value = chatLastMessageReadRepository.isNewestMessageNewerThanLastReadTimestamp()
-        delay(1.seconds) // todo(makerdays) Change to bigger number after demo
+        delay(5.seconds)
       }
     }
     CollectEvents { event ->
