@@ -169,6 +169,7 @@ fun PreviewSettingsScreen() {
           languageOptions = listOf(Language.SV_SE, Language.EN_SE),
           selectedTheme = Theme.SYSTEM_DEFAULT,
           showNotificationReminder = true,
+          chatBubbleSetting = SettingsUiState.ChatBubbleSetting.FeatureEnabled(true),
         ),
         notificationPermissionState = object : NotificationPermissionState {
           override val showDialog = false

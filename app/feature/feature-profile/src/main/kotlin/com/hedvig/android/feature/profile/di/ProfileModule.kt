@@ -64,6 +64,7 @@ val profileModule = module {
       enableNotificationsReminderManager = get<EnableNotificationsReminderManager>(),
       cacheManager = get<NetworkCacheManager>(),
       uploadLanguagePreferenceToBackendUseCase = get<UploadLanguagePreferenceToBackendUseCase>(),
+      featureManager = get<FeatureManager>(),
     )
   }
 

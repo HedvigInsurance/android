@@ -8,7 +8,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.auth.listeners.UploadLanguagePreferenceToBackendUseCase
+import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
+import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.language.Language
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.memberreminders.EnableNotificationsReminderManager
@@ -23,6 +26,7 @@ internal class SettingsPresenter(
   private val enableNotificationsReminderManager: EnableNotificationsReminderManager,
   private val cacheManager: NetworkCacheManager,
   private val uploadLanguagePreferenceToBackendUseCase: UploadLanguagePreferenceToBackendUseCase,
+  private val featureManager: FeatureManager,
 ) : MoleculePresenter<SettingsEvent, SettingsUiState> {
   @Composable
   override fun MoleculePresenterScope<SettingsEvent>.present(lastState: SettingsUiState): SettingsUiState {
@@ -32,6 +36,7 @@ internal class SettingsPresenter(
       .showNotificationReminder()
       .collectAsState(lastState.showNotificationReminder)
       .value
+    val chatBubbleSetting = chatBubbleSetting(settingsDataStore, featureManager, lastState)
 
     CollectEvents { event ->
       when (event) {
@@ -49,6 +54,10 @@ internal class SettingsPresenter(
         SettingsEvent.SnoozeNotificationPermissionReminder -> {
           launch { enableNotificationsReminderManager.snoozeNotificationReminder() }
         }
+
+        is SettingsEvent.SetChatBubblePreference -> {
+          launch { settingsDataStore.setChatBubbleSetting(event.showChatBubble) }
+        }
       }
     }
 
@@ -63,8 +72,30 @@ internal class SettingsPresenter(
         languageOptions = lastState.languageOptions,
         selectedTheme = selectedTheme,
         showNotificationReminder = showNotificationReminder,
+        chatBubbleSetting = chatBubbleSetting,
       )
     }
+  }
+
+  @Composable
+  private fun chatBubbleSetting(
+    settingsDataStore: SettingsDataStore,
+    featureManager: FeatureManager,
+    lastState: SettingsUiState,
+  ): SettingsUiState.ChatBubbleSetting {
+    val isFeatureEnabled by remember(featureManager) { featureManager.isFeatureEnabled(Feature.CHAT_BUBBLE) }
+      .collectAsState(lastState.chatBubbleSetting != SettingsUiState.ChatBubbleSetting.FeatureDisabled)
+    if (!isFeatureEnabled) {
+      return SettingsUiState.ChatBubbleSetting.FeatureDisabled
+    }
+    val showChatAsBubble by remember(settingsDataStore) { settingsDataStore.chatBubbleSetting() }
+      .collectAsState(
+        lastState
+          .chatBubbleSetting
+          .safeCast<SettingsUiState.ChatBubbleSetting.FeatureEnabled>()
+          ?.showChatAsBubble ?: false,
+      )
+    return SettingsUiState.ChatBubbleSetting.FeatureEnabled(showChatAsBubble)
   }
 }
 
@@ -73,6 +104,7 @@ sealed interface SettingsUiState {
   val languageOptions: List<Language>
   val selectedTheme: Theme?
   val showNotificationReminder: Boolean?
+  val chatBubbleSetting: ChatBubbleSetting
 
   data class Loading(
     override val selectedLanguage: Language,
@@ -80,6 +112,7 @@ sealed interface SettingsUiState {
   ) : SettingsUiState {
     override val selectedTheme: Theme? = null
     override val showNotificationReminder: Boolean? = null
+    override val chatBubbleSetting: ChatBubbleSetting = ChatBubbleSetting.FeatureDisabled
   }
 
   data class Loaded(
@@ -87,13 +120,22 @@ sealed interface SettingsUiState {
     override val languageOptions: List<Language>,
     override val selectedTheme: Theme?,
     override val showNotificationReminder: Boolean,
+    override val chatBubbleSetting: ChatBubbleSetting,
   ) : SettingsUiState
+
+  sealed interface ChatBubbleSetting {
+    data object FeatureDisabled : ChatBubbleSetting
+
+    data class FeatureEnabled(val showChatAsBubble: Boolean) : ChatBubbleSetting
+  }
 }
 
 sealed interface SettingsEvent {
   data class ChangeLanguage(val language: Language) : SettingsEvent
 
   data class ChangeTheme(val theme: Theme) : SettingsEvent
+
+  data class SetChatBubblePreference(val showChatBubble: Boolean) : SettingsEvent
 
   data object SnoozeNotificationPermissionReminder : SettingsEvent
 }
