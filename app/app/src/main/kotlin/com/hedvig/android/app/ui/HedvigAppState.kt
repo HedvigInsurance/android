@@ -10,6 +10,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -52,7 +53,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -103,7 +103,7 @@ internal class HedvigAppState(
   tabNotificationBadgeService: TabNotificationBadgeService,
   private val settingsDataStore: SettingsDataStore,
   getOnlyHasNonPayingContractsUseCase: Provider<GetOnlyHasNonPayingContractsUseCase>,
-  shouldShowChatButtonUseCase: ShouldShowChatButtonUseCase,
+  private val shouldShowChatButtonUseCase: ShouldShowChatButtonUseCase,
   featureManager: FeatureManager,
 ) {
   val currentDestination: NavDestination?
@@ -127,8 +127,8 @@ internal class HedvigAppState(
       }
     }
 
-  val isInHomeScreen: Boolean
-    @Composable get() = currentDestination?.route == createRoutePattern<HomeDestination.Home>()
+  val chatBubbleState: ChatBubbleState
+    @Composable get() = rememberChatBubbleState(currentDestination, shouldShowChatButtonUseCase)
 
   /**
    * App kill-switch. If this is enabled we must show nothing in the app but a button to try to update the app
@@ -163,20 +163,6 @@ internal class HedvigAppState(
       TopLevelGraph.Payments,
       TopLevelGraph.Profile,
     ),
-  )
-
-  val showChatBubble: StateFlow<Boolean> = combine(
-    shouldShowChatButtonUseCase.invoke(),
-    navController.currentBackStackEntryFlow,
-  ) { showChatButton, currentBackStackEntry ->
-    val isLoggedOut = currentBackStackEntry.destination.hierarchy.any { navDestination ->
-      navDestination.route == createRoutePattern<LoginDestination>()
-    }
-    !isLoggedOut && showChatButton
-  }.stateIn(
-    coroutineScope,
-    SharingStarted.Eagerly,
-    false,
   )
 
   val topLevelGraphsWithNotifications: StateFlow<PersistentSet<TopLevelGraph>> =
@@ -354,4 +340,41 @@ private sealed interface TopLevelDestination {
   object Profile : TopLevelDestination {
     override val destination: Destination = ProfileDestination.Profile
   }
+}
+
+@Composable
+private fun rememberChatBubbleState(
+  currentDestination: NavDestination?,
+  shouldShowChatButtonUseCase: ShouldShowChatButtonUseCase,
+): ChatBubbleState {
+  val showChatButton by remember(shouldShowChatButtonUseCase) {
+    shouldShowChatButtonUseCase.invoke()
+  }.collectAsStateWithLifecycle(false)
+  if (!showChatButton) {
+    return ChatBubbleState(
+      currentDestination,
+      false,
+    )
+  }
+  val isLoggedOut = remember(currentDestination) {
+    currentDestination?.hierarchy?.any { navDestination ->
+      navDestination.route == createRoutePattern<LoginDestination>()
+    } == true
+  }
+  return ChatBubbleState(
+    currentDestination,
+    !isLoggedOut,
+  )
+}
+
+@Stable
+internal class ChatBubbleState(
+  private val currentDestination: NavDestination?,
+  val showChatBubble: Boolean,
+) {
+  val isInHomeScreen: Boolean
+    @Composable get() {
+      val homeRoutePattern = remember { createRoutePattern<HomeDestination.Home>() }
+      return currentDestination?.route == homeRoutePattern
+    }
 }
