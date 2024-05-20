@@ -47,7 +47,7 @@ dependencies {
   implementation(projects.dataContractAndroid)
   implementation(projects.dataContractPublic)
   implementation(projects.dataPayingMember)
-  implementation(projects.dataSettingsDatastorePublic)
+  implementation(projects.dataSettingsDatastore)
   implementation(projects.featureFlagsPublic)
   implementation(projects.languageCore)
   implementation(projects.languageData)
@@ -70,13 +70,11 @@ dependencies {
   testImplementation(libs.turbine)
   testImplementation(projects.coreCommonTest)
   testImplementation(projects.coreDatastoreTest)
-  testImplementation(projects.dataSettingsDatastoreTest)
   testImplementation(projects.featureFlagsTest)
   testImplementation(projects.languageTest)
   testImplementation(projects.marketTest)
   testImplementation(projects.memberRemindersTest)
   testImplementation(projects.moleculeTest)
-
 }
 
 apollo {
