@@ -9,5 +9,6 @@ dependencies {
   implementation(libs.androidx.datastore.preferencesCore)
   implementation(libs.coroutines.core)
   implementation(libs.coroutines.test)
+  implementation(libs.junit)
   implementation(projects.coreDatastorePublic)
 }

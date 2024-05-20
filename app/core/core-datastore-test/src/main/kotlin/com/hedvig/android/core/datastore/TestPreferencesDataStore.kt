@@ -5,7 +5,7 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import java.io.File
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.plus
+import org.junit.rules.TemporaryFolder
 
 private const val testPreferencesDatastoreFileName = "hedvig_test_data_store_preferences"
 
@@ -38,4 +38,9 @@ class TestPreferencesDataStore(
       val fileNameWithDatastoreExtension = "$testPreferencesDatastoreFileName$preferencesDatastoreFileExtension"
       File(datastoreTestFileDirectory, "$preferencesDataStoreFileDirectory/$fileNameWithDatastoreExtension")
     },
-  )
+  ) {
+  constructor(
+    temporaryFolder: TemporaryFolder,
+    coroutineScope: CoroutineScope,
+  ) : this(temporaryFolder.newFolder("datastoreTempFolder"), coroutineScope)
+}
