@@ -3,6 +3,8 @@ package com.hedvig.android.feature.profile.myinfo
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -23,7 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -37,9 +39,7 @@ import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.ValidatedInput
-import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
-import com.hedvig.android.logger.logcat
 import hedvig.resources.R
 
 @Composable
@@ -73,14 +73,19 @@ private fun MyInfoScreen(
   phoneNumberChanged: (String) -> Unit,
   reload: () -> Unit,
 ) {
-  val localSoftwareKeyboardController = LocalSoftwareKeyboardController.current
+  val focusManager = LocalFocusManager.current
   Box(
     modifier = Modifier.fillMaxSize(),
   ) {
     HedvigScaffold(
       topAppBarText = stringResource(R.string.PROFILE_MY_INFO_ROW_TITLE),
       navigateUp = navigateUp,
-      modifier = Modifier.clearFocusOnTap(),
+      modifier = Modifier.clickable(
+        indication = null,
+        interactionSource = remember { MutableInteractionSource() },
+      ) {
+        focusManager.clearFocus()
+      },
     ) {
       FadeAnimatedContent(
         targetState = uiState,
@@ -98,14 +103,11 @@ private fun MyInfoScreen(
               }
             }
             is MyInfoUiState.Success -> {
-              logcat { "mariia: got a nice uiState! $animatedUiState" }
-              val initialEmail = animatedUiState.member.email.input ?: ""
               var emailInput by remember {
-                mutableStateOf(initialEmail)
+                mutableStateOf(animatedUiState.member.email.input ?: "")
               }
-              val initialPhone = animatedUiState.member.phoneNumber.input ?: ""
               var phoneInput by remember {
-                mutableStateOf(initialPhone)
+                mutableStateOf(animatedUiState.member.phoneNumber.input ?: "")
               }
               Spacer(Modifier.height(16.dp))
               val errorText = animatedUiState.member.phoneNumber.errorMessageRes?.let { stringResource(id = it) }
@@ -152,7 +154,7 @@ private fun MyInfoScreen(
                 keyboardActions = KeyboardActions(
                   onDone = {
                     updateEmailAndPhoneNumber()
-                    localSoftwareKeyboardController?.hide()
+                    focusManager.clearFocus()
                   },
                 ),
                 withNewDesign = true,
@@ -170,7 +172,7 @@ private fun MyInfoScreen(
                   text = stringResource(R.string.general_save_button),
                   enabled = animatedUiState.canSubmit,
                   onClick = {
-                    localSoftwareKeyboardController?.hide()
+                    focusManager.clearFocus()
                     updateEmailAndPhoneNumber()
                   },
                   isLoading = animatedUiState.isSubmitting,

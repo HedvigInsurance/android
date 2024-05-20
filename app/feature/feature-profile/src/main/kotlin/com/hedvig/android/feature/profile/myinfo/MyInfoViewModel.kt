@@ -13,7 +13,6 @@ import com.hedvig.android.core.common.android.validation.validateEmail
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.feature.profile.data.ProfileRepository
-import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -65,7 +64,6 @@ internal class MyInfoPresenter(
           currentState = MyInfoUiState.Error
         },
         ifRight = { profile ->
-          logcat { "mariia: got a nice response! $profile" }
           currentState = MyInfoUiState.Success(
             member = MyInfoMember(
               email = ValidatedInput(profile.member.email),
@@ -93,7 +91,6 @@ internal class MyInfoPresenter(
               currentState = MyInfoUiState.Error
             },
             ifRight = { member ->
-              logcat { "mariia: got a nice response after update! $member" }
               currentState = MyInfoUiState.Success(
                 member = MyInfoMember(
                   email = ValidatedInput(member.email),
