@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.hedvig.colored.hedvig.Chat
 import com.hedvig.android.core.icons.hedvig.colored.hedvig.ColoredCircleWithCampaign
 import com.hedvig.android.core.icons.hedvig.colored.hedvig.FirstVet
 import hedvig.resources.R
@@ -26,6 +27,19 @@ import hedvig.resources.R
 @Composable
 fun EmptySpaceIcon(modifier: Modifier = Modifier) {
   Spacer(modifier = modifier.size(ToolbarItemSize))
+}
+
+@Composable
+fun ToolbarChatIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
+  Image(
+    imageVector = Icons.Hedvig.Chat,
+    contentDescription = stringResource(R.string.DASHBOARD_OPEN_CHAT),
+    modifier = modifier
+      .size(ToolbarItemSize)
+      .shadow(4.dp, CircleShape)
+      .clip(CircleShape)
+      .clickable(onClick = onClick),
+  )
 }
 
 @Composable
