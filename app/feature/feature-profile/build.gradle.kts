@@ -61,6 +61,7 @@ dependencies {
   implementation(projects.placeholder)
   implementation(projects.pullrefresh)
   implementation(projects.theme)
+  implementation(projects.loggingTest)
 
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
