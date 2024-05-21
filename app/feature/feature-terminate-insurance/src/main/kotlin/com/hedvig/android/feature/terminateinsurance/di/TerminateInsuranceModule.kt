@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.data.termination.data.GetTerminatableContractsUseCase
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
+import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepositoryImpl
 import com.hedvig.android.feature.terminateinsurance.data.TerminationFlowContextStorage
 import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination
@@ -46,7 +47,7 @@ val terminateInsuranceModule = module {
     )
   }
   single<TerminateInsuranceRepository> {
-    TerminateInsuranceRepository(
+    TerminateInsuranceRepositoryImpl(
       apolloClient = get<ApolloClient>(),
       terminationFlowContextStorage = get(),
     )

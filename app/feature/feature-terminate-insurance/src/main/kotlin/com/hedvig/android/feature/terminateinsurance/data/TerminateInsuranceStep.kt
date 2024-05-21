@@ -163,7 +163,6 @@ private fun TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Opt
 internal fun TerminateInsuranceStep.toTerminateInsuranceDestination(
   commonParams: TerminationGraphParameters,
 ): TerminateInsuranceDestination {
-  logcat { "mariia: the step we get is: $this" }
   return when (this) {
     is TerminateInsuranceStep.Failure -> TerminateInsuranceDestination.TerminationFailure(message)
 

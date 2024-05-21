@@ -35,7 +35,7 @@ internal class TerminationSurveyPresenter(
 
     val currentReasonsWithFeedback = remember {
       val initialReasons = (
-        lastState.reasons.ifEmpty { // in initial state reasons are empty, so we take them from parameters
+        lastState.reasons.ifEmpty {
           options.map { option ->
             TerminationReason(option, null)
           }

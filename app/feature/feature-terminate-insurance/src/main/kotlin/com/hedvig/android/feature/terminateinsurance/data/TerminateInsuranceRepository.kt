@@ -18,11 +18,21 @@ import octopus.type.FlowTerminationStartInput
 import octopus.type.FlowTerminationSurveyDataInput
 import octopus.type.FlowTerminationSurveyInput
 
-internal class TerminateInsuranceRepository(
+internal interface TerminateInsuranceRepository {
+  suspend fun startTerminationFlow(insuranceId: InsuranceId): Either<ErrorMessage, TerminateInsuranceStep>
+
+  suspend fun setTerminationDate(terminationDate: LocalDate): Either<ErrorMessage, TerminateInsuranceStep>
+
+  suspend fun submitReasonForCancelling(reason: TerminationReason): Either<ErrorMessage, TerminateInsuranceStep>
+
+  suspend fun confirmDeletion(): Either<ErrorMessage, TerminateInsuranceStep>
+}
+
+internal class TerminateInsuranceRepositoryImpl(
   private val apolloClient: ApolloClient,
   private val terminationFlowContextStorage: TerminationFlowContextStorage,
-) {
-  suspend fun startTerminationFlow(insuranceId: InsuranceId): Either<ErrorMessage, TerminateInsuranceStep> {
+) : TerminateInsuranceRepository {
+  override suspend fun startTerminationFlow(insuranceId: InsuranceId): Either<ErrorMessage, TerminateInsuranceStep> {
     return either {
       val result = apolloClient
         .mutation(FlowTerminationStartMutation(FlowTerminationStartInput(insuranceId.id)))
@@ -35,7 +45,7 @@ internal class TerminateInsuranceRepository(
     }
   }
 
-  suspend fun setTerminationDate(terminationDate: LocalDate): Either<ErrorMessage, TerminateInsuranceStep> {
+  override suspend fun setTerminationDate(terminationDate: LocalDate): Either<ErrorMessage, TerminateInsuranceStep> {
     return either {
       val result = apolloClient
         .mutation(
@@ -53,7 +63,9 @@ internal class TerminateInsuranceRepository(
     }
   }
 
-  suspend fun submitReasonForCancelling(reason: TerminationReason): Either<ErrorMessage, TerminateInsuranceStep> {
+  override suspend fun submitReasonForCancelling(
+    reason: TerminationReason,
+  ): Either<ErrorMessage, TerminateInsuranceStep> {
     return either {
       val result = apolloClient
         .mutation(
@@ -76,7 +88,7 @@ internal class TerminateInsuranceRepository(
     }
   }
 
-  suspend fun confirmDeletion(): Either<ErrorMessage, TerminateInsuranceStep> {
+  override suspend fun confirmDeletion(): Either<ErrorMessage, TerminateInsuranceStep> {
     return either {
       val result = apolloClient
         .mutation(FlowTerminationDeletionNextMutation(terminationFlowContextStorage.getContext()))
