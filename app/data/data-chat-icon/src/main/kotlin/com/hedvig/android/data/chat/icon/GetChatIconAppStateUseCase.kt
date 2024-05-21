@@ -18,7 +18,7 @@ interface GetChatIconAppStateUseCase {
   fun invoke(): Flow<ChatIconAppState>
 }
 
-internal class GetChatIconAppStateUseCaseImpl(
+class GetChatIconAppStateUseCaseImpl(
   private val settingsDataStore: SettingsDataStore,
   private val featureManager: FeatureManager,
   private val shouldShowChatIconUseCase: ShouldShowChatIconUseCase,
@@ -30,18 +30,22 @@ internal class GetChatIconAppStateUseCaseImpl(
         flowOf(ChatIconAppState.Hidden)
       } else {
         combine(
-          settingsDataStore.chatBubbleSetting(),
           featureManager.isFeatureEnabled(Feature.CHAT_BUBBLE),
-          chatLastMessageReadRepository.pollingIsNewestMessageNewerThanLastReadTimestamp(),
-        ) { userPreferenceHasChatBubbleEnabled, isChatBubbleFeatureEnabled, hasNotification ->
-          val showAsFloatingBubble = userPreferenceHasChatBubbleEnabled && isChatBubbleFeatureEnabled
-          ChatIconAppState.Shown(showAsFloatingBubble, hasNotification)
+          settingsDataStore.chatBubbleSetting(),
+          chatLastMessageReadRepository.pollIsNewestMessageNewerThanLastReadTimestamp(),
+        ) { isChatBubbleFeatureEnabled, userPreferenceHasChatBubbleEnabled, hasNotification ->
+          if (!isChatBubbleFeatureEnabled) {
+            ChatIconAppState.ShownAlwaysPinned(hasNotification)
+          } else {
+            val showAsFloatingBubble = userPreferenceHasChatBubbleEnabled
+            ChatIconAppState.ShownAndCanFloat(hasNotification, showAsFloatingBubble)
+          }
         }
       }
     }
   }
 
-  private fun ChatLastMessageReadRepository.pollingIsNewestMessageNewerThanLastReadTimestamp(): Flow<Boolean> {
+  private fun ChatLastMessageReadRepository.pollIsNewestMessageNewerThanLastReadTimestamp(): Flow<Boolean> {
     return flow {
       while (currentCoroutineContext().isActive) {
         emit(isNewestMessageNewerThanLastReadTimestamp())
@@ -52,10 +56,14 @@ internal class GetChatIconAppStateUseCaseImpl(
 }
 
 sealed interface ChatIconAppState {
-  object Hidden : ChatIconAppState
+  data object Hidden : ChatIconAppState
 
-  data class Shown(
-    val showAsFloatingBubble: Boolean,
+  data class ShownAlwaysPinned(
     val hasNotification: Boolean,
+  ) : ChatIconAppState
+
+  data class ShownAndCanFloat(
+    val hasNotification: Boolean,
+    val showAsFloatingBubble: Boolean,
   ) : ChatIconAppState
 }
