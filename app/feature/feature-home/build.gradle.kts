@@ -35,7 +35,6 @@ dependencies {
   implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.moneta)
-  implementation(projects.notificationBadgeDataPublic)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.audioPlayerData)
@@ -63,6 +62,7 @@ dependencies {
   implementation(projects.navigationActivity)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
+  implementation(projects.notificationBadgeDataPublic)
   implementation(projects.notificationPermission)
   implementation(projects.pullrefresh)
   implementation(projects.uiEmergency)
@@ -82,8 +82,8 @@ dependencies {
   testImplementation(projects.loggingTest)
   testImplementation(projects.memberRemindersTest)
   testImplementation(projects.moleculeTest)
-  testImplementation(projects.testClock)
   testImplementation(projects.notificationBadgeDataFake)
+  testImplementation(projects.testClock)
 }
 
 apollo {

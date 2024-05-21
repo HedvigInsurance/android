@@ -9,6 +9,7 @@ plugins {
 
 dependencies {
   implementation(libs.androidx.compose.material3)
+  implementation(libs.androidx.compose.material3.windowSizeClass)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.koin.compose)
@@ -26,5 +27,4 @@ dependencies {
   implementation(projects.dataClaimTriaging)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
-  implementation(libs.androidx.compose.material3.windowSizeClass)
 }
