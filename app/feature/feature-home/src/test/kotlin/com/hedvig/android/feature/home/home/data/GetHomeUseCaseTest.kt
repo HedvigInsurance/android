@@ -24,6 +24,8 @@ import com.hedvig.android.apollo.test.TestApolloClientRule
 import com.hedvig.android.apollo.test.TestNetworkTransportType
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.test.isRight
+import com.hedvig.android.data.chat.icon.ChatIconAppState
+import com.hedvig.android.data.chat.icon.GetChatIconAppStateUseCase
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.featureflags.test.FakeFeatureManager2
@@ -73,7 +75,7 @@ internal class GetHomeUseCaseTest {
         )
       },
       testGetMemberRemindersUseCase,
-      TestShouldShowChatButtonUseCase(true),
+      testGetChatIconAppStateUseCase(),
       FakeFeatureManager2(true),
       TestClock(),
       TimeZone.UTC,
@@ -112,7 +114,7 @@ internal class GetHomeUseCaseTest {
         )
       },
       testGetMemberRemindersUseCase,
-      TestShouldShowChatButtonUseCase(true),
+      testGetChatIconAppStateUseCase(),
       FakeFeatureManager2(true),
       TestClock(),
       TimeZone.UTC,
@@ -381,12 +383,12 @@ internal class GetHomeUseCaseTest {
 
     assertThat(result)
       .isRight()
-      .prop(HomeData::showChatIcon)
+      .prop(HomeData::chatIconAppState)
       .apply {
         if (showChatButton) {
-          isTrue()
+          ChatIconAppState.ShownAndCanFloat(false, false)
         } else {
-          isFalse()
+          ChatIconAppState.Hidden
         }
       }
   }
@@ -402,16 +404,20 @@ internal class GetHomeUseCaseTest {
     return GetHomeDataUseCaseImpl(
       apolloClient,
       TestGetMemberRemindersUseCase().apply { memberReminders.add(MemberReminders()) },
-      TestShouldShowChatButtonUseCase(withChatButtonShowing),
+      testGetChatIconAppStateUseCase(withChatButtonShowing),
       faetureManager,
       testClock,
       timeZone,
     )
   }
 
-  private fun TestShouldShowChatButtonUseCase(response: Boolean) = object : ShouldShowChatButtonUseCase {
-    override fun invoke(): Flow<Boolean> {
-      return flowOf(response)
+  private fun testGetChatIconAppStateUseCase(showChatIcon: Boolean = true) = object : GetChatIconAppStateUseCase {
+    override fun invoke(): Flow<ChatIconAppState> {
+      return if (showChatIcon) {
+        flowOf(ChatIconAppState.ShownAndCanFloat(false, false))
+      } else {
+        flowOf(ChatIconAppState.Hidden)
+      }
     }
   }
 }

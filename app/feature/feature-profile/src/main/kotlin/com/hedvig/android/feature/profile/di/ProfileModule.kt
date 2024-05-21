@@ -5,6 +5,7 @@ import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.auth.listeners.UploadLanguagePreferenceToBackendUseCase
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.core.demomode.DemoManager
+import com.hedvig.android.data.chat.icon.GetChatIconAppStateUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.feature.profile.aboutapp.AboutAppViewModel
 import com.hedvig.android.feature.profile.data.CheckTravelCertificateDestinationAvailabilityUseCase
@@ -64,7 +65,7 @@ val profileModule = module {
       enableNotificationsReminderManager = get<EnableNotificationsReminderManager>(),
       cacheManager = get<NetworkCacheManager>(),
       uploadLanguagePreferenceToBackendUseCase = get<UploadLanguagePreferenceToBackendUseCase>(),
-      featureManager = get<FeatureManager>(),
+      getChatIconAppStateUseCase = get<GetChatIconAppStateUseCase>(),
     )
   }
 

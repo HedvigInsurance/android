@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.retryWhen
 import octopus.NumberOfChatMessagesQuery
 import octopus.type.ChatMessageSender
 
-internal interface ShouldShowChatIconUseCase {
+interface ShouldShowChatIconUseCase {
   fun invoke(): Flow<Boolean>
 }
 

@@ -40,6 +40,7 @@ import com.hedvig.android.core.common.di.datastoreFileQualifier
 import com.hedvig.android.core.datastore.di.dataStoreModule
 import com.hedvig.android.core.demomode.di.demoModule
 import com.hedvig.android.core.fileupload.fileUploadModule
+import com.hedvig.android.data.chat.icon.di.dataChatIconModule
 import com.hedvig.android.data.chat.read.timestamp.di.chatReadTimestampModule
 import com.hedvig.android.data.claimflow.di.claimFlowDataModule
 import com.hedvig.android.data.paying.member.di.dataPayingMemberModule
@@ -273,6 +274,7 @@ val applicationModule = module {
   includes(
     listOf(
       adyenFeatureModule,
+      dataChatIconModule,
       apolloAuthListenersModule,
       appModule,
       authModule,

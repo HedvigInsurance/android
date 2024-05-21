@@ -8,6 +8,7 @@ plugins {
 dependencies {
   apolloMetadata(projects.apolloOctopusPublic)
 
+  api(projects.dataChatReadTimestampPublic)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
@@ -15,7 +16,6 @@ dependencies {
   implementation(libs.koin.core)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.coreCommonPublic)
-  implementation(projects.dataChatReadTimestampPublic)
   implementation(projects.dataSettingsDatastore)
   implementation(projects.featureFlagsPublic)
   testImplementation(libs.apollo.testingSupport)

@@ -172,7 +172,11 @@ private data class SuccessData(
       }
       val chatAction = when (homeData.chatIconAppState) {
         ChatIconAppState.Hidden -> null
-        is ChatIconAppState.Shown -> HomeTopBarAction.ChatAction(
+        is ChatIconAppState.ShownAlwaysPinned -> HomeTopBarAction.ChatAction(
+          false,
+          homeData.chatIconAppState.hasNotification,
+        )
+        is ChatIconAppState.ShownAndCanFloat -> HomeTopBarAction.ChatAction(
           homeData.chatIconAppState.showAsFloatingBubble,
           homeData.chatIconAppState.hasNotification,
         )

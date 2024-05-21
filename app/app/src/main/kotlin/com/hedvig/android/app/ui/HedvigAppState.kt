@@ -367,7 +367,11 @@ private fun rememberChatBubbleState(
       ChatBubbleState(currentDestination, false, false)
     }
 
-    is ChatIconAppState.Shown -> {
+    is ChatIconAppState.ShownAlwaysPinned -> {
+      ChatBubbleState(currentDestination, false, false)
+    }
+
+    is ChatIconAppState.ShownAndCanFloat -> {
       ChatBubbleState(currentDestination, chatIconAppState.showAsFloatingBubble, chatIconAppState.hasNotification)
     }
   }

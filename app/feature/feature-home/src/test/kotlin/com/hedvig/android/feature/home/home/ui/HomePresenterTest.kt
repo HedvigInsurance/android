@@ -11,6 +11,7 @@ import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isTrue
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.data.chat.icon.ChatIconAppState
 import com.hedvig.android.data.contract.android.CrossSell
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
@@ -107,7 +108,7 @@ internal class HomePresenterTest {
           ),
           veryImportantMessages = persistentListOf(),
           memberReminders = MemberReminders(),
-          showChatIcon = false,
+          chatIconAppState = ChatIconAppState.Hidden,
           showHelpCenter = false,
           crossSells = persistentListOf(),
           firstVetSections = listOf(),
@@ -162,7 +163,7 @@ internal class HomePresenterTest {
           ),
           crossSells = persistentListOf(),
           firstVetSections = listOf(),
-          showChatIcon = false,
+          chatIconAppState = ChatIconAppState.Hidden,
           showHelpCenter = false,
         ).right(),
       )
@@ -225,7 +226,7 @@ internal class HomePresenterTest {
           veryImportantMessages = persistentListOf(),
           memberReminders = MemberReminders(),
           crossSells = persistentListOf(),
-          showChatIcon = false,
+          chatIconAppState = ChatIconAppState.Hidden,
           firstVetSections = listOf(),
           showHelpCenter = false,
         ).right(),
@@ -271,7 +272,7 @@ internal class HomePresenterTest {
           veryImportantMessages = persistentListOf(),
           memberReminders = MemberReminders(),
           crossSells = persistentListOf(),
-          showChatIcon = false,
+          chatIconAppState = ChatIconAppState.Hidden,
           firstVetSections = listOf(firstVet),
           showHelpCenter = false,
         ).right(),
@@ -318,7 +319,7 @@ internal class HomePresenterTest {
           veryImportantMessages = persistentListOf(),
           memberReminders = MemberReminders(),
           crossSells = persistentListOf(crossSell),
-          showChatIcon = false,
+          chatIconAppState = ChatIconAppState.Hidden,
           firstVetSections = listOf(),
           showHelpCenter = false,
         ).right(),
@@ -354,7 +355,7 @@ internal class HomePresenterTest {
     claimStatusCardsData = null,
     veryImportantMessages = persistentListOf(),
     memberReminders = MemberReminders(),
-    showChatIcon = false,
+    chatIconAppState = ChatIconAppState.Hidden,
     showHelpCenter = false,
     firstVetSections = listOf(),
     crossSells = persistentListOf(),

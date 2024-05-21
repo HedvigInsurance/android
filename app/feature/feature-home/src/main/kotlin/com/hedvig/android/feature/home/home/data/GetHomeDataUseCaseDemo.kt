@@ -20,7 +20,7 @@ internal class GetHomeDataUseCaseDemo : GetHomeDataUseCase {
         upcomingRenewals = null,
         enableNotifications = null,
       ),
-      chatIconAppState = ChatIconAppState.Shown(true, false),
+      chatIconAppState = ChatIconAppState.ShownAndCanFloat(false, true),
       showHelpCenter = true,
       firstVetSections = listOf(),
       crossSells = persistentListOf(),
