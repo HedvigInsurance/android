@@ -2,6 +2,8 @@ package com.hedvig.android.feature.terminateinsurance.data
 
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import kotlinx.datetime.LocalDate
 import octopus.fragment.TerminationFlowStepFragment
 
@@ -15,14 +17,11 @@ internal sealed interface TerminateInsuranceStep {
     val terminationDate: LocalDate?,
   ) : TerminateInsuranceStep
 
-  data class InsuranceDeletion(
-    val disclaimer: String,
-  ) : TerminateInsuranceStep
+  data object InsuranceDeletion : TerminateInsuranceStep
 
-  // todo: add
-//  data class Survey(
-//    val options: List<TerminationSurveyOption>
-//  )
+  data class Survey(
+    val options: List<TerminationSurveyOption>,
+  ) : TerminateInsuranceStep
 
   /**
    * Note that this is not a network error, or trying to show an unknown screen. This is an explicitly returned
@@ -35,8 +34,6 @@ internal sealed interface TerminateInsuranceStep {
    * screen
    */
   data class UnknownStep(val message: String? = "") : TerminateInsuranceStep
-
-  // todo: add TerminateInsuranceStep.Survey(val options: List<TerminationSurveyOption>)
 }
 
 internal fun TerminationFlowStepFragment.CurrentStep.toTerminateInsuranceStep(): TerminateInsuranceStep {
@@ -47,25 +44,126 @@ internal fun TerminationFlowStepFragment.CurrentStep.toTerminateInsuranceStep():
 
     is TerminationFlowStepFragment.FlowTerminationFailedStepCurrentStep -> TerminateInsuranceStep.Failure()
     is TerminationFlowStepFragment.FlowTerminationDeletionStepCurrentStep -> {
-      TerminateInsuranceStep.InsuranceDeletion(disclaimer)
+      TerminateInsuranceStep.InsuranceDeletion
     }
 
     is TerminationFlowStepFragment.FlowTerminationSuccessStepCurrentStep -> {
       TerminateInsuranceStep.TerminateInsuranceSuccess(terminationDate)
     }
 
-    // todo: add
-    // is TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep -> {
-    //      TerminateInsuranceStep.Survey(options)
-    //    }
+    is TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep -> {
+      TerminateInsuranceStep.Survey(
+        options.toOptionList(),
+      )
+    }
 
     else -> TerminateInsuranceStep.UnknownStep()
+  }
+}
+
+private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Option>.toOptionList(): List<TerminationSurveyOption> {
+  return map {
+    TerminationSurveyOption(
+      id = it.id,
+      title = it.title,
+      feedBackRequired = it.feedBack != null,
+      subOptions = it.subOptions?.toSubOptionList() ?: listOf(),
+      suggestion = it.suggestion?.toSuggestion(),
+    )
+  }
+}
+
+private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Option.SubOption>.toSubOptionList(): List<TerminationSurveyOption> {
+  return map {
+    TerminationSurveyOption(
+      id = it.id,
+      title = it.title,
+      feedBackRequired = it.feedBack != null,
+      subOptions = listOf(),
+      suggestion = it.suggestion?.toSuggestion(),
+    )
+  }
+}
+
+// todo: duplicate functions here
+private fun TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Option.Suggestion.toSuggestion(): SurveyOptionSuggestion? {
+  return when (this) {
+    is TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep
+      .Option.FlowTerminationSurveyOptionSuggestionActionSuggestion,
+    -> {
+      val action = this.action.rawValue
+      if (action == "UPDATE_ADDRESS") {
+        SurveyOptionSuggestion.Action.UpdateAddress
+      } else {
+        logcat(
+          LogPriority.WARN,
+          message = { "FlowTerminationSurveyStepCurrentStep unknown suggestion type: ${this.action.rawValue}" },
+        )
+        null
+      }
+    }
+
+    is TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep
+      .Option.FlowTerminationSurveyOptionSuggestionRedirectSuggestion,
+    -> {
+      SurveyOptionSuggestion.Redirect(
+        buttonTitle = this.buttonTitle,
+        description = this.description,
+        url = this.url,
+      )
+    }
+
+    else -> {
+      logcat(
+        LogPriority.WARN,
+        message = { "FlowTerminationSurveyStepCurrentStep unknown suggestion type: $this" },
+      )
+      null
+    }
+  }
+}
+
+private fun TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Option.SubOption.Suggestion.toSuggestion(): SurveyOptionSuggestion? {
+  return when (this) {
+    is TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep
+      .Option.FlowTerminationSurveyOptionSuggestionActionSuggestion,
+    -> {
+      val action = this.action.rawValue
+      if (action == "UPDATE_ADDRESS") {
+        SurveyOptionSuggestion.Action.UpdateAddress
+      } else {
+        logcat(
+          LogPriority.WARN,
+          message = { "FlowTerminationSurveyStepCurrentStep unknown suggestion type: ${this.action.rawValue}" },
+        )
+        null
+      }
+    }
+
+    is TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep
+      .Option.FlowTerminationSurveyOptionSuggestionRedirectSuggestion,
+    -> {
+      SurveyOptionSuggestion.Redirect(
+        buttonTitle = this.buttonTitle,
+        description = this.description,
+        url = this.url,
+      )
+    }
+
+    else -> {
+      logcat(
+        LogPriority.WARN,
+        message = { "FlowTerminationSurveyStepCurrentStep unknown suggestion type: $this" },
+      )
+      null
+    }
   }
 }
 
 internal fun TerminateInsuranceStep.toTerminateInsuranceDestination(
   commonParams: TerminationGraphParameters,
 ): TerminateInsuranceDestination {
+  logcat { "mariia: the step we get is: $this" }
   return when (this) {
     is TerminateInsuranceStep.Failure -> TerminateInsuranceDestination.TerminationFailure(message)
 
@@ -87,9 +185,9 @@ internal fun TerminateInsuranceStep.toTerminateInsuranceDestination(
 
     is TerminateInsuranceStep.UnknownStep -> TerminateInsuranceDestination.UnknownScreen
 
-    // todo: add
-    // is TerminateInsuranceStep.Survey -> TerminateInsuranceDestination.TerminationSurveyFirstStep(
-    // options = options,
-    // commonParams = commonParams)
+    is TerminateInsuranceStep.Survey -> TerminateInsuranceDestination.TerminationSurveyFirstStep(
+      options = options,
+      commonParams = commonParams,
+    )
   }
 }
