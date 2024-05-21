@@ -34,9 +34,9 @@ import com.hedvig.android.core.appreview.WaitUntilAppReviewDialogShouldBeOpenedU
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.demomode.DemoManager
+import com.hedvig.android.data.chat.icon.GetChatIconAppStateUseCase
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCaseProvider
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
-import com.hedvig.android.feature.home.home.data.ShouldShowChatButtonUseCase
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.language.LanguageAndMarketLaunchCheckUseCase
 import com.hedvig.android.language.LanguageService
@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
   private val demoManager: DemoManager by inject()
   private val featureManager: FeatureManager by inject()
   private val getOnlyHasNonPayingContractsUseCase: GetOnlyHasNonPayingContractsUseCaseProvider by inject()
-  private val shouldShowChatButtonUseCase: ShouldShowChatButtonUseCase by inject()
+  private val getChatIconAppStateUseCase: GetChatIconAppStateUseCase by inject()
   private val hedvigBuildConstants: HedvigBuildConstants by inject()
   private val hedvigDeepLinkContainer: HedvigDeepLinkContainer by inject()
   private val imageLoader: ImageLoader by inject()
@@ -139,7 +139,7 @@ class MainActivity : AppCompatActivity() {
         tabNotificationBadgeService = tabNotificationBadgeService,
         settingsDataStore = settingsDataStore,
         getOnlyHasNonPayingContractsUseCase = getOnlyHasNonPayingContractsUseCase,
-        shouldShowChatButtonUseCase = shouldShowChatButtonUseCase,
+        getChatIconAppStateUseCase = getChatIconAppStateUseCase,
         featureManager = featureManager,
         splashIsRemovedSignal = splashIsRemovedSignal,
         authTokenService = authTokenService,

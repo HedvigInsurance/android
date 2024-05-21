@@ -22,10 +22,11 @@ import com.datadog.android.compose.ExperimentalTrackingApi
 import com.datadog.android.compose.NavigationViewTrackingEffect
 import com.hedvig.android.app.navigation.RootGraph
 import com.hedvig.android.core.demomode.Provider
+import com.hedvig.android.data.chat.icon.ChatIconAppState
+import com.hedvig.android.data.chat.icon.GetChatIconAppStateUseCase
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.feature.forever.navigation.ForeverDestination
-import com.hedvig.android.feature.home.home.data.ShouldShowChatButtonUseCase
 import com.hedvig.android.feature.home.home.navigation.HomeDestination
 import com.hedvig.android.feature.insurances.navigation.InsurancesDestination
 import com.hedvig.android.feature.insurances.navigation.insurancesBottomNavPermittedDestinations
@@ -36,6 +37,7 @@ import com.hedvig.android.feature.profile.navigation.profileBottomNavPermittedDe
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.notification.badge.data.tab.BottomNavTab
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
@@ -65,7 +67,7 @@ internal fun rememberHedvigAppState(
   tabNotificationBadgeService: TabNotificationBadgeService,
   settingsDataStore: SettingsDataStore,
   getOnlyHasNonPayingContractsUseCase: Provider<GetOnlyHasNonPayingContractsUseCase>,
-  shouldShowChatButtonUseCase: ShouldShowChatButtonUseCase,
+  getChatIconAppStateUseCase: GetChatIconAppStateUseCase,
   featureManager: FeatureManager,
   navHostController: NavHostController,
   coroutineScope: CoroutineScope = rememberCoroutineScope(),
@@ -79,7 +81,7 @@ internal fun rememberHedvigAppState(
     tabNotificationBadgeService,
     settingsDataStore,
     getOnlyHasNonPayingContractsUseCase,
-    shouldShowChatButtonUseCase,
+    getChatIconAppStateUseCase,
     featureManager,
   ) {
     HedvigAppState(
@@ -89,7 +91,7 @@ internal fun rememberHedvigAppState(
       tabNotificationBadgeService = tabNotificationBadgeService,
       settingsDataStore = settingsDataStore,
       getOnlyHasNonPayingContractsUseCase = getOnlyHasNonPayingContractsUseCase,
-      shouldShowChatButtonUseCase = shouldShowChatButtonUseCase,
+      getChatIconAppStateUseCase = getChatIconAppStateUseCase,
       featureManager = featureManager,
     )
   }
@@ -103,7 +105,7 @@ internal class HedvigAppState(
   tabNotificationBadgeService: TabNotificationBadgeService,
   private val settingsDataStore: SettingsDataStore,
   getOnlyHasNonPayingContractsUseCase: Provider<GetOnlyHasNonPayingContractsUseCase>,
-  private val shouldShowChatButtonUseCase: ShouldShowChatButtonUseCase,
+  private val getChatIconAppStateUseCase: GetChatIconAppStateUseCase,
   featureManager: FeatureManager,
 ) {
   val currentDestination: NavDestination?
@@ -128,7 +130,7 @@ internal class HedvigAppState(
     }
 
   val chatBubbleState: ChatBubbleState
-    @Composable get() = rememberChatBubbleState(currentDestination, shouldShowChatButtonUseCase, settingsDataStore)
+    @Composable get() = rememberChatBubbleState(currentDestination, getChatIconAppStateUseCase)
 
   /**
    * App kill-switch. If this is enabled we must show nothing in the app but a button to try to update the app
@@ -345,34 +347,37 @@ private sealed interface TopLevelDestination {
 @Composable
 private fun rememberChatBubbleState(
   currentDestination: NavDestination?,
-  shouldShowChatButtonUseCase: ShouldShowChatButtonUseCase,
-  settingsDataStore: SettingsDataStore,
+  getChatIconAppStateUseCase: GetChatIconAppStateUseCase,
 ): ChatBubbleState {
-  val showChatButton by remember(shouldShowChatButtonUseCase) {
-    shouldShowChatButtonUseCase.invoke()
-  }.collectAsStateWithLifecycle(false)
-  if (!showChatButton) {
-    return ChatBubbleState(
-      currentDestination,
-      false,
-    )
-  }
-  val isLoggedOut = remember(currentDestination) {
-    currentDestination?.hierarchy?.any { navDestination ->
+  val isInRestrictedScreen = remember(currentDestination) {
+    val isLoggedOut = currentDestination?.hierarchy?.any { navDestination ->
       navDestination.route == createRoutePattern<LoginDestination>()
     } == true
+    val isInChatScreen = currentDestination?.route == createRoutePattern<AppDestination.Chat>()
+    isLoggedOut || isInChatScreen
   }
-  val userPreferenceAllowsChatBubble by remember { settingsDataStore.chatBubbleSetting() }.collectAsState(false)
-  return ChatBubbleState(
-    currentDestination,
-    userPreferenceAllowsChatBubble && !isLoggedOut,
-  )
+  if (isInRestrictedScreen) {
+    return ChatBubbleState(currentDestination, false, false)
+  }
+  val chatIconAppState: ChatIconAppState = remember(getChatIconAppStateUseCase) {
+    getChatIconAppStateUseCase.invoke()
+  }.collectAsStateWithLifecycle(ChatIconAppState.Hidden).value
+  return when (chatIconAppState) {
+    ChatIconAppState.Hidden -> {
+      ChatBubbleState(currentDestination, false, false)
+    }
+
+    is ChatIconAppState.Shown -> {
+      ChatBubbleState(currentDestination, chatIconAppState.showAsFloatingBubble, chatIconAppState.hasNotification)
+    }
+  }
 }
 
 @Stable
 internal class ChatBubbleState(
   private val currentDestination: NavDestination?,
   val showChatBubble: Boolean,
+  val hasUnseenChatMessages: Boolean,
 ) {
   val isInHomeScreen: Boolean
     @Composable get() {

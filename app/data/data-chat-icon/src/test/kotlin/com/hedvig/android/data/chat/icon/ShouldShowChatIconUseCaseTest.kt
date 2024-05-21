@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.home.home.data
+package com.hedvig.android.data.chat.icon
 
 import assertk.assertThat
 import assertk.assertions.isFalse
@@ -27,7 +27,7 @@ import org.junit.runner.RunWith
 
 @OptIn(ApolloExperimental::class)
 @RunWith(TestParameterInjector::class)
-class ShouldShowChatButtonUseCaseTest {
+class ShouldShowChatIconUseCaseTest {
   @get:Rule
   val testLogcatLogger = TestLogcatLoggingRule()
 
@@ -136,7 +136,7 @@ class ShouldShowChatButtonUseCaseTest {
     }
   }
 
-  private fun testUseCase(featureManager: FeatureManager = FakeFeatureManager2(true)): ShouldShowChatButtonUseCase {
-    return ShouldShowChatButtonUseCaseImpl(apolloClient, featureManager)
+  private fun testUseCase(featureManager: FeatureManager = FakeFeatureManager2(true)): ShouldShowChatIconUseCase {
+    return ShouldShowChatIconUseCaseImpl(apolloClient, featureManager)
   }
 }

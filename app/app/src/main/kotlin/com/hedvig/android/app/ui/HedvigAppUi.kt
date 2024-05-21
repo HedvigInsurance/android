@@ -84,6 +84,7 @@ internal fun HedvigAppUi(
       if (chatBubbleState.showChatBubble) {
         FloatingBubbleChat(
           isInHomeScreen = chatBubbleState.isInHomeScreen,
+          hasUnseenChatMessages = chatBubbleState.hasUnseenChatMessages,
           imageLoader = imageLoader,
           appPackageId = hedvigBuildConstants.appId,
           hedvigDeepLinkContainer = hedvigDeepLinkContainer,

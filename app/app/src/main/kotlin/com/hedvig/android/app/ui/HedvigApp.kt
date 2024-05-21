@@ -28,10 +28,10 @@ import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.data.chat.icon.GetChatIconAppStateUseCase
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.feature.force.upgrade.ForceUpgradeBlockingScreen
-import com.hedvig.android.feature.home.home.data.ShouldShowChatButtonUseCase
 import com.hedvig.android.feature.login.navigation.LoginDestination
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.language.LanguageService
@@ -58,7 +58,7 @@ internal fun HedvigApp(
   tabNotificationBadgeService: TabNotificationBadgeService,
   settingsDataStore: SettingsDataStore,
   getOnlyHasNonPayingContractsUseCase: Provider<GetOnlyHasNonPayingContractsUseCase>,
-  shouldShowChatButtonUseCase: ShouldShowChatButtonUseCase,
+  getChatIconAppStateUseCase: GetChatIconAppStateUseCase,
   featureManager: FeatureManager,
   splashIsRemovedSignal: Channel<Unit>,
   authTokenService: AuthTokenService,
@@ -80,7 +80,7 @@ internal fun HedvigApp(
     tabNotificationBadgeService = tabNotificationBadgeService,
     settingsDataStore = settingsDataStore,
     getOnlyHasNonPayingContractsUseCase = getOnlyHasNonPayingContractsUseCase,
-    shouldShowChatButtonUseCase = shouldShowChatButtonUseCase,
+    getChatIconAppStateUseCase = getChatIconAppStateUseCase,
     featureManager = featureManager,
     navHostController = navHostController,
   )

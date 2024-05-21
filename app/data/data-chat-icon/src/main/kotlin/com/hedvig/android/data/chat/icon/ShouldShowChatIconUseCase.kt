@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.home.home.data
+package com.hedvig.android.data.chat.icon
 
 import arrow.core.Either
 import arrow.core.getOrElse
@@ -21,21 +21,21 @@ import kotlinx.coroutines.flow.retryWhen
 import octopus.NumberOfChatMessagesQuery
 import octopus.type.ChatMessageSender
 
-interface ShouldShowChatButtonUseCase {
+internal interface ShouldShowChatIconUseCase {
   fun invoke(): Flow<Boolean>
 }
 
-internal class ShouldShowChatButtonUseCaseImpl(
+internal class ShouldShowChatIconUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,
-) : ShouldShowChatButtonUseCase {
+) : ShouldShowChatIconUseCase {
   override fun invoke(): Flow<Boolean> {
     return combine(
       isEligibleToShowTheChatIcon(),
       featureManager.isFeatureEnabled(Feature.DISABLE_CHAT),
       featureManager.isFeatureEnabled(Feature.HELP_CENTER),
     ) { isEligibleToShowTheChatIcon, disableChat, showHelpCenter ->
-      !shouldHideChatButton(
+      !shouldHideChatIcon(
         disableChat,
         isEligibleToShowTheChatIcon.getOrElse { false },
         showHelpCenter,
@@ -51,16 +51,7 @@ internal class ShouldShowChatButtonUseCaseImpl(
           val data = ensureNotNull(apolloResponse.data) {
             ErrorMessage("Home failed to fetch chat history")
           }
-          val chatMessages = data.chat.messages.map { message ->
-            ChatMessage(
-              message.id,
-              when (message.sender) {
-                ChatMessageSender.MEMBER -> ChatMessage.Sender.MEMBER
-                ChatMessageSender.HEDVIG -> ChatMessage.Sender.HEDVIG
-                ChatMessageSender.UNKNOWN__ -> ChatMessage.Sender.HEDVIG
-              },
-            )
-          }
+          val chatMessages = data.chat.messages
           chatMessages.isEligibleToShowTheChatIcon()
         }
       }
@@ -75,14 +66,14 @@ internal class ShouldShowChatButtonUseCaseImpl(
       }
   }
 
-  private fun List<ChatMessage>.isEligibleToShowTheChatIcon(): Boolean {
+  private fun List<NumberOfChatMessagesQuery.Data.Chat.Message>.isEligibleToShowTheChatIcon(): Boolean {
     // If there are *any* messages from the member, then we should show the chat icon
-    if (this.any { it.sender == ChatMessage.Sender.MEMBER }) return true
+    if (this.any { it.sender == ChatMessageSender.MEMBER }) return true
     // There is always an automatic message sent by Hedvig, therefore we need to check for > 1
-    return this.filter { it.sender == ChatMessage.Sender.HEDVIG }.size > 1
+    return this.filter { it.sender == ChatMessageSender.HEDVIG }.size > 1
   }
 
-  private fun shouldHideChatButton(
+  private fun shouldHideChatIcon(
     isChatDisabledFromKillSwitch: Boolean,
     isEligibleToShowTheChatIcon: Boolean,
     isHelpCenterEnabled: Boolean,
