@@ -79,6 +79,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun FloatingBubbleChat(
   isInHomeScreen: Boolean,
+  hasUnseenChatMessages: Boolean,
   imageLoader: ImageLoader,
   appPackageId: String,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
@@ -94,7 +95,7 @@ fun FloatingBubbleChat(
     floatingBubbleState = floatingBubbleState,
     showWelcomeTooltip = floatingBubbleUiState.showWelcomeTooltip,
     onWelcomeTooltipShown = { floatingBubbleViewModel.emit(FloatingBubbleEvent.SeenTooltip) },
-    hasUnseenChatMessages = floatingBubbleUiState.hasUnseenChatMessages,
+    hasUnseenChatMessages = hasUnseenChatMessages,
   ) {
     ChatDestination(
       viewModel = viewModel,
@@ -174,7 +175,7 @@ private fun SharedTransitionScope.MinimizedBubble(
   ) {
     chatIcon(
       Modifier
-        .notificationCircle(-SpaceFromScreenEdge, hasUnseenChatMessages)
+        .notificationCircle(hasUnseenChatMessages, -SpaceFromScreenEdge)
         .sharedBounds(rememberSharedContentState(SharedSurfaceKey), animatedContentScope),
     )
     if (showWelcomeTooltip) {
