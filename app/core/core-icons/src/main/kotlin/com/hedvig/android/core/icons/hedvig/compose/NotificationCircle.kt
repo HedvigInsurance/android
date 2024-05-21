@@ -5,12 +5,13 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 
 /**
  * A notification circle attached to the top right taking up ~35% of the available size.
  * https://www.figma.com/file/qUhLjrKl98PAzHov9ilaDH/Hedvig-UI-Kit?type=design&node-id=3813%3A19134&mode=design&t=V1DM52RqO3kDFMUq-1
  */
-fun Modifier.notificationCircle(horizontalOffset: Dp, showNotification: Boolean = true) = this.drawWithContent {
+fun Modifier.notificationCircle(showNotification: Boolean = true, horizontalOffset: Dp = 0.dp) = this.drawWithContent {
   drawContent()
   if (showNotification) {
     // The red circle takes up ~34% of the icon's size
