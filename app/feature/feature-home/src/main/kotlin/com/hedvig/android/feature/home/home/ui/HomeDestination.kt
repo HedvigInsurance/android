@@ -65,8 +65,10 @@ import com.hedvig.android.core.designsystem.material3.warningElement
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.hedvig.compose.notificationCircle
 import com.hedvig.android.core.icons.hedvig.normal.WarningFilled
 import com.hedvig.android.core.ui.appbar.m3.EmptySpaceIcon
+import com.hedvig.android.core.ui.appbar.m3.ToolbarChatIcon
 import com.hedvig.android.core.ui.appbar.m3.ToolbarCrossSellsIcon
 import com.hedvig.android.core.ui.appbar.m3.ToolbarFirstVetIcon
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarLayoutForActions
@@ -224,14 +226,23 @@ private fun HomeScreen(
           val actionsList: List<HomeTopBarAction> = buildList {
             if (currentState.crossSellsAction != null) add(currentState.crossSellsAction)
             if (currentState.firstVetAction != null) add(currentState.firstVetAction)
-            if (currentState.chatAction != null) add(HomeTopBarAction.ChatAction)
+            if (currentState.chatAction != null) add(currentState.chatAction)
           }
           actionsList.forEachIndexed { index, action ->
             if (index != 0) {
               Spacer(modifier = Modifier.width(8.dp))
             }
             when (action) {
-              HomeTopBarAction.ChatAction -> EmptySpaceIcon()
+              is HomeTopBarAction.ChatAction -> {
+                if (action.onlyTakeUpPlaceWithoutRendering) {
+                  EmptySpaceIcon()
+                } else {
+                  ToolbarChatIcon(
+                    onClick = onStartChat,
+                    modifier = Modifier.notificationCircle(showNotification = action.hasUnseenMessage),
+                  )
+                }
+              }
 
               is HomeTopBarAction.CrossSellsAction -> ToolbarCrossSellsIcon(
                 onClick = {

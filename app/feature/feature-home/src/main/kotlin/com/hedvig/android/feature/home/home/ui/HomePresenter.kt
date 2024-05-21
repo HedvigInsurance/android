@@ -10,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import com.hedvig.android.core.demomode.Provider
+import com.hedvig.android.data.chat.icon.ChatIconAppState
 import com.hedvig.android.data.contract.android.CrossSell
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
@@ -169,7 +170,13 @@ private data class SuccessData(
       } else {
         null
       }
-      val chatAction = if (homeData.showChatIcon) HomeTopBarAction.ChatAction else null
+      val chatAction = when (homeData.chatIconAppState) {
+        ChatIconAppState.Hidden -> null
+        is ChatIconAppState.Shown -> HomeTopBarAction.ChatAction(
+          homeData.chatIconAppState.showAsFloatingBubble,
+          homeData.chatIconAppState.hasNotification,
+        )
+      }
       val firstVetAction = if (homeData.firstVetSections.isNotEmpty()) {
         HomeTopBarAction.FirstVetAction(homeData.firstVetSections)
       } else {
@@ -212,7 +219,10 @@ sealed interface HomeText {
 }
 
 sealed interface HomeTopBarAction {
-  data object ChatAction : HomeTopBarAction
+  data class ChatAction(
+    val onlyTakeUpPlaceWithoutRendering: Boolean,
+    val hasUnseenMessage: Boolean,
+  ) : HomeTopBarAction
 
   data class FirstVetAction(
     val sections: List<FirstVetSection>,

@@ -11,6 +11,8 @@ import com.apollographql.apollo3.cache.normalized.FetchPolicy
 import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.data.chat.icon.ChatIconAppState
+import com.hedvig.android.data.chat.icon.GetChatIconAppStateUseCase
 import com.hedvig.android.data.contract.android.CrossSell
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
@@ -38,7 +40,7 @@ internal interface GetHomeDataUseCase {
 internal class GetHomeDataUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val getMemberRemindersUseCase: GetMemberRemindersUseCase,
-  private val shouldShowChatButtonUseCase: ShouldShowChatButtonUseCase,
+  private val getChatIconAppStateUseCase: GetChatIconAppStateUseCase,
   private val featureManager: FeatureManager,
   private val clock: Clock,
   private val timeZone: TimeZone,
@@ -49,9 +51,14 @@ internal class GetHomeDataUseCaseImpl(
         .fetchPolicy(if (forceNetworkFetch) FetchPolicy.NetworkOnly else FetchPolicy.CacheFirst)
         .safeFlow(::ErrorMessage),
       getMemberRemindersUseCase.invoke(),
-      shouldShowChatButtonUseCase.invoke(),
+      getChatIconAppStateUseCase.invoke(),
       featureManager.isFeatureEnabled(Feature.HELP_CENTER),
-    ) { homeQueryDataResult, memberReminders, showChatIcon, isHelpCenterEnabled ->
+    ) {
+        homeQueryDataResult: Either<ErrorMessage, HomeQuery.Data>,
+        memberReminders: MemberReminders,
+        chatIconAppState: ChatIconAppState,
+        isHelpCenterEnabled: Boolean,
+      ->
       either {
         val homeQueryData: HomeQuery.Data = homeQueryDataResult.bind()
         val contractStatus = homeQueryData.currentMember.toContractStatus()
@@ -91,7 +98,7 @@ internal class GetHomeDataUseCaseImpl(
           claimStatusCardsData = homeQueryData.claimStatusCards(),
           veryImportantMessages = veryImportantMessages.toPersistentList(),
           memberReminders = memberReminders,
-          showChatIcon = showChatIcon,
+          chatIconAppState = chatIconAppState,
           showHelpCenter = isHelpCenterEnabled,
           firstVetSections = firstVetActions,
           crossSells = crossSells,
@@ -177,7 +184,7 @@ internal data class HomeData(
   val claimStatusCardsData: ClaimStatusCardsData?,
   val veryImportantMessages: ImmutableList<VeryImportantMessage>,
   val memberReminders: MemberReminders,
-  val showChatIcon: Boolean,
+  val chatIconAppState: ChatIconAppState,
   val showHelpCenter: Boolean,
   val firstVetSections: List<FirstVetSection>,
   val crossSells: ImmutableList<CrossSell>,
