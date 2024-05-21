@@ -2,8 +2,8 @@ package com.hedvig.android.feature.profile.settings
 
 import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.auth.listeners.UploadLanguagePreferenceToBackendUseCase
+import com.hedvig.android.data.chat.icon.GetChatIconAppStateUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
-import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.language.Language
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.Market
@@ -18,7 +18,7 @@ internal class SettingsViewModel(
   enableNotificationsReminderManager: EnableNotificationsReminderManager,
   cacheManager: NetworkCacheManager,
   uploadLanguagePreferenceToBackendUseCase: UploadLanguagePreferenceToBackendUseCase,
-  featureManager: FeatureManager,
+  getChatIconAppStateUseCase: GetChatIconAppStateUseCase,
 ) : MoleculeViewModel<SettingsEvent, SettingsUiState>(
     SettingsUiState.Loading(
       selectedLanguage = languageService.getLanguage(),
@@ -34,6 +34,6 @@ internal class SettingsViewModel(
       enableNotificationsReminderManager = enableNotificationsReminderManager,
       cacheManager = cacheManager,
       uploadLanguagePreferenceToBackendUseCase = uploadLanguagePreferenceToBackendUseCase,
-      featureManager = featureManager,
+      getChatIconAppStateUseCase = getChatIconAppStateUseCase,
     ),
   )

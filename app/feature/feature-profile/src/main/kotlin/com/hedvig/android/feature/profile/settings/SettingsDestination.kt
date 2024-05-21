@@ -136,10 +136,10 @@ private fun SettingsScreen(
             .padding(horizontal = 16.dp),
         )
         Spacer(Modifier.height(4.dp))
-        val chatBubbleSetting = uiState.chatBubbleSetting
-        if (chatBubbleSetting is SettingsUiState.ChatBubbleSetting.FeatureEnabled) {
+        val chatBubbleSettingState = uiState.chatBubbleSettingState
+        if (chatBubbleSettingState is SettingsUiState.ChatBubbleSettingState.SettingVisible) {
           HedvigBigCard(
-            onClick = { setChatBubblePreference(!chatBubbleSetting.showChatAsBubble) },
+            onClick = { setChatBubblePreference(!chatBubbleSettingState.showAsBubbleSetting) },
             modifier = Modifier.padding(horizontal = 16.dp),
           ) {
             Row(
@@ -151,7 +151,7 @@ private fun SettingsScreen(
               Text("Chat Bubble", style = MaterialTheme.typography.headlineSmall)
               Spacer(Modifier.weight(1f))
               Spacer(Modifier.width(8.dp))
-              Switch(chatBubbleSetting.showChatAsBubble, { setChatBubblePreference(it) })
+              Switch(chatBubbleSettingState.showAsBubbleSetting, { setChatBubblePreference(it) })
             }
           }
           Spacer(Modifier.height(4.dp))
@@ -197,7 +197,7 @@ fun PreviewSettingsScreen() {
           languageOptions = listOf(Language.SV_SE, Language.EN_SE),
           selectedTheme = Theme.SYSTEM_DEFAULT,
           showNotificationReminder = true,
-          chatBubbleSetting = SettingsUiState.ChatBubbleSetting.FeatureEnabled(true),
+          chatBubbleSettingState = SettingsUiState.ChatBubbleSettingState.SettingVisible(true),
         ),
         notificationPermissionState = object : NotificationPermissionState {
           override val showDialog = false

@@ -8,14 +8,21 @@ import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.auth.listeners.UploadLanguagePreferenceToBackendUseCase
 import com.hedvig.android.core.datastore.TestPreferencesDataStore
+import com.hedvig.android.data.chat.icon.GetChatIconAppStateUseCase
+import com.hedvig.android.data.chat.icon.GetChatIconAppStateUseCaseImpl
+import com.hedvig.android.data.chat.icon.ShouldShowChatIconUseCase
+import com.hedvig.android.data.chat.read.timestamp.ChatLastMessageReadRepository
+import com.hedvig.android.data.chat.read.timestamp.FakeChatLastMessageReadRepository
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
-import com.hedvig.android.featureflags.flags.Feature
+import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.test.FakeFeatureManager2
 import com.hedvig.android.language.Language
 import com.hedvig.android.language.test.FakeLanguageService
 import com.hedvig.android.memberreminders.test.TestEnableNotificationsReminderManager
 import com.hedvig.android.molecule.test.test
 import com.hedvig.android.theme.Theme
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
@@ -30,13 +37,14 @@ class SettingsPresenterTest {
   @Test
   fun `content stays loading as long as notificationReminder are uninitialized`() = runTest {
     val enableNotificationsReminderManager = TestEnableNotificationsReminderManager()
+    val settingsDataStore = SettingsDataStore(TestPreferencesDataStore(testFolder, backgroundScope))
     val settingsPresenter = SettingsPresenter(
       FakeLanguageService(),
-      SettingsDataStore(TestPreferencesDataStore(testFolder, backgroundScope)),
+      settingsDataStore,
       enableNotificationsReminderManager,
       NoopNetworkCacheManager(),
       NoopUploadLanguagePreferenceToBackendUseCase(),
-      FakeFeatureManager2(false),
+      testGetChatIconAppStateUseCase(settingsDataStore),
     )
 
     settingsPresenter.test(SettingsUiState.Loading(Language.entries.first(), Language.entries)) {
@@ -49,13 +57,14 @@ class SettingsPresenterTest {
   @Test
   fun `when there's a notification reminder, show it`() = runTest {
     val enableNotificationsReminderManager = TestEnableNotificationsReminderManager()
+    val settingsDataStore = SettingsDataStore(TestPreferencesDataStore(testFolder, backgroundScope))
     val settingsPresenter = SettingsPresenter(
       FakeLanguageService(),
-      SettingsDataStore(TestPreferencesDataStore(testFolder, backgroundScope)),
+      settingsDataStore,
       enableNotificationsReminderManager,
       NoopNetworkCacheManager(),
       NoopUploadLanguagePreferenceToBackendUseCase(),
-      FakeFeatureManager2(false),
+      testGetChatIconAppStateUseCase(settingsDataStore),
     )
 
     settingsPresenter.test(
@@ -64,7 +73,7 @@ class SettingsPresenterTest {
         listOf(Language.EN_SE, Language.SV_SE),
         Theme.SYSTEM_DEFAULT,
         false,
-        SettingsUiState.ChatBubbleSetting.FeatureDisabled,
+        SettingsUiState.ChatBubbleSettingState.SettingNotAvailable,
       ),
     ) {
       assertThat(awaitItem().showNotificationReminder).isEqualTo(false)
@@ -76,13 +85,14 @@ class SettingsPresenterTest {
   @Test
   fun `when there's no notification reminder, keep not showing it`() = runTest {
     val enableNotificationsReminderManager = TestEnableNotificationsReminderManager()
+    val settingsDataStore = SettingsDataStore(TestPreferencesDataStore(testFolder, backgroundScope))
     val settingsPresenter = SettingsPresenter(
       FakeLanguageService(),
-      SettingsDataStore(TestPreferencesDataStore(testFolder, backgroundScope)),
+      settingsDataStore,
       enableNotificationsReminderManager,
       NoopNetworkCacheManager(),
       NoopUploadLanguagePreferenceToBackendUseCase(),
-      FakeFeatureManager2(false),
+      testGetChatIconAppStateUseCase(settingsDataStore),
     )
 
     settingsPresenter.test(
@@ -91,7 +101,7 @@ class SettingsPresenterTest {
         listOf(Language.EN_SE, Language.SV_SE),
         Theme.SYSTEM_DEFAULT,
         false,
-        SettingsUiState.ChatBubbleSetting.FeatureDisabled,
+        SettingsUiState.ChatBubbleSettingState.SettingNotAvailable,
       ),
     ) {
       assertThat(awaitItem().showNotificationReminder).isEqualTo(false)
@@ -103,13 +113,14 @@ class SettingsPresenterTest {
   @Test
   fun `snoozing the notification correctly reports that to the service`() = runTest {
     val enableNotificationsReminderManager = TestEnableNotificationsReminderManager()
+    val settingsDataStore = SettingsDataStore(TestPreferencesDataStore(testFolder, backgroundScope))
     val settingsPresenter = SettingsPresenter(
       FakeLanguageService(),
-      SettingsDataStore(TestPreferencesDataStore(testFolder, backgroundScope)),
+      settingsDataStore,
       enableNotificationsReminderManager,
       NoopNetworkCacheManager(),
       NoopUploadLanguagePreferenceToBackendUseCase(),
-      FakeFeatureManager2(false),
+      testGetChatIconAppStateUseCase(settingsDataStore),
     )
 
     settingsPresenter.test(
@@ -118,7 +129,7 @@ class SettingsPresenterTest {
         Language.entries,
         Theme.entries.first(),
         false,
-        SettingsUiState.ChatBubbleSetting.FeatureDisabled,
+        SettingsUiState.ChatBubbleSettingState.SettingNotAvailable,
       ),
     ) {
       enableNotificationsReminderManager.snoozeNotificationReminderCalls.expectNoEvents()
@@ -137,7 +148,7 @@ class SettingsPresenterTest {
       TestEnableNotificationsReminderManager(),
       NoopNetworkCacheManager(),
       NoopUploadLanguagePreferenceToBackendUseCase(),
-      FakeFeatureManager2(false),
+      testGetChatIconAppStateUseCase(settingsDataStore),
     )
 
     settingsDataStore.setTheme(Theme.LIGHT)
@@ -147,7 +158,7 @@ class SettingsPresenterTest {
         languageOptions = Language.entries,
         selectedTheme = Theme.LIGHT,
         showNotificationReminder = false,
-        chatBubbleSetting = SettingsUiState.ChatBubbleSetting.FeatureDisabled,
+        SettingsUiState.ChatBubbleSettingState.SettingNotAvailable,
       ),
     ) {
       assertThat(awaitItem().selectedTheme).isEqualTo(Theme.LIGHT)
@@ -161,7 +172,7 @@ class SettingsPresenterTest {
   }
 
   @Test
-  fun `Chat bubble setting respecs the feature flag and the user preference`(
+  fun `Chat bubble setting respects the feature flag and the user preference`(
     @TestParameter isFeatureFlagEnabled: Boolean,
     @TestParameter initialUserPreference: Boolean,
   ) = runTest {
@@ -172,7 +183,7 @@ class SettingsPresenterTest {
       TestEnableNotificationsReminderManager(),
       NoopNetworkCacheManager(),
       NoopUploadLanguagePreferenceToBackendUseCase(),
-      FakeFeatureManager2(mapOf(Feature.CHAT_BUBBLE to isFeatureFlagEnabled)),
+      testGetChatIconAppStateUseCase(settingsDataStore, shouldShowChatIcon = true),
     )
     settingsDataStore.setChatBubbleSetting(initialUserPreference)
     settingsPresenter.test(
@@ -181,25 +192,26 @@ class SettingsPresenterTest {
         languageOptions = Language.entries,
         selectedTheme = null,
         showNotificationReminder = false,
-        chatBubbleSetting = if (isFeatureFlagEnabled) {
-          SettingsUiState.ChatBubbleSetting.FeatureEnabled(initialUserPreference)
+        chatBubbleSettingState = if (isFeatureFlagEnabled) {
+          SettingsUiState.ChatBubbleSettingState.SettingVisible(initialUserPreference)
         } else {
-          SettingsUiState.ChatBubbleSetting.FeatureDisabled
+          SettingsUiState.ChatBubbleSettingState.SettingNotAvailable
         },
       ),
     ) {
       if (isFeatureFlagEnabled) {
-        assertThat(awaitItem().chatBubbleSetting)
-          .isEqualTo(SettingsUiState.ChatBubbleSetting.FeatureEnabled(initialUserPreference))
+        assertThat(awaitItem().chatBubbleSettingState)
+          .isEqualTo(SettingsUiState.ChatBubbleSettingState.SettingVisible(initialUserPreference))
         expectNoEvents()
         sendEvent(SettingsEvent.SetChatBubblePreference(!initialUserPreference))
-        assertThat(awaitItem().chatBubbleSetting)
-          .isEqualTo(SettingsUiState.ChatBubbleSetting.FeatureEnabled(!initialUserPreference))
+        assertThat(awaitItem().chatBubbleSettingState)
+          .isEqualTo(SettingsUiState.ChatBubbleSettingState.SettingVisible(!initialUserPreference))
         sendEvent(SettingsEvent.SetChatBubblePreference(initialUserPreference))
-        assertThat(awaitItem().chatBubbleSetting)
-          .isEqualTo(SettingsUiState.ChatBubbleSetting.FeatureEnabled(initialUserPreference))
+        assertThat(awaitItem().chatBubbleSettingState)
+          .isEqualTo(SettingsUiState.ChatBubbleSettingState.SettingVisible(initialUserPreference))
       } else {
-        assertThat(awaitItem().chatBubbleSetting).isEqualTo(SettingsUiState.ChatBubbleSetting.FeatureDisabled)
+        assertThat(awaitItem().chatBubbleSettingState)
+          .isEqualTo(SettingsUiState.ChatBubbleSettingState.SettingNotAvailable)
         sendEvent(SettingsEvent.SetChatBubblePreference(true))
         expectNoEvents()
         sendEvent(SettingsEvent.SetChatBubblePreference(false))
@@ -215,4 +227,24 @@ private class NoopNetworkCacheManager : NetworkCacheManager {
 
 private class NoopUploadLanguagePreferenceToBackendUseCase : UploadLanguagePreferenceToBackendUseCase {
   override suspend fun invoke() {}
+}
+
+private fun testGetChatIconAppStateUseCase(
+  settingsDataStore: SettingsDataStore,
+  featureManager: FeatureManager = FakeFeatureManager2(true),
+  shouldShowChatIcon: Boolean = false,
+  chatLastMessageReadRepository: ChatLastMessageReadRepository = FakeChatLastMessageReadRepository().apply {
+    isNewestMessageNewerThanLastReadTimestamp.add(false)
+  },
+): GetChatIconAppStateUseCase {
+  return GetChatIconAppStateUseCaseImpl(
+    settingsDataStore = settingsDataStore,
+    featureManager = featureManager,
+    shouldShowChatIconUseCase = object : ShouldShowChatIconUseCase {
+      override fun invoke(): Flow<Boolean> {
+        return flowOf(shouldShowChatIcon)
+      }
+    },
+    chatLastMessageReadRepository = chatLastMessageReadRepository,
+  )
 }
