@@ -15,6 +15,10 @@ interface SettingsDataStore {
    * Returns if a specific [Theme] was explicitly chosen, otherwise null.
    */
   fun observeTheme(): Flow<Theme?>
+
+  suspend fun setSubscriptionPreference(subscribe: Boolean)
+
+  fun observeSubscriptionPreference(): Flow<Boolean>
 }
 
 class SettingsDataStoreImpl(
@@ -32,7 +36,23 @@ class SettingsDataStoreImpl(
     }
   }
 
+  override suspend fun setSubscriptionPreference(subscribe: Boolean) {
+    dataStore.edit {
+      it[subscriptionKey] = subscribe.toString()
+    }
+  }
+
+  override fun observeSubscriptionPreference(): Flow<Boolean> {
+    return dataStore.data.map { preferences ->
+      preferences[subscriptionKey]?.let {
+        it.toBoolean()
+      } ?: true
+      // here we assume that member is subscribed by default in customer.io
+    }
+  }
+
   companion object {
     private val themeKey = stringPreferencesKey("settings-theme")
+    private val subscriptionKey = stringPreferencesKey("settings-email-subscription")
   }
 }

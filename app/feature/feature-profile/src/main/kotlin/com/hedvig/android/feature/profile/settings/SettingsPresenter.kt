@@ -28,6 +28,7 @@ internal class SettingsPresenter(
   override fun MoleculePresenterScope<SettingsEvent>.present(lastState: SettingsUiState): SettingsUiState {
     var selectedLanguage by remember { mutableStateOf(lastState.selectedLanguage) }
     val selectedTheme = settingsDataStore.observeTheme().collectAsState(lastState.selectedTheme).value
+    val subscribed = settingsDataStore.observeSubscriptionPreference().collectAsState(lastState.subscribed).value
     val showNotificationReminder = enableNotificationsReminderManager
       .showNotificationReminder()
       .collectAsState(lastState.showNotificationReminder)
@@ -49,6 +50,13 @@ internal class SettingsPresenter(
         SettingsEvent.SnoozeNotificationPermissionReminder -> {
           launch { enableNotificationsReminderManager.snoozeNotificationReminder() }
         }
+
+        is SettingsEvent.ChangeSubscriptionPreference -> {
+          launch {
+            settingsDataStore.setSubscriptionPreference(event.subscribe)
+            // todo: toggle the mutation here
+          }
+        }
       }
     }
 
@@ -56,6 +64,7 @@ internal class SettingsPresenter(
       SettingsUiState.Loading(
         selectedLanguage = selectedLanguage,
         languageOptions = lastState.languageOptions,
+        subscribed = subscribed,
       )
     } else {
       SettingsUiState.Loaded(
@@ -63,6 +72,7 @@ internal class SettingsPresenter(
         languageOptions = lastState.languageOptions,
         selectedTheme = selectedTheme,
         showNotificationReminder = showNotificationReminder,
+        subscribed = subscribed,
       )
     }
   }
@@ -72,11 +82,13 @@ sealed interface SettingsUiState {
   val selectedLanguage: Language
   val languageOptions: List<Language>
   val selectedTheme: Theme?
+  val subscribed: Boolean
   val showNotificationReminder: Boolean?
 
   data class Loading(
     override val selectedLanguage: Language,
     override val languageOptions: List<Language>,
+    override val subscribed: Boolean,
   ) : SettingsUiState {
     override val selectedTheme: Theme? = null
     override val showNotificationReminder: Boolean? = null
@@ -87,6 +99,7 @@ sealed interface SettingsUiState {
     override val languageOptions: List<Language>,
     override val selectedTheme: Theme?,
     override val showNotificationReminder: Boolean,
+    override val subscribed: Boolean,
   ) : SettingsUiState
 }
 
@@ -94,6 +107,8 @@ sealed interface SettingsEvent {
   data class ChangeLanguage(val language: Language) : SettingsEvent
 
   data class ChangeTheme(val theme: Theme) : SettingsEvent
+
+  data class ChangeSubscriptionPreference(val subscribe: Boolean) : SettingsEvent
 
   data object SnoozeNotificationPermissionReminder : SettingsEvent
 }

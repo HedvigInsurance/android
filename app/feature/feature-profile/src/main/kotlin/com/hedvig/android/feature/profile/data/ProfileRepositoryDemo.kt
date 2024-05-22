@@ -30,4 +30,7 @@ internal class ProfileRepositoryDemo : ProfileRepository {
     phoneNumber = input
     demoMember
   }
+
+  override suspend fun updateEmailSubscriptionPreference(subscribe: Boolean) {
+  }
 }
