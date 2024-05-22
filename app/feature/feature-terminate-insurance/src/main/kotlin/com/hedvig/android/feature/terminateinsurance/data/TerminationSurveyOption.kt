@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 internal data class TerminationSurveyOption(
   val id: String,
+  val listIndex: Int,
   val title: String,
   val feedBackRequired: Boolean,
   val suggestion: SurveyOptionSuggestion?,

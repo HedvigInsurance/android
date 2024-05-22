@@ -6,6 +6,9 @@ plugins {
   alias(libs.plugins.serialization)
   alias(libs.plugins.squareSortDependencies)
 }
+android {
+  testOptions.unitTests.isReturnDefaultValues = true
+}
 
 dependencies {
   implementation(libs.androidx.activity.compose)

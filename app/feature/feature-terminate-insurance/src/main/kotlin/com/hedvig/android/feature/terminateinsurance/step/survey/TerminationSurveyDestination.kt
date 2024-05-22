@@ -116,11 +116,11 @@ internal fun TerminationSurveyDestination(
     selectOption = { option ->
       viewModel.emit(TerminationSurveyEvent.SelectOption(option))
     },
-    changeFeedbackForReason = { option, feedback ->
-      viewModel.emit(TerminationSurveyEvent.ChangeFeedbackForReason(option, feedback))
+    changeFeedbackForSelectedReason = { feedback ->
+      viewModel.emit(TerminationSurveyEvent.ChangeFeedbackForSelectedReason(feedback))
     },
     onCloseFullScreenEditText = {
-      viewModel.emit(TerminationSurveyEvent.ClearFullScreenEditText)
+      viewModel.emit(TerminationSurveyEvent.CloseFullScreenEditText)
     },
     onLaunchFullScreenEditText = {
       viewModel.emit(TerminationSurveyEvent.ShowFullScreenEditText(it))
@@ -139,7 +139,7 @@ private fun TerminationSurveyScreen(
   openUrl: (String) -> Unit,
   onCloseFullScreenEditText: () -> Unit,
   onLaunchFullScreenEditText: (option: TerminationSurveyOption) -> Unit,
-  changeFeedbackForReason: (option: TerminationSurveyOption, feedback: String?) -> Unit,
+  changeFeedbackForSelectedReason: (feedback: String?) -> Unit,
   onContinueClick: () -> Unit,
 ) {
   Box {
@@ -317,7 +317,7 @@ private fun TerminationSurveyScreen(
           disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
         ),
         onClick = onContinueClick,
-        isLoading = uiState.isNavigationStepLoading,
+        isLoading = uiState.navigationStepLoadingForReason != null,
       )
       Spacer(Modifier.height(16.dp))
     }
@@ -338,7 +338,7 @@ private fun TerminationSurveyScreen(
             ),
           onCancelClick = onCloseFullScreenEditText,
           onSaveClick = { newFeedback ->
-            changeFeedbackForReason(reason.surveyOption, newFeedback)
+            changeFeedbackForSelectedReason(newFeedback)
           },
         )
       }
@@ -510,7 +510,7 @@ private fun ShowSurveyScreenPreview(
         navigateUp = {},
         navigateToMovingFlow = {},
         closeTerminationFlow = {},
-        changeFeedbackForReason = { option, String ->
+        changeFeedbackForSelectedReason = { String ->
         },
         onContinueClick = {},
         onCloseFullScreenEditText = {},
@@ -541,13 +541,13 @@ private class ShowSurveyUiStateProvider :
     listOf(
       TerminationSurveyState(
         nextNavigationStep = null,
-        isNavigationStepLoading = false,
+        navigationStepLoadingForReason = null,
         selectedOption = previewReason1.surveyOption,
         reasons = listOf(previewReason1, previewReason2, previewReason3),
       ),
       TerminationSurveyState(
         nextNavigationStep = null,
-        isNavigationStepLoading = false,
+        navigationStepLoadingForReason = null,
         selectedOption = previewReason3.surveyOption,
         reasons = listOf(previewReason1, previewReason2, previewReason3),
       ),
@@ -567,7 +567,7 @@ private class ShowSurveyUiStateProvider :
 //      ),
       TerminationSurveyState(
         nextNavigationStep = null,
-        isNavigationStepLoading = false,
+        navigationStepLoadingForReason = null,
         errorWhileLoadingNextStep = true,
         selectedOption = previewReason2.surveyOption,
         reasons = listOf(previewReason1, previewReason2filled, previewReason3),
@@ -586,6 +586,7 @@ private val previewReason1 = TerminationReason(
         subOptions = listOf(),
         suggestion = null,
         feedBackRequired = false,
+        listIndex = 0,
       ),
       TerminationSurveyOption(
         id = "12",
@@ -593,6 +594,7 @@ private val previewReason1 = TerminationReason(
         subOptions = listOf(),
         suggestion = null,
         feedBackRequired = false,
+        listIndex = 1,
       ),
       TerminationSurveyOption(
         id = "23",
@@ -600,10 +602,12 @@ private val previewReason1 = TerminationReason(
         subOptions = listOf(),
         suggestion = null,
         feedBackRequired = true,
+        listIndex = 2,
       ),
     ),
     suggestion = SurveyOptionSuggestion.Action.UpdateAddress,
     feedBackRequired = true,
+    listIndex = 0,
   ),
   null,
 )
@@ -615,6 +619,7 @@ private val previewReason2 = TerminationReason(
     subOptions = listOf(),
     suggestion = null,
     feedBackRequired = true,
+    listIndex = 1,
   ),
   "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla nec nisi eget mi luctus suscipit. Donec at vestibulum turpis.",
 )
@@ -626,6 +631,7 @@ private val previewReason2filled = TerminationReason(
     subOptions = listOf(),
     suggestion = null,
     feedBackRequired = true,
+    listIndex = 2,
   ),
   "Got a great all included offer from If",
 )
@@ -641,6 +647,7 @@ private val previewReason3 = TerminationReason(
         subOptions = listOf(),
         suggestion = null,
         feedBackRequired = true,
+        listIndex = 0,
       ),
       TerminationSurveyOption(
         id = "32",
@@ -648,6 +655,7 @@ private val previewReason3 = TerminationReason(
         subOptions = listOf(),
         suggestion = null,
         feedBackRequired = true,
+        listIndex = 1,
       ),
     ),
     suggestion = SurveyOptionSuggestion.Redirect(
@@ -656,6 +664,7 @@ private val previewReason3 = TerminationReason(
       "Click here to do it",
     ),
     feedBackRequired = false,
+    listIndex = 3,
   ),
   null,
 )

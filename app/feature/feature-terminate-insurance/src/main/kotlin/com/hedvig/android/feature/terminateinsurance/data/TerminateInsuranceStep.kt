@@ -66,6 +66,7 @@ private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentSte
     TerminationSurveyOption(
       id = it.id,
       title = it.title,
+      listIndex = this.indexOf(it),
       feedBackRequired = it.feedBack != null,
       subOptions = it.subOptions?.toSubOptionList() ?: listOf(),
       suggestion = it.suggestion?.toSuggestion(),
@@ -80,6 +81,7 @@ private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentSte
       title = it.title,
       feedBackRequired = it.feedBack != null,
       subOptions = listOf(),
+      listIndex = this.indexOf(it),
       suggestion = it.suggestion?.toSuggestion(),
     )
   }

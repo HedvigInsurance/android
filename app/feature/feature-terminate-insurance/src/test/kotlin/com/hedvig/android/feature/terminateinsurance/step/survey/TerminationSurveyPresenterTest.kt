@@ -2,8 +2,11 @@ package com.hedvig.android.feature.terminateinsurance.step.survey
 
 import app.cash.turbine.Turbine
 import arrow.core.Either
+import arrow.core.right
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import assertk.assertions.isNotNull
+import assertk.assertions.isNull
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.terminateinsurance.InsuranceId
 import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion
@@ -28,6 +31,7 @@ class TerminationSurveyPresenterTest {
       feedBackRequired = false,
       title = "I'm moving",
       subOptions = listOf(),
+      listIndex = 0,
       suggestion = SurveyOptionSuggestion.Action.UpdateAddress,
     ),
     TerminationSurveyOption(
@@ -35,9 +39,10 @@ class TerminationSurveyPresenterTest {
       title = " I no longer need insurance",
       feedBackRequired = false,
       suggestion = null,
+      listIndex = 1,
       subOptions = listOf(
-        TerminationSurveyOption("id2-2", "I have moved abroad", feedBackRequired = false, null, listOf()),
-        TerminationSurveyOption("id2-1", "Other reason", feedBackRequired = true, null, listOf()),
+        TerminationSurveyOption("id2-2", 0, "I have moved abroad", feedBackRequired = false, null, listOf()),
+        TerminationSurveyOption("id2-1", 1, "Other reason", feedBackRequired = true, null, listOf()),
       ),
     ),
     TerminationSurveyOption(
@@ -45,6 +50,15 @@ class TerminationSurveyPresenterTest {
       title = "- I got a better offer elsewhere",
       feedBackRequired = true,
       suggestion = null,
+      listIndex = 2,
+      subOptions = listOf(),
+    ),
+    TerminationSurveyOption(
+      id = "id4",
+      title = "Other reason",
+      feedBackRequired = true,
+      suggestion = null,
+      listIndex = 3,
       subOptions = listOf(),
     ),
   )
@@ -57,12 +71,130 @@ class TerminationSurveyPresenterTest {
       repository,
     )
     presenter.test(initialState = TerminationSurveyState()) {
-      assertThat(awaitItem()).isEqualTo(TerminationSurveyState())
-//      awaitItem()
-//      sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[3]))
-//      awaitItem()
-//      sendEvent(TerminationSurveyEvent.ShowFullScreenEditText(listOfOptionsForHome[3]))
-//      assertThat(awaitItem().showFullScreenEditText?.surveyOption).isEqualTo(listOfOptionsForHome[3])
+      assertThat(awaitItem().reasons.map { it.surveyOption }).isEqualTo(listOfOptionsForHome)
+      sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[3]))
+      awaitItem()
+      sendEvent(TerminationSurveyEvent.ShowFullScreenEditText(listOfOptionsForHome[3]))
+      assertThat(awaitItem().showFullScreenEditText?.surveyOption).isEqualTo(listOfOptionsForHome[3])
+    }
+  }
+
+  @Test
+  fun `if full screen input field is dismissed do not show full screen input field`() = runTest {
+    val repository = FakeTerminateInsuranceRepository()
+    val presenter = TerminationSurveyPresenter(
+      listOfOptionsForHome,
+      repository,
+    )
+    presenter.test(initialState = TerminationSurveyState()) {
+      awaitItem()
+      sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[3]))
+      awaitItem()
+      sendEvent(TerminationSurveyEvent.ShowFullScreenEditText(listOfOptionsForHome[3]))
+      assertThat(awaitItem().showFullScreenEditText).isNotNull()
+      sendEvent(TerminationSurveyEvent.CloseFullScreenEditText)
+      assertThat(awaitItem().showFullScreenEditText).isNull()
+    }
+  }
+
+  @Test
+  fun `the received options are displayed in the correct order`() = runTest {
+    val repository = FakeTerminateInsuranceRepository()
+    val presenter = TerminationSurveyPresenter(
+      listOfOptionsForHome,
+      repository,
+    )
+    presenter.test(initialState = TerminationSurveyState()) {
+      assertThat(awaitItem().reasons.map { it.surveyOption }).isEqualTo(listOfOptionsForHome)
+    }
+  }
+
+  @Test
+  fun `if feedback for a reason is changed the right reason is updated with the new feedback`() = runTest {
+    val repository = FakeTerminateInsuranceRepository()
+    val presenter = TerminationSurveyPresenter(
+      listOfOptionsForHome,
+      repository,
+    )
+    presenter.test(initialState = TerminationSurveyState()) {
+      awaitItem()
+      sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[3]))
+      awaitItem()
+      sendEvent(TerminationSurveyEvent.ChangeFeedbackForSelectedReason("new feedback!"))
+      assertThat(
+        awaitItem().reasons.first { it.surveyOption == listOfOptionsForHome[3] }.feedBack,
+      ).isEqualTo("new feedback!")
+      sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[2]))
+      awaitItem()
+      sendEvent(TerminationSurveyEvent.ChangeFeedbackForSelectedReason("new feedback22!"))
+      assertThat(
+        awaitItem().reasons.first {
+          it.surveyOption == listOfOptionsForHome[2]
+        }.feedBack,
+      ).isEqualTo("new feedback22!")
+    }
+  }
+
+  @Test
+  fun `when survey is submitted the right option with the right feedback is submitted`() = runTest {
+    val repository = FakeTerminateInsuranceRepository()
+    val presenter = TerminationSurveyPresenter(
+      listOfOptionsForHome,
+      repository,
+    )
+    val nextStep = TerminateInsuranceStep.TerminateInsuranceDate(
+      LocalDate(2024, 6, 1),
+      LocalDate(2024, 6, 29),
+    )
+    presenter.test(initialState = TerminationSurveyState()) {
+      awaitItem()
+      sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[3]))
+      awaitItem()
+      sendEvent(TerminationSurveyEvent.ChangeFeedbackForSelectedReason("entirely new feedback"))
+      awaitItem()
+      sendEvent(TerminationSurveyEvent.Continue)
+      assertThat(
+        awaitItem().navigationStepLoadingForReason,
+      ).isEqualTo(TerminationReason(listOfOptionsForHome[3], "entirely new feedback"))
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `when survey is submitted for option with no subOptions navigate to nex termination step`() = runTest {
+    val repository = FakeTerminateInsuranceRepository()
+    val presenter = TerminationSurveyPresenter(
+      listOfOptionsForHome,
+      repository,
+    )
+    val nextStep = TerminateInsuranceStep.TerminateInsuranceDate(
+      LocalDate(2024, 6, 1),
+      LocalDate(2024, 6, 29),
+    )
+    presenter.test(initialState = TerminationSurveyState()) {
+      awaitItem()
+      sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[3]))
+      awaitItem()
+      sendEvent(TerminationSurveyEvent.Continue)
+      awaitItem()
+      repository.terminationFlowTurbine.add(nextStep.right())
+      assertThat(awaitItem().nextNavigationStep).isEqualTo(SurveyNavigationStep.NavigateToNextTerminationStep(nextStep))
+    }
+  }
+
+  @Test
+  fun `when survey is submitted for option with subOptions navigate to next survey screen`() = runTest {
+    val repository = FakeTerminateInsuranceRepository()
+    val presenter = TerminationSurveyPresenter(
+      listOfOptionsForHome,
+      repository,
+    )
+    presenter.test(initialState = TerminationSurveyState()) {
+      awaitItem()
+      sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[1]))
+      awaitItem()
+      sendEvent(TerminationSurveyEvent.Continue)
+      assertThat(awaitItem().nextNavigationStep).isEqualTo(SurveyNavigationStep.NavigateToSubOptions)
     }
   }
 }
