@@ -11,6 +11,8 @@ import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepo
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 import com.hedvig.android.feature.terminateinsurance.data.TerminationReason
 import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -98,6 +100,7 @@ internal class TerminationSurveyPresenter(
           .submitReasonForCancelling(reasonToSubmit)
           .fold(
             ifLeft = {
+              logcat(LogPriority.WARN) { "Received error on submitting reason for termination" }
               loadNextStep = false
               currentState.copy(
                 navigationStepLoadingForReason = null,
@@ -105,6 +108,9 @@ internal class TerminationSurveyPresenter(
               )
             },
             ifRight = { step ->
+              logcat(priority = LogPriority.INFO) {
+                "Successfully submitted reason for termination: $reasonToSubmit and received next step: $step"
+              }
               loadNextStep = false
               currentState.copy(
                 navigationStepLoadingForReason = null,
