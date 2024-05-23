@@ -1,11 +1,13 @@
 package com.hedvig.android.feature.help.center.home
 
+import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.VisibilityThreshold
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -26,7 +28,6 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
@@ -70,8 +71,8 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import arrow.core.toNonEmptyListOrNull
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.designsystem.material3.infoContainer
 import com.hedvig.android.core.designsystem.material3.onInfoContainer
 import com.hedvig.android.core.designsystem.material3.onTypeContainer
@@ -131,8 +132,8 @@ internal fun HelpCenterHomeDestination(
     openChat = openChat,
     onNavigateUp = onNavigateUp,
     search = uiState.search,
-    onSearchChange = { query ->
-      viewModel.emit(HelpCenterEvent.SearchForQuery(query))
+    onUpdateSearchResults = { helpSearchResults ->
+      viewModel.emit(HelpCenterEvent.UpdateSearchResults(helpSearchResults))
     },
     onClearSearch = {
       viewModel.emit(HelpCenterEvent.ClearSearchQuery)
@@ -154,7 +155,7 @@ private fun HelpCenterHomeScreen(
   onDismissQuickActionDialog: () -> Unit,
   openChat: () -> Unit,
   onNavigateUp: () -> Unit,
-  onSearchChange: (String) -> Unit,
+  onUpdateSearchResults: (HelpCenterUiState.HelpSearchResults?) -> Unit,
   onClearSearch: () -> Unit,
 ) {
   when (selectedQuickAction) {
@@ -179,7 +180,7 @@ private fun HelpCenterHomeScreen(
     null -> {}
   }
   var searchQuery by remember {
-    mutableStateOf(search?.query)
+    mutableStateOf<String?>(null)
   }
   val focusRequester = remember { FocusRequester() }
   val focusManager = LocalFocusManager.current
@@ -198,6 +199,7 @@ private fun HelpCenterHomeScreen(
         onClick = onNavigateUp,
       )
       Spacer(modifier = Modifier.height(8.dp))
+      val context = LocalContext.current
       SearchField(
         searchQuery = searchQuery,
         focusRequester = focusRequester,
@@ -212,12 +214,20 @@ private fun HelpCenterHomeScreen(
             onClearSearch()
           } else {
             searchQuery = it
+            val results = searchForQuery(
+              query = it,
+              context = context,
+              quickLinksForSearch = (
+                quickLinksUiState as?
+                  HelpCenterUiState.QuickLinkUiState.QuickLinks
+              )?.quickLinks ?: listOf(),
+            )
+            onUpdateSearchResults(results)
           }
         },
         onKeyboardAction = {
           searchQuery?.let {
             focusManager.clearFocus()
-            onSearchChange(it)
           }
         },
         onClearSearch = {
@@ -229,10 +239,18 @@ private fun HelpCenterHomeScreen(
       Column(
         modifier = Modifier
           .fillMaxSize()
-          .imePadding()
           .verticalScroll(rememberScrollState()),
       ) {
-        AnimatedContent(targetState = search) { animatedSearch ->
+        AnimatedContent(
+          targetState = search,
+          transitionSpec = {
+            (
+              fadeIn(
+                animationSpec = tween(220, delayMillis = 90),
+              )
+            ).togetherWith(fadeOut(animationSpec = tween(90)))
+          },
+        ) { animatedSearch ->
           if (animatedSearch == null) {
             Column {
               Spacer(Modifier.height(32.dp))
@@ -354,15 +372,6 @@ private fun SearchResults(
       }
     }
 
-    HelpCenterUiState.ActiveSearchState.Loading -> {
-      Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-      ) {
-        HedvigFullScreenCenterAlignedProgress()
-      }
-    }
-
     is HelpCenterUiState.ActiveSearchState.Success -> {
       Column(
         Modifier.padding(
@@ -395,6 +404,7 @@ private fun SearchResults(
             itemText = { resources.getString(it.questionRes) },
             onClickItem = { onNavigateToQuestion(it) },
           )
+          Spacer(Modifier.height(32.dp))
         }
       }
     }
@@ -611,6 +621,37 @@ private fun QuickLinkCard(
   }
 }
 
+private fun searchForQuery(
+  query: String,
+  quickLinksForSearch: List<HelpCenterUiState.QuickLink>,
+  context: Context,
+): HelpCenterUiState.HelpSearchResults? {
+  val resultsInQuickLinks =
+    buildList {
+      for (link in quickLinksForSearch) {
+        val title = context.getString(link.quickAction.titleRes).lowercase()
+        val hint = context.getString(link.quickAction.hintTextRes).lowercase()
+        if (title.contains(query) || hint.contains(query)) {
+          add(link)
+        }
+      }
+    }.toNonEmptyListOrNull()
+  val resultsInQuestions = buildList {
+    Question.entries.forEach {
+      val answer = context.getString(it.answerRes).lowercase()
+      val question = context.getString(it.questionRes).lowercase()
+      if (answer.contains(query) || question.contains(query)) {
+        add(it)
+      }
+    }
+  }.toNonEmptyListOrNull()
+  return if (resultsInQuestions == null && resultsInQuickLinks == null) {
+    null
+  } else {
+    HelpCenterUiState.HelpSearchResults(resultsInQuickLinks, resultsInQuestions)
+  }
+}
+
 @HedvigPreview
 @Composable
 private fun PreviewHelpCenterHomeScreen(
@@ -631,7 +672,7 @@ private fun PreviewHelpCenterHomeScreen(
         onNavigateUp = {},
         quickLinksUiState = quickLinksUiState,
         onClearSearch = {},
-        onSearchChange = {},
+        onUpdateSearchResults = {},
         search = null,
 //        search = HelpCenterUiState.Search(
 //          "dubadee",
@@ -682,7 +723,7 @@ private fun PreviewQuickLinkAnimations() {
             onNavigateUp = {},
             quickLinksUiState = quickLinkUiState,
             onClearSearch = {},
-            onSearchChange = {},
+            onUpdateSearchResults = {},
             search = null,
           )
         },
