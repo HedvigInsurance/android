@@ -16,6 +16,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -54,6 +55,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -61,6 +64,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.IntSize
@@ -68,8 +72,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
-import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
-import com.hedvig.android.core.designsystem.component.textfield.HedvigTextFieldDefaults
 import com.hedvig.android.core.designsystem.material3.infoContainer
 import com.hedvig.android.core.designsystem.material3.onInfoContainer
 import com.hedvig.android.core.designsystem.material3.onTypeContainer
@@ -81,6 +83,7 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.dialog.MultiSelectDialog
+import com.hedvig.android.core.ui.layout.LayoutWithoutPlacement
 import com.hedvig.android.core.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
 import com.hedvig.android.feature.help.center.HelpCenterEvent
 import com.hedvig.android.feature.help.center.HelpCenterUiState
@@ -181,25 +184,28 @@ private fun HelpCenterHomeScreen(
   val focusRequester = remember { FocusRequester() }
   val focusManager = LocalFocusManager.current
   Surface(
-      color = MaterialTheme.colorScheme.background,
-      modifier = Modifier.clickable(
-          indication = null,
-          interactionSource = remember { MutableInteractionSource() },
-      ) {
-          focusManager.clearFocus() // clearing focus for search textField
-      },
+    color = MaterialTheme.colorScheme.background,
+    modifier = Modifier.clickable(
+      indication = null,
+      interactionSource = remember { MutableInteractionSource() },
+    ) {
+      focusManager.clearFocus() // clearing focus for search textField
+    },
   ) {
     Column(Modifier.fillMaxSize()) {
       TopAppBarWithBack(
         title = stringResource(id = R.string.HC_TITLE),
         onClick = onNavigateUp,
       )
+      Spacer(modifier = Modifier.height(8.dp))
       SearchField(
         searchQuery = searchQuery,
         focusRequester = focusRequester,
         modifier = Modifier
           .padding(horizontal = 16.dp)
-            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+          .windowInsetsPadding(
+            WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
+          ),
         onSearchChange = {
           if (it.isEmpty()) {
             searchQuery = null
@@ -222,28 +228,28 @@ private fun HelpCenterHomeScreen(
       Spacer(Modifier.height(16.dp))
       Column(
         modifier = Modifier
-            .fillMaxSize()
-            .imePadding()
-            .verticalScroll(rememberScrollState()),
+          .fillMaxSize()
+          .imePadding()
+          .verticalScroll(rememberScrollState()),
       ) {
         AnimatedContent(targetState = search) { animatedSearch ->
           if (animatedSearch == null) {
             Column {
-              Spacer(Modifier.height(50.dp))
+              Spacer(Modifier.height(32.dp))
               Image(
                 painter = painterResource(id = R.drawable.pillow_hedvig),
                 contentDescription = null,
                 modifier = Modifier
-                    .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
-                    .size(170.dp)
-                    .align(Alignment.CenterHorizontally),
+                  .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+                  .size(170.dp)
+                  .align(Alignment.CenterHorizontally),
               )
               Spacer(Modifier.height(50.dp))
               Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier
-                    .padding(horizontal = 20.dp)
-                    .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+                  .padding(horizontal = 20.dp)
+                  .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
               ) {
                 Text(stringResource(id = R.string.HC_HOME_VIEW_QUESTION))
                 Text(
@@ -274,9 +280,9 @@ private fun HelpCenterHomeScreen(
                         HedvigCard(
                           onClick = { onNavigateToTopic(topic) },
                           modifier = Modifier
-                              .fillMaxWidth()
-                              .padding(horizontal = 16.dp)
-                              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
                         ) {
                           Text(stringResource(topic.titleRes), Modifier.padding(16.dp))
                         }
@@ -310,7 +316,8 @@ private fun HelpCenterHomeScreen(
                 searchQuery = null
                 onClearSearch()
               },
-              onNavigateToQuestion, onQuickActionsSelected
+              onNavigateToQuestion,
+              onQuickActionsSelected,
             )
           }
         }
@@ -403,101 +410,91 @@ private fun SearchField(
   onSearchChange: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  Row (
+  Row(
     modifier = modifier
       .fillMaxWidth()
       .height(40.dp)
       .background(
         color = MaterialTheme.colorScheme.surface,
-        shape = MaterialTheme.shapes.squircleMedium)
+        shape = MaterialTheme.shapes.squircleMedium,
+      ),
   ) {
     BasicTextField(
       value = searchQuery ?: "",
       onValueChange = onSearchChange,
+      cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
       modifier = modifier
         .fillMaxWidth()
-        .padding(horizontal = 16.dp)
         .focusRequester(focusRequester),
-//      colors = HedvigTextFieldDefaults.colors(
-//        typingHighlightColor = MaterialTheme.colorScheme.surface,
-//      ),
+      textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
       keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
       keyboardActions = KeyboardActions(
         onAny = {
           onKeyboardAction()
         },
       ),
-
-//      placeholder = {
-//        Text(
-//          text = "Search", // todo: remove hardcode
-//          style = MaterialTheme.typography.bodyLarge.copy(color = LocalContentColor.current),
-//          modifier = Modifier.alpha(0.60f),
-//        )
-//      },
-//      leadingIcon = {
-//        Icon(
-//          Icons.Default.Search,
-//          contentDescription = null,
-//          modifier = Modifier.alpha(0.60f),
-//        )
-//      },
-//      trailingIcon = {
-//        if (searchQuery != null) {
-//          Icon(
-//            Icons.Default.Clear,
-//            contentDescription = null,
-//            modifier = Modifier.clickable {
-//              onClearSearch()
-//            },
-//          )
-//        }
-//      },
+      decorationBox = { innerTextField ->
+        Row(
+          Modifier
+            .fillMaxSize(),
+          horizontalArrangement = Arrangement.Start,
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
+          Icon(
+            Icons.Default.Search,
+            contentDescription = null,
+            modifier = Modifier
+              .alpha(0.60f)
+              .padding(8.dp),
+          )
+          Box(
+            modifier = Modifier
+              .weight(1f)
+              .padding(horizontal = 4.dp),
+          ) {
+            if (searchQuery.isNullOrEmpty()) {
+              Text(
+                text = "Search", // todo: remove hardcode
+                style = MaterialTheme.typography.bodyLarge.copy(color = LocalContentColor.current),
+                modifier = Modifier
+                  .alpha(0.60f),
+              )
+            }
+            innerTextField()
+          }
+          LayoutWithoutPlacement(
+            sizeAdjustingContent = {
+              ClearSearchIcon(
+                onClearSearch,
+                tint = MaterialTheme.colorScheme.onSurface,
+              )
+            },
+          ) {
+            if (!searchQuery.isNullOrEmpty()) {
+              ClearSearchIcon(
+                onClearSearch,
+                tint = MaterialTheme.colorScheme.onSurface,
+              )
+            }
+          }
+        }
+      },
     )
   }
+}
 
-//  HedvigTextField(
-//    modifier = modifier
-//        .fillMaxWidth()
-//        .padding(horizontal = 16.dp)
-//        .focusRequester(focusRequester),
-//    value = searchQuery ?: "",
-//    colors = HedvigTextFieldDefaults.colors(
-//      typingHighlightColor = MaterialTheme.colorScheme.surface,
-//    ),
-//    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-//    keyboardActions = KeyboardActions(
-//      onAny = {
-//        onKeyboardAction()
-//      },
-//    ),
-//    onValueChange = onSearchChange,
-//    placeholder = {
-//      Text(
-//        text = "Search", // todo: remove hardcode
-//        style = MaterialTheme.typography.bodyLarge.copy(color = LocalContentColor.current),
-//        modifier = Modifier.alpha(0.60f),
-//      )
-//    },
-//    leadingIcon = {
-//      Icon(
-//        Icons.Default.Search,
-//        contentDescription = null,
-//        modifier = Modifier.alpha(0.60f),
-//      )
-//    },
-//    trailingIcon = {
-//      if (searchQuery != null) {
-//        Icon(
-//          Icons.Default.Clear,
-//          contentDescription = null,
-//          modifier = Modifier.clickable {
-//            onClearSearch()
-//          },
-//        )
-//      }
-//    },
-//  )
+@Composable
+private fun ClearSearchIcon(onClearSearch: () -> Unit, tint: Color) {
+  Icon(
+    Icons.Default.Clear,
+    contentDescription = null,
+    tint = tint,
+    modifier = Modifier
+      .clickable {
+        onClearSearch()
+      }
+      .padding(8.dp),
+  )
 }
 
 private val QuickLinksSectionEnterTransition = fadeIn() + expandVertically(
@@ -600,9 +597,9 @@ private fun QuickLinkCard(
   HedvigCard(
     onClick = onClick,
     modifier = modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp)
-        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+      .fillMaxWidth()
+      .padding(horizontal = 16.dp)
+      .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
   ) {
     Column(
       verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -725,3 +722,9 @@ private class QuickLinkUiStatePreviewProvider :
       ),
     ),
   )
+
+@Preview
+@Composable
+private fun SearchFieldPreview() {
+  SearchField("travel", FocusRequester(), {}, {}, {})
+}

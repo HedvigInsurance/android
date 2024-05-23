@@ -47,13 +47,14 @@ internal fun <T> HelpCenterSectionWithClickableRows(
             verticalArrangement = Arrangement.spacedBy(4.dp),
             modifier = Modifier.clickable { onClickItem(question) }
               .padding(vertical = 16.dp, horizontal = 16.dp)
-              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
           ) {
             Text(
               text = itemText(question),
               modifier = Modifier
-                .fillMaxWidth())
-            if (itemSubtitle!=null) {
+                .fillMaxWidth(),
+            )
+            if (itemSubtitle != null) {
               Text(
                 text = itemSubtitle(question),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -64,12 +65,11 @@ internal fun <T> HelpCenterSectionWithClickableRows(
             }
           }
 
-            HorizontalDivider(
-              Modifier
-                .padding(horizontal = 16.dp)
-                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-            )
-
+          HorizontalDivider(
+            Modifier
+              .padding(horizontal = 16.dp)
+              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+          )
         }
       }
     },
