@@ -42,6 +42,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -190,7 +191,7 @@ private fun HelpCenterHomeScreen(
       indication = null,
       interactionSource = remember { MutableInteractionSource() },
     ) {
-      focusManager.clearFocus() // clearing focus for search textField
+      focusManager.clearFocus()
     },
   ) {
     Column(Modifier.fillMaxSize()) {
@@ -495,16 +496,15 @@ private fun SearchField(
 
 @Composable
 private fun ClearSearchIcon(onClearSearch: () -> Unit, tint: Color) {
-  Icon(
-    Icons.Default.Clear,
-    contentDescription = null,
-    tint = tint,
-    modifier = Modifier
-      .clickable {
-        onClearSearch()
-      }
-      .padding(8.dp),
-  )
+  IconButton(
+    onClick = onClearSearch,
+  ) {
+    Icon(
+      Icons.Default.Clear,
+      contentDescription = null,
+      tint = tint,
+    )
+  }
 }
 
 private val QuickLinksSectionEnterTransition = fadeIn() + expandVertically(
@@ -674,28 +674,6 @@ private fun PreviewHelpCenterHomeScreen(
         onClearSearch = {},
         onUpdateSearchResults = {},
         search = null,
-//        search = HelpCenterUiState.Search(
-//          "dubadee",
-//          HelpCenterUiState.ActiveSearchState.Success(
-//            HelpCenterUiState.HelpSearchResults(
-//              nonEmptyListOf(
-//                HelpCenterUiState.QuickLink(
-//                  QuickAction.StandaloneQuickLink(
-//                    quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkTravelCertificate,
-//                    titleRes = R.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE,
-//                    hintTextRes = R.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE_SUBTITLE,
-//                  ),
-//                ),
-//              ),
-//              nonEmptyListOf(
-//                Question.CLAIMS_Q6,
-//                Question.CLAIMS_Q9,
-//                Question.COVERAGE_Q5,
-//                Question.OTHER_Q4,
-//              ),
-//            ),
-//          ),
-//        ),
       )
     }
   }
