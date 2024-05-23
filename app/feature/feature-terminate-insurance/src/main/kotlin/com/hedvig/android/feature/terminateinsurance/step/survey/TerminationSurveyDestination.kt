@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -49,6 +50,7 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.LineBreak
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -264,7 +266,7 @@ private fun TerminationSurveyScreen(
                   ),
                   modifier = Modifier
                     .fillMaxWidth()
-                    .heightIn(100.dp)
+                    .requiredHeight(100.dp)
                     .padding(horizontal = 16.dp),
                 ) {
                   Column {
@@ -275,6 +277,7 @@ private fun TerminationSurveyScreen(
                         .padding(start = 16.dp, top = 10.dp, end = 16.dp),
                     ) {
                       Text(
+                        overflow = TextOverflow.Ellipsis,
                         text = feedback ?: stringResource(id = R.string.TERMINATION_SURVEY_FEEDBACK_HINT),
                         style = MaterialTheme.typography.bodyLarge,
                         color = if (feedback != null) {
@@ -286,19 +289,6 @@ private fun TerminationSurveyScreen(
                       )
                     }
                     Spacer(modifier = Modifier.weight(1f))
-                    Row(
-                      horizontalArrangement = Arrangement.End,
-                      modifier = Modifier
-                        .fillMaxSize()
-                        .padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
-                    ) {
-                      val length = feedback?.length ?: 0
-                      Text(
-                        text = "$length/140",
-                        style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                      )
-                    }
                   }
                 }
                 Spacer(modifier = (Modifier.height(4.dp)))
@@ -382,7 +372,7 @@ private fun FullScreenEditableText(
         BasicTextField(
           value = textValue,
           onValueChange = {
-            textValue = it.ofMaxLength(140)
+            textValue = it.ofMaxLength(2000)
           },
           cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
           modifier = Modifier
@@ -430,7 +420,7 @@ private fun FullScreenEditableText(
                   .padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
               ) {
                 Text(
-                  text = "${textValue.text.length}/140",
+                  text = "${textValue.text.length}/2000",
                   style = MaterialTheme.typography.titleSmall,
                   color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
