@@ -36,6 +36,7 @@ import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenC
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.clearFocusOnTap
+import com.hedvig.android.core.ui.dialog.HedvigAlertDialog
 import com.hedvig.android.core.ui.dialog.SingleSelectDialog
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.language.Language
@@ -63,6 +64,9 @@ internal fun SettingsDestination(
     onLanguageSelected = { viewModel.emit(SettingsEvent.ChangeLanguage(it)) },
     onThemeSelected = { viewModel.emit(SettingsEvent.ChangeTheme(it)) },
     onTerminateAccountClicked = onNavigateToDeleteAccountFeature,
+    changeSubscriptionPreference = {
+      viewModel.emit(SettingsEvent.ChangeSubscriptionPreference(it))
+    },
   )
 }
 
@@ -71,6 +75,7 @@ private fun SettingsScreen(
   uiState: SettingsUiState,
   notificationPermissionState: NotificationPermissionState,
   navigateUp: () -> Unit,
+  changeSubscriptionPreference: (Boolean) -> Unit,
   openAppSettings: () -> Unit,
   onNotificationInfoDismissed: () -> Unit,
   onLanguageSelected: (Language) -> Unit,
@@ -128,6 +133,16 @@ private fun SettingsScreen(
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         )
+        Spacer(Modifier.height(4.dp))
+        SubscriptionWithDialog(
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+          onConfirmUnsubscribeClick = { changeSubscriptionPreference(false) },
+          onSubscribeClick = { changeSubscriptionPreference(true) },
+          subscribed = uiState.subscribed ?: true,
+          enabled = true,
+        )
         Spacer(Modifier.height(16.dp))
 
         AnimatedVisibility(
@@ -169,6 +184,7 @@ fun PreviewSettingsScreen() {
           languageOptions = listOf(Language.SV_SE, Language.EN_SE),
           selectedTheme = Theme.SYSTEM_DEFAULT,
           showNotificationReminder = true,
+          subscribed = true,
         ),
         notificationPermissionState = object : NotificationPermissionState {
           override val showDialog = false
@@ -186,6 +202,7 @@ fun PreviewSettingsScreen() {
         onLanguageSelected = {},
         onThemeSelected = {},
         onTerminateAccountClicked = {},
+        changeSubscriptionPreference = {},
       )
     }
   }
@@ -217,6 +234,44 @@ internal fun LanguageWithDialog(
     onClick = { showLanguagePickerDialog = true },
     hintText = stringResource(id = R.string.language_picker_modal_title),
     inputText = context.getString(selectedLanguage.label),
+    enabled = enabled,
+    modifier = modifier,
+  )
+}
+
+@Composable
+internal fun SubscriptionWithDialog(
+  onConfirmUnsubscribeClick: () -> Unit,
+  onSubscribeClick: () -> Unit,
+  subscribed: Boolean,
+  enabled: Boolean,
+  modifier: Modifier = Modifier,
+) {
+  var showLanguagePickerDialog by rememberSaveable { mutableStateOf(false) }
+  if (showLanguagePickerDialog) {
+    HedvigAlertDialog(
+      title = stringResource(R.string.SETTINGS_SCREEN_EMAIL_PREFERENCES),
+      text = stringResource(R.string.SETTINGS_SCREEN_UNSUBSCRIBE_DESCRIPTION),
+      onConfirmClick = onConfirmUnsubscribeClick,
+      onDismissRequest = { showLanguagePickerDialog = false },
+      confirmButtonLabel = stringResource(R.string.SETTINGS_SCREEN_CONFIRM_UNSUBSCRIBE),
+      dismissButtonLabel = stringResource(R.string.general_close_button),
+    )
+  }
+  HedvigBigCard(
+    onClick = {
+      if (subscribed) {
+        showLanguagePickerDialog = true
+      } else {
+        onSubscribeClick()
+      }
+    },
+    hintText = stringResource(id = R.string.SETTINGS_SCREEN_EMAIL_PREFERENCES),
+    inputText = if (subscribed) {
+      stringResource(id = R.string.GENERAL_SUBSCRIBED)
+    } else {
+      stringResource(id = R.string.GENERAL_UNSUBSCRIBED)
+    },
     enabled = enabled,
     modifier = modifier,
   )

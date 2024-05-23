@@ -9,6 +9,4 @@ internal interface ProfileRepository {
   suspend fun updateEmail(input: String): Either<OperationResult.Error, ProfileData.Member>
 
   suspend fun updatePhoneNumber(input: String): Either<OperationResult.Error, ProfileData.Member>
-
-  suspend fun updateEmailSubscriptionPreference(subscribe: Boolean)
 }

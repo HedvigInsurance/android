@@ -4,16 +4,13 @@ import arrow.core.Either
 import arrow.core.raise.either
 import arrow.core.raise.ensureNotNull
 import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.api.Optional
 import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
-import com.hedvig.android.logger.logcat
 import octopus.MemberUpdateEmailMutation
 import octopus.MemberUpdatePhoneNumberMutation
 import octopus.ProfileQuery
-import octopus.UpdateSubscriptionPreferenceMutation
 import octopus.type.MemberUpdateEmailInput
 import octopus.type.MemberUpdatePhoneNumberInput
 
@@ -21,14 +18,6 @@ internal class ProfileRepositoryImpl(
   private val apolloClient: ApolloClient,
   private val networkCacheManager: NetworkCacheManager,
 ) : ProfileRepository {
-  override suspend fun updateEmailSubscriptionPreference(subscribe: Boolean) {
-    val result = apolloClient.mutation(UpdateSubscriptionPreferenceMutation(Optional.present(subscribe)))
-      .safeExecute().toEither()
-    val msg = result.getOrNull()?.memberUpdateSubscriptionPreference?.message
-    logcat { "updateEmailSubscriptionPreference message: $msg" }
-    networkCacheManager.clearCache()
-  }
-
   override suspend fun profile(): Either<OperationResult.Error, ProfileData> = either {
     val member = apolloClient
       .query(ProfileQuery())

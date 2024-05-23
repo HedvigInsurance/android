@@ -3,6 +3,7 @@ package com.hedvig.android.feature.profile.settings
 import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.auth.listeners.UploadLanguagePreferenceToBackendUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
+import com.hedvig.android.feature.profile.data.ChangeEmailSubscriptionPreferencesUseCase
 import com.hedvig.android.language.Language
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.Market
@@ -14,6 +15,7 @@ internal class SettingsViewModel(
   marketManager: MarketManager,
   languageService: LanguageService,
   settingsDataStore: SettingsDataStore,
+  changeEmailSubscriptionPreferencesUseCase: ChangeEmailSubscriptionPreferencesUseCase,
   enableNotificationsReminderManager: EnableNotificationsReminderManager,
   private val cacheManager: NetworkCacheManager,
   private val uploadLanguagePreferenceToBackendUseCase: UploadLanguagePreferenceToBackendUseCase,
@@ -32,5 +34,6 @@ internal class SettingsViewModel(
       enableNotificationsReminderManager = enableNotificationsReminderManager,
       cacheManager = cacheManager,
       uploadLanguagePreferenceToBackendUseCase = uploadLanguagePreferenceToBackendUseCase,
+      changeEmailSubscriptionPreferencesUseCase = changeEmailSubscriptionPreferencesUseCase,
     ),
   )

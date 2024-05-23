@@ -9,6 +9,7 @@ import androidx.compose.runtime.setValue
 import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.auth.listeners.UploadLanguagePreferenceToBackendUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
+import com.hedvig.android.feature.profile.data.ChangeEmailSubscriptionPreferencesUseCase
 import com.hedvig.android.language.Language
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.memberreminders.EnableNotificationsReminderManager
@@ -22,6 +23,7 @@ internal class SettingsPresenter(
   private val settingsDataStore: SettingsDataStore,
   private val enableNotificationsReminderManager: EnableNotificationsReminderManager,
   private val cacheManager: NetworkCacheManager,
+  private val changeEmailSubscriptionPreferencesUseCase: ChangeEmailSubscriptionPreferencesUseCase,
   private val uploadLanguagePreferenceToBackendUseCase: UploadLanguagePreferenceToBackendUseCase,
 ) : MoleculePresenter<SettingsEvent, SettingsUiState> {
   @Composable
@@ -54,7 +56,7 @@ internal class SettingsPresenter(
         is SettingsEvent.ChangeSubscriptionPreference -> {
           launch {
             settingsDataStore.setSubscriptionPreference(event.subscribe)
-            // todo: toggle the mutation here
+            changeEmailSubscriptionPreferencesUseCase.invoke(event.subscribe)
           }
         }
       }
@@ -64,7 +66,6 @@ internal class SettingsPresenter(
       SettingsUiState.Loading(
         selectedLanguage = selectedLanguage,
         languageOptions = lastState.languageOptions,
-        subscribed = subscribed,
       )
     } else {
       SettingsUiState.Loaded(
@@ -82,14 +83,14 @@ sealed interface SettingsUiState {
   val selectedLanguage: Language
   val languageOptions: List<Language>
   val selectedTheme: Theme?
-  val subscribed: Boolean
+  val subscribed: Boolean?
   val showNotificationReminder: Boolean?
 
   data class Loading(
     override val selectedLanguage: Language,
     override val languageOptions: List<Language>,
-    override val subscribed: Boolean,
   ) : SettingsUiState {
+    override val subscribed: Boolean? = null
     override val selectedTheme: Theme? = null
     override val showNotificationReminder: Boolean? = null
   }
@@ -99,7 +100,7 @@ sealed interface SettingsUiState {
     override val languageOptions: List<Language>,
     override val selectedTheme: Theme?,
     override val showNotificationReminder: Boolean,
-    override val subscribed: Boolean,
+    override val subscribed: Boolean?,
   ) : SettingsUiState
 }
 
