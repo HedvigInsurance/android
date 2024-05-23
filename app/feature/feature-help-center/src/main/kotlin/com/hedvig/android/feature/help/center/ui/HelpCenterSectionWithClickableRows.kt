@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.help.center.ui
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -31,6 +32,7 @@ internal fun <T> HelpCenterSectionWithClickableRows(
   contentColor: Color,
   items: ImmutableList<T>,
   itemText: (T) -> String,
+  itemSubtitle: ((T) -> String)? = null,
   onClickItem: (T) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -41,21 +43,33 @@ internal fun <T> HelpCenterSectionWithClickableRows(
     content = {
       Column {
         for ((index, question) in items.withIndex()) {
-          if (index > 0) {
+          Column(
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            modifier = Modifier.clickable { onClickItem(question) }
+              .padding(vertical = 16.dp, horizontal = 16.dp)
+              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+          ) {
+            Text(
+              text = itemText(question),
+              modifier = Modifier
+                .fillMaxWidth())
+            if (itemSubtitle!=null) {
+              Text(
+                text = itemSubtitle(question),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier
+                  .fillMaxWidth(),
+              )
+            }
+          }
+
             HorizontalDivider(
               Modifier
                 .padding(horizontal = 16.dp)
                 .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
             )
-          }
-          Text(
-            text = itemText(question),
-            modifier = Modifier
-              .fillMaxWidth()
-              .clickable { onClickItem(question) }
-              .padding(vertical = 16.dp, horizontal = 18.dp)
-              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-          )
+
         }
       }
     },
