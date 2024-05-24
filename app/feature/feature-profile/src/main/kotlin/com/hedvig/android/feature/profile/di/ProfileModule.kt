@@ -8,6 +8,7 @@ import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.feature.profile.aboutapp.AboutAppViewModel
 import com.hedvig.android.feature.profile.data.ChangeEmailSubscriptionPreferencesUseCase
+import com.hedvig.android.feature.profile.data.ChangeEmailSubscriptionPreferencesUseCaseImpl
 import com.hedvig.android.feature.profile.data.CheckTravelCertificateDestinationAvailabilityUseCase
 import com.hedvig.android.feature.profile.data.CheckTravelCertificateDestinationAvailabilityUseCaseImpl
 import com.hedvig.android.feature.profile.data.ProfileRepositoryDemo
@@ -41,7 +42,7 @@ val profileModule = module {
   viewModel<EurobonusViewModel> { EurobonusViewModel(get<ApolloClient>()) }
 
   single<ChangeEmailSubscriptionPreferencesUseCase> {
-    ChangeEmailSubscriptionPreferencesUseCase(
+    ChangeEmailSubscriptionPreferencesUseCaseImpl(
       apolloClient = get<ApolloClient>(),
       networkCacheManager = get<NetworkCacheManager>(),
     )

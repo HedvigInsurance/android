@@ -8,11 +8,15 @@ import com.hedvig.android.apollo.toEither
 import com.hedvig.android.logger.logcat
 import octopus.UpdateSubscriptionPreferenceMutation
 
-class ChangeEmailSubscriptionPreferencesUseCase(
+interface ChangeEmailSubscriptionPreferencesUseCase {
+  suspend fun invoke(subscribe: Boolean)
+}
+
+class ChangeEmailSubscriptionPreferencesUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val networkCacheManager: NetworkCacheManager,
-) {
-  suspend fun invoke(subscribe: Boolean) {
+) : ChangeEmailSubscriptionPreferencesUseCase {
+  override suspend fun invoke(subscribe: Boolean) {
     val result = apolloClient.mutation(UpdateSubscriptionPreferenceMutation(Optional.present(subscribe)))
       .safeExecute().toEither()
     val msg = result.getOrNull()?.memberUpdateSubscriptionPreference?.message

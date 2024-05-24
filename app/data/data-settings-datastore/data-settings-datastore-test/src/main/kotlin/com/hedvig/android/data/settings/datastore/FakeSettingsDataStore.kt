@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 
 class FakeSettingsDataStore() : SettingsDataStore {
   val themeTurbine = Turbine<Theme>()
+  val subscriptionPreferenceTurbine = Turbine<Boolean>()
 
   override suspend fun setTheme(theme: Theme) {
     themeTurbine.add(theme)
@@ -15,5 +16,13 @@ class FakeSettingsDataStore() : SettingsDataStore {
 
   override fun observeTheme(): Flow<Theme> {
     return themeTurbine.asChannel().receiveAsFlow()
+  }
+
+  override suspend fun setSubscriptionPreference(subscribe: Boolean) {
+    subscriptionPreferenceTurbine.add(subscribe)
+  }
+
+  override fun observeSubscriptionPreference(): Flow<Boolean> {
+    return subscriptionPreferenceTurbine.asChannel().receiveAsFlow()
   }
 }

@@ -6,6 +6,7 @@ import assertk.assertions.isInstanceOf
 import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.auth.listeners.UploadLanguagePreferenceToBackendUseCase
 import com.hedvig.android.core.datastore.FakeSettingsDataStore
+import com.hedvig.android.feature.profile.data.ChangeEmailSubscriptionPreferencesUseCase
 import com.hedvig.android.language.Language
 import com.hedvig.android.language.test.FakeLanguageService
 import com.hedvig.android.memberreminders.test.TestEnableNotificationsReminderManager
@@ -23,7 +24,8 @@ class SettingsPresenterTest {
       FakeSettingsDataStore(),
       enableNotificationsReminderManager,
       NoopNetworkCacheManager(),
-      NoopUploadLanguagePreferenceToBackendUseCase(),
+      uploadLanguagePreferenceToBackendUseCase = NoopUploadLanguagePreferenceToBackendUseCase(),
+      changeEmailSubscriptionPreferencesUseCase = NoopChangeEmailSubscriptionPreferencesUseCase(),
     )
 
     settingsPresenter.test(SettingsUiState.Loading(Language.entries.first(), Language.entries)) {
@@ -41,7 +43,8 @@ class SettingsPresenterTest {
       FakeSettingsDataStore(),
       enableNotificationsReminderManager,
       NoopNetworkCacheManager(),
-      NoopUploadLanguagePreferenceToBackendUseCase(),
+      uploadLanguagePreferenceToBackendUseCase = NoopUploadLanguagePreferenceToBackendUseCase(),
+      changeEmailSubscriptionPreferencesUseCase = NoopChangeEmailSubscriptionPreferencesUseCase(),
     )
 
     settingsPresenter.test(
@@ -50,6 +53,7 @@ class SettingsPresenterTest {
         listOf(Language.EN_SE, Language.SV_SE),
         Theme.SYSTEM_DEFAULT,
         false,
+        subscribed = false,
       ),
     ) {
       assertThat(awaitItem().showNotificationReminder).isEqualTo(false)
@@ -66,7 +70,8 @@ class SettingsPresenterTest {
       FakeSettingsDataStore(),
       enableNotificationsReminderManager,
       NoopNetworkCacheManager(),
-      NoopUploadLanguagePreferenceToBackendUseCase(),
+      uploadLanguagePreferenceToBackendUseCase = NoopUploadLanguagePreferenceToBackendUseCase(),
+      changeEmailSubscriptionPreferencesUseCase = NoopChangeEmailSubscriptionPreferencesUseCase(),
     )
 
     settingsPresenter.test(
@@ -75,6 +80,7 @@ class SettingsPresenterTest {
         listOf(Language.EN_SE, Language.SV_SE),
         Theme.SYSTEM_DEFAULT,
         false,
+        subscribed = false,
       ),
     ) {
       assertThat(awaitItem().showNotificationReminder).isEqualTo(false)
@@ -91,7 +97,8 @@ class SettingsPresenterTest {
       FakeSettingsDataStore(),
       enableNotificationsReminderManager,
       NoopNetworkCacheManager(),
-      NoopUploadLanguagePreferenceToBackendUseCase(),
+      uploadLanguagePreferenceToBackendUseCase = NoopUploadLanguagePreferenceToBackendUseCase(),
+      changeEmailSubscriptionPreferencesUseCase = NoopChangeEmailSubscriptionPreferencesUseCase(),
     )
 
     settingsPresenter.test(
@@ -100,6 +107,7 @@ class SettingsPresenterTest {
         Language.entries,
         Theme.entries.first(),
         false,
+        subscribed = false,
       ),
     ) {
       enableNotificationsReminderManager.snoozeNotificationReminderCalls.expectNoEvents()
@@ -118,7 +126,8 @@ class SettingsPresenterTest {
       settingsDataStore,
       enableNotificationsReminderManager,
       NoopNetworkCacheManager(),
-      NoopUploadLanguagePreferenceToBackendUseCase(),
+      uploadLanguagePreferenceToBackendUseCase = NoopUploadLanguagePreferenceToBackendUseCase(),
+      changeEmailSubscriptionPreferencesUseCase = NoopChangeEmailSubscriptionPreferencesUseCase(),
     )
 
     settingsPresenter.test(
@@ -127,6 +136,7 @@ class SettingsPresenterTest {
         languageOptions = Language.entries,
         selectedTheme = Theme.LIGHT,
         showNotificationReminder = false,
+        subscribed = false,
       ),
     ) {
       assertThat(awaitItem().selectedTheme).isEqualTo(Theme.LIGHT)
@@ -143,4 +153,8 @@ private class NoopNetworkCacheManager : NetworkCacheManager {
 
 private class NoopUploadLanguagePreferenceToBackendUseCase : UploadLanguagePreferenceToBackendUseCase {
   override suspend fun invoke() {}
+}
+
+private class NoopChangeEmailSubscriptionPreferencesUseCase : ChangeEmailSubscriptionPreferencesUseCase {
+  override suspend fun invoke(subscribe: Boolean) {}
 }
