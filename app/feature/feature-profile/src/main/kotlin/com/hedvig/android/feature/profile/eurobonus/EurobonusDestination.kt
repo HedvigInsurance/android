@@ -44,22 +44,19 @@ import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 
 @Composable
 internal fun EurobonusDestination(viewModel: EurobonusViewModel, navigateUp: () -> Unit) {
-  val eurobonusText = viewModel.eurobonusText
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  val isEligibleForEurobonus by viewModel.isEligibleForEurobonus.collectAsStateWithLifecycle()
-  LaunchedEffect(isEligibleForEurobonus) {
-    if (!isEligibleForEurobonus) {
+  LaunchedEffect(uiState.isEligibleForEurobonus) {
+    if (uiState.isEligibleForEurobonus == false) {
       navigateUp()
     }
   }
   val focusManager = LocalFocusManager.current
   EurobonusScreen(
-    eurobonusText = eurobonusText,
-    setEurobonusText = viewModel::updateEurobonusValue,
+    setEurobonusText = { viewModel.emit(EurobonusEvent.UpdateEurobonusValue(it)) },
     uiState = uiState,
-    onSubmitEurobonus = { newEurobonusValue ->
+    onSubmitEurobonus = {
       focusManager.clearFocus()
-      viewModel.submitEurobonus(newEurobonusValue)
+      viewModel.emit(EurobonusEvent.SubmitEurobonus)
     },
     navigateUp = navigateUp,
   )
@@ -67,10 +64,9 @@ internal fun EurobonusDestination(viewModel: EurobonusViewModel, navigateUp: () 
 
 @Composable
 private fun EurobonusScreen(
-  eurobonusText: String,
-  setEurobonusText: (String) -> Unit,
   uiState: EurobonusUiState,
-  onSubmitEurobonus: (String) -> Unit,
+  setEurobonusText: (String) -> Unit,
+  onSubmitEurobonus: () -> Unit,
   navigateUp: () -> Unit,
 ) {
   Box(
@@ -95,7 +91,7 @@ private fun EurobonusScreen(
         )
       }
       HedvigTextField(
-        value = eurobonusText,
+        value = uiState.eurobonusText,
         onValueChange = { newInput ->
           if (newInput.indices.all { newInput[it].isWhitespace().not() }) {
             setEurobonusText(newInput)
@@ -138,7 +134,7 @@ private fun EurobonusScreen(
         keyboardActions = KeyboardActions(
           onDone = {
             if (uiState.canSubmit) {
-              onSubmitEurobonus(eurobonusText)
+              onSubmitEurobonus()
             }
           },
         ),
@@ -157,7 +153,7 @@ private fun EurobonusScreen(
       HedvigContainedButton(
         text = stringResource(hedvig.resources.R.string.general_save_button),
         enabled = uiState.canSubmit,
-        onClick = { onSubmitEurobonus(eurobonusText) },
+        onClick = { onSubmitEurobonus() },
         modifier = Modifier.padding(horizontal = 16.dp),
       )
       Spacer(Modifier.height(16.dp))
@@ -174,14 +170,14 @@ private fun PreviewEurobonusScreen(
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       EurobonusScreen(
-        "ABC-123",
-        {},
         EurobonusUiState(
+          eurobonusText = "ABC-123",
           canSubmit = true,
           isLoading = true,
           canEditText = true,
           hasError = hasError,
         ),
+        {},
         {},
         {},
       )
