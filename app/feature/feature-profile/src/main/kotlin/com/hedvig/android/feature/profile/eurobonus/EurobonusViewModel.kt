@@ -7,28 +7,29 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.cache.normalized.FetchPolicy
-import com.apollographql.apollo3.cache.normalized.fetchPolicy
-import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.apollo.toEither
+import com.hedvig.android.feature.profile.data.GetEurobonusDataUseCase
+import com.hedvig.android.feature.profile.data.UpdateEurobonusNumberUseCase
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
-import octopus.EurobonusDataQuery
-import octopus.UpdateEurobonusNumberMutation
 
-internal class EurobonusViewModel(apolloClient: ApolloClient) : MoleculeViewModel<EurobonusEvent, EurobonusUiState>(
-  initialState = EurobonusUiState(
-    canSubmit = false,
-    isLoading = false,
-    canEditText = false,
-    hasError = false,
-  ),
-  presenter = EurobonusPresenter(apolloClient),
-)
+internal class EurobonusViewModel(
+  getEurobonusDataUseCase: GetEurobonusDataUseCase,
+  updateEurobonusNumberUseCase: UpdateEurobonusNumberUseCase,
+) : MoleculeViewModel<EurobonusEvent, EurobonusUiState>(
+    initialState = EurobonusUiState(
+      canSubmit = false,
+      isLoading = false,
+      canEditText = false,
+      hasError = false,
+    ),
+    presenter = EurobonusPresenter(getEurobonusDataUseCase, updateEurobonusNumberUseCase),
+  )
 
-internal class EurobonusPresenter(private val apolloClient: ApolloClient) :
+internal class EurobonusPresenter(
+  private val getEurobonusDataUseCase: GetEurobonusDataUseCase,
+  private val updateEurobonusNumberUseCase: UpdateEurobonusNumberUseCase,
+) :
   MoleculePresenter<EurobonusEvent, EurobonusUiState> {
   @Composable
   override fun MoleculePresenterScope<EurobonusEvent>.present(lastState: EurobonusUiState): EurobonusUiState {
@@ -78,10 +79,7 @@ internal class EurobonusPresenter(private val apolloClient: ApolloClient) :
     }
 
     LaunchedEffect(Unit) {
-      apolloClient.query(EurobonusDataQuery())
-        .fetchPolicy(FetchPolicy.NetworkOnly)
-        .safeExecute()
-        .toEither()
+      getEurobonusDataUseCase.invoke()
         .onRight { data ->
           data.currentMember.partnerData?.sas?.eligible?.let { eligible ->
             if (!eligible) {
@@ -104,9 +102,7 @@ internal class EurobonusPresenter(private val apolloClient: ApolloClient) :
       if (submittingIteration > 0) {
         isSubmitting = true
         val valueToSubmit = eurobonusNumberToShow
-        apolloClient.mutation(UpdateEurobonusNumberMutation(valueToSubmit))
-          .safeExecute()
-          .toEither()
+        updateEurobonusNumberUseCase.invoke(valueToSubmit)
           .fold(
             ifLeft = {
               hasError = true
