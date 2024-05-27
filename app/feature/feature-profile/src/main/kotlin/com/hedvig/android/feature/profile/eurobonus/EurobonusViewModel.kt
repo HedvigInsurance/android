@@ -119,12 +119,13 @@ internal class EurobonusPresenter(private val apolloClient: ApolloClient) :
     val differentFromOriginal = eurobonusTextToShow != eurobonusTextFromBackend
     val canSubmit =
       eurobonusTextToShow.isNotBlank() && differentFromOriginal && !isSubmitting && !isLoadingInitialEurobonusValue
-    val isLoading = isSubmitting || isLoadingInitialEurobonusValue
-    val canEditText = !isLoading
+    val isLoadingInProcess = isSubmitting || isLoadingInitialEurobonusValue
+    val canEditText = !isLoadingInProcess
 
     return EurobonusUiState(
       canSubmit = canSubmit,
-      isLoading = isLoading,
+      isLoading = isLoadingInitialEurobonusValue,
+      isSubmitting = isSubmitting,
       canEditText = canEditText,
       hasError = hasError,
       eurobonusText = eurobonusTextToShow,
@@ -138,8 +139,9 @@ internal data class EurobonusUiState(
   val isLoading: Boolean,
   val canEditText: Boolean,
   val hasError: Boolean?,
-  val eurobonusText: String = "", // todo: think here
-  val isEligibleForEurobonus: Boolean? = null, // todo: think here
+  val eurobonusText: String = "",
+  val isEligibleForEurobonus: Boolean? = null,
+  val isSubmitting: Boolean = false
 )
 
 internal sealed interface EurobonusEvent {
