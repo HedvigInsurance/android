@@ -19,8 +19,7 @@ internal class EurobonusViewModel(
 ) : MoleculeViewModel<EurobonusEvent, EurobonusUiState>(
     initialState = EurobonusUiState(
       canSubmit = false,
-      isLoading = false,
-      canEditText = false,
+      isLoading = true,
       hasError = false,
     ),
     presenter = EurobonusPresenter(getEurobonusDataUseCase, updateEurobonusNumberUseCase),
@@ -126,7 +125,6 @@ internal class EurobonusPresenter(
       canSubmit = canSubmit,
       isLoading = isLoadingInitialEurobonusValue,
       isSubmitting = isSubmitting,
-      canEditText = !isLoadingInProcess,
       hasError = hasError,
       eurobonusNumber = eurobonusNumberToShow,
       isEligibleForEurobonus = isEligibleForEurobonus,
@@ -137,12 +135,13 @@ internal class EurobonusPresenter(
 internal data class EurobonusUiState(
   val canSubmit: Boolean,
   val isLoading: Boolean,
-  val canEditText: Boolean,
   val hasError: Boolean?,
   val eurobonusNumber: String = "",
   val isEligibleForEurobonus: Boolean? = null,
   val isSubmitting: Boolean = false,
-)
+) {
+  val canEditText = !(isSubmitting || isLoading)
+}
 
 internal sealed interface EurobonusEvent {
   data object SubmitEditedEurobonus : EurobonusEvent

@@ -204,7 +204,6 @@ private fun PreviewEurobonusScreen(
           eurobonusNumber = "ABC-123",
           canSubmit = true,
           isLoading = true,
-          canEditText = true,
           hasError = hasError,
         ),
         {},
