@@ -19,7 +19,12 @@ import octopus.EurobonusDataQuery
 import octopus.UpdateEurobonusNumberMutation
 
 internal class EurobonusViewModel(apolloClient: ApolloClient) : MoleculeViewModel<EurobonusEvent, EurobonusUiState>(
-  initialState = EurobonusUiState(false, false, false, false),
+  initialState = EurobonusUiState(
+    canSubmit = false,
+    isLoading = false,
+    canEditText = false,
+    hasError = false,
+  ),
   presenter = EurobonusPresenter(apolloClient),
 )
 
@@ -27,11 +32,11 @@ internal class EurobonusPresenter(private val apolloClient: ApolloClient) :
   MoleculePresenter<EurobonusEvent, EurobonusUiState> {
   @Composable
   override fun MoleculePresenterScope<EurobonusEvent>.present(lastState: EurobonusUiState): EurobonusUiState {
-    var eurobonusTextFromBackend by remember {
+    var eurobonusNumberFromBackend by remember {
       mutableStateOf<String?>(null)
     }
 
-    var eurobonusTextToShow by remember {
+    var eurobonusNumberToShow by remember {
       mutableStateOf("")
     }
 
@@ -57,8 +62,8 @@ internal class EurobonusPresenter(private val apolloClient: ApolloClient) :
 
     CollectEvents { event ->
       when (event) {
-        is EurobonusEvent.SubmitEurobonus -> {
-          if (!isSubmitting && eurobonusTextToShow.isNotBlank()) {
+        is EurobonusEvent.SubmitEditedEurobonus -> {
+          if (!isSubmitting && eurobonusNumberToShow.isNotBlank()) {
             submittingIteration++
           }
         }
@@ -66,7 +71,7 @@ internal class EurobonusPresenter(private val apolloClient: ApolloClient) :
         is EurobonusEvent.UpdateEurobonusValue -> {
           if (!isSubmitting) {
             hasError = false
-            eurobonusTextToShow = event.newEurobonusValue
+            eurobonusNumberToShow = event.newEurobonusValue
           }
         }
       }
@@ -84,8 +89,8 @@ internal class EurobonusPresenter(private val apolloClient: ApolloClient) :
             }
           }
           data.currentMember.partnerData?.sas?.eurobonusNumber?.let { existingEurobonusNumber ->
-            eurobonusTextFromBackend = existingEurobonusNumber
-            eurobonusTextToShow = existingEurobonusNumber
+            eurobonusNumberFromBackend = existingEurobonusNumber
+            eurobonusNumberToShow = existingEurobonusNumber
           }
           hasError = false
         }
@@ -98,7 +103,7 @@ internal class EurobonusPresenter(private val apolloClient: ApolloClient) :
     LaunchedEffect(submittingIteration) {
       if (submittingIteration > 0) {
         isSubmitting = true
-        val valueToSubmit = eurobonusTextToShow
+        val valueToSubmit = eurobonusNumberToShow
         apolloClient.mutation(UpdateEurobonusNumberMutation(valueToSubmit))
           .safeExecute()
           .toEither()
@@ -108,7 +113,7 @@ internal class EurobonusPresenter(private val apolloClient: ApolloClient) :
             },
             ifRight = {
               it.memberUpdateEurobonusNumber.member?.partnerData?.sas?.eurobonusNumber?.let { existingEurobonusNumber ->
-                eurobonusTextFromBackend = existingEurobonusNumber
+                eurobonusNumberFromBackend = existingEurobonusNumber
               }
             },
           )
@@ -116,19 +121,18 @@ internal class EurobonusPresenter(private val apolloClient: ApolloClient) :
       }
     }
 
-    val differentFromOriginal = eurobonusTextToShow != eurobonusTextFromBackend
-    val canSubmit =
-      eurobonusTextToShow.isNotBlank() && differentFromOriginal && !isSubmitting && !isLoadingInitialEurobonusValue
+    val differentFromOriginal = eurobonusNumberToShow != eurobonusNumberFromBackend
     val isLoadingInProcess = isSubmitting || isLoadingInitialEurobonusValue
-    val canEditText = !isLoadingInProcess
+    val canSubmit =
+      eurobonusNumberToShow.isNotBlank() && differentFromOriginal && !isLoadingInProcess
 
     return EurobonusUiState(
       canSubmit = canSubmit,
       isLoading = isLoadingInitialEurobonusValue,
       isSubmitting = isSubmitting,
-      canEditText = canEditText,
+      canEditText = !isLoadingInProcess,
       hasError = hasError,
-      eurobonusText = eurobonusTextToShow,
+      eurobonusNumber = eurobonusNumberToShow,
       isEligibleForEurobonus = isEligibleForEurobonus,
     )
   }
@@ -139,13 +143,13 @@ internal data class EurobonusUiState(
   val isLoading: Boolean,
   val canEditText: Boolean,
   val hasError: Boolean?,
-  val eurobonusText: String = "",
+  val eurobonusNumber: String = "",
   val isEligibleForEurobonus: Boolean? = null,
-  val isSubmitting: Boolean = false
+  val isSubmitting: Boolean = false,
 )
 
 internal sealed interface EurobonusEvent {
-  data object SubmitEurobonus : EurobonusEvent
+  data object SubmitEditedEurobonus : EurobonusEvent
 
   data class UpdateEurobonusValue(val newEurobonusValue: String) : EurobonusEvent
 }

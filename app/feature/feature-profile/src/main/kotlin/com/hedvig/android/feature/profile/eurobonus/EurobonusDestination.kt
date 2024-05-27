@@ -55,11 +55,11 @@ internal fun EurobonusDestination(viewModel: EurobonusViewModel, navigateUp: () 
   }
   val focusManager = LocalFocusManager.current
   EurobonusScreen(
-    setEurobonusText = { viewModel.emit(EurobonusEvent.UpdateEurobonusValue(it)) },
+    setEurobonusNumber = { viewModel.emit(EurobonusEvent.UpdateEurobonusValue(it)) },
     uiState = uiState,
-    onSubmitEurobonus = {
+    onSave = {
       focusManager.clearFocus()
-      viewModel.emit(EurobonusEvent.SubmitEurobonus)
+      viewModel.emit(EurobonusEvent.SubmitEditedEurobonus)
     },
     navigateUp = navigateUp,
   )
@@ -68,8 +68,8 @@ internal fun EurobonusDestination(viewModel: EurobonusViewModel, navigateUp: () 
 @Composable
 private fun EurobonusScreen(
   uiState: EurobonusUiState,
-  setEurobonusText: (String) -> Unit,
-  onSubmitEurobonus: () -> Unit,
+  setEurobonusNumber: (String) -> Unit,
+  onSave: () -> Unit,
   navigateUp: () -> Unit,
 ) {
   Box(
@@ -100,9 +100,9 @@ private fun EurobonusScreen(
           canSubmit = uiState.canSubmit,
           canEditText = uiState.canEditText,
           hasError = uiState.hasError ?: false,
-          number = uiState.eurobonusText,
-          onSubmitEurobonus = onSubmitEurobonus,
-          setEurobonusText = setEurobonusText,
+          number = uiState.eurobonusNumber,
+          onSubmitEurobonus = onSave,
+          setEurobonusText = setEurobonusNumber,
         )
         Spacer(Modifier.height(16.dp))
         Text(
@@ -114,9 +114,9 @@ private fun EurobonusScreen(
         HedvigContainedButton(
           text = stringResource(hedvig.resources.R.string.general_save_button),
           enabled = uiState.canSubmit,
-          onClick = { onSubmitEurobonus() },
+          onClick = { onSave() },
           modifier = Modifier.padding(horizontal = 16.dp),
-          isLoading = uiState.isSubmitting
+          isLoading = uiState.isSubmitting,
         )
         Spacer(Modifier.height(16.dp))
       }
@@ -187,8 +187,8 @@ private fun EurobonusNumberField(
     ),
     withNewDesign = true,
     modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp),
+      .fillMaxWidth()
+      .padding(horizontal = 16.dp),
   )
 }
 
@@ -201,7 +201,7 @@ private fun PreviewEurobonusScreen(
     Surface(color = MaterialTheme.colorScheme.background) {
       EurobonusScreen(
         EurobonusUiState(
-          eurobonusText = "ABC-123",
+          eurobonusNumber = "ABC-123",
           canSubmit = true,
           isLoading = true,
           canEditText = true,
