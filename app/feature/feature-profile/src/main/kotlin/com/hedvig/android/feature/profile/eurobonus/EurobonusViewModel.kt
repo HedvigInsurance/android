@@ -55,27 +55,24 @@ internal class EurobonusPresenter(private val apolloClient: ApolloClient) :
       mutableIntStateOf(0)
     }
 
-    var dataLoadIteration by remember {
-      mutableIntStateOf(0)
-    }
-
     CollectEvents { event ->
       when (event) {
         is EurobonusEvent.SubmitEurobonus -> {
-          if (!isSubmitting && !hasError && eurobonusTextToShow.isNotBlank()) { // todo: why not has error???
+          if (!isSubmitting && eurobonusTextToShow.isNotBlank()) {
             submittingIteration++
           }
         }
 
         is EurobonusEvent.UpdateEurobonusValue -> {
           if (!isSubmitting) {
+            hasError = false
             eurobonusTextToShow = event.newEurobonusValue
           }
         }
       }
     }
 
-    LaunchedEffect(dataLoadIteration) {
+    LaunchedEffect(Unit) {
       apolloClient.query(EurobonusDataQuery())
         .fetchPolicy(FetchPolicy.NetworkOnly)
         .safeExecute()
@@ -121,8 +118,7 @@ internal class EurobonusPresenter(private val apolloClient: ApolloClient) :
 
     val differentFromOriginal = eurobonusTextToShow != eurobonusTextFromBackend
     val canSubmit =
-      eurobonusTextToShow.isNotBlank() && differentFromOriginal && !isSubmitting && !hasError && !isLoadingInitialEurobonusValue
-    // todo: why not has error??? what do we do with error?
+      eurobonusTextToShow.isNotBlank() && differentFromOriginal && !isSubmitting && !isLoadingInitialEurobonusValue
     val isLoading = isSubmitting || isLoadingInitialEurobonusValue
     val canEditText = !isLoading
 

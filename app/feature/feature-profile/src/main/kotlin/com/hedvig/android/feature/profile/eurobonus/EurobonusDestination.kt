@@ -81,8 +81,8 @@ private fun EurobonusScreen(
       Box(
         contentAlignment = Alignment.BottomStart,
         modifier = Modifier
-          .heightIn(80.dp)
-          .fillMaxWidth(),
+            .heightIn(80.dp)
+            .fillMaxWidth(),
       ) {
         Text(
           text = stringResource(hedvig.resources.R.string.sas_integration_connect_your_eurobonus),
@@ -90,58 +90,13 @@ private fun EurobonusScreen(
           modifier = Modifier.padding(16.dp),
         )
       }
-      HedvigTextField(
-        value = uiState.eurobonusText,
-        onValueChange = { newInput ->
-          if (newInput.indices.all { newInput[it].isWhitespace().not() }) {
-            setEurobonusText(newInput)
-          }
-        },
-        enabled = uiState.canEditText,
-        label = {
-          Text(
-            buildString {
-              append(stringResource(hedvig.resources.R.string.sas_integration_title))
-              append(" ")
-              append(stringResource(hedvig.resources.R.string.sas_integration_number))
-            },
-          )
-        },
-        supportingText = {
-          if (uiState.hasError == true) {
-            Row(
-              verticalAlignment = Alignment.CenterVertically,
-            ) {
-              Icon(
-                imageVector = Icons.Hedvig.WarningFilled,
-                contentDescription = null,
-                modifier = Modifier.size(16.dp),
-                tint = MaterialTheme.colorScheme.warningElement,
-              )
-              Spacer(Modifier.width(6.dp))
-              Text(stringResource(hedvig.resources.R.string.something_went_wrong))
-            }
-          } else {
-            Text(stringResource(hedvig.resources.R.string.sas_integration_number_placeholder))
-          }
-        },
-        isError = uiState.hasError == true,
-        keyboardOptions = KeyboardOptions(
-          capitalization = KeyboardCapitalization.Characters,
-          keyboardType = KeyboardType.Text,
-          imeAction = ImeAction.Done,
-        ),
-        keyboardActions = KeyboardActions(
-          onDone = {
-            if (uiState.canSubmit) {
-              onSubmitEurobonus()
-            }
-          },
-        ),
-        withNewDesign = true,
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
+      EurobonusNumberField(
+        canSubmit = uiState.canSubmit,
+        canEditText = uiState.canEditText,
+        hasError = uiState.hasError ?: false,
+        number = uiState.eurobonusText,
+        onSubmitEurobonus = onSubmitEurobonus,
+        setEurobonusText = setEurobonusText,
       )
       Spacer(Modifier.height(16.dp))
       Text(
@@ -160,6 +115,70 @@ private fun EurobonusScreen(
     }
     HedvigFullScreenCenterAlignedProgressDebounced(show = uiState.isLoading)
   }
+}
+
+@Composable
+private fun EurobonusNumberField(
+  number: String,
+  hasError: Boolean,
+  canEditText: Boolean,
+  canSubmit: Boolean,
+  setEurobonusText: (String) -> Unit,
+  onSubmitEurobonus: () -> Unit,
+) {
+  HedvigTextField(
+    value = number,
+    onValueChange = { newInput ->
+      if (newInput.indices.all { newInput[it].isWhitespace().not() }) {
+        setEurobonusText(newInput)
+      }
+    },
+    enabled = canEditText,
+    label = {
+      Text(
+        buildString {
+          append(stringResource(hedvig.resources.R.string.sas_integration_title))
+          append(" ")
+          append(stringResource(hedvig.resources.R.string.sas_integration_number))
+        },
+      )
+    },
+    supportingText = {
+      if (hasError) {
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
+          Icon(
+            imageVector = Icons.Hedvig.WarningFilled,
+            contentDescription = null,
+            modifier = Modifier.size(16.dp),
+            tint = MaterialTheme.colorScheme.warningElement,
+          )
+          Spacer(Modifier.width(6.dp))
+          Text(stringResource(hedvig.resources.R.string.something_went_wrong))
+        }
+      } else {
+        Text(stringResource(hedvig.resources.R.string.sas_integration_number_placeholder))
+      }
+    },
+    isError = hasError,
+    keyboardOptions = KeyboardOptions(
+      capitalization = KeyboardCapitalization.Characters,
+      keyboardType = KeyboardType.Text,
+      imeAction = ImeAction.Done,
+    ),
+    keyboardActions = KeyboardActions(
+      onDone = {
+        if (canSubmit) {
+          onSubmitEurobonus()
+        }
+      },
+    ),
+    withNewDesign = true,
+    modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
+  )
 }
 
 @HedvigPreview
