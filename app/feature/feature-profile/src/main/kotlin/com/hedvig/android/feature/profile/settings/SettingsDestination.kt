@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -134,16 +135,19 @@ private fun SettingsScreen(
             .padding(horizontal = 16.dp),
         )
         Spacer(Modifier.height(4.dp))
-        SubscriptionWithDialog(
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-          onConfirmUnsubscribeClick = { changeSubscriptionPreference(false) },
-          onSubscribeClick = { changeSubscriptionPreference(true) },
-          subscribed = uiState.subscribed ?: true,
-          enabled = true,
-        )
-        Spacer(Modifier.height(16.dp))
+        if (uiState.showSubscriptionPreferences) {
+          SubscriptionWithDialog(
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(horizontal = 16.dp),
+            onConfirmUnsubscribeClick = { changeSubscriptionPreference(false) },
+            onSubscribeClick = { changeSubscriptionPreference(true) },
+            subscribed = uiState.subscribed ?: true,
+            enabled = true,
+          )
+          Spacer(Modifier.height(16.dp))
+        }
+
 
         AnimatedVisibility(
           visible = uiState.showNotificationReminder && !notificationPermissionState.status.isGranted,
@@ -223,23 +227,28 @@ internal fun SubscriptionWithDialog(
       dismissButtonLabel = stringResource(R.string.general_close_button),
     )
   }
-  HedvigBigCard(
-    onClick = {
-      if (subscribed) {
-        showLanguagePickerDialog = true
+  Column {
+    HedvigBigCard(
+      onClick = {
+        if (subscribed) {
+          showLanguagePickerDialog = true
+        } else {
+          onSubscribeClick()
+        }
+      },
+      hintText = stringResource(id = R.string.SETTINGS_SCREEN_EMAIL_PREFERENCES),
+      inputText = if (subscribed) {
+        stringResource(id = R.string.GENERAL_SUBSCRIBED)
       } else {
-        onSubscribeClick()
-      }
-    },
-    hintText = stringResource(id = R.string.SETTINGS_SCREEN_EMAIL_PREFERENCES),
-    inputText = if (subscribed) {
-      stringResource(id = R.string.GENERAL_SUBSCRIBED)
-    } else {
-      stringResource(id = R.string.GENERAL_UNSUBSCRIBED)
-    },
-    enabled = enabled,
-    modifier = modifier,
-  )
+        stringResource(id = R.string.GENERAL_UNSUBSCRIBED)
+      },
+      enabled = enabled,
+      modifier = modifier,
+    )
+    Text(text = stringResource(id = R.string.something_went_wrong),
+      fontStyle = MaterialTheme.typography.bodySmall.fontStyle)
+  }
+
 }
 
 @Composable

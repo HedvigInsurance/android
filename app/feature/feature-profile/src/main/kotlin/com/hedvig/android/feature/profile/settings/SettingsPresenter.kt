@@ -30,6 +30,7 @@ internal class SettingsPresenter(
   @Composable
   override fun MoleculePresenterScope<SettingsEvent>.present(lastState: SettingsUiState): SettingsUiState {
     var selectedLanguage by remember { mutableStateOf(lastState.selectedLanguage) }
+    var emailPrefError by remember { mutableStateOf(false) }
     val selectedTheme = settingsDataStore.observeTheme().collectAsState(lastState.selectedTheme).value
     val subscribed = settingsDataStore.observeSubscriptionPreference().collectAsState(lastState.subscribed).value
     val showNotificationReminder = enableNotificationsReminderManager
@@ -58,9 +59,10 @@ internal class SettingsPresenter(
           launch {
             changeEmailSubscriptionPreferencesUseCase.invoke(event.subscribe)
               .onLeft {
-                // todo: add something wrong here
+                emailPrefError = true
               }
               .onRight {
+                emailPrefError = false
                 settingsDataStore.setSubscriptionPreference(event.subscribe)
               }
           }
@@ -81,7 +83,8 @@ internal class SettingsPresenter(
         selectedTheme = selectedTheme,
         showNotificationReminder = showNotificationReminder,
         subscribed = subscribed,
-        showSubscriptionPreferences = isSwedishMarket
+        showSubscriptionPreferences = isSwedishMarket,
+        emailSubscriptionPreferenceError = emailPrefError
       )
     }
   }
@@ -111,7 +114,8 @@ sealed interface SettingsUiState {
     override val selectedTheme: Theme?,
     override val showNotificationReminder: Boolean,
     override val subscribed: Boolean?,
-    override val showSubscriptionPreferences: Boolean
+    override val showSubscriptionPreferences: Boolean,
+    val emailSubscriptionPreferenceError: Boolean = false
   ) : SettingsUiState
 }
 
