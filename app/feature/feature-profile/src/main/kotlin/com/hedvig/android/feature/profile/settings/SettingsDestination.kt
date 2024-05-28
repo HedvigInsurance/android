@@ -174,41 +174,6 @@ private fun SettingsScreen(
 }
 
 @Composable
-@HedvigPreview
-fun PreviewSettingsScreen() {
-  HedvigTheme {
-    Surface {
-      SettingsScreen(
-        uiState = SettingsUiState.Loaded(
-          selectedLanguage = Language.SV_SE,
-          languageOptions = listOf(Language.SV_SE, Language.EN_SE),
-          selectedTheme = Theme.SYSTEM_DEFAULT,
-          showNotificationReminder = true,
-          subscribed = true,
-        ),
-        notificationPermissionState = object : NotificationPermissionState {
-          override val showDialog = false
-
-          override fun dismissDialog() {}
-
-          override fun launchPermissionRequest() {}
-
-          override val permission: String = ""
-          override val status: PermissionStatus = PermissionStatus.Granted
-        },
-        navigateUp = {},
-        openAppSettings = {},
-        onNotificationInfoDismissed = {},
-        onLanguageSelected = {},
-        onThemeSelected = {},
-        onTerminateAccountClicked = {},
-        changeSubscriptionPreference = {},
-      )
-    }
-  }
-}
-
-@Composable
 internal fun LanguageWithDialog(
   languageOptions: List<Language>,
   selectedLanguage: Language,
@@ -340,6 +305,42 @@ private fun Theme.apply() = when (this) {
       AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
     } else {
       AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY)
+    }
+  }
+}
+
+@Composable
+@HedvigPreview
+fun PreviewSettingsScreen() {
+  HedvigTheme {
+    Surface {
+      SettingsScreen(
+        uiState = SettingsUiState.Loaded(
+          selectedLanguage = Language.SV_SE,
+          languageOptions = listOf(Language.SV_SE, Language.EN_SE),
+          selectedTheme = Theme.SYSTEM_DEFAULT,
+          showNotificationReminder = true,
+          subscribed = true,
+          showSubscriptionPreferences = true
+        ),
+        notificationPermissionState = object : NotificationPermissionState {
+          override val showDialog = false
+
+          override fun dismissDialog() {}
+
+          override fun launchPermissionRequest() {}
+
+          override val permission: String = ""
+          override val status: PermissionStatus = PermissionStatus.Granted
+        },
+        navigateUp = {},
+        openAppSettings = {},
+        onNotificationInfoDismissed = {},
+        onLanguageSelected = {},
+        onThemeSelected = {},
+        onTerminateAccountClicked = {},
+        changeSubscriptionPreference = {},
+      )
     }
   }
 }

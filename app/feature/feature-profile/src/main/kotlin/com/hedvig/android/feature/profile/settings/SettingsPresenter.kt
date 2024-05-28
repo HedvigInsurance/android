@@ -23,6 +23,7 @@ internal class SettingsPresenter(
   private val settingsDataStore: SettingsDataStore,
   private val enableNotificationsReminderManager: EnableNotificationsReminderManager,
   private val cacheManager: NetworkCacheManager,
+  private val isSwedishMarket: Boolean,
   private val changeEmailSubscriptionPreferencesUseCase: ChangeEmailSubscriptionPreferencesUseCase,
   private val uploadLanguagePreferenceToBackendUseCase: UploadLanguagePreferenceToBackendUseCase,
 ) : MoleculePresenter<SettingsEvent, SettingsUiState> {
@@ -71,6 +72,7 @@ internal class SettingsPresenter(
       SettingsUiState.Loading(
         selectedLanguage = selectedLanguage,
         languageOptions = lastState.languageOptions,
+        showSubscriptionPreferences = isSwedishMarket
       )
     } else {
       SettingsUiState.Loaded(
@@ -79,6 +81,7 @@ internal class SettingsPresenter(
         selectedTheme = selectedTheme,
         showNotificationReminder = showNotificationReminder,
         subscribed = subscribed,
+        showSubscriptionPreferences = isSwedishMarket
       )
     }
   }
@@ -90,10 +93,12 @@ sealed interface SettingsUiState {
   val selectedTheme: Theme?
   val subscribed: Boolean?
   val showNotificationReminder: Boolean?
+  val showSubscriptionPreferences: Boolean
 
   data class Loading(
     override val selectedLanguage: Language,
     override val languageOptions: List<Language>,
+    override val showSubscriptionPreferences: Boolean
   ) : SettingsUiState {
     override val subscribed: Boolean? = null
     override val selectedTheme: Theme? = null
@@ -106,6 +111,7 @@ sealed interface SettingsUiState {
     override val selectedTheme: Theme?,
     override val showNotificationReminder: Boolean,
     override val subscribed: Boolean?,
+    override val showSubscriptionPreferences: Boolean
   ) : SettingsUiState
 }
 
