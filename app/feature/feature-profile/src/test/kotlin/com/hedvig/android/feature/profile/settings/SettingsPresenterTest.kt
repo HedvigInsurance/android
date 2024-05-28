@@ -1,5 +1,8 @@
 package com.hedvig.android.feature.profile.settings
 
+import arrow.core.Either
+import arrow.core.raise.either
+import arrow.core.right
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
@@ -7,6 +10,8 @@ import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.auth.listeners.UploadLanguagePreferenceToBackendUseCase
 import com.hedvig.android.core.datastore.FakeSettingsDataStore
 import com.hedvig.android.feature.profile.data.ChangeEmailSubscriptionPreferencesUseCase
+import com.hedvig.android.feature.profile.data.SubPrefError
+import com.hedvig.android.feature.profile.data.SubPrefSuccess
 import com.hedvig.android.language.Language
 import com.hedvig.android.language.test.FakeLanguageService
 import com.hedvig.android.memberreminders.test.TestEnableNotificationsReminderManager
@@ -156,5 +161,7 @@ private class NoopUploadLanguagePreferenceToBackendUseCase : UploadLanguagePrefe
 }
 
 private class NoopChangeEmailSubscriptionPreferencesUseCase : ChangeEmailSubscriptionPreferencesUseCase {
-  override suspend fun invoke(subscribe: Boolean) {}
+  override suspend fun invoke(subscribe: Boolean): Either<SubPrefError, SubPrefSuccess> = either {
+    return SubPrefSuccess.right()
+  }
 }

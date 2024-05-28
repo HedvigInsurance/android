@@ -55,8 +55,13 @@ internal class SettingsPresenter(
 
         is SettingsEvent.ChangeSubscriptionPreference -> {
           launch {
-            settingsDataStore.setSubscriptionPreference(event.subscribe)
             changeEmailSubscriptionPreferencesUseCase.invoke(event.subscribe)
+              .onLeft {
+                // todo: add something wrong here
+              }
+              .onRight {
+                settingsDataStore.setSubscriptionPreference(event.subscribe)
+              }
           }
         }
       }
