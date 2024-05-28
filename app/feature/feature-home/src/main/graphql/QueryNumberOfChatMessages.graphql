@@ -1,5 +1,5 @@
 query NumberOfChatMessages {
-  chat {
+  chat(until: null) {
     messages {
       id
       sender
