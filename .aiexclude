@@ -1,0 +1,13 @@
+.properties
+.DS_Store
+.gradle
+.settings
+.iml
+.li
+.classpath
+.project
+build/
+mapping.txt
+.json
+.graphqls
+Jks
