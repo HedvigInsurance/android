@@ -1,17 +1,16 @@
 plugins {
   id("hedvig.android.library")
   id("hedvig.android.ktlint")
+  alias(libs.plugins.squareSortDependencies)
 }
 
 dependencies {
-  implementation(projects.app.apollo.giraffe)
-  implementation(projects.app.core.common)
-  implementation(projects.app.core.resources)
+  api(projects.languageCore)
 
-  implementation(libs.androidx.other.preference)
+  implementation(libs.androidx.datastore.core)
+  implementation(libs.androidx.datastore.preferencesCore)
   implementation(libs.koin.core)
-}
-
-android {
-  namespace = "com.hedvig.android.market"
+  implementation(projects.coreBuildConstants)
+  implementation(projects.coreCommonPublic)
+  implementation(projects.coreResources)
 }

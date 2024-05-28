@@ -1,4 +1,3 @@
-@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
   alias(libs.plugins.androidApplication) apply false
   alias(libs.plugins.androidLibrary) apply false
@@ -6,7 +5,9 @@ plugins {
   alias(libs.plugins.dependencyAnalysis)
   alias(libs.plugins.doctor)
   alias(libs.plugins.kotlin) apply false
+  alias(libs.plugins.kotlinJvm) apply false
   alias(libs.plugins.kotlinter) apply false
+  alias(libs.plugins.lintGradlePlugin) apply false
 }
 
 apply {

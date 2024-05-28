@@ -1,7 +1,0 @@
-query ActiveContractBundles {
-  activeContractBundles {
-    angelStories {
-      addressChangeV2
-    }
-  }
-}

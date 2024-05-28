@@ -1,0 +1,62 @@
+query Home {
+  currentMember {
+    claims {
+      ...ClaimFragment
+    }
+    terminatedContracts {
+      id
+    }
+    pendingContracts {
+      id
+      externalInsuranceCancellationHandledByHedvig
+      exposureDisplayName
+    }
+    importantMessages {
+      id
+      message
+      link
+    }
+    crossSells {
+      id
+      title
+      description
+      storeUrl
+      type
+    }
+    memberActions {
+      firstVetAction {
+        sections {
+          title
+          buttonTitle
+          description
+          url
+        }
+      }
+    }
+    activeContracts {
+      masterInceptionDate
+      currentAgreement {
+        productVariant {
+          commonClaimDescriptions {
+            id
+            title
+            layout {
+              ... on CommonClaimLayoutEmergency {
+                emergencyNumber
+              }
+              ... on CommonClaimLayoutTitleAndBulletPoints {
+                bulletPoints {
+                  title
+                  description
+                  icon {
+                    ...IconsFragment
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

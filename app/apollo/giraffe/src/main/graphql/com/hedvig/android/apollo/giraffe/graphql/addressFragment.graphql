@@ -1,5 +1,0 @@
-fragment AddressFragment on Address {
-  street
-  postalCode
-  city
-}

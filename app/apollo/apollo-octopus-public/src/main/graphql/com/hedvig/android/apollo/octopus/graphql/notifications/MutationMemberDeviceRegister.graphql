@@ -1,0 +1,3 @@
+mutation MemberDeviceRegister($token: String!) {
+  memberDeviceRegister(input: {platform: ANDROID, token: $token})
+}

@@ -10,9 +10,7 @@ pluginManagement {
 }
 
 dependencyResolutionManagement {
-  @Suppress("UnstableApiUsage")
   repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-  @Suppress("UnstableApiUsage")
   repositories {
     google()
     mavenCentral()
@@ -30,55 +28,29 @@ dependencyResolutionManagement {
 
 rootProject.name = "hedvigandroid"
 
-include(":app:apollo")
-include(":app:apollo:core")
-include(":app:apollo:di")
-include(":app:apollo:giraffe")
-include(":app:apollo:giraffe-test")
-include(":app:apollo:octopus")
-include(":app:app")
-include(":app:audio-player")
-include(":app:auth:auth-android")
-include(":app:auth:auth-core")
-include(":app:auth:auth-event-core")
-include(":app:auth:auth-event-test")
-include(":app:auth:auth-test")
-include(":app:core:common")
-include(":app:core:common-android")
-include(":app:core:common-android-test")
-include(":app:core:common-test")
-include(":app:core:datastore")
-include(":app:core:datastore-test")
-include(":app:core:design-system")
-include(":app:core:icons")
-include(":app:core:resources")
-include(":app:core:ui")
-include(":app:core:ui-data")
-include(":app:data:claim-flow")
-include(":app:data:claim-triaging")
-include(":app:data:travel-certificate")
-include(":app:datadog")
-include(":app:feature:businessmodel")
-include(":app:feature:changeaddress")
-include(":app:feature:claim-triaging")
-include(":app:feature:home")
-include(":app:feature:odyssey")
-include(":app:feature:terminate-insurance")
-include(":app:feature:travel-certificate")
-include(":app:hanalytics:hanalytics-android")
-include(":app:hanalytics:hanalytics-core")
-include(":app:hanalytics:hanalytics-feature-flags")
-include(":app:hanalytics:hanalytics-feature-flags-test")
-include(":app:hanalytics:hanalytics-test")
-include(":app:language:language-core")
-include(":app:language:language-test")
-include(":app:market:market-core")
-include(":app:market:market-test")
-include(":app:navigation:core")
-include(":app:navigation:navigation-activity")
-include(":app:navigation:navigation-compose-typed")
-include(":app:notification-badge-data")
-include(":app:notification:firebase")
-include(":app:notification:notification-core")
-include(":app:testdata")
-include(":micro-apps:design-showcase")
+private val File.gradleModuleDescendants: Sequence<File>
+  get() = listFiles()
+    ?.asSequence()
+    ?.filter {
+      it.isDirectory
+    }
+    ?.flatMap {
+      if (File(it, "build.gradle.kts").exists()) {
+        sequenceOf(it)
+      } else {
+        it.gradleModuleDescendants
+      }
+    } ?: emptySequence()
+
+rootProject.projectDir
+  .resolve("app")
+  .gradleModuleDescendants
+  .forEach { file ->
+    include(file.name)
+    project(":${file.name}").projectDir = file
+  }
+
+include("design-showcase")
+project(":design-showcase").projectDir = rootProject.projectDir.resolve("micro-apps").resolve("design-showcase")
+include("hedvig-lint")
+

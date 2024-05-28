@@ -1,0 +1,12 @@
+query GetPayinMethodStatus {
+  currentMember {
+    paymentInformation {
+      status
+    }
+    activeContracts {
+      terminationDate
+      terminationDueToMissedPayments
+      id
+    }
+  }
+}

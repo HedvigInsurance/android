@@ -2,16 +2,17 @@ package com.hedvig.android.market.test
 
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class FakeMarketManager(
-  private val _market: Market,
+  initialMarket: Market = Market.SE,
 ) : MarketManager {
-  override val enabledMarkets: List<Market>
-    get() = TODO()
+  override val market: StateFlow<Market> = MutableStateFlow(initialMarket).asStateFlow()
 
-  override var market: Market?
-    get() = _market
-    set(_) {
-      error("Construct FakeMarketManager with another market instead")
-    }
+  override fun selectedMarket(): Flow<Market?> {
+    error("Not yet implemented")
+  }
 }

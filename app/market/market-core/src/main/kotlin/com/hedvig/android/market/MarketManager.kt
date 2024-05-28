@@ -1,51 +1,39 @@
 package com.hedvig.android.market
 
-import android.annotation.SuppressLint
-import android.content.Context
-import androidx.preference.PreferenceManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.stateIn
 
 interface MarketManager {
-  val enabledMarkets: List<Market>
-  var market: Market?
+  /**
+   * The current market, defaulting to [Market.SE] if none is set, for cases wherer we need a best guess on the market,
+   * in a synchronous manner.
+   */
+  val market: StateFlow<Market>
+
+  /**
+   * Suspend version which does not default to some market if none is set.
+   */
+  fun selectedMarket(): Flow<Market?>
 }
 
 internal class MarketManagerImpl(
-  context: Context,
-  isDebug: Boolean,
+  private val marketStorage: MarketStorage,
+  coroutineScope: CoroutineScope,
 ) : MarketManager {
+  @Deprecated("Try to use selectedMarket instead, which does not default to SE by itself")
+  override val market: StateFlow<Market> = marketStorage.market
+    .filterNotNull()
+    .stateIn(
+      coroutineScope,
+      SharingStarted.Eagerly,
+      Market.SE,
+    )
 
-  private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-
-  override val enabledMarkets = listOfNotNull(
-    Market.SE,
-    Market.NO,
-    Market.DK,
-    if (isDebug) Market.FR else null,
-  )
-
-  override var market: Market?
-    get() = getMarketLocally()
-    set(value) {
-      value?.let(::setMarketLocally) ?: removeMarket()
-    }
-
-  private fun getMarketLocally(): Market? {
-    return sharedPreferences
-      .getString(Market.MARKET_SHARED_PREF, null)
-      ?.let { Market.valueOf(it) }
-  }
-
-  @SuppressLint("ApplySharedPref") // We need to do this right away
-  private fun setMarketLocally(market: Market) {
-    sharedPreferences.edit()
-      .putString(Market.MARKET_SHARED_PREF, market.name)
-      .commit()
-  }
-
-  @SuppressLint("ApplySharedPref") // We need to do this right away
-  private fun removeMarket() {
-    sharedPreferences.edit()
-      .remove(Market.MARKET_SHARED_PREF)
-      .commit()
+  override fun selectedMarket(): Flow<Market?> {
+    return marketStorage.market
   }
 }

@@ -7,7 +7,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationManagerCompat
-import slimber.log.d
+import com.hedvig.android.logger.logcat
 
 @SuppressLint("MissingPermission")
 fun sendHedvigNotification(
@@ -16,7 +16,7 @@ fun sendHedvigNotification(
   notificationId: Int,
   notification: Notification,
 ) {
-  d { "$notificationSender is going to send a notification" }
+  logcat { "$notificationSender is going to send a notification" }
   if (
     ActivityCompat.checkSelfPermission(
       context,
@@ -27,6 +27,6 @@ fun sendHedvigNotification(
       .from(context)
       .notify(notificationId, notification)
   } else {
-    d { "$notificationSender did not have notification permission" }
+    logcat { "$notificationSender did not have notification permission" }
   }
 }

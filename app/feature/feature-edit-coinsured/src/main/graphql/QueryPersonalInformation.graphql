@@ -1,0 +1,6 @@
+query PersonalInformation($ssn: String!) {
+  personalInformation(input: { personalNumber: $ssn }) {
+    firstName
+    lastName
+  }
+}

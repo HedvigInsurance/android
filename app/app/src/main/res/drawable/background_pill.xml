@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <padding
-        android:top="@dimen/pill_padding_vertical"
-        android:bottom="@dimen/pill_padding_vertical"
-        android:left="@dimen/pill_padding_horizontal"
-        android:right="@dimen/pill_padding_horizontal" />
-    <corners android:radius="@dimen/pill_corner_radius" />
-</shape>

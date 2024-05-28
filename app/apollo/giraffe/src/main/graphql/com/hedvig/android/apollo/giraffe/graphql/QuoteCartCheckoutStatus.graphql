@@ -1,9 +1,0 @@
-query QuoteCartCheckoutStatusQuery($id: ID!) {
-  quoteCart(id: $id) {
-    checkout {
-      status
-      statusText
-      redirectUrl
-    }
-  }
-}

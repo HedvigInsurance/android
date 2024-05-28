@@ -62,7 +62,10 @@ task generateProjectDependencyGraph {
                             def graphKey = new Tuple2<Project, Project>(project, dependency)
                             def traits = dependencies.computeIfAbsent(graphKey) { new ArrayList<String>() }
 
-                            if (config.name.toLowerCase().endsWith('implementation')) {
+
+                            def configLowerCaseName = config.name.toLowerCase()
+                            println "configLowerCaseName:${configLowerCaseName}"
+                            if (configLowerCaseName.endsWith('implementation') || configLowerCaseName.endsWith('lintchecks')) {
                                 traits.add('style=dotted')
                             }
                         }

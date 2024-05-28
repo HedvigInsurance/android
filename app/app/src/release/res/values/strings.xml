@@ -2,15 +2,12 @@
 <resources>
     <string name="APP_NAME" translatable="false">Hedvig</string>
 
-    <string name="APP_SCHEME" translatable="false">hedvig</string>
-    <string name="FIREBASE_LINK_DOMAIN" translatable="false">hedvig.page.link</string>
+    <string name="DEEP_LINK_DOMAIN_HOST" translatable="false">hedvig.page.link</string>
 
-    <string name="GRAPHQL_URL" translatable="false">https://giraffe.hedvig.com/graphql</string>
-    <string name="WS_GRAPHQL_URL" translatable="false">wss://giraffe.hedvig.com/subscriptions</string>
     <string name="OCTOPUS_GRAPHQL_URL" translatable="false">https://apollo-router.prod.hedvigit.com</string>
-    <string name="BASE_URL" translatable="false">https://giraffe.hedvig.com</string>
     <string name="WEB_BASE_URL" translatable="false">https://www.hedvig.com</string>
-    <string name="HANALYTICS_URL" translatable="false">https://hanalytics.prod.hedvigit.com</string>
     <string name="ODYSSEY_URL" translatable="false">https://odyssey.prod.hedvigit.com</string>
+    <string name="BOT_SERVICE" translatable="false">https://gateway.hedvig.com/bot-service</string>
     <string name="AUTH_URL" translatable="false">"https://auth.prod.hedvigit.com"</string>
+    <string name="CLAIMS_SERVICE" translatable="false">https://gateway.hedvig.com/claims</string>
 </resources>

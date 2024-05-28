@@ -1,0 +1,228 @@
+fragment ClaimFlowStepFragment on Flow {
+  currentStep {
+    id
+    ...FlowClaimAudioRecordingStepFragment
+    ...FlowClaimDateOfOccurrenceStepFragment
+    ...FlowClaimLocationStepFragment
+    ...FlowClaimDateOfOccurrencePlusLocationStepFragment
+    ...FlowClaimPhoneNumberStepFragment
+    ...FlowClaimSingleItemStepFragment
+    ...FlowClaimSingleItemCheckoutStepFragment
+    ...FlowClaimSummaryStepFragment
+    ...FlowClaimFailedStepFragment
+    ...FlowClaimSuccessStepFragment
+    ...FlowClaimContractSelectStepFragment
+    ...FlowClaimDeflectGlassDamageStepFragment
+    ...FlowClaimConfirmEmergencyStepFragment
+    ...FlowClaimDeflectEmergencyStepFragment
+    ...FlowClaimDeflectPestsStepFragment
+    ...FlowClaimFileUploadFragment
+    ...FlowClaimDeflectTowingStepFragment
+    ...FlowClaimDeflectEirStepFragment
+  }
+}
+
+fragment FlowClaimAudioRecordingStepFragment on FlowClaimAudioRecordingStep {
+  id
+  questions
+  audioContent {
+    ...AudioContentFragment
+  }
+}
+
+fragment FlowClaimDateOfOccurrenceStepFragment on FlowClaimDateOfOccurrenceStep {
+  id
+  dateOfOccurrence
+  maxDate
+}
+
+fragment FlowClaimLocationStepFragment on FlowClaimLocationStep {
+  id
+  location
+  options {
+    value
+    displayName
+  }
+}
+
+fragment FlowClaimDateOfOccurrencePlusLocationStepFragment on FlowClaimDateOfOccurrencePlusLocationStep {
+  id
+  dateOfOccurrenceStep {
+    ...FlowClaimDateOfOccurrenceStepFragment
+  }
+  locationStep {
+    ...FlowClaimLocationStepFragment
+  }
+}
+
+fragment FlowClaimPhoneNumberStepFragment on FlowClaimPhoneNumberStep {
+  id
+  phoneNumber
+}
+
+fragment FlowClaimSingleItemStepFragment on FlowClaimSingleItemStep {
+  id
+  preferredCurrency
+  purchasePrice {
+    ...MoneyFragment
+  }
+  purchasePriceApplicable
+  purchaseDate
+  selectedItemProblems
+  availableItemProblems {
+    displayName
+    itemProblemId
+  }
+  selectedItemBrand
+  customName
+  availableItemBrands {
+    displayName
+    itemTypeId
+    itemBrandId
+  }
+  selectedItemModel
+  availableItemModels {
+    displayName
+    itemTypeId
+    itemBrandId
+    itemModelId
+  }
+}
+
+fragment FlowClaimSingleItemCheckoutStepFragment on FlowClaimSingleItemCheckoutStep {
+  id
+  singleItemStep {
+    ...FlowClaimSingleItemStepFragment
+  }
+  availableCheckoutMethods {
+    id
+    ...CheckoutMethodFragment
+  }
+  compensation {
+    ... on FlowClaimSingleItemCheckoutRepairCompensation {
+      deductible {
+        ...MoneyFragment
+      }
+      payoutAmount {
+        ...MoneyFragment
+      }
+      repairCost {
+        ...MoneyFragment
+      }
+    }
+    ... on FlowClaimSingleItemCheckoutValueCompensation {
+      deductible {
+        ...MoneyFragment
+      }
+      depreciation {
+        ...MoneyFragment
+      }
+      payoutAmount {
+        ...MoneyFragment
+      }
+      price {
+        ...MoneyFragment
+      }
+    }
+  }
+}
+
+fragment FlowClaimSummaryStepFragment on FlowClaimSummaryStep {
+  id
+  title
+  locationStep {
+    ...FlowClaimLocationStepFragment
+  }
+  dateOfOccurrenceStep {
+    ...FlowClaimDateOfOccurrenceStepFragment
+  }
+  singleItemStep {
+    ...FlowClaimSingleItemStepFragment
+  }
+  fileUploadStep {
+    ...FlowClaimFileUploadFragment
+  }
+  audioRecordingStep {
+    ...FlowClaimAudioRecordingStepFragment
+  }
+}
+
+fragment FlowClaimFailedStepFragment on FlowClaimFailedStep {
+  id
+}
+
+fragment FlowClaimSuccessStepFragment on FlowClaimSuccessStep {
+  id
+}
+
+fragment FlowClaimContractSelectStepFragment on FlowClaimContractSelectStep {
+  id
+  options {
+    id
+    displayName
+  }
+}
+
+fragment FlowClaimDeflectGlassDamageStepFragment on FlowClaimDeflectGlassDamageStep {
+  id
+  partners {
+    ...FlowClaimDeflectPartnerFragment
+  }
+}
+
+fragment FlowClaimConfirmEmergencyStepFragment on FlowClaimConfirmEmergencyStep {
+  id
+  text
+  confirmEmergency
+  options {
+    displayName
+    displayValue: value
+  }
+}
+
+fragment FlowClaimDeflectEmergencyStepFragment on FlowClaimDeflectEmergencyStep {
+  id
+  partners {
+    ...FlowClaimDeflectPartnerFragment
+  }
+}
+
+fragment FlowClaimDeflectPestsStepFragment on FlowClaimDeflectPestsStep {
+  id
+  partners {
+    ...FlowClaimDeflectPartnerFragment
+  }
+}
+
+fragment FlowClaimDeflectTowingStepFragment on FlowClaimDeflectTowingStep {
+  id
+  partners {
+    ...FlowClaimDeflectPartnerFragment
+  }
+}
+
+fragment FlowClaimDeflectEirStepFragment on FlowClaimDeflectEirStep {
+  id
+  partners {
+    ...FlowClaimDeflectPartnerFragment
+  }
+}
+
+fragment FlowClaimDeflectPartnerFragment on FlowClaimDeflectPartner {
+  id
+  imageUrl
+  url
+  phoneNumber
+}
+
+fragment FlowClaimFileUploadFragment on FlowClaimFileUploadStep {
+  id
+  title
+  targetUploadUrl
+  uploads { #already added files - if we go back and get upload step again
+    fileId
+    signedUrl
+    mimeType
+    name
+  }
+}

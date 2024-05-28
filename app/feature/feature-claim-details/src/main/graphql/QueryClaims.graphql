@@ -1,0 +1,7 @@
+query Claims {
+  currentMember {
+    claims {
+      ...ClaimFragment
+    }
+  }
+}

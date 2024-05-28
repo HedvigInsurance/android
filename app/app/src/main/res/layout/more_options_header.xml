@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="24dp"
-    android:layout_marginBottom="24dp"
-    android:text="@string/embark_onboarding_more_options.information_section_title"
-    android:textAppearance="?textAppearanceHeadline6" />

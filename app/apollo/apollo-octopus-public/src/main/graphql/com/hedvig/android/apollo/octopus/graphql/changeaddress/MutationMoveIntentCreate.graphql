@@ -1,0 +1,24 @@
+mutation MoveIntentCreate {
+  moveIntentCreate {
+    moveIntent {
+      id
+      minMovingDate
+      maxMovingDate
+      isApartmentAvailableforStudent
+      maxApartmentNumberCoInsured
+      maxHouseNumberCoInsured
+      maxApartmentSquareMeters
+      maxHouseSquareMeters
+      suggestedNumberCoInsured
+      extraBuildingTypes
+      currentHomeAddresses {
+        id
+        street
+        postalCode
+      }
+    }
+    userError {
+      message
+    }
+  }
+}

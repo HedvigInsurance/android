@@ -1,12 +1,10 @@
 plugins {
   id("hedvig.android.library")
   id("hedvig.android.ktlint")
+  alias(libs.plugins.squareSortDependencies)
 }
 
 dependencies {
-  implementation(projects.app.market.marketCore)
-}
-
-android {
-  namespace = "com.hedvig.android.market.test"
+  implementation(libs.coroutines.core)
+  implementation(projects.marketCore)
 }

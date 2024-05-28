@@ -1,0 +1,20 @@
+query CoInsured {
+  currentMember {
+    firstName
+    lastName
+    ssn
+    activeContracts {
+      id
+      coInsured {
+        firstName
+        lastName
+        birthdate
+        ssn
+        hasMissingInfo
+        activatesOn
+        terminatesOn
+      }
+    }
+  }
+}
+

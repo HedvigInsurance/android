@@ -1,7 +1,0 @@
-query CrossSells($locale: Locale!) {
-  activeContractBundles {
-    potentialCrossSells {
-      ...CrossSellFragment
-    }
-  }
-}

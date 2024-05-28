@@ -1,3 +1,0 @@
-mutation SendChatTextResponse($input: ChatResponseTextInput!) {
-  sendChatTextResponse(input: $input)
-}

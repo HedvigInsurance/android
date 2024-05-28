@@ -1,0 +1,56 @@
+query InsuranceContracts {
+  currentMember {
+    firstName
+    lastName
+    ssn
+    terminatedContracts {
+      ...ContractFragment
+    }
+
+    activeContracts {
+      ...ContractFragment
+    }
+  }
+}
+
+fragment ContractFragment on Contract {
+  id
+  masterInceptionDate
+  terminationDate
+  exposureDisplayName
+  supportsMoving
+  supportsCoInsured
+  coInsured {
+    firstName
+    lastName
+    ssn
+    birthdate
+    hasMissingInfo
+    activatesOn
+    terminatesOn
+  }
+  currentAgreement {
+    ...AgreementFragment
+  }
+  upcomingChangedAgreement {
+    ...AgreementFragment
+  }
+}
+
+fragment AgreementFragment on Agreement {
+  activeFrom
+  activeTo
+  certificateUrl
+  creationCause
+  displayItems {
+    ...AgreementDisplayItemFragment
+  }
+  productVariant {
+    ...ProductVariantFragment
+  }
+}
+
+fragment AgreementDisplayItemFragment on AgreementDisplayItem {
+  displayTitle
+  displayValue
+}

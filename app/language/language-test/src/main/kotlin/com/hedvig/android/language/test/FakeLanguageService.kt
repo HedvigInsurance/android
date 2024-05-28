@@ -1,28 +1,25 @@
 package com.hedvig.android.language.test
 
+import com.hedvig.android.language.Language
 import com.hedvig.android.language.LanguageService
-import com.hedvig.android.market.Language
 import java.util.Locale
 
-@Suppress("unused")
-class FakeLanguageService : LanguageService {
+class FakeLanguageService(
+  private val fixedLocale: Locale? = null,
+) : LanguageService {
   override fun setLanguage(language: Language) {
-    TODO("Not yet implemented")
+    error("Not implemented")
+  }
+
+  override fun getSelectedLanguage(): Language? {
+    error("Not implemented")
   }
 
   override fun getLanguage(): Language {
-    TODO("Not yet implemented")
+    error("Not implemented")
   }
 
   override fun getLocale(): Locale {
-    return Locale.ENGLISH
-  }
-
-  override fun getGraphQLLocale(): giraffe.type.Locale {
-    TODO("Not yet implemented")
-  }
-
-  override fun performOnLaunchLanguageCheck() {
-    TODO("Not yet implemented")
+    return fixedLocale ?: error("Not implemented")
   }
 }

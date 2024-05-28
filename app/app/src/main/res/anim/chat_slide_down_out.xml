@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<set xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shareInterpolator="false"
-    android:interpolator="@android:interpolator/linear_out_slow_in">
-    <translate
-        android:duration="@integer/chat_slide_out_animation_duration"
-        android:fromYDelta="0%"
-        android:toYDelta="100%" />
-</set>

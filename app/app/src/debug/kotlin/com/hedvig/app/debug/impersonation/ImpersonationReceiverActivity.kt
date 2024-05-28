@@ -1,12 +1,12 @@
 package com.hedvig.app.debug.impersonation
 
 import android.os.Bundle
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -16,13 +16,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
+import com.hedvig.android.app.MainActivity
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.hanalytics.featureflags.FeatureManager
-import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.AuthTokenResult
 import com.hedvig.authlib.AuthorizationCodeGrant
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,9 +38,8 @@ import org.koin.core.context.loadKoinModules
 import org.koin.core.context.unloadKoinModules
 import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
-import kotlin.time.Duration.Companion.milliseconds
 
-class ImpersonationReceiverActivity : AppCompatActivity() {
+class ImpersonationReceiverActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     loadKoinModules(module)
@@ -55,7 +54,7 @@ class ImpersonationReceiverActivity : AppCompatActivity() {
       .events
       .flowWithLifecycle(lifecycle)
       .onEach {
-        startActivity(LoggedInActivity.newInstance(this, withoutHistory = true))
+        startActivity(MainActivity.newInstance(this, withoutHistory = true))
         finish()
       }
       .launchIn(lifecycleScope)
@@ -73,7 +72,7 @@ class ImpersonationReceiverActivity : AppCompatActivity() {
             },
             modifier = Modifier.align(Alignment.Center),
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.h4,
+            style = MaterialTheme.typography.headlineMedium,
           )
         }
       }
@@ -88,7 +87,7 @@ class ImpersonationReceiverActivity : AppCompatActivity() {
   companion object {
     val module = module {
       viewModel { params ->
-        ImpersonationReceiverViewModel(params.get(), get(), get(), get())
+        ImpersonationReceiverViewModel(params.get(), get(), get())
       }
     }
   }
@@ -98,11 +97,12 @@ class ImpersonationReceiverViewModel(
   exchangeToken: String,
   authTokenService: AuthTokenService,
   authRepository: AuthRepository,
-  featureManager: FeatureManager,
 ) : ViewModel() {
   sealed class ViewState {
     object Loading : ViewState()
+
     object Success : ViewState()
+
     data class Error(val message: String?) : ViewState()
   }
 
@@ -117,10 +117,9 @@ class ImpersonationReceiverViewModel(
   init {
     viewModelScope.launch {
       when (val result = authRepository.exchange(AuthorizationCodeGrant(exchangeToken))) {
-        is AuthTokenResult.Error -> _state.update { ViewState.Error(result.message) }
+        is AuthTokenResult.Error -> _state.update { ViewState.Error(result.toString()) }
         is AuthTokenResult.Success -> {
           authTokenService.loginWithTokens(result.accessToken, result.refreshToken)
-          featureManager.invalidateExperiments()
           _state.update { ViewState.Success }
           delay(500.milliseconds)
           _events.send(GoToLoggedInActivityEvent)

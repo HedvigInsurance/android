@@ -1,9 +1,0 @@
-query MarketingBackground($language: String!) {
-  appMarketingImages(where: { language: { code: $language } }) {
-    image {
-      url
-    }
-    blurhash
-    userInterfaceStyle
-  }
-}

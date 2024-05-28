@@ -1,9 +1,0 @@
-query EntrypointGroups {
-  entrypointGroups(type: CLAIM) {
-    id
-    displayName
-    entrypoints {
-      ...EntryPoint
-    }
-  }
-}

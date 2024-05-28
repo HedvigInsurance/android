@@ -1,0 +1,60 @@
+query UpcomingPayment {
+  currentMember {
+    futureCharge {
+      ...MemberChargeFragment
+    }
+    paymentInformation {
+      status
+      connection {
+        displayName
+        descriptor
+      }
+    }
+  }
+}
+
+fragment MemberChargeFragment on MemberCharge {
+  contractsChargeBreakdown {
+    contract {
+      exposureDisplayName
+      currentAgreement {
+        productVariant {
+          displayName
+        }
+      }
+    }
+    gross {
+      ...MoneyFragment
+    }
+    periods {
+      amount {
+        ...MoneyFragment
+      }
+      fromDate
+      isPreviouslyFailedCharge
+      toDate
+    }
+  }
+  date
+  discountBreakdown {
+    code
+    isReferral
+    discount {
+      ...MoneyFragment
+    }
+  }
+  gross {
+    ...MoneyFragment
+  }
+  id
+  net {
+    ...MoneyFragment
+  }
+  status
+  carriedAdjustment {
+   ...MoneyFragment
+  }
+  settlementAdjustment {
+    ...MoneyFragment
+  }
+}

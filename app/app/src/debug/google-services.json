@@ -1,82 +1,26 @@
 {
   "project_info": {
-    "project_number": "50557424572",
-    "firebase_url": "https://hedvig-test.firebaseio.com",
-    "project_id": "hedvig-test",
-    "storage_bucket": "hedvig-test.appspot.com"
+    "project_number": "190369814613",
+    "project_id": "hedvig-dev",
+    "storage_bucket": "hedvig-dev.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:50557424572:android:ece9baf70d8890806c11b9",
+        "mobilesdk_app_id": "1:190369814613:android:32212e1fecd1ec27c99cdc",
         "android_client_info": {
           "package_name": "com.hedvig.dev.app"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "50557424572-bm12n8993fjpb65ueukdvvkd3dlij6pl.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyB99lRN-QvB3Si4UkxOwMn3p0N9oWhilSA"
+          "current_key": "AIzaSyAcRb6o7dqKoDds6YwFluCuXzZczTjNVwA"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "50557424572-bm12n8993fjpb65ueukdvvkd3dlij6pl.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "50557424572-72impeqmcrg3oc3fl0lh8mbk7plqi6bq.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.hedvig.test.app",
-                "app_store_id": "1339670517"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:50557424572:android:b13f4f0c701d8299",
-        "android_client_info": {
-          "package_name": "com.hedvig.test.app"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "50557424572-bm12n8993fjpb65ueukdvvkd3dlij6pl.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyB99lRN-QvB3Si4UkxOwMn3p0N9oWhilSA"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "50557424572-bm12n8993fjpb65ueukdvvkd3dlij6pl.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "50557424572-72impeqmcrg3oc3fl0lh8mbk7plqi6bq.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.hedvig.test.app",
-                "app_store_id": "1339670517"
-              }
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

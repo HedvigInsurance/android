@@ -1,0 +1,15 @@
+query ForeverInformation {
+  currentMember {
+    referralInformation {
+      code
+      monthlyDiscountPerReferral {
+        ...MoneyFragment
+      }
+    }
+    insuranceCost {
+      monthlyDiscount {
+        ...MoneyFragment
+      }
+    }
+  }
+}

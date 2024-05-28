@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
+
 plugins {
   `kotlin-dsl`
 }
@@ -7,6 +9,10 @@ group = "com.hedvig.android.buildlogic"
 java {
   sourceCompatibility = JavaVersion.VERSION_17
   targetCompatibility = JavaVersion.VERSION_17
+}
+
+tasks.withType<KotlinJvmCompile>().configureEach {
+  kotlinOptions.jvmTarget = JavaVersion.VERSION_17.toString()
 }
 
 dependencies {
@@ -32,9 +38,11 @@ gradlePlugin {
     createPlugin("hedvig.android.apollo", "ApolloConventionPlugin")
     createPlugin("hedvig.android.application", "ApplicationConventionPlugin")
     createPlugin("hedvig.android.application.compose", "ApplicationComposeConventionPlugin")
+    createPlugin("hedvig.android.feature", "FeatureConventionPlugin")
     createPlugin("hedvig.android.ktlint", "KtlintConventionPlugin")
     createPlugin("hedvig.android.library", "LibraryConventionPlugin")
     createPlugin("hedvig.android.library.compose", "LibraryComposeConventionPlugin")
     createPlugin("hedvig.kotlin.library", "KotlinLibraryConventionPlugin")
+    createPlugin("hedvig.lint", "HedvigLintConventionPlugin")
   }
 }

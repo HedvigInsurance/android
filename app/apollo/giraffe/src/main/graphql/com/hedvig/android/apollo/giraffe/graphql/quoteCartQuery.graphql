@@ -1,6 +1,0 @@
-query QuoteCartQuery($locale: Locale!, $id: ID!) {
-  quoteCart(id: $id) {
-    id
-    ...QuoteCartFragment
-  }
-}

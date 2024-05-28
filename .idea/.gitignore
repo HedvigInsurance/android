@@ -1,9 +1,12 @@
 # Default ignored files
 /shelf/
 /workspace.xml
+# GitHub Copilot files
+/copilot/*
 # Ignore everything inside .idea
 /*
 # Except for shared run configurations
 !/runConfigurations/
 !codeInsightSettings.xml
 !.gitignore
+!/codeStyles/
