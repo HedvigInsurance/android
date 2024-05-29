@@ -7,16 +7,17 @@ plugins {
 
 dependencies {
   apolloMetadata(projects.apolloOctopusPublic)
-  implementation(libs.apollo.runtime)
+
   implementation(libs.apollo.normalizedCache)
+  implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
   implementation(libs.koin.core)
+  implementation(libs.kotlinx.datetime)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
-  implementation(projects.coreUiData)
   implementation(projects.coreCommonPublic)
+  implementation(projects.coreUiData)
   implementation(projects.dataContractPublic)
-  implementation(libs.kotlinx.datetime)
   implementation(projects.featureFlagsPublic)
 }
 

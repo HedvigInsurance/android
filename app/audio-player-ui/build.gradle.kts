@@ -13,11 +13,11 @@ dependencies {
   implementation(libs.androidx.lifecycle.common)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.androidx.lifecycle.runtime)
+  implementation(projects.audioPlayerData)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreDesignSystem)
   implementation(projects.coreIcons)
   implementation(projects.coreResources)
-  implementation(projects.audioPlayerData)
 
   testImplementation(libs.assertK)
   testImplementation(libs.junit)
