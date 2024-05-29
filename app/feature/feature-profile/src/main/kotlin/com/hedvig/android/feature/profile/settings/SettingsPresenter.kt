@@ -64,6 +64,11 @@ internal class SettingsPresenter(
               .onRight {
                 emailPrefError = false
                 settingsDataStore.setSubscriptionPreference(event.subscribe)
+                // todo: if we have error (connection error e.g.),
+                //  the error is shown, then the connection is back, we try again,
+                //  it changes the setting in the store and clears the error,
+                //  but does not show the right value.
+                //  for scenario unregister -> register
               }
           }
         }
