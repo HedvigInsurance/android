@@ -53,6 +53,7 @@ import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
+import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
@@ -541,26 +542,12 @@ private class ShowSurveyUiStateProvider :
         selectedOption = previewReason3.surveyOption,
         reasons = listOf(previewReason1, previewReason2, previewReason3),
       ),
-//      TerminationSurveyState(
-//          nextNavigationStep = null,
-//          isNavigationStepLoading = true,
-//          feedbackEmptyWarning = false,
-//          selectedOption = previewReason2.surveyOption,
-//          reasons = listOf(previewReason1, previewReason2filled, previewReason3),
-//      ),
-      //      TerminationSurveyState(
-//          nextNavigationStep = null,
-//          isNavigationStepLoading = false,
-//          feedbackEmptyWarning = false,
-//          selectedOption = null,
-//          reasons = listOf(previewReason1, previewReason2filled, previewReason3),
-//      ),
       TerminationSurveyState(
         nextNavigationStep = null,
         navigationStepLoadingForReason = null,
         errorWhileLoadingNextStep = true,
         selectedOption = previewReason2.surveyOption,
-        reasons = listOf(previewReason1, previewReason2filled, previewReason3),
+        reasons = listOf(previewReason1, previewReason2, previewReason3),
       ),
     ),
   )
@@ -611,7 +598,7 @@ private val previewReason2 = TerminationReason(
     feedBackRequired = true,
     listIndex = 1,
   ),
-  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla nec nisi eget mi luctus suscipit. Donec at vestibulum turpis.",
+  feedBack = LoremIpsum(25).values.first(),
 )
 
 private val previewReason2filled = TerminationReason(
