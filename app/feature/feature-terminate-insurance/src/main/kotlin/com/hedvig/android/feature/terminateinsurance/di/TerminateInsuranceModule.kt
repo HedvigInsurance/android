@@ -5,10 +5,11 @@ import androidx.datastore.preferences.core.Preferences
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.data.termination.data.GetTerminatableContractsUseCase
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
+import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepositoryImpl
 import com.hedvig.android.feature.terminateinsurance.data.TerminationFlowContextStorage
 import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination
-import com.hedvig.android.feature.terminateinsurance.navigation.TerminationDataParameters
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminationDateParameters
 import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateViewModel
 import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyViewModel
 import com.hedvig.android.feature.terminateinsurance.step.terminationdate.TerminationDateViewModel
@@ -31,7 +32,7 @@ val terminateInsuranceModule = module {
       terminateInsuranceRepository = get<TerminateInsuranceRepository>(),
     )
   }
-  viewModel<TerminationDateViewModel> { (parameters: TerminationDataParameters) ->
+  viewModel<TerminationDateViewModel> { (parameters: TerminationDateParameters) ->
     TerminationDateViewModel(
       parameters,
       languageService = get<LanguageService>(),
@@ -46,7 +47,7 @@ val terminateInsuranceModule = module {
     )
   }
   single<TerminateInsuranceRepository> {
-    TerminateInsuranceRepository(
+    TerminateInsuranceRepositoryImpl(
       apolloClient = get<ApolloClient>(),
       terminationFlowContextStorage = get(),
     )

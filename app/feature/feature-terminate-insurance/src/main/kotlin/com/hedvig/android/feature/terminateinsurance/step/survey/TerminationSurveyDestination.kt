@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -49,6 +50,7 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.LineBreak
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -84,6 +86,7 @@ internal fun TerminationSurveyDestination(
   navigateUp: () -> Unit,
   navigateToMovingFlow: () -> Unit,
   closeTerminationFlow: () -> Unit,
+  openUrl: (String) -> Unit,
   navigateToNextStep: (step: TerminateInsuranceStep) -> Unit,
   navigateToSubOptions: ((List<TerminationSurveyOption>) -> Unit)?,
 ) {
@@ -115,15 +118,16 @@ internal fun TerminationSurveyDestination(
     selectOption = { option ->
       viewModel.emit(TerminationSurveyEvent.SelectOption(option))
     },
-    changeFeedbackForReason = { option, feedback ->
-      viewModel.emit(TerminationSurveyEvent.ChangeFeedbackForReason(option, feedback))
+    changeFeedbackForSelectedReason = { feedback ->
+      viewModel.emit(TerminationSurveyEvent.ChangeFeedbackForSelectedReason(feedback))
     },
     onCloseFullScreenEditText = {
-      viewModel.emit(TerminationSurveyEvent.ClearFullScreenEditText)
+      viewModel.emit(TerminationSurveyEvent.CloseFullScreenEditText)
     },
     onLaunchFullScreenEditText = {
       viewModel.emit(TerminationSurveyEvent.ShowFullScreenEditText(it))
     },
+    openUrl = openUrl,
   )
 }
 
@@ -134,9 +138,10 @@ private fun TerminationSurveyScreen(
   navigateUp: () -> Unit,
   navigateToMovingFlow: () -> Unit,
   closeTerminationFlow: () -> Unit,
+  openUrl: (String) -> Unit,
   onCloseFullScreenEditText: () -> Unit,
   onLaunchFullScreenEditText: (option: TerminationSurveyOption) -> Unit,
-  changeFeedbackForReason: (option: TerminationSurveyOption, feedback: String?) -> Unit,
+  changeFeedbackForSelectedReason: (feedback: String?) -> Unit,
   onContinueClick: () -> Unit,
 ) {
   Box {
@@ -162,9 +167,9 @@ private fun TerminationSurveyScreen(
         Column {
           WarningTextWithIcon(
             modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .fillMaxWidth()
-                .wrapContentWidth(),
+              .padding(horizontal = 16.dp)
+              .fillMaxWidth()
+              .wrapContentWidth(),
             text = stringResource(R.string.something_went_wrong),
           )
           Spacer(Modifier.height(16.dp))
@@ -178,15 +183,15 @@ private fun TerminationSurveyScreen(
               containerColor = MaterialTheme.colorScheme.surface,
             ),
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+              .fillMaxWidth()
+              .padding(horizontal = 16.dp),
           ) {
             Row(
               verticalAlignment = Alignment.CenterVertically,
               modifier = Modifier
-                  .heightIn(64.dp)
-                  .fillMaxWidth()
-                  .padding(horizontal = 16.dp, vertical = 10.dp),
+                .heightIn(64.dp)
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 10.dp),
             ) {
               Text(
                 text = reason.surveyOption.title,
@@ -213,12 +218,24 @@ private fun TerminationSurveyScreen(
 
                   is SurveyOptionSuggestion.Redirect -> suggestion.description
                 }
+                val buttonText = when (suggestion) {
+                  SurveyOptionSuggestion.Action.UpdateAddress -> stringResource(
+                    R.string.TERMINATION_SURVEY_MOVING_BUTTON,
+                  )
+
+                  is SurveyOptionSuggestion.Redirect -> suggestion.buttonTitle
+                }
+                val onSuggestionButtonClick: () -> Unit = when (suggestion) {
+                  SurveyOptionSuggestion.Action.UpdateAddress -> { -> navigateToMovingFlow() }
+
+                  is SurveyOptionSuggestion.Redirect -> { -> openUrl(suggestion.url) }
+                }
                 VectorInfoCard(
                   text = text,
                   icon = Icons.Hedvig.Campaign,
                   modifier = Modifier
-                      .fillMaxWidth()
-                      .padding(horizontal = 16.dp),
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
                   iconColor = MaterialTheme.colorScheme.typeElement,
                   colors = CardDefaults.outlinedCardColors(
                     containerColor = MaterialTheme.colorScheme.typeContainer,
@@ -230,8 +247,8 @@ private fun TerminationSurveyScreen(
                     modifier = Modifier.fillMaxSize(),
                   ) {
                     InfoCardTextButton(
-                      text = stringResource(R.string.TERMINATION_SURVEY_MOVING_BUTTON),
-                      onClick = navigateToMovingFlow,
+                      text = buttonText,
+                      onClick = onSuggestionButtonClick,
                       modifier = Modifier.weight(1f),
                     )
                   }
@@ -248,18 +265,19 @@ private fun TerminationSurveyScreen(
                     containerColor = MaterialTheme.colorScheme.surface,
                   ),
                   modifier = Modifier
-                      .fillMaxWidth()
-                      .heightIn(100.dp)
-                      .padding(horizontal = 16.dp),
+                    .fillMaxWidth()
+                    .requiredHeight(100.dp)
+                    .padding(horizontal = 16.dp),
                 ) {
                   Column {
                     Row(
                       verticalAlignment = Alignment.Top,
                       modifier = Modifier
-                          .fillMaxWidth()
-                          .padding(start = 16.dp, top = 10.dp, end = 16.dp),
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, top = 10.dp, end = 16.dp),
                     ) {
                       Text(
+                        overflow = TextOverflow.Ellipsis,
                         text = feedback ?: stringResource(id = R.string.TERMINATION_SURVEY_FEEDBACK_HINT),
                         style = MaterialTheme.typography.bodyLarge,
                         color = if (feedback != null) {
@@ -271,19 +289,6 @@ private fun TerminationSurveyScreen(
                       )
                     }
                     Spacer(modifier = Modifier.weight(1f))
-                    Row(
-                      horizontalArrangement = Arrangement.End,
-                      modifier = Modifier
-                          .fillMaxSize()
-                          .padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
-                    ) {
-                      val length = feedback?.length ?: 0
-                      Text(
-                        text = "$length/140",
-                        style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                      )
-                    }
                   }
                 }
                 Spacer(modifier = (Modifier.height(4.dp)))
@@ -302,7 +307,7 @@ private fun TerminationSurveyScreen(
           disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
         ),
         onClick = onContinueClick,
-        isLoading = uiState.isNavigationStepLoading,
+        isLoading = uiState.navigationStepLoadingForReason != null,
       )
       Spacer(Modifier.height(16.dp))
     }
@@ -317,13 +322,13 @@ private fun TerminationSurveyScreen(
         FullScreenEditableText(
           reason.feedBack,
           modifier = Modifier
-              .fillMaxSize()
-              .windowInsetsPadding(
-                  WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Vertical),
-              ),
+            .fillMaxSize()
+            .windowInsetsPadding(
+              WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Vertical),
+            ),
           onCancelClick = onCloseFullScreenEditText,
           onSaveClick = { newFeedback ->
-            changeFeedbackForReason(reason.surveyOption, newFeedback)
+            changeFeedbackForSelectedReason(newFeedback)
           },
         )
       }
@@ -359,24 +364,24 @@ private fun FullScreenEditableText(
       color = MaterialTheme.colorScheme.background,
     ) {
       Column(
-          modifier
-              .fillMaxSize()
-              .imePadding()
-              .padding(8.dp),
+        modifier
+          .fillMaxSize()
+          .imePadding()
+          .padding(8.dp),
       ) {
         BasicTextField(
           value = textValue,
           onValueChange = {
-            textValue = it.ofMaxLength(140)
+            textValue = it.ofMaxLength(2000)
           },
           cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
           modifier = Modifier
-              .weight(1f)
-              .focusRequester(focusRequester)
-              .background(
-                  MaterialTheme.colorScheme.surface,
-                  shape = HedvigTextFieldDefaults.shape,
-              ),
+            .weight(1f)
+            .focusRequester(focusRequester)
+            .background(
+              MaterialTheme.colorScheme.surface,
+              shape = HedvigTextFieldDefaults.shape,
+            ),
           textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
           decorationBox = @Composable { innerTextField ->
             Column {
@@ -411,11 +416,11 @@ private fun FullScreenEditableText(
               Row(
                 horizontalArrangement = Arrangement.End,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
+                  .fillMaxWidth()
+                  .padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
               ) {
                 Text(
-                  text = "${textValue.text.length}/140",
+                  text = "${textValue.text.length}/2000",
                   style = MaterialTheme.typography.titleSmall,
                   color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -495,11 +500,12 @@ private fun ShowSurveyScreenPreview(
         navigateUp = {},
         navigateToMovingFlow = {},
         closeTerminationFlow = {},
-        changeFeedbackForReason = { option, String ->
+        changeFeedbackForSelectedReason = { String ->
         },
         onContinueClick = {},
         onCloseFullScreenEditText = {},
         onLaunchFullScreenEditText = {},
+        openUrl = {},
       )
     }
   }
@@ -525,14 +531,14 @@ private class ShowSurveyUiStateProvider :
     listOf(
       TerminationSurveyState(
         nextNavigationStep = null,
-        isNavigationStepLoading = false,
+        navigationStepLoadingForReason = null,
         selectedOption = previewReason1.surveyOption,
         reasons = listOf(previewReason1, previewReason2, previewReason3),
       ),
       TerminationSurveyState(
         nextNavigationStep = null,
-        isNavigationStepLoading = false,
-        selectedOption = previewReason2.surveyOption,
+        navigationStepLoadingForReason = null,
+        selectedOption = previewReason3.surveyOption,
         reasons = listOf(previewReason1, previewReason2, previewReason3),
       ),
 //      TerminationSurveyState(
@@ -551,7 +557,7 @@ private class ShowSurveyUiStateProvider :
 //      ),
       TerminationSurveyState(
         nextNavigationStep = null,
-        isNavigationStepLoading = false,
+        navigationStepLoadingForReason = null,
         errorWhileLoadingNextStep = true,
         selectedOption = previewReason2.surveyOption,
         reasons = listOf(previewReason1, previewReason2filled, previewReason3),
@@ -570,6 +576,7 @@ private val previewReason1 = TerminationReason(
         subOptions = listOf(),
         suggestion = null,
         feedBackRequired = false,
+        listIndex = 0,
       ),
       TerminationSurveyOption(
         id = "12",
@@ -577,6 +584,7 @@ private val previewReason1 = TerminationReason(
         subOptions = listOf(),
         suggestion = null,
         feedBackRequired = false,
+        listIndex = 1,
       ),
       TerminationSurveyOption(
         id = "23",
@@ -584,10 +592,12 @@ private val previewReason1 = TerminationReason(
         subOptions = listOf(),
         suggestion = null,
         feedBackRequired = true,
+        listIndex = 2,
       ),
     ),
     suggestion = SurveyOptionSuggestion.Action.UpdateAddress,
     feedBackRequired = true,
+    listIndex = 0,
   ),
   null,
 )
@@ -599,6 +609,7 @@ private val previewReason2 = TerminationReason(
     subOptions = listOf(),
     suggestion = null,
     feedBackRequired = true,
+    listIndex = 1,
   ),
   "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla nec nisi eget mi luctus suscipit. Donec at vestibulum turpis.",
 )
@@ -610,6 +621,7 @@ private val previewReason2filled = TerminationReason(
     subOptions = listOf(),
     suggestion = null,
     feedBackRequired = true,
+    listIndex = 2,
   ),
   "Got a great all included offer from If",
 )
@@ -625,6 +637,7 @@ private val previewReason3 = TerminationReason(
         subOptions = listOf(),
         suggestion = null,
         feedBackRequired = true,
+        listIndex = 0,
       ),
       TerminationSurveyOption(
         id = "32",
@@ -632,10 +645,16 @@ private val previewReason3 = TerminationReason(
         subOptions = listOf(),
         suggestion = null,
         feedBackRequired = true,
+        listIndex = 1,
       ),
     ),
-    suggestion = null,
+    suggestion = SurveyOptionSuggestion.Redirect(
+      "http://www.google.com",
+      "Do this action instead",
+      "Click here to do it",
+    ),
     feedBackRequired = false,
+    listIndex = 3,
   ),
   null,
 )
