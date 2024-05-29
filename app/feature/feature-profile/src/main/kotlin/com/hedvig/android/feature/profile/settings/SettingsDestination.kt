@@ -144,10 +144,10 @@ private fun SettingsScreen(
             onSubscribeClick = { changeSubscriptionPreference(true) },
             subscribed = uiState.subscribed ?: true,
             enabled = true,
+            hasError = uiState.emailSubscriptionPreferenceError,
           )
           Spacer(Modifier.height(16.dp))
         }
-
 
         AnimatedVisibility(
           visible = uiState.showNotificationReminder && !notificationPermissionState.status.isGranted,
@@ -214,6 +214,7 @@ internal fun SubscriptionWithDialog(
   onSubscribeClick: () -> Unit,
   subscribed: Boolean,
   enabled: Boolean,
+  hasError: Boolean,
   modifier: Modifier = Modifier,
 ) {
   var showLanguagePickerDialog by rememberSaveable { mutableStateOf(false) }
@@ -245,10 +246,15 @@ internal fun SubscriptionWithDialog(
       enabled = enabled,
       modifier = modifier,
     )
-    Text(text = stringResource(id = R.string.something_went_wrong),
-      fontStyle = MaterialTheme.typography.bodySmall.fontStyle)
+    AnimatedVisibility(visible = hasError) {
+      Text(
+        text = stringResource(id = R.string.something_went_wrong),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.error,
+        modifier = Modifier.padding(horizontal = 32.dp),
+      )
+    }
   }
-
 }
 
 @Composable
@@ -330,7 +336,8 @@ fun PreviewSettingsScreen() {
           selectedTheme = Theme.SYSTEM_DEFAULT,
           showNotificationReminder = true,
           subscribed = true,
-          showSubscriptionPreferences = true
+          showSubscriptionPreferences = true,
+          emailSubscriptionPreferenceError = true,
         ),
         notificationPermissionState = object : NotificationPermissionState {
           override val showDialog = false

@@ -100,6 +100,7 @@ internal fun TerminationInfoScreen(
         Text(
           text = bodyText,
           style = MaterialTheme.typography.bodyLarge,
+          textAlign = TextAlign.Center,
           modifier = sideSpacingModifier.align(Alignment.CenterHorizontally),
         )
       }
