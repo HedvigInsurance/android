@@ -11,7 +11,6 @@ plugins {
 dependencies {
   apolloMetadata(projects.apolloOctopusPublic)
 
-  implementation(project(":placeholder"))
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.apollo.normalizedCache)
@@ -43,6 +42,7 @@ dependencies {
   implementation(projects.moleculePublic)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
+  implementation(projects.placeholder)
   implementation(projects.uiEmergency)
 }
 
