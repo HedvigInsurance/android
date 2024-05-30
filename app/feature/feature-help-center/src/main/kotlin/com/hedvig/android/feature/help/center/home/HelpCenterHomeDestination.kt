@@ -132,8 +132,8 @@ internal fun HelpCenterHomeDestination(
     openChat = openChat,
     onNavigateUp = onNavigateUp,
     search = uiState.search,
-    onUpdateSearchResults = { helpSearchResults ->
-      viewModel.emit(HelpCenterEvent.UpdateSearchResults(helpSearchResults))
+    onUpdateSearchResults = { searchQuery, helpSearchResults ->
+      viewModel.emit(HelpCenterEvent.UpdateSearchResults(searchQuery, helpSearchResults))
     },
     onClearSearch = {
       viewModel.emit(HelpCenterEvent.ClearSearchQuery)
@@ -155,7 +155,7 @@ private fun HelpCenterHomeScreen(
   onDismissQuickActionDialog: () -> Unit,
   openChat: () -> Unit,
   onNavigateUp: () -> Unit,
-  onUpdateSearchResults: (HelpCenterUiState.HelpSearchResults?) -> Unit,
+  onUpdateSearchResults: (String, HelpCenterUiState.HelpSearchResults?) -> Unit,
   onClearSearch: () -> Unit,
 ) {
   when (selectedQuickAction) {
@@ -180,7 +180,7 @@ private fun HelpCenterHomeScreen(
     null -> {}
   }
   var searchQuery by remember {
-    mutableStateOf<String?>(null)
+    mutableStateOf<String?>(search?.searchQuery)
   }
   val focusRequester = remember { FocusRequester() }
   val focusManager = LocalFocusManager.current
@@ -217,7 +217,7 @@ private fun HelpCenterHomeScreen(
                   HelpCenterUiState.QuickLinkUiState.QuickLinks
               )?.quickLinks ?: listOf(),
             )
-            onUpdateSearchResults(results)
+            onUpdateSearchResults(it, results)
           }
         },
         onKeyboardAction = {
@@ -686,7 +686,7 @@ private fun PreviewHelpCenterHomeScreen(
         onNavigateUp = {},
         quickLinksUiState = quickLinksUiState,
         onClearSearch = {},
-        onUpdateSearchResults = {},
+        onUpdateSearchResults = { _, _ -> },
         search = null,
       )
     }
@@ -715,7 +715,7 @@ private fun PreviewQuickLinkAnimations() {
             onNavigateUp = {},
             quickLinksUiState = quickLinkUiState,
             onClearSearch = {},
-            onUpdateSearchResults = {},
+            onUpdateSearchResults = { _, _ -> },
             search = null,
           )
         },

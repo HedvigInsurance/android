@@ -21,7 +21,10 @@ internal sealed interface HelpCenterEvent {
 
   data object OnDismissQuickActionDialog : HelpCenterEvent
 
-  data class UpdateSearchResults(val results: HelpCenterUiState.HelpSearchResults?) : HelpCenterEvent
+  data class UpdateSearchResults(
+    val searchQuery: String,
+    val results: HelpCenterUiState.HelpSearchResults?,
+  ) : HelpCenterEvent
 
   data object ClearSearchQuery : HelpCenterEvent
 }
@@ -44,6 +47,7 @@ internal data class HelpCenterUiState(
   }
 
   data class Search(
+    val searchQuery: String?,
     val activeSearchState: ActiveSearchState,
   )
 
@@ -77,14 +81,21 @@ internal class HelpCenterPresenter(
         HelpCenterEvent.ClearSearchQuery -> {
           currentState = currentState.copy(search = null)
         }
+
         is HelpCenterEvent.UpdateSearchResults -> {
           currentState = if (event.results == null) {
             currentState.copy(
-              search = HelpCenterUiState.Search(HelpCenterUiState.ActiveSearchState.Empty),
+              search = HelpCenterUiState.Search(
+                event.searchQuery,
+                HelpCenterUiState.ActiveSearchState.Empty,
+              ),
             )
           } else {
             currentState.copy(
-              search = HelpCenterUiState.Search(HelpCenterUiState.ActiveSearchState.Success(event.results)),
+              search = HelpCenterUiState.Search(
+                event.searchQuery,
+                HelpCenterUiState.ActiveSearchState.Success(event.results),
+              ),
             )
           }
         }
