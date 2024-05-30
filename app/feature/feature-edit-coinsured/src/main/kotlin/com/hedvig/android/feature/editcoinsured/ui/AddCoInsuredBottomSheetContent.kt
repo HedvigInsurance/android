@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.DatePickerDialog
@@ -138,6 +139,7 @@ internal fun AddCoInsuredBottomSheetContent(
             Switch(
               checked = bottomSheetState.showManualInput,
               onCheckedChange = onManualInputSwitchChanged,
+              modifier = Modifier.wrapContentSize(Alignment.CenterEnd),
             )
           },
           spaceBetween = 4.dp,
