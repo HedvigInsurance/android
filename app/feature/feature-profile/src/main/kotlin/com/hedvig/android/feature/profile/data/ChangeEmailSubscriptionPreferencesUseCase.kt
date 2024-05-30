@@ -1,11 +1,9 @@
 package com.hedvig.android.feature.profile.data
 
-import androidx.compose.ui.tooling.data.EmptyGroup.data
 import arrow.core.Either
 import arrow.core.raise.either
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.Optional
-import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import octopus.UpdateSubscriptionPreferenceMutation
@@ -16,7 +14,6 @@ internal interface ChangeEmailSubscriptionPreferencesUseCase {
 
 internal class ChangeEmailSubscriptionPreferencesUseCaseImpl(
   private val apolloClient: ApolloClient,
-  private val networkCacheManager: NetworkCacheManager,
 ) : ChangeEmailSubscriptionPreferencesUseCase {
   override suspend fun invoke(subscribe: Boolean): Either<SubPrefError, SubPrefSuccess> {
     return either {
@@ -32,7 +29,6 @@ internal class ChangeEmailSubscriptionPreferencesUseCaseImpl(
       if (userErrorMessage != null) {
         raise(SubPrefError(userErrorMessage))
       }
-      networkCacheManager.clearCache()
       SubPrefSuccess
     }
   }

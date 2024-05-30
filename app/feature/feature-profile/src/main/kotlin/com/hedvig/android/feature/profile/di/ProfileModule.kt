@@ -44,7 +44,6 @@ val profileModule = module {
   single<ChangeEmailSubscriptionPreferencesUseCase> {
     ChangeEmailSubscriptionPreferencesUseCaseImpl(
       apolloClient = get<ApolloClient>(),
-      networkCacheManager = get<NetworkCacheManager>(),
     )
   }
   single<ProfileRepositoryImpl> {
