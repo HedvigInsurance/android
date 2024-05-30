@@ -198,7 +198,7 @@ private fun EditCoInsuredScreen(
             HedvigContainedButton(
               text = stringResource(id = R.string.GENERAL_SAVE_CHANGES_BUTTON),
               onClick = onCommitChanges,
-              enabled = uiState.listState.noCoInsuredHaveMissingInfo(),
+              enabled = true,
               isLoading = uiState.listState.isCommittingUpdate,
               modifier = Modifier.padding(horizontal = 16.dp),
             )
