@@ -142,12 +142,16 @@ internal fun AddCoInsuredBottomSheetContent(
           spaceBetween = 4.dp,
         )
       }
-    }
-    AnimatedVisibility(bottomSheetState.showUnderAgedInfo) {
-      Spacer(Modifier.height(4.dp))
-      VectorWarningCard(
-        text = stringResource(id = R.string.COINSURED_WITHOUT_SSN_INFO),
-      )
+      AnimatedVisibility(bottomSheetState.showUnderAgedInfo) {
+        Column {
+          Spacer(Modifier.height(4.dp))
+          VectorWarningCard(
+            text = stringResource(
+              id = R.string.COINSURED_WITHOUT_SSN_INFO,
+            ),
+          )
+        }
+      }
     }
     Spacer(Modifier.height(16.dp))
     HedvigContainedButton(
@@ -470,7 +474,11 @@ private fun AddCoInsuredBottomSheetContentWithCoInsuredPreview() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       AddCoInsuredBottomSheetContent(
-        bottomSheetState = AddBottomSheetState(errorMessage = "errorMessage"),
+        bottomSheetState = AddBottomSheetState(
+          errorMessage = "errorMessage",
+          showUnderAgedInfo = true,
+          showManualInput = true,
+        ),
         onSsnChanged = {},
         onContinue = {},
         onManualInputSwitchChanged = {},
