@@ -421,7 +421,7 @@ private fun SearchField(
   onSearchChange: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  Row(
+  Box(
     modifier = modifier
       .fillMaxWidth()
       .height(40.dp)
