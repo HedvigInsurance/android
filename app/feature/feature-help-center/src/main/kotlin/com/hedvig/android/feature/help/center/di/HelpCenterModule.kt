@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.help.center.di
 
-import android.content.Context
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.feature.help.center.HelpCenterViewModel
 import com.hedvig.android.feature.help.center.data.GetMemberActionsUseCase
@@ -29,7 +28,6 @@ val helpCenterModule = module {
   viewModel<HelpCenterViewModel> {
     HelpCenterViewModel(
       getQuickLinksUseCase = get<GetQuickLinksUseCase>(),
-      context = get<Context>(),
     )
   }
 }

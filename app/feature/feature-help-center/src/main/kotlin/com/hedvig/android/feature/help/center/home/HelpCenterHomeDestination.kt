@@ -1,20 +1,24 @@
 package com.hedvig.android.feature.help.center.home
 
+import android.content.Context
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.VisibilityThreshold
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -22,13 +26,13 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -36,6 +40,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -50,6 +55,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -57,25 +64,27 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import arrow.core.toNonEmptyListOrNull
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
-import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
-import com.hedvig.android.core.designsystem.component.textfield.HedvigTextFieldDefaults
 import com.hedvig.android.core.designsystem.material3.infoContainer
 import com.hedvig.android.core.designsystem.material3.onInfoContainer
 import com.hedvig.android.core.designsystem.material3.onTypeContainer
 import com.hedvig.android.core.designsystem.material3.onYellowContainer
+import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.material3.typeContainer
 import com.hedvig.android.core.designsystem.material3.yellowContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
+import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.dialog.MultiSelectDialog
+import com.hedvig.android.core.ui.layout.withoutPlacement
 import com.hedvig.android.core.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
 import com.hedvig.android.feature.help.center.HelpCenterEvent
 import com.hedvig.android.feature.help.center.HelpCenterUiState
@@ -123,8 +132,8 @@ internal fun HelpCenterHomeDestination(
     openChat = openChat,
     onNavigateUp = onNavigateUp,
     search = uiState.search,
-    onSearchChange = { query ->
-      viewModel.emit(HelpCenterEvent.SearchForQuery(query))
+    onUpdateSearchResults = { searchQuery, helpSearchResults ->
+      viewModel.emit(HelpCenterEvent.UpdateSearchResults(searchQuery, helpSearchResults))
     },
     onClearSearch = {
       viewModel.emit(HelpCenterEvent.ClearSearchQuery)
@@ -146,7 +155,7 @@ private fun HelpCenterHomeScreen(
   onDismissQuickActionDialog: () -> Unit,
   openChat: () -> Unit,
   onNavigateUp: () -> Unit,
-  onSearchChange: (String) -> Unit,
+  onUpdateSearchResults: (String, HelpCenterUiState.HelpSearchResults?) -> Unit,
   onClearSearch: () -> Unit,
 ) {
   when (selectedQuickAction) {
@@ -171,180 +180,245 @@ private fun HelpCenterHomeScreen(
     null -> {}
   }
   var searchQuery by remember {
-    mutableStateOf(search?.query)
+    mutableStateOf<String?>(search?.searchQuery)
   }
   val focusRequester = remember { FocusRequester() }
   val focusManager = LocalFocusManager.current
-  Surface(color = MaterialTheme.colorScheme.background) {
+  Surface(
+    color = MaterialTheme.colorScheme.background,
+    modifier = Modifier.clearFocusOnTap(),
+  ) {
     Column(Modifier.fillMaxSize()) {
       TopAppBarWithBack(
         title = stringResource(id = R.string.HC_TITLE),
         onClick = onNavigateUp,
       )
+      Spacer(modifier = Modifier.height(8.dp))
+      val context = LocalContext.current
+      SearchField(
+        searchQuery = searchQuery,
+        focusRequester = focusRequester,
+        modifier = Modifier
+          .padding(horizontal = 16.dp)
+          .windowInsetsPadding(
+            WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
+          ),
+        onSearchChange = {
+          if (it.isEmpty()) {
+            searchQuery = null
+            onClearSearch()
+          } else {
+            searchQuery = it
+            val results = searchForQuery(
+              query = it,
+              context = context,
+              quickLinksForSearch = (
+                quickLinksUiState as?
+                  HelpCenterUiState.QuickLinkUiState.QuickLinks
+              )?.quickLinks ?: listOf(),
+            )
+            onUpdateSearchResults(it, results)
+          }
+        },
+        onKeyboardAction = {
+          searchQuery?.let {
+            focusManager.clearFocus()
+          }
+        },
+        onClearSearch = {
+          searchQuery = null
+          onClearSearch()
+        },
+      )
+      Spacer(Modifier.height(16.dp))
       Column(
         modifier = Modifier
           .fillMaxSize()
-          .clickable(
-            indication = null,
-            interactionSource = remember { MutableInteractionSource() },
-          ) {
-            focusManager.clearFocus() // clearing focus for search textField
-          }
-          .imePadding()
           .verticalScroll(rememberScrollState()),
       ) {
-        Spacer(Modifier.height(50.dp))
-        Image(
-          painter = painterResource(id = R.drawable.pillow_hedvig),
-          contentDescription = null,
-          modifier = Modifier
-            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
-            .size(170.dp)
-            .align(Alignment.CenterHorizontally),
-        )
-        Spacer(Modifier.height(50.dp))
-        Column(
-          verticalArrangement = Arrangement.spacedBy(8.dp),
-          modifier = Modifier
-            .padding(horizontal = 20.dp)
-            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-        ) {
-          Text(stringResource(id = R.string.HC_HOME_VIEW_QUESTION))
-          Text(
-            text = stringResource(id = R.string.HC_HOME_VIEW_ANSWER),
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-          )
-        }
-        Spacer(modifier = Modifier.height(40.dp))
-        SearchField(
-          searchQuery = searchQuery,
-          focusRequester = focusRequester,
-          modifier = Modifier
-            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-          onSearchChange = {
-            if (it.isEmpty()) {
-              searchQuery = null
-              onClearSearch()
-            } else {
-              searchQuery = it
-            }
+        AnimatedContent(
+          targetState = search,
+          transitionSpec = {
+            fadeIn(animationSpec = tween(220, delayMillis = 90))
+              .togetherWith(fadeOut(animationSpec = tween(90)))
           },
-          onKeyboardAction = {
-            searchQuery?.let {
-              focusManager.clearFocus()
-              onSearchChange(it)
-            }
-          },
-          onClearSearch = {
-            searchQuery = null
-            onClearSearch()
-          },
-        )
-        Spacer(Modifier.height(24.dp))
-        AnimatedContent(targetState = search) { animatedSearch ->
+        ) { animatedSearch ->
           if (animatedSearch == null) {
-            Column {
-              AnimatedVisibility(
-                visible = quickLinksUiState !is HelpCenterUiState.QuickLinkUiState.NoQuickLinks,
-                enter = QuickLinksSectionEnterTransition,
-                exit = QuickLinksSectionExitTransition,
-              ) {
-                Column {
-                  QuickLinksSection(quickLinksUiState, onQuickActionsSelected)
-                  Spacer(Modifier.height(32.dp))
-                }
-              }
-              HelpCenterSection(
-                title = stringResource(id = R.string.HC_COMMON_TOPICS_TITLE),
-                chipContainerColor = MaterialTheme.colorScheme.yellowContainer,
-                contentColor = MaterialTheme.colorScheme.onYellowContainer,
-                content = {
-                  Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    for (topic in topics) {
-                      HedvigCard(
-                        onClick = { onNavigateToTopic(topic) },
-                        modifier = Modifier
-                          .fillMaxWidth()
-                          .padding(horizontal = 16.dp)
-                          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-                      ) {
-                        Text(stringResource(topic.titleRes), Modifier.padding(16.dp))
-                      }
-                    }
-                  }
-                },
-              )
-              Spacer(Modifier.height(32.dp))
-              LocalConfiguration.current
-              val resources = LocalContext.current.resources
-              HelpCenterSectionWithClickableRows(
-                title = stringResource(id = R.string.HC_COMMON_QUESTIONS_TITLE),
-                chipContainerColor = MaterialTheme.colorScheme.infoContainer,
-                contentColor = MaterialTheme.colorScheme.onInfoContainer,
-                items = questions,
-                itemText = { resources.getString(it.questionRes) },
-                onClickItem = { onNavigateToQuestion(it) },
-              )
-            }
+            ContentWithoutSearch(
+              quickLinksUiState = quickLinksUiState,
+              onQuickActionsSelected = onQuickActionsSelected,
+              topics = topics,
+              onNavigateToTopic = onNavigateToTopic,
+              questions = questions,
+              onNavigateToQuestion = onNavigateToQuestion,
+              openChat = openChat,
+            )
           } else {
-            when (animatedSearch.activeSearchState) {
-              HelpCenterUiState.ActiveSearchState.Empty -> {
-                Column(
-                  verticalArrangement = Arrangement.Center,
-                  horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                  Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center,
-                    text = "Nothing found, sorry!",
-                  ) // todo: remove hardcode
-                }
-              }
+            SearchResults(
+              activeSearchState = animatedSearch.activeSearchState,
+              onBackPressed = {
+                searchQuery = null
+                onClearSearch()
+              },
+              onNavigateToQuestion = onNavigateToQuestion,
+              onQuickActionsSelected = onQuickActionsSelected,
+            )
+          }
+        }
+      }
+    }
+  }
+}
 
-              HelpCenterUiState.ActiveSearchState.Loading -> {
-                Column(
-                  verticalArrangement = Arrangement.Center,
-                  horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                  HedvigFullScreenCenterAlignedProgress()
-                }
-              }
+@Composable
+private fun ContentWithoutSearch(
+  quickLinksUiState: HelpCenterUiState.QuickLinkUiState,
+  onQuickActionsSelected: (QuickAction) -> Unit,
+  topics: ImmutableList<Topic>,
+  onNavigateToTopic: (topic: Topic) -> Unit,
+  questions: ImmutableList<Question>,
+  onNavigateToQuestion: (question: Question) -> Unit,
+  openChat: () -> Unit,
+) {
+  Column {
+    Spacer(Modifier.height(32.dp))
+    Image(
+      painter = painterResource(id = R.drawable.pillow_hedvig),
+      contentDescription = null,
+      modifier = Modifier
+        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+        .size(170.dp)
+        .align(Alignment.CenterHorizontally),
+    )
+    Spacer(Modifier.height(50.dp))
+    Column(
+      verticalArrangement = Arrangement.spacedBy(8.dp),
+      modifier = Modifier
+        .padding(horizontal = 20.dp)
+        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+    ) {
+      Text(stringResource(id = R.string.HC_HOME_VIEW_QUESTION))
+      Text(
+        text = stringResource(id = R.string.HC_HOME_VIEW_ANSWER),
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+      )
+    }
+    Spacer(Modifier.height(24.dp))
 
-              is HelpCenterUiState.ActiveSearchState.Success -> {
-                Column(
-                  verticalArrangement = Arrangement.Center,
-                  horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                  if (animatedSearch.activeSearchState.results.filteredQuickLinks != null) {
-                    val searchQuickLinkUiState = HelpCenterUiState.QuickLinkUiState.QuickLinks(
-                      animatedSearch.activeSearchState.results.filteredQuickLinks.toPersistentList(),
-                    )
-                    QuickLinksSection(searchQuickLinkUiState, onQuickActionsSelected)
-                    Spacer(Modifier.height(32.dp))
-                  }
-                  if (animatedSearch.activeSearchState.results.filteredQuestions != null) {
-                    LocalConfiguration.current
-                    val resources = LocalContext.current.resources
-                    HelpCenterSectionWithClickableRows(
-                      title = "Results in questions", // todo: hardcode
-                      chipContainerColor = MaterialTheme.colorScheme.infoContainer,
-                      contentColor = MaterialTheme.colorScheme.onInfoContainer,
-                      items = animatedSearch.activeSearchState.results.filteredQuestions.toPersistentList(),
-                      itemText = { resources.getString(it.questionRes) },
-                      onClickItem = { onNavigateToQuestion(it) },
-                    )
-                  }
-                }
+    Column {
+      AnimatedVisibility(
+        visible = quickLinksUiState !is HelpCenterUiState.QuickLinkUiState.NoQuickLinks,
+        enter = QuickLinksSectionEnterTransition,
+        exit = QuickLinksSectionExitTransition,
+      ) {
+        Column {
+          QuickLinksSection(quickLinksUiState, onQuickActionsSelected)
+          Spacer(Modifier.height(32.dp))
+        }
+      }
+      HelpCenterSection(
+        title = stringResource(id = R.string.HC_COMMON_TOPICS_TITLE),
+        chipContainerColor = MaterialTheme.colorScheme.yellowContainer,
+        contentColor = MaterialTheme.colorScheme.onYellowContainer,
+        content = {
+          Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            for (topic in topics) {
+              HedvigCard(
+                onClick = { onNavigateToTopic(topic) },
+                modifier = Modifier
+                  .fillMaxWidth()
+                  .padding(horizontal = 16.dp)
+                  .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+              ) {
+                Text(stringResource(topic.titleRes), Modifier.padding(16.dp))
               }
             }
           }
-        }
-        Spacer(Modifier.weight(1f))
-        Spacer(Modifier.height(40.dp))
-        StillNeedHelpSection(
-          openChat = openChat,
-          contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom).asPaddingValues(),
+        },
+      )
+      Spacer(Modifier.height(32.dp))
+      LocalConfiguration.current
+      val resources = LocalContext.current.resources
+      HelpCenterSectionWithClickableRows(
+        title = stringResource(id = R.string.HC_COMMON_QUESTIONS_TITLE),
+        chipContainerColor = MaterialTheme.colorScheme.infoContainer,
+        contentColor = MaterialTheme.colorScheme.onInfoContainer,
+        items = questions,
+        itemText = { resources.getString(it.questionRes) },
+        onClickItem = { onNavigateToQuestion(it) },
+      )
+    }
+    Spacer(Modifier.weight(1f))
+    Spacer(Modifier.height(40.dp))
+    StillNeedHelpSection(
+      openChat = openChat,
+      contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom).asPaddingValues(),
+    )
+  }
+}
+
+@Composable
+private fun SearchResults(
+  activeSearchState: HelpCenterUiState.ActiveSearchState,
+  onBackPressed: () -> Unit,
+  onNavigateToQuestion: (question: Question) -> Unit,
+  onQuickActionsSelected: (QuickAction) -> Unit,
+) {
+  BackHandler(true) {
+    onBackPressed()
+  }
+
+  when (activeSearchState) {
+    HelpCenterUiState.ActiveSearchState.Empty -> {
+      Column(
+        Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+      ) {
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+          modifier = Modifier.fillMaxWidth(),
+          textAlign = TextAlign.Center,
+          text = stringResource(R.string.SEARCH_NOTHING_FOUND),
         )
+        Spacer(modifier = Modifier.height(16.dp))
+      }
+    }
+
+    is HelpCenterUiState.ActiveSearchState.Success -> {
+      Column(
+        Modifier.padding(
+          WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom).asPaddingValues(),
+        ),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+      ) {
+        Spacer(modifier = Modifier.height(16.dp))
+        LocalConfiguration.current
+        val resources = LocalContext.current.resources
+        if (activeSearchState.results.filteredQuickLinks != null) {
+          HelpCenterSectionWithClickableRows(
+            title = stringResource(R.string.HC_QUICK_ACTIONS_TITLE),
+            chipContainerColor = MaterialTheme.colorScheme.typeContainer,
+            contentColor = MaterialTheme.colorScheme.onTypeContainer,
+            items = activeSearchState.results.filteredQuickLinks.toPersistentList(),
+            itemText = { resources.getString(it.quickAction.titleRes) },
+            itemSubtitle = { resources.getString(it.quickAction.hintTextRes) },
+            onClickItem = { onQuickActionsSelected(it.quickAction) },
+          )
+          Spacer(Modifier.height(32.dp))
+        }
+        if (activeSearchState.results.filteredQuestions != null) {
+          HelpCenterSectionWithClickableRows(
+            title = stringResource(R.string.HC_COMMON_QUESTIONS_TITLE),
+            chipContainerColor = MaterialTheme.colorScheme.infoContainer,
+            contentColor = MaterialTheme.colorScheme.onInfoContainer,
+            items = activeSearchState.results.filteredQuestions.toPersistentList(),
+            itemText = { resources.getString(it.questionRes) },
+            onClickItem = { onNavigateToQuestion(it) },
+          )
+          Spacer(Modifier.height(32.dp))
+        }
       }
     }
   }
@@ -359,48 +433,92 @@ private fun SearchField(
   onSearchChange: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  HedvigTextField(
+  Box(
     modifier = modifier
       .fillMaxWidth()
-      .padding(horizontal = 16.dp)
-      .focusRequester(focusRequester),
-    value = searchQuery ?: "",
-    colors = HedvigTextFieldDefaults.colors(
-      typingHighlightColor = MaterialTheme.colorScheme.surface,
-    ),
-    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-    keyboardActions = KeyboardActions(
-      onAny = {
-        onKeyboardAction()
+      .height(40.dp)
+      .background(
+        color = MaterialTheme.colorScheme.surface,
+        shape = MaterialTheme.shapes.squircleMedium,
+      ),
+  ) {
+    BasicTextField(
+      value = searchQuery ?: "",
+      onValueChange = onSearchChange,
+      cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
+      modifier = Modifier
+        .fillMaxWidth()
+        .focusRequester(focusRequester),
+      textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
+      keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+      keyboardActions = KeyboardActions(
+        onSearch = {
+          onKeyboardAction()
+        },
+      ),
+      decorationBox = { innerTextField ->
+        Row(
+          Modifier
+            .fillMaxSize(),
+          horizontalArrangement = Arrangement.Start,
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
+          Icon(
+            Icons.Default.Search,
+            contentDescription = null,
+            modifier = Modifier
+              .alpha(0.60f)
+              .padding(8.dp)
+              .size(24.dp),
+          )
+          Box(
+            modifier = Modifier
+              .weight(1f)
+              .padding(horizontal = 4.dp),
+          ) {
+            if (searchQuery.isNullOrEmpty()) {
+              Text(
+                text = stringResource(R.string.SEARCH_PLACEHOLDER),
+                style = MaterialTheme.typography.bodyLarge.copy(color = LocalContentColor.current),
+                modifier = Modifier
+                  .alpha(0.60f),
+              )
+            }
+            innerTextField()
+          }
+          ClearSearchIcon(
+            onClick = onClearSearch,
+            tint = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.padding(8.dp).size(24.dp).then(
+              if (searchQuery.isNullOrEmpty()) {
+                Modifier.withoutPlacement()
+              } else {
+                Modifier
+              },
+            ),
+          )
+        }
       },
-    ),
-    onValueChange = onSearchChange,
-    placeholder = {
-      Text(
-        text = "Search",
-        style = MaterialTheme.typography.bodyLarge.copy(color = LocalContentColor.current),
-        modifier = Modifier.alpha(0.60f),
-      ) // todo: remove hardcode
-    },
-    leadingIcon = {
-      Icon(
-        Icons.Default.Search,
-        contentDescription = null,
-        modifier = Modifier.alpha(0.60f),
-      )
-    },
-    trailingIcon = {
-      if (searchQuery != null) {
-        Icon(
-          Icons.Default.Clear,
-          contentDescription = null,
-          modifier = Modifier.clickable {
-            onClearSearch()
-          },
-        )
-      }
-    },
-  )
+    )
+  }
+}
+
+@Composable
+private fun ClearSearchIcon(
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+  tint: Color = LocalContentColor.current,
+) {
+  IconButton(
+    onClick = onClick,
+    modifier = modifier,
+  ) {
+    Icon(
+      Icons.Default.Clear,
+      contentDescription = null,
+      tint = tint,
+    )
+  }
 }
 
 private val QuickLinksSectionEnterTransition = fadeIn() + expandVertically(
@@ -517,6 +635,37 @@ private fun QuickLinkCard(
   }
 }
 
+private fun searchForQuery(
+  query: String,
+  quickLinksForSearch: List<HelpCenterUiState.QuickLink>,
+  context: Context,
+): HelpCenterUiState.HelpSearchResults? {
+  val resultsInQuickLinks =
+    buildList {
+      for (link in quickLinksForSearch) {
+        val title = context.getString(link.quickAction.titleRes).lowercase()
+        val hint = context.getString(link.quickAction.hintTextRes).lowercase()
+        if (title.contains(query) || hint.contains(query)) {
+          add(link)
+        }
+      }
+    }.toNonEmptyListOrNull()
+  val resultsInQuestions = buildList {
+    Question.entries.forEach {
+      val answer = context.getString(it.answerRes).lowercase()
+      val question = context.getString(it.questionRes).lowercase()
+      if (answer.contains(query) || question.contains(query)) {
+        add(it)
+      }
+    }
+  }.toNonEmptyListOrNull()
+  return if (resultsInQuestions == null && resultsInQuickLinks == null) {
+    null
+  } else {
+    HelpCenterUiState.HelpSearchResults(resultsInQuickLinks, resultsInQuestions)
+  }
+}
+
 @HedvigPreview
 @Composable
 private fun PreviewHelpCenterHomeScreen(
@@ -537,30 +686,8 @@ private fun PreviewHelpCenterHomeScreen(
         onNavigateUp = {},
         quickLinksUiState = quickLinksUiState,
         onClearSearch = {},
-        onSearchChange = {},
+        onUpdateSearchResults = { _, _ -> },
         search = null,
-//        search = HelpCenterUiState.Search(
-//          "dubadee",
-//          HelpCenterUiState.ActiveSearchState.Success(
-//            HelpCenterUiState.HelpSearchResults(
-//              nonEmptyListOf(
-//                HelpCenterUiState.QuickLink(
-//                  QuickAction.StandaloneQuickLink(
-//                    quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkTravelCertificate,
-//                    titleRes = R.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE,
-//                    hintTextRes = R.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE_SUBTITLE,
-//                  ),
-//                ),
-//              ),
-//              nonEmptyListOf(
-//                Question.CLAIMS_Q6,
-//                Question.CLAIMS_Q9,
-//                Question.COVERAGE_Q5,
-//                Question.OTHER_Q4,
-//              ),
-//            ),
-//          ),
-//        ),
       )
     }
   }
@@ -588,7 +715,7 @@ private fun PreviewQuickLinkAnimations() {
             onNavigateUp = {},
             quickLinksUiState = quickLinkUiState,
             onClearSearch = {},
-            onSearchChange = {},
+            onUpdateSearchResults = { _, _ -> },
             search = null,
           )
         },
@@ -628,3 +755,9 @@ private class QuickLinkUiStatePreviewProvider :
       ),
     ),
   )
+
+@Preview
+@Composable
+private fun SearchFieldPreview() {
+  SearchField("travel", FocusRequester(), {}, {}, {})
+}
