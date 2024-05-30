@@ -15,11 +15,13 @@ annotation class HedvigPreview
 
 @Preview(
   name = "lightMode landscape",
+  locale = "en",
   uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL,
   device = "spec:parent=pixel_5,orientation=landscape",
 )
 @Preview(
   name = "darkMode landscape",
+  locale = "en",
   uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL,
   device = "spec:parent=pixel_5,orientation=landscape",
 )
