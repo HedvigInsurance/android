@@ -465,7 +465,7 @@ private fun SearchField(
           ) {
             if (searchQuery.isNullOrEmpty()) {
               Text(
-                text = "Search", // todo: remove hardcode
+                text = stringResource(R.string.SEARCH),
                 style = MaterialTheme.typography.bodyLarge.copy(color = LocalContentColor.current),
                 modifier = Modifier
                   .alpha(0.60f),
