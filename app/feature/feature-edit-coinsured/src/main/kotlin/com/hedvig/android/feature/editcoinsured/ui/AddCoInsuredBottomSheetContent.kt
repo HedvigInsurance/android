@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -50,7 +51,7 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.SelectableHedvigCard
 import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.core.ui.infocard.VectorWarningCard
-import com.hedvig.android.core.ui.rememberHedvigBirthDateDateTimeFormatter
+import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.ui.text.WarningTextWithIconForInput
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
@@ -359,7 +360,7 @@ internal fun DatePickerWithDialog(birthDate: LocalDate?, onSave: (LocalDate) -> 
 
   val selectedDateMillis: Long? = datePickerState.selectedDateMillis
   val locale = getLocale()
-  val hedvigDateTimeFormatter = rememberHedvigBirthDateDateTimeFormatter()
+  val hedvigDateTimeFormatter = rememberHedvigDateTimeFormatter()
   val selectedDate = remember(locale, selectedDateMillis) {
     if (selectedDateMillis == null) {
       null
@@ -405,22 +406,38 @@ internal fun DatePickerWithDialog(birthDate: LocalDate?, onSave: (LocalDate) -> 
     onClick = { showDatePicker = true },
     modifier = modifier,
   ) {
-    Text(
-      text = if (birthDate != null) {
-        hedvigDateTimeFormatter.format(birthDate.toJavaLocalDate())
+    Column(Modifier.padding(top = 4.dp, bottom = 8.dp)) {
+      val paddingForBirthDate = if (birthDate == null) {
+        PaddingValues(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 8.dp)
       } else {
-        stringResource(id = R.string.CONTRACT_BIRTH_DATE)
-      },
-      color = if (birthDate != null) {
-        Color.Unspecified
-      } else {
-        MaterialTheme.colorScheme.onSurfaceVariant
-      },
-      modifier = Modifier.padding(
-        horizontal = 16.dp,
-        vertical = 16.dp,
-      ),
-    )
+        PaddingValues(horizontal = 16.dp)
+      }
+      if (birthDate != null) {
+        Text(
+          text = stringResource(id = R.string.CONTRACT_BIRTH_DATE),
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+          fontSize = MaterialTheme.typography.labelMedium.fontSize,
+          modifier = Modifier.padding(
+            horizontal = 16.dp,
+          ),
+        )
+      }
+      Text(
+        text = if (birthDate != null) {
+          hedvigDateTimeFormatter.format(birthDate.toJavaLocalDate())
+        } else {
+          stringResource(id = R.string.CONTRACT_BIRTH_DATE)
+        },
+        color = if (birthDate != null) {
+          Color.Unspecified
+        } else {
+          MaterialTheme.colorScheme.onSurfaceVariant
+        },
+        modifier = Modifier.padding(
+          paddingForBirthDate,
+        ),
+      )
+    }
   }
 }
 
@@ -478,6 +495,7 @@ private fun AddCoInsuredBottomSheetContentWithCoInsuredPreview() {
           errorMessage = "errorMessage",
           showUnderAgedInfo = true,
           showManualInput = true,
+          birthDate = LocalDate(2016, 7, 28),
         ),
         onSsnChanged = {},
         onContinue = {},
