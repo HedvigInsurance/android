@@ -18,11 +18,11 @@ class FakeSettingsDataStore() : SettingsDataStore {
     return themeTurbine.asChannel().receiveAsFlow()
   }
 
-  override suspend fun setSubscriptionPreference(subscribe: Boolean) {
+  override suspend fun setEmailSubscriptionPreference(subscribe: Boolean) {
     subscriptionPreferenceTurbine.add(subscribe)
   }
 
-  override fun observeSubscriptionPreference(): Flow<Boolean> {
+  override fun observeEmailSubscriptionPreference(): Flow<Boolean> {
     return subscriptionPreferenceTurbine.asChannel().receiveAsFlow()
   }
 }

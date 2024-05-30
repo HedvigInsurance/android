@@ -17,9 +17,9 @@ interface SettingsDataStore {
    */
   fun observeTheme(): Flow<Theme?>
 
-  suspend fun setSubscriptionPreference(subscribe: Boolean)
+  suspend fun setEmailSubscriptionPreference(subscribe: Boolean)
 
-  fun observeSubscriptionPreference(): Flow<Boolean>
+  fun observeEmailSubscriptionPreference(): Flow<Boolean>
 }
 
 class SettingsDataStoreImpl(
@@ -37,13 +37,13 @@ class SettingsDataStoreImpl(
     }
   }
 
-  override suspend fun setSubscriptionPreference(subscribe: Boolean) {
+  override suspend fun setEmailSubscriptionPreference(subscribe: Boolean) {
     dataStore.edit {
       it[subscriptionKey] = subscribe
     }
   }
 
-  override fun observeSubscriptionPreference(): Flow<Boolean> {
+  override fun observeEmailSubscriptionPreference(): Flow<Boolean> {
     return dataStore.data.map { preferences ->
       // here we assume that member is subscribed by default in customer.io
       preferences[subscriptionKey] ?: true

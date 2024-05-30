@@ -22,7 +22,7 @@ internal class SettingsViewModel(
 ) : MoleculeViewModel<SettingsEvent, SettingsUiState>(
     SettingsUiState.Loading(
       selectedLanguage = languageService.getLanguage(),
-      showSubscriptionPreferences = marketManager.market.value == Market.SE,
+      showEmailSubscriptionPreferences = marketManager.market.value == Market.SE,
       languageOptions = when (marketManager.market.value) {
         Market.SE -> listOf(Language.EN_SE, Language.SV_SE)
         Market.NO -> listOf(Language.EN_NO, Language.NB_NO)

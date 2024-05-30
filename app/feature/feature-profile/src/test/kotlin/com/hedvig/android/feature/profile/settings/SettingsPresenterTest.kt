@@ -31,14 +31,16 @@ class SettingsPresenterTest {
       NoopNetworkCacheManager(),
       uploadLanguagePreferenceToBackendUseCase = NoopUploadLanguagePreferenceToBackendUseCase(),
       changeEmailSubscriptionPreferencesUseCase = NoopChangeEmailSubscriptionPreferencesUseCase(),
-      isSwedishMarket = true
+      isSwedishMarket = true,
     )
 
-    settingsPresenter.test(SettingsUiState.Loading(
-      selectedLanguage = Language.entries.first(),
-      languageOptions = Language.entries,
-      showSubscriptionPreferences = true
-    )) {
+    settingsPresenter.test(
+      SettingsUiState.Loading(
+        selectedLanguage = Language.entries.first(),
+        languageOptions = Language.entries,
+        showEmailSubscriptionPreferences = true,
+      ),
+    ) {
       assertThat(awaitItem()).isInstanceOf<SettingsUiState.Loading>()
       enableNotificationsReminderManager.showNotification.add(false)
       assertThat(awaitItem()).isInstanceOf<SettingsUiState.Loaded>()
@@ -55,7 +57,7 @@ class SettingsPresenterTest {
       NoopNetworkCacheManager(),
       uploadLanguagePreferenceToBackendUseCase = NoopUploadLanguagePreferenceToBackendUseCase(),
       changeEmailSubscriptionPreferencesUseCase = NoopChangeEmailSubscriptionPreferencesUseCase(),
-      isSwedishMarket = true
+      isSwedishMarket = true,
     )
 
     settingsPresenter.test(
@@ -64,8 +66,8 @@ class SettingsPresenterTest {
         listOf(Language.EN_SE, Language.SV_SE),
         Theme.SYSTEM_DEFAULT,
         false,
-        subscribed = false,
-        showSubscriptionPreferences = true
+        isSubscribedToEmails = false,
+        showEmailSubscriptionPreferences = true,
       ),
     ) {
       assertThat(awaitItem().showNotificationReminder).isEqualTo(false)
@@ -84,7 +86,7 @@ class SettingsPresenterTest {
       NoopNetworkCacheManager(),
       uploadLanguagePreferenceToBackendUseCase = NoopUploadLanguagePreferenceToBackendUseCase(),
       changeEmailSubscriptionPreferencesUseCase = NoopChangeEmailSubscriptionPreferencesUseCase(),
-      isSwedishMarket = true
+      isSwedishMarket = true,
     )
 
     settingsPresenter.test(
@@ -93,8 +95,8 @@ class SettingsPresenterTest {
         listOf(Language.EN_SE, Language.SV_SE),
         Theme.SYSTEM_DEFAULT,
         false,
-        subscribed = false,
-        showSubscriptionPreferences = true
+        isSubscribedToEmails = false,
+        showEmailSubscriptionPreferences = true,
       ),
     ) {
       assertThat(awaitItem().showNotificationReminder).isEqualTo(false)
@@ -113,7 +115,7 @@ class SettingsPresenterTest {
       NoopNetworkCacheManager(),
       uploadLanguagePreferenceToBackendUseCase = NoopUploadLanguagePreferenceToBackendUseCase(),
       changeEmailSubscriptionPreferencesUseCase = NoopChangeEmailSubscriptionPreferencesUseCase(),
-      isSwedishMarket = true
+      isSwedishMarket = true,
     )
 
     settingsPresenter.test(
@@ -122,8 +124,8 @@ class SettingsPresenterTest {
         Language.entries,
         Theme.entries.first(),
         false,
-        subscribed = false,
-        showSubscriptionPreferences = true
+        isSubscribedToEmails = false,
+        showEmailSubscriptionPreferences = true,
       ),
     ) {
       enableNotificationsReminderManager.snoozeNotificationReminderCalls.expectNoEvents()
@@ -144,7 +146,7 @@ class SettingsPresenterTest {
       NoopNetworkCacheManager(),
       uploadLanguagePreferenceToBackendUseCase = NoopUploadLanguagePreferenceToBackendUseCase(),
       changeEmailSubscriptionPreferencesUseCase = NoopChangeEmailSubscriptionPreferencesUseCase(),
-      isSwedishMarket = true
+      isSwedishMarket = true,
     )
 
     settingsPresenter.test(
@@ -153,8 +155,8 @@ class SettingsPresenterTest {
         languageOptions = Language.entries,
         selectedTheme = Theme.LIGHT,
         showNotificationReminder = false,
-        subscribed = false,
-        showSubscriptionPreferences = true
+        isSubscribedToEmails = false,
+        showEmailSubscriptionPreferences = true,
       ),
     ) {
       assertThat(awaitItem().selectedTheme).isEqualTo(Theme.LIGHT)

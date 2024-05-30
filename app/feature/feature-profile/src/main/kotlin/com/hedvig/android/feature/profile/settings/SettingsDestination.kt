@@ -135,14 +135,14 @@ private fun SettingsScreen(
             .padding(horizontal = 16.dp),
         )
         Spacer(Modifier.height(4.dp))
-        if (uiState.showSubscriptionPreferences) {
-          SubscriptionWithDialog(
+        if (uiState.showEmailSubscriptionPreferences) {
+          EmailSubscriptionWithDialog(
             modifier = Modifier
               .fillMaxWidth()
               .padding(horizontal = 16.dp),
             onConfirmUnsubscribeClick = { changeSubscriptionPreference(false) },
             onSubscribeClick = { changeSubscriptionPreference(true) },
-            subscribed = uiState.subscribed ?: true,
+            isSubscribedToEmails = uiState.isSubscribedToEmails ?: true,
             enabled = true,
             hasError = uiState.emailSubscriptionPreferenceError,
           )
@@ -209,10 +209,10 @@ internal fun LanguageWithDialog(
 }
 
 @Composable
-internal fun SubscriptionWithDialog(
+internal fun EmailSubscriptionWithDialog(
   onConfirmUnsubscribeClick: () -> Unit,
   onSubscribeClick: () -> Unit,
-  subscribed: Boolean,
+  isSubscribedToEmails: Boolean,
   enabled: Boolean,
   hasError: Boolean,
   modifier: Modifier = Modifier,
@@ -231,14 +231,14 @@ internal fun SubscriptionWithDialog(
   Column {
     HedvigBigCard(
       onClick = {
-        if (subscribed) {
+        if (isSubscribedToEmails) {
           showLanguagePickerDialog = true
         } else {
           onSubscribeClick()
         }
       },
       hintText = stringResource(id = R.string.SETTINGS_SCREEN_EMAIL_PREFERENCES),
-      inputText = if (subscribed) {
+      inputText = if (isSubscribedToEmails) {
         stringResource(id = R.string.GENERAL_SUBSCRIBED)
       } else {
         stringResource(id = R.string.GENERAL_UNSUBSCRIBED)
@@ -335,8 +335,8 @@ fun PreviewSettingsScreen() {
           languageOptions = listOf(Language.SV_SE, Language.EN_SE),
           selectedTheme = Theme.SYSTEM_DEFAULT,
           showNotificationReminder = true,
-          subscribed = true,
-          showSubscriptionPreferences = true,
+          isSubscribedToEmails = true,
+          showEmailSubscriptionPreferences = true,
           emailSubscriptionPreferenceError = true,
         ),
         notificationPermissionState = object : NotificationPermissionState {

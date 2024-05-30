@@ -8,6 +8,9 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import octopus.UpdateSubscriptionPreferenceMutation
 
+/**
+ * Requests to be subscribed/unsubscribed to promotional email.
+ */
 internal interface ChangeEmailSubscriptionPreferencesUseCase {
   suspend fun invoke(subscribe: Boolean): Either<SubPrefError, SubPrefSuccess>
 }

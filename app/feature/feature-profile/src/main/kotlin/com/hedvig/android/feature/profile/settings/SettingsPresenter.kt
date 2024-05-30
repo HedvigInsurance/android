@@ -30,9 +30,11 @@ internal class SettingsPresenter(
   @Composable
   override fun MoleculePresenterScope<SettingsEvent>.present(lastState: SettingsUiState): SettingsUiState {
     var selectedLanguage by remember { mutableStateOf(lastState.selectedLanguage) }
-    var emailPrefError by remember { mutableStateOf(false) }
+    var emailSubscriptionPreferenceError by remember { mutableStateOf(false) }
     val selectedTheme = settingsDataStore.observeTheme().collectAsState(lastState.selectedTheme).value
-    val subscribed = settingsDataStore.observeSubscriptionPreference().collectAsState(lastState.subscribed).value
+    val isSubscribedToEmails = settingsDataStore.observeEmailSubscriptionPreference().collectAsState(
+      lastState.isSubscribedToEmails,
+    ).value
     val showNotificationReminder = enableNotificationsReminderManager
       .showNotificationReminder()
       .collectAsState(lastState.showNotificationReminder)
@@ -59,11 +61,11 @@ internal class SettingsPresenter(
           launch {
             changeEmailSubscriptionPreferencesUseCase.invoke(event.subscribe)
               .onLeft {
-                emailPrefError = true
+                emailSubscriptionPreferenceError = true
               }
               .onRight {
-                emailPrefError = false
-                settingsDataStore.setSubscriptionPreference(event.subscribe)
+                emailSubscriptionPreferenceError = false
+                settingsDataStore.setEmailSubscriptionPreference(event.subscribe)
               }
           }
         }
@@ -74,7 +76,7 @@ internal class SettingsPresenter(
       SettingsUiState.Loading(
         selectedLanguage = selectedLanguage,
         languageOptions = lastState.languageOptions,
-        showSubscriptionPreferences = isSwedishMarket,
+        showEmailSubscriptionPreferences = isSwedishMarket,
       )
     } else {
       SettingsUiState.Loaded(
@@ -82,9 +84,9 @@ internal class SettingsPresenter(
         languageOptions = lastState.languageOptions,
         selectedTheme = selectedTheme,
         showNotificationReminder = showNotificationReminder,
-        subscribed = subscribed,
-        showSubscriptionPreferences = isSwedishMarket,
-        emailSubscriptionPreferenceError = emailPrefError,
+        isSubscribedToEmails = isSubscribedToEmails,
+        showEmailSubscriptionPreferences = isSwedishMarket,
+        emailSubscriptionPreferenceError = emailSubscriptionPreferenceError,
       )
     }
   }
@@ -94,16 +96,16 @@ sealed interface SettingsUiState {
   val selectedLanguage: Language
   val languageOptions: List<Language>
   val selectedTheme: Theme?
-  val subscribed: Boolean?
+  val isSubscribedToEmails: Boolean?
   val showNotificationReminder: Boolean?
-  val showSubscriptionPreferences: Boolean
+  val showEmailSubscriptionPreferences: Boolean
 
   data class Loading(
     override val selectedLanguage: Language,
     override val languageOptions: List<Language>,
-    override val showSubscriptionPreferences: Boolean,
+    override val showEmailSubscriptionPreferences: Boolean,
   ) : SettingsUiState {
-    override val subscribed: Boolean? = null
+    override val isSubscribedToEmails: Boolean? = null
     override val selectedTheme: Theme? = null
     override val showNotificationReminder: Boolean? = null
   }
@@ -113,8 +115,8 @@ sealed interface SettingsUiState {
     override val languageOptions: List<Language>,
     override val selectedTheme: Theme?,
     override val showNotificationReminder: Boolean,
-    override val subscribed: Boolean?,
-    override val showSubscriptionPreferences: Boolean,
+    override val isSubscribedToEmails: Boolean?,
+    override val showEmailSubscriptionPreferences: Boolean,
     val emailSubscriptionPreferenceError: Boolean = false,
   ) : SettingsUiState
 }
