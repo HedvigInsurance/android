@@ -434,7 +434,7 @@ private fun SearchField(
       value = searchQuery ?: "",
       onValueChange = onSearchChange,
       cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
-      modifier = modifier
+      modifier = Modifier
         .fillMaxWidth()
         .focusRequester(focusRequester),
       textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
