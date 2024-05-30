@@ -440,7 +440,7 @@ private fun SearchField(
       textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
       keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
       keyboardActions = KeyboardActions(
-        onAny = {
+        onSearch = {
           onKeyboardAction()
         },
       ),
