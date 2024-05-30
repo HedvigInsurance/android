@@ -85,7 +85,6 @@ internal fun TerminationInfoCardDate(
               style = MaterialTheme.typography.bodyMedium,
               color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            Spacer(modifier = Modifier.height(4.dp))
             Text(
               text = dateValue ?: stringResource(R.string.TERMINATION_FLOW_DATE_FIELD_PLACEHOLDER),
               style = MaterialTheme.typography.bodyLarge,
