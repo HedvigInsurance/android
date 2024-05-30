@@ -85,7 +85,7 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.dialog.MultiSelectDialog
-import com.hedvig.android.core.ui.layout.LayoutWithoutPlacement
+import com.hedvig.android.core.ui.layout.withoutPlacement
 import com.hedvig.android.core.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
 import com.hedvig.android.feature.help.center.HelpCenterEvent
 import com.hedvig.android.feature.help.center.HelpCenterUiState
@@ -474,21 +474,17 @@ private fun SearchField(
             }
             innerTextField()
           }
-          LayoutWithoutPlacement(
-            sizeAdjustingContent = {
-              ClearSearchIcon(
-                onClearSearch,
-                tint = MaterialTheme.colorScheme.onSurface,
-              )
-            },
-          ) {
-            if (!searchQuery.isNullOrEmpty()) {
-              ClearSearchIcon(
-                onClearSearch,
-                tint = MaterialTheme.colorScheme.onSurface,
-              )
-            }
-          }
+          ClearSearchIcon(
+            onClick = onClearSearch,
+            tint = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.padding(8.dp).size(24.dp).then(
+              if (searchQuery.isNullOrEmpty()) {
+                Modifier.withoutPlacement()
+              } else {
+                Modifier
+              },
+            ),
+          )
         }
       },
     )
