@@ -15,8 +15,6 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -84,6 +82,7 @@ import com.hedvig.android.core.designsystem.material3.yellowContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
+import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.dialog.MultiSelectDialog
 import com.hedvig.android.core.ui.layout.withoutPlacement
 import com.hedvig.android.core.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
@@ -187,12 +186,7 @@ private fun HelpCenterHomeScreen(
   val focusManager = LocalFocusManager.current
   Surface(
     color = MaterialTheme.colorScheme.background,
-    modifier = Modifier.clickable(
-      indication = null,
-      interactionSource = remember { MutableInteractionSource() },
-    ) {
-      focusManager.clearFocus()
-    },
+    modifier = Modifier.clearFocusOnTap(),
   ) {
     Column(Modifier.fillMaxSize()) {
       TopAppBarWithBack(
