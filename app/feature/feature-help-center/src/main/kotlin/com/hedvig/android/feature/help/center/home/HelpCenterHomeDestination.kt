@@ -239,11 +239,8 @@ private fun HelpCenterHomeScreen(
         AnimatedContent(
           targetState = search,
           transitionSpec = {
-            (
-              fadeIn(
-                animationSpec = tween(220, delayMillis = 90),
-              )
-            ).togetherWith(fadeOut(animationSpec = tween(90)))
+            fadeIn(animationSpec = tween(220, delayMillis = 90))
+              .togetherWith(fadeOut(animationSpec = tween(90)))
           },
         ) { animatedSearch ->
           if (animatedSearch == null) {
