@@ -23,11 +23,7 @@ internal class FetchCoInsuredPersonalInformationUseCaseImpl(
       .toEither(::ErrorMessage)
       .bind()
     if (result.personalInformation == null) {
-      val birthdate = try {
-        convertSsnToBirthDate(ssn)
-      } catch (e: Exception) {
-        null
-      }
+      val birthdate = convertSsnToBirthDateOrNull(ssn)
       CoInsuredPersonalInformation.EmptyInfo(birthdate)
     } else {
       CoInsuredPersonalInformation.FullInfo(
@@ -47,9 +43,11 @@ internal interface CoInsuredPersonalInformation {
   data class EmptyInfo(val dateOfBirth: LocalDate?) : CoInsuredPersonalInformation
 }
 
-private fun convertSsnToBirthDate(ssn: String): LocalDate {
-  val stringYear = ssn.substring(0, 4).toInt()
-  val stringMonth = ssn.substring(4, 6).toInt()
-  val stringDate = ssn.substring(6, 8).toInt()
+private fun convertSsnToBirthDateOrNull(ssn: String): LocalDate? {
+  val stringYear = ssn.substring(0, 4).toIntOrNull()
+  val stringMonth = ssn.substring(4, 6).toIntOrNull()
+  val stringDate = ssn.substring(6, 8).toIntOrNull()
+  if (stringYear == null || stringMonth == null || stringDate == null) return null
+  if (stringMonth !in 1..12) return null
   return LocalDate(year = stringYear, month = Month(stringMonth), dayOfMonth = stringDate)
 }
