@@ -33,11 +33,29 @@ import octopus.FlowClaimSingleItemNextMutation
 import octopus.FlowClaimStartMutation
 import octopus.FlowClaimSummaryNextMutation
 import octopus.fragment.ClaimFlowStepFragment
+import octopus.type.FlowClaimAudioRecordingStep
+import octopus.type.FlowClaimConfirmEmergencyStep
+import octopus.type.FlowClaimDateOfOccurrencePlusLocationStep
+import octopus.type.FlowClaimDateOfOccurrenceStep
+import octopus.type.FlowClaimDeflectEirStep
+import octopus.type.FlowClaimDeflectEmergencyStep
+import octopus.type.FlowClaimDeflectGlassDamageStep
+import octopus.type.FlowClaimDeflectPestsStep
+import octopus.type.FlowClaimDeflectTowingStep
+import octopus.type.FlowClaimFailedStep
 import octopus.type.FlowClaimFileUploadInput
+import octopus.type.FlowClaimFileUploadStep
 import octopus.type.FlowClaimItemBrandInput
 import octopus.type.FlowClaimItemModelInput
+import octopus.type.FlowClaimLocationStep
+import octopus.type.FlowClaimPersonSelectStep
+import octopus.type.FlowClaimPhoneNumberStep
+import octopus.type.FlowClaimSingleItemCheckoutStep
 import octopus.type.FlowClaimSingleItemInput
+import octopus.type.FlowClaimSingleItemStep
+import octopus.type.FlowClaimSuccessStep
 import octopus.type.FlowClaimSummaryInput
+import octopus.type.FlowClaimSummaryStep
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -107,7 +125,13 @@ internal class ClaimFlowRepositoryImpl(
   ): Either<ErrorMessage, ClaimFlowStep> {
     return either {
       val result = apolloClient
-        .mutation(FlowClaimStartMutation(entryPointId?.id, entryPointOptionId?.id))
+        .mutation(
+          FlowClaimStartMutation(
+            entrypointId = entryPointId?.id,
+            entryPointOptionId = entryPointOptionId?.id,
+            supportedSteps = getSupportedSteps(),
+          ),
+        )
         .safeExecute()
         .toEither(::ErrorMessage)
         .bind()
@@ -330,6 +354,29 @@ internal class ClaimFlowRepositoryImpl(
     }
   }
 
+  private fun getSupportedSteps(): List<String> {
+    return listOf(
+      FlowClaimAudioRecordingStep.type.name,
+      FlowClaimConfirmEmergencyStep.type.name,
+      FlowClaimDateOfOccurrencePlusLocationStep.type.name,
+      FlowClaimDateOfOccurrenceStep.type.name,
+      FlowClaimDeflectEirStep.type.name,
+      FlowClaimDeflectEmergencyStep.type.name,
+      FlowClaimDeflectGlassDamageStep.type.name,
+      FlowClaimDeflectPestsStep.type.name,
+      FlowClaimDeflectTowingStep.type.name,
+      FlowClaimFailedStep.type.name,
+      FlowClaimFileUploadStep.type.name,
+      FlowClaimLocationStep.type.name,
+      FlowClaimPersonSelectStep.type.name,
+      FlowClaimPhoneNumberStep.type.name,
+      FlowClaimSingleItemCheckoutStep.type.name,
+      FlowClaimSingleItemStep.type.name,
+      FlowClaimSuccessStep.type.name,
+      FlowClaimSummaryStep.type.name,
+    )
+  }
+
   private suspend fun Raise<ErrorMessage>.uploadAudioFile(flowId: String, file: File): AudioUrl {
     val result = odysseyService
       .uploadAudioRecordingFile(
@@ -370,12 +417,15 @@ private suspend fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(
     is ClaimFlowStepFragment.FlowClaimAudioRecordingStepCurrentStep -> {
       ClaimFlowStep.ClaimAudioRecordingStep(flowId, questions, audioContent)
     }
+
     is ClaimFlowStepFragment.FlowClaimDateOfOccurrenceStepCurrentStep -> {
       ClaimFlowStep.ClaimDateOfOccurrenceStep(flowId, dateOfOccurrence, maxDate)
     }
+
     is ClaimFlowStepFragment.FlowClaimLocationStepCurrentStep -> {
       ClaimFlowStep.ClaimLocationStep(flowId, location, options)
     }
+
     is ClaimFlowStepFragment.FlowClaimDateOfOccurrencePlusLocationStepCurrentStep -> {
       ClaimFlowStep.ClaimDateOfOccurrencePlusLocationStep(
         flowId,
@@ -385,9 +435,11 @@ private suspend fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(
         locationStep.options,
       )
     }
+
     is ClaimFlowStepFragment.FlowClaimPhoneNumberStepCurrentStep -> {
       ClaimFlowStep.ClaimPhoneNumberStep(flowId, phoneNumber)
     }
+
     is ClaimFlowStepFragment.FlowClaimSingleItemStepCurrentStep -> {
       ClaimFlowStep.ClaimSingleItemStep(
         flowId,
@@ -442,6 +494,7 @@ private suspend fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(
       selfServiceCompletedEventManager.completedSelfServiceSuccessfully()
       ClaimFlowStep.ClaimSuccessStep(flowId)
     }
+
     is ClaimFlowStepFragment.FlowClaimContractSelectStepCurrentStep -> ClaimFlowStep.ClaimSelectContractStep(
       flowId,
       options,
