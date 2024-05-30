@@ -379,8 +379,8 @@ private fun SearchResults(
         Text(
           modifier = Modifier.fillMaxWidth(),
           textAlign = TextAlign.Center,
-          text = "Nothing found, sorry!",
-        ) // todo: remove hardcode
+          text = stringResource(R.string.NO_RESULTS_FOR_YOUR_SEARCH),
+        )
         Spacer(modifier = Modifier.height(16.dp))
       }
     }
