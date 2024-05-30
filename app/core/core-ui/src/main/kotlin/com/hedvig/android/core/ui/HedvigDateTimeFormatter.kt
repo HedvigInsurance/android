@@ -26,7 +26,7 @@ fun hedvigMonthDateTimeFormatter(locale: Locale): DateTimeFormatter {
  * Example output: "910113"
  */
 fun hedvigSecondaryBirthDateDateTimeFormatter(locale: Locale): DateTimeFormatter {
-  return DateTimeFormatter.ofPattern("yyMMd", locale)
+  return DateTimeFormatter.ofPattern("yyMMdd", locale)
 }
 
 @Composable
