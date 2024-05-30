@@ -140,11 +140,7 @@ internal class EditCoInsuredPresenter(
             addBottomSheetState.copy(lastName = event.lastName, errorMessage = null)
 
         is EditCoInsuredEvent.OnManualInputSwitchChanged -> {
-          addBottomSheetState =
-            Loaded.AddBottomSheetState(
-              showManualInput = event.show,
-              show = true,
-            )
+          addBottomSheetState = addBottomSheetState.copy(showManualInput = event.show)
         }
 
         is EditCoInsuredEvent.OnEditCoInsuredClicked -> {
