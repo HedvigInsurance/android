@@ -52,6 +52,8 @@ class SettingsDataStoreImpl(
 
   companion object {
     private val themeKey = stringPreferencesKey("settings-theme")
-    private val subscriptionKey = booleanPreferencesKey("settings-email-subscription")
+    private val subscriptionKey = booleanPreferencesKey(
+      "com.hedvig.android.data.settings.datastore.settings-email-subscription",
+    )
   }
 }
