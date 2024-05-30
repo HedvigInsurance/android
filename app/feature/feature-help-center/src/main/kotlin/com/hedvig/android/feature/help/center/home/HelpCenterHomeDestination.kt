@@ -379,7 +379,7 @@ private fun SearchResults(
         Text(
           modifier = Modifier.fillMaxWidth(),
           textAlign = TextAlign.Center,
-          text = stringResource(R.string.NO_RESULTS_FOR_YOUR_SEARCH),
+          text = stringResource(R.string.SEARCH_NOTHING_FOUND),
         )
         Spacer(modifier = Modifier.height(16.dp))
       }
@@ -478,7 +478,7 @@ private fun SearchField(
           ) {
             if (searchQuery.isNullOrEmpty()) {
               Text(
-                text = stringResource(R.string.SEARCH),
+                text = stringResource(R.string.SEARCH_PLACEHOLDER),
                 style = MaterialTheme.typography.bodyLarge.copy(color = LocalContentColor.current),
                 modifier = Modifier
                   .alpha(0.60f),
