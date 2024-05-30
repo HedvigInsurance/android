@@ -5,7 +5,11 @@ import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraph
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import kotlinx.datetime.LocalDate
+import octopus.fragment.FlowTerminationSurveyOptionSuggestionActionFlowTerminationSurveyOptionSuggestionFragment
+import octopus.fragment.FlowTerminationSurveyOptionSuggestionFragment
+import octopus.fragment.FlowTerminationSurveyOptionSuggestionRedirectFlowTerminationSurveyOptionSuggestionFragment
 import octopus.fragment.TerminationFlowStepFragment
+import octopus.type.FlowTerminationSurveyRedirectAction
 
 internal sealed interface TerminateInsuranceStep {
   data class TerminateInsuranceDate(
@@ -87,14 +91,10 @@ private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentSte
   }
 }
 
-// todo: duplicate functions here
-private fun TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Option.Suggestion.toSuggestion(): SurveyOptionSuggestion? {
+private fun FlowTerminationSurveyOptionSuggestionFragment.toSuggestion(): SurveyOptionSuggestion? {
   return when (this) {
-    is TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep
-      .Option.FlowTerminationSurveyOptionSuggestionActionSuggestion,
-    -> {
-      val action = this.action.rawValue
-      if (action == "UPDATE_ADDRESS") {
+    is FlowTerminationSurveyOptionSuggestionActionFlowTerminationSurveyOptionSuggestionFragment -> {
+      if (action == FlowTerminationSurveyRedirectAction.UPDATE_ADDRESS) {
         SurveyOptionSuggestion.Action.UpdateAddress
       } else {
         logcat(
@@ -105,46 +105,7 @@ private fun TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Opt
       }
     }
 
-    is TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep
-      .Option.FlowTerminationSurveyOptionSuggestionRedirectSuggestion,
-    -> {
-      SurveyOptionSuggestion.Redirect(
-        buttonTitle = this.buttonTitle,
-        description = this.description,
-        url = this.url,
-      )
-    }
-
-    else -> {
-      logcat(
-        LogPriority.WARN,
-        message = { "FlowTerminationSurveyStepCurrentStep unknown suggestion type: $this" },
-      )
-      null
-    }
-  }
-}
-
-private fun TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Option.SubOption.Suggestion.toSuggestion(): SurveyOptionSuggestion? {
-  return when (this) {
-    is TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep
-      .Option.FlowTerminationSurveyOptionSuggestionActionSuggestion,
-    -> {
-      val action = this.action.rawValue
-      if (action == "UPDATE_ADDRESS") {
-        SurveyOptionSuggestion.Action.UpdateAddress
-      } else {
-        logcat(
-          LogPriority.WARN,
-          message = { "FlowTerminationSurveyStepCurrentStep unknown suggestion type: ${this.action.rawValue}" },
-        )
-        null
-      }
-    }
-
-    is TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep
-      .Option.FlowTerminationSurveyOptionSuggestionRedirectSuggestion,
-    -> {
+    is FlowTerminationSurveyOptionSuggestionRedirectFlowTerminationSurveyOptionSuggestionFragment -> {
       SurveyOptionSuggestion.Redirect(
         buttonTitle = this.buttonTitle,
         description = this.description,

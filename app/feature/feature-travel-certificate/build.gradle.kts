@@ -11,7 +11,6 @@ plugins {
 dependencies {
   apolloMetadata(projects.apolloOctopusPublic)
 
-  implementation(project(":data-contract-public"))
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.lifecycle.compose)
@@ -35,6 +34,7 @@ dependencies {
   implementation(projects.coreIcons)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
+  implementation(projects.dataContractPublic)
   implementation(projects.languageCore)
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)

@@ -152,8 +152,8 @@ internal data class TerminationSurveyState(
   val showFullScreenEditText: TerminationReason? = null,
   val selectedOption: TerminationSurveyOption? = null,
   val nextNavigationStep: SurveyNavigationStep? = null,
-  val navigationStepLoadingForReason: TerminationReason? = null,
   // this one is not Boolean entirely for the sake of more convenient testing
+  val navigationStepLoadingForReason: TerminationReason? = null,
   val errorWhileLoadingNextStep: Boolean = false,
 ) {
   val continueAllowed: Boolean = selectedOption != null

@@ -17,19 +17,22 @@ fragment FlowTerminationSurveyStepFragment on FlowTerminationSurveyStep {
 }
 
 fragment FlowTerminationSurveyOptionFragment on FlowTerminationSurveyOption {
+  id
+  title
+  suggestion {
+    ...FlowTerminationSurveyOptionSuggestionFragment
+  }
+  feedBack {
+    ... on FlowTerminationSurveyOptionFeedback {
+      id
+      isRequired
+    }
+  }
+  subOptions {
     id
     title
     suggestion {
-      ... on FlowTerminationSurveyOptionSuggestionAction {
-        id
-        action
-      }
-      ... on FlowTerminationSurveyOptionSuggestionRedirect {
-        buttonTitle
-        description
-        id
-        url
-      }
+      ...FlowTerminationSurveyOptionSuggestionFragment
     }
     feedBack {
       ... on FlowTerminationSurveyOptionFeedback {
@@ -37,28 +40,20 @@ fragment FlowTerminationSurveyOptionFragment on FlowTerminationSurveyOption {
         isRequired
       }
     }
-    subOptions {
-      id
-      title
-      suggestion {
-         ... on FlowTerminationSurveyOptionSuggestionAction {
-           id
-           action
-           }
-         ... on FlowTerminationSurveyOptionSuggestionRedirect {
-           buttonTitle
-           description
-           id
-           url
-           }
-      }
-      feedBack {
-      ... on FlowTerminationSurveyOptionFeedback {
-         id
-         isRequired
-         }
-      }
-    }
+  }
+}
+
+fragment FlowTerminationSurveyOptionSuggestionFragment on FlowTerminationSurveyOptionSuggestion {
+  ... on FlowTerminationSurveyOptionSuggestionAction {
+    id
+    action
+  }
+  ... on FlowTerminationSurveyOptionSuggestionRedirect {
+    buttonTitle
+    description
+    id
+    url
+  }
 }
 
 fragment FlowTerminationDateStepFragment on FlowTerminationDateStep {

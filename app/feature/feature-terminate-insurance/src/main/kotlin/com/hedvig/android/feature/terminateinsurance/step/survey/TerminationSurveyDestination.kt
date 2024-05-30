@@ -1,10 +1,14 @@
 package com.hedvig.android.feature.terminateinsurance.step.survey
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -45,6 +49,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
@@ -53,6 +58,7 @@ import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
+import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
@@ -274,14 +280,14 @@ private fun TerminationSurveyScreen(
                       verticalAlignment = Alignment.Top,
                       modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 16.dp, top = 10.dp, end = 16.dp),
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
                     ) {
                       Text(
                         overflow = TextOverflow.Ellipsis,
                         text = feedback ?: stringResource(id = R.string.TERMINATION_SURVEY_FEEDBACK_HINT),
                         style = MaterialTheme.typography.bodyLarge,
                         color = if (feedback != null) {
-                          MaterialTheme.typography.bodyLarge.color
+                          MaterialTheme.colorScheme.secondary
                         } else {
                           MaterialTheme.colorScheme.onSurfaceVariant
                         },
@@ -312,37 +318,65 @@ private fun TerminationSurveyScreen(
       Spacer(Modifier.height(16.dp))
     }
 
-    AnimatedVisibility(
-      visible = uiState.showFullScreenEditText != null,
-      enter = fadeIn() + slideInVertically(initialOffsetY = { it / 2 }),
-      exit = fadeOut(),
-    ) {
-      val reason = uiState.showFullScreenEditText
+    FeedbackEditableText(uiState, onCloseFullScreenEditText, changeFeedbackForSelectedReason)
+  }
+}
+
+@Composable
+private fun FeedbackEditableText(
+  uiState: TerminationSurveyState,
+  onCloseFullScreenEditText: () -> Unit,
+  changeFeedbackForSelectedReason: (feedback: String?) -> Unit,
+) {
+  val showFullScreenEditTextTransition = updateTransition(
+    uiState.showFullScreenEditText,
+    "showFullScreenEditTextTransition",
+  )
+  showFullScreenEditTextTransition.AnimatedContent(
+    transitionSpec = {
+      fadeIn() togetherWith fadeOut()
+    },
+    modifier = Modifier.fillMaxSize(),
+  ) { showFullScreenEditText: TerminationReason? ->
+    val reason = showFullScreenEditText
+    Box(Modifier.fillMaxSize()) {
       if (reason != null) {
-        FullScreenEditableText(
-          reason.feedBack,
-          modifier = Modifier
-            .fillMaxSize()
-            .windowInsetsPadding(
-              WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Vertical),
-            ),
-          onCancelClick = onCloseFullScreenEditText,
-          onSaveClick = { newFeedback ->
-            changeFeedbackForSelectedReason(newFeedback)
-          },
-        )
+        HedvigTheme(darkTheme = true) {
+          Surface(
+            color = MaterialTheme.colorScheme.background,
+            modifier = Modifier.fillMaxSize(),
+          ) {
+            FeedbackEditableText(
+              reason.feedBack,
+              modifier = Modifier
+                .fillMaxSize()
+                .windowInsetsPadding(
+                  WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Vertical),
+                )
+                .animateEnterExit(
+                  enter = slideInVertically(initialOffsetY = { it / 2 }),
+                  exit = ExitTransition.None,
+                ),
+              onCancelClick = onCloseFullScreenEditText,
+              onSaveClick = { newFeedback ->
+                changeFeedbackForSelectedReason(newFeedback)
+              },
+            )
+          }
+        }
       }
     }
   }
 }
 
 @Composable
-private fun FullScreenEditableText(
+private fun FeedbackEditableText(
   feedbackText: String?,
   onSaveClick: (String?) -> Unit,
   onCancelClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val focusManager = LocalFocusManager.current
   val focusRequester = remember { FocusRequester() }
   val hint = stringResource(id = R.string.TERMINATION_SURVEY_FEEDBACK_HINT)
   var textValue by remember {
@@ -357,112 +391,106 @@ private fun FullScreenEditableText(
     focusRequester.requestFocus()
   }
   BackHandler(true) {
+    focusManager.clearFocus()
     onCancelClick()
   }
-  HedvigTheme(darkTheme = true) {
-    Surface(
-      color = MaterialTheme.colorScheme.background,
-    ) {
-      Column(
-        modifier
-          .fillMaxSize()
-          .imePadding()
-          .padding(8.dp),
-      ) {
-        BasicTextField(
-          value = textValue,
-          onValueChange = {
-            textValue = it.ofMaxLength(2000)
-          },
-          cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
-          modifier = Modifier
-            .weight(1f)
-            .focusRequester(focusRequester)
-            .background(
-              MaterialTheme.colorScheme.surface,
-              shape = HedvigTextFieldDefaults.shape,
-            ),
-          textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
-          decorationBox = @Composable { innerTextField ->
-            Column {
-              Row(
-                verticalAlignment = Alignment.Top,
-                horizontalArrangement = Arrangement.Start,
-                modifier = Modifier.weight(1f),
-              ) {
-                HedvigTextFieldDefaults.DecorationBox(
-                  value = textValue.text,
-                  colors = HedvigTextFieldDefaults.colors(
-                    typingHighlightColor = Color.Transparent,
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent,
-                    focusedIndicatorColor = MaterialTheme.colorScheme.onSurface,
-                    unfocusedIndicatorColor = MaterialTheme.colorScheme.onSurface,
-                  ),
-                  placeholder = {
-                    Text(
-                      text = hint,
-                      Modifier.fillMaxSize(),
-                      fontSize = MaterialTheme.typography.bodyLarge.fontSize,
-                    )
-                  },
-                  innerTextField = innerTextField,
-                  enabled = true,
-                  singleLine = false,
-                  interactionSource = remember { MutableInteractionSource() },
-                  visualTransformation = VisualTransformation.None,
-                )
-              }
-              Row(
-                horizontalArrangement = Arrangement.End,
-                modifier = Modifier
-                  .fillMaxWidth()
-                  .padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
-              ) {
+  Column(
+    modifier
+      .fillMaxSize()
+      .imePadding()
+      .padding(8.dp),
+  ) {
+    BasicTextField(
+      value = textValue,
+      onValueChange = {
+        textValue = it.ofMaxLength(2000)
+      },
+      cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
+      modifier = Modifier
+        .weight(1f)
+        .focusRequester(focusRequester)
+        .background(
+          MaterialTheme.colorScheme.surface,
+          shape = HedvigTextFieldDefaults.shape,
+        ),
+      textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
+      decorationBox = @Composable { innerTextField ->
+        Column {
+          Row(
+            verticalAlignment = Alignment.Top,
+            horizontalArrangement = Arrangement.Start,
+            modifier = Modifier.weight(1f),
+          ) {
+            HedvigTextFieldDefaults.DecorationBox(
+              value = textValue.text,
+              colors = HedvigTextFieldDefaults.colors(
+                typingHighlightColor = Color.Transparent,
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent,
+                focusedIndicatorColor = MaterialTheme.colorScheme.onSurface,
+                unfocusedIndicatorColor = MaterialTheme.colorScheme.onSurface,
+              ),
+              placeholder = {
                 Text(
-                  text = "${textValue.text.length}/2000",
-                  style = MaterialTheme.typography.titleSmall,
-                  color = MaterialTheme.colorScheme.onSurfaceVariant,
+                  text = hint,
+                  Modifier.fillMaxSize(),
+                  fontSize = MaterialTheme.typography.bodyLarge.fontSize,
                 )
-              }
-            }
-          },
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Row(
-          modifier = Modifier
-            .fillMaxWidth(),
-          horizontalArrangement = Arrangement.Center,
-        ) {
-          HedvigContainedSmallButton(
-            text = stringResource(id = R.string.general_cancel_button),
-            onClick = {
-              focusRequester.freeFocus()
-              onCancelClick()
-            },
-            modifier = Modifier.weight(1f),
-            colors = ButtonDefaults.buttonColors(
-              containerColor = MaterialTheme.colorScheme.surface,
-              contentColor = MaterialTheme.colorScheme.onSurface,
-            ),
-          )
-          Spacer(modifier = Modifier.width(8.dp))
-          HedvigContainedSmallButton(
-            text = stringResource(id = R.string.general_save_button),
-            onClick = {
-              focusRequester.freeFocus()
-              val valueToSave = textValue.text.ifEmpty { null }
-              onSaveClick(valueToSave)
-            },
-            modifier = Modifier.weight(1f),
-            colors = ButtonDefaults.buttonColors(
-              containerColor = MaterialTheme.colorScheme.onAlwaysBlackContainer,
-              contentColor = MaterialTheme.colorScheme.alwaysBlackContainer,
-            ),
-          )
+              },
+              innerTextField = innerTextField,
+              enabled = true,
+              singleLine = false,
+              interactionSource = remember { MutableInteractionSource() },
+              visualTransformation = VisualTransformation.None,
+            )
+          }
+          Row(
+            horizontalArrangement = Arrangement.End,
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
+          ) {
+            Text(
+              text = "${textValue.text.length}/2000",
+              style = MaterialTheme.typography.titleSmall,
+              color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+          }
         }
-        Spacer(modifier = Modifier.height(8.dp))
-      }
+      },
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+    Row(
+      modifier = Modifier
+        .fillMaxWidth(),
+      horizontalArrangement = Arrangement.Center,
+    ) {
+      HedvigContainedSmallButton(
+        text = stringResource(id = R.string.general_cancel_button),
+        onClick = {
+          focusManager.clearFocus()
+          onCancelClick()
+        },
+        modifier = Modifier.weight(1f),
+        colors = ButtonDefaults.buttonColors(
+          containerColor = MaterialTheme.colorScheme.surface,
+          contentColor = MaterialTheme.colorScheme.onSurface,
+        ),
+      )
+      Spacer(modifier = Modifier.width(8.dp))
+      HedvigContainedSmallButton(
+        text = stringResource(id = R.string.general_save_button),
+        onClick = {
+          focusManager.clearFocus()
+          val valueToSave = textValue.text.ifEmpty { null }
+          onSaveClick(valueToSave)
+        },
+        modifier = Modifier.weight(1f),
+        colors = ButtonDefaults.buttonColors(
+          containerColor = MaterialTheme.colorScheme.onAlwaysBlackContainer,
+          contentColor = MaterialTheme.colorScheme.alwaysBlackContainer,
+        ),
+      )
     }
   }
 }
@@ -513,10 +541,10 @@ private fun ShowSurveyScreenPreview(
 
 @HedvigPreview
 @Composable
-private fun FullScreenEditableTextPreview() {
+private fun FeedbackEditableTextPreview() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      FullScreenEditableText(
+      FeedbackEditableText(
         null,
         {},
         {},
@@ -541,26 +569,12 @@ private class ShowSurveyUiStateProvider :
         selectedOption = previewReason3.surveyOption,
         reasons = listOf(previewReason1, previewReason2, previewReason3),
       ),
-//      TerminationSurveyState(
-//          nextNavigationStep = null,
-//          isNavigationStepLoading = true,
-//          feedbackEmptyWarning = false,
-//          selectedOption = previewReason2.surveyOption,
-//          reasons = listOf(previewReason1, previewReason2filled, previewReason3),
-//      ),
-      //      TerminationSurveyState(
-//          nextNavigationStep = null,
-//          isNavigationStepLoading = false,
-//          feedbackEmptyWarning = false,
-//          selectedOption = null,
-//          reasons = listOf(previewReason1, previewReason2filled, previewReason3),
-//      ),
       TerminationSurveyState(
         nextNavigationStep = null,
         navigationStepLoadingForReason = null,
         errorWhileLoadingNextStep = true,
         selectedOption = previewReason2.surveyOption,
-        reasons = listOf(previewReason1, previewReason2filled, previewReason3),
+        reasons = listOf(previewReason1, previewReason2, previewReason3),
       ),
     ),
   )
@@ -611,7 +625,7 @@ private val previewReason2 = TerminationReason(
     feedBackRequired = true,
     listIndex = 1,
   ),
-  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla nec nisi eget mi luctus suscipit. Donec at vestibulum turpis.",
+  feedBack = LoremIpsum(25).values.first(),
 )
 
 private val previewReason2filled = TerminationReason(

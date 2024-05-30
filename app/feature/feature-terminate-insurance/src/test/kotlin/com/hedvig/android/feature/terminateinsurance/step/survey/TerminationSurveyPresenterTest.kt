@@ -73,7 +73,7 @@ class TerminationSurveyPresenterTest {
     presenter.test(initialState = TerminationSurveyState()) {
       assertThat(awaitItem().reasons.map { it.surveyOption }).isEqualTo(listOfOptionsForHome)
       sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[3]))
-      awaitItem()
+      skipItems(1)
       sendEvent(TerminationSurveyEvent.ShowFullScreenEditText(listOfOptionsForHome[3]))
       assertThat(awaitItem().showFullScreenEditText?.surveyOption).isEqualTo(listOfOptionsForHome[3])
     }
@@ -87,9 +87,9 @@ class TerminationSurveyPresenterTest {
       repository,
     )
     presenter.test(initialState = TerminationSurveyState()) {
-      awaitItem()
+      skipItems(1)
       sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[3]))
-      awaitItem()
+      skipItems(1)
       sendEvent(TerminationSurveyEvent.ShowFullScreenEditText(listOfOptionsForHome[3]))
       assertThat(awaitItem().showFullScreenEditText).isNotNull()
       sendEvent(TerminationSurveyEvent.CloseFullScreenEditText)
@@ -117,15 +117,15 @@ class TerminationSurveyPresenterTest {
       repository,
     )
     presenter.test(initialState = TerminationSurveyState()) {
-      awaitItem()
+      skipItems(1)
       sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[3]))
-      awaitItem()
+      skipItems(1)
       sendEvent(TerminationSurveyEvent.ChangeFeedbackForSelectedReason("new feedback!"))
       assertThat(
         awaitItem().reasons.first { it.surveyOption == listOfOptionsForHome[3] }.feedBack,
       ).isEqualTo("new feedback!")
       sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[2]))
-      awaitItem()
+      skipItems(1)
       sendEvent(TerminationSurveyEvent.ChangeFeedbackForSelectedReason("new feedback22!"))
       assertThat(
         awaitItem().reasons.first {
@@ -147,11 +147,11 @@ class TerminationSurveyPresenterTest {
       LocalDate(2024, 6, 29),
     )
     presenter.test(initialState = TerminationSurveyState()) {
-      awaitItem()
+      skipItems(1)
       sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[3]))
-      awaitItem()
+      skipItems(1)
       sendEvent(TerminationSurveyEvent.ChangeFeedbackForSelectedReason("entirely new feedback"))
-      awaitItem()
+      skipItems(1)
       sendEvent(TerminationSurveyEvent.Continue)
       assertThat(
         awaitItem().navigationStepLoadingForReason,
@@ -172,11 +172,11 @@ class TerminationSurveyPresenterTest {
       LocalDate(2024, 6, 29),
     )
     presenter.test(initialState = TerminationSurveyState()) {
-      awaitItem()
+      skipItems(1)
       sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[3]))
-      awaitItem()
+      skipItems(1)
       sendEvent(TerminationSurveyEvent.Continue)
-      awaitItem()
+      skipItems(1)
       repository.terminationFlowTurbine.add(nextStep.right())
       assertThat(awaitItem().nextNavigationStep).isEqualTo(SurveyNavigationStep.NavigateToNextTerminationStep(nextStep))
     }
@@ -190,9 +190,9 @@ class TerminationSurveyPresenterTest {
       repository,
     )
     presenter.test(initialState = TerminationSurveyState()) {
-      awaitItem()
+      skipItems(1)
       sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[1]))
-      awaitItem()
+      skipItems(1)
       sendEvent(TerminationSurveyEvent.Continue)
       assertThat(awaitItem().nextNavigationStep).isEqualTo(SurveyNavigationStep.NavigateToSubOptions)
     }
