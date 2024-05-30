@@ -2,6 +2,7 @@ package com.hedvig.android.data.settings.datastore
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.hedvig.android.theme.Theme
@@ -38,21 +39,19 @@ class SettingsDataStoreImpl(
 
   override suspend fun setSubscriptionPreference(subscribe: Boolean) {
     dataStore.edit {
-      it[subscriptionKey] = subscribe.toString()
+      it[subscriptionKey] = subscribe
     }
   }
 
   override fun observeSubscriptionPreference(): Flow<Boolean> {
     return dataStore.data.map { preferences ->
-      preferences[subscriptionKey]?.let {
-        it.toBoolean()
-      } ?: true
       // here we assume that member is subscribed by default in customer.io
+      preferences[subscriptionKey] ?: true
     }
   }
 
   companion object {
     private val themeKey = stringPreferencesKey("settings-theme")
-    private val subscriptionKey = stringPreferencesKey("settings-email-subscription")
+    private val subscriptionKey = booleanPreferencesKey("settings-email-subscription")
   }
 }
