@@ -32,9 +32,9 @@ internal fun <T> HelpCenterSectionWithClickableRows(
   contentColor: Color,
   items: ImmutableList<T>,
   itemText: (T) -> String,
-  itemSubtitle: ((T) -> String)? = null,
   onClickItem: (T) -> Unit,
   modifier: Modifier = Modifier,
+  itemSubtitle: ((T) -> String)? = null,
 ) {
   HelpCenterSection(
     title = title,
