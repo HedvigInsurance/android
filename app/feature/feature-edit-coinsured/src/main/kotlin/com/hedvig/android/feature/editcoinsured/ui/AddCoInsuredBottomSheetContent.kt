@@ -49,6 +49,7 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.SelectableHedvigCard
 import com.hedvig.android.core.ui.getLocale
+import com.hedvig.android.core.ui.infocard.VectorWarningCard
 import com.hedvig.android.core.ui.rememberHedvigBirthDateDateTimeFormatter
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.ui.text.WarningTextWithIconForInput
@@ -142,7 +143,12 @@ internal fun AddCoInsuredBottomSheetContent(
         )
       }
     }
-
+    AnimatedVisibility(bottomSheetState.showUnderAgedInfo) {
+      Spacer(Modifier.height(4.dp))
+      VectorWarningCard(
+        text = stringResource(id = R.string.COINSURED_WITHOUT_SSN_INFO),
+      )
+    }
     Spacer(Modifier.height(16.dp))
     HedvigContainedButton(
       text = stringResource(id = bottomSheetState.getSaveLabel().stringRes()),
@@ -331,6 +337,7 @@ private fun ManualInputFields(
       },
       spaceBetween = 4.dp,
     )
+
     Spacer(Modifier.height(4.dp))
     AnimatedVisibility(
       visible = errorMessage != null,

@@ -208,11 +208,11 @@ internal class EditCoInsuredPresenter(
                 Loaded.AddBottomSheetState(
                   showManualInput = true,
                   show = true,
-                  birthDate = result.dateOfBirth
+                  birthDate = result.dateOfBirth,
+                  showUnderAgedInfo = true,
                 )
             }
           }
-
         }.onLeft {
           addBottomSheetState = addBottomSheetState.copy(errorMessage = it.message)
         }
@@ -418,6 +418,7 @@ internal sealed interface EditCoInsuredState {
       val errorMessage: String? = null,
       val isLoading: Boolean = false,
       val show: Boolean = false,
+      val showUnderAgedInfo: Boolean = false,
     ) {
       fun canPickExistingCoInsured() = !selectableCoInsured.isNullOrEmpty()
 
