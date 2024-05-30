@@ -456,7 +456,8 @@ private fun SearchField(
             contentDescription = null,
             modifier = Modifier
               .alpha(0.60f)
-              .padding(8.dp),
+              .padding(8.dp)
+              .size(24.dp),
           )
           Box(
             modifier = Modifier
@@ -495,9 +496,14 @@ private fun SearchField(
 }
 
 @Composable
-private fun ClearSearchIcon(onClearSearch: () -> Unit, tint: Color) {
+private fun ClearSearchIcon(
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+  tint: Color = LocalContentColor.current,
+) {
   IconButton(
-    onClick = onClearSearch,
+    onClick = onClick,
+    modifier = modifier,
   ) {
     Icon(
       Icons.Default.Clear,
