@@ -244,95 +244,116 @@ private fun HelpCenterHomeScreen(
           },
         ) { animatedSearch ->
           if (animatedSearch == null) {
-            Column {
-              Spacer(Modifier.height(32.dp))
-              Image(
-                painter = painterResource(id = R.drawable.pillow_hedvig),
-                contentDescription = null,
-                modifier = Modifier
-                  .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
-                  .size(170.dp)
-                  .align(Alignment.CenterHorizontally),
-              )
-              Spacer(Modifier.height(50.dp))
-              Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier
-                  .padding(horizontal = 20.dp)
-                  .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-              ) {
-                Text(stringResource(id = R.string.HC_HOME_VIEW_QUESTION))
-                Text(
-                  text = stringResource(id = R.string.HC_HOME_VIEW_ANSWER),
-                  color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-              }
-              Spacer(Modifier.height(24.dp))
-
-              Column {
-                AnimatedVisibility(
-                  visible = quickLinksUiState !is HelpCenterUiState.QuickLinkUiState.NoQuickLinks,
-                  enter = QuickLinksSectionEnterTransition,
-                  exit = QuickLinksSectionExitTransition,
-                ) {
-                  Column {
-                    QuickLinksSection(quickLinksUiState, onQuickActionsSelected)
-                    Spacer(Modifier.height(32.dp))
-                  }
-                }
-                HelpCenterSection(
-                  title = stringResource(id = R.string.HC_COMMON_TOPICS_TITLE),
-                  chipContainerColor = MaterialTheme.colorScheme.yellowContainer,
-                  contentColor = MaterialTheme.colorScheme.onYellowContainer,
-                  content = {
-                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                      for (topic in topics) {
-                        HedvigCard(
-                          onClick = { onNavigateToTopic(topic) },
-                          modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
-                            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-                        ) {
-                          Text(stringResource(topic.titleRes), Modifier.padding(16.dp))
-                        }
-                      }
-                    }
-                  },
-                )
-                Spacer(Modifier.height(32.dp))
-                LocalConfiguration.current
-                val resources = LocalContext.current.resources
-                HelpCenterSectionWithClickableRows(
-                  title = stringResource(id = R.string.HC_COMMON_QUESTIONS_TITLE),
-                  chipContainerColor = MaterialTheme.colorScheme.infoContainer,
-                  contentColor = MaterialTheme.colorScheme.onInfoContainer,
-                  items = questions,
-                  itemText = { resources.getString(it.questionRes) },
-                  onClickItem = { onNavigateToQuestion(it) },
-                )
-              }
-              Spacer(Modifier.weight(1f))
-              Spacer(Modifier.height(40.dp))
-              StillNeedHelpSection(
-                openChat = openChat,
-                contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom).asPaddingValues(),
-              )
-            }
+            ContentWithoutSearch(
+              quickLinksUiState = quickLinksUiState,
+              onQuickActionsSelected = onQuickActionsSelected,
+              topics = topics,
+              onNavigateToTopic = onNavigateToTopic,
+              questions = questions,
+              onNavigateToQuestion = onNavigateToQuestion,
+              openChat = openChat,
+            )
           } else {
             SearchResults(
-              animatedSearch.activeSearchState,
+              activeSearchState = animatedSearch.activeSearchState,
               onBackPressed = {
                 searchQuery = null
                 onClearSearch()
               },
-              onNavigateToQuestion,
-              onQuickActionsSelected,
+              onNavigateToQuestion = onNavigateToQuestion,
+              onQuickActionsSelected = onQuickActionsSelected,
             )
           }
         }
       }
     }
+  }
+}
+
+@Composable
+private fun ContentWithoutSearch(
+  quickLinksUiState: HelpCenterUiState.QuickLinkUiState,
+  onQuickActionsSelected: (QuickAction) -> Unit,
+  topics: ImmutableList<Topic>,
+  onNavigateToTopic: (topic: Topic) -> Unit,
+  questions: ImmutableList<Question>,
+  onNavigateToQuestion: (question: Question) -> Unit,
+  openChat: () -> Unit,
+) {
+  Column {
+    Spacer(Modifier.height(32.dp))
+    Image(
+      painter = painterResource(id = R.drawable.pillow_hedvig),
+      contentDescription = null,
+      modifier = Modifier
+        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+        .size(170.dp)
+        .align(Alignment.CenterHorizontally),
+    )
+    Spacer(Modifier.height(50.dp))
+    Column(
+      verticalArrangement = Arrangement.spacedBy(8.dp),
+      modifier = Modifier
+        .padding(horizontal = 20.dp)
+        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+    ) {
+      Text(stringResource(id = R.string.HC_HOME_VIEW_QUESTION))
+      Text(
+        text = stringResource(id = R.string.HC_HOME_VIEW_ANSWER),
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+      )
+    }
+    Spacer(Modifier.height(24.dp))
+
+    Column {
+      AnimatedVisibility(
+        visible = quickLinksUiState !is HelpCenterUiState.QuickLinkUiState.NoQuickLinks,
+        enter = QuickLinksSectionEnterTransition,
+        exit = QuickLinksSectionExitTransition,
+      ) {
+        Column {
+          QuickLinksSection(quickLinksUiState, onQuickActionsSelected)
+          Spacer(Modifier.height(32.dp))
+        }
+      }
+      HelpCenterSection(
+        title = stringResource(id = R.string.HC_COMMON_TOPICS_TITLE),
+        chipContainerColor = MaterialTheme.colorScheme.yellowContainer,
+        contentColor = MaterialTheme.colorScheme.onYellowContainer,
+        content = {
+          Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            for (topic in topics) {
+              HedvigCard(
+                onClick = { onNavigateToTopic(topic) },
+                modifier = Modifier
+                  .fillMaxWidth()
+                  .padding(horizontal = 16.dp)
+                  .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+              ) {
+                Text(stringResource(topic.titleRes), Modifier.padding(16.dp))
+              }
+            }
+          }
+        },
+      )
+      Spacer(Modifier.height(32.dp))
+      LocalConfiguration.current
+      val resources = LocalContext.current.resources
+      HelpCenterSectionWithClickableRows(
+        title = stringResource(id = R.string.HC_COMMON_QUESTIONS_TITLE),
+        chipContainerColor = MaterialTheme.colorScheme.infoContainer,
+        contentColor = MaterialTheme.colorScheme.onInfoContainer,
+        items = questions,
+        itemText = { resources.getString(it.questionRes) },
+        onClickItem = { onNavigateToQuestion(it) },
+      )
+    }
+    Spacer(Modifier.weight(1f))
+    Spacer(Modifier.height(40.dp))
+    StillNeedHelpSection(
+      openChat = openChat,
+      contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom).asPaddingValues(),
+    )
   }
 }
 
