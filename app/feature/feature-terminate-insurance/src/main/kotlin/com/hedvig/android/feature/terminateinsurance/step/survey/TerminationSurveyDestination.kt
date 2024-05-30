@@ -280,14 +280,14 @@ private fun TerminationSurveyScreen(
                       verticalAlignment = Alignment.Top,
                       modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 16.dp, top = 10.dp, end = 16.dp),
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
                     ) {
                       Text(
                         overflow = TextOverflow.Ellipsis,
                         text = feedback ?: stringResource(id = R.string.TERMINATION_SURVEY_FEEDBACK_HINT),
                         style = MaterialTheme.typography.bodyLarge,
                         color = if (feedback != null) {
-                          MaterialTheme.typography.bodyLarge.color
+                          MaterialTheme.colorScheme.secondary
                         } else {
                           MaterialTheme.colorScheme.onSurfaceVariant
                         },
@@ -492,7 +492,6 @@ private fun FeedbackEditableText(
         ),
       )
     }
-    Spacer(modifier = Modifier.height(8.dp))
   }
 }
 
