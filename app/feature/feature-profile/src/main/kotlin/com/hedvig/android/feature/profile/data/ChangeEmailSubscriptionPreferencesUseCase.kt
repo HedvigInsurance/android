@@ -1,12 +1,13 @@
 package com.hedvig.android.feature.profile.data
 
+import androidx.compose.ui.tooling.data.EmptyGroup.data
 import arrow.core.Either
+import arrow.core.raise.either
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.Optional
 import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
-import com.hedvig.android.logger.logcat
 import octopus.UpdateSubscriptionPreferenceMutation
 
 internal interface ChangeEmailSubscriptionPreferencesUseCase {
@@ -18,19 +19,22 @@ internal class ChangeEmailSubscriptionPreferencesUseCaseImpl(
   private val networkCacheManager: NetworkCacheManager,
 ) : ChangeEmailSubscriptionPreferencesUseCase {
   override suspend fun invoke(subscribe: Boolean): Either<SubPrefError, SubPrefSuccess> {
-    val result = apolloClient
-      .mutation(UpdateSubscriptionPreferenceMutation(Optional.present(subscribe)))
-      .safeExecute()
-      .toEither()
-      .mapLeft {
-        logcat { "" }
-        SubPrefError(it.message)
+    return either {
+      val data: UpdateSubscriptionPreferenceMutation.Data = apolloClient
+        .mutation(UpdateSubscriptionPreferenceMutation(Optional.present(subscribe)))
+        .safeExecute()
+        .toEither()
+        .mapLeft {
+          SubPrefError(it.message)
+        }
+        .bind()
+      val userErrorMessage = data.memberUpdateSubscriptionPreference?.message
+      if (userErrorMessage != null) {
+        raise(SubPrefError(userErrorMessage))
       }
-      .map {
-        SubPrefSuccess
-      }
-    networkCacheManager.clearCache()
-    return result
+      networkCacheManager.clearCache()
+      SubPrefSuccess
+    }
   }
 }
 
