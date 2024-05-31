@@ -75,33 +75,32 @@ internal class MyInfoPresenter(
     }
 
     LaunchedEffect(updateLoadIteration) {
-      if (updateLoadIteration > 0) {
-        val successState = currentState as? MyInfoUiState.Success ?: return@LaunchedEffect
-        val validatedState = successState.validateInput()
-        currentState = validatedState
-        if (validatedState.isInputValid) {
-          currentState = validatedState.copy(isSubmitting = true)
-          Either.zipOrAccumulate(
-            profileRepositoryProvider.provide().updatePhoneNumber(validatedState.member.phoneNumber.input ?: ""),
-            profileRepositoryProvider.provide().updateEmail(validatedState.member.email.input ?: ""),
-          ) { memberWithPhone, memberWithEmail ->
-            memberWithPhone.copy(email = memberWithEmail.email)
-          }.fold(
-            ifLeft = {
-              currentState = MyInfoUiState.Error
-            },
-            ifRight = { member ->
-              currentState = MyInfoUiState.Success(
-                member = MyInfoMember(
-                  email = ValidatedInput(member.email),
-                  phoneNumber = ValidatedInput(member.phoneNumber),
-                ),
-                isSubmitting = false,
-                canSubmit = false,
-              )
-            },
-          )
-        }
+      if (updateLoadIteration == 0) return@LaunchedEffect
+      val successState = currentState as? MyInfoUiState.Success ?: return@LaunchedEffect
+      val validatedState = successState.validateInput()
+      currentState = validatedState
+      if (validatedState.isInputValid) {
+        currentState = validatedState.copy(isSubmitting = true)
+        Either.zipOrAccumulate(
+          profileRepositoryProvider.provide().updatePhoneNumber(validatedState.member.phoneNumber.input ?: ""),
+          profileRepositoryProvider.provide().updateEmail(validatedState.member.email.input ?: ""),
+        ) { memberWithPhone, memberWithEmail ->
+          memberWithPhone.copy(email = memberWithEmail.email)
+        }.fold(
+          ifLeft = {
+            currentState = MyInfoUiState.Error
+          },
+          ifRight = { member ->
+            currentState = MyInfoUiState.Success(
+              member = MyInfoMember(
+                email = ValidatedInput(member.email),
+                phoneNumber = ValidatedInput(member.phoneNumber),
+              ),
+              isSubmitting = false,
+              canSubmit = false,
+            )
+          },
+        )
       }
     }
     return currentState
