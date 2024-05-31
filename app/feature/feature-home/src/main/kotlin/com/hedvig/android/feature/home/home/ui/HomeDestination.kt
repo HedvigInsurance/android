@@ -36,6 +36,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -57,6 +58,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.nonEmptyListOf
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.permissions.isGranted
+import com.hedvig.android.core.designsystem.component.bottomsheet.HedvigBottomSheet
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigSecondaryContainedButton
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
@@ -70,11 +72,15 @@ import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.compose.notificationCircle
 import com.hedvig.android.core.icons.hedvig.normal.WarningFilled
 import com.hedvig.android.core.ui.appbar.m3.ToolbarChatIcon
+import com.hedvig.android.core.ui.appbar.m3.ToolbarCrossSellsIcon
+import com.hedvig.android.core.ui.appbar.m3.ToolbarFirstVetIcon
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarLayoutForActions
 import com.hedvig.android.core.ui.infocard.InfoCardTextButton
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.plus
 import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
+import com.hedvig.android.crosssells.CrossSellsSection
+import com.hedvig.android.data.contract.android.CrossSell
 import com.hedvig.android.feature.home.home.ChatTooltip
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.memberreminders.MemberReminder
@@ -93,9 +99,11 @@ import com.hedvig.android.ui.claimstatus.ClaimStatusCards
 import com.hedvig.android.ui.claimstatus.model.ClaimPillType
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
+import com.hedvig.android.ui.emergency.FirstVetSection
 import hedvig.resources.R
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -112,6 +120,7 @@ internal fun HomeDestination(
   openUrl: (String) -> Unit,
   openAppSettings: () -> Unit,
   navigateToMissingInfo: (String) -> Unit,
+  navigateToFirstVet: (List<FirstVetSection>) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val notificationPermissionState = rememberNotificationPermissionState()
@@ -128,6 +137,8 @@ internal fun HomeDestination(
     openAppSettings = openAppSettings,
     navigateToMissingInfo = navigateToMissingInfo,
     markMessageAsSeen = { viewModel.emit(HomeEvent.MarkMessageAsSeen(it)) },
+    navigateToFirstVet = navigateToFirstVet,
+    markCrossSellsNotificationAsSeen = { viewModel.emit(HomeEvent.MarkCardCrossSellsAsSeen) },
   )
 }
 
@@ -145,6 +156,8 @@ private fun HomeScreen(
   markMessageAsSeen: (String) -> Unit,
   openAppSettings: () -> Unit,
   navigateToMissingInfo: (String) -> Unit,
+  navigateToFirstVet: (List<FirstVetSection>) -> Unit,
+  markCrossSellsNotificationAsSeen: () -> Unit,
 ) {
   val context = LocalContext.current
   val systemBarInsetTopDp = with(LocalDensity.current) {
@@ -155,7 +168,20 @@ private fun HomeScreen(
     onRefresh = reload,
     refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
   )
-
+  var crossSellsForBottomSheet by remember { mutableStateOf<ImmutableList<CrossSell>?>(null) }
+  if (crossSellsForBottomSheet != null) {
+    val list = crossSellsForBottomSheet
+    if (list != null) {
+      LaunchedEffect(Unit) {
+        markCrossSellsNotificationAsSeen()
+      }
+      CrossSellBottomSheet(
+        crossSells = list,
+        onDismissed = { crossSellsForBottomSheet = null },
+        onCrossSellClick = openUrl,
+      )
+    }
+  }
   Box(Modifier.fillMaxSize()) {
     val toolbarHeight = 64.dp
     val transition = updateTransition(targetState = uiState, label = "home ui state")
@@ -200,14 +226,43 @@ private fun HomeScreen(
         }
       }
     }
-    if (uiState.showChatIcon) {
-      Column {
-        TopAppBarLayoutForActions {
-          ToolbarChatIcon(
-            onClick = onStartChat,
-            modifier = Modifier.notificationCircle(uiState.hasUnseenChatMessages),
-          )
+
+    Column {
+      TopAppBarLayoutForActions {
+        val currentState = uiState as? HomeUiState.Success
+        if (currentState != null) {
+          val actionsList = buildList {
+            if (currentState.crossSellsAction != null) add(currentState.crossSellsAction)
+            if (currentState.firstVetAction != null) add(currentState.firstVetAction)
+            if (currentState.chatAction != null) add(currentState.chatAction)
+          }
+          actionsList.forEachIndexed { index, action ->
+            if (index != 0) {
+              Spacer(modifier = Modifier.width(8.dp))
+            }
+            when (action) {
+              HomeTopBarAction.ChatAction -> ToolbarChatIcon(
+                onClick = onStartChat,
+                modifier = Modifier.notificationCircle(uiState.hasUnseenChatMessages),
+              )
+
+              is HomeTopBarAction.CrossSellsAction -> ToolbarCrossSellsIcon(
+                onClick = {
+                  crossSellsForBottomSheet = action.crossSells
+                },
+              )
+
+              is HomeTopBarAction.FirstVetAction -> {
+                val sections = action.sections
+                ToolbarFirstVetIcon(
+                  onClick = { navigateToFirstVet(sections) },
+                )
+              }
+            }
+          }
         }
+      }
+      if ((uiState as? HomeUiState.Success)?.chatAction != null) {
         val shouldShowTooltip by produceState(false) {
           val daysSinceLastTooltipShown = daysSinceLastTooltipShown(context)
           value = daysSinceLastTooltipShown
@@ -408,7 +463,8 @@ private fun ImportantMessages(
           pageCount = animatedList.size,
           activeColor = LocalContentColor.current,
           modifier = Modifier
-            .align(Alignment.CenterHorizontally).padding(contentPadding),
+            .align(Alignment.CenterHorizontally)
+            .padding(contentPadding),
         )
       }
     }
@@ -478,6 +534,26 @@ private fun WelcomeMessage(homeText: HomeText, modifier: Modifier = Modifier) {
   )
 }
 
+@Composable
+private fun CrossSellBottomSheet(
+  crossSells: ImmutableList<CrossSell>,
+  onDismissed: () -> Unit,
+  onCrossSellClick: (String) -> Unit,
+) {
+  HedvigBottomSheet(
+    onDismissed = onDismissed,
+    content = {
+      Column {
+        CrossSellsSection(
+          showNotificationBadge = false,
+          crossSells = crossSells,
+          onCrossSellClick = onCrossSellClick,
+        )
+      }
+    },
+  )
+}
+
 private const val SHARED_PREFERENCE_LAST_OPEN = "shared_preference_last_open"
 
 private fun Context.setLastEpochDayWhenChatTooltipWasShown(epochDay: Long) =
@@ -528,8 +604,21 @@ private fun PreviewHomeScreen(
             connectPayment = MemberReminder.PaymentReminder.ConnectPayment(),
           ),
           isHelpCenterEnabled = true,
-          showChatIcon = true,
           hasUnseenChatMessages = hasUnseenChatMessages,
+          crossSellsAction = HomeTopBarAction.CrossSellsAction(
+            persistentListOf(CrossSell("rf", "erf", "", "", CrossSell.CrossSellType.ACCIDENT)),
+          ),
+          firstVetAction = HomeTopBarAction.FirstVetAction(
+            listOf(
+              FirstVetSection(
+                "",
+                "",
+                "",
+                "",
+              ),
+            ),
+          ),
+          chatAction = HomeTopBarAction.ChatAction,
         ),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
         reload = {},
@@ -542,6 +631,8 @@ private fun PreviewHomeScreen(
         openAppSettings = {},
         navigateToMissingInfo = {},
         markMessageAsSeen = {},
+        navigateToFirstVet = {},
+        markCrossSellsNotificationAsSeen = {},
       )
     }
   }

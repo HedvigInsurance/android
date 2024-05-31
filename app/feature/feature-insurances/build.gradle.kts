@@ -38,6 +38,7 @@ dependencies {
   implementation(projects.coreIcons)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
+  implementation(projects.crossSells)
   implementation(projects.dataContractAndroid)
   implementation(projects.dataContractPublic)
   implementation(projects.dataProductVariantAndroid)
@@ -49,7 +50,9 @@ dependencies {
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
   implementation(projects.notificationBadgeDataPublic)
+  implementation(projects.placeholder)
   implementation(projects.pullrefresh)
+  implementation(projects.uiEmergency)
 
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
@@ -63,7 +66,6 @@ dependencies {
   testImplementation(projects.loggingTest)
   testImplementation(projects.moleculeTest)
   testImplementation(projects.notificationBadgeDataFake)
-  implementation(projects.placeholder)
 }
 
 apollo {

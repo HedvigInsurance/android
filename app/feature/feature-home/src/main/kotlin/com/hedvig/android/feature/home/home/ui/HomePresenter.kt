@@ -13,24 +13,31 @@ import androidx.compose.runtime.snapshots.Snapshot
 import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.chat.read.timestamp.ChatLastMessageReadRepository
+import com.hedvig.android.data.contract.android.CrossSell
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorage
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import com.hedvig.android.notification.badge.data.crosssell.card.CrossSellCardNotificationBadgeService
+import com.hedvig.android.ui.emergency.FirstVetSection
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 
 internal class HomePresenter(
   private val getHomeDataUseCaseProvider: Provider<GetHomeDataUseCase>,
   private val chatLastMessageReadRepository: ChatLastMessageReadRepository,
   private val seenImportantMessagesStorage: SeenImportantMessagesStorage,
+  private val crossSellCardNotificationBadgeServiceProvider: Provider<CrossSellCardNotificationBadgeService>,
+  private val applicationScope: CoroutineScope,
 ) : MoleculePresenter<HomeEvent, HomeUiState> {
   @Composable
   override fun MoleculePresenterScope<HomeEvent>.present(lastState: HomeUiState): HomeUiState {
@@ -55,6 +62,9 @@ internal class HomePresenter(
         HomeEvent.RefreshData -> loadIteration++
         is HomeEvent.MarkMessageAsSeen -> {
           seenImportantMessagesStorage.markMessageAsSeen(homeEvent.messageId)
+        }
+        HomeEvent.MarkCardCrossSellsAsSeen -> {
+          applicationScope.launch { crossSellCardNotificationBadgeServiceProvider.provide().markAsSeen() }
         }
       }
     }
@@ -103,8 +113,10 @@ internal class HomePresenter(
             !alreadySeenImportantMessages.contains(it.id)
           }.toPersistentList(),
           isHelpCenterEnabled = successData.showHelpCenter,
-          showChatIcon = successData.showChatIcon,
           hasUnseenChatMessages = hasUnseenChatMessages,
+          chatAction = successData.chatAction,
+          firstVetAction = successData.firstVetAction,
+          crossSellsAction = successData.crossSellsAction,
         )
       }
     }
@@ -115,13 +127,12 @@ internal sealed interface HomeEvent {
   data object RefreshData : HomeEvent
 
   data class MarkMessageAsSeen(val messageId: String) : HomeEvent
+
+  data object MarkCardCrossSellsAsSeen : HomeEvent
 }
 
 internal sealed interface HomeUiState {
   val isReloading: Boolean
-    get() = false
-
-  val showChatIcon: Boolean
     get() = false
 
   val isHelpCenterEnabled: Boolean
@@ -136,14 +147,16 @@ internal sealed interface HomeUiState {
     val claimStatusCardsData: HomeData.ClaimStatusCardsData?,
     val veryImportantMessages: ImmutableList<HomeData.VeryImportantMessage>,
     val memberReminders: MemberReminders,
+    val chatAction: HomeTopBarAction.ChatAction?,
+    val firstVetAction: HomeTopBarAction.FirstVetAction?,
+    val crossSellsAction: HomeTopBarAction.CrossSellsAction?,
     override val isHelpCenterEnabled: Boolean,
-    override val showChatIcon: Boolean,
     override val hasUnseenChatMessages: Boolean,
   ) : HomeUiState
 
   data class Error(val message: String?) : HomeUiState
 
-  object Loading : HomeUiState
+  data object Loading : HomeUiState
 }
 
 private data class SuccessData(
@@ -151,8 +164,10 @@ private data class SuccessData(
   val claimStatusCardsData: HomeData.ClaimStatusCardsData?,
   val veryImportantMessages: ImmutableList<HomeData.VeryImportantMessage>,
   val memberReminders: MemberReminders,
-  val showChatIcon: Boolean,
   val showHelpCenter: Boolean,
+  val chatAction: HomeTopBarAction.ChatAction?,
+  val firstVetAction: HomeTopBarAction.FirstVetAction?,
+  val crossSellsAction: HomeTopBarAction.CrossSellsAction?,
 ) {
   companion object {
     fun fromLastState(lastState: HomeUiState): SuccessData? {
@@ -162,12 +177,25 @@ private data class SuccessData(
         claimStatusCardsData = lastState.claimStatusCardsData,
         veryImportantMessages = lastState.veryImportantMessages,
         memberReminders = lastState.memberReminders,
-        showChatIcon = lastState.showChatIcon,
         showHelpCenter = lastState.isHelpCenterEnabled,
+        chatAction = lastState.chatAction,
+        crossSellsAction = lastState.crossSellsAction,
+        firstVetAction = lastState.firstVetAction,
       )
     }
 
     fun fromHomeData(homeData: HomeData): SuccessData {
+      val crossSellsAction = if (homeData.crossSells.isNotEmpty()) {
+        HomeTopBarAction.CrossSellsAction(homeData.crossSells)
+      } else {
+        null
+      }
+      val chatAction = if (homeData.showChatIcon) HomeTopBarAction.ChatAction else null
+      val firstVetAction = if (homeData.firstVetSections.isNotEmpty()) {
+        HomeTopBarAction.FirstVetAction(homeData.firstVetSections)
+      } else {
+        null
+      }
       return SuccessData(
         homeText = when (homeData.contractStatus) {
           HomeData.ContractStatus.Active -> HomeText.Active
@@ -183,8 +211,10 @@ private data class SuccessData(
         claimStatusCardsData = homeData.claimStatusCardsData,
         veryImportantMessages = homeData.veryImportantMessages,
         memberReminders = homeData.memberReminders.copy(enableNotifications = null),
-        showChatIcon = homeData.showChatIcon,
         showHelpCenter = homeData.showHelpCenter,
+        chatAction = chatAction,
+        firstVetAction = firstVetAction,
+        crossSellsAction = crossSellsAction,
       )
     }
   }
@@ -200,4 +230,16 @@ sealed interface HomeText {
   data object Pending : HomeText
 
   data object Switching : HomeText
+}
+
+sealed interface HomeTopBarAction {
+  data object ChatAction : HomeTopBarAction
+
+  data class FirstVetAction(
+    val sections: List<FirstVetSection>,
+  ) : HomeTopBarAction
+
+  data class CrossSellsAction(
+    val crossSells: ImmutableList<CrossSell>,
+  ) : HomeTopBarAction
 }

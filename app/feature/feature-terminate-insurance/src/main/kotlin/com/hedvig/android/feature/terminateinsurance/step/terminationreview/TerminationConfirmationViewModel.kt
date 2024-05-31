@@ -5,8 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -30,8 +28,6 @@ internal class TerminationConfirmationViewModel(
   fun submitContractTermination() {
     _uiState.update { it.copy(isSubmittingContractTermination = true) }
     viewModelScope.launch {
-      // Make the success response take at least 3 seconds as per the design
-      val minimumTimeDelay = async { delay(3000) }
       when (terminationType) {
         TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Deletion -> {
           terminateInsuranceRepository.confirmDeletion()
@@ -42,7 +38,6 @@ internal class TerminationConfirmationViewModel(
         }
       }.fold(
         ifLeft = { errorMessage ->
-          minimumTimeDelay.cancel()
           _uiState.update {
             it.copy(
               isSubmittingContractTermination = false,
@@ -51,7 +46,6 @@ internal class TerminationConfirmationViewModel(
           }
         },
         ifRight = { terminateInsuranceFlowStep ->
-          minimumTimeDelay.await()
           _uiState.update {
             it.copy(
               isSubmittingContractTermination = false,

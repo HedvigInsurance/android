@@ -3,9 +3,7 @@ package com.hedvig.android.feature.terminateinsurance.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -85,7 +83,6 @@ internal fun TerminationInfoCardDate(
               style = MaterialTheme.typography.bodyMedium,
               color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            Spacer(modifier = Modifier.height(4.dp))
             Text(
               text = dateValue ?: stringResource(R.string.TERMINATION_FLOW_DATE_FIELD_PLACEHOLDER),
               style = MaterialTheme.typography.bodyLarge,

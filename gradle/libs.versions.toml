@@ -5,12 +5,12 @@ targetSdkVersion = "33"
 minSdkVersion = "23"
 
 # lint versions
-lintApi = "31.3.2"
-lintGradlePlugin = "8.3.2"
+lintApi = "31.4.0"
+lintGradlePlugin = "8.4.0"
 
 # gradlePlugin versions
-androidGradlePlugin = "8.3.2"
-apollo = "3.8.3"
+androidGradlePlugin = "8.4.0"
+apollo = "3.8.4"
 cacheFix = "3.0.1"
 crashlytics = "2.9.9"
 datadogPlugin = "1.13.1"
@@ -29,20 +29,23 @@ accompanist = "0.34.0"
 androidx-activity-compose = "1.9.0"
 androidx-activity-core = "1.9.0"
 androidx-annotation = "1.7.1"
-androidx-composeBom = "2024.04.01"
+androidx-composeBom = "2024.05.00"
 androidx-composeCompiler = "1.5.11"
-androidx-datastore = "1.1.0"
+androidx-datastore = "1.1.1"
+androidx-junit = "1.1.5"
 androidx-lifecycle = "2.7.0"
 androidx-navigation = "2.7.7"
 androidx-other-appCompat = "1.6.1"
 androidx-other-browser = "1.8.0"
 androidx-other-constraintLayout = "2.1.4"
-androidx-other-core = "1.13.0"
+androidx-other-core = "1.13.1"
 androidx-other-splashscreen = "1.2.0-alpha01"
 androidx-other-startup = "1.1.1"
 androidx-other-workManager = "2.9.0"
 androidx-profileInstaller = "1.3.1"
-androidxGraphicsShapes = "1.0.0-alpha05"
+androidx-test = "1.5.0"
+androidx-testRunners = "1.5.2"
+androidxGraphicsShapes = "1.0.0-beta01"
 arrow = "1.2.4"
 assertK = "0.28.1"
 coil = "2.6.0"
@@ -68,8 +71,9 @@ okio = "3.9.0"
 playReview = "2.0.1"
 retrofit = "2.11.0"
 retrofitArrow = "1.2.4"
+robolectric = "4.12.1"
 slimber = "2.0.0"
-testParameterInjector = "1.15"
+testParameterInjector = "1.16"
 timber = "5.0.1"
 turbine = "1.1.0"
 unleash = "1.0.0"
@@ -121,6 +125,9 @@ androidx-other-splashscreen = { module = "androidx.core:core-splashscreen", vers
 androidx-other-startup = { module = "androidx.startup:startup-runtime", version.ref = "androidx-other-startup" }
 androidx-other-workManager = { module = "androidx.work:work-runtime-ktx", version.ref = "androidx-other-workManager" }
 androidx-profileInstaller = { module = "androidx.profileinstaller:profileinstaller", version.ref = "androidx-profileInstaller" }
+androidx-test = { module = "androidx.test:core-ktx", version.ref = "androidx-test" }
+androidx-testRunners = { module = "androidx.test:runner", version.ref = "androidx-testRunners" }
+androidx-junit = { module = "androidx.test.ext:junit-ktx", version.ref = "androidx-junit" }
 apollo-adapters = { module = "com.apollographql.apollo3:apollo-adapters", version.ref = "apollo" }
 apollo-annotations = { module = "com.apollographql.apollo3:apollo-annotations", version.ref = "apollo" }
 apollo-api = { module = "com.apollographql.apollo3:apollo-api", version.ref = "apollo" }
@@ -179,6 +186,7 @@ playReview = { module = "com.google.android.play:review-ktx", version.ref = "pla
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofitArrow = { module = "io.arrow-kt:arrow-core-retrofit", version.ref = "retrofitArrow" }
 retrofitKotlinxSerializationConverter = { module = "com.squareup.retrofit2:converter-kotlinx-serialization", version.ref = "retrofit" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 slimber = { module = "com.github.PaulWoitaschek:Slimber", version.ref = "slimber" }
 testParameterInjector = { module = "com.google.testparameterinjector:test-parameter-injector", version.ref = "testParameterInjector" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }

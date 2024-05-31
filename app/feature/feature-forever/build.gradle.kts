@@ -16,10 +16,10 @@ dependencies {
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.coreBuildConstants)
   implementation(projects.coreDesignSystem)
-  implementation(projects.languageCore)
-  implementation(projects.navigationComposeTyped)
-  implementation(projects.navigationCore)
   implementation(projects.foreverUi)
+  implementation(projects.languageCore)
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
+  implementation(projects.navigationComposeTyped)
+  implementation(projects.navigationCore)
 }

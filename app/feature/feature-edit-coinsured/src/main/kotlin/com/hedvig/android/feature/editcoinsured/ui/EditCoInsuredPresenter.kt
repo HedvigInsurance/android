@@ -14,6 +14,7 @@ import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.data.CoInsuredError
+import com.hedvig.android.feature.editcoinsured.data.CoInsuredPersonalInformation
 import com.hedvig.android.feature.editcoinsured.data.CommitMidtermChangeUseCase
 import com.hedvig.android.feature.editcoinsured.data.CreateMidtermChangeUseCase
 import com.hedvig.android.feature.editcoinsured.data.FetchCoInsuredPersonalInformationUseCase
@@ -139,11 +140,7 @@ internal class EditCoInsuredPresenter(
             addBottomSheetState.copy(lastName = event.lastName, errorMessage = null)
 
         is EditCoInsuredEvent.OnManualInputSwitchChanged -> {
-          addBottomSheetState =
-            Loaded.AddBottomSheetState(
-              showManualInput = event.show,
-              show = true,
-            )
+          addBottomSheetState = addBottomSheetState.copy(showManualInput = event.show)
         }
 
         is EditCoInsuredEvent.OnEditCoInsuredClicked -> {
@@ -193,12 +190,25 @@ internal class EditCoInsuredPresenter(
         val paddedSsn = formatShortSsn(ssn)
         either {
           val result = fetchCoInsuredPersonalInformationUseCase.invoke(paddedSsn).bind()
-          addBottomSheetState = addBottomSheetState.copy(
-            firstName = result.firstName,
-            lastName = result.lastName,
-            ssn = paddedSsn,
-            errorMessage = null,
-          )
+          when (result) {
+            is CoInsuredPersonalInformation.FullInfo -> {
+              addBottomSheetState = addBottomSheetState.copy(
+                firstName = result.firstName,
+                lastName = result.lastName,
+                ssn = paddedSsn,
+                errorMessage = null,
+              )
+            }
+            is CoInsuredPersonalInformation.EmptyInfo -> {
+              addBottomSheetState =
+                Loaded.AddBottomSheetState(
+                  showManualInput = true,
+                  show = true,
+                  birthDate = result.dateOfBirth,
+                  showUnderAgedInfo = true,
+                )
+            }
+          }
         }.onLeft {
           addBottomSheetState = addBottomSheetState.copy(errorMessage = it.message)
         }
@@ -404,6 +414,7 @@ internal sealed interface EditCoInsuredState {
       val errorMessage: String? = null,
       val isLoading: Boolean = false,
       val show: Boolean = false,
+      val showUnderAgedInfo: Boolean = false,
     ) {
       fun canPickExistingCoInsured() = !selectableCoInsured.isNullOrEmpty()
 

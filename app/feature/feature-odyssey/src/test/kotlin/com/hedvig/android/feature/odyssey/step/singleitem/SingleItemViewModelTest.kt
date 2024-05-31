@@ -309,6 +309,7 @@ class SingleItemViewModelTest {
         CurrencyCode.SEK,
         null,
         null,
+        purchasePriceApplicable = true,
         itemBrands,
         null,
         itemModels,

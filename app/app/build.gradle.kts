@@ -25,7 +25,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "12.6.4"
+    versionName = "12.6.10"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -166,6 +166,7 @@ dependencies {
   implementation(projects.apolloCore)
   implementation(projects.apolloNetworkCacheManager)
   implementation(projects.authCorePublic)
+  implementation(projects.coreAppReview)
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
@@ -176,11 +177,13 @@ dependencies {
   implementation(projects.coreIcons)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
+  implementation(projects.crossSells)
   implementation(projects.dataChatReadTimestampPublic)
   implementation(projects.dataClaimFlow)
   implementation(projects.dataContractPublic)
   implementation(projects.dataPayingMember)
   implementation(projects.dataSettingsDatastorePublic)
+  implementation(projects.dataTermination)
   implementation(projects.datadogCore)
   implementation(projects.datadogDemoTracking)
   implementation(projects.featureChangeaddress)
@@ -203,6 +206,7 @@ dependencies {
   implementation(projects.featureProfile)
   implementation(projects.featureTerminateInsurance)
   implementation(projects.featureTravelCertificate)
+  implementation(projects.foreverUi)
   implementation(projects.initializable)
   implementation(projects.languageCore)
   implementation(projects.languageData)
@@ -221,9 +225,6 @@ dependencies {
   implementation(projects.theme)
   implementation(projects.trackingCore)
   implementation(projects.trackingDatadog)
-  implementation(projects.coreAppReview)
-  implementation(projects.dataTermination)
-  implementation(projects.foreverUi)
 
   debugImplementation(libs.androidx.compose.uiTestManifest)
   debugImplementation(libs.androidx.compose.uiTooling)

@@ -10,8 +10,8 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.ui.emergency.FirstVetSection
 import kotlinx.coroutines.flow.first
-import kotlinx.serialization.Serializable
 import octopus.MemberActionsQuery
 
 internal interface GetMemberActionsUseCase {
@@ -72,14 +72,6 @@ internal data class DeflectPartner(
   val id: String,
   val imageUrl: String?,
   val phoneNumber: String?,
-  val url: String?,
-)
-
-@Serializable
-data class FirstVetSection(
-  val buttonTitle: String?,
-  val description: String?,
-  val title: String?,
   val url: String?,
 )
 

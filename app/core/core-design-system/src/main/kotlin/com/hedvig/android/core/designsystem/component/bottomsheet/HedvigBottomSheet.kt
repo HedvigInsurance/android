@@ -1,5 +1,6 @@
 package com.hedvig.android.core.designsystem.component.bottomsheet
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -7,6 +8,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -70,19 +73,23 @@ fun HedvigBottomSheet(
     shape = MaterialTheme.shapes.squircleLargeTop,
     windowInsets = BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top),
   ) {
-    content()
-    Spacer(Modifier.height(16.dp))
-    HedvigTextButton(
-      text = stringResource(id = R.string.general_close_button),
-      onClick = {
-        scope.launch {
-          sheetState.hide()
-        }.invokeOnCompletion {
-          onDismissed()
-        }
-      },
-      modifier = Modifier.padding(start = 24.dp, end = 24.dp, bottom = 16.dp),
-    )
-    Spacer(Modifier.windowInsetsPadding(BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Bottom)))
+    Column(
+      modifier = Modifier.verticalScroll(rememberScrollState()),
+    ) {
+      content()
+      Spacer(Modifier.height(16.dp))
+      HedvigTextButton(
+        text = stringResource(id = R.string.general_close_button),
+        onClick = {
+          scope.launch {
+            sheetState.hide()
+          }.invokeOnCompletion {
+            onDismissed()
+          }
+        },
+        modifier = Modifier.padding(start = 24.dp, end = 24.dp, bottom = 16.dp),
+      )
+      Spacer(Modifier.windowInsetsPadding(BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Bottom)))
+    }
   }
 }

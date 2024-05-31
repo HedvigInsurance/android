@@ -1,6 +1,4 @@
-package com.hedvig.android.feature.insurances.data
-
-import com.hedvig.android.data.contract.android.R
+package com.hedvig.android.data.contract.android
 
 data class CrossSell(
   val id: String,

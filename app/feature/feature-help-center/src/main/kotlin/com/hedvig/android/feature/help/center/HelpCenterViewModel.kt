@@ -13,6 +13,7 @@ internal class HelpCenterViewModel(
       questions = commonQuestions,
       selectedQuickAction = null,
       quickLinksUiState = HelpCenterUiState.QuickLinkUiState.Loading,
+      search = null,
     ),
     presenter = HelpCenterPresenter(
       getQuickLinksUseCase = getQuickLinksUseCase,

@@ -43,11 +43,13 @@ fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
     }
 
     is ClaimFlowStep.ClaimPhoneNumberStep -> ClaimFlowDestination.PhoneNumber(phoneNumber)
+
     is ClaimFlowStep.ClaimSingleItemStep -> {
       ClaimFlowDestination.SingleItem(
         preferredCurrency = preferredCurrency,
         purchaseDate = purchaseDate,
         purchasePrice = UiNullableMoney.fromMoneyFragment(purchasePrice),
+        purchasePriceApplicable = purchasePriceApplicable,
         availableItemBrands = availableItemBrands?.map { it.toItemBrand() },
         selectedItemBrand = selectedItemBrand,
         availableItemModels = availableItemModels?.map { it.toItemModel() },
@@ -91,12 +93,18 @@ fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
     }
 
     is ClaimFlowStep.ClaimResolutionSingleItemStep -> {
+      val modelName = singleItemStep?.availableItemModels?.firstOrNull {
+        it.itemModelId == singleItemStep.selectedItemModel
+      }?.displayName
+      val compensation: ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep.Compensation =
+        this.compensation
       ClaimFlowDestination.SingleItemCheckout(
-        UiMoney.fromMoneyFragment(price),
-        UiMoney.fromMoneyFragment(depreciation),
-        UiMoney.fromMoneyFragment(deductible),
-        UiMoney.fromMoneyFragment(payoutAmount),
-        availableCheckoutMethods.map(CheckoutMethodFragment::toCheckoutMethod).filterIsInstance<CheckoutMethod.Known>(),
+        compensation = compensation.toCompensation(),
+        availableCheckoutMethods = availableCheckoutMethods.map(CheckoutMethodFragment::toCheckoutMethod)
+          .filterIsInstance<CheckoutMethod.Known>(),
+        modelName = modelName,
+        brandName = singleItemStep?.selectedItemBrand,
+        customName = singleItemStep?.customName,
       )
     }
 
@@ -168,6 +176,33 @@ private fun CheckoutMethodFragment.toCheckoutMethod(): CheckoutMethod {
     }
 
     else -> CheckoutMethod.Unknown
+  }
+}
+
+private fun ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep.Compensation.toCompensation(): ClaimFlowDestination.Compensation {
+  return when (this) {
+    is ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep
+      .FlowClaimSingleItemCheckoutRepairCompensationCompensation,
+    -> {
+      ClaimFlowDestination.Compensation.Known.RepairCompensation(
+        repairCost = UiMoney.fromMoneyFragment(repairCost),
+        deductible = UiMoney.fromMoneyFragment(deductible),
+        payoutAmount = UiMoney.fromMoneyFragment(payoutAmount),
+      )
+    }
+
+    is ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep
+      .FlowClaimSingleItemCheckoutValueCompensationCompensation,
+    -> {
+      ClaimFlowDestination.Compensation.Known.ValueCompensation(
+        price = UiMoney.fromMoneyFragment(price),
+        deductible = UiMoney.fromMoneyFragment(deductible),
+        depreciation = UiMoney.fromMoneyFragment(depreciation),
+        payoutAmount = UiMoney.fromMoneyFragment(payoutAmount),
+      )
+    }
+
+    else -> ClaimFlowDestination.Compensation.Unknown
   }
 }
 
