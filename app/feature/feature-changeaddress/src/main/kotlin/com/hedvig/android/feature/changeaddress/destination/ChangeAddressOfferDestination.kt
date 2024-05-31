@@ -60,6 +60,7 @@ import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.productVariant.android.getStringRes
+import com.hedvig.android.data.productvariant.InsurableLimit
 import com.hedvig.android.feature.changeaddress.ChangeAddressUiState
 import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
 import com.hedvig.android.feature.changeaddress.data.MoveIntentId
@@ -67,6 +68,7 @@ import com.hedvig.android.feature.changeaddress.data.MoveQuote
 import com.hedvig.android.feature.changeaddress.ui.offer.Faqs
 import com.hedvig.android.feature.changeaddress.ui.offer.QuoteCard
 import hedvig.resources.R
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
@@ -267,16 +269,19 @@ private fun QuoteDetailsAndPdfs(quote: MoveQuote, openUrl: (String) -> Unit, mod
       )
     }
     Spacer(Modifier.height(32.dp))
-    InsurableLimits(quote)
-    Spacer(Modifier.height(32.dp))
+    val insurableLimits = quote.productVariant.insurableLimits
+    if (insurableLimits.isNotEmpty()) {
+      InsurableLimits(insurableLimits)
+      Spacer(Modifier.height(32.dp))
+    }
     Documents(quote, openUrl)
   }
 }
 
 @Suppress("UnusedReceiverParameter")
 @Composable
-private fun ColumnScope.InsurableLimits(quote: MoveQuote) {
-  quote.productVariant.insurableLimits.mapIndexed { index, highlight ->
+private fun ColumnScope.InsurableLimits(insurableLimits: ImmutableList<InsurableLimit>) {
+  insurableLimits.mapIndexed { index, highlight ->
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
         Text(
@@ -297,7 +302,7 @@ private fun ColumnScope.InsurableLimits(quote: MoveQuote) {
       },
       spaceBetween = 18.dp,
     )
-    if (index != quote.productVariant.insurableLimits.lastIndex) {
+    if (index != insurableLimits.lastIndex) {
       Spacer(Modifier.height(16.dp))
       HorizontalDivider()
       Spacer(Modifier.height(16.dp))
