@@ -55,12 +55,12 @@ internal class ProfilePresenter(
   override fun MoleculePresenterScope<ProfileUiEvent>.present(lastState: ProfileUiState): ProfileUiState {
     var dataLoadIteration by remember { mutableIntStateOf(0) }
     var currentState by remember { mutableStateOf(lastState) }
-    var snoozeNotificationReminder by remember { mutableStateOf(false) }
+    var snoozeNotificationReminderRequest by remember { mutableIntStateOf(0) }
 
     CollectEvents { event ->
       when (event) {
         ProfileUiEvent.Logout -> logoutUseCase.invoke()
-        ProfileUiEvent.SnoozeNotificationPermission -> snoozeNotificationReminder = true
+        ProfileUiEvent.SnoozeNotificationPermission -> snoozeNotificationReminderRequest++
         ProfileUiEvent.Reload -> dataLoadIteration++
       }
     }
@@ -88,10 +88,9 @@ internal class ProfilePresenter(
       }
     }
 
-    LaunchedEffect(snoozeNotificationReminder) {
-      if (snoozeNotificationReminder) {
-        enableNotificationsReminderManager.snoozeNotificationReminder()
-      }
+    LaunchedEffect(snoozeNotificationReminderRequest) {
+      if (snoozeNotificationReminderRequest == 0) return@LaunchedEffect
+      enableNotificationsReminderManager.snoozeNotificationReminder()
     }
 
     return currentState
