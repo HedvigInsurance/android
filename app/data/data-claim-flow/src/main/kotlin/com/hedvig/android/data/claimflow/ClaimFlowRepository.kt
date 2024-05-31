@@ -35,6 +35,7 @@ import octopus.FlowClaimSummaryNextMutation
 import octopus.fragment.ClaimFlowStepFragment
 import octopus.type.FlowClaimAudioRecordingStep
 import octopus.type.FlowClaimConfirmEmergencyStep
+import octopus.type.FlowClaimContractSelectStep
 import octopus.type.FlowClaimDateOfOccurrencePlusLocationStep
 import octopus.type.FlowClaimDateOfOccurrenceStep
 import octopus.type.FlowClaimDeflectEirStep
@@ -48,7 +49,6 @@ import octopus.type.FlowClaimFileUploadStep
 import octopus.type.FlowClaimItemBrandInput
 import octopus.type.FlowClaimItemModelInput
 import octopus.type.FlowClaimLocationStep
-import octopus.type.FlowClaimPersonSelectStep
 import octopus.type.FlowClaimPhoneNumberStep
 import octopus.type.FlowClaimSingleItemCheckoutStep
 import octopus.type.FlowClaimSingleItemInput
@@ -129,7 +129,7 @@ internal class ClaimFlowRepositoryImpl(
           FlowClaimStartMutation(
             entrypointId = entryPointId?.id,
             entryPointOptionId = entryPointOptionId?.id,
-            supportedSteps = getSupportedSteps(),
+            supportedSteps = supportedSteps,
           ),
         )
         .safeExecute()
@@ -354,29 +354,6 @@ internal class ClaimFlowRepositoryImpl(
     }
   }
 
-  private fun getSupportedSteps(): List<String> {
-    return listOf(
-      FlowClaimAudioRecordingStep.type.name,
-      FlowClaimConfirmEmergencyStep.type.name,
-      FlowClaimDateOfOccurrencePlusLocationStep.type.name,
-      FlowClaimDateOfOccurrenceStep.type.name,
-      FlowClaimDeflectEirStep.type.name,
-      FlowClaimDeflectEmergencyStep.type.name,
-      FlowClaimDeflectGlassDamageStep.type.name,
-      FlowClaimDeflectPestsStep.type.name,
-      FlowClaimDeflectTowingStep.type.name,
-      FlowClaimFailedStep.type.name,
-      FlowClaimFileUploadStep.type.name,
-      FlowClaimLocationStep.type.name,
-      FlowClaimPersonSelectStep.type.name,
-      FlowClaimPhoneNumberStep.type.name,
-      FlowClaimSingleItemCheckoutStep.type.name,
-      FlowClaimSingleItemStep.type.name,
-      FlowClaimSuccessStep.type.name,
-      FlowClaimSummaryStep.type.name,
-    )
-  }
-
   private suspend fun Raise<ErrorMessage>.uploadAudioFile(flowId: String, file: File): AudioUrl {
     val result = odysseyService
       .uploadAudioRecordingFile(
@@ -542,3 +519,28 @@ private suspend fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(
     else -> ClaimFlowStep.UnknownStep(flowId)
   }
 }
+
+/**
+ * Very important that these match the list of the supported steps in the
+ * [ClaimFlowStepFragment.CurrentStep.toClaimFlowStep] function above
+ */
+private val supportedSteps: List<String> = listOf(
+  FlowClaimAudioRecordingStep.type.name,
+  FlowClaimDateOfOccurrenceStep.type.name,
+  FlowClaimLocationStep.type.name,
+  FlowClaimDateOfOccurrencePlusLocationStep.type.name,
+  FlowClaimPhoneNumberStep.type.name,
+  FlowClaimSingleItemStep.type.name,
+  FlowClaimSingleItemCheckoutStep.type.name,
+  FlowClaimSummaryStep.type.name,
+  FlowClaimFailedStep.type.name,
+  FlowClaimSuccessStep.type.name,
+  FlowClaimContractSelectStep.type.name,
+  FlowClaimDeflectGlassDamageStep.type.name,
+  FlowClaimDeflectTowingStep.type.name,
+  FlowClaimDeflectEirStep.type.name,
+  FlowClaimConfirmEmergencyStep.type.name,
+  FlowClaimDeflectEmergencyStep.type.name,
+  FlowClaimDeflectPestsStep.type.name,
+  FlowClaimFileUploadStep.type.name,
+)
