@@ -1,17 +1,22 @@
 package com.hedvig.android.feature.profile.myinfo
 
+import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.Snapshot
 import arrow.core.Either
-import com.hedvig.android.core.common.android.validation.ValidationResult
+import arrow.core.NonEmptyList
+import arrow.core.raise.either
+import arrow.core.raise.zipOrAccumulate
 import com.hedvig.android.core.common.android.validation.validateEmail
+import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.core.demomode.Provider
-import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.feature.profile.data.ProfileRepository
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -30,139 +35,142 @@ internal class MyInfoPresenter(
 ) : MoleculePresenter<MyInfoEvent, MyInfoUiState> {
   @Composable
   override fun MoleculePresenterScope<MyInfoEvent>.present(lastState: MyInfoUiState): MyInfoUiState {
-    var currentState by remember { mutableStateOf(lastState) }
-    var updateLoadIteration by remember { mutableIntStateOf(0) }
+    var myInfoMember by remember { mutableStateOf(lastState.safeCast<MyInfoUiState.Success>()?.member) }
+    var hasError by remember { mutableStateOf(lastState is MyInfoUiState.Error) }
+    var isLoading by remember { mutableStateOf(lastState is MyInfoUiState.Loading) }
+
+    var updateInfoIteration by remember { mutableIntStateOf(0) }
     var dataLoadIteration by remember { mutableIntStateOf(0) }
+    var isSubmittingNewValues by remember { mutableStateOf(false) }
+
+    // The "real" values as saved in the backend. We should not re-send the same values to the backend.
+    var originalPhoneNumber by remember { mutableStateOf(lastState.safeCast<MyInfoUiState.Success>()?.member?.email) }
+    var originalEmail by remember { mutableStateOf(lastState.safeCast<MyInfoUiState.Success>()?.member?.email) }
+
+    val canSubmit by remember {
+      derivedStateOf {
+        @Suppress("NAME_SHADOWING")
+        val myInfoMember = myInfoMember ?: return@derivedStateOf false
+        val hasChangedPhoneNumberOrEmail =
+          myInfoMember.phoneNumber != originalPhoneNumber || myInfoMember.email != originalEmail
+        !isSubmittingNewValues && hasChangedPhoneNumberOrEmail
+      }
+    }
 
     CollectEvents { event ->
       when (event) {
         MyInfoEvent.Reload -> dataLoadIteration++
 
         is MyInfoEvent.EmailChanged -> {
-          val state = currentState as? MyInfoUiState.Success ?: return@CollectEvents
-          currentState = state.copy(
-            member = state.member.copy(email = ValidatedInput(event.email)),
-            canSubmit = true,
-          )
+          val myInfoMemberValue = myInfoMember ?: return@CollectEvents
+          myInfoMember = myInfoMemberValue.copy(email = event.email, emailErrorMessage = null)
         }
 
         is MyInfoEvent.PhoneNumberChanged -> {
-          val state = currentState as? MyInfoUiState.Success ?: return@CollectEvents
-          currentState = state.copy(
-            member = state.member.copy(phoneNumber = ValidatedInput(event.phoneNumber)),
-            canSubmit = true,
-          )
+          val myInfoMemberValue = myInfoMember ?: return@CollectEvents
+          myInfoMember = myInfoMemberValue.copy(phoneNumber = event.phoneNumber, phoneNumberErrorMessage = null)
         }
 
-        MyInfoEvent.UpdateEmailAndPhoneNumber -> updateLoadIteration++
+        MyInfoEvent.UpdateEmailAndPhoneNumber -> updateInfoIteration++
       }
     }
 
     LaunchedEffect(dataLoadIteration) {
+      Snapshot.withMutableSnapshot {
+        if (dataLoadIteration > 0 || lastState !is MyInfoUiState.Success) {
+          isLoading = true
+        }
+        hasError = false
+      }
       profileRepositoryProvider.provide().profile().fold(
         ifLeft = {
-          currentState = MyInfoUiState.Error
+          hasError = true
         },
         ifRight = { profile ->
-          currentState = MyInfoUiState.Success(
-            member = MyInfoMember(
-              email = ValidatedInput(profile.member.email),
-              phoneNumber = ValidatedInput(profile.member.phoneNumber),
-            ),
-          )
+          Snapshot.withMutableSnapshot {
+            originalPhoneNumber = profile.member.phoneNumber
+            originalEmail = profile.member.email
+            myInfoMember = MyInfoMember(
+              email = profile.member.email,
+              emailErrorMessage = null,
+              phoneNumber = profile.member.phoneNumber,
+              phoneNumberErrorMessage = null,
+            )
+          }
         },
       )
+      isLoading = false
     }
 
-    LaunchedEffect(updateLoadIteration) {
-      if (updateLoadIteration == 0) return@LaunchedEffect
-      val successState = currentState as? MyInfoUiState.Success ?: return@LaunchedEffect
-      val validatedState = successState.validateInput()
-      currentState = validatedState
-      if (!validatedState.isInputValid) return@LaunchedEffect
-      currentState = validatedState.copy(isSubmitting = true)
-      Either.zipOrAccumulate(
-        profileRepositoryProvider.provide().updatePhoneNumber(validatedState.member.phoneNumber.input ?: ""),
-        profileRepositoryProvider.provide().updateEmail(validatedState.member.email.input ?: ""),
-      ) { memberWithPhone, memberWithEmail ->
-        memberWithPhone.copy(email = memberWithEmail.email)
-      }.fold(
-        ifLeft = {
-          currentState = MyInfoUiState.Error
-        },
-        ifRight = { member ->
-          currentState = MyInfoUiState.Success(
-            member = MyInfoMember(
-              email = ValidatedInput(member.email),
-              phoneNumber = ValidatedInput(member.phoneNumber),
-            ),
-            isSubmitting = false,
-            canSubmit = false,
+    LaunchedEffect(updateInfoIteration) {
+      if (updateInfoIteration == 0) return@LaunchedEffect
+      val myInfoMemberValue = myInfoMember ?: return@LaunchedEffect
+      val validMyInfoMember = myInfoMemberValue.validate().fold(
+        ifLeft = { errors ->
+          myInfoMember = myInfoMemberValue.copy(
+            emailErrorMessage = errors.firstOrNull { it is MyInfoMemberErrors.Email }?.errorMessage,
+            phoneNumberErrorMessage = errors.firstOrNull { it is MyInfoMemberErrors.PhoneNumber }?.errorMessage,
           )
+          return@LaunchedEffect
+        },
+        ifRight = { validMyInfoMember ->
+          myInfoMember = validMyInfoMember.toMyInfoMember()
+          validMyInfoMember
         },
       )
+      isSubmittingNewValues = true
+      try {
+        val profileRepository = profileRepositoryProvider.provide()
+        val backendMemberResponse =
+          profileRepository.updatePhoneAndEmail(validMyInfoMember, originalPhoneNumber, originalEmail)
+        backendMemberResponse.fold(
+          { hasError = true },
+          {
+            Snapshot.withMutableSnapshot {
+              originalPhoneNumber = it.phoneNumber
+              originalEmail = it.email
+              myInfoMember = it
+            }
+          },
+        )
+      } finally {
+        isSubmittingNewValues = false
+      }
     }
-    return currentState
+    val myInfoMemberValue = myInfoMember
+    return when {
+      isLoading -> MyInfoUiState.Loading
+      hasError -> MyInfoUiState.Error
+      myInfoMemberValue != null -> MyInfoUiState.Success(
+        member = myInfoMemberValue,
+        isSubmitting = isSubmittingNewValues,
+        canSubmit = canSubmit,
+      )
+
+      else -> MyInfoUiState.Error
+    }
   }
 }
 
-internal sealed interface MyInfoUiState {
-  data object Loading : MyInfoUiState
-
-  data object Error : MyInfoUiState
-
-  data class Success(
-    val member: MyInfoMember,
-    val isSubmitting: Boolean = false,
-    val canSubmit: Boolean = false,
-  ) : MyInfoUiState {
-    val isInputValid = member.email.errorMessageRes == null &&
-      member.phoneNumber.errorMessageRes == null
-
-    fun validateInput(): Success {
-      return copy(
-        member = member.copy(
-          email = member.email.copy(
-            errorMessageRes = if (!member.hasValidEmail()) {
-              R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_EMAIL
-            } else {
-              null
-            },
-          ),
-          phoneNumber = member.phoneNumber.copy(
-            errorMessageRes = if (!member.hasValidPhoneNumber()) {
-              R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_PHONE_NUMBER
-            } else {
-              null
-            },
-          ),
-        ),
-      )
+private suspend fun ProfileRepository.updatePhoneAndEmail(
+  validMyInfoMember: ValidMyInfoMember,
+  originalPhoneNumber: String?,
+  originalEmail: String?,
+): Either<Unit, MyInfoMember> {
+  return either {
+    val phoneNumber: String? = if (originalPhoneNumber != validMyInfoMember.phoneNumber) {
+      updatePhoneNumber(validMyInfoMember.phoneNumber).mapLeft { Unit }.bind().phoneNumber
+    } else {
+      validMyInfoMember.phoneNumber
     }
-
-    private fun MyInfoMember.hasValidEmail() = email.isPresent &&
-      email.input?.isBlank() == false &&
-      validateEmail(email.input!!).isSuccessful
-
-    private fun MyInfoMember.hasValidPhoneNumber() = phoneNumber.isPresent &&
-      phoneNumber.input?.isBlank() == false &&
-      validatePhoneNumber(phoneNumber.input!!).isSuccessful
+    val email = if (originalEmail != validMyInfoMember.email) {
+      updateEmail(validMyInfoMember.email).mapLeft { Unit }.bind().email
+    } else {
+      validMyInfoMember.email
+    }
+    validMyInfoMember.toMyInfoMember().copy(phoneNumber = phoneNumber, email = email)
   }
 }
-
-data class MyInfoMember(
-  val email: ValidatedInput<String?>,
-  val phoneNumber: ValidatedInput<String?>,
-)
-
-private val phoneNumberRegex = Regex("([+]*[0-9]+[+. -]*)")
-
-private fun validatePhoneNumber(phoneNumber: CharSequence): ValidationResult =
-  if (!phoneNumberRegex.matches(phoneNumber)) {
-    ValidationResult(false, R.string.PROFILE_MY_INFO_INVALID_PHONE_NUMBER)
-  } else {
-    ValidationResult(true, null)
-  }
 
 internal sealed interface MyInfoEvent {
   data object Reload : MyInfoEvent
@@ -172,4 +180,66 @@ internal sealed interface MyInfoEvent {
   data class EmailChanged(val email: String) : MyInfoEvent
 
   data object UpdateEmailAndPhoneNumber : MyInfoEvent
+}
+
+internal sealed interface MyInfoUiState {
+  data object Loading : MyInfoUiState
+
+  data object Error : MyInfoUiState
+
+  data class Success(
+    val member: MyInfoMember,
+    val isSubmitting: Boolean,
+    val canSubmit: Boolean,
+  ) : MyInfoUiState
+}
+
+data class MyInfoMember(
+  val email: String,
+  @StringRes
+  val emailErrorMessage: Int?,
+  val phoneNumber: String?,
+  @StringRes
+  val phoneNumberErrorMessage: Int?,
+)
+
+private data class ValidMyInfoMember(val email: String, val phoneNumber: String) {
+  fun toMyInfoMember(): MyInfoMember = MyInfoMember(email, null, phoneNumber, null)
+}
+
+private val phoneNumberRegex = Regex("([+]*[0-9]+[+. -]*)")
+
+sealed interface MyInfoMemberErrors {
+  @get:StringRes
+  val errorMessage: Int
+
+  data object Email : MyInfoMemberErrors {
+    override val errorMessage: Int
+      get() = R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_EMAIL
+  }
+
+  data object PhoneNumber : MyInfoMemberErrors {
+    override val errorMessage: Int
+      get() = R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_PHONE_NUMBER
+  }
+}
+
+private fun MyInfoMember.validate(): Either<NonEmptyList<MyInfoMemberErrors>, ValidMyInfoMember> {
+  return either {
+    zipOrAccumulate(
+      {
+        val hasValidEmail = email.isNotBlank() && validateEmail(email).isSuccessful
+        if (!hasValidEmail) raise(MyInfoMemberErrors.Email)
+        email
+      },
+      {
+        val phoneNumber = phoneNumber ?: raise(MyInfoMemberErrors.PhoneNumber)
+        val hasValidPhoneNumber = phoneNumber.isNotBlank() == true && phoneNumberRegex.matches(phoneNumber)
+        if (!hasValidPhoneNumber) raise(MyInfoMemberErrors.PhoneNumber)
+        phoneNumber
+      },
+    ) { email: String, phoneNumber: String ->
+      ValidMyInfoMember(email, phoneNumber)
+    }
+  }
 }

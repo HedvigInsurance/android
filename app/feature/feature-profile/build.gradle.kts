@@ -60,7 +60,6 @@ dependencies {
   implementation(projects.placeholder)
   implementation(projects.pullrefresh)
   implementation(projects.theme)
-  implementation(projects.loggingTest)
 
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
@@ -71,6 +70,7 @@ dependencies {
   testImplementation(projects.dataSettingsDatastoreTest)
   testImplementation(projects.featureFlagsTest)
   testImplementation(projects.languageTest)
+  testImplementation(projects.loggingTest)
   testImplementation(projects.marketTest)
   testImplementation(projects.memberRemindersTest)
   testImplementation(projects.moleculeTest)

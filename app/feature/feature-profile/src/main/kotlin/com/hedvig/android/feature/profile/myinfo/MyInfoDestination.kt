@@ -38,7 +38,6 @@ import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenC
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import hedvig.resources.R
@@ -116,10 +115,10 @@ private fun ColumnScope.SuccessState(
   updateEmailAndPhoneNumber: () -> Unit,
   focusManager: FocusManager,
 ) {
-  var emailInput by rememberSaveable { mutableStateOf(uiState.member.email.input ?: "") }
-  var phoneInput by rememberSaveable { mutableStateOf(uiState.member.phoneNumber.input ?: "") }
+  var emailInput by rememberSaveable { mutableStateOf(uiState.member.email) }
+  var phoneInput by rememberSaveable { mutableStateOf(uiState.member.phoneNumber ?: "") }
   Spacer(Modifier.height(16.dp))
-  val errorText = uiState.member.phoneNumber.errorMessageRes?.let { stringResource(id = it) }
+  val errorText = uiState.member.phoneNumberErrorMessage?.let { stringResource(id = it) }
   HedvigTextField(
     value = phoneInput,
     onValueChange = onValueChange@{ newInput ->
@@ -150,7 +149,7 @@ private fun ColumnScope.SuccessState(
       emailInput = newInput
     },
     label = { Text(stringResource(R.string.PROFILE_MY_INFO_EMAIL_LABEL)) },
-    errorText = uiState.member.email.errorMessageRes?.let { stringResource(id = it) },
+    errorText = uiState.member.emailErrorMessage?.let { stringResource(id = it) },
     keyboardOptions = KeyboardOptions(
       keyboardType = KeyboardType.Email,
       imeAction = ImeAction.Done,
@@ -194,9 +193,13 @@ private fun PreviewMyInfoScreen() {
       MyInfoScreen(
         uiState = MyInfoUiState.Success(
           member = MyInfoMember(
-            ValidatedInput("email@email.com"),
-            ValidatedInput("072102103"),
+            "email@email.com",
+            null,
+            "072102103",
+            null,
           ),
+          isSubmitting = false,
+          canSubmit = true,
         ),
         updateEmailAndPhoneNumber = {},
         navigateUp = {},

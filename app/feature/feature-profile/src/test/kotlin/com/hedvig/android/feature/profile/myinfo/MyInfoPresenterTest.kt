@@ -6,7 +6,10 @@ import arrow.core.left
 import arrow.core.right
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
+import assertk.assertions.isTrue
+import assertk.assertions.prop
 import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.feature.profile.data.ProfileData
 import com.hedvig.android.feature.profile.data.ProfileRepository
@@ -38,18 +41,34 @@ class MyInfoPresenterTest {
       profileRepository.profileResponseTurbine.add(
         ProfileData(member).right(),
       )
-      assertThat((awaitItem() as MyInfoUiState.Success).member.email.input).isEqualTo(member.email)
+      assertThat((awaitItem() as MyInfoUiState.Success).member.email).isEqualTo(member.email)
       sendEvent(MyInfoEvent.EmailChanged("newemail@gmail.com"))
       awaitItem()
       sendEvent(MyInfoEvent.PhoneNumberChanged("31987231987"))
-      awaitItem()
+      assertThat(awaitItem())
+        .isInstanceOf<MyInfoUiState.Success>()
+        .prop(MyInfoUiState.Success::member)
+        .apply {
+          prop(MyInfoMember::email).isEqualTo("newemail@gmail.com")
+          prop(MyInfoMember::phoneNumber).isEqualTo("31987231987")
+        }
       sendEvent(MyInfoEvent.UpdateEmailAndPhoneNumber)
-      profileRepository.profileResponseTurbine.add(
-        ProfileData(member.copy(phoneNumber = "31987231987", email = "newemail@gmail.com")).right(),
-      )
-      val result = awaitItem() as MyInfoUiState.Success
-      assertThat(result.member.email.input).isEqualTo("newemail@gmail.com")
-      assertThat(result.member.phoneNumber.input).isEqualTo("31987231987")
+      assertThat(awaitItem())
+        .isInstanceOf<MyInfoUiState.Success>()
+        .prop(MyInfoUiState.Success::isSubmitting)
+        .isTrue()
+      profileRepository.phoneResponseTurbine.add(member.copy(phoneNumber = "31987231987").right())
+      expectNoEvents()
+      profileRepository.emailResponseTurbine.add(member.copy(email = "newemail@gmail.com").right())
+      assertThat(awaitItem())
+        .isInstanceOf<MyInfoUiState.Success>()
+        .apply {
+          prop(MyInfoUiState.Success::canSubmit).isFalse()
+          prop(MyInfoUiState.Success::isSubmitting).isFalse()
+          prop(MyInfoUiState.Success::member).isEqualTo(
+            MyInfoMember("newemail@gmail.com", null, "31987231987", null),
+          )
+        }
     }
   }
 
@@ -62,17 +81,25 @@ class MyInfoPresenterTest {
       profileRepository.profileResponseTurbine.add(
         ProfileData(member).right(),
       )
-      val result0 = awaitItem() as MyInfoUiState.Success
-      assertThat(result0.canSubmit).isEqualTo(false)
+      assertThat(awaitItem())
+        .isInstanceOf<MyInfoUiState.Success>()
+        .prop(MyInfoUiState.Success::canSubmit)
+        .isFalse()
       sendEvent(MyInfoEvent.EmailChanged("newemail@gmail.com"))
-      val result1 = awaitItem() as MyInfoUiState.Success
-      assertThat(result1.canSubmit).isEqualTo(true)
+      assertThat(awaitItem())
+        .isInstanceOf<MyInfoUiState.Success>()
+        .prop(MyInfoUiState.Success::canSubmit)
+        .isTrue()
       sendEvent(MyInfoEvent.UpdateEmailAndPhoneNumber)
-      assertThat((awaitItem() as MyInfoUiState.Success).isSubmitting).isEqualTo(true)
+      assertThat(awaitItem())
+        .isInstanceOf<MyInfoUiState.Success>()
+        .prop(MyInfoUiState.Success::isSubmitting)
+        .isTrue()
       profileRepository.emailResponseTurbine.add(member.copy(email = "newemail@gmail.com").right())
-      profileRepository.phoneResponseTurbine.add(member.right())
-      val result2 = awaitItem() as MyInfoUiState.Success
-      assertThat(result2.canSubmit).isEqualTo(false)
+      assertThat(awaitItem())
+        .isInstanceOf<MyInfoUiState.Success>()
+        .prop(MyInfoUiState.Success::canSubmit)
+        .isFalse()
     }
   }
 
@@ -85,13 +112,38 @@ class MyInfoPresenterTest {
       profileRepository.profileResponseTurbine.add(
         ProfileData(member).right(),
       )
-      assertThat(awaitItem()).isInstanceOf(MyInfoUiState.Success::class)
+      assertThat(awaitItem()).isInstanceOf<MyInfoUiState.Success>()
       sendEvent(MyInfoEvent.EmailChanged("newemail@gmail.com"))
       awaitItem()
       profileRepository.phoneResponseTurbine.add(OperationResult.Error.NetworkError(null, null).left())
       profileRepository.emailResponseTurbine.add(OperationResult.Error.NetworkError(null, null).left())
       sendEvent(MyInfoEvent.UpdateEmailAndPhoneNumber)
       assertThat(awaitItem()).isEqualTo(MyInfoUiState.Error)
+    }
+  }
+
+  @Test
+  fun `can recover from a network error`() = runTest {
+    val profileRepository = FakeProfileRepository()
+    val presenter = MyInfoPresenter { profileRepository }
+    presenter.test(MyInfoUiState.Loading) {
+      skipItems(1)
+      profileRepository.profileResponseTurbine.add(
+        ProfileData(member).right(),
+      )
+      skipItems(1)
+      sendEvent(MyInfoEvent.EmailChanged("newemail@gmail.com"))
+      skipItems(1)
+      sendEvent(MyInfoEvent.UpdateEmailAndPhoneNumber)
+      skipItems(1)
+      profileRepository.emailResponseTurbine.add(OperationResult.Error.NetworkError(null, null).left())
+      assertThat(awaitItem()).isInstanceOf<MyInfoUiState.Error>()
+      sendEvent(MyInfoEvent.Reload)
+      assertThat(awaitItem()).isInstanceOf<MyInfoUiState.Loading>()
+      profileRepository.profileResponseTurbine.add(
+        ProfileData(member).right(),
+      )
+      assertThat(awaitItem()).isInstanceOf<MyInfoUiState.Success>()
     }
   }
 }

@@ -15,10 +15,11 @@ import octopus.EurobonusDataQuery
 import octopus.UpdateEurobonusNumberMutation
 import org.junit.Test
 
-class EurobonusPresenterTes {
+class EurobonusPresenterTest {
   private val currentMember = EurobonusDataQuery.Data.CurrentMember(
     "name",
-    EurobonusDataQuery.Data.CurrentMember.PartnerData(
+    id = "id",
+    partnerData = EurobonusDataQuery.Data.CurrentMember.PartnerData(
       EurobonusDataQuery.Data.CurrentMember.PartnerData.Sas("BA1234556", true),
     ),
   )
