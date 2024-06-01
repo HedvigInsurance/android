@@ -20,6 +20,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
@@ -44,22 +47,19 @@ import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 
 @Composable
 internal fun EurobonusDestination(viewModel: EurobonusViewModel, navigateUp: () -> Unit) {
-  val eurobonusText = viewModel.eurobonusText
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  val isEligibleForEurobonus by viewModel.isEligibleForEurobonus.collectAsStateWithLifecycle()
-  LaunchedEffect(isEligibleForEurobonus) {
-    if (!isEligibleForEurobonus) {
+  LaunchedEffect(uiState.isEligibleForEurobonus) {
+    if (uiState.isEligibleForEurobonus == false) {
       navigateUp()
     }
   }
   val focusManager = LocalFocusManager.current
   EurobonusScreen(
-    eurobonusText = eurobonusText,
-    setEurobonusText = viewModel::updateEurobonusValue,
+    setEurobonusNumber = { viewModel.emit(EurobonusEvent.UpdateEurobonusValue(it)) },
     uiState = uiState,
-    onSubmitEurobonus = { newEurobonusValue ->
+    onSave = {
       focusManager.clearFocus()
-      viewModel.submitEurobonus(newEurobonusValue)
+      viewModel.emit(EurobonusEvent.SubmitEditedEurobonus)
     },
     navigateUp = navigateUp,
   )
@@ -67,103 +67,129 @@ internal fun EurobonusDestination(viewModel: EurobonusViewModel, navigateUp: () 
 
 @Composable
 private fun EurobonusScreen(
-  eurobonusText: String,
-  setEurobonusText: (String) -> Unit,
   uiState: EurobonusUiState,
-  onSubmitEurobonus: (String) -> Unit,
+  setEurobonusNumber: (String) -> Unit,
+  onSave: () -> Unit,
   navigateUp: () -> Unit,
 ) {
   Box(
     propagateMinConstraints = true,
     modifier = Modifier.fillMaxSize(),
   ) {
-    HedvigScaffold(
-      topAppBarText = stringResource(hedvig.resources.R.string.sas_integration_title),
-      navigateUp = navigateUp,
-      modifier = Modifier.clearFocusOnTap(),
-    ) {
-      Box(
-        contentAlignment = Alignment.BottomStart,
-        modifier = Modifier
-          .heightIn(80.dp)
-          .fillMaxWidth(),
+    if (uiState.isLoading) {
+      HedvigFullScreenCenterAlignedProgressDebounced()
+    } else {
+      HedvigScaffold(
+        topAppBarText = stringResource(hedvig.resources.R.string.sas_integration_title),
+        navigateUp = navigateUp,
+        modifier = Modifier.clearFocusOnTap(),
       ) {
-        Text(
-          text = stringResource(hedvig.resources.R.string.sas_integration_connect_your_eurobonus),
-          style = MaterialTheme.typography.titleLarge,
-          modifier = Modifier.padding(16.dp),
-        )
-      }
-      HedvigTextField(
-        value = eurobonusText,
-        onValueChange = { newInput ->
-          if (newInput.indices.all { newInput[it].isWhitespace().not() }) {
-            setEurobonusText(newInput)
-          }
-        },
-        enabled = uiState.canEditText,
-        label = {
+        Box(
+          contentAlignment = Alignment.BottomStart,
+          modifier = Modifier
+            .heightIn(80.dp)
+            .fillMaxWidth(),
+        ) {
           Text(
-            buildString {
-              append(stringResource(hedvig.resources.R.string.sas_integration_title))
-              append(" ")
-              append(stringResource(hedvig.resources.R.string.sas_integration_number))
-            },
+            text = stringResource(hedvig.resources.R.string.sas_integration_connect_your_eurobonus),
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(16.dp),
           )
-        },
-        supportingText = {
-          if (uiState.hasError == true) {
-            Row(
-              verticalAlignment = Alignment.CenterVertically,
-            ) {
-              Icon(
-                imageVector = Icons.Hedvig.WarningFilled,
-                contentDescription = null,
-                modifier = Modifier.size(16.dp),
-                tint = MaterialTheme.colorScheme.warningElement,
-              )
-              Spacer(Modifier.width(6.dp))
-              Text(stringResource(hedvig.resources.R.string.something_went_wrong))
-            }
-          } else {
-            Text(stringResource(hedvig.resources.R.string.sas_integration_number_placeholder))
-          }
-        },
-        isError = uiState.hasError == true,
-        keyboardOptions = KeyboardOptions(
-          capitalization = KeyboardCapitalization.Characters,
-          keyboardType = KeyboardType.Text,
-          imeAction = ImeAction.Done,
-        ),
-        keyboardActions = KeyboardActions(
-          onDone = {
-            if (uiState.canSubmit) {
-              onSubmitEurobonus(eurobonusText)
-            }
-          },
-        ),
-        withNewDesign = true,
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
-      )
-      Spacer(Modifier.height(16.dp))
-      Text(
-        text = stringResource(hedvig.resources.R.string.sas_integration_info),
-        style = MaterialTheme.typography.bodyMedium,
-        modifier = Modifier.padding(horizontal = 16.dp),
-      )
-      Spacer(Modifier.height(16.dp))
-      HedvigContainedButton(
-        text = stringResource(hedvig.resources.R.string.general_save_button),
-        enabled = uiState.canSubmit,
-        onClick = { onSubmitEurobonus(eurobonusText) },
-        modifier = Modifier.padding(horizontal = 16.dp),
-      )
-      Spacer(Modifier.height(16.dp))
+        }
+        EurobonusNumberField(
+          canSubmit = uiState.canSubmit,
+          canEditText = uiState.canEditText,
+          hasError = uiState.hasError ?: false,
+          number = uiState.eurobonusNumber,
+          onSubmitEurobonus = onSave,
+          setEurobonusText = setEurobonusNumber,
+        )
+        Spacer(Modifier.height(16.dp))
+        Text(
+          text = stringResource(hedvig.resources.R.string.sas_integration_info),
+          style = MaterialTheme.typography.bodyMedium,
+          modifier = Modifier.padding(horizontal = 16.dp),
+        )
+        Spacer(Modifier.height(16.dp))
+        HedvigContainedButton(
+          text = stringResource(hedvig.resources.R.string.general_save_button),
+          enabled = uiState.canSubmit,
+          onClick = { onSave() },
+          modifier = Modifier.padding(horizontal = 16.dp),
+          isLoading = uiState.isSubmitting,
+        )
+        Spacer(Modifier.height(16.dp))
+      }
     }
-    HedvigFullScreenCenterAlignedProgressDebounced(show = uiState.isLoading)
   }
+}
+
+@Composable
+private fun EurobonusNumberField(
+  number: String,
+  hasError: Boolean,
+  canEditText: Boolean,
+  canSubmit: Boolean,
+  setEurobonusText: (String) -> Unit,
+  onSubmitEurobonus: () -> Unit,
+) {
+  var numberValue by remember {
+    mutableStateOf(number)
+  }
+  HedvigTextField(
+    value = numberValue,
+    onValueChange = { newInput ->
+      if (newInput.indices.all { newInput[it].isWhitespace().not() }) {
+        numberValue = newInput
+        setEurobonusText(newInput)
+      }
+    },
+    enabled = canEditText,
+    label = {
+      Text(
+        buildString {
+          append(stringResource(hedvig.resources.R.string.sas_integration_title))
+          append(" ")
+          append(stringResource(hedvig.resources.R.string.sas_integration_number))
+        },
+      )
+    },
+    supportingText = {
+      if (hasError) {
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
+          Icon(
+            imageVector = Icons.Hedvig.WarningFilled,
+            contentDescription = null,
+            modifier = Modifier.size(16.dp),
+            tint = MaterialTheme.colorScheme.warningElement,
+          )
+          Spacer(Modifier.width(6.dp))
+          Text(stringResource(hedvig.resources.R.string.something_went_wrong))
+        }
+      } else {
+        Text(stringResource(hedvig.resources.R.string.sas_integration_number_placeholder))
+      }
+    },
+    isError = hasError,
+    keyboardOptions = KeyboardOptions(
+      capitalization = KeyboardCapitalization.Characters,
+      keyboardType = KeyboardType.Text,
+      imeAction = ImeAction.Done,
+    ),
+    keyboardActions = KeyboardActions(
+      onDone = {
+        if (canSubmit) {
+          onSubmitEurobonus()
+        }
+      },
+    ),
+    withNewDesign = true,
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(horizontal = 16.dp),
+  )
 }
 
 @HedvigPreview
@@ -174,14 +200,13 @@ private fun PreviewEurobonusScreen(
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       EurobonusScreen(
-        "ABC-123",
-        {},
         EurobonusUiState(
+          eurobonusNumber = "ABC-123",
           canSubmit = true,
           isLoading = true,
-          canEditText = true,
           hasError = hasError,
         ),
+        {},
         {},
         {},
       )

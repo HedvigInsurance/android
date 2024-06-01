@@ -11,8 +11,12 @@ import com.hedvig.android.feature.profile.data.ChangeEmailSubscriptionPreference
 import com.hedvig.android.feature.profile.data.ChangeEmailSubscriptionPreferencesUseCaseImpl
 import com.hedvig.android.feature.profile.data.CheckTravelCertificateDestinationAvailabilityUseCase
 import com.hedvig.android.feature.profile.data.CheckTravelCertificateDestinationAvailabilityUseCaseImpl
+import com.hedvig.android.feature.profile.data.GetEurobonusDataUseCase
+import com.hedvig.android.feature.profile.data.GetEurobonusDataUseCaseImpl
 import com.hedvig.android.feature.profile.data.ProfileRepositoryDemo
 import com.hedvig.android.feature.profile.data.ProfileRepositoryImpl
+import com.hedvig.android.feature.profile.data.UpdateEurobonusNumberUseCase
+import com.hedvig.android.feature.profile.data.UpdateEurobonusNumberUseCaseImpl
 import com.hedvig.android.feature.profile.eurobonus.EurobonusViewModel
 import com.hedvig.android.feature.profile.myinfo.MyInfoViewModel
 import com.hedvig.android.feature.profile.settings.SettingsViewModel
@@ -39,7 +43,20 @@ val profileModule = module {
       get<LogoutUseCase>(),
     )
   }
-  viewModel<EurobonusViewModel> { EurobonusViewModel(get<ApolloClient>()) }
+  viewModel<EurobonusViewModel> {
+    EurobonusViewModel(
+      getEurobonusDataUseCase = get<GetEurobonusDataUseCase>(),
+      updateEurobonusNumberUseCase = get<UpdateEurobonusNumberUseCase>(),
+    )
+  }
+
+  single<GetEurobonusDataUseCase> {
+    GetEurobonusDataUseCaseImpl(apolloClient = get<ApolloClient>())
+  }
+
+  single<UpdateEurobonusNumberUseCase> {
+    UpdateEurobonusNumberUseCaseImpl(apolloClient = get<ApolloClient>())
+  }
 
   single<ChangeEmailSubscriptionPreferencesUseCase> {
     ChangeEmailSubscriptionPreferencesUseCaseImpl(
