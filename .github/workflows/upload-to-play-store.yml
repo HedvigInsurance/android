@@ -15,6 +15,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - uses: gradle/actions/wrapper-validation@v3
       - name: Copy CI gradle.properties
         run: mkdir -p ~/.gradle ; cp .github/ci-gradle.properties ~/.gradle/gradle.properties
       - name: Add GitHub Packages auth
