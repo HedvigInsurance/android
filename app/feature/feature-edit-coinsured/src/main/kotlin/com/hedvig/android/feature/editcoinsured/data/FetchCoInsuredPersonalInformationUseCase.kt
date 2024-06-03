@@ -2,11 +2,12 @@ package com.hedvig.android.feature.editcoinsured.data
 
 import arrow.core.Either
 import arrow.core.raise.either
-import arrow.core.raise.ensureNotNull
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.Month
 import octopus.PersonalInformationQuery
 
 internal interface FetchCoInsuredPersonalInformationUseCase {
@@ -21,20 +22,32 @@ internal class FetchCoInsuredPersonalInformationUseCaseImpl(
       .safeExecute()
       .toEither(::ErrorMessage)
       .bind()
-
-    ensureNotNull(result.personalInformation) {
-      // todo localize this error message. Perhaps trigger "manual input" directly when we get this error too.
-      ErrorMessage("No personal information found")
+    if (result.personalInformation == null) {
+      val birthdate = convertSsnToBirthDateOrNull(ssn)
+      CoInsuredPersonalInformation.EmptyInfo(birthdate)
+    } else {
+      CoInsuredPersonalInformation.FullInfo(
+        firstName = result.personalInformation.firstName,
+        lastName = result.personalInformation.lastName,
+      )
     }
-
-    CoInsuredPersonalInformation(
-      firstName = result.personalInformation.firstName,
-      lastName = result.personalInformation.lastName,
-    )
   }
 }
 
-internal data class CoInsuredPersonalInformation(
-  val firstName: String,
-  val lastName: String,
-)
+internal interface CoInsuredPersonalInformation {
+  data class FullInfo(
+    val firstName: String,
+    val lastName: String,
+  ) : CoInsuredPersonalInformation
+
+  data class EmptyInfo(val dateOfBirth: LocalDate?) : CoInsuredPersonalInformation
+}
+
+private fun convertSsnToBirthDateOrNull(ssn: String): LocalDate? {
+  val stringYear = ssn.substring(0, 4).toIntOrNull()
+  val stringMonth = ssn.substring(4, 6).toIntOrNull()
+  val stringDate = ssn.substring(6, 8).toIntOrNull()
+  if (stringYear == null || stringMonth == null || stringDate == null) return null
+  if (stringMonth !in 1..12) return null
+  return LocalDate(year = stringYear, month = Month(stringMonth), dayOfMonth = stringDate)
+}
