@@ -44,8 +44,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.NonEmptyList
 import arrow.core.toNonEmptyListOrNull
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.bottomsheet.HedvigBottomSheet
+import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
@@ -373,9 +373,7 @@ internal fun SingleItemCheckoutInfoBottomSheet(
 
 @HedvigPreview
 @Composable
-private fun PreviewSingleItemCheckoutScreenWithRepair(
-  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) withMultiplePayoutMethods: Boolean,
-) {
+private fun PreviewSingleItemCheckoutScreenWithRepair() {
   val checkoutNr1 = CheckoutMethod.Known.AutomaticAutogiro(
     "#1",
     "Fancy payment method",
@@ -393,9 +391,6 @@ private fun PreviewSingleItemCheckoutScreenWithRepair(
           ),
           availableCheckoutMethods = buildList {
             add(checkoutNr1)
-            if(withMultiplePayoutMethods) {
-              add(checkoutNr2)
-            }
           }.toNonEmptyListOrNull()!!,
           selectedCheckoutMethod = selected,
           "IPhone 12",
