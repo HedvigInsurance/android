@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest-8-vcpu
     steps:
       - uses: actions/checkout@v4
+      - uses: gradle/actions/wrapper-validation@v3
       - name: Copy CI gradle.properties
         run: mkdir -p ~/.gradle ; cp .github/ci-gradle.properties ~/.gradle/gradle.properties
       - name: Add GitHub Packages auth
@@ -24,7 +25,7 @@ jobs:
           java-version: '17'
           distribution: 'zulu'
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v3
+        uses: gradle/actions/setup-gradle@v3
         with:
           # Only write to the cache for builds on the 'develop' branch
           cache-read-only: false
@@ -44,6 +45,7 @@ jobs:
     runs-on: ubuntu-latest-8-vcpu
     steps:
       - uses: actions/checkout@v4
+      - uses: gradle/actions/wrapper-validation@v3
       - name: Copy CI gradle.properties
         run: mkdir -p ~/.gradle ; cp .github/ci-gradle.properties ~/.gradle/gradle.properties
       - name: Add GitHub Packages auth
@@ -57,7 +59,7 @@ jobs:
           java-version: '17'
           distribution: 'zulu'
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v3
+        uses: gradle/actions/setup-gradle@v3
         with:
           # Only write to the cache for builds on the 'develop' branch
           cache-read-only: false
@@ -76,6 +78,7 @@ jobs:
     runs-on: ubuntu-latest-8-vcpu
     steps:
       - uses: actions/checkout@v4
+      - uses: gradle/actions/wrapper-validation@v3
       - name: Copy CI gradle.properties
         run: mkdir -p ~/.gradle ; cp .github/ci-gradle.properties ~/.gradle/gradle.properties
       - name: Add GitHub Packages auth
@@ -89,7 +92,7 @@ jobs:
           java-version: '17'
           distribution: 'zulu'
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v3
+        uses: gradle/actions/setup-gradle@v3
         with:
           # Only write to the cache for builds on the 'develop' branch
           cache-read-only: false
@@ -110,8 +113,8 @@ jobs:
   build:
     runs-on: ubuntu-latest-8-vcpu
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - uses: gradle/actions/wrapper-validation@v3
       - name: Copy CI gradle.properties
         run: mkdir -p ~/.gradle ; cp .github/ci-gradle.properties ~/.gradle/gradle.properties
       - name: Add GitHub Packages auth
@@ -125,7 +128,7 @@ jobs:
           java-version: '17'
           distribution: 'zulu'
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v3
+        uses: gradle/actions/setup-gradle@v3
         with:
           # Only write to the cache for builds on the 'develop' branch
           cache-read-only: false
