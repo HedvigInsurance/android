@@ -27,7 +27,6 @@ import com.hedvig.android.core.appreview.WaitUntilAppReviewDialogShouldBeOpenedU
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.Provider
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.feature.force.upgrade.ForceUpgradeBlockingScreen
@@ -114,6 +113,19 @@ internal fun HedvigApp(
           hedvigBuildConstants = hedvigBuildConstants,
         )
       }
+    }
+  }
+}
+
+/**
+ * Temporary measure as both design systems need to live side-by-side.
+ * When everything can come from com.hedvig.android.design.system.hedvig, then this can potentially be removed.
+ */
+@Composable
+private fun HedvigTheme(darkTheme: Boolean, content: @Composable () -> Unit) {
+  com.hedvig.android.core.designsystem.theme.HedvigTheme(darkTheme = darkTheme) {
+    com.hedvig.android.design.system.hedvig.HedvigTheme(darkTheme = darkTheme) {
+      content()
     }
   }
 }
