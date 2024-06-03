@@ -1,5 +1,6 @@
 package com.hedvig.android.molecule.test
 
+import androidx.compose.runtime.CheckResult
 import app.cash.molecule.RecompositionMode
 import app.cash.molecule.moleculeFlow
 import app.cash.turbine.TurbineTestContext
@@ -45,6 +46,7 @@ private class MoleculePresenterTestContextImpl<Event, State>(
 
   private var lastModel: State? = null
 
+  @CheckResult("""skipItems(count = 1)""")
   override suspend fun awaitItem(): State {
     while (true) {
       val nextModel = turbineTestContext.awaitItem()
@@ -56,12 +58,9 @@ private class MoleculePresenterTestContextImpl<Event, State>(
   }
 
   override suspend fun skipItems(count: Int) {
-    while (true) {
-      val nextModel = turbineTestContext.awaitItem()
-      if (nextModel != lastModel) {
-        lastModel = nextModel
-        return
-      }
+    repeat(count) {
+      @Suppress("CheckResult")
+      awaitItem()
     }
   }
 

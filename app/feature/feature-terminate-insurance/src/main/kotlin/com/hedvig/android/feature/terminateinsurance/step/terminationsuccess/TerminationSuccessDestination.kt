@@ -25,7 +25,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.success.HedvigSuccessSection
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -37,11 +36,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
 
 @Composable
-internal fun TerminationSuccessDestination(
-  terminationDate: LocalDate?,
-  onSurveyClicked: () -> Unit,
-  onDone: () -> Unit,
-) {
+internal fun TerminationSuccessDestination(terminationDate: LocalDate?, onDone: () -> Unit) {
   Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.fillMaxSize()) {
     Column(
       modifier = Modifier
@@ -71,14 +66,6 @@ internal fun TerminationSuccessDestination(
         onClick = onDone,
         modifier = Modifier.padding(horizontal = 16.dp),
       )
-      Spacer(Modifier.height(8.dp))
-      HedvigTextButton(
-        text = stringResource(
-          R.string.TERMINATION_FLOW_SHARE_FEEDBACK,
-        ), // TODO: delete this when we'll have survey in app
-        onClick = onSurveyClicked,
-        modifier = Modifier.padding(horizontal = 16.dp),
-      )
       Spacer(Modifier.height(16.dp))
       Spacer(
         Modifier.padding(
@@ -105,7 +92,6 @@ private fun PreviewTerminationSuccessScreen(
         } else {
           null
         },
-        onSurveyClicked = {},
         {},
       )
     }

@@ -1,6 +1,6 @@
 extend type Member @typePolicy(keyFields: "id")
 
 extend type Chat @typePolicy(keyFields: "id")
-extend type ChatMessage @typePolicy(keyFields: "id")
+extend interface ChatMessage @typePolicy(keyFields: "id")
 extend type Contract @typePolicy(keyFields: "id")
 extend type Claim @typePolicy(keyFields: "id")

@@ -153,6 +153,11 @@ internal fun HedvigNavHost(
           navigateToInsurances = { navOptions ->
             hedvigAppState.navController.navigate(InsurancesDestination.Graph, navOptions)
           },
+          navigateToMovingFlow = { backStackEntry ->
+            with(navigator) {
+              backStackEntry.navigate(AppDestination.ChangeAddress)
+            }
+          },
           closeTerminationFlow = {
             /**
              * If we fail to pop the backstack including TerminateInsuranceGraphDestination here it means we were deep

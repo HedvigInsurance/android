@@ -27,21 +27,12 @@ internal class GetQuickLinksUseCase(
     val memberActionOptions = getMemberActionsUseCase.invoke().bind()
 
     buildList {
-      if (memberActionOptions.isTravelCertificateEnabled) {
+      if (memberActionOptions.isMovingEnabled) {
         add(
           QuickAction.StandaloneQuickLink(
-            quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkTravelCertificate,
-            titleRes = R.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE,
-            hintTextRes = R.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE_SUBTITLE,
-          ),
-        )
-      }
-      if (memberActionOptions.isCancelInsuranceEnabled) {
-        add(
-          QuickAction.StandaloneQuickLink(
-            quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkTermination,
-            titleRes = R.string.HC_QUICK_ACTIONS_CANCELLATION_TITLE,
-            hintTextRes = R.string.HC_QUICK_ACTIONS_CANCELLATION_SUBTITLE,
+            quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkChangeAddress,
+            titleRes = R.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_TITLE,
+            hintTextRes = R.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_SUBTITLE,
           ),
         )
       }
@@ -54,12 +45,37 @@ internal class GetQuickLinksUseCase(
           ),
         )
       }
-      if (memberActionOptions.isMovingEnabled) {
+      if (memberActionOptions.isEditCoInsuredEnabled) {
+        val contracts = apolloClient.query(AvailableSelfServiceOnContractsQuery())
+          .safeExecute()
+          .toEither(::ErrorMessage)
+          .onLeft { logcat(LogPriority.ERROR) { "Could not fetch common claims ${it.message}" } }
+          .bind()
+          .currentMember
+          .activeContracts
+        contracts
+          .filter { it.supportsCoInsured }
+          .takeIf { featureManager.isFeatureEnabled(Feature.EDIT_COINSURED).first() }
+          ?.createCoInsuredQuickLink()
+          ?.let { quickAction ->
+            add(quickAction)
+          }
+      }
+      if (memberActionOptions.isCancelInsuranceEnabled) {
         add(
           QuickAction.StandaloneQuickLink(
-            quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkChangeAddress,
-            titleRes = R.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_TITLE,
-            hintTextRes = R.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_SUBTITLE,
+            quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkTermination,
+            titleRes = R.string.HC_QUICK_ACTIONS_CANCELLATION_TITLE,
+            hintTextRes = R.string.HC_QUICK_ACTIONS_CANCELLATION_SUBTITLE,
+          ),
+        )
+      }
+      if (memberActionOptions.isTravelCertificateEnabled) {
+        add(
+          QuickAction.StandaloneQuickLink(
+            quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkTravelCertificate,
+            titleRes = R.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE,
+            hintTextRes = R.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE_SUBTITLE,
           ),
         )
       }
@@ -84,22 +100,6 @@ internal class GetQuickLinksUseCase(
             hintTextRes = R.string.HC_QUICK_ACTIONS_SICK_ABROAD_SUBTITLE,
           ),
         )
-      }
-      if (memberActionOptions.isEditCoInsuredEnabled) {
-        val contracts = apolloClient.query(AvailableSelfServiceOnContractsQuery())
-          .safeExecute()
-          .toEither(::ErrorMessage)
-          .onLeft { logcat(LogPriority.ERROR) { "Could not fetch common claims ${it.message}" } }
-          .bind()
-          .currentMember
-          .activeContracts
-        contracts
-          .filter { it.supportsCoInsured }
-          .takeIf { featureManager.isFeatureEnabled(Feature.EDIT_COINSURED).first() }
-          ?.createCoInsuredQuickLink()
-          ?.let { quickAction ->
-            add(quickAction)
-          }
       }
     }.toPersistentList()
   }

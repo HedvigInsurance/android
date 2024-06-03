@@ -1,5 +1,5 @@
-mutation FlowClaimStart($entrypointId: ID, $entryPointOptionId: ID) {
-  flowClaimStart(input: { entrypointId: $entrypointId, entrypointOptionId: $entryPointOptionId }, context: null) {
+mutation FlowClaimStart($entrypointId: ID, $entryPointOptionId: ID, $supportedSteps: [ID!]) {
+  flowClaimStart(input: { entrypointId: $entrypointId, entrypointOptionId: $entryPointOptionId, supportedSteps: $supportedSteps }, context: null) {
     id
     context
     ...ClaimFlowStepFragment

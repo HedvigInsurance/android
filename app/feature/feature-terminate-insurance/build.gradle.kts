@@ -6,8 +6,12 @@ plugins {
   alias(libs.plugins.serialization)
   alias(libs.plugins.squareSortDependencies)
 }
+android {
+  testOptions.unitTests.isReturnDefaultValues = true
+}
 
 dependencies {
+  implementation(libs.accompanist.permissions)
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.compose.material3.windowSizeClass)
@@ -46,4 +50,20 @@ dependencies {
   implementation(projects.navigationActivity)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
+
+  testImplementation(libs.apollo.testingSupport)
+  testImplementation(libs.assertK)
+  testImplementation(libs.coroutines.test)
+  testImplementation(libs.junit)
+  testImplementation(libs.testParameterInjector)
+  testImplementation(libs.turbine)
+  testImplementation(projects.apolloOctopusTest)
+  testImplementation(projects.apolloTest)
+  testImplementation(projects.coreCommonTest)
+  testImplementation(projects.featureFlagsTest)
+  testImplementation(projects.languageTest)
+  testImplementation(projects.loggingTest)
+  testImplementation(projects.memberRemindersTest)
+  testImplementation(projects.moleculeTest)
+  testImplementation(projects.testClock)
 }
