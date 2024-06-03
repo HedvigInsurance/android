@@ -354,7 +354,7 @@ private fun CustomModelInput(initialValue: String, onInput: (String?) -> Unit, m
     textStyle = LocalTextStyle.current,
     label = { Text(stringResource(id = R.string.claims_item_enter_model_name)) },
     keyboardOptions = KeyboardOptions(
-      autoCorrect = false,
+      autoCorrectEnabled = false,
       keyboardType = KeyboardType.Text,
       imeAction = ImeAction.Done,
     ),
