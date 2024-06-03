@@ -30,8 +30,6 @@ fun IconButton(
     modifier = modifier
       .minimumInteractiveComponentSize()
       .size(IconButtonTokens.StateLayerSize)
-      .clip(IconButtonTokens.StateLayerShape.value)
-      .background(color = colors.containerColor(enabled))
       .clickable(
         onClick = onClick,
         enabled = enabled,
@@ -41,7 +39,9 @@ fun IconButton(
           bounded = false,
           radius = IconButtonTokens.StateLayerSize / 2,
         ),
-      ),
+      )
+      .clip(IconButtonTokens.StateLayerShape.value)
+      .background(color = colors.containerColor(enabled)),
     contentAlignment = Alignment.Center,
   ) {
     val contentColor = colors.contentColor(enabled)
