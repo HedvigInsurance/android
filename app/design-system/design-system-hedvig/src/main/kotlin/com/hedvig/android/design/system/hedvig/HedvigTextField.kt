@@ -401,7 +401,7 @@ private fun IsNotEmptyTrailingIcon(tint: Color, onClick: () -> Unit) {
 }
 
 /**
- * The raw HedvigTextField, with the same API as the [androidx.compose.material3.TextField], with our HedvigSpecific
+ * The raw HedvigTextField, with the same API as the [androidx.compose.material3.TextField], with our Hedvig specific
  * HedvigTextFieldDefaults.
  */
 @Composable
