@@ -50,10 +50,6 @@ import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
 import com.hedvig.app.BuildConfig
-import com.kiwi.navigationcompose.typed.createRoutePattern
-import com.kiwi.navigationcompose.typed.navigate
-import com.kiwi.navigationcompose.typed.popBackStack
-import com.kiwi.navigationcompose.typed.popUpTo
 
 @Composable
 internal fun HedvigNavHost(

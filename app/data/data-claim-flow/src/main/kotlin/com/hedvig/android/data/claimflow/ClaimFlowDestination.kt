@@ -11,7 +11,6 @@ import com.hedvig.android.data.claimflow.ItemModel.Unknown.displayName
 import com.hedvig.android.data.claimflow.model.AudioUrl
 import com.hedvig.android.data.claimflow.model.FlowId
 import com.hedvig.audio.player.data.SignedAudioUrl
-import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 import octopus.type.CurrencyCode

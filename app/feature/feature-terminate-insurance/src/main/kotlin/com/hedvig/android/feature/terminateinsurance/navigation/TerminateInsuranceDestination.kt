@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.terminateinsurance.navigation
 
 import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
-import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

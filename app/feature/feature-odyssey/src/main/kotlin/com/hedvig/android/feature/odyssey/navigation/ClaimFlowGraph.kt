@@ -45,10 +45,6 @@ import com.hedvig.android.feature.odyssey.step.unknownerror.UnknownErrorDestinat
 import com.hedvig.android.feature.odyssey.step.unknownscreen.UnknownScreenDestination
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.Navigator
-import com.kiwi.navigationcompose.typed.composable
-import com.kiwi.navigationcompose.typed.createRoutePattern
-import com.kiwi.navigationcompose.typed.navigation
-import com.kiwi.navigationcompose.typed.popUpTo
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 

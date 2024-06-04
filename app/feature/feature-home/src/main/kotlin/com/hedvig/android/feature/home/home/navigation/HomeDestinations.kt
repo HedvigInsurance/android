@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.home.home.navigation
 
 import com.hedvig.android.ui.emergency.FirstVetSection
-import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.serialization.Serializable
 
 sealed interface HomeDestination {

@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.editcoinsured.navigation
 
-import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 

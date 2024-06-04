@@ -5,7 +5,6 @@ import androidx.navigation.NavOptions
 import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.Navigator
 import androidx.navigation.navOptions
-import com.kiwi.navigationcompose.typed.Destination
 
 interface Navigator {
   fun NavBackStackEntry.navigate(

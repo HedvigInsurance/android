@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.claim.details.navigation
 
-import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.serialization.Serializable
 
 sealed interface ClaimDetailDestinations : Destination {

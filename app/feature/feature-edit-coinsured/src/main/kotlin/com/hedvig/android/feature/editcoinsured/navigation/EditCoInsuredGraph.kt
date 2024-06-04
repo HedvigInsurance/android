@@ -6,11 +6,6 @@ import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredAddMissingInfoDe
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredAddOrRemoveDestination
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredSuccessDestination
 import com.hedvig.android.navigation.core.AppDestination
-import com.kiwi.navigationcompose.typed.composable
-import com.kiwi.navigationcompose.typed.createRoutePattern
-import com.kiwi.navigationcompose.typed.navigate
-import com.kiwi.navigationcompose.typed.navigation
-import com.kiwi.navigationcompose.typed.popUpTo
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 

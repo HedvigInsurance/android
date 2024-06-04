@@ -18,11 +18,6 @@ import com.hedvig.android.feature.travelcertificate.ui.history.TravelCertificate
 import com.hedvig.android.feature.travelcertificate.ui.overview.TravelCertificateOverviewDestination
 import com.hedvig.android.feature.travelcertificate.ui.overview.TravelCertificateOverviewViewModel
 import com.hedvig.android.navigation.core.AppDestination
-import com.kiwi.navigationcompose.typed.composable
-import com.kiwi.navigationcompose.typed.createRoutePattern
-import com.kiwi.navigationcompose.typed.navigate
-import com.kiwi.navigationcompose.typed.navigation
-import com.kiwi.navigationcompose.typed.popUpTo
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 

@@ -1,7 +1,5 @@
 package com.hedvig.android.feature.insurances.navigation
 
-import com.kiwi.navigationcompose.typed.Destination
-import com.kiwi.navigationcompose.typed.createRoutePattern
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

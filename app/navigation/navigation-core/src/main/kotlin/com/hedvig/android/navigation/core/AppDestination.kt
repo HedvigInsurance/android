@@ -1,6 +1,5 @@
 package com.hedvig.android.navigation.core
 
-import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.serialization.Serializable
 
 sealed interface AppDestination : Destination {

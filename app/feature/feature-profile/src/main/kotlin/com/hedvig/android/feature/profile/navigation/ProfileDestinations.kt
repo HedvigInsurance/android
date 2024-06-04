@@ -1,7 +1,5 @@
 package com.hedvig.android.feature.profile.navigation
 
-import com.kiwi.navigationcompose.typed.Destination
-import com.kiwi.navigationcompose.typed.createRoutePattern
 import kotlinx.serialization.Serializable
 
 sealed interface ProfileDestination {

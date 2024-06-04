@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.travelcertificate.navigation
 
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
-import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 

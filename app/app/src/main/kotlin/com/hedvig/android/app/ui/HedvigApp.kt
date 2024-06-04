@@ -38,7 +38,6 @@ import com.hedvig.android.market.MarketManager
 import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
-import com.kiwi.navigationcompose.typed.createRoutePattern
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest

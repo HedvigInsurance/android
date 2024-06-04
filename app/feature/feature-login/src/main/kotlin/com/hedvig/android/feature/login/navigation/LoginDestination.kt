@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.login.navigation
 
-import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.serialization.Serializable
 
 @Serializable

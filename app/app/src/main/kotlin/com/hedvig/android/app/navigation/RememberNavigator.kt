@@ -9,8 +9,6 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import com.hedvig.android.navigation.core.Navigator
-import com.kiwi.navigationcompose.typed.Destination
-import com.kiwi.navigationcompose.typed.navigate
 
 @Composable
 internal fun rememberNavigator(navController: NavController, finishApp: () -> Unit): Navigator {

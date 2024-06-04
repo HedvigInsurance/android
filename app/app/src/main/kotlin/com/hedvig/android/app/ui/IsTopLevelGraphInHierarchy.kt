@@ -8,7 +8,6 @@ import com.hedvig.android.feature.insurances.navigation.InsurancesDestination
 import com.hedvig.android.feature.payments.navigation.PaymentsDestination
 import com.hedvig.android.feature.profile.navigation.ProfileDestination
 import com.hedvig.android.navigation.core.TopLevelGraph
-import com.kiwi.navigationcompose.typed.createRoutePattern
 
 /**
  * Checks if the [TopLevelGraph] is part of the hiararchy of [this]

@@ -15,8 +15,6 @@ import com.hedvig.android.feature.claimtriaging.claimentrypoints.ClaimEntryPoint
 import com.hedvig.android.feature.claimtriaging.claimgroups.ClaimGroupsDestination
 import com.hedvig.android.feature.claimtriaging.claimgroups.ClaimGroupsViewModel
 import com.hedvig.android.navigation.core.Navigator
-import com.kiwi.navigationcompose.typed.Destination
-import com.kiwi.navigationcompose.typed.composable
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
