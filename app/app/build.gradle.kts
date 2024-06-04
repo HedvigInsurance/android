@@ -12,6 +12,7 @@ plugins {
   alias(libs.plugins.license)
   alias(libs.plugins.serialization)
   alias(libs.plugins.squareSortDependencies)
+  alias(libs.plugins.composeCompilerGradlePlugin)
 }
 
 android {

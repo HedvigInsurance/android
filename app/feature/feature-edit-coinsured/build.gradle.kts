@@ -6,6 +6,7 @@ plugins {
   alias(libs.plugins.apollo)
   alias(libs.plugins.serialization)
   alias(libs.plugins.squareSortDependencies)
+  alias(libs.plugins.composeCompilerGradlePlugin)
 }
 
 android {

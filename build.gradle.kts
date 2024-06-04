@@ -8,6 +8,7 @@ plugins {
   alias(libs.plugins.kotlinJvm) apply false
   alias(libs.plugins.kotlinter) apply false
   alias(libs.plugins.lintGradlePlugin) apply false
+  alias(libs.plugins.composeCompilerGradlePlugin) apply false
 }
 
 apply {

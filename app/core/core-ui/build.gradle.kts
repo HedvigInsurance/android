@@ -2,9 +2,9 @@ plugins {
   id("hedvig.android.library")
   id("hedvig.android.library.compose")
   id("hedvig.android.ktlint")
-  alias(libs.plugins.molecule)
   alias(libs.plugins.serialization)
   alias(libs.plugins.squareSortDependencies)
+  alias(libs.plugins.composeCompilerGradlePlugin)
 }
 
 dependencies {
@@ -12,7 +12,7 @@ dependencies {
   api(libs.androidx.compose.material3)
   api(libs.arrow.core)
   api(projects.coreIcons)
-
+  implementation(libs.molecule)
   implementation(libs.androidx.compose.material3.windowSizeClass)
   implementation(libs.androidx.compose.materialIconsExtended)
   implementation(libs.androidx.compose.uiUtil)
