@@ -4,11 +4,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
-import kotlinx.serialization.serializer
+import androidx.navigation.toRoute
 
 @Composable
-inline fun <reified T : Destination> NavController.getRouteFromBackStack(backStackEntry: NavBackStackEntry): T {
+inline fun <reified T : Any> NavController.getRouteFromBackStack(backStackEntry: NavBackStackEntry): T {
   return remember(this, backStackEntry) {
-    decodeArguments(serializer<T>(), getBackStackEntry(createRoutePattern<T>()))
+    getBackStackEntry<T>().toRoute<T>()
   }
 }
