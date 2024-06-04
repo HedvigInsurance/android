@@ -5,13 +5,13 @@ import kotlinx.serialization.Serializable
 
 sealed interface InsurancesDestination {
   @Serializable
-  data object Graph : InsurancesDestination, Destination
+  data object Graph : InsurancesDestination
 
   @Serializable
-  data object Insurances : InsurancesDestination, Destination
+  data object Insurances : InsurancesDestination
 }
 
-internal sealed interface InsurancesDestinations : Destination {
+internal sealed interface InsurancesDestinations {
   @Serializable
   data class InsuranceContractDetail(
     /** Must match the name of the param inside [com.hedvig.android.navigation.core.HedvigDeepLinkContainer.contract] */

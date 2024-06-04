@@ -4,8 +4,8 @@ import kotlinx.serialization.Serializable
 
 sealed interface ForeverDestination {
   @Serializable
-  data object Graph : ForeverDestination, Destination
+  data object Graph : ForeverDestination
 
   @Serializable
-  data object Forever : ForeverDestination, Destination
+  data object Forever : ForeverDestination
 }

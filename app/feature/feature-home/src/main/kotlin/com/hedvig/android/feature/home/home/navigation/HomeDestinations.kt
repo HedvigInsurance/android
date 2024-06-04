@@ -5,12 +5,12 @@ import kotlinx.serialization.Serializable
 
 sealed interface HomeDestination {
   @Serializable
-  data object Graph : HomeDestination, Destination
+  data object Graph : HomeDestination
 
   @Serializable
-  data object Home : HomeDestination, Destination
+  data object Home : HomeDestination
 
   @Serializable
   data class FirstVet(val sections: List<FirstVetSection>) :
-    HomeDestination, Destination
+    HomeDestination
 }

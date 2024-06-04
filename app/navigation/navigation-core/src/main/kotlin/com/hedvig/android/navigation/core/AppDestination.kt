@@ -2,7 +2,7 @@ package com.hedvig.android.navigation.core
 
 import kotlinx.serialization.Serializable
 
-sealed interface AppDestination : Destination {
+sealed interface AppDestination {
   @Serializable
   data class Chat(
     val chatContext: ChatContext? = null,

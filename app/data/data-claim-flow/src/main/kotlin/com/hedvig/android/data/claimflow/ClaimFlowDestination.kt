@@ -15,7 +15,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 import octopus.type.CurrencyCode
 
-sealed interface ClaimFlowDestination : Destination {
+sealed interface ClaimFlowDestination {
   @Serializable
   object HonestyPledge : ClaimFlowDestination
 

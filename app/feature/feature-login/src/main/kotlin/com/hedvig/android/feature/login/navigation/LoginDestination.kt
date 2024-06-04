@@ -3,9 +3,9 @@ package com.hedvig.android.feature.login.navigation
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object LoginDestination : Destination
+data object LoginDestination
 
-internal sealed interface LoginDestinations : Destination {
+internal sealed interface LoginDestinations {
   @Serializable
   object Marketing : LoginDestinations
 

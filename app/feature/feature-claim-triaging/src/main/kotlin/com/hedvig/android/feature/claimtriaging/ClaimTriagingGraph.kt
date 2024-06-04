@@ -3,6 +3,7 @@ package com.hedvig.android.feature.claimtriaging
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimtriaging.ClaimGroup
 import com.hedvig.android.data.claimtriaging.EntryPoint
@@ -19,7 +20,7 @@ import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-sealed interface ClaimTriagingDestination : Destination {
+sealed interface ClaimTriagingDestination {
   @Serializable
   object ClaimGroups : ClaimTriagingDestination
 

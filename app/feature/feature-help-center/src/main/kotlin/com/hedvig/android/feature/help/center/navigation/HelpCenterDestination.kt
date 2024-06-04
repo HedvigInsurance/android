@@ -4,9 +4,9 @@ import com.hedvig.android.ui.emergency.FirstVetSection
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object HelpCenterDestination : Destination
+data object HelpCenterDestination
 
-internal sealed interface HelpCenterDestinations : Destination {
+internal sealed interface HelpCenterDestinations {
   @Serializable
   data object HelpCenter : HelpCenterDestinations
 

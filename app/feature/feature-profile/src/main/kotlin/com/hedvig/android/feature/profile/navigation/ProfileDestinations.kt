@@ -4,13 +4,13 @@ import kotlinx.serialization.Serializable
 
 sealed interface ProfileDestination {
   @Serializable
-  data object Graph : ProfileDestination, Destination
+  data object Graph : ProfileDestination
 
   @Serializable
-  data object Profile : ProfileDestination, Destination
+  data object Profile : ProfileDestination
 }
 
-internal sealed interface ProfileDestinations : Destination {
+internal sealed interface ProfileDestinations {
   @Serializable
   data object Eurobonus : ProfileDestinations
 

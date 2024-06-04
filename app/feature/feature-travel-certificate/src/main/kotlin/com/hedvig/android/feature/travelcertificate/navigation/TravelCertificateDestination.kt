@@ -4,7 +4,7 @@ import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
-internal sealed interface TravelCertificateDestination : Destination {
+internal sealed interface TravelCertificateDestination {
   @Serializable
   data object TravelCertificateHistory : TravelCertificateDestination
 

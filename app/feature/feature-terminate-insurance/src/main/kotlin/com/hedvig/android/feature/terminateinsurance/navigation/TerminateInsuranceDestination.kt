@@ -12,9 +12,9 @@ data class TerminateInsuranceGraphDestination(
    */
   @SerialName("contractId")
   val insuranceId: String?,
-) : Destination
+)
 
-internal sealed interface TerminateInsuranceDestination : Destination {
+internal sealed interface TerminateInsuranceDestination {
   @Serializable
   data object StartStep : TerminateInsuranceDestination
 
