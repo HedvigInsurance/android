@@ -162,7 +162,8 @@ internal fun HedvigNavHost(
               }
               backStackEntry.navigate(
                 destination = AppDestination.ChangeAddress,
-                navOptions = options)
+                navOptions = options,
+              )
             }
           },
           closeTerminationFlow = {
