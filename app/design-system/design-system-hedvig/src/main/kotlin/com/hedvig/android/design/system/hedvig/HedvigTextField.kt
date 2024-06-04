@@ -39,7 +39,10 @@ import com.hedvig.android.design.system.hedvig.icon.Lock
 import com.hedvig.android.design.system.hedvig.icon.WarningFilled
 import com.hedvig.android.design.system.hedvig.internal.HedvigDecorationBox
 import com.hedvig.android.design.system.hedvig.tokens.LargeSizeTextFieldTokens
+import com.hedvig.android.design.system.hedvig.tokens.MediumSizeTextFieldTokens
+import com.hedvig.android.design.system.hedvig.tokens.SmallSizeTextFieldTokens
 import com.hedvig.android.design.system.hedvig.tokens.TextFieldTokens
+import com.hedvig.android.design.system.hedvig.tokens.TypographyKeyTokens
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.drop
@@ -91,12 +94,15 @@ fun HedvigTextField(
       errorState.isError -> {
         { ErrorTrailingIcon(trailingIconColor) }
       }
+
       readOnly -> {
         { ReadOnlyTrailingIcon(trailingIconColor) }
       }
+
       text.isNotEmpty() -> {
         { IsNotEmptyTrailingIcon(trailingIconColor, { onValueChange("") }) }
       }
+
       else -> {
         null
       }
@@ -314,9 +320,23 @@ internal data class HedvigTextFieldColors internal constructor(
 private val HedvigTextFieldDefaults.TextFieldSize.size: HedvigTextFieldSize
   get() = when (this) {
     HedvigTextFieldDefaults.TextFieldSize.Large -> HedvigTextFieldSize.Large
-    HedvigTextFieldDefaults.TextFieldSize.Medium -> HedvigTextFieldSize.Large // TODO()
-    HedvigTextFieldDefaults.TextFieldSize.Small -> HedvigTextFieldSize.Large // TODO()
+    HedvigTextFieldDefaults.TextFieldSize.Medium -> HedvigTextFieldSize.Medium
+    HedvigTextFieldDefaults.TextFieldSize.Small -> HedvigTextFieldSize.Small
   }
+
+internal interface HedvigTextFieldSizeConstants {
+  val topPadding: Dp
+  val topPaddingWithTextAndLabel: Dp
+  val bottomPadding: Dp
+  val bottomPaddingWithTextAndLabel: Dp
+  val horizontalPadding: Dp
+  val supportingTextHorizontalPadding: Dp
+  val supportingTextTopPadding: Dp
+  val supportingTextBottomPadding: Dp
+  val textStyle: TypographyKeyTokens
+  val labelTextStyle: TypographyKeyTokens
+  val labelToTextOverlap: Dp
+}
 
 internal sealed interface HedvigTextFieldSize {
   /**
@@ -325,59 +345,92 @@ internal sealed interface HedvigTextFieldSize {
    * container to expand according to those bigger items, but instead determines the height on the text+label.
    */
   @Composable
-  fun textAndLabelVerticalPadding(onlyLabelShowing: Boolean): PaddingValues
+  fun textAndLabelVerticalPadding(onlyLabelShowing: Boolean): PaddingValues {
+    val topPadding = when (onlyLabelShowing) {
+      true -> hedvigTextFieldSizeConstants.topPadding
+      false -> hedvigTextFieldSizeConstants.topPaddingWithTextAndLabel
+    }
+    val bottomPadding = when (onlyLabelShowing) {
+      true -> hedvigTextFieldSizeConstants.bottomPadding
+      false -> hedvigTextFieldSizeConstants.bottomPaddingWithTextAndLabel
+    }
+    return PaddingValues(
+      top = topPadding,
+      bottom = bottomPadding,
+    )
+  }
 
-  fun horizontalPadding(): PaddingValues
+  fun horizontalPadding(): PaddingValues {
+    return PaddingValues(horizontal = hedvigTextFieldSizeConstants.horizontalPadding)
+  }
 
   val supportingTextPadding: PaddingValues
-
-  @get:Composable
-  val textStyle: TextStyle
-
-  @get:Composable
-  val labelTextStyle: TextStyle
-
-  val labelToTextOverlap: Dp
-
-  object Large : HedvigTextFieldSize {
-    @Composable
-    override fun textAndLabelVerticalPadding(onlyLabelShowing: Boolean): PaddingValues {
-      val topPadding = when (onlyLabelShowing) {
-        true -> LargeSizeTextFieldTokens.TopPadding
-        false -> LargeSizeTextFieldTokens.TopPaddingWithTextAndLabel
-      }
-      val bottomPadding = when (onlyLabelShowing) {
-        true -> LargeSizeTextFieldTokens.BottomPadding
-        false -> LargeSizeTextFieldTokens.BottomPaddingWithTextAndLabel
-      }
-      return PaddingValues(
-        top = topPadding,
-        bottom = bottomPadding,
-      )
-    }
-
-    override fun horizontalPadding(): PaddingValues {
-      return PaddingValues(
-        horizontal = LargeSizeTextFieldTokens.HorizontalPadding,
-      )
-    }
-
-    override val supportingTextPadding: PaddingValues = PaddingValues(
-      start = LargeSizeTextFieldTokens.SupportingTextHorizontalPadding,
-      top = LargeSizeTextFieldTokens.SupportingTextTopPadding,
-      end = LargeSizeTextFieldTokens.SupportingTextHorizontalPadding,
-      bottom = LargeSizeTextFieldTokens.SupportingTextBottomPadding,
+    get() = PaddingValues(
+      start = hedvigTextFieldSizeConstants.supportingTextHorizontalPadding,
+      top = hedvigTextFieldSizeConstants.supportingTextTopPadding,
+      end = hedvigTextFieldSizeConstants.supportingTextHorizontalPadding,
+      bottom = hedvigTextFieldSizeConstants.supportingTextBottomPadding,
     )
 
-    override val textStyle: TextStyle
-      @Composable
-      get() = LargeSizeTextFieldTokens.TextStyle.value
+  val textStyle: TextStyle
+    @Composable
+    get() = hedvigTextFieldSizeConstants.textStyle.value
 
-    override val labelTextStyle: TextStyle
-      @Composable
-      get() = LargeSizeTextFieldTokens.LabelTextStyle.value
+  val labelTextStyle: TextStyle
+    @Composable
+    get() = hedvigTextFieldSizeConstants.labelTextStyle.value
 
-    override val labelToTextOverlap: Dp = LargeSizeTextFieldTokens.LabelToTextOverlap
+  val labelToTextOverlap: Dp
+    get() = hedvigTextFieldSizeConstants.labelToTextOverlap
+
+  val hedvigTextFieldSizeConstants: HedvigTextFieldSizeConstants
+
+  object Large : HedvigTextFieldSize {
+    override val hedvigTextFieldSizeConstants: HedvigTextFieldSizeConstants = object : HedvigTextFieldSizeConstants {
+      override val topPadding: Dp = LargeSizeTextFieldTokens.TopPadding
+      override val topPaddingWithTextAndLabel: Dp = LargeSizeTextFieldTokens.TopPaddingWithTextAndLabel
+      override val bottomPadding: Dp = LargeSizeTextFieldTokens.BottomPadding
+      override val bottomPaddingWithTextAndLabel: Dp = LargeSizeTextFieldTokens.BottomPaddingWithTextAndLabel
+      override val horizontalPadding: Dp = LargeSizeTextFieldTokens.HorizontalPadding
+      override val supportingTextHorizontalPadding = LargeSizeTextFieldTokens.SupportingTextHorizontalPadding
+      override val supportingTextTopPadding = LargeSizeTextFieldTokens.SupportingTextTopPadding
+      override val supportingTextBottomPadding = LargeSizeTextFieldTokens.SupportingTextBottomPadding
+      override val textStyle: TypographyKeyTokens = LargeSizeTextFieldTokens.TextStyle
+      override val labelTextStyle: TypographyKeyTokens = LargeSizeTextFieldTokens.LabelTextStyle
+      override val labelToTextOverlap = LargeSizeTextFieldTokens.LabelToTextOverlap
+    }
+  }
+
+  object Medium : HedvigTextFieldSize {
+    override val hedvigTextFieldSizeConstants: HedvigTextFieldSizeConstants = object : HedvigTextFieldSizeConstants {
+      override val topPadding: Dp = MediumSizeTextFieldTokens.TopPadding
+      override val topPaddingWithTextAndLabel: Dp = MediumSizeTextFieldTokens.TopPaddingWithTextAndLabel
+      override val bottomPadding: Dp = MediumSizeTextFieldTokens.BottomPadding
+      override val bottomPaddingWithTextAndLabel: Dp = MediumSizeTextFieldTokens.BottomPaddingWithTextAndLabel
+      override val horizontalPadding: Dp = MediumSizeTextFieldTokens.HorizontalPadding
+      override val supportingTextHorizontalPadding = MediumSizeTextFieldTokens.SupportingTextHorizontalPadding
+      override val supportingTextTopPadding = MediumSizeTextFieldTokens.SupportingTextTopPadding
+      override val supportingTextBottomPadding = MediumSizeTextFieldTokens.SupportingTextBottomPadding
+      override val textStyle: TypographyKeyTokens = MediumSizeTextFieldTokens.TextStyle
+      override val labelTextStyle: TypographyKeyTokens = MediumSizeTextFieldTokens.LabelTextStyle
+      override val labelToTextOverlap = MediumSizeTextFieldTokens.LabelToTextOverlap
+    }
+  }
+
+  object Small : HedvigTextFieldSize {
+    override val hedvigTextFieldSizeConstants: HedvigTextFieldSizeConstants = object : HedvigTextFieldSizeConstants {
+      override val topPadding: Dp = SmallSizeTextFieldTokens.TopPadding
+      override val topPaddingWithTextAndLabel: Dp = SmallSizeTextFieldTokens.TopPaddingWithTextAndLabel
+      override val bottomPadding: Dp = SmallSizeTextFieldTokens.BottomPadding
+      override val bottomPaddingWithTextAndLabel: Dp = SmallSizeTextFieldTokens.BottomPaddingWithTextAndLabel
+      override val horizontalPadding: Dp = SmallSizeTextFieldTokens.HorizontalPadding
+      override val supportingTextHorizontalPadding = SmallSizeTextFieldTokens.SupportingTextHorizontalPadding
+      override val supportingTextTopPadding = SmallSizeTextFieldTokens.SupportingTextTopPadding
+      override val supportingTextBottomPadding = SmallSizeTextFieldTokens.SupportingTextBottomPadding
+      override val textStyle: TypographyKeyTokens = SmallSizeTextFieldTokens.TextStyle
+      override val labelTextStyle: TypographyKeyTokens = SmallSizeTextFieldTokens.LabelTextStyle
+      override val labelToTextOverlap = SmallSizeTextFieldTokens.LabelToTextOverlap
+    }
   }
 }
 

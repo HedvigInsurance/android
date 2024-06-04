@@ -39,3 +39,31 @@ internal object LargeSizeTextFieldTokens {
   val SupportingTextBottomPadding = 8.dp
   val SupportingTextHorizontalPadding = 16.dp
 }
+
+internal object MediumSizeTextFieldTokens {
+  val TextStyle = TypographyKeyTokens.BodySmall
+  val LabelTextStyle = TypographyKeyTokens.Label
+  val HorizontalPadding = 16.dp
+  val TopPadding = 19.dp
+  val BottomPadding = 21.dp
+  val LabelToTextOverlap = 2.dp
+  val TopPaddingWithTextAndLabel = 11.5.dp
+  val BottomPaddingWithTextAndLabel = 12.5.dp
+  val SupportingTextTopPadding = 4.dp
+  val SupportingTextBottomPadding = 8.dp
+  val SupportingTextHorizontalPadding = 16.dp
+}
+
+internal object SmallSizeTextFieldTokens {
+  val TextStyle = TypographyKeyTokens.BodySmall
+  val LabelTextStyle = TypographyKeyTokens.Label
+  val HorizontalPadding = 14.dp
+  val TopPadding = 15.dp
+  val BottomPadding = 17.dp
+  val LabelToTextOverlap = 2.dp
+  val TopPaddingWithTextAndLabel = 8.5.dp
+  val BottomPaddingWithTextAndLabel = 7.5.dp
+  val SupportingTextTopPadding = 4.dp
+  val SupportingTextBottomPadding = 8.dp
+  val SupportingTextHorizontalPadding = 14.dp
+}
