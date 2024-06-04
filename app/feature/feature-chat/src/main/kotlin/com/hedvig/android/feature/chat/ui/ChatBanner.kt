@@ -18,6 +18,7 @@ import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.unit.dp
 import com.halilibo.richtext.markdown.Markdown
 import com.halilibo.richtext.ui.material3.RichText
+import com.hedvig.android.compose.ui.LayoutWithoutPlacement
 import com.hedvig.android.core.designsystem.component.card.HedvigInfoCard
 import com.hedvig.android.core.designsystem.material3.infoContainer
 import com.hedvig.android.core.designsystem.material3.infoElement
@@ -26,7 +27,6 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.InfoFilled
-import com.hedvig.android.core.ui.layout.LayoutWithoutPlacement
 
 @Composable
 internal fun ChatBanner(text: String, onBannerLinkClicked: (String) -> Unit, modifier: Modifier = Modifier) {

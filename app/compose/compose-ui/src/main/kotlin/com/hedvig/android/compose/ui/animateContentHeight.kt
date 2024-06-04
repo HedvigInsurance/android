@@ -1,6 +1,5 @@
-package com.hedvig.android.core.designsystem.animation
+package com.hedvig.android.compose.ui
 
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationEndReason
 import androidx.compose.animation.core.AnimationSpec

@@ -38,6 +38,7 @@ dependencies {
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.composePhotoCaptureState)
+  implementation(projects.composeUi)
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)

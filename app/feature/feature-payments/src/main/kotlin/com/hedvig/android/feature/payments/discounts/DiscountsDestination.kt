@@ -40,6 +40,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.core.content.getSystemService
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.designsystem.component.bottomsheet.HedvigInfoBottomSheet
 import com.hedvig.android.core.designsystem.component.button.HedvigSecondaryContainedButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
@@ -58,7 +59,6 @@ import com.hedvig.android.core.icons.hedvig.normal.InfoFilled
 import com.hedvig.android.core.icons.hedvig.small.hedvig.Campaign
 import com.hedvig.android.core.ui.infocard.InfoCardTextButton
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
-import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.uidata.UiMoney
@@ -271,7 +271,9 @@ private fun ForeverSection(
 @Composable
 @HedvigPreview
 private fun PaymentDetailsScreenPreview(
-  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) hasForeverAndDiscounts: Boolean,
+  @PreviewParameter(
+    com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider::class,
+  ) hasForeverAndDiscounts: Boolean,
 ) {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {

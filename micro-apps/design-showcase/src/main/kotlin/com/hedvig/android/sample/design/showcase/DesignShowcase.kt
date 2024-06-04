@@ -3,11 +3,22 @@ package com.hedvig.android.sample.design.showcase
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.hedvig.android.sample.design.showcase.button.ShowcaseButton
 import com.hedvig.android.sample.design.showcase.icons.ShowcaseIcons
+import com.hedvig.android.sample.design.showcase.textfield.ShowcaseTextField
 
 @Composable
-fun DesignShowcase(modifier: Modifier = Modifier) {
+internal fun DesignShowcase(modifier: Modifier = Modifier) {
   Box(modifier) {
-    ShowcaseIcons()
+    if (showIcons) {
+      ShowcaseIcons()
+    } else if (showButton) {
+      ShowcaseButton()
+    } else {
+      ShowcaseTextField()
+    }
   }
 }
+
+private val showIcons = false
+private val showButton = false

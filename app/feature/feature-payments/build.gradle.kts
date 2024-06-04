@@ -34,6 +34,7 @@ dependencies {
   implementation(projects.apolloNetworkCacheManager)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.authCorePublic)
+  implementation(projects.composeUi)
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)

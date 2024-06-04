@@ -23,13 +23,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.success.HedvigSuccessSection
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.CircleWithCheckmarkFilled
-import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
@@ -80,7 +80,9 @@ internal fun TerminationSuccessDestination(terminationDate: LocalDate?, onDone: 
 @HedvigPreview
 @Composable
 private fun PreviewTerminationSuccessScreen(
-  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) withTerminationDate: Boolean,
+  @PreviewParameter(
+    com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider::class,
+  ) withTerminationDate: Boolean,
 ) {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {

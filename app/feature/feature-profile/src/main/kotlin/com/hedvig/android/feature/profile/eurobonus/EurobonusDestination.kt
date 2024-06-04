@@ -33,6 +33,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
@@ -42,7 +43,6 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.WarningFilled
 import com.hedvig.android.core.ui.clearFocusOnTap
-import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 
 @Composable
@@ -195,7 +195,9 @@ private fun EurobonusNumberField(
 @HedvigPreview
 @Composable
 private fun PreviewEurobonusScreen(
-  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) hasError: Boolean,
+  @PreviewParameter(
+    com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider::class,
+  ) hasError: Boolean,
 ) {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {

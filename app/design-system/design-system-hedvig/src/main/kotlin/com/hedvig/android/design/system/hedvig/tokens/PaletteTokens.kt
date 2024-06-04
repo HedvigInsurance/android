@@ -2,7 +2,13 @@ package com.hedvig.android.design.system.hedvig.tokens
 
 import androidx.compose.ui.graphics.Color
 
+@Suppress("unused") // We want the entire palette to be here even if some are unused
 internal object PaletteTokens {
+  val Black = Color(0xFF121212)
+  val White = Color(0xFFFAFAFA)
+  val BlackTransparent = Color(0xEB000000)
+  val WhiteTransparent = Color(0x01121212)
+
   val G50 = Color(0xFFF5F5F5)
   val G100 = Color(0xFFF0F0F0)
   val G200 = Color(0xFFEAEAEA)
@@ -15,8 +21,32 @@ internal object PaletteTokens {
   val G750 = Color(0xFF606060)
   val G800 = Color(0xFF505050)
   val G900 = Color(0xFF303030)
-  val GBlack = Color(0xFF121212)
-  val GWhite = Color(0xFFFAFAFA)
+
+  val G50TLight = Color(0x05121212)
+  val G100TLight = Color(0x0B121212)
+  val G200TLight = Color(0x12121212)
+  val G300TLight = Color(0x1C121212)
+  val G400TLight = Color(0x2F121212)
+  val G450TLight = Color(0x3B121212)
+  val G500TLight = Color(0x4D121212)
+  val G600TLight = Color(0x6E121212)
+  val G700TLight = Color(0x98121212)
+  val G750TLight = Color(0xA9121212)
+  val G800TLight = Color(0xBB121212)
+  val G900TLight = Color(0xDE121212)
+
+  val G50TDark = Color(0xFAFAFAFA)
+  val G100TDark = Color(0xF4FAFAFA)
+  val G200TDark = Color(0xEDFAFAFA)
+  val G300TDark = Color(0xE3FAFAFA)
+  val G400TDark = Color(0xD0FAFAFA)
+  val G450TDark = Color(0xC4FAFAFA)
+  val G500TDark = Color(0xB3FAFAFA)
+  val G600TDark = Color(0x8FFAFAFA)
+  val G700TDark = Color(0x67FAFAFA)
+  val G750TDark = Color(0x55FAFAFA)
+  val G800TDark = Color(0x44FAFAFA)
+  val G900TDark = Color(0x21FAFAFA)
 
   val Red50 = Color(0xFFFFEEEB)
   val Red100 = Color(0xFFFEE2DE)
@@ -113,4 +143,6 @@ internal object PaletteTokens {
   val Purple700 = Color(0xFF6D5A87)
   val Purple800 = Color(0xFF54446A)
   val Purple900 = Color(0xFF3D2D53)
+
+  val Transparent = Color.Transparent
 }

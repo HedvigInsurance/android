@@ -51,6 +51,7 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.isGranted
+import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -62,7 +63,6 @@ import com.hedvig.android.core.icons.hedvig.normal.MultipleDocuments
 import com.hedvig.android.core.icons.hedvig.normal.Settings
 import com.hedvig.android.core.ui.dialog.HedvigAlertDialog
 import com.hedvig.android.core.ui.plus
-import com.hedvig.android.core.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
 import com.hedvig.android.memberreminders.ui.MemberReminderCards
 import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
@@ -372,20 +372,18 @@ private fun PreviewProfileItemRows() {
     Surface(color = MaterialTheme.colorScheme.background) {
       PreviewContentWithProvidedParametersAnimatedOnClick(
         parametersList = ProfileUiStateProvider().values.toList(),
-        content = {
-            uiState ->
-          Column {
-            ProfileRows(
-              uiState,
-              {},
-              {},
-              {},
-              {},
-              {},
-            )
-          }
-        },
-      )
+      ) { uiState ->
+        Column {
+          ProfileRows(
+            uiState,
+            {},
+            {},
+            {},
+            {},
+            {},
+          )
+        }
+      }
     }
   }
 }

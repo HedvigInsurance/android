@@ -33,6 +33,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import coil.ImageLoader
 import coil.compose.AsyncImage
+import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.designsystem.material3.DisabledAlpha
 import com.hedvig.android.core.designsystem.material3.squircleExtraSmall
 import com.hedvig.android.core.designsystem.material3.squircleMedium
@@ -40,7 +41,6 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.Hedvig
-import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.placeholder.PlaceholderHighlight
 import com.hedvig.android.placeholder.placeholder

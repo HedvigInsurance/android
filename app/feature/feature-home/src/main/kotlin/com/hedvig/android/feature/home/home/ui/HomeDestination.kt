@@ -58,6 +58,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.nonEmptyListOf
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.permissions.isGranted
+import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.designsystem.component.bottomsheet.HedvigBottomSheet
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigSecondaryContainedButton
@@ -78,7 +79,6 @@ import com.hedvig.android.core.ui.appbar.m3.TopAppBarLayoutForActions
 import com.hedvig.android.core.ui.infocard.InfoCardTextButton
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.plus
-import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.crosssells.CrossSellsSection
 import com.hedvig.android.data.contract.android.CrossSell
 import com.hedvig.android.feature.home.home.ChatTooltip
@@ -444,7 +444,7 @@ private fun ImportantMessages(
         HorizontalPager(
           state = pagerState,
           contentPadding = contentPadding,
-          beyondBoundsPageCount = 1,
+          beyondViewportPageCount = 1,
           pageSpacing = 8.dp,
           modifier = Modifier
             .fillMaxWidth()

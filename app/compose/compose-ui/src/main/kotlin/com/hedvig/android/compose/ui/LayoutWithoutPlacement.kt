@@ -1,11 +1,10 @@
-package com.hedvig.android.core.ui.layout
+package com.hedvig.android.compose.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.layout
 
 /**

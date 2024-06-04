@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.NonEmptyList
 import arrow.core.toNonEmptyListOrNull
+import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.designsystem.component.bottomsheet.HedvigBottomSheet
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
@@ -53,7 +54,6 @@ import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.InfoFilled
 import com.hedvig.android.core.ui.SelectIndicationCircle
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
-import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.scaffold.ClaimFlowScaffold
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
