@@ -258,7 +258,7 @@ internal fun HedvigNavHost(
         navigator.navigateUnsafe(
           AppDestination.ConnectPaymentAdyen,
           navOptions {
-            popUpTo(createRoutePattern<AppDestination.ConnectPayment>()) {
+            popUpTo<AppDestination.ConnectPayment> {
               inclusive = true
             }
           },
