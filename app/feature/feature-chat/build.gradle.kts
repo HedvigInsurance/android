@@ -25,7 +25,6 @@ dependencies {
   implementation(libs.compose.richtext)
   implementation(libs.compose.richtextUi)
   implementation(libs.coroutines.core)
-  implementation(libs.kiwi.navigationCompose)
   implementation(libs.koin.compose)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.datetime)

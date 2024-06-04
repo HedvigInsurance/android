@@ -23,7 +23,6 @@ dependencies {
   implementation(libs.apollo.normalizedCache)
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
-  implementation(libs.kiwi.navigationCompose)
   implementation(libs.koin.android)
   implementation(libs.koin.compose)
   implementation(libs.koin.core)

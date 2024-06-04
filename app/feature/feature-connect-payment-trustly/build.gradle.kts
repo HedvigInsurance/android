@@ -20,7 +20,6 @@ dependencies {
   implementation(libs.apollo.api)
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
-  implementation(libs.kiwi.navigationCompose)
   implementation(libs.koin.compose)
   implementation(libs.koin.core)
   implementation(projects.apolloCore)

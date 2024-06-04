@@ -26,7 +26,6 @@ dependencies {
   implementation(libs.arrow.fx)
   implementation(libs.coil.coil)
   implementation(libs.coil.compose)
-  implementation(libs.kiwi.navigationCompose)
   implementation(libs.koin.compose)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.datetime)

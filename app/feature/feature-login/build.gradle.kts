@@ -15,7 +15,6 @@ dependencies {
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.androidx.lifecycle.viewModel)
   implementation(libs.androidx.navigation.compose)
-  implementation(libs.kiwi.navigationCompose)
   implementation(libs.koin.compose)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.core)

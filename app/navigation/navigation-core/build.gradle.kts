@@ -8,7 +8,6 @@ plugins {
 dependencies {
   implementation(libs.androidx.annotation)
   implementation(libs.androidx.navigation.common)
-  implementation(libs.kiwi.navigationCompose)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
