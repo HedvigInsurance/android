@@ -11,7 +11,10 @@ import com.hedvig.android.feature.chat.data.BotServiceService
 import com.hedvig.android.feature.chat.data.ChatRepository
 import com.hedvig.android.feature.chat.data.ChatRepositoryDemo
 import com.hedvig.android.feature.chat.data.ChatRepositoryImpl
+import com.hedvig.android.feature.chat.data.GetAllConversationsUseCase
+import com.hedvig.android.feature.chat.data.GetAllConversationsUseCaseImpl
 import com.hedvig.android.feature.chat.data.GetChatRepositoryProvider
+import com.hedvig.android.feature.chat.ui.inbox.InboxViewModel
 import com.hedvig.android.navigation.core.AppDestination
 import kotlinx.datetime.Clock
 import kotlinx.serialization.json.Json
@@ -67,5 +70,13 @@ val chatModule = module {
    */
   single<ChatRepository> {
     get<ChatRepositoryImpl>()
+  }
+
+  single<GetAllConversationsUseCase> {
+    GetAllConversationsUseCaseImpl(get<ApolloClient>())
+  }
+
+  viewModel<InboxViewModel> {
+    InboxViewModel(get<GetAllConversationsUseCase>())
   }
 }
