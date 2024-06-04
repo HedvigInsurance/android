@@ -1,21 +1,26 @@
 package com.hedvig.android.feature.claimtriaging.claimentrypoints
 
 import androidx.compose.runtime.Immutable
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.hedvig.android.data.claimflow.ClaimFlowRepository
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimtriaging.EntryPoint
+import com.hedvig.android.feature.claimtriaging.ClaimTriagingDestination
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class ClaimEntryPointsViewModel(
-  private val entryPoints: List<EntryPoint>,
+  savedStateHandle: SavedStateHandle,
   private val claimFlowRepository: ClaimFlowRepository,
 ) : ViewModel() {
-  private val _uiState = MutableStateFlow(ClaimEntryPointsUiState(entryPoints))
+  val claimEntryPoints = savedStateHandle.toRoute<ClaimTriagingDestination.ClaimEntryPoints>()
+
+  private val _uiState = MutableStateFlow(ClaimEntryPointsUiState(claimEntryPoints.entryPoints))
   val uiState = _uiState.asStateFlow()
 
   fun continueWithoutSelection() {

@@ -3,6 +3,9 @@ package com.hedvig.android.feature.changeaddress.navigation
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigation
+import androidx.navigation.toRoute
 import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
 import com.hedvig.android.feature.changeaddress.destination.ChangeAddressEnterNewAddressDestination
 import com.hedvig.android.feature.changeaddress.destination.ChangeAddressEnterVillaInformationDestination
@@ -83,9 +86,9 @@ fun NavGraphBuilder.changeAddressGraph(
       )
     }
   }
-  composable<ChangeAddressDestination.AddressResult> {
+  composable<ChangeAddressDestination.AddressResult> { navBackStackEntry ->
     ChangeAddressResultDestination(
-      movingDate = movingDate,
+      movingDate = navBackStackEntry.toRoute<ChangeAddressDestination.AddressResult>().movingDate,
       popBackstack = navController::popBackStack,
     )
   }
