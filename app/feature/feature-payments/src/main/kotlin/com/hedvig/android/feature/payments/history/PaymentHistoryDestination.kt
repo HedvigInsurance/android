@@ -78,8 +78,7 @@ private fun PaymentHistoryScreen(
       ) = remember(uiState.paymentHistory) {
         if (uiState.paymentHistory.isEmpty()) {
           PaymentHistory.NoHistoryData to {
-            s: String ->
-
+              s: String ->
           }
         } else {
           PaymentHistory.PastCharges(
