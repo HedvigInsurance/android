@@ -22,8 +22,8 @@ private fun KotlinCommonCompilerOptions.configureCommonKotlinCompilerOptions(
   project: Project,
   extraFreeCompilerArgs: List<String> = emptyList(),
 ) {
-  apiVersion.set(KotlinVersion.KOTLIN_1_9)
-  languageVersion.set(KotlinVersion.KOTLIN_1_9)
+  apiVersion.set(KotlinVersion.KOTLIN_2_0)
+  languageVersion.set(KotlinVersion.KOTLIN_2_0)
   freeCompilerArgs.addAll(project.commonFreeCompilerArgs().plus(extraFreeCompilerArgs))
 }
 
