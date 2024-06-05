@@ -203,8 +203,6 @@ kotlinter-gradlePlugin = { module = "org.jmailen.gradle:kotlinter-gradle", versi
 compose-compilerGradlePlugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin"}
 molecule = { module = "app.cash.molecule:molecule-runtime", version.ref = "molecule" }
 
-
-
 # lint dependencies
 lintApi = { module = "com.android.tools.lint:lint-api", version.ref = "lintApi" }
 

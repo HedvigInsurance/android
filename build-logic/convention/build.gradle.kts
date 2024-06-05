@@ -13,7 +13,7 @@ java {
 
 kotlin {
   compilerOptions {
-     jvmTarget.set(JvmTarget.JVM_17)
+    jvmTarget.set(JvmTarget.JVM_17)
   }
 }
 
@@ -22,7 +22,6 @@ dependencies {
   compileOnly(libs.kotlin.gradlePlugin)
   compileOnly(libs.kotlinter.gradlePlugin)
   compileOnly(libs.compose.compilerGradlePlugin)
-
 
   // Not sure why this can't be compileOnly. Not a big deal, but might figure it out in the future
   implementation(libs.apollo.gradlePlugin)
@@ -48,6 +47,7 @@ gradlePlugin {
     createPlugin("hedvig.android.library", "LibraryConventionPlugin")
     createPlugin("hedvig.android.library.compose", "LibraryComposeConventionPlugin")
     createPlugin("hedvig.kotlin.library", "KotlinLibraryConventionPlugin")
+    createPlugin("hedvig.kotlin.library.compose", "KotlinLibraryComposeConventionPlugin")
     createPlugin("hedvig.lint", "HedvigLintConventionPlugin")
   }
 }
