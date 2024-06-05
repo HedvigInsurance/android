@@ -16,7 +16,7 @@ import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
  */
 internal fun Project.configureKotlin() {
   kotlinExtension.forEachCompilerOptions {
-    configureKotlinCompilerOptions(this@configureKotlin)
+    configureKotlinCompilerOptions()
   }
   project.extensions.getByType(JavaPluginExtension::class.java).apply {
     toolchain.languageVersion.set(JavaLanguageVersion.of(17))

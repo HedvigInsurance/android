@@ -1,33 +1,31 @@
 package com.hedvig.android
 
-import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
-internal fun KotlinCommonCompilerOptions.configureKotlinCompilerOptions(project: Project) {
+internal fun KotlinCommonCompilerOptions.configureKotlinCompilerOptions() {
   when (this) {
     is KotlinJvmCompilerOptions -> {
-      configureCommonKotlinCompilerOptions(project, listOf("-Xjvm-default=all"))
+      configureCommonKotlinCompilerOptions(listOf("-Xjvm-default=all"))
       jvmTarget.set(JvmTarget.JVM_17)
     }
     else -> {
-      configureCommonKotlinCompilerOptions(project)
+      configureCommonKotlinCompilerOptions()
     }
   }
 }
 
 private fun KotlinCommonCompilerOptions.configureCommonKotlinCompilerOptions(
-  project: Project,
   extraFreeCompilerArgs: List<String> = emptyList(),
 ) {
   apiVersion.set(KotlinVersion.KOTLIN_2_0)
   languageVersion.set(KotlinVersion.KOTLIN_2_0)
-  freeCompilerArgs.addAll(project.commonFreeCompilerArgs().plus(extraFreeCompilerArgs))
+  freeCompilerArgs.addAll(commonFreeCompilerArgs().plus(extraFreeCompilerArgs))
 }
 
-private fun Project.commonFreeCompilerArgs(): List<String> {
+private fun commonFreeCompilerArgs(): List<String> {
   return buildList {
     addAll(
       listOf(
@@ -43,19 +41,5 @@ private fun Project.commonFreeCompilerArgs(): List<String> {
         "-opt-in=kotlinx.serialization.ExperimentalSerializationApi",
       ),
     )
-
-    // Get compose metrics with `./gradlew :app:assembleRelease -Pcom.hedvig.app.enableComposeCompilerReports=true`
-    if (project.findProperty("com.hedvig.app.enableComposeCompilerReports") == "true") {
-      addAll(
-        listOf(
-          "-P",
-          "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=" +
-            project.layout.buildDirectory.asFile.get().absolutePath + "/compose_metrics",
-          "-P",
-          "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=" +
-            project.layout.buildDirectory.asFile.get().absolutePath + "/compose_metrics",
-        ),
-      )
-    }
   }
 }

@@ -23,7 +23,7 @@ internal fun Project.configureAndroidCompose(commonExtension: AndroidCommonExten
     }
 
     extensions.configure<ComposeCompilerGradlePluginExtension> {
-      enableStrongSkippingMode = true
+      configureComposeCompiler(this@configureAndroidCompose)
     }
     dependencies {
       val bom = libs.androidx.compose.bom

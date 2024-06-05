@@ -1,7 +1,7 @@
+import com.hedvig.android.configureComposeCompiler
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.the
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
@@ -17,7 +17,7 @@ class KotlinLibraryComposeConventionPlugin : Plugin<Project> {
         apply(libs.plugins.composeCompilerGradlePlugin.get().pluginId)
       }
       extensions.configure<ComposeCompilerGradlePluginExtension> {
-        enableStrongSkippingMode = true
+        configureComposeCompiler(this@with)
       }
     }
   }

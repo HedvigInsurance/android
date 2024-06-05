@@ -32,7 +32,7 @@ internal fun Project.configureKotlinAndroid(commonExtension: AndroidCommonExtens
   }
 
   project.configure<KotlinAndroidProjectExtension> {
-    compilerOptions.configureKotlinCompilerOptions(project)
+    compilerOptions.configureKotlinCompilerOptions()
   }
 
   fun Project.isLoggingPublicModule(): Boolean {
