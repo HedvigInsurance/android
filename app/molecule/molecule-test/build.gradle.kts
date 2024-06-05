@@ -7,6 +7,7 @@ plugins {
 
 dependencies {
   api(projects.moleculePublic)
-  implementation(libs.turbine)
+
   implementation(libs.molecule)
+  implementation(libs.turbine)
 }

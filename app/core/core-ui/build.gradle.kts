@@ -11,7 +11,7 @@ dependencies {
   api(libs.androidx.compose.material3)
   api(libs.arrow.core)
   api(projects.coreIcons)
-  implementation(libs.molecule)
+
   implementation(libs.androidx.compose.material3.windowSizeClass)
   implementation(libs.androidx.compose.materialIconsExtended)
   implementation(libs.androidx.compose.uiUtil)
@@ -22,6 +22,7 @@ dependencies {
   implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)
+  implementation(libs.molecule)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.coreDesignSystem)
   implementation(projects.coreResources)
