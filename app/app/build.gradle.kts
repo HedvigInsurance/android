@@ -103,6 +103,10 @@ android {
   }
 }
 
+composeCompiler {
+  enableStrongSkippingMode = true
+}
+
 dependencies {
   implementation(platform(libs.firebase.bom))
   implementation(libs.androidx.activity.compose)

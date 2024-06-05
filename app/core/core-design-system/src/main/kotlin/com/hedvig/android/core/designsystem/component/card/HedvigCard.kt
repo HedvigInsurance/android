@@ -10,6 +10,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -108,11 +109,12 @@ private fun Card(
   Surface(
     modifier = modifier,
     shape = shape,
-    color = colors.containerColor(enabled = true),
-    contentColor = colors.contentColor(enabled = true),
-    tonalElevation = elevation.tonalElevation(enabled = true),
-    shadowElevation = elevation.shadowElevation(enabled = true, interactionSource = null).value,
+   // color = colors.containerColor(enabled = true), //todo: remove!!
+    // contentColor = colors.contentColor(enabled = true), //todo: remove!!
+  //  tonalElevation = elevation.tonalElevation(enabled = true), //todo: remove!!
+  //  shadowElevation = elevation.shadowElevation(enabled = true, interactionSource = null).value, //todo: remove!!
     border = border,
+    //todo: REMOVE EXPERIMENTAL VALUES HERE!!!!
   ) {
     content()
   }
@@ -139,10 +141,10 @@ private fun Card(
     modifier = modifier,
     enabled = enabled,
     shape = shape,
-    color = colors.containerColor(enabled),
-    contentColor = colors.contentColor(enabled),
-    tonalElevation = elevation.tonalElevation(enabled),
-    shadowElevation = elevation.shadowElevation(enabled, interactionSource).value,
+//    color = colors.containerColor(enabled),
+//    contentColor = colors.contentColor(enabled),
+//    tonalElevation = elevation.tonalElevation(enabled),
+//    shadowElevation = elevation.shadowElevation(enabled, interactionSource).value, //todo: remove!!
     border = border,
     interactionSource = interactionSource,
     content = content,
