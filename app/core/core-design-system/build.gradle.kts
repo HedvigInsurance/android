@@ -3,7 +3,6 @@ plugins {
   id("hedvig.android.library.compose")
   id("hedvig.android.ktlint")
   alias(libs.plugins.squareSortDependencies)
-  alias(libs.plugins.composeCompilerGradlePlugin)
 }
 
 dependencies {

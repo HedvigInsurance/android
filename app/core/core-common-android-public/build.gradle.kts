@@ -5,7 +5,6 @@ plugins {
   id("kotlin-parcelize")
   alias(libs.plugins.serialization)
   alias(libs.plugins.squareSortDependencies)
-  alias(libs.plugins.composeCompilerGradlePlugin)
 }
 
 dependencies {

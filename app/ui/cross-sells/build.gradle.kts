@@ -4,7 +4,6 @@ plugins {
   id("hedvig.android.library.compose")
   alias(libs.plugins.serialization)
   alias(libs.plugins.squareSortDependencies)
-  alias(libs.plugins.composeCompilerGradlePlugin)
 }
 
 dependencies {
