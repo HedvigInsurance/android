@@ -6,10 +6,10 @@ minSdkVersion = "23"
 
 # lint versions
 lintApi = "31.4.0"
-lintGradlePlugin = "8.4.0"
+lintGradlePlugin = "8.6.0-alpha04"
 
 # gradlePlugin versions
-androidGradlePlugin = "8.4.0"
+androidGradlePlugin = "8.6.0-alpha04"
 apollo = "3.8.4"
 cacheFix = "3.0.1"
 crashlytics = "2.9.9"
@@ -194,8 +194,6 @@ turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 unleash = { module = "io.getunleash:unleash-android-proxy-sdk", version.ref = "unleash" }
 zXing = { module = "com.google.zxing:core", version.ref = "zXing" }
 zoomable = { module = "net.engawapg.lib:zoomable", version.ref = "zoomable" }
-molecule = { module = "app.cash.molecule:molecule-runtime", version.ref = "molecule" }
-
 # Plugin libraries for build-logic's convention plugins to use to resolve the types/tasks coming from these plugins
 android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "androidGradlePlugin" }
 apollo-gradlePlugin = { module = "com.apollographql.apollo3:apollo-gradle-plugin", version.ref = "apollo" }
@@ -203,6 +201,8 @@ firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "fireb
 kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlinter-gradlePlugin = { module = "org.jmailen.gradle:kotlinter-gradle", version.ref = "kotlinter" }
 compose-compilerGradlePlugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin"}
+molecule = { module = "app.cash.molecule:molecule-runtime", version.ref = "molecule" }
+
 
 
 # lint dependencies
@@ -230,3 +230,4 @@ lintGradlePlugin = { id = "com.android.lint", version.ref = "lintGradlePlugin" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 squareSortDependencies = { id = "com.squareup.sort-dependencies", version.ref = "squareSortDependencies" }
 composeCompilerGradlePlugin = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+
