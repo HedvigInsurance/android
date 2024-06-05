@@ -13,7 +13,7 @@ androidGradlePlugin = "8.6.0-alpha04"
 apollo = "3.8.4"
 cacheFix = "3.0.1"
 crashlytics = "2.9.9"
-datadogPlugin = "1.13.1"
+datadogPlugin = "1.14.0"
 doctor = "0.9.2"
 easylauncher = "6.3.0"
 googleServices = "4.4.1"
@@ -230,4 +230,3 @@ lintGradlePlugin = { id = "com.android.lint", version.ref = "lintGradlePlugin" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 squareSortDependencies = { id = "com.squareup.sort-dependencies", version.ref = "squareSortDependencies" }
 composeCompilerGradlePlugin = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-
