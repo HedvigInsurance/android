@@ -108,12 +108,11 @@ private fun Card(
   Surface(
     modifier = modifier,
     shape = shape,
-    // color = colors.containerColor(enabled = true), //todo: remove!!
-    // contentColor = colors.contentColor(enabled = true), //todo: remove!!
-    //  tonalElevation = elevation.tonalElevation(enabled = true), //todo: remove!!
-    //  shadowElevation = elevation.shadowElevation(enabled = true, interactionSource = null).value, //todo: remove!!
+    color = colors.containerColor(enabled = true),
+    contentColor = colors.contentColor(enabled = true),
+    tonalElevation = elevation.tonalElevation(enabled = true),
+    shadowElevation = elevation.shadowElevation(enabled = true, interactionSource = null).value,
     border = border,
-    // todo: REMOVE EXPERIMENTAL VALUES HERE!!!!
   ) {
     content()
   }
@@ -140,10 +139,10 @@ private fun Card(
     modifier = modifier,
     enabled = enabled,
     shape = shape,
-//    color = colors.containerColor(enabled),
-//    contentColor = colors.contentColor(enabled),
-//    tonalElevation = elevation.tonalElevation(enabled),
-//    shadowElevation = elevation.shadowElevation(enabled, interactionSource).value, //todo: remove!!
+    color = colors.containerColor(enabled),
+    contentColor = colors.contentColor(enabled),
+    tonalElevation = elevation.tonalElevation(enabled),
+    shadowElevation = elevation.shadowElevation(enabled, interactionSource).value,
     border = border,
     interactionSource = interactionSource,
     content = content,
