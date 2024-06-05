@@ -1,5 +1,6 @@
 package com.hedvig.android.core.ui
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import java.time.format.DateTimeFormatter
@@ -73,6 +74,7 @@ object HedvigDateTimeFormatterDefaults {
 /**
  * Example output: "2021.07.01"
  */
+@SuppressLint("NewApi") // We do have desugaring enabled
 private val isoLocalDateWithDots: DateTimeFormatterBuilder = DateTimeFormatterBuilder()
   .appendValue(ChronoField.YEAR, 4, 10, SignStyle.EXCEEDS_PAD)
   .appendLiteral('.')
@@ -83,6 +85,7 @@ private val isoLocalDateWithDots: DateTimeFormatterBuilder = DateTimeFormatterBu
 /**
  * Example output: "12:34"
  */
+@SuppressLint("NewApi")
 private val timeOnly: DateTimeFormatterBuilder = DateTimeFormatterBuilder()
   .appendValue(ChronoField.HOUR_OF_DAY, 2)
   .appendLiteral(':')
@@ -91,6 +94,7 @@ private val timeOnly: DateTimeFormatterBuilder = DateTimeFormatterBuilder()
 /**
  * Example output: "Fri 12:34"
  */
+@SuppressLint("NewApi")
 private val dayOfTheWeekAndTime: DateTimeFormatterBuilder = DateTimeFormatterBuilder()
   .appendPattern("EEE")
   .appendLiteral(' ')
@@ -101,6 +105,7 @@ private val dayOfTheWeekAndTime: DateTimeFormatterBuilder = DateTimeFormatterBui
 /**
  * Example output: "Nov 11 9:04"
  */
+@SuppressLint("NewApi")
 private val monthDateAndTime: DateTimeFormatterBuilder = DateTimeFormatterBuilder()
   .appendPattern("MMM")
   .appendLiteral(' ')
@@ -113,6 +118,7 @@ private val monthDateAndTime: DateTimeFormatterBuilder = DateTimeFormatterBuilde
 /**
  * Example output: "2022 Nov 11 9:04"
  */
+@SuppressLint("NewApi")
 private val yearMonthDateAndTime: DateTimeFormatterBuilder = DateTimeFormatterBuilder()
   .appendPattern("yyyy")
   .appendLiteral(' ')

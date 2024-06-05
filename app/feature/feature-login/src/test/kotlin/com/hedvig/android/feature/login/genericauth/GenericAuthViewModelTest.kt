@@ -49,27 +49,27 @@ class GenericAuthViewModelTest {
       }
 
       override fun observeLoginStatus(statusUrl: StatusUrl): Flow<LoginStatusResult> {
-        TODO("Not yet implemented")
+        error("Not yet implemented")
       }
 
       override suspend fun submitOtp(verifyUrl: String, otp: String): SubmitOtpResult {
-        TODO("Not yet implemented")
+        error("Not yet implemented")
       }
 
       override suspend fun resendOtp(resendUrl: String): ResendOtpResult {
-        TODO("Not yet implemented")
+        error("Not yet implemented")
       }
 
       override suspend fun exchange(grant: Grant): AuthTokenResult {
-        TODO("Not yet implemented")
+        error("Not yet implemented")
       }
 
       override suspend fun loginStatus(statusUrl: StatusUrl): LoginStatusResult {
-        TODO("Not yet implemented")
+        error("Not yet implemented")
       }
 
       override suspend fun revoke(token: String): RevokeResult {
-        TODO("Not yet implemented")
+        error("Not yet implemented")
       }
     },
     marketManager = FakeMarketManager(),

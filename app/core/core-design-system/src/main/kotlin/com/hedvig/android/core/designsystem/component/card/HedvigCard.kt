@@ -104,7 +104,7 @@ private fun Card(
   border: BorderStroke? = null,
   content: @Composable () -> Unit,
 ) {
-  @Suppress("INVISIBLE_MEMBER")
+  @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
   Surface(
     modifier = modifier,
     shape = shape,
@@ -133,7 +133,7 @@ private fun Card(
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   content: @Composable () -> Unit,
 ) {
-  @Suppress("INVISIBLE_MEMBER")
+  @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
   Surface(
     onClick = onClick,
     modifier = modifier,

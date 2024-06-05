@@ -6,10 +6,10 @@ minSdkVersion = "23"
 
 # lint versions
 lintApi = "31.4.0"
-lintGradlePlugin = "8.4.0"
+lintGradlePlugin = "8.4.1"
 
 # gradlePlugin versions
-androidGradlePlugin = "8.4.0"
+androidGradlePlugin = "8.4.1"
 apollo = "3.8.4"
 cacheFix = "3.0.1"
 crashlytics = "2.9.9"
@@ -17,11 +17,11 @@ datadogPlugin = "1.14.0"
 doctor = "0.9.2"
 easylauncher = "6.3.0"
 googleServices = "4.4.1"
-kotlin = "1.9.23"
+kotlin = "2.0.0"
 kotlinter = "4.3.0"
 ktor = "2.3.10"
 license = "0.9.7"
-molecule = "1.4.2"
+molecule = "2.0.0"
 squareSortDependencies = "0.6"
 
 # Other versions sorted alphabetically
@@ -30,7 +30,7 @@ androidx-activity-compose = "1.9.0"
 androidx-activity-core = "1.9.0"
 androidx-annotation = "1.7.1"
 androidx-composeBom = "2024.05.00"
-androidx-composeCompiler = "1.5.11"
+
 androidx-datastore = "1.1.1"
 androidx-junit = "1.1.5"
 androidx-lifecycle = "2.7.0"
@@ -84,8 +84,8 @@ zoomable = "1.6.1"
 
 accompanist-pagerIndicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanist" }
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
-androidx-activity-core = { module = "androidx.activity:activity", version.ref = "androidx-activity-core" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity-compose" }
+androidx-activity-core = { module = "androidx.activity:activity", version.ref = "androidx-activity-core" }
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
 androidx-compose-animation = { module = "androidx.compose.animation:animation-core" }
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "androidx-composeBom" }
@@ -108,6 +108,7 @@ androidx-compose-uiUtil = { module = "androidx.compose.ui:ui-util" }
 androidx-datastore-core = { module = "androidx.datastore:datastore-core", version.ref = "androidx-datastore" }
 androidx-datastore-preferencesCore = { module = "androidx.datastore:datastore-preferences-core", version.ref = "androidx-datastore" }
 androidx-graphicsShapes = { module = "androidx.graphics:graphics-shapes", version.ref = "androidxGraphicsShapes" }
+androidx-junit = { module = "androidx.test.ext:junit-ktx", version.ref = "androidx-junit" }
 androidx-lifecycle-common = { module = "androidx.lifecycle:lifecycle-common-java8", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-liveData = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "androidx-lifecycle" }
@@ -128,7 +129,6 @@ androidx-other-workManager = { module = "androidx.work:work-runtime-ktx", versio
 androidx-profileInstaller = { module = "androidx.profileinstaller:profileinstaller", version.ref = "androidx-profileInstaller" }
 androidx-test = { module = "androidx.test:core-ktx", version.ref = "androidx-test" }
 androidx-testRunners = { module = "androidx.test:runner", version.ref = "androidx-testRunners" }
-androidx-junit = { module = "androidx.test.ext:junit-ktx", version.ref = "androidx-junit" }
 apollo-adapters = { module = "com.apollographql.apollo3:apollo-adapters", version.ref = "apollo" }
 apollo-annotations = { module = "com.apollographql.apollo3:apollo-annotations", version.ref = "apollo" }
 apollo-api = { module = "com.apollographql.apollo3:apollo-api", version.ref = "apollo" }
@@ -149,8 +149,8 @@ coreLibraryDesugaring = { module = "com.android.tools:desugar_jdk_libs", version
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
-datadog-sdk-core = { module = "com.datadoghq:dd-sdk-android-core", version.ref = "datadog" }
 datadog-sdk-compose = { module = "com.datadoghq:dd-sdk-android-compose", version.ref = "datadog" }
+datadog-sdk-core = { module = "com.datadoghq:dd-sdk-android-core", version.ref = "datadog" }
 datadog-sdk-logs = { module = "com.datadoghq:dd-sdk-android-logs", version.ref = "datadog" }
 datadog-sdk-okhttp = { module = "com.datadoghq:dd-sdk-android-okhttp", version.ref = "datadog" }
 datadog-sdk-rum = { module = "com.datadoghq:dd-sdk-android-rum", version.ref = "datadog" }
@@ -177,6 +177,7 @@ kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 ktor = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
 leakCanary = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakCanary" }
+molecule = { module = "app.cash.molecule:molecule-runtime", version.ref = "molecule" }
 moneta = { module = "org.javamoney.moneta:moneta-core", version.ref = "moneta" }
 navigationRecentsUrlSharing = { module = "com.stylianosgakis.navigation.recents.url.sharing:navigation-recents-url-sharing", version.ref = "navigationRecentsUrlSharing" }
 okhttp-core = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
@@ -195,13 +196,13 @@ turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 unleash = { module = "io.getunleash:unleash-android-proxy-sdk", version.ref = "unleash" }
 zXing = { module = "com.google.zxing:core", version.ref = "zXing" }
 zoomable = { module = "net.engawapg.lib:zoomable", version.ref = "zoomable" }
-
 # Plugin libraries for build-logic's convention plugins to use to resolve the types/tasks coming from these plugins
 android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "androidGradlePlugin" }
 apollo-gradlePlugin = { module = "com.apollographql.apollo3:apollo-gradle-plugin", version.ref = "apollo" }
 firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" }
 kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlinter-gradlePlugin = { module = "org.jmailen.gradle:kotlinter-gradle", version.ref = "kotlinter" }
+compose-compilerGradlePlugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin"}
 
 # lint dependencies
 lintApi = { module = "com.android.tools.lint:lint-api", version.ref = "lintApi" }
@@ -215,6 +216,7 @@ androidLibrary = { id = "com.android.library", version.ref = "androidGradlePlugi
 apollo = { id = "com.apollographql.apollo3", version.ref = "apollo" }
 appIconBannerGenerator = { id = "com.starter.easylauncher", version.ref = "easylauncher" }
 cacheFix = { id = "org.gradle.android.cache-fix", version.ref = "cacheFix" }
+composeCompilerGradlePlugin = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics" }
 datadog = { id = "com.datadoghq.dd-sdk-android-gradle-plugin", version.ref = "datadogPlugin" }
 dependencyAnalysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependencyAnalysis" }
@@ -225,6 +227,5 @@ kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinter = { id = "org.jmailen.kotlinter", version.ref = "kotlinter" }
 license = { id = "com.jaredsburrows.license", version.ref = "license" }
 lintGradlePlugin = { id = "com.android.lint", version.ref = "lintGradlePlugin" }
-molecule = { id = "app.cash.molecule", version.ref = "molecule" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 squareSortDependencies = { id = "com.squareup.sort-dependencies", version.ref = "squareSortDependencies" }
