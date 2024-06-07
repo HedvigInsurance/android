@@ -5,6 +5,7 @@ import com.hedvig.android.core.appreview.SelfServiceCompletedEventManager
 import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
 import com.hedvig.android.feature.changeaddress.data.ChangeAddressRepository
 import com.hedvig.android.feature.changeaddress.data.NetworkChangeAddressRepository
+import com.hedvig.android.feature.changeaddress.destination.selecthousingtype.SelectHousingTypeViewModel
 import com.hedvig.android.language.LanguageService
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -21,5 +22,8 @@ val changeAddressModule = module {
       changeAddressRepository = get<ChangeAddressRepository>(),
       languageService = get<LanguageService>(),
     )
+  }
+  viewModel<SelectHousingTypeViewModel> {
+    SelectHousingTypeViewModel(changeAddressRepository = get<ChangeAddressRepository>())
   }
 }

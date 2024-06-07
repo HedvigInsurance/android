@@ -26,8 +26,6 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.dialog.ErrorDialog
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
-import com.hedvig.android.feature.changeaddress.ChangeAddressUiState
-import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
 import com.hedvig.android.feature.changeaddress.data.HousingType
 import com.hedvig.android.feature.changeaddress.data.HousingType.APARTMENT_OWN
 import com.hedvig.android.feature.changeaddress.data.HousingType.APARTMENT_RENT
@@ -36,15 +34,15 @@ import com.hedvig.android.feature.changeaddress.data.displayNameResource
 
 @Composable
 internal fun ChangeAddressSelectHousingTypeDestination(
-  viewModel: ChangeAddressViewModel,
+  viewModel: SelectHousingTypeViewModel,
   navigateUp: () -> Unit,
   navigateToEnterNewAddressDestination: () -> Unit,
 ) {
-  val uiState: ChangeAddressUiState by viewModel.uiState.collectAsStateWithLifecycle()
+  val uiState: SelectHousingTypeUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-  LaunchedEffect(uiState.navigateToFirstStepAfterHavingReceivedMoveIntentId) {
-    if (uiState.navigateToFirstStepAfterHavingReceivedMoveIntentId) {
-      viewModel.onNavigatedToFirstStepAfterHavingReceivedMoveIntentId()
+  LaunchedEffect(uiState.navigationParameters) {
+    if (uiState.navigationParameters != null) {
+      viewModel.emit(SelectHousingTypeEvent.ClearNavigationParameters)
       navigateToEnterNewAddressDestination()
     }
   }
@@ -52,17 +50,27 @@ internal fun ChangeAddressSelectHousingTypeDestination(
   ChangeAddressSelectHousingTypeScreen(
     uiState = uiState,
     navigateUp = navigateUp,
-    onHousingTypeSelected = viewModel::onHousingTypeSelected,
-    onHousingTypeSubmitted = viewModel::onHousingTypeSubmitted,
-    onHousingTypeErrorDialogDismissed = viewModel::onHousingTypeErrorDialogDismissed,
-    onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
-    onValidateHousingType = viewModel::onValidateHousingType,
+    onHousingTypeSelected = { type ->
+      viewModel.emit(SelectHousingTypeEvent.SelectHousingType(type))
+    },
+    onHousingTypeSubmitted = {
+      viewModel.emit(SelectHousingTypeEvent.SubmitHousingType)
+    },
+    onHousingTypeErrorDialogDismissed = {
+      viewModel.emit(SelectHousingTypeEvent.DismissHousingTypeErrorDialog)
+    },
+    onErrorDialogDismissed = {
+      viewModel.emit(SelectHousingTypeEvent.DismissErrorDialog)
+    },
+    onValidateHousingType = {
+      viewModel.emit(SelectHousingTypeEvent.ValidateHousingType)
+    },
   )
 }
 
 @Composable
 private fun ChangeAddressSelectHousingTypeScreen(
-  uiState: ChangeAddressUiState,
+  uiState: SelectHousingTypeUiState,
   navigateUp: () -> Unit,
   onHousingTypeSelected: (HousingType) -> Unit,
   onHousingTypeSubmitted: () -> Unit,
@@ -165,7 +173,7 @@ private fun PreviewChangeAddressSelectHousingTypeScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       ChangeAddressSelectHousingTypeScreen(
-        ChangeAddressUiState(),
+        SelectHousingTypeUiState(),
         {},
         {},
         {},

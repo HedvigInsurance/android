@@ -16,7 +16,6 @@ import java.util.Locale
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
-import kotlinx.serialization.Serializable
 
 internal data class ChangeAddressUiState(
   val moveIntentId: MoveIntentId? = null,
@@ -189,25 +188,3 @@ internal class DatePickerUiState(
     },
   )
 }
-
-@Serializable
-internal data class MovingParameters(
-  val moveIntentId: String?,
-  val street: String?,
-  val postalCode: String?,
-  val squareMeters: String?,
-  val yearOfConstruction: String?,
-  val ancillaryArea: String?,
-  val numberOfBathrooms: String?,
-  val movingDate: LocalDate?,
-  val numberInsured: String?,
-  val housingType: HousingType?,
-  val isSublet: Boolean,
-  val isStudent: Boolean,
-  val isEligibleForStudent: Boolean,
-  val maxNumberCoInsured: Int?,
-  val maxSquareMeters: Int?,
-  val extraBuildingTypes: List<ExtraBuildingType>,
-  val extraBuildings: List<ExtraBuilding>,
-  val moveFromAddressId: AddressId?,
-)

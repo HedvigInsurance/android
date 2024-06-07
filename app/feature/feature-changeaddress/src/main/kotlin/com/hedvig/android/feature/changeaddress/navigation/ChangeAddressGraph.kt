@@ -9,6 +9,7 @@ import com.hedvig.android.feature.changeaddress.destination.enternewaddress.Chan
 import com.hedvig.android.feature.changeaddress.destination.entervillainfo.ChangeAddressEnterVillaInformationDestination
 import com.hedvig.android.feature.changeaddress.destination.offer.ChangeAddressOfferDestination
 import com.hedvig.android.feature.changeaddress.destination.selecthousingtype.ChangeAddressSelectHousingTypeDestination
+import com.hedvig.android.feature.changeaddress.destination.selecthousingtype.SelectHousingTypeViewModel
 import com.hedvig.android.feature.changeaddress.navigation.ChangeAddressDestination.AddressResult
 import com.hedvig.android.feature.changeaddress.navigation.ChangeAddressDestination.EnterNewAddress
 import com.hedvig.android.feature.changeaddress.navigation.ChangeAddressDestination.EnterVillaInformation
@@ -21,6 +22,7 @@ import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigate
 import com.kiwi.navigationcompose.typed.navigation
 import com.kiwi.navigationcompose.typed.popUpTo
+import org.koin.androidx.compose.koinViewModel
 
 fun NavGraphBuilder.changeAddressGraph(
   navController: NavController,
@@ -31,10 +33,8 @@ fun NavGraphBuilder.changeAddressGraph(
     startDestination = createRoutePattern<ChangeAddressDestination.SelectHousingType>(),
   ) {
     composable<ChangeAddressDestination.SelectHousingType> { navBackStackEntry ->
-      val viewModel: ChangeAddressViewModel = destinationScopedViewModel<AppDestination.ChangeAddress, _>(
-        navController = navController,
-        backStackEntry = navBackStackEntry,
-      )
+
+      val viewModel: SelectHousingTypeViewModel = koinViewModel()
       ChangeAddressSelectHousingTypeDestination(
         viewModel = viewModel,
         navigateUp = navController::navigateUp,
