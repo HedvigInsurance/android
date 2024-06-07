@@ -155,14 +155,13 @@ internal fun HedvigNavHost(
           },
           navigateToMovingFlow = { backStackEntry ->
             with(navigator) {
-              val options = navOptions {
-                popUpTo<TerminateInsuranceGraphDestination> {
-                  inclusive = true
-                }
-              }
               backStackEntry.navigate(
                 destination = AppDestination.ChangeAddress,
-                navOptions = options,
+                navOptions = navOptions {
+                  popUpTo<TerminateInsuranceGraphDestination> {
+                    inclusive = true
+                  }
+                },
               )
             }
           },
