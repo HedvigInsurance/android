@@ -16,7 +16,7 @@ import com.hedvig.android.feature.changeaddress.destination.selecthousingtype.Se
 import com.hedvig.android.feature.changeaddress.destination.selecthousingtype.SelectHousingTypeEvent.SelectHousingType
 import com.hedvig.android.feature.changeaddress.destination.selecthousingtype.SelectHousingTypeEvent.SubmitHousingType
 import com.hedvig.android.feature.changeaddress.destination.selecthousingtype.SelectHousingTypeEvent.ValidateHousingType
-import com.hedvig.android.feature.changeaddress.navigation.SelectHousingMovingParameters
+import com.hedvig.android.feature.changeaddress.navigation.SelectHousingTypeParameters
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -55,10 +55,7 @@ internal class SelectHousingTypePresenter(private val changeAddressRepository: C
         ValidateHousingType -> {
           if (!currentState.housingType.isPresent) {
             currentState = currentState.copy(
-              housingType = ValidatedInput(
-                input = null,
-                errorMessageRes = R.string.CHANGE_ADDRESS_HOUSING_TYPE_ERROR,
-              ),
+              errorMessageRes = R.string.CHANGE_ADDRESS_HOUSING_TYPE_ERROR,
             )
           }
         }
@@ -80,7 +77,7 @@ internal class SelectHousingTypePresenter(private val changeAddressRepository: C
             )
           },
           ifRight = { moveIntent ->
-            val parameters = SelectHousingMovingParameters(
+            val parameters = SelectHousingTypeParameters(
               minDate = moveIntent.movingDateRange.start,
               maxDate = moveIntent.movingDateRange.endInclusive,
               moveIntentId = moveIntent.id.id,
@@ -123,7 +120,7 @@ internal data class SelectHousingTypeUiState(
   val errorMessage: String? = null,
   val housingType: ValidatedInput<HousingType?> = ValidatedInput(null),
   val errorMessageRes: Int? = null, // todo: sure?
-  val navigationParameters: SelectHousingMovingParameters? = null,
+  val navigationParameters: SelectHousingTypeParameters? = null,
 ) {
   val isHousingTypeValid: Boolean
     get() = housingType.input != null

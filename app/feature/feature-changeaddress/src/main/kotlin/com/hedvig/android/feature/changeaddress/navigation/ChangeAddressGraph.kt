@@ -33,12 +33,13 @@ fun NavGraphBuilder.changeAddressGraph(
     startDestination = createRoutePattern<ChangeAddressDestination.SelectHousingType>(),
   ) {
     composable<ChangeAddressDestination.SelectHousingType> { navBackStackEntry ->
-
       val viewModel: SelectHousingTypeViewModel = koinViewModel()
       ChangeAddressSelectHousingTypeDestination(
         viewModel = viewModel,
         navigateUp = navController::navigateUp,
-        navigateToEnterNewAddressDestination = { navController.navigate(EnterNewAddress) },
+        navigateToEnterNewAddressDestination = { params ->
+          navController.navigate(EnterNewAddress(params))
+        },
       )
     }
 

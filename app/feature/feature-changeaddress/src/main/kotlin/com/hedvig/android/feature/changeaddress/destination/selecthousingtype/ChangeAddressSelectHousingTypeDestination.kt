@@ -31,19 +31,21 @@ import com.hedvig.android.feature.changeaddress.data.HousingType.APARTMENT_OWN
 import com.hedvig.android.feature.changeaddress.data.HousingType.APARTMENT_RENT
 import com.hedvig.android.feature.changeaddress.data.HousingType.VILLA
 import com.hedvig.android.feature.changeaddress.data.displayNameResource
+import com.hedvig.android.feature.changeaddress.navigation.SelectHousingTypeParameters
 
 @Composable
 internal fun ChangeAddressSelectHousingTypeDestination(
   viewModel: SelectHousingTypeViewModel,
   navigateUp: () -> Unit,
-  navigateToEnterNewAddressDestination: () -> Unit,
+  navigateToEnterNewAddressDestination: (SelectHousingTypeParameters) -> Unit,
 ) {
   val uiState: SelectHousingTypeUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
   LaunchedEffect(uiState.navigationParameters) {
-    if (uiState.navigationParameters != null) {
+    val params = uiState.navigationParameters
+    if (params != null) {
       viewModel.emit(SelectHousingTypeEvent.ClearNavigationParameters)
-      navigateToEnterNewAddressDestination()
+      navigateToEnterNewAddressDestination(params)
     }
   }
 
@@ -78,7 +80,7 @@ private fun ChangeAddressSelectHousingTypeScreen(
   onErrorDialogDismissed: () -> Unit,
   onValidateHousingType: () -> Unit,
 ) {
-  uiState.housingType.errorMessageRes?.let {
+  uiState.errorMessageRes?.let {
     ErrorDialog(
       title = stringResource(hedvig.resources.R.string.general_error),
       message = stringResource(it),

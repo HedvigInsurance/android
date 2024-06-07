@@ -13,7 +13,9 @@ internal sealed interface ChangeAddressDestination : Destination {
   data object SelectHousingType : ChangeAddressDestination
 
   @Serializable
-  data object EnterNewAddress : ChangeAddressDestination
+  data class EnterNewAddress(
+    val previousParameters: SelectHousingTypeParameters,
+  ) : ChangeAddressDestination
 
   @Serializable
   data object EnterVillaInformation : ChangeAddressDestination
@@ -52,7 +54,7 @@ internal data class MovingParameters(
 )
 
 @Serializable
-internal data class SelectHousingMovingParameters(
+internal data class SelectHousingTypeParameters(
   val isEligibleForStudent: Boolean,
   val maxNumberCoInsured: Int?,
   val maxSquareMeters: Int?,

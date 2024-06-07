@@ -2,15 +2,18 @@ package com.hedvig.android.feature.changeaddress.destination.enternewaddress
 
 import androidx.compose.runtime.Composable
 import com.hedvig.android.feature.changeaddress.DatePickerUiState
+import com.hedvig.android.feature.changeaddress.navigation.SelectHousingTypeParameters
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import kotlinx.datetime.LocalDate
 
-internal class EnterNewAddressViewModel(initialState: EnterNewAddressUiState) : MoleculeViewModel<EnterNewAddressEvent, EnterNewAddressUiState>(
-  initialState = EnterNewAddressUiState(), // todo: parse parameters here! if we need any
-  presenter = EnterNewAddressPresenter(),
-)
+internal class EnterNewAddressViewModel(
+  val previousParameters: SelectHousingTypeParameters,
+) : MoleculeViewModel<EnterNewAddressEvent, EnterNewAddressUiState>(
+    initialState = EnterNewAddressUiState(), // todo: parse parameters here! if we need any
+    presenter = EnterNewAddressPresenter(),
+  )
 
 internal class EnterNewAddressPresenter() : MoleculePresenter<EnterNewAddressEvent, EnterNewAddressUiState> {
   @Composable
