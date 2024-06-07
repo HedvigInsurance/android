@@ -102,6 +102,7 @@ internal class SelectHousingTypePresenter(private val changeAddressRepository: C
                 HousingType.VILLA -> moveIntent.maxHouseNumberCoInsured
                 null -> null
               },
+              housingType = currentState.housingType.input
             )
             currentState = currentState.copy(
               isLoading = false,

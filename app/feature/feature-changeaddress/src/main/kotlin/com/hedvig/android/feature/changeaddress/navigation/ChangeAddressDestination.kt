@@ -31,7 +31,6 @@ internal sealed interface ChangeAddressDestination : Destination {
 
 @Serializable
 internal data class MovingParameters(
-  val moveIntentId: String?,
   val street: String?,
   val postalCode: String?,
   val squareMeters: String?,
@@ -39,18 +38,13 @@ internal data class MovingParameters(
   val ancillaryArea: String?,
   val numberOfBathrooms: String?,
   val movingDate: LocalDate?,
-  val numberInsured: String?,
-  val housingType: HousingType?,
   val isSublet: Boolean,
   val isStudent: Boolean,
-  val isEligibleForStudent: Boolean,
-  val maxNumberCoInsured: Int?,
-  val maxSquareMeters: Int?,
-  val extraBuildingTypes: List<ExtraBuildingType>,
   val extraBuildings: List<ExtraBuilding>,
-  val moveFromAddressId: AddressId?,
-  val minDate: LocalDate,
-  val maxDate: LocalDate,
+
+  val numberInsured: String?, //todo: initial will change here
+
+  val selectHousingTypeParameters: SelectHousingTypeParameters
 )
 
 @Serializable
@@ -64,4 +58,5 @@ internal data class SelectHousingTypeParameters(
   val maxDate: LocalDate,
   val numberInsured: String,
   val moveIntentId: String,
+  val housingType: HousingType?,
 )
