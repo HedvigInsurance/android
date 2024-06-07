@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.changeaddress.destination
+package com.hedvig.android.feature.changeaddress.destination.enternewaddress
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,7 +28,7 @@ import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.feature.changeaddress.ChangeAddressUiState
 import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
 import com.hedvig.android.feature.changeaddress.DatePickerUiState
-import com.hedvig.android.feature.changeaddress.data.HousingType
+import com.hedvig.android.feature.changeaddress.data.HousingType.VILLA
 import com.hedvig.android.feature.changeaddress.ui.ChangeAddressSwitch
 import com.hedvig.android.feature.changeaddress.ui.InputTextField
 import com.hedvig.android.feature.changeaddress.ui.MovingDateButton
@@ -66,7 +66,7 @@ internal fun ChangeAddressEnterNewAddressDestination(
     onSaveNewAddress = {
       val isInputValid = viewModel.validateAddressInput()
       if (isInputValid) {
-        if (uiState.housingType.input == HousingType.VILLA) {
+        if (uiState.housingType.input == VILLA) {
           onNavigateToVillaInformationDestination()
         } else {
           viewModel.onSubmitNewAddress()

@@ -41,4 +41,6 @@ dependencies {
   implementation(projects.languageCore)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
+  implementation(projects.moleculePublic)
+  implementation(projects.moleculeAndroid)
 }

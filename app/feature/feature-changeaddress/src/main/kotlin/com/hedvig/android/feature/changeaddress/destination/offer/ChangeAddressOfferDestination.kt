@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.changeaddress.destination
+package com.hedvig.android.feature.changeaddress.destination.offer
 
 import android.content.res.Configuration
 import androidx.compose.animation.core.Spring
@@ -70,7 +70,7 @@ import com.hedvig.android.feature.changeaddress.ui.offer.QuoteCard
 import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
+import kotlinx.datetime.Clock.System
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -375,7 +375,7 @@ private fun PreviewChangeAddressOfferScreen() {
         ChangeAddressUiState(
           moveIntentId = MoveIntentId(""),
           quotes = List(2, MoveQuote::PreviewData),
-          movingDate = ValidatedInput(Clock.System.now().toLocalDateTime(TimeZone.UTC).date),
+          movingDate = ValidatedInput(System.now().toLocalDateTime(TimeZone.UTC).date),
           extraBuildingTypes = emptyList(),
         ),
         {},

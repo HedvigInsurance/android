@@ -4,13 +4,18 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
-import com.hedvig.android.feature.changeaddress.destination.ChangeAddressEnterNewAddressDestination
-import com.hedvig.android.feature.changeaddress.destination.ChangeAddressEnterVillaInformationDestination
-import com.hedvig.android.feature.changeaddress.destination.ChangeAddressOfferDestination
 import com.hedvig.android.feature.changeaddress.destination.ChangeAddressResultDestination
-import com.hedvig.android.feature.changeaddress.destination.ChangeAddressSelectHousingTypeDestination
+import com.hedvig.android.feature.changeaddress.destination.enternewaddress.ChangeAddressEnterNewAddressDestination
+import com.hedvig.android.feature.changeaddress.destination.entervillainfo.ChangeAddressEnterVillaInformationDestination
+import com.hedvig.android.feature.changeaddress.destination.offer.ChangeAddressOfferDestination
+import com.hedvig.android.feature.changeaddress.destination.selecthousingtype.ChangeAddressSelectHousingTypeDestination
+import com.hedvig.android.feature.changeaddress.navigation.ChangeAddressDestination.AddressResult
+import com.hedvig.android.feature.changeaddress.navigation.ChangeAddressDestination.EnterNewAddress
+import com.hedvig.android.feature.changeaddress.navigation.ChangeAddressDestination.EnterVillaInformation
+import com.hedvig.android.feature.changeaddress.navigation.ChangeAddressDestination.Offer
 import com.hedvig.android.navigation.compose.typed.destinationScopedViewModel
 import com.hedvig.android.navigation.core.AppDestination
+import com.hedvig.android.navigation.core.AppDestination.ChangeAddress
 import com.kiwi.navigationcompose.typed.composable
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigate
@@ -33,7 +38,7 @@ fun NavGraphBuilder.changeAddressGraph(
       ChangeAddressSelectHousingTypeDestination(
         viewModel = viewModel,
         navigateUp = navController::navigateUp,
-        navigateToEnterNewAddressDestination = { navController.navigate(ChangeAddressDestination.EnterNewAddress) },
+        navigateToEnterNewAddressDestination = { navController.navigate(EnterNewAddress) },
       )
     }
 
@@ -45,11 +50,11 @@ fun NavGraphBuilder.changeAddressGraph(
       ChangeAddressEnterNewAddressDestination(
         viewModel = viewModel,
         onNavigateToVillaInformationDestination = {
-          navController.navigate(ChangeAddressDestination.EnterVillaInformation)
+          navController.navigate(EnterVillaInformation)
         },
         navigateUp = navController::navigateUp,
         onNavigateToOfferDestination = {
-          navController.navigate(ChangeAddressDestination.Offer)
+          navController.navigate(Offer)
         },
       )
     }
@@ -63,7 +68,7 @@ fun NavGraphBuilder.changeAddressGraph(
         viewModel = viewModel,
         navigateUp = navController::navigateUp,
         onNavigateToOfferDestination = {
-          navController.navigate(ChangeAddressDestination.Offer)
+          navController.navigate(Offer)
         },
       )
     }
@@ -78,8 +83,8 @@ fun NavGraphBuilder.changeAddressGraph(
         openChat = { openChat(backStackEntry) },
         navigateUp = navController::navigateUp,
         onChangeAddressResult = { movingDate ->
-          navController.navigate(ChangeAddressDestination.AddressResult(movingDate)) {
-            popUpTo<AppDestination.ChangeAddress> {
+          navController.navigate(AddressResult(movingDate)) {
+            popUpTo<ChangeAddress> {
               inclusive = true
             }
           }

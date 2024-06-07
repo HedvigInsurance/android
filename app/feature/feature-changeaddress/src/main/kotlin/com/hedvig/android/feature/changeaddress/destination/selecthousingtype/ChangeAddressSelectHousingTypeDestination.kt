@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.changeaddress.destination
+package com.hedvig.android.feature.changeaddress.destination.selecthousingtype
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -29,6 +29,9 @@ import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.feature.changeaddress.ChangeAddressUiState
 import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
 import com.hedvig.android.feature.changeaddress.data.HousingType
+import com.hedvig.android.feature.changeaddress.data.HousingType.APARTMENT_OWN
+import com.hedvig.android.feature.changeaddress.data.HousingType.APARTMENT_RENT
+import com.hedvig.android.feature.changeaddress.data.HousingType.VILLA
 import com.hedvig.android.feature.changeaddress.data.displayNameResource
 
 @Composable
@@ -97,11 +100,11 @@ private fun ChangeAddressSelectHousingTypeScreen(
     )
     Spacer(modifier = Modifier.weight(1f))
     Spacer(modifier = Modifier.height(16.dp))
-    RadioButton(HousingType.APARTMENT_OWN, uiState.housingType.input, onHousingTypeSelected)
+    RadioButton(APARTMENT_OWN, uiState.housingType.input, onHousingTypeSelected)
     Spacer(modifier = Modifier.height(8.dp))
-    RadioButton(HousingType.APARTMENT_RENT, uiState.housingType.input, onHousingTypeSelected)
+    RadioButton(APARTMENT_RENT, uiState.housingType.input, onHousingTypeSelected)
     Spacer(modifier = Modifier.height(8.dp))
-    RadioButton(HousingType.VILLA, uiState.housingType.input, onHousingTypeSelected)
+    RadioButton(VILLA, uiState.housingType.input, onHousingTypeSelected)
     Spacer(modifier = Modifier.height(16.dp))
     VectorInfoCard(
       text = stringResource(id = hedvig.resources.R.string.CHANGE_ADDRESS_COVERAGE_INFO_TEXT),
