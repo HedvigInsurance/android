@@ -29,6 +29,7 @@ import com.hedvig.android.feature.changeaddress.ChangeAddressUiState
 import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
 import com.hedvig.android.feature.changeaddress.DatePickerUiState
 import com.hedvig.android.feature.changeaddress.data.HousingType.VILLA
+import com.hedvig.android.feature.changeaddress.navigation.MovingParameters
 import com.hedvig.android.feature.changeaddress.ui.ChangeAddressSwitch
 import com.hedvig.android.feature.changeaddress.ui.InputTextField
 import com.hedvig.android.feature.changeaddress.ui.MovingDateButton
@@ -39,7 +40,7 @@ import kotlinx.datetime.LocalDate
 @Composable
 internal fun ChangeAddressEnterNewAddressDestination(
   viewModel: ChangeAddressViewModel,
-  onNavigateToVillaInformationDestination: () -> Unit,
+  onNavigateToVillaInformationDestination: (MovingParameters) -> Unit,
   navigateUp: () -> Unit,
   onNavigateToOfferDestination: () -> Unit,
 ) {
@@ -64,6 +65,7 @@ internal fun ChangeAddressEnterNewAddressDestination(
     onMoveDateSelected = viewModel::onMoveDateSelected,
     onIsStudentSelected = viewModel::onIsStudentChanged,
     onSaveNewAddress = {
+
       val isInputValid = viewModel.validateAddressInput()
       if (isInputValid) {
         if (uiState.housingType.input == VILLA) {

@@ -81,7 +81,7 @@ internal class SelectHousingTypePresenter(private val changeAddressRepository: C
               minDate = moveIntent.movingDateRange.start,
               maxDate = moveIntent.movingDateRange.endInclusive,
               moveIntentId = moveIntent.id.id,
-              numberInsured = moveIntent.suggestedNumberInsured.toString(),
+              suggestedNumberInsured = moveIntent.suggestedNumberInsured.toString(),
               moveFromAddressId = moveIntent.currentHomeAddresses.firstOrNull()?.id,
               extraBuildingTypes = moveIntent.extraBuildingTypes,
               isEligibleForStudent = moveIntent.isApartmentAvailableforStudent == true &&

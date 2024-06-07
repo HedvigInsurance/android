@@ -42,8 +42,6 @@ internal data class MovingParameters(
   val isStudent: Boolean,
   val extraBuildings: List<ExtraBuilding>,
 
-  val numberInsured: String?, //todo: initial will change here
-
   val selectHousingTypeParameters: SelectHousingTypeParameters
 )
 
@@ -56,7 +54,18 @@ internal data class SelectHousingTypeParameters(
   val moveFromAddressId: AddressId?,
   val minDate: LocalDate,
   val maxDate: LocalDate,
-  val numberInsured: String,
+  val suggestedNumberInsured: String,
   val moveIntentId: String,
   val housingType: HousingType?,
+)
+
+@Serializable
+internal data class NewAddressParameters(
+  val street: String,
+  val postalCode: String,
+  val squareMeters: String,
+  val isStudent: Boolean,
+  val movingDate: LocalDate,
+  val numberInsured: String,
+  val selectHousingTypeParameters: SelectHousingTypeParameters
 )
