@@ -23,7 +23,7 @@ internal fun createQuoteInput(
   ancillaryArea: String?,
   numberOfBathrooms: String?,
   extraBuildings: List<ExtraBuilding>,
-  ): QuoteInput {
+): QuoteInput {
   return when (housingType) {
     HousingType.APARTMENT_RENT,
     HousingType.APARTMENT_OWN,

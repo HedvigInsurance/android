@@ -2,11 +2,14 @@ package com.hedvig.android.feature.changeaddress.di
 
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.core.appreview.SelfServiceCompletedEventManager
-import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
 import com.hedvig.android.feature.changeaddress.data.ChangeAddressRepository
 import com.hedvig.android.feature.changeaddress.data.NetworkChangeAddressRepository
 import com.hedvig.android.feature.changeaddress.destination.enternewaddress.EnterNewAddressViewModel
+import com.hedvig.android.feature.changeaddress.destination.entervillainfo.EnterVillaInformationViewModel
+import com.hedvig.android.feature.changeaddress.destination.offer.ChangeAddressOfferViewModel
 import com.hedvig.android.feature.changeaddress.destination.selecthousingtype.SelectHousingTypeViewModel
+import com.hedvig.android.feature.changeaddress.navigation.MovingParameters
+import com.hedvig.android.feature.changeaddress.navigation.SelectHousingTypeParameters
 import com.hedvig.android.language.LanguageService
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -18,19 +21,28 @@ val changeAddressModule = module {
       get<SelfServiceCompletedEventManager>(),
     )
   }
-  viewModel<ChangeAddressViewModel> {
-    ChangeAddressViewModel(
+
+  viewModel<SelectHousingTypeViewModel> {
+    SelectHousingTypeViewModel(
       changeAddressRepository = get<ChangeAddressRepository>(),
-      languageService = get<LanguageService>(),
     )
   }
-  viewModel<SelectHousingTypeViewModel> {
-    SelectHousingTypeViewModel(changeAddressRepository = get<ChangeAddressRepository>())
-  }
-  viewModel< EnterNewAddressViewModel> { params ->
+  viewModel<EnterNewAddressViewModel> { params ->
     EnterNewAddressViewModel(
-      changeAddressRepository = get<ChangeAddressRepository>(),
       languageService = get<LanguageService>(),
-      previousParameters = params.get())
+      previousParameters = params.get<SelectHousingTypeParameters>(),
+    )
+  }
+  viewModel<EnterVillaInformationViewModel> { params ->
+    EnterVillaInformationViewModel(
+      previousParameters = params.get<MovingParameters>(),
+    )
+  }
+
+  viewModel<ChangeAddressOfferViewModel> { params ->
+    ChangeAddressOfferViewModel(
+      changeAddressRepository = get<ChangeAddressRepository>(),
+      previousParameters = params.get<MovingParameters>(),
+    )
   }
 }

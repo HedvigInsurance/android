@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.changeaddress.destination.enternewaddress
 
-import androidx.compose.foundation.interaction.HoverInteraction.Enter
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,11 +25,7 @@ import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.dialog.ErrorDialog
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
-import com.hedvig.android.feature.changeaddress.ChangeAddressUiState
-import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
 import com.hedvig.android.feature.changeaddress.DatePickerUiState
-import com.hedvig.android.feature.changeaddress.data.HousingType.VILLA
-import com.hedvig.android.feature.changeaddress.data.MoveQuote
 import com.hedvig.android.feature.changeaddress.navigation.MovingParameters
 import com.hedvig.android.feature.changeaddress.ui.ChangeAddressSwitch
 import com.hedvig.android.feature.changeaddress.ui.InputTextField
@@ -44,15 +39,23 @@ internal fun ChangeAddressEnterNewAddressDestination(
   viewModel: EnterNewAddressViewModel,
   onNavigateToVillaInformationDestination: (MovingParameters) -> Unit,
   navigateUp: () -> Unit,
-  onNavigateToOfferDestination: ( List<MoveQuote>) -> Unit,
+  onNavigateToOfferDestination: (MovingParameters) -> Unit,
 ) {
   val uiState: EnterNewAddressUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-  val listOfQuotes = uiState.navParamsForOfferDestination
-  LaunchedEffect(listOfQuotes) {
-    if (listOfQuotes!=null) {
-      viewModel.onNavigatedToOfferScreenAfterHavingReceivedQuotes()
-      onNavigateToOfferDestination()
+  val paramsForOffers = uiState.navParamsForOfferDestination
+  LaunchedEffect(paramsForOffers) {
+    if (paramsForOffers != null) {
+      viewModel.emit(EnterNewAddressEvent.ClearNavParams)
+      onNavigateToOfferDestination(paramsForOffers)
+    }
+  }
+
+  val paramsForVilla = uiState.navParamsForVillaDestination
+  LaunchedEffect(paramsForVilla) {
+    if (paramsForVilla != null) {
+      viewModel.emit(EnterNewAddressEvent.ClearNavParams)
+      onNavigateToVillaInformationDestination(paramsForVilla)
     }
   }
 
@@ -60,13 +63,13 @@ internal fun ChangeAddressEnterNewAddressDestination(
     uiState = uiState,
     navigateUp = navigateUp,
     onErrorDialogDismissed = { viewModel.emit(EnterNewAddressEvent.DismissErrorDialog) },
-    onStreetChanged =  { street -> viewModel.emit(EnterNewAddressEvent.ChangeStreet(street)) } ,
+    onStreetChanged = { street -> viewModel.emit(EnterNewAddressEvent.ChangeStreet(street)) },
     onPostalCodeChanged = { postalCode -> viewModel.emit(EnterNewAddressEvent.ChangePostalCode(postalCode)) },
-    onSquareMetersChanged = { squareMeters -> viewModel.emit(EnterNewAddressEvent.ChangeSquareMeters(squareMeters))},
+    onSquareMetersChanged = { squareMeters -> viewModel.emit(EnterNewAddressEvent.ChangeSquareMeters(squareMeters)) },
     onCoInsuredChanged = { coInsured -> viewModel.emit(EnterNewAddressEvent.ChangeCoInsured(coInsured)) },
     onMoveDateSelected = { date -> viewModel.emit(EnterNewAddressEvent.ChangeMoveDate(date)) },
     onIsStudentSelected = { isStudent -> viewModel.emit(EnterNewAddressEvent.ChangeIsStudent(isStudent)) },
-    onSaveNewAddress = { viewModel.emit(EnterNewAddressEvent.SubmitNewAddress) },
+    onSaveNewAddress = { viewModel.emit(EnterNewAddressEvent.ValidateInput) },
   )
 }
 
@@ -190,7 +193,7 @@ private fun PreviewChangeAddressEnterNewAddressScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       ChangeAddressEnterNewAddressScreen(
-        ChangeAddressUiState(datePickerUiState = DatePickerUiState(Locale.ENGLISH, null)),
+        EnterNewAddressUiState(datePickerUiState = DatePickerUiState(Locale.ENGLISH, null)),
         {},
         {},
         {},

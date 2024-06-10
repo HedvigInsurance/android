@@ -53,7 +53,6 @@ import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.small.hedvig.ArrowNorthEast
-import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.core.ui.dialog.ErrorDialog
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
@@ -61,8 +60,6 @@ import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.productVariant.android.getStringRes
 import com.hedvig.android.data.productvariant.InsurableLimit
-import com.hedvig.android.feature.changeaddress.ChangeAddressUiState
-import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
 import com.hedvig.android.feature.changeaddress.data.MoveIntentId
 import com.hedvig.android.feature.changeaddress.data.MoveQuote
 import com.hedvig.android.feature.changeaddress.ui.offer.Faqs
@@ -77,34 +74,36 @@ import kotlinx.datetime.toLocalDateTime
 
 @Composable
 internal fun ChangeAddressOfferDestination(
-  viewModel: ChangeAddressViewModel,
+  viewModel: ChangeAddressOfferViewModel,
   openChat: () -> Unit,
   navigateUp: () -> Unit,
   onChangeAddressResult: (LocalDate?) -> Unit,
   openUrl: (String) -> Unit,
 ) {
-  val uiState: ChangeAddressUiState by viewModel.uiState.collectAsStateWithLifecycle()
+  val uiState: ChangeAddressOfferUiState by viewModel.uiState.collectAsStateWithLifecycle()
   val moveResult = uiState.successfulMoveResult
 
   LaunchedEffect(moveResult) {
     if (moveResult != null) {
-      onChangeAddressResult(uiState.movingDate.input)
+      onChangeAddressResult(uiState.movingDate)
     }
   }
   ChangeAddressOfferScreen(
     uiState = uiState,
     openChat = openChat,
     navigateUp = navigateUp,
-    onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
-    onExpandQuote = viewModel::onExpandQuote,
-    onConfirmMove = viewModel::onConfirmMove,
+    onErrorDialogDismissed = {
+      viewModel.emit(ChangeAddressOfferEvent.DismissErrorDialog)
+    },
+    onExpandQuote = { viewModel.emit(ChangeAddressOfferEvent.ExpandQuote(it)) },
+    onConfirmMove = { viewModel.emit(ChangeAddressOfferEvent.ConfirmMove(it)) },
     openUrl = openUrl,
   )
 }
 
 @Composable
 private fun ChangeAddressOfferScreen(
-  uiState: ChangeAddressUiState,
+  uiState: ChangeAddressOfferUiState,
   openChat: () -> Unit,
   navigateUp: () -> Unit,
   onErrorDialogDismissed: () -> Unit,
@@ -112,7 +111,7 @@ private fun ChangeAddressOfferScreen(
   onConfirmMove: (MoveIntentId) -> Unit,
   openUrl: (String) -> Unit,
 ) {
-  val moveIntentId = uiState.moveIntentId ?: throw IllegalArgumentException("No moveIntentId found!")
+  val moveIntentId = uiState.moveIntentId
 
   if (uiState.errorMessage != null) {
     ErrorDialog(
@@ -372,11 +371,10 @@ private fun PreviewChangeAddressOfferScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       ChangeAddressOfferScreen(
-        ChangeAddressUiState(
+        ChangeAddressOfferUiState(
           moveIntentId = MoveIntentId(""),
           quotes = List(2, MoveQuote::PreviewData),
-          movingDate = ValidatedInput(System.now().toLocalDateTime(TimeZone.UTC).date),
-          extraBuildingTypes = emptyList(),
+          movingDate = System.now().toLocalDateTime(TimeZone.UTC).date,
         ),
         {},
         {},

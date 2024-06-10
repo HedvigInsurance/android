@@ -25,12 +25,10 @@ import com.hedvig.android.core.designsystem.component.button.HedvigContainedButt
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.clearFocusOnTap
-import com.hedvig.android.core.ui.dialog.ErrorDialog
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
-import com.hedvig.android.feature.changeaddress.ChangeAddressUiState
-import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
 import com.hedvig.android.feature.changeaddress.data.ExtraBuilding
+import com.hedvig.android.feature.changeaddress.navigation.MovingParameters
 import com.hedvig.android.feature.changeaddress.ui.ChangeAddressSwitch
 import com.hedvig.android.feature.changeaddress.ui.InputTextField
 import com.hedvig.android.feature.changeaddress.ui.extrabuildings.ExtraBuildingBottomSheet
@@ -39,17 +37,17 @@ import hedvig.resources.R
 
 @Composable
 internal fun ChangeAddressEnterVillaInformationDestination(
-  viewModel: ChangeAddressViewModel,
+  viewModel: EnterVillaInformationViewModel,
   navigateUp: () -> Unit,
-  onNavigateToOfferDestination: () -> Unit,
+  onNavigateToOfferDestination: (MovingParameters) -> Unit,
 ) {
-  val uiState: ChangeAddressUiState by viewModel.uiState.collectAsStateWithLifecycle()
+  val uiState: EnterVillaInformationUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-  val navigateToOfferScreenAfterHavingReceivedQuotes = uiState.navigateToOfferScreenAfterHavingReceivedQuotes
-  LaunchedEffect(navigateToOfferScreenAfterHavingReceivedQuotes) {
-    if (navigateToOfferScreenAfterHavingReceivedQuotes) {
-      viewModel.onNavigatedToOfferScreenAfterHavingReceivedQuotes()
-      onNavigateToOfferDestination()
+  val movingParameters = uiState.movingParameters
+  LaunchedEffect(movingParameters) {
+    if (movingParameters != null) {
+      viewModel.emit(EnterVillaInformationEvent.ClearNavParameters)
+      onNavigateToOfferDestination(movingParameters)
     }
   }
 
@@ -63,7 +61,7 @@ internal fun ChangeAddressEnterVillaInformationDestination(
       },
       onSave = {
         showExtraBuildingsBottomSheet = false
-        viewModel.addExtraBuilding(it)
+        viewModel.emit(EnterVillaInformationEvent.AddExtraBuilding(it))
       },
       sheetState = sheetState,
     )
@@ -72,29 +70,32 @@ internal fun ChangeAddressEnterVillaInformationDestination(
   ChangeAddressEnterVillaInformationScreen(
     uiState = uiState,
     navigateUp = navigateUp,
-    onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
-    onYearOfConstructionChanged = viewModel::onYearOfConstructionChanged,
-    onAncillaryAreaChanged = viewModel::onAncillaryAreaChanged,
-    onNumberOfBathroomsChanged = viewModel::onNumberOfBathroomsChanged,
-    onIsSubletSelected = viewModel::onIsSubletChanged,
+    onYearOfConstructionChanged = {
+      viewModel.emit(EnterVillaInformationEvent.ChangeYearOfConstruction(it))
+    },
+    onAncillaryAreaChanged = {
+      viewModel.emit(EnterVillaInformationEvent.ChangeAncillaryArea(it))
+    },
+    onNumberOfBathroomsChanged = {
+      viewModel.emit(EnterVillaInformationEvent.ChangeNumberOfBathrooms(it))
+    },
+    onIsSubletSelected = {
+      viewModel.emit(EnterVillaInformationEvent.ChangeIsSublet(it))
+    },
     onSaveNewAddress = {
-      val isInputValid = viewModel.validateHouseInput()
-      if (isInputValid) {
-        viewModel.onSubmitNewAddress()
-      }
+      viewModel.emit(EnterVillaInformationEvent.SubmitNewAddress)
     },
     onAddExtraBuildingClicked = {
       showExtraBuildingsBottomSheet = true
     },
-    onRemoveExtraBuildingClicked = viewModel::onRemoveExtraBuildingClicked,
+    onRemoveExtraBuildingClicked = { viewModel.emit(EnterVillaInformationEvent.RemoveExtraBuildingClicked(it)) },
   )
 }
 
 @Composable
 private fun ChangeAddressEnterVillaInformationScreen(
-  uiState: ChangeAddressUiState,
+  uiState: EnterVillaInformationUiState,
   navigateUp: () -> Unit,
-  onErrorDialogDismissed: () -> Unit,
   onYearOfConstructionChanged: (String) -> Unit,
   onAncillaryAreaChanged: (String) -> Unit,
   onNumberOfBathroomsChanged: (String) -> Unit,
@@ -103,14 +104,6 @@ private fun ChangeAddressEnterVillaInformationScreen(
   onAddExtraBuildingClicked: () -> Unit,
   onRemoveExtraBuildingClicked: (ExtraBuilding) -> Unit,
 ) {
-  if (uiState.errorMessage != null) {
-    ErrorDialog(
-      title = stringResource(id = R.string.general_error),
-      message = uiState.errorMessage,
-      onDismiss = onErrorDialogDismissed,
-    )
-  }
-
   HedvigScaffold(
     navigateUp = navigateUp,
     modifier = Modifier.clearFocusOnTap(),
@@ -196,8 +189,9 @@ private fun PreviewChangeAddressEnterVillaInformationScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       ChangeAddressEnterVillaInformationScreen(
-        ChangeAddressUiState(),
-        {},
+        EnterVillaInformationUiState(
+          extraBuildingTypes = listOf(),
+        ),
         {},
         {},
         {},

@@ -1,27 +1,23 @@
 package com.hedvig.android.feature.changeaddress.destination.enternewaddress
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.feature.changeaddress.DatePickerUiState
-import com.hedvig.android.feature.changeaddress.data.ChangeAddressRepository
 import com.hedvig.android.feature.changeaddress.data.HousingType.VILLA
-import com.hedvig.android.feature.changeaddress.data.MoveQuote
-import com.hedvig.android.feature.changeaddress.destination.createQuoteInput
 import com.hedvig.android.feature.changeaddress.destination.enternewaddress.EnterNewAddressEvent.ChangeCoInsured
 import com.hedvig.android.feature.changeaddress.destination.enternewaddress.EnterNewAddressEvent.ChangeIsStudent
 import com.hedvig.android.feature.changeaddress.destination.enternewaddress.EnterNewAddressEvent.ChangeMoveDate
 import com.hedvig.android.feature.changeaddress.destination.enternewaddress.EnterNewAddressEvent.ChangePostalCode
 import com.hedvig.android.feature.changeaddress.destination.enternewaddress.EnterNewAddressEvent.ChangeSquareMeters
 import com.hedvig.android.feature.changeaddress.destination.enternewaddress.EnterNewAddressEvent.ChangeStreet
+import com.hedvig.android.feature.changeaddress.destination.enternewaddress.EnterNewAddressEvent.ClearNavParams
 import com.hedvig.android.feature.changeaddress.destination.enternewaddress.EnterNewAddressEvent.DismissErrorDialog
-import com.hedvig.android.feature.changeaddress.destination.enternewaddress.EnterNewAddressEvent.SubmitNewAddress
 import com.hedvig.android.feature.changeaddress.destination.enternewaddress.EnterNewAddressEvent.ValidateInput
+import com.hedvig.android.feature.changeaddress.navigation.MovingParameters
 import com.hedvig.android.feature.changeaddress.navigation.NewAddressParameters
 import com.hedvig.android.feature.changeaddress.navigation.SelectHousingTypeParameters
 import com.hedvig.android.language.LanguageService
@@ -33,39 +29,32 @@ import kotlinx.datetime.LocalDate
 internal class EnterNewAddressViewModel(
   previousParameters: SelectHousingTypeParameters,
   languageService: LanguageService,
-  changeAddressRepository: ChangeAddressRepository,
 ) : MoleculeViewModel<EnterNewAddressEvent, EnterNewAddressUiState>(
-  initialState = EnterNewAddressUiState(
-    datePickerUiState = DatePickerUiState(
-      locale = languageService.getLocale(),
-      initiallySelectedDate = null,
-      minDate = previousParameters.minDate,
-      maxDate = previousParameters.maxDate,
+    initialState = EnterNewAddressUiState(
+      datePickerUiState = DatePickerUiState(
+        locale = languageService.getLocale(),
+        initiallySelectedDate = null,
+        minDate = previousParameters.minDate,
+        maxDate = previousParameters.maxDate,
+      ),
+      maxNumberCoInsured = previousParameters.maxNumberCoInsured,
+      maxSquareMeters = previousParameters.maxSquareMeters,
+      numberInsured = ValidatedInput(previousParameters.suggestedNumberInsured),
     ),
-    maxNumberCoInsured = previousParameters.maxNumberCoInsured,
-    maxSquareMeters = previousParameters.maxSquareMeters,
-  ),
-  presenter = EnterNewAddressPresenter(
-    previousParameters,
-    changeAddressRepository,
-  ),
-)
+    presenter = EnterNewAddressPresenter(
+      previousParameters,
+    ),
+  )
 
 internal class EnterNewAddressPresenter(
   private val previousParameters: SelectHousingTypeParameters,
-  private val changeAddressRepository: ChangeAddressRepository,
 ) : MoleculePresenter<EnterNewAddressEvent, EnterNewAddressUiState> {
   @Composable
   override fun MoleculePresenterScope<EnterNewAddressEvent>.present(
     lastState: EnterNewAddressUiState,
   ): EnterNewAddressUiState {
-
     var currentState by remember {
       mutableStateOf(lastState)
-    }
-
-    var dataLoadIteration by remember {
-      mutableIntStateOf(0)
     }
 
     CollectEvents { event ->
@@ -98,71 +87,47 @@ internal class EnterNewAddressPresenter(
           currentState = currentState.copy(errorMessage = null)
         }
 
-        SubmitNewAddress -> {
-          TODO()
-
-        }
-
         ValidateInput -> {
           currentState = currentState.validateAddressInput()
           val stateSnapShot = currentState
           val isInputValid = stateSnapShot.isAddressInputValid
           if (isInputValid) {
+            val newAddressParams = NewAddressParameters(
+              street = stateSnapShot.street.input!!,
+              postalCode = stateSnapShot.postalCode.input!!,
+              squareMeters = stateSnapShot.squareMeters.input!!,
+              numberInsured = stateSnapShot.numberInsured.input!!,
+              isStudent = stateSnapShot.isStudent,
+              movingDate = stateSnapShot.movingDate.input!!,
+            )
             if (previousParameters.housingType == VILLA) {
-              val params = NewAddressParameters(
-                selectHousingTypeParameters = previousParameters,
-                street = stateSnapShot.street.input!!,
-                postalCode = stateSnapShot.postalCode.input!!,
-                squareMeters = stateSnapShot.squareMeters.input!!,
-                numberInsured = stateSnapShot.numberInsured.input!!,
-                isStudent = stateSnapShot.isStudent,
-                movingDate = stateSnapShot.movingDate.input!!, //todo: are we okay with doing it this way if isAddressInputValid does not smart cast?
+              currentState = currentState.copy(
+                navParamsForVillaDestination = MovingParameters(
+                  villaOnlyParameters = null,
+                  selectHousingTypeParameters = previousParameters,
+                  newAddressParameters = newAddressParams,
+                ),
               )
-              currentState = currentState.copy(navParamsForVillaDestination = params)
             } else {
-              dataLoadIteration++
+              val params = MovingParameters(
+                selectHousingTypeParameters = previousParameters,
+                newAddressParameters = newAddressParams,
+                villaOnlyParameters = null,
+              )
+              currentState = currentState.copy(navParamsForOfferDestination = params)
             }
           }
+        }
+
+        ClearNavParams -> {
+          currentState = currentState.copy(
+            navParamsForVillaDestination = null,
+            navParamsForOfferDestination = null,
+          )
         }
       }
     }
 
-    LaunchedEffect(dataLoadIteration) {
-      if (dataLoadIteration > 0) {
-        val input = createQuoteInput(
-          housingType = previousParameters.housingType,
-          isStudent = currentState.isStudent,
-          moveIntentId = previousParameters.moveIntentId,
-          street = currentState.street.input,
-          postalCode = currentState.postalCode.input,
-          moveFromAddressId = previousParameters.moveFromAddressId,
-          movingDate = currentState.movingDate.input,
-          numberInsured = currentState.numberInsured.input,
-          squareMeters = currentState.squareMeters.input,
-          yearOfConstruction = null,
-          ancillaryArea = null,
-          numberOfBathrooms = null,
-          extraBuildings = listOf(),
-          isSublet = false,
-          //todo: add clearing nav Params!
-        )
-        currentState = currentState.copy(isLoading = true)
-        changeAddressRepository.createQuotes(input).fold(
-          ifLeft = { error ->
-            currentState = currentState.copy(
-              isLoading = false,
-              errorMessage = error.message,
-            )
-          },
-          ifRight = { quotes ->
-            currentState = currentState.copy(
-              isLoading = false,
-              navParamsForOfferDestination = quotes,
-            )
-          },
-        )
-      }
-    }
     return currentState
   }
 }
@@ -180,8 +145,8 @@ internal data class EnterNewAddressUiState(
   val movingDate: ValidatedInput<LocalDate?> = ValidatedInput(null),
   val maxNumberCoInsured: Int? = null,
   val maxSquareMeters: Int? = null,
-  val navParamsForVillaDestination: NewAddressParameters? = null,
-  val navParamsForOfferDestination: List<MoveQuote>? = null,
+  val navParamsForVillaDestination: MovingParameters? = null,
+  val navParamsForOfferDestination: MovingParameters? = null,
 ) {
   val isAddressInputValid: Boolean
     get() {
@@ -273,7 +238,7 @@ internal sealed interface EnterNewAddressEvent {
 
   data class ChangeMoveDate(val movingDate: LocalDate) : EnterNewAddressEvent
 
-  data object SubmitNewAddress : EnterNewAddressEvent //todo maybe this one should be private actually
-
   data object ValidateInput : EnterNewAddressEvent
+
+  data object ClearNavParams : EnterNewAddressEvent
 }

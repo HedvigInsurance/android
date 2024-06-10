@@ -14,14 +14,18 @@ internal sealed interface ChangeAddressDestination : Destination {
 
   @Serializable
   data class EnterNewAddress(
-    val previousParameters: SelectHousingTypeParameters,
+    val previousDestinationParameters: SelectHousingTypeParameters,
   ) : ChangeAddressDestination
 
   @Serializable
-  data object EnterVillaInformation : ChangeAddressDestination
+  data class EnterVillaInformation(
+    val previousDestinationParameters: MovingParameters,
+  ) : ChangeAddressDestination
 
   @Serializable
-  data object Offer : ChangeAddressDestination
+  data class Offer(
+    val previousDestinationParameters: MovingParameters,
+  ) : ChangeAddressDestination
 
   @Serializable
   data class AddressResult(
@@ -31,18 +35,18 @@ internal sealed interface ChangeAddressDestination : Destination {
 
 @Serializable
 internal data class MovingParameters(
-  val street: String?,
-  val postalCode: String?,
-  val squareMeters: String?,
+  val selectHousingTypeParameters: SelectHousingTypeParameters,
+  val newAddressParameters: NewAddressParameters,
+  val villaOnlyParameters: VillaOnlyParameters?,
+)
+
+@Serializable
+internal data class VillaOnlyParameters(
   val yearOfConstruction: String?,
   val ancillaryArea: String?,
   val numberOfBathrooms: String?,
-  val movingDate: LocalDate?,
   val isSublet: Boolean,
-  val isStudent: Boolean,
   val extraBuildings: List<ExtraBuilding>,
-
-  val selectHousingTypeParameters: SelectHousingTypeParameters
 )
 
 @Serializable
@@ -67,5 +71,4 @@ internal data class NewAddressParameters(
   val isStudent: Boolean,
   val movingDate: LocalDate,
   val numberInsured: String,
-  val selectHousingTypeParameters: SelectHousingTypeParameters
 )
