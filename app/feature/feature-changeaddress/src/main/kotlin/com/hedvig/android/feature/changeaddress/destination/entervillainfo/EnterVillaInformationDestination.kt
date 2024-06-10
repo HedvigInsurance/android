@@ -36,7 +36,7 @@ import com.hedvig.android.feature.changeaddress.ui.extrabuildings.ExtraBuildingC
 import hedvig.resources.R
 
 @Composable
-internal fun ChangeAddressEnterVillaInformationDestination(
+internal fun EnterVillaInformationDestination(
   viewModel: EnterVillaInformationViewModel,
   navigateUp: () -> Unit,
   onNavigateToOfferDestination: (MovingParameters) -> Unit,

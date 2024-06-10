@@ -4,13 +4,13 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.feature.changeaddress.destination.ChangeAddressResultDestination
-import com.hedvig.android.feature.changeaddress.destination.enternewaddress.ChangeAddressEnterNewAddressDestination
+import com.hedvig.android.feature.changeaddress.destination.enternewaddress.EnterNewAddressDestination
 import com.hedvig.android.feature.changeaddress.destination.enternewaddress.EnterNewAddressViewModel
-import com.hedvig.android.feature.changeaddress.destination.entervillainfo.ChangeAddressEnterVillaInformationDestination
+import com.hedvig.android.feature.changeaddress.destination.entervillainfo.EnterVillaInformationDestination
 import com.hedvig.android.feature.changeaddress.destination.entervillainfo.EnterVillaInformationViewModel
 import com.hedvig.android.feature.changeaddress.destination.offer.ChangeAddressOfferDestination
 import com.hedvig.android.feature.changeaddress.destination.offer.ChangeAddressOfferViewModel
-import com.hedvig.android.feature.changeaddress.destination.selecthousingtype.ChangeAddressSelectHousingTypeDestination
+import com.hedvig.android.feature.changeaddress.destination.selecthousingtype.SelectHousingTypeDestination
 import com.hedvig.android.feature.changeaddress.destination.selecthousingtype.SelectHousingTypeViewModel
 import com.hedvig.android.feature.changeaddress.navigation.ChangeAddressDestination.AddressResult
 import com.hedvig.android.feature.changeaddress.navigation.ChangeAddressDestination.EnterNewAddress
@@ -35,7 +35,7 @@ fun NavGraphBuilder.changeAddressGraph(
   ) {
     composable<ChangeAddressDestination.SelectHousingType> { _ ->
       val viewModel: SelectHousingTypeViewModel = koinViewModel()
-      ChangeAddressSelectHousingTypeDestination(
+      SelectHousingTypeDestination(
         viewModel = viewModel,
         navigateUp = navController::navigateUp,
         navigateToEnterNewAddressDestination = { params ->
@@ -46,7 +46,7 @@ fun NavGraphBuilder.changeAddressGraph(
 
     composable<EnterNewAddress> { _ ->
       val viewModel: EnterNewAddressViewModel = koinViewModel { parametersOf(previousDestinationParameters) }
-      ChangeAddressEnterNewAddressDestination(
+      EnterNewAddressDestination(
         viewModel = viewModel,
         onNavigateToVillaInformationDestination = { newAddressParameters ->
           navController.navigate(EnterVillaInformation(newAddressParameters))
@@ -60,7 +60,7 @@ fun NavGraphBuilder.changeAddressGraph(
 
     composable<EnterVillaInformation> { _ ->
       val viewModel: EnterVillaInformationViewModel = koinViewModel { parametersOf(previousDestinationParameters) }
-      ChangeAddressEnterVillaInformationDestination(
+      EnterVillaInformationDestination(
         viewModel = viewModel,
         navigateUp = navController::navigateUp,
         onNavigateToOfferDestination = { params ->

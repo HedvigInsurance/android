@@ -92,9 +92,7 @@ internal fun ChangeAddressOfferDestination(
     uiState = uiState,
     openChat = openChat,
     navigateUp = navigateUp,
-    onErrorDialogDismissed = {
-      viewModel.emit(ChangeAddressOfferEvent.DismissErrorDialog)
-    },
+    onErrorDialogDismissed = { viewModel.emit(ChangeAddressOfferEvent.DismissErrorDialog) },
     onExpandQuote = { viewModel.emit(ChangeAddressOfferEvent.ExpandQuote(it)) },
     onConfirmMove = { viewModel.emit(ChangeAddressOfferEvent.ConfirmMove(it)) },
     openUrl = openUrl,

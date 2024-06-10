@@ -1,12 +1,15 @@
 package com.hedvig.android.feature.changeaddress.destination.enternewaddress
 
+import androidx.compose.material3.DatePickerState
+import androidx.compose.material3.DisplayMode
+import androidx.compose.material3.SelectableDates
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.core.ui.ValidatedInput
-import com.hedvig.android.feature.changeaddress.DatePickerUiState
 import com.hedvig.android.feature.changeaddress.data.HousingType.VILLA
 import com.hedvig.android.feature.changeaddress.destination.enternewaddress.EnterNewAddressEvent.ChangeCoInsured
 import com.hedvig.android.feature.changeaddress.destination.enternewaddress.EnterNewAddressEvent.ChangeIsStudent
@@ -24,7 +27,10 @@ import com.hedvig.android.language.LanguageService
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import java.util.Locale
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
 
 internal class EnterNewAddressViewModel(
   previousParameters: SelectHousingTypeParameters,
@@ -241,4 +247,30 @@ internal sealed interface EnterNewAddressEvent {
   data object ValidateInput : EnterNewAddressEvent
 
   data object ClearNavParams : EnterNewAddressEvent
+}
+
+
+@Stable
+internal class DatePickerUiState(
+  locale: Locale,
+  initiallySelectedDate: LocalDate?,
+  minDate: LocalDate = LocalDate(1900, 1, 1),
+  maxDate: LocalDate = LocalDate(2100, 1, 1),
+) {
+  private val minDateInMillis = minDate.atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
+  private val maxDateInMillis = maxDate.atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
+  private val yearRange = minDate.year..maxDate.year
+
+  val datePickerState = DatePickerState(
+    locale = locale,
+    initialSelectedDateMillis = initiallySelectedDate?.atStartOfDayIn(TimeZone.UTC)?.toEpochMilliseconds(),
+    initialDisplayedMonthMillis = null,
+    yearRange = yearRange,
+    initialDisplayMode = DisplayMode.Picker,
+    selectableDates = object : SelectableDates {
+      override fun isSelectableDate(utcTimeMillis: Long) = utcTimeMillis in minDateInMillis..maxDateInMillis
+
+      override fun isSelectableYear(year: Int) = year in yearRange
+    },
+  )
 }

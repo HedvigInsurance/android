@@ -34,7 +34,7 @@ import com.hedvig.android.feature.changeaddress.data.displayNameResource
 import com.hedvig.android.feature.changeaddress.navigation.SelectHousingTypeParameters
 
 @Composable
-internal fun ChangeAddressSelectHousingTypeDestination(
+internal fun SelectHousingTypeDestination(
   viewModel: SelectHousingTypeViewModel,
   navigateUp: () -> Unit,
   navigateToEnterNewAddressDestination: (SelectHousingTypeParameters) -> Unit,
