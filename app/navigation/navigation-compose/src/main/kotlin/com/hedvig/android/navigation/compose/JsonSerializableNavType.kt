@@ -17,6 +17,13 @@ inline fun <reified T : Any> typeMapOf(): Map<KType, @JvmSuppressWildcards NavTy
 )
 
 /**
+ * Used for the simple cases where we'd do `typeOf<T?>() to JsonSerializableNullableNavType<T?>(),`.
+ */
+inline fun <reified T : Any?> typeMapOfNullable(): Map<KType, @JvmSuppressWildcards NavType<*>> = mapOf(
+  typeOf<T>() to JsonSerializableNullableNavType<T>(),
+)
+
+/**
  * Use like:
  * ```
  * private val typeMap: Map<KType, @JvmSuppressWildcards NavType<*>> = mapOf(

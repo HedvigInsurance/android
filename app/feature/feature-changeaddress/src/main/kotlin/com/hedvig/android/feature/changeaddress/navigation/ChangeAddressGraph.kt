@@ -86,7 +86,9 @@ fun NavGraphBuilder.changeAddressGraph(
       )
     }
   }
-  navdestination<ChangeAddressDestination.AddressResult> { navBackStackEntry ->
+  navdestination<ChangeAddressDestination.AddressResult>(
+    typeMap = ChangeAddressDestination.AddressResult.typeMap,
+  ) { navBackStackEntry ->
     ChangeAddressResultDestination(
       movingDate = navBackStackEntry.toRoute<ChangeAddressDestination.AddressResult>().movingDate,
       popBackstack = navController::popBackStack,
