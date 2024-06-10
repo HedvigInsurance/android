@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -108,6 +109,15 @@ private fun ChangeAddressEnterVillaInformationScreen(
     navigateUp = navigateUp,
     modifier = Modifier.clearFocusOnTap(),
   ) {
+    var year by remember {
+      mutableStateOf(uiState.yearOfConstruction.input ?: "")
+    }
+    var ancillary by remember {
+      mutableStateOf(uiState.ancillaryArea.input ?: "")
+    }
+    var bathrooms by remember {
+      mutableStateOf(uiState.numberOfBathrooms.input ?: "")
+    }
     Spacer(modifier = Modifier.height(48.dp))
     Text(
       text = stringResource(id = R.string.CHANGE_ADDRESS_INFORMATION_ABOUT_YOUR_HOUSE),
@@ -120,9 +130,12 @@ private fun ChangeAddressEnterVillaInformationScreen(
     Spacer(modifier = Modifier.height(32.dp))
     Spacer(modifier = Modifier.weight(1f))
     InputTextField(
-      value = uiState.yearOfConstruction.input,
+      value = year,
       errorMessageRes = uiState.yearOfConstruction.errorMessageRes,
-      onValueChange = onYearOfConstructionChanged,
+      onValueChange = {
+        year = it
+        onYearOfConstructionChanged(it)
+      },
       label = stringResource(id = R.string.CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_LABEL),
       modifier = Modifier.padding(horizontal = 16.dp),
       keyboardOptions = KeyboardOptions(
@@ -131,9 +144,12 @@ private fun ChangeAddressEnterVillaInformationScreen(
     )
     Spacer(modifier = Modifier.height(8.dp))
     InputTextField(
-      value = uiState.ancillaryArea.input,
+      value = ancillary,
       errorMessageRes = uiState.ancillaryArea.errorMessageRes,
-      onValueChange = onAncillaryAreaChanged,
+      onValueChange = {
+        ancillary = it
+        onAncillaryAreaChanged(it)
+      },
       label = stringResource(id = R.string.CHANGE_ADDRESS_ANCILLARY_AREA_LABEL),
       modifier = Modifier.padding(horizontal = 16.dp),
       keyboardOptions = KeyboardOptions(
@@ -142,9 +158,12 @@ private fun ChangeAddressEnterVillaInformationScreen(
     )
     Spacer(modifier = Modifier.height(8.dp))
     InputTextField(
-      value = uiState.numberOfBathrooms.input,
+      value = bathrooms,
       errorMessageRes = uiState.numberOfBathrooms.errorMessageRes,
-      onValueChange = onNumberOfBathroomsChanged,
+      onValueChange = {
+        bathrooms = it
+        onNumberOfBathroomsChanged(it)
+      },
       label = stringResource(id = R.string.CHANGE_ADDRESS_BATHROOMS_LABEL),
       modifier = Modifier.padding(horizontal = 16.dp),
       keyboardOptions = KeyboardOptions(

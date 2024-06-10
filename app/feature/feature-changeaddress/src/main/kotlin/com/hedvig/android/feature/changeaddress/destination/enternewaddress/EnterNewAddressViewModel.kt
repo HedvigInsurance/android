@@ -249,7 +249,6 @@ internal sealed interface EnterNewAddressEvent {
   data object ClearNavParams : EnterNewAddressEvent
 }
 
-
 @Stable
 internal class DatePickerUiState(
   locale: Locale,
