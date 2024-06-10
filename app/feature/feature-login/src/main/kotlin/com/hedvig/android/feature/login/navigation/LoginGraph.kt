@@ -83,7 +83,9 @@ fun NavGraphBuilder.loginGraph(
         },
       )
     }
-    navdestination<LoginDestinations.OtpInput> {
+    navdestination<LoginDestinations.OtpInput>(
+      typeMap = LoginDestinations.OtpInput.typeMap,
+    ) {
       val otpInputInformation: LoginDestinations.OtpInput.OtpInformation = this.otpInformation
       val viewModel: OtpInputViewModel = koinViewModel { parametersOf(otpInputInformation) }
       OtpInputDestination(

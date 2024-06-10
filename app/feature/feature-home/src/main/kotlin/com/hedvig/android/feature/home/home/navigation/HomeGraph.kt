@@ -56,7 +56,9 @@ fun NavGraphBuilder.homeGraph(
         },
       )
     }
-    navdestination<HomeDestination.FirstVet> {
+    navdestination<HomeDestination.FirstVet>(
+      typeMap = HomeDestination.FirstVet.typeMap,
+    ) {
       FirstVetDestination(
         sections,
         navigateUp = navigator::navigateUp,

@@ -3,9 +3,18 @@ package com.hedvig.android.navigation.compose
 import android.net.Uri
 import android.os.Bundle
 import androidx.navigation.NavType
+import kotlin.reflect.KType
+import kotlin.reflect.typeOf
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
+
+/**
+ * Used for the simple cases where we'd do `typeOf<T>() to JsonSerializableNavType<T>(),` and the type is non-nullable.
+ */
+inline fun <reified T : Any> typeMapOf(): Map<KType, @JvmSuppressWildcards NavType<*>> = mapOf(
+  typeOf<T>() to JsonSerializableNavType<T>(),
+)
 
 /**
  * Use like:
