@@ -1,6 +1,7 @@
 package com.hedvig.android.app.ui
 
 import androidx.navigation.NavDestination
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import com.hedvig.android.feature.forever.navigation.ForeverDestination
 import com.hedvig.android.feature.home.home.navigation.HomeDestination
@@ -15,13 +16,13 @@ import com.hedvig.android.navigation.core.TopLevelGraph
 internal fun NavDestination?.isTopLevelGraphInHierarchy(topLevelGraph: TopLevelGraph): Boolean {
   val hierarchy = this?.hierarchy ?: return false
   val topLevelGraphRelatedRoute = when (topLevelGraph) {
-    TopLevelGraph.Home -> createRoutePattern<HomeDestination.Graph>()
-    TopLevelGraph.Insurances -> createRoutePattern<InsurancesDestination.Graph>()
-    TopLevelGraph.Forever -> createRoutePattern<ForeverDestination.Graph>()
-    TopLevelGraph.Payments -> createRoutePattern<PaymentsDestination.Graph>()
-    TopLevelGraph.Profile -> createRoutePattern<ProfileDestination.Graph>()
+    TopLevelGraph.Home -> HomeDestination.Graph::class
+    TopLevelGraph.Insurances -> InsurancesDestination.Graph::class
+    TopLevelGraph.Forever -> ForeverDestination.Graph::class
+    TopLevelGraph.Payments -> PaymentsDestination.Graph::class
+    TopLevelGraph.Profile -> ProfileDestination.Graph::class
   }
   return hierarchy.any { navDestination ->
-    navDestination.route?.contains(topLevelGraphRelatedRoute) == true
+    navDestination.hasRoute(topLevelGraphRelatedRoute)
   }
 }
