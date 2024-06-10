@@ -10,12 +10,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import coil.ImageLoader
@@ -192,7 +193,6 @@ private fun LogoutOnInvalidCredentialsEffect(
   }
   val lifecycle = LocalLifecycleOwner.current.lifecycle
   LaunchedEffect(lifecycle, hedvigAppState, authTokenService, demoManager) {
-    val loginGraphRoute = createRoutePattern<LoginDestination>()
     lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
       combine(
         authTokenService.authStatus.onEach(authStatusLog).filterNotNull().distinctUntilChanged(),
@@ -202,7 +202,7 @@ private fun LogoutOnInvalidCredentialsEffect(
       }.collect { (authStatus, isDemoMode) ->
         val navBackStackEntry: NavBackStackEntry = hedvigAppState.navController.currentBackStackEntryFlow.first()
         val isLoggedOut = navBackStackEntry.destination.hierarchy.any { navDestination ->
-          navDestination.route?.contains(loginGraphRoute) == true
+          navDestination.hasRoute<LoginDestination>()
         }
         if (isLoggedOut) {
           return@collect
