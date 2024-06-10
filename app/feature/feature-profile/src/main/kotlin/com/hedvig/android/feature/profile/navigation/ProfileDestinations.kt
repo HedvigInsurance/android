@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.profile.navigation
 
+import kotlin.reflect.KClass
 import kotlinx.serialization.Serializable
 
 sealed interface ProfileDestination {
@@ -32,6 +33,6 @@ internal sealed interface SettingsDestinations {
   data object Settings : ProfileDestinations
 }
 
-val profileBottomNavPermittedDestinations: List<String> = listOf(
-  createRoutePattern<ProfileDestinations.Eurobonus>(),
+val profileBottomNavPermittedDestinations: List<KClass<*>> = listOf(
+  ProfileDestinations.Eurobonus::class,
 )

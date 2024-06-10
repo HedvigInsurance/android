@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.insurances.navigation
 
+import kotlin.reflect.KClass
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -23,7 +24,7 @@ internal sealed interface InsurancesDestinations {
   data object TerminatedInsurances : InsurancesDestinations
 }
 
-val insurancesBottomNavPermittedDestinations: List<String> = listOf(
-  createRoutePattern<InsurancesDestinations.InsuranceContractDetail>(),
-  createRoutePattern<InsurancesDestinations.TerminatedInsurances>(),
+val insurancesBottomNavPermittedDestinations: List<KClass<*>> = listOf(
+  InsurancesDestinations.InsuranceContractDetail::class,
+  InsurancesDestinations.TerminatedInsurances::class,
 )
