@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.changeaddress.destination.enternewaddress
 
+import androidx.compose.foundation.interaction.HoverInteraction.Enter
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -29,6 +30,7 @@ import com.hedvig.android.feature.changeaddress.ChangeAddressUiState
 import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
 import com.hedvig.android.feature.changeaddress.DatePickerUiState
 import com.hedvig.android.feature.changeaddress.data.HousingType.VILLA
+import com.hedvig.android.feature.changeaddress.data.MoveQuote
 import com.hedvig.android.feature.changeaddress.navigation.MovingParameters
 import com.hedvig.android.feature.changeaddress.ui.ChangeAddressSwitch
 import com.hedvig.android.feature.changeaddress.ui.InputTextField
@@ -39,16 +41,16 @@ import kotlinx.datetime.LocalDate
 
 @Composable
 internal fun ChangeAddressEnterNewAddressDestination(
-  viewModel: ChangeAddressViewModel,
+  viewModel: EnterNewAddressViewModel,
   onNavigateToVillaInformationDestination: (MovingParameters) -> Unit,
   navigateUp: () -> Unit,
-  onNavigateToOfferDestination: () -> Unit,
+  onNavigateToOfferDestination: ( List<MoveQuote>) -> Unit,
 ) {
-  val uiState: ChangeAddressUiState by viewModel.uiState.collectAsStateWithLifecycle()
+  val uiState: EnterNewAddressUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-  val navigateToOfferScreenAfterHavingReceivedQuotes = uiState.navigateToOfferScreenAfterHavingReceivedQuotes
-  LaunchedEffect(navigateToOfferScreenAfterHavingReceivedQuotes) {
-    if (navigateToOfferScreenAfterHavingReceivedQuotes) {
+  val listOfQuotes = uiState.navParamsForOfferDestination
+  LaunchedEffect(listOfQuotes) {
+    if (listOfQuotes!=null) {
       viewModel.onNavigatedToOfferScreenAfterHavingReceivedQuotes()
       onNavigateToOfferDestination()
     }
@@ -57,30 +59,20 @@ internal fun ChangeAddressEnterNewAddressDestination(
   ChangeAddressEnterNewAddressScreen(
     uiState = uiState,
     navigateUp = navigateUp,
-    onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
-    onStreetChanged = viewModel::onStreetChanged,
-    onPostalCodeChanged = viewModel::onPostalCodeChanged,
-    onSquareMetersChanged = viewModel::onSquareMetersChanged,
-    onCoInsuredChanged = viewModel::onCoInsuredChanged,
-    onMoveDateSelected = viewModel::onMoveDateSelected,
-    onIsStudentSelected = viewModel::onIsStudentChanged,
-    onSaveNewAddress = {
-
-      val isInputValid = viewModel.validateAddressInput()
-      if (isInputValid) {
-        if (uiState.housingType.input == VILLA) {
-          onNavigateToVillaInformationDestination()
-        } else {
-          viewModel.onSubmitNewAddress()
-        }
-      }
-    },
+    onErrorDialogDismissed = { viewModel.emit(EnterNewAddressEvent.DismissErrorDialog) },
+    onStreetChanged =  { street -> viewModel.emit(EnterNewAddressEvent.ChangeStreet(street)) } ,
+    onPostalCodeChanged = { postalCode -> viewModel.emit(EnterNewAddressEvent.ChangePostalCode(postalCode)) },
+    onSquareMetersChanged = { squareMeters -> viewModel.emit(EnterNewAddressEvent.ChangeSquareMeters(squareMeters))},
+    onCoInsuredChanged = { coInsured -> viewModel.emit(EnterNewAddressEvent.ChangeCoInsured(coInsured)) },
+    onMoveDateSelected = { date -> viewModel.emit(EnterNewAddressEvent.ChangeMoveDate(date)) },
+    onIsStudentSelected = { isStudent -> viewModel.emit(EnterNewAddressEvent.ChangeIsStudent(isStudent)) },
+    onSaveNewAddress = { viewModel.emit(EnterNewAddressEvent.SubmitNewAddress) },
   )
 }
 
 @Composable
 private fun ChangeAddressEnterNewAddressScreen(
-  uiState: ChangeAddressUiState,
+  uiState: EnterNewAddressUiState,
   navigateUp: () -> Unit,
   onErrorDialogDismissed: () -> Unit,
   onStreetChanged: (String) -> Unit,
