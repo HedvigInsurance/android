@@ -120,7 +120,7 @@ internal data class SelectHousingTypeUiState(
   val isLoading: Boolean = false,
   val errorMessage: String? = null,
   val housingType: ValidatedInput<HousingType?> = ValidatedInput(null),
-  val errorMessageRes: Int? = null, // todo: sure?
+  val errorMessageRes: Int? = null,
   val navigationParameters: SelectHousingTypeParameters? = null,
 ) {
   val isHousingTypeValid: Boolean

@@ -15,6 +15,7 @@ import com.hedvig.android.feature.changeaddress.destination.createQuoteInput
 import com.hedvig.android.feature.changeaddress.destination.offer.ChangeAddressOfferEvent.ConfirmMove
 import com.hedvig.android.feature.changeaddress.destination.offer.ChangeAddressOfferEvent.DismissErrorDialog
 import com.hedvig.android.feature.changeaddress.destination.offer.ChangeAddressOfferEvent.ExpandQuote
+import com.hedvig.android.feature.changeaddress.destination.offer.ChangeAddressOfferEvent.Retry
 import com.hedvig.android.feature.changeaddress.navigation.MovingParameters
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -47,6 +48,8 @@ internal class ChangeAddressOfferPresenter(
 
     var dataLoadIteration by remember { mutableIntStateOf(0) }
 
+    var quotesLoadIteration by remember { mutableIntStateOf(0) }
+
     CollectEvents { event ->
       when (event) {
         is ConfirmMove -> {
@@ -64,6 +67,8 @@ internal class ChangeAddressOfferPresenter(
             },
           )
         }
+
+        Retry -> quotesLoadIteration++
       }
     }
 
@@ -89,7 +94,7 @@ internal class ChangeAddressOfferPresenter(
       }
     }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(quotesLoadIteration) {
       val input = createQuoteInput(
         housingType = previousParameters.selectHousingTypeParameters.housingType,
         isStudent = previousParameters.newAddressParameters.isStudent,
@@ -106,12 +111,12 @@ internal class ChangeAddressOfferPresenter(
         extraBuildings = previousParameters.villaOnlyParameters?.extraBuildings ?: listOf(),
         isSublet = previousParameters.villaOnlyParameters?.isSublet ?: false,
       )
-      currentState = currentState.copy(isLoading = true)
+      currentState = currentState.copy(error = false, isLoading = true)
       changeAddressRepository.createQuotes(input).fold(
         ifLeft = { error ->
           currentState = currentState.copy(
             isLoading = false,
-            errorMessage = error.message,
+            error = true,
           )
         },
         ifRight = { quotes ->
@@ -130,6 +135,7 @@ internal data class ChangeAddressOfferUiState(
   val quotes: List<MoveQuote> = emptyList(),
   val successfulMoveResult: SuccessfulMove? = null,
   val errorMessage: String? = null,
+  val error: Boolean = false,
   val movingDate: LocalDate,
   val moveIntentId: MoveIntentId,
   val isLoading: Boolean = false,
@@ -141,4 +147,6 @@ internal sealed interface ChangeAddressOfferEvent {
   data class ExpandQuote(val moveQuote: MoveQuote) : ChangeAddressOfferEvent
 
   data object DismissErrorDialog : ChangeAddressOfferEvent
+
+  data object Retry : ChangeAddressOfferEvent
 }
