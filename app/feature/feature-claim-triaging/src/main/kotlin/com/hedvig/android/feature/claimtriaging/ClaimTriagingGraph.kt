@@ -3,7 +3,6 @@ package com.hedvig.android.feature.claimtriaging
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.composable
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimtriaging.ClaimGroup
 import com.hedvig.android.data.claimtriaging.EntryPoint
@@ -15,6 +14,7 @@ import com.hedvig.android.feature.claimtriaging.claimentrypoints.ClaimEntryPoint
 import com.hedvig.android.feature.claimtriaging.claimentrypoints.ClaimEntryPointsViewModel
 import com.hedvig.android.feature.claimtriaging.claimgroups.ClaimGroupsDestination
 import com.hedvig.android.feature.claimtriaging.claimgroups.ClaimGroupsViewModel
+import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.core.Navigator
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
@@ -41,7 +41,7 @@ fun NavGraphBuilder.claimTriagingDestinations(
   startClaimFlow: (NavBackStackEntry, ClaimFlowStep) -> Unit,
   closeClaimFlow: () -> Unit,
 ) {
-  composable<ClaimTriagingDestination.ClaimGroups> { backStackEntry ->
+  navdestination<ClaimTriagingDestination.ClaimGroups> { backStackEntry ->
     val viewModel: ClaimGroupsViewModel = koinViewModel()
     ClaimGroupsDestination(
       viewModel = viewModel,
@@ -59,7 +59,7 @@ fun NavGraphBuilder.claimTriagingDestinations(
       windowSizeClass = windowSizeClass,
     )
   }
-  composable<ClaimTriagingDestination.ClaimEntryPoints> { backStackEntry ->
+  navdestination<ClaimTriagingDestination.ClaimEntryPoints> { backStackEntry ->
     val viewModel: ClaimEntryPointsViewModel = koinViewModel()
     ClaimEntryPointsDestination(
       viewModel = viewModel,
@@ -77,7 +77,7 @@ fun NavGraphBuilder.claimTriagingDestinations(
       windowSizeClass = windowSizeClass,
     )
   }
-  composable<ClaimTriagingDestination.ClaimEntryPointOptions> { backStackEntry ->
+  navdestination<ClaimTriagingDestination.ClaimEntryPointOptions> { backStackEntry ->
     val viewModel: ClaimEntryPointOptionsViewModel = koinViewModel()
     ClaimEntryPointOptionsDestination(
       viewModel = viewModel,

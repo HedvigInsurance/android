@@ -35,6 +35,7 @@ dependencies {
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
   implementation(projects.navigationCore)
+  implementation(projects.navigationCompose)
 }
 
 apollo {

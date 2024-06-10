@@ -7,6 +7,8 @@ import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.feature.home.home.ui.FirstVetDestination
 import com.hedvig.android.feature.home.home.ui.HomeDestination
 import com.hedvig.android.feature.home.home.ui.HomeViewModel
+import com.hedvig.android.navigation.compose.navdestination
+import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
 import org.koin.androidx.compose.koinViewModel
@@ -24,10 +26,10 @@ fun NavGraphBuilder.homeGraph(
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
 ) {
-  navigation<HomeDestination.Graph>(
+  navgraph<HomeDestination.Graph>(
     startDestination = HomeDestination.Home::class,
   ) {
-    composable<HomeDestination.Home>(
+    navdestination<HomeDestination.Home>(
       deepLinks = listOf(
         navDeepLink { uriPattern = hedvigDeepLinkContainer.home },
       ),
@@ -54,7 +56,7 @@ fun NavGraphBuilder.homeGraph(
         },
       )
     }
-    composable<HomeDestination.FirstVet> {
+    navdestination<HomeDestination.FirstVet> {
       FirstVetDestination(
         sections,
         navigateUp = navigator::navigateUp,

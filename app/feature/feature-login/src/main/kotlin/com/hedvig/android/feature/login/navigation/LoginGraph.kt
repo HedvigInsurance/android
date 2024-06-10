@@ -15,6 +15,8 @@ import com.hedvig.android.language.Language
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.Market
+import com.hedvig.android.navigation.compose.navdestination
+import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.Navigator
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -27,10 +29,10 @@ fun NavGraphBuilder.loginGraph(
   onOpenEmailApp: () -> Unit,
   startLoggedInActivity: () -> Unit,
 ) {
-  navigation<LoginDestination>(
+  navgraph<LoginDestination>(
     startDestination = LoginDestinations.Marketing::class,
   ) {
-    composable<LoginDestinations.Marketing> { backStackEntry ->
+    navdestination<LoginDestinations.Marketing> { backStackEntry ->
       val marketingViewModel: MarketingViewModel = koinViewModel()
       val locale = getLocale()
       MarketingDestination(
@@ -53,7 +55,7 @@ fun NavGraphBuilder.loginGraph(
         },
       )
     }
-    composable<LoginDestinations.SwedishLogin> { backStackEntry ->
+    navdestination<LoginDestinations.SwedishLogin> { backStackEntry ->
       val swedishLoginViewModel: SwedishLoginViewModel = koinViewModel()
       SwedishLoginDestination(
         swedishLoginViewModel = swedishLoginViewModel,
@@ -67,7 +69,7 @@ fun NavGraphBuilder.loginGraph(
         startLoggedInActivity = startLoggedInActivity,
       )
     }
-    composable<LoginDestinations.GenericAuthCredentialsInput> { backStackEntry ->
+    navdestination<LoginDestinations.GenericAuthCredentialsInput> { backStackEntry ->
       val viewModel: GenericAuthViewModel = koinViewModel()
       GenericAuthDestination(
         viewModel = viewModel,
@@ -81,7 +83,7 @@ fun NavGraphBuilder.loginGraph(
         },
       )
     }
-    composable<LoginDestinations.OtpInput> {
+    navdestination<LoginDestinations.OtpInput> {
       val otpInputInformation: LoginDestinations.OtpInput.OtpInformation = this.otpInformation
       val viewModel: OtpInputViewModel = koinViewModel { parametersOf(otpInputInformation) }
       OtpInputDestination(

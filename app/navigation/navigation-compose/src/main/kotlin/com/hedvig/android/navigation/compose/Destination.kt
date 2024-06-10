@@ -25,7 +25,7 @@ private typealias ExitTransitionFactory =
 private typealias SizeTransformFactory =
   AnimatedContentTransitionScope<NavBackStackEntry>.() -> @JvmSuppressWildcards SizeTransform?
 
-inline fun <reified T : Any> NavGraphBuilder.destination(
+inline fun <reified T : Any> NavGraphBuilder.navdestination(
   typeMap: Map<KType, @JvmSuppressWildcards NavType<*>> = emptyMap(),
   deepLinks: List<NavDeepLink> = emptyList(),
   noinline enterTransition: EnterTransitionFactory? = null,

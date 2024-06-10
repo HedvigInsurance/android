@@ -34,6 +34,7 @@ dependencies {
   implementation(projects.marketSet)
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
+  implementation(projects.navigationCompose)
   implementation(projects.navigationCore)
 
   testImplementation(libs.androidx.datastore.core)

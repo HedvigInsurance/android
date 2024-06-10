@@ -13,6 +13,8 @@ import com.hedvig.android.feature.payments.history.PaymentHistoryViewModel
 import com.hedvig.android.feature.payments.payments.PaymentsDestination
 import com.hedvig.android.feature.payments.payments.PaymentsViewModel
 import com.hedvig.android.language.LanguageService
+import com.hedvig.android.navigation.compose.navdestination
+import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverDestination
@@ -27,10 +29,10 @@ fun NavGraphBuilder.paymentsGraph(
   hedvigBuildConstants: HedvigBuildConstants,
   navigateToConnectPayment: () -> Unit,
 ) {
-  navigation<PaymentsDestination.Graph>(
+  navgraph<PaymentsDestination.Graph>(
     startDestination = PaymentsDestination.Payments::class,
   ) {
-    composable<PaymentsDestination.Payments>(
+    navdestination<PaymentsDestination.Payments>(
       deepLinks = listOf(
         navDeepLink { uriPattern = hedvigDeepLinkContainer.payments },
       ),
@@ -59,7 +61,7 @@ fun NavGraphBuilder.paymentsGraph(
       )
     }
 
-    composable<PaymentsDestinations.Details> { backStackEntry ->
+    navdestination<PaymentsDestinations.Details> { backStackEntry ->
       val viewModel: PaymentDetailsViewModel = koinViewModel(parameters = { parametersOf(this.memberChargeId) })
       PaymentDetailsDestination(
         viewModel = viewModel,
@@ -76,7 +78,7 @@ fun NavGraphBuilder.paymentsGraph(
       )
     }
 
-    composable<PaymentsDestinations.History> { backStackEntry ->
+    navdestination<PaymentsDestinations.History> { backStackEntry ->
       val viewModel: PaymentHistoryViewModel = koinViewModel()
       PaymentHistoryDestination(
         viewModel = viewModel,
@@ -93,7 +95,7 @@ fun NavGraphBuilder.paymentsGraph(
       )
     }
 
-    composable<PaymentsDestinations.Forever> {
+    navdestination<PaymentsDestinations.Forever> {
       val viewModel: ForeverViewModel = koinViewModel()
       ForeverDestination(
         viewModel = viewModel,
@@ -102,7 +104,7 @@ fun NavGraphBuilder.paymentsGraph(
       )
     }
 
-    composable<PaymentsDestinations.Discounts> { backStackEntry ->
+    navdestination<PaymentsDestinations.Discounts> { backStackEntry ->
       val viewModel: DiscountsViewModel = koinViewModel()
       DiscountsDestination(
         viewModel = viewModel,

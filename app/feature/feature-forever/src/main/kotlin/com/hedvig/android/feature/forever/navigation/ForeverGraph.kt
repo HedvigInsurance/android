@@ -1,12 +1,12 @@
 package com.hedvig.android.feature.forever.navigation
 
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
-import androidx.navigation.navigation
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.language.LanguageService
+import com.hedvig.android.navigation.compose.navdestination
+import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverDestination
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverViewModel
@@ -17,10 +17,10 @@ fun NavGraphBuilder.foreverGraph(
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
 ) {
-  navigation<ForeverDestination.Graph>(
+  navgraph<ForeverDestination.Graph>(
     startDestination = ForeverDestination.Forever::class,
   ) {
-    composable<ForeverDestination.Forever>(
+    navdestination<ForeverDestination.Forever>(
       deepLinks = listOf(
         navDeepLink { uriPattern = hedvigDeepLinkContainer.forever },
       ),

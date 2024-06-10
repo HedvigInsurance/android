@@ -4,8 +4,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Density
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.navigation
 import com.hedvig.android.core.common.android.sharePDF
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.feature.travelcertificate.ui.choose.ChooseContractForCertificateDestination
@@ -19,19 +17,21 @@ import com.hedvig.android.feature.travelcertificate.ui.history.CertificateHistor
 import com.hedvig.android.feature.travelcertificate.ui.history.TravelCertificateHistoryDestination
 import com.hedvig.android.feature.travelcertificate.ui.overview.TravelCertificateOverviewDestination
 import com.hedvig.android.feature.travelcertificate.ui.overview.TravelCertificateOverviewViewModel
+import com.hedvig.android.navigation.compose.navdestination
+import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.AppDestination
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavController, applicationId: String) {
-  navigation<AppDestination.TravelCertificate>(
+  navgraph<AppDestination.TravelCertificate>(
     startDestination = TravelCertificateDestination.TravelCertificateHistory::class,
     enterTransition = { MotionDefaults.sharedXAxisEnter(density) },
     exitTransition = { MotionDefaults.sharedXAxisExit(density) },
     popEnterTransition = { MotionDefaults.sharedXAxisPopEnter(density) },
     popExitTransition = { MotionDefaults.sharedXAxisPopExit(density) },
   ) {
-    composable<TravelCertificateDestination.TravelCertificateHistory> {
+    navdestination<TravelCertificateDestination.TravelCertificateHistory> {
       val viewModel: CertificateHistoryViewModel = koinViewModel()
       val localContext = LocalContext.current
       TravelCertificateHistoryDestination(
@@ -50,7 +50,7 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavC
       )
     }
 
-    composable<TravelCertificateDestination.TravelCertificateChooseContract> {
+    navdestination<TravelCertificateDestination.TravelCertificateChooseContract> {
       val viewModel: ChooseContractForCertificateViewModel = koinViewModel()
       ChooseContractForCertificateDestination(
         viewModel = viewModel,
@@ -61,7 +61,7 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavC
       )
     }
 
-    composable<TravelCertificateDestination.TravelCertificateDateInput> {
+    navdestination<TravelCertificateDestination.TravelCertificateDateInput> {
       val viewModel: TravelCertificateDateInputViewModel = koinViewModel(
         parameters = {
           parametersOf(contractId)
@@ -87,7 +87,7 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavC
       )
     }
 
-    composable<TravelCertificateDestination.TravelCertificateTravellersInput> {
+    navdestination<TravelCertificateDestination.TravelCertificateTravellersInput> {
       val viewModel: TravelCertificateTravellersInputViewModel = koinViewModel(
         parameters = {
           parametersOf(primaryInput)
@@ -109,7 +109,7 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavC
       )
     }
 
-    composable<TravelCertificateDestination.ShowCertificate> {
+    navdestination<TravelCertificateDestination.ShowCertificate> {
       val viewModel: TravelCertificateOverviewViewModel = koinViewModel()
       val context = LocalContext.current
       TravelCertificateOverviewDestination(
