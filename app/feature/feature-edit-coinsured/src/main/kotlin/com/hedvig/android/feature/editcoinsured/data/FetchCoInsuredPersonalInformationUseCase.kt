@@ -51,7 +51,7 @@ private fun convertSsnToBirthDateOrNull(ssn: String): LocalDate? {
   if (stringMonth !in 1..12) return null
   val result = try {
     LocalDate(year = stringYear, month = Month(stringMonth), dayOfMonth = stringDate)
-  } catch (e: Exception) {
+  } catch (e: IllegalArgumentException) {
     null
   }
   return result
