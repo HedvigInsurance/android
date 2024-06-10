@@ -80,8 +80,8 @@ internal fun HedvigNavHost(
 
   NavHost(
     navController = hedvigAppState.navController,
-    startDestination = createRoutePattern<HomeDestination.Graph>(),
-    route = RootGraph.route,
+    startDestination = HomeDestination.Graph::class,
+    route = RootGraph::class,
     modifier = modifier,
     enterTransition = { MotionDefaults.sharedXAxisEnter(density) },
     exitTransition = { MotionDefaults.sharedXAxisExit(density) },
@@ -274,7 +274,7 @@ internal fun HedvigNavHost(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       navigator = navigator,
       onNavigateToQuickLink = { backStackEntry, quickLinkDestination ->
-        val destination = when (quickLinkDestination) {
+        val destination: Any = when (quickLinkDestination) {
           QuickLinkDestination.OuterDestination.QuickLinkChangeAddress -> AppDestination.ChangeAddress
           is QuickLinkDestination.OuterDestination.QuickLinkCoInsuredAddInfo ->
             AppDestination.CoInsuredAddInfo(quickLinkDestination.contractId)

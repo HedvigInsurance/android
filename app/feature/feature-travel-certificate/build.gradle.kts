@@ -15,6 +15,7 @@ dependencies {
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.androidx.navigation.common)
+  implementation(libs.androidx.navigation.compose)
   implementation(libs.androidx.navigation.runtime)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.apollo.runtime)

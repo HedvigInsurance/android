@@ -21,7 +21,7 @@ fun NavGraphBuilder.changeAddressGraph(
   openUrl: (String) -> Unit,
 ) {
   navigation<AppDestination.ChangeAddress>(
-    startDestination = createRoutePattern<ChangeAddressDestination.SelectHousingType>(),
+    startDestination = ChangeAddressDestination.SelectHousingType::class,
   ) {
     composable<ChangeAddressDestination.SelectHousingType> { navBackStackEntry ->
       val viewModel: ChangeAddressViewModel = destinationScopedViewModel<AppDestination.ChangeAddress, _>(

@@ -4,6 +4,8 @@ import android.net.Uri
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigation
 import coil.ImageLoader
 import com.hedvig.android.core.common.android.sharePDF
 import com.hedvig.android.feature.claim.details.ui.AddFilesDestination
@@ -25,7 +27,7 @@ fun NavGraphBuilder.claimDetailsGraph(
   applicationId: String,
 ) {
   navigation<AppDestination.ClaimDetails>(
-    startDestination = createRoutePattern<ClaimDetailDestinations.ClaimOverviewDestination>(),
+    startDestination = ClaimDetailDestinations.ClaimOverviewDestination::class,
   ) {
     composable<ClaimDetailDestinations.ClaimOverviewDestination> { backStackEntry ->
       val viewModel: ClaimDetailsViewModel = koinViewModel { parametersOf(claimId) }

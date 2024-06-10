@@ -25,7 +25,7 @@ fun NavGraphBuilder.homeGraph(
   openUrl: (String) -> Unit,
 ) {
   navigation<HomeDestination.Graph>(
-    startDestination = createRoutePattern<HomeDestination.Home>(),
+    startDestination = HomeDestination.Home::class,
   ) {
     composable<HomeDestination.Home>(
       deepLinks = listOf(

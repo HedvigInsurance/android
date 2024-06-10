@@ -3,7 +3,9 @@ package com.hedvig.android.feature.odyssey.navigation
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
 import androidx.navigation.navOptions
+import androidx.navigation.navigation
 import coil.ImageLoader
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.data.claimflow.ClaimFlowDestination
@@ -62,7 +64,7 @@ fun NavGraphBuilder.claimFlowGraph(
   nestedGraphs: NavGraphBuilder.() -> Unit,
 ) {
   navigation<AppDestination.ClaimsFlow>(
-    startDestination = createRoutePattern<ClaimFlowDestination.HonestyPledge>(),
+    startDestination = ClaimFlowDestination.HonestyPledge::class,
   ) {
     nestedGraphs()
     composable<ClaimFlowDestination.HonestyPledge>(

@@ -17,6 +17,7 @@ dependencies {
   implementation(libs.androidx.compose.uiCore)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.androidx.navigation.common)
+  implementation(libs.androidx.navigation.compose)
   implementation(libs.androidx.navigation.runtime)
   implementation(libs.arrow.core)
   implementation(libs.coil.coil)

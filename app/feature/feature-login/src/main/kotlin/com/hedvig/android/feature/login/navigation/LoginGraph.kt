@@ -28,7 +28,7 @@ fun NavGraphBuilder.loginGraph(
   startLoggedInActivity: () -> Unit,
 ) {
   navigation<LoginDestination>(
-    startDestination = createRoutePattern<LoginDestinations.Marketing>(),
+    startDestination = LoginDestinations.Marketing::class,
   ) {
     composable<LoginDestinations.Marketing> { backStackEntry ->
       val marketingViewModel: MarketingViewModel = koinViewModel()

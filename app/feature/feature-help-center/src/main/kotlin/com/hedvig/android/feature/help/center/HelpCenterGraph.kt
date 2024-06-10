@@ -4,7 +4,9 @@ import android.content.res.Resources
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
+import androidx.navigation.navigation
 import com.hedvig.android.feature.help.center.commonclaim.FirstVetDestination
 import com.hedvig.android.feature.help.center.commonclaim.emergency.EmergencyDestination
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination
@@ -27,7 +29,7 @@ fun NavGraphBuilder.helpCenterGraph(
   openChat: (NavBackStackEntry, AppDestination.Chat.ChatContext?) -> Unit,
 ) {
   navigation<HelpCenterDestination>(
-    startDestination = createRoutePattern<HelpCenterDestinations.HelpCenter>(),
+    startDestination = HelpCenterDestinations.HelpCenter::class,
   ) {
     composable<HelpCenterDestinations.HelpCenter>(
       deepLinks = listOf(

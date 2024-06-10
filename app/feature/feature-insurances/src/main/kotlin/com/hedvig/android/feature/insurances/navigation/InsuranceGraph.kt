@@ -30,7 +30,7 @@ fun NavGraphBuilder.insuranceGraph(
   imageLoader: ImageLoader,
 ) {
   navigation<InsurancesDestination.Graph>(
-    startDestination = createRoutePattern<InsurancesDestination.Insurances>(),
+    startDestination = InsurancesDestination.Insurances::class,
   ) {
     nestedGraphs()
     composable<InsurancesDestination.Insurances>(

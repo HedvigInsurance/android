@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.forever.navigation
 
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
@@ -17,7 +18,7 @@ fun NavGraphBuilder.foreverGraph(
   hedvigBuildConstants: HedvigBuildConstants,
 ) {
   navigation<ForeverDestination.Graph>(
-    startDestination = createRoutePattern<ForeverDestination.Forever>(),
+    startDestination = ForeverDestination.Forever::class,
   ) {
     composable<ForeverDestination.Forever>(
       deepLinks = listOf(

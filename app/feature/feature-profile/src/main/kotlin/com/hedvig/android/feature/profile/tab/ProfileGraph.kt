@@ -36,7 +36,7 @@ fun NavGraphBuilder.profileGraph(
   openUrl: (String) -> Unit,
 ) {
   navigation<ProfileDestination.Graph>(
-    startDestination = createRoutePattern<ProfileDestination.Profile>(),
+    startDestination = ProfileDestination.Profile::class,
   ) {
     composable<ProfileDestination.Profile>(
       deepLinks = listOf(
@@ -109,7 +109,7 @@ fun NavGraphBuilder.profileGraph(
       )
     }
     navigation<ProfileDestinations.SettingsGraph>(
-      startDestination = createRoutePattern<SettingsDestinations.Settings>(),
+      startDestination = SettingsDestinations.Settings::class,
     ) {
       composable<SettingsDestinations.Settings> { backStackEntry ->
         val viewModel: SettingsViewModel = koinViewModel()

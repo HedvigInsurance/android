@@ -28,7 +28,7 @@ fun NavGraphBuilder.paymentsGraph(
   navigateToConnectPayment: () -> Unit,
 ) {
   navigation<PaymentsDestination.Graph>(
-    startDestination = createRoutePattern<PaymentsDestination.Payments>(),
+    startDestination = PaymentsDestination.Payments::class,
   ) {
     composable<PaymentsDestination.Payments>(
       deepLinks = listOf(

@@ -75,7 +75,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
   }
 
   navigation<TerminateInsuranceGraphDestination>(
-    startDestination = createRoutePattern<TerminateInsuranceDestination.StartStep>(),
+    startDestination = TerminateInsuranceDestination.StartStep::class,
     deepLinks = listOf(
       navDeepLink { uriPattern = hedvigDeepLinkContainer.terminateInsurance },
     ),
