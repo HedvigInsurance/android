@@ -42,6 +42,7 @@ dependencies {
   implementation(projects.coreUiData)
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
+  implementation(projects.navigationCompose)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
 
