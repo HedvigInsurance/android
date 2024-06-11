@@ -6,6 +6,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.core.common.android.sharePDF
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
+import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateDestination.TravelCertificateTravellersInput.Companion.typeMap
 import com.hedvig.android.feature.travelcertificate.ui.choose.ChooseContractForCertificateDestination
 import com.hedvig.android.feature.travelcertificate.ui.choose.ChooseContractForCertificateViewModel
 import com.hedvig.android.feature.travelcertificate.ui.generatewhen.TravelCertificateDateInputDestination
@@ -87,7 +88,9 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavC
       )
     }
 
-    navdestination<TravelCertificateDestination.TravelCertificateTravellersInput> {
+    navdestination<TravelCertificateDestination.TravelCertificateTravellersInput>(
+      typeMap = TravelCertificateDestination.TravelCertificateTravellersInput.typeMap,
+    ) {
       val viewModel: TravelCertificateTravellersInputViewModel = koinViewModel(
         parameters = {
           parametersOf(primaryInput)
@@ -109,7 +112,9 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavC
       )
     }
 
-    navdestination<TravelCertificateDestination.ShowCertificate> {
+    navdestination<TravelCertificateDestination.ShowCertificate>(
+      typeMap = TravelCertificateDestination.ShowCertificate.typeMap,
+    ) {
       val viewModel: TravelCertificateOverviewViewModel = koinViewModel()
       val context = LocalContext.current
       TravelCertificateOverviewDestination(
