@@ -22,6 +22,7 @@ fun NavGraphBuilder.chatGraph(
   navigator: Navigator,
 ) {
   navdestination<AppDestination.Chat>(
+    typeMap = AppDestination.Chat.typeMap,
     deepLinks = listOf(
       navDeepLink { uriPattern = hedvigDeepLinkContainer.chat },
     ),

@@ -1,5 +1,6 @@
 package com.hedvig.android.navigation.core
 
+import com.hedvig.android.navigation.compose.typeMapOfNullable
 import kotlinx.serialization.Serializable
 
 sealed interface AppDestination {
@@ -13,6 +14,10 @@ sealed interface AppDestination {
       COVERAGE,
       INSURANCE,
       OTHER,
+    }
+
+    companion object {
+      val typeMap = typeMapOfNullable<ChatContext>()
     }
   }
 

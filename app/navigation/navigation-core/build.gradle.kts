@@ -13,4 +13,5 @@ dependencies {
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.coreBuildConstants)
   implementation(projects.dataContractPublic)
+  implementation(projects.navigationCompose)
 }
