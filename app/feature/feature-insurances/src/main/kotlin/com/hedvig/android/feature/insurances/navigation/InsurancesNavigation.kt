@@ -1,19 +1,18 @@
 package com.hedvig.android.feature.insurances.navigation
 
-import com.kiwi.navigationcompose.typed.Destination
-import com.kiwi.navigationcompose.typed.createRoutePattern
+import kotlin.reflect.KClass
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 sealed interface InsurancesDestination {
   @Serializable
-  data object Graph : InsurancesDestination, Destination
+  data object Graph : InsurancesDestination
 
   @Serializable
-  data object Insurances : InsurancesDestination, Destination
+  data object Insurances : InsurancesDestination
 }
 
-internal sealed interface InsurancesDestinations : Destination {
+internal sealed interface InsurancesDestinations {
   @Serializable
   data class InsuranceContractDetail(
     /** Must match the name of the param inside [com.hedvig.android.navigation.core.HedvigDeepLinkContainer.contract] */
@@ -25,7 +24,7 @@ internal sealed interface InsurancesDestinations : Destination {
   data object TerminatedInsurances : InsurancesDestinations
 }
 
-val insurancesBottomNavPermittedDestinations: List<String> = listOf(
-  createRoutePattern<InsurancesDestinations.InsuranceContractDetail>(),
-  createRoutePattern<InsurancesDestinations.TerminatedInsurances>(),
+val insurancesBottomNavPermittedDestinations: List<KClass<*>> = listOf(
+  InsurancesDestinations.InsuranceContractDetail::class,
+  InsurancesDestinations.TerminatedInsurances::class,
 )

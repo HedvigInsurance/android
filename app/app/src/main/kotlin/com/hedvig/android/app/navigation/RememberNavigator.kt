@@ -9,16 +9,14 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import com.hedvig.android.navigation.core.Navigator
-import com.kiwi.navigationcompose.typed.Destination
-import com.kiwi.navigationcompose.typed.navigate
 
 @Composable
 internal fun rememberNavigator(navController: NavController, finishApp: () -> Unit): Navigator {
   val updatedFinishApp by rememberUpdatedState(finishApp)
   return remember(navController) {
     object : Navigator {
-      override fun NavBackStackEntry.navigate(
-        destination: Destination,
+      override fun <T : Any> NavBackStackEntry.navigate(
+        destination: T,
         navOptions: NavOptions?,
         navigatorExtras: androidx.navigation.Navigator.Extras?,
       ) {
@@ -27,8 +25,8 @@ internal fun rememberNavigator(navController: NavController, finishApp: () -> Un
         }
       }
 
-      override fun navigateUnsafe(
-        destination: Destination,
+      override fun <T : Any> navigateUnsafe(
+        destination: T,
         navOptions: NavOptions?,
         navigatorExtras: androidx.navigation.Navigator.Extras?,
       ) {

@@ -5,20 +5,17 @@ import androidx.navigation.NavHostController
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredAddMissingInfoDestination
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredAddOrRemoveDestination
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredSuccessDestination
+import com.hedvig.android.navigation.compose.navdestination
+import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.AppDestination
-import com.kiwi.navigationcompose.typed.composable
-import com.kiwi.navigationcompose.typed.createRoutePattern
-import com.kiwi.navigationcompose.typed.navigate
-import com.kiwi.navigationcompose.typed.navigation
-import com.kiwi.navigationcompose.typed.popUpTo
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 fun NavGraphBuilder.editCoInsuredGraph(navigateUp: () -> Unit, navController: NavHostController) {
-  navigation<AppDestination.EditCoInsured>(
-    startDestination = createRoutePattern<AppDestination.CoInsuredAddOrRemove>(),
+  navgraph<AppDestination.EditCoInsured>(
+    startDestination = AppDestination.CoInsuredAddOrRemove::class,
   ) {
-    composable<AppDestination.CoInsuredAddInfo> {
+    navdestination<AppDestination.CoInsuredAddInfo> {
       EditCoInsuredAddMissingInfoDestination(
         viewModel = koinViewModel { parametersOf(contractId) },
         navigateToSuccessScreen = {
@@ -31,7 +28,7 @@ fun NavGraphBuilder.editCoInsuredGraph(navigateUp: () -> Unit, navController: Na
         navigateUp = navigateUp,
       )
     }
-    composable<AppDestination.CoInsuredAddOrRemove> {
+    navdestination<AppDestination.CoInsuredAddOrRemove> {
       EditCoInsuredAddOrRemoveDestination(
         koinViewModel { parametersOf(contractId) },
         navigateToSuccessScreen = {
@@ -44,7 +41,9 @@ fun NavGraphBuilder.editCoInsuredGraph(navigateUp: () -> Unit, navController: Na
         navigateUp = navigateUp,
       )
     }
-    composable<EditCoInsuredDestination.Success> {
+    navdestination<EditCoInsuredDestination.Success>(
+      typeMap = EditCoInsuredDestination.Success.typeMap,
+    ) {
       EditCoInsuredSuccessDestination(
         date = date,
         popBackstack = {

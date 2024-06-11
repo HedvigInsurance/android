@@ -12,6 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -37,10 +38,7 @@ import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.notification.badge.data.tab.BottomNavTab
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
 import com.hedvig.android.theme.Theme
-import com.kiwi.navigationcompose.typed.Destination
-import com.kiwi.navigationcompose.typed.createRoutePattern
-import com.kiwi.navigationcompose.typed.navigate
-import com.kiwi.navigationcompose.typed.popUpTo
+import kotlin.reflect.KClass
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
@@ -282,48 +280,49 @@ private fun TopLevelDestinationNavigationSideEffect(
 }
 
 private fun NavDestination?.toTopLevelAppDestination(): TopLevelDestination? {
-  return when (this?.route) {
-    createRoutePattern<HomeDestination.Home>() -> TopLevelDestination.Home
-    createRoutePattern<InsurancesDestination.Insurances>() -> TopLevelDestination.Insurances
-    createRoutePattern<ForeverDestination.Forever>() -> TopLevelDestination.Forever
-    createRoutePattern<PaymentsDestination.Payments>() -> TopLevelDestination.Payments
-    createRoutePattern<ProfileDestination.Profile>() -> TopLevelDestination.Profile
+  return when {
+    this == null -> null
+    hasRoute<HomeDestination.Home>() -> TopLevelDestination.Home
+    hasRoute<InsurancesDestination.Insurances>() -> TopLevelDestination.Insurances
+    hasRoute<ForeverDestination.Forever>() -> TopLevelDestination.Forever
+    hasRoute<PaymentsDestination.Payments>() -> TopLevelDestination.Payments
+    hasRoute<ProfileDestination.Profile>() -> TopLevelDestination.Profile
     else -> null
   }
 }
 
 private fun NavDestination?.isInListOfNonTopLevelNavBarPermittedDestinations(): Boolean {
-  return this?.route in bottomNavPermittedDestinations
+  return bottomNavPermittedDestinations.any { this?.hasRoute(it) == true }
 }
 
 /**
  * Special routes, which despite not being top level should still show the navigation bars.
  */
-private val bottomNavPermittedDestinations: List<String> = buildList {
+private val bottomNavPermittedDestinations: List<KClass<*>> = buildList {
   addAll(profileBottomNavPermittedDestinations)
   addAll(insurancesBottomNavPermittedDestinations)
 }
 
 private sealed interface TopLevelDestination {
-  val destination: Destination
+  val destination: Any
 
   object Home : TopLevelDestination {
-    override val destination: Destination = HomeDestination.Home
+    override val destination: Any = HomeDestination.Home
   }
 
   object Insurances : TopLevelDestination {
-    override val destination: Destination = InsurancesDestination.Insurances
+    override val destination: Any = InsurancesDestination.Insurances
   }
 
   object Forever : TopLevelDestination {
-    override val destination: Destination = ForeverDestination.Forever
+    override val destination: Any = ForeverDestination.Forever
   }
 
   object Payments : TopLevelDestination {
-    override val destination: Destination = PaymentsDestination.Payments
+    override val destination: Any = PaymentsDestination.Payments
   }
 
   object Profile : TopLevelDestination {
-    override val destination: Destination = ProfileDestination.Profile
+    override val destination: Any = ProfileDestination.Profile
   }
 }

@@ -50,10 +50,6 @@ import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
 import com.hedvig.app.BuildConfig
-import com.kiwi.navigationcompose.typed.createRoutePattern
-import com.kiwi.navigationcompose.typed.navigate
-import com.kiwi.navigationcompose.typed.popBackStack
-import com.kiwi.navigationcompose.typed.popUpTo
 
 @Composable
 internal fun HedvigNavHost(
@@ -84,8 +80,8 @@ internal fun HedvigNavHost(
 
   NavHost(
     navController = hedvigAppState.navController,
-    startDestination = createRoutePattern<HomeDestination.Graph>(),
-    route = RootGraph.route,
+    startDestination = HomeDestination.Graph::class,
+    route = RootGraph::class,
     modifier = modifier,
     enterTransition = { MotionDefaults.sharedXAxisEnter(density) },
     exitTransition = { MotionDefaults.sharedXAxisExit(density) },
@@ -262,7 +258,7 @@ internal fun HedvigNavHost(
         navigator.navigateUnsafe(
           AppDestination.ConnectPaymentAdyen,
           navOptions {
-            popUpTo(createRoutePattern<AppDestination.ConnectPayment>()) {
+            popUpTo<AppDestination.ConnectPayment> {
               inclusive = true
             }
           },
@@ -278,7 +274,7 @@ internal fun HedvigNavHost(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       navigator = navigator,
       onNavigateToQuickLink = { backStackEntry, quickLinkDestination ->
-        val destination = when (quickLinkDestination) {
+        val destination: Any = when (quickLinkDestination) {
           QuickLinkDestination.OuterDestination.QuickLinkChangeAddress -> AppDestination.ChangeAddress
           is QuickLinkDestination.OuterDestination.QuickLinkCoInsuredAddInfo ->
             AppDestination.CoInsuredAddInfo(quickLinkDestination.contractId)

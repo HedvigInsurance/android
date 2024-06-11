@@ -8,7 +8,6 @@ plugins {
 
 dependencies {
   api(libs.androidx.navigation.common)
-  api(libs.kiwi.navigationCompose)
   implementation(libs.androidx.compose.animation)
   implementation(libs.androidx.compose.runtime)
   implementation(libs.androidx.navigation.compose)

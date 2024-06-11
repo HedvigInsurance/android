@@ -10,13 +10,15 @@ import com.hedvig.android.data.claimflow.ItemBrand.Unknown.displayName
 import com.hedvig.android.data.claimflow.ItemModel.Unknown.displayName
 import com.hedvig.android.data.claimflow.model.AudioUrl
 import com.hedvig.android.data.claimflow.model.FlowId
+import com.hedvig.android.navigation.compose.typeMapOf
+import com.hedvig.android.navigation.compose.typePairOf
+import com.hedvig.android.navigation.compose.typePairOfNullable
 import com.hedvig.audio.player.data.SignedAudioUrl
-import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 import octopus.type.CurrencyCode
 
-sealed interface ClaimFlowDestination : Destination {
+sealed interface ClaimFlowDestination {
   @Serializable
   object HonestyPledge : ClaimFlowDestination
 
@@ -28,19 +30,37 @@ sealed interface ClaimFlowDestination : Destination {
     val flowId: FlowId,
     val questions: List<String>,
     val audioContent: AudioContent?,
-  ) : ClaimFlowDestination
+  ) : ClaimFlowDestination {
+    companion object {
+      val typeMap = mapOf(
+        typePairOf<FlowId>(),
+        typePairOfNullable<AudioContent>(),
+      )
+    }
+  }
 
   @Serializable
   data class DateOfOccurrence(
     val dateOfOccurrence: LocalDate?,
     val maxDate: LocalDate,
-  ) : ClaimFlowDestination
+  ) : ClaimFlowDestination {
+    companion object {
+      val typeMap = mapOf(
+        typePairOfNullable<LocalDate>(),
+        typePairOf<LocalDate>(),
+      )
+    }
+  }
 
   @Serializable
   data class Location(
     val selectedLocation: String?,
     val locationOptions: List<LocationOption>,
-  ) : ClaimFlowDestination
+  ) : ClaimFlowDestination {
+    companion object {
+      val typeMap = typeMapOf<List<LocationOption>>()
+    }
+  }
 
   @Serializable
   data class DateOfOccurrencePlusLocation(
@@ -48,7 +68,15 @@ sealed interface ClaimFlowDestination : Destination {
     val maxDate: LocalDate,
     val selectedLocation: String?,
     val locationOptions: List<LocationOption>,
-  ) : ClaimFlowDestination
+  ) : ClaimFlowDestination {
+    companion object {
+      val typeMap = mapOf(
+        typePairOfNullable<LocalDate>(),
+        typePairOf<LocalDate>(),
+        typePairOf<List<LocationOption>>(),
+      )
+    }
+  }
 
   @Serializable
   data class PhoneNumber(val phoneNumber: String) : ClaimFlowDestination
@@ -56,7 +84,11 @@ sealed interface ClaimFlowDestination : Destination {
   @Serializable
   data class SelectContract(
     val options: List<LocalContractContractOption>,
-  ) : ClaimFlowDestination
+  ) : ClaimFlowDestination {
+    companion object {
+      val typeMap = typeMapOf<List<LocalContractContractOption>>()
+    }
+  }
 
   @Serializable
   data class SingleItem(
@@ -71,39 +103,77 @@ sealed interface ClaimFlowDestination : Destination {
     val customName: String?,
     val availableItemProblems: List<ItemProblem>?,
     val selectedItemProblems: List<String>?,
-  ) : ClaimFlowDestination
+  ) : ClaimFlowDestination {
+    companion object {
+      val typeMap = mapOf(
+        typePairOf<CurrencyCode>(),
+        typePairOfNullable<LocalDate>(),
+        typePairOfNullable<UiNullableMoney>(),
+        typePairOfNullable<List<ItemBrand>>(),
+        typePairOfNullable<List<ItemModel>>(),
+        typePairOfNullable<List<ItemProblem>>(),
+      )
+    }
+  }
 
   @Serializable
   data class DeflectGlassDamage(
     val partners: List<DeflectPartner>,
-  ) : ClaimFlowDestination
+  ) : ClaimFlowDestination {
+    companion object {
+      val typeMap = typeMapOf<List<DeflectPartner>>()
+    }
+  }
 
   @Serializable
   data class DeflectTowing(
     val partners: List<DeflectPartner>,
-  ) : ClaimFlowDestination
+  ) : ClaimFlowDestination {
+    companion object {
+      val typeMap = typeMapOf<List<DeflectPartner>>()
+    }
+  }
 
   @Serializable
   data class DeflectCarOtherDamage(
     val partners: List<DeflectPartner>,
-  ) : ClaimFlowDestination
+  ) : ClaimFlowDestination {
+    companion object {
+      val typeMap = typeMapOf<List<DeflectPartner>>()
+    }
+  }
 
   @Serializable
   data class ConfirmEmergency(
     val text: String,
     val confirmEmergency: Boolean?,
     val options: List<EmergencyOption>,
-  ) : ClaimFlowDestination
+  ) : ClaimFlowDestination {
+    companion object {
+      val typeMap = mapOf(
+        typePairOfNullable<Boolean>(),
+        typePairOf<List<EmergencyOption>>(),
+      )
+    }
+  }
 
   @Serializable
   data class DeflectEmergency(
     val partners: List<DeflectPartner>,
-  ) : ClaimFlowDestination
+  ) : ClaimFlowDestination {
+    companion object {
+      val typeMap = typeMapOf<List<DeflectPartner>>()
+    }
+  }
 
   @Serializable
   data class DeflectPests(
     val partners: List<DeflectPartner>,
-  ) : ClaimFlowDestination
+  ) : ClaimFlowDestination {
+    companion object {
+      val typeMap = typeMapOf<List<DeflectPartner>>()
+    }
+  }
 
   @Serializable
   data class Summary(
@@ -124,7 +194,22 @@ sealed interface ClaimFlowDestination : Destination {
     val selectedItemProblems: List<String>?,
     val submittedContent: SubmittedContent?,
     val files: List<UiFile>,
-  ) : ClaimFlowDestination
+  ) : ClaimFlowDestination {
+    companion object {
+      val typeMap = mapOf(
+        typePairOf<List<LocationOption>>(),
+        typePairOfNullable<LocalDate>(),
+        typePairOf<LocalDate>(),
+        typePairOfNullable<CurrencyCode>(),
+        typePairOfNullable<UiNullableMoney>(),
+        typePairOfNullable<List<ItemBrand>>(),
+        typePairOfNullable<List<ItemModel>>(),
+        typePairOfNullable<List<ItemProblem>>(),
+        typePairOfNullable<SubmittedContent>(),
+        typePairOf<List<UiFile>>(),
+      )
+    }
+  }
 
   @Serializable
   data class SingleItemCheckout(
@@ -133,7 +218,14 @@ sealed interface ClaimFlowDestination : Destination {
     val modelName: String?,
     val brandName: String?,
     val customName: String?,
-  ) : ClaimFlowDestination
+  ) : ClaimFlowDestination {
+    companion object {
+      val typeMap = mapOf(
+        typePairOf<Compensation>(),
+        typePairOf<List<CheckoutMethod.Known>>(),
+      )
+    }
+  }
 
   @Serializable
   sealed interface Compensation {
@@ -165,14 +257,22 @@ sealed interface ClaimFlowDestination : Destination {
   @Serializable
   data class SingleItemPayout(
     val checkoutMethod: CheckoutMethod.Known,
-  ) : ClaimFlowDestination
+  ) : ClaimFlowDestination {
+    companion object {
+      val typeMap = typeMapOf<CheckoutMethod.Known>()
+    }
+  }
 
   @Serializable
   data class FileUpload(
     val title: String,
     val targetUploadUrl: String,
     val uploads: List<UiFile>,
-  ) : ClaimFlowDestination
+  ) : ClaimFlowDestination {
+    companion object {
+      val typeMap = typeMapOf<List<UiFile>>()
+    }
+  }
 
   @Serializable
   object ClaimSuccess : ClaimFlowDestination

@@ -1,17 +1,20 @@
 package com.hedvig.android.feature.home.home.navigation
 
+import com.hedvig.android.navigation.compose.typeMapOf
 import com.hedvig.android.ui.emergency.FirstVetSection
-import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.serialization.Serializable
 
 sealed interface HomeDestination {
   @Serializable
-  data object Graph : HomeDestination, Destination
+  data object Graph : HomeDestination
 
   @Serializable
-  data object Home : HomeDestination, Destination
+  data object Home : HomeDestination
 
   @Serializable
-  data class FirstVet(val sections: List<FirstVetSection>) :
-    HomeDestination, Destination
+  data class FirstVet(val sections: List<FirstVetSection>) : HomeDestination {
+    companion object {
+      val typeMap = typeMapOf<List<FirstVetSection>>()
+    }
+  }
 }

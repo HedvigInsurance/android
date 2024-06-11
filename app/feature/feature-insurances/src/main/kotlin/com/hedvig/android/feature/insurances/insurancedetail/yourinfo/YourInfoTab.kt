@@ -157,7 +157,13 @@ internal fun YourInfoTab(
         ),
         sections = upcomingChangesInsuranceAgreement.displayItems
           .map { it.title to it.value },
-        onOpenChat = openChat,
+        onOpenChat = {
+          coroutineScope.launch {
+            sheetState.hide()
+            showUpcomingChangesBottomSheet = false
+            openChat()
+          }
+        },
         onDismiss = {
           coroutineScope.launch {
             sheetState.hide()

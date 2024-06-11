@@ -148,7 +148,6 @@ dependencies {
   implementation(libs.firebase.crashlytics)
   implementation(libs.firebase.dynamicLinks)
   implementation(libs.firebase.messaging)
-  implementation(libs.kiwi.navigationCompose)
   implementation(libs.koin.android)
   implementation(libs.koin.compose)
   implementation(libs.koin.workManager)
