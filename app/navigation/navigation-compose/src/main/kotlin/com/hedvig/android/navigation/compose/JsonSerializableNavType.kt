@@ -10,11 +10,30 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 
 /**
- * Used for the simple cases where we'd do `typeOf<T>() to JsonSerializableNavType<T>(),` and the type is non-nullable.
+ * Short for `mapOf(typePairOf<T>())`
+ * Usually used like:
+ * ```
+ * companion object {
+ *   val typeMap = typeMapOf<FirstAndOnlyParameter>()
+ * }
+ * ```
  */
-inline fun <reified T : Any> typeMapOf(): Map<KType, @JvmSuppressWildcards NavType<*>> = mapOf(
-  typeOf<T>() to JsonSerializableNavType<T>(),
-)
+inline fun <reified T : Any> typeMapOf(): Map<KType, @JvmSuppressWildcards NavType<*>> = mapOf(typePairOf<T>())
+
+/**
+ * Short for `typeOf<T>() to JsonSerializableNavType<T>()`
+ * Usually used like:
+ * ```
+ * companion object {
+ *   val typeMap = mapOf(
+ *     typePairOf<FirstParameter>(),
+ *     typePairOf<SecondParameter>(),
+ *   )
+ * }
+ * ```
+ */
+inline fun <reified T : Any> typePairOf(): Pair<KType, @JvmSuppressWildcards NavType<*>> =
+  typeOf<T>() to JsonSerializableNavType<T>()
 
 /**
  * Used for the simple cases where we'd do `typeOf<T?>() to JsonSerializableNullableNavType<T?>(),`.

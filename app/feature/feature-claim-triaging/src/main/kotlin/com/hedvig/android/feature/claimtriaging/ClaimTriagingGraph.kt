@@ -16,6 +16,7 @@ import com.hedvig.android.feature.claimtriaging.claimgroups.ClaimGroupsDestinati
 import com.hedvig.android.feature.claimtriaging.claimgroups.ClaimGroupsViewModel
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.typeMapOf
+import com.hedvig.android.navigation.compose.typePairOf
 import com.hedvig.android.navigation.core.Navigator
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
@@ -37,7 +38,14 @@ sealed interface ClaimTriagingDestination {
   data class ClaimEntryPointOptions(
     val entryPointId: EntryPointId,
     val entryPointOptions: List<EntryPointOption>,
-  ) : ClaimTriagingDestination
+  ) : ClaimTriagingDestination {
+    companion object {
+      val typeMap = mapOf(
+        typePairOf<EntryPointId>(),
+        typePairOf<List<EntryPointOption>>(),
+      )
+    }
+  }
 }
 
 fun NavGraphBuilder.claimTriagingDestinations(
@@ -84,7 +92,9 @@ fun NavGraphBuilder.claimTriagingDestinations(
       windowSizeClass = windowSizeClass,
     )
   }
-  navdestination<ClaimTriagingDestination.ClaimEntryPointOptions> { backStackEntry ->
+  navdestination<ClaimTriagingDestination.ClaimEntryPointOptions>(
+    typeMap = ClaimTriagingDestination.ClaimEntryPointOptions.typeMap,
+  ) { backStackEntry ->
     val viewModel: ClaimEntryPointOptionsViewModel = koinViewModel()
     ClaimEntryPointOptionsDestination(
       viewModel = viewModel,
