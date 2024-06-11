@@ -22,7 +22,7 @@ internal sealed interface ChangeAddressDestination {
     val movingDate: LocalDate?,
   ) : ChangeAddressDestination {
     companion object {
-      val typeMap = typeMapOfNullable<LocalDate?>()
+      val typeMap = typeMapOfNullable<LocalDate>()
     }
   }
 }

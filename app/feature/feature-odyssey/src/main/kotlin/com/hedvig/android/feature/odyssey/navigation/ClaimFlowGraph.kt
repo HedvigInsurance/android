@@ -94,7 +94,9 @@ fun NavGraphBuilder.claimFlowGraph(
         closeClaimFlow = closeClaimFlow,
       )
     }
-    navdestination<ClaimFlowDestination.AudioRecording> { backStackEntry ->
+    navdestination<ClaimFlowDestination.AudioRecording>(
+      typeMap = ClaimFlowDestination.AudioRecording.typeMap,
+    ) { backStackEntry ->
       val viewModel: AudioRecordingViewModel = koinViewModel { parametersOf(flowId, audioContent) }
       AudioRecordingDestination(
         viewModel = viewModel,
@@ -110,7 +112,9 @@ fun NavGraphBuilder.claimFlowGraph(
         closeClaimFlow = closeClaimFlow,
       )
     }
-    navdestination<ClaimFlowDestination.DateOfOccurrence> { backStackEntry ->
+    navdestination<ClaimFlowDestination.DateOfOccurrence>(
+      typeMap = ClaimFlowDestination.DateOfOccurrence.typeMap,
+    ) { backStackEntry ->
       val dateOfOccurrence: ClaimFlowDestination.DateOfOccurrence = this
       val viewModel: DateOfOccurrenceViewModel = koinViewModel { parametersOf(dateOfOccurrence) }
       DateOfOccurrenceDestination(
@@ -124,7 +128,9 @@ fun NavGraphBuilder.claimFlowGraph(
         closeClaimFlow = closeClaimFlow,
       )
     }
-    navdestination<ClaimFlowDestination.DateOfOccurrencePlusLocation> { backStackEntry ->
+    navdestination<ClaimFlowDestination.DateOfOccurrencePlusLocation>(
+      typeMap = ClaimFlowDestination.DateOfOccurrencePlusLocation.typeMap,
+    ) { backStackEntry ->
       val dateOfOccurencePlusLocation: ClaimFlowDestination.DateOfOccurrencePlusLocation = this
       val viewModel: DateOfOccurrencePlusLocationViewModel = koinViewModel {
         parametersOf(dateOfOccurencePlusLocation)
@@ -140,7 +146,9 @@ fun NavGraphBuilder.claimFlowGraph(
         closeClaimFlow = closeClaimFlow,
       )
     }
-    navdestination<ClaimFlowDestination.Location> { backStackEntry ->
+    navdestination<ClaimFlowDestination.Location>(
+      typeMap = ClaimFlowDestination.Location.typeMap,
+    ) { backStackEntry ->
       val viewModel: LocationViewModel = koinViewModel { parametersOf(selectedLocation, locationOptions) }
       LocationDestination(
         viewModel = viewModel,
@@ -166,7 +174,9 @@ fun NavGraphBuilder.claimFlowGraph(
         closeClaimFlow = closeClaimFlow,
       )
     }
-    navdestination<ClaimFlowDestination.SingleItem> { backStackEntry ->
+    navdestination<ClaimFlowDestination.SingleItem>(
+      typeMap = ClaimFlowDestination.SingleItem.typeMap,
+    ) { backStackEntry ->
       val singleItem: ClaimFlowDestination.SingleItem = this
       val viewModel: SingleItemViewModel = koinViewModel { parametersOf(singleItem) }
       SingleItemDestination(
@@ -180,7 +190,9 @@ fun NavGraphBuilder.claimFlowGraph(
         closeClaimFlow = closeClaimFlow,
       )
     }
-    navdestination<ClaimFlowDestination.Summary> { backStackEntry ->
+    navdestination<ClaimFlowDestination.Summary>(
+      typeMap = ClaimFlowDestination.Summary.typeMap,
+    ) { backStackEntry ->
       val summary: ClaimFlowDestination.Summary = this
       val viewModel: ClaimSummaryViewModel = koinViewModel { parametersOf(summary) }
       ClaimSummaryDestination(
@@ -195,7 +207,9 @@ fun NavGraphBuilder.claimFlowGraph(
         windowSizeClass = windowSizeClass,
       )
     }
-    navdestination<ClaimFlowDestination.SingleItemCheckout> { backStackEntry ->
+    navdestination<ClaimFlowDestination.SingleItemCheckout>(
+      typeMap = ClaimFlowDestination.SingleItemCheckout.typeMap,
+    ) { backStackEntry ->
       val singleItemCheckout = this
       val viewModel: SingleItemCheckoutViewModel = koinViewModel { parametersOf(singleItemCheckout) }
       SingleItemCheckoutDestination(
@@ -214,7 +228,9 @@ fun NavGraphBuilder.claimFlowGraph(
         closeClaimFlow = closeClaimFlow,
       )
     }
-    navdestination<ClaimFlowDestination.SelectContract> { backStackEntry ->
+    navdestination<ClaimFlowDestination.SelectContract>(
+      typeMap = ClaimFlowDestination.SelectContract.typeMap,
+    ) { backStackEntry ->
       val viewModel: SelectContractViewModel = koinViewModel { parametersOf(this) }
       SelectContractDestination(
         viewModel = viewModel,
@@ -227,7 +243,9 @@ fun NavGraphBuilder.claimFlowGraph(
         closeClaimFlow = closeClaimFlow,
       )
     }
-    navdestination<ClaimFlowDestination.ConfirmEmergency> { backStackEntry ->
+    navdestination<ClaimFlowDestination.ConfirmEmergency>(
+      typeMap = ClaimFlowDestination.ConfirmEmergency.typeMap,
+    ) { backStackEntry ->
       val viewModel: ConfirmEmergencyViewModel = koinViewModel { parametersOf(this) }
       ConfirmEmergencyDestination(
         viewModel = viewModel,
@@ -240,7 +258,9 @@ fun NavGraphBuilder.claimFlowGraph(
         closeClaimFlow = closeClaimFlow,
       )
     }
-    navdestination<ClaimFlowDestination.DeflectGlassDamage> { navBackStackEntry ->
+    navdestination<ClaimFlowDestination.DeflectGlassDamage>(
+      typeMap = ClaimFlowDestination.DeflectGlassDamage.typeMap,
+    ) { navBackStackEntry ->
       DeflectGlassDamageDestination(
         deflectGlassDamage = this,
         openChat = {
@@ -253,7 +273,9 @@ fun NavGraphBuilder.claimFlowGraph(
         imageLoader = imageLoader,
       )
     }
-    navdestination<ClaimFlowDestination.DeflectTowing> { navBackStackEntry ->
+    navdestination<ClaimFlowDestination.DeflectTowing>(
+      typeMap = ClaimFlowDestination.DeflectTowing.typeMap,
+    ) { navBackStackEntry ->
       DeflectTowingDestination(
         deflectTowing = this,
         openChat = {
@@ -266,7 +288,9 @@ fun NavGraphBuilder.claimFlowGraph(
       )
     }
 
-    navdestination<ClaimFlowDestination.DeflectCarOtherDamage> { navBackStackEntry ->
+    navdestination<ClaimFlowDestination.DeflectCarOtherDamage>(
+      typeMap = ClaimFlowDestination.DeflectCarOtherDamage.typeMap,
+    ) {
       DeflectCarOtherDamageDestination(
         deflectCarOtherDamage = this,
         windowSizeClass = windowSizeClass,
@@ -276,13 +300,17 @@ fun NavGraphBuilder.claimFlowGraph(
       )
     }
 
-    navdestination<ClaimFlowDestination.DeflectEmergency> {
+    navdestination<ClaimFlowDestination.DeflectEmergency>(
+      typeMap = ClaimFlowDestination.DeflectEmergency.typeMap,
+    ) {
       DeflectEmergencyDestination(
         deflectEmergency = this,
         navigateUp = navigator::navigateUp,
       )
     }
-    navdestination<ClaimFlowDestination.DeflectPests> { navBackStackEntry ->
+    navdestination<ClaimFlowDestination.DeflectPests>(
+      typeMap = ClaimFlowDestination.DeflectPests.typeMap,
+    ) { navBackStackEntry ->
       DeflectPestsDestination(
         deflectPests = this,
         openChat = {
@@ -295,7 +323,9 @@ fun NavGraphBuilder.claimFlowGraph(
         imageLoader = imageLoader,
       )
     }
-    navdestination<ClaimFlowDestination.FileUpload> { backStackEntry ->
+    navdestination<ClaimFlowDestination.FileUpload>(
+      typeMap = ClaimFlowDestination.FileUpload.typeMap,
+    ) { backStackEntry ->
       val viewModel: FileUploadViewModel = koinViewModel { parametersOf(this) }
       FileUploadDestination(
         viewModel = viewModel,
@@ -322,7 +352,9 @@ fun NavGraphBuilder.terminalClaimFlowStepDestinations(
   openPlayStore: () -> Unit,
   openChat: (NavBackStackEntry) -> Unit,
 ) {
-  navdestination<ClaimFlowDestination.SingleItemPayout> { backStackEntry ->
+  navdestination<ClaimFlowDestination.SingleItemPayout>(
+    typeMap = ClaimFlowDestination.SingleItemPayout.typeMap,
+  ) { backStackEntry ->
     val singleItemPayout = this
     val viewModel: SingleItemPayoutViewModel = koinViewModel { parametersOf(singleItemPayout) }
     SingleItemPayoutDestination(

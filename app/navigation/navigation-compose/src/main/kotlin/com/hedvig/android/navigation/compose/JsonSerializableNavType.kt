@@ -36,11 +36,16 @@ inline fun <reified T : Any> typePairOf(): Pair<KType, @JvmSuppressWildcards Nav
   typeOf<T>() to JsonSerializableNavType<T>()
 
 /**
- * Used for the simple cases where we'd do `typeOf<T?>() to JsonSerializableNullableNavType<T?>(),`.
+ * Same as [typeMapOf] but for nullable types
  */
-inline fun <reified T : Any?> typeMapOfNullable(): Map<KType, @JvmSuppressWildcards NavType<*>> = mapOf(
-  typeOf<T>() to JsonSerializableNullableNavType<T>(),
-)
+inline fun <reified T : Any?> typeMapOfNullable(): Map<KType, @JvmSuppressWildcards NavType<*>> =
+  mapOf(typePairOfNullable<T?>())
+
+/**
+ * Same as [typePairOf] but for nullable types
+ */
+inline fun <reified T : Any?> typePairOfNullable(): Pair<KType, @JvmSuppressWildcards NavType<*>> =
+  typeOf<T?>() to JsonSerializableNullableNavType<T?>()
 
 /**
  * Use like:
