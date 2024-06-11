@@ -41,7 +41,9 @@ fun NavGraphBuilder.editCoInsuredGraph(navigateUp: () -> Unit, navController: Na
         navigateUp = navigateUp,
       )
     }
-    navdestination<EditCoInsuredDestination.Success> {
+    navdestination<EditCoInsuredDestination.Success>(
+      typeMap = EditCoInsuredDestination.Success.typeMap,
+    ) {
       EditCoInsuredSuccessDestination(
         date = date,
         popBackstack = {
