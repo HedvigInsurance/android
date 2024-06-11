@@ -64,9 +64,6 @@ internal fun SelectHousingTypeDestination(
     onErrorDialogDismissed = {
       viewModel.emit(SelectHousingTypeEvent.DismissErrorDialog)
     },
-    onValidateHousingType = {
-      viewModel.emit(SelectHousingTypeEvent.ValidateHousingType)
-    },
   )
 }
 
@@ -78,7 +75,6 @@ private fun ChangeAddressSelectHousingTypeScreen(
   onHousingTypeSubmitted: () -> Unit,
   onHousingTypeErrorDialogDismissed: () -> Unit,
   onErrorDialogDismissed: () -> Unit,
-  onValidateHousingType: () -> Unit,
 ) {
   uiState.errorMessageRes?.let {
     ErrorDialog(
@@ -123,12 +119,7 @@ private fun ChangeAddressSelectHousingTypeScreen(
     Spacer(modifier = Modifier.height(16.dp))
     HedvigContainedButton(
       text = stringResource(id = hedvig.resources.R.string.general_continue_button),
-      onClick = {
-        onValidateHousingType()
-        if (uiState.isHousingTypeValid) {
-          onHousingTypeSubmitted()
-        }
-      },
+      onClick = onHousingTypeSubmitted,
       isLoading = uiState.isLoading,
       modifier = Modifier.padding(horizontal = 16.dp),
     )
@@ -176,7 +167,6 @@ private fun PreviewChangeAddressSelectHousingTypeScreen() {
     Surface(color = MaterialTheme.colorScheme.background) {
       ChangeAddressSelectHousingTypeScreen(
         SelectHousingTypeUiState(),
-        {},
         {},
         {},
         {},

@@ -15,7 +15,6 @@ import com.hedvig.android.feature.changeaddress.destination.selecthousingtype.Se
 import com.hedvig.android.feature.changeaddress.destination.selecthousingtype.SelectHousingTypeEvent.DismissHousingTypeErrorDialog
 import com.hedvig.android.feature.changeaddress.destination.selecthousingtype.SelectHousingTypeEvent.SelectHousingType
 import com.hedvig.android.feature.changeaddress.destination.selecthousingtype.SelectHousingTypeEvent.SubmitHousingType
-import com.hedvig.android.feature.changeaddress.destination.selecthousingtype.SelectHousingTypeEvent.ValidateHousingType
 import com.hedvig.android.feature.changeaddress.navigation.SelectHousingTypeParameters
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -52,15 +51,15 @@ internal class SelectHousingTypePresenter(private val changeAddressRepository: C
           currentState = currentState.copy(housingType = ValidatedInput(input = event.housingType))
         }
 
-        ValidateHousingType -> {
+        SubmitHousingType -> {
           if (!currentState.housingType.isPresent) {
             currentState = currentState.copy(
               errorMessageRes = R.string.CHANGE_ADDRESS_HOUSING_TYPE_ERROR,
             )
+          } else {
+            dataLoadIteration++
           }
         }
-
-        SubmitHousingType -> dataLoadIteration++
 
         ClearNavigationParameters -> currentState = currentState.copy(navigationParameters = null)
       }
@@ -94,7 +93,7 @@ internal class SelectHousingTypePresenter(private val changeAddressRepository: C
                 HousingType.VILLA -> moveIntent.maxHouseSquareMeters
                 null -> null
               },
-              maxNumberCoInsured = when (currentState.housingType.input) {
+              maxNumberCoInsured = when (currentState.housingType.input) { //todo: is this number of coInsured or just Insured (incl.main insured?) bc later it's used as if it is the later one.
                 HousingType.APARTMENT_RENT,
                 HousingType.APARTMENT_OWN,
                 -> moveIntent.maxApartmentNumberCoInsured
@@ -122,10 +121,7 @@ internal data class SelectHousingTypeUiState(
   val housingType: ValidatedInput<HousingType?> = ValidatedInput(null),
   val errorMessageRes: Int? = null,
   val navigationParameters: SelectHousingTypeParameters? = null,
-) {
-  val isHousingTypeValid: Boolean
-    get() = housingType.input != null
-}
+)
 
 internal sealed interface SelectHousingTypeEvent {
   data class SelectHousingType(val housingType: HousingType) : SelectHousingTypeEvent
@@ -135,8 +131,6 @@ internal sealed interface SelectHousingTypeEvent {
   data object DismissHousingTypeErrorDialog : SelectHousingTypeEvent
 
   data object DismissErrorDialog : SelectHousingTypeEvent
-
-  data object ValidateHousingType : SelectHousingTypeEvent
 
   data object ClearNavigationParameters : SelectHousingTypeEvent
 }

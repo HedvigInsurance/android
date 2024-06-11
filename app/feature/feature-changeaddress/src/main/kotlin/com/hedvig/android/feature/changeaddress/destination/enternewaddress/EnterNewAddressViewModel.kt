@@ -11,7 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.feature.changeaddress.data.HousingType.VILLA
-import com.hedvig.android.feature.changeaddress.destination.enternewaddress.EnterNewAddressEvent.ChangeCoInsured
+import com.hedvig.android.feature.changeaddress.destination.enternewaddress.EnterNewAddressEvent.ChangeNumberInsured
 import com.hedvig.android.feature.changeaddress.destination.enternewaddress.EnterNewAddressEvent.ChangeIsStudent
 import com.hedvig.android.feature.changeaddress.destination.enternewaddress.EnterNewAddressEvent.ChangeMoveDate
 import com.hedvig.android.feature.changeaddress.destination.enternewaddress.EnterNewAddressEvent.ChangePostalCode
@@ -65,8 +65,8 @@ internal class EnterNewAddressPresenter(
 
     CollectEvents { event ->
       when (event) {
-        is ChangeCoInsured -> {
-          currentState = currentState.copy(numberInsured = ValidatedInput(event.coInsured))
+        is ChangeNumberInsured -> {
+          currentState = currentState.copy(numberInsured = ValidatedInput(event.numberInsured))
         }
 
         is ChangeIsStudent -> {
@@ -197,9 +197,9 @@ internal data class EnterNewAddressUiState(
         },
       ),
       numberInsured = numberInsured.copy(
-        errorMessageRes = if (!numberInsured.isPresent) {
-          hedvig.resources.R.string.CHANGE_ADDRESS_CO_INSURED_ERROR
-        } else if (numberInsured.isPresent && !isNumberCoInsuredWithinBounds(numberInsured.input!!.toIntOrNull())) {
+        errorMessageRes = if (!numberInsured.isPresent || isNumberInsuredTooLow(numberInsured.input!!.toIntOrNull()) ) {
+          hedvig.resources.R.string.CHANGE_ADDRESS_CO_INSURED_ERROR //todo: I think the copy may be wrong here. It is the number of all the insured (incl.the main insured, not only co-insured)
+        } else if (numberInsured.isPresent && !isNumberInsuredWithinBounds(numberInsured.input!!.toIntOrNull())) {
           hedvig.resources.R.string.CHANGE_ADDRESS_CO_INSURED_MAX_ERROR_ALTERNATIVE
         } else {
           null
@@ -218,7 +218,14 @@ internal data class EnterNewAddressUiState(
     return squareMeters <= maxSquareMeters
   }
 
-  private fun isNumberCoInsuredWithinBounds(numberCoInsured: Int?): Boolean {
+  private fun isNumberInsuredTooLow(numberInsured: Int?): Boolean {
+    if (numberInsured == null) {
+      return true
+    }
+    return numberInsured < 1
+  }
+
+  private fun isNumberInsuredWithinBounds(numberCoInsured: Int?): Boolean {
     if (maxNumberCoInsured == null) {
       return true
     }
@@ -232,7 +239,7 @@ internal data class EnterNewAddressUiState(
 internal sealed interface EnterNewAddressEvent {
   data object DismissErrorDialog : EnterNewAddressEvent
 
-  data class ChangeCoInsured(val coInsured: String) : EnterNewAddressEvent
+  data class ChangeNumberInsured(val numberInsured: String) : EnterNewAddressEvent
 
   data class ChangeSquareMeters(val squareMeters: String) : EnterNewAddressEvent
 

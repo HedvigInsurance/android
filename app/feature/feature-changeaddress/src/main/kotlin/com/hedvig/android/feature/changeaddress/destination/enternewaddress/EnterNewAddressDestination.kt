@@ -68,7 +68,7 @@ internal fun EnterNewAddressDestination(
     onStreetChanged = { street -> viewModel.emit(EnterNewAddressEvent.ChangeStreet(street)) },
     onPostalCodeChanged = { postalCode -> viewModel.emit(EnterNewAddressEvent.ChangePostalCode(postalCode)) },
     onSquareMetersChanged = { squareMeters -> viewModel.emit(EnterNewAddressEvent.ChangeSquareMeters(squareMeters)) },
-    onCoInsuredChanged = { coInsured -> viewModel.emit(EnterNewAddressEvent.ChangeCoInsured(coInsured)) },
+    onCoInsuredChanged = { coInsured -> viewModel.emit(EnterNewAddressEvent.ChangeNumberInsured(coInsured)) },
     onMoveDateSelected = { date -> viewModel.emit(EnterNewAddressEvent.ChangeMoveDate(date)) },
     onIsStudentSelected = { isStudent -> viewModel.emit(EnterNewAddressEvent.ChangeIsStudent(isStudent)) },
     onSaveNewAddress = { viewModel.emit(EnterNewAddressEvent.ValidateInput) },
