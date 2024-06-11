@@ -20,7 +20,6 @@ import org.junit.Rule
 import org.junit.Test
 
 class EnterNewAddressPresenterTest {
-
   @get:Rule
   val testLogcatLogger = TestLogcatLoggingRule()
 
@@ -54,53 +53,52 @@ class EnterNewAddressPresenterTest {
     }
 
   @Test
-  fun `when the values are changed by the user it shows in the uiState`() =
-    runTest {
-      val languageService = FakeLanguageService(fixedLocale = Locale.ENGLISH)
-      val presenter = EnterNewAddressPresenter(fakeSelectHousingTypeParametersForApartment)
-      presenter.test(
-        EnterNewAddressUiState(
-          datePickerUiState = DatePickerUiState(
-            locale = languageService.getLocale(),
-            initiallySelectedDate = null,
-            minDate = fakeSelectHousingTypeParametersForApartment.minDate,
-            maxDate = fakeSelectHousingTypeParametersForApartment.maxDate,
-          ),
-          maxNumberCoInsured = fakeSelectHousingTypeParametersForApartment.maxNumberCoInsured,
-          maxSquareMeters = fakeSelectHousingTypeParametersForApartment.maxSquareMeters,
-          numberInsured = ValidatedInput(fakeSelectHousingTypeParametersForApartment.suggestedNumberInsured),
+  fun `when the values are changed by the user it shows in the uiState`() = runTest {
+    val languageService = FakeLanguageService(fixedLocale = Locale.ENGLISH)
+    val presenter = EnterNewAddressPresenter(fakeSelectHousingTypeParametersForApartment)
+    presenter.test(
+      EnterNewAddressUiState(
+        datePickerUiState = DatePickerUiState(
+          locale = languageService.getLocale(),
+          initiallySelectedDate = null,
+          minDate = fakeSelectHousingTypeParametersForApartment.minDate,
+          maxDate = fakeSelectHousingTypeParametersForApartment.maxDate,
         ),
-      ) {
-        assertk.assertThat(awaitItem())
-          .isInstanceOf<EnterNewAddressUiState>()
-          .apply {
-            prop(EnterNewAddressUiState::numberInsured).isEqualTo(
-                ValidatedInput(
-                    fakeSelectHousingTypeParametersForApartment.suggestedNumberInsured,
-                ),
-            )
-            prop(EnterNewAddressUiState::street).isEqualTo(ValidatedInput(null))
-            prop(EnterNewAddressUiState::movingDate).isEqualTo(ValidatedInput(null))
-            prop(EnterNewAddressUiState::postalCode).isEqualTo(ValidatedInput(null))
-            prop(EnterNewAddressUiState::squareMeters).isEqualTo(ValidatedInput(null))
-          }
-        sendEvent(EnterNewAddressEvent.ChangeNumberInsured("1"))
-        sendEvent(EnterNewAddressEvent.ChangeStreet("newStreet"))
-        sendEvent(EnterNewAddressEvent.ChangePostalCode("newPostalCode"))
-        sendEvent(EnterNewAddressEvent.ChangeMoveDate(LocalDate(2024, 7, 1)))
-        sendEvent(EnterNewAddressEvent.ChangeSquareMeters("93"))
-        skipItems(4)
-        assertk.assertThat(awaitItem())
-          .isInstanceOf<EnterNewAddressUiState>()
-          .apply {
-            prop(EnterNewAddressUiState::numberInsured).isEqualTo(ValidatedInput("1"))
-            prop(EnterNewAddressUiState::street).isEqualTo(ValidatedInput("newStreet"))
-            prop(EnterNewAddressUiState::movingDate).isEqualTo(ValidatedInput(LocalDate(2024, 7, 1)))
-            prop(EnterNewAddressUiState::postalCode).isEqualTo(ValidatedInput("newPostalCode"))
-            prop(EnterNewAddressUiState::squareMeters).isEqualTo(ValidatedInput("93"))
-          }
-      }
+        maxNumberCoInsured = fakeSelectHousingTypeParametersForApartment.maxNumberCoInsured,
+        maxSquareMeters = fakeSelectHousingTypeParametersForApartment.maxSquareMeters,
+        numberInsured = ValidatedInput(fakeSelectHousingTypeParametersForApartment.suggestedNumberInsured),
+      ),
+    ) {
+      assertk.assertThat(awaitItem())
+        .isInstanceOf<EnterNewAddressUiState>()
+        .apply {
+          prop(EnterNewAddressUiState::numberInsured).isEqualTo(
+            ValidatedInput(
+              fakeSelectHousingTypeParametersForApartment.suggestedNumberInsured,
+            ),
+          )
+          prop(EnterNewAddressUiState::street).isEqualTo(ValidatedInput(null))
+          prop(EnterNewAddressUiState::movingDate).isEqualTo(ValidatedInput(null))
+          prop(EnterNewAddressUiState::postalCode).isEqualTo(ValidatedInput(null))
+          prop(EnterNewAddressUiState::squareMeters).isEqualTo(ValidatedInput(null))
+        }
+      sendEvent(EnterNewAddressEvent.ChangeNumberInsured("1"))
+      sendEvent(EnterNewAddressEvent.ChangeStreet("newStreet"))
+      sendEvent(EnterNewAddressEvent.ChangePostalCode("newPostalCode"))
+      sendEvent(EnterNewAddressEvent.ChangeMoveDate(LocalDate(2024, 7, 1)))
+      sendEvent(EnterNewAddressEvent.ChangeSquareMeters("93"))
+      skipItems(4)
+      assertk.assertThat(awaitItem())
+        .isInstanceOf<EnterNewAddressUiState>()
+        .apply {
+          prop(EnterNewAddressUiState::numberInsured).isEqualTo(ValidatedInput("1"))
+          prop(EnterNewAddressUiState::street).isEqualTo(ValidatedInput("newStreet"))
+          prop(EnterNewAddressUiState::movingDate).isEqualTo(ValidatedInput(LocalDate(2024, 7, 1)))
+          prop(EnterNewAddressUiState::postalCode).isEqualTo(ValidatedInput("newPostalCode"))
+          prop(EnterNewAddressUiState::squareMeters).isEqualTo(ValidatedInput("93"))
+        }
     }
+  }
 
   @Test
   fun `if try to continue when one of the fields is not filled will highlight missing info field and not allow to continue`() =
@@ -141,7 +139,7 @@ class EnterNewAddressPresenterTest {
           .isInstanceOf<EnterNewAddressUiState>()
           .apply {
             prop(EnterNewAddressUiState::squareMeters).prop(ValidatedInput<String?>::errorMessageRes).isNull()
-            prop(EnterNewAddressUiState::street).prop(ValidatedInput<String?>:: errorMessageRes).isNotNull()
+            prop(EnterNewAddressUiState::street).prop(ValidatedInput<String?>::errorMessageRes).isNotNull()
             prop(EnterNewAddressUiState::navParamsForOfferDestination).isNull()
             prop(EnterNewAddressUiState::navParamsForVillaDestination).isNull()
           }
@@ -238,118 +236,117 @@ class EnterNewAddressPresenterTest {
         assertk.assertThat(awaitItem())
           .isInstanceOf<EnterNewAddressUiState>()
           .apply {
-            prop(EnterNewAddressUiState::navParamsForOfferDestination).isEqualTo(MovingParameters(
-              selectHousingTypeParameters = fakeSelectHousingTypeParametersForApartment,
-              villaOnlyParameters = null,
-              newAddressParameters = NewAddressParameters(
-                street = "newStreet",
-                numberInsured = "1",
-                isStudent = false,
-                movingDate = LocalDate(2024, 7, 1),
-                postalCode = "newPostalCode",
-                squareMeters = "93"
-              )
-            ))
+            prop(EnterNewAddressUiState::navParamsForOfferDestination).isEqualTo(
+              MovingParameters(
+                selectHousingTypeParameters = fakeSelectHousingTypeParametersForApartment,
+                villaOnlyParameters = null,
+                newAddressParameters = NewAddressParameters(
+                  street = "newStreet",
+                  numberInsured = "1",
+                  isStudent = false,
+                  movingDate = LocalDate(2024, 7, 1),
+                  postalCode = "newPostalCode",
+                  squareMeters = "93",
+                ),
+              ),
+            )
           }
       }
     }
 
   @Test
-  fun `when trying to continue but number of insured is zero show error in the input field`() =
-    runTest {
-      val languageService = FakeLanguageService(fixedLocale = Locale.ENGLISH)
-      val presenterApartment = EnterNewAddressPresenter(fakeSelectHousingTypeParametersForApartment)
-      presenterApartment.test(
-        EnterNewAddressUiState(
-          datePickerUiState = DatePickerUiState(
-            locale = languageService.getLocale(),
-            initiallySelectedDate = null,
-            minDate = fakeSelectHousingTypeParametersForApartment.minDate,
-            maxDate = fakeSelectHousingTypeParametersForApartment.maxDate,
-          ),
-          maxNumberCoInsured = fakeSelectHousingTypeParametersForApartment.maxNumberCoInsured,
-          maxSquareMeters = fakeSelectHousingTypeParametersForApartment.maxSquareMeters,
-          numberInsured = ValidatedInput(fakeSelectHousingTypeParametersForApartment.suggestedNumberInsured),
+  fun `when trying to continue but number of insured is zero show error in the input field`() = runTest {
+    val languageService = FakeLanguageService(fixedLocale = Locale.ENGLISH)
+    val presenterApartment = EnterNewAddressPresenter(fakeSelectHousingTypeParametersForApartment)
+    presenterApartment.test(
+      EnterNewAddressUiState(
+        datePickerUiState = DatePickerUiState(
+          locale = languageService.getLocale(),
+          initiallySelectedDate = null,
+          minDate = fakeSelectHousingTypeParametersForApartment.minDate,
+          maxDate = fakeSelectHousingTypeParametersForApartment.maxDate,
         ),
-      ) {
-        sendEvent(EnterNewAddressEvent.ChangeNumberInsured("0"))
-        sendEvent(EnterNewAddressEvent.ChangeStreet("newStreet"))
-        sendEvent(EnterNewAddressEvent.ChangePostalCode("newPostalCode"))
-        sendEvent(EnterNewAddressEvent.ChangeMoveDate(LocalDate(2024, 7, 1)))
-        sendEvent(EnterNewAddressEvent.ChangeSquareMeters("93"))
-        skipItems(6)
-        sendEvent(EnterNewAddressEvent.ValidateInput)
-        assertk.assertThat(awaitItem())
-          .isInstanceOf<EnterNewAddressUiState>()
-          .apply {
-            prop(EnterNewAddressUiState::numberInsured).prop(ValidatedInput<String?>::errorMessageRes).isNotNull()
-          }
-      }
+        maxNumberCoInsured = fakeSelectHousingTypeParametersForApartment.maxNumberCoInsured,
+        maxSquareMeters = fakeSelectHousingTypeParametersForApartment.maxSquareMeters,
+        numberInsured = ValidatedInput(fakeSelectHousingTypeParametersForApartment.suggestedNumberInsured),
+      ),
+    ) {
+      sendEvent(EnterNewAddressEvent.ChangeNumberInsured("0"))
+      sendEvent(EnterNewAddressEvent.ChangeStreet("newStreet"))
+      sendEvent(EnterNewAddressEvent.ChangePostalCode("newPostalCode"))
+      sendEvent(EnterNewAddressEvent.ChangeMoveDate(LocalDate(2024, 7, 1)))
+      sendEvent(EnterNewAddressEvent.ChangeSquareMeters("93"))
+      skipItems(6)
+      sendEvent(EnterNewAddressEvent.ValidateInput)
+      assertk.assertThat(awaitItem())
+        .isInstanceOf<EnterNewAddressUiState>()
+        .apply {
+          prop(EnterNewAddressUiState::numberInsured).prop(ValidatedInput<String?>::errorMessageRes).isNotNull()
+        }
     }
+  }
 
   @Test
-  fun `when trying to continue but number of insured is out of bounds show error in the input field`() =
-    runTest {
-      val languageService = FakeLanguageService(fixedLocale = Locale.ENGLISH)
-      val presenterApartment = EnterNewAddressPresenter(fakeSelectHousingTypeParametersForApartment)
-      presenterApartment.test(
-        EnterNewAddressUiState(
-          datePickerUiState = DatePickerUiState(
-            locale = languageService.getLocale(),
-            initiallySelectedDate = null,
-            minDate = fakeSelectHousingTypeParametersForApartment.minDate,
-            maxDate = fakeSelectHousingTypeParametersForApartment.maxDate,
-          ),
-          maxNumberCoInsured = 8,
-          maxSquareMeters = fakeSelectHousingTypeParametersForApartment.maxSquareMeters,
-          numberInsured = ValidatedInput(fakeSelectHousingTypeParametersForApartment.suggestedNumberInsured),
+  fun `when trying to continue but number of insured is out of bounds show error in the input field`() = runTest {
+    val languageService = FakeLanguageService(fixedLocale = Locale.ENGLISH)
+    val presenterApartment = EnterNewAddressPresenter(fakeSelectHousingTypeParametersForApartment)
+    presenterApartment.test(
+      EnterNewAddressUiState(
+        datePickerUiState = DatePickerUiState(
+          locale = languageService.getLocale(),
+          initiallySelectedDate = null,
+          minDate = fakeSelectHousingTypeParametersForApartment.minDate,
+          maxDate = fakeSelectHousingTypeParametersForApartment.maxDate,
         ),
-      ) {
-        sendEvent(EnterNewAddressEvent.ChangeNumberInsured("9"))
-        sendEvent(EnterNewAddressEvent.ChangeStreet("newStreet"))
-        sendEvent(EnterNewAddressEvent.ChangePostalCode("newPostalCode"))
-        sendEvent(EnterNewAddressEvent.ChangeMoveDate(LocalDate(2024, 7, 1)))
-        sendEvent(EnterNewAddressEvent.ChangeSquareMeters("93"))
-        skipItems(6)
-        sendEvent(EnterNewAddressEvent.ValidateInput)
-        assertk.assertThat(awaitItem())
-          .isInstanceOf<EnterNewAddressUiState>()
-          .apply {
-            prop(EnterNewAddressUiState::numberInsured).prop(ValidatedInput<String?>::errorMessageRes).isNotNull()
-          }
-      }
+        maxNumberCoInsured = 8,
+        maxSquareMeters = fakeSelectHousingTypeParametersForApartment.maxSquareMeters,
+        numberInsured = ValidatedInput(fakeSelectHousingTypeParametersForApartment.suggestedNumberInsured),
+      ),
+    ) {
+      sendEvent(EnterNewAddressEvent.ChangeNumberInsured("9"))
+      sendEvent(EnterNewAddressEvent.ChangeStreet("newStreet"))
+      sendEvent(EnterNewAddressEvent.ChangePostalCode("newPostalCode"))
+      sendEvent(EnterNewAddressEvent.ChangeMoveDate(LocalDate(2024, 7, 1)))
+      sendEvent(EnterNewAddressEvent.ChangeSquareMeters("93"))
+      skipItems(6)
+      sendEvent(EnterNewAddressEvent.ValidateInput)
+      assertk.assertThat(awaitItem())
+        .isInstanceOf<EnterNewAddressUiState>()
+        .apply {
+          prop(EnterNewAddressUiState::numberInsured).prop(ValidatedInput<String?>::errorMessageRes).isNotNull()
+        }
     }
+  }
 
   @Test
-  fun `when trying to continue but size is out of bounds show error in the input field`() =
-    runTest {
-      val languageService = FakeLanguageService(fixedLocale = Locale.ENGLISH)
-      val presenterApartment = EnterNewAddressPresenter(fakeSelectHousingTypeParametersForApartment)
-      presenterApartment.test(
-        EnterNewAddressUiState(
-          datePickerUiState = DatePickerUiState(
-            locale = languageService.getLocale(),
-            initiallySelectedDate = null,
-            minDate = fakeSelectHousingTypeParametersForApartment.minDate,
-            maxDate = fakeSelectHousingTypeParametersForApartment.maxDate,
-          ),
-          maxNumberCoInsured = fakeSelectHousingTypeParametersForApartment.maxNumberCoInsured,
-          maxSquareMeters = 90,
-          numberInsured = ValidatedInput(fakeSelectHousingTypeParametersForApartment.suggestedNumberInsured),
+  fun `when trying to continue but size is out of bounds show error in the input field`() = runTest {
+    val languageService = FakeLanguageService(fixedLocale = Locale.ENGLISH)
+    val presenterApartment = EnterNewAddressPresenter(fakeSelectHousingTypeParametersForApartment)
+    presenterApartment.test(
+      EnterNewAddressUiState(
+        datePickerUiState = DatePickerUiState(
+          locale = languageService.getLocale(),
+          initiallySelectedDate = null,
+          minDate = fakeSelectHousingTypeParametersForApartment.minDate,
+          maxDate = fakeSelectHousingTypeParametersForApartment.maxDate,
         ),
-      ) {
-        sendEvent(EnterNewAddressEvent.ChangeNumberInsured("2"))
-        sendEvent(EnterNewAddressEvent.ChangeStreet("newStreet"))
-        sendEvent(EnterNewAddressEvent.ChangePostalCode("newPostalCode"))
-        sendEvent(EnterNewAddressEvent.ChangeMoveDate(LocalDate(2024, 7, 1)))
-        sendEvent(EnterNewAddressEvent.ChangeSquareMeters("93"))
-        skipItems(6)
-        sendEvent(EnterNewAddressEvent.ValidateInput)
-        assertk.assertThat(awaitItem())
-          .isInstanceOf<EnterNewAddressUiState>()
-          .apply {
-            prop(EnterNewAddressUiState::squareMeters).prop(ValidatedInput<String?>::errorMessageRes).isNotNull()
-          }
-      }
+        maxNumberCoInsured = fakeSelectHousingTypeParametersForApartment.maxNumberCoInsured,
+        maxSquareMeters = 90,
+        numberInsured = ValidatedInput(fakeSelectHousingTypeParametersForApartment.suggestedNumberInsured),
+      ),
+    ) {
+      sendEvent(EnterNewAddressEvent.ChangeNumberInsured("2"))
+      sendEvent(EnterNewAddressEvent.ChangeStreet("newStreet"))
+      sendEvent(EnterNewAddressEvent.ChangePostalCode("newPostalCode"))
+      sendEvent(EnterNewAddressEvent.ChangeMoveDate(LocalDate(2024, 7, 1)))
+      sendEvent(EnterNewAddressEvent.ChangeSquareMeters("93"))
+      skipItems(6)
+      sendEvent(EnterNewAddressEvent.ValidateInput)
+      assertk.assertThat(awaitItem())
+        .isInstanceOf<EnterNewAddressUiState>()
+        .apply {
+          prop(EnterNewAddressUiState::squareMeters).prop(ValidatedInput<String?>::errorMessageRes).isNotNull()
+        }
     }
+  }
 }

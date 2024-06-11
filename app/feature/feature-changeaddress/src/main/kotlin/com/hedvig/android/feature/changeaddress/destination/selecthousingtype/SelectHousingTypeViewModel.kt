@@ -93,7 +93,7 @@ internal class SelectHousingTypePresenter(private val changeAddressRepository: C
                 HousingType.VILLA -> moveIntent.maxHouseSquareMeters
                 null -> null
               },
-              maxNumberCoInsured = when (currentState.housingType.input) { //todo: is this number of coInsured or just Insured (incl.main insured?) bc later it's used as if it is the later one.
+              maxNumberCoInsured = when (currentState.housingType.input) { // todo: is this number of coInsured or just Insured (incl.main insured?) bc later it's used as if it is the later one.
                 HousingType.APARTMENT_RENT,
                 HousingType.APARTMENT_OWN,
                 -> moveIntent.maxApartmentNumberCoInsured

@@ -13,6 +13,8 @@ import com.hedvig.android.feature.changeaddress.data.MoveIntentId
 import com.hedvig.android.feature.changeaddress.data.MoveQuote
 import com.hedvig.android.feature.changeaddress.data.QuoteInput
 import com.hedvig.android.feature.changeaddress.data.SuccessfulMove
+import com.hedvig.android.feature.changeaddress.navigation.MovingParameters
+import com.hedvig.android.feature.changeaddress.navigation.NewAddressParameters
 import com.hedvig.android.feature.changeaddress.navigation.SelectHousingTypeParameters
 import kotlinx.datetime.LocalDate
 
@@ -33,29 +35,44 @@ internal val fakeSelectHousingTypeParametersForVilla = SelectHousingTypeParamete
   extraBuildingTypes = listOf(),
   housingType = VILLA,
   isEligibleForStudent = false,
-  maxDate = LocalDate(2024,9,30),
-  minDate = LocalDate(2024,6,24),
+  maxDate = LocalDate(2024, 9, 30),
+  minDate = LocalDate(2024, 6, 24),
   suggestedNumberInsured = "3",
   maxNumberCoInsured = 6,
   maxSquareMeters = 500,
   moveIntentId = "moveintentid",
-  moveFromAddressId = AddressId("address")
+  moveFromAddressId = AddressId("address"),
 )
 
 internal val fakeSelectHousingTypeParametersForApartment = SelectHousingTypeParameters(
   extraBuildingTypes = listOf(),
   housingType = APARTMENT_OWN,
   isEligibleForStudent = false,
-  maxDate = LocalDate(2024,9,30),
-  minDate = LocalDate(2024,6,24),
+  maxDate = LocalDate(2024, 9, 30),
+  minDate = LocalDate(2024, 6, 24),
   suggestedNumberInsured = "3",
   maxNumberCoInsured = 4,
   maxSquareMeters = 300,
   moveIntentId = "moveintentid",
-  moveFromAddressId = AddressId("address")
+  moveFromAddressId = AddressId("address"),
 )
 
-internal class FakeChangeAddressRepository: ChangeAddressRepository {
+private val fakeEnterNewAddressParameters = NewAddressParameters(
+  street = "newStreet",
+  numberInsured = "1",
+  isStudent = false,
+  movingDate = LocalDate(2024, 7, 1),
+  postalCode = "newPostalCode",
+  squareMeters = "93",
+)
+
+internal val fakeMovingParametersForVilla = MovingParameters(
+  selectHousingTypeParameters = fakeSelectHousingTypeParametersForVilla,
+  newAddressParameters = fakeEnterNewAddressParameters,
+  villaOnlyParameters = null,
+)
+
+internal class FakeChangeAddressRepository : ChangeAddressRepository {
   val createMoveResponseTurbine = Turbine<Either<ErrorMessage, MoveIntent>>()
   val createQuotesResponseTurbine = Turbine<Either<ErrorMessage, List<MoveQuote>>>()
   val commitMoveResponseTurbine = Turbine<Either<ErrorMessage, SuccessfulMove>>()

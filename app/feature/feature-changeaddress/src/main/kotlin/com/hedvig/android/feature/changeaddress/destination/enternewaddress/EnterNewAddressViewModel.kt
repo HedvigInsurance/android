@@ -11,9 +11,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.feature.changeaddress.data.HousingType.VILLA
-import com.hedvig.android.feature.changeaddress.destination.enternewaddress.EnterNewAddressEvent.ChangeNumberInsured
 import com.hedvig.android.feature.changeaddress.destination.enternewaddress.EnterNewAddressEvent.ChangeIsStudent
 import com.hedvig.android.feature.changeaddress.destination.enternewaddress.EnterNewAddressEvent.ChangeMoveDate
+import com.hedvig.android.feature.changeaddress.destination.enternewaddress.EnterNewAddressEvent.ChangeNumberInsured
 import com.hedvig.android.feature.changeaddress.destination.enternewaddress.EnterNewAddressEvent.ChangePostalCode
 import com.hedvig.android.feature.changeaddress.destination.enternewaddress.EnterNewAddressEvent.ChangeSquareMeters
 import com.hedvig.android.feature.changeaddress.destination.enternewaddress.EnterNewAddressEvent.ChangeStreet
@@ -197,8 +197,8 @@ internal data class EnterNewAddressUiState(
         },
       ),
       numberInsured = numberInsured.copy(
-        errorMessageRes = if (!numberInsured.isPresent || isNumberInsuredTooLow(numberInsured.input!!.toIntOrNull()) ) {
-          hedvig.resources.R.string.CHANGE_ADDRESS_CO_INSURED_ERROR //todo: I think the copy may be wrong here. It is the number of all the insured (incl.the main insured, not only co-insured)
+        errorMessageRes = if (!numberInsured.isPresent || isNumberInsuredTooLow(numberInsured.input!!.toIntOrNull())) {
+          hedvig.resources.R.string.CHANGE_ADDRESS_CO_INSURED_ERROR // todo: I think the copy may be wrong here. It is the number of all the insured (incl.the main insured, not only co-insured)
         } else if (numberInsured.isPresent && !isNumberInsuredWithinBounds(numberInsured.input!!.toIntOrNull())) {
           hedvig.resources.R.string.CHANGE_ADDRESS_CO_INSURED_MAX_ERROR_ALTERNATIVE
         } else {
