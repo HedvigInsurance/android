@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.help.center.navigation
 
+import com.hedvig.android.navigation.compose.typeMapOf
 import com.hedvig.android.ui.emergency.FirstVetSection
 import kotlinx.serialization.Serializable
 
@@ -14,19 +15,29 @@ internal sealed interface HelpCenterDestinations {
   data class Topic(
     val displayName: String,
     val topic: com.hedvig.android.feature.help.center.model.Topic,
-  ) : HelpCenterDestinations
+  ) : HelpCenterDestinations {
+    companion object {
+      val typeMap = typeMapOf<com.hedvig.android.feature.help.center.model.Topic>()
+    }
+  }
 
   @Serializable
   data class Question(
     val displayName: String,
     val question: com.hedvig.android.feature.help.center.model.Question,
-  ) : HelpCenterDestinations
+  ) : HelpCenterDestinations {
+    companion object {
+      val typeMap = typeMapOf<com.hedvig.android.feature.help.center.model.Question>()
+    }
+  }
 
   @Serializable
-  data class Emergency(val emergencyNumber: String?) :
-    HelpCenterDestinations
+  data class Emergency(val emergencyNumber: String?) : HelpCenterDestinations
 
   @Serializable
-  data class FirstVet(val sections: List<FirstVetSection>) :
-    HelpCenterDestinations
+  data class FirstVet(val sections: List<FirstVetSection>) : HelpCenterDestinations {
+    companion object {
+      val typeMap = typeMapOf<List<FirstVetSection>>()
+    }
+  }
 }
