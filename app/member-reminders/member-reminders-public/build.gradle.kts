@@ -18,7 +18,6 @@ dependencies {
   implementation(libs.arrow.fx)
   implementation(libs.coroutines.core)
   implementation(libs.koin.core)
-  implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)
   implementation(projects.apolloCore)

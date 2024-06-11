@@ -5,7 +5,6 @@ plugins {
 }
 
 dependencies {
-  implementation(libs.kotlinx.immutable.collections)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.coreResources)
   implementation(projects.dataContractAndroid)

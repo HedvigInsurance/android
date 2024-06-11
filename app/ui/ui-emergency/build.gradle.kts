@@ -13,7 +13,6 @@ dependencies {
   implementation(libs.androidx.compose.uiCore)
   implementation(libs.androidx.compose.uiUtil)
   implementation(libs.androidx.lifecycle.compose)
-  implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.coreDesignSystem)
   implementation(projects.coreResources)

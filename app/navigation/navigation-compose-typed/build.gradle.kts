@@ -13,6 +13,5 @@ dependencies {
   implementation(libs.androidx.compose.runtime)
   implementation(libs.androidx.navigation.compose)
   implementation(libs.koin.compose)
-  implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
 }
