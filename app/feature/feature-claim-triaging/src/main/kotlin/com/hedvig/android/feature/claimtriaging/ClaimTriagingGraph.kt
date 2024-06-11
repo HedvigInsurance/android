@@ -20,6 +20,7 @@ import com.hedvig.android.navigation.compose.typePairOf
 import com.hedvig.android.navigation.core.Navigator
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 sealed interface ClaimTriagingDestination {
   @Serializable
@@ -75,7 +76,8 @@ fun NavGraphBuilder.claimTriagingDestinations(
   navdestination<ClaimTriagingDestination.ClaimEntryPoints>(
     typeMap = ClaimTriagingDestination.ClaimEntryPoints.typeMap,
   ) { backStackEntry ->
-    val viewModel: ClaimEntryPointsViewModel = koinViewModel()
+    val entryPoints: List<EntryPoint> = this.entryPoints
+    val viewModel: ClaimEntryPointsViewModel = koinViewModel { parametersOf(entryPoints) }
     ClaimEntryPointsDestination(
       viewModel = viewModel,
       onEntryPointWithOptionsSubmit = { entryPointId, entryPointOptions ->
@@ -95,7 +97,9 @@ fun NavGraphBuilder.claimTriagingDestinations(
   navdestination<ClaimTriagingDestination.ClaimEntryPointOptions>(
     typeMap = ClaimTriagingDestination.ClaimEntryPointOptions.typeMap,
   ) { backStackEntry ->
-    val viewModel: ClaimEntryPointOptionsViewModel = koinViewModel()
+    val entryPointId: EntryPointId = this.entryPointId
+    val entryPointOptions: List<EntryPointOption> = this.entryPointOptions
+    val viewModel: ClaimEntryPointOptionsViewModel = koinViewModel { parametersOf(entryPointId, entryPointOptions) }
     ClaimEntryPointOptionsDestination(
       viewModel = viewModel,
       startClaimFlow = { claimFlowStep ->

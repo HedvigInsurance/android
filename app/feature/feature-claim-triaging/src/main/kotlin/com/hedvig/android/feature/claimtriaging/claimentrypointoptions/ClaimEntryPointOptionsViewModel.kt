@@ -1,26 +1,23 @@
 package com.hedvig.android.feature.claimtriaging.claimentrypointoptions
 
 import androidx.compose.runtime.Immutable
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.toRoute
 import com.hedvig.android.data.claimflow.ClaimFlowRepository
 import com.hedvig.android.data.claimflow.ClaimFlowStep
+import com.hedvig.android.data.claimtriaging.EntryPointId
 import com.hedvig.android.data.claimtriaging.EntryPointOption
-import com.hedvig.android.feature.claimtriaging.ClaimTriagingDestination
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class ClaimEntryPointOptionsViewModel(
-  private val savedStateHandle: SavedStateHandle,
+  private val entryPointId: EntryPointId,
+  entryPointOptions: List<EntryPointOption>,
   private val claimFlowRepository: ClaimFlowRepository,
 ) : ViewModel() {
-  val claimEntryPointOptions = savedStateHandle.toRoute<ClaimTriagingDestination.ClaimEntryPointOptions>()
-
-  private val _uiState = MutableStateFlow(ClaimEntryPointOptionsUiState(claimEntryPointOptions.entryPointOptions))
+  private val _uiState = MutableStateFlow(ClaimEntryPointOptionsUiState(entryPointOptions))
   val uiState = _uiState.asStateFlow()
 
   fun continueWithoutSelection() {
@@ -41,7 +38,7 @@ internal class ClaimEntryPointOptionsViewModel(
     val selectedEntryPointOption = uiState.selectedEntryPointOption ?: return
     _uiState.update { it.copy(isLoading = true) }
     viewModelScope.launch {
-      claimFlowRepository.startClaimFlow(claimEntryPointOptions.entryPointId, selectedEntryPointOption.id).fold(
+      claimFlowRepository.startClaimFlow(entryPointId, selectedEntryPointOption.id).fold(
         ifLeft = { errorMessage ->
           _uiState.update { it.copy(isLoading = false, startClaimErrorMessage = errorMessage.message) }
         },

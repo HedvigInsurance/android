@@ -3,7 +3,6 @@ package com.hedvig.android.feature.changeaddress.navigation
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.toRoute
 import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
 import com.hedvig.android.feature.changeaddress.destination.ChangeAddressEnterNewAddressDestination
 import com.hedvig.android.feature.changeaddress.destination.ChangeAddressEnterVillaInformationDestination
@@ -90,7 +89,7 @@ fun NavGraphBuilder.changeAddressGraph(
     typeMap = ChangeAddressDestination.AddressResult.typeMap,
   ) { navBackStackEntry ->
     ChangeAddressResultDestination(
-      movingDate = navBackStackEntry.toRoute<ChangeAddressDestination.AddressResult>().movingDate,
+      movingDate = movingDate,
       popBackstack = navController::popBackStack,
     )
   }
