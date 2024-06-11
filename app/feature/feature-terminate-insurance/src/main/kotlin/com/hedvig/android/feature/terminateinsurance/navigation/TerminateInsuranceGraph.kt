@@ -60,7 +60,9 @@ fun NavGraphBuilder.terminateInsuranceGraph(
     )
   }
 
-  navdestination<TerminateInsuranceDestination.TerminationSuccess> { backStackEntry ->
+  navdestination<TerminateInsuranceDestination.TerminationSuccess>(
+    typeMap = TerminateInsuranceDestination.TerminationSuccess.typeMap,
+  ) {
     TerminationSuccessDestination(
       terminationDate = terminationDate,
       onDone = {
@@ -105,7 +107,9 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       )
     }
 
-    navdestination<TerminateInsuranceDestination.TerminationSurveyFirstStep> { backStackEntry ->
+    navdestination<TerminateInsuranceDestination.TerminationSurveyFirstStep>(
+      typeMap = TerminateInsuranceDestination.TerminationSurveyFirstStep.typeMap,
+    ) { backStackEntry ->
       val viewModel: TerminationSurveyViewModel = koinViewModel {
         parametersOf(options)
       }
@@ -128,7 +132,9 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       )
     }
 
-    navdestination<TerminateInsuranceDestination.TerminationSurveySecondStep> { backStackEntry ->
+    navdestination<TerminateInsuranceDestination.TerminationSurveySecondStep>(
+      typeMap = TerminateInsuranceDestination.TerminationSurveySecondStep.typeMap,
+    ) { backStackEntry ->
       val viewModel: TerminationSurveyViewModel = koinViewModel {
         parametersOf(subOptions)
       }
@@ -147,7 +153,9 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       )
     }
 
-    navdestination<TerminateInsuranceDestination.TerminationDate> { backStackEntry ->
+    navdestination<TerminateInsuranceDestination.TerminationDate>(
+      typeMap = TerminateInsuranceDestination.TerminationDate.typeMap,
+    ) {
       val viewModel: TerminationDateViewModel = koinViewModel {
         parametersOf(
           TerminationDateParameters(
@@ -174,7 +182,9 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       )
     }
 
-    navdestination<TerminateInsuranceDestination.InsuranceDeletion> { backStackEntry ->
+    navdestination<TerminateInsuranceDestination.InsuranceDeletion>(
+      typeMap = TerminateInsuranceDestination.InsuranceDeletion.typeMap,
+    ) {
       InsuranceDeletionDestination(
         displayName = commonParams.insuranceDisplayName,
         exposureName = commonParams.exposureName,
@@ -191,7 +201,9 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       )
     }
 
-    navdestination<TerminateInsuranceDestination.TerminationConfirmation> { backStackEntry ->
+    navdestination<TerminateInsuranceDestination.TerminationConfirmation>(
+      typeMap = TerminateInsuranceDestination.TerminationConfirmation.typeMap,
+    ) {
       val viewModel: TerminationConfirmationViewModel = koinViewModel {
         parametersOf(
           terminationType,
