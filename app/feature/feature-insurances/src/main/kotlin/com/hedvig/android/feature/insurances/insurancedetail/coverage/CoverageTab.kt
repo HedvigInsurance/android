@@ -56,17 +56,13 @@ import com.hedvig.android.core.ui.card.ExpandablePlusCard
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.data.productvariant.InsurableLimit
 import com.hedvig.android.data.productvariant.ProductVariantPeril
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.launch
 
 @ExperimentalMaterial3Api
 @Composable
 internal fun CoverageTab(
-  insurableLimits: ImmutableList<InsurableLimit>,
-  perils: ImmutableList<ProductVariantPeril>,
+  insurableLimits: List<InsurableLimit>,
+  perils: List<ProductVariantPeril>,
   modifier: Modifier = Modifier,
 ) {
   val coroutineScope = rememberCoroutineScope()
@@ -129,7 +125,7 @@ internal fun CoverageTab(
 
 @Suppress("UnusedReceiverParameter")
 @Composable
-private fun ColumnScope.PerilSection(perilItems: ImmutableList<ProductVariantPeril>) {
+private fun ColumnScope.PerilSection(perilItems: List<ProductVariantPeril>) {
   var expandedItemIndex by rememberSaveable { mutableIntStateOf(-1) }
   for ((index, perilItem) in perilItems.withIndex()) {
     ExpandableCoverageCard(
@@ -144,7 +140,7 @@ private fun ColumnScope.PerilSection(perilItems: ImmutableList<ProductVariantPer
       color = perilItem.colorCode?.color,
       title = perilItem.title,
       expandedTitle = perilItem.description,
-      expandedDescriptionList = perilItem.covered.toPersistentList(),
+      expandedDescriptionList = perilItem.covered,
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     if (index != perilItems.lastIndex) {
@@ -163,7 +159,7 @@ private fun ExpandableCoverageCard(
   color: Color?,
   title: String,
   expandedTitle: String,
-  expandedDescriptionList: ImmutableList<String>,
+  expandedDescriptionList: List<String>,
   modifier: Modifier = Modifier,
 ) {
   ExpandablePlusCard(
@@ -225,7 +221,7 @@ private fun ExpandableCoverageCard(
 @Suppress("UnusedReceiverParameter")
 @Composable
 private fun ColumnScope.InsurableLimitSection(
-  insurableLimits: ImmutableList<InsurableLimit>,
+  insurableLimits: List<InsurableLimit>,
   onInsurableLimitClick: (InsurableLimit) -> Unit,
 ) {
   insurableLimits.mapIndexed { index, insurableLimitItem ->
@@ -318,19 +314,19 @@ private fun PreviewPerilSection() {
   }
 }
 
-private val previewPerils: PersistentList<ProductVariantPeril> = List(4) { index ->
+private val previewPerils: List<ProductVariantPeril> = List(4) { index ->
   ProductVariantPeril(
     id = index.toString(),
     title = "Eldsvåda",
     description = "description$index",
-    covered = persistentListOf("Covered#$index"),
+    covered = listOf("Covered#$index"),
     colorCode = "0xFFC45D4F",
     info = "test",
     exceptions = listOf(),
   )
-}.toPersistentList()
+}
 
-private val previewInsurableLimits: PersistentList<InsurableLimit> = persistentListOf(
+private val previewInsurableLimits: List<InsurableLimit> = listOf(
   InsurableLimit("Insured amount".repeat(2), "1 000 000 kr", "", InsurableLimit.InsurableLimitType.GOODS_FAMILY),
   InsurableLimit("Deductible", "1 500 kr", "", InsurableLimit.InsurableLimitType.DEDUCTIBLE),
   InsurableLimit("Travel insurance", "45 days", "", InsurableLimit.InsurableLimitType.BIKE),

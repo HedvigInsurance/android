@@ -4,7 +4,6 @@ import arrow.core.Either
 import arrow.core.right
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.memberreminders.MemberReminders
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
@@ -13,7 +12,7 @@ internal class GetHomeDataUseCaseDemo : GetHomeDataUseCase {
     HomeData(
       contractStatus = HomeData.ContractStatus.Active,
       claimStatusCardsData = null,
-      veryImportantMessages = persistentListOf(),
+      veryImportantMessages = listOf(),
       memberReminders = MemberReminders(
         connectPayment = null,
         upcomingRenewals = null,
@@ -22,7 +21,7 @@ internal class GetHomeDataUseCaseDemo : GetHomeDataUseCase {
       showChatIcon = true,
       showHelpCenter = true,
       firstVetSections = listOf(),
-      crossSells = persistentListOf(),
+      crossSells = listOf(),
     ).right(),
   )
 }

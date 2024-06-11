@@ -13,8 +13,6 @@ import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.ui.emergency.FirstVetSection
 import hedvig.resources.R
-import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.first
 import octopus.AvailableSelfServiceOnContractsQuery
 
@@ -23,7 +21,7 @@ internal class GetQuickLinksUseCase(
   private val featureManager: FeatureManager,
   private val getMemberActionsUseCase: GetMemberActionsUseCase,
 ) {
-  suspend fun invoke(): Either<ErrorMessage, PersistentList<QuickAction>> = either {
+  suspend fun invoke(): Either<ErrorMessage, List<QuickAction>> = either {
     val memberActionOptions = getMemberActionsUseCase.invoke().bind()
 
     buildList {
@@ -101,7 +99,7 @@ internal class GetQuickLinksUseCase(
           ),
         )
       }
-    }.toPersistentList()
+    }
   }
 }
 

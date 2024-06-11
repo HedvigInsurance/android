@@ -17,7 +17,6 @@ import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.featureflags.test.FakeFeatureManager2
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.test.runTest
@@ -250,18 +249,18 @@ class ContractDetailPresenterTest {
       currentInsuranceAgreement = InsuranceAgreement(
         activeFrom = LocalDate.fromEpochDays(240),
         activeTo = LocalDate.fromEpochDays(340),
-        displayItems = persistentListOf(),
+        displayItems = listOf(),
         productVariant = ProductVariant(
           displayName = "Variant",
           contractGroup = ContractGroup.RENTAL,
           contractType = ContractType.SE_APARTMENT_RENT,
           partner = null,
-          perils = persistentListOf(),
-          insurableLimits = persistentListOf(),
-          documents = persistentListOf(),
+          perils = listOf(),
+          insurableLimits = listOf(),
+          documents = listOf(),
         ),
         certificateUrl = null,
-        coInsured = persistentListOf(),
+        coInsured = listOf(),
         creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
       ),
       upcomingInsuranceAgreement = null,
@@ -282,18 +281,18 @@ class ContractDetailPresenterTest {
       currentInsuranceAgreement = InsuranceAgreement(
         activeFrom = LocalDate.fromEpochDays(240),
         activeTo = LocalDate.fromEpochDays(340),
-        displayItems = persistentListOf(),
+        displayItems = listOf(),
         productVariant = ProductVariant(
           displayName = "Variant",
           contractGroup = ContractGroup.RENTAL,
           contractType = ContractType.SE_APARTMENT_RENT,
           partner = null,
-          perils = persistentListOf(),
-          insurableLimits = persistentListOf(),
-          documents = persistentListOf(),
+          perils = listOf(),
+          insurableLimits = listOf(),
+          documents = listOf(),
         ),
         certificateUrl = null,
-        coInsured = persistentListOf(),
+        coInsured = listOf(),
         creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
       ),
       upcomingInsuranceAgreement = null,

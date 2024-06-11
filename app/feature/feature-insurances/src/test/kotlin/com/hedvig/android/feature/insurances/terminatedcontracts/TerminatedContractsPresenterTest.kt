@@ -16,8 +16,6 @@ import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceContract
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.test.runTest
@@ -177,14 +175,13 @@ class TerminatedContractsPresenterTest {
       responseTurbine.add(ErrorMessage().left())
     }
 
-    fun getTerminatedInsurances() = terminatedInsurances.toPersistentList()
+    fun getTerminatedInsurances() = terminatedInsurances
 
     fun addAnotherSetOfTerminatedInsurances() {
       responseTurbine.add((terminatedInsurances + listOf(extraTerminatedInsurance)).right())
     }
 
-    fun getAnotherSetOfTerminatedInsurances() =
-      (terminatedInsurances + listOf(extraTerminatedInsurance)).toPersistentList()
+    fun getAnotherSetOfTerminatedInsurances() = (terminatedInsurances + listOf(extraTerminatedInsurance))
 
     private val terminatedInsurances = listOf(
       InsuranceContract(
@@ -196,18 +193,18 @@ class TerminatedContractsPresenterTest {
         currentInsuranceAgreement = InsuranceAgreement(
           activeFrom = LocalDate.fromEpochDays(240),
           activeTo = LocalDate.fromEpochDays(340),
-          displayItems = persistentListOf(),
+          displayItems = listOf(),
           productVariant = ProductVariant(
             displayName = "Variant",
             contractGroup = ContractGroup.RENTAL,
             contractType = ContractType.SE_APARTMENT_RENT,
             partner = null,
-            perils = persistentListOf(),
-            insurableLimits = persistentListOf(),
-            documents = persistentListOf(),
+            perils = listOf(),
+            insurableLimits = listOf(),
+            documents = listOf(),
           ),
           certificateUrl = null,
-          coInsured = persistentListOf(),
+          coInsured = listOf(),
           creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
         ),
         upcomingInsuranceAgreement = null,
@@ -227,18 +224,18 @@ class TerminatedContractsPresenterTest {
         currentInsuranceAgreement = InsuranceAgreement(
           activeFrom = LocalDate.fromEpochDays(240),
           activeTo = LocalDate.fromEpochDays(340),
-          displayItems = persistentListOf(),
+          displayItems = listOf(),
           productVariant = ProductVariant(
             displayName = "Variant",
             contractGroup = ContractGroup.RENTAL,
             contractType = ContractType.SE_APARTMENT_RENT,
             partner = null,
-            perils = persistentListOf(),
-            insurableLimits = persistentListOf(),
-            documents = persistentListOf(),
+            perils = listOf(),
+            insurableLimits = listOf(),
+            documents = listOf(),
           ),
           certificateUrl = null,
-          coInsured = persistentListOf(),
+          coInsured = listOf(),
           creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
         ),
         upcomingInsuranceAgreement = null,
@@ -260,18 +257,18 @@ class TerminatedContractsPresenterTest {
       currentInsuranceAgreement = InsuranceAgreement(
         activeFrom = LocalDate.fromEpochDays(240),
         activeTo = LocalDate.fromEpochDays(340),
-        displayItems = persistentListOf(),
+        displayItems = listOf(),
         productVariant = ProductVariant(
           displayName = "Variant",
           contractGroup = ContractGroup.RENTAL,
           contractType = ContractType.SE_APARTMENT_RENT,
           partner = null,
-          perils = persistentListOf(),
-          insurableLimits = persistentListOf(),
-          documents = persistentListOf(),
+          perils = listOf(),
+          insurableLimits = listOf(),
+          documents = listOf(),
         ),
         certificateUrl = null,
-        coInsured = persistentListOf(),
+        coInsured = listOf(),
         creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
       ),
       upcomingInsuranceAgreement = null,
@@ -293,18 +290,18 @@ class TerminatedContractsPresenterTest {
         currentInsuranceAgreement = InsuranceAgreement(
           activeFrom = LocalDate.fromEpochDays(240),
           activeTo = LocalDate.fromEpochDays(340),
-          displayItems = persistentListOf(),
+          displayItems = listOf(),
           productVariant = ProductVariant(
             displayName = "Variant",
             contractGroup = ContractGroup.RENTAL,
             contractType = ContractType.SE_APARTMENT_RENT,
             partner = null,
-            perils = persistentListOf(),
-            insurableLimits = persistentListOf(),
-            documents = persistentListOf(),
+            perils = listOf(),
+            insurableLimits = listOf(),
+            documents = listOf(),
           ),
           certificateUrl = null,
-          coInsured = persistentListOf(),
+          coInsured = listOf(),
           creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
         ),
         upcomingInsuranceAgreement = null,
@@ -324,18 +321,18 @@ class TerminatedContractsPresenterTest {
         currentInsuranceAgreement = InsuranceAgreement(
           activeFrom = LocalDate.fromEpochDays(240),
           activeTo = LocalDate.fromEpochDays(340),
-          displayItems = persistentListOf(),
+          displayItems = listOf(),
           productVariant = ProductVariant(
             displayName = "Variant",
             contractGroup = ContractGroup.RENTAL,
             contractType = ContractType.SE_APARTMENT_RENT,
             partner = null,
-            perils = persistentListOf(),
-            insurableLimits = persistentListOf(),
-            documents = persistentListOf(),
+            perils = listOf(),
+            insurableLimits = listOf(),
+            documents = listOf(),
           ),
           certificateUrl = null,
-          coInsured = persistentListOf(),
+          coInsured = listOf(),
           creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
         ),
         upcomingInsuranceAgreement = null,

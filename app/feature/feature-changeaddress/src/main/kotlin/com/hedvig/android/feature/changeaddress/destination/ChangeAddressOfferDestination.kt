@@ -68,7 +68,6 @@ import com.hedvig.android.feature.changeaddress.data.MoveQuote
 import com.hedvig.android.feature.changeaddress.ui.offer.Faqs
 import com.hedvig.android.feature.changeaddress.ui.offer.QuoteCard
 import hedvig.resources.R
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
@@ -280,7 +279,7 @@ private fun QuoteDetailsAndPdfs(quote: MoveQuote, openUrl: (String) -> Unit, mod
 
 @Suppress("UnusedReceiverParameter")
 @Composable
-private fun ColumnScope.InsurableLimits(insurableLimits: ImmutableList<InsurableLimit>) {
+private fun ColumnScope.InsurableLimits(insurableLimits: List<InsurableLimit>) {
   insurableLimits.mapIndexed { index, highlight ->
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {

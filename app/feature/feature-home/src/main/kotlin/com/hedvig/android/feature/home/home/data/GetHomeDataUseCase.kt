@@ -26,8 +26,6 @@ import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.android.ui.emergency.FirstVetSection
 import kotlin.time.Duration.Companion.seconds
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -87,7 +85,7 @@ internal class GetHomeDataUseCaseImpl(
               CrossSellType.UNKNOWN__ -> CrossSell.CrossSellType.UNKNOWN
             },
           )
-        }.toPersistentList()
+        }
         val showChatIcon = !shouldHideChatButton(
           isChatDisabledFromKillSwitch = isChatDisabled,
           isEligibleToShowTheChatIcon = isEligibleToShowTheChatIconResult.bind(),
@@ -105,7 +103,7 @@ internal class GetHomeDataUseCaseImpl(
         HomeData(
           contractStatus = contractStatus,
           claimStatusCardsData = homeQueryData.claimStatusCards(),
-          veryImportantMessages = veryImportantMessages.toPersistentList(),
+          veryImportantMessages = veryImportantMessages,
           memberReminders = memberReminders,
           showChatIcon = showChatIcon,
           showHelpCenter = isHelpCenterEnabled,
@@ -242,12 +240,12 @@ internal data class ChatMessage(
 internal data class HomeData(
   val contractStatus: ContractStatus,
   val claimStatusCardsData: ClaimStatusCardsData?,
-  val veryImportantMessages: ImmutableList<VeryImportantMessage>,
+  val veryImportantMessages: List<VeryImportantMessage>,
   val memberReminders: MemberReminders,
   val showChatIcon: Boolean,
   val showHelpCenter: Boolean,
   val firstVetSections: List<FirstVetSection>,
-  val crossSells: ImmutableList<CrossSell>,
+  val crossSells: List<CrossSell>,
 ) {
   @Immutable
   data class ClaimStatusCardsData(

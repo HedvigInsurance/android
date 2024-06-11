@@ -26,8 +26,6 @@ import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.navigation.core.AppDestination
 import kotlin.time.Duration.Companion.seconds
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
@@ -57,7 +55,7 @@ internal sealed interface ChatUiState {
   @Immutable
   data class Loaded(
     // The list of messages, ordered from the newest one to the oldest one
-    val messages: ImmutableList<UiChatMessage>,
+    val messages: List<UiChatMessage>,
     val fetchMoreMessagesUiState: FetchMoreMessagesUiState,
     val bannerText: String?,
     // This is used to track if a message has been sent at least once in this chat "session"
@@ -244,8 +242,7 @@ internal class ChatPresenter(
         }
       ChatUiState.Loaded(
         messages = (uiChatMessages + failedChatMessages)
-          .sortedByDescending { it.chatMessage.sentAt }
-          .toPersistentList(),
+          .sortedByDescending { it.chatMessage.sentAt },
         fetchMoreMessagesUiState = fetchMoreMessagesUiState,
         bannerText = bannerText,
         haveSentAtLeastOneMessage = haveSentAtLeastOneMessage,

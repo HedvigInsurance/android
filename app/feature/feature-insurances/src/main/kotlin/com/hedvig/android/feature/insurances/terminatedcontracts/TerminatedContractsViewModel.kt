@@ -18,8 +18,6 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.onEach
 
@@ -67,7 +65,7 @@ internal class TerminatedContractsPresenter(
               logcat(LogPriority.ERROR) { "Terminated insurances screen got 0 terminated insurances" }
               TerminatedContractsUiState.NoTerminatedInsurances
             } else {
-              TerminatedContractsUiState.Success(terminatedContracts.toImmutableList())
+              TerminatedContractsUiState.Success(terminatedContracts)
             }
           }.fold(
             ifLeft = { errorMessage ->
@@ -85,7 +83,7 @@ internal class TerminatedContractsPresenter(
 
 internal sealed interface TerminatedContractsUiState {
   data class Success(
-    val insuranceContracts: ImmutableList<InsuranceContract>,
+    val insuranceContracts: List<InsuranceContract>,
   ) : TerminatedContractsUiState
 
   data object NoTerminatedInsurances : TerminatedContractsUiState

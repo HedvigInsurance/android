@@ -10,14 +10,12 @@ import com.hedvig.android.data.contract.android.toDrawableRes
 import com.hedvig.android.data.contract.isTrialContract
 import com.hedvig.android.feature.insurances.data.InsuranceContract
 import hedvig.resources.R
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toPersistentList
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
 
 @Composable
-internal fun InsuranceContract.createChips(): ImmutableList<String> {
+internal fun InsuranceContract.createChips(): List<String> {
   val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
   return listOfNotNull(
     terminationDate?.let { terminationDate ->
@@ -49,7 +47,7 @@ internal fun InsuranceContract.createChips(): ImmutableList<String> {
         null
       }
     },
-  ).toPersistentList()
+  )
 }
 
 @Composable

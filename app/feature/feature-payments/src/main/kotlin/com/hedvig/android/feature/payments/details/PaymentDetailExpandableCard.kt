@@ -41,7 +41,6 @@ import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.payments.data.MemberCharge
 import hedvig.resources.R
 import java.time.format.DateTimeFormatter
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
 import octopus.type.CurrencyCode
@@ -202,7 +201,7 @@ private fun PaymentDetailExpandableCardPreview() {
         displayName = "Bilförsäkring",
         subtitle = "ABH 234",
         totalAmount = "978 kr",
-        periods = persistentListOf(
+        periods = listOf(
           MemberCharge.ChargeBreakdown.Period(
             amount = UiMoney(200.0, CurrencyCode.SEK),
             fromDate = LocalDate.fromEpochDays(200),
@@ -244,7 +243,7 @@ private fun PaymentDetailExpandableCardExpandedPreview() {
         displayName = "Bilförsäkring",
         subtitle = "ABH 234",
         totalAmount = "978 kr",
-        periods = persistentListOf(
+        periods = listOf(
           MemberCharge.ChargeBreakdown.Period(
             amount = UiMoney(200.0, CurrencyCode.SEK),
             fromDate = LocalDate.fromEpochDays(200),

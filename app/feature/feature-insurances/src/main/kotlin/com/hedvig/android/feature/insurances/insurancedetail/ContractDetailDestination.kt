@@ -63,9 +63,6 @@ import com.hedvig.android.feature.insurances.insurancedetail.yourinfo.YourInfoTa
 import com.hedvig.android.feature.insurances.ui.createChips
 import com.hedvig.android.feature.insurances.ui.createPainter
 import hedvig.resources.R
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 
@@ -213,8 +210,7 @@ private fun ContractDetailScreen(
                   0 -> {
                     YourInfoTab(
                       coverageItems = state.insuranceContract.currentInsuranceAgreement.displayItems
-                        .map { it.title to it.value }
-                        .toImmutableList(),
+                        .map { it.title to it.value },
                       coInsured = state.insuranceContract.currentInsuranceAgreement.coInsured,
                       allowEditCoInsured = state.insuranceContract.supportsEditCoInsured,
                       contractHolderDisplayName = state.insuranceContract.contractHolderDisplayName,
@@ -276,7 +272,7 @@ private fun ContractDetailScreen(
 }
 
 @Composable
-private fun InsuranceContract.getAllDocuments(): ImmutableList<InsuranceVariantDocument> = buildList {
+private fun InsuranceContract.getAllDocuments(): List<InsuranceVariantDocument> = buildList {
   addAll(currentInsuranceAgreement.productVariant.documents)
   if (currentInsuranceAgreement.certificateUrl != null) {
     val certificate = InsuranceVariantDocument(
@@ -286,7 +282,7 @@ private fun InsuranceContract.getAllDocuments(): ImmutableList<InsuranceVariantD
     )
     add(certificate)
   }
-}.toImmutableList()
+}
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -338,18 +334,18 @@ private fun PreviewContractDetailScreen() {
             currentInsuranceAgreement = InsuranceAgreement(
               activeFrom = LocalDate.fromEpochDays(240),
               activeTo = LocalDate.fromEpochDays(340),
-              displayItems = persistentListOf(),
+              displayItems = listOf(),
               productVariant = ProductVariant(
                 displayName = "Variant",
                 contractGroup = ContractGroup.RENTAL,
                 contractType = ContractType.SE_APARTMENT_RENT,
                 partner = null,
-                perils = persistentListOf(),
-                insurableLimits = persistentListOf(),
-                documents = persistentListOf(),
+                perils = listOf(),
+                insurableLimits = listOf(),
+                documents = listOf(),
               ),
               certificateUrl = null,
-              coInsured = persistentListOf(),
+              coInsured = listOf(),
               creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
             ),
             upcomingInsuranceAgreement = null,

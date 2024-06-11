@@ -9,8 +9,6 @@ import com.hedvig.android.data.claimtriaging.ClaimGroup
 import com.hedvig.android.feature.claimtriaging.GetEntryPointGroupsUseCase
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -95,7 +93,7 @@ internal class ClaimGroupsViewModel(
 
 @Immutable
 internal data class ClaimGroupsUiState(
-  val claimGroups: ImmutableList<ClaimGroup> = persistentListOf(),
+  val claimGroups: List<ClaimGroup> = listOf(),
   val selectedClaimGroup: ClaimGroup? = null,
   val haveTriedContinuingWithoutSelection: Boolean = false,
   val chipLoadingErrorMessage: String? = null,

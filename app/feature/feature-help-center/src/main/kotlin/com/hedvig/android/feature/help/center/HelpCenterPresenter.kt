@@ -13,8 +13,6 @@ import com.hedvig.android.feature.help.center.model.QuickAction
 import com.hedvig.android.feature.help.center.model.Topic
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
 
 internal sealed interface HelpCenterEvent {
   data class OnQuickActionSelected(val quickAction: QuickAction) : HelpCenterEvent
@@ -30,8 +28,8 @@ internal sealed interface HelpCenterEvent {
 }
 
 internal data class HelpCenterUiState(
-  val topics: ImmutableList<Topic>,
-  val questions: ImmutableList<Question>,
+  val topics: List<Topic>,
+  val questions: List<Question>,
   val quickLinksUiState: QuickLinkUiState,
   val selectedQuickAction: QuickAction?,
   val search: Search?,
@@ -43,7 +41,7 @@ internal data class HelpCenterUiState(
 
     data object NoQuickLinks : QuickLinkUiState
 
-    data class QuickLinks(val quickLinks: ImmutableList<QuickLink>) : QuickLinkUiState
+    data class QuickLinks(val quickLinks: List<QuickLink>) : QuickLinkUiState
   }
 
   data class Search(
@@ -113,7 +111,7 @@ internal class HelpCenterPresenter(
         ifRight = {
           val list = it.map { action ->
             HelpCenterUiState.QuickLink(action)
-          }.toImmutableList()
+          }
           HelpCenterUiState.QuickLinkUiState.QuickLinks(list)
         },
       )

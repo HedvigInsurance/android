@@ -6,7 +6,6 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.datetime.LocalDate
@@ -24,19 +23,19 @@ internal class GetInsuranceContractsUseCaseDemo : GetInsuranceContractsUseCase {
           currentInsuranceAgreement = InsuranceAgreement(
             activeFrom = LocalDate.fromEpochDays(240),
             activeTo = LocalDate.fromEpochDays(340),
-            displayItems = persistentListOf(),
+            displayItems = listOf(),
             productVariant = ProductVariant(
               displayName = "Variant",
               contractGroup = ContractGroup.RENTAL,
               contractType = ContractType.SE_APARTMENT_RENT,
               partner = null,
-              perils = persistentListOf(),
-              insurableLimits = persistentListOf(),
-              documents = persistentListOf(),
+              perils = listOf(),
+              insurableLimits = listOf(),
+              documents = listOf(),
             ),
             certificateUrl = null,
             creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
-            coInsured = persistentListOf(
+            coInsured = listOf(
               InsuranceAgreement.CoInsured(
                 ssn = "123",
                 birthDate = LocalDate.fromEpochDays(300),

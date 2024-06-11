@@ -58,8 +58,6 @@ import com.hedvig.android.core.ui.text.WarningTextWithIconForInput
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.AddBottomSheetState
 import hedvig.resources.R
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -175,7 +173,7 @@ internal fun AddCoInsuredBottomSheetContent(
 
 @Composable
 internal fun SelectableCoInsuredList(
-  selectableCoInsured: ImmutableList<CoInsured>,
+  selectableCoInsured: List<CoInsured>,
   selectedCoInsured: CoInsured?,
   errorMessage: String?,
   onAddNewCoInsured: () -> Unit,
@@ -456,7 +454,7 @@ private fun AddCoInsuredBottomSheetContentPreview() {
       AddCoInsuredBottomSheetContent(
         bottomSheetState = AddBottomSheetState(
           errorMessage = "Error",
-          selectableCoInsured = persistentListOf(
+          selectableCoInsured = listOf(
             CoInsured(
               "Test",
               "Testersson",

@@ -14,11 +14,9 @@ import com.hedvig.android.feature.claimtriaging.claimentrypoints.ClaimEntryPoint
 import com.hedvig.android.feature.claimtriaging.claimentrypoints.ClaimEntryPointsViewModel
 import com.hedvig.android.feature.claimtriaging.claimgroups.ClaimGroupsDestination
 import com.hedvig.android.feature.claimtriaging.claimgroups.ClaimGroupsViewModel
-import com.hedvig.android.navigation.compose.typed.SerializableImmutableList
 import com.hedvig.android.navigation.core.Navigator
 import com.kiwi.navigationcompose.typed.Destination
 import com.kiwi.navigationcompose.typed.composable
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -29,13 +27,13 @@ sealed interface ClaimTriagingDestination : Destination {
 
   @Serializable
   data class ClaimEntryPoints(
-    val entryPoints: SerializableImmutableList<EntryPoint>,
+    val entryPoints: List<EntryPoint>,
   ) : ClaimTriagingDestination
 
   @Serializable
   data class ClaimEntryPointOptions(
     val entryPointId: EntryPointId,
-    val entryPointOptions: SerializableImmutableList<EntryPointOption>,
+    val entryPointOptions: List<EntryPointOption>,
   ) : ClaimTriagingDestination
 }
 
@@ -64,7 +62,7 @@ fun NavGraphBuilder.claimTriagingDestinations(
     )
   }
   composable<ClaimTriagingDestination.ClaimEntryPoints> { backStackEntry ->
-    val entryPoints: ImmutableList<EntryPoint> = this.entryPoints
+    val entryPoints: List<EntryPoint> = this.entryPoints
     val viewModel: ClaimEntryPointsViewModel = koinViewModel { parametersOf(entryPoints) }
     ClaimEntryPointsDestination(
       viewModel = viewModel,
@@ -84,7 +82,7 @@ fun NavGraphBuilder.claimTriagingDestinations(
   }
   composable<ClaimTriagingDestination.ClaimEntryPointOptions> { backStackEntry ->
     val entryPointId: EntryPointId = this.entryPointId
-    val entryPointOptions: ImmutableList<EntryPointOption> = this.entryPointOptions
+    val entryPointOptions: List<EntryPointOption> = this.entryPointOptions
     val viewModel: ClaimEntryPointOptionsViewModel = koinViewModel { parametersOf(entryPointId, entryPointOptions) }
     ClaimEntryPointOptionsDestination(
       viewModel = viewModel,
