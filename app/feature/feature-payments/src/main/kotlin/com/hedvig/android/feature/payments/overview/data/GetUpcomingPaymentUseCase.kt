@@ -69,7 +69,7 @@ internal data class GetUpcomingPaymentUseCaseImpl(
 }
 
 private fun MemberChargeFragment.toMemberChargeShortInfo() = MemberChargeShortInfo(
-  id = id ?: "",
+  id = id,
   netAmount = UiMoney.fromMoneyFragment(net),
   dueDate = date,
   failedCharge = toFailedCharge(),

@@ -16,14 +16,14 @@ import octopus.PaymentHistoryWithDetailsQuery
 import octopus.type.MemberPaymentConnectionStatus
 
 internal interface GetChargeDetailsUseCase {
-  suspend fun invoke(id: String): Either<ErrorMessage, PaymentDetails>
+  suspend fun invoke(id: String?): Either<ErrorMessage, PaymentDetails>
 }
 
 internal class GetChargeDetailsUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val clock: Clock,
 ) : GetChargeDetailsUseCase {
-  override suspend fun invoke(id: String): Either<ErrorMessage, PaymentDetails> = either {
+  override suspend fun invoke(id: String?): Either<ErrorMessage, PaymentDetails> = either {
     val result = apolloClient.query(PaymentHistoryWithDetailsQuery())
       .fetchPolicy(FetchPolicy.NetworkFirst)
       .safeExecute()

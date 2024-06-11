@@ -13,7 +13,7 @@ sealed interface PaymentsDestination {
 internal sealed interface PaymentsDestinations {
   @Serializable
   data class Details(
-    val memberChargeId: String,
+    val memberChargeId: String?,
   ) : PaymentsDestinations
 
   @Serializable

@@ -102,7 +102,7 @@ internal sealed interface PaymentsUiState {
     data class UpcomingPayment(
       val netAmount: UiMoney,
       val dueDate: LocalDate,
-      val id: String,
+      val id: String?,
     )
 
     sealed interface UpcomingPaymentInfo {

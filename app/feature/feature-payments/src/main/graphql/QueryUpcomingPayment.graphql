@@ -14,6 +14,7 @@ query UpcomingPayment {
 }
 
 fragment MemberChargeFragment on MemberCharge {
+  id
   contractsChargeBreakdown {
     contract {
       exposureDisplayName
@@ -46,7 +47,6 @@ fragment MemberChargeFragment on MemberCharge {
   gross {
     ...MoneyFragment
   }
-  id
   net {
     ...MoneyFragment
   }

@@ -78,7 +78,7 @@ import octopus.type.CurrencyCode
 @Composable
 internal fun PaymentsDestination(
   viewModel: PaymentsViewModel,
-  onUpcomingPaymentClicked: (memberChargeId: String) -> Unit,
+  onUpcomingPaymentClicked: (memberChargeId: String?) -> Unit,
   onDiscountClicked: () -> Unit,
   onPaymentHistoryClicked: () -> Unit,
   onChangeBankAccount: () -> Unit,
@@ -97,7 +97,7 @@ internal fun PaymentsDestination(
 @Composable
 private fun PaymentsScreen(
   uiState: PaymentsUiState,
-  onUpcomingPaymentClicked: (memberChargeId: String) -> Unit,
+  onUpcomingPaymentClicked: (memberChargeId: String?) -> Unit,
   onChangeBankAccount: () -> Unit,
   onDiscountClicked: () -> Unit,
   onPaymentHistoryClicked: () -> Unit,

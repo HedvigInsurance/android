@@ -14,7 +14,7 @@ internal data class PaymentOverview(
 internal data class MemberChargeShortInfo(
   val netAmount: UiMoney,
   val dueDate: LocalDate,
-  val id: String,
+  val id: String?,
   val status: MemberCharge.MemberChargeStatus,
   val failedCharge: MemberCharge.FailedCharge?,
 )
