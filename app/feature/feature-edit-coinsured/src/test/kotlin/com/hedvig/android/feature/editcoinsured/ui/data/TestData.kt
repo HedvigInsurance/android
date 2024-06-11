@@ -2,11 +2,10 @@ package com.hedvig.android.feature.editcoinsured.ui.data
 
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.data.Member
-import kotlinx.collections.immutable.persistentListOf
 
 internal val testContractId = "123"
 
-internal val coInsuredTestList = persistentListOf(
+internal val coInsuredTestList = listOf(
   CoInsured(
     internalId = "1",
     firstName = "Test2",

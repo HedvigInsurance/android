@@ -32,7 +32,6 @@ dependencies {
   implementation(libs.coil.compose)
   implementation(libs.koin.compose)
   implementation(libs.kotlinx.datetime)
-  implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.moneta)
   implementation(projects.apolloCore)

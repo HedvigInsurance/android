@@ -3,14 +3,13 @@ package com.hedvig.android.feature.help.center.model
 import androidx.annotation.StringRes
 import com.hedvig.android.navigation.core.AppDestination
 import hedvig.resources.R
-import kotlinx.collections.immutable.persistentListOf
 
 internal enum class Question(
   @StringRes val titleRes: Int,
   @StringRes val questionRes: Int,
   @StringRes val answerRes: Int,
   val chatContext: AppDestination.Chat.ChatContext,
-  val relatedQuestionIds: List<Question> = persistentListOf(),
+  val relatedQuestionIds: List<Question> = listOf(),
 ) {
   // CLAIMS
   CLAIMS_Q1(
@@ -389,7 +388,7 @@ internal enum class Question(
   ),
 }
 
-internal val commonQuestions = persistentListOf(
+internal val commonQuestions = listOf(
   Question.CLAIMS_Q1,
   Question.INSURANCE_Q5,
   Question.PAYMENTS_Q1,

@@ -15,7 +15,6 @@ import com.hedvig.android.feature.editcoinsured.ui.data.coInsuredTestList
 import com.hedvig.android.feature.editcoinsured.ui.data.testContractId
 import com.hedvig.android.feature.editcoinsured.ui.data.testMember
 import com.hedvig.android.molecule.test.test
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import octopus.type.CurrencyCode
@@ -44,7 +43,7 @@ internal class EditCoInsuredPresenterTest {
         CoInsuredResult(
           member = testMember,
           coInsuredOnContract = coInsuredTestList,
-          allCoInsured = persistentListOf(),
+          allCoInsured = listOf(),
         ),
       )
 
@@ -77,7 +76,7 @@ internal class EditCoInsuredPresenterTest {
         listState = EditCoInsuredState.Loaded.CoInsuredListState(
           originalCoInsured = coInsuredTestList,
           member = testMember,
-          allCoInsured = persistentListOf(),
+          allCoInsured = listOf(),
         ),
         addBottomSheetState = EditCoInsuredState.Loaded.AddBottomSheetState(),
         removeBottomSheetState = EditCoInsuredState.Loaded.RemoveBottomSheetState(),
@@ -119,7 +118,7 @@ internal class EditCoInsuredPresenterTest {
         listState = EditCoInsuredState.Loaded.CoInsuredListState(
           originalCoInsured = coInsuredTestList,
           member = testMember,
-          allCoInsured = persistentListOf(),
+          allCoInsured = listOf(),
         ),
         addBottomSheetState = EditCoInsuredState.Loaded.AddBottomSheetState(),
         removeBottomSheetState = EditCoInsuredState.Loaded.RemoveBottomSheetState(),

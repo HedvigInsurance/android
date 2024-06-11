@@ -2,8 +2,6 @@ package com.hedvig.android.memberreminders
 
 import arrow.core.NonEmptyList
 import java.util.UUID
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
@@ -78,7 +76,7 @@ data class MemberReminders(
    *
    * If [alreadyHasNotificationPermission] is true, then the notification permission reminder should not be shown.
    */
-  fun onlyApplicableReminders(alreadyHasNotificationPermission: Boolean): ImmutableList<MemberReminder> {
+  fun onlyApplicableReminders(alreadyHasNotificationPermission: Boolean): List<MemberReminder> {
     return buildList {
       connectPayment?.let {
         add(connectPayment)
@@ -94,7 +92,7 @@ data class MemberReminders(
       upcomingRenewals?.let {
         addAll(it)
       }
-    }.toImmutableList()
+    }
   }
 }
 

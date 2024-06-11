@@ -12,7 +12,6 @@ dependencies {
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.koin.compose)
   implementation(libs.koin.core)
-  implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.coreBuildConstants)
   implementation(projects.coreDesignSystem)

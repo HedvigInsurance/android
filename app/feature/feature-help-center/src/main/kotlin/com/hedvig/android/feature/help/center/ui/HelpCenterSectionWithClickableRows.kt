@@ -22,15 +22,13 @@ import com.hedvig.android.core.designsystem.material3.onPinkContainer
 import com.hedvig.android.core.designsystem.material3.pinkContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 internal fun <T> HelpCenterSectionWithClickableRows(
   title: String,
   chipContainerColor: Color,
   contentColor: Color,
-  items: ImmutableList<T>,
+  items: List<T>,
   itemText: (T) -> String,
   onClickItem: (T) -> Unit,
   modifier: Modifier = Modifier,
@@ -86,7 +84,7 @@ private fun PreviewHelpCenterSectionWithClickableRows() {
         title = "Common topics",
         chipContainerColor = MaterialTheme.colorScheme.pinkContainer,
         contentColor = MaterialTheme.colorScheme.onPinkContainer,
-        items = listOf("Item 1", "Item 2", "Item 3").toPersistentList(),
+        items = listOf("Item 1", "Item 2", "Item 3"),
         itemText = { it },
         onClickItem = {},
       )

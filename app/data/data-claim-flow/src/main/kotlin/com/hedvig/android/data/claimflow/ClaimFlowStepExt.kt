@@ -5,7 +5,6 @@ import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.core.uidata.UiNullableMoney
 import com.hedvig.android.data.claimflow.model.AudioUrl
 import com.hedvig.audio.player.data.SignedAudioUrl
-import kotlinx.collections.immutable.toPersistentList
 import octopus.fragment.AudioContentFragment
 import octopus.fragment.AutomaticAutogiroPayoutFragment
 import octopus.fragment.CheckoutMethodFragment
@@ -116,15 +115,15 @@ fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
     )
 
     is ClaimFlowStep.ClaimDeflectGlassDamageStep -> ClaimFlowDestination.DeflectGlassDamage(
-      partners.map { it.toLocalPartner() }.toPersistentList(),
+      partners.map { it.toLocalPartner() },
     )
 
     is ClaimFlowStep.ClaimDeflectTowingStep -> ClaimFlowDestination.DeflectTowing(
-      partners.map { it.toLocalPartner() }.toPersistentList(),
+      partners.map { it.toLocalPartner() },
     )
 
     is ClaimFlowStep.ClaimDeflectEirStep -> ClaimFlowDestination.DeflectCarOtherDamage(
-      partners.map { it.toLocalPartner() }.toPersistentList(),
+      partners.map { it.toLocalPartner() },
     )
 
     is ClaimFlowStep.ClaimConfirmEmergencyStep -> ClaimFlowDestination.ConfirmEmergency(
@@ -134,17 +133,17 @@ fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
     )
 
     is ClaimFlowStep.ClaimDeflectEmergencyStep -> ClaimFlowDestination.DeflectEmergency(
-      partners.map { it.toLocalPartner() }.toPersistentList(),
+      partners.map { it.toLocalPartner() },
     )
 
     is ClaimFlowStep.ClaimDeflectPestsStep -> ClaimFlowDestination.DeflectPests(
-      partners.map { it.toLocalPartner() }.toPersistentList(),
+      partners.map { it.toLocalPartner() },
     )
 
     is ClaimFlowStep.ClaimFileUploadStep -> ClaimFlowDestination.FileUpload(
       title,
       targetUploadUrl,
-      uploads.map { it.toLocalUpload() }.toPersistentList(),
+      uploads.map { it.toLocalUpload() },
     )
   }
 }

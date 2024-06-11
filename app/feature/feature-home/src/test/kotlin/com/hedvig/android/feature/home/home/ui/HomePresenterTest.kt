@@ -25,7 +25,6 @@ import com.hedvig.android.molecule.test.test
 import com.hedvig.android.notification.badge.data.crosssell.card.FakeCrossSellCardNotificationBadgeService
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.android.ui.emergency.FirstVetSection
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.test.runTest
@@ -114,11 +113,11 @@ internal class HomePresenterTest {
               ),
             ),
           ),
-          veryImportantMessages = persistentListOf(),
+          veryImportantMessages = listOf(),
           memberReminders = MemberReminders(),
           showChatIcon = true,
           showHelpCenter = false,
-          crossSells = persistentListOf(),
+          crossSells = listOf(),
           firstVetSections = listOf(),
         ).right(),
       )
@@ -137,7 +136,7 @@ internal class HomePresenterTest {
               ),
             ),
           ),
-          veryImportantMessages = persistentListOf(),
+          veryImportantMessages = listOf(),
           memberReminders = MemberReminders(),
           isHelpCenterEnabled = false,
           firstVetAction = null,
@@ -167,12 +166,12 @@ internal class HomePresenterTest {
         HomeData(
           contractStatus = HomeData.ContractStatus.Active,
           claimStatusCardsData = null,
-          veryImportantMessages = persistentListOf(),
+          veryImportantMessages = listOf(),
           memberReminders = MemberReminders(
             enableNotifications = MemberReminder.EnableNotifications(),
           ),
           showChatIcon = false,
-          crossSells = persistentListOf(),
+          crossSells = listOf(),
           firstVetSections = listOf(),
           showHelpCenter = false,
         ).right(),
@@ -182,7 +181,7 @@ internal class HomePresenterTest {
           isReloading = false,
           homeText = HomeText.Active,
           claimStatusCardsData = null,
-          veryImportantMessages = persistentListOf(),
+          veryImportantMessages = listOf(),
           memberReminders = MemberReminders(
             connectPayment = null,
           ),
@@ -240,14 +239,14 @@ internal class HomePresenterTest {
         HomeData(
           contractStatus = HomeData.ContractStatus.Active,
           claimStatusCardsData = null,
-          veryImportantMessages = persistentListOf(),
+          veryImportantMessages = listOf(),
           memberReminders = MemberReminders(
             enableNotifications = MemberReminder.EnableNotifications(),
           ),
           showChatIcon = false,
           showHelpCenter = false,
           firstVetSections = listOf(),
-          crossSells = persistentListOf(),
+          crossSells = listOf(),
         ).right(),
       )
       assertThat(awaitItem())
@@ -275,10 +274,10 @@ internal class HomePresenterTest {
         HomeData(
           contractStatus = HomeData.ContractStatus.Active,
           claimStatusCardsData = null,
-          veryImportantMessages = persistentListOf(),
+          veryImportantMessages = listOf(),
           memberReminders = MemberReminders(),
           showChatIcon = false,
-          crossSells = persistentListOf(),
+          crossSells = listOf(),
           firstVetSections = listOf(),
           showHelpCenter = false,
         ).right(),
@@ -288,7 +287,7 @@ internal class HomePresenterTest {
           isReloading = false,
           homeText = HomeText.Active,
           claimStatusCardsData = null,
-          veryImportantMessages = persistentListOf(),
+          veryImportantMessages = listOf(),
           memberReminders = MemberReminders(),
           isHelpCenterEnabled = false,
           hasUnseenChatMessages = false,
@@ -323,10 +322,10 @@ internal class HomePresenterTest {
         HomeData(
           contractStatus = HomeData.ContractStatus.Active,
           claimStatusCardsData = null,
-          veryImportantMessages = persistentListOf(),
+          veryImportantMessages = listOf(),
           memberReminders = MemberReminders(),
           showChatIcon = false,
-          crossSells = persistentListOf(),
+          crossSells = listOf(),
           firstVetSections = listOf(
             firstVet,
           ),
@@ -338,7 +337,7 @@ internal class HomePresenterTest {
           isReloading = false,
           homeText = HomeText.Active,
           claimStatusCardsData = null,
-          veryImportantMessages = persistentListOf(),
+          veryImportantMessages = listOf(),
           memberReminders = MemberReminders(),
           isHelpCenterEnabled = false,
           hasUnseenChatMessages = false,
@@ -374,10 +373,10 @@ internal class HomePresenterTest {
         HomeData(
           contractStatus = HomeData.ContractStatus.Active,
           claimStatusCardsData = null,
-          veryImportantMessages = persistentListOf(),
+          veryImportantMessages = listOf(),
           memberReminders = MemberReminders(),
           showChatIcon = false,
-          crossSells = persistentListOf(crossSell),
+          crossSells = listOf(crossSell),
           firstVetSections = listOf(),
           showHelpCenter = false,
         ).right(),
@@ -387,13 +386,13 @@ internal class HomePresenterTest {
           isReloading = false,
           homeText = HomeText.Active,
           claimStatusCardsData = null,
-          veryImportantMessages = persistentListOf(),
+          veryImportantMessages = listOf(),
           memberReminders = MemberReminders(),
           isHelpCenterEnabled = false,
           hasUnseenChatMessages = false,
           chatAction = null,
           firstVetAction = null,
-          crossSellsAction = HomeTopBarAction.CrossSellsAction(persistentListOf(crossSell)),
+          crossSellsAction = HomeTopBarAction.CrossSellsAction(listOf(crossSell)),
         ),
       )
     }
@@ -416,10 +415,10 @@ internal class HomePresenterTest {
         HomeData(
           contractStatus = HomeData.ContractStatus.Active,
           claimStatusCardsData = null,
-          veryImportantMessages = persistentListOf(),
+          veryImportantMessages = listOf(),
           memberReminders = MemberReminders(),
           showChatIcon = true,
-          crossSells = persistentListOf(),
+          crossSells = listOf(),
           firstVetSections = listOf(),
           showHelpCenter = false,
         ).right(),
@@ -429,7 +428,7 @@ internal class HomePresenterTest {
           isReloading = false,
           homeText = HomeText.Active,
           claimStatusCardsData = null,
-          veryImportantMessages = persistentListOf(),
+          veryImportantMessages = listOf(),
           memberReminders = MemberReminders(),
           isHelpCenterEnabled = false,
           hasUnseenChatMessages = false,
@@ -458,10 +457,10 @@ internal class HomePresenterTest {
         HomeData(
           contractStatus = HomeData.ContractStatus.Active,
           claimStatusCardsData = null,
-          veryImportantMessages = persistentListOf(),
+          veryImportantMessages = listOf(),
           memberReminders = MemberReminders(),
           showChatIcon = false,
-          crossSells = persistentListOf(),
+          crossSells = listOf(),
           firstVetSections = listOf(),
           showHelpCenter = false,
         ).right(),
@@ -471,7 +470,7 @@ internal class HomePresenterTest {
           isReloading = false,
           homeText = HomeText.Active,
           claimStatusCardsData = null,
-          veryImportantMessages = persistentListOf(),
+          veryImportantMessages = listOf(),
           memberReminders = MemberReminders(),
           isHelpCenterEnabled = false,
           hasUnseenChatMessages = false,
@@ -496,11 +495,11 @@ internal class HomePresenterTest {
   private val someIrrelevantHomeDataInstance: HomeData = HomeData(
     contractStatus = HomeData.ContractStatus.Active,
     claimStatusCardsData = null,
-    veryImportantMessages = persistentListOf(),
+    veryImportantMessages = listOf(),
     memberReminders = MemberReminders(),
     showChatIcon = false,
     showHelpCenter = false,
     firstVetSections = listOf(),
-    crossSells = persistentListOf(),
+    crossSells = listOf(),
   )
 }

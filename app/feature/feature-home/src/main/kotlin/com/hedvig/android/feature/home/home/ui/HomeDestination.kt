@@ -103,8 +103,6 @@ import com.hedvig.android.ui.emergency.FirstVetSection
 import hedvig.resources.R
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.toJavaLocalDate
@@ -168,7 +166,7 @@ private fun HomeScreen(
     onRefresh = reload,
     refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
   )
-  var crossSellsForBottomSheet by remember { mutableStateOf<ImmutableList<CrossSell>?>(null) }
+  var crossSellsForBottomSheet by remember { mutableStateOf<List<CrossSell>?>(null) }
   if (crossSellsForBottomSheet != null) {
     val list = crossSellsForBottomSheet
     if (list != null) {
@@ -536,7 +534,7 @@ private fun WelcomeMessage(homeText: HomeText, modifier: Modifier = Modifier) {
 
 @Composable
 private fun CrossSellBottomSheet(
-  crossSells: ImmutableList<CrossSell>,
+  crossSells: List<CrossSell>,
   onDismissed: () -> Unit,
   onCrossSellClick: (String) -> Unit,
 ) {
@@ -593,7 +591,7 @@ private fun PreviewHomeScreen(
               ),
             ),
           ),
-          veryImportantMessages = persistentListOf(
+          veryImportantMessages = listOf(
             HomeData.VeryImportantMessage(
               "id",
               "Beware of the earthquake",
@@ -606,7 +604,7 @@ private fun PreviewHomeScreen(
           isHelpCenterEnabled = true,
           hasUnseenChatMessages = hasUnseenChatMessages,
           crossSellsAction = HomeTopBarAction.CrossSellsAction(
-            persistentListOf(CrossSell("rf", "erf", "", "", CrossSell.CrossSellType.ACCIDENT)),
+            listOf(CrossSell("rf", "erf", "", "", CrossSell.CrossSellType.ACCIDENT)),
           ),
           firstVetAction = HomeTopBarAction.FirstVetAction(
             listOf(

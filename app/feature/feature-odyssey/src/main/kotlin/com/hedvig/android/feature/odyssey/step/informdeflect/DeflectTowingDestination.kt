@@ -50,8 +50,6 @@ import com.hedvig.android.data.claimflow.DeflectPartner
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import hedvig.resources.R
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 internal fun DeflectTowingDestination(
@@ -74,7 +72,7 @@ internal fun DeflectTowingDestination(
 
 @Composable
 private fun DeflectTowingScreen(
-  partners: ImmutableList<DeflectPartner>,
+  partners: List<DeflectPartner>,
   openChat: () -> Unit,
   closeClaimFlow: () -> Unit,
   windowSizeClass: WindowSizeClass,
@@ -240,7 +238,7 @@ private fun PreviewDeflectTowingScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       DeflectTowingScreen(
-        partners = persistentListOf(
+        partners = listOf(
           DeflectPartner(
             id = "1",
             imageUrl = "test",

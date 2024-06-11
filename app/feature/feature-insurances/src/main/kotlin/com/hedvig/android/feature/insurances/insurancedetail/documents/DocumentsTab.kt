@@ -32,12 +32,10 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.small.hedvig.ArrowNorthEast
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 internal fun DocumentsTab(
-  documents: ImmutableList<InsuranceVariantDocument>,
+  documents: List<InsuranceVariantDocument>,
   onDocumentClicked: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -110,7 +108,7 @@ private fun PreviewDocumentsScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       DocumentsTab(
-        documents = persistentListOf(
+        documents = listOf(
           InsuranceVariantDocument("", "test", InsuranceVariantDocument.InsuranceDocumentType.GENERAL_TERMS),
           InsuranceVariantDocument("", "", InsuranceVariantDocument.InsuranceDocumentType.PRE_SALE_INFO),
         ),

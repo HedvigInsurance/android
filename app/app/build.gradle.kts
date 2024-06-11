@@ -154,7 +154,6 @@ dependencies {
   implementation(libs.koin.workManager)
   implementation(libs.kotlin.reflect)
   implementation(libs.kotlinx.datetime)
-  implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.moneta)
   implementation(libs.navigationRecentsUrlSharing)

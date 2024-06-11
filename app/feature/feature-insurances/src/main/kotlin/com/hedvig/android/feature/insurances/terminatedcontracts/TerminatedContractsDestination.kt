@@ -32,7 +32,6 @@ import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceContract
 import com.hedvig.android.feature.insurances.ui.createChips
 import hedvig.resources.R
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate
 
 @Composable
@@ -129,7 +128,7 @@ private class PreviewTerminatedContractsUiStateProvider :
       TerminatedContractsUiState.NoTerminatedInsurances,
       TerminatedContractsUiState.Error,
       TerminatedContractsUiState.Success(
-        persistentListOf(
+        listOf(
           InsuranceContract(
             "1",
             "Test123",
@@ -139,18 +138,18 @@ private class PreviewTerminatedContractsUiStateProvider :
             currentInsuranceAgreement = InsuranceAgreement(
               activeFrom = LocalDate.fromEpochDays(240),
               activeTo = LocalDate.fromEpochDays(340),
-              displayItems = persistentListOf(),
+              displayItems = listOf(),
               productVariant = ProductVariant(
                 displayName = "Variant",
                 contractGroup = ContractGroup.RENTAL,
                 contractType = ContractType.SE_APARTMENT_RENT,
                 partner = null,
-                perils = persistentListOf(),
-                insurableLimits = persistentListOf(),
-                documents = persistentListOf(),
+                perils = listOf(),
+                insurableLimits = listOf(),
+                documents = listOf(),
               ),
               certificateUrl = null,
-              coInsured = persistentListOf(),
+              coInsured = listOf(),
               creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
             ),
             upcomingInsuranceAgreement = null,

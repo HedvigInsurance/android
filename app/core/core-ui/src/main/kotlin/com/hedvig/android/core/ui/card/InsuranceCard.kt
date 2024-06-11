@@ -45,13 +45,11 @@ import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.placeholder.PlaceholderHighlight
 import com.hedvig.android.placeholder.placeholder
 import com.hedvig.android.placeholder.shimmer
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun InsuranceCard(
-  chips: ImmutableList<String>,
+  chips: List<String>,
   topText: String,
   bottomText: String,
   imageLoader: ImageLoader,
@@ -145,7 +143,7 @@ private fun Chip(text: String, modifier: Modifier = Modifier) {
 @Composable
 fun InsuranceCardPlaceholder(imageLoader: ImageLoader, modifier: Modifier = Modifier) {
   InsuranceCard(
-    chips = persistentListOf(),
+    chips = listOf(),
     topText = "",
     bottomText = "",
     imageLoader = imageLoader,
@@ -162,7 +160,7 @@ private fun PreviewInsuranceCard(
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       InsuranceCard(
-        chips = persistentListOf("Activates 20.03.2024", "Terminates 20.03.2025", "Something in 20.03.2026"),
+        chips = listOf("Activates 20.03.2024", "Terminates 20.03.2025", "Something in 20.03.2026"),
         topText = "Home Insurance",
         bottomText = "Bellmansgatan 19A ∙ You +1",
         imageLoader = rememberPreviewImageLoader(),

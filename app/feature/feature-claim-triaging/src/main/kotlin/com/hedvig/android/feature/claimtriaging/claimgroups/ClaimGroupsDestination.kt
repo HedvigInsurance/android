@@ -41,8 +41,6 @@ import com.hedvig.android.data.claimtriaging.ClaimGroup
 import com.hedvig.android.data.claimtriaging.ClaimGroupId
 import com.hedvig.android.feature.claimtriaging.OptionChipsFlowRow
 import hedvig.resources.R
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 internal fun ClaimGroupsDestination(
@@ -170,8 +168,8 @@ private fun PreviewClaimGroupsScreen(
       val claimGroups = remember {
         List(12) {
           val displayName = buildString { repeat((4..14).random()) { append(('a'..'z').random()) } }
-          ClaimGroup(ClaimGroupId(it.toString()), displayName, persistentListOf())
-        }.toImmutableList()
+          ClaimGroup(ClaimGroupId(it.toString()), displayName, listOf())
+        }
       }
       ClaimGroupsScreen(
         uiState = ClaimGroupsUiState(

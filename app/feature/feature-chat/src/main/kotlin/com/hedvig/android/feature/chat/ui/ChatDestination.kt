@@ -42,7 +42,6 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import hedvig.resources.R
 import kotlin.time.Duration.Companion.seconds
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.Clock
 
 @Composable
@@ -227,8 +226,7 @@ private class ChatUiStateProvider : CollectionPreviewParameterProvider<ChatUiSta
         )
         .map {
           ChatUiState.Loaded.UiChatMessage(it, false)
-        }
-        .toImmutableList(),
+        },
       fetchMoreMessagesUiState = ChatUiState.Loaded.FetchMoreMessagesUiState.FetchingMore,
       bannerText = "Test",
       haveSentAtLeastOneMessage = false,

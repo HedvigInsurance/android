@@ -13,14 +13,12 @@ import com.hedvig.android.data.claimtriaging.ClaimGroupId
 import com.hedvig.android.data.claimtriaging.EntryPoint
 import com.hedvig.android.data.claimtriaging.EntryPointId
 import com.hedvig.android.data.claimtriaging.toEntryPointOptions
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
 import octopus.EntryPointGroupsQuery
 
 internal class GetEntryPointGroupsUseCase(
   private val apolloClient: ApolloClient,
 ) {
-  suspend fun invoke(): Either<ErrorMessage, ImmutableList<ClaimGroup>> {
+  suspend fun invoke(): Either<ErrorMessage, List<ClaimGroup>> {
     return either {
       val data = apolloClient
         .query(EntryPointGroupsQuery())
@@ -35,17 +33,17 @@ internal class GetEntryPointGroupsUseCase(
           entryPointGroup.displayName,
           entryPointGroup.entrypoints.toEntryPoints(),
         )
-      }.toImmutableList()
+      }
     }
   }
 }
 
-private fun List<octopus.fragment.EntryPoint>.toEntryPoints(): ImmutableList<EntryPoint> {
+private fun List<octopus.fragment.EntryPoint>.toEntryPoints(): List<EntryPoint> {
   return map { entryPoint ->
     EntryPoint(
       EntryPointId(entryPoint.id),
       entryPoint.displayName,
       entryPoint.options?.toEntryPointOptions(),
     )
-  }.toImmutableList()
+  }
 }

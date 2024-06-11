@@ -26,7 +26,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.halilibo.richtext.markdown.Markdown
 import com.halilibo.richtext.ui.material3.RichText
-import com.hedvig.android.compose.ui.preview.DoubleBooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.material3.infoContainer
 import com.hedvig.android.core.designsystem.material3.onInfoContainer
@@ -42,9 +41,6 @@ import com.hedvig.android.feature.help.center.ui.HelpCenterSection
 import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
 import com.hedvig.android.feature.help.center.ui.StillNeedHelpSection
 import hedvig.resources.R
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 internal fun HelpCenterQuestionDestination(
@@ -59,9 +55,8 @@ internal fun HelpCenterQuestionDestination(
   val relatedQuestions = question
     ?.relatedQuestionIds
     ?.mapNotNull { id ->
-      Question.entries.find { it == id }
-    }
-    ?.toPersistentList() ?: persistentListOf()
+      Question.entries.firstOrNull { it == id }
+    } ?: listOf()
   HelpCenterQuestionScreen(
     question = question,
     relatedQuestions = relatedQuestions,
@@ -75,7 +70,7 @@ internal fun HelpCenterQuestionDestination(
 @Composable
 private fun HelpCenterQuestionScreen(
   question: Question?,
-  relatedQuestions: ImmutableList<Question>,
+  relatedQuestions: List<Question>,
   onNavigateToQuestion: (questionId: Question) -> Unit,
   onNavigateUp: () -> Unit,
   onNavigateBack: () -> Unit,
@@ -181,11 +176,11 @@ private fun PreviewHelpCenterQuestionScreen(
       HelpCenterQuestionScreen(
         question = Question.CLAIMS_Q1.takeIf { hasQuestion },
         relatedQuestions = if (hasRelatedQuestions) {
-          persistentListOf(
+          listOf(
             Question.CLAIMS_Q1,
           )
         } else {
-          persistentListOf()
+          listOf()
         },
         onNavigateToQuestion = {},
         onNavigateUp = {},

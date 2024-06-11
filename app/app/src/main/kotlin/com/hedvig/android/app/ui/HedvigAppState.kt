@@ -42,10 +42,6 @@ import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigate
 import com.kiwi.navigationcompose.typed.popUpTo
 import kotlin.time.Duration.Companion.seconds
-import kotlinx.collections.immutable.ImmutableSet
-import kotlinx.collections.immutable.PersistentSet
-import kotlinx.collections.immutable.persistentSetOf
-import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -131,7 +127,7 @@ internal class HedvigAppState(
       false,
     )
 
-  val topLevelGraphs: StateFlow<ImmutableSet<TopLevelGraph>> = flow {
+  val topLevelGraphs: StateFlow<Set<TopLevelGraph>> = flow {
     val onlyHasNonPayingContracts = getOnlyHasNonPayingContractsUseCase.provide().invoke().getOrNull()
     emit(
       buildList {
@@ -142,12 +138,12 @@ internal class HedvigAppState(
         }
         add(TopLevelGraph.Payments)
         add(TopLevelGraph.Profile)
-      }.toPersistentSet(),
+      }.toSet(),
     )
   }.stateIn(
     coroutineScope,
     SharingStarted.Eagerly,
-    persistentSetOf(
+    setOf(
       TopLevelGraph.Home,
       TopLevelGraph.Insurances,
       TopLevelGraph.Payments,
@@ -155,7 +151,7 @@ internal class HedvigAppState(
     ),
   )
 
-  val topLevelGraphsWithNotifications: StateFlow<PersistentSet<TopLevelGraph>> =
+  val topLevelGraphsWithNotifications: StateFlow<Set<TopLevelGraph>> =
     tabNotificationBadgeService.unseenTabNotificationBadges().map { bottomNavTabs: Set<BottomNavTab> ->
       bottomNavTabs.map { bottomNavTab ->
         when (bottomNavTab) {
@@ -165,11 +161,11 @@ internal class HedvigAppState(
           BottomNavTab.PAYMENTS -> TopLevelGraph.Payments
           BottomNavTab.PROFILE -> TopLevelGraph.Profile
         }
-      }.toPersistentSet()
+      }.toSet()
     }.stateIn(
       scope = coroutineScope,
       started = SharingStarted.WhileSubscribed(5.seconds),
-      initialValue = persistentSetOf(),
+      initialValue = setOf(),
     )
 
   /**

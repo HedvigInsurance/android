@@ -5,8 +5,6 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.data.claimflow.ClaimFlowDestination
 import com.hedvig.android.data.claimflow.DeflectPartner
 import com.hedvig.android.ui.emergency.EmergencyScreen
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 internal fun DeflectEmergencyDestination(
@@ -20,7 +18,7 @@ internal fun DeflectEmergencyDestination(
 }
 
 @Composable
-private fun DeflectEmergencyScreen(partners: ImmutableList<DeflectPartner>, navigateUp: () -> Unit) {
+private fun DeflectEmergencyScreen(partners: List<DeflectPartner>, navigateUp: () -> Unit) {
   EmergencyScreen(
     emergencyNumber = partners.firstNotNullOfOrNull { it.phoneNumber },
     navigateUp = navigateUp,
@@ -31,7 +29,7 @@ private fun DeflectEmergencyScreen(partners: ImmutableList<DeflectPartner>, navi
 @Composable
 private fun DeflectEmergencyScreenPreview() {
   DeflectEmergencyScreen(
-    partners = persistentListOf(
+    partners = listOf(
       DeflectPartner(
         id = "1",
         imageUrl = "test",

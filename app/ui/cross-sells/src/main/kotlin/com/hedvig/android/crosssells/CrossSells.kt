@@ -44,12 +44,11 @@ import com.hedvig.android.placeholder.fade
 import com.hedvig.android.placeholder.placeholder
 import com.hedvig.android.placeholder.shimmer
 import hedvig.resources.R
-import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 fun ColumnScope.CrossSellsSection(
   showNotificationBadge: Boolean,
-  crossSells: ImmutableList<CrossSell>,
+  crossSells: List<CrossSell>,
   onCrossSellClick: (String) -> Unit,
 ) {
   CrossSellsSubHeaderWithDivider(showNotificationBadge)

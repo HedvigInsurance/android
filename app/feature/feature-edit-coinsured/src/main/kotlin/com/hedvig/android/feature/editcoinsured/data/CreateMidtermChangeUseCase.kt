@@ -8,17 +8,13 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiMoney
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.datetime.LocalDate
 import octopus.CreateMidtermChangeMutation
 import octopus.type.CoInsuredInput
 import octopus.type.MidtermChangeIntentCreateInput
 
 internal interface CreateMidtermChangeUseCase {
-  suspend fun invoke(
-    contractId: String,
-    coInsured: ImmutableList<CoInsured>,
-  ): Either<ErrorMessage, CreateMidtermChangeResult>
+  suspend fun invoke(contractId: String, coInsured: List<CoInsured>): Either<ErrorMessage, CreateMidtermChangeResult>
 }
 
 internal class CreateMidtermChangeUseCaseImpl(
@@ -26,7 +22,7 @@ internal class CreateMidtermChangeUseCaseImpl(
 ) : CreateMidtermChangeUseCase {
   override suspend fun invoke(
     contractId: String,
-    coInsured: ImmutableList<CoInsured>,
+    coInsured: List<CoInsured>,
   ): Either<ErrorMessage, CreateMidtermChangeResult> = either {
     val mutation = CreateMidtermChangeMutation(
       contractId,
@@ -71,5 +67,5 @@ internal data class CreateMidtermChangeResult(
   val currentPremium: UiMoney,
   val newPremium: UiMoney,
   val activatedDate: LocalDate,
-  val coInsured: ImmutableList<CoInsured>,
+  val coInsured: List<CoInsured>,
 )
