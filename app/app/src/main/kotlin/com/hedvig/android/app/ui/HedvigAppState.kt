@@ -198,7 +198,7 @@ internal class HedvigAppState(
    * https://issuetracker.google.com/issues/334413738
    */
   fun navigateToLoggedIn() {
-    navController.navigate(RootGraph.route) {
+    navController.navigate(RootGraph) {
       popUpTo<LoginDestination> {
         inclusive = true
       }
@@ -207,7 +207,7 @@ internal class HedvigAppState(
 
   fun navigateToLoggedOut() {
     navController.navigate(LoginDestination) {
-      popUpTo(RootGraph.route) {
+      popUpTo<RootGraph> {
         inclusive = true
       }
     }
