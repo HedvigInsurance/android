@@ -127,9 +127,9 @@ private fun QuoteDetailsAndPrice(isExpanded: Boolean, quote: MoveQuote) {
         Spacer(Modifier.width(8.dp))
         val angle = animateFloatAsState(
           targetValue = if (isExpanded) {
-            0f
-          } else {
             -180f
+          } else {
+            0f
           },
           label = "",
         )
