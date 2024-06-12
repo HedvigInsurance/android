@@ -8,7 +8,7 @@ import com.hedvig.android.feature.changeaddress.data.ExtraBuilding
 import com.hedvig.android.feature.changeaddress.data.ExtraBuildingType.GARAGE
 import com.hedvig.android.feature.changeaddress.data.ExtraBuildingType.SAUNA
 import com.hedvig.android.feature.changeaddress.destination.fakeMovingParametersForVilla
-import com.hedvig.android.feature.changeaddress.navigation.VillaOnlyParameters
+import com.hedvig.android.feature.changeaddress.destination.fakeVillaOnlyParameters
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
 import kotlinx.coroutines.test.runTest
@@ -140,20 +140,7 @@ class EnterVillaInformationPresenterTest {
           .isInstanceOf<EnterVillaInformationUiState>()
           .prop(EnterVillaInformationUiState::movingParameters).isEqualTo(
             fakeMovingParametersForVilla.copy(
-              villaOnlyParameters = VillaOnlyParameters(
-                isSublet = true,
-                ancillaryArea = "15",
-                numberOfBathrooms = "2",
-                yearOfConstruction = "1999",
-                extraBuildings = listOf(
-                  ExtraBuilding(
-                    "iddd",
-                    3,
-                    type = GARAGE,
-                    hasWaterConnected = false,
-                  ),
-                ),
-              ),
+              villaOnlyParameters = fakeVillaOnlyParameters,
             ),
           )
       }

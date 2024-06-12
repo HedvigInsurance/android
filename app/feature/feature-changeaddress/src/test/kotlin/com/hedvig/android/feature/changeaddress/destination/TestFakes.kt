@@ -3,9 +3,17 @@ package com.hedvig.android.feature.changeaddress.destination
 import app.cash.turbine.Turbine
 import arrow.core.Either
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.contract.ContractGroup
+import com.hedvig.android.data.contract.ContractType
+import com.hedvig.android.data.productvariant.InsurableLimit
+import com.hedvig.android.data.productvariant.InsurableLimit.InsurableLimitType.BIKE
+import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.feature.changeaddress.data.Address
 import com.hedvig.android.feature.changeaddress.data.AddressId
 import com.hedvig.android.feature.changeaddress.data.ChangeAddressRepository
+import com.hedvig.android.feature.changeaddress.data.ExtraBuilding
+import com.hedvig.android.feature.changeaddress.data.ExtraBuildingType.GARAGE
 import com.hedvig.android.feature.changeaddress.data.HousingType.APARTMENT_OWN
 import com.hedvig.android.feature.changeaddress.data.HousingType.VILLA
 import com.hedvig.android.feature.changeaddress.data.MoveIntent
@@ -16,7 +24,10 @@ import com.hedvig.android.feature.changeaddress.data.SuccessfulMove
 import com.hedvig.android.feature.changeaddress.navigation.MovingParameters
 import com.hedvig.android.feature.changeaddress.navigation.NewAddressParameters
 import com.hedvig.android.feature.changeaddress.navigation.SelectHousingTypeParameters
+import com.hedvig.android.feature.changeaddress.navigation.VillaOnlyParameters
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate
+import octopus.type.CurrencyCode
 
 internal val fakeMoveIntent = MoveIntent(
   id = MoveIntentId("moveintentid"),
@@ -68,6 +79,59 @@ private val fakeEnterNewAddressParameters = NewAddressParameters(
 
 internal val fakeMovingParametersForVilla = MovingParameters(
   selectHousingTypeParameters = fakeSelectHousingTypeParametersForVilla,
+  newAddressParameters = fakeEnterNewAddressParameters,
+  villaOnlyParameters = null,
+)
+
+internal val fakeVillaOnlyParameters = VillaOnlyParameters(
+  isSublet = true,
+  ancillaryArea = "15",
+  numberOfBathrooms = "2",
+  yearOfConstruction = "1999",
+  extraBuildings = listOf(
+    ExtraBuilding(
+      "iddd",
+      3,
+      type = GARAGE,
+      hasWaterConnected = false,
+    ),
+  ),
+)
+
+internal val fakeMoveQuote = MoveQuote(
+  id = "fakeId",
+  insuranceName = "Insurance Good Home",
+  moveIntentId = MoveIntentId(""),
+  premium = UiMoney(99.0, CurrencyCode.SEK),
+  startDate = LocalDate(2023, 5, 13),
+  isExpanded = false,
+  productVariant = ProductVariant(
+    displayName = "Test",
+    contractGroup = ContractGroup.RENTAL,
+    contractType = ContractType.SE_APARTMENT_RENT,
+    partner = "test",
+    perils = persistentListOf(),
+    insurableLimits = persistentListOf(
+      InsurableLimit(
+        label = "test",
+        description = "long".repeat(10),
+        limit = "long".repeat(10),
+        type = BIKE,
+      ),
+    ),
+    documents = persistentListOf(),
+  ),
+  displayItems = persistentListOf(),
+)
+
+internal val fakeMovingParametersForOfferFromVilla = MovingParameters(
+  selectHousingTypeParameters = fakeSelectHousingTypeParametersForVilla,
+  newAddressParameters = fakeEnterNewAddressParameters,
+  villaOnlyParameters = fakeVillaOnlyParameters,
+)
+
+internal val fakeMovingParametersForOfferFromApartment = MovingParameters(
+  selectHousingTypeParameters = fakeSelectHousingTypeParametersForApartment,
   newAddressParameters = fakeEnterNewAddressParameters,
   villaOnlyParameters = null,
 )

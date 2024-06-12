@@ -16,6 +16,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -180,10 +181,16 @@ private fun ChangeAddressEnterNewAddressScreen(
         keyboardType = KeyboardType.Number,
       ),
     )
+    val focusManager = LocalFocusManager.current
     uiState.datePickerUiState?.let {
       Spacer(modifier = Modifier.height(8.dp))
       MovingDateButton(
-        onDateSelected = { onMoveDateSelected(it) },
+        onDateSelected = {
+          onMoveDateSelected(it)
+          focusManager.clearFocus()
+        },
+        // todo: Scaffold's modifier does not clear focus in this case,
+        //  nor does MovingDateButton modifier, so it's annoying when keyboard opens again
         datePickerState = uiState.datePickerUiState.datePickerState,
         movingDate = uiState.movingDate,
         modifier = Modifier.padding(horizontal = 16.dp),
