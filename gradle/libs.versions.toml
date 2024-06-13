@@ -29,11 +29,11 @@ accompanist = "0.34.0"
 androidx-activity-compose = "1.9.0"
 androidx-activity-core = "1.9.0"
 androidx-annotation = "1.8.0"
-androidx-composeBom = "2024.05.00"
+androidx-composeBom = "2024.06.00"
 
 androidx-datastore = "1.1.1"
 androidx-junit = "1.1.5"
-androidx-lifecycle = "2.8.1"
+androidx-lifecycle = "2.8.2"
 androidx-navigation = "2.7.7"
 androidx-other-appCompat = "1.7.0"
 androidx-other-browser = "1.8.0"
@@ -89,13 +89,13 @@ androidx-activity-core = { module = "androidx.activity:activity", version.ref = 
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
 androidx-compose-animation = { module = "androidx.compose.animation:animation-core" }
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "androidx-composeBom" }
-androidx-compose-foundation = { module = "androidx.compose.foundation:foundation", version = "1.7.0-beta02" }
+androidx-compose-foundation = { module = "androidx.compose.foundation:foundation", version = "1.7.0-beta03" }
 androidx-compose-foundationLayout = { module = "androidx.compose.foundation:foundation-layout" }
 androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
 androidx-compose-material3-windowSizeClass = { module = "androidx.compose.material3:material3-window-size-class" }
 androidx-compose-materialIconsCore = { module = "androidx.compose.material:material-icons-core" }
 androidx-compose-materialIconsExtended = { module = "androidx.compose.material:material-icons-extended" }
-androidx-compose-materialRipple = { module = "androidx.compose.material:material-ripple", version = "1.7.0-beta02" }
+androidx-compose-materialRipple = { module = "androidx.compose.material:material-ripple", version = "1.7.0-beta03" }
 androidx-compose-runtime = { module = "androidx.compose.runtime:runtime" }
 androidx-compose-runtime-livedata = { module = "androidx.compose.runtime:runtime-livedata" }
 androidx-compose-uiCore = { module = "androidx.compose.ui:ui" }
