@@ -9,13 +9,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
+import com.hedvig.android.design.system.hedvig.RadioOptionDefaults.RadioOptionStyle
 import com.hedvig.android.design.system.hedvig.RadioOptionState.Chosen
 import com.hedvig.android.design.system.hedvig.RadioOptionState.ChosenLocked
 import com.hedvig.android.design.system.hedvig.RadioOptionState.NotChosen
-import com.hedvig.android.design.system.hedvig.tokens.LargeSizeButtonTokens
-import com.hedvig.android.design.system.hedvig.tokens.MediumSizeButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.RadioOptionColorTokens
-import com.hedvig.android.design.system.hedvig.tokens.SmallSizeButtonTokens
+import com.hedvig.android.design.system.hedvig.tokens.SizeRadioOptionTokens.LargeSizeRadioOptionTokens
+import com.hedvig.android.design.system.hedvig.tokens.SizeRadioOptionTokens.MediumSizeRadioOptionTokens
+import com.hedvig.android.design.system.hedvig.tokens.SizeRadioOptionTokens.SmallSizeRadioOptionTokens
 
 object RadioOptionDefaults {
   internal val radioOptionStyle: RadioOptionStyle = RadioOptionStyle.Default
@@ -39,6 +40,14 @@ enum class RadioOptionState {
   Chosen,
   NotChosen,
   ChosenLocked,
+}
+
+private fun RadioOptionDefaults.RadioOptionSize.size(style: RadioOptionStyle): RadioOptionSize {
+  return when (this) {
+    RadioOptionDefaults.RadioOptionSize.Large -> RadioOptionSize.Large(style)
+    RadioOptionDefaults.RadioOptionSize.Medium -> RadioOptionSize.Medium(style)
+    RadioOptionDefaults.RadioOptionSize.Small -> RadioOptionSize.Small(style)
+  }
 }
 
 @Immutable
@@ -87,76 +96,76 @@ private sealed interface RadioOptionSize {
   @get:Composable
   val shape: Shape
 
-  data object Large : RadioOptionSize {
+  data class Large(val style: RadioOptionStyle) : RadioOptionSize {
     override val contentPadding: PaddingValues = PaddingValues(
-      top = LargeSizeButtonTokens.TopPadding,
-      bottom = LargeSizeButtonTokens.BottomPadding,
-      start = LargeSizeButtonTokens.HorizontalPadding,
-      end = LargeSizeButtonTokens.HorizontalPadding,
+      top = LargeSizeRadioOptionTokens.topPadding(style),
+      bottom = LargeSizeRadioOptionTokens.bottomPadding(style),
+      start = LargeSizeRadioOptionTokens.HorizontalPadding,
+      end = LargeSizeRadioOptionTokens.HorizontalPadding,
     )
 
     override val labelTextStyle: TextStyle
       @Composable
       @ReadOnlyComposable
-      get() = LargeSizeButtonTokens.LabelTextFont.value
+      get() = LargeSizeRadioOptionTokens.LabelTextFont.value
 
     override val optionTextStyle: TextStyle
       @Composable
       @ReadOnlyComposable
-      get() = LargeSizeButtonTokens.LabelTextFont.value // todo
+      get() = LargeSizeRadioOptionTokens.OptionTextFont.value
 
     override val shape: Shape
       @Composable
       @ReadOnlyComposable
-      get() = LargeSizeButtonTokens.ContainerShape.value
+      get() = LargeSizeRadioOptionTokens.ContainerShape.value
   }
 
-  data object Medium : RadioOptionSize {
+  data class Medium(val style: RadioOptionStyle) : RadioOptionSize {
     override val contentPadding: PaddingValues = PaddingValues(
-      top = MediumSizeButtonTokens.TopPadding,
-      bottom = MediumSizeButtonTokens.BottomPadding,
-      start = MediumSizeButtonTokens.HorizontalPadding,
-      end = MediumSizeButtonTokens.HorizontalPadding,
+      top = MediumSizeRadioOptionTokens.topPadding(style),
+      bottom = MediumSizeRadioOptionTokens.bottomPadding(style),
+      start = MediumSizeRadioOptionTokens.HorizontalPadding,
+      end = MediumSizeRadioOptionTokens.HorizontalPadding,
     )
 
     override val optionTextStyle: TextStyle
       @Composable
       @ReadOnlyComposable
-      get() = MediumSizeButtonTokens.LabelTextFont.value
+      get() = MediumSizeRadioOptionTokens.OptionTextFont.value
 
     override val shape: Shape
       @Composable
       @ReadOnlyComposable
-      get() = MediumSizeButtonTokens.ContainerShape.value
+      get() = MediumSizeRadioOptionTokens.ContainerShape.value
 
     override val labelTextStyle: TextStyle
       @Composable
       @ReadOnlyComposable
-      get() = LargeSizeButtonTokens.LabelTextFont.value // todo
+      get() = MediumSizeRadioOptionTokens.LabelTextFont.value
   }
 
-  data object Small : RadioOptionSize {
+  data class Small(val style: RadioOptionStyle) : RadioOptionSize {
     override val contentPadding: PaddingValues = PaddingValues(
-      top = SmallSizeButtonTokens.TopPadding,
-      bottom = SmallSizeButtonTokens.BottomPadding,
-      start = SmallSizeButtonTokens.HorizontalPadding,
-      end = SmallSizeButtonTokens.HorizontalPadding,
+      top = SmallSizeRadioOptionTokens.topPadding(style),
+      bottom = SmallSizeRadioOptionTokens.bottomPadding(style),
+      start = SmallSizeRadioOptionTokens.HorizontalPadding,
+      end = SmallSizeRadioOptionTokens.HorizontalPadding,
     )
 
     override val labelTextStyle: TextStyle
       @Composable
       @ReadOnlyComposable
-      get() = LargeSizeButtonTokens.LabelTextFont.value // todo
+      get() = SmallSizeRadioOptionTokens.LabelTextFont.value
 
     override val optionTextStyle: TextStyle
       @Composable
       @ReadOnlyComposable
-      get() = SmallSizeButtonTokens.LabelTextFont.value
+      get() = SmallSizeRadioOptionTokens.OptionTextFont.value
 
     override val shape: Shape
       @Composable
       @ReadOnlyComposable
-      get() = SmallSizeButtonTokens.ContainerShape.value
+      get() = SmallSizeRadioOptionTokens.ContainerShape.value
   }
 }
 
