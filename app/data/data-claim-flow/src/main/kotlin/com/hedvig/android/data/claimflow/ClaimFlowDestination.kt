@@ -11,9 +11,8 @@ import com.hedvig.android.data.claimflow.ItemModel.Unknown.displayName
 import com.hedvig.android.data.claimflow.model.AudioUrl
 import com.hedvig.android.data.claimflow.model.FlowId
 import com.hedvig.android.navigation.compose.typeMapOf
-import com.hedvig.android.navigation.compose.typePairOf
-import com.hedvig.android.navigation.compose.typePairOfNullable
 import com.hedvig.audio.player.data.SignedAudioUrl
+import kotlin.reflect.typeOf
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 import octopus.type.CurrencyCode
@@ -32,9 +31,9 @@ sealed interface ClaimFlowDestination {
     val audioContent: AudioContent?,
   ) : ClaimFlowDestination {
     companion object {
-      val typeMap = mapOf(
-        typePairOf<FlowId>(),
-        typePairOfNullable<AudioContent>(),
+      val typeMap = typeMapOf(
+        typeOf<FlowId>(),
+        typeOf<AudioContent?>(),
       )
     }
   }
@@ -45,9 +44,9 @@ sealed interface ClaimFlowDestination {
     val maxDate: LocalDate,
   ) : ClaimFlowDestination {
     companion object {
-      val typeMap = mapOf(
-        typePairOfNullable<LocalDate>(),
-        typePairOf<LocalDate>(),
+      val typeMap = typeMapOf(
+        typeOf<LocalDate?>(),
+        typeOf<LocalDate>(),
       )
     }
   }
@@ -58,7 +57,7 @@ sealed interface ClaimFlowDestination {
     val locationOptions: List<LocationOption>,
   ) : ClaimFlowDestination {
     companion object {
-      val typeMap = typeMapOf<List<LocationOption>>()
+      val typeMap = typeMapOf(typeOf<List<LocationOption>>())
     }
   }
 
@@ -70,10 +69,10 @@ sealed interface ClaimFlowDestination {
     val locationOptions: List<LocationOption>,
   ) : ClaimFlowDestination {
     companion object {
-      val typeMap = mapOf(
-        typePairOfNullable<LocalDate>(),
-        typePairOf<LocalDate>(),
-        typePairOf<List<LocationOption>>(),
+      val typeMap = typeMapOf(
+        typeOf<LocalDate?>(),
+        typeOf<LocalDate>(),
+        typeOf<List<LocationOption>>(),
       )
     }
   }
@@ -86,7 +85,7 @@ sealed interface ClaimFlowDestination {
     val options: List<LocalContractContractOption>,
   ) : ClaimFlowDestination {
     companion object {
-      val typeMap = typeMapOf<List<LocalContractContractOption>>()
+      val typeMap = typeMapOf(typeOf<List<LocalContractContractOption>>())
     }
   }
 
@@ -105,13 +104,13 @@ sealed interface ClaimFlowDestination {
     val selectedItemProblems: List<String>?,
   ) : ClaimFlowDestination {
     companion object {
-      val typeMap = mapOf(
-        typePairOf<CurrencyCode>(),
-        typePairOfNullable<LocalDate>(),
-        typePairOfNullable<UiNullableMoney>(),
-        typePairOfNullable<List<ItemBrand>>(),
-        typePairOfNullable<List<ItemModel>>(),
-        typePairOfNullable<List<ItemProblem>>(),
+      val typeMap = typeMapOf(
+        typeOf<CurrencyCode>(),
+        typeOf<LocalDate?>(),
+        typeOf<UiNullableMoney?>(),
+        typeOf<List<ItemBrand>?>(),
+        typeOf<List<ItemModel>?>(),
+        typeOf<List<ItemProblem>?>(),
       )
     }
   }
@@ -121,7 +120,7 @@ sealed interface ClaimFlowDestination {
     val partners: List<DeflectPartner>,
   ) : ClaimFlowDestination {
     companion object {
-      val typeMap = typeMapOf<List<DeflectPartner>>()
+      val typeMap = typeMapOf(typeOf<List<DeflectPartner>>())
     }
   }
 
@@ -130,7 +129,7 @@ sealed interface ClaimFlowDestination {
     val partners: List<DeflectPartner>,
   ) : ClaimFlowDestination {
     companion object {
-      val typeMap = typeMapOf<List<DeflectPartner>>()
+      val typeMap = typeMapOf(typeOf<List<DeflectPartner>>())
     }
   }
 
@@ -139,7 +138,7 @@ sealed interface ClaimFlowDestination {
     val partners: List<DeflectPartner>,
   ) : ClaimFlowDestination {
     companion object {
-      val typeMap = typeMapOf<List<DeflectPartner>>()
+      val typeMap = typeMapOf(typeOf<List<DeflectPartner>>())
     }
   }
 
@@ -150,9 +149,9 @@ sealed interface ClaimFlowDestination {
     val options: List<EmergencyOption>,
   ) : ClaimFlowDestination {
     companion object {
-      val typeMap = mapOf(
-        typePairOfNullable<Boolean>(),
-        typePairOf<List<EmergencyOption>>(),
+      val typeMap = typeMapOf(
+        typeOf<Boolean?>(),
+        typeOf<List<EmergencyOption>>(),
       )
     }
   }
@@ -162,7 +161,7 @@ sealed interface ClaimFlowDestination {
     val partners: List<DeflectPartner>,
   ) : ClaimFlowDestination {
     companion object {
-      val typeMap = typeMapOf<List<DeflectPartner>>()
+      val typeMap = typeMapOf(typeOf<List<DeflectPartner>>())
     }
   }
 
@@ -171,7 +170,7 @@ sealed interface ClaimFlowDestination {
     val partners: List<DeflectPartner>,
   ) : ClaimFlowDestination {
     companion object {
-      val typeMap = typeMapOf<List<DeflectPartner>>()
+      val typeMap = typeMapOf(typeOf<List<DeflectPartner>>())
     }
   }
 
@@ -196,17 +195,17 @@ sealed interface ClaimFlowDestination {
     val files: List<UiFile>,
   ) : ClaimFlowDestination {
     companion object {
-      val typeMap = mapOf(
-        typePairOf<List<LocationOption>>(),
-        typePairOfNullable<LocalDate>(),
-        typePairOf<LocalDate>(),
-        typePairOfNullable<CurrencyCode>(),
-        typePairOfNullable<UiNullableMoney>(),
-        typePairOfNullable<List<ItemBrand>>(),
-        typePairOfNullable<List<ItemModel>>(),
-        typePairOfNullable<List<ItemProblem>>(),
-        typePairOfNullable<SubmittedContent>(),
-        typePairOf<List<UiFile>>(),
+      val typeMap = typeMapOf(
+        typeOf<List<LocationOption>>(),
+        typeOf<LocalDate?>(),
+        typeOf<LocalDate>(),
+        typeOf<CurrencyCode?>(),
+        typeOf<UiNullableMoney?>(),
+        typeOf<List<ItemBrand>?>(),
+        typeOf<List<ItemModel>?>(),
+        typeOf<List<ItemProblem>?>(),
+        typeOf<SubmittedContent?>(),
+        typeOf<List<UiFile>>(),
       )
     }
   }
@@ -220,9 +219,9 @@ sealed interface ClaimFlowDestination {
     val customName: String?,
   ) : ClaimFlowDestination {
     companion object {
-      val typeMap = mapOf(
-        typePairOf<Compensation>(),
-        typePairOf<List<CheckoutMethod.Known>>(),
+      val typeMap = typeMapOf(
+        typeOf<Compensation>(),
+        typeOf<List<CheckoutMethod.Known>>(),
       )
     }
   }
@@ -259,7 +258,7 @@ sealed interface ClaimFlowDestination {
     val checkoutMethod: CheckoutMethod.Known,
   ) : ClaimFlowDestination {
     companion object {
-      val typeMap = typeMapOf<CheckoutMethod.Known>()
+      val typeMap = typeMapOf(typeOf<CheckoutMethod.Known>())
     }
   }
 
@@ -270,7 +269,7 @@ sealed interface ClaimFlowDestination {
     val uploads: List<UiFile>,
   ) : ClaimFlowDestination {
     companion object {
-      val typeMap = typeMapOf<List<UiFile>>()
+      val typeMap = typeMapOf(typeOf<List<UiFile>>())
     }
   }
 

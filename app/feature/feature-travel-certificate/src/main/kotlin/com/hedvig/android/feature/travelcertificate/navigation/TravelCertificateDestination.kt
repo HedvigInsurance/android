@@ -3,6 +3,7 @@ package com.hedvig.android.feature.travelcertificate.navigation
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateDestination.TravelCertificateTravellersInput.TravelCertificatePrimaryInput
 import com.hedvig.android.navigation.compose.typeMapOf
+import kotlin.reflect.typeOf
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
@@ -30,7 +31,7 @@ internal sealed interface TravelCertificateDestination {
     )
 
     companion object {
-      val typeMap = typeMapOf<TravelCertificatePrimaryInput>()
+      val typeMap = typeMapOf(typeOf<TravelCertificatePrimaryInput>())
     }
   }
 
@@ -39,7 +40,7 @@ internal sealed interface TravelCertificateDestination {
     val travelCertificateUrl: TravelCertificateUrl,
   ) : TravelCertificateDestination {
     companion object {
-      val typeMap = typeMapOf<TravelCertificateUrl>()
+      val typeMap = typeMapOf(typeOf<TravelCertificateUrl>())
     }
   }
 }

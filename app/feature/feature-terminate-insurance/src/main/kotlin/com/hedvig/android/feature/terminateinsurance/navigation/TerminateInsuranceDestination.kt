@@ -2,8 +2,7 @@ package com.hedvig.android.feature.terminateinsurance.navigation
 
 import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
 import com.hedvig.android.navigation.compose.typeMapOf
-import com.hedvig.android.navigation.compose.typeMapOfNullable
-import com.hedvig.android.navigation.compose.typePairOf
+import kotlin.reflect.typeOf
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -27,9 +26,9 @@ internal sealed interface TerminateInsuranceDestination {
     val commonParams: TerminationGraphParameters,
   ) : TerminateInsuranceDestination {
     companion object {
-      val typeMap = mapOf(
-        typePairOf<List<TerminationSurveyOption>>(),
-        typePairOf<TerminationGraphParameters>(),
+      val typeMap = typeMapOf(
+        typeOf<List<TerminationSurveyOption>>(),
+        typeOf<TerminationGraphParameters>(),
       )
     }
   }
@@ -40,9 +39,9 @@ internal sealed interface TerminateInsuranceDestination {
     val commonParams: TerminationGraphParameters,
   ) : TerminateInsuranceDestination {
     companion object {
-      val typeMap = mapOf(
-        typePairOf<List<TerminationSurveyOption>>(),
-        typePairOf<TerminationGraphParameters>(),
+      val typeMap = typeMapOf(
+        typeOf<List<TerminationSurveyOption>>(),
+        typeOf<TerminationGraphParameters>(),
       )
     }
   }
@@ -54,9 +53,9 @@ internal sealed interface TerminateInsuranceDestination {
     val commonParams: TerminationGraphParameters,
   ) : TerminateInsuranceDestination {
     companion object {
-      val typeMap = mapOf(
-        typePairOf<LocalDate>(),
-        typePairOf<TerminationGraphParameters>(),
+      val typeMap = typeMapOf(
+        typeOf<LocalDate>(),
+        typeOf<TerminationGraphParameters>(),
       )
     }
   }
@@ -79,9 +78,9 @@ internal sealed interface TerminateInsuranceDestination {
     }
 
     companion object {
-      val typeMap = mapOf(
-        typePairOf<TerminationType>(),
-        typePairOf<TerminationGraphParameters>(),
+      val typeMap = typeMapOf(
+        typeOf<TerminationType>(),
+        typeOf<TerminationGraphParameters>(),
       )
     }
   }
@@ -91,14 +90,14 @@ internal sealed interface TerminateInsuranceDestination {
     val terminationDate: LocalDate?,
   ) : TerminateInsuranceDestination {
     companion object {
-      val typeMap = typeMapOfNullable<LocalDate>()
+      val typeMap = typeMapOf(typeOf<LocalDate?>())
     }
   }
 
   @Serializable
   data class InsuranceDeletion(val commonParams: TerminationGraphParameters) : TerminateInsuranceDestination {
     companion object {
-      val typeMap = typeMapOf<TerminationGraphParameters>()
+      val typeMap = typeMapOf(typeOf<TerminationGraphParameters>())
     }
   }
 
@@ -118,9 +117,9 @@ internal data class TerminationDateParameters(
   val commonParams: TerminationGraphParameters,
 ) {
   companion object {
-    val typeMap = mapOf(
-      typePairOf<LocalDate>(),
-      typePairOf<TerminationGraphParameters>(),
+    val typeMap = typeMapOf(
+      typeOf<LocalDate>(),
+      typeOf<TerminationGraphParameters>(),
     )
   }
 }

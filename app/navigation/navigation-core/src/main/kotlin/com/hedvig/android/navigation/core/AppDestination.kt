@@ -1,6 +1,7 @@
 package com.hedvig.android.navigation.core
 
-import com.hedvig.android.navigation.compose.typeMapOfNullable
+import com.hedvig.android.navigation.compose.typeMapOf
+import kotlin.reflect.typeOf
 import kotlinx.serialization.Serializable
 
 sealed interface AppDestination {
@@ -17,7 +18,7 @@ sealed interface AppDestination {
     }
 
     companion object {
-      val typeMap = typeMapOfNullable<ChatContext>()
+      val typeMap = typeMapOf(typeOf<ChatContext?>())
     }
   }
 

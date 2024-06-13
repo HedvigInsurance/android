@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.changeaddress.navigation
 
-import com.hedvig.android.navigation.compose.typeMapOfNullable
+import com.hedvig.android.navigation.compose.typeMapOf
+import kotlin.reflect.typeOf
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
@@ -22,7 +23,7 @@ internal sealed interface ChangeAddressDestination {
     val movingDate: LocalDate?,
   ) : ChangeAddressDestination {
     companion object {
-      val typeMap = typeMapOfNullable<LocalDate>()
+      val typeMap = typeMapOf(typeOf<LocalDate?>())
     }
   }
 }

@@ -1,62 +1,27 @@
+@file:Suppress("NOTHING_TO_INLINE")
+
 package com.hedvig.android.navigation.compose
 
 import android.net.Uri
 import android.os.Bundle
 import androidx.navigation.NavType
 import kotlin.reflect.KType
-import kotlin.reflect.typeOf
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 
-/**
- * Short for `mapOf(typePairOf<T>())`
- * Usually used like:
- * ```
- * companion object {
- *   val typeMap = typeMapOf<FirstAndOnlyParameter>()
- * }
- * ```
- */
-inline fun <reified T : Any> typeMapOf(): Map<KType, @JvmSuppressWildcards NavType<*>> = mapOf(typePairOf<T>())
+fun typeMapOf(vararg ktypes: KType): Map<KType, @JvmSuppressWildcards NavType<*>> {
+  return ktypes.associate {
+    if (it.isMarkedNullable) {
+      it to JsonSerializableNullableNavType(serializer(it))
+    } else {
+      it to JsonSerializableNavType(serializer(it).cast())
+    }
+  }
+}
 
-/**
- * Short for `typeOf<T>() to JsonSerializableNavType<T>()`
- * Usually used like:
- * ```
- * companion object {
- *   val typeMap = mapOf(
- *     typePairOf<FirstParameter>(),
- *     typePairOf<SecondParameter>(),
- *   )
- * }
- * ```
- */
-inline fun <reified T : Any> typePairOf(): Pair<KType, @JvmSuppressWildcards NavType<*>> =
-  typeOf<T>() to JsonSerializableNavType<T>()
-
-/**
- * Same as [typeMapOf] but for nullable types
- */
-inline fun <reified T : Any?> typeMapOfNullable(): Map<KType, @JvmSuppressWildcards NavType<*>> =
-  mapOf(typePairOfNullable<T?>())
-
-/**
- * Same as [typePairOf] but for nullable types
- */
-inline fun <reified T : Any?> typePairOfNullable(): Pair<KType, @JvmSuppressWildcards NavType<*>> =
-  typeOf<T?>() to JsonSerializableNullableNavType<T?>()
-
-/**
- * Use like:
- * ```
- * private val typeMap: Map<KType, @JvmSuppressWildcards NavType<*>> = mapOf(
- * 	typeOf<InsuranceData>() to JsonSerializableNavType<InsuranceData>(),
- * )
- * ```
- */
-@Suppress("FunctionName")
-inline fun <reified T : Any> JsonSerializableNavType(): NavType<T> = JsonSerializableNavType(serializer())
+@Suppress("UNCHECKED_CAST")
+private inline fun <T> KSerializer<*>.cast(): KSerializer<T> = this as KSerializer<T>
 
 @Suppress("NOTHING_TO_INLINE")
 class JsonSerializableNavType<T : Any>(
@@ -82,18 +47,6 @@ class JsonSerializableNavType<T : Any>(
 
   private inline fun String.decodedFromString(): T = Json.decodeFromString(serializer, this)
 }
-
-/**
- * Use like:
- * ```
- * private val typeMap: Map<KType, @JvmSuppressWildcards NavType<*>> = mapOf(
- * 	typeOf<InsuranceData?>() to JsonSerializableNullableNavType<InsuranceData?>(),
- * )
- * ```
- */
-@Suppress("FunctionName")
-inline fun <reified T : Any?> JsonSerializableNullableNavType(): NavType<T?> =
-  JsonSerializableNullableNavType(serializer())
 
 @Suppress("NOTHING_TO_INLINE")
 class JsonSerializableNullableNavType<T : Any?>(

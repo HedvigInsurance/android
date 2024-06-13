@@ -2,6 +2,7 @@ package com.hedvig.android.feature.help.center.navigation
 
 import com.hedvig.android.navigation.compose.typeMapOf
 import com.hedvig.android.ui.emergency.FirstVetSection
+import kotlin.reflect.typeOf
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -17,7 +18,7 @@ internal sealed interface HelpCenterDestinations {
     val topic: com.hedvig.android.feature.help.center.model.Topic,
   ) : HelpCenterDestinations {
     companion object {
-      val typeMap = typeMapOf<com.hedvig.android.feature.help.center.model.Topic>()
+      val typeMap = typeMapOf(typeOf<com.hedvig.android.feature.help.center.model.Topic>())
     }
   }
 
@@ -27,7 +28,7 @@ internal sealed interface HelpCenterDestinations {
     val question: com.hedvig.android.feature.help.center.model.Question,
   ) : HelpCenterDestinations {
     companion object {
-      val typeMap = typeMapOf<com.hedvig.android.feature.help.center.model.Question>()
+      val typeMap = typeMapOf(typeOf<com.hedvig.android.feature.help.center.model.Question>())
     }
   }
 
@@ -37,7 +38,7 @@ internal sealed interface HelpCenterDestinations {
   @Serializable
   data class FirstVet(val sections: List<FirstVetSection>) : HelpCenterDestinations {
     companion object {
-      val typeMap = typeMapOf<List<FirstVetSection>>()
+      val typeMap = typeMapOf(typeOf<List<FirstVetSection>>())
     }
   }
 }
