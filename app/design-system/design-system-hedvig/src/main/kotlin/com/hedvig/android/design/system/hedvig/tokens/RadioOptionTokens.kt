@@ -28,14 +28,14 @@ internal abstract class SizeRadioOptionTokens {
 
   fun topPadding(style: RadioOptionStyle): Dp {
     return when (style) {
-      Label -> LabelTopPadding
+      is Label -> LabelTopPadding
       else -> TopPadding
     }
   }
 
   fun bottomPadding(style: RadioOptionStyle): Dp {
     return when (style) {
-      Label -> LabelBottomPadding
+      is Label -> LabelBottomPadding
       else -> BottomPadding
     }
   }
@@ -67,7 +67,7 @@ internal abstract class SizeRadioOptionTokens {
     override val BottomPadding = 17.dp
     override val LabelTopPadding = 7.dp
     override val LabelBottomPadding = 10.dp
-    override val OptionTextFont = TypographyKeyTokens.BodyMedium
+    override val OptionTextFont = TypographyKeyTokens.BodySmall
     override val LabelTextFont = TypographyKeyTokens.FinePrint
     override val HorizontalPadding = 16.dp
     override val ContainerShape = ShapeKeyTokens.CornerLarge
