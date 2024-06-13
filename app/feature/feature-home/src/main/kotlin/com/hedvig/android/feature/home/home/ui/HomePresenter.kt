@@ -23,8 +23,6 @@ import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.notification.badge.data.crosssell.card.CrossSellCardNotificationBadgeService
 import com.hedvig.android.ui.emergency.FirstVetSection
 import kotlin.time.Duration.Companion.seconds
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -111,7 +109,7 @@ internal class HomePresenter(
           memberReminders = successData.memberReminders,
           veryImportantMessages = successData.veryImportantMessages.filter {
             !alreadySeenImportantMessages.contains(it.id)
-          }.toPersistentList(),
+          },
           isHelpCenterEnabled = successData.showHelpCenter,
           hasUnseenChatMessages = hasUnseenChatMessages,
           chatAction = successData.chatAction,
@@ -145,7 +143,7 @@ internal sealed interface HomeUiState {
     override val isReloading: Boolean = false,
     val homeText: HomeText,
     val claimStatusCardsData: HomeData.ClaimStatusCardsData?,
-    val veryImportantMessages: ImmutableList<HomeData.VeryImportantMessage>,
+    val veryImportantMessages: List<HomeData.VeryImportantMessage>,
     val memberReminders: MemberReminders,
     val chatAction: HomeTopBarAction.ChatAction?,
     val firstVetAction: HomeTopBarAction.FirstVetAction?,
@@ -162,7 +160,7 @@ internal sealed interface HomeUiState {
 private data class SuccessData(
   val homeText: HomeText,
   val claimStatusCardsData: HomeData.ClaimStatusCardsData?,
-  val veryImportantMessages: ImmutableList<HomeData.VeryImportantMessage>,
+  val veryImportantMessages: List<HomeData.VeryImportantMessage>,
   val memberReminders: MemberReminders,
   val showHelpCenter: Boolean,
   val chatAction: HomeTopBarAction.ChatAction?,
@@ -240,6 +238,6 @@ sealed interface HomeTopBarAction {
   ) : HomeTopBarAction
 
   data class CrossSellsAction(
-    val crossSells: ImmutableList<CrossSell>,
+    val crossSells: List<CrossSell>,
   ) : HomeTopBarAction
 }

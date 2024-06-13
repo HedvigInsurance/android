@@ -4,7 +4,6 @@ import com.hedvig.android.core.common.formatName
 import com.hedvig.android.core.common.formatSsn
 import com.hedvig.android.data.productvariant.ProductVariant
 import java.time.format.DateTimeFormatter
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
 
@@ -30,7 +29,7 @@ data class InsuranceAgreement(
   val displayItems: List<DisplayItem>,
   val productVariant: ProductVariant,
   val certificateUrl: String?,
-  val coInsured: ImmutableList<CoInsured>,
+  val coInsured: List<CoInsured>,
   val creationCause: CreationCause,
 ) {
   data class DisplayItem(

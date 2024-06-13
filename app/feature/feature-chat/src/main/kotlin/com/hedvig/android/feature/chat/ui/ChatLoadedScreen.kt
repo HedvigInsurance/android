@@ -92,8 +92,6 @@ import com.hedvig.android.placeholder.fade
 import com.hedvig.android.placeholder.placeholder
 import hedvig.resources.R
 import kotlin.time.Duration.Companion.seconds
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -212,7 +210,7 @@ private fun ScrollToBottomOnKeyboardShownEffect(lazyListState: LazyListState) {
 @Composable
 private fun ScrollToBottomOnOwnMessageSentEffect(
   lazyListState: LazyListState,
-  messages: ImmutableList<ChatUiState.Loaded.UiChatMessage>,
+  messages: List<ChatUiState.Loaded.UiChatMessage>,
 ) {
   var currentLatestMessage by remember { mutableStateOf(messages.firstOrNull()) }
   LaunchedEffect(messages) {
@@ -235,7 +233,7 @@ private fun ScrollToBottomOnOwnMessageSentEffect(
 @Composable
 private fun ScrollToBottomOnNewMessageReceivedWhenAlreadyAtBottomEffect(
   lazyListState: LazyListState,
-  messages: ImmutableList<ChatUiState.Loaded.UiChatMessage>,
+  messages: List<ChatUiState.Loaded.UiChatMessage>,
 ) {
   var currentLatestMessage by remember { mutableStateOf(messages.firstOrNull()) }
   LaunchedEffect(messages) {
@@ -667,7 +665,7 @@ private fun PreviewChatLoadedScreen() {
               ),
               isLastDeliveredMessage = index == 0,
             )
-          }.toPersistentList(),
+          },
           fetchMoreMessagesUiState = ChatUiState.Loaded.FetchMoreMessagesUiState.NothingMoreToFetch,
           bannerText = "Banner text",
           haveSentAtLeastOneMessage = false,

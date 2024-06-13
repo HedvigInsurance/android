@@ -5,6 +5,5 @@ plugins {
 }
 
 dependencies {
-  implementation(libs.kotlinx.immutable.collections)
   implementation(projects.dataContractPublic)
 }

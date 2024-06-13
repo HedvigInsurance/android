@@ -100,9 +100,6 @@ import com.hedvig.android.placeholder.PlaceholderHighlight
 import com.hedvig.android.placeholder.fade
 import com.hedvig.android.placeholder.placeholder
 import hedvig.resources.R
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 internal fun HelpCenterHomeDestination(
@@ -144,8 +141,8 @@ internal fun HelpCenterHomeDestination(
 @Composable
 private fun HelpCenterHomeScreen(
   search: HelpCenterUiState.Search?,
-  topics: ImmutableList<Topic>,
-  questions: ImmutableList<Question>,
+  topics: List<Topic>,
+  questions: List<Question>,
   quickLinksUiState: HelpCenterUiState.QuickLinkUiState,
   selectedQuickAction: QuickAction?,
   onNavigateToTopic: (topic: Topic) -> Unit,
@@ -274,9 +271,9 @@ private fun HelpCenterHomeScreen(
 private fun ContentWithoutSearch(
   quickLinksUiState: HelpCenterUiState.QuickLinkUiState,
   onQuickActionsSelected: (QuickAction) -> Unit,
-  topics: ImmutableList<Topic>,
+  topics: List<Topic>,
   onNavigateToTopic: (topic: Topic) -> Unit,
-  questions: ImmutableList<Question>,
+  questions: List<Question>,
   onNavigateToQuestion: (question: Question) -> Unit,
   openChat: () -> Unit,
 ) {
@@ -401,7 +398,7 @@ private fun SearchResults(
             title = stringResource(R.string.HC_QUICK_ACTIONS_TITLE),
             chipContainerColor = MaterialTheme.colorScheme.typeContainer,
             contentColor = MaterialTheme.colorScheme.onTypeContainer,
-            items = activeSearchState.results.filteredQuickLinks.toPersistentList(),
+            items = activeSearchState.results.filteredQuickLinks,
             itemText = { resources.getString(it.quickAction.titleRes) },
             itemSubtitle = { resources.getString(it.quickAction.hintTextRes) },
             onClickItem = { onQuickActionsSelected(it.quickAction) },
@@ -413,7 +410,7 @@ private fun SearchResults(
             title = stringResource(R.string.HC_COMMON_QUESTIONS_TITLE),
             chipContainerColor = MaterialTheme.colorScheme.infoContainer,
             contentColor = MaterialTheme.colorScheme.onInfoContainer,
-            items = activeSearchState.results.filteredQuestions.toPersistentList(),
+            items = activeSearchState.results.filteredQuestions,
             itemText = { resources.getString(it.questionRes) },
             onClickItem = { onNavigateToQuestion(it) },
           )
@@ -674,8 +671,8 @@ private fun PreviewHelpCenterHomeScreen(
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       HelpCenterHomeScreen(
-        topics = persistentListOf(Topic.PAYMENTS, Topic.PAYMENTS),
-        questions = persistentListOf(Question.CLAIMS_Q1, Question.CLAIMS_Q1),
+        topics = listOf(Topic.PAYMENTS, Topic.PAYMENTS),
+        questions = listOf(Question.CLAIMS_Q1, Question.CLAIMS_Q1),
         selectedQuickAction = null,
         onNavigateToTopic = {},
         onNavigateToQuestion = {},
@@ -703,8 +700,8 @@ private fun PreviewQuickLinkAnimations() {
         parametersList = provider.values.toList(),
       ) { quickLinkUiState ->
         HelpCenterHomeScreen(
-          topics = persistentListOf(Topic.PAYMENTS, Topic.PAYMENTS),
-          questions = persistentListOf(Question.CLAIMS_Q1, Question.CLAIMS_Q1),
+          topics = listOf(Topic.PAYMENTS, Topic.PAYMENTS),
+          questions = listOf(Question.CLAIMS_Q1, Question.CLAIMS_Q1),
           selectedQuickAction = null,
           onNavigateToTopic = {},
           onNavigateToQuestion = {},
@@ -750,7 +747,7 @@ private class QuickLinkUiStatePreviewProvider :
               ),
             ),
           )
-        }.toPersistentList(),
+        },
       ),
     ),
   )

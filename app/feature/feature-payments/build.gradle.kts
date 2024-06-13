@@ -27,7 +27,6 @@ dependencies {
   implementation(libs.koin.android)
   implementation(libs.koin.compose)
   implementation(libs.koin.core)
-  implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.moneta)
   implementation(projects.apolloCore)

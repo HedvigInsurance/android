@@ -8,8 +8,6 @@ import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.data.CreateMidtermChangeResult
 import com.hedvig.android.feature.editcoinsured.data.CreateMidtermChangeUseCase
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate
 
 internal class TestCreateMidTermChangeUseCase : CreateMidtermChangeUseCase {
@@ -29,14 +27,14 @@ internal class TestCreateMidTermChangeUseCase : CreateMidtermChangeUseCase {
         currentPremium = currentPremium,
         newPremium = newPremium,
         activatedDate = activatedDate,
-        coInsured = persistentListOf(),
+        coInsured = listOf(),
       ),
     )
   }
 
   override suspend fun invoke(
     contractId: String,
-    coInsured: ImmutableList<CoInsured>,
+    coInsured: List<CoInsured>,
   ): Either<ErrorMessage, CreateMidtermChangeResult> {
     return raceN(
       { errorMessages.awaitItem() },

@@ -19,7 +19,6 @@ dependencies {
   implementation(libs.androidx.other.appCompat)
   implementation(libs.coil.coil)
   implementation(libs.coil.compose)
-  implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)
   implementation(libs.molecule)

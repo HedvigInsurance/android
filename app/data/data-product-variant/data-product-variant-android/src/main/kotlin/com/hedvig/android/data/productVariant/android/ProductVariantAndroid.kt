@@ -7,7 +7,6 @@ import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.data.productvariant.ProductVariantPeril
 import hedvig.resources.R
-import kotlinx.collections.immutable.toImmutableList
 import octopus.fragment.ProductVariantFragment
 import octopus.type.InsurableLimitType
 import octopus.type.InsuranceDocumentType
@@ -37,7 +36,7 @@ fun ProductVariantFragment.toProductVariant() = ProductVariant(
       exceptions = peril.exceptions,
       colorCode = peril.colorCode,
     )
-  }.toImmutableList(),
+  },
   insurableLimits = this.insurableLimits.map { insurableLimit ->
     InsurableLimit(
       label = insurableLimit.label,
@@ -66,7 +65,7 @@ fun ProductVariantFragment.toProductVariant() = ProductVariant(
         InsurableLimitType.UNKNOWN__ -> InsurableLimit.InsurableLimitType.UNKNOWN
       },
     )
-  }.toImmutableList(),
+  },
   documents = this.documents.map { document ->
     InsuranceVariantDocument(
       displayName = document.displayName,
@@ -81,5 +80,5 @@ fun ProductVariantFragment.toProductVariant() = ProductVariant(
         InsuranceDocumentType.UNKNOWN__ -> InsuranceVariantDocument.InsuranceDocumentType.UNKNOWN__
       },
     )
-  }.toImmutableList(),
+  },
 )

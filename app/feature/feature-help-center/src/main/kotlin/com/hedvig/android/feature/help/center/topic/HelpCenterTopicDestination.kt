@@ -36,9 +36,6 @@ import com.hedvig.android.feature.help.center.model.Topic
 import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
 import com.hedvig.android.feature.help.center.ui.StillNeedHelpSection
 import hedvig.resources.R
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 internal fun HelpCenterTopicDestination(
@@ -53,13 +50,13 @@ internal fun HelpCenterTopicDestination(
     .mapNotNull { questionId ->
       Question.entries.find { it == questionId }
     }
-    .toPersistentList()
+
   val allQuestions = topic
     .allQuestionIds
     .mapNotNull { questionId ->
       Question.entries.find { it == questionId }
     }
-    .toPersistentList()
+
   HelpCenterTopicScreen(
     topic = topic,
     commonQuestions = commonQuestions,
@@ -74,8 +71,8 @@ internal fun HelpCenterTopicDestination(
 @Composable
 private fun HelpCenterTopicScreen(
   topic: Topic?,
-  commonQuestions: ImmutableList<Question>,
-  allQuestions: ImmutableList<Question>,
+  commonQuestions: List<Question>,
+  allQuestions: List<Question>,
   onNavigateToQuestion: (questionId: Question) -> Unit,
   onNavigateUp: () -> Unit,
   onNavigateBack: () -> Unit,
@@ -171,14 +168,14 @@ private fun PreviewHelpCenterTopicScreen(
       HelpCenterTopicScreen(
         Topic.PAYMENTS.takeIf { hasTopic },
         if (hasQuestions) {
-          persistentListOf(Question.CLAIMS_Q1, Question.CLAIMS_Q1)
+          listOf(Question.CLAIMS_Q1, Question.CLAIMS_Q1)
         } else {
-          persistentListOf()
+          listOf()
         },
         if (hasQuestions) {
-          persistentListOf(Question.CLAIMS_Q1, Question.CLAIMS_Q1)
+          listOf(Question.CLAIMS_Q1, Question.CLAIMS_Q1)
         } else {
-          persistentListOf()
+          listOf()
         },
         {},
         {},

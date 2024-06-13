@@ -20,7 +20,6 @@ import com.hedvig.android.feature.insurances.data.InsuranceContract
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
 import com.hedvig.android.notification.badge.data.crosssell.card.FakeCrossSellCardNotificationBadgeService
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
@@ -44,18 +43,18 @@ internal class InsurancePresenterTest {
       currentInsuranceAgreement = InsuranceAgreement(
         activeFrom = LocalDate.fromEpochDays(240),
         activeTo = LocalDate.fromEpochDays(340),
-        displayItems = persistentListOf(),
+        displayItems = listOf(),
         productVariant = ProductVariant(
           displayName = "Variant",
           contractGroup = ContractGroup.RENTAL,
           contractType = ContractType.SE_APARTMENT_RENT,
           partner = null,
-          perils = persistentListOf(),
-          insurableLimits = persistentListOf(),
-          documents = persistentListOf(),
+          perils = listOf(),
+          insurableLimits = listOf(),
+          documents = listOf(),
         ),
         certificateUrl = null,
-        coInsured = persistentListOf(),
+        coInsured = listOf(),
         creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
       ),
       upcomingInsuranceAgreement = null,
@@ -75,18 +74,18 @@ internal class InsurancePresenterTest {
       currentInsuranceAgreement = InsuranceAgreement(
         activeFrom = LocalDate.fromEpochDays(240),
         activeTo = LocalDate.fromEpochDays(340),
-        displayItems = persistentListOf(),
+        displayItems = listOf(),
         productVariant = ProductVariant(
           displayName = "Variant",
           contractGroup = ContractGroup.RENTAL,
           contractType = ContractType.SE_APARTMENT_RENT,
           partner = null,
-          perils = persistentListOf(),
-          insurableLimits = persistentListOf(),
-          documents = persistentListOf(),
+          perils = listOf(),
+          insurableLimits = listOf(),
+          documents = listOf(),
         ),
         certificateUrl = null,
-        coInsured = persistentListOf(),
+        coInsured = listOf(),
         creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
       ),
       upcomingInsuranceAgreement = null,
@@ -108,18 +107,18 @@ internal class InsurancePresenterTest {
       currentInsuranceAgreement = InsuranceAgreement(
         activeFrom = LocalDate.fromEpochDays(240),
         activeTo = LocalDate.fromEpochDays(340),
-        displayItems = persistentListOf(),
+        displayItems = listOf(),
         productVariant = ProductVariant(
           displayName = "Variant",
           contractGroup = ContractGroup.RENTAL,
           contractType = ContractType.SE_APARTMENT_RENT,
           partner = null,
-          perils = persistentListOf(),
-          insurableLimits = persistentListOf(),
-          documents = persistentListOf(),
+          perils = listOf(),
+          insurableLimits = listOf(),
+          documents = listOf(),
         ),
         certificateUrl = null,
-        coInsured = persistentListOf(),
+        coInsured = listOf(),
         creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
       ),
       upcomingInsuranceAgreement = null,
@@ -139,18 +138,18 @@ internal class InsurancePresenterTest {
       currentInsuranceAgreement = InsuranceAgreement(
         activeFrom = LocalDate.fromEpochDays(240),
         activeTo = LocalDate.fromEpochDays(340),
-        displayItems = persistentListOf(),
+        displayItems = listOf(),
         productVariant = ProductVariant(
           displayName = "Variant",
           contractGroup = ContractGroup.RENTAL,
           contractType = ContractType.SE_APARTMENT_RENT,
           partner = null,
-          perils = persistentListOf(),
-          insurableLimits = persistentListOf(),
-          documents = persistentListOf(),
+          perils = listOf(),
+          insurableLimits = listOf(),
+          documents = listOf(),
         ),
         certificateUrl = null,
-        coInsured = persistentListOf(),
+        coInsured = listOf(),
         creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
       ),
       upcomingInsuranceAgreement = null,
@@ -361,8 +360,8 @@ internal class InsurancePresenterTest {
       backgroundScope,
     )
     val initialState = InsuranceUiState(
-      contracts = persistentListOf(),
-      crossSells = persistentListOf(),
+      contracts = listOf(),
+      crossSells = listOf(),
       showNotificationBadge = false,
       quantityOfCancelledInsurances = 0,
       hasError = false,

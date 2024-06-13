@@ -36,13 +36,12 @@ import com.hedvig.android.core.ui.infocard.VectorWarningCard
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.notification.permission.NotificationPermissionState
 import hedvig.resources.R
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 
 @Composable
 fun MemberReminderCardsWithoutNotification(
-  memberReminders: ImmutableList<MemberReminder>,
+  memberReminders: List<MemberReminder>,
   navigateToConnectPayment: () -> Unit,
   openUrl: (String) -> Unit,
   navigateToAddMissingInfo: (String) -> Unit,
@@ -65,7 +64,7 @@ fun MemberReminderCardsWithoutNotification(
 
 @Composable
 fun MemberReminderCards(
-  memberReminders: ImmutableList<MemberReminder>,
+  memberReminders: List<MemberReminder>,
   navigateToConnectPayment: () -> Unit,
   openUrl: (String) -> Unit,
   navigateToAddMissingInfo: (String) -> Unit,

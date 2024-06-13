@@ -19,13 +19,11 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import hedvig.resources.R
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 internal fun UpcomingChangesBottomSheetContent(
   infoText: String,
-  sections: ImmutableList<Pair<String, String>>,
+  sections: List<Pair<String, String>>,
   onOpenChat: () -> Unit,
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
@@ -69,7 +67,7 @@ private fun PreviewUpcomingChangesBottomSheetContent() {
     Surface(color = MaterialTheme.colorScheme.background) {
       UpcomingChangesBottomSheetContent(
         infoText = "Test",
-        sections = persistentListOf(
+        sections = listOf(
           "1" to "2",
         ),
         onDismiss = {},

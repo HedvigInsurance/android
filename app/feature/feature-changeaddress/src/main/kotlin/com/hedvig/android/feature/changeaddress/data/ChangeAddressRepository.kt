@@ -11,7 +11,6 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.productVariant.android.toProductVariant
 import com.hedvig.android.logger.logcat
-import kotlinx.collections.immutable.toImmutableList
 import octopus.MoveIntentCommitMutation
 import octopus.MoveIntentCreateMutation
 import octopus.MoveIntentRequestMutation
@@ -128,8 +127,7 @@ private fun MoveIntentRequestMutation.Data.MoveIntentRequest.MoveIntent.toMoveQu
       startDate = quote.startDate,
       productVariant = quote.productVariant.toProductVariant(),
       displayItems = quote.displayItems
-        .map { it.displayTitle to it.displayValue }
-        .toImmutableList(),
+        .map { it.displayTitle to it.displayValue },
     )
   }
 }

@@ -9,7 +9,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import arrow.core.raise.either
-import com.hedvig.android.core.common.formatShortSsn
 import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
@@ -31,9 +30,6 @@ import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loading
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.LocalDate
 
 internal class EditCoInsuredPresenter(
@@ -65,7 +61,7 @@ internal class EditCoInsuredPresenter(
     var selectedCoInsuredId by remember { mutableStateOf<String?>(null) }
     var commit by remember { mutableStateOf(false) }
     var contractUpdateDate by remember { mutableStateOf<LocalDate?>(null) }
-    var editedCoInsuredList by remember { mutableStateOf<ImmutableList<CoInsured>?>(null) }
+    var editedCoInsuredList by remember { mutableStateOf<List<CoInsured>?>(null) }
 
     LaunchedEffect(Unit) {
       if (listState.member != null) {
@@ -114,7 +110,7 @@ internal class EditCoInsuredPresenter(
           )
 
         is RemoveCoInsured -> {
-          editedCoInsuredList = listState.coInsured.filterNot { it == event.coInsured }.toImmutableList()
+          editedCoInsuredList = listState.coInsured.filterNot { it == event.coInsured }
         }
 
         is EditCoInsuredEvent.OnSsnChanged ->
@@ -187,18 +183,18 @@ internal class EditCoInsuredPresenter(
       addBottomSheetState = addBottomSheetState.copy(errorMessage = null)
       val ssn = addBottomSheetState.ssn
       if (ssn != null) {
-        val paddedSsn = formatShortSsn(ssn)
         either {
-          val result = fetchCoInsuredPersonalInformationUseCase.invoke(paddedSsn).bind()
+          val result = fetchCoInsuredPersonalInformationUseCase.invoke(ssn).bind()
           when (result) {
             is CoInsuredPersonalInformation.FullInfo -> {
               addBottomSheetState = addBottomSheetState.copy(
                 firstName = result.firstName,
                 lastName = result.lastName,
-                ssn = paddedSsn,
+                ssn = ssn,
                 errorMessage = null,
               )
             }
+
             is CoInsuredPersonalInformation.EmptyInfo -> {
               addBottomSheetState =
                 Loaded.AddBottomSheetState(
@@ -313,7 +309,7 @@ internal class EditCoInsuredPresenter(
       hasMissingInfo = false,
     )
     val old = listState.coInsured.first { it.internalId == selectedCoInsuredId }
-    listState.coInsured.updated(old, updatedCoInsured).toImmutableList()
+    listState.coInsured.updated(old, updatedCoInsured)
   } else {
     val updatedCoInsured = CoInsured(
       firstName = addBottomSheetState.firstName,
@@ -322,15 +318,15 @@ internal class EditCoInsuredPresenter(
       ssn = addBottomSheetState.ssn,
       hasMissingInfo = false,
     )
-    (listState.coInsured + updatedCoInsured).toImmutableList()
+    (listState.coInsured + updatedCoInsured)
   }
 
   private fun addCoInsured(selectedCoInsuredId: String?, coInsured: CoInsured, listState: Loaded.CoInsuredListState) =
     if (selectedCoInsuredId != null) {
       val old = listState.coInsured.first { it.internalId == selectedCoInsuredId }
-      listState.coInsured.updated(old, coInsured).toImmutableList()
+      listState.coInsured.updated(old, coInsured)
     } else {
-      (listState.coInsured + coInsured).toImmutableList()
+      (listState.coInsured + coInsured)
     }
 }
 
@@ -380,14 +376,14 @@ internal sealed interface EditCoInsuredState {
     val contractUpdateDate: LocalDate? = null,
   ) : EditCoInsuredState {
     data class CoInsuredListState(
-      val originalCoInsured: ImmutableList<CoInsured>? = null,
-      val updatedCoInsured: ImmutableList<CoInsured>? = null,
-      val allCoInsured: ImmutableList<CoInsured>? = null,
+      val originalCoInsured: List<CoInsured>? = null,
+      val updatedCoInsured: List<CoInsured>? = null,
+      val allCoInsured: List<CoInsured>? = null,
       val member: Member? = null,
       val priceInfo: PriceInfo? = null,
       val isCommittingUpdate: Boolean = false,
     ) {
-      val coInsured = updatedCoInsured ?: originalCoInsured ?: persistentListOf()
+      val coInsured = updatedCoInsured ?: originalCoInsured ?: listOf()
 
       fun hasMadeChanges() = priceInfo != null &&
         originalCoInsured != null &&
@@ -409,7 +405,7 @@ internal sealed interface EditCoInsuredState {
       val ssn: String? = null,
       val birthDate: LocalDate? = null,
       val showManualInput: Boolean = false,
-      val selectableCoInsured: ImmutableList<CoInsured>? = null,
+      val selectableCoInsured: List<CoInsured>? = null,
       val selectedCoInsured: CoInsured? = null,
       val errorMessage: String? = null,
       val isLoading: Boolean = false,

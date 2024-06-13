@@ -19,17 +19,14 @@ import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.navigation.NavDestination
-import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.navigation.core.TopLevelGraph
-import kotlinx.collections.immutable.ImmutableSet
-import kotlinx.collections.immutable.toPersistentSet
 
 @Composable
 internal fun NavigationSuite(
   navigationSuiteType: NavigationSuiteType,
-  topLevelGraphs: ImmutableSet<TopLevelGraph>,
-  topLevelGraphsWithNotifications: ImmutableSet<TopLevelGraph>,
+  topLevelGraphs: Set<TopLevelGraph>,
+  topLevelGraphsWithNotifications: Set<TopLevelGraph>,
   currentDestination: NavDestination?,
   onNavigateToTopLevelGraph: (TopLevelGraph) -> Unit,
   modifier: Modifier = Modifier,
@@ -86,8 +83,8 @@ private fun PreviewNavigationSuite(
         } else {
           NavigationSuiteType.NavigationRail
         },
-        topLevelGraphs = TopLevelGraph.entries.toPersistentSet(),
-        topLevelGraphsWithNotifications = TopLevelGraph.entries.toPersistentSet(),
+        topLevelGraphs = TopLevelGraph.entries.toSet(),
+        topLevelGraphsWithNotifications = TopLevelGraph.entries.toSet(),
         currentDestination = null,
         onNavigateToTopLevelGraph = {},
       ) {

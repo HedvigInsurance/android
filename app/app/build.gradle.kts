@@ -38,7 +38,8 @@ android {
       excludes += "README.txt"
       excludes += "META-INF/LGPL2.1"
       excludes += "META-INF/AL2.0"
-      excludes += "META-INF/versions/9/previous-compilation-data.bin" // https://github.com/Kotlin/kotlinx-datetime/issues/304
+      // https://github.com/Kotlin/kotlinx-datetime/issues/304
+      excludes += "META-INF/versions/9/previous-compilation-data.bin"
     }
   }
 
@@ -147,20 +148,19 @@ dependencies {
   implementation(libs.firebase.crashlytics)
   implementation(libs.firebase.dynamicLinks)
   implementation(libs.firebase.messaging)
-  implementation(libs.firebase.playServicesBase)
   implementation(libs.kiwi.navigationCompose)
   implementation(libs.koin.android)
   implementation(libs.koin.compose)
   implementation(libs.koin.workManager)
   implementation(libs.kotlin.reflect)
   implementation(libs.kotlinx.datetime)
-  implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.moneta)
   implementation(libs.navigationRecentsUrlSharing)
   implementation(libs.okhttp.core)
   implementation(libs.okhttp.loggingInterceptor)
   implementation(libs.playReview)
+  implementation(libs.playServicesBase)
   implementation(libs.timber)
   implementation(projects.apolloAuthListeners)
   implementation(projects.apolloCore)

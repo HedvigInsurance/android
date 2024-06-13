@@ -7,9 +7,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -58,8 +63,6 @@ import com.hedvig.android.core.ui.text.WarningTextWithIconForInput
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.AddBottomSheetState
 import hedvig.resources.R
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -169,13 +172,14 @@ internal fun AddCoInsuredBottomSheetContent(
       text = stringResource(id = R.string.general_cancel_button),
       modifier = Modifier.fillMaxWidth(),
     )
-    Spacer(Modifier.height(32.dp))
+    Spacer(Modifier.height(16.dp))
+    Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
   }
 }
 
 @Composable
 internal fun SelectableCoInsuredList(
-  selectableCoInsured: ImmutableList<CoInsured>,
+  selectableCoInsured: List<CoInsured>,
   selectedCoInsured: CoInsured?,
   errorMessage: String?,
   onAddNewCoInsured: () -> Unit,
@@ -456,7 +460,7 @@ private fun AddCoInsuredBottomSheetContentPreview() {
       AddCoInsuredBottomSheetContent(
         bottomSheetState = AddBottomSheetState(
           errorMessage = "Error",
-          selectableCoInsured = persistentListOf(
+          selectableCoInsured = listOf(
             CoInsured(
               "Test",
               "Testersson",

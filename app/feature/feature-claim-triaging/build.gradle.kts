@@ -14,7 +14,6 @@ dependencies {
   implementation(libs.apollo.normalizedCache)
   implementation(libs.koin.compose)
   implementation(libs.koin.core)
-  implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)

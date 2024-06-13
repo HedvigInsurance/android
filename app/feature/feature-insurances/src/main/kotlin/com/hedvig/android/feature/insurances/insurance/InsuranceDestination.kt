@@ -72,8 +72,6 @@ import com.hedvig.android.pullrefresh.PullRefreshIndicator
 import com.hedvig.android.pullrefresh.pullRefresh
 import com.hedvig.android.pullrefresh.rememberPullRefreshState
 import hedvig.resources.R
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate
 
 @Composable
@@ -241,7 +239,7 @@ private fun ColumnScope.InsuranceScreenContent(
 
 @Composable
 private fun ColumnScope.ContractsSection(
-  contracts: ImmutableList<InsuranceContract>,
+  contracts: List<InsuranceContract>,
   imageLoader: ImageLoader,
   onInsuranceCardClick: (contractId: String) -> Unit,
   modifier: Modifier = Modifier,
@@ -318,11 +316,11 @@ private fun PreviewInsuranceScreen(
       InsuranceScreen(
         InsuranceUiState(
           contracts = if (withContracts) {
-            persistentListOf(previewInsurance)
+            listOf(previewInsurance)
           } else {
-            persistentListOf()
+            listOf()
           },
-          crossSells = persistentListOf(
+          crossSells = listOf(
             CrossSell(
               id = "1",
               title = "Pet",
@@ -373,8 +371,8 @@ private fun PreviewInsuranceDestinationAnimation() {
 private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<InsuranceUiState>(
   listOf(
     InsuranceUiState(
-      contracts = persistentListOf(),
-      crossSells = persistentListOf(),
+      contracts = listOf(),
+      crossSells = listOf(),
       hasError = false,
       isLoading = true,
       isRetrying = false,
@@ -383,8 +381,8 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
     ),
     InsuranceUiState(
       contracts =
-        persistentListOf(previewInsurance),
-      crossSells = persistentListOf(
+        listOf(previewInsurance),
+      crossSells = listOf(
         CrossSell(
           id = "1",
           title = "Pet",
@@ -400,8 +398,8 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       isRetrying = false,
     ),
     InsuranceUiState(
-      contracts = persistentListOf(),
-      crossSells = persistentListOf(),
+      contracts = listOf(),
+      crossSells = listOf(),
       hasError = false,
       isLoading = true,
       isRetrying = false,
@@ -409,8 +407,8 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       showNotificationBadge = false,
     ),
     InsuranceUiState(
-      contracts = persistentListOf(),
-      crossSells = persistentListOf(
+      contracts = listOf(),
+      crossSells = listOf(
         CrossSell(
           id = "1",
           title = "Home",
@@ -433,8 +431,8 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       showNotificationBadge = false,
     ),
     InsuranceUiState(
-      contracts = persistentListOf(),
-      crossSells = persistentListOf(),
+      contracts = listOf(),
+      crossSells = listOf(),
       hasError = false,
       isLoading = true,
       isRetrying = false,
@@ -442,8 +440,8 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       showNotificationBadge = false,
     ),
     InsuranceUiState(
-      contracts = persistentListOf(),
-      crossSells = persistentListOf(),
+      contracts = listOf(),
+      crossSells = listOf(),
       hasError = true,
       isLoading = false,
       isRetrying = false,
@@ -462,18 +460,18 @@ private val previewInsurance = InsuranceContract(
   currentInsuranceAgreement = InsuranceAgreement(
     activeFrom = LocalDate.fromEpochDays(240),
     activeTo = LocalDate.fromEpochDays(340),
-    displayItems = persistentListOf(),
+    displayItems = listOf(),
     productVariant = ProductVariant(
       displayName = "",
       contractGroup = ContractGroup.RENTAL,
       contractType = ContractType.SE_APARTMENT_RENT,
       partner = null,
-      perils = persistentListOf(),
-      insurableLimits = persistentListOf(),
-      documents = persistentListOf(),
+      perils = listOf(),
+      insurableLimits = listOf(),
+      documents = listOf(),
     ),
     certificateUrl = null,
-    coInsured = persistentListOf(),
+    coInsured = listOf(),
     creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
   ),
   upcomingInsuranceAgreement = null,

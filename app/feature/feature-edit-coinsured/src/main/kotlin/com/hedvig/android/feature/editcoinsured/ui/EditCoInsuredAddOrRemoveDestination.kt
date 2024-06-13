@@ -48,7 +48,6 @@ import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.data.Member
 import hedvig.resources.R
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
@@ -322,7 +321,7 @@ private fun EditCoInsuredScreenEditablePreview() {
         navigateUp = { },
         uiState = EditCoInsuredState.Loaded(
           listState = EditCoInsuredState.Loaded.CoInsuredListState(
-            originalCoInsured = persistentListOf(
+            originalCoInsured = listOf(
               CoInsured(
                 "Test",
                 "Testersson",
@@ -338,7 +337,7 @@ private fun EditCoInsuredScreenEditablePreview() {
                 hasMissingInfo = true,
               ),
             ),
-            updatedCoInsured = persistentListOf(
+            updatedCoInsured = listOf(
               CoInsured(
                 "Test",
                 "Testersson",
@@ -357,7 +356,7 @@ private fun EditCoInsuredScreenEditablePreview() {
               newPrice = UiMoney(200.0, CurrencyCode.SEK),
               validFrom = LocalDate.fromEpochDays(400),
             ),
-            allCoInsured = persistentListOf(),
+            allCoInsured = listOf(),
           ),
           addBottomSheetState = EditCoInsuredState.Loaded.AddBottomSheetState(
             isLoading = false,
@@ -394,7 +393,7 @@ private fun EditCoInsuredScreenNonEditablePreview() {
         navigateUp = { },
         uiState = EditCoInsuredState.Loaded(
           listState = EditCoInsuredState.Loaded.CoInsuredListState(
-            originalCoInsured = persistentListOf(
+            originalCoInsured = listOf(
               CoInsured(
                 "Test",
                 "Testersson",
@@ -415,7 +414,7 @@ private fun EditCoInsuredScreenNonEditablePreview() {
               lastName = "Membersson",
               ssn = "197312331093",
             ),
-            allCoInsured = persistentListOf(),
+            allCoInsured = listOf(),
           ),
           addBottomSheetState = EditCoInsuredState.Loaded.AddBottomSheetState(
             isLoading = false,

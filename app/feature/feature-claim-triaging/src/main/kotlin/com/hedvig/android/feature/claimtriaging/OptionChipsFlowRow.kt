@@ -23,14 +23,12 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.HedvigChip
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.seconds
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun <T> OptionChipsFlowRow(
-  items: ImmutableList<T>,
+  items: List<T>,
   itemDisplayName: (T) -> String,
   selectedItem: T?,
   onItemClick: (T) -> Unit,
@@ -78,7 +76,7 @@ private fun PreviewOptionChipsFlowRow() {
           List(12) {
             val displayName = buildString { repeat((4..14).random()) { append(('a'..'z').random()) } }
             displayName
-          }.toImmutableList()
+          }
         }
         OptionChipsFlowRow(
           items,

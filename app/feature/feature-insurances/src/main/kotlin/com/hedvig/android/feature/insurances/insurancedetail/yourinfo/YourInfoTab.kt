@@ -60,9 +60,6 @@ import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import hedvig.resources.R
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -71,8 +68,8 @@ import kotlinx.datetime.toJavaLocalDate
 @ExperimentalMaterial3Api
 @Composable
 internal fun YourInfoTab(
-  coverageItems: ImmutableList<Pair<String, String>>,
-  coInsured: ImmutableList<InsuranceAgreement.CoInsured>,
+  coverageItems: List<Pair<String, String>>,
+  coInsured: List<InsuranceAgreement.CoInsured>,
   allowChangeAddress: Boolean,
   allowTerminatingInsurance: Boolean,
   allowEditCoInsured: Boolean,
@@ -159,8 +156,7 @@ internal fun YourInfoTab(
           dateTimeFormatter.format(upcomingChangesInsuranceAgreement.activeFrom.toJavaLocalDate()),
         ),
         sections = upcomingChangesInsuranceAgreement.displayItems
-          .map { it.title to it.value }
-          .toImmutableList(),
+          .map { it.title to it.value },
         onOpenChat = openChat,
         onDismiss = {
           coroutineScope.launch {
@@ -261,7 +257,7 @@ internal fun YourInfoTab(
 }
 
 @Composable
-internal fun CoverageRows(coverageRowItems: ImmutableList<Pair<String, String>>, modifier: Modifier = Modifier) {
+internal fun CoverageRows(coverageRowItems: List<Pair<String, String>>, modifier: Modifier = Modifier) {
   Column(modifier = modifier) {
     coverageRowItems.forEachIndexed { index, (firstText, secondText) ->
       HorizontalItemsWithMaximumSpaceTaken(
@@ -297,7 +293,7 @@ internal fun CoverageRows(coverageRowItems: ImmutableList<Pair<String, String>>,
 
 @Composable
 internal fun CoInsuredSection(
-  coInsuredList: ImmutableList<InsuranceAgreement.CoInsured>,
+  coInsuredList: List<InsuranceAgreement.CoInsured>,
   contractHolderDisplayName: String,
   contractHolderSSN: String?,
   onMissingInfoClick: () -> Unit,
@@ -456,13 +452,13 @@ private fun PreviewYourInfoTab() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       YourInfoTab(
-        coverageItems = persistentListOf(
+        coverageItems = listOf(
           "Address".repeat(4) to "Bellmansgatan 19A",
           "Postal code" to "118 47".repeat(6),
           "Type" to "Homeowner",
           "Size" to "56 m2",
         ),
-        coInsured = persistentListOf(
+        coInsured = listOf(
           InsuranceAgreement.CoInsured(
             ssn = "199101131093",
             birthDate = null,
@@ -493,18 +489,18 @@ private fun PreviewYourInfoTab() {
               title = "test title",
               value = "test value",
             ),
-          ).toImmutableList(),
+          ),
           productVariant = ProductVariant(
             displayName = "Variant",
             contractGroup = ContractGroup.RENTAL,
             contractType = ContractType.SE_APARTMENT_RENT,
             partner = null,
-            perils = persistentListOf(),
-            insurableLimits = persistentListOf(),
-            documents = persistentListOf(),
+            perils = listOf(),
+            insurableLimits = listOf(),
+            documents = listOf(),
           ),
           certificateUrl = null,
-          coInsured = persistentListOf(
+          coInsured = listOf(
             InsuranceAgreement.CoInsured(
               ssn = "199101131093",
               birthDate = null,

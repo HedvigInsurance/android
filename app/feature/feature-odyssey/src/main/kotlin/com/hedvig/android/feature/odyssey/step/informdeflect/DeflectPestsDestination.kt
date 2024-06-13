@@ -32,8 +32,6 @@ import com.hedvig.android.data.claimflow.DeflectPartner
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import hedvig.resources.R
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 internal fun DeflectPestsDestination(
@@ -58,7 +56,7 @@ internal fun DeflectPestsDestination(
 
 @Composable
 private fun DeflectPestsScreen(
-  partners: ImmutableList<DeflectPartner>,
+  partners: List<DeflectPartner>,
   openChat: () -> Unit,
   closeClaimFlow: () -> Unit,
   windowSizeClass: WindowSizeClass,
@@ -171,7 +169,7 @@ private fun DeflectPestsScreen(
 @Composable
 private fun DeflectPestsScreenPreview() {
   DeflectPestsScreen(
-    partners = persistentListOf(
+    partners = listOf(
       DeflectPartner(
         id = "1",
         imageUrl = "test",
