@@ -25,7 +25,6 @@ import com.hedvig.android.feature.changeaddress.navigation.MovingParameters
 import com.hedvig.android.feature.changeaddress.navigation.NewAddressParameters
 import com.hedvig.android.feature.changeaddress.navigation.SelectHousingTypeParameters
 import com.hedvig.android.feature.changeaddress.navigation.VillaOnlyParameters
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate
 import octopus.type.CurrencyCode
 
@@ -110,8 +109,8 @@ internal val fakeMoveQuote = MoveQuote(
     contractGroup = ContractGroup.RENTAL,
     contractType = ContractType.SE_APARTMENT_RENT,
     partner = "test",
-    perils = persistentListOf(),
-    insurableLimits = persistentListOf(
+    perils = listOf(),
+    insurableLimits = listOf(
       InsurableLimit(
         label = "test",
         description = "long".repeat(10),
@@ -119,9 +118,9 @@ internal val fakeMoveQuote = MoveQuote(
         type = BIKE,
       ),
     ),
-    documents = persistentListOf(),
+    documents = listOf(),
   ),
-  displayItems = persistentListOf(),
+  displayItems = listOf(),
 )
 
 internal val fakeMovingParametersForOfferFromVilla = MovingParameters(
