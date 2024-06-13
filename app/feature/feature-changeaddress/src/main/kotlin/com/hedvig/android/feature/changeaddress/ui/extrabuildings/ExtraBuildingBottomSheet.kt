@@ -2,9 +2,15 @@ package com.hedvig.android.feature.changeaddress.ui.extrabuildings
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -56,6 +62,8 @@ internal fun ExtraBuildingBottomSheet(
     shape = MaterialTheme.shapes.squircleLargeTop,
     sheetState = sheetState,
     tonalElevation = 0.dp,
+    windowInsets = WindowInsets.ime,
+    //modifier = Modifier.imePadding(),
   ) {
     Column(
       modifier = Modifier.verticalScroll(rememberScrollState()),
@@ -64,8 +72,8 @@ internal fun ExtraBuildingBottomSheet(
         text = stringResource(id = R.string.CHANGE_ADDRESS_EXTRA_BUILDINGS_BOTTOM_SHEET_TITLE),
         textAlign = TextAlign.Center,
         modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
       )
       Spacer(Modifier.height(24.dp))
       ExtraBuildingTypeContainer(
@@ -87,8 +95,8 @@ internal fun ExtraBuildingBottomSheet(
           keyboardType = KeyboardType.Number,
         ),
         modifier = Modifier
-          .padding(horizontal = 16.dp)
-          .fillMaxWidth(),
+            .padding(horizontal = 16.dp)
+            .fillMaxWidth(),
       )
       Spacer(Modifier.height(8.dp))
       ChangeAddressSwitch(
@@ -121,6 +129,12 @@ internal fun ExtraBuildingBottomSheet(
         text = stringResource(id = R.string.general_cancel_button),
         onClick = { onDismiss() },
         modifier = Modifier.padding(horizontal = 16.dp),
+      )
+      Spacer(
+          Modifier.padding(
+              WindowInsets.safeDrawing
+                  .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom).asPaddingValues(),
+          ),
       )
     }
   }
