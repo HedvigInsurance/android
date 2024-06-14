@@ -50,8 +50,8 @@ inline fun <reified T : Destination> NavGraphBuilder.navdestination(
   )
 }
 
-inline fun <reified T : Any> NavGraphBuilder.navgraph(
-  startDestination: KClass<*>,
+inline fun <reified T : Destination> NavGraphBuilder.navgraph(
+  startDestination: KClass<out Destination>,
   destinationNavTypeAware: DestinationNavTypeAware = NoOpDestinationNavTypeAware,
   deepLinks: List<NavDeepLink> = emptyList(),
   noinline enterTransition: EnterTransitionFactory? = null,
