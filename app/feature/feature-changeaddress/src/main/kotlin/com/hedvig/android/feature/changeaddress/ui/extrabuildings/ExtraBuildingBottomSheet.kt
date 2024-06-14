@@ -63,14 +63,6 @@ internal fun ExtraBuildingBottomSheet(
   val isImeVisible = WindowInsets.isImeVisible
   val windowInsets = BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top)
   val navigationBottomHeight = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding()
-  val customModifier = if (isImeVisible) {
-    Modifier.imePadding()
-  } else {
-    Modifier.padding(
-      WindowInsets.safeDrawing
-        .only(WindowInsetsSides.Bottom).asPaddingValues(),
-    )
-  }
   ModalBottomSheet(
     containerColor = MaterialTheme.colorScheme.background,
     onDismissRequest = {
@@ -148,11 +140,15 @@ internal fun ExtraBuildingBottomSheet(
         onClick = { onDismiss() },
         modifier = Modifier.padding(horizontal = 16.dp),
       )
+      val customModifier = if (isImeVisible) {
+        Modifier.imePadding()
+      } else {
+        Modifier.padding(
+          WindowInsets.safeDrawing
+            .only(WindowInsetsSides.Bottom).asPaddingValues(),
+        )
+      }
       Spacer(
-//        Modifier.padding(
-//          WindowInsets.safeDrawing
-//            .only(WindowInsetsSides.Bottom).asPaddingValues(),
-//        ),
         customModifier,
       )
     }
