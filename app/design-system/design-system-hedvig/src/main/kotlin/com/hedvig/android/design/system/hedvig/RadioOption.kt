@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
@@ -46,6 +47,8 @@ import com.hedvig.android.design.system.hedvig.RadioOptionDefaults.RadioOptionSt
 import com.hedvig.android.design.system.hedvig.RadioOptionState.Chosen
 import com.hedvig.android.design.system.hedvig.RadioOptionState.ChosenLocked
 import com.hedvig.android.design.system.hedvig.RadioOptionState.NotChosen
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.flag.FlagSweden
 import com.hedvig.android.design.system.hedvig.tokens.RadioOptionColorTokens
 import com.hedvig.android.design.system.hedvig.tokens.SizeRadioOptionTokens.LargeSizeRadioOptionTokens
 import com.hedvig.android.design.system.hedvig.tokens.SizeRadioOptionTokens.MediumSizeRadioOptionTokens
@@ -92,12 +95,25 @@ fun RadioOption(
           SelectIndicationCircle(state)
         }
         is RadioOptionStyle.Icon -> {
-          Image(
-            painter = painterResource(id = radioOptionStyle.iconRes),
-            contentDescription = null,
-            modifier = Modifier
-              .size(32.dp),
-          )
+          when (radioOptionStyle.iconResource) {
+            is IconResource.Vector -> {
+              Icon(
+                imageVector = radioOptionStyle.iconResource.imageVector,
+                contentDescription = null,
+                tint = Color.Unspecified,
+                modifier = Modifier
+                  .size(32.dp),
+              )
+            }
+            is IconResource.Painter -> {
+              Image(
+                painter = painterResource(id = radioOptionStyle.iconResource.painterResId),
+                contentDescription = null,
+                modifier = Modifier
+                  .size(32.dp),
+              )
+            }
+          }
           Spacer(Modifier.width(8.dp))
           HedvigText(
             optionText,
@@ -137,6 +153,12 @@ fun RadioOption(
       }
     }
   }
+}
+
+sealed interface IconResource {
+  data class Vector(val imageVector: ImageVector) : IconResource
+
+  data class Painter(val painterResId: Int) : IconResource
 }
 
 @Composable
@@ -183,7 +205,7 @@ object RadioOptionDefaults {
 
     data class Label(val labelText: String) : RadioOptionStyle
 
-    data class Icon(val iconRes: Int) : RadioOptionStyle // we need another solution here. Content?
+    data class Icon(val iconResource: IconResource) : RadioOptionStyle // we need another solution here. Content?
 
     data object LeftAligned : RadioOptionStyle
   }
@@ -427,7 +449,8 @@ private class RadioOptionStyleProvider :
     listOf(
       Default,
       Label("Label"),
-      RadioOptionStyle.Icon(hedvig.resources.R.drawable.pillow_hedvig),
+      RadioOptionStyle.Icon(IconResource.Painter(hedvig.resources.R.drawable.pillow_hedvig)),
+      RadioOptionStyle.Icon(IconResource.Vector(HedvigIcons.FlagSweden)),
       LeftAligned,
     ),
   )
