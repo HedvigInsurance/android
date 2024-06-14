@@ -3,7 +3,6 @@ package com.hedvig.android.feature.travelcertificate.navigation
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Density
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.navOptions
 import com.hedvig.android.core.common.android.sharePDF
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.feature.travelcertificate.ui.choose.ChooseContractForCertificateDestination
@@ -77,25 +76,22 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navigator: Navigato
       )
       TravelCertificateDateInputDestination(
         viewModel = viewModel,
-        navigateUp = { navigator.navigateUp() },
+        navigateUp = navigator::navigateUp,
         onNavigateToFellowTravellers = { travelCertificatePrimaryInput ->
-          with(navigator) {
-            navigateUnsafe(
-              TravelCertificateDestination.TravelCertificateTravellersInput(
-                travelCertificatePrimaryInput,
-              ),
-            )
-          }
+          navigator.navigateUnsafe(
+            TravelCertificateDestination.TravelCertificateTravellersInput(
+              travelCertificatePrimaryInput,
+            ),
+          )
         },
         onNavigateToOverview = { travelCertificateUrl ->
           navigator.navigateUnsafe(
             TravelCertificateDestination.ShowCertificate(travelCertificateUrl),
-            navOptions {
-              typedPopUpTo<TravelCertificateDestination.TravelCertificateHistory> {
-                inclusive = false
-              }
-            },
-          )
+          ) {
+            typedPopUpTo<TravelCertificateDestination.TravelCertificateHistory> {
+              inclusive = false
+            }
+          }
         },
       )
     }
@@ -114,12 +110,11 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navigator: Navigato
         onNavigateToOverview = { travelCertificateUrl ->
           navigator.navigateUnsafe(
             TravelCertificateDestination.ShowCertificate(travelCertificateUrl),
-            navOptions {
-              typedPopUpTo<TravelCertificateDestination.TravelCertificateHistory> {
-                inclusive = false
-              }
-            },
-          )
+          ) {
+            typedPopUpTo<TravelCertificateDestination.TravelCertificateHistory> {
+              inclusive = false
+            }
+          }
         },
         onNavigateToCoInsuredAddInfo = {
           with(navigator) {

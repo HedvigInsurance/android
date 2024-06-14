@@ -4,9 +4,8 @@ import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavOptions
+import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.navDeepLink
-import androidx.navigation.navOptions
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.termination.data.TerminatableInsurance
 import com.hedvig.android.feature.terminateinsurance.data.toTerminateInsuranceDestination
@@ -41,7 +40,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
   openUrl: (String) -> Unit,
   navigateToMovingFlow: (NavBackStackEntry) -> Unit,
   openPlayStore: () -> Unit,
-  navigateToInsurances: (NavOptions) -> Unit,
+  navigateToInsurances: (NavOptionsBuilder.() -> Unit) -> Unit,
   closeTerminationFlow: () -> Unit,
 ) {
   navdestination<TerminateInsuranceDestination.TerminationFailure> { backStackEntry ->
@@ -70,13 +69,11 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       onDone = {
         if (!navController.popBackStack()) {
           // In the deep link situation, we want to navigate to Insurances when we're successfully done with this flow
-          navigateToInsurances(
-            navOptions {
-              typedPopUpTo<TerminateInsuranceDestination.TerminationSuccess> {
-                inclusive = true
-              }
-            },
-          )
+          navigateToInsurances {
+            typedPopUpTo<TerminateInsuranceDestination.TerminationSuccess> {
+              inclusive = true
+            }
+          }
         }
       },
     )
@@ -232,7 +229,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
  * If we're going to a terminal destination, pop the termination flow backstack completely before going there.
  */
 private fun <T : Destination> Navigator.navigateToTerminateFlowDestination(destination: T) {
-  val navOptions = navOptions {
+  val navOptions: NavOptionsBuilder.() -> Unit = {
     when (destination) {
       is TerminateInsuranceDestination.TerminationSuccess,
       is TerminateInsuranceDestination.TerminationFailure,

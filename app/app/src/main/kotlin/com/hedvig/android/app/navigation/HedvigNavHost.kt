@@ -8,7 +8,6 @@ import androidx.compose.ui.unit.Density
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
-import androidx.navigation.navOptions
 import coil.ImageLoader
 import com.hedvig.android.app.ui.HedvigAppState
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
@@ -148,19 +147,18 @@ internal fun HedvigNavHost(
           openUrl = openUrl,
           openPlayStore = externalNavigator::tryOpenPlayStore,
           hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-          navigateToInsurances = { navOptions ->
-            hedvigAppState.navController.navigate(InsurancesDestination.Graph, navOptions)
+          navigateToInsurances = { navOptionsBuilder ->
+            hedvigAppState.navController.navigate(InsurancesDestination.Graph, navOptionsBuilder)
           },
           navigateToMovingFlow = { backStackEntry ->
             with(navigator) {
               backStackEntry.navigate(
                 destination = AppDestination.ChangeAddress,
-                navOptions = navOptions {
-                  typedPopUpTo<TerminateInsuranceGraphDestination> {
-                    inclusive = true
-                  }
-                },
-              )
+              ) {
+                typedPopUpTo<TerminateInsuranceGraphDestination> {
+                  inclusive = true
+                }
+              }
             }
           },
           closeTerminationFlow = {
@@ -259,12 +257,11 @@ internal fun HedvigNavHost(
       navigateToAdyenConnectPayment = {
         navigator.navigateUnsafe(
           AppDestination.ConnectPaymentAdyen,
-          navOptions {
-            typedPopUpTo<AppDestination.ConnectPayment> {
-              inclusive = true
-            }
-          },
-        )
+        ) {
+          typedPopUpTo<AppDestination.ConnectPayment> {
+            inclusive = true
+          }
+        }
       },
     )
     editCoInsuredGraph(

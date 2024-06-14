@@ -3,7 +3,7 @@ package com.hedvig.android.feature.odyssey.navigation
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.navOptions
+import androidx.navigation.NavOptionsBuilder
 import coil.ImageLoader
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.data.claimflow.ClaimFlowDestination
@@ -390,7 +390,7 @@ fun NavGraphBuilder.terminalClaimFlowStepDestinations(
  * If we're going to a terminal destination, pop the claims flow backstack completely before going there.
  */
 fun Navigator.navigateToClaimFlowDestination(backStackEntry: NavBackStackEntry, destination: Destination) {
-  val navOptions = navOptions {
+  val navOptions: NavOptionsBuilder.() -> Unit = {
     when (destination) {
       is ClaimFlowDestination.ClaimSuccess,
       is ClaimFlowDestination.UpdateApp,
