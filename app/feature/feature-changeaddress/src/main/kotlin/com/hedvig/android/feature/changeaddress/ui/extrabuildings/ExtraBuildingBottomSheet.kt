@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
@@ -14,9 +15,7 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -72,10 +71,12 @@ internal fun ExtraBuildingBottomSheet(
     sheetState = sheetState,
     tonalElevation = 0.dp,
     windowInsets = windowInsets,
-    modifier = Modifier.padding(bottom = navigationBottomHeight),
+    modifier = Modifier
+      .padding(bottom = navigationBottomHeight)
+      .fillMaxSize(),
   ) {
     Column(
-      modifier = Modifier.verticalScroll(rememberScrollState()).clearFocusOnTap(),
+      modifier = Modifier.clearFocusOnTap(),
     ) {
       Text(
         text = stringResource(id = R.string.CHANGE_ADDRESS_EXTRA_BUILDINGS_BOTTOM_SHEET_TITLE),
@@ -85,11 +86,13 @@ internal fun ExtraBuildingBottomSheet(
           .padding(horizontal = 16.dp),
       )
       Spacer(Modifier.height(24.dp))
+
       ExtraBuildingTypeContainer(
         types = extraBuildingTypes,
         selectedType = selectedType,
         onSelected = { selectedType = it },
         modifier = Modifier
+          .weight(1f)
           .padding(horizontal = 16.dp),
       )
       Spacer(Modifier.height(8.dp))
