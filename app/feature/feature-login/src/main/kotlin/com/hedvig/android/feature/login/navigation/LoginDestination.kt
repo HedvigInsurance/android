@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.login.navigation
 
-import com.hedvig.android.navigation.compose.typeMapOf
+import com.hedvig.android.navigation.compose.DestinationNavTypeAware
+import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 import kotlinx.serialization.Serializable
 
@@ -34,8 +35,8 @@ internal sealed interface LoginDestinations {
       val credential: String,
     )
 
-    companion object {
-      val typeMap = typeMapOf(typeOf<OtpInformation>())
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<OtpInformation>())
     }
   }
 }

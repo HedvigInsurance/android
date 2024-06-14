@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.changeaddress.navigation
 
-import com.hedvig.android.navigation.compose.typeMapOf
+import com.hedvig.android.navigation.compose.DestinationNavTypeAware
+import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
@@ -22,8 +23,8 @@ internal sealed interface ChangeAddressDestination {
   data class AddressResult(
     val movingDate: LocalDate?,
   ) : ChangeAddressDestination {
-    companion object {
-      val typeMap = typeMapOf(typeOf<LocalDate?>())
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<LocalDate?>())
     }
   }
 }

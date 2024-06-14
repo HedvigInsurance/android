@@ -10,8 +10,9 @@ import com.hedvig.android.data.claimflow.ItemBrand.Unknown.displayName
 import com.hedvig.android.data.claimflow.ItemModel.Unknown.displayName
 import com.hedvig.android.data.claimflow.model.AudioUrl
 import com.hedvig.android.data.claimflow.model.FlowId
-import com.hedvig.android.navigation.compose.typeMapOf
+import com.hedvig.android.navigation.compose.DestinationNavTypeAware
 import com.hedvig.audio.player.data.SignedAudioUrl
+import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
@@ -30,8 +31,8 @@ sealed interface ClaimFlowDestination {
     val questions: List<String>,
     val audioContent: AudioContent?,
   ) : ClaimFlowDestination {
-    companion object {
-      val typeMap = typeMapOf(
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(
         typeOf<FlowId>(),
         typeOf<AudioContent?>(),
       )
@@ -43,8 +44,8 @@ sealed interface ClaimFlowDestination {
     val dateOfOccurrence: LocalDate?,
     val maxDate: LocalDate,
   ) : ClaimFlowDestination {
-    companion object {
-      val typeMap = typeMapOf(
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(
         typeOf<LocalDate?>(),
         typeOf<LocalDate>(),
       )
@@ -56,8 +57,8 @@ sealed interface ClaimFlowDestination {
     val selectedLocation: String?,
     val locationOptions: List<LocationOption>,
   ) : ClaimFlowDestination {
-    companion object {
-      val typeMap = typeMapOf(typeOf<List<LocationOption>>())
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<List<LocationOption>>())
     }
   }
 
@@ -68,8 +69,8 @@ sealed interface ClaimFlowDestination {
     val selectedLocation: String?,
     val locationOptions: List<LocationOption>,
   ) : ClaimFlowDestination {
-    companion object {
-      val typeMap = typeMapOf(
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(
         typeOf<LocalDate?>(),
         typeOf<LocalDate>(),
         typeOf<List<LocationOption>>(),
@@ -84,8 +85,8 @@ sealed interface ClaimFlowDestination {
   data class SelectContract(
     val options: List<LocalContractContractOption>,
   ) : ClaimFlowDestination {
-    companion object {
-      val typeMap = typeMapOf(typeOf<List<LocalContractContractOption>>())
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<List<LocalContractContractOption>>())
     }
   }
 
@@ -103,8 +104,8 @@ sealed interface ClaimFlowDestination {
     val availableItemProblems: List<ItemProblem>?,
     val selectedItemProblems: List<String>?,
   ) : ClaimFlowDestination {
-    companion object {
-      val typeMap = typeMapOf(
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(
         typeOf<CurrencyCode>(),
         typeOf<LocalDate?>(),
         typeOf<UiNullableMoney?>(),
@@ -119,8 +120,8 @@ sealed interface ClaimFlowDestination {
   data class DeflectGlassDamage(
     val partners: List<DeflectPartner>,
   ) : ClaimFlowDestination {
-    companion object {
-      val typeMap = typeMapOf(typeOf<List<DeflectPartner>>())
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<List<DeflectPartner>>())
     }
   }
 
@@ -128,8 +129,8 @@ sealed interface ClaimFlowDestination {
   data class DeflectTowing(
     val partners: List<DeflectPartner>,
   ) : ClaimFlowDestination {
-    companion object {
-      val typeMap = typeMapOf(typeOf<List<DeflectPartner>>())
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<List<DeflectPartner>>())
     }
   }
 
@@ -137,8 +138,8 @@ sealed interface ClaimFlowDestination {
   data class DeflectCarOtherDamage(
     val partners: List<DeflectPartner>,
   ) : ClaimFlowDestination {
-    companion object {
-      val typeMap = typeMapOf(typeOf<List<DeflectPartner>>())
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<List<DeflectPartner>>())
     }
   }
 
@@ -148,8 +149,8 @@ sealed interface ClaimFlowDestination {
     val confirmEmergency: Boolean?,
     val options: List<EmergencyOption>,
   ) : ClaimFlowDestination {
-    companion object {
-      val typeMap = typeMapOf(
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(
         typeOf<Boolean?>(),
         typeOf<List<EmergencyOption>>(),
       )
@@ -160,8 +161,8 @@ sealed interface ClaimFlowDestination {
   data class DeflectEmergency(
     val partners: List<DeflectPartner>,
   ) : ClaimFlowDestination {
-    companion object {
-      val typeMap = typeMapOf(typeOf<List<DeflectPartner>>())
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<List<DeflectPartner>>())
     }
   }
 
@@ -169,8 +170,8 @@ sealed interface ClaimFlowDestination {
   data class DeflectPests(
     val partners: List<DeflectPartner>,
   ) : ClaimFlowDestination {
-    companion object {
-      val typeMap = typeMapOf(typeOf<List<DeflectPartner>>())
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<List<DeflectPartner>>())
     }
   }
 
@@ -194,8 +195,8 @@ sealed interface ClaimFlowDestination {
     val submittedContent: SubmittedContent?,
     val files: List<UiFile>,
   ) : ClaimFlowDestination {
-    companion object {
-      val typeMap = typeMapOf(
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(
         typeOf<List<LocationOption>>(),
         typeOf<LocalDate?>(),
         typeOf<LocalDate>(),
@@ -218,8 +219,8 @@ sealed interface ClaimFlowDestination {
     val brandName: String?,
     val customName: String?,
   ) : ClaimFlowDestination {
-    companion object {
-      val typeMap = typeMapOf(
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(
         typeOf<Compensation>(),
         typeOf<List<CheckoutMethod.Known>>(),
       )
@@ -257,8 +258,8 @@ sealed interface ClaimFlowDestination {
   data class SingleItemPayout(
     val checkoutMethod: CheckoutMethod.Known,
   ) : ClaimFlowDestination {
-    companion object {
-      val typeMap = typeMapOf(typeOf<CheckoutMethod.Known>())
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<CheckoutMethod.Known>())
     }
   }
 
@@ -268,8 +269,8 @@ sealed interface ClaimFlowDestination {
     val targetUploadUrl: String,
     val uploads: List<UiFile>,
   ) : ClaimFlowDestination {
-    companion object {
-      val typeMap = typeMapOf(typeOf<List<UiFile>>())
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<List<UiFile>>())
     }
   }
 

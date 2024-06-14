@@ -2,7 +2,8 @@ package com.hedvig.android.feature.travelcertificate.navigation
 
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateDestination.TravelCertificateTravellersInput.TravelCertificatePrimaryInput
-import com.hedvig.android.navigation.compose.typeMapOf
+import com.hedvig.android.navigation.compose.DestinationNavTypeAware
+import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
@@ -30,8 +31,8 @@ internal sealed interface TravelCertificateDestination {
       val contractId: String,
     )
 
-    companion object {
-      val typeMap = typeMapOf(typeOf<TravelCertificatePrimaryInput>())
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<TravelCertificatePrimaryInput>())
     }
   }
 
@@ -39,8 +40,8 @@ internal sealed interface TravelCertificateDestination {
   data class ShowCertificate(
     val travelCertificateUrl: TravelCertificateUrl,
   ) : TravelCertificateDestination {
-    companion object {
-      val typeMap = typeMapOf(typeOf<TravelCertificateUrl>())
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<TravelCertificateUrl>())
     }
   }
 }

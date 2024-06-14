@@ -1,7 +1,8 @@
 package com.hedvig.android.feature.terminateinsurance.navigation
 
 import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
-import com.hedvig.android.navigation.compose.typeMapOf
+import com.hedvig.android.navigation.compose.DestinationNavTypeAware
+import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.SerialName
@@ -25,8 +26,8 @@ internal sealed interface TerminateInsuranceDestination {
     val options: List<TerminationSurveyOption>,
     val commonParams: TerminationGraphParameters,
   ) : TerminateInsuranceDestination {
-    companion object {
-      val typeMap = typeMapOf(
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(
         typeOf<List<TerminationSurveyOption>>(),
         typeOf<TerminationGraphParameters>(),
       )
@@ -38,8 +39,8 @@ internal sealed interface TerminateInsuranceDestination {
     val subOptions: List<TerminationSurveyOption>,
     val commonParams: TerminationGraphParameters,
   ) : TerminateInsuranceDestination {
-    companion object {
-      val typeMap = typeMapOf(
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(
         typeOf<List<TerminationSurveyOption>>(),
         typeOf<TerminationGraphParameters>(),
       )
@@ -52,8 +53,8 @@ internal sealed interface TerminateInsuranceDestination {
     val maxDate: LocalDate,
     val commonParams: TerminationGraphParameters,
   ) : TerminateInsuranceDestination {
-    companion object {
-      val typeMap = typeMapOf(
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(
         typeOf<LocalDate>(),
         typeOf<TerminationGraphParameters>(),
       )
@@ -77,8 +78,8 @@ internal sealed interface TerminateInsuranceDestination {
       data class Termination(val terminationDate: LocalDate) : TerminationType
     }
 
-    companion object {
-      val typeMap = typeMapOf(
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(
         typeOf<TerminationType>(),
         typeOf<TerminationGraphParameters>(),
       )
@@ -89,15 +90,15 @@ internal sealed interface TerminateInsuranceDestination {
   data class TerminationSuccess(
     val terminationDate: LocalDate?,
   ) : TerminateInsuranceDestination {
-    companion object {
-      val typeMap = typeMapOf(typeOf<LocalDate?>())
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<LocalDate?>())
     }
   }
 
   @Serializable
   data class InsuranceDeletion(val commonParams: TerminationGraphParameters) : TerminateInsuranceDestination {
-    companion object {
-      val typeMap = typeMapOf(typeOf<TerminationGraphParameters>())
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<TerminationGraphParameters>())
     }
   }
 
@@ -116,8 +117,8 @@ internal data class TerminationDateParameters(
   val maxDate: LocalDate,
   val commonParams: TerminationGraphParameters,
 ) {
-  companion object {
-    val typeMap = typeMapOf(
+  companion object : DestinationNavTypeAware {
+    override val typeList: List<KType> = listOf(
       typeOf<LocalDate>(),
       typeOf<TerminationGraphParameters>(),
     )

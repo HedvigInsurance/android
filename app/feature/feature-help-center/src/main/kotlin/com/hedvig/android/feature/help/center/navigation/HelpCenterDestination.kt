@@ -1,7 +1,8 @@
 package com.hedvig.android.feature.help.center.navigation
 
-import com.hedvig.android.navigation.compose.typeMapOf
+import com.hedvig.android.navigation.compose.DestinationNavTypeAware
 import com.hedvig.android.ui.emergency.FirstVetSection
+import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 import kotlinx.serialization.Serializable
 
@@ -17,8 +18,8 @@ internal sealed interface HelpCenterDestinations {
     val displayName: String,
     val topic: com.hedvig.android.feature.help.center.model.Topic,
   ) : HelpCenterDestinations {
-    companion object {
-      val typeMap = typeMapOf(typeOf<com.hedvig.android.feature.help.center.model.Topic>())
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<com.hedvig.android.feature.help.center.model.Topic>())
     }
   }
 
@@ -27,8 +28,8 @@ internal sealed interface HelpCenterDestinations {
     val displayName: String,
     val question: com.hedvig.android.feature.help.center.model.Question,
   ) : HelpCenterDestinations {
-    companion object {
-      val typeMap = typeMapOf(typeOf<com.hedvig.android.feature.help.center.model.Question>())
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<com.hedvig.android.feature.help.center.model.Question>())
     }
   }
 
@@ -37,8 +38,8 @@ internal sealed interface HelpCenterDestinations {
 
   @Serializable
   data class FirstVet(val sections: List<FirstVetSection>) : HelpCenterDestinations {
-    companion object {
-      val typeMap = typeMapOf(typeOf<List<FirstVetSection>>())
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<List<FirstVetSection>>())
     }
   }
 }

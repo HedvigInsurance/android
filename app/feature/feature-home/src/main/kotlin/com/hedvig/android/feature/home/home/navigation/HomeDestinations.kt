@@ -1,7 +1,8 @@
 package com.hedvig.android.feature.home.home.navigation
 
-import com.hedvig.android.navigation.compose.typeMapOf
+import com.hedvig.android.navigation.compose.DestinationNavTypeAware
 import com.hedvig.android.ui.emergency.FirstVetSection
+import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 import kotlinx.serialization.Serializable
 
@@ -14,8 +15,8 @@ sealed interface HomeDestination {
 
   @Serializable
   data class FirstVet(val sections: List<FirstVetSection>) : HomeDestination {
-    companion object {
-      val typeMap = typeMapOf(typeOf<List<FirstVetSection>>())
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<List<FirstVetSection>>())
     }
   }
 }

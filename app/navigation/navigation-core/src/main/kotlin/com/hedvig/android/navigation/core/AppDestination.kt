@@ -1,6 +1,8 @@
 package com.hedvig.android.navigation.core
 
-import com.hedvig.android.navigation.compose.typeMapOf
+import com.hedvig.android.navigation.compose.Destination
+import com.hedvig.android.navigation.compose.DestinationNavTypeAware
+import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 import kotlinx.serialization.Serializable
 
@@ -8,7 +10,7 @@ sealed interface AppDestination {
   @Serializable
   data class Chat(
     val chatContext: ChatContext? = null,
-  ) : AppDestination {
+  ) : AppDestination, Destination {
     enum class ChatContext {
       PAYMENT,
       CLAIMS,
@@ -17,8 +19,8 @@ sealed interface AppDestination {
       OTHER,
     }
 
-    companion object {
-      val typeMap = typeMapOf(typeOf<ChatContext?>())
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<ChatContext?>())
     }
   }
 
