@@ -1,13 +1,13 @@
 package com.hedvig.android.app.ui
 
 import androidx.navigation.NavDestination
-import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import com.hedvig.android.feature.forever.navigation.ForeverDestination
 import com.hedvig.android.feature.home.home.navigation.HomeDestination
 import com.hedvig.android.feature.insurances.navigation.InsurancesDestination
 import com.hedvig.android.feature.payments.navigation.PaymentsDestination
 import com.hedvig.android.feature.profile.navigation.ProfileDestination
+import com.hedvig.android.navigation.compose.typedHasRoute
 import com.hedvig.android.navigation.core.TopLevelGraph
 
 /**
@@ -23,6 +23,6 @@ internal fun NavDestination?.isTopLevelGraphInHierarchy(topLevelGraph: TopLevelG
     TopLevelGraph.Profile -> ProfileDestination.Graph::class
   }
   return hierarchy.any { navDestination ->
-    navDestination.hasRoute(topLevelGraphRelatedRoute)
+    navDestination.typedHasRoute(topLevelGraphRelatedRoute)
   }
 }

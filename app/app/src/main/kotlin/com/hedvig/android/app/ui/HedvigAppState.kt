@@ -12,7 +12,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
-import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -34,6 +33,8 @@ import com.hedvig.android.feature.profile.navigation.profileBottomNavPermittedDe
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.navigation.compose.Destination
+import com.hedvig.android.navigation.compose.typedHasRoute
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.notification.badge.data.tab.BottomNavTab
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
@@ -282,23 +283,23 @@ private fun TopLevelDestinationNavigationSideEffect(
 private fun NavDestination?.toTopLevelAppDestination(): TopLevelDestination? {
   return when {
     this == null -> null
-    hasRoute<HomeDestination.Home>() -> TopLevelDestination.Home
-    hasRoute<InsurancesDestination.Insurances>() -> TopLevelDestination.Insurances
-    hasRoute<ForeverDestination.Forever>() -> TopLevelDestination.Forever
-    hasRoute<PaymentsDestination.Payments>() -> TopLevelDestination.Payments
-    hasRoute<ProfileDestination.Profile>() -> TopLevelDestination.Profile
+    typedHasRoute<HomeDestination.Home>() -> TopLevelDestination.Home
+    typedHasRoute<InsurancesDestination.Insurances>() -> TopLevelDestination.Insurances
+    typedHasRoute<ForeverDestination.Forever>() -> TopLevelDestination.Forever
+    typedHasRoute<PaymentsDestination.Payments>() -> TopLevelDestination.Payments
+    typedHasRoute<ProfileDestination.Profile>() -> TopLevelDestination.Profile
     else -> null
   }
 }
 
 private fun NavDestination?.isInListOfNonTopLevelNavBarPermittedDestinations(): Boolean {
-  return bottomNavPermittedDestinations.any { this?.hasRoute(it) == true }
+  return bottomNavPermittedDestinations.any { this?.typedHasRoute(it) == true }
 }
 
 /**
  * Special routes, which despite not being top level should still show the navigation bars.
  */
-private val bottomNavPermittedDestinations: List<KClass<*>> = buildList {
+private val bottomNavPermittedDestinations: List<KClass<out Destination>> = buildList {
   addAll(profileBottomNavPermittedDestinations)
   addAll(insurancesBottomNavPermittedDestinations)
 }

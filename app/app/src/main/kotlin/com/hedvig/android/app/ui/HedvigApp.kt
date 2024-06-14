@@ -16,7 +16,6 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import coil.ImageLoader
@@ -37,6 +36,7 @@ import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.navigation.activity.ExternalNavigator
+import com.hedvig.android.navigation.compose.typedHasRoute
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
 import kotlinx.coroutines.channels.Channel
@@ -202,7 +202,7 @@ private fun LogoutOnInvalidCredentialsEffect(
       }.collect { (authStatus, isDemoMode) ->
         val navBackStackEntry: NavBackStackEntry = hedvigAppState.navController.currentBackStackEntryFlow.first()
         val isLoggedOut = navBackStackEntry.destination.hierarchy.any { navDestination ->
-          navDestination.hasRoute<LoginDestination>()
+          navDestination.typedHasRoute<LoginDestination>()
         }
         if (isLoggedOut) {
           return@collect
