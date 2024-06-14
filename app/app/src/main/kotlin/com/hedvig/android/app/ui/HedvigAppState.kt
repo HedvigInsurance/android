@@ -35,6 +35,7 @@ import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.compose.Destination
 import com.hedvig.android.navigation.compose.typedHasRoute
+import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.notification.badge.data.tab.BottomNavTab
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
@@ -200,7 +201,7 @@ internal class HedvigAppState(
    */
   fun navigateToLoggedIn() {
     navController.navigate(RootGraph) {
-      popUpTo<LoginDestination> {
+      typedPopUpTo<LoginDestination> {
         inclusive = true
       }
     }
@@ -208,7 +209,7 @@ internal class HedvigAppState(
 
   fun navigateToLoggedOut() {
     navController.navigate(LoginDestination) {
-      popUpTo<RootGraph> {
+      typedPopUpTo<RootGraph> {
         inclusive = true
       }
     }

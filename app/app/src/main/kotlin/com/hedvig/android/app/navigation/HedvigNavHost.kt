@@ -47,6 +47,7 @@ import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.Market
 import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.compose.Destination
+import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
@@ -155,7 +156,7 @@ internal fun HedvigNavHost(
               backStackEntry.navigate(
                 destination = AppDestination.ChangeAddress,
                 navOptions = navOptions {
-                  popUpTo<TerminateInsuranceGraphDestination> {
+                  typedPopUpTo<TerminateInsuranceGraphDestination> {
                     inclusive = true
                   }
                 },
@@ -259,7 +260,7 @@ internal fun HedvigNavHost(
         navigator.navigateUnsafe(
           AppDestination.ConnectPaymentAdyen,
           navOptions {
-            popUpTo<AppDestination.ConnectPayment> {
+            typedPopUpTo<AppDestination.ConnectPayment> {
               inclusive = true
             }
           },
@@ -378,7 +379,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     openChat = { backStackEntry ->
       with(navigator) {
         backStackEntry.navigate(destination = AppDestination.Chat()) {
-          popUpTo<HomeDestination.Home>()
+          typedPopUpTo<HomeDestination.Home>()
         }
       }
     },

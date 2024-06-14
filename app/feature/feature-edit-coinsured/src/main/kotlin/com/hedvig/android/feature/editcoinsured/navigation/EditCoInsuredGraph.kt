@@ -7,6 +7,7 @@ import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredAddOrRemoveDesti
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredSuccessDestination
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
+import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.AppDestination
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -20,7 +21,7 @@ fun NavGraphBuilder.editCoInsuredGraph(navigateUp: () -> Unit, navController: Na
         viewModel = koinViewModel { parametersOf(contractId) },
         navigateToSuccessScreen = {
           navController.navigate(EditCoInsuredDestination.Success(it)) {
-            popUpTo<AppDestination.EditCoInsured> {
+            typedPopUpTo<AppDestination.EditCoInsured> {
               inclusive = true
             }
           }
@@ -33,7 +34,7 @@ fun NavGraphBuilder.editCoInsuredGraph(navigateUp: () -> Unit, navController: Na
         koinViewModel { parametersOf(contractId) },
         navigateToSuccessScreen = {
           navController.navigate(EditCoInsuredDestination.Success(it)) {
-            popUpTo<AppDestination.EditCoInsured> {
+            typedPopUpTo<AppDestination.EditCoInsured> {
               inclusive = true
             }
           }

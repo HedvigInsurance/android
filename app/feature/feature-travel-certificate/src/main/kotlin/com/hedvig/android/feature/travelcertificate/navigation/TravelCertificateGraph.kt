@@ -19,6 +19,7 @@ import com.hedvig.android.feature.travelcertificate.ui.overview.TravelCertificat
 import com.hedvig.android.feature.travelcertificate.ui.overview.TravelCertificateOverviewViewModel
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
+import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.AppDestination
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -79,7 +80,7 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavC
         },
         onNavigateToOverview = { travelCertificateUrl ->
           navController.navigate(TravelCertificateDestination.ShowCertificate(travelCertificateUrl)) {
-            popUpTo<TravelCertificateDestination.TravelCertificateHistory> {
+            typedPopUpTo<TravelCertificateDestination.TravelCertificateHistory> {
               inclusive = false
             }
           }
@@ -100,7 +101,7 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navController: NavC
         navigateUp = { navController.navigateUp() },
         onNavigateToOverview = { travelCertificateUrl ->
           navController.navigate(TravelCertificateDestination.ShowCertificate(travelCertificateUrl)) {
-            popUpTo<TravelCertificateDestination.TravelCertificateHistory> {
+            typedPopUpTo<TravelCertificateDestination.TravelCertificateHistory> {
               inclusive = false
             }
           }

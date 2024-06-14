@@ -26,6 +26,7 @@ import com.hedvig.android.navigation.compose.Destination
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.typed.getRouteFromBackStack
+import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
 import org.koin.androidx.compose.koinViewModel
@@ -71,7 +72,9 @@ fun NavGraphBuilder.terminateInsuranceGraph(
           // In the deep link situation, we want to navigate to Insurances when we're successfully done with this flow
           navigateToInsurances(
             navOptions {
-              popUpTo<TerminateInsuranceDestination.TerminationSuccess> { inclusive = true }
+              typedPopUpTo<TerminateInsuranceDestination.TerminationSuccess> {
+                inclusive = true
+              }
             },
           )
         }
@@ -235,7 +238,7 @@ private fun <T : Destination> Navigator.navigateToTerminateFlowDestination(desti
       is TerminateInsuranceDestination.TerminationFailure,
       is TerminateInsuranceDestination.UnknownScreen,
       -> {
-        popUpTo<TerminateInsuranceGraphDestination> {
+        typedPopUpTo<TerminateInsuranceGraphDestination> {
           inclusive = true
         }
       }

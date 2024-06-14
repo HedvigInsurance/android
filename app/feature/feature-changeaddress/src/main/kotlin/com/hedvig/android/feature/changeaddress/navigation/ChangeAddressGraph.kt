@@ -12,6 +12,7 @@ import com.hedvig.android.feature.changeaddress.destination.ChangeAddressSelectH
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.typed.destinationScopedViewModel
+import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.AppDestination
 
 fun NavGraphBuilder.changeAddressGraph(
@@ -76,7 +77,7 @@ fun NavGraphBuilder.changeAddressGraph(
         navigateUp = navController::navigateUp,
         onChangeAddressResult = { movingDate ->
           navController.navigate(ChangeAddressDestination.AddressResult(movingDate)) {
-            popUpTo<AppDestination.ChangeAddress> {
+            typedPopUpTo<AppDestination.ChangeAddress> {
               inclusive = true
             }
           }

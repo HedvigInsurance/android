@@ -46,6 +46,7 @@ import com.hedvig.android.feature.odyssey.step.unknownscreen.UnknownScreenDestin
 import com.hedvig.android.navigation.compose.Destination
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
+import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.Navigator
 import org.koin.androidx.compose.koinViewModel
@@ -396,7 +397,7 @@ fun Navigator.navigateToClaimFlowDestination(backStackEntry: NavBackStackEntry, 
       is ClaimFlowDestination.Failure,
       is ClaimFlowDestination.SingleItemPayout,
       -> {
-        popUpTo<AppDestination.ClaimsFlow> {
+        typedPopUpTo<AppDestination.ClaimsFlow> {
           inclusive = true
         }
       }
