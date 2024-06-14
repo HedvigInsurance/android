@@ -29,12 +29,14 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
+import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
@@ -59,6 +61,7 @@ internal fun QuoteCard(
 ) {
   HedvigCard(
     modifier = modifier
+      .clip(MaterialTheme.shapes.squircleMedium)
       .clickable(
         interactionSource = remember { MutableInteractionSource() },
         indication = rememberRipple(
