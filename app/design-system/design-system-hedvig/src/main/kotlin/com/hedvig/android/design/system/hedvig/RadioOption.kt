@@ -47,8 +47,6 @@ import com.hedvig.android.design.system.hedvig.RadioOptionDefaults.RadioOptionSt
 import com.hedvig.android.design.system.hedvig.RadioOptionState.Chosen
 import com.hedvig.android.design.system.hedvig.RadioOptionState.ChosenLocked
 import com.hedvig.android.design.system.hedvig.RadioOptionState.NotChosen
-import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import com.hedvig.android.design.system.hedvig.icon.flag.FlagSweden
 import com.hedvig.android.design.system.hedvig.tokens.RadioOptionColorTokens
 import com.hedvig.android.design.system.hedvig.tokens.SizeRadioOptionTokens.LargeSizeRadioOptionTokens
 import com.hedvig.android.design.system.hedvig.tokens.SizeRadioOptionTokens.MediumSizeRadioOptionTokens
@@ -450,7 +448,7 @@ private class RadioOptionStyleProvider :
       Default,
       Label("Label"),
       RadioOptionStyle.Icon(IconResource.Painter(hedvig.resources.R.drawable.pillow_hedvig)),
-      RadioOptionStyle.Icon(IconResource.Vector(HedvigIcons.FlagSweden)),
+      //   RadioOptionStyle.Icon(IconResource.Vector(HedvigIcons.FlagSweden)),
       LeftAligned,
     ),
   )
