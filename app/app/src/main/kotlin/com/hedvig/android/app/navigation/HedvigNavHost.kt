@@ -335,7 +335,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
   )
   travelCertificateGraph(
     density = density,
-    navController = hedvigAppState.navController,
+    navigator = navigator,
     applicationId = BuildConfig.APPLICATION_ID,
   )
   claimFlowGraph(
