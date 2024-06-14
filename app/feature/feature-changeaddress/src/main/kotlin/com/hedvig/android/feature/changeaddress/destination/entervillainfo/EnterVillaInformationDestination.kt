@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -43,7 +44,7 @@ internal fun EnterVillaInformationDestination(
   onNavigateToOfferDestination: (MovingParameters) -> Unit,
 ) {
   val uiState: EnterVillaInformationUiState by viewModel.uiState.collectAsStateWithLifecycle()
-
+  val focusManager = LocalFocusManager.current
   val movingParameters = uiState.movingParameters
   LaunchedEffect(movingParameters) {
     if (movingParameters != null) {
@@ -88,6 +89,7 @@ internal fun EnterVillaInformationDestination(
     },
     onAddExtraBuildingClicked = {
       showExtraBuildingsBottomSheet = true
+      focusManager.clearFocus()
     },
     onRemoveExtraBuildingClicked = { viewModel.emit(EnterVillaInformationEvent.RemoveExtraBuildingClicked(it)) },
   )

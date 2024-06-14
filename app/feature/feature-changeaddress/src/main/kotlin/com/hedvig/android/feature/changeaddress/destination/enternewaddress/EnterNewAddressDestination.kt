@@ -189,8 +189,6 @@ private fun ChangeAddressEnterNewAddressScreen(
           onMoveDateSelected(it)
           focusManager.clearFocus()
         },
-        // todo: Scaffold's modifier does not clear focus in this case,
-        //  nor does MovingDateButton modifier, so it's annoying when keyboard opens again
         datePickerState = uiState.datePickerUiState.datePickerState,
         movingDate = uiState.movingDate,
         modifier = Modifier.padding(horizontal = 16.dp),
