@@ -42,7 +42,7 @@ fun NavGraphBuilder.editCoInsuredGraph(navigateUp: () -> Unit, navController: Na
       )
     }
     navdestination<EditCoInsuredDestination.Success>(
-      typeMap = EditCoInsuredDestination.Success.typeMap,
+      EditCoInsuredDestination.Success,
     ) {
       EditCoInsuredSuccessDestination(
         date = date,

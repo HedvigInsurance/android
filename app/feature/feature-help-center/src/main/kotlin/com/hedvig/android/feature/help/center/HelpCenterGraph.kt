@@ -74,7 +74,7 @@ fun NavGraphBuilder.helpCenterGraph(
       )
     }
     navdestination<HelpCenterDestinations.Topic>(
-      typeMap = HelpCenterDestinations.Topic.typeMap,
+      HelpCenterDestinations.Topic,
     ) { backStackEntry ->
       val resources = LocalContext.current.resources
       HelpCenterTopicDestination(
@@ -90,7 +90,7 @@ fun NavGraphBuilder.helpCenterGraph(
       )
     }
     navdestination<HelpCenterDestinations.Question>(
-      typeMap = HelpCenterDestinations.Question.typeMap,
+      HelpCenterDestinations.Question,
     ) { backStackEntry ->
       val resources = LocalContext.current.resources
       HelpCenterQuestionDestination(
@@ -106,7 +106,7 @@ fun NavGraphBuilder.helpCenterGraph(
       )
     }
     navdestination<HelpCenterDestinations.FirstVet>(
-      typeMap = HelpCenterDestinations.FirstVet.typeMap,
+      HelpCenterDestinations.FirstVet,
     ) {
       FirstVetDestination(
         sections = sections,

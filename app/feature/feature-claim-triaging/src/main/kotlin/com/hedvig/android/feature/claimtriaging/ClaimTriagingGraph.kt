@@ -75,7 +75,7 @@ fun NavGraphBuilder.claimTriagingDestinations(
     )
   }
   navdestination<ClaimTriagingDestination.ClaimEntryPoints>(
-    typeMap = ClaimTriagingDestination.ClaimEntryPoints.typeMap,
+    ClaimTriagingDestination.ClaimEntryPoints,
   ) { backStackEntry ->
     val entryPoints: List<EntryPoint> = this.entryPoints
     val viewModel: ClaimEntryPointsViewModel = koinViewModel { parametersOf(entryPoints) }
@@ -96,7 +96,7 @@ fun NavGraphBuilder.claimTriagingDestinations(
     )
   }
   navdestination<ClaimTriagingDestination.ClaimEntryPointOptions>(
-    typeMap = ClaimTriagingDestination.ClaimEntryPointOptions.typeMap,
+    ClaimTriagingDestination.ClaimEntryPointOptions,
   ) { backStackEntry ->
     val entryPointId: EntryPointId = this.entryPointId
     val entryPointOptions: List<EntryPointOption> = this.entryPointOptions

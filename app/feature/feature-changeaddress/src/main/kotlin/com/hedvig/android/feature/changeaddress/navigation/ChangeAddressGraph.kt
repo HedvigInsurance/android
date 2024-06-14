@@ -86,7 +86,7 @@ fun NavGraphBuilder.changeAddressGraph(
     }
   }
   navdestination<ChangeAddressDestination.AddressResult>(
-    typeMap = ChangeAddressDestination.AddressResult.typeMap,
+    ChangeAddressDestination.AddressResult,
   ) { navBackStackEntry ->
     ChangeAddressResultDestination(
       movingDate = movingDate,
