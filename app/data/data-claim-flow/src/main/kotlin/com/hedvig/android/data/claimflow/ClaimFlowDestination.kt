@@ -218,39 +218,39 @@ sealed interface ClaimFlowDestination {
     val modelName: String?,
     val brandName: String?,
     val customName: String?,
-  ) : ClaimFlowDestination {
+  ) : ClaimFlowDestination, Destination {
+    @Serializable
+    sealed interface Compensation {
+      sealed interface Known : Compensation {
+        val deductible: UiMoney
+        val payoutAmount: UiMoney
+
+        @Serializable
+        data class ValueCompensation(
+          val price: UiMoney,
+          val depreciation: UiMoney,
+          override val deductible: UiMoney,
+          override val payoutAmount: UiMoney,
+        ) : Known
+
+        @Serializable
+        data class RepairCompensation(
+          val repairCost: UiMoney,
+          override val deductible: UiMoney,
+          override val payoutAmount: UiMoney,
+        ) : Known
+      }
+
+      @Serializable
+      data object Unknown : Compensation
+    }
+
     companion object : DestinationNavTypeAware {
       override val typeList: List<KType> = listOf(
         typeOf<Compensation>(),
         typeOf<List<CheckoutMethod.Known>>(),
       )
     }
-  }
-
-  @Serializable
-  sealed interface Compensation {
-    sealed interface Known : Compensation {
-      val deductible: UiMoney
-      val payoutAmount: UiMoney
-
-      @Serializable
-      data class ValueCompensation(
-        val price: UiMoney,
-        val depreciation: UiMoney,
-        override val deductible: UiMoney,
-        override val payoutAmount: UiMoney,
-      ) : Known
-
-      @Serializable
-      data class RepairCompensation(
-        val repairCost: UiMoney,
-        override val deductible: UiMoney,
-        override val payoutAmount: UiMoney,
-      ) : Known
-    }
-
-    @Serializable
-    data object Unknown : Compensation
   }
 
   // Local-only destination, not matching to a flow step, used to handle payout logic

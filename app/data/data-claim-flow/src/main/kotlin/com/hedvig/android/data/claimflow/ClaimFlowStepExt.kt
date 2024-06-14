@@ -178,12 +178,12 @@ private fun CheckoutMethodFragment.toCheckoutMethod(): CheckoutMethod {
   }
 }
 
-private fun ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep.Compensation.toCompensation(): ClaimFlowDestination.Compensation {
+private fun ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep.Compensation.toCompensation(): ClaimFlowDestination.SingleItemCheckout.Compensation {
   return when (this) {
     is ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep
       .FlowClaimSingleItemCheckoutRepairCompensationCompensation,
     -> {
-      ClaimFlowDestination.Compensation.Known.RepairCompensation(
+      ClaimFlowDestination.SingleItemCheckout.Compensation.Known.RepairCompensation(
         repairCost = UiMoney.fromMoneyFragment(repairCost),
         deductible = UiMoney.fromMoneyFragment(deductible),
         payoutAmount = UiMoney.fromMoneyFragment(payoutAmount),
@@ -193,7 +193,7 @@ private fun ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep.Com
     is ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep
       .FlowClaimSingleItemCheckoutValueCompensationCompensation,
     -> {
-      ClaimFlowDestination.Compensation.Known.ValueCompensation(
+      ClaimFlowDestination.SingleItemCheckout.Compensation.Known.ValueCompensation(
         price = UiMoney.fromMoneyFragment(price),
         deductible = UiMoney.fromMoneyFragment(deductible),
         depreciation = UiMoney.fromMoneyFragment(depreciation),
@@ -201,7 +201,7 @@ private fun ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep.Com
       )
     }
 
-    else -> ClaimFlowDestination.Compensation.Unknown
+    else -> ClaimFlowDestination.SingleItemCheckout.Compensation.Unknown
   }
 }
 
