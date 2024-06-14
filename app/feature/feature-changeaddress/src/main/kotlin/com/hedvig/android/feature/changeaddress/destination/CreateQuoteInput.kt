@@ -8,50 +8,49 @@ import com.hedvig.android.feature.changeaddress.data.MoveIntentId
 import com.hedvig.android.feature.changeaddress.data.QuoteInput
 import kotlinx.datetime.LocalDate
 
-internal fun createQuoteInput(
-  housingType: HousingType?,
+internal fun HousingType?.createQuoteInput(
   isSublet: Boolean,
   isStudent: Boolean,
-  moveIntentId: String?,
-  street: String?,
-  postalCode: String?,
-  moveFromAddressId: AddressId?,
-  movingDate: LocalDate?,
-  numberInsured: String?,
-  squareMeters: String?,
+  moveIntentId: String,
+  street: String,
+  postalCode: String,
+  moveFromAddressId: AddressId,
+  movingDate: LocalDate,
+  numberInsured: String,
+  squareMeters: String,
   yearOfConstruction: String?,
   ancillaryArea: String?,
   numberOfBathrooms: String?,
   extraBuildings: List<ExtraBuilding>,
 ): QuoteInput {
-  return when (housingType) {
+  return when (this) {
     HousingType.APARTMENT_RENT,
     HousingType.APARTMENT_OWN,
     -> QuoteInput.ApartmentInput(
-      moveIntentId = MoveIntentId(moveIntentId!!),
+      moveIntentId = MoveIntentId(moveIntentId),
       address = AddressInput(
-        street = street!!,
-        postalCode = postalCode!!,
+        street = street,
+        postalCode = postalCode,
       ),
-      moveFromAddressId = moveFromAddressId!!,
-      movingDate = movingDate!!,
-      numberCoInsured = numberInsured!!.toInt() - 1,
-      squareMeters = squareMeters!!.toInt(),
-      apartmentOwnerType = housingType,
+      moveFromAddressId = moveFromAddressId,
+      movingDate = movingDate,
+      numberCoInsured = numberInsured.toInt() - 1,
+      squareMeters = squareMeters.toInt(),
+      apartmentOwnerType = this,
       isStudent = isStudent,
     )
 
     HousingType.VILLA -> QuoteInput.VillaInput(
-      moveIntentId = MoveIntentId(moveIntentId!!),
+      moveIntentId = MoveIntentId(moveIntentId),
       address = AddressInput(
-        street = street!!,
-        postalCode = postalCode!!,
+        street = street,
+        postalCode = postalCode,
       ),
-      moveFromAddressId = moveFromAddressId!!,
-      movingDate = movingDate!!,
-      numberCoInsured = numberInsured!!.toInt() - 1,
-      squareMeters = squareMeters!!.toInt(),
-      apartmentOwnerType = housingType,
+      moveFromAddressId = moveFromAddressId,
+      movingDate = movingDate,
+      numberCoInsured = numberInsured.toInt() - 1,
+      squareMeters = squareMeters.toInt(),
+      apartmentOwnerType = this,
       yearOfConstruction = yearOfConstruction!!.toInt(),
       ancillaryArea = ancillaryArea!!.toInt(),
       numberOfBathrooms = numberOfBathrooms!!.toInt(),

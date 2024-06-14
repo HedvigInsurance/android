@@ -95,13 +95,12 @@ internal class ChangeAddressOfferPresenter(
     }
 
     LaunchedEffect(quotesLoadIteration) {
-      val input = createQuoteInput(
-        housingType = previousParameters.selectHousingTypeParameters.housingType,
+      val input = previousParameters.selectHousingTypeParameters.housingType.createQuoteInput(
         isStudent = previousParameters.newAddressParameters.isStudent,
         moveIntentId = previousParameters.selectHousingTypeParameters.moveIntentId,
         street = previousParameters.newAddressParameters.street,
         postalCode = previousParameters.newAddressParameters.postalCode,
-        moveFromAddressId = previousParameters.selectHousingTypeParameters.moveFromAddressId,
+        moveFromAddressId = previousParameters.selectHousingTypeParameters.moveFromAddressId!!,
         movingDate = previousParameters.newAddressParameters.movingDate,
         numberInsured = previousParameters.newAddressParameters.numberInsured,
         squareMeters = previousParameters.newAddressParameters.squareMeters,
