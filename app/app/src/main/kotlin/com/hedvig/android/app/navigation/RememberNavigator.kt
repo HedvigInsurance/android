@@ -16,8 +16,8 @@ internal fun rememberNavigator(navController: NavController, finishApp: () -> Un
   val updatedFinishApp by rememberUpdatedState(finishApp)
   return remember(navController) {
     object : Navigator {
-      override fun <T : Destination> NavBackStackEntry.navigate(
-        destination: T,
+      override fun NavBackStackEntry.navigate(
+        destination: Destination,
         navOptions: NavOptions?,
         navigatorExtras: androidx.navigation.Navigator.Extras?,
       ) {
@@ -26,8 +26,8 @@ internal fun rememberNavigator(navController: NavController, finishApp: () -> Un
         }
       }
 
-      override fun <T : Destination> navigateUnsafe(
-        destination: T,
+      override fun navigateUnsafe(
+        destination: Destination,
         navOptions: NavOptions?,
         navigatorExtras: androidx.navigation.Navigator.Extras?,
       ) {
