@@ -14,6 +14,7 @@ import com.hedvig.android.feature.claimtriaging.claimentrypoints.ClaimEntryPoint
 import com.hedvig.android.feature.claimtriaging.claimentrypoints.ClaimEntryPointsViewModel
 import com.hedvig.android.feature.claimtriaging.claimgroups.ClaimGroupsDestination
 import com.hedvig.android.feature.claimtriaging.claimgroups.ClaimGroupsViewModel
+import com.hedvig.android.navigation.compose.Destination
 import com.hedvig.android.navigation.compose.DestinationNavTypeAware
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.core.Navigator
@@ -25,12 +26,12 @@ import org.koin.core.parameter.parametersOf
 
 sealed interface ClaimTriagingDestination {
   @Serializable
-  object ClaimGroups : ClaimTriagingDestination
+  object ClaimGroups : ClaimTriagingDestination, Destination
 
   @Serializable
   data class ClaimEntryPoints(
     val entryPoints: List<EntryPoint>,
-  ) : ClaimTriagingDestination {
+  ) : ClaimTriagingDestination, Destination {
     companion object : DestinationNavTypeAware {
       override val typeList: List<KType> = listOf(typeOf<List<EntryPoint>>())
     }
@@ -40,7 +41,7 @@ sealed interface ClaimTriagingDestination {
   data class ClaimEntryPointOptions(
     val entryPointId: EntryPointId,
     val entryPointOptions: List<EntryPointOption>,
-  ) : ClaimTriagingDestination {
+  ) : ClaimTriagingDestination, Destination {
     companion object : DestinationNavTypeAware {
       override val typeList: List<KType> = listOf(
         typeOf<EntryPointId>(),

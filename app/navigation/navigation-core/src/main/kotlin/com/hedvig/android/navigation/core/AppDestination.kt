@@ -25,37 +25,37 @@ sealed interface AppDestination {
   }
 
   @Serializable
-  data object ChangeAddress : AppDestination
+  data object ChangeAddress : AppDestination, Destination
 
   @Serializable
-  data object EditCoInsured : AppDestination
+  data object EditCoInsured : AppDestination, Destination
 
   @Serializable
-  data object TravelCertificate : AppDestination
+  data object TravelCertificate : AppDestination, Destination
 
   @Serializable
-  data object ClaimsFlow : AppDestination
+  data object ClaimsFlow : AppDestination, Destination
 
   // Handles connecting payment with Trustly. Auto-navigates to Adyen for NO/DK
   @Serializable
-  data object ConnectPayment : AppDestination
+  data object ConnectPayment : AppDestination, Destination
 
   // To be deprecated as soon as Adyen support is dropped
   @Serializable
-  data object ConnectPaymentAdyen : AppDestination
+  data object ConnectPaymentAdyen : AppDestination, Destination
 
   @Serializable
   data class ClaimDetails(
     val claimId: String,
-  ) : AppDestination
+  ) : AppDestination, Destination
 
   @Serializable
   data class CoInsuredAddInfo(
     val contractId: String,
-  ) : AppDestination
+  ) : AppDestination, Destination
 
   @Serializable
   data class CoInsuredAddOrRemove(
     val contractId: String,
-  ) : AppDestination
+  ) : AppDestination, Destination
 }

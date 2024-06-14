@@ -218,6 +218,7 @@ dependencies {
   implementation(projects.marketSet)
   implementation(projects.memberRemindersPublic)
   implementation(projects.navigationActivity)
+  implementation(projects.navigationCompose)
   implementation(projects.navigationCore)
   implementation(projects.navigationUi)
   implementation(projects.notificationBadgeDataPublic)
