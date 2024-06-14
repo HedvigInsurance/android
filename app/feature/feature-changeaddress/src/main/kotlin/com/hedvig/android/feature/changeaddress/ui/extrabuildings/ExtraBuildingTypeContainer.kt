@@ -43,7 +43,7 @@ internal fun ExtraBuildingTypeContainer(
       object : NestedScrollConnection {
         // to intercept scrolling gesture and do not close the sheet while scrolling the list
         override fun onPostScroll(consumed: Offset, available: Offset, source: NestedScrollSource) = available
-      } 
+      }
     }
     Column(Modifier.nestedScroll(nestedScrollConnection).verticalScroll(rememberScrollState())) {
       Text(

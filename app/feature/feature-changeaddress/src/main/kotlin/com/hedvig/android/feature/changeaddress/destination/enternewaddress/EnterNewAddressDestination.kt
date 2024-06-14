@@ -1,11 +1,16 @@
 package com.hedvig.android.feature.changeaddress.destination.enternewaddress
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -15,6 +20,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -23,8 +29,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
+import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.hedvig.small.hedvig.Minus
+import com.hedvig.android.core.icons.hedvig.small.hedvig.Plus
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.dialog.ErrorDialog
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
@@ -69,10 +79,11 @@ internal fun EnterNewAddressDestination(
     onStreetChanged = { street -> viewModel.emit(EnterNewAddressEvent.ChangeStreet(street)) },
     onPostalCodeChanged = { postalCode -> viewModel.emit(EnterNewAddressEvent.ChangePostalCode(postalCode)) },
     onSquareMetersChanged = { squareMeters -> viewModel.emit(EnterNewAddressEvent.ChangeSquareMeters(squareMeters)) },
-    onCoInsuredChanged = { coInsured -> viewModel.emit(EnterNewAddressEvent.ChangeNumberInsured(coInsured)) },
     onMoveDateSelected = { date -> viewModel.emit(EnterNewAddressEvent.ChangeMoveDate(date)) },
     onIsStudentSelected = { isStudent -> viewModel.emit(EnterNewAddressEvent.ChangeIsStudent(isStudent)) },
     onSaveNewAddress = { viewModel.emit(EnterNewAddressEvent.ValidateInput) },
+    onCoInsuredIncreased = { viewModel.emit(EnterNewAddressEvent.OnCoInsuredIncreased) },
+    onCoInsuredDecreased = { viewModel.emit(EnterNewAddressEvent.OnCoInsuredDecreased) },
   )
 }
 
@@ -84,7 +95,8 @@ private fun ChangeAddressEnterNewAddressScreen(
   onStreetChanged: (String) -> Unit,
   onPostalCodeChanged: (String) -> Unit,
   onSquareMetersChanged: (String) -> Unit,
-  onCoInsuredChanged: (String) -> Unit,
+  onCoInsuredIncreased: () -> Unit,
+  onCoInsuredDecreased: () -> Unit,
   onMoveDateSelected: (LocalDate) -> Unit,
   onIsStudentSelected: (Boolean) -> Unit,
   onSaveNewAddress: () -> Unit,
@@ -113,9 +125,6 @@ private fun ChangeAddressEnterNewAddressScreen(
     }
     var size by remember {
       mutableStateOf(uiState.squareMeters.input ?: "")
-    }
-    var insuredPeople by remember {
-      mutableStateOf(uiState.numberInsured.input ?: "")
     }
 
     Spacer(modifier = Modifier.height(48.dp))
@@ -168,18 +177,12 @@ private fun ChangeAddressEnterNewAddressScreen(
       ),
     )
     Spacer(modifier = Modifier.height(8.dp))
-    InputTextField(
-      value = insuredPeople,
-      errorMessageRes = uiState.numberInsured.errorMessageRes,
-      onValueChange = {
-        insuredPeople = it
-        onCoInsuredChanged(it)
-      },
-      label = stringResource(id = R.string.CHANGE_ADDRESS_CO_INSURED_LABEL),
+    YouAndWhatArmy(
+      insuredPeople = uiState.numberInsured.input.toInt(),
+      maxNumberCoInsured = uiState.maxNumberCoInsured,
       modifier = Modifier.padding(horizontal = 16.dp),
-      keyboardOptions = KeyboardOptions(
-        keyboardType = KeyboardType.Number,
-      ),
+      onValueDecrease = onCoInsuredDecreased,
+      onValueIncrease = onCoInsuredIncreased,
     )
     val focusManager = LocalFocusManager.current
     uiState.datePickerUiState?.let {
@@ -219,6 +222,58 @@ private fun ChangeAddressEnterNewAddressScreen(
   }
 }
 
+@Composable
+private fun YouAndWhatArmy(
+  insuredPeople: Int,
+  onValueIncrease: () -> Unit,
+  onValueDecrease: () -> Unit,
+  maxNumberCoInsured: Int?,
+  modifier: Modifier = Modifier,
+) {
+  val numberCoInsured = insuredPeople - 1
+  val labelTypography = MaterialTheme.typography.bodyMedium
+  val textTypography = MaterialTheme.typography.headlineSmall
+  val labelColor = MaterialTheme.colorScheme.onSurfaceVariant
+  val minusEnabled = insuredPeople > 1
+  val plusEnabled = maxNumberCoInsured?.let { numberCoInsured < it } ?: true // todo: check here one more time
+  HedvigCard(
+    modifier.fillMaxWidth(),
+  ) {
+    Row(
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(start = 16.dp),
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      Column(modifier = Modifier.weight(1f)) {
+        Spacer(Modifier.height(8.dp))
+        Text(
+          text = stringResource(id = R.string.CHANGE_ADDRESS_CO_INSURED_LABEL),
+          style = labelTypography,
+          color = labelColor,
+        )
+        Text(
+          text = stringResource(id = R.string.CHANGE_ADDRESS_YOU_PLUS, numberCoInsured),
+          style = textTypography,
+        )
+        Spacer(Modifier.height(8.dp))
+      }
+      IconButton(
+        onClick = onValueDecrease,
+        enabled = minusEnabled,
+      ) {
+        Icon(Icons.Hedvig.Minus, null)
+      }
+      IconButton(
+        onClick = onValueIncrease,
+        enabled = plusEnabled,
+      ) {
+        Icon(Icons.Hedvig.Plus, null)
+      }
+    }
+  }
+}
+
 @HedvigPreview
 @Composable
 private fun PreviewChangeAddressEnterNewAddressScreen() {
@@ -226,6 +281,7 @@ private fun PreviewChangeAddressEnterNewAddressScreen() {
     Surface(color = MaterialTheme.colorScheme.background) {
       ChangeAddressEnterNewAddressScreen(
         EnterNewAddressUiState(datePickerUiState = DatePickerUiState(Locale.ENGLISH, null)),
+        {},
         {},
         {},
         {},

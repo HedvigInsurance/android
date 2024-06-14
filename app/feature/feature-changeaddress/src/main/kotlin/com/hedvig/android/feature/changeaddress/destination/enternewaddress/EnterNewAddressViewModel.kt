@@ -13,12 +13,13 @@ import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.feature.changeaddress.data.HousingType.VILLA
 import com.hedvig.android.feature.changeaddress.destination.enternewaddress.EnterNewAddressEvent.ChangeIsStudent
 import com.hedvig.android.feature.changeaddress.destination.enternewaddress.EnterNewAddressEvent.ChangeMoveDate
-import com.hedvig.android.feature.changeaddress.destination.enternewaddress.EnterNewAddressEvent.ChangeNumberInsured
 import com.hedvig.android.feature.changeaddress.destination.enternewaddress.EnterNewAddressEvent.ChangePostalCode
 import com.hedvig.android.feature.changeaddress.destination.enternewaddress.EnterNewAddressEvent.ChangeSquareMeters
 import com.hedvig.android.feature.changeaddress.destination.enternewaddress.EnterNewAddressEvent.ChangeStreet
 import com.hedvig.android.feature.changeaddress.destination.enternewaddress.EnterNewAddressEvent.ClearNavParams
 import com.hedvig.android.feature.changeaddress.destination.enternewaddress.EnterNewAddressEvent.DismissErrorDialog
+import com.hedvig.android.feature.changeaddress.destination.enternewaddress.EnterNewAddressEvent.OnCoInsuredDecreased
+import com.hedvig.android.feature.changeaddress.destination.enternewaddress.EnterNewAddressEvent.OnCoInsuredIncreased
 import com.hedvig.android.feature.changeaddress.destination.enternewaddress.EnterNewAddressEvent.ValidateInput
 import com.hedvig.android.feature.changeaddress.navigation.MovingParameters
 import com.hedvig.android.feature.changeaddress.navigation.NewAddressParameters
@@ -65,10 +66,6 @@ internal class EnterNewAddressPresenter(
 
     CollectEvents { event ->
       when (event) {
-        is ChangeNumberInsured -> {
-          currentState = currentState.copy(numberInsured = ValidatedInput(event.numberInsured))
-        }
-
         is ChangeIsStudent -> {
           currentState = currentState.copy(isStudent = event.isStudent)
         }
@@ -102,7 +99,7 @@ internal class EnterNewAddressPresenter(
               street = stateSnapShot.street.input!!,
               postalCode = stateSnapShot.postalCode.input!!,
               squareMeters = stateSnapShot.squareMeters.input!!,
-              numberInsured = stateSnapShot.numberInsured.input!!,
+              numberInsured = stateSnapShot.numberInsured.input,
               isStudent = stateSnapShot.isStudent,
               movingDate = stateSnapShot.movingDate.input!!,
             )
@@ -131,6 +128,23 @@ internal class EnterNewAddressPresenter(
             navParamsForOfferDestination = null,
           )
         }
+
+        OnCoInsuredDecreased -> {
+          val currentInsured = currentState.numberInsured.input.toInt()
+          if (currentInsured > 1) {
+            val insuredNumberDecreased = currentInsured - 1
+            currentState = currentState.copy(numberInsured = ValidatedInput(insuredNumberDecreased.toString()))
+          }
+        }
+
+        OnCoInsuredIncreased -> {
+          val currentInsured = currentState.numberInsured.input.toInt()
+          val currentCoInsuredMax = currentState.maxNumberCoInsured
+          if (currentCoInsuredMax==null || (currentInsured < (currentCoInsuredMax+1))) {// todo: check here!!
+            val insuredNumberIncreased = currentInsured + 1
+            currentState = currentState.copy(numberInsured = ValidatedInput(insuredNumberIncreased.toString()))
+          }
+        }
       }
     }
 
@@ -144,7 +158,7 @@ internal data class EnterNewAddressUiState(
   val street: ValidatedInput<String?> = ValidatedInput(null),
   val postalCode: ValidatedInput<String?> = ValidatedInput(null),
   val squareMeters: ValidatedInput<String?> = ValidatedInput(null),
-  val numberInsured: ValidatedInput<String?> = ValidatedInput(null),
+  val numberInsured: ValidatedInput<String> = ValidatedInput("1"),
   val datePickerUiState: DatePickerUiState? = null,
   val isEligibleForStudent: Boolean = false,
   val isStudent: Boolean = false,
@@ -197,9 +211,9 @@ internal data class EnterNewAddressUiState(
         },
       ),
       numberInsured = numberInsured.copy(
-        errorMessageRes = if (!numberInsured.isPresent || isNumberInsuredTooLow(numberInsured.input!!.toIntOrNull())) {
+        errorMessageRes = if (!numberInsured.isPresent || isNumberInsuredTooLow(numberInsured.input.toIntOrNull())) {
           hedvig.resources.R.string.CHANGE_ADDRESS_CO_INSURED_ERROR // todo: I think the copy may be wrong here. It is the number of all the insured (incl.the main insured, not only co-insured)
-        } else if (numberInsured.isPresent && !isNumberInsuredWithinBounds(numberInsured.input!!.toIntOrNull())) {
+        } else if (numberInsured.isPresent && !isNumberInsuredWithinBounds(numberInsured.input.toIntOrNull())) {
           hedvig.resources.R.string.CHANGE_ADDRESS_CO_INSURED_MAX_ERROR_ALTERNATIVE
         } else {
           null
@@ -232,14 +246,16 @@ internal data class EnterNewAddressUiState(
     if (numberCoInsured == null) {
       return false
     }
-    return numberCoInsured <= maxNumberCoInsured
+    return numberCoInsured <= maxNumberCoInsured+1
   }
 }
 
 internal sealed interface EnterNewAddressEvent {
   data object DismissErrorDialog : EnterNewAddressEvent
 
-  data class ChangeNumberInsured(val numberInsured: String) : EnterNewAddressEvent
+  data object OnCoInsuredDecreased : EnterNewAddressEvent
+
+  data object OnCoInsuredIncreased : EnterNewAddressEvent
 
   data class ChangeSquareMeters(val squareMeters: String) : EnterNewAddressEvent
 
