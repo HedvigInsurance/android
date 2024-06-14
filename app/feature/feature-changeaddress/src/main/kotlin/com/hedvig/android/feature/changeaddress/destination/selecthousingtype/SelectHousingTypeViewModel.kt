@@ -33,7 +33,7 @@ internal class SelectHousingTypePresenter(private val changeAddressRepository: C
   override fun MoleculePresenterScope<SelectHousingTypeEvent>.present(
     lastState: SelectHousingTypeUiState,
   ): SelectHousingTypeUiState {
-    var dataLoadIteration by remember {
+    var createMoveIntentIteration by remember {
       mutableIntStateOf(0)
     }
 
@@ -57,7 +57,7 @@ internal class SelectHousingTypePresenter(private val changeAddressRepository: C
               errorMessageRes = R.string.CHANGE_ADDRESS_HOUSING_TYPE_ERROR,
             )
           } else {
-            dataLoadIteration++
+            createMoveIntentIteration++
           }
         }
 
@@ -65,8 +65,8 @@ internal class SelectHousingTypePresenter(private val changeAddressRepository: C
       }
     }
 
-    LaunchedEffect(dataLoadIteration) {
-      if (dataLoadIteration > 0) {
+    LaunchedEffect(createMoveIntentIteration) {
+      if (createMoveIntentIteration > 0) {
         currentState = currentState.copy(isLoading = true)
         changeAddressRepository.createMoveIntent().fold(
           ifLeft = { error ->

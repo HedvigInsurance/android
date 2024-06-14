@@ -46,14 +46,14 @@ internal class ChangeAddressOfferPresenter(
   ): ChangeAddressOfferUiState {
     var currentState by remember { mutableStateOf(lastState) }
 
-    var dataLoadIteration by remember { mutableIntStateOf(0) }
+    var commitMoveIteration by remember { mutableIntStateOf(0) }
 
     var quotesLoadIteration by remember { mutableIntStateOf(0) }
 
     CollectEvents { event ->
       when (event) {
         is ConfirmMove -> {
-          dataLoadIteration++
+          commitMoveIteration++
         }
         DismissErrorDialog -> currentState = currentState.copy(errorMessage = null)
         is ExpandQuote -> {
@@ -72,8 +72,8 @@ internal class ChangeAddressOfferPresenter(
       }
     }
 
-    LaunchedEffect(dataLoadIteration) {
-      if (dataLoadIteration > 0) {
+    LaunchedEffect(commitMoveIteration) {
+      if (commitMoveIteration > 0) {
         currentState = currentState.copy(isLoading = true)
         changeAddressRepository.commitMove(
           MoveIntentId(previousParameters.selectHousingTypeParameters.moveIntentId),
