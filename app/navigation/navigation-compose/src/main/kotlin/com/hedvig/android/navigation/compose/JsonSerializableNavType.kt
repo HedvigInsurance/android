@@ -10,7 +10,8 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 
-fun typeMapOf(vararg ktypes: KType): Map<KType, @JvmSuppressWildcards NavType<*>> {
+@PublishedApi
+internal fun typeMapOf(ktypes: List<KType>): Map<KType, @JvmSuppressWildcards NavType<*>> {
   return ktypes.associate {
     if (it.isMarkedNullable) {
       it to JsonSerializableNullableNavType(serializer(it))
@@ -24,7 +25,7 @@ fun typeMapOf(vararg ktypes: KType): Map<KType, @JvmSuppressWildcards NavType<*>
 private inline fun <T> KSerializer<*>.cast(): KSerializer<T> = this as KSerializer<T>
 
 @Suppress("NOTHING_TO_INLINE")
-class JsonSerializableNavType<T : Any>(
+internal class JsonSerializableNavType<T : Any>(
   private val serializer: KSerializer<T>,
 ) : NavType<T>(isNullableAllowed = false) {
   override fun put(bundle: Bundle, key: String, value: T) {
@@ -49,7 +50,7 @@ class JsonSerializableNavType<T : Any>(
 }
 
 @Suppress("NOTHING_TO_INLINE")
-class JsonSerializableNullableNavType<T : Any?>(
+internal class JsonSerializableNullableNavType<T : Any?>(
   private val serializer: KSerializer<T?>,
 ) : NavType<T?>(isNullableAllowed = true) {
   override fun put(bundle: Bundle, key: String, value: T?) {

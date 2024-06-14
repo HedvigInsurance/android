@@ -9,12 +9,10 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDeepLink
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.toRoute
 import kotlin.reflect.KClass
-import kotlin.reflect.KType
 
 private typealias EnterTransitionFactory =
   @JvmSuppressWildcards AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?
@@ -25,8 +23,8 @@ private typealias ExitTransitionFactory =
 private typealias SizeTransformFactory =
   AnimatedContentTransitionScope<NavBackStackEntry>.() -> @JvmSuppressWildcards SizeTransform?
 
-inline fun <reified T : Any> NavGraphBuilder.navdestination(
-  typeMap: Map<KType, @JvmSuppressWildcards NavType<*>> = emptyMap(),
+inline fun <reified T : Destination> NavGraphBuilder.navdestination(
+  destinationNavTypeAware: DestinationNavTypeAware = NoOpDestinationNavTypeAware,
   deepLinks: List<NavDeepLink> = emptyList(),
   noinline enterTransition: EnterTransitionFactory? = null,
   noinline exitTransition: ExitTransitionFactory? = null,
@@ -36,7 +34,7 @@ inline fun <reified T : Any> NavGraphBuilder.navdestination(
   noinline content: @Composable T.(NavBackStackEntry) -> Unit,
 ) {
   composable<T>(
-    typeMap = typeMap,
+    typeMap = typeMapOf(destinationNavTypeAware.typeList),
     deepLinks = deepLinks,
     enterTransition = enterTransition,
     exitTransition = exitTransition,
@@ -54,7 +52,7 @@ inline fun <reified T : Any> NavGraphBuilder.navdestination(
 
 inline fun <reified T : Any> NavGraphBuilder.navgraph(
   startDestination: KClass<*>,
-  typeMap: Map<KType, @JvmSuppressWildcards NavType<*>> = emptyMap(),
+  destinationNavTypeAware: DestinationNavTypeAware = NoOpDestinationNavTypeAware,
   deepLinks: List<NavDeepLink> = emptyList(),
   noinline enterTransition: EnterTransitionFactory? = null,
   noinline exitTransition: ExitTransitionFactory? = null,
@@ -65,7 +63,7 @@ inline fun <reified T : Any> NavGraphBuilder.navgraph(
 ) {
   navigation<T>(
     startDestination = startDestination,
-    typeMap = typeMap,
+    typeMap = typeMapOf(destinationNavTypeAware.typeList),
     deepLinks = deepLinks,
     enterTransition = enterTransition,
     exitTransition = exitTransition,
