@@ -43,6 +43,7 @@ import com.hedvig.android.feature.odyssey.step.summary.ClaimSummaryDestination
 import com.hedvig.android.feature.odyssey.step.summary.ClaimSummaryViewModel
 import com.hedvig.android.feature.odyssey.step.unknownerror.UnknownErrorDestination
 import com.hedvig.android.feature.odyssey.step.unknownscreen.UnknownScreenDestination
+import com.hedvig.android.navigation.compose.Destination
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.AppDestination
@@ -387,10 +388,7 @@ fun NavGraphBuilder.terminalClaimFlowStepDestinations(
 /**
  * If we're going to a terminal destination, pop the claims flow backstack completely before going there.
  */
-fun <T : ClaimFlowDestination> Navigator.navigateToClaimFlowDestination(
-  backStackEntry: NavBackStackEntry,
-  destination: T,
-) {
+fun Navigator.navigateToClaimFlowDestination(backStackEntry: NavBackStackEntry, destination: Destination) {
   val navOptions = navOptions {
     when (destination) {
       is ClaimFlowDestination.ClaimSuccess,

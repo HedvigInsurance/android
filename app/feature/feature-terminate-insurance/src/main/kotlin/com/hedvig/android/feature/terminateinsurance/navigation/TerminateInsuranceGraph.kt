@@ -22,6 +22,7 @@ import com.hedvig.android.feature.terminateinsurance.step.terminationreview.Term
 import com.hedvig.android.feature.terminateinsurance.step.terminationreview.TerminationConfirmationViewModel
 import com.hedvig.android.feature.terminateinsurance.step.terminationsuccess.TerminationSuccessDestination
 import com.hedvig.android.feature.terminateinsurance.step.unknown.UnknownScreenDestination
+import com.hedvig.android.navigation.compose.Destination
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.typed.getRouteFromBackStack
@@ -227,7 +228,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
 /**
  * If we're going to a terminal destination, pop the termination flow backstack completely before going there.
  */
-private fun <T : TerminateInsuranceDestination> Navigator.navigateToTerminateFlowDestination(destination: T) {
+private fun <T : Destination> Navigator.navigateToTerminateFlowDestination(destination: T) {
   val navOptions = navOptions {
     when (destination) {
       is TerminateInsuranceDestination.TerminationSuccess,

@@ -8,6 +8,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
+import com.hedvig.android.navigation.compose.Destination
 import com.hedvig.android.navigation.core.Navigator
 
 @Composable
@@ -15,7 +16,7 @@ internal fun rememberNavigator(navController: NavController, finishApp: () -> Un
   val updatedFinishApp by rememberUpdatedState(finishApp)
   return remember(navController) {
     object : Navigator {
-      override fun <T : Any> NavBackStackEntry.navigate(
+      override fun <T : Destination> NavBackStackEntry.navigate(
         destination: T,
         navOptions: NavOptions?,
         navigatorExtras: androidx.navigation.Navigator.Extras?,
@@ -25,7 +26,7 @@ internal fun rememberNavigator(navController: NavController, finishApp: () -> Un
         }
       }
 
-      override fun <T : Any> navigateUnsafe(
+      override fun <T : Destination> navigateUnsafe(
         destination: T,
         navOptions: NavOptions?,
         navigatorExtras: androidx.navigation.Navigator.Extras?,
