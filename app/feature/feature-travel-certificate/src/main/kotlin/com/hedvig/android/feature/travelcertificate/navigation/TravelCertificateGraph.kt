@@ -106,7 +106,7 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navigator: Navigato
       )
       TravelCertificateTravellersInputDestination(
         viewModel = viewModel,
-        navigateUp = { navigator.navigateUp() },
+        navigateUp = navigator::navigateUp,
         onNavigateToOverview = { travelCertificateUrl ->
           navigator.navigateUnsafe(
             TravelCertificateDestination.ShowCertificate(travelCertificateUrl),

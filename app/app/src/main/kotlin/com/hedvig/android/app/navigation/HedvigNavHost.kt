@@ -264,10 +264,7 @@ internal fun HedvigNavHost(
         }
       },
     )
-    editCoInsuredGraph(
-      navigateUp = navigator::navigateUp,
-      navController = hedvigAppState.navController,
-    )
+    editCoInsuredGraph(navigator)
     connectAdyenPaymentGraph(navigator)
     helpCenterGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
@@ -323,6 +320,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
   )
   changeAddressGraph(
     navController = hedvigAppState.navController,
+    navigator = navigator,
     openChat = { backStackEntry ->
       with(navigator) {
         backStackEntry.navigate(AppDestination.Chat())

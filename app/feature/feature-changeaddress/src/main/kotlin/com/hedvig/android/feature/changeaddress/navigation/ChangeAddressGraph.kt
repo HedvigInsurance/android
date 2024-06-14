@@ -14,9 +14,11 @@ import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.typed.destinationScopedViewModel
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.AppDestination
+import com.hedvig.android.navigation.core.Navigator
 
 fun NavGraphBuilder.changeAddressGraph(
   navController: NavController,
+  navigator: Navigator,
   openChat: (NavBackStackEntry) -> Unit,
   openUrl: (String) -> Unit,
 ) {
@@ -30,8 +32,8 @@ fun NavGraphBuilder.changeAddressGraph(
       )
       ChangeAddressSelectHousingTypeDestination(
         viewModel = viewModel,
-        navigateUp = navController::navigateUp,
-        navigateToEnterNewAddressDestination = { navController.navigate(ChangeAddressDestination.EnterNewAddress) },
+        navigateUp = navigator::navigateUp,
+        navigateToEnterNewAddressDestination = { navigator.navigateUnsafe(ChangeAddressDestination.EnterNewAddress) },
       )
     }
 
@@ -43,11 +45,13 @@ fun NavGraphBuilder.changeAddressGraph(
       ChangeAddressEnterNewAddressDestination(
         viewModel = viewModel,
         onNavigateToVillaInformationDestination = {
-          navController.navigate(ChangeAddressDestination.EnterVillaInformation)
+          with(navigator) {
+            navBackStackEntry.navigate(ChangeAddressDestination.EnterVillaInformation)
+          }
         },
-        navigateUp = navController::navigateUp,
+        navigateUp = navigator::navigateUp,
         onNavigateToOfferDestination = {
-          navController.navigate(ChangeAddressDestination.Offer)
+          navigator.navigateUnsafe(ChangeAddressDestination.Offer)
         },
       )
     }
@@ -59,9 +63,9 @@ fun NavGraphBuilder.changeAddressGraph(
       )
       ChangeAddressEnterVillaInformationDestination(
         viewModel = viewModel,
-        navigateUp = navController::navigateUp,
+        navigateUp = navigator::navigateUp,
         onNavigateToOfferDestination = {
-          navController.navigate(ChangeAddressDestination.Offer)
+          navigator.navigateUnsafe(ChangeAddressDestination.Offer)
         },
       )
     }
@@ -74,9 +78,9 @@ fun NavGraphBuilder.changeAddressGraph(
       ChangeAddressOfferDestination(
         viewModel = viewModel,
         openChat = { openChat(backStackEntry) },
-        navigateUp = navController::navigateUp,
+        navigateUp = navigator::navigateUp,
         onChangeAddressResult = { movingDate ->
-          navController.navigate(ChangeAddressDestination.AddressResult(movingDate)) {
+          navigator.navigateUnsafe(ChangeAddressDestination.AddressResult(movingDate)) {
             typedPopUpTo<AppDestination.ChangeAddress> {
               inclusive = true
             }
@@ -91,7 +95,7 @@ fun NavGraphBuilder.changeAddressGraph(
   ) { navBackStackEntry ->
     ChangeAddressResultDestination(
       movingDate = movingDate,
-      popBackstack = navController::popBackStack,
+      popBackstack = navigator::popBackStack,
     )
   }
 }
