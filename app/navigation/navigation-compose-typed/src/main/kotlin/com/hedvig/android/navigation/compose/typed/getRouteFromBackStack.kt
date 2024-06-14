@@ -5,9 +5,10 @@ import androidx.compose.runtime.remember
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.toRoute
+import com.hedvig.android.navigation.compose.Destination
 
 @Composable
-inline fun <reified T : Any> NavController.getRouteFromBackStack(backStackEntry: NavBackStackEntry): T {
+inline fun <reified T : Destination> NavController.getRouteFromBackStack(backStackEntry: NavBackStackEntry): T {
   return remember(this, backStackEntry) {
     getBackStackEntry<T>().toRoute<T>()
   }
