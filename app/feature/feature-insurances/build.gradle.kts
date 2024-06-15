@@ -15,6 +15,7 @@ android {
 dependencies {
   apolloMetadata(projects.apolloOctopusPublic)
 
+  implementation(libs.androidx.compose.animation)
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.apollo.normalizedCache)
