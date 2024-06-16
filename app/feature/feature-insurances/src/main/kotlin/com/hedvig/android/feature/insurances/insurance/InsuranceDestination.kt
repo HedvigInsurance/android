@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.insurances.insurance
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
@@ -43,8 +44,11 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
+import com.hedvig.android.compose.ui.LocalSharedTransitionScope
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
+import com.hedvig.android.compose.ui.rememberSharedContentState
+import com.hedvig.android.compose.ui.sharedElement
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.information.HedvigInformationSection
@@ -67,6 +71,7 @@ import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceUiS
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceViewModel
 import com.hedvig.android.feature.insurances.ui.createChips
 import com.hedvig.android.feature.insurances.ui.createPainter
+import com.hedvig.android.navigation.compose.LocalNavAnimatedVisibilityScope
 import com.hedvig.android.pullrefresh.PullRefreshDefaults
 import com.hedvig.android.pullrefresh.PullRefreshIndicator
 import com.hedvig.android.pullrefresh.pullRefresh
@@ -265,6 +270,7 @@ private fun ColumnScope.ContractsSection(
   }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun InsuranceCard(
   contract: InsuranceContract,
@@ -279,6 +285,11 @@ fun InsuranceCard(
     bottomText = contract.exposureDisplayName,
     imageLoader = imageLoader,
     modifier = modifier
+      .sharedElement(
+        LocalSharedTransitionScope.current,
+        LocalNavAnimatedVisibilityScope.current,
+        rememberSharedContentState(contract.id),
+      )
       .clickable {
         onInsuranceCardClick(contract.id)
       },

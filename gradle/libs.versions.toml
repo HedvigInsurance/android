@@ -86,7 +86,7 @@ accompanist-permissions = { module = "com.google.accompanist:accompanist-permiss
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity-compose" }
 androidx-activity-core = { module = "androidx.activity:activity", version.ref = "androidx-activity-core" }
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
-androidx-compose-animation = { module = "androidx.compose.animation:animation-core" }
+androidx-compose-animation = { module = "androidx.compose.animation:animation-core", version = "1.7.0-beta03" }
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "androidx-composeBom" }
 androidx-compose-foundation = { module = "androidx.compose.foundation:foundation", version = "1.7.0-beta03" }
 androidx-compose-foundationLayout = { module = "androidx.compose.foundation:foundation-layout" }

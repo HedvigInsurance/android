@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.insurances.insurancedetail
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
@@ -41,7 +42,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
+import com.hedvig.android.compose.ui.LocalSharedTransitionScope
 import com.hedvig.android.compose.ui.animateContentHeight
+import com.hedvig.android.compose.ui.rememberSharedContentState
+import com.hedvig.android.compose.ui.sharedElement
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -62,6 +66,7 @@ import com.hedvig.android.feature.insurances.insurancedetail.documents.Documents
 import com.hedvig.android.feature.insurances.insurancedetail.yourinfo.YourInfoTab
 import com.hedvig.android.feature.insurances.ui.createChips
 import com.hedvig.android.feature.insurances.ui.createPainter
+import com.hedvig.android.navigation.compose.LocalNavAnimatedVisibilityScope
 import hedvig.resources.R
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
@@ -95,7 +100,7 @@ internal fun ContractDetailDestination(
   )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
 private fun ContractDetailScreen(
   uiState: ContractDetailsUiState,
@@ -189,9 +194,15 @@ private fun ContractDetailScreen(
                 topText = contract.currentInsuranceAgreement.productVariant.displayName,
                 bottomText = contract.exposureDisplayName,
                 imageLoader = imageLoader,
-                modifier = Modifier.padding(horizontal = 16.dp),
                 fallbackPainter = contract.createPainter(),
                 isLoading = false,
+                modifier = Modifier
+                  .padding(horizontal = 16.dp)
+                  .sharedElement(
+                    LocalSharedTransitionScope.current,
+                    LocalNavAnimatedVisibilityScope.current,
+                    rememberSharedContentState(contract.id),
+                  ),
               )
             }
             item(key = 2, contentType = "space") { Spacer(Modifier.height(16.dp)) }
