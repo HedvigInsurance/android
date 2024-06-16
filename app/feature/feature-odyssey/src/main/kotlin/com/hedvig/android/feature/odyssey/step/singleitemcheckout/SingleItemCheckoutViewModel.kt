@@ -28,7 +28,7 @@ internal sealed interface SingleItemCheckoutUiState {
   fun asContent(): Content? = this as? Content
 
   data class Content(
-    val compensation: ClaimFlowDestination.Compensation.Known,
+    val compensation: ClaimFlowDestination.SingleItemCheckout.Compensation.Known,
     val availableCheckoutMethods: NonEmptyList<CheckoutMethod.Known>,
     val selectedCheckoutMethod: CheckoutMethod.Known,
     val modelDisplayName: String,
@@ -48,7 +48,7 @@ internal sealed interface SingleItemCheckoutUiState {
       val availableCheckoutMethods = singleItemCheckout.availableCheckoutMethods.toNonEmptyListOrNull()
       val initiallySelectedCheckoutMethod =
         availableCheckoutMethods?.firstOrNull() ?: return Unavailable
-      val checkedCompensation = singleItemCheckout.compensation as? ClaimFlowDestination.Compensation.Known
+      val checkedCompensation = singleItemCheckout.compensation as? ClaimFlowDestination.SingleItemCheckout.Compensation.Known
         ?: return Unavailable
       val modelName = singleItemCheckout.modelName ?: singleItemCheckout.customName
         ?: singleItemCheckout.brandName ?: "-"

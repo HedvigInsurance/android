@@ -8,7 +8,6 @@ import androidx.compose.ui.unit.Density
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
-import androidx.navigation.navOptions
 import coil.ImageLoader
 import com.hedvig.android.app.ui.HedvigAppState
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
@@ -46,14 +45,12 @@ import com.hedvig.android.feature.travelcertificate.navigation.travelCertificate
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.Market
 import com.hedvig.android.navigation.activity.ExternalNavigator
+import com.hedvig.android.navigation.compose.Destination
+import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
 import com.hedvig.app.BuildConfig
-import com.kiwi.navigationcompose.typed.createRoutePattern
-import com.kiwi.navigationcompose.typed.navigate
-import com.kiwi.navigationcompose.typed.popBackStack
-import com.kiwi.navigationcompose.typed.popUpTo
 
 @Composable
 internal fun HedvigNavHost(
@@ -84,8 +81,8 @@ internal fun HedvigNavHost(
 
   NavHost(
     navController = hedvigAppState.navController,
-    startDestination = createRoutePattern<HomeDestination.Graph>(),
-    route = RootGraph.route,
+    startDestination = HomeDestination.Graph::class,
+    route = RootGraph::class,
     modifier = modifier,
     enterTransition = { MotionDefaults.sharedXAxisEnter(density) },
     exitTransition = { MotionDefaults.sharedXAxisExit(density) },
@@ -150,19 +147,18 @@ internal fun HedvigNavHost(
           openUrl = openUrl,
           openPlayStore = externalNavigator::tryOpenPlayStore,
           hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-          navigateToInsurances = { navOptions ->
-            hedvigAppState.navController.navigate(InsurancesDestination.Graph, navOptions)
+          navigateToInsurances = { navOptionsBuilder ->
+            hedvigAppState.navController.navigate(InsurancesDestination.Graph, navOptionsBuilder)
           },
           navigateToMovingFlow = { backStackEntry ->
             with(navigator) {
               backStackEntry.navigate(
                 destination = AppDestination.ChangeAddress,
-                navOptions = navOptions {
-                  popUpTo<TerminateInsuranceGraphDestination> {
-                    inclusive = true
-                  }
-                },
-              )
+              ) {
+                typedPopUpTo<TerminateInsuranceGraphDestination> {
+                  inclusive = true
+                }
+              }
             }
           },
           closeTerminationFlow = {
@@ -261,24 +257,20 @@ internal fun HedvigNavHost(
       navigateToAdyenConnectPayment = {
         navigator.navigateUnsafe(
           AppDestination.ConnectPaymentAdyen,
-          navOptions {
-            popUpTo(createRoutePattern<AppDestination.ConnectPayment>()) {
-              inclusive = true
-            }
-          },
-        )
+        ) {
+          typedPopUpTo<AppDestination.ConnectPayment> {
+            inclusive = true
+          }
+        }
       },
     )
-    editCoInsuredGraph(
-      navigateUp = navigator::navigateUp,
-      navController = hedvigAppState.navController,
-    )
+    editCoInsuredGraph(navigator)
     connectAdyenPaymentGraph(navigator)
     helpCenterGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       navigator = navigator,
       onNavigateToQuickLink = { backStackEntry, quickLinkDestination ->
-        val destination = when (quickLinkDestination) {
+        val destination: Destination = when (quickLinkDestination) {
           QuickLinkDestination.OuterDestination.QuickLinkChangeAddress -> AppDestination.ChangeAddress
           is QuickLinkDestination.OuterDestination.QuickLinkCoInsuredAddInfo ->
             AppDestination.CoInsuredAddInfo(quickLinkDestination.contractId)
@@ -328,6 +320,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
   )
   changeAddressGraph(
     navController = hedvigAppState.navController,
+    navigator = navigator,
     openChat = { backStackEntry ->
       with(navigator) {
         backStackEntry.navigate(AppDestination.Chat())
@@ -337,7 +330,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
   )
   travelCertificateGraph(
     density = density,
-    navController = hedvigAppState.navController,
+    navigator = navigator,
     applicationId = BuildConfig.APPLICATION_ID,
   )
   claimFlowGraph(
@@ -381,7 +374,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     openChat = { backStackEntry ->
       with(navigator) {
         backStackEntry.navigate(destination = AppDestination.Chat()) {
-          popUpTo<HomeDestination.Home>()
+          typedPopUpTo<HomeDestination.Home>()
         }
       }
     },

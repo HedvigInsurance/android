@@ -33,14 +33,14 @@ import com.hedvig.android.feature.profile.navigation.profileBottomNavPermittedDe
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.navigation.compose.Destination
+import com.hedvig.android.navigation.compose.typedHasRoute
+import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.notification.badge.data.tab.BottomNavTab
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
 import com.hedvig.android.theme.Theme
-import com.kiwi.navigationcompose.typed.Destination
-import com.kiwi.navigationcompose.typed.createRoutePattern
-import com.kiwi.navigationcompose.typed.navigate
-import com.kiwi.navigationcompose.typed.popUpTo
+import kotlin.reflect.KClass
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
@@ -200,8 +200,8 @@ internal class HedvigAppState(
    * https://issuetracker.google.com/issues/334413738
    */
   fun navigateToLoggedIn() {
-    navController.navigate(RootGraph.route) {
-      popUpTo<LoginDestination> {
+    navController.navigate(RootGraph) {
+      typedPopUpTo<LoginDestination> {
         inclusive = true
       }
     }
@@ -209,7 +209,7 @@ internal class HedvigAppState(
 
   fun navigateToLoggedOut() {
     navController.navigate(LoginDestination) {
-      popUpTo(RootGraph.route) {
+      typedPopUpTo<RootGraph> {
         inclusive = true
       }
     }
@@ -282,48 +282,49 @@ private fun TopLevelDestinationNavigationSideEffect(
 }
 
 private fun NavDestination?.toTopLevelAppDestination(): TopLevelDestination? {
-  return when (this?.route) {
-    createRoutePattern<HomeDestination.Home>() -> TopLevelDestination.Home
-    createRoutePattern<InsurancesDestination.Insurances>() -> TopLevelDestination.Insurances
-    createRoutePattern<ForeverDestination.Forever>() -> TopLevelDestination.Forever
-    createRoutePattern<PaymentsDestination.Payments>() -> TopLevelDestination.Payments
-    createRoutePattern<ProfileDestination.Profile>() -> TopLevelDestination.Profile
+  return when {
+    this == null -> null
+    typedHasRoute<HomeDestination.Home>() -> TopLevelDestination.Home
+    typedHasRoute<InsurancesDestination.Insurances>() -> TopLevelDestination.Insurances
+    typedHasRoute<ForeverDestination.Forever>() -> TopLevelDestination.Forever
+    typedHasRoute<PaymentsDestination.Payments>() -> TopLevelDestination.Payments
+    typedHasRoute<ProfileDestination.Profile>() -> TopLevelDestination.Profile
     else -> null
   }
 }
 
 private fun NavDestination?.isInListOfNonTopLevelNavBarPermittedDestinations(): Boolean {
-  return this?.route in bottomNavPermittedDestinations
+  return bottomNavPermittedDestinations.any { this?.typedHasRoute(it) == true }
 }
 
 /**
  * Special routes, which despite not being top level should still show the navigation bars.
  */
-private val bottomNavPermittedDestinations: List<String> = buildList {
+private val bottomNavPermittedDestinations: List<KClass<out Destination>> = buildList {
   addAll(profileBottomNavPermittedDestinations)
   addAll(insurancesBottomNavPermittedDestinations)
 }
 
 private sealed interface TopLevelDestination {
-  val destination: Destination
+  val destination: Any
 
   object Home : TopLevelDestination {
-    override val destination: Destination = HomeDestination.Home
+    override val destination: Any = HomeDestination.Home
   }
 
   object Insurances : TopLevelDestination {
-    override val destination: Destination = InsurancesDestination.Insurances
+    override val destination: Any = InsurancesDestination.Insurances
   }
 
   object Forever : TopLevelDestination {
-    override val destination: Destination = ForeverDestination.Forever
+    override val destination: Any = ForeverDestination.Forever
   }
 
   object Payments : TopLevelDestination {
-    override val destination: Destination = PaymentsDestination.Payments
+    override val destination: Any = PaymentsDestination.Payments
   }
 
   object Profile : TopLevelDestination {
-    override val destination: Destination = ProfileDestination.Profile
+    override val destination: Any = ProfileDestination.Profile
   }
 }

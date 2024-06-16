@@ -4,6 +4,7 @@ import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.core.uidata.UiNullableMoney
 import com.hedvig.android.data.claimflow.model.AudioUrl
+import com.hedvig.android.navigation.compose.Destination
 import com.hedvig.audio.player.data.SignedAudioUrl
 import octopus.fragment.AudioContentFragment
 import octopus.fragment.AutomaticAutogiroPayoutFragment
@@ -15,7 +16,7 @@ import octopus.fragment.FlowClaimFileUploadFragment
 import octopus.fragment.FlowClaimLocationStepFragment
 import octopus.fragment.FlowClaimSingleItemStepFragment
 
-fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
+fun ClaimFlowStep.toClaimFlowDestination(): Destination {
   return when (this) {
     is ClaimFlowStep.ClaimAudioRecordingStep -> {
       ClaimFlowDestination.AudioRecording(flowId, questions, audioContent?.toAudioContent())
@@ -178,12 +179,13 @@ private fun CheckoutMethodFragment.toCheckoutMethod(): CheckoutMethod {
   }
 }
 
-private fun ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep.Compensation.toCompensation(): ClaimFlowDestination.Compensation {
+private fun ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep.Compensation.toCompensation():
+  ClaimFlowDestination.SingleItemCheckout.Compensation {
   return when (this) {
     is ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep
       .FlowClaimSingleItemCheckoutRepairCompensationCompensation,
     -> {
-      ClaimFlowDestination.Compensation.Known.RepairCompensation(
+      ClaimFlowDestination.SingleItemCheckout.Compensation.Known.RepairCompensation(
         repairCost = UiMoney.fromMoneyFragment(repairCost),
         deductible = UiMoney.fromMoneyFragment(deductible),
         payoutAmount = UiMoney.fromMoneyFragment(payoutAmount),
@@ -193,7 +195,7 @@ private fun ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep.Com
     is ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep
       .FlowClaimSingleItemCheckoutValueCompensationCompensation,
     -> {
-      ClaimFlowDestination.Compensation.Known.ValueCompensation(
+      ClaimFlowDestination.SingleItemCheckout.Compensation.Known.ValueCompensation(
         price = UiMoney.fromMoneyFragment(price),
         deductible = UiMoney.fromMoneyFragment(deductible),
         depreciation = UiMoney.fromMoneyFragment(depreciation),
@@ -201,7 +203,7 @@ private fun ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep.Com
       )
     }
 
-    else -> ClaimFlowDestination.Compensation.Unknown
+    else -> ClaimFlowDestination.SingleItemCheckout.Compensation.Unknown
   }
 }
 

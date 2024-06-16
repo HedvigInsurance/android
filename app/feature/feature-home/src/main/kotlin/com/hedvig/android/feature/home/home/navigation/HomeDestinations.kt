@@ -1,7 +1,10 @@
 package com.hedvig.android.feature.home.home.navigation
 
+import com.hedvig.android.navigation.compose.Destination
+import com.hedvig.android.navigation.compose.DestinationNavTypeAware
 import com.hedvig.android.ui.emergency.FirstVetSection
-import com.kiwi.navigationcompose.typed.Destination
+import kotlin.reflect.KType
+import kotlin.reflect.typeOf
 import kotlinx.serialization.Serializable
 
 sealed interface HomeDestination {
@@ -12,6 +15,9 @@ sealed interface HomeDestination {
   data object Home : HomeDestination, Destination
 
   @Serializable
-  data class FirstVet(val sections: List<FirstVetSection>) :
-    HomeDestination, Destination
+  data class FirstVet(val sections: List<FirstVetSection>) : HomeDestination, Destination {
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<List<FirstVetSection>>())
+    }
+  }
 }

@@ -78,7 +78,7 @@ class SingleItemCheckoutViewModelTest {
       brandName: String? = null,
       customName: String? = null,
     ) = ClaimFlowDestination.SingleItemCheckout(
-      compensation = ClaimFlowDestination.Compensation.Known.ValueCompensation(
+      compensation = ClaimFlowDestination.SingleItemCheckout.Compensation.Known.ValueCompensation(
         price,
         depreciation,
         deductible,

@@ -107,14 +107,14 @@ fun InsuranceCard(
         Spacer(Modifier.height(8.dp))
         Text(
           topText,
-          modifier = modifier.placeholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer()),
+          modifier = Modifier.placeholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer()),
         )
         Spacer(Modifier.height(4.dp))
         Text(
           text = bottomText,
           color = MaterialTheme.colorScheme.onSurfaceVariant,
           style = MaterialTheme.typography.bodyMedium,
-          modifier = modifier.placeholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer()),
+          modifier = Modifier.placeholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer()),
         )
       }
     }

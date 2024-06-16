@@ -5,8 +5,7 @@ import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
-import com.kiwi.navigationcompose.typed.Destination
-import com.kiwi.navigationcompose.typed.createRoutePattern
+import com.hedvig.android.navigation.compose.Destination
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.ParametersDefinition
 
@@ -21,7 +20,7 @@ inline fun <reified Dest : Destination, reified VM : ViewModel> destinationScope
   noinline parameters: ParametersDefinition? = null,
 ): VM {
   val parentEntry: NavBackStackEntry = remember(navController, backStackEntry) {
-    navController.getBackStackEntry(createRoutePattern<Dest>())
+    navController.getBackStackEntry<Dest>()
   }
   return koinViewModel(
     viewModelStoreOwner = parentEntry,

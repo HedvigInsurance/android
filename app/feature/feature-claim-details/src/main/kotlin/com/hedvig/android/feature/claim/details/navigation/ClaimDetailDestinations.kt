@@ -1,15 +1,15 @@
 package com.hedvig.android.feature.claim.details.navigation
 
-import com.kiwi.navigationcompose.typed.Destination
+import com.hedvig.android.navigation.compose.Destination
 import kotlinx.serialization.Serializable
 
-sealed interface ClaimDetailDestinations : Destination {
+sealed interface ClaimDetailDestinations {
   @Serializable
-  data class ClaimOverviewDestination(val claimId: String) : ClaimDetailDestinations
+  data class ClaimOverviewDestination(val claimId: String) : ClaimDetailDestinations, Destination
 
   @Serializable
   data class AddFilesDestination(
     val targetUploadUrl: String,
     val initialFilesUri: List<String>,
-  ) : ClaimDetailDestinations
+  ) : ClaimDetailDestinations, Destination
 }

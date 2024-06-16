@@ -85,7 +85,7 @@ val paymentsModule = module {
     )
   }
 
-  viewModel<PaymentDetailsViewModel> { (chargeId: String) ->
+  viewModel<PaymentDetailsViewModel> { (chargeId: String?) ->
     PaymentDetailsViewModel(
       chargeId = chargeId,
       getChargeDetailsUseCase = get<GetChargeDetailsUseCase>(),
