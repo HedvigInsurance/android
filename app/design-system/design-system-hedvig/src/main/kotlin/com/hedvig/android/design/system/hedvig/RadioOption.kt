@@ -234,7 +234,7 @@ object RadioOptionDefaults {
 
     data class Label(val labelText: String) : RadioOptionStyle
 
-    data class Icon(val iconResource: IconResource) : RadioOptionStyle // we need another solution here. Content?
+    data class Icon(val iconResource: IconResource) : RadioOptionStyle
 
     data object LeftAligned : RadioOptionStyle
   }
