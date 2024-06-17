@@ -12,5 +12,5 @@ dependencies {
   implementation(libs.androidx.compose.uiGraphics)
   implementation(libs.androidx.graphicsShapes)
   implementation(projects.composeUi)
-  implementation(projects.coreResources) //todo: will delete it later, just for preview
+  implementation(projects.coreResources)
 }

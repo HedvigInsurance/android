@@ -1,5 +1,6 @@
 package com.hedvig.android.design.system.hedvig.tokens
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.RadioOptionDefaults.RadioOptionStyle
@@ -17,27 +18,28 @@ internal object RadioOptionColorTokens {
 }
 
 internal abstract class SizeRadioOptionTokens {
-  protected abstract val TopPadding: Dp
-  protected abstract val BottomPadding: Dp
-  protected abstract val LabelTopPadding: Dp
-  protected abstract val LabelBottomPadding: Dp
+  abstract val TopPadding: Dp
+  abstract val BottomPadding: Dp
+  abstract val LabelTopPadding: Dp
+  abstract val LabelBottomPadding: Dp
   abstract val OptionTextFont: TypographyKeyTokens
   abstract val LabelTextFont: TypographyKeyTokens
   abstract val HorizontalPadding: Dp
   abstract val ContainerShape: ShapeKeyTokens
 
-  fun topPadding(style: RadioOptionStyle): Dp {
-    return when (style) {
+  fun verticalPadding(style: RadioOptionStyle): PaddingValues {
+    val topPadding = when (style) {
       is Label -> LabelTopPadding
       else -> TopPadding
     }
-  }
-
-  fun bottomPadding(style: RadioOptionStyle): Dp {
-    return when (style) {
+    val bottomPadding = when (style) {
       is Label -> LabelBottomPadding
       else -> BottomPadding
     }
+    return PaddingValues(
+      top = topPadding,
+      bottom = bottomPadding,
+    )
   }
 
   data object LargeSizeRadioOptionTokens : SizeRadioOptionTokens() {
