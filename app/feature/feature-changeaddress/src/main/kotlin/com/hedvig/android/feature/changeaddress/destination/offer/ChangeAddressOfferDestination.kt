@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.changeaddress.destination
+package com.hedvig.android.feature.changeaddress.destination.offer
 
 import android.content.res.Configuration
 import androidx.compose.animation.core.Spring
@@ -48,12 +48,13 @@ import com.hedvig.android.core.designsystem.component.button.HedvigContainedButt
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.card.HedvigInfoCard
+import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.designsystem.material3.squircleExtraSmall
 import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.small.hedvig.ArrowNorthEast
-import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.core.ui.dialog.ErrorDialog
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
@@ -61,49 +62,57 @@ import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.productVariant.android.getStringRes
 import com.hedvig.android.data.productvariant.InsurableLimit
-import com.hedvig.android.feature.changeaddress.ChangeAddressUiState
-import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
 import com.hedvig.android.feature.changeaddress.data.MoveIntentId
 import com.hedvig.android.feature.changeaddress.data.MoveQuote
 import com.hedvig.android.feature.changeaddress.ui.offer.Faqs
 import com.hedvig.android.feature.changeaddress.ui.offer.QuoteCard
 import hedvig.resources.R
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
+import kotlinx.datetime.Clock.System
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
 @Composable
 internal fun ChangeAddressOfferDestination(
-  viewModel: ChangeAddressViewModel,
+  viewModel: ChangeAddressOfferViewModel,
   openChat: () -> Unit,
   navigateUp: () -> Unit,
   onChangeAddressResult: (LocalDate?) -> Unit,
   openUrl: (String) -> Unit,
 ) {
-  val uiState: ChangeAddressUiState by viewModel.uiState.collectAsStateWithLifecycle()
+  val uiState: ChangeAddressOfferUiState by viewModel.uiState.collectAsStateWithLifecycle()
   val moveResult = uiState.successfulMoveResult
 
   LaunchedEffect(moveResult) {
     if (moveResult != null) {
-      onChangeAddressResult(uiState.movingDate.input)
+      onChangeAddressResult(uiState.movingDate)
     }
   }
-  ChangeAddressOfferScreen(
-    uiState = uiState,
-    openChat = openChat,
-    navigateUp = navigateUp,
-    onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
-    onExpandQuote = viewModel::onExpandQuote,
-    onConfirmMove = viewModel::onConfirmMove,
-    openUrl = openUrl,
-  )
+  if (uiState.error) {
+    HedvigScaffold(
+      topAppBarText = stringResource(id = R.string.CHANGE_ADDRESS_SUMMARY_TITLE),
+      navigateUp = navigateUp,
+      topAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
+    ) {
+      HedvigErrorSection(onButtonClick = { viewModel.emit(ChangeAddressOfferEvent.Retry) })
+    }
+  } else {
+    ChangeAddressOfferScreen(
+      uiState = uiState,
+      openChat = openChat,
+      navigateUp = navigateUp,
+      onErrorDialogDismissed = { viewModel.emit(ChangeAddressOfferEvent.DismissErrorDialog) },
+      onExpandQuote = { viewModel.emit(ChangeAddressOfferEvent.ExpandQuote(it)) },
+      onConfirmMove = { viewModel.emit(ChangeAddressOfferEvent.ConfirmMove(it)) },
+      openUrl = openUrl,
+    )
+  }
 }
 
 @Composable
 private fun ChangeAddressOfferScreen(
-  uiState: ChangeAddressUiState,
+  uiState: ChangeAddressOfferUiState,
   openChat: () -> Unit,
   navigateUp: () -> Unit,
   onErrorDialogDismissed: () -> Unit,
@@ -111,7 +120,7 @@ private fun ChangeAddressOfferScreen(
   onConfirmMove: (MoveIntentId) -> Unit,
   openUrl: (String) -> Unit,
 ) {
-  val moveIntentId = uiState.moveIntentId ?: throw IllegalArgumentException("No moveIntentId found!")
+  val moveIntentId = uiState.moveIntentId
 
   if (uiState.errorMessage != null) {
     ErrorDialog(
@@ -127,110 +136,114 @@ private fun ChangeAddressOfferScreen(
     topAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
     scrollState = scrollState,
   ) {
-    Spacer(Modifier.height(8.dp))
-    for (quote in uiState.quotes) {
-      QuoteCard(
-        movingDate = quote.startDate,
-        quote = quote,
-        onExpandClicked = { onExpandQuote(quote) },
-        isExpanded = quote.isExpanded,
+    if (uiState.isLoading) {
+      HedvigFullScreenCenterAlignedProgress(Modifier.weight(1f))
+    } else {
+      Spacer(Modifier.height(8.dp))
+      for (quote in uiState.quotes) {
+        QuoteCard(
+          movingDate = quote.startDate,
+          quote = quote,
+          onExpandClicked = { onExpandQuote(quote) },
+          isExpanded = quote.isExpanded,
+          modifier = Modifier.padding(horizontal = 16.dp),
+        )
+        Spacer(Modifier.height(16.dp))
+      }
+      if (uiState.quotes.size > 1) {
+        VectorInfoCard(
+          text = stringResource(id = R.string.CHANGE_ADDRESS_OTHER_INSURANCES_INFO_TEXT),
+          modifier = Modifier.padding(horizontal = 16.dp),
+        )
+        Spacer(Modifier.height(16.dp))
+        QuotesPriceSum(
+          quotes = uiState.quotes,
+          modifier = Modifier.padding(horizontal = 16.dp),
+        )
+      }
+      Spacer(Modifier.height(32.dp))
+      HedvigContainedButton(
+        text = stringResource(R.string.CHANGE_ADDRESS_ACCEPT_OFFER),
+        onClick = { onConfirmMove(moveIntentId) },
+        isLoading = uiState.isLoading,
         modifier = Modifier.padding(horizontal = 16.dp),
       )
-      Spacer(Modifier.height(16.dp))
-    }
-    if (uiState.quotes.size > 1) {
-      VectorInfoCard(
-        text = stringResource(id = R.string.CHANGE_ADDRESS_OTHER_INSURANCES_INFO_TEXT),
-        modifier = Modifier.padding(horizontal = 16.dp),
-      )
-      Spacer(Modifier.height(16.dp))
-      QuotesPriceSum(
-        quotes = uiState.quotes,
-        modifier = Modifier.padding(horizontal = 16.dp),
-      )
-    }
-    Spacer(Modifier.height(32.dp))
-    HedvigContainedButton(
-      text = stringResource(R.string.CHANGE_ADDRESS_ACCEPT_OFFER),
-      onClick = { onConfirmMove(moveIntentId) },
-      isLoading = uiState.isLoading,
-      modifier = Modifier.padding(horizontal = 16.dp),
-    )
-    Spacer(Modifier.height(8.dp))
-    val coroutineScope = rememberCoroutineScope()
-    var whatsIncludedButtonPositionY by remember { mutableFloatStateOf(0f) }
-    HedvigTextButton(
-      text = stringResource(id = R.string.CHANGE_ADDRESS_INCLUDED),
-      onClick = {
-        coroutineScope.launch {
-          scrollState.animateScrollTo(
-            value = whatsIncludedButtonPositionY.toInt(),
-            animationSpec = spring(stiffness = Spring.StiffnessVeryLow),
-          )
-        }
-      },
-      modifier = Modifier
-        .padding(horizontal = 16.dp)
-        .onPlaced { layoutCoordinates ->
-          // Find the Y position where this button ends, to scroll right below it on click.
-          whatsIncludedButtonPositionY =
-            layoutCoordinates.positionInParent().y + layoutCoordinates.size.height
+      Spacer(Modifier.height(8.dp))
+      val coroutineScope = rememberCoroutineScope()
+      var whatsIncludedButtonPositionY by remember { mutableFloatStateOf(0f) }
+      HedvigTextButton(
+        text = stringResource(id = R.string.CHANGE_ADDRESS_INCLUDED),
+        onClick = {
+          coroutineScope.launch {
+            scrollState.animateScrollTo(
+              value = whatsIncludedButtonPositionY.toInt(),
+              animationSpec = spring(stiffness = Spring.StiffnessVeryLow),
+            )
+          }
         },
-    )
-    Spacer(Modifier.height(80.dp))
+        modifier = Modifier
+          .padding(horizontal = 16.dp)
+          .onPlaced { layoutCoordinates ->
+            // Find the Y position where this button ends, to scroll right below it on click.
+            whatsIncludedButtonPositionY =
+              layoutCoordinates.positionInParent().y + layoutCoordinates.size.height
+          },
+      )
+      Spacer(Modifier.height(80.dp))
 
-    for (quote in uiState.quotes.distinctBy { it.productVariant.contractGroup }) {
-      QuoteDetailsAndPdfs(
-        quote = quote,
-        openUrl = openUrl,
+      for (quote in uiState.quotes.distinctBy { it.productVariant.contractGroup }) {
+        QuoteDetailsAndPdfs(
+          quote = quote,
+          openUrl = openUrl,
+          modifier = Modifier.padding(horizontal = 16.dp),
+        )
+        Spacer(Modifier.height(40.dp))
+      }
+      Faqs(
+        faqItems = listOf(
+          stringResource(id = R.string.CHANGE_ADDRESS_FAQ_DATE_TITLE) to stringResource(
+            id = R.string.CHANGE_ADDRESS_FAQ_DATE_LABEL,
+          ),
+          stringResource(id = R.string.CHANGE_ADDRESS_FAQ_PRICE_TITLE) to stringResource(
+            id = R.string.CHANGE_ADDRESS_FAQ_PRICE_LABEL,
+          ),
+          stringResource(id = R.string.CHANGE_ADDRESS_FAQ_RENTBRF_TITLE) to stringResource(
+            id = R.string.CHANGE_ADDRESS_FAQ_RENTBRF_LABEL,
+          ),
+          stringResource(id = R.string.CHANGE_ADDRESS_FAQ_STORAGE_TITLE) to stringResource(
+            id = R.string.CHANGE_ADDRESS_FAQ_STORAGE_LABEL,
+          ),
+          stringResource(id = R.string.CHANGE_ADDRESS_FAQ_STUDENT_TITLE) to stringResource(
+            id = R.string.CHANGE_ADDRESS_FAQ_STUDENT_LABEL,
+          ),
+        ),
         modifier = Modifier.padding(horizontal = 16.dp),
       )
-      Spacer(Modifier.height(40.dp))
-    }
-    Faqs(
-      faqItems = listOf(
-        stringResource(id = R.string.CHANGE_ADDRESS_FAQ_DATE_TITLE) to stringResource(
-          id = R.string.CHANGE_ADDRESS_FAQ_DATE_LABEL,
-        ),
-        stringResource(id = R.string.CHANGE_ADDRESS_FAQ_PRICE_TITLE) to stringResource(
-          id = R.string.CHANGE_ADDRESS_FAQ_PRICE_LABEL,
-        ),
-        stringResource(id = R.string.CHANGE_ADDRESS_FAQ_RENTBRF_TITLE) to stringResource(
-          id = R.string.CHANGE_ADDRESS_FAQ_RENTBRF_LABEL,
-        ),
-        stringResource(id = R.string.CHANGE_ADDRESS_FAQ_STORAGE_TITLE) to stringResource(
-          id = R.string.CHANGE_ADDRESS_FAQ_STORAGE_LABEL,
-        ),
-        stringResource(id = R.string.CHANGE_ADDRESS_FAQ_STUDENT_TITLE) to stringResource(
-          id = R.string.CHANGE_ADDRESS_FAQ_STUDENT_LABEL,
-        ),
-      ),
-      modifier = Modifier.padding(horizontal = 16.dp),
-    )
-    Spacer(Modifier.height(64.dp))
-    Text(
-      text = stringResource(id = R.string.CHANGE_ADDRESS_NO_FIND),
-      style = MaterialTheme.typography.bodyLarge,
-      textAlign = TextAlign.Center,
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp),
-    )
-    Spacer(Modifier.height(24.dp))
-    Button(
-      shape = MaterialTheme.shapes.squircleMedium,
-      onClick = { openChat() },
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp)
-        .wrapContentWidth(),
-    ) {
+      Spacer(Modifier.height(64.dp))
       Text(
-        text = stringResource(R.string.open_chat),
+        text = stringResource(id = R.string.CHANGE_ADDRESS_NO_FIND),
         style = MaterialTheme.typography.bodyLarge,
+        textAlign = TextAlign.Center,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
       )
+      Spacer(Modifier.height(24.dp))
+      Button(
+        shape = MaterialTheme.shapes.squircleMedium,
+        onClick = { openChat() },
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp)
+          .wrapContentWidth(),
+      ) {
+        Text(
+          text = stringResource(R.string.open_chat),
+          style = MaterialTheme.typography.bodyLarge,
+        )
+      }
+      Spacer(Modifier.height(16.dp))
     }
-    Spacer(Modifier.height(16.dp))
   }
 }
 
@@ -371,11 +384,10 @@ private fun PreviewChangeAddressOfferScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       ChangeAddressOfferScreen(
-        ChangeAddressUiState(
+        ChangeAddressOfferUiState(
           moveIntentId = MoveIntentId(""),
           quotes = List(2, MoveQuote::PreviewData),
-          movingDate = ValidatedInput(Clock.System.now().toLocalDateTime(TimeZone.UTC).date),
-          extraBuildingTypes = emptyList(),
+          movingDate = System.now().toLocalDateTime(TimeZone.UTC).date,
         ),
         {},
         {},

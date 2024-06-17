@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.changeaddress.destination
+package com.hedvig.android.feature.changeaddress.destination.selecthousingtype
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -26,48 +26,57 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.dialog.ErrorDialog
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
-import com.hedvig.android.feature.changeaddress.ChangeAddressUiState
-import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
 import com.hedvig.android.feature.changeaddress.data.HousingType
+import com.hedvig.android.feature.changeaddress.data.HousingType.APARTMENT_OWN
+import com.hedvig.android.feature.changeaddress.data.HousingType.APARTMENT_RENT
+import com.hedvig.android.feature.changeaddress.data.HousingType.VILLA
 import com.hedvig.android.feature.changeaddress.data.displayNameResource
+import com.hedvig.android.feature.changeaddress.navigation.SelectHousingTypeParameters
 
 @Composable
-internal fun ChangeAddressSelectHousingTypeDestination(
-  viewModel: ChangeAddressViewModel,
+internal fun SelectHousingTypeDestination(
+  viewModel: SelectHousingTypeViewModel,
   navigateUp: () -> Unit,
-  navigateToEnterNewAddressDestination: () -> Unit,
+  navigateToEnterNewAddressDestination: (SelectHousingTypeParameters) -> Unit,
 ) {
-  val uiState: ChangeAddressUiState by viewModel.uiState.collectAsStateWithLifecycle()
+  val uiState: SelectHousingTypeUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-  LaunchedEffect(uiState.navigateToFirstStepAfterHavingReceivedMoveIntentId) {
-    if (uiState.navigateToFirstStepAfterHavingReceivedMoveIntentId) {
-      viewModel.onNavigatedToFirstStepAfterHavingReceivedMoveIntentId()
-      navigateToEnterNewAddressDestination()
+  LaunchedEffect(uiState.navigationParameters) {
+    val params = uiState.navigationParameters
+    if (params != null) {
+      viewModel.emit(SelectHousingTypeEvent.ClearNavigationParameters)
+      navigateToEnterNewAddressDestination(params)
     }
   }
 
   ChangeAddressSelectHousingTypeScreen(
     uiState = uiState,
     navigateUp = navigateUp,
-    onHousingTypeSelected = viewModel::onHousingTypeSelected,
-    onHousingTypeSubmitted = viewModel::onHousingTypeSubmitted,
-    onHousingTypeErrorDialogDismissed = viewModel::onHousingTypeErrorDialogDismissed,
-    onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
-    onValidateHousingType = viewModel::onValidateHousingType,
+    onHousingTypeSelected = { type ->
+      viewModel.emit(SelectHousingTypeEvent.SelectHousingType(type))
+    },
+    onHousingTypeSubmitted = {
+      viewModel.emit(SelectHousingTypeEvent.SubmitHousingType)
+    },
+    onHousingTypeErrorDialogDismissed = {
+      viewModel.emit(SelectHousingTypeEvent.DismissHousingTypeErrorDialog)
+    },
+    onErrorDialogDismissed = {
+      viewModel.emit(SelectHousingTypeEvent.DismissErrorDialog)
+    },
   )
 }
 
 @Composable
 private fun ChangeAddressSelectHousingTypeScreen(
-  uiState: ChangeAddressUiState,
+  uiState: SelectHousingTypeUiState,
   navigateUp: () -> Unit,
   onHousingTypeSelected: (HousingType) -> Unit,
   onHousingTypeSubmitted: () -> Unit,
   onHousingTypeErrorDialogDismissed: () -> Unit,
   onErrorDialogDismissed: () -> Unit,
-  onValidateHousingType: () -> Unit,
 ) {
-  uiState.housingType.errorMessageRes?.let {
+  uiState.errorMessageRes?.let {
     ErrorDialog(
       title = stringResource(hedvig.resources.R.string.general_error),
       message = stringResource(it),
@@ -97,11 +106,11 @@ private fun ChangeAddressSelectHousingTypeScreen(
     )
     Spacer(modifier = Modifier.weight(1f))
     Spacer(modifier = Modifier.height(16.dp))
-    RadioButton(HousingType.APARTMENT_OWN, uiState.housingType.input, onHousingTypeSelected)
+    RadioButton(APARTMENT_OWN, uiState.housingType.input, onHousingTypeSelected)
     Spacer(modifier = Modifier.height(8.dp))
-    RadioButton(HousingType.APARTMENT_RENT, uiState.housingType.input, onHousingTypeSelected)
+    RadioButton(APARTMENT_RENT, uiState.housingType.input, onHousingTypeSelected)
     Spacer(modifier = Modifier.height(8.dp))
-    RadioButton(HousingType.VILLA, uiState.housingType.input, onHousingTypeSelected)
+    RadioButton(VILLA, uiState.housingType.input, onHousingTypeSelected)
     Spacer(modifier = Modifier.height(16.dp))
     VectorInfoCard(
       text = stringResource(id = hedvig.resources.R.string.CHANGE_ADDRESS_COVERAGE_INFO_TEXT),
@@ -110,12 +119,7 @@ private fun ChangeAddressSelectHousingTypeScreen(
     Spacer(modifier = Modifier.height(16.dp))
     HedvigContainedButton(
       text = stringResource(id = hedvig.resources.R.string.general_continue_button),
-      onClick = {
-        onValidateHousingType()
-        if (uiState.isHousingTypeValid) {
-          onHousingTypeSubmitted()
-        }
-      },
+      onClick = onHousingTypeSubmitted,
       isLoading = uiState.isLoading,
       modifier = Modifier.padding(horizontal = 16.dp),
     )
@@ -162,8 +166,7 @@ private fun PreviewChangeAddressSelectHousingTypeScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       ChangeAddressSelectHousingTypeScreen(
-        ChangeAddressUiState(),
-        {},
+        SelectHousingTypeUiState(),
         {},
         {},
         {},

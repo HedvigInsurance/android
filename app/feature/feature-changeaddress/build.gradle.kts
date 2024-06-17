@@ -7,6 +7,11 @@ plugins {
   alias(libs.plugins.squareSortDependencies)
 }
 
+android {
+  testOptions.unitTests.isReturnDefaultValues = true
+}
+
+
 dependencies {
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.compose.material3)
@@ -40,4 +45,15 @@ dependencies {
   implementation(projects.languageCore)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
+  implementation(projects.moleculePublic)
+  implementation(projects.moleculeAndroid)
+
+  testImplementation(libs.assertK)
+  testImplementation(libs.coroutines.test)
+  testImplementation(libs.junit)
+  testImplementation(libs.turbine)
+  testImplementation(projects.coreCommonTest)
+  testImplementation(projects.languageTest)
+  testImplementation(projects.loggingTest)
+  testImplementation(projects.moleculeTest)
 }
