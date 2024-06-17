@@ -45,10 +45,10 @@ class EnterNewAddressPresenterTest {
         assertk.assertThat(awaitItem()).isInstanceOf<EnterNewAddressUiState>()
           .prop(EnterNewAddressUiState::numberInsured)
           .isEqualTo(ValidatedInput(fakeSelectHousingTypeParametersForApartment.suggestedNumberInsured))
-        sendEvent(EnterNewAddressEvent.ChangeNumberInsured("1"))
+        sendEvent(EnterNewAddressEvent.OnCoInsuredIncreased)
         assertk.assertThat(awaitItem()).isInstanceOf<EnterNewAddressUiState>()
           .prop(EnterNewAddressUiState::numberInsured)
-          .isEqualTo(ValidatedInput("1"))
+          .isEqualTo(ValidatedInput("4"))
       }
     }
 
@@ -82,7 +82,7 @@ class EnterNewAddressPresenterTest {
           prop(EnterNewAddressUiState::postalCode).isEqualTo(ValidatedInput(null))
           prop(EnterNewAddressUiState::squareMeters).isEqualTo(ValidatedInput(null))
         }
-      sendEvent(EnterNewAddressEvent.ChangeNumberInsured("1"))
+      sendEvent(EnterNewAddressEvent.OnCoInsuredIncreased)
       sendEvent(EnterNewAddressEvent.ChangeStreet("newStreet"))
       sendEvent(EnterNewAddressEvent.ChangePostalCode("newPostalCode"))
       sendEvent(EnterNewAddressEvent.ChangeMoveDate(LocalDate(2024, 7, 1)))
@@ -91,7 +91,7 @@ class EnterNewAddressPresenterTest {
       assertk.assertThat(awaitItem())
         .isInstanceOf<EnterNewAddressUiState>()
         .apply {
-          prop(EnterNewAddressUiState::numberInsured).isEqualTo(ValidatedInput("1"))
+          prop(EnterNewAddressUiState::numberInsured).isEqualTo(ValidatedInput("4"))
           prop(EnterNewAddressUiState::street).isEqualTo(ValidatedInput("newStreet"))
           prop(EnterNewAddressUiState::movingDate).isEqualTo(ValidatedInput(LocalDate(2024, 7, 1)))
           prop(EnterNewAddressUiState::postalCode).isEqualTo(ValidatedInput("newPostalCode"))
@@ -118,7 +118,7 @@ class EnterNewAddressPresenterTest {
           numberInsured = ValidatedInput(fakeSelectHousingTypeParametersForApartment.suggestedNumberInsured),
         ),
       ) {
-        sendEvent(EnterNewAddressEvent.ChangeNumberInsured("1"))
+        sendEvent(EnterNewAddressEvent.OnCoInsuredDecreased)
         sendEvent(EnterNewAddressEvent.ChangeStreet("newStreet"))
         sendEvent(EnterNewAddressEvent.ChangePostalCode("newPostalCode"))
         sendEvent(EnterNewAddressEvent.ChangeMoveDate(LocalDate(2024, 7, 1)))
@@ -164,7 +164,7 @@ class EnterNewAddressPresenterTest {
           numberInsured = ValidatedInput(fakeSelectHousingTypeParametersForApartment.suggestedNumberInsured),
         ),
       ) {
-        sendEvent(EnterNewAddressEvent.ChangeNumberInsured("1"))
+        sendEvent(EnterNewAddressEvent.OnCoInsuredDecreased)
         sendEvent(EnterNewAddressEvent.ChangeStreet("newStreet"))
         sendEvent(EnterNewAddressEvent.ChangePostalCode("newPostalCode"))
         sendEvent(EnterNewAddressEvent.ChangeMoveDate(LocalDate(2024, 7, 1)))
@@ -192,7 +192,7 @@ class EnterNewAddressPresenterTest {
           numberInsured = ValidatedInput(fakeSelectHousingTypeParametersForVilla.suggestedNumberInsured),
         ),
       ) {
-        sendEvent(EnterNewAddressEvent.ChangeNumberInsured("1"))
+        sendEvent(EnterNewAddressEvent.OnCoInsuredDecreased)
         sendEvent(EnterNewAddressEvent.ChangeStreet("newStreet"))
         sendEvent(EnterNewAddressEvent.ChangePostalCode("newPostalCode"))
         sendEvent(EnterNewAddressEvent.ChangeMoveDate(LocalDate(2024, 7, 1)))
@@ -223,10 +223,10 @@ class EnterNewAddressPresenterTest {
           ),
           maxNumberCoInsured = fakeSelectHousingTypeParametersForApartment.maxNumberCoInsured,
           maxSquareMeters = fakeSelectHousingTypeParametersForApartment.maxSquareMeters,
-          numberInsured = ValidatedInput(fakeSelectHousingTypeParametersForApartment.suggestedNumberInsured),
+          numberInsured = ValidatedInput("3"),
         ),
       ) {
-        sendEvent(EnterNewAddressEvent.ChangeNumberInsured("1"))
+        sendEvent(EnterNewAddressEvent.OnCoInsuredDecreased)
         sendEvent(EnterNewAddressEvent.ChangeStreet("newStreet"))
         sendEvent(EnterNewAddressEvent.ChangePostalCode("newPostalCode"))
         sendEvent(EnterNewAddressEvent.ChangeMoveDate(LocalDate(2024, 7, 1)))
@@ -242,7 +242,7 @@ class EnterNewAddressPresenterTest {
                 villaOnlyParameters = null,
                 newAddressParameters = NewAddressParameters(
                   street = "newStreet",
-                  numberInsured = "1",
+                  numberInsured = "2",
                   isStudent = false,
                   movingDate = LocalDate(2024, 7, 1),
                   postalCode = "newPostalCode",
@@ -255,7 +255,7 @@ class EnterNewAddressPresenterTest {
     }
 
   @Test
-  fun `when trying to continue but number of insured is zero show error in the input field`() = runTest {
+  fun `when trying to lower the number of insured below 1 do not let it`() = runTest {
     val languageService = FakeLanguageService(fixedLocale = Locale.ENGLISH)
     val presenterApartment = EnterNewAddressPresenter(fakeSelectHousingTypeParametersForApartment)
     presenterApartment.test(
@@ -268,10 +268,11 @@ class EnterNewAddressPresenterTest {
         ),
         maxNumberCoInsured = fakeSelectHousingTypeParametersForApartment.maxNumberCoInsured,
         maxSquareMeters = fakeSelectHousingTypeParametersForApartment.maxSquareMeters,
-        numberInsured = ValidatedInput(fakeSelectHousingTypeParametersForApartment.suggestedNumberInsured),
+        numberInsured = ValidatedInput("2"),
       ),
     ) {
-      sendEvent(EnterNewAddressEvent.ChangeNumberInsured("0"))
+      sendEvent(EnterNewAddressEvent.OnCoInsuredDecreased)
+      sendEvent(EnterNewAddressEvent.OnCoInsuredDecreased)
       sendEvent(EnterNewAddressEvent.ChangeStreet("newStreet"))
       sendEvent(EnterNewAddressEvent.ChangePostalCode("newPostalCode"))
       sendEvent(EnterNewAddressEvent.ChangeMoveDate(LocalDate(2024, 7, 1)))
@@ -281,13 +282,13 @@ class EnterNewAddressPresenterTest {
       assertk.assertThat(awaitItem())
         .isInstanceOf<EnterNewAddressUiState>()
         .apply {
-          prop(EnterNewAddressUiState::numberInsured).prop(ValidatedInput<String?>::errorMessageRes).isNotNull()
+          prop(EnterNewAddressUiState::numberInsured).prop(ValidatedInput<String>::input).isEqualTo("1")
         }
     }
   }
 
   @Test
-  fun `when trying to continue but number of insured is out of bounds show error in the input field`() = runTest {
+  fun `when trying to enter number of insured that is more than max do not increase it`() = runTest {
     val languageService = FakeLanguageService(fixedLocale = Locale.ENGLISH)
     val presenterApartment = EnterNewAddressPresenter(fakeSelectHousingTypeParametersForApartment)
     presenterApartment.test(
@@ -298,22 +299,25 @@ class EnterNewAddressPresenterTest {
           minDate = fakeSelectHousingTypeParametersForApartment.minDate,
           maxDate = fakeSelectHousingTypeParametersForApartment.maxDate,
         ),
-        maxNumberCoInsured = 8,
+        maxNumberCoInsured = 5,
         maxSquareMeters = fakeSelectHousingTypeParametersForApartment.maxSquareMeters,
-        numberInsured = ValidatedInput(fakeSelectHousingTypeParametersForApartment.suggestedNumberInsured),
+        numberInsured = ValidatedInput("3"),
       ),
     ) {
-      sendEvent(EnterNewAddressEvent.ChangeNumberInsured("9"))
+      sendEvent(EnterNewAddressEvent.OnCoInsuredIncreased)
+      sendEvent(EnterNewAddressEvent.OnCoInsuredIncreased)
+      sendEvent(EnterNewAddressEvent.OnCoInsuredIncreased)
+      sendEvent(EnterNewAddressEvent.OnCoInsuredIncreased)
       sendEvent(EnterNewAddressEvent.ChangeStreet("newStreet"))
       sendEvent(EnterNewAddressEvent.ChangePostalCode("newPostalCode"))
       sendEvent(EnterNewAddressEvent.ChangeMoveDate(LocalDate(2024, 7, 1)))
       sendEvent(EnterNewAddressEvent.ChangeSquareMeters("93"))
-      skipItems(6)
+      skipItems(8)
       sendEvent(EnterNewAddressEvent.ValidateInput)
       assertk.assertThat(awaitItem())
         .isInstanceOf<EnterNewAddressUiState>()
         .apply {
-          prop(EnterNewAddressUiState::numberInsured).prop(ValidatedInput<String?>::errorMessageRes).isNotNull()
+          prop(EnterNewAddressUiState::numberInsured).prop(ValidatedInput<String>::input).isEqualTo("6")
         }
     }
   }
@@ -335,7 +339,7 @@ class EnterNewAddressPresenterTest {
         numberInsured = ValidatedInput(fakeSelectHousingTypeParametersForApartment.suggestedNumberInsured),
       ),
     ) {
-      sendEvent(EnterNewAddressEvent.ChangeNumberInsured("2"))
+      sendEvent(EnterNewAddressEvent.OnCoInsuredDecreased)
       sendEvent(EnterNewAddressEvent.ChangeStreet("newStreet"))
       sendEvent(EnterNewAddressEvent.ChangePostalCode("newPostalCode"))
       sendEvent(EnterNewAddressEvent.ChangeMoveDate(LocalDate(2024, 7, 1)))

@@ -177,8 +177,8 @@ private fun ChangeAddressEnterNewAddressScreen(
       ),
     )
     Spacer(modifier = Modifier.height(8.dp))
-    YouAndWhatArmy(
-      insuredPeople = uiState.numberInsured.input.toInt(),
+    YouAndWho(
+      allInsuredPeople = uiState.numberInsured.input.toInt(),
       maxNumberCoInsured = uiState.maxNumberCoInsured,
       modifier = Modifier.padding(horizontal = 16.dp),
       onValueDecrease = onCoInsuredDecreased,
@@ -223,19 +223,19 @@ private fun ChangeAddressEnterNewAddressScreen(
 }
 
 @Composable
-private fun YouAndWhatArmy(
-  insuredPeople: Int,
+private fun YouAndWho(
+  allInsuredPeople: Int,
   onValueIncrease: () -> Unit,
   onValueDecrease: () -> Unit,
   maxNumberCoInsured: Int?,
   modifier: Modifier = Modifier,
 ) {
-  val numberCoInsured = insuredPeople - 1
+  val numberCoInsured = allInsuredPeople - 1
   val labelTypography = MaterialTheme.typography.bodyMedium
   val textTypography = MaterialTheme.typography.headlineSmall
   val labelColor = MaterialTheme.colorScheme.onSurfaceVariant
-  val minusEnabled = insuredPeople > 1
-  val plusEnabled = maxNumberCoInsured?.let { numberCoInsured < it } ?: true // todo: check here one more time
+  val minusEnabled = allInsuredPeople > 1
+  val plusEnabled = maxNumberCoInsured?.let { numberCoInsured < it } ?: true
   HedvigCard(
     modifier.fillMaxWidth(),
   ) {

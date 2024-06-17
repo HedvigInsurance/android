@@ -140,7 +140,7 @@ internal class EnterNewAddressPresenter(
         OnCoInsuredIncreased -> {
           val currentInsured = currentState.numberInsured.input.toInt()
           val currentCoInsuredMax = currentState.maxNumberCoInsured
-          if (currentCoInsuredMax==null || (currentInsured < (currentCoInsuredMax+1))) {// todo: check here!!
+          if (currentCoInsuredMax == null || (currentInsured < (currentCoInsuredMax + 1))) {
             val insuredNumberIncreased = currentInsured + 1
             currentState = currentState.copy(numberInsured = ValidatedInput(insuredNumberIncreased.toString()))
           }
@@ -211,8 +211,8 @@ internal data class EnterNewAddressUiState(
         },
       ),
       numberInsured = numberInsured.copy(
-        errorMessageRes = if (!numberInsured.isPresent || isNumberInsuredTooLow(numberInsured.input.toIntOrNull())) {
-          hedvig.resources.R.string.CHANGE_ADDRESS_CO_INSURED_ERROR // todo: I think the copy may be wrong here. It is the number of all the insured (incl.the main insured, not only co-insured)
+        errorMessageRes = if (!numberInsured.isPresent) {
+          hedvig.resources.R.string.CHANGE_ADDRESS_CO_INSURED_ERROR
         } else if (numberInsured.isPresent && !isNumberInsuredWithinBounds(numberInsured.input.toIntOrNull())) {
           hedvig.resources.R.string.CHANGE_ADDRESS_CO_INSURED_MAX_ERROR_ALTERNATIVE
         } else {
@@ -232,21 +232,14 @@ internal data class EnterNewAddressUiState(
     return squareMeters <= maxSquareMeters
   }
 
-  private fun isNumberInsuredTooLow(numberInsured: Int?): Boolean {
-    if (numberInsured == null) {
-      return true
-    }
-    return numberInsured < 1
-  }
-
-  private fun isNumberInsuredWithinBounds(numberCoInsured: Int?): Boolean {
+  private fun isNumberInsuredWithinBounds(numberInsured: Int?): Boolean {
     if (maxNumberCoInsured == null) {
       return true
     }
-    if (numberCoInsured == null) {
+    if (numberInsured == null) {
       return false
     }
-    return numberCoInsured <= maxNumberCoInsured+1
+    return numberInsured <= maxNumberCoInsured + 1
   }
 }
 
