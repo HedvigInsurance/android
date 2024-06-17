@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.chat.ui.inbox
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,29 +10,24 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -39,19 +35,21 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.core.designsystem.material3.lightTypeContainer
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.hedvig.normal.Document
+import com.hedvig.android.core.ui.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
-import com.hedvig.android.core.ui.layout.withoutPlacement
+import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.core.ui.preview.TripleBooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.ui.preview.TripleCase
-import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
+import com.hedvig.android.feature.chat.model.ChatMessage
 import com.hedvig.android.feature.chat.model.Conversation
-import com.hedvig.android.feature.chat.model.legacyCheckPoint
-import hedvig.resources.R
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.toJavaLocalDate
+import com.hedvig.android.feature.chat.ui.formattedDateTime
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toJavaLocalDateTime
+import kotlinx.datetime.toLocalDateTime
 
 @Composable
 internal fun InboxDestination(
@@ -103,53 +101,20 @@ private fun InboxScreen(
 
 @Composable
 private fun InboxSuccessScreen(conversations: List<Conversation>, onConversationClick: (id: String) -> Unit) {
-  Column {
-    val legacyConversation = conversations.filterIsInstance<Conversation.LegacyConversation>().firstOrNull()
-    if (legacyConversation != null) {
-      if (legacyConversation.isClosed) {
-        ClosedLegacyConversation(
-          onConversationClick = { onConversationClick(legacyConversation.conversationId) },
-        )
-      } else {
-        ConversationCard(
-          conversation = legacyConversation,
-          onConversationClick = { onConversationClick(legacyConversation.conversationId) },
-        )
-      }
-      HorizontalDivider(Modifier.height(1.dp))
-    }
-    val conversationsInOrder = conversations.filterNot { it is Conversation.LegacyConversation }
-      .sortedByDescending { it.lastUpdatedTime }
-    LazyColumn {
-      items(conversationsInOrder, {
+  val conversationsInOrder = conversations.sortedByDescending { it.newestMessageForPreview.sentAt }
+  LazyColumn {
+    items(
+      conversationsInOrder,
+      {
         it.conversationId
-      }) { conversation ->
-        ConversationCard(conversation = conversation, onConversationClick = onConversationClick)
-        HorizontalDivider()
-      }
+      },
+    ) { conversation ->
+      ConversationCard(
+        conversation = conversation,
+        onConversationClick = onConversationClick,
+      )
+      HorizontalDivider()
     }
-  }
-}
-
-@Composable
-private fun ClosedLegacyConversation(onConversationClick: () -> Unit, modifier: Modifier = Modifier) {
-  val text = "Conversation history until ${legacyCheckPoint.date}" // todo: remove hardcoded string
-  Row(
-    modifier = modifier
-      .padding(top = 12.dp, end = 16.dp, bottom = 12.dp)
-      .clickable { onConversationClick() },
-    verticalAlignment = Alignment.CenterVertically,
-  ) {
-    Icon(
-      Icons.Hedvig.Document,
-      contentDescription = null,
-      modifier = Modifier.weight(1f).size(12.dp),
-    ) // todo: icon?
-    Text(
-      text = text,
-      style = MaterialTheme.typography.bodyMedium,
-      modifier = Modifier.weight(8f),
-    )
   }
 }
 
@@ -159,18 +124,40 @@ private fun ConversationCard(
   onConversationClick: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val dateFormatter = rememberHedvigDateTimeFormatter()
+  val title = conversation.title
+  val subTitle = conversation.subtitle
+  val dateOfLatest = if (conversation.isLegacy) {
+    "Until ${
+      HedvigDateTimeFormatterDefaults.isoLocalDateWithDots(getLocale()).format(
+        conversation.newestMessageForPreview.sentAt.toLocalDateTime(
+          TimeZone.currentSystemDefault(),
+        ).toJavaLocalDateTime(),
+      )
+    }"
+  } else {
+    conversation.newestMessageForPreview.formattedDateTime(getLocale()) // todo: copy!!!
+  }
   Column(
     modifier = modifier
-      .padding(top = 12.dp, bottom = 12.dp, end = 16.dp)
-      .clickable { onConversationClick(conversation.conversationId) },
+      .clickable { onConversationClick(conversation.conversationId) }
+      .background(
+        color = if (conversation.hasNewMessages) {
+          MaterialTheme.colorScheme.lightTypeContainer
+        } else {
+          Color.Transparent
+        },
+      ),
   ) {
-    Row(Modifier.height(IntrinsicSize.Min)) {
+    Row(
+      Modifier
+        .height(IntrinsicSize.Min)
+        .padding(top = 12.dp, end = 16.dp),
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
       val notificationColor = MaterialTheme.colorScheme.error
       val modifierWithDot = Modifier
         .weight(1f)
         .drawWithContent {
-          drawContent() // todo: do you need this?
           drawCircle(
             notificationColor,
             radius = 5.dp.toPx(),
@@ -178,13 +165,6 @@ private fun ConversationCard(
           )
         }
       val notificationModifier = if (conversation.hasNewMessages) modifierWithDot else Modifier
-      val title = when (conversation) {
-        is Conversation.ClaimConversation -> conversation.title ?: stringResource(
-          R.string.claim_casetype_insurance_case,
-        )
-        is Conversation.LegacyConversation -> "Conversation history until ${legacyCheckPoint.date}" // todo: remove hardcoded string
-        is Conversation.ServiceConversation -> conversation.title ?: "Placeholder service question title" // todo: remove hardcoded string
-      }
       Box(
         modifier = notificationModifier
           .weight(1f)
@@ -193,65 +173,69 @@ private fun ConversationCard(
       ) {}
       Text(
         text = title,
-        modifier = Modifier.weight(8f),
+        modifier = Modifier.weight(5f),
         style = MaterialTheme.typography.bodyLarge,
         overflow = TextOverflow.Ellipsis,
         maxLines = 1,
       )
+      Text(
+        modifier = Modifier.weight(3f),
+        text = dateOfLatest,
+        style = MaterialTheme.typography.bodyMedium.copy(
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+        ),
+        textAlign = TextAlign.End,
+      )
     }
-    Spacer(Modifier.height(4.dp))
-    val detailsModifier = Modifier.then(
-      if (conversation is Conversation.LegacyConversation) {
-        Modifier.withoutPlacement()
-      } else {
-        Modifier
-      },
-    )
-    Row(modifier = detailsModifier.height(IntrinsicSize.Min)) {
-      Box(Modifier.weight(1f))
-      Row(Modifier.weight(8f)) {
-        val label = when (conversation) {
-          is Conversation.ClaimConversation -> conversation.label
-          is Conversation.LegacyConversation -> ""
-          is Conversation.ServiceConversation -> "Question" // todo: remove hardcode
+    if (!conversation.isLegacy) {
+      Spacer(Modifier.height(4.dp))
+      Row(
+        modifier = Modifier
+          .height(IntrinsicSize.Min)
+          .padding(end = 16.dp),
+      ) {
+        Box(Modifier.weight(1f))
+        Row(Modifier.weight(8f)) {
+          Text(
+            text = subTitle,
+            style = MaterialTheme.typography.bodyMedium,
+          )
         }
-        val submitted = when (conversation) {
-          is Conversation.LegacyConversation -> ""
-          is Conversation.ServiceConversation -> "Submitted ${dateFormatter.format(
-            conversation.createdAt.date.toJavaLocalDate(),
-          )}" // todo: remove hardcode
-          is Conversation.ClaimConversation -> "Submitted ${dateFormatter.format(
-            conversation.createdAt.date.toJavaLocalDate(),
-          )}" // todo: remove hardcode
-        }
-        Text(
-          modifier = Modifier.padding(end = 6.dp),
-          text = label,
-          style = MaterialTheme.typography.bodyMedium.copy(
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-          ),
-        )
-        VerticalDivider(
-          Modifier
-            .width(1.dp)
-            .fillMaxHeight(),
-        )
-        Text(
-          modifier = Modifier.padding(start = 6.dp),
-          text = submitted,
-          style = MaterialTheme.typography.bodyMedium.copy(
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-          ),
-        )
       }
     }
     Spacer(Modifier.height(8.dp))
     Row {
       Box(Modifier.weight(1f))
-      Row(Modifier.weight(8f)) {
+      Row(
+        Modifier
+          .weight(8f)
+          .padding(bottom = 12.dp, end = 16.dp),
+      ) {
+        val sender = when (conversation.newestMessageForPreview.sender) {
+          ChatMessage.Sender.HEDVIG -> "Hedvig"
+          ChatMessage.Sender.MEMBER -> "You" // todo: add copy!
+        }
+        val msgText = when (conversation.newestMessageForPreview) {
+          is ChatMessage.ChatMessageFile -> "Sent a file" // todo: add copy!
+          is ChatMessage.ChatMessageGif -> "GIF" // todo: add copy!
+          is ChatMessage.ChatMessageText -> conversation.newestMessageForPreview.text
+          is ChatMessage.FailedToBeSent.ChatMessageText -> conversation.newestMessageForPreview.text
+          is ChatMessage.FailedToBeSent.ChatMessageUri -> "Sent a file" // todo: add copy!
+        }
+        val textForPreview = if (conversation.isLegacy) {
+          "Your conversation history from previous contacts with Hedvig while everything was one long chat." // todo: copy!
+        } else {
+          "$sender: $msgText"
+        }
         Text(
-          text = conversation.lastMessageForPreview,
-          style = MaterialTheme.typography.bodyMedium,
+          text = textForPreview,
+          style = if (conversation.hasNewMessages) {
+            MaterialTheme.typography.bodyMedium
+          } else {
+            MaterialTheme.typography.bodyMedium.copy(
+              color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+          },
           overflow = TextOverflow.Ellipsis,
           maxLines = 2,
         )
@@ -266,7 +250,7 @@ private fun InboxSuccessScreenPreview() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       InboxScreen(
-        InboxUiState.Success(listOf(previewServiceConversation, previewClaimConversation, previewLegacyConversation)),
+        InboxUiState.Success(listOf(mockConversation1, mockConversation2, mockConversationLegacy)),
         {},
         {},
         {},
@@ -284,9 +268,9 @@ private fun ConversationCardPreview(
     Surface(color = MaterialTheme.colorScheme.background) {
       ConversationCard(
         conversation = when (cases) {
-          TripleCase.FIRST -> previewLegacyConversation
-          TripleCase.SECOND -> previewServiceConversation
-          TripleCase.THIRD -> previewClaimConversation
+          TripleCase.FIRST -> mockConversation1
+          TripleCase.SECOND -> mockConversation2
+          TripleCase.THIRD -> mockConversationLegacy
         },
         onConversationClick = {},
       )
@@ -294,29 +278,73 @@ private fun ConversationCardPreview(
   }
 }
 
-private val previewServiceConversation = Conversation.ServiceConversation(
-  conversationId = "123",
-  lastMessageForPreview = "Lorem ipsum dolor sit amet consectetur. Accumsan vitae adipiscing blandit id et interdum Lorem ipsum dolor sit amet consectetur. Accumsan vitae adipiscing blandit id et interdum.",
+private val mockConversation1 = Conversation(
+  conversationId = "1",
+  newestMessageForPreview = ChatMessage.ChatMessageText(
+    "11",
+    ChatMessage.Sender.HEDVIG,
+    sentAt = Clock.System.now(),
+    text = "Please tell as more about how the phone broke.",
+  ),
   hasNewMessages = true,
-  lastUpdatedTime = LocalDateTime(2024, 5, 26, 13, 13, 0, 0),
-  createdAt = LocalDateTime(2024, 5, 25, 13, 13, 0, 0),
-  title = null,
+  chatMessages = listOf(
+    ChatMessage.ChatMessageText(
+      "11",
+      ChatMessage.Sender.HEDVIG,
+      sentAt = Clock.System.now(),
+      text = "Please tell as more about how the phone broke.",
+    ),
+  ),
+  title = "Claim",
+  subtitle = "Broken phone",
+  statusMessage = null,
+  isLegacy = false,
 )
 
-private val previewClaimConversation = Conversation.LegacyConversation(
-  conversationId = "108",
-  lastMessageForPreview = "Lorem ipsum dolor sit amet consectetur. Accumsan vitae adipiscing blandit id et interdum Lorem ipsum dolor sit amet consectetur. Accumsan vitae adipiscing blandit id et interdum.",
-  closedAt = LocalDateTime(2024, 3, 26, 13, 13, 0, 0),
-  lastUpdatedTime = LocalDateTime(2024, 3, 26, 13, 13, 0, 0),
+private val mockConversation2 = Conversation(
+  conversationId = "2",
+  newestMessageForPreview = ChatMessage.ChatMessageFile(
+    "Id",
+    ChatMessage.Sender.MEMBER,
+    mimeType = ChatMessage.ChatMessageFile.MimeType.IMAGE,
+    sentAt = Clock.System.now(),
+    url = "url",
+  ),
   hasNewMessages = false,
+  chatMessages = listOf(
+    ChatMessage.ChatMessageFile(
+      "Id",
+      ChatMessage.Sender.MEMBER,
+      mimeType = ChatMessage.ChatMessageFile.MimeType.IMAGE,
+      sentAt = Clock.System.now(),
+      url = "url",
+    ),
+  ),
+  title = "Question",
+  subtitle = "Termination",
+  statusMessage = null,
+  isLegacy = false,
 )
 
-private val previewLegacyConversation = Conversation.ClaimConversation(
-  title = "Accident abroad",
-  label = "Home",
-  conversationId = "2344",
-  createdAt = LocalDateTime(2024, 5, 15, 13, 13, 0, 0),
+private val mockConversationLegacy = Conversation(
+  conversationId = "0",
+  newestMessageForPreview = ChatMessage.ChatMessageText(
+    "11",
+    ChatMessage.Sender.HEDVIG,
+    sentAt = Instant.fromEpochSeconds(50, 1),
+    text = "Please tell as more about how the phone broke.",
+  ),
   hasNewMessages = false,
-  lastMessageForPreview = "Thanks, please file a report to your BRF and send in the documents and we’ll take a further look.",
-  lastUpdatedTime = LocalDateTime(2024, 5, 26, 13, 16, 0, 0),
+  chatMessages = listOf(
+    ChatMessage.ChatMessageText(
+      "11",
+      ChatMessage.Sender.HEDVIG,
+      sentAt = Instant.fromEpochSeconds(50, 1),
+      text = "Please tell as more about how the phone broke.",
+    ),
+  ),
+  title = "Conversation history",
+  subtitle = "",
+  statusMessage = null,
+  isLegacy = true,
 )
