@@ -75,3 +75,38 @@ internal abstract class SizeRadioOptionTokens {
     override val ContainerShape = ShapeKeyTokens.CornerLarge
   }
 }
+
+internal abstract class SizeRadioGroupTokens {
+  abstract val LabelTopPadding: Dp
+  abstract val LabelBottomPadding: Dp
+  abstract val HorizontalPadding: Dp
+  abstract val ContainerShape: ShapeKeyTokens
+
+  fun verticalPadding(): PaddingValues {
+    return PaddingValues(
+      top = LabelTopPadding,
+      bottom = LabelBottomPadding,
+    )
+  }
+
+  data object LargeSizeRadioGroupTokens : SizeRadioGroupTokens() {
+    override val LabelTopPadding = 12.dp
+    override val LabelBottomPadding = 13.dp
+    override val HorizontalPadding = 16.dp
+    override val ContainerShape = ShapeKeyTokens.CornerLarge
+  }
+
+  data object MediumSizeRadioGroupTokens : SizeRadioGroupTokens() {
+    override val LabelTopPadding = 11.dp
+    override val LabelBottomPadding = 16.dp
+    override val HorizontalPadding = 16.dp
+    override val ContainerShape = ShapeKeyTokens.CornerLarge
+  }
+
+  data object SmallSizeRadioGroupTokens : SizeRadioGroupTokens() {
+    override val LabelTopPadding = 10.dp
+    override val LabelBottomPadding = 16.dp
+    override val HorizontalPadding = 16.dp
+    override val ContainerShape = ShapeKeyTokens.CornerLarge
+  }
+}

@@ -38,14 +38,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.design.system.hedvig.LockedState.Locked
+import com.hedvig.android.design.system.hedvig.LockedState.NotLocked
 import com.hedvig.android.design.system.hedvig.RadioOptionChosenState.Chosen
 import com.hedvig.android.design.system.hedvig.RadioOptionChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.RadioOptionDefaults.RadioOptionStyle
 import com.hedvig.android.design.system.hedvig.RadioOptionDefaults.RadioOptionStyle.Default
 import com.hedvig.android.design.system.hedvig.RadioOptionDefaults.RadioOptionStyle.Label
 import com.hedvig.android.design.system.hedvig.RadioOptionDefaults.RadioOptionStyle.LeftAligned
-import com.hedvig.android.design.system.hedvig.RadioOptionLockedState.Locked
-import com.hedvig.android.design.system.hedvig.RadioOptionLockedState.NotLocked
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.flag.FlagSweden
 import com.hedvig.android.design.system.hedvig.tokens.RadioOptionColorTokens
@@ -54,13 +54,41 @@ import com.hedvig.android.design.system.hedvig.tokens.SizeRadioOptionTokens.Medi
 import com.hedvig.android.design.system.hedvig.tokens.SizeRadioOptionTokens.SmallSizeRadioOptionTokens
 import com.hedvig.android.design.system.hedvig.tokens.TweenAnimationTokens
 
+data class RadioOptionData(
+  val optionText: String,
+  val onClick: () -> Unit,
+  val chosenState: RadioOptionChosenState,
+  val lockedState: LockedState = NotLocked,
+  val interactionSource: MutableInteractionSource? = null,
+)
+
+@Composable
+internal fun RadioOption(
+  data: RadioOptionData,
+  radioOptionStyle: RadioOptionStyle,
+  radioOptionSize: RadioOptionDefaults.RadioOptionSize,
+  groupLockedState: LockedState,
+  modifier: Modifier = Modifier,
+) {
+  RadioOption(
+    optionText = data.optionText,
+    onClick = data.onClick,
+    chosenState = data.chosenState,
+    modifier = modifier,
+    lockedState = if (groupLockedState == Locked) Locked else data.lockedState,
+    radioOptionStyle = radioOptionStyle,
+    radioOptionSize = radioOptionSize,
+    interactionSource = data.interactionSource,
+  )
+}
+
 @Composable
 fun RadioOption(
   optionText: String,
   onClick: () -> Unit,
   chosenState: RadioOptionChosenState,
   modifier: Modifier = Modifier,
-  lockedState: RadioOptionLockedState = NotLocked,
+  lockedState: LockedState = NotLocked,
   radioOptionStyle: RadioOptionStyle = RadioOptionDefaults.radioOptionStyle,
   radioOptionSize: RadioOptionDefaults.RadioOptionSize = RadioOptionDefaults.radioOptionSize,
   interactionSource: MutableInteractionSource? = null,
@@ -161,13 +189,9 @@ fun RadioOption(
 }
 
 @Composable
-private fun Experimenting() {
-}
-
-@Composable
-private fun SelectIndicationCircle(
+internal fun SelectIndicationCircle(
   chosenState: RadioOptionChosenState,
-  lockedState: RadioOptionLockedState,
+  lockedState: LockedState,
   modifier: Modifier = Modifier,
 ) {
   CheckItemAnimation(chosenState) { currentState: RadioOptionChosenState ->
@@ -251,12 +275,12 @@ enum class RadioOptionChosenState {
   NotChosen,
 }
 
-enum class RadioOptionLockedState {
+enum class LockedState {
   Locked,
   NotLocked,
 }
 
-private fun RadioOptionDefaults.RadioOptionSize.size(style: RadioOptionStyle): RadioOptionSize {
+internal fun RadioOptionDefaults.RadioOptionSize.size(style: RadioOptionStyle): RadioOptionSize {
   return when (this) {
     RadioOptionDefaults.RadioOptionSize.Large -> RadioOptionSize.Large(style)
     RadioOptionDefaults.RadioOptionSize.Medium -> RadioOptionSize.Medium(style)
@@ -265,7 +289,7 @@ private fun RadioOptionDefaults.RadioOptionSize.size(style: RadioOptionStyle): R
 }
 
 @Immutable
-private data class RadioOptionColors(
+internal data class RadioOptionColors(
   val containerColor: Color,
   val optionTextColor: Color,
   val labelTextColor: Color,
@@ -276,19 +300,19 @@ private data class RadioOptionColors(
   val disabledIndicatorColor: Color,
 ) {
   @Stable
-  fun optionTextColor(state: RadioOptionLockedState): Color = when (state) {
+  fun optionTextColor(state: LockedState): Color = when (state) {
     Locked -> disabledOptionTextColor
     else -> optionTextColor
   }
 
   @Stable
-  fun labelTextColor(state: RadioOptionLockedState): Color = when (state) {
+  fun labelTextColor(state: LockedState): Color = when (state) {
     Locked -> disabledLabelTextColor
     else -> labelTextColor
   }
 }
 
-private val radioOptionColors: RadioOptionColors
+internal val radioOptionColors: RadioOptionColors
   @Composable
   get() = with(HedvigTheme.colorScheme) {
     remember(this) {
@@ -305,7 +329,7 @@ private val radioOptionColors: RadioOptionColors
     }
   }
 
-private sealed interface RadioOptionSize {
+internal sealed interface RadioOptionSize {
   val contentPadding: PaddingValues
 
   @get:Composable
@@ -514,7 +538,7 @@ private class RadioOptionStyleProvider :
     listOf(
       Default,
       Label("Label"),
-      RadioOptionStyle.Icon(IconResource.Painter(hedvig.resources.R.drawable.pillow_hedvig)),
+      //  RadioOptionStyle.Icon(IconResource.Painter(hedvig.resources.R.drawable.pillow_hedvig)),
       RadioOptionStyle.Icon(IconResource.Vector(HedvigIcons.FlagSweden)),
       LeftAligned,
     ),
