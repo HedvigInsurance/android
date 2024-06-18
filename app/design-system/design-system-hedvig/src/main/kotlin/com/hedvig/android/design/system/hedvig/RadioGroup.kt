@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -54,7 +55,6 @@ fun RadioGroup(
   // to avoid problems with nested scroll/infinity max height,
   // when the lazyColumn/Row may not even be needed since the list is very short. In that case we'll just use a simple
   // Column/Row here and leave handling the scroll to the parent Composable
-  // to use, also set Modifier.width (Modifier.width(intrinsicSize = Max) or fixed width)
   groupLockedState: LockedState = NotLocked,
   radioGroupStyle: RadioGroupStyle = RadioGroupDefaults.radioGroupStyle,
   radioGroupSize: RadioGroupSize = RadioGroupDefaults.radioGroupSize,
@@ -110,7 +110,7 @@ private fun HorizontalRadioGroup(
   modifier: Modifier = Modifier,
 ) {
   if (longListUseLazyScroll) {
-    LazyRow {
+    LazyRow(modifier) {
       items(
         items = data,
         key = { it.optionText },
@@ -120,20 +120,20 @@ private fun HorizontalRadioGroup(
           radioOptionStyle = RadioOptionStyle.LeftAligned,
           radioOptionSize = radioGroupSize.toOptionSize(),
           groupLockedState = groupLockedState,
-          modifier = modifier,
+          modifier = Modifier.width(intrinsicSize = Max),
         )
         Spacer(Modifier.width(4.dp))
       }
     }
   } else {
-    Row {
+    Row(modifier) {
       for (i in data) {
         RadioOption(
           data = i,
           radioOptionStyle = RadioOptionStyle.LeftAligned,
           radioOptionSize = radioGroupSize.toOptionSize(),
           groupLockedState = groupLockedState,
-          modifier = modifier.weight(1f),
+          modifier = Modifier.weight(1f),
         )
         Spacer(Modifier.width(4.dp))
       }
@@ -178,16 +178,16 @@ private fun HorizontalRadioGroupWithLabel(
               SelectIndicationCircle(
                 radioOptionData.chosenState,
                 radioOptionData.lockedState,
-                  Modifier
-                      .clip(CircleShape)
-                      .clickable(
-                          enabled = groupLockedState == NotLocked && radioOptionData.lockedState == NotLocked,
-                          role = Role.RadioButton,
-                      ) {
-                          if (radioOptionData.lockedState != Locked) {
-                              radioOptionData.onClick()
-                          }
-                      },
+                Modifier
+                  .clip(CircleShape)
+                  .clickable(
+                    enabled = groupLockedState == NotLocked && radioOptionData.lockedState == NotLocked,
+                    role = Role.RadioButton,
+                  ) {
+                    if (radioOptionData.lockedState != Locked) {
+                      radioOptionData.onClick()
+                    }
+                  },
               )
               Spacer(Modifier.width(8.dp))
               HedvigText(
@@ -205,23 +205,23 @@ private fun HorizontalRadioGroupWithLabel(
           for (i in data) {
             val optionTextColor = radioOptionColors.optionTextColor(i.lockedState)
             Row(
-                Modifier
-                    .sizeIn(maxHeight = 40.dp)
-                    .width(intrinsicSize = Max),
+              Modifier
+                .sizeIn(maxHeight = 40.dp)
+                .width(intrinsicSize = Max),
             ) {
               SelectIndicationCircle(
                 i.chosenState,
                 i.lockedState,
-                  Modifier
-                      .clip(CircleShape)
-                      .clickable(
-                          enabled = groupLockedState == NotLocked && i.lockedState == NotLocked,
-                          role = Role.RadioButton,
-                      ) {
-                          if (i.lockedState != Locked) {
-                              i.onClick()
-                          }
-                      },
+                Modifier
+                  .clip(CircleShape)
+                  .clickable(
+                    enabled = groupLockedState == NotLocked && i.lockedState == NotLocked,
+                    role = Role.RadioButton,
+                  ) {
+                    if (i.lockedState != Locked) {
+                      i.onClick()
+                    }
+                  },
               )
               Spacer(Modifier.width(16.dp))
               HedvigText(
@@ -247,7 +247,34 @@ private fun VerticalRadioGroup(
   longListUseLazyScroll: Boolean,
   modifier: Modifier = Modifier,
 ) {
-  TODO()
+  if (longListUseLazyScroll) {
+    LazyColumn(modifier) {
+      items(
+        items = data,
+        key = { it.optionText },
+      ) { radioOptionData ->
+        RadioOption(
+          data = radioOptionData,
+          radioOptionStyle = optionStyle,
+          groupLockedState = groupLockedState,
+          radioOptionSize = radioGroupSize.toOptionSize(),
+        )
+        Spacer(Modifier.height(4.dp))
+      }
+    }
+  } else {
+    Column(modifier) {
+      for (radioOptionData in data) {
+        RadioOption(
+          data = radioOptionData,
+          radioOptionStyle = optionStyle,
+          groupLockedState = groupLockedState,
+          radioOptionSize = radioGroupSize.toOptionSize(),
+        )
+        Spacer(Modifier.height(4.dp))
+      }
+    }
+  }
 }
 
 @Composable
@@ -380,7 +407,7 @@ fun GroupPreview(
           groupLockedState = NotLocked,
           radioGroupSize = size,
           longListUseLazyScroll = true,
-          modifier = Modifier.width(intrinsicSize = Max),
+          modifier = Modifier,
           data = listOf(
             RadioOptionData(
               optionText = "Yes",
@@ -407,6 +434,30 @@ fun GroupPreview(
         Spacer(Modifier.height(16.dp))
         HedvigText("Horizontal with label")
         HorizontalRadioGroupWithLabel(
+          groupLockedState = NotLocked,
+          radioGroupSize = size,
+          longListUseLazyScroll = false,
+          modifier = Modifier.fillMaxWidth(),
+          groupLabelText = "Label",
+          contentPaddingValues = calculateContentPadding(HorizontalWithLabel("Label"), size),
+          data = listOf(
+            RadioOptionData(
+              optionText = "Yes",
+              onClick = {},
+              chosenState = Chosen,
+            ),
+            RadioOptionData(
+              optionText = "No",
+              onClick = {},
+              chosenState = NotChosen,
+            ),
+          ),
+        )
+        Spacer(Modifier.height(4.dp))
+        Row(
+          Modifier.horizontalScroll(rememberScrollState()),
+        ) {
+          HorizontalRadioGroupWithLabel(
             groupLockedState = NotLocked,
             radioGroupSize = size,
             longListUseLazyScroll = false,
@@ -414,61 +465,37 @@ fun GroupPreview(
             groupLabelText = "Label",
             contentPaddingValues = calculateContentPadding(HorizontalWithLabel("Label"), size),
             data = listOf(
-                RadioOptionData(
-                    optionText = "Yes",
-                    onClick = {},
-                    chosenState = Chosen,
-                ),
-                RadioOptionData(
-                    optionText = "No",
-                    onClick = {},
-                    chosenState = NotChosen,
-                ),
-            ),
-        )
-        Spacer(Modifier.height(4.dp))
-        Row(
-            Modifier.horizontalScroll(rememberScrollState()),
-        ) {
-          HorizontalRadioGroupWithLabel(
-              groupLockedState = NotLocked,
-              radioGroupSize = size,
-              longListUseLazyScroll = false,
-              modifier = Modifier.fillMaxWidth(),
-              groupLabelText = "Label",
-              contentPaddingValues = calculateContentPadding(HorizontalWithLabel("Label"), size),
-              data = listOf(
-                  RadioOptionData(
-                      optionText = "Yes",
-                      onClick = {},
-                      chosenState = Chosen,
-                  ),
-                  RadioOptionData(
-                      optionText = "No",
-                      onClick = {},
-                      chosenState = NotChosen,
-                  ),
-                  RadioOptionData(
-                      optionText = "Maybe",
-                      onClick = {},
-                      chosenState = NotChosen,
-                  ),
-                  RadioOptionData(
-                      optionText = "Not sure",
-                      onClick = {},
-                      chosenState = NotChosen,
-                  ),
-                  RadioOptionData(
-                      optionText = "Perhaps",
-                      onClick = {},
-                      chosenState = NotChosen,
-                  ),
-                  RadioOptionData(
-                      optionText = "Very unlikely",
-                      onClick = {},
-                      chosenState = NotChosen,
-                  ),
+              RadioOptionData(
+                optionText = "Yes",
+                onClick = {},
+                chosenState = Chosen,
               ),
+              RadioOptionData(
+                optionText = "No",
+                onClick = {},
+                chosenState = NotChosen,
+              ),
+              RadioOptionData(
+                optionText = "Maybe",
+                onClick = {},
+                chosenState = NotChosen,
+              ),
+              RadioOptionData(
+                optionText = "Not sure",
+                onClick = {},
+                chosenState = NotChosen,
+              ),
+              RadioOptionData(
+                optionText = "Perhaps",
+                onClick = {},
+                chosenState = NotChosen,
+              ),
+              RadioOptionData(
+                optionText = "Very unlikely",
+                onClick = {},
+                chosenState = NotChosen,
+              ),
+            ),
           )
         }
         HedvigText("Horizontal with label with longListUseLazyScroll")
@@ -512,6 +539,81 @@ fun GroupPreview(
             ),
           ),
           contentPaddingValues = calculateContentPadding(HorizontalWithLabel("Label"), size),
+        )
+        HedvigText("Vertical with longListUseLazyScroll")
+        VerticalRadioGroup(
+          groupLockedState = NotLocked,
+          radioGroupSize = size,
+          longListUseLazyScroll = true,
+          modifier = Modifier.fillMaxWidth(),
+          optionStyle = RadioOptionStyle.Default,
+          data = listOf(
+            RadioOptionData(
+              optionText = "Yes",
+              onClick = {},
+              chosenState = Chosen,
+            ),
+            RadioOptionData(
+              optionText = "No",
+              onClick = {},
+              chosenState = NotChosen,
+              lockedState = Locked,
+            ),
+            RadioOptionData(
+              optionText = "Maybe",
+              onClick = {},
+              chosenState = NotChosen,
+            ),
+            RadioOptionData(
+              optionText = "Not sure",
+              onClick = {},
+              chosenState = NotChosen,
+            ),
+            RadioOptionData(
+              optionText = "Perhaps",
+              onClick = {},
+              chosenState = NotChosen,
+            ),
+            RadioOptionData(
+              optionText = "Very unlikely",
+              onClick = {},
+              chosenState = NotChosen,
+            ),
+          ),
+        )
+      }
+    }
+  }
+}
+
+@Preview
+@Composable
+fun VerticalGroupNoLazyPreview(
+  @PreviewParameter(HorizontalGroupParametersProvider::class) size: RadioGroupSize,
+) {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundWhite) {
+      Column(Modifier.padding(horizontal = 16.dp)) {
+        HedvigText("Vertical")
+        VerticalRadioGroup(
+          groupLockedState = NotLocked,
+          radioGroupSize = size,
+          longListUseLazyScroll = false,
+          modifier = Modifier.fillMaxWidth(),
+          optionStyle = RadioOptionStyle.Default,
+          data = listOf(
+            RadioOptionData(
+              optionText = "Vertical option with very very long text, how about that? About three lines tall",
+              onClick = {},
+              chosenState = Chosen,
+            ),
+            RadioOptionData(
+              optionText = "No",
+              onClick = {},
+              chosenState = NotChosen,
+              lockedState = NotLocked,
+            ),
+          ),
         )
       }
     }
