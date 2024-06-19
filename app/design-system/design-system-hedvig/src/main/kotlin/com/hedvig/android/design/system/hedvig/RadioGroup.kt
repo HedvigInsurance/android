@@ -1,28 +1,23 @@
 package com.hedvig.android.design.system.hedvig
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize.Max
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -43,9 +38,11 @@ import com.hedvig.android.design.system.hedvig.RadioOptionChosenState.Chosen
 import com.hedvig.android.design.system.hedvig.RadioOptionChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.RadioOptionDefaults.RadioOptionStyle
 import com.hedvig.android.design.system.hedvig.RadioOptionDefaults.RadioOptionStyle.Default
+import com.hedvig.android.design.system.hedvig.RadioOptionDefaults.RadioOptionStyle.Label
 import com.hedvig.android.design.system.hedvig.RadioOptionDefaults.RadioOptionStyle.LeftAligned
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Play
+import com.hedvig.android.design.system.hedvig.icon.flag.FlagSweden
 import com.hedvig.android.design.system.hedvig.tokens.SizeRadioGroupTokens.LargeSizeRadioGroupTokens
 import com.hedvig.android.design.system.hedvig.tokens.SizeRadioGroupTokens.MediumSizeRadioGroupTokens
 import com.hedvig.android.design.system.hedvig.tokens.SizeRadioGroupTokens.SmallSizeRadioGroupTokens
@@ -122,7 +119,7 @@ private fun HorizontalRadioGroup(
       ) { radioOptionData ->
         RadioOption(
           data = radioOptionData,
-          radioOptionStyle = RadioOptionStyle.LeftAligned,
+          radioOptionStyle = LeftAligned,
           radioOptionSize = radioGroupSize.toOptionSize(),
           groupLockedState = groupLockedState,
           modifier = Modifier.width(intrinsicSize = Max),
@@ -135,7 +132,7 @@ private fun HorizontalRadioGroup(
       for (i in data) {
         RadioOption(
           data = i,
-          radioOptionStyle = RadioOptionStyle.LeftAligned,
+          radioOptionStyle = LeftAligned,
           radioOptionSize = radioGroupSize.toOptionSize(),
           groupLockedState = groupLockedState,
           modifier = Modifier.weight(1f),
@@ -161,81 +158,44 @@ private fun HorizontalRadioGroupWithLabel(
     color = radioOptionColors.containerColor,
   ) {
     Column(
-      modifier.padding(contentPaddingValues),
+      modifier.padding(
+        top = contentPaddingValues.calculateTopPadding(),
+      ),
     ) {
       val labelTextColor = radioOptionColors.labelTextColor(groupLockedState)
       HedvigText(
         text = groupLabelText,
         style = MediumSizeRadioOptionTokens.LabelTextFont.value, // same for all sizes in figma
         color = labelTextColor,
+        modifier = Modifier.padding(horizontal = contentPaddingValues.calculateStartPadding(Ltr)),
       )
-      Spacer(Modifier.height(16.dp))
       if (longListUseLazyScroll) {
         LazyRow {
           items(
             items = data,
             key = { it.optionText },
           ) { radioOptionData ->
-            val optionTextColor = radioOptionColors.optionTextColor(radioOptionData.lockedState)
-            Row(
-              Modifier.width(intrinsicSize = Max),
-            ) {
-              SelectIndicationCircle(
-                radioOptionData.chosenState,
-                radioOptionData.lockedState,
-                Modifier
-                  .clip(CircleShape)
-                  .clickable(
-                    enabled = groupLockedState == NotLocked && radioOptionData.lockedState == NotLocked,
-                    role = Role.RadioButton,
-                  ) {
-                    if (radioOptionData.lockedState != Locked) {
-                      radioOptionData.onClick()
-                    }
-                  },
-              )
-              Spacer(Modifier.width(8.dp))
-              HedvigText(
-                radioOptionData.optionText,
-                style = radioGroupSize.toOptionSize().size(LeftAligned).optionTextStyle,
-                color = optionTextColor,
-                modifier = Modifier.weight(1f),
-              )
-              Spacer(Modifier.width(16.dp))
-            }
+            RadioOption(
+              data = radioOptionData,
+              radioOptionStyle = LeftAligned,
+              radioOptionSize = radioGroupSize.toOptionSize(),
+              groupLockedState = groupLockedState,
+              modifier = Modifier.width(intrinsicSize = Max),
+            )
+            Spacer(Modifier.width(4.dp))
           }
         }
       } else {
         Row {
           for (i in data) {
-            val optionTextColor = radioOptionColors.optionTextColor(i.lockedState)
-            Row(
-              Modifier
-                .sizeIn(maxHeight = 40.dp)
-                .width(intrinsicSize = Max),
-            ) {
-              SelectIndicationCircle(
-                i.chosenState,
-                i.lockedState,
-                Modifier
-                  .clip(CircleShape)
-                  .clickable(
-                    enabled = groupLockedState == NotLocked && i.lockedState == NotLocked,
-                    role = Role.RadioButton,
-                  ) {
-                    if (i.lockedState != Locked) {
-                      i.onClick()
-                    }
-                  },
-              )
-              Spacer(Modifier.width(16.dp))
-              HedvigText(
-                i.optionText,
-                style = radioGroupSize.toOptionSize().size(LeftAligned).optionTextStyle,
-                color = optionTextColor,
-              )
-              Spacer(Modifier.width(16.dp))
-            }
+            RadioOption(
+              data = i,
+              radioOptionStyle = LeftAligned,
+              radioOptionSize = radioGroupSize.toOptionSize(),
+              groupLockedState = groupLockedState,
+              modifier = Modifier.width(intrinsicSize = Max),
+            )
+            Spacer(Modifier.width(4.dp))
           }
         }
       }
@@ -302,11 +262,7 @@ private fun VerticalRadioGroupWithLabel(
     ) {
       val labelTextColor = radioOptionColors.labelTextColor(groupLockedState)
       HedvigText(
-        modifier = Modifier.padding(
-          top = contentPaddingValues.calculateTopPadding(),
-          start = contentPaddingValues.calculateStartPadding(Ltr),
-          end = contentPaddingValues.calculateEndPadding(Ltr),
-        ),
+        modifier = Modifier.padding(contentPaddingValues),
         text = groupLabelText,
         style = MediumSizeRadioOptionTokens.LabelTextFont.value, // same for all sizes in figma
         color = labelTextColor,
@@ -349,21 +305,21 @@ private fun calculateContentPadding(radioGroupStyle: RadioGroupStyle, radioGroup
       start = LargeSizeRadioGroupTokens.HorizontalPadding,
       end = LargeSizeRadioGroupTokens.HorizontalPadding,
       top = LargeSizeRadioGroupTokens.verticalPadding().calculateTopPadding(),
-      bottom = LargeSizeRadioGroupTokens.verticalPadding().calculateBottomPadding(),
+      bottom = if (radioGroupStyle !is VerticalWithLabel) LargeSizeRadioGroupTokens.verticalPadding().calculateBottomPadding() else 0.dp,
     )
 
     Medium -> PaddingValues(
       start = MediumSizeRadioGroupTokens.HorizontalPadding,
       end = MediumSizeRadioGroupTokens.HorizontalPadding,
       top = MediumSizeRadioGroupTokens.verticalPadding().calculateTopPadding(),
-      bottom = MediumSizeRadioGroupTokens.verticalPadding().calculateBottomPadding(),
+      bottom = if (radioGroupStyle !is VerticalWithLabel) MediumSizeRadioGroupTokens.verticalPadding().calculateBottomPadding() else 0.dp,
     )
 
     Small -> PaddingValues(
       start = SmallSizeRadioGroupTokens.HorizontalPadding,
       end = SmallSizeRadioGroupTokens.HorizontalPadding,
       top = SmallSizeRadioGroupTokens.verticalPadding().calculateTopPadding(),
-      bottom = SmallSizeRadioGroupTokens.verticalPadding().calculateBottomPadding(),
+      bottom = if (radioGroupStyle !is VerticalWithLabel) SmallSizeRadioGroupTokens.verticalPadding().calculateBottomPadding() else 0.dp,
     )
   }
   return when (radioGroupStyle) {
@@ -598,7 +554,7 @@ fun GroupPreview(
           radioGroupSize = size,
           longListUseLazyScroll = true,
           modifier = Modifier.fillMaxWidth(),
-          optionStyle = RadioOptionStyle.Default,
+          optionStyle = Default,
           data = listOf(
             RadioOptionData(
               optionText = "Yes",
@@ -652,7 +608,7 @@ fun VerticalGroupsPreview(
           radioGroupSize = size,
           longListUseLazyScroll = false,
           modifier = Modifier.fillMaxWidth(),
-          optionStyle = RadioOptionStyle.Default,
+          optionStyle = Default,
           data = listOf(
             RadioOptionData(
               optionText = "Vertical option",
@@ -674,10 +630,10 @@ fun VerticalGroupsPreview(
           radioGroupSize = size,
           longListUseLazyScroll = false,
           modifier = Modifier.fillMaxWidth(),
-          optionStyle = RadioOptionStyle.Default,
+          optionStyle = Default,
           groupLabelText = "Label",
           contentPaddingValues = calculateContentPadding(
-            RadioGroupStyle.VerticalWithLabel(
+            VerticalWithLabel(
               groupLabelText = "Label",
               optionStyle = RadioOptionStyle.Icon(IconResource.Vector(HedvigIcons.Play)),
             ),
@@ -702,11 +658,151 @@ fun VerticalGroupsPreview(
   }
 }
 
+@Preview
+@Composable
+fun VerticalGroupWithDiffOptionStylesPreview(
+  @PreviewParameter(RadiOptionStyleParametersProvider::class) style: RadioOptionStyle,
+) {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      Column(Modifier.padding(horizontal = 16.dp).verticalScroll(rememberScrollState())) {
+        VerticalRadioGroupWithLabel(
+          groupLockedState = NotLocked,
+          radioGroupSize = Small,
+          longListUseLazyScroll = false,
+          modifier = Modifier.fillMaxWidth(),
+          optionStyle = style,
+          groupLabelText = "Label",
+          contentPaddingValues = calculateContentPadding(
+            VerticalWithLabel(
+              groupLabelText = "Label",
+              optionStyle = RadioOptionStyle.Icon(IconResource.Vector(HedvigIcons.Play)),
+            ),
+            Small,
+          ),
+          data = listOf(
+            RadioOptionData(
+              optionText = "Vertical option",
+              onClick = {},
+              chosenState = NotChosen,
+            ),
+            RadioOptionData(
+              optionText = "No",
+              onClick = {},
+              chosenState = Chosen,
+              lockedState = NotLocked,
+            ),
+            RadioOptionData(
+              optionText = "Vertical option",
+              onClick = {},
+              chosenState = NotChosen,
+            ),
+            RadioOptionData(
+              optionText = "No",
+              onClick = {},
+              chosenState = NotChosen,
+              lockedState = NotLocked,
+            ),
+            RadioOptionData(
+              optionText = "Vertical option",
+              onClick = {},
+              chosenState = NotChosen,
+            ),
+            RadioOptionData(
+              optionText = "No",
+              onClick = {},
+              chosenState = NotChosen,
+              lockedState = NotLocked,
+            ),
+            RadioOptionData(
+              optionText = "Vertical option",
+              onClick = {},
+              chosenState = NotChosen,
+            ),
+            RadioOptionData(
+              optionText = "No",
+              onClick = {},
+              chosenState = NotChosen,
+              lockedState = NotLocked,
+            ),
+            RadioOptionData(
+              optionText = "Vertical option",
+              onClick = {},
+              chosenState = NotChosen,
+            ),
+            RadioOptionData(
+              optionText = "No",
+              onClick = {},
+              chosenState = NotChosen,
+              lockedState = NotLocked,
+            ),
+            RadioOptionData(
+              optionText = "Vertical option",
+              onClick = {},
+              chosenState = NotChosen,
+            ),
+            RadioOptionData(
+              optionText = "No",
+              onClick = {},
+              chosenState = NotChosen,
+              lockedState = NotLocked,
+            ),
+            RadioOptionData(
+              optionText = "Vertical option",
+              onClick = {},
+              chosenState = NotChosen,
+            ),
+            RadioOptionData(
+              optionText = "No",
+              onClick = {},
+              chosenState = NotChosen,
+              lockedState = NotLocked,
+            ),
+            RadioOptionData(
+              optionText = "Vertical option",
+              onClick = {},
+              chosenState = NotChosen,
+            ),
+            RadioOptionData(
+              optionText = "No",
+              onClick = {},
+              chosenState = NotChosen,
+              lockedState = NotLocked,
+            ),
+            RadioOptionData(
+              optionText = "Vertical option",
+              onClick = {},
+              chosenState = NotChosen,
+            ),
+            RadioOptionData(
+              optionText = "No",
+              onClick = {},
+              chosenState = NotChosen,
+              lockedState = NotLocked,
+            ),
+          ),
+        )
+      }
+    }
+  }
+}
+
 private class HorizontalGroupParametersProvider :
   CollectionPreviewParameterProvider<RadioGroupSize>(
     listOf(
       Large,
       Medium,
       Small,
+    ),
+  )
+
+private class RadiOptionStyleParametersProvider :
+  CollectionPreviewParameterProvider<RadioOptionStyle>(
+    listOf(
+      Default,
+      Label("Label"),
+      RadioOptionStyle.Icon(IconResource.Painter(hedvig.resources.R.drawable.pillow_hedvig)),
+      RadioOptionStyle.Icon(IconResource.Vector(HedvigIcons.FlagSweden)),
+      LeftAligned,
     ),
   )

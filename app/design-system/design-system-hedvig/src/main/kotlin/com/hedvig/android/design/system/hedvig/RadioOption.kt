@@ -538,7 +538,7 @@ private class RadioOptionStyleProvider :
     listOf(
       Default,
       Label("Label"),
-      //  RadioOptionStyle.Icon(IconResource.Painter(hedvig.resources.R.drawable.pillow_hedvig)),
+      RadioOptionStyle.Icon(IconResource.Painter(hedvig.resources.R.drawable.pillow_hedvig)),
       RadioOptionStyle.Icon(IconResource.Vector(HedvigIcons.FlagSweden)),
       LeftAligned,
     ),
