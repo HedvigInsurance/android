@@ -1,8 +1,6 @@
 package com.hedvig.android.design.system.hedvig
 
-import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -209,6 +207,7 @@ private fun HorizontalRadioGroupWithLabel(
         maxItemsInEachRow = 2,
         overflow = FlowRowOverflow.Visible,
         verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
       ) {
         for (option in data) {
           val optionTextColor = radioOptionColors.optionTextColor(option.lockedState)
@@ -260,7 +259,11 @@ private fun HorizontalWithLabelRadioOption(
         enabled = enabled,
         role = Role.RadioButton,
         interactionSource = interactionSource,
-        indication = null,
+        indication = ripple(
+          bounded = false,
+          radius = 50.dp,
+          // todo: pls check out this ripple. I like this one, but maybe it's too much
+        ),
       ) {
         if (enabled) {
           onClick()
@@ -276,11 +279,8 @@ private fun HorizontalWithLabelRadioOption(
       optionText,
       style = style,
       color = textColor,
-      modifier = Modifier
-        .clip(shape)
-        .indication(interactionSource, LocalIndication.current),
+      modifier = Modifier,
     )
-    Spacer(Modifier.width(16.dp))
   }
 }
 
@@ -302,7 +302,7 @@ private fun VerticalRadioGroup(
         radioOptionSize = radioGroupSize.toOptionSize(),
         onOptionClick = {
           onOptionClick(radioOptionData.id)
-        }
+        },
       )
       Spacer(Modifier.height(4.dp))
     }
@@ -343,9 +343,11 @@ private fun VerticalRadioGroupWithLabel(
             radioOptionSize = radioGroupSize.toOptionSize(),
             onOptionClick = {
               onOptionClick(radioOptionData.id)
-            }
+            },
           )
-          HorizontalDivider()
+          if (data.indexOf(radioOptionData) != data.lastIndex) {
+            HorizontalDivider()
+          }
         }
       }
     }
