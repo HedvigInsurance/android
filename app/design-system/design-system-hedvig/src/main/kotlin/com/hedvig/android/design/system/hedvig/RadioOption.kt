@@ -92,6 +92,7 @@ fun RadioOption(
   radioOptionStyle: RadioOptionStyle = RadioOptionDefaults.radioOptionStyle,
   radioOptionSize: RadioOptionDefaults.RadioOptionSize = RadioOptionDefaults.radioOptionSize,
   interactionSource: MutableInteractionSource? = null,
+  belowContent: (@Composable () -> Unit)? = null, // TODO
 ) {
   @Suppress("NAME_SHADOWING")
   val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
