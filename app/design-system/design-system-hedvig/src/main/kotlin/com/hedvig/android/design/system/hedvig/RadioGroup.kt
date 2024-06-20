@@ -206,7 +206,7 @@ private fun HorizontalRadioGroupWithLabel(
         modifier = Modifier.fillMaxWidth(),
         maxItemsInEachRow = 2,
         overflow = FlowRowOverflow.Visible,
-        verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
       ) {
         for (option in data) {
@@ -224,7 +224,7 @@ private fun HorizontalRadioGroupWithLabel(
             enabled = lockedState == NotLocked,
             style = calculateHorizontalGroupOptionTextStyle(radioGroupSize),
             textColor = optionTextColor,
-            modifier = itemModifier,
+            modifier = itemModifier.align(Alignment.CenterVertically),
             optionText = option.optionText,
             onClick = {
               onOptionClick(option.id)
