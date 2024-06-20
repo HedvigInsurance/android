@@ -220,11 +220,11 @@ private fun HorizontalRadioGroupWithLabel(
           }
           val lockedState = calculateLockedStateForItemInGroup(option, groupLockedState)
           HorizontalWithLabelRadioOption(
-            shape = shape,
             enabled = lockedState == NotLocked,
             style = calculateHorizontalGroupOptionTextStyle(radioGroupSize),
             textColor = optionTextColor,
-            modifier = itemModifier.align(Alignment.CenterVertically),
+            modifier = itemModifier
+              .align(Alignment.CenterVertically),
             optionText = option.optionText,
             onClick = {
               onOptionClick(option.id)
@@ -244,7 +244,6 @@ private fun HorizontalWithLabelRadioOption(
   onClick: () -> Unit,
   lockedState: LockedState,
   chosenState: RadioOptionChosenState,
-  shape: Shape,
   enabled: Boolean,
   style: TextStyle,
   textColor: Color,
@@ -254,7 +253,6 @@ private fun HorizontalWithLabelRadioOption(
   Row(
     verticalAlignment = Alignment.CenterVertically,
     modifier = modifier
-      .clip(shape)
       .clickable(
         enabled = enabled,
         role = Role.RadioButton,

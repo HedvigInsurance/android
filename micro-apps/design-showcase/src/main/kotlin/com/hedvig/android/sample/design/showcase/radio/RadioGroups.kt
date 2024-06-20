@@ -13,6 +13,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.RadioGroup
+import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupSize.Large
 import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupSize.Medium
 import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyle
 import com.hedvig.android.design.system.hedvig.RadioOptionChosenState.Chosen
@@ -64,6 +65,19 @@ internal fun ShowCaseRadioGroups(modifier: Modifier = Modifier) {
       },
       radioGroupSize = Medium,
       radioGroupStyle = RadioGroupStyle.Horizontal,
+    )
+    Spacer(Modifier.height(8.dp))
+    RadioGroup(
+      data = list2,
+      onOptionClick = { _ ->
+        list2 = if (list2 == shortList1) {
+          shortList2
+        } else {
+          shortList1
+        }
+      },
+      radioGroupSize = Large,
+      radioGroupStyle = RadioGroupStyle.HorizontalWithLabel("Your decision"),
     )
     Spacer(Modifier.height(8.dp))
     RadioGroup(
