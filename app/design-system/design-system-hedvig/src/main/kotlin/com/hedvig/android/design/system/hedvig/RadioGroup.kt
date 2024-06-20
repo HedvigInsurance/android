@@ -2,7 +2,10 @@ package com.hedvig.android.design.system.hedvig
 
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize.Max
+import androidx.compose.foundation.layout.IntrinsicSize.Min
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,12 +14,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -52,11 +54,6 @@ import com.hedvig.android.design.system.hedvig.tokens.SizeRadioOptionTokens.Medi
 fun RadioGroup(
   data: List<RadioOptionData>,
   modifier: Modifier = Modifier,
-  longListUseLazyScroll: Boolean = true,
-  // not sure about this. Added this parameter here to have some flexibility when it comes to scroll call:
-  // to avoid problems with nested scroll/infinity max height,
-  // when the lazyColumn/Row may not even be needed since the list is very short. In that case we'll just use a simple
-  // Column/Row here and leave handling the scroll to the parent Composable
   groupLockedState: LockedState = NotLocked,
   radioGroupStyle: RadioGroupStyle = RadioGroupDefaults.radioGroupStyle,
   radioGroupSize: RadioGroupSize = RadioGroupDefaults.radioGroupSize,
@@ -68,7 +65,6 @@ fun RadioGroup(
       modifier = modifier,
       groupLockedState = groupLockedState,
       radioGroupSize = radioGroupSize,
-      longListUseLazyScroll = longListUseLazyScroll,
     )
 
     is HorizontalWithLabel -> HorizontalRadioGroupWithLabel(
@@ -77,7 +73,6 @@ fun RadioGroup(
       modifier = modifier,
       groupLockedState = groupLockedState,
       radioGroupSize = radioGroupSize,
-      longListUseLazyScroll = longListUseLazyScroll,
       contentPaddingValues = contentPadding,
     )
 
@@ -87,7 +82,6 @@ fun RadioGroup(
       modifier = modifier,
       groupLockedState = groupLockedState,
       radioGroupSize = radioGroupSize,
-      longListUseLazyScroll = longListUseLazyScroll,
     )
 
     is VerticalWithLabel -> VerticalRadioGroupWithLabel(
@@ -97,47 +91,55 @@ fun RadioGroup(
       groupLockedState = groupLockedState,
       radioGroupSize = radioGroupSize,
       groupLabelText = radioGroupStyle.groupLabelText,
-      longListUseLazyScroll = longListUseLazyScroll,
       contentPaddingValues = contentPadding,
     )
   }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun HorizontalRadioGroup(
   data: List<RadioOptionData>,
   groupLockedState: LockedState,
   radioGroupSize: RadioGroupSize,
-  longListUseLazyScroll: Boolean,
   modifier: Modifier = Modifier,
 ) {
-  if (longListUseLazyScroll) {
-    LazyRow(modifier) {
-      items(
-        items = data,
-        key = { it.optionText },
-      ) { radioOptionData ->
-        RadioOption(
-          data = radioOptionData,
-          radioOptionStyle = LeftAligned,
-          radioOptionSize = radioGroupSize.toOptionSize(),
-          groupLockedState = groupLockedState,
-          modifier = Modifier.width(intrinsicSize = Max),
-        )
-        Spacer(Modifier.width(4.dp))
+  FlowRow(
+    modifier,
+    maxItemsInEachRow = 2,
+  ) {
+    for (i in data) {
+      val itemPadding = if (data.indexOf(i) % 2 != 0) {
+        PaddingValues(bottom = 4.dp)
+      } else {
+        PaddingValues(bottom = 4.dp, end = 4.dp)
       }
-    }
-  } else {
-    Row(modifier) {
-      for (i in data) {
+      if (data.indexOf(i) % 2 == 0 && data.indexOf(i) == data.lastIndex) {
         RadioOption(
           data = i,
           radioOptionStyle = LeftAligned,
           radioOptionSize = radioGroupSize.toOptionSize(),
           groupLockedState = groupLockedState,
-          modifier = Modifier.weight(1f),
+          modifier = Modifier
+            .weight(1f)
+            .width(Min)
+            .padding(itemPadding),
+          // so with this implementation we make the last odd chip take half of the row,
+          // but the downside is that the content of the last chip gets clipped if it's too long.
+          // the other chips' content is not clipped
         )
-        Spacer(Modifier.width(4.dp))
+        Spacer(Modifier.weight(1f))
+      } else {
+        RadioOption(
+          data = i,
+          radioOptionStyle = LeftAligned,
+          radioOptionSize = radioGroupSize.toOptionSize(),
+          groupLockedState = groupLockedState,
+          modifier = Modifier
+            .weight(1f)
+            .width(Min)
+            .padding(itemPadding),
+        )
       }
     }
   }
@@ -149,7 +151,6 @@ private fun HorizontalRadioGroupWithLabel(
   groupLabelText: String,
   groupLockedState: LockedState,
   radioGroupSize: RadioGroupSize,
-  longListUseLazyScroll: Boolean,
   contentPaddingValues: PaddingValues,
   modifier: Modifier = Modifier,
 ) {
@@ -169,34 +170,16 @@ private fun HorizontalRadioGroupWithLabel(
         color = labelTextColor,
         modifier = Modifier.padding(horizontal = contentPaddingValues.calculateStartPadding(Ltr)),
       )
-      if (longListUseLazyScroll) {
-        LazyRow {
-          items(
-            items = data,
-            key = { it.optionText },
-          ) { radioOptionData ->
-            RadioOption(
-              data = radioOptionData,
-              radioOptionStyle = LeftAligned,
-              radioOptionSize = radioGroupSize.toOptionSize(),
-              groupLockedState = groupLockedState,
-              modifier = Modifier.width(intrinsicSize = Max),
-            )
-            Spacer(Modifier.width(4.dp))
-          }
-        }
-      } else {
-        Row {
-          for (i in data) {
-            RadioOption(
-              data = i,
-              radioOptionStyle = LeftAligned,
-              radioOptionSize = radioGroupSize.toOptionSize(),
-              groupLockedState = groupLockedState,
-              modifier = Modifier.width(intrinsicSize = Max),
-            )
-            Spacer(Modifier.width(4.dp))
-          }
+      Row {
+        for (i in data) {
+          RadioOption(
+            data = i,
+            radioOptionStyle = LeftAligned,
+            radioOptionSize = radioGroupSize.toOptionSize(),
+            groupLockedState = groupLockedState,
+            modifier = Modifier.width(intrinsicSize = Max),
+          )
+          Spacer(Modifier.width(4.dp))
         }
       }
     }
@@ -209,35 +192,17 @@ private fun VerticalRadioGroup(
   optionStyle: RadioOptionStyle,
   groupLockedState: LockedState,
   radioGroupSize: RadioGroupSize,
-  longListUseLazyScroll: Boolean,
   modifier: Modifier = Modifier,
 ) {
-  if (longListUseLazyScroll) {
-    LazyColumn(modifier) {
-      items(
-        items = data,
-        key = { it.optionText },
-      ) { radioOptionData ->
-        RadioOption(
-          data = radioOptionData,
-          radioOptionStyle = optionStyle,
-          groupLockedState = groupLockedState,
-          radioOptionSize = radioGroupSize.toOptionSize(),
-        )
-        Spacer(Modifier.height(4.dp))
-      }
-    }
-  } else {
-    Column(modifier) {
-      for (radioOptionData in data) {
-        RadioOption(
-          data = radioOptionData,
-          radioOptionStyle = optionStyle,
-          groupLockedState = groupLockedState,
-          radioOptionSize = radioGroupSize.toOptionSize(),
-        )
-        Spacer(Modifier.height(4.dp))
-      }
+  Column(modifier) {
+    for (radioOptionData in data) {
+      RadioOption(
+        data = radioOptionData,
+        radioOptionStyle = optionStyle,
+        groupLockedState = groupLockedState,
+        radioOptionSize = radioGroupSize.toOptionSize(),
+      )
+      Spacer(Modifier.height(4.dp))
     }
   }
 }
@@ -249,7 +214,6 @@ private fun VerticalRadioGroupWithLabel(
   optionStyle: RadioOptionStyle,
   groupLockedState: LockedState,
   radioGroupSize: RadioGroupSize,
-  longListUseLazyScroll: Boolean,
   contentPaddingValues: PaddingValues,
   modifier: Modifier = Modifier,
 ) {
@@ -267,32 +231,15 @@ private fun VerticalRadioGroupWithLabel(
         style = MediumSizeRadioOptionTokens.LabelTextFont.value, // same for all sizes in figma
         color = labelTextColor,
       )
-      if (longListUseLazyScroll) {
-        LazyColumn(modifier) {
-          items(
-            items = data,
-            key = { it.optionText },
-          ) { radioOptionData ->
-            RadioOption(
-              data = radioOptionData,
-              radioOptionStyle = optionStyle,
-              groupLockedState = groupLockedState,
-              radioOptionSize = radioGroupSize.toOptionSize(),
-            )
-            HorizontalDivider()
-          }
-        }
-      } else {
-        Column(modifier) {
-          for (radioOptionData in data) {
-            RadioOption(
-              data = radioOptionData,
-              radioOptionStyle = optionStyle,
-              groupLockedState = groupLockedState,
-              radioOptionSize = radioGroupSize.toOptionSize(),
-            )
-            HorizontalDivider()
-          }
+      Column(modifier) {
+        for (radioOptionData in data) {
+          RadioOption(
+            data = radioOptionData,
+            radioOptionStyle = optionStyle,
+            groupLockedState = groupLockedState,
+            radioOptionSize = radioGroupSize.toOptionSize(),
+          )
+          HorizontalDivider()
         }
       }
     }
@@ -305,21 +252,36 @@ private fun calculateContentPadding(radioGroupStyle: RadioGroupStyle, radioGroup
       start = LargeSizeRadioGroupTokens.HorizontalPadding,
       end = LargeSizeRadioGroupTokens.HorizontalPadding,
       top = LargeSizeRadioGroupTokens.verticalPadding().calculateTopPadding(),
-      bottom = if (radioGroupStyle !is VerticalWithLabel) LargeSizeRadioGroupTokens.verticalPadding().calculateBottomPadding() else 0.dp,
+      bottom = if (radioGroupStyle !is VerticalWithLabel) {
+        LargeSizeRadioGroupTokens.verticalPadding()
+          .calculateBottomPadding()
+      } else {
+        0.dp
+      },
     )
 
     Medium -> PaddingValues(
       start = MediumSizeRadioGroupTokens.HorizontalPadding,
       end = MediumSizeRadioGroupTokens.HorizontalPadding,
       top = MediumSizeRadioGroupTokens.verticalPadding().calculateTopPadding(),
-      bottom = if (radioGroupStyle !is VerticalWithLabel) MediumSizeRadioGroupTokens.verticalPadding().calculateBottomPadding() else 0.dp,
+      bottom = if (radioGroupStyle !is VerticalWithLabel) {
+        MediumSizeRadioGroupTokens.verticalPadding()
+          .calculateBottomPadding()
+      } else {
+        0.dp
+      },
     )
 
     Small -> PaddingValues(
       start = SmallSizeRadioGroupTokens.HorizontalPadding,
       end = SmallSizeRadioGroupTokens.HorizontalPadding,
       top = SmallSizeRadioGroupTokens.verticalPadding().calculateTopPadding(),
-      bottom = if (radioGroupStyle !is VerticalWithLabel) SmallSizeRadioGroupTokens.verticalPadding().calculateBottomPadding() else 0.dp,
+      bottom = if (radioGroupStyle !is VerticalWithLabel) {
+        SmallSizeRadioGroupTokens.verticalPadding()
+          .calculateBottomPadding()
+      } else {
+        0.dp
+      },
     )
   }
   return when (radioGroupStyle) {
@@ -375,7 +337,6 @@ fun GroupPreview(
         HorizontalRadioGroup(
           groupLockedState = NotLocked,
           radioGroupSize = size,
-          longListUseLazyScroll = false,
           modifier = Modifier,
           data = listOf(
             RadioOptionData(
@@ -394,7 +355,6 @@ fun GroupPreview(
         HorizontalRadioGroup(
           groupLockedState = Locked,
           radioGroupSize = size,
-          longListUseLazyScroll = false,
           modifier = Modifier,
           data = listOf(
             RadioOptionData(
@@ -410,11 +370,10 @@ fun GroupPreview(
           ),
         )
         Spacer(Modifier.height(6.dp))
-        HedvigText("Horizontal with longListUseLazyScroll = true")
+        HedvigText("Horizontal with long List")
         HorizontalRadioGroup(
           groupLockedState = NotLocked,
           radioGroupSize = size,
-          longListUseLazyScroll = true,
           modifier = Modifier,
           data = listOf(
             RadioOptionData(
@@ -423,7 +382,7 @@ fun GroupPreview(
               chosenState = Chosen,
             ),
             RadioOptionData(
-              optionText = "No",
+              optionText = "Non",
               onClick = {},
               chosenState = NotChosen,
             ),
@@ -433,7 +392,12 @@ fun GroupPreview(
               chosenState = NotChosen,
             ),
             RadioOptionData(
-              optionText = "Not sure",
+              optionText = "Not sureeeeeeeeeeeeeeeeeeeeeee",
+              onClick = {},
+              chosenState = NotChosen,
+            ),
+            RadioOptionData(
+              optionText = "Probably",
               onClick = {},
               chosenState = NotChosen,
             ),
@@ -444,7 +408,6 @@ fun GroupPreview(
         HorizontalRadioGroupWithLabel(
           groupLockedState = NotLocked,
           radioGroupSize = size,
-          longListUseLazyScroll = false,
           modifier = Modifier.fillMaxWidth(),
           groupLabelText = "Label",
           contentPaddingValues = calculateContentPadding(HorizontalWithLabel("Label"), size),
@@ -468,7 +431,6 @@ fun GroupPreview(
           HorizontalRadioGroupWithLabel(
             groupLockedState = NotLocked,
             radioGroupSize = size,
-            longListUseLazyScroll = false,
             modifier = Modifier.fillMaxWidth(),
             groupLabelText = "Label",
             contentPaddingValues = calculateContentPadding(HorizontalWithLabel("Label"), size),
@@ -484,7 +446,7 @@ fun GroupPreview(
                 chosenState = NotChosen,
               ),
               RadioOptionData(
-                optionText = "Maybe",
+                optionText = "Maybet",
                 onClick = {},
                 chosenState = NotChosen,
               ),
@@ -506,53 +468,10 @@ fun GroupPreview(
             ),
           )
         }
-        HedvigText("Horizontal with label with longListUseLazyScroll")
-        HorizontalRadioGroupWithLabel(
-          groupLockedState = NotLocked,
-          radioGroupSize = size,
-          longListUseLazyScroll = true,
-          modifier = Modifier.fillMaxWidth(),
-          groupLabelText = "Label",
-          data = listOf(
-            RadioOptionData(
-              optionText = "Yes",
-              onClick = {},
-              chosenState = Chosen,
-            ),
-            RadioOptionData(
-              optionText = "No",
-              onClick = {},
-              chosenState = NotChosen,
-              lockedState = Locked,
-            ),
-            RadioOptionData(
-              optionText = "Maybe",
-              onClick = {},
-              chosenState = NotChosen,
-            ),
-            RadioOptionData(
-              optionText = "Not sure",
-              onClick = {},
-              chosenState = NotChosen,
-            ),
-            RadioOptionData(
-              optionText = "Perhaps",
-              onClick = {},
-              chosenState = NotChosen,
-            ),
-            RadioOptionData(
-              optionText = "Very unlikely",
-              onClick = {},
-              chosenState = NotChosen,
-            ),
-          ),
-          contentPaddingValues = calculateContentPadding(HorizontalWithLabel("Label"), size),
-        )
         HedvigText("Vertical with longListUseLazyScroll")
         VerticalRadioGroup(
           groupLockedState = NotLocked,
           radioGroupSize = size,
-          longListUseLazyScroll = true,
           modifier = Modifier.fillMaxWidth(),
           optionStyle = Default,
           data = listOf(
@@ -606,7 +525,6 @@ fun VerticalGroupsPreview(
         VerticalRadioGroup(
           groupLockedState = NotLocked,
           radioGroupSize = size,
-          longListUseLazyScroll = false,
           modifier = Modifier.fillMaxWidth(),
           optionStyle = Default,
           data = listOf(
@@ -628,7 +546,6 @@ fun VerticalGroupsPreview(
         VerticalRadioGroupWithLabel(
           groupLockedState = NotLocked,
           radioGroupSize = size,
-          longListUseLazyScroll = false,
           modifier = Modifier.fillMaxWidth(),
           optionStyle = Default,
           groupLabelText = "Label",
@@ -665,11 +582,14 @@ fun VerticalGroupWithDiffOptionStylesPreview(
 ) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      Column(Modifier.padding(horizontal = 16.dp).verticalScroll(rememberScrollState())) {
+      Column(
+        Modifier
+          .padding(horizontal = 16.dp)
+          .verticalScroll(rememberScrollState()),
+      ) {
         VerticalRadioGroupWithLabel(
           groupLockedState = NotLocked,
           radioGroupSize = Small,
-          longListUseLazyScroll = false,
           modifier = Modifier.fillMaxWidth(),
           optionStyle = style,
           groupLabelText = "Label",
