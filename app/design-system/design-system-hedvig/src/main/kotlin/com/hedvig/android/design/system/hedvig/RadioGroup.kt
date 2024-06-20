@@ -147,9 +147,9 @@ private fun HorizontalRadioGroup(
             onOptionClick(i.id)
           },
           modifier = Modifier
-              .weight(1f)
-              .width(Min)
-              .padding(itemPadding),
+            .weight(1f)
+            .width(Min)
+            .padding(itemPadding),
           // so with this implementation the downside is
           // that both types of horizontal groups are not good for optionText longer than 1 word.
         )
@@ -164,9 +164,9 @@ private fun HorizontalRadioGroup(
             onOptionClick(i.id)
           },
           modifier = Modifier
-              .weight(1f)
-              .width(Min)
-              .padding(itemPadding),
+            .weight(1f)
+            .width(Min)
+            .padding(itemPadding),
         )
       }
     }
@@ -215,9 +215,9 @@ private fun HorizontalRadioGroupWithLabel(
           val itemModifier = if (data.size == 2) {
             Modifier.width(Min)
           } else {
-              Modifier
-                  .weight(1f)
-                  .width(Min)
+            Modifier
+              .weight(1f)
+              .width(Min)
           }
           val lockedState = calculateLockedStateForItemInGroup(option, groupLockedState)
           HorizontalWithLabelRadioOption(
@@ -338,23 +338,23 @@ private fun VerticalRadioGroupWithLabel(
           val interactionSource = remember { MutableInteractionSource() }
           val modifierRipple = Modifier
             .clickable(
-                enabled = calculateLockedStateForItemInGroup(radioOptionData, groupLockedState) == NotLocked,
-                role = Role.RadioButton,
-                interactionSource = interactionSource,
-                indication = ripple(
-                    bounded = true,
-                ),
-                onClick = {
-                    onOptionClick(radioOptionData.id)
-                },
+              enabled = calculateLockedStateForItemInGroup(radioOptionData, groupLockedState) == NotLocked,
+              role = Role.RadioButton,
+              interactionSource = interactionSource,
+              indication = ripple(
+                bounded = true,
+              ),
+              onClick = {
+                onOptionClick(radioOptionData.id)
+              },
             )
           RadioOption(
-              data = radioOptionData,
-              radioOptionStyle = optionStyle,
-              groupLockedState = groupLockedState,
-              radioOptionSize = radioGroupSize.toOptionSize(),
-              interactionSource = interactionSource,
-              modifier = modifierRipple,
+            data = radioOptionData,
+            radioOptionStyle = optionStyle,
+            groupLockedState = groupLockedState,
+            radioOptionSize = radioGroupSize.toOptionSize(),
+            interactionSource = interactionSource,
+            modifier = modifierRipple,
           )
           if (data.indexOf(radioOptionData) != data.lastIndex) {
             HorizontalDivider()
@@ -739,9 +739,9 @@ fun VerticalGroupWithDiffOptionStylesPreview(
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       Column(
-          Modifier
-              .padding(horizontal = 16.dp)
-              .verticalScroll(rememberScrollState()),
+        Modifier
+          .padding(horizontal = 16.dp)
+          .verticalScroll(rememberScrollState()),
       ) {
         VerticalRadioGroupWithLabel(
           groupLockedState = NotLocked,

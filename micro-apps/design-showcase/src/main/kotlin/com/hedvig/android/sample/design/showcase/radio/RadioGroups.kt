@@ -56,8 +56,8 @@ internal fun ShowCaseRadioGroups(modifier: Modifier = Modifier) {
     Spacer(Modifier.height(48.dp))
     RadioGroup(
       data = list1,
-      onOptionClick = { _ ->
-        list1 = if (list1 == shortList1) {
+      onOptionClick = { optionId ->
+        list1 = if (optionId == "2") {
           shortList2
         } else {
           shortList1
@@ -69,8 +69,8 @@ internal fun ShowCaseRadioGroups(modifier: Modifier = Modifier) {
     Spacer(Modifier.height(8.dp))
     RadioGroup(
       data = list2,
-      onOptionClick = { _ ->
-        list2 = if (list2 == shortList1) {
+      onOptionClick = { optionId ->
+        list2 = if (optionId == "2") {
           shortList2
         } else {
           shortList1
@@ -82,8 +82,8 @@ internal fun ShowCaseRadioGroups(modifier: Modifier = Modifier) {
     Spacer(Modifier.height(8.dp))
     RadioGroup(
       data = list2,
-      onOptionClick = { _ ->
-        list2 = if (list2 == shortList1) {
+      onOptionClick = { optionId ->
+        list2 = if (optionId == "2") {
           shortList2
         } else {
           shortList1
@@ -95,8 +95,8 @@ internal fun ShowCaseRadioGroups(modifier: Modifier = Modifier) {
     Spacer(Modifier.height(8.dp))
     RadioGroup(
       data = list3,
-      onOptionClick = { _ ->
-        list3 = if (list3 == shortList1) {
+      onOptionClick = { optionId ->
+        list3 = if (optionId == "2") {
           shortList2
         } else {
           shortList1

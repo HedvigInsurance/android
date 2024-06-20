@@ -15,10 +15,9 @@ internal fun DesignShowcase(modifier: Modifier = Modifier) {
       ShowcaseIcons()
     } else if (showButton) {
       ShowcaseButton()
-    } else if (showTextField)
-      {
-        ShowcaseTextField()
-      } else {
+    } else if (showTextField) {
+      ShowcaseTextField()
+    } else {
       ShowCaseRadioGroups()
     }
   }

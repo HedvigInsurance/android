@@ -73,7 +73,6 @@ internal fun RadioOption(
   onOptionClick: (() -> Unit)? = null,
   interactionSource: MutableInteractionSource? = null,
 ) {
-
   RadioOption(
     optionText = data.optionText,
     onClick = onOptionClick,
@@ -103,20 +102,23 @@ fun RadioOption(
 ) {
   @Suppress("NAME_SHADOWING")
   val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
-  val clickableModifier = if (onClick != null) modifier
-    .clip(radioOptionSize.size(radioOptionStyle).shape)
+  val clickableModifier = if (onClick != null) {
+    modifier
+      .clip(radioOptionSize.size(radioOptionStyle).shape)
       .semantics { role = Role.RadioButton }
       .clickable(
-          enabled = when (lockedState) {
-              Locked -> false
-              NotLocked -> true
-          },
-          interactionSource = interactionSource,
-          indication = LocalIndication.current,
+        enabled = when (lockedState) {
+          Locked -> false
+          NotLocked -> true
+        },
+        interactionSource = interactionSource,
+        indication = LocalIndication.current,
       ) {
-          onClick()
-      } else
+        onClick()
+      }
+  } else {
     modifier.semantics { role = Role.RadioButton }
+  }
   Surface(
     modifier = clickableModifier,
     shape = radioOptionSize.size(radioOptionStyle).shape,
@@ -215,25 +217,25 @@ internal fun SelectIndicationCircle(
       contentAlignment = Alignment.Center,
     ) {
       Spacer(
-          modifier
-              .size(24.dp)
-              .clip(CircleShape)
-              .then(
-                  when (currentState) {
-                      Chosen -> {
-                          when (lockedState) {
-                              Locked -> Modifier.border(8.dp, radioOptionColors.disabledIndicatorColor, CircleShape)
-                              NotLocked -> Modifier.border(8.dp, radioOptionColors.chosenIndicatorColor, CircleShape)
-                          }
-                      }
+        modifier
+          .size(24.dp)
+          .clip(CircleShape)
+          .then(
+            when (currentState) {
+              Chosen -> {
+                when (lockedState) {
+                  Locked -> Modifier.border(8.dp, radioOptionColors.disabledIndicatorColor, CircleShape)
+                  NotLocked -> Modifier.border(8.dp, radioOptionColors.chosenIndicatorColor, CircleShape)
+                }
+              }
 
-                      NotChosen -> {
-                          Modifier.border(2.dp, radioOptionColors.notChosenIndicatorColor, CircleShape)
-                          // disabled color is actually brighter than notChosenIndicatorColor,
-                          // makes no sense here, so I left only one
-                      }
-                  },
-              ),
+              NotChosen -> {
+                Modifier.border(2.dp, radioOptionColors.notChosenIndicatorColor, CircleShape)
+                // disabled color is actually brighter than notChosenIndicatorColor,
+                // makes no sense here, so I left only one
+              }
+            },
+          ),
       )
     }
   }
@@ -438,9 +440,9 @@ private fun PreviewRadioOptionStyles(
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundWhite) {
       Column(
-          Modifier
-              .width(330.dp)
-              .padding(16.dp),
+        Modifier
+          .width(330.dp)
+          .padding(16.dp),
       ) {
         RadioOption(
           optionText = "Option",
