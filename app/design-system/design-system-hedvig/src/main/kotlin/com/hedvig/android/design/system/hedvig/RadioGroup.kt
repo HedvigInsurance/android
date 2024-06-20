@@ -1,10 +1,15 @@
 package com.hedvig.android.design.system.hedvig
 
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.FlowRowOverflow
+import androidx.compose.foundation.layout.FlowRowOverflow.Companion
 import androidx.compose.foundation.layout.IntrinsicSize.Min
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -16,8 +21,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -111,12 +115,14 @@ private fun HorizontalRadioGroup(
   FlowRow(
     modifier,
     maxItemsInEachRow = 2,
+    overflow = Companion.Visible,
+    verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically),
   ) {
     for (i in data) {
       val itemPadding = if (data.indexOf(i) % 2 != 0) {
-        PaddingValues(bottom = 4.dp)
+        PaddingValues()
       } else {
-        PaddingValues(bottom = 4.dp, end = 4.dp)
+        PaddingValues(end = 4.dp)
       }
       if (data.indexOf(i) % 2 == 0 && data.indexOf(i) == data.lastIndex) {
         RadioOption(
@@ -128,9 +134,8 @@ private fun HorizontalRadioGroup(
             .weight(1f)
             .width(Min)
             .padding(itemPadding),
-          // so with this implementation we make the last odd chip take half of the row,
-          // but the downside is that the content of the last chip gets clipped if it's too long.
-          // the other chips' content is not clipped
+          // so with this implementation the downside is
+          // that both types of horizontal groups are not good for optionText longer than 1 word.
         )
         Spacer(Modifier.weight(1f))
       } else {
@@ -174,17 +179,18 @@ private fun HorizontalRadioGroupWithLabel(
       val labelTextColor = radioOptionColors.labelTextColor(groupLockedState)
       HedvigText(
         text = groupLabelText,
-        style = MediumSizeRadioOptionTokens.LabelTextFont.value, // same for all sizes in figma TODO
+        style = calculateHorizontalGroupLabelTextStyle(radioGroupSize),
         color = labelTextColor,
       )
       Spacer(Modifier.height(16.dp))
       FlowRow(
         modifier = Modifier.fillMaxWidth(),
         maxItemsInEachRow = 2,
+        overflow = FlowRowOverflow.Visible,
         verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
       ) {
-        for (i in data) {
-          val optionTextColor = radioOptionColors.optionTextColor(i.lockedState)
+        for (option in data) {
+          val optionTextColor = radioOptionColors.optionTextColor(option.lockedState)
           val itemModifier = if (data.size == 2) {
             Modifier.width(Min)
           } else {
@@ -192,13 +198,17 @@ private fun HorizontalRadioGroupWithLabel(
               .weight(1f)
               .width(Min)
           }
+          val lockedState = calculateLockedStateForItemInGroup(option, groupLockedState)
           HorizontalWithLabelRadioOption(
-            i = i,
             shape = shape,
-            enabled = groupLockedState == NotLocked && i.lockedState == NotLocked, // TODO,
-            style = radioGroupSize.toOptionSize().size(LeftAligned).optionTextStyle,
+            enabled = lockedState == NotLocked,
+            style = calculateHorizontalGroupOptionTextStyle(radioGroupSize),
             textColor = optionTextColor,
             modifier = itemModifier,
+            optionText = option.optionText,
+            onClick = option.onClick,
+            chosenState = option.chosenState,
+            lockedState = lockedState,
           )
         }
       }
@@ -208,13 +218,17 @@ private fun HorizontalRadioGroupWithLabel(
 
 @Composable
 private fun HorizontalWithLabelRadioOption(
-  i: RadioOptionData,
+  optionText: String,
+  onClick: () -> Unit,
+  lockedState: LockedState,
+  chosenState: RadioOptionChosenState,
   shape: Shape,
   enabled: Boolean,
   style: TextStyle,
   textColor: Color,
   modifier: Modifier = Modifier,
 ) {
+  val interactionSource = remember { MutableInteractionSource() }
   Row(
     verticalAlignment = Alignment.CenterVertically,
     modifier = modifier
@@ -222,22 +236,26 @@ private fun HorizontalWithLabelRadioOption(
       .clickable(
         enabled = enabled,
         role = Role.RadioButton,
+        interactionSource = interactionSource,
+        indication = null,
       ) {
-        if (i.lockedState != Locked) { // TODO
-          i.onClick()
+        if (enabled) {
+          onClick()
         }
       },
   ) {
     SelectIndicationCircle(
-      i.chosenState,
-      i.lockedState, // TODO
+      chosenState,
+      lockedState,
     )
     Spacer(Modifier.width(8.dp))
     HedvigText(
-      i.optionText,
+      optionText,
       style = style,
       color = textColor,
-      modifier = Modifier.fillMaxWidth(),
+      modifier = Modifier
+        .clip(shape)
+        .indication(interactionSource, LocalIndication.current),
     )
     Spacer(Modifier.width(16.dp))
   }
@@ -300,6 +318,24 @@ private fun VerticalRadioGroupWithLabel(
         }
       }
     }
+  }
+}
+
+@Composable
+private fun calculateHorizontalGroupLabelTextStyle(radioGroupSize: RadioGroupSize): TextStyle {
+  return when (radioGroupSize) {
+    Large -> LargeSizeRadioGroupTokens.LabelTextFont.value
+    Medium -> MediumSizeRadioGroupTokens.LabelTextFont.value
+    Small -> SmallSizeRadioGroupTokens.LabelTextFont.value
+  }
+}
+
+@Composable
+private fun calculateHorizontalGroupOptionTextStyle(radioGroupSize: RadioGroupSize): TextStyle {
+  return when (radioGroupSize) {
+    Large -> LargeSizeRadioGroupTokens.HorizontalOptionTextFont.value
+    Medium -> MediumSizeRadioGroupTokens.HorizontalOptionTextFont.value
+    Small -> SmallSizeRadioGroupTokens.HorizontalOptionTextFont.value
   }
 }
 
@@ -409,6 +445,7 @@ fun GroupPreview(
           ),
         )
         Spacer(Modifier.height(6.dp))
+        HedvigText("Horizontal locked group")
         HorizontalRadioGroup(
           groupLockedState = Locked,
           radioGroupSize = size,
@@ -482,6 +519,7 @@ fun GroupPreview(
           ),
         )
         Spacer(Modifier.height(4.dp))
+        HedvigText("Horizontal with label and long List")
         Row {
           HorizontalRadioGroupWithLabel(
             groupLockedState = NotLocked,
@@ -501,7 +539,49 @@ fun GroupPreview(
                 chosenState = NotChosen,
               ),
               RadioOptionData(
-                optionText = "Maybet",
+                optionText = "Maybe",
+                onClick = {},
+                chosenState = NotChosen,
+              ),
+              RadioOptionData(
+                optionText = "Not sure ",
+                onClick = {},
+                chosenState = NotChosen,
+              ),
+              RadioOptionData(
+                optionText = "Perhaps",
+                onClick = {},
+                chosenState = NotChosen,
+              ),
+              RadioOptionData(
+                optionText = "Very unlikely",
+                onClick = {},
+                chosenState = NotChosen,
+              ),
+            ),
+          )
+        }
+        HedvigText("Vertical")
+        Column(Modifier.verticalScroll(rememberScrollState())) {
+          VerticalRadioGroup(
+            groupLockedState = NotLocked,
+            radioGroupSize = size,
+            modifier = Modifier.fillMaxWidth(),
+            optionStyle = Default,
+            data = listOf(
+              RadioOptionData(
+                optionText = "Yes",
+                onClick = {},
+                chosenState = Chosen,
+              ),
+              RadioOptionData(
+                optionText = "No",
+                onClick = {},
+                chosenState = NotChosen,
+                lockedState = Locked,
+              ),
+              RadioOptionData(
+                optionText = "Maybe",
                 onClick = {},
                 chosenState = NotChosen,
               ),
@@ -523,46 +603,6 @@ fun GroupPreview(
             ),
           )
         }
-        HedvigText("Vertical")
-        VerticalRadioGroup(
-          groupLockedState = NotLocked,
-          radioGroupSize = size,
-          modifier = Modifier.fillMaxWidth(),
-          optionStyle = Default,
-          data = listOf(
-            RadioOptionData(
-              optionText = "Yes",
-              onClick = {},
-              chosenState = Chosen,
-            ),
-            RadioOptionData(
-              optionText = "No",
-              onClick = {},
-              chosenState = NotChosen,
-              lockedState = Locked,
-            ),
-            RadioOptionData(
-              optionText = "Maybe",
-              onClick = {},
-              chosenState = NotChosen,
-            ),
-            RadioOptionData(
-              optionText = "Not sure",
-              onClick = {},
-              chosenState = NotChosen,
-            ),
-            RadioOptionData(
-              optionText = "Perhaps",
-              onClick = {},
-              chosenState = NotChosen,
-            ),
-            RadioOptionData(
-              optionText = "Very unlikely",
-              onClick = {},
-              chosenState = NotChosen,
-            ),
-          ),
-        )
       }
     }
   }

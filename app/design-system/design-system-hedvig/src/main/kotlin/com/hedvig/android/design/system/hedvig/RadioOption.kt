@@ -75,11 +75,15 @@ internal fun RadioOption(
     onClick = data.onClick,
     chosenState = data.chosenState,
     modifier = modifier,
-    lockedState = if (groupLockedState == Locked) Locked else data.lockedState,
+    lockedState = calculateLockedStateForItemInGroup(data, groupLockedState),
     radioOptionStyle = radioOptionStyle,
     radioOptionSize = radioOptionSize,
     interactionSource = data.interactionSource,
   )
+}
+
+internal fun calculateLockedStateForItemInGroup(data: RadioOptionData, groupLockedState: LockedState): LockedState {
+  return if (groupLockedState == Locked) Locked else data.lockedState
 }
 
 @Composable
