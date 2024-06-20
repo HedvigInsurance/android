@@ -7,7 +7,9 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -59,7 +61,6 @@ data class RadioOptionData(
   val optionText: String,
   val chosenState: RadioOptionChosenState,
   val lockedState: LockedState = NotLocked,
-  val interactionSource: MutableInteractionSource? = null,
 )
 
 @Composable
@@ -68,9 +69,11 @@ internal fun RadioOption(
   radioOptionStyle: RadioOptionStyle,
   radioOptionSize: RadioOptionDefaults.RadioOptionSize,
   groupLockedState: LockedState,
-  onOptionClick: () -> Unit,
   modifier: Modifier = Modifier,
+  onOptionClick: (() -> Unit)? = null,
+  interactionSource: MutableInteractionSource? = null,
 ) {
+
   RadioOption(
     optionText = data.optionText,
     onClick = onOptionClick,
@@ -79,7 +82,7 @@ internal fun RadioOption(
     lockedState = calculateLockedStateForItemInGroup(data, groupLockedState),
     radioOptionStyle = radioOptionStyle,
     radioOptionSize = radioOptionSize,
-    interactionSource = data.interactionSource,
+    interactionSource = interactionSource,
   )
 }
 
@@ -90,27 +93,34 @@ internal fun calculateLockedStateForItemInGroup(data: RadioOptionData, groupLock
 @Composable
 fun RadioOption(
   optionText: String,
-  onClick: () -> Unit,
   chosenState: RadioOptionChosenState,
   modifier: Modifier = Modifier,
+  onClick: (() -> Unit)? = null,
   lockedState: LockedState = NotLocked,
   radioOptionStyle: RadioOptionStyle = RadioOptionDefaults.radioOptionStyle,
   radioOptionSize: RadioOptionDefaults.RadioOptionSize = RadioOptionDefaults.radioOptionSize,
   interactionSource: MutableInteractionSource? = null,
-  belowContent: (@Composable () -> Unit)? = null, // TODO
 ) {
   @Suppress("NAME_SHADOWING")
   val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
+  val clickableModifier = if (onClick != null) modifier
+    .clip(radioOptionSize.size(radioOptionStyle).shape)
+      .semantics { role = Role.RadioButton }
+      .clickable(
+          enabled = when (lockedState) {
+              Locked -> false
+              NotLocked -> true
+          },
+          interactionSource = interactionSource,
+          indication = LocalIndication.current,
+      ) {
+          onClick()
+      } else
+    modifier.semantics { role = Role.RadioButton }
   Surface(
-    onClick = onClick,
-    modifier = modifier.semantics { role = Role.RadioButton },
-    enabled = when (lockedState) {
-      Locked -> false
-      NotLocked -> true
-    },
+    modifier = clickableModifier,
     shape = radioOptionSize.size(radioOptionStyle).shape,
     color = radioOptionColors.containerColor,
-    interactionSource = interactionSource,
   ) {
     val optionTextColor = radioOptionColors.optionTextColor(lockedState)
     val labelTextColor = radioOptionColors.labelTextColor(lockedState)
@@ -205,25 +215,25 @@ internal fun SelectIndicationCircle(
       contentAlignment = Alignment.Center,
     ) {
       Spacer(
-        modifier
-          .size(24.dp)
-          .clip(CircleShape)
-          .then(
-            when (currentState) {
-              Chosen -> {
-                when (lockedState) {
-                  Locked -> Modifier.border(8.dp, radioOptionColors.disabledIndicatorColor, CircleShape)
-                  NotLocked -> Modifier.border(8.dp, radioOptionColors.chosenIndicatorColor, CircleShape)
-                }
-              }
+          modifier
+              .size(24.dp)
+              .clip(CircleShape)
+              .then(
+                  when (currentState) {
+                      Chosen -> {
+                          when (lockedState) {
+                              Locked -> Modifier.border(8.dp, radioOptionColors.disabledIndicatorColor, CircleShape)
+                              NotLocked -> Modifier.border(8.dp, radioOptionColors.chosenIndicatorColor, CircleShape)
+                          }
+                      }
 
-              NotChosen -> {
-                Modifier.border(2.dp, radioOptionColors.notChosenIndicatorColor, CircleShape)
-                // disabled color is actually brighter than notChosenIndicatorColor,
-                // makes no sense here, so I left only one
-              }
-            },
-          ),
+                      NotChosen -> {
+                          Modifier.border(2.dp, radioOptionColors.notChosenIndicatorColor, CircleShape)
+                          // disabled color is actually brighter than notChosenIndicatorColor,
+                          // makes no sense here, so I left only one
+                      }
+                  },
+              ),
       )
     }
   }
@@ -428,9 +438,9 @@ private fun PreviewRadioOptionStyles(
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundWhite) {
       Column(
-        Modifier
-          .width(330.dp)
-          .padding(16.dp),
+          Modifier
+              .width(330.dp)
+              .padding(16.dp),
       ) {
         RadioOption(
           optionText = "Option",

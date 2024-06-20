@@ -22,7 +22,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.semantics.Role
@@ -54,7 +53,9 @@ import com.hedvig.android.design.system.hedvig.icon.flag.FlagSweden
 import com.hedvig.android.design.system.hedvig.tokens.SizeRadioGroupTokens.LargeSizeRadioGroupTokens
 import com.hedvig.android.design.system.hedvig.tokens.SizeRadioGroupTokens.MediumSizeRadioGroupTokens
 import com.hedvig.android.design.system.hedvig.tokens.SizeRadioGroupTokens.SmallSizeRadioGroupTokens
+import com.hedvig.android.design.system.hedvig.tokens.SizeRadioOptionTokens.LargeSizeRadioOptionTokens
 import com.hedvig.android.design.system.hedvig.tokens.SizeRadioOptionTokens.MediumSizeRadioOptionTokens
+import com.hedvig.android.design.system.hedvig.tokens.SizeRadioOptionTokens.SmallSizeRadioOptionTokens
 
 @Composable
 fun RadioGroup(
@@ -146,9 +147,9 @@ private fun HorizontalRadioGroup(
             onOptionClick(i.id)
           },
           modifier = Modifier
-            .weight(1f)
-            .width(Min)
-            .padding(itemPadding),
+              .weight(1f)
+              .width(Min)
+              .padding(itemPadding),
           // so with this implementation the downside is
           // that both types of horizontal groups are not good for optionText longer than 1 word.
         )
@@ -163,9 +164,9 @@ private fun HorizontalRadioGroup(
             onOptionClick(i.id)
           },
           modifier = Modifier
-            .weight(1f)
-            .width(Min)
-            .padding(itemPadding),
+              .weight(1f)
+              .width(Min)
+              .padding(itemPadding),
         )
       }
     }
@@ -214,9 +215,9 @@ private fun HorizontalRadioGroupWithLabel(
           val itemModifier = if (data.size == 2) {
             Modifier.width(Min)
           } else {
-            Modifier
-              .weight(1f)
-              .width(Min)
+              Modifier
+                  .weight(1f)
+                  .width(Min)
           }
           val lockedState = calculateLockedStateForItemInGroup(option, groupLockedState)
           HorizontalWithLabelRadioOption(
@@ -319,7 +320,7 @@ private fun VerticalRadioGroupWithLabel(
   modifier: Modifier = Modifier,
 ) {
   Surface(
-    shape = radioGroupSize.toOptionSize().size(LeftAligned).shape,
+    shape = radioGroupSize.getShape(),
     color = radioOptionColors.containerColor,
   ) {
     Column(
@@ -334,14 +335,26 @@ private fun VerticalRadioGroupWithLabel(
       )
       Column(modifier) {
         for (radioOptionData in data) {
+          val interactionSource = remember { MutableInteractionSource() }
+          val modifierRipple = Modifier
+            .clickable(
+                enabled = calculateLockedStateForItemInGroup(radioOptionData, groupLockedState) == NotLocked,
+                role = Role.RadioButton,
+                interactionSource = interactionSource,
+                indication = ripple(
+                    bounded = true,
+                ),
+                onClick = {
+                    onOptionClick(radioOptionData.id)
+                },
+            )
           RadioOption(
-            data = radioOptionData,
-            radioOptionStyle = optionStyle,
-            groupLockedState = groupLockedState,
-            radioOptionSize = radioGroupSize.toOptionSize(),
-            onOptionClick = {
-              onOptionClick(radioOptionData.id)
-            },
+              data = radioOptionData,
+              radioOptionStyle = optionStyle,
+              groupLockedState = groupLockedState,
+              radioOptionSize = radioGroupSize.toOptionSize(),
+              interactionSource = interactionSource,
+              modifier = modifierRipple,
           )
           if (data.indexOf(radioOptionData) != data.lastIndex) {
             HorizontalDivider()
@@ -421,6 +434,15 @@ private fun RadioGroupSize.toOptionSize(): RadioOptionDefaults.RadioOptionSize {
     Large -> RadioOptionDefaults.RadioOptionSize.Large
     Medium -> RadioOptionDefaults.RadioOptionSize.Medium
     Small -> RadioOptionDefaults.RadioOptionSize.Small
+  }
+}
+
+@Composable
+private fun RadioGroupSize.getShape(): Shape {
+  return when (this) {
+    Large -> LargeSizeRadioOptionTokens.ContainerShape.value
+    Medium -> MediumSizeRadioOptionTokens.ContainerShape.value
+    Small -> SmallSizeRadioOptionTokens.ContainerShape.value
   }
 }
 
@@ -717,9 +739,9 @@ fun VerticalGroupWithDiffOptionStylesPreview(
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       Column(
-        Modifier
-          .padding(horizontal = 16.dp)
-          .verticalScroll(rememberScrollState()),
+          Modifier
+              .padding(horizontal = 16.dp)
+              .verticalScroll(rememberScrollState()),
       ) {
         VerticalRadioGroupWithLabel(
           groupLockedState = NotLocked,
