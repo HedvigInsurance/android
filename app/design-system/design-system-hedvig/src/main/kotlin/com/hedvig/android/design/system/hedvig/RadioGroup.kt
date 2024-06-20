@@ -61,6 +61,7 @@ import com.hedvig.android.design.system.hedvig.tokens.SizeRadioOptionTokens.Medi
 @Composable
 fun RadioGroup(
   data: List<RadioOptionData>,
+  onOptionClick: (String) -> Unit,
   modifier: Modifier = Modifier,
   groupLockedState: LockedState = NotLocked,
   radioGroupStyle: RadioGroupStyle = RadioGroupDefaults.radioGroupStyle,
@@ -73,6 +74,9 @@ fun RadioGroup(
       modifier = modifier,
       groupLockedState = groupLockedState,
       radioGroupSize = radioGroupSize,
+      onOptionClick = { id ->
+        onOptionClick(id)
+      },
     )
 
     is HorizontalWithLabel -> HorizontalRadioGroupWithLabel(
@@ -82,6 +86,9 @@ fun RadioGroup(
       groupLockedState = groupLockedState,
       radioGroupSize = radioGroupSize,
       contentPaddingValues = contentPadding,
+      onOptionClick = { id ->
+        onOptionClick(id)
+      },
     )
 
     is Vertical -> VerticalRadioGroup(
@@ -90,6 +97,9 @@ fun RadioGroup(
       modifier = modifier,
       groupLockedState = groupLockedState,
       radioGroupSize = radioGroupSize,
+      onOptionClick = { id ->
+        onOptionClick(id)
+      },
     )
 
     is VerticalWithLabel -> VerticalRadioGroupWithLabel(
@@ -100,6 +110,9 @@ fun RadioGroup(
       radioGroupSize = radioGroupSize,
       groupLabelText = radioGroupStyle.groupLabelText,
       contentPaddingValues = contentPadding,
+      onOptionClick = { id ->
+        onOptionClick(id)
+      },
     )
   }
 }
@@ -110,6 +123,7 @@ private fun HorizontalRadioGroup(
   data: List<RadioOptionData>,
   groupLockedState: LockedState,
   radioGroupSize: RadioGroupSize,
+  onOptionClick: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   FlowRow(
@@ -130,6 +144,9 @@ private fun HorizontalRadioGroup(
           radioOptionStyle = LeftAligned,
           radioOptionSize = radioGroupSize.toOptionSize(),
           groupLockedState = groupLockedState,
+          onOptionClick = {
+            onOptionClick(i.id)
+          },
           modifier = Modifier
             .weight(1f)
             .width(Min)
@@ -144,6 +161,9 @@ private fun HorizontalRadioGroup(
           radioOptionStyle = LeftAligned,
           radioOptionSize = radioGroupSize.toOptionSize(),
           groupLockedState = groupLockedState,
+          onOptionClick = {
+            onOptionClick(i.id)
+          },
           modifier = Modifier
             .weight(1f)
             .width(Min)
@@ -162,6 +182,7 @@ private fun HorizontalRadioGroupWithLabel(
   groupLockedState: LockedState,
   radioGroupSize: RadioGroupSize,
   contentPaddingValues: PaddingValues,
+  onOptionClick: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val shape = radioGroupSize.toOptionSize().size(LeftAligned).shape
@@ -206,7 +227,9 @@ private fun HorizontalRadioGroupWithLabel(
             textColor = optionTextColor,
             modifier = itemModifier,
             optionText = option.optionText,
-            onClick = option.onClick,
+            onClick = {
+              onOptionClick(option.id)
+            },
             chosenState = option.chosenState,
             lockedState = lockedState,
           )
@@ -267,6 +290,7 @@ private fun VerticalRadioGroup(
   optionStyle: RadioOptionStyle,
   groupLockedState: LockedState,
   radioGroupSize: RadioGroupSize,
+  onOptionClick: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
@@ -276,6 +300,9 @@ private fun VerticalRadioGroup(
         radioOptionStyle = optionStyle,
         groupLockedState = groupLockedState,
         radioOptionSize = radioGroupSize.toOptionSize(),
+        onOptionClick = {
+          onOptionClick(radioOptionData.id)
+        }
       )
       Spacer(Modifier.height(4.dp))
     }
@@ -290,6 +317,7 @@ private fun VerticalRadioGroupWithLabel(
   groupLockedState: LockedState,
   radioGroupSize: RadioGroupSize,
   contentPaddingValues: PaddingValues,
+  onOptionClick: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Surface(
@@ -313,6 +341,9 @@ private fun VerticalRadioGroupWithLabel(
             radioOptionStyle = optionStyle,
             groupLockedState = groupLockedState,
             radioOptionSize = radioGroupSize.toOptionSize(),
+            onOptionClick = {
+              onOptionClick(radioOptionData.id)
+            }
           )
           HorizontalDivider()
         }
@@ -431,15 +462,16 @@ fun GroupPreview(
           groupLockedState = NotLocked,
           radioGroupSize = size,
           modifier = Modifier,
+          onOptionClick = {},
           data = listOf(
             RadioOptionData(
+              id = "",
               optionText = "Yes",
-              onClick = {},
               chosenState = Chosen,
             ),
             RadioOptionData(
+              id = "",
               optionText = "No",
-              onClick = {},
               chosenState = NotChosen,
             ),
           ),
@@ -450,15 +482,16 @@ fun GroupPreview(
           groupLockedState = Locked,
           radioGroupSize = size,
           modifier = Modifier,
+          onOptionClick = {},
           data = listOf(
             RadioOptionData(
+              id = "",
               optionText = "Yes",
-              onClick = {},
               chosenState = Chosen,
             ),
             RadioOptionData(
+              id = "",
               optionText = "No",
-              onClick = {},
               chosenState = NotChosen,
             ),
           ),
@@ -469,30 +502,31 @@ fun GroupPreview(
           groupLockedState = NotLocked,
           radioGroupSize = size,
           modifier = Modifier,
+          onOptionClick = {},
           data = listOf(
             RadioOptionData(
+              id = "",
               optionText = "Yes",
-              onClick = {},
               chosenState = Chosen,
             ),
             RadioOptionData(
+              id = "",
               optionText = "Non",
-              onClick = {},
               chosenState = NotChosen,
             ),
             RadioOptionData(
+              id = "",
               optionText = "Maybe",
-              onClick = {},
               chosenState = NotChosen,
             ),
             RadioOptionData(
+              id = "",
               optionText = "Not sure",
-              onClick = {},
               chosenState = NotChosen,
             ),
             RadioOptionData(
+              id = "",
               optionText = "Probably",
-              onClick = {},
               chosenState = NotChosen,
             ),
           ),
@@ -504,16 +538,17 @@ fun GroupPreview(
           radioGroupSize = size,
           modifier = Modifier,
           groupLabelText = "Label",
+          onOptionClick = {},
           contentPaddingValues = calculateContentPadding(HorizontalWithLabel("Label"), size),
           data = listOf(
             RadioOptionData(
+              id = "",
               optionText = "Yes",
-              onClick = {},
               chosenState = Chosen,
             ),
             RadioOptionData(
+              id = "",
               optionText = "No",
-              onClick = {},
               chosenState = NotChosen,
             ),
           ),
@@ -526,36 +561,37 @@ fun GroupPreview(
             radioGroupSize = size,
             modifier = Modifier.fillMaxWidth(),
             groupLabelText = "Label",
+            onOptionClick = {},
             contentPaddingValues = calculateContentPadding(HorizontalWithLabel("Label"), size),
             data = listOf(
               RadioOptionData(
+                id = "",
                 optionText = "Yes",
-                onClick = {},
                 chosenState = Chosen,
               ),
               RadioOptionData(
+                id = "",
                 optionText = "No",
-                onClick = {},
                 chosenState = NotChosen,
               ),
               RadioOptionData(
+                id = "",
                 optionText = "Maybe",
-                onClick = {},
                 chosenState = NotChosen,
               ),
               RadioOptionData(
+                id = "",
                 optionText = "Not sure ",
-                onClick = {},
                 chosenState = NotChosen,
               ),
               RadioOptionData(
+                id = "",
                 optionText = "Perhaps",
-                onClick = {},
                 chosenState = NotChosen,
               ),
               RadioOptionData(
+                id = "",
                 optionText = "Very unlikely",
-                onClick = {},
                 chosenState = NotChosen,
               ),
             ),
@@ -568,36 +604,37 @@ fun GroupPreview(
             radioGroupSize = size,
             modifier = Modifier.fillMaxWidth(),
             optionStyle = Default,
+            onOptionClick = {},
             data = listOf(
               RadioOptionData(
+                id = "",
                 optionText = "Yes",
-                onClick = {},
                 chosenState = Chosen,
               ),
               RadioOptionData(
+                id = "",
                 optionText = "No",
-                onClick = {},
                 chosenState = NotChosen,
                 lockedState = Locked,
               ),
               RadioOptionData(
+                id = "",
                 optionText = "Maybe",
-                onClick = {},
                 chosenState = NotChosen,
               ),
               RadioOptionData(
+                id = "",
                 optionText = "Not sure",
-                onClick = {},
                 chosenState = NotChosen,
               ),
               RadioOptionData(
+                id = "",
                 optionText = "Perhaps",
-                onClick = {},
                 chosenState = NotChosen,
               ),
               RadioOptionData(
+                id = "",
                 optionText = "Very unlikely",
-                onClick = {},
                 chosenState = NotChosen,
               ),
             ),
@@ -622,15 +659,16 @@ fun VerticalGroupsPreview(
           radioGroupSize = size,
           modifier = Modifier.fillMaxWidth(),
           optionStyle = Default,
+          onOptionClick = {},
           data = listOf(
             RadioOptionData(
+              id = "",
               optionText = "Vertical option",
-              onClick = {},
               chosenState = NotChosen,
             ),
             RadioOptionData(
+              id = "",
               optionText = "No",
-              onClick = {},
               chosenState = Chosen,
               lockedState = NotLocked,
             ),
@@ -651,15 +689,16 @@ fun VerticalGroupsPreview(
             ),
             size,
           ),
+          onOptionClick = {},
           data = listOf(
             RadioOptionData(
+              id = "",
               optionText = "Vertical option",
-              onClick = {},
               chosenState = NotChosen,
             ),
             RadioOptionData(
+              id = "",
               optionText = "No",
-              onClick = {},
               chosenState = Chosen,
               lockedState = NotLocked,
             ),
@@ -695,103 +734,104 @@ fun VerticalGroupWithDiffOptionStylesPreview(
             ),
             Small,
           ),
+          onOptionClick = {},
           data = listOf(
             RadioOptionData(
+              id = "",
               optionText = "Vertical option",
-              onClick = {},
               chosenState = NotChosen,
             ),
             RadioOptionData(
+              id = "",
               optionText = "No",
-              onClick = {},
               chosenState = Chosen,
               lockedState = NotLocked,
             ),
             RadioOptionData(
+              id = "",
               optionText = "Vertical option",
-              onClick = {},
               chosenState = NotChosen,
             ),
             RadioOptionData(
+              id = "",
               optionText = "No",
-              onClick = {},
               chosenState = NotChosen,
               lockedState = NotLocked,
             ),
             RadioOptionData(
+              id = "",
               optionText = "Vertical option",
-              onClick = {},
               chosenState = NotChosen,
             ),
             RadioOptionData(
+              id = "",
               optionText = "No",
-              onClick = {},
               chosenState = NotChosen,
               lockedState = NotLocked,
             ),
             RadioOptionData(
+              id = "",
               optionText = "Vertical option",
-              onClick = {},
               chosenState = NotChosen,
             ),
             RadioOptionData(
+              id = "",
               optionText = "No",
-              onClick = {},
               chosenState = NotChosen,
               lockedState = NotLocked,
             ),
             RadioOptionData(
+              id = "",
               optionText = "Vertical option",
-              onClick = {},
               chosenState = NotChosen,
             ),
             RadioOptionData(
+              id = "",
               optionText = "No",
-              onClick = {},
               chosenState = NotChosen,
               lockedState = NotLocked,
             ),
             RadioOptionData(
+              id = "",
               optionText = "Vertical option",
-              onClick = {},
               chosenState = NotChosen,
             ),
             RadioOptionData(
+              id = "",
               optionText = "No",
-              onClick = {},
               chosenState = NotChosen,
               lockedState = NotLocked,
             ),
             RadioOptionData(
+              id = "",
               optionText = "Vertical option",
-              onClick = {},
               chosenState = NotChosen,
             ),
             RadioOptionData(
+              id = "",
               optionText = "No",
-              onClick = {},
               chosenState = NotChosen,
               lockedState = NotLocked,
             ),
             RadioOptionData(
+              id = "",
               optionText = "Vertical option",
-              onClick = {},
               chosenState = NotChosen,
             ),
             RadioOptionData(
+              id = "",
               optionText = "No",
-              onClick = {},
               chosenState = NotChosen,
               lockedState = NotLocked,
             ),
             RadioOptionData(
+              id = "",
               optionText = "Vertical option",
-              onClick = {},
               chosenState = NotChosen,
             ),
             RadioOptionData(
+              id = "",
               optionText = "No",
-              onClick = {},
               chosenState = NotChosen,
               lockedState = NotLocked,
             ),

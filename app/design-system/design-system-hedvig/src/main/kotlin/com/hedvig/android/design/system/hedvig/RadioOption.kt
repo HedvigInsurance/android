@@ -55,8 +55,8 @@ import com.hedvig.android.design.system.hedvig.tokens.SizeRadioOptionTokens.Smal
 import com.hedvig.android.design.system.hedvig.tokens.TweenAnimationTokens
 
 data class RadioOptionData(
+  val id: String,
   val optionText: String,
-  val onClick: () -> Unit,
   val chosenState: RadioOptionChosenState,
   val lockedState: LockedState = NotLocked,
   val interactionSource: MutableInteractionSource? = null,
@@ -68,11 +68,12 @@ internal fun RadioOption(
   radioOptionStyle: RadioOptionStyle,
   radioOptionSize: RadioOptionDefaults.RadioOptionSize,
   groupLockedState: LockedState,
+  onOptionClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   RadioOption(
     optionText = data.optionText,
-    onClick = data.onClick,
+    onClick = onOptionClick,
     chosenState = data.chosenState,
     modifier = modifier,
     lockedState = calculateLockedStateForItemInGroup(data, groupLockedState),
