@@ -4,23 +4,18 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineBreak
@@ -29,18 +24,20 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
-import com.hedvig.android.core.designsystem.material3.borderSecondary
-import com.hedvig.android.core.designsystem.material3.typeElement
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.SelectIndicationCircle
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.core.ui.text.WarningTextWithIcon
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.termination.data.TerminatableInsurance
+import com.hedvig.android.design.system.hedvig.RadioGroup
+import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupSize
+import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyle
+import com.hedvig.android.design.system.hedvig.RadioOptionChosenState.Chosen
+import com.hedvig.android.design.system.hedvig.RadioOptionChosenState.NotChosen
+import com.hedvig.android.design.system.hedvig.RadioOptionData
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationScaffold
 import hedvig.resources.R
@@ -69,7 +66,7 @@ internal fun ChooseInsuranceToTerminateDestination(
     closeTerminationFlow = closeTerminationFlow,
     reload = { viewModel.emit(ChooseInsuranceToTerminateEvent.RetryLoadData) },
     fetchTerminationStep = { viewModel.emit(ChooseInsuranceToTerminateEvent.SubmitSelectedInsuranceToTerminate(it)) },
-    selectInsurance = { viewModel.emit(ChooseInsuranceToTerminateEvent.SelectInsurance(it)) },
+    selectInsurance = { id -> viewModel.emit(ChooseInsuranceToTerminateEvent.SelectInsurance(id)) },
   )
 }
 
@@ -81,7 +78,7 @@ private fun ChooseInsuranceToTerminateScreen(
   openChat: () -> Unit,
   closeTerminationFlow: () -> Unit,
   fetchTerminationStep: (insurance: TerminatableInsurance) -> Unit,
-  selectInsurance: (insurance: TerminatableInsurance) -> Unit,
+  selectInsurance: (insuranceId: String) -> Unit,
 ) {
   when (uiState) {
     ChooseInsuranceToTerminateStepUiState.NotAllowed -> {
@@ -140,43 +137,18 @@ private fun ChooseInsuranceToTerminateScreen(
             Spacer(Modifier.height(16.dp))
           }
         }
-        for (insurance in uiState.insuranceList) {
-          HedvigCard(
-            onClick = { selectInsurance(insurance) },
-            colors = CardDefaults.outlinedCardColors(
-              containerColor = MaterialTheme.colorScheme.surface,
-            ),
+        val radioOptionData = uiState.insuranceList.toRadioOptionDataList(uiState.selectedInsurance?.id)
+        com.hedvig.android.design.system.hedvig.HedvigTheme {
+          // todo: where do we apply the theme now that we're still on both old and new theme?
+          RadioGroup(
+            data = radioOptionData,
+            onOptionClick = { insuranceId -> selectInsurance(insuranceId) },
             modifier = Modifier
               .fillMaxWidth()
               .padding(horizontal = 16.dp),
-          ) {
-            Row(
-              verticalAlignment = Alignment.CenterVertically,
-              modifier = Modifier
-                .heightIn(64.dp)
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 10.dp),
-            ) {
-              Column(modifier = Modifier.weight(1f)) {
-                Text(
-                  text = insurance.displayName,
-                  style = MaterialTheme.typography.bodyLarge,
-                )
-                Text(
-                  text = insurance.contractExposure,
-                  style = MaterialTheme.typography.bodyMedium,
-                  color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-              }
-              Spacer(Modifier.width(8.dp))
-              SelectIndicationCircle(
-                uiState.selectedInsurance?.id == insurance.id,
-                selectedIndicationColor = MaterialTheme.colorScheme.typeElement,
-                unselectedCircleColor = MaterialTheme.colorScheme.borderSecondary,
-              )
-            }
-          }
-          Spacer(modifier = (Modifier.height(4.dp)))
+            radioGroupSize = RadioGroupSize.Medium,
+            radioGroupStyle = RadioGroupStyle.Vertical.Label,
+          )
         }
         Spacer(Modifier.height(12.dp))
         HedvigContainedButton(
@@ -198,6 +170,21 @@ private fun ChooseInsuranceToTerminateScreen(
       }
     }
   }
+}
+
+private fun List<TerminatableInsurance>.toRadioOptionDataList(selectedInsuranceId: String?): List<RadioOptionData> {
+  val result = mutableListOf<RadioOptionData>()
+  for (i in this) {
+    result.add(
+      RadioOptionData(
+        id = i.id,
+        optionText = i.displayName,
+        chosenState = if (selectedInsuranceId == i.id) Chosen else NotChosen,
+        labelText = i.contractExposure,
+      ),
+    )
+  }
+  return result
 }
 
 @HedvigPreview

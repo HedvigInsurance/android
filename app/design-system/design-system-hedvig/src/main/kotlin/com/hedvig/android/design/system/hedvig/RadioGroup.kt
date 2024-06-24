@@ -30,6 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.design.system.hedvig.IconResource.Painter
 import com.hedvig.android.design.system.hedvig.LockedState.Locked
 import com.hedvig.android.design.system.hedvig.LockedState.NotLocked
 import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupSize
@@ -40,22 +41,20 @@ import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyl
 import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyle.Horizontal
 import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyle.HorizontalWithLabel
 import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyle.Vertical
-import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyle.VerticalWithLabel
+import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyle.VerticalWithGroupLabel
 import com.hedvig.android.design.system.hedvig.RadioOptionChosenState.Chosen
 import com.hedvig.android.design.system.hedvig.RadioOptionChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.RadioOptionDefaults.RadioOptionStyle
 import com.hedvig.android.design.system.hedvig.RadioOptionDefaults.RadioOptionStyle.Default
 import com.hedvig.android.design.system.hedvig.RadioOptionDefaults.RadioOptionStyle.Label
 import com.hedvig.android.design.system.hedvig.RadioOptionDefaults.RadioOptionStyle.LeftAligned
-import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import com.hedvig.android.design.system.hedvig.icon.Play
-import com.hedvig.android.design.system.hedvig.icon.flag.FlagSweden
 import com.hedvig.android.design.system.hedvig.tokens.SizeRadioGroupTokens.LargeSizeRadioGroupTokens
 import com.hedvig.android.design.system.hedvig.tokens.SizeRadioGroupTokens.MediumSizeRadioGroupTokens
 import com.hedvig.android.design.system.hedvig.tokens.SizeRadioGroupTokens.SmallSizeRadioGroupTokens
 import com.hedvig.android.design.system.hedvig.tokens.SizeRadioOptionTokens.LargeSizeRadioOptionTokens
 import com.hedvig.android.design.system.hedvig.tokens.SizeRadioOptionTokens.MediumSizeRadioOptionTokens
 import com.hedvig.android.design.system.hedvig.tokens.SizeRadioOptionTokens.SmallSizeRadioOptionTokens
+import hedvig.resources.R
 
 @Composable
 fun RadioGroup(
@@ -92,7 +91,7 @@ fun RadioGroup(
 
     is Vertical -> VerticalRadioGroup(
       data = data,
-      optionStyle = radioGroupStyle.optionStyle,
+      radioGroupStyle = radioGroupStyle,
       modifier = modifier,
       groupLockedState = groupLockedState,
       radioGroupSize = radioGroupSize,
@@ -101,13 +100,12 @@ fun RadioGroup(
       },
     )
 
-    is VerticalWithLabel -> VerticalRadioGroupWithLabel(
+    is VerticalWithGroupLabel -> VerticalRadioGroupWithLabel(
       data = data,
-      optionStyle = radioGroupStyle.optionStyle,
+      radioGroupStyle = radioGroupStyle,
       modifier = modifier,
       groupLockedState = groupLockedState,
       radioGroupSize = radioGroupSize,
-      groupLabelText = radioGroupStyle.groupLabelText,
       contentPaddingValues = contentPadding,
       onOptionClick = { id ->
         onOptionClick(id)
@@ -286,7 +284,7 @@ private fun HorizontalWithLabelRadioOption(
 @Composable
 private fun VerticalRadioGroup(
   data: List<RadioOptionData>,
-  optionStyle: RadioOptionStyle,
+  radioGroupStyle: Vertical,
   groupLockedState: LockedState,
   radioGroupSize: RadioGroupSize,
   onOptionClick: (String) -> Unit,
@@ -294,9 +292,15 @@ private fun VerticalRadioGroup(
 ) {
   Column(modifier) {
     for (radioOptionData in data) {
+      val radioOptionStyle = when (radioGroupStyle) {
+        is Vertical.Default -> Default
+        is Vertical.Icon -> RadioOptionStyle.Icon(radioOptionData.iconResource ?: Painter(R.drawable.pillow_hedvig)) // todo: how is that for placeholder
+        is Vertical.Label -> Label(radioOptionData.labelText ?: "") // todo: no placeholder
+        is Vertical.LeftAligned -> LeftAligned
+      }
       RadioOption(
         data = radioOptionData,
-        radioOptionStyle = optionStyle,
+        radioOptionStyle = radioOptionStyle,
         groupLockedState = groupLockedState,
         radioOptionSize = radioGroupSize.toOptionSize(),
         onOptionClick = {
@@ -311,8 +315,7 @@ private fun VerticalRadioGroup(
 @Composable
 private fun VerticalRadioGroupWithLabel(
   data: List<RadioOptionData>,
-  groupLabelText: String,
-  optionStyle: RadioOptionStyle,
+  radioGroupStyle: VerticalWithGroupLabel,
   groupLockedState: LockedState,
   radioGroupSize: RadioGroupSize,
   contentPaddingValues: PaddingValues,
@@ -329,7 +332,7 @@ private fun VerticalRadioGroupWithLabel(
       val labelTextColor = radioOptionColors.labelTextColor(groupLockedState)
       HedvigText(
         modifier = Modifier.padding(contentPaddingValues),
-        text = groupLabelText,
+        text = radioGroupStyle.groupLabelText,
         style = MediumSizeRadioOptionTokens.LabelTextFont.value, // same for all sizes in figma
         color = labelTextColor,
       )
@@ -348,9 +351,17 @@ private fun VerticalRadioGroupWithLabel(
                 onOptionClick(radioOptionData.id)
               },
             )
+          val radioOptionStyle = when (radioGroupStyle) {
+            is VerticalWithGroupLabel.Default -> Default
+            is VerticalWithGroupLabel.Icon -> RadioOptionStyle.Icon(
+              radioOptionData.iconResource ?: Painter(R.drawable.pillow_hedvig),
+            ) // todo: how is that for placeholder
+            is VerticalWithGroupLabel.Label -> Label(radioOptionData.labelText ?: "") // todo: no placeholder
+            is VerticalWithGroupLabel.LeftAligned -> LeftAligned
+          }
           RadioOption(
             data = radioOptionData,
-            radioOptionStyle = optionStyle,
+            radioOptionStyle = radioOptionStyle,
             groupLockedState = groupLockedState,
             radioOptionSize = radioGroupSize.toOptionSize(),
             interactionSource = interactionSource,
@@ -389,7 +400,7 @@ private fun calculateContentPadding(radioGroupStyle: RadioGroupStyle, radioGroup
       start = LargeSizeRadioGroupTokens.HorizontalPadding,
       end = LargeSizeRadioGroupTokens.HorizontalPadding,
       top = LargeSizeRadioGroupTokens.verticalPadding().calculateTopPadding(),
-      bottom = if (radioGroupStyle !is VerticalWithLabel) {
+      bottom = if (radioGroupStyle !is VerticalWithGroupLabel) {
         LargeSizeRadioGroupTokens.verticalPadding()
           .calculateBottomPadding()
       } else {
@@ -401,7 +412,7 @@ private fun calculateContentPadding(radioGroupStyle: RadioGroupStyle, radioGroup
       start = MediumSizeRadioGroupTokens.HorizontalPadding,
       end = MediumSizeRadioGroupTokens.HorizontalPadding,
       top = MediumSizeRadioGroupTokens.verticalPadding().calculateTopPadding(),
-      bottom = if (radioGroupStyle !is VerticalWithLabel) {
+      bottom = if (radioGroupStyle !is VerticalWithGroupLabel) {
         MediumSizeRadioGroupTokens.verticalPadding()
           .calculateBottomPadding()
       } else {
@@ -413,7 +424,7 @@ private fun calculateContentPadding(radioGroupStyle: RadioGroupStyle, radioGroup
       start = SmallSizeRadioGroupTokens.HorizontalPadding,
       end = SmallSizeRadioGroupTokens.HorizontalPadding,
       top = SmallSizeRadioGroupTokens.verticalPadding().calculateTopPadding(),
-      bottom = if (radioGroupStyle !is VerticalWithLabel) {
+      bottom = if (radioGroupStyle !is VerticalWithGroupLabel) {
         SmallSizeRadioGroupTokens.verticalPadding()
           .calculateBottomPadding()
       } else {
@@ -425,7 +436,7 @@ private fun calculateContentPadding(radioGroupStyle: RadioGroupStyle, radioGroup
     Horizontal -> PaddingValues()
     is HorizontalWithLabel -> paddingValuesForLabel
     is Vertical -> PaddingValues()
-    is VerticalWithLabel -> paddingValuesForLabel
+    is VerticalWithGroupLabel -> paddingValuesForLabel
   }
 }
 
@@ -447,7 +458,7 @@ private fun RadioGroupSize.getShape(): Shape {
 }
 
 object RadioGroupDefaults {
-  internal val radioGroupStyle: RadioGroupStyle = Vertical(Default)
+  internal val radioGroupStyle: RadioGroupStyle = Vertical.Default
   internal val radioGroupSize: RadioGroupSize = Large
 
   sealed interface RadioGroupStyle {
@@ -457,11 +468,27 @@ object RadioGroupDefaults {
       val groupLabelText: String,
     ) : RadioGroupStyle
 
-    data class Vertical(
-      val optionStyle: RadioOptionStyle,
-    ) : RadioGroupStyle
+    sealed interface Vertical : RadioGroupStyle {
+      data object Default : Vertical
 
-    data class VerticalWithLabel(val optionStyle: RadioOptionStyle, val groupLabelText: String) : RadioGroupStyle
+      data object Label : Vertical
+
+      data object Icon : Vertical
+
+      data object LeftAligned : Vertical
+    }
+
+    sealed interface VerticalWithGroupLabel : RadioGroupStyle {
+      val groupLabelText: String
+
+      data class Default(override val groupLabelText: String) : VerticalWithGroupLabel
+
+      data class Label(override val groupLabelText: String) : VerticalWithGroupLabel
+
+      data class Icon(override val groupLabelText: String) : VerticalWithGroupLabel
+
+      data class LeftAligned(override val groupLabelText: String) : VerticalWithGroupLabel
+    }
   }
 
   enum class RadioGroupSize {
@@ -474,7 +501,7 @@ object RadioGroupDefaults {
 @Preview
 @Composable
 fun GroupPreview(
-  @PreviewParameter(HorizontalGroupParametersProvider::class) size: RadioGroupSize,
+  @PreviewParameter(GroupSizeParametersProvider::class) size: RadioGroupSize,
 ) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundWhite) {
@@ -625,7 +652,7 @@ fun GroupPreview(
             groupLockedState = NotLocked,
             radioGroupSize = size,
             modifier = Modifier.fillMaxWidth(),
-            optionStyle = Default,
+            radioGroupStyle = Vertical.Default,
             onOptionClick = {},
             data = listOf(
               RadioOptionData(
@@ -670,7 +697,7 @@ fun GroupPreview(
 @Preview
 @Composable
 fun VerticalGroupsPreview(
-  @PreviewParameter(HorizontalGroupParametersProvider::class) size: RadioGroupSize,
+  @PreviewParameter(GroupSizeParametersProvider::class) size: RadioGroupSize,
 ) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundWhite) {
@@ -680,7 +707,7 @@ fun VerticalGroupsPreview(
           groupLockedState = NotLocked,
           radioGroupSize = size,
           modifier = Modifier.fillMaxWidth(),
-          optionStyle = Default,
+          radioGroupStyle = Vertical.Default,
           onOptionClick = {},
           data = listOf(
             RadioOptionData(
@@ -702,16 +729,12 @@ fun VerticalGroupsPreview(
           groupLockedState = NotLocked,
           radioGroupSize = size,
           modifier = Modifier.fillMaxWidth(),
-          optionStyle = Default,
-          groupLabelText = "Label",
           contentPaddingValues = calculateContentPadding(
-            VerticalWithLabel(
-              groupLabelText = "Label",
-              optionStyle = RadioOptionStyle.Icon(IconResource.Vector(HedvigIcons.Play)),
-            ),
+            VerticalWithGroupLabel.Default("Label"),
             size,
           ),
           onOptionClick = {},
+          radioGroupStyle = VerticalWithGroupLabel.Default("Label"),
           data = listOf(
             RadioOptionData(
               id = "",
@@ -734,7 +757,9 @@ fun VerticalGroupsPreview(
 @Preview
 @Composable
 fun VerticalGroupWithDiffOptionStylesPreview(
-  @PreviewParameter(RadiOptionStyleParametersProvider::class) style: RadioOptionStyle,
+  @PreviewParameter(
+    RadioGroupStyleVerticalGroupLabelParameterProvider::class,
+  ) style: VerticalWithGroupLabel,
 ) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
@@ -747,13 +772,9 @@ fun VerticalGroupWithDiffOptionStylesPreview(
           groupLockedState = NotLocked,
           radioGroupSize = Small,
           modifier = Modifier.fillMaxWidth(),
-          optionStyle = style,
-          groupLabelText = "Label",
+          radioGroupStyle = style,
           contentPaddingValues = calculateContentPadding(
-            VerticalWithLabel(
-              groupLabelText = "Label",
-              optionStyle = RadioOptionStyle.Icon(IconResource.Vector(HedvigIcons.Play)),
-            ),
+            VerticalWithGroupLabel.Default("GroupLabel"),
             Small,
           ),
           onOptionClick = {},
@@ -864,7 +885,7 @@ fun VerticalGroupWithDiffOptionStylesPreview(
   }
 }
 
-private class HorizontalGroupParametersProvider :
+private class GroupSizeParametersProvider :
   CollectionPreviewParameterProvider<RadioGroupSize>(
     listOf(
       Large,
@@ -873,13 +894,12 @@ private class HorizontalGroupParametersProvider :
     ),
   )
 
-private class RadiOptionStyleParametersProvider :
-  CollectionPreviewParameterProvider<RadioOptionStyle>(
+private class RadioGroupStyleVerticalGroupLabelParameterProvider :
+  CollectionPreviewParameterProvider<VerticalWithGroupLabel>(
     listOf(
-      Default,
-      Label("Label"),
-      RadioOptionStyle.Icon(IconResource.Painter(hedvig.resources.R.drawable.pillow_hedvig)),
-      RadioOptionStyle.Icon(IconResource.Vector(HedvigIcons.FlagSweden)),
-      LeftAligned,
+      VerticalWithGroupLabel.Default("GroupLabel"),
+      VerticalWithGroupLabel.Label("GroupLabel"),
+      VerticalWithGroupLabel.LeftAligned("GroupLabel"),
+      VerticalWithGroupLabel.Icon("GroupLabel"),
     ),
   )

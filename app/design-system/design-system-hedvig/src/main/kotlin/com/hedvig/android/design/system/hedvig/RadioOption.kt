@@ -59,6 +59,8 @@ import com.hedvig.android.design.system.hedvig.tokens.TweenAnimationTokens
 data class RadioOptionData(
   val id: String,
   val optionText: String,
+  val labelText: String? = null,
+  val iconResource: IconResource? = null,
   val chosenState: RadioOptionChosenState,
   val lockedState: LockedState = NotLocked,
 )

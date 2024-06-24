@@ -19,7 +19,6 @@ import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyl
 import com.hedvig.android.design.system.hedvig.RadioOptionChosenState.Chosen
 import com.hedvig.android.design.system.hedvig.RadioOptionChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.RadioOptionData
-import com.hedvig.android.design.system.hedvig.RadioOptionDefaults.RadioOptionStyle
 
 @Composable
 internal fun ShowCaseRadioGroups(modifier: Modifier = Modifier) {
@@ -52,7 +51,11 @@ internal fun ShowCaseRadioGroups(modifier: Modifier = Modifier) {
   var list2 by remember { mutableStateOf(shortList1) }
   var list3 by remember { mutableStateOf(shortList1) }
   var list4 by remember { mutableStateOf(shortList1) }
-  Column(modifier.fillMaxSize().padding(horizontal = 16.dp)) {
+  Column(
+    modifier
+      .fillMaxSize()
+      .padding(horizontal = 16.dp),
+  ) {
     Spacer(Modifier.height(48.dp))
     RadioGroup(
       data = list1,
@@ -79,6 +82,7 @@ internal fun ShowCaseRadioGroups(modifier: Modifier = Modifier) {
       radioGroupSize = Large,
       radioGroupStyle = RadioGroupStyle.HorizontalWithLabel("Your decision"),
     )
+
     Spacer(Modifier.height(8.dp))
     RadioGroup(
       data = list2,
@@ -103,7 +107,7 @@ internal fun ShowCaseRadioGroups(modifier: Modifier = Modifier) {
         }
       },
       radioGroupSize = Medium,
-      radioGroupStyle = RadioGroupStyle.Vertical(RadioOptionStyle.Label("Answer")),
+      radioGroupStyle = RadioGroupStyle.Vertical.Label,
     )
     Spacer(Modifier.height(8.dp))
     RadioGroup(
@@ -116,8 +120,7 @@ internal fun ShowCaseRadioGroups(modifier: Modifier = Modifier) {
         }
       },
       radioGroupSize = Medium,
-      radioGroupStyle = RadioGroupStyle.VerticalWithLabel(
-        RadioOptionStyle.Default,
+      radioGroupStyle = RadioGroupStyle.VerticalWithGroupLabel.Default(
         "Your decision",
       ),
     )
