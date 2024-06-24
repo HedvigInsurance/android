@@ -12,7 +12,7 @@ internal object CheckboxColorTokens {
   val DisabledOptionTextColor = ColorSchemeKeyTokens.TextDisabledTranslucent
   val DisabledLabelTextColor = ColorSchemeKeyTokens.TextDisabledTranslucent
   val ChosenIndicatorColor = ColorSchemeKeyTokens.SignalGreenElement
-  val NotChosenIndicatorColor = ColorSchemeKeyTokens.BorderSecondary
+  val NotChosenIndicatorColor = ColorSchemeKeyTokens.FillDisabled // todo: if i put borderSecondary here as it is in figma, it's almost invisible
   val DisabledIndicatorColor = ColorSchemeKeyTokens.FillDisabledTransparent
 }
 
@@ -21,6 +21,8 @@ internal abstract class SizeCheckboxTokens {
   abstract val BottomPadding: Dp
   abstract val LabelTopPadding: Dp
   abstract val LabelBottomPadding: Dp
+  abstract val IconTopPadding: Dp
+  abstract val IconBottomPadding: Dp
   abstract val OptionTextFont: TypographyKeyTokens
   abstract val LabelTextFont: TypographyKeyTokens
   abstract val HorizontalPadding: Dp
@@ -30,10 +32,12 @@ internal abstract class SizeCheckboxTokens {
   fun verticalPadding(style: CheckboxStyle): PaddingValues {
     val topPadding = when (style) {
       is CheckboxStyle.Label -> LabelTopPadding
+      is CheckboxStyle.Icon -> IconTopPadding
       else -> TopPadding
     }
     val bottomPadding = when (style) {
       is CheckboxStyle.Label -> LabelBottomPadding
+      is CheckboxStyle.Icon -> IconBottomPadding
       else -> BottomPadding
     }
     return PaddingValues(
@@ -47,11 +51,13 @@ internal abstract class SizeCheckboxTokens {
     override val BottomPadding = 18.dp
     override val LabelTopPadding = 7.dp
     override val LabelBottomPadding = 10.dp
+    override val IconTopPadding = 16.dp
+    override val IconBottomPadding = 16.dp
     override val OptionTextFont = TypographyKeyTokens.BodyMedium
     override val LabelTextFont = TypographyKeyTokens.Label
     override val HorizontalPadding = 16.dp
     override val ContainerShape = ShapeKeyTokens.CornerLarge
-    override val IndicationShape = ShapeKeyTokens.CornerLarge
+    override val IndicationShape = ShapeKeyTokens.CornerSmall
   }
 
   data object MediumSizeCheckboxTokens : SizeCheckboxTokens() {
@@ -59,11 +65,13 @@ internal abstract class SizeCheckboxTokens {
     override val BottomPadding = 21.dp
     override val LabelTopPadding = 10.dp
     override val LabelBottomPadding = 12.dp
+    override val IconTopPadding = 16.dp
+    override val IconBottomPadding = 16.dp
     override val OptionTextFont = TypographyKeyTokens.BodySmall
     override val LabelTextFont = TypographyKeyTokens.Label
     override val HorizontalPadding = 16.dp
     override val ContainerShape = ShapeKeyTokens.CornerLarge
-    override val IndicationShape = ShapeKeyTokens.CornerLarge
+    override val IndicationShape = ShapeKeyTokens.CornerSmall
   }
 
   data object SmallSizeCheckboxTokens : SizeCheckboxTokens() {
@@ -71,10 +79,12 @@ internal abstract class SizeCheckboxTokens {
     override val BottomPadding = 17.dp
     override val LabelTopPadding = 7.dp
     override val LabelBottomPadding = 10.dp
+    override val IconTopPadding = 12.dp
+    override val IconBottomPadding = 12.dp
     override val OptionTextFont = TypographyKeyTokens.BodySmall
     override val LabelTextFont = TypographyKeyTokens.FinePrint
-    override val HorizontalPadding = 16.dp
+    override val HorizontalPadding = 14.dp
     override val ContainerShape = ShapeKeyTokens.CornerLarge
-    override val IndicationShape = ShapeKeyTokens.CornerLarge
+    override val IndicationShape = ShapeKeyTokens.CornerSmall
   }
 }

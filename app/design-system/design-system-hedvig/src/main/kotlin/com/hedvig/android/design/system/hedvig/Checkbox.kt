@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -29,7 +30,13 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.design.system.hedvig.CheckboxDefaults.CheckboxSize.Large
+import com.hedvig.android.design.system.hedvig.CheckboxDefaults.CheckboxSize.Medium
+import com.hedvig.android.design.system.hedvig.CheckboxDefaults.CheckboxSize.Small
 import com.hedvig.android.design.system.hedvig.CheckboxDefaults.CheckboxStyle
 import com.hedvig.android.design.system.hedvig.CheckboxDefaults.CheckboxStyle.Default
 import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
@@ -38,6 +45,7 @@ import com.hedvig.android.design.system.hedvig.LockedState.Locked
 import com.hedvig.android.design.system.hedvig.LockedState.NotLocked
 import com.hedvig.android.design.system.hedvig.icon.Checkmark
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.flag.FlagSweden
 import com.hedvig.android.design.system.hedvig.tokens.CheckboxColorTokens
 import com.hedvig.android.design.system.hedvig.tokens.SizeCheckboxTokens.LargeSizeCheckboxTokens
 import com.hedvig.android.design.system.hedvig.tokens.SizeCheckboxTokens.MediumSizeCheckboxTokens
@@ -169,7 +177,7 @@ fun SelectIndicationSquareBox(
   modifier: Modifier = Modifier,
 ) {
   CheckItemAnimation(chosenState) { currentState: ChosenState ->
-    val shape = CheckboxDefaults.CheckboxSize.Large.size(Default).shape // same for all sizes
+    val shape = CheckboxDefaults.CheckboxSize.Large.size(Default).indicationShape // same for all sizes
     val checkIconColor = HedvigTheme.colorScheme.surfacePrimary
     val backgroundColor = when (currentState) {
       Chosen -> {
@@ -194,16 +202,16 @@ fun SelectIndicationSquareBox(
     Box(
       modifier = modifier
         .size(24.dp)
-        .background(
-          color = backgroundColor,
-          shape = shape,
-        )
+        .clip(shape)
         .border(
           width = 2.dp,
           color = borderColor,
           shape = shape,
         )
-        .clip(shape)
+        .background(
+          color = backgroundColor,
+          shape = shape,
+        )
         .clickable {
           if (onCheckedChange != null) {
             onCheckedChange(currentState)
@@ -213,6 +221,7 @@ fun SelectIndicationSquareBox(
     ) {
       if ((currentState == Chosen)) {
         Icon(HedvigIcons.Checkmark, contentDescription = null, tint = checkIconColor)
+        // todo: I am not entirely sure this is the right Checkmark icon. It looks differently in figma
       }
     }
   }
@@ -390,3 +399,32 @@ internal sealed interface CheckboxSize {
       get() = SmallSizeCheckboxTokens.IndicationShape.value
   }
 }
+
+@Preview
+@Composable
+private fun PreviewCheckboxStyles(
+  @PreviewParameter(CheckboxStyleProvider::class) style: CheckboxStyle,
+) {
+  HedvigTheme(darkTheme = false) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      Column(Modifier.padding(16.dp)) {
+        CheckBox("Large option", Chosen, checkboxStyle = style, checkboxSize = Large)
+        Spacer(Modifier.height(8.dp))
+        CheckBox("Medium option", NotChosen, checkboxStyle = style, checkboxSize = Medium)
+        Spacer(Modifier.height(8.dp))
+        CheckBox("Small option", NotChosen, checkboxStyle = style, checkboxSize = Small)
+      }
+    }
+  }
+}
+
+private class CheckboxStyleProvider :
+  CollectionPreviewParameterProvider<CheckboxStyle>(
+    listOf(
+      CheckboxStyle.Default,
+      CheckboxStyle.Label("Group label"),
+      CheckboxStyle.Icon(IconResource.Painter(hedvig.resources.R.drawable.pillow_hedvig)),
+      CheckboxStyle.Icon(IconResource.Vector(HedvigIcons.FlagSweden)),
+      CheckboxStyle.LeftAligned,
+    ),
+  )

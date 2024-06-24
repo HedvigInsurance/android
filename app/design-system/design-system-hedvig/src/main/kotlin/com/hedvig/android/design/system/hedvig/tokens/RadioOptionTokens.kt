@@ -22,6 +22,8 @@ internal abstract class SizeRadioOptionTokens {
   abstract val BottomPadding: Dp
   abstract val LabelTopPadding: Dp
   abstract val LabelBottomPadding: Dp
+  abstract val IconTopPadding: Dp
+  abstract val IconBottomPadding: Dp
   abstract val OptionTextFont: TypographyKeyTokens
   abstract val LabelTextFont: TypographyKeyTokens
   abstract val HorizontalPadding: Dp
@@ -30,10 +32,12 @@ internal abstract class SizeRadioOptionTokens {
   fun verticalPadding(style: RadioOptionStyle): PaddingValues {
     val topPadding = when (style) {
       is Label -> LabelTopPadding
+      is RadioOptionStyle.Icon -> IconTopPadding
       else -> TopPadding
     }
     val bottomPadding = when (style) {
       is Label -> LabelBottomPadding
+      is RadioOptionStyle.Icon -> IconBottomPadding
       else -> BottomPadding
     }
     return PaddingValues(
@@ -47,6 +51,8 @@ internal abstract class SizeRadioOptionTokens {
     override val BottomPadding = 18.dp
     override val LabelTopPadding = 7.dp
     override val LabelBottomPadding = 10.dp
+    override val IconTopPadding = 16.dp
+    override val IconBottomPadding = 16.dp
     override val OptionTextFont = TypographyKeyTokens.BodyMedium
     override val LabelTextFont = TypographyKeyTokens.Label
     override val HorizontalPadding = 16.dp
@@ -58,6 +64,8 @@ internal abstract class SizeRadioOptionTokens {
     override val BottomPadding = 21.dp
     override val LabelTopPadding = 10.dp
     override val LabelBottomPadding = 12.dp
+    override val IconTopPadding = 16.dp
+    override val IconBottomPadding = 16.dp
     override val OptionTextFont = TypographyKeyTokens.BodySmall
     override val LabelTextFont = TypographyKeyTokens.Label
     override val HorizontalPadding = 16.dp
@@ -69,6 +77,8 @@ internal abstract class SizeRadioOptionTokens {
     override val BottomPadding = 17.dp
     override val LabelTopPadding = 7.dp
     override val LabelBottomPadding = 10.dp
+    override val IconTopPadding = 12.dp
+    override val IconBottomPadding = 12.dp
     override val OptionTextFont = TypographyKeyTokens.BodySmall
     override val LabelTextFont = TypographyKeyTokens.FinePrint
     override val HorizontalPadding = 16.dp
@@ -112,7 +122,7 @@ internal abstract class SizeRadioGroupTokens {
   data object SmallSizeRadioGroupTokens : SizeRadioGroupTokens() {
     override val LabelTopPadding = 10.dp
     override val LabelBottomPadding = 16.dp
-    override val HorizontalPadding = 16.dp
+    override val HorizontalPadding = 14.dp
     override val ContainerShape = ShapeKeyTokens.CornerLarge
     override val LabelTextFont = TypographyKeyTokens.Label
     override val HorizontalOptionTextFont = TypographyKeyTokens.BodySmall
