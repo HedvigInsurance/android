@@ -52,7 +52,29 @@ import com.hedvig.android.design.system.hedvig.tokens.SizeCheckboxTokens.MediumS
 import com.hedvig.android.design.system.hedvig.tokens.SizeCheckboxTokens.SmallSizeCheckboxTokens
 
 @Composable
-fun CheckBox(
+fun Checkbox(
+  data: OptionData,
+  checkboxStyle: CheckboxStyle,
+  groupLockedState: LockedState,
+  checkboxSize: CheckboxDefaults.CheckboxSize,
+  modifier: Modifier = Modifier,
+  onClick: (() -> Unit)? = null,
+  interactionSource: MutableInteractionSource? = null,
+) {
+  Checkbox(
+    optionText = data.optionText,
+    chosenState = data.chosenState,
+    lockedState = calculateLockedStateForItemInGroup(data, groupLockedState),
+    modifier = modifier,
+    onClick = onClick,
+    interactionSource = interactionSource,
+    checkboxStyle = checkboxStyle,
+    checkboxSize = checkboxSize,
+  )
+}
+
+@Composable
+fun Checkbox(
   optionText: String,
   chosenState: ChosenState,
   modifier: Modifier = Modifier,
@@ -67,7 +89,7 @@ fun CheckBox(
   val clickableModifier = if (onClick != null) {
     modifier
       .clip(checkboxSize.size(checkboxStyle).shape)
-      .semantics { role = Role.RadioButton }
+      .semantics { role = Role.Checkbox }
       .clickable(
         enabled = when (lockedState) {
           Locked -> false
@@ -79,7 +101,7 @@ fun CheckBox(
         onClick()
       }
   } else {
-    modifier.semantics { role = Role.RadioButton }
+    modifier.semantics { role = Role.Checkbox }
   }
   Surface(
     modifier = clickableModifier,
@@ -408,21 +430,25 @@ private fun PreviewCheckboxStyles(
   HedvigTheme(darkTheme = false) {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       Column(Modifier.padding(16.dp)) {
-        CheckBox("Large option", Chosen, checkboxStyle = style, checkboxSize = Large)
+        Checkbox("Large option", Chosen, checkboxStyle = style, checkboxSize = Large)
         Spacer(Modifier.height(8.dp))
-        CheckBox("Medium option", NotChosen, checkboxStyle = style, checkboxSize = Medium)
+        Checkbox("Medium option", NotChosen, checkboxStyle = style, checkboxSize = Medium)
         Spacer(Modifier.height(8.dp))
-        CheckBox("Small option", NotChosen, checkboxStyle = style, checkboxSize = Small)
+        Checkbox("Small option", NotChosen, checkboxStyle = style, checkboxSize = Small)
+        Spacer(Modifier.height(8.dp))
+        Checkbox("Locked option", NotChosen, checkboxStyle = style, checkboxSize = Small, lockedState = Locked)
+        Spacer(Modifier.height(8.dp))
+        Checkbox("Locked chosen option", Chosen, checkboxStyle = style, checkboxSize = Small, lockedState = Locked)
       }
     }
   }
 }
 
-private class CheckboxStyleProvider :
+internal class CheckboxStyleProvider :
   CollectionPreviewParameterProvider<CheckboxStyle>(
     listOf(
       CheckboxStyle.Default,
-      CheckboxStyle.Label("Group label"),
+      CheckboxStyle.Label("Option label"),
       CheckboxStyle.Icon(IconResource.Painter(hedvig.resources.R.drawable.pillow_hedvig)),
       CheckboxStyle.Icon(IconResource.Vector(HedvigIcons.FlagSweden)),
       CheckboxStyle.LeftAligned,

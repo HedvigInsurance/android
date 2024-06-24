@@ -56,7 +56,7 @@ import com.hedvig.android.design.system.hedvig.tokens.SizeRadioOptionTokens.Medi
 import com.hedvig.android.design.system.hedvig.tokens.SizeRadioOptionTokens.SmallSizeRadioOptionTokens
 import com.hedvig.android.design.system.hedvig.tokens.TweenAnimationTokens
 
-data class RadioOptionData(
+data class OptionData(
   val id: String,
   val optionText: String,
   val labelText: String? = null,
@@ -67,7 +67,7 @@ data class RadioOptionData(
 
 @Composable
 internal fun RadioOption(
-  data: RadioOptionData,
+  data: OptionData,
   radioOptionStyle: RadioOptionStyle,
   radioOptionSize: RadioOptionDefaults.RadioOptionSize,
   groupLockedState: LockedState,
@@ -87,7 +87,7 @@ internal fun RadioOption(
   )
 }
 
-internal fun calculateLockedStateForItemInGroup(data: RadioOptionData, groupLockedState: LockedState): LockedState {
+internal fun calculateLockedStateForItemInGroup(data: OptionData, groupLockedState: LockedState): LockedState {
   return if (groupLockedState == Locked) Locked else data.lockedState
 }
 

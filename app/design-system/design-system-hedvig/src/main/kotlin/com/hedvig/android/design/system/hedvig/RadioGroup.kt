@@ -58,7 +58,7 @@ import hedvig.resources.R
 
 @Composable
 fun RadioGroup(
-  data: List<RadioOptionData>,
+  data: List<OptionData>,
   onOptionClick: (String) -> Unit,
   modifier: Modifier = Modifier,
   groupLockedState: LockedState = NotLocked,
@@ -117,7 +117,7 @@ fun RadioGroup(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun HorizontalRadioGroup(
-  data: List<RadioOptionData>,
+  data: List<OptionData>,
   groupLockedState: LockedState,
   radioGroupSize: RadioGroupSize,
   onOptionClick: (String) -> Unit,
@@ -174,7 +174,7 @@ private fun HorizontalRadioGroup(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun HorizontalRadioGroupWithLabel(
-  data: List<RadioOptionData>,
+  data: List<OptionData>,
   groupLabelText: String,
   groupLockedState: LockedState,
   radioGroupSize: RadioGroupSize,
@@ -283,7 +283,7 @@ private fun HorizontalWithLabelRadioOption(
 
 @Composable
 private fun VerticalRadioGroup(
-  data: List<RadioOptionData>,
+  data: List<OptionData>,
   radioGroupStyle: Vertical,
   groupLockedState: LockedState,
   radioGroupSize: RadioGroupSize,
@@ -314,7 +314,7 @@ private fun VerticalRadioGroup(
 
 @Composable
 private fun VerticalRadioGroupWithLabel(
-  data: List<RadioOptionData>,
+  data: List<OptionData>,
   radioGroupStyle: VerticalWithGroupLabel,
   groupLockedState: LockedState,
   radioGroupSize: RadioGroupSize,
@@ -513,12 +513,12 @@ fun GroupPreview(
           modifier = Modifier,
           onOptionClick = {},
           data = listOf(
-            RadioOptionData(
+            OptionData(
               id = "",
               optionText = "Yes",
               chosenState = Chosen,
             ),
-            RadioOptionData(
+            OptionData(
               id = "",
               optionText = "No",
               chosenState = NotChosen,
@@ -533,12 +533,12 @@ fun GroupPreview(
           modifier = Modifier,
           onOptionClick = {},
           data = listOf(
-            RadioOptionData(
+            OptionData(
               id = "",
               optionText = "Yes",
               chosenState = Chosen,
             ),
-            RadioOptionData(
+            OptionData(
               id = "",
               optionText = "No",
               chosenState = NotChosen,
@@ -553,27 +553,27 @@ fun GroupPreview(
           modifier = Modifier,
           onOptionClick = {},
           data = listOf(
-            RadioOptionData(
+            OptionData(
               id = "",
               optionText = "Yes",
               chosenState = Chosen,
             ),
-            RadioOptionData(
+            OptionData(
               id = "",
               optionText = "Non",
               chosenState = NotChosen,
             ),
-            RadioOptionData(
+            OptionData(
               id = "",
               optionText = "Maybe",
               chosenState = NotChosen,
             ),
-            RadioOptionData(
+            OptionData(
               id = "",
               optionText = "Not sure",
               chosenState = NotChosen,
             ),
-            RadioOptionData(
+            OptionData(
               id = "",
               optionText = "Probably",
               chosenState = NotChosen,
@@ -590,12 +590,12 @@ fun GroupPreview(
           onOptionClick = {},
           contentPaddingValues = calculateContentPadding(HorizontalWithLabel("Label"), size),
           data = listOf(
-            RadioOptionData(
+            OptionData(
               id = "",
               optionText = "Yes",
               chosenState = Chosen,
             ),
-            RadioOptionData(
+            OptionData(
               id = "",
               optionText = "No",
               chosenState = NotChosen,
@@ -613,32 +613,32 @@ fun GroupPreview(
             onOptionClick = {},
             contentPaddingValues = calculateContentPadding(HorizontalWithLabel("Label"), size),
             data = listOf(
-              RadioOptionData(
+              OptionData(
                 id = "",
                 optionText = "Yes",
                 chosenState = Chosen,
               ),
-              RadioOptionData(
+              OptionData(
                 id = "",
                 optionText = "No",
                 chosenState = NotChosen,
               ),
-              RadioOptionData(
+              OptionData(
                 id = "",
                 optionText = "Maybe",
                 chosenState = NotChosen,
               ),
-              RadioOptionData(
+              OptionData(
                 id = "",
                 optionText = "Not sure ",
                 chosenState = NotChosen,
               ),
-              RadioOptionData(
+              OptionData(
                 id = "",
                 optionText = "Perhaps",
                 chosenState = NotChosen,
               ),
-              RadioOptionData(
+              OptionData(
                 id = "",
                 optionText = "Very unlikely",
                 chosenState = NotChosen,
@@ -655,33 +655,33 @@ fun GroupPreview(
             radioGroupStyle = Vertical.Default,
             onOptionClick = {},
             data = listOf(
-              RadioOptionData(
+              OptionData(
                 id = "",
                 optionText = "Yes",
                 chosenState = Chosen,
               ),
-              RadioOptionData(
+              OptionData(
                 id = "",
                 optionText = "No",
                 chosenState = NotChosen,
                 lockedState = Locked,
               ),
-              RadioOptionData(
+              OptionData(
                 id = "",
                 optionText = "Maybe",
                 chosenState = NotChosen,
               ),
-              RadioOptionData(
+              OptionData(
                 id = "",
                 optionText = "Not sure",
                 chosenState = NotChosen,
               ),
-              RadioOptionData(
+              OptionData(
                 id = "",
                 optionText = "Perhaps",
                 chosenState = NotChosen,
               ),
-              RadioOptionData(
+              OptionData(
                 id = "",
                 optionText = "Very unlikely",
                 chosenState = NotChosen,
@@ -710,12 +710,12 @@ fun VerticalGroupsPreview(
           radioGroupStyle = Vertical.Default,
           onOptionClick = {},
           data = listOf(
-            RadioOptionData(
+            OptionData(
               id = "",
               optionText = "Vertical option",
               chosenState = NotChosen,
             ),
-            RadioOptionData(
+            OptionData(
               id = "",
               optionText = "No",
               chosenState = Chosen,
@@ -736,12 +736,12 @@ fun VerticalGroupsPreview(
           onOptionClick = {},
           radioGroupStyle = VerticalWithGroupLabel.Default("Label"),
           data = listOf(
-            RadioOptionData(
+            OptionData(
               id = "",
               optionText = "Vertical option",
               chosenState = NotChosen,
             ),
-            RadioOptionData(
+            OptionData(
               id = "",
               optionText = "No",
               chosenState = Chosen,
@@ -779,100 +779,100 @@ fun VerticalGroupWithDiffOptionStylesPreview(
           ),
           onOptionClick = {},
           data = listOf(
-            RadioOptionData(
+            OptionData(
               id = "",
               optionText = "Vertical option",
               chosenState = NotChosen,
             ),
-            RadioOptionData(
+            OptionData(
               id = "",
               optionText = "No",
               chosenState = Chosen,
               lockedState = NotLocked,
             ),
-            RadioOptionData(
+            OptionData(
               id = "",
               optionText = "Vertical option",
               chosenState = NotChosen,
             ),
-            RadioOptionData(
+            OptionData(
               id = "",
               optionText = "No",
               chosenState = NotChosen,
               lockedState = NotLocked,
             ),
-            RadioOptionData(
+            OptionData(
               id = "",
               optionText = "Vertical option",
               chosenState = NotChosen,
             ),
-            RadioOptionData(
+            OptionData(
               id = "",
               optionText = "No",
               chosenState = NotChosen,
               lockedState = NotLocked,
             ),
-            RadioOptionData(
+            OptionData(
               id = "",
               optionText = "Vertical option",
               chosenState = NotChosen,
             ),
-            RadioOptionData(
+            OptionData(
               id = "",
               optionText = "No",
               chosenState = NotChosen,
               lockedState = NotLocked,
             ),
-            RadioOptionData(
+            OptionData(
               id = "",
               optionText = "Vertical option",
               chosenState = NotChosen,
             ),
-            RadioOptionData(
+            OptionData(
               id = "",
               optionText = "No",
               chosenState = NotChosen,
               lockedState = NotLocked,
             ),
-            RadioOptionData(
+            OptionData(
               id = "",
               optionText = "Vertical option",
               chosenState = NotChosen,
             ),
-            RadioOptionData(
+            OptionData(
               id = "",
               optionText = "No",
               chosenState = NotChosen,
               lockedState = NotLocked,
             ),
-            RadioOptionData(
+            OptionData(
               id = "",
               optionText = "Vertical option",
               chosenState = NotChosen,
             ),
-            RadioOptionData(
+            OptionData(
               id = "",
               optionText = "No",
               chosenState = NotChosen,
               lockedState = NotLocked,
             ),
-            RadioOptionData(
+            OptionData(
               id = "",
               optionText = "Vertical option",
               chosenState = NotChosen,
             ),
-            RadioOptionData(
+            OptionData(
               id = "",
               optionText = "No",
               chosenState = NotChosen,
               lockedState = NotLocked,
             ),
-            RadioOptionData(
+            OptionData(
               id = "",
               optionText = "Vertical option",
               chosenState = NotChosen,
             ),
-            RadioOptionData(
+            OptionData(
               id = "",
               optionText = "No",
               chosenState = NotChosen,
