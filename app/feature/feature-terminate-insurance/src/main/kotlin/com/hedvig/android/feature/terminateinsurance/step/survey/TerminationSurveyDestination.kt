@@ -76,9 +76,9 @@ import com.hedvig.android.core.icons.hedvig.small.hedvig.Campaign
 import com.hedvig.android.core.ui.infocard.InfoCardTextButton
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.text.WarningTextWithIcon
+import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
+import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.RadioOption
-import com.hedvig.android.design.system.hedvig.RadioOptionChosenState.Chosen
-import com.hedvig.android.design.system.hedvig.RadioOptionChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.RadioOptionDefaults
 import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep

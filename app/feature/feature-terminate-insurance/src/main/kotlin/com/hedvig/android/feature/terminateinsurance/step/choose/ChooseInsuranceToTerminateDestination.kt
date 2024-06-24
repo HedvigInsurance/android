@@ -32,11 +32,11 @@ import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.core.ui.text.WarningTextWithIcon
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.termination.data.TerminatableInsurance
+import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
+import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.RadioGroup
 import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupSize
 import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyle
-import com.hedvig.android.design.system.hedvig.RadioOptionChosenState.Chosen
-import com.hedvig.android.design.system.hedvig.RadioOptionChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.RadioOptionData
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationScaffold

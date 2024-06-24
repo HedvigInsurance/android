@@ -12,12 +12,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
+import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.RadioGroup
 import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupSize.Large
 import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupSize.Medium
 import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyle
-import com.hedvig.android.design.system.hedvig.RadioOptionChosenState.Chosen
-import com.hedvig.android.design.system.hedvig.RadioOptionChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.RadioOptionData
 
 @Composable

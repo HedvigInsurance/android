@@ -30,6 +30,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
+import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.IconResource.Painter
 import com.hedvig.android.design.system.hedvig.LockedState.Locked
 import com.hedvig.android.design.system.hedvig.LockedState.NotLocked
@@ -42,8 +44,6 @@ import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyl
 import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyle.HorizontalWithLabel
 import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyle.Vertical
 import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyle.VerticalWithGroupLabel
-import com.hedvig.android.design.system.hedvig.RadioOptionChosenState.Chosen
-import com.hedvig.android.design.system.hedvig.RadioOptionChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.RadioOptionDefaults.RadioOptionStyle
 import com.hedvig.android.design.system.hedvig.RadioOptionDefaults.RadioOptionStyle.Default
 import com.hedvig.android.design.system.hedvig.RadioOptionDefaults.RadioOptionStyle.Label
@@ -242,7 +242,7 @@ private fun HorizontalWithLabelRadioOption(
   optionText: String,
   onClick: () -> Unit,
   lockedState: LockedState,
-  chosenState: RadioOptionChosenState,
+  chosenState: ChosenState,
   enabled: Boolean,
   style: TextStyle,
   textColor: Color,
