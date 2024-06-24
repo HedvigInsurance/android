@@ -40,10 +40,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
+import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.LockedState.Locked
 import com.hedvig.android.design.system.hedvig.LockedState.NotLocked
-import com.hedvig.android.design.system.hedvig.RadioOptionChosenState.Chosen
-import com.hedvig.android.design.system.hedvig.RadioOptionChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.RadioOptionDefaults.RadioOptionStyle
 import com.hedvig.android.design.system.hedvig.RadioOptionDefaults.RadioOptionStyle.Default
 import com.hedvig.android.design.system.hedvig.RadioOptionDefaults.RadioOptionStyle.Label
@@ -56,18 +56,18 @@ import com.hedvig.android.design.system.hedvig.tokens.SizeRadioOptionTokens.Medi
 import com.hedvig.android.design.system.hedvig.tokens.SizeRadioOptionTokens.SmallSizeRadioOptionTokens
 import com.hedvig.android.design.system.hedvig.tokens.TweenAnimationTokens
 
-data class RadioOptionData(
+data class OptionData(
   val id: String,
   val optionText: String,
   val labelText: String? = null,
   val iconResource: IconResource? = null,
-  val chosenState: RadioOptionChosenState,
+  val chosenState: ChosenState,
   val lockedState: LockedState = NotLocked,
 )
 
 @Composable
 internal fun RadioOption(
-  data: RadioOptionData,
+  data: OptionData,
   radioOptionStyle: RadioOptionStyle,
   radioOptionSize: RadioOptionDefaults.RadioOptionSize,
   groupLockedState: LockedState,
@@ -87,14 +87,14 @@ internal fun RadioOption(
   )
 }
 
-internal fun calculateLockedStateForItemInGroup(data: RadioOptionData, groupLockedState: LockedState): LockedState {
+internal fun calculateLockedStateForItemInGroup(data: OptionData, groupLockedState: LockedState): LockedState {
   return if (groupLockedState == Locked) Locked else data.lockedState
 }
 
 @Composable
 fun RadioOption(
   optionText: String,
-  chosenState: RadioOptionChosenState,
+  chosenState: ChosenState,
   modifier: Modifier = Modifier,
   onClick: (() -> Unit)? = null,
   lockedState: LockedState = NotLocked,
@@ -210,11 +210,11 @@ fun RadioOption(
 
 @Composable
 internal fun SelectIndicationCircle(
-  chosenState: RadioOptionChosenState,
+  chosenState: ChosenState,
   lockedState: LockedState,
   modifier: Modifier = Modifier,
 ) {
-  CheckItemAnimation(chosenState) { currentState: RadioOptionChosenState ->
+  CheckItemAnimation(chosenState) { currentState: ChosenState ->
     Box(
       contentAlignment = Alignment.Center,
     ) {
@@ -244,10 +244,7 @@ internal fun SelectIndicationCircle(
 }
 
 @Composable
-private fun CheckItemAnimation(
-  state: RadioOptionChosenState,
-  content: @Composable (state: RadioOptionChosenState) -> Unit,
-) {
+internal fun CheckItemAnimation(state: ChosenState, content: @Composable (state: ChosenState) -> Unit) {
   val selectedTransition = updateTransition(state)
   selectedTransition.AnimatedContent(
     transitionSpec = {
@@ -290,7 +287,7 @@ object RadioOptionDefaults {
   }
 }
 
-enum class RadioOptionChosenState {
+enum class ChosenState {
   Chosen,
   NotChosen,
 }

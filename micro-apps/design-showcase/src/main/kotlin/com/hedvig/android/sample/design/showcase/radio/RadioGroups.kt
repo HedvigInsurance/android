@@ -12,23 +12,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
+import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
+import com.hedvig.android.design.system.hedvig.OptionData
 import com.hedvig.android.design.system.hedvig.RadioGroup
 import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupSize.Large
 import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupSize.Medium
 import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyle
-import com.hedvig.android.design.system.hedvig.RadioOptionChosenState.Chosen
-import com.hedvig.android.design.system.hedvig.RadioOptionChosenState.NotChosen
-import com.hedvig.android.design.system.hedvig.RadioOptionData
 
 @Composable
 internal fun ShowCaseRadioGroups(modifier: Modifier = Modifier) {
   val shortList1 = listOf(
-    RadioOptionData(
+    OptionData(
       id = "1",
       optionText = "Yes",
       chosenState = Chosen,
     ),
-    RadioOptionData(
+    OptionData(
       id = "2",
       optionText = "No",
       chosenState = NotChosen,
@@ -36,12 +36,12 @@ internal fun ShowCaseRadioGroups(modifier: Modifier = Modifier) {
   )
 
   val shortList2 = listOf(
-    RadioOptionData(
+    OptionData(
       id = "1",
       optionText = "Yes",
       chosenState = NotChosen,
     ),
-    RadioOptionData(
+    OptionData(
       id = "2",
       optionText = "No",
       chosenState = Chosen,
