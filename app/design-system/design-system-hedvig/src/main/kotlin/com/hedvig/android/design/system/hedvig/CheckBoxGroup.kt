@@ -25,33 +25,28 @@ import com.hedvig.android.design.system.hedvig.CheckboxGroupDefaults.CheckboxGro
 import com.hedvig.android.design.system.hedvig.CheckboxGroupDefaults.CheckboxGroupStyle
 import com.hedvig.android.design.system.hedvig.CheckboxGroupDefaults.CheckboxGroupStyle.Vertical
 import com.hedvig.android.design.system.hedvig.CheckboxGroupDefaults.CheckboxGroupStyle.VerticalWithGroupLabel
-import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
-import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
-import com.hedvig.android.design.system.hedvig.IconResource.Painter
 import com.hedvig.android.design.system.hedvig.LockedState.NotLocked
-import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import com.hedvig.android.design.system.hedvig.icon.flag.FlagSweden
+import com.hedvig.android.design.system.hedvig.RadioOptionGroupData.RadioOptionGroupDataSimple
+import com.hedvig.android.design.system.hedvig.RadioOptionGroupData.RadioOptionGroupDataWithIcon
+import com.hedvig.android.design.system.hedvig.RadioOptionGroupData.RadioOptionGroupDataWithLabel
 import com.hedvig.android.design.system.hedvig.tokens.SizeCheckboxGroupTokens.LargeSizeCheckboxGroupTokens
 import com.hedvig.android.design.system.hedvig.tokens.SizeCheckboxGroupTokens.MediumSizeCheckboxGroupTokens
 import com.hedvig.android.design.system.hedvig.tokens.SizeCheckboxGroupTokens.SmallSizeCheckboxGroupTokens
 import com.hedvig.android.design.system.hedvig.tokens.SizeCheckboxTokens.LargeSizeCheckboxTokens
 import com.hedvig.android.design.system.hedvig.tokens.SizeCheckboxTokens.MediumSizeCheckboxTokens
 import com.hedvig.android.design.system.hedvig.tokens.SizeCheckboxTokens.SmallSizeCheckboxTokens
-import hedvig.resources.R
 
 @Composable
 fun CheckboxGroup(
-  data: List<RadioOptionData>,
+  groupStyle: CheckboxGroupStyle,
   onOptionClick: (String) -> Unit,
   modifier: Modifier = Modifier,
   groupLockedState: LockedState = NotLocked,
-  groupStyle: CheckboxGroupStyle = CheckboxGroupDefaults.checkboxGroupStyle,
   groupSize: CheckboxGroupSize = CheckboxGroupDefaults.checkboxGroupSize,
 ) {
   val contentPadding = calculateContentPadding(groupStyle, groupSize)
   when (groupStyle) {
-    is Vertical -> VerticalCheckboxGroup(
-      data = data,
+    is Vertical<*> -> VerticalCheckboxGroup(
       checkboxGroupStyle = groupStyle,
       modifier = modifier,
       groupLockedState = groupLockedState,
@@ -61,8 +56,7 @@ fun CheckboxGroup(
       },
     )
 
-    is VerticalWithGroupLabel -> VerticalCheckboxGroupWithLabel(
-      data = data,
+    is VerticalWithGroupLabel<*> -> VerticalCheckboxGroupWithLabel(
       checkboxGroupStyle = groupStyle,
       modifier = modifier,
       groupLockedState = groupLockedState,
@@ -77,30 +71,29 @@ fun CheckboxGroup(
 
 @Composable
 private fun VerticalCheckboxGroup(
-  data: List<RadioOptionData>,
-  checkboxGroupStyle: Vertical,
+  checkboxGroupStyle: Vertical<*>,
   groupLockedState: LockedState,
   checkboxGroupSize: CheckboxGroupSize,
   onOptionClick: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
-    for (optionData in data) {
+    for (data in checkboxGroupStyle.dataList) {
       val checkboxStyle = when (checkboxGroupStyle) {
         is Vertical.Default -> CheckboxStyle.Default
         is Vertical.Icon -> CheckboxStyle.Icon(
-          optionData.iconResource ?: Painter(R.drawable.pillow_hedvig),
-        ) // todo: how is that for placeholder
-        is Vertical.Label -> CheckboxStyle.Label(optionData.labelText ?: "") // todo: no placeholder
+          (data as RadioOptionGroupDataWithIcon).iconResource,
+        )
+        is Vertical.Label -> CheckboxStyle.Label((data as RadioOptionGroupDataWithLabel).labelText)
         is Vertical.LeftAligned -> CheckboxStyle.LeftAligned
       }
       Checkbox(
-        data = optionData,
+        data = data.radioOptionData,
         checkboxStyle = checkboxStyle,
         lockedState = groupLockedState,
         checkboxSize = checkboxGroupSize.toOptionSize(),
         onClick = {
-          onOptionClick(optionData.id)
+          onOptionClick(data.radioOptionData.id)
         },
       )
       Spacer(Modifier.height(4.dp))
@@ -110,8 +103,7 @@ private fun VerticalCheckboxGroup(
 
 @Composable
 private fun VerticalCheckboxGroupWithLabel(
-  data: List<RadioOptionData>,
-  checkboxGroupStyle: VerticalWithGroupLabel,
+  checkboxGroupStyle: VerticalWithGroupLabel<*>,
   groupLockedState: LockedState,
   checkboxGroupSize: CheckboxGroupSize,
   contentPaddingValues: PaddingValues,
@@ -129,43 +121,43 @@ private fun VerticalCheckboxGroupWithLabel(
       HedvigText(
         modifier = Modifier.padding(contentPaddingValues),
         text = checkboxGroupStyle.groupLabelText,
-        style = MediumSizeCheckboxTokens.LabelTextFont.value, // same for all sizes in figma
+        style = checkboxGroupSize.getLabelTextStyle(),
         color = labelTextColor,
       )
       Column(modifier) {
-        for (checkboxData in data) {
+        for (data in checkboxGroupStyle.dataList) {
           val interactionSource = remember { MutableInteractionSource() }
           val modifierRipple = Modifier
             .clickable(
-              enabled = calculateLockedStateForItemInGroup(checkboxData, groupLockedState) == NotLocked,
+              enabled = calculateLockedStateForItemInGroup(data.radioOptionData, groupLockedState) == NotLocked,
               role = Role.Checkbox,
               interactionSource = interactionSource,
               indication = ripple(
                 bounded = true,
               ),
               onClick = {
-                onOptionClick(checkboxData.id)
+                onOptionClick(data.radioOptionData.id)
               },
             )
           val checkboxStyle = when (checkboxGroupStyle) {
-            is CheckboxGroupStyle.VerticalWithGroupLabel.Default -> CheckboxStyle.Default
-            is CheckboxGroupStyle.VerticalWithGroupLabel.Icon -> CheckboxStyle.Icon(
-              checkboxData.iconResource ?: Painter(R.drawable.pillow_hedvig),
-            ) // todo: how is that for placeholder
-            is CheckboxGroupStyle.VerticalWithGroupLabel.Label -> CheckboxStyle.Label(
-              checkboxData.labelText ?: "",
-            ) // todo: no placeholder
-            is CheckboxGroupStyle.VerticalWithGroupLabel.LeftAligned -> CheckboxStyle.LeftAligned
+            is VerticalWithGroupLabel.Default -> CheckboxStyle.Default
+            is VerticalWithGroupLabel.Icon -> CheckboxStyle.Icon(
+              (data as RadioOptionGroupDataWithIcon).iconResource,
+            )
+            is VerticalWithGroupLabel.Label -> CheckboxStyle.Label(
+              (data as RadioOptionGroupDataWithLabel).labelText,
+            )
+            is VerticalWithGroupLabel.LeftAligned -> CheckboxStyle.LeftAligned
           }
           Checkbox(
-            data = checkboxData,
+            data = data.radioOptionData,
             checkboxStyle = checkboxStyle,
             lockedState = groupLockedState,
             checkboxSize = checkboxGroupSize.toOptionSize(),
             interactionSource = interactionSource,
             modifier = modifierRipple,
           )
-          if (data.indexOf(checkboxData) != data.lastIndex) {
+          if (checkboxGroupStyle.dataList.indexOf(data) != checkboxGroupStyle.dataList.lastIndex) {
             HorizontalDivider()
           }
         }
@@ -183,7 +175,7 @@ private fun calculateContentPadding(
       start = LargeSizeCheckboxGroupTokens.HorizontalPadding,
       end = LargeSizeCheckboxGroupTokens.HorizontalPadding,
       top = LargeSizeCheckboxGroupTokens.verticalPadding().calculateTopPadding(),
-      bottom = if (checkboxGroupStyle !is VerticalWithGroupLabel) {
+      bottom = if (checkboxGroupStyle !is VerticalWithGroupLabel<*>) {
         LargeSizeCheckboxGroupTokens.verticalPadding()
           .calculateBottomPadding()
       } else {
@@ -195,7 +187,7 @@ private fun calculateContentPadding(
       start = MediumSizeCheckboxGroupTokens.HorizontalPadding,
       end = MediumSizeCheckboxGroupTokens.HorizontalPadding,
       top = MediumSizeCheckboxGroupTokens.verticalPadding().calculateTopPadding(),
-      bottom = if (checkboxGroupStyle !is VerticalWithGroupLabel) {
+      bottom = if (checkboxGroupStyle !is VerticalWithGroupLabel<*>) {
         MediumSizeCheckboxGroupTokens.verticalPadding()
           .calculateBottomPadding()
       } else {
@@ -207,7 +199,7 @@ private fun calculateContentPadding(
       start = SmallSizeCheckboxGroupTokens.HorizontalPadding,
       end = SmallSizeCheckboxGroupTokens.HorizontalPadding,
       top = SmallSizeCheckboxGroupTokens.verticalPadding().calculateTopPadding(),
-      bottom = if (checkboxGroupStyle !is VerticalWithGroupLabel) {
+      bottom = if (checkboxGroupStyle !is VerticalWithGroupLabel<*>) {
         SmallSizeCheckboxGroupTokens.verticalPadding()
           .calculateBottomPadding()
       } else {
@@ -216,8 +208,8 @@ private fun calculateContentPadding(
     )
   }
   return when (checkboxGroupStyle) {
-    is CheckboxGroupStyle.Vertical -> PaddingValues()
-    is CheckboxGroupStyle.VerticalWithGroupLabel -> paddingValuesForLabel
+    is CheckboxGroupStyle.Vertical<*> -> PaddingValues()
+    is CheckboxGroupStyle.VerticalWithGroupLabel<*> -> paddingValuesForLabel
   }
 }
 
@@ -248,30 +240,47 @@ private fun CheckboxGroupSize.getLabelTextStyle(): TextStyle {
 }
 
 object CheckboxGroupDefaults {
-  internal val checkboxGroupStyle: CheckboxGroupStyle = CheckboxGroupStyle.Vertical.Default
   internal val checkboxGroupSize: CheckboxGroupSize = Large
 
   sealed interface CheckboxGroupStyle {
-    sealed interface Vertical : CheckboxGroupStyle {
-      data object Default : Vertical
+    sealed interface Vertical<T : RadioOptionGroupData> : CheckboxGroupStyle {
+      val dataList: List<T>
 
-      data object Label : Vertical
+      data class Default(override val dataList: List<RadioOptionGroupDataSimple>) : Vertical<RadioOptionGroupDataSimple>
 
-      data object Icon : Vertical
+      data class Label(override val dataList: List<RadioOptionGroupDataWithLabel>) :
+        Vertical<RadioOptionGroupDataWithLabel>
 
-      data object LeftAligned : Vertical
+      data class Icon(override val dataList: List<RadioOptionGroupDataWithIcon>) :
+        Vertical<RadioOptionGroupDataWithIcon>
+
+      data class LeftAligned(override val dataList: List<RadioOptionGroupDataSimple>) :
+        Vertical<RadioOptionGroupDataSimple>
     }
 
-    sealed interface VerticalWithGroupLabel : CheckboxGroupStyle {
+    sealed interface VerticalWithGroupLabel<T : RadioOptionGroupData> : CheckboxGroupStyle {
+      val dataList: List<T>
       val groupLabelText: String
 
-      data class Default(override val groupLabelText: String) : VerticalWithGroupLabel
+      data class Default(
+        override val groupLabelText: String,
+        override val dataList: List<RadioOptionGroupDataSimple>,
+      ) : VerticalWithGroupLabel<RadioOptionGroupDataSimple>
 
-      data class Label(override val groupLabelText: String) : VerticalWithGroupLabel
+      data class Label(
+        override val groupLabelText: String,
+        override val dataList: List<RadioOptionGroupDataWithLabel>,
+      ) : VerticalWithGroupLabel<RadioOptionGroupDataWithLabel>
 
-      data class Icon(override val groupLabelText: String) : VerticalWithGroupLabel
+      data class Icon(
+        override val groupLabelText: String,
+        override val dataList: List<RadioOptionGroupDataWithIcon>,
+      ) : VerticalWithGroupLabel<RadioOptionGroupDataWithIcon>
 
-      data class LeftAligned(override val groupLabelText: String) : VerticalWithGroupLabel
+      data class LeftAligned(
+        override val groupLabelText: String,
+        override val dataList: List<RadioOptionGroupDataSimple>,
+      ) : VerticalWithGroupLabel<RadioOptionGroupDataSimple>
     }
   }
 
@@ -293,36 +302,6 @@ private fun PreviewCheckboxStyles(
         CheckboxGroup(
           groupStyle = style,
           groupSize = Medium,
-          data = listOf(
-            RadioOptionData(
-              id = "1",
-              optionText = "Option text 1",
-              labelText = "Label text 1",
-              iconResource = IconResource.Vector(HedvigIcons.FlagSweden),
-              chosenState = Chosen,
-            ),
-            RadioOptionData(
-              id = "2",
-              optionText = "Option text 2",
-              labelText = "Label text2",
-              iconResource = IconResource.Vector(HedvigIcons.FlagSweden),
-              chosenState = NotChosen,
-            ),
-            RadioOptionData(
-              id = "3",
-              optionText = "Option text 3",
-              labelText = "Label text 3",
-              iconResource = IconResource.Vector(HedvigIcons.FlagSweden),
-              chosenState = NotChosen,
-            ),
-            RadioOptionData(
-              id = "4",
-              optionText = "Option text 4",
-              labelText = "Label text 4",
-              iconResource = IconResource.Vector(HedvigIcons.FlagSweden),
-              chosenState = Chosen,
-            ),
-          ),
           onOptionClick = {},
         )
       }
@@ -333,13 +312,13 @@ private fun PreviewCheckboxStyles(
 internal class CheckboxGroupStyleProvider :
   CollectionPreviewParameterProvider<CheckboxGroupStyle>(
     listOf(
-      Vertical.Default,
-      Vertical.Icon,
-      Vertical.Label,
-      Vertical.LeftAligned,
-      VerticalWithGroupLabel.Default("Group label"),
-      VerticalWithGroupLabel.Icon("Group label"),
-      VerticalWithGroupLabel.Label("Group label"),
-      VerticalWithGroupLabel.LeftAligned("Group label"),
+      Vertical.Default(previewListOfDataSimple),
+      Vertical.Icon(previewListOfDataWithIcon),
+      Vertical.Label(previewListOfDataWithLabel),
+      Vertical.LeftAligned(previewListOfDataSimple),
+      VerticalWithGroupLabel.Default("Group label", previewListOfDataSimple),
+      VerticalWithGroupLabel.Icon("Group label", previewListOfDataWithIcon),
+      VerticalWithGroupLabel.Label("Group label", previewListOfDataWithLabel),
+      VerticalWithGroupLabel.LeftAligned("Group label", previewListOfDataSimple),
     ),
   )

@@ -14,11 +14,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
 import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
+import com.hedvig.android.design.system.hedvig.IconResource
 import com.hedvig.android.design.system.hedvig.RadioGroup
 import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupSize.Large
 import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupSize.Medium
 import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyle
 import com.hedvig.android.design.system.hedvig.RadioOptionData
+import com.hedvig.android.design.system.hedvig.RadioOptionGroupData.RadioOptionGroupDataWithIcon
+import com.hedvig.android.design.system.hedvig.RadioOptionGroupData.RadioOptionGroupDataWithLabel
+import com.hedvig.android.design.system.hedvig.icon.Document
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.ID
 
 @Composable
 internal fun ShowCaseRadioGroups(modifier: Modifier = Modifier) {
@@ -47,10 +53,27 @@ internal fun ShowCaseRadioGroups(modifier: Modifier = Modifier) {
       chosenState = Chosen,
     ),
   )
+
+  val shortListLabel1 = listOf(
+    RadioOptionGroupDataWithLabel(shortList1[0], "Some label 1"),
+    RadioOptionGroupDataWithLabel(shortList1[1], "Some label 2"),
+  )
+  val shortListLabel2 = listOf(
+    RadioOptionGroupDataWithLabel(shortList2[0], "Some label 1"),
+    RadioOptionGroupDataWithLabel(shortList2[1], "Some label 2"),
+  )
+  val shortListIcon1 = listOf(
+    RadioOptionGroupDataWithIcon(shortList1[0], IconResource.Vector(HedvigIcons.ID)),
+    RadioOptionGroupDataWithIcon(shortList1[1], IconResource.Vector(HedvigIcons.Document)),
+  )
+  val shortListIcon2 = listOf(
+    RadioOptionGroupDataWithIcon(shortList2[0], IconResource.Vector(HedvigIcons.ID)),
+    RadioOptionGroupDataWithIcon(shortList2[1], IconResource.Vector(HedvigIcons.Document)),
+  )
   var list1 by remember { mutableStateOf(shortList1) }
   var list2 by remember { mutableStateOf(shortList1) }
-  var list3 by remember { mutableStateOf(shortList1) }
-  var list4 by remember { mutableStateOf(shortList1) }
+  var listLabel by remember { mutableStateOf(shortListLabel1) }
+  var listIcon by remember { mutableStateOf(shortListIcon1) }
   Column(
     modifier
       .fillMaxSize()
@@ -58,7 +81,6 @@ internal fun ShowCaseRadioGroups(modifier: Modifier = Modifier) {
   ) {
     Spacer(Modifier.height(48.dp))
     RadioGroup(
-      data = list1,
       onOptionClick = { optionId ->
         list1 = if (optionId == "2") {
           shortList2
@@ -67,11 +89,10 @@ internal fun ShowCaseRadioGroups(modifier: Modifier = Modifier) {
         }
       },
       radioGroupSize = Medium,
-      radioGroupStyle = RadioGroupStyle.Horizontal,
+      radioGroupStyle = RadioGroupStyle.Horizontal(list1),
     )
     Spacer(Modifier.height(8.dp))
     RadioGroup(
-      data = list2,
       onOptionClick = { optionId ->
         list2 = if (optionId == "2") {
           shortList2
@@ -80,12 +101,11 @@ internal fun ShowCaseRadioGroups(modifier: Modifier = Modifier) {
         }
       },
       radioGroupSize = Large,
-      radioGroupStyle = RadioGroupStyle.HorizontalWithLabel("Your decision"),
+      radioGroupStyle = RadioGroupStyle.HorizontalWithLabel("Your decision", list2),
     )
 
     Spacer(Modifier.height(8.dp))
     RadioGroup(
-      data = list2,
       onOptionClick = { optionId ->
         list2 = if (optionId == "2") {
           shortList2
@@ -94,34 +114,33 @@ internal fun ShowCaseRadioGroups(modifier: Modifier = Modifier) {
         }
       },
       radioGroupSize = Medium,
-      radioGroupStyle = RadioGroupStyle.HorizontalWithLabel("Your decision"),
+      radioGroupStyle = RadioGroupStyle.HorizontalWithLabel("Your decision", list2),
     )
     Spacer(Modifier.height(8.dp))
     RadioGroup(
-      data = list3,
       onOptionClick = { optionId ->
-        list3 = if (optionId == "2") {
-          shortList2
+        listLabel = if (optionId == "2") {
+          shortListLabel2
         } else {
-          shortList1
+          shortListLabel1
         }
       },
       radioGroupSize = Medium,
-      radioGroupStyle = RadioGroupStyle.Vertical.Label,
+      radioGroupStyle = RadioGroupStyle.Vertical.Label(listLabel),
     )
     Spacer(Modifier.height(8.dp))
     RadioGroup(
-      data = list4,
-      onOptionClick = { _ ->
-        list4 = if (list4 == shortList1) {
-          shortList2
+      onOptionClick = { optionId ->
+        listIcon = if (optionId == "2") {
+          shortListIcon2
         } else {
-          shortList1
+          shortListIcon1
         }
       },
       radioGroupSize = Medium,
-      radioGroupStyle = RadioGroupStyle.VerticalWithGroupLabel.Default(
+      radioGroupStyle = RadioGroupStyle.VerticalWithGroupLabel.Icon(
         "Your decision",
+        listIcon,
       ),
     )
     Spacer(Modifier.height(8.dp))

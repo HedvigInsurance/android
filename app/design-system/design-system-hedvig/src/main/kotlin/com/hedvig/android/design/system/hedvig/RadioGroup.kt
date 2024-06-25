@@ -32,7 +32,6 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
 import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
-import com.hedvig.android.design.system.hedvig.IconResource.Painter
 import com.hedvig.android.design.system.hedvig.LockedState.Locked
 import com.hedvig.android.design.system.hedvig.LockedState.NotLocked
 import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupSize
@@ -48,27 +47,30 @@ import com.hedvig.android.design.system.hedvig.RadioOptionDefaults.RadioOptionSt
 import com.hedvig.android.design.system.hedvig.RadioOptionDefaults.RadioOptionStyle.Default
 import com.hedvig.android.design.system.hedvig.RadioOptionDefaults.RadioOptionStyle.Label
 import com.hedvig.android.design.system.hedvig.RadioOptionDefaults.RadioOptionStyle.LeftAligned
+import com.hedvig.android.design.system.hedvig.RadioOptionGroupData.RadioOptionGroupDataSimple
+import com.hedvig.android.design.system.hedvig.RadioOptionGroupData.RadioOptionGroupDataWithIcon
+import com.hedvig.android.design.system.hedvig.RadioOptionGroupData.RadioOptionGroupDataWithLabel
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.flag.FlagSweden
 import com.hedvig.android.design.system.hedvig.tokens.SizeRadioGroupTokens.LargeSizeRadioGroupTokens
 import com.hedvig.android.design.system.hedvig.tokens.SizeRadioGroupTokens.MediumSizeRadioGroupTokens
 import com.hedvig.android.design.system.hedvig.tokens.SizeRadioGroupTokens.SmallSizeRadioGroupTokens
 import com.hedvig.android.design.system.hedvig.tokens.SizeRadioOptionTokens.LargeSizeRadioOptionTokens
 import com.hedvig.android.design.system.hedvig.tokens.SizeRadioOptionTokens.MediumSizeRadioOptionTokens
 import com.hedvig.android.design.system.hedvig.tokens.SizeRadioOptionTokens.SmallSizeRadioOptionTokens
-import hedvig.resources.R
 
 @Composable
 fun RadioGroup(
-  data: List<RadioOptionData>,
+  radioGroupStyle: RadioGroupStyle,
   onOptionClick: (String) -> Unit,
   modifier: Modifier = Modifier,
   groupLockedState: LockedState = NotLocked,
-  radioGroupStyle: RadioGroupStyle = RadioGroupDefaults.radioGroupStyle,
   radioGroupSize: RadioGroupSize = RadioGroupDefaults.radioGroupSize,
 ) {
   val contentPadding = calculateContentPadding(radioGroupStyle, radioGroupSize)
   when (radioGroupStyle) {
-    Horizontal -> HorizontalRadioGroup(
-      data = data,
+    is Horizontal -> HorizontalRadioGroup(
+      data = radioGroupStyle.dataList,
       modifier = modifier,
       groupLockedState = groupLockedState,
       radioGroupSize = radioGroupSize,
@@ -78,7 +80,7 @@ fun RadioGroup(
     )
 
     is HorizontalWithLabel -> HorizontalRadioGroupWithLabel(
-      data = data,
+      data = radioGroupStyle.dataList,
       groupLabelText = radioGroupStyle.groupLabelText,
       modifier = modifier,
       groupLockedState = groupLockedState,
@@ -89,8 +91,7 @@ fun RadioGroup(
       },
     )
 
-    is Vertical -> VerticalRadioGroup(
-      data = data,
+    is Vertical<*> -> VerticalRadioGroup(
       radioGroupStyle = radioGroupStyle,
       modifier = modifier,
       groupLockedState = groupLockedState,
@@ -100,8 +101,7 @@ fun RadioGroup(
       },
     )
 
-    is VerticalWithGroupLabel -> VerticalRadioGroupWithLabel(
-      data = data,
+    is VerticalWithGroupLabel<*> -> VerticalRadioGroupWithLabel(
       radioGroupStyle = radioGroupStyle,
       modifier = modifier,
       groupLockedState = groupLockedState,
@@ -283,28 +283,27 @@ private fun HorizontalWithLabelRadioOption(
 
 @Composable
 private fun VerticalRadioGroup(
-  data: List<RadioOptionData>,
-  radioGroupStyle: Vertical,
+  radioGroupStyle: Vertical<*>,
   groupLockedState: LockedState,
   radioGroupSize: RadioGroupSize,
   onOptionClick: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
-    for (radioOptionData in data) {
+    for (radioOptionData in radioGroupStyle.dataList) {
       val radioOptionStyle = when (radioGroupStyle) {
         is Vertical.Default -> Default
-        is Vertical.Icon -> RadioOptionStyle.Icon(radioOptionData.iconResource ?: Painter(R.drawable.pillow_hedvig)) // todo: how is that for placeholder
-        is Vertical.Label -> Label(radioOptionData.labelText ?: "") // todo: no placeholder
+        is Vertical.Icon -> RadioOptionStyle.Icon((radioOptionData as RadioOptionGroupDataWithIcon).iconResource)
+        is Vertical.Label -> Label((radioOptionData as RadioOptionGroupDataWithLabel).labelText)
         is Vertical.LeftAligned -> LeftAligned
       }
       RadioOption(
-        data = radioOptionData,
+        data = radioOptionData.radioOptionData,
         radioOptionStyle = radioOptionStyle,
         groupLockedState = groupLockedState,
         radioOptionSize = radioGroupSize.toOptionSize(),
         onOptionClick = {
-          onOptionClick(radioOptionData.id)
+          onOptionClick(radioOptionData.radioOptionData.id)
         },
       )
       Spacer(Modifier.height(4.dp))
@@ -314,8 +313,7 @@ private fun VerticalRadioGroup(
 
 @Composable
 private fun VerticalRadioGroupWithLabel(
-  data: List<RadioOptionData>,
-  radioGroupStyle: VerticalWithGroupLabel,
+  radioGroupStyle: VerticalWithGroupLabel<*>,
   groupLockedState: LockedState,
   radioGroupSize: RadioGroupSize,
   contentPaddingValues: PaddingValues,
@@ -337,37 +335,38 @@ private fun VerticalRadioGroupWithLabel(
         color = labelTextColor,
       )
       Column(modifier) {
-        for (radioOptionData in data) {
+        for (data in radioGroupStyle.dataList) {
           val interactionSource = remember { MutableInteractionSource() }
           val modifierRipple = Modifier
             .clickable(
-              enabled = calculateLockedStateForItemInGroup(radioOptionData, groupLockedState) == NotLocked,
+              enabled = calculateLockedStateForItemInGroup(data.radioOptionData, groupLockedState) == NotLocked,
               role = Role.RadioButton,
               interactionSource = interactionSource,
               indication = ripple(
                 bounded = true,
               ),
               onClick = {
-                onOptionClick(radioOptionData.id)
+                onOptionClick(data.radioOptionData.id)
               },
             )
           val radioOptionStyle = when (radioGroupStyle) {
             is VerticalWithGroupLabel.Default -> Default
             is VerticalWithGroupLabel.Icon -> RadioOptionStyle.Icon(
-              radioOptionData.iconResource ?: Painter(R.drawable.pillow_hedvig),
-            ) // todo: how is that for placeholder
-            is VerticalWithGroupLabel.Label -> Label(radioOptionData.labelText ?: "") // todo: no placeholder
+              (data as RadioOptionGroupDataWithIcon).iconResource,
+            )
+
+            is VerticalWithGroupLabel.Label -> Label((data as RadioOptionGroupDataWithLabel).labelText)
             is VerticalWithGroupLabel.LeftAligned -> LeftAligned
           }
           RadioOption(
-            data = radioOptionData,
+            data = data.radioOptionData,
             radioOptionStyle = radioOptionStyle,
             groupLockedState = groupLockedState,
             radioOptionSize = radioGroupSize.toOptionSize(),
             interactionSource = interactionSource,
             modifier = modifierRipple,
           )
-          if (data.indexOf(radioOptionData) != data.lastIndex) {
+          if (radioGroupStyle.dataList.indexOf(data) != radioGroupStyle.dataList.lastIndex) {
             HorizontalDivider()
           }
         }
@@ -400,7 +399,7 @@ private fun calculateContentPadding(radioGroupStyle: RadioGroupStyle, radioGroup
       start = LargeSizeRadioGroupTokens.HorizontalPadding,
       end = LargeSizeRadioGroupTokens.HorizontalPadding,
       top = LargeSizeRadioGroupTokens.verticalPadding().calculateTopPadding(),
-      bottom = if (radioGroupStyle !is VerticalWithGroupLabel) {
+      bottom = if (radioGroupStyle !is VerticalWithGroupLabel<*>) {
         LargeSizeRadioGroupTokens.verticalPadding()
           .calculateBottomPadding()
       } else {
@@ -412,7 +411,7 @@ private fun calculateContentPadding(radioGroupStyle: RadioGroupStyle, radioGroup
       start = MediumSizeRadioGroupTokens.HorizontalPadding,
       end = MediumSizeRadioGroupTokens.HorizontalPadding,
       top = MediumSizeRadioGroupTokens.verticalPadding().calculateTopPadding(),
-      bottom = if (radioGroupStyle !is VerticalWithGroupLabel) {
+      bottom = if (radioGroupStyle !is VerticalWithGroupLabel<*>) {
         MediumSizeRadioGroupTokens.verticalPadding()
           .calculateBottomPadding()
       } else {
@@ -424,7 +423,7 @@ private fun calculateContentPadding(radioGroupStyle: RadioGroupStyle, radioGroup
       start = SmallSizeRadioGroupTokens.HorizontalPadding,
       end = SmallSizeRadioGroupTokens.HorizontalPadding,
       top = SmallSizeRadioGroupTokens.verticalPadding().calculateTopPadding(),
-      bottom = if (radioGroupStyle !is VerticalWithGroupLabel) {
+      bottom = if (radioGroupStyle !is VerticalWithGroupLabel<*>) {
         SmallSizeRadioGroupTokens.verticalPadding()
           .calculateBottomPadding()
       } else {
@@ -433,10 +432,10 @@ private fun calculateContentPadding(radioGroupStyle: RadioGroupStyle, radioGroup
     )
   }
   return when (radioGroupStyle) {
-    Horizontal -> PaddingValues()
+    is Horizontal -> PaddingValues()
     is HorizontalWithLabel -> paddingValuesForLabel
-    is Vertical -> PaddingValues()
-    is VerticalWithGroupLabel -> paddingValuesForLabel
+    is Vertical<*> -> PaddingValues()
+    is VerticalWithGroupLabel<*> -> paddingValuesForLabel
   }
 }
 
@@ -467,36 +466,54 @@ private fun RadioGroupSize.getLabelTextFont(): TextStyle {
 }
 
 object RadioGroupDefaults {
-  internal val radioGroupStyle: RadioGroupStyle = Vertical.Default
   internal val radioGroupSize: RadioGroupSize = Large
 
   sealed interface RadioGroupStyle {
-    data object Horizontal : RadioGroupStyle
+    data class Horizontal(val dataList: List<RadioOptionData>) : RadioGroupStyle
 
     data class HorizontalWithLabel(
       val groupLabelText: String,
+      val dataList: List<RadioOptionData>,
     ) : RadioGroupStyle
 
-    sealed interface Vertical : RadioGroupStyle {
-      data object Default : Vertical
+    sealed interface Vertical<T : RadioOptionGroupData> : RadioGroupStyle {
+      val dataList: List<T>
 
-      data object Label : Vertical
+      data class Default(override val dataList: List<RadioOptionGroupDataSimple>) : Vertical<RadioOptionGroupDataSimple>
 
-      data object Icon : Vertical
+      data class Label(override val dataList: List<RadioOptionGroupDataWithLabel>) :
+        Vertical<RadioOptionGroupDataWithLabel>
 
-      data object LeftAligned : Vertical
+      data class Icon(override val dataList: List<RadioOptionGroupDataWithIcon>) :
+        Vertical<RadioOptionGroupDataWithIcon>
+
+      data class LeftAligned(override val dataList: List<RadioOptionGroupDataSimple>) :
+        Vertical<RadioOptionGroupDataSimple>
     }
 
-    sealed interface VerticalWithGroupLabel : RadioGroupStyle {
+    sealed interface VerticalWithGroupLabel<T : RadioOptionGroupData> : RadioGroupStyle {
+      val dataList: List<T>
       val groupLabelText: String
 
-      data class Default(override val groupLabelText: String) : VerticalWithGroupLabel
+      data class Default(
+        override val groupLabelText: String,
+        override val dataList: List<RadioOptionGroupDataSimple>,
+      ) : VerticalWithGroupLabel<RadioOptionGroupDataSimple>
 
-      data class Label(override val groupLabelText: String) : VerticalWithGroupLabel
+      data class Label(
+        override val groupLabelText: String,
+        override val dataList: List<RadioOptionGroupDataWithLabel>,
+      ) : VerticalWithGroupLabel<RadioOptionGroupDataWithLabel>
 
-      data class Icon(override val groupLabelText: String) : VerticalWithGroupLabel
+      data class Icon(
+        override val groupLabelText: String,
+        override val dataList: List<RadioOptionGroupDataWithIcon>,
+      ) : VerticalWithGroupLabel<RadioOptionGroupDataWithIcon>
 
-      data class LeftAligned(override val groupLabelText: String) : VerticalWithGroupLabel
+      data class LeftAligned(
+        override val groupLabelText: String,
+        override val dataList: List<RadioOptionGroupDataSimple>,
+      ) : VerticalWithGroupLabel<RadioOptionGroupDataSimple>
     }
   }
 
@@ -597,7 +614,24 @@ fun GroupPreview(
           modifier = Modifier,
           groupLabelText = "Label",
           onOptionClick = {},
-          contentPaddingValues = calculateContentPadding(HorizontalWithLabel("Label"), size),
+          contentPaddingValues = calculateContentPadding(
+            HorizontalWithLabel(
+              "Label",
+              listOf(
+                RadioOptionData(
+                  id = "",
+                  optionText = "Yes",
+                  chosenState = Chosen,
+                ),
+                RadioOptionData(
+                  id = "",
+                  optionText = "No",
+                  chosenState = NotChosen,
+                ),
+              ),
+            ),
+            size,
+          ),
           data = listOf(
             RadioOptionData(
               id = "",
@@ -620,39 +654,8 @@ fun GroupPreview(
             modifier = Modifier.fillMaxWidth(),
             groupLabelText = "Label",
             onOptionClick = {},
-            contentPaddingValues = calculateContentPadding(HorizontalWithLabel("Label"), size),
-            data = listOf(
-              RadioOptionData(
-                id = "",
-                optionText = "Yes",
-                chosenState = Chosen,
-              ),
-              RadioOptionData(
-                id = "",
-                optionText = "No",
-                chosenState = NotChosen,
-              ),
-              RadioOptionData(
-                id = "",
-                optionText = "Maybe",
-                chosenState = NotChosen,
-              ),
-              RadioOptionData(
-                id = "",
-                optionText = "Not sure ",
-                chosenState = NotChosen,
-              ),
-              RadioOptionData(
-                id = "",
-                optionText = "Perhaps",
-                chosenState = NotChosen,
-              ),
-              RadioOptionData(
-                id = "",
-                optionText = "Very unlikely",
-                chosenState = NotChosen,
-              ),
-            ),
+            contentPaddingValues = calculateContentPadding(HorizontalWithLabel("Label", previewList), size),
+            data = previewList,
           )
         }
         HedvigText("Vertical")
@@ -661,41 +664,8 @@ fun GroupPreview(
             groupLockedState = NotLocked,
             radioGroupSize = size,
             modifier = Modifier.fillMaxWidth(),
-            radioGroupStyle = Vertical.Default,
+            radioGroupStyle = Vertical.Default(previewListOfDataSimple),
             onOptionClick = {},
-            data = listOf(
-              RadioOptionData(
-                id = "",
-                optionText = "Yes",
-                chosenState = Chosen,
-              ),
-              RadioOptionData(
-                id = "",
-                optionText = "No",
-                chosenState = NotChosen,
-                lockedState = Locked,
-              ),
-              RadioOptionData(
-                id = "",
-                optionText = "Maybe",
-                chosenState = NotChosen,
-              ),
-              RadioOptionData(
-                id = "",
-                optionText = "Not sure",
-                chosenState = NotChosen,
-              ),
-              RadioOptionData(
-                id = "",
-                optionText = "Perhaps",
-                chosenState = NotChosen,
-              ),
-              RadioOptionData(
-                id = "",
-                optionText = "Very unlikely",
-                chosenState = NotChosen,
-              ),
-            ),
           )
         }
       }
@@ -716,21 +686,8 @@ fun VerticalGroupsPreview(
           groupLockedState = NotLocked,
           radioGroupSize = size,
           modifier = Modifier.fillMaxWidth(),
-          radioGroupStyle = Vertical.Default,
+          radioGroupStyle = Vertical.Default(previewListOfDataSimple),
           onOptionClick = {},
-          data = listOf(
-            RadioOptionData(
-              id = "",
-              optionText = "Vertical option",
-              chosenState = NotChosen,
-            ),
-            RadioOptionData(
-              id = "",
-              optionText = "No",
-              chosenState = Chosen,
-              lockedState = NotLocked,
-            ),
-          ),
         )
         Spacer(Modifier.height(16.dp))
         HedvigText("Vertical with label")
@@ -739,24 +696,11 @@ fun VerticalGroupsPreview(
           radioGroupSize = size,
           modifier = Modifier.fillMaxWidth(),
           contentPaddingValues = calculateContentPadding(
-            VerticalWithGroupLabel.Default("Label"),
+            VerticalWithGroupLabel.Default("Label", previewListOfDataSimple),
             size,
           ),
           onOptionClick = {},
-          radioGroupStyle = VerticalWithGroupLabel.Default("Label"),
-          data = listOf(
-            RadioOptionData(
-              id = "",
-              optionText = "Vertical option",
-              chosenState = NotChosen,
-            ),
-            RadioOptionData(
-              id = "",
-              optionText = "No",
-              chosenState = Chosen,
-              lockedState = NotLocked,
-            ),
-          ),
+          radioGroupStyle = VerticalWithGroupLabel.Default("Label", previewListOfDataSimple),
         )
       }
     }
@@ -768,7 +712,7 @@ fun VerticalGroupsPreview(
 fun VerticalGroupWithDiffOptionStylesPreview(
   @PreviewParameter(
     RadioGroupStyleVerticalGroupLabelParameterProvider::class,
-  ) style: VerticalWithGroupLabel,
+  ) style: VerticalWithGroupLabel<*>,
 ) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
@@ -783,111 +727,10 @@ fun VerticalGroupWithDiffOptionStylesPreview(
           modifier = Modifier.fillMaxWidth(),
           radioGroupStyle = style,
           contentPaddingValues = calculateContentPadding(
-            VerticalWithGroupLabel.Default("GroupLabel"),
+            VerticalWithGroupLabel.Default("GroupLabel", previewListOfDataSimple),
             Small,
           ),
           onOptionClick = {},
-          data = listOf(
-            RadioOptionData(
-              id = "",
-              optionText = "Vertical option",
-              chosenState = NotChosen,
-            ),
-            RadioOptionData(
-              id = "",
-              optionText = "No",
-              chosenState = Chosen,
-              lockedState = NotLocked,
-            ),
-            RadioOptionData(
-              id = "",
-              optionText = "Vertical option",
-              chosenState = NotChosen,
-            ),
-            RadioOptionData(
-              id = "",
-              optionText = "No",
-              chosenState = NotChosen,
-              lockedState = NotLocked,
-            ),
-            RadioOptionData(
-              id = "",
-              optionText = "Vertical option",
-              chosenState = NotChosen,
-            ),
-            RadioOptionData(
-              id = "",
-              optionText = "No",
-              chosenState = NotChosen,
-              lockedState = NotLocked,
-            ),
-            RadioOptionData(
-              id = "",
-              optionText = "Vertical option",
-              chosenState = NotChosen,
-            ),
-            RadioOptionData(
-              id = "",
-              optionText = "No",
-              chosenState = NotChosen,
-              lockedState = NotLocked,
-            ),
-            RadioOptionData(
-              id = "",
-              optionText = "Vertical option",
-              chosenState = NotChosen,
-            ),
-            RadioOptionData(
-              id = "",
-              optionText = "No",
-              chosenState = NotChosen,
-              lockedState = NotLocked,
-            ),
-            RadioOptionData(
-              id = "",
-              optionText = "Vertical option",
-              chosenState = NotChosen,
-            ),
-            RadioOptionData(
-              id = "",
-              optionText = "No",
-              chosenState = NotChosen,
-              lockedState = NotLocked,
-            ),
-            RadioOptionData(
-              id = "",
-              optionText = "Vertical option",
-              chosenState = NotChosen,
-            ),
-            RadioOptionData(
-              id = "",
-              optionText = "No",
-              chosenState = NotChosen,
-              lockedState = NotLocked,
-            ),
-            RadioOptionData(
-              id = "",
-              optionText = "Vertical option",
-              chosenState = NotChosen,
-            ),
-            RadioOptionData(
-              id = "",
-              optionText = "No",
-              chosenState = NotChosen,
-              lockedState = NotLocked,
-            ),
-            RadioOptionData(
-              id = "",
-              optionText = "Vertical option",
-              chosenState = NotChosen,
-            ),
-            RadioOptionData(
-              id = "",
-              optionText = "No",
-              chosenState = NotChosen,
-              lockedState = NotLocked,
-            ),
-          ),
         )
       }
     }
@@ -904,11 +747,173 @@ private class GroupSizeParametersProvider :
   )
 
 private class RadioGroupStyleVerticalGroupLabelParameterProvider :
-  CollectionPreviewParameterProvider<VerticalWithGroupLabel>(
+  CollectionPreviewParameterProvider<VerticalWithGroupLabel<*>>(
     listOf(
-      VerticalWithGroupLabel.Default("GroupLabel"),
-      VerticalWithGroupLabel.Label("GroupLabel"),
-      VerticalWithGroupLabel.LeftAligned("GroupLabel"),
-      VerticalWithGroupLabel.Icon("GroupLabel"),
+      VerticalWithGroupLabel.Default("GroupLabel", previewListOfDataSimple),
+      VerticalWithGroupLabel.Label("GroupLabel", previewListOfDataWithLabel),
+      VerticalWithGroupLabel.LeftAligned("GroupLabel", previewListOfDataSimple),
+      VerticalWithGroupLabel.Icon("GroupLabel", previewListOfDataWithIcon),
     ),
   )
+
+internal val previewList = listOf(
+  RadioOptionData(
+    id = "",
+    optionText = "Yes",
+    chosenState = Chosen,
+  ),
+  RadioOptionData(
+    id = "",
+    optionText = "No",
+    chosenState = NotChosen,
+  ),
+  RadioOptionData(
+    id = "",
+    optionText = "Maybe",
+    chosenState = NotChosen,
+  ),
+  RadioOptionData(
+    id = "",
+    optionText = "Not sure ",
+    chosenState = NotChosen,
+  ),
+  RadioOptionData(
+    id = "",
+    optionText = "Perhaps",
+    chosenState = NotChosen,
+  ),
+  RadioOptionData(
+    id = "",
+    optionText = "Very unlikely",
+    chosenState = NotChosen,
+  ),
+)
+
+internal val previewListOfDataSimple = listOf(
+  RadioOptionGroupDataSimple(
+    RadioOptionData(
+      id = "",
+      optionText = "Yes",
+      chosenState = Chosen,
+    ),
+  ),
+  RadioOptionGroupDataSimple(
+    RadioOptionData(
+      id = "",
+      optionText = "No",
+      chosenState = NotChosen,
+      lockedState = Locked,
+    ),
+  ),
+  RadioOptionGroupDataSimple(
+    RadioOptionData(
+      id = "",
+      optionText = "Maybe",
+      chosenState = NotChosen,
+    ),
+  ),
+  RadioOptionGroupDataSimple(
+    RadioOptionData(
+      id = "",
+      optionText = "Not sure",
+      chosenState = NotChosen,
+    ),
+  ),
+  RadioOptionGroupDataSimple(
+    RadioOptionData(
+      id = "",
+      optionText = "Perhaps",
+      chosenState = NotChosen,
+    ),
+  ),
+  RadioOptionGroupDataSimple(
+    RadioOptionData(
+      id = "",
+      optionText = "Very unlikely",
+      chosenState = NotChosen,
+    ),
+  ),
+)
+
+internal val previewListOfDataWithLabel = listOf(
+  RadioOptionGroupDataWithLabel(
+    RadioOptionData(
+      id = "",
+      optionText = "Vertical option",
+      chosenState = NotChosen,
+    ),
+    "Some label",
+  ),
+  RadioOptionGroupDataWithLabel(
+    RadioOptionData(
+      id = "",
+      optionText = "No",
+      chosenState = Chosen,
+      lockedState = NotLocked,
+    ),
+    "Some label 2",
+  ),
+)
+
+internal val previewListOfDataWithIcon = listOf(
+  RadioOptionGroupDataWithIcon(
+    iconResource = IconResource.Vector(HedvigIcons.FlagSweden),
+    radioOptionData = RadioOptionData(
+      id = "",
+      optionText = "Vertical option",
+      chosenState = NotChosen,
+    ),
+  ),
+  RadioOptionGroupDataWithIcon(
+    iconResource = IconResource.Vector(HedvigIcons.FlagSweden),
+    radioOptionData = RadioOptionData(
+      id = "",
+      optionText = "No",
+      chosenState = Chosen,
+      lockedState = NotLocked,
+    ),
+  ),
+  RadioOptionGroupDataWithIcon(
+    iconResource = IconResource.Vector(HedvigIcons.FlagSweden),
+    radioOptionData = RadioOptionData(
+      id = "",
+      optionText = "No",
+      chosenState = NotChosen,
+      lockedState = NotLocked,
+    ),
+  ),
+  RadioOptionGroupDataWithIcon(
+    iconResource = IconResource.Vector(HedvigIcons.FlagSweden),
+    radioOptionData = RadioOptionData(
+      id = "",
+      optionText = "Vertical option",
+      chosenState = NotChosen,
+    ),
+  ),
+  RadioOptionGroupDataWithIcon(
+    iconResource = IconResource.Vector(HedvigIcons.FlagSweden),
+    radioOptionData = RadioOptionData(
+      id = "",
+      optionText = "No",
+      chosenState = NotChosen,
+      lockedState = NotLocked,
+    ),
+  ),
+  RadioOptionGroupDataWithIcon(
+    iconResource = IconResource.Vector(HedvigIcons.FlagSweden),
+    radioOptionData = RadioOptionData(
+      id = "",
+      optionText = "Vertical option",
+      chosenState = NotChosen,
+    ),
+  ),
+  RadioOptionGroupDataWithIcon(
+    iconResource = IconResource.Vector(HedvigIcons.FlagSweden),
+    radioOptionData = RadioOptionData(
+      id = "",
+      optionText = "No",
+      chosenState = NotChosen,
+      lockedState = NotLocked,
+    ),
+  ),
+)

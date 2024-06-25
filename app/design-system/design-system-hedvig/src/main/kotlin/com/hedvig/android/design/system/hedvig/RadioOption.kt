@@ -60,11 +60,28 @@ import com.hedvig.android.design.system.hedvig.tokens.TweenAnimationTokens
 data class RadioOptionData(
   val id: String,
   val optionText: String,
-  val labelText: String? = null,
-  val iconResource: IconResource? = null,
   val chosenState: ChosenState,
   val lockedState: LockedState = NotLocked,
 )
+
+sealed interface RadioOptionGroupData {
+  val radioOptionData: RadioOptionData
+
+  data class RadioOptionGroupDataSimple(
+    override val radioOptionData: RadioOptionData,
+  ) :
+    RadioOptionGroupData
+
+  data class RadioOptionGroupDataWithLabel(
+    override val radioOptionData: RadioOptionData,
+    val labelText: String,
+  ) : RadioOptionGroupData
+
+  data class RadioOptionGroupDataWithIcon(
+    override val radioOptionData: RadioOptionData,
+    val iconResource: IconResource,
+  ) : RadioOptionGroupData
+}
 
 @Composable
 internal fun RadioOption(

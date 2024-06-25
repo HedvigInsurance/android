@@ -38,6 +38,7 @@ import com.hedvig.android.design.system.hedvig.RadioGroup
 import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupSize
 import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyle
 import com.hedvig.android.design.system.hedvig.RadioOptionData
+import com.hedvig.android.design.system.hedvig.RadioOptionGroupData.RadioOptionGroupDataWithLabel
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationScaffold
 import hedvig.resources.R
@@ -137,17 +138,16 @@ private fun ChooseInsuranceToTerminateScreen(
             Spacer(Modifier.height(16.dp))
           }
         }
-        val radioOptionData = uiState.insuranceList.toRadioOptionDataList(uiState.selectedInsurance?.id)
+        val radioOptionData = uiState.insuranceList.toListOfDataWithLabel(uiState.selectedInsurance?.id)
         com.hedvig.android.design.system.hedvig.HedvigTheme {
           // todo: where do we apply the theme now that we're still on both old and new theme?
           RadioGroup(
-            data = radioOptionData,
             onOptionClick = { insuranceId -> selectInsurance(insuranceId) },
             modifier = Modifier
               .fillMaxWidth()
               .padding(horizontal = 16.dp),
             radioGroupSize = RadioGroupSize.Medium,
-            radioGroupStyle = RadioGroupStyle.Vertical.Label,
+            radioGroupStyle = RadioGroupStyle.Vertical.Label(radioOptionData),
           )
         }
         Spacer(Modifier.height(12.dp))
@@ -172,14 +172,18 @@ private fun ChooseInsuranceToTerminateScreen(
   }
 }
 
-private fun List<TerminatableInsurance>.toRadioOptionDataList(selectedInsuranceId: String?): List<RadioOptionData> {
-  val result = mutableListOf<RadioOptionData>()
+private fun List<TerminatableInsurance>.toListOfDataWithLabel(
+  selectedInsuranceId: String?,
+): List<RadioOptionGroupDataWithLabel> {
+  val result = mutableListOf<RadioOptionGroupDataWithLabel>()
   for (i in this) {
     result.add(
-      RadioOptionData(
-        id = i.id,
-        optionText = i.displayName,
-        chosenState = if (selectedInsuranceId == i.id) Chosen else NotChosen,
+      RadioOptionGroupDataWithLabel(
+        RadioOptionData(
+          id = i.id,
+          optionText = i.displayName,
+          chosenState = if (selectedInsuranceId == i.id) Chosen else NotChosen,
+        ),
         labelText = i.contractExposure,
       ),
     )
