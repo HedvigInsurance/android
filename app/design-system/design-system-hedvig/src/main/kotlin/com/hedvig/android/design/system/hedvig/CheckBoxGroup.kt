@@ -208,8 +208,8 @@ private fun calculateContentPadding(
     )
   }
   return when (checkboxGroupStyle) {
-    is CheckboxGroupStyle.Vertical<*> -> PaddingValues()
-    is CheckboxGroupStyle.VerticalWithGroupLabel<*> -> paddingValuesForLabel
+    is Vertical<*> -> PaddingValues()
+    is VerticalWithGroupLabel<*> -> paddingValuesForLabel
   }
 }
 

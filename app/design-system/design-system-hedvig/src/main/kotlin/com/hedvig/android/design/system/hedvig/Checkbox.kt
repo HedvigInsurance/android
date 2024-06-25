@@ -251,7 +251,7 @@ fun SelectIndicationSquareBox(
 
 object CheckboxDefaults {
   internal val checkboxStyle: CheckboxStyle = Default
-  internal val checkboxSize: CheckboxSize = CheckboxSize.Large
+  internal val checkboxSize: CheckboxSize = Large
 
   sealed interface CheckboxStyle {
     data object Default : CheckboxStyle
@@ -447,7 +447,7 @@ private fun PreviewCheckboxStyles(
 internal class CheckboxStyleProvider :
   CollectionPreviewParameterProvider<CheckboxStyle>(
     listOf(
-      CheckboxStyle.Default,
+      Default,
       CheckboxStyle.Label("Option label"),
       CheckboxStyle.Icon(IconResource.Painter(hedvig.resources.R.drawable.pillow_hedvig)),
       CheckboxStyle.Icon(IconResource.Vector(HedvigIcons.FlagSweden)),
