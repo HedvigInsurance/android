@@ -123,7 +123,11 @@ fun Checkbox(
             modifier = Modifier.weight(1f),
           )
           Spacer(Modifier.width(8.dp))
-          SelectIndicationSquareBox(chosenState = chosenState, lockedState = lockedState, onCheckedChange = null)
+          SelectIndicationSquareBox(
+            chosenState = chosenState,
+            lockedState = lockedState,
+            onCheckedChange = onClick,
+          )
         }
 
         is CheckboxStyle.Icon -> {
@@ -155,7 +159,7 @@ fun Checkbox(
             color = optionTextColor,
           )
           Spacer(Modifier.width(8.dp))
-          SelectIndicationSquareBox(chosenState = chosenState, lockedState = lockedState, onCheckedChange = null)
+          SelectIndicationSquareBox(chosenState = chosenState, lockedState = lockedState, onCheckedChange = onClick)
         }
 
         is CheckboxStyle.Label -> {
@@ -172,11 +176,11 @@ fun Checkbox(
             )
           }
           Spacer(Modifier.width(8.dp))
-          SelectIndicationSquareBox(chosenState = chosenState, lockedState = lockedState, onCheckedChange = null)
+          SelectIndicationSquareBox(chosenState = chosenState, lockedState = lockedState, onCheckedChange = onClick)
         }
 
         CheckboxStyle.LeftAligned -> {
-          SelectIndicationSquareBox(chosenState = chosenState, lockedState = lockedState, onCheckedChange = null)
+          SelectIndicationSquareBox(chosenState = chosenState, lockedState = lockedState, onCheckedChange = onClick)
           Spacer(Modifier.width(8.dp))
           HedvigText(
             optionText,
@@ -195,7 +199,7 @@ fun SelectIndicationSquareBox(
   // public here, bc there are checkboxes different in color than in design system, but with the same indicationBox (like termination flow, date step)
   chosenState: ChosenState,
   lockedState: LockedState,
-  onCheckedChange: ((ChosenState) -> Unit)?,
+  onCheckedChange: (() -> Unit)?,
   modifier: Modifier = Modifier,
 ) {
   CheckItemAnimation(chosenState) { currentState: ChosenState ->
@@ -236,7 +240,7 @@ fun SelectIndicationSquareBox(
         )
         .clickable {
           if (onCheckedChange != null) {
-            onCheckedChange(currentState)
+            onCheckedChange()
           }
         },
       contentAlignment = Alignment.Center,
