@@ -53,9 +53,9 @@ import com.hedvig.android.design.system.hedvig.tokens.SizeCheckboxTokens.SmallSi
 
 @Composable
 fun Checkbox(
-  data: OptionData,
+  data: RadioOptionData,
   checkboxStyle: CheckboxStyle,
-  groupLockedState: LockedState,
+  lockedState: LockedState,
   checkboxSize: CheckboxDefaults.CheckboxSize,
   modifier: Modifier = Modifier,
   onClick: (() -> Unit)? = null,
@@ -64,7 +64,7 @@ fun Checkbox(
   Checkbox(
     optionText = data.optionText,
     chosenState = data.chosenState,
-    lockedState = calculateLockedStateForItemInGroup(data, groupLockedState),
+    lockedState = calculateLockedStateForItemInGroup(data, lockedState),
     modifier = modifier,
     onClick = onClick,
     interactionSource = interactionSource,

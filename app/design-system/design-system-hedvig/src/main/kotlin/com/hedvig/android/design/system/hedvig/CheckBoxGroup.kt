@@ -12,6 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -40,7 +41,7 @@ import hedvig.resources.R
 
 @Composable
 fun CheckboxGroup(
-  data: List<OptionData>,
+  data: List<RadioOptionData>,
   onOptionClick: (String) -> Unit,
   modifier: Modifier = Modifier,
   groupLockedState: LockedState = NotLocked,
@@ -76,7 +77,7 @@ fun CheckboxGroup(
 
 @Composable
 private fun VerticalCheckboxGroup(
-  data: List<OptionData>,
+  data: List<RadioOptionData>,
   checkboxGroupStyle: Vertical,
   groupLockedState: LockedState,
   checkboxGroupSize: CheckboxGroupSize,
@@ -96,7 +97,7 @@ private fun VerticalCheckboxGroup(
       Checkbox(
         data = optionData,
         checkboxStyle = checkboxStyle,
-        groupLockedState = groupLockedState,
+        lockedState = groupLockedState,
         checkboxSize = checkboxGroupSize.toOptionSize(),
         onClick = {
           onOptionClick(optionData.id)
@@ -109,7 +110,7 @@ private fun VerticalCheckboxGroup(
 
 @Composable
 private fun VerticalCheckboxGroupWithLabel(
-  data: List<OptionData>,
+  data: List<RadioOptionData>,
   checkboxGroupStyle: VerticalWithGroupLabel,
   groupLockedState: LockedState,
   checkboxGroupSize: CheckboxGroupSize,
@@ -159,7 +160,7 @@ private fun VerticalCheckboxGroupWithLabel(
           Checkbox(
             data = checkboxData,
             checkboxStyle = checkboxStyle,
-            groupLockedState = groupLockedState,
+            lockedState = groupLockedState,
             checkboxSize = checkboxGroupSize.toOptionSize(),
             interactionSource = interactionSource,
             modifier = modifierRipple,
@@ -237,6 +238,15 @@ private fun CheckboxGroupSize.getShape(): Shape {
   }
 }
 
+@Composable
+private fun CheckboxGroupSize.getLabelTextStyle(): TextStyle {
+  return when (this) {
+    Large -> LargeSizeCheckboxTokens.LabelTextFont.value
+    Medium -> MediumSizeCheckboxTokens.LabelTextFont.value
+    Small -> SmallSizeCheckboxTokens.LabelTextFont.value
+  }
+}
+
 object CheckboxGroupDefaults {
   internal val checkboxGroupStyle: CheckboxGroupStyle = CheckboxGroupStyle.Vertical.Default
   internal val checkboxGroupSize: CheckboxGroupSize = Large
@@ -284,28 +294,28 @@ private fun PreviewCheckboxStyles(
           groupStyle = style,
           groupSize = Medium,
           data = listOf(
-            OptionData(
+            RadioOptionData(
               id = "1",
               optionText = "Option text 1",
               labelText = "Label text 1",
               iconResource = IconResource.Vector(HedvigIcons.FlagSweden),
               chosenState = Chosen,
             ),
-            OptionData(
+            RadioOptionData(
               id = "2",
               optionText = "Option text 2",
               labelText = "Label text2",
               iconResource = IconResource.Vector(HedvigIcons.FlagSweden),
               chosenState = NotChosen,
             ),
-            OptionData(
+            RadioOptionData(
               id = "3",
               optionText = "Option text 3",
               labelText = "Label text 3",
               iconResource = IconResource.Vector(HedvigIcons.FlagSweden),
               chosenState = NotChosen,
             ),
-            OptionData(
+            RadioOptionData(
               id = "4",
               optionText = "Option text 4",
               labelText = "Label text 4",

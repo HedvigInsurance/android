@@ -56,7 +56,8 @@ import com.hedvig.android.design.system.hedvig.tokens.SizeRadioOptionTokens.Medi
 import com.hedvig.android.design.system.hedvig.tokens.SizeRadioOptionTokens.SmallSizeRadioOptionTokens
 import com.hedvig.android.design.system.hedvig.tokens.TweenAnimationTokens
 
-data class OptionData(
+// used in RadioOption and Checkbox composables
+data class RadioOptionData(
   val id: String,
   val optionText: String,
   val labelText: String? = null,
@@ -67,7 +68,7 @@ data class OptionData(
 
 @Composable
 internal fun RadioOption(
-  data: OptionData,
+  data: RadioOptionData,
   radioOptionStyle: RadioOptionStyle,
   radioOptionSize: RadioOptionDefaults.RadioOptionSize,
   groupLockedState: LockedState,
@@ -87,7 +88,7 @@ internal fun RadioOption(
   )
 }
 
-internal fun calculateLockedStateForItemInGroup(data: OptionData, groupLockedState: LockedState): LockedState {
+internal fun calculateLockedStateForItemInGroup(data: RadioOptionData, groupLockedState: LockedState): LockedState {
   return if (groupLockedState == Locked) Locked else data.lockedState
 }
 
