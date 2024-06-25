@@ -115,19 +115,17 @@ private fun TravelCertificateTravellersInput(
           )
           for (i in uiState.coInsuredList) {
             Spacer(Modifier.height(4.dp))
-            com.hedvig.android.design.system.hedvig.HedvigTheme {
-              // todo: where do we apply the theme now that we're still on both old and new theme?
-              Checkbox(
-                optionText = i.name,
-                chosenState = if (i.isIncluded) Chosen else NotChosen,
-                modifier = Modifier
-                  .fillMaxWidth()
-                  .padding(horizontal = 16.dp),
-                onClick = { changeCoInsuredChecked(i) },
-                checkboxStyle = CheckboxStyle.Default,
-                checkboxSize = Large,
-              )
-            }
+
+            Checkbox(
+              optionText = i.name,
+              chosenState = if (i.isIncluded) Chosen else NotChosen,
+              modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+              onClick = { changeCoInsuredChecked(i) },
+              checkboxStyle = CheckboxStyle.Default,
+              checkboxSize = Large,
+            )
           }
           if (uiState.coInsuredHasMissingInfo) {
             Spacer(Modifier.height(16.dp))

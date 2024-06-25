@@ -139,17 +139,14 @@ private fun ChooseInsuranceToTerminateScreen(
           }
         }
         val radioOptionData = uiState.insuranceList.toListOfDataWithLabel(uiState.selectedInsurance?.id)
-        com.hedvig.android.design.system.hedvig.HedvigTheme {
-          // todo: where do we apply the theme now that we're still on both old and new theme?
-          RadioGroup(
-            onOptionClick = { insuranceId -> selectInsurance(insuranceId) },
-            modifier = Modifier
-              .fillMaxWidth()
-              .padding(horizontal = 16.dp),
-            radioGroupSize = RadioGroupSize.Medium,
-            radioGroupStyle = RadioGroupStyle.Vertical.Label(radioOptionData),
-          )
-        }
+        RadioGroup(
+          onOptionClick = { insuranceId -> selectInsurance(insuranceId) },
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+          radioGroupSize = RadioGroupSize.Medium,
+          radioGroupStyle = RadioGroupStyle.Vertical.Label(radioOptionData),
+        )
         Spacer(Modifier.height(12.dp))
         HedvigContainedButton(
           stringResource(id = R.string.general_continue_button),
@@ -175,20 +172,16 @@ private fun ChooseInsuranceToTerminateScreen(
 private fun List<TerminatableInsurance>.toListOfDataWithLabel(
   selectedInsuranceId: String?,
 ): List<RadioOptionGroupDataWithLabel> {
-  val result = mutableListOf<RadioOptionGroupDataWithLabel>()
-  for (i in this) {
-    result.add(
-      RadioOptionGroupDataWithLabel(
-        RadioOptionData(
-          id = i.id,
-          optionText = i.displayName,
-          chosenState = if (selectedInsuranceId == i.id) Chosen else NotChosen,
-        ),
-        labelText = i.contractExposure,
+  return this.map { i ->
+    RadioOptionGroupDataWithLabel(
+      RadioOptionData(
+        id = i.id,
+        optionText = i.displayName,
+        chosenState = if (selectedInsuranceId == i.id) Chosen else NotChosen,
       ),
+      labelText = i.contractExposure,
     )
   }
-  return result
 }
 
 @HedvigPreview

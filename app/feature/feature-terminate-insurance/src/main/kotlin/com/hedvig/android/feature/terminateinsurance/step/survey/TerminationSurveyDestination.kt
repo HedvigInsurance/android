@@ -184,18 +184,16 @@ private fun TerminationSurveyScreen(
       }
       for (reason in uiState.reasons) {
         Column {
-          com.hedvig.android.design.system.hedvig.HedvigTheme {
-            // todo: where do we apply the theme now that we're still on both old and new theme?
-            RadioOption(
-              optionText = reason.surveyOption.title,
-              chosenState = if (uiState.selectedOption == reason.surveyOption) Chosen else NotChosen,
-              modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-              onClick = { selectOption(reason.surveyOption) },
-              radioOptionSize = RadioOptionDefaults.RadioOptionSize.Medium,
-            )
-          }
+          RadioOption(
+            optionText = reason.surveyOption.title,
+            chosenState = if (uiState.selectedOption == reason.surveyOption) Chosen else NotChosen,
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(horizontal = 16.dp),
+            onClick = { selectOption(reason.surveyOption) },
+            radioOptionSize = RadioOptionDefaults.RadioOptionSize.Medium,
+          )
+
           Spacer(modifier = (Modifier.height(4.dp)))
           AnimatedVisibility(visible = reason.surveyOption == uiState.selectedOption) {
             Column {
@@ -610,18 +608,6 @@ private val previewReason2 = TerminationReason(
     listIndex = 1,
   ),
   feedBack = LoremIpsum(25).values.first(),
-)
-
-private val previewReason2filled = TerminationReason(
-  TerminationSurveyOption(
-    id = "2",
-    title = "I got a better offer elsewhere",
-    subOptions = listOf(),
-    suggestion = null,
-    feedBackRequired = true,
-    listIndex = 2,
-  ),
-  "Got a great all included offer from If",
 )
 
 private val previewReason3 = TerminationReason(

@@ -129,13 +129,13 @@ private fun HorizontalRadioGroup(
     overflow = Companion.Visible,
     verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically),
   ) {
-    for (i in data) {
-      val itemPadding = if (data.indexOf(i) % 2 != 0) {
+    for ((index, i) in data.withIndex()) {
+      val itemPadding = if (index % 2 != 0) {
         PaddingValues()
       } else {
         PaddingValues(end = 4.dp)
       }
-      if (data.indexOf(i) % 2 == 0 && data.indexOf(i) == data.lastIndex) {
+      if (index % 2 == 0 && index == data.lastIndex) {
         RadioOption(
           data = i,
           radioOptionStyle = LeftAligned,
