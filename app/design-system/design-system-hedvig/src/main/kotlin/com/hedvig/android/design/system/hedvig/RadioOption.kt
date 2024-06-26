@@ -248,11 +248,11 @@ internal fun SelectIndicationCircle(
                   NotLocked -> Modifier.border(8.dp, radioOptionColors.chosenIndicatorColor, CircleShape)
                 }
               }
-
               NotChosen -> {
-                Modifier.border(2.dp, radioOptionColors.notChosenIndicatorColor, CircleShape)
-                // disabled color is actually brighter than notChosenIndicatorColor,
-                // makes no sense here, so I left only one
+                when (lockedState) {
+                  Locked -> Modifier.border(8.dp, radioOptionColors.disabledIndicatorColor, CircleShape)
+                  NotLocked -> Modifier.border(2.dp, radioOptionColors.notChosenIndicatorColor, CircleShape)
+                }
               }
             },
           ),
