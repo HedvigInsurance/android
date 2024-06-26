@@ -1,33 +1,23 @@
 package com.hedvig.android.sample.design.showcase.bottomSheet
 
-import HedvigBottomSheet
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.ime
-import androidx.compose.foundation.layout.isImeVisible
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
@@ -67,14 +57,16 @@ fun ShowcaseBottomSheet() {
           },
           onSystemBack = {
             isSomeStuffVisible.value = true
-            logcat { "mariia: onSystemBack is called, setting isSomeStuffVisible.value to true. isSomeStuffVisible = ${isSomeStuffVisible.value}" }
-                         },
+            logcat {
+              "mariia: onSystemBack is called, setting isSomeStuffVisible.value to true. isSomeStuffVisible = ${isSomeStuffVisible.value}"
+            }
+          },
           content = {
             Column(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .verticalScroll(rememberScrollState()),
+              Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState()),
               horizontalAlignment = Alignment.CenterHorizontally,
             ) {
               HedvigText(
@@ -94,18 +86,18 @@ fun ShowcaseBottomSheet() {
               }
               Spacer(Modifier.height(40.dp))
               HedvigButton(
-                  enabled = textFieldValue.value != "",
-                  onClick = {
-                      isBottomSheetVisible.value = false
-                  },
+                enabled = textFieldValue.value != "",
+                onClick = {
+                  isBottomSheetVisible.value = false
+                },
               ) { HedvigText("Save") }
               Spacer(Modifier.height(40.dp))
               HedvigButton(
-                  enabled = true,
-                  onClick = {
-                      isBottomSheetVisible.value = false
-                      textFieldValue.value = ""
-                  },
+                enabled = true,
+                onClick = {
+                  isBottomSheetVisible.value = false
+                  textFieldValue.value = ""
+                },
               ) { HedvigText("Cancel") }
             }
           },

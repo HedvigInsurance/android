@@ -1,3 +1,5 @@
+package com.hedvig.android.design.system.hedvig
+
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
@@ -8,16 +10,13 @@ import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.window.Popup
-import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.fromToken
 import com.hedvig.android.design.system.hedvig.tokens.BottomSheetTokens
+import com.hedvig.android.design.system.hedvig.tokens.LargeSizeButtonTokens
 import com.hedvig.android.logger.logcat
 import eu.wewox.modalsheet.ExperimentalSheetApi
 import eu.wewox.modalsheet.ModalSheet
@@ -82,16 +81,4 @@ internal data class BottomSheetShape(
 
 internal val bottomSheetShape: BottomSheetShape
   @Composable
-  get() = with(HedvigTheme.colorScheme) {
-    remember(this) {
-      BottomSheetShape(
-        shape = RoundedCornerShape(
-          topStart = BottomSheetTokens.TopCornerRadius,
-          topEnd = BottomSheetTokens.TopCornerRadius,
-          bottomEnd = BottomSheetTokens.BottomCornerRadius,
-          bottomStart = BottomSheetTokens.BottomCornerRadius,
-        ),
-      )
-    }
-  }
-
+  get() = BottomSheetShape(LargeSizeButtonTokens.ContainerShape.value)
