@@ -2,14 +2,11 @@ package com.hedvig.android.feature.travelcertificate.ui.generatewho
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -18,14 +15,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.designsystem.material3.onSecondaryContainedButtonContainer
@@ -36,6 +31,11 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.RoundedCornerCheckBox
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
+import com.hedvig.android.design.system.hedvig.Checkbox
+import com.hedvig.android.design.system.hedvig.CheckboxDefaults.CheckboxSize.Large
+import com.hedvig.android.design.system.hedvig.CheckboxDefaults.CheckboxStyle
+import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
+import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import hedvig.resources.R
 
@@ -103,56 +103,29 @@ private fun TravelCertificateTravellersInput(
           )
           Spacer(Modifier.weight(1f))
           Spacer(Modifier.height(16.dp))
-
-          HedvigCard(
-            onClick = changeMemberChecked,
+          Checkbox(
+            optionText = uiState.memberFullName,
+            chosenState = if (uiState.isMemberIncluded) Chosen else NotChosen,
             modifier = Modifier
               .fillMaxWidth()
               .padding(horizontal = 16.dp),
-          ) {
-            Row(
-              verticalAlignment = Alignment.CenterVertically,
-              modifier = Modifier
-                .heightIn(72.dp)
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            ) {
-              Text(
-                text = uiState.memberFullName,
-                style = MaterialTheme.typography.headlineSmall,
-                modifier = Modifier.weight(1f),
-              )
-              Spacer(Modifier.width(8.dp))
-              RoundedCornerCheckBox(
-                isChecked = uiState.isMemberIncluded,
-                onCheckedChange = { changeMemberChecked() },
-              )
-            }
-          }
+            onClick = changeMemberChecked,
+            checkboxStyle = CheckboxStyle.Default,
+            checkboxSize = Large,
+          )
           for (i in uiState.coInsuredList) {
             Spacer(Modifier.height(4.dp))
-            HedvigCard(
-              onClick = { changeCoInsuredChecked(i) },
+
+            Checkbox(
+              optionText = i.name,
+              chosenState = if (i.isIncluded) Chosen else NotChosen,
               modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
-            ) {
-              Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                  .heightIn(72.dp)
-                  .fillMaxWidth()
-                  .padding(horizontal = 16.dp),
-              ) {
-                Text(
-                  text = i.name,
-                  style = MaterialTheme.typography.headlineSmall,
-                  modifier = Modifier.weight(1f),
-                )
-                Spacer(Modifier.width(8.dp))
-                RoundedCornerCheckBox(isChecked = i.isIncluded, onCheckedChange = { changeCoInsuredChecked(i) })
-              }
-            }
+              onClick = { changeCoInsuredChecked(i) },
+              checkboxStyle = CheckboxStyle.Default,
+              checkboxSize = Large,
+            )
           }
           if (uiState.coInsuredHasMissingInfo) {
             Spacer(Modifier.height(16.dp))
@@ -236,7 +209,10 @@ private fun PreviewTravelCertificateTravellersInput() {
       TravelCertificateTravellersInput(
         TravelCertificateTravellersInputUiState.Success(
           true,
-          listOf(CoInsured("id", "Co-insured Baby", null, null, false)),
+          listOf(
+            CoInsured("id", "Co-insured Baby", null, null, false),
+            CoInsured("id2", "Co-insured Baby 2", null, null, true),
+          ),
           "The Member Themselves",
           true,
         ),
