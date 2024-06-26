@@ -41,6 +41,7 @@ dependencies {
   implementation(projects.navigationActivity)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
+  implementation(projects.designSystemHedvig)
 
   testImplementation(libs.apollo.testingSupport)
   testImplementation(libs.assertK)

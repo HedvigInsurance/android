@@ -64,8 +64,9 @@ private class ChooseInsuranceToTerminatePresenter(
         is ChooseInsuranceToTerminateEvent.SelectInsurance -> {
           val currentStateValue = currentState
           if (currentStateValue is ChooseInsuranceToTerminateStepUiState.Success) {
+            val newlySelectedInsurance = currentStateValue.insuranceList.first { it.id == event.insuranceId }
             currentState = currentStateValue.copy(
-              selectedInsurance = event.insurance,
+              selectedInsurance = newlySelectedInsurance,
               navigationStepFailedToLoad = false,
             )
           }
@@ -148,7 +149,7 @@ private class ChooseInsuranceToTerminatePresenter(
 }
 
 internal sealed interface ChooseInsuranceToTerminateEvent {
-  data class SelectInsurance(val insurance: TerminatableInsurance) :
+  data class SelectInsurance(val insuranceId: String) :
     ChooseInsuranceToTerminateEvent
 
   data object RetryLoadData : ChooseInsuranceToTerminateEvent
