@@ -3,7 +3,6 @@ package com.hedvig.android.design.system.hedvig
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -218,24 +217,29 @@ fun SelectIndicationSquareBox(
     val borderColor = when (currentState) {
       Chosen -> {
         when (lockedState) {
-          Locked -> checkboxColors.disabledIndicatorColor
+          Locked -> Color.Transparent
           NotLocked -> checkboxColors.chosenIndicatorColor
         }
       }
 
-      NotChosen -> checkboxColors.notChosenIndicatorColor
+      NotChosen -> {
+        when (lockedState) {
+          Locked -> checkboxColors.disabledIndicatorColor
+          NotLocked -> checkboxColors.notChosenIndicatorColor
+        }
+      }
     }
     Box(
       modifier = modifier
         .size(24.dp)
         .clip(shape)
-        .border(
-          width = 2.dp,
-          color = borderColor,
-          shape = shape,
-        )
         .background(
           color = backgroundColor,
+          shape = shape,
+        )
+        .borderForTranslucentColor(
+          width = 2.dp,
+          color = borderColor,
           shape = shape,
         )
         .clickable {

@@ -12,7 +12,7 @@ internal object CheckboxColorTokens {
   val DisabledOptionTextColor = ColorSchemeKeyTokens.TextDisabledTranslucent
   val DisabledLabelTextColor = ColorSchemeKeyTokens.TextDisabledTranslucent
   val ChosenIndicatorColor = ColorSchemeKeyTokens.SignalGreenElement
-  val NotChosenIndicatorColor = ColorSchemeKeyTokens.FillDisabled // todo: if i put borderSecondary here as it is in figma, it's almost invisible
+  val NotChosenIndicatorColor = ColorSchemeKeyTokens.BorderSecondary
   val DisabledIndicatorColor = ColorSchemeKeyTokens.FillDisabledTransparent
 }
 
