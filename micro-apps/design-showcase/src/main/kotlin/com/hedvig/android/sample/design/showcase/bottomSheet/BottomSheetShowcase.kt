@@ -1,6 +1,7 @@
 package com.hedvig.android.sample.design.showcase.bottomSheet
 
 import HedvigBottomSheet
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -31,6 +32,7 @@ import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.logger.logcat
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -38,30 +40,41 @@ fun ShowcaseBottomSheet() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        var isBottomSheetVisible by remember { mutableStateOf(false) }
-        var textFieldValue by remember { mutableStateOf("enter your name") }
-        val isImeVisible = WindowInsets.isImeVisible
+        val isSomeStuffVisible = remember { mutableStateOf(false) }
+//        BackHandler {
+//          isSomeStuffVisible.value = true
+//        }
+
+        val isBottomSheetVisible = remember { mutableStateOf(false) }
+
+        val textFieldValue = remember { mutableStateOf("enter your name") }
         Spacer(Modifier.height(40.dp))
         HedvigText(
           "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum..",
           Modifier.padding(horizontal = 16.dp),
         )
         Spacer(Modifier.height(40.dp))
-        HedvigButton(enabled = true, onClick = { isBottomSheetVisible = true }) { HedvigText("Open sheet") }
+        if (isSomeStuffVisible.value) {
+          HedvigText("Some stuff is visible!")
+        }
+        Spacer(Modifier.height(40.dp))
+        HedvigButton(enabled = true, onClick = { isBottomSheetVisible.value = true }) { HedvigText("Open sheet") }
         Spacer(Modifier.height(40.dp))
         HedvigBottomSheet(
-          isVisible = isBottomSheetVisible,
-          onVisibleChange = { isBottomSheetVisible = it },
-          onSystemBack = null,
-          sheetPadding = if (isImeVisible) {
-            WindowInsets.ime.asPaddingValues()
-          } else {
-            WindowInsets.safeDrawing
-              .only(WindowInsetsSides.Bottom).asPaddingValues()
+          isVisible = isBottomSheetVisible.value,
+          onVisibleChange = { bool ->
+            isBottomSheetVisible.value = bool
           },
+          onSystemBack = {
+            isSomeStuffVisible.value = true
+            logcat { "mariia: onSystemBack is called, setting isSomeStuffVisible.value to true. isSomeStuffVisible = ${isSomeStuffVisible.value}" }
+                         },
           content = {
             Column(
-              Modifier.fillMaxWidth().padding(16.dp).verticalScroll(rememberScrollState()),
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState()),
               horizontalAlignment = Alignment.CenterHorizontally,
             ) {
               HedvigText(
@@ -69,21 +82,31 @@ fun ShowcaseBottomSheet() {
               )
               Spacer(Modifier.height(40.dp))
               BasicTextField(
-                value = textFieldValue,
+                value = textFieldValue.value,
                 modifier = Modifier.background(Color.Red),
                 onValueChange = {
-                  textFieldValue = it
+                  textFieldValue.value = it
                 },
               )
               Spacer(Modifier.height(40.dp))
-              HedvigButton(enabled = textFieldValue != "", onClick = {
-                isBottomSheetVisible = false
-              }) { HedvigText("Save") }
+              if (isSomeStuffVisible.value) {
+                HedvigText("Some stuff is visible!")
+              }
               Spacer(Modifier.height(40.dp))
-              HedvigButton(enabled = true, onClick = {
-                isBottomSheetVisible = false
-                textFieldValue = ""
-              }) { HedvigText("Cancel") }
+              HedvigButton(
+                  enabled = textFieldValue.value != "",
+                  onClick = {
+                      isBottomSheetVisible.value = false
+                  },
+              ) { HedvigText("Save") }
+              Spacer(Modifier.height(40.dp))
+              HedvigButton(
+                  enabled = true,
+                  onClick = {
+                      isBottomSheetVisible.value = false
+                      textFieldValue.value = ""
+                  },
+              ) { HedvigText("Cancel") }
             }
           },
         )
