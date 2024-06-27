@@ -3,9 +3,6 @@ mutation ChatSendFile($uploadToken: ID!, $context: ChatMessageContext) {
     message {
       ...MessageFragment
     }
-    status {
-      message
-    }
     error {
       message
     }
