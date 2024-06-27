@@ -61,6 +61,8 @@ ktlint_standard_multiline-expression-wrapping=disabled
 # These also need to be disabled due to the ones above beeing disabled + explaination here https://github.com/pinterest/ktlint/issues/2338#issuecomment-1787229643
 # https://pinterest.github.io/ktlint/1.0.1/rules/standard/#string-template-indent
 ktlint_standard_string-template-indent=disabled
+# https://pinterest.github.io/ktlint/latest/rules/standard/#function-expression-body
+ktlint_standard_function-expression-body = disabled
 
 [*.xml]
 indent_size=2
