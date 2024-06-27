@@ -59,69 +59,63 @@ internal class ChatRepositoryImpl(
     return fetchChatMessages(until)
   }
 
-  override suspend fun pollNewestMessages(): Either<ErrorMessage, ChatMessagesResult> {
-    return fetchChatMessages(null)
+  override suspend fun pollNewestMessages(): Either<ErrorMessage, ChatMessagesResult> = fetchChatMessages(null)
+
+  private suspend fun fetchChatMessages(until: Instant?): Either<ErrorMessage, ChatMessagesResult> = either {
+    val result = apolloClient
+      .query(ChatMessagesQuery(until))
+      .fetchPolicy(FetchPolicy.NetworkOnly)
+      .doNotStore(true)
+      .safeExecute()
+      .toEither(::ErrorMessage)
+      .bind()
+
+    populateCacheWithNewMessageData(result)
+
+    ChatMessagesResult(
+      messages = result.chat.messages.mapNotNull { it.toChatMessage() },
+      nextUntil = result.chat.nextUntil,
+      hasNext = result.chat.hasNext,
+      informationMessage = result.chat.bannerText?.string,
+    )
   }
 
-  private suspend fun fetchChatMessages(until: Instant?): Either<ErrorMessage, ChatMessagesResult> {
-    return either {
-      val result = apolloClient.query(ChatMessagesQuery(until))
-        .fetchPolicy(FetchPolicy.NetworkOnly)
-        .doNotStore(true)
-        .safeExecute()
-        .toEither(::ErrorMessage)
-        .bind()
-
-      populateCacheWithNewMessageData(result)
-
-      ChatMessagesResult(
-        messages = result.chat.messages.mapNotNull { it.toChatMessage() },
-        nextUntil = result.chat.nextUntil,
-        hasNext = result.chat.hasNext,
-        informationMessage = result.chat.bannerText?.string,
+  override fun watchMessages(): Flow<Either<ErrorMessage, List<ChatMessage>>> = apolloClient
+    .query(ChatMessagesQuery(null))
+    .fetchPolicy(FetchPolicy.CacheOnly)
+    .watch(fetchThrows = true)
+    .map { apolloResponse: ApolloResponse<ChatMessagesQuery.Data> ->
+      either {
+        ensure(apolloResponse.errors.isNullOrEmpty()) {
+          ErrorMessage("watchMessages: Got errors from Apollo: ${apolloResponse.errors}")
+        }
+        val data: ChatMessagesQuery.Data? = apolloResponse.data
+        ensureNotNull(data) {
+          ErrorMessage("watchMessages: No data")
+        }
+        val chat = data.chat
+        val messages = chat.messages.mapNotNull { it.toChatMessage() }.sortedByDescending { it.sentAt }
+        messages.firstOrNull()?.let {
+          chatLastMessageReadRepository.storeLatestReadTimestamp(it.sentAt)
+        }
+        messages
+      }
+    }.retryWhen { cause, _ ->
+      val shouldRetry = cause is CacheMissException ||
+        (cause is ApolloCompositeException && cause.suppressedExceptions.any { it is CacheMissException })
+      if (shouldRetry) {
+        emit(emptyList<ChatMessage>().right())
+        delay(1.seconds)
+      }
+      shouldRetry
+    }.onEach {
+      it.fold(
+        ifLeft = {
+          logcat(LogPriority.ERROR, it.throwable) { "watchMessages: Failed to fetch initial messages:${it.message}" }
+        },
+        ifRight = { logcat { "watchMessages: Emitting #${it.count()} messages" } },
       )
     }
-  }
-
-  override fun watchMessages(): Flow<Either<ErrorMessage, List<ChatMessage>>> {
-    return apolloClient.query(ChatMessagesQuery(null))
-      .fetchPolicy(FetchPolicy.CacheOnly)
-      .watch(fetchThrows = true)
-      .map { apolloResponse: ApolloResponse<ChatMessagesQuery.Data> ->
-        either {
-          ensure(apolloResponse.errors.isNullOrEmpty()) {
-            ErrorMessage("watchMessages: Got errors from Apollo: ${apolloResponse.errors}")
-          }
-          val data: ChatMessagesQuery.Data? = apolloResponse.data
-          ensureNotNull(data) {
-            ErrorMessage("watchMessages: No data")
-          }
-          val chat = data.chat
-          val messages = chat.messages.mapNotNull { it.toChatMessage() }.sortedByDescending { it.sentAt }
-          messages.firstOrNull()?.let {
-            chatLastMessageReadRepository.storeLatestReadTimestamp(it.sentAt)
-          }
-          messages
-        }
-      }
-      .retryWhen { cause, _ ->
-        val shouldRetry = cause is CacheMissException ||
-          (cause is ApolloCompositeException && cause.suppressedExceptions.any { it is CacheMissException })
-        if (shouldRetry) {
-          emit(emptyList<ChatMessage>().right())
-          delay(1.seconds)
-        }
-        shouldRetry
-      }
-      .onEach {
-        it.fold(
-          ifLeft = {
-            logcat(LogPriority.ERROR, it.throwable) { "watchMessages: Failed to fetch initial messages:${it.message}" }
-          },
-          ifRight = { logcat { "watchMessages: Emitting #${it.count()} messages" } },
-        )
-      }
-  }
 
   override suspend fun sendPhoto(
     uri: Uri,
@@ -129,7 +123,8 @@ internal class ChatRepositoryImpl(
   ): Either<ErrorMessage, ChatMessage> = either {
     logcat { "Chat sendPhoto uploading photo with uri:$uri" }
     val uploadToken = uploadFile(uri)
-    val result = apolloClient.mutation(ChatSendFileMutation(uploadToken, context?.toChatMessageContext()))
+    val result = apolloClient
+      .mutation(ChatSendFileMutation(uploadToken, context?.toChatMessageContext()))
       .safeExecute()
       .toEither(::ErrorMessage)
       .bind()
@@ -137,16 +132,12 @@ internal class ChatRepositoryImpl(
 
     val error = result.error
     val message = result.message
-    val status = result.status
 
     ensure(error == null) {
       ErrorMessage("Uploading file failed with error message:${error?.message}. Result:$result")
     }
     ensureNotNull(message) {
       ErrorMessage("No data")
-    }
-    if (status != null) {
-      logcat { "Status was: ${status.message}" }
     }
 
     val chatMessage: ChatMessage = ensureNotNull(message.toChatMessage()) {
@@ -175,11 +166,11 @@ internal class ChatRepositoryImpl(
   private suspend fun Raise<ErrorMessage>.uploadFile(uri: Uri): String {
     val contentType = fileService.getMimeType(uri).toMediaType()
     val file = uri.toFile()
-    val result = botServiceService.uploadFile(file, contentType)
+    val result = botServiceService
+      .uploadFile(file, contentType)
       .onLeft {
         logcat(LogPriority.ERROR) { "Failed to upload file with path:${file.absolutePath}. Error:$it" }
-      }
-      .mapLeft(CallError::toErrorMessage)
+      }.mapLeft(CallError::toErrorMessage)
       .bind()
     logcat { "Uploaded file with path:${file.absolutePath}. Result:$result" }
     val fileUploadResponse = result.firstOrNull() ?: raise(ErrorMessage("No file upload response"))
@@ -194,7 +185,8 @@ internal class ChatRepositoryImpl(
   ): Either<ErrorMessage, ChatMessage> = either {
     logcat { "Chat sendMedia uploading media with uri:$uri" }
     val uploadToken = uploadMedia(uri)
-    val result = apolloClient.mutation(ChatSendFileMutation(uploadToken, context?.toChatMessageContext()))
+    val result = apolloClient
+      .mutation(ChatSendFileMutation(uploadToken, context?.toChatMessageContext()))
       .safeExecute()
       .toEither(::ErrorMessage)
       .bind()
@@ -202,16 +194,12 @@ internal class ChatRepositoryImpl(
 
     val error = result.error
     val message: ChatSendFileMutation.Data.ChatSendFile.Message? = result.message
-    val status = result.status
 
     ensure(error == null) {
       ErrorMessage("Uploading file failed with error message:${error?.message}. Result:$result")
     }
     ensureNotNull(message) {
       ErrorMessage("No data")
-    }
-    if (status != null) {
-      logcat { "Status was: ${status.message}" }
     }
 
     val chatMessage: ChatMessage = ensureNotNull(message.toChatMessage()) {
@@ -250,7 +238,8 @@ internal class ChatRepositoryImpl(
     context: AppDestination.Chat.ChatContext?,
   ): Either<ErrorMessage, ChatMessage> = either {
     logcat { "Chat sendMessage uploading text:$text" }
-    val result = apolloClient.mutation(ChatSendMessageMutation(text, context?.toChatMessageContext()))
+    val result = apolloClient
+      .mutation(ChatSendMessageMutation(text, context?.toChatMessageContext()))
       .safeExecute()
       .toEither(::ErrorMessage)
       .bind()
@@ -258,17 +247,12 @@ internal class ChatRepositoryImpl(
 
     val error = result.error
     val message: ChatSendMessageMutation.Data.ChatSendText.Message? = result.message
-    val status = result.status
 
     ensure(error == null) {
       ErrorMessage("Failed with error response: ${error?.message}")
     }
     ensureNotNull(message) {
       ErrorMessage("No data")
-    }
-    // todo chat: Consider using status which prints stuff like "Chat is closed, we'll answer asap" in the UI somehow
-    if (status != null) {
-      logcat(LogPriority.WARN) { "Status was: ${status.message}" }
     }
 
     val chatMessage = ensureNotNull(message.toChatMessage()) {
@@ -393,12 +377,10 @@ private fun String.isGifUrl(): Boolean {
 
 private val webUrlLinkMatcher: Regex = Patterns.WEB_URL.toRegex()
 
-private fun AppDestination.Chat.ChatContext.toChatMessageContext(): ChatMessageContext? {
-  return when (this) {
-    AppDestination.Chat.ChatContext.PAYMENT -> ChatMessageContext.HELP_CENTER_PAYMENTS
-    AppDestination.Chat.ChatContext.CLAIMS -> ChatMessageContext.HELP_CENTER_CLAIMS
-    AppDestination.Chat.ChatContext.COVERAGE -> ChatMessageContext.HELP_CENTER_COVERAGE
-    AppDestination.Chat.ChatContext.INSURANCE -> ChatMessageContext.HELP_CENTER_MY_INSURANCE
-    AppDestination.Chat.ChatContext.OTHER -> null
-  }
+private fun AppDestination.Chat.ChatContext.toChatMessageContext(): ChatMessageContext? = when (this) {
+  AppDestination.Chat.ChatContext.PAYMENT -> ChatMessageContext.HELP_CENTER_PAYMENTS
+  AppDestination.Chat.ChatContext.CLAIMS -> ChatMessageContext.HELP_CENTER_CLAIMS
+  AppDestination.Chat.ChatContext.COVERAGE -> ChatMessageContext.HELP_CENTER_COVERAGE
+  AppDestination.Chat.ChatContext.INSURANCE -> ChatMessageContext.HELP_CENTER_MY_INSURANCE
+  AppDestination.Chat.ChatContext.OTHER -> null
 }
