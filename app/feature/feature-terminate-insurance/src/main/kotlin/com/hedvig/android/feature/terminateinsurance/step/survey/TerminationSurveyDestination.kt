@@ -214,9 +214,13 @@ private fun TerminationSurveyScreen(
                   is SurveyOptionSuggestion.Redirect -> suggestion.buttonTitle
                 }
                 val onSuggestionButtonClick: () -> Unit = when (suggestion) {
-                  SurveyOptionSuggestion.Action.UpdateAddress -> { -> navigateToMovingFlow() }
+                  SurveyOptionSuggestion.Action.UpdateAddress -> {
+                    { navigateToMovingFlow() }
+                  }
 
-                  is SurveyOptionSuggestion.Redirect -> { -> openUrl(suggestion.url) }
+                  is SurveyOptionSuggestion.Redirect -> {
+                    { openUrl(suggestion.url) }
+                  }
                 }
                 VectorInfoCard(
                   text = text,
