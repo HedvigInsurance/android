@@ -66,7 +66,7 @@ ktlint_standard_function-expression-body = disabled
 # https://pinterest.github.io/ktlint/latest/rules/standard/#class-signature
 ktlint_standard_class-signature = disabled
 # https://pinterest.github.io/ktlint/latest/rules/standard/#chain-method-continuation
-ktlint_chain_method_rule_force_multiline_when_chain_operator_count_greater_or_equal_than=50
+ktlint_standard_chain-method-continuation = disabled
 
 [*.xml]
 indent_size=2
