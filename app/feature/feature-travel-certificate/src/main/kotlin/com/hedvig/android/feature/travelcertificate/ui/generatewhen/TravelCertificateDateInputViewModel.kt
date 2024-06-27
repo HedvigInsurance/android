@@ -94,7 +94,8 @@ internal class TravelCertificateDateInputPresenter(
 
       fun validateInputAndContinue() {
         val successScreenContent = screenContent as? DateInputScreenContent.Success ?: return
-        if (successScreenContent.details.email != null && validateEmail(
+        if (successScreenContent.details.email != null &&
+          validateEmail(
             successScreenContent.details.email,
           ).isSuccessful
         ) {

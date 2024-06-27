@@ -146,17 +146,23 @@ fun EmergencyScreen(emergencyNumber: String?, navigateUp: () -> Unit, modifier: 
   }
 }
 
-@Suppress("ktlint:standard:max-line-length", "ktlint:standard:argument-list-wrapping")
 @Composable
 private fun QuestionsAndAnswers(modifier: Modifier = Modifier) {
   var expandedItem by rememberSaveable { mutableIntStateOf(-1) }
+
   val faqList = listOf(
-    stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ1_TITLE) to stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ1_LABEL),
-    stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ2_TITLE) to stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ2_LABEL),
-    stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ3_TITLE) to stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ3_LABEL),
-    stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ4_TITLE) to stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ4_LABEL),
-    stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ5_TITLE) to stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ5_LABEL),
-    stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ6_TITLE) to stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ6_LABEL),
+    stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ1_TITLE) to
+      stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ1_LABEL),
+    stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ2_TITLE) to
+      stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ2_LABEL),
+    stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ3_TITLE) to
+      stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ3_LABEL),
+    stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ4_TITLE) to
+      stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ4_LABEL),
+    stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ5_TITLE) to
+      stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ5_LABEL),
+    stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ6_TITLE) to
+      stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ6_LABEL),
   )
   Column(modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
     faqList.forEachIndexed { index, faqItem ->
