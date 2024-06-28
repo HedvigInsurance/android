@@ -7,6 +7,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Shape
 import com.hedvig.android.design.system.hedvig.tokens.ShapeKeyTokens
 import com.hedvig.android.design.system.hedvig.tokens.ShapeTokens
+import com.hedvig.android.design.system.hedvig.tokens.ShapeTokens.CornerTopOnlyXLarge
 
 @Immutable
 data class Shapes(
@@ -38,6 +39,7 @@ internal fun Shapes.fromToken(value: ShapeKeyTokens): Shape {
     ShapeKeyTokens.CornerSmall -> cornerSmall
     ShapeKeyTokens.CornerExtraSmall -> cornerExtraSmall
     ShapeKeyTokens.CornerNone -> cornerNone
+    ShapeKeyTokens.CornerTopOnlyXLarge -> CornerTopOnlyXLarge
   }
 }
 

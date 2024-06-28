@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
@@ -46,6 +45,7 @@ import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.core.ui.hedvigDateTimeFormatter
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.data.contract.android.toPillow
+import com.hedvig.android.design.system.hedvig.ripple
 import com.hedvig.android.feature.changeaddress.data.MoveQuote
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
@@ -64,7 +64,7 @@ internal fun QuoteCard(
       .clip(MaterialTheme.shapes.squircleMedium)
       .clickable(
         interactionSource = remember { MutableInteractionSource() },
-        indication = rememberRipple(
+        indication = ripple(
           bounded = true,
           radius = 1000.dp,
         ),

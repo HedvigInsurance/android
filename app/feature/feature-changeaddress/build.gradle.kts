@@ -47,6 +47,7 @@ dependencies {
   implementation(projects.navigationCore)
   implementation(projects.moleculePublic)
   implementation(projects.moleculeAndroid)
+  implementation(projects.designSystemHedvig)
 
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)

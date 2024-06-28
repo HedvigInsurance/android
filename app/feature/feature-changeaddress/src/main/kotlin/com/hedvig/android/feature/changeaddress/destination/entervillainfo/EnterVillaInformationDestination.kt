@@ -8,7 +8,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -54,7 +53,6 @@ internal fun EnterVillaInformationDestination(
   }
 
   var showExtraBuildingsBottomSheet by rememberSaveable { mutableStateOf(false) }
-  val sheetState = rememberModalBottomSheetState(true)
   if (showExtraBuildingsBottomSheet) {
     ExtraBuildingBottomSheet(
       extraBuildingTypes = uiState.extraBuildingTypes,
@@ -65,7 +63,7 @@ internal fun EnterVillaInformationDestination(
         showExtraBuildingsBottomSheet = false
         viewModel.emit(EnterVillaInformationEvent.AddExtraBuilding(it))
       },
-      sheetState = sheetState,
+      onVisibleChange = { showExtraBuildingsBottomSheet = it },
     )
   }
 

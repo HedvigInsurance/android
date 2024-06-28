@@ -12,5 +12,6 @@ dependencies {
   implementation(libs.androidx.compose.uiGraphics)
   implementation(libs.androidx.graphicsShapes)
   implementation(projects.composeUi)
+  implementation(libs.modal.sheet)
   implementation(projects.coreResources)
 }
