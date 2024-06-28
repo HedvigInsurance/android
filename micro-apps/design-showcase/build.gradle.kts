@@ -56,4 +56,5 @@ dependencies {
   implementation(projects.loggingAndroid)
   implementation(projects.trackingCore)
   implementation(projects.trackingDatadog)
+  implementation(projects.coreUi)
 }

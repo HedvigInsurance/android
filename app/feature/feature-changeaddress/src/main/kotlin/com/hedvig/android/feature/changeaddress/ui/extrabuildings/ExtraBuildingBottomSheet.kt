@@ -1,28 +1,15 @@
 package com.hedvig.android.feature.changeaddress.ui.extrabuildings
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.isImeVisible
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.BottomSheetDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.SheetState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,48 +22,41 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
-import com.hedvig.android.core.designsystem.material3.squircleLargeTop
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.clearFocusOnTap
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheetType
 import com.hedvig.android.feature.changeaddress.data.ExtraBuilding
 import com.hedvig.android.feature.changeaddress.data.ExtraBuildingType
 import com.hedvig.android.feature.changeaddress.ui.ChangeAddressSwitch
 import com.hedvig.android.feature.changeaddress.ui.InputTextField
 import hedvig.resources.R
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun ExtraBuildingBottomSheet(
   extraBuildingTypes: List<ExtraBuildingType>,
   extraBuilding: ExtraBuilding? = null,
   onDismiss: () -> Unit,
+  onVisibleChange: (Boolean) -> Unit,
   onSave: (ExtraBuilding) -> Unit,
-  sheetState: SheetState,
 ) {
   var sizeInput by rememberSaveable { mutableStateOf(extraBuilding?.size?.toString()) }
   var hasWaterConnected by rememberSaveable { mutableStateOf(extraBuilding?.hasWaterConnected ?: false) }
   var selectedType by rememberSaveable { mutableStateOf(extraBuilding?.type) }
   var sizeErrorText by rememberSaveable { mutableStateOf<Int?>(null) }
 
-  val isImeVisible = WindowInsets.isImeVisible
-  val windowInsets = BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top)
-  val navigationBottomHeight = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding()
-  ModalBottomSheet(
-    containerColor = MaterialTheme.colorScheme.background,
-    onDismissRequest = {
-      onDismiss()
-    },
-    shape = MaterialTheme.shapes.squircleLargeTop,
-    sheetState = sheetState,
-    tonalElevation = 0.dp,
-    windowInsets = windowInsets,
-    modifier = Modifier
-      .padding(bottom = navigationBottomHeight)
-      .fillMaxSize(),
+  HedvigBottomSheet(
+    allowNestedScroll = false,
+    onDismissRequest = onDismiss,
+    onVisibleChange = onVisibleChange,
+    containSystemBars = false,
+    sheetType = HedvigBottomSheetType.FullScreenWithManyTextInputs,
   ) {
     Column(
-      modifier = Modifier.clearFocusOnTap(),
+      modifier = Modifier
+        .clearFocusOnTap()
+        .verticalScroll(rememberScrollState()),
     ) {
       Text(
         text = stringResource(id = R.string.CHANGE_ADDRESS_EXTRA_BUILDINGS_BOTTOM_SHEET_TITLE),
@@ -92,7 +72,6 @@ internal fun ExtraBuildingBottomSheet(
         selectedType = selectedType,
         onSelected = { selectedType = it },
         modifier = Modifier
-          .weight(1f)
           .padding(horizontal = 16.dp),
       )
       Spacer(Modifier.height(8.dp))
@@ -143,17 +122,6 @@ internal fun ExtraBuildingBottomSheet(
         onClick = { onDismiss() },
         modifier = Modifier.padding(horizontal = 16.dp),
       )
-      val customModifier = if (isImeVisible) {
-        Modifier.imePadding()
-      } else {
-        Modifier.padding(
-          WindowInsets.safeDrawing
-            .only(WindowInsetsSides.Bottom).asPaddingValues(),
-        )
-      }
-      Spacer(
-        customModifier,
-      )
     }
   }
 }
@@ -171,7 +139,7 @@ private fun PreviewExtraBuildingBottomSheet() {
         extraBuildingTypes = listOf(ExtraBuildingType.BARN, ExtraBuildingType.CARPORT),
         onDismiss = {},
         onSave = {},
-        sheetState = rememberModalBottomSheetState(),
+        onVisibleChange = {},
       )
     }
   }

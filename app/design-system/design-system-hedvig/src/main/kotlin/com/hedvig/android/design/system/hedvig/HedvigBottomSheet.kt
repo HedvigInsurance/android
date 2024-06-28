@@ -25,23 +25,26 @@ import com.skydoves.flexible.core.rememberFlexibleBottomSheetState
 fun HedvigBottomSheet(
   onVisibleChange: (Boolean) -> Unit,
   allowNestedScroll: Boolean,
+  containSystemBars: Boolean,
   sheetType: HedvigBottomSheetType,
   onDismissRequest: () -> Unit = { onVisibleChange(false) },
   content: @Composable ColumnScope.() -> Unit,
 ) {
   when (sheetType) {
     FullScreenWithManyTextInputs -> FullScreenWithManyTextInputsBottomSheet(
-      onVisibleChange,
-      allowNestedScroll,
-      onDismissRequest,
-      content,
+      onVisibleChange = onVisibleChange,
+      allowNestedScroll = allowNestedScroll,
+      containSystemBars = containSystemBars,
+      onDismissRequest = onDismissRequest,
+      content = content,
     )
 
     SimpleHalfScreenSheet -> SimpleHalfScreenSheetBottomSheet(
-      onVisibleChange,
-      allowNestedScroll,
-      onDismissRequest,
-      content,
+      onVisibleChange = onVisibleChange,
+      allowNestedScroll = allowNestedScroll,
+      containSystemBars = containSystemBars,
+      onDismissRequest = onDismissRequest,
+      content = content,
     )
   }
 }
@@ -50,6 +53,7 @@ fun HedvigBottomSheet(
 private fun FullScreenWithManyTextInputsBottomSheet(
   onVisibleChange: (Boolean) -> Unit,
   allowNestedScroll: Boolean,
+  containSystemBars: Boolean,
   onDismissRequest: (() -> Unit) = { onVisibleChange(false) },
   content: @Composable ColumnScope.() -> Unit,
 ) {
@@ -60,7 +64,7 @@ private fun FullScreenWithManyTextInputsBottomSheet(
     skipSlightlyExpanded = true,
     skipIntermediatelyExpanded = true,
     isModal = HedvigBottomSheetDefaults.ISMODAL,
-    containSystemBars = HedvigBottomSheetDefaults.containSystemBars,
+    containSystemBars = containSystemBars,
     allowNestedScroll = allowNestedScroll,
     flexibleSheetSize = HedvigBottomSheetDefaults.flexibleSheetSize,
   )
@@ -87,6 +91,7 @@ private fun FullScreenWithManyTextInputsBottomSheet(
 private fun SimpleHalfScreenSheetBottomSheet(
   onVisibleChange: (Boolean) -> Unit,
   allowNestedScroll: Boolean,
+  containSystemBars: Boolean,
   onDismissRequest: (() -> Unit) = { onVisibleChange(false) },
   content: @Composable ColumnScope.() -> Unit,
 ) {
@@ -97,7 +102,7 @@ private fun SimpleHalfScreenSheetBottomSheet(
     skipSlightlyExpanded = true,
     skipIntermediatelyExpanded = false,
     isModal = HedvigBottomSheetDefaults.ISMODAL,
-    containSystemBars = HedvigBottomSheetDefaults.containSystemBars,
+    containSystemBars = containSystemBars,
     allowNestedScroll = allowNestedScroll,
     flexibleSheetSize = HedvigBottomSheetDefaults.flexibleSheetSize,
   )

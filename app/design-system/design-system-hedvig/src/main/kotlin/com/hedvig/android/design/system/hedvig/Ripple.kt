@@ -25,7 +25,7 @@ import com.hedvig.android.design.system.hedvig.tokens.StateTokens
  * https://cs.android.com/androidx/platform/frameworks/support/+/710392834c2317072387b04235d2ad02012abaf8:compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3/Ripple.kt;l=252
  */
 @Stable
-internal fun ripple(
+fun ripple(
   bounded: Boolean = true,
   radius: Dp = Dp.Unspecified,
   color: Color = Color.Unspecified,

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -18,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheetType.FullScreenWithManyTextInputs
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheetType.SimpleHalfScreenSheet
@@ -34,7 +36,7 @@ fun ShowcaseBottomSheet() {
   HedvigTheme {
     Surface(
       color = HedvigTheme.colorScheme.backgroundWhite,
-      modifier = Modifier.fillMaxSize(),
+      modifier = Modifier.safeDrawingPadding().fillMaxSize().verticalScroll(rememberScrollState()),
     ) {
       Column(horizontalAlignment = Alignment.CenterHorizontally) {
         val isBottomSheetVisible = remember { mutableStateOf(false) }
@@ -128,9 +130,11 @@ private fun LongBottomSheetWithManyTextInputs(
     onVisibleChange = onVisibleChange,
     allowNestedScroll = false,
     sheetType = FullScreenWithManyTextInputs,
+    containSystemBars = false,
     content = {
       Column(
         Modifier
+          .clearFocusOnTap()
           .fillMaxSize()
           .padding(horizontal = 16.dp)
           .verticalScroll(rememberScrollState()),
@@ -183,6 +187,7 @@ private fun SimpleBottomSheet(onVisibleChange: (Boolean) -> Unit) {
     onVisibleChange = onVisibleChange,
     allowNestedScroll = true,
     sheetType = SimpleHalfScreenSheet,
+    containSystemBars = false,
   ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
       HedvigText(
@@ -201,6 +206,7 @@ private fun HalfScreenBottomSheetWithInput(onVisibleChange: (Boolean) -> Unit) {
     onVisibleChange = onVisibleChange,
     allowNestedScroll = true,
     sheetType = SimpleHalfScreenSheet,
+    containSystemBars = false,
   ) {
     var textFieldValue by remember { mutableStateOf("placeholder") }
     Column {
