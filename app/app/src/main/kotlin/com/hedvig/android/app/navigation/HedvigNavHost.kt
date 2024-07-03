@@ -16,6 +16,8 @@ import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.toClaimFlowDestination
 import com.hedvig.android.feature.changeaddress.navigation.changeAddressGraph
+import com.hedvig.android.feature.chat.navigation.ChatDestination
+import com.hedvig.android.feature.chat.navigation.cbmChatGraph
 import com.hedvig.android.feature.chat.navigation.chatGraph
 import com.hedvig.android.feature.claim.details.navigation.claimDetailsGraph
 import com.hedvig.android.feature.claimtriaging.ClaimTriagingDestination
@@ -116,7 +118,11 @@ internal fun HedvigNavHost(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       onStartChat = { backStackEntry ->
         with(navigator) {
-          backStackEntry.navigate(AppDestination.Chat())
+          if (hedvigAppState.isCbmEnabled.value) {
+            backStackEntry.navigate(ChatDestination)
+          } else {
+            backStackEntry.navigate(AppDestination.Chat())
+          }
         }
       },
       onStartClaim = { backStackEntry ->
@@ -248,6 +254,13 @@ internal fun HedvigNavHost(
       },
     )
     chatGraph(
+      hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+      hedvigBuildConstants = hedvigBuildConstants,
+      imageLoader = imageLoader,
+      openUrl = openUrl,
+      navigator = navigator,
+    )
+    cbmChatGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       hedvigBuildConstants = hedvigBuildConstants,
       imageLoader = imageLoader,
