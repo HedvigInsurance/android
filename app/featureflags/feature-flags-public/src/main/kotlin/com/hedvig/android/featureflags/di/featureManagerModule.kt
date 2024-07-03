@@ -24,7 +24,7 @@ val featureManagerModule = module {
     if (get<HedvigBuildConstants>().isProduction) {
       UnleashFeatureFlagProvider(get<HedvigUnleashClient>())
     } else {
-      UnleashFeatureFlagProvider(get<HedvigUnleashClient>())
+      UnleashFeatureFlagProvider(get<HedvigUnleashClient>(), alwaysEnableCbm = true)
     }
   }
 }
