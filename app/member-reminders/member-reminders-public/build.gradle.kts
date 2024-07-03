@@ -47,7 +47,6 @@ dependencies {
 apollo {
   service("octopus") {
     packageName.set("octopus")
-    generateDataBuilders.set(true)
     dependsOn(projects.apolloOctopusPublic)
   }
 }
