@@ -6,7 +6,6 @@ plugins {
 
 dependencies {
   implementation(libs.coroutines.core)
-  implementation(libs.hedvig.authlib)
   implementation(libs.turbine)
   implementation(projects.authCorePublic)
 }

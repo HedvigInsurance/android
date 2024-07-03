@@ -1,8 +1,6 @@
 package com.hedvig.android.auth
 
 import com.hedvig.android.auth.token.AuthTokens
-import com.hedvig.authlib.AccessToken
-import com.hedvig.authlib.RefreshToken
 import kotlinx.coroutines.flow.StateFlow
 
 interface AuthTokenService {
@@ -10,12 +8,12 @@ interface AuthTokenService {
 
   suspend fun getTokens(): AuthTokens?
 
-  suspend fun refreshAndGetAccessToken(): AccessToken?
+//  suspend fun refreshAndGetAccessToken(): AccessToken?
 
   /**
    * Effectively the function which logs the user *in* the app. Should only be called with valid tokens
    */
-  suspend fun loginWithTokens(accessToken: AccessToken, refreshToken: RefreshToken)
+//  suspend fun loginWithTokens(accessToken: AccessToken, refreshToken: RefreshToken)
 
   /**
    * Effectively the function which logs the user *out* from the app.

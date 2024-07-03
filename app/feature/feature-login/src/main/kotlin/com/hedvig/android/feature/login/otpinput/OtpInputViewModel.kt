@@ -3,11 +3,6 @@ package com.hedvig.android.feature.login.otpinput
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.auth.AuthTokenService
-import com.hedvig.authlib.AuthRepository
-import com.hedvig.authlib.AuthTokenResult
-import com.hedvig.authlib.ResendOtpResult.Error
-import com.hedvig.authlib.ResendOtpResult.Success
-import com.hedvig.authlib.SubmitOtpResult
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,7 +15,7 @@ class OtpInputViewModel(
   private val resendUrl: String,
   credential: String,
   private val authTokenService: AuthTokenService,
-  private val authRepository: AuthRepository,
+//  private val authRepository: AuthRepository,
 ) : ViewModel() {
   private val _viewState = MutableStateFlow(ViewState(credential = credential))
   val viewState = _viewState.asStateFlow()
@@ -37,7 +32,9 @@ class OtpInputViewModel(
   )
 
   sealed class Event {
-    data class Success(val authToken: String) : Event()
+    data class Success(
+      val authToken: String,
+    ) : Event()
 
     object CodeResent : Event()
   }
@@ -54,35 +51,36 @@ class OtpInputViewModel(
     }
 
     viewModelScope.launch {
-      when (val otpResult = authRepository.submitOtp(verifyUrl, code)) {
-        is SubmitOtpResult.Error -> setErrorState(otpResult.message)
-        is SubmitOtpResult.Success -> submitAuthCode(otpResult)
-      }
+      TODO("todo does not work without authlib")
+//      when (val otpResult = authRepository.submitOtp(verifyUrl, code)) {
+//        is SubmitOtpResult.Error -> setErrorState(otpResult.message)
+//        is SubmitOtpResult.Success -> submitAuthCode(otpResult)
+//      }
     }
   }
 
-  private suspend fun submitAuthCode(otpResult: SubmitOtpResult.Success) {
-    when (val authCodeResult = authRepository.exchange(otpResult.loginAuthorizationCode)) {
-      is AuthTokenResult.Error -> setErrorState(
-        when (authCodeResult) {
-          is AuthTokenResult.Error.BackendErrorResponse -> "Error:${authCodeResult.message}"
-          is AuthTokenResult.Error.IOError -> "IO Error:${authCodeResult.message}"
-          is AuthTokenResult.Error.UnknownError -> authCodeResult.message
-        },
-      )
-
-      is AuthTokenResult.Success -> {
-        authTokenService.loginWithTokens(
-          authCodeResult.accessToken,
-          authCodeResult.refreshToken,
-        )
-        _events.trySend(Event.Success(authCodeResult.accessToken.token))
-        _viewState.update {
-          it.copy(loadingCode = false)
-        }
-      }
-    }
-  }
+//  private suspend fun submitAuthCode(otpResult: SubmitOtpResult.Success) {
+//    when (val authCodeResult = authRepository.exchange(otpResult.loginAuthorizationCode)) {
+//      is AuthTokenResult.Error -> setErrorState(
+//        when (authCodeResult) {
+//          is AuthTokenResult.Error.BackendErrorResponse -> "Error:${authCodeResult.message}"
+//          is AuthTokenResult.Error.IOError -> "IO Error:${authCodeResult.message}"
+//          is AuthTokenResult.Error.UnknownError -> authCodeResult.message
+//        },
+//      )
+//
+//      is AuthTokenResult.Success -> {
+//        authTokenService.loginWithTokens(
+//          authCodeResult.accessToken,
+//          authCodeResult.refreshToken,
+//        )
+//        _events.trySend(Event.Success(authCodeResult.accessToken.token))
+//        _viewState.update {
+//          it.copy(loadingCode = false)
+//        }
+//      }
+//    }
+//  }
 
   private fun setErrorState(message: String) {
     _viewState.update {
@@ -95,20 +93,21 @@ class OtpInputViewModel(
       it.copy(networkErrorMessage = null, loadingResend = true)
     }
     viewModelScope.launch {
-      when (val result = authRepository.resendOtp(resendUrl)) {
-        is Error -> {
-          _viewState.update {
-            it.copy(networkErrorMessage = result.message, loadingResend = false)
-          }
-        }
-
-        Success -> {
-          _events.trySend(Event.CodeResent)
-          _viewState.update {
-            it.copy(networkErrorMessage = null, input = "", loadingResend = false)
-          }
-        }
-      }
+      TODO("todo does not work without authlib")
+//      when (val result = authRepository.resendOtp(resendUrl)) {
+//        is Error -> {
+//          _viewState.update {
+//            it.copy(networkErrorMessage = result.message, loadingResend = false)
+//          }
+//        }
+//
+//        Success -> {
+//          _events.trySend(Event.CodeResent)
+//          _viewState.update {
+//            it.copy(networkErrorMessage = null, input = "", loadingResend = false)
+//          }
+//        }
+//      }
     }
   }
 
