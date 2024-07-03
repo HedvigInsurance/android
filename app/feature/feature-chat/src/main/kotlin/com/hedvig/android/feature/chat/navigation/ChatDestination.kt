@@ -1,14 +1,18 @@
 package com.hedvig.android.feature.chat.navigation
 
-import com.benasher44.uuid.Uuid
 import com.kiwi.navigationcompose.typed.Destination
+import kotlinx.serialization.Serializable
 
+@Serializable
 object ChatDestination : Destination
 
 internal sealed interface ChatDestinations {
-  object Inbox : Destination
+  @Serializable
+  object Inbox : ChatDestinations, Destination
 
+  @Serializable
   data class Chat(
-    val conversationId: Uuid,
-  ) : Destination
+    val conversationId: String,
+  ) : ChatDestinations,
+    Destination
 }

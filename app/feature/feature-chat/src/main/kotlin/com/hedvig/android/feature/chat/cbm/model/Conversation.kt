@@ -1,4 +1,6 @@
-package com.hedvig.android.feature.chat.model
+package com.hedvig.android.feature.chat.cbm.model
+
+import com.hedvig.android.feature.chat.model.ChatMessage
 
 internal data class Conversation(
   val conversationId: String,

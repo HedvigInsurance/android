@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.chat.ui.inbox
+package com.hedvig.android.feature.chat.cbm.inbox
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -43,9 +43,14 @@ import com.hedvig.android.core.ui.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.feature.chat.model.ChatMessage
-import com.hedvig.android.feature.chat.model.Conversation
+import com.hedvig.android.feature.chat.cbm.model.Conversation
+import com.hedvig.android.feature.chat.model.ChatMessage.ChatMessageFile
+import com.hedvig.android.feature.chat.model.ChatMessage.ChatMessageFile.MimeType.IMAGE
+import com.hedvig.android.feature.chat.model.ChatMessage.ChatMessageText
+import com.hedvig.android.feature.chat.model.ChatMessage.Sender.HEDVIG
+import com.hedvig.android.feature.chat.model.ChatMessage.Sender.MEMBER
 import com.hedvig.android.feature.chat.ui.formattedDateTime
-import kotlinx.datetime.Clock
+import kotlinx.datetime.Clock.System
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDateTime
@@ -280,18 +285,18 @@ private fun ConversationCardPreview(
 
 private val mockConversation1 = Conversation(
   conversationId = "1",
-  newestMessageForPreview = ChatMessage.ChatMessageText(
+  newestMessageForPreview = ChatMessageText(
     "11",
-    ChatMessage.Sender.HEDVIG,
-    sentAt = Clock.System.now(),
+    HEDVIG,
+    sentAt = System.now(),
     text = "Please tell as more about how the phone broke.",
   ),
   hasNewMessages = true,
   chatMessages = listOf(
-    ChatMessage.ChatMessageText(
+    ChatMessageText(
       "11",
-      ChatMessage.Sender.HEDVIG,
-      sentAt = Clock.System.now(),
+      HEDVIG,
+      sentAt = System.now(),
       text = "Please tell as more about how the phone broke.",
     ),
   ),
@@ -303,20 +308,20 @@ private val mockConversation1 = Conversation(
 
 private val mockConversation2 = Conversation(
   conversationId = "2",
-  newestMessageForPreview = ChatMessage.ChatMessageFile(
+  newestMessageForPreview = ChatMessageFile(
     "Id",
-    ChatMessage.Sender.MEMBER,
-    mimeType = ChatMessage.ChatMessageFile.MimeType.IMAGE,
-    sentAt = Clock.System.now(),
+    MEMBER,
+    mimeType = IMAGE,
+    sentAt = System.now(),
     url = "url",
   ),
   hasNewMessages = false,
   chatMessages = listOf(
-    ChatMessage.ChatMessageFile(
+    ChatMessageFile(
       "Id",
-      ChatMessage.Sender.MEMBER,
-      mimeType = ChatMessage.ChatMessageFile.MimeType.IMAGE,
-      sentAt = Clock.System.now(),
+      MEMBER,
+      mimeType = IMAGE,
+      sentAt = System.now(),
       url = "url",
     ),
   ),
@@ -328,17 +333,17 @@ private val mockConversation2 = Conversation(
 
 private val mockConversationLegacy = Conversation(
   conversationId = "0",
-  newestMessageForPreview = ChatMessage.ChatMessageText(
+  newestMessageForPreview = ChatMessageText(
     "11",
-    ChatMessage.Sender.HEDVIG,
+    HEDVIG,
     sentAt = Instant.fromEpochSeconds(50, 1),
     text = "Please tell as more about how the phone broke.",
   ),
   hasNewMessages = false,
   chatMessages = listOf(
-    ChatMessage.ChatMessageText(
+    ChatMessageText(
       "11",
-      ChatMessage.Sender.HEDVIG,
+      HEDVIG,
       sentAt = Instant.fromEpochSeconds(50, 1),
       text = "Please tell as more about how the phone broke.",
     ),

@@ -7,14 +7,14 @@ import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.fileupload.FileService
 import com.hedvig.android.data.chat.read.timestamp.ChatLastMessageReadRepository
 import com.hedvig.android.feature.chat.ChatViewModel
+import com.hedvig.android.feature.chat.cbm.data.GetAllConversationsUseCase
+import com.hedvig.android.feature.chat.cbm.data.GetAllConversationsUseCaseImpl
+import com.hedvig.android.feature.chat.cbm.inbox.InboxViewModel
 import com.hedvig.android.feature.chat.data.BotServiceService
 import com.hedvig.android.feature.chat.data.ChatRepository
 import com.hedvig.android.feature.chat.data.ChatRepositoryDemo
 import com.hedvig.android.feature.chat.data.ChatRepositoryImpl
-import com.hedvig.android.feature.chat.data.GetAllConversationsUseCase
-import com.hedvig.android.feature.chat.data.GetAllConversationsUseCaseImpl
 import com.hedvig.android.feature.chat.data.GetChatRepositoryProvider
-import com.hedvig.android.feature.chat.ui.inbox.InboxViewModel
 import com.hedvig.android.navigation.core.AppDestination
 import kotlinx.datetime.Clock
 import kotlinx.serialization.json.Json
@@ -54,7 +54,8 @@ val chatModule = module {
   }
 
   single<BotServiceService> {
-    val retrofit = Retrofit.Builder()
+    val retrofit = Retrofit
+      .Builder()
       .callFactory(get<OkHttpClient>())
       .baseUrl("${get<HedvigBuildConstants>().urlBotService}/api/")
       .addCallAdapterFactory(EitherCallAdapterFactory.create())
