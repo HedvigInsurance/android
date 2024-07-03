@@ -33,8 +33,7 @@ private val File.gradleModuleDescendants: Sequence<File>
     ?.asSequence()
     ?.filter {
       it.isDirectory
-    }
-    ?.flatMap {
+    }?.flatMap {
       if (File(it, "build.gradle.kts").exists()) {
         sequenceOf(it)
       } else {
@@ -53,4 +52,3 @@ rootProject.projectDir
 include("design-showcase")
 project(":design-showcase").projectDir = rootProject.projectDir.resolve("micro-apps").resolve("design-showcase")
 include("hedvig-lint")
-

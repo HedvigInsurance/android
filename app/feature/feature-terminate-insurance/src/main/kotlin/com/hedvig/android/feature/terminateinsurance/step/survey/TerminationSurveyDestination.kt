@@ -232,9 +232,13 @@ private fun TerminationSurveyScreen(
                   is SurveyOptionSuggestion.Redirect -> suggestion.buttonTitle
                 }
                 val onSuggestionButtonClick: () -> Unit = when (suggestion) {
-                  SurveyOptionSuggestion.Action.UpdateAddress -> { -> navigateToMovingFlow() }
+                  SurveyOptionSuggestion.Action.UpdateAddress -> {
+                    { navigateToMovingFlow() }
+                  }
 
-                  is SurveyOptionSuggestion.Redirect -> { -> openUrl(suggestion.url) }
+                  is SurveyOptionSuggestion.Redirect -> {
+                    { openUrl(suggestion.url) }
+                  }
                 }
                 VectorInfoCard(
                   text = text,
@@ -352,8 +356,7 @@ private fun FeedbackEditableText(
                 .fillMaxSize()
                 .windowInsetsPadding(
                   WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Vertical),
-                )
-                .animateEnterExit(
+                ).animateEnterExit(
                   enter = slideInVertically(initialOffsetY = { it / 2 }),
                   exit = ExitTransition.None,
                 ),
