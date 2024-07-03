@@ -63,6 +63,6 @@ apollo {
   service("octopus") {
     packageName.set("octopus")
     generateOptionalOperationVariables.set(false)
-    dependsOn(projects.apolloOctopusPublic)
+      dependsOn(projects.apolloOctopusPublic, true)
   }
 }
