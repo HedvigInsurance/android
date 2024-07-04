@@ -3,112 +3,79 @@ package com.hedvig.android.feature.chat.cbm.data
 import arrow.core.Either
 import arrow.core.raise.either
 import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.cache.normalized.FetchPolicy
+import com.apollographql.apollo3.cache.normalized.fetchPolicy
+import com.hedvig.android.apollo.safeExecute
+import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.feature.chat.cbm.model.Conversation
-import com.hedvig.android.feature.chat.model.ChatMessage.ChatMessageText
-import com.hedvig.android.feature.chat.model.ChatMessage.Sender.HEDVIG
-import com.hedvig.android.feature.chat.model.ChatMessage.Sender.MEMBER
+import com.hedvig.android.feature.chat.cbm.model.InboxConversation
+import com.hedvig.android.feature.chat.cbm.model.InboxConversation.LatestMessage
+import com.hedvig.android.feature.chat.cbm.model.toSender
+import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.datetime.Instant
+import kotlinx.coroutines.isActive
+import octopus.ChatConversationsQuery
+import octopus.fragment.ConversationFragment
+import octopus.fragment.ConversationFragment.NewestMessage.Companion.asChatMessageText
 
 internal interface GetAllConversationsUseCase {
-  suspend fun invoke(): Flow<Either<ErrorMessage, List<Conversation>>>
+  suspend fun invoke(): Flow<Either<ErrorMessage, List<InboxConversation>>>
 }
 
-internal class GetAllConversationsUseCaseImpl(apolloClient: ApolloClient) : GetAllConversationsUseCase {
-  override suspend fun invoke(): Flow<Either<ErrorMessage, List<Conversation>>> {
-    // todo! remove mock with real impl
+internal class GetAllConversationsUseCaseImpl(
+  private val apolloClient: ApolloClient,
+) : GetAllConversationsUseCase {
+  override suspend fun invoke(): Flow<Either<ErrorMessage, List<InboxConversation>>> {
     return flow {
-      either<ErrorMessage, List<Conversation>> {
-        listOf(mockConversation1, mockConversation2, mockConversationLegacy.copy(isLegacy = true))
+      while (currentCoroutineContext().isActive) {
+        val inboxConversations = either<ErrorMessage, List<InboxConversation>> {
+          val response = apolloClient
+            .query(ChatConversationsQuery())
+            .fetchPolicy(FetchPolicy.NetworkOnly)
+            .safeExecute()
+            .toEither(::ErrorMessage)
+            .bind()
+          buildList {
+            addAll(response.currentMember.conversations.map { it.toInboxConversation(isLegacy = false) })
+            response.currentMember.legacyConversation?.let { legacyConversation ->
+              add(legacyConversation.toInboxConversation(isLegacy = true))
+            }
+          }
+        }
+        emit(inboxConversations)
+        delay(5.seconds)
       }
     }
   }
 }
 
-internal interface GetLegacyConversationUseCase {
-  suspend fun invoke(): Flow<Either<ErrorMessage, List<Conversation>>>
-}
-
-internal class GetLegacyConversationUseCaseImpl(apolloClient: ApolloClient) : GetLegacyConversationUseCase {
-  override suspend fun invoke(): Flow<Either<ErrorMessage, List<Conversation>>> {
-    // todo! remove mock with real impl
-    return flow {
-      either<ErrorMessage, Conversation> {
-        mockConversationLegacy.copy(isLegacy = true)
-      }
+private fun ConversationFragment.toInboxConversation(isLegacy: Boolean): InboxConversation {
+  val newestMessage = newestMessage
+  val latestMessage = run {
+    if (newestMessage == null) return@run null
+    newestMessage.asChatMessageText()?.let { textMessage ->
+      LatestMessage.Text(textMessage.text, textMessage.sender.toSender())
     }
+    newestMessage.asChatMessageText()?.let { fileMessage ->
+      LatestMessage.File(fileMessage.sender.toSender())
+    }
+    LatestMessage.Unknown(newestMessage.sender.toSender())
   }
+  return InboxConversation(
+    conversationId = id,
+    header = if (isLegacy) {
+      InboxConversation.Header.Legacy
+    } else {
+      InboxConversation.Header.Conversation(
+        title = title,
+        subtitle = subtitle,
+      )
+    },
+    latestMessage = latestMessage,
+    hasNewMessages = false, // todo store latest seen message in DB
+    createdAt = createdAt,
+  )
 }
-
-private val mockConversation1 = Conversation(
-  conversationId = "1",
-  newestMessageForPreview = ChatMessageText(
-    "11",
-    HEDVIG,
-    sentAt = Instant.fromEpochSeconds(50, 1),
-    text = "Please tell as more about how the phone broke.",
-  ),
-  hasNewMessages = true,
-  chatMessages = listOf(
-    ChatMessageText(
-      "11",
-      HEDVIG,
-      sentAt = Instant.fromEpochSeconds(50, 1),
-      text = "Please tell as more about how the phone broke.",
-    ),
-  ),
-  title = "Claim",
-  subtitle = "Broken phone",
-  statusMessage = null,
-  isLegacy = false,
-)
-
-private val mockConversation2 = Conversation(
-  conversationId = "2",
-  newestMessageForPreview = ChatMessageText(
-    "15",
-    MEMBER,
-    sentAt = Instant.fromEpochSeconds(10300, 1),
-    text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed dignissim ex dui. Proin eget lectus rhoncus, iaculis diam vitae, tincidunt leo. Nam ligula lacus, ullamcorper auctor tempus eget, commodo sit amet urna. Proin vulputate libero sapien, nec iaculis tellus commodo id. Donec non odio porta, rutrum urna viverra, finibus odio. Aliquam eu erat pellentesque, blandit nulla ac, elementum mauris. Duis consectetur accumsan dui, et sodales arcu imperdiet accumsan. Nullam fermentum justo vitae dui hendrerit vehicula. Vestibulum suscipit efficitur pellentesque. Cras suscipit suscipit lacus, nec efficitur diam viverra nec. Sed vitae pulvinar est, at bibendum neque. Nulla congue ut arcu sed viverra. Aenean bibendum risus nec lacus malesuada, vel consequat nunc porttitor.\n" +
-      "\n",
-  ),
-  hasNewMessages = false,
-  chatMessages = listOf(
-    ChatMessageText(
-      "15",
-      MEMBER,
-      sentAt = Instant.fromEpochSeconds(10300, 1),
-      text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed dignissim ex dui. Proin eget lectus rhoncus, iaculis diam vitae, tincidunt leo. Nam ligula lacus, ullamcorper auctor tempus eget, commodo sit amet urna. Proin vulputate libero sapien, nec iaculis tellus commodo id. Donec non odio porta, rutrum urna viverra, finibus odio. Aliquam eu erat pellentesque, blandit nulla ac, elementum mauris. Duis consectetur accumsan dui, et sodales arcu imperdiet accumsan. Nullam fermentum justo vitae dui hendrerit vehicula. Vestibulum suscipit efficitur pellentesque. Cras suscipit suscipit lacus, nec efficitur diam viverra nec. Sed vitae pulvinar est, at bibendum neque. Nulla congue ut arcu sed viverra. Aenean bibendum risus nec lacus malesuada, vel consequat nunc porttitor.\n" +
-        "\n.",
-    ),
-  ),
-  title = "Question",
-  subtitle = "Termination",
-  statusMessage = null,
-  isLegacy = false,
-)
-
-private val mockConversationLegacy = Conversation(
-  conversationId = "0",
-  newestMessageForPreview = ChatMessageText(
-    "11",
-    HEDVIG,
-    sentAt = Instant.fromEpochSeconds(50, 1),
-    text = "Please tell as more about how the phone broke.",
-  ),
-  hasNewMessages = false,
-  chatMessages = listOf(
-    ChatMessageText(
-      "11",
-      HEDVIG,
-      sentAt = Instant.fromEpochSeconds(50, 1),
-      text = "Please tell as more about how the phone broke.",
-    ),
-  ),
-  title = "Conversation history",
-  subtitle = "",
-  statusMessage = null,
-  isLegacy = true,
-)

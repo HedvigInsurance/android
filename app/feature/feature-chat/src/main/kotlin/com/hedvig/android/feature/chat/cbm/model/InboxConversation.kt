@@ -1,0 +1,37 @@
+package com.hedvig.android.feature.chat.cbm.model
+
+import kotlinx.datetime.Instant
+
+internal data class InboxConversation(
+  val conversationId: String,
+  val header: Header,
+  val latestMessage: LatestMessage?,
+  val hasNewMessages: Boolean,
+  val createdAt: Instant,
+) {
+  sealed interface LatestMessage {
+    val sender: Sender
+
+    data class Text(
+      val text: String,
+      override val sender: Sender,
+    ) : LatestMessage
+
+    data class File(
+      override val sender: Sender,
+    ) : LatestMessage
+
+    data class Unknown(
+      override val sender: Sender,
+    ) : LatestMessage
+  }
+
+  sealed interface Header {
+    object Legacy : Header
+
+    data class Conversation(
+      val title: String,
+      val subtitle: String?,
+    ) : Header
+  }
+}

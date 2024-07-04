@@ -107,9 +107,7 @@ fun <T> HedvigChip(
     CompositionLocalProvider(LocalContentColor provides contentColor) {
       Text(
         text = itemDisplayName(item),
-        style = MaterialTheme.typography.bodyLarge.copy(
-          fontSize = 18.sp,
-        ),
+        style = MaterialTheme.typography.bodyLarge,
         maxLines = 1,
         textAlign = TextAlign.Center,
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
