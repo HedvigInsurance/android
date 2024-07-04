@@ -15,6 +15,7 @@ import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.feature.chat.cbm.CbmChatViewModel
 import com.hedvig.android.feature.chat.cbm.inbox.InboxDestination
 import com.hedvig.android.feature.chat.cbm.inbox.InboxViewModel
+import com.hedvig.android.feature.chat.cbm.ui.CbmChatDestination
 import com.hedvig.android.feature.chat.navigation.ChatDestination
 import com.hedvig.android.feature.chat.navigation.ChatDestinations
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
@@ -52,13 +53,14 @@ fun NavGraphBuilder.cbmChatGraph(
     }
     composable<ChatDestinations.Chat> {
       val viewModel = koinViewModel<CbmChatViewModel> { parametersOf(this.conversationId) }
-      val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-      Box(Modifier.fillMaxSize(), Alignment.Center) {
-        Column {
-          Text("Chat id:${this@composable.conversationId}")
-          Text(uiState.toString())
-        }
-      }
+      CbmChatDestination(
+        viewModel = viewModel,
+        imageLoader = imageLoader,
+        appPackageId = hedvigBuildConstants.appId,
+        hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+        openUrl = openUrl,
+        onNavigateUp = navigator::navigateUp,
+      )
     }
   }
 }
