@@ -9,6 +9,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
 import coil.ImageLoader
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.feature.chat.cbm.CbmChatViewModel
 import com.hedvig.android.feature.chat.cbm.inbox.InboxDestination
 import com.hedvig.android.feature.chat.cbm.inbox.InboxViewModel
 import com.hedvig.android.feature.chat.navigation.ChatDestination
@@ -48,6 +49,7 @@ fun NavGraphBuilder.cbmChatGraph(
       )
     }
     composable<ChatDestinations.Chat> {
+      val viewModel = koinViewModel<CbmChatViewModel>()
       Box(Modifier.fillMaxSize(), Alignment.Center) {
         Text("Chat id:${this@composable.conversationId}")
       }
