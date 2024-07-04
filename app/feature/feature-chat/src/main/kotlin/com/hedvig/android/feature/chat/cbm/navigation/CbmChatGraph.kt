@@ -35,12 +35,16 @@ fun NavGraphBuilder.cbmChatGraph(
       navDeepLink { uriPattern = hedvigDeepLinkContainer.chat },
     ),
   ) {
-    composable<ChatDestinations.Inbox> {
+    composable<ChatDestinations.Inbox> { backStackEntry ->
       val viewModel: InboxViewModel = koinViewModel()
       InboxDestination(
         viewModel = viewModel,
         navigateUp = navigator::navigateUp,
-        onConversationClick = {},
+        onConversationClick = { conversationId ->
+          with(navigator) {
+            backStackEntry.navigate(ChatDestinations.Chat(conversationId))
+          }
+        },
       )
     }
     composable<ChatDestinations.Chat> {
