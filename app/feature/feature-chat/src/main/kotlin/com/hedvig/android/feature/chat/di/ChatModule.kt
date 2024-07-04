@@ -89,7 +89,7 @@ val chatModule = module {
 
   single<AppDatabase> {
     val applicationContext = get<Context>()
-    val dbFile = applicationContext.getDatabasePath("my_room.db")
+    val dbFile = applicationContext.getDatabasePath("hedvig_chat_database.db")
     Room
       .databaseBuilder<AppDatabase>(applicationContext, dbFile.absolutePath)
       .fallbackToDestructiveMigration(true)
