@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
 import octopus.ChatConversationsQuery
 import octopus.fragment.ConversationFragment
+import octopus.fragment.ConversationFragment.NewestMessage.Companion.asChatMessageFile
 import octopus.fragment.ConversationFragment.NewestMessage.Companion.asChatMessageText
 
 internal interface GetAllConversationsUseCase {
@@ -43,7 +44,7 @@ internal class GetAllConversationsUseCaseImpl(
             response.currentMember.legacyConversation?.let { legacyConversation ->
               add(legacyConversation.toInboxConversation(isLegacy = true))
             }
-          }
+          }.sortedByDescending { it.latestMessage?.sentAt ?: it.createdAt }
         }
         emit(inboxConversations)
         delay(5.seconds)
@@ -57,12 +58,12 @@ private fun ConversationFragment.toInboxConversation(isLegacy: Boolean): InboxCo
   val latestMessage = run {
     if (newestMessage == null) return@run null
     newestMessage.asChatMessageText()?.let { textMessage ->
-      LatestMessage.Text(textMessage.text, textMessage.sender.toSender())
+      return@run LatestMessage.Text(textMessage.text, textMessage.sender.toSender(), textMessage.sentAt)
     }
-    newestMessage.asChatMessageText()?.let { fileMessage ->
-      LatestMessage.File(fileMessage.sender.toSender())
+    newestMessage.asChatMessageFile()?.let { fileMessage ->
+      return@run LatestMessage.File(fileMessage.sender.toSender(), fileMessage.sentAt)
     }
-    LatestMessage.Unknown(newestMessage.sender.toSender())
+    LatestMessage.Unknown(newestMessage.sender.toSender(), newestMessage.sentAt)
   }
   return InboxConversation(
     conversationId = id,

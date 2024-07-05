@@ -42,7 +42,6 @@ import com.hedvig.android.core.designsystem.material3.infoContainer
 import com.hedvig.android.core.designsystem.material3.lightTypeContainer
 import com.hedvig.android.core.designsystem.material3.onInfoContainer
 import com.hedvig.android.core.designsystem.material3.squircleExtraSmall
-import com.hedvig.android.core.designsystem.material3.squircleSmall
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
@@ -117,13 +116,20 @@ private fun InboxSuccessScreen(inboxConversations: List<InboxConversation>, onCo
       items = inboxConversations,
       key = { _, item -> item.conversationId },
     ) { index, conversation ->
-      if (index != 0) {
-        HorizontalDivider()
+      Column(
+        modifier = Modifier.animateItem(
+          fadeInSpec = null,
+          fadeOutSpec = null,
+        ),
+      ) {
+        if (index != 0) {
+          HorizontalDivider()
+        }
+        ConversationCard(
+          conversation = conversation,
+          onConversationClick = onConversationClick,
+        )
       }
-      ConversationCard(
-        conversation = conversation,
-        onConversationClick = onConversationClick,
-      )
     }
   }
 }
@@ -165,7 +171,7 @@ private fun ConversationCard(
                 containerColor = MaterialTheme.colorScheme.infoContainer,
                 contentColor = MaterialTheme.colorScheme.onInfoContainer,
               ),
-              shape = MaterialTheme.shapes.squircleExtraSmall
+              shape = MaterialTheme.shapes.squircleExtraSmall,
             ) {
               Text(
                 text = stringResource(R.string.CHAT_NEW_MESSAGE),
@@ -175,13 +181,14 @@ private fun ConversationCard(
             }
           } else {
             val locale = getLocale()
-            val createdAtFormatted = remember(locale, conversation.createdAt) {
-              HedvigDateTimeFormatterDefaults
-                .isoLocalDateWithDots(locale)
-                .format(conversation.createdAt.toLocalDateTime(TimeZone.currentSystemDefault()).toJavaLocalDateTime())
-            }
+            val lastMessageSentFormatter =
+              remember(locale, conversation.latestMessage?.sentAt ?: conversation.createdAt) {
+                HedvigDateTimeFormatterDefaults
+                  .isoLocalDateWithDots(locale)
+                  .format(conversation.createdAt.toLocalDateTime(TimeZone.currentSystemDefault()).toJavaLocalDateTime())
+              }
             Text(
-              text = createdAtFormatted,
+              text = lastMessageSentFormatter,
               style = MaterialTheme.typography.labelLarge,
             )
           }
@@ -266,7 +273,7 @@ private val mockInboxConversation1 = InboxConversation(
     title = "Claim",
     subtitle = "Broken phone",
   ),
-  latestMessage = InboxConversation.LatestMessage.Text("Please tell as more about how the phone broke.", Sender.HEDVIG),
+  latestMessage = InboxConversation.LatestMessage.Text("Please tell as more about how the phone broke.", Sender.HEDVIG, Clock.System.now()),
   hasNewMessages = true,
   createdAt = Clock.System.now(),
 )
@@ -277,7 +284,7 @@ private val mockInboxConversation2 = InboxConversation(
     title = "Question",
     subtitle = "Termination",
   ),
-  latestMessage = InboxConversation.LatestMessage.File(Sender.MEMBER),
+  latestMessage = InboxConversation.LatestMessage.File(Sender.MEMBER, Clock.System.now()),
   hasNewMessages = false,
   createdAt = Clock.System.now(),
 )
@@ -285,7 +292,7 @@ private val mockInboxConversation2 = InboxConversation(
 private val mockInboxConversationLegacy = InboxConversation(
   conversationId = "3",
   header = Header.Legacy,
-  latestMessage = InboxConversation.LatestMessage.File(Sender.MEMBER),
+  latestMessage = InboxConversation.LatestMessage.File(Sender.MEMBER, Clock.System.now()),
   hasNewMessages = false,
   createdAt = Clock.System.now(),
 )

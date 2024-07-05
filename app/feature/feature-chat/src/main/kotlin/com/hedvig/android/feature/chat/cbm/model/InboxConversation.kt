@@ -11,18 +11,22 @@ internal data class InboxConversation(
 ) {
   sealed interface LatestMessage {
     val sender: Sender
+    val sentAt: Instant
 
     data class Text(
       val text: String,
       override val sender: Sender,
+      override val sentAt: Instant,
     ) : LatestMessage
 
     data class File(
       override val sender: Sender,
+      override val sentAt: Instant,
     ) : LatestMessage
 
     data class Unknown(
       override val sender: Sender,
+      override val sentAt: Instant,
     ) : LatestMessage
   }
 
