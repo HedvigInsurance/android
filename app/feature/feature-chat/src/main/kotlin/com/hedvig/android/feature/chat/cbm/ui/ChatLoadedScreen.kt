@@ -117,6 +117,9 @@ internal fun CbmChatLoadedScreen(
 ) {
   val lazyListState = rememberLazyListState()
   val coroutineScope = rememberCoroutineScope()
+  val scrollToBottom = {
+    coroutineScope.launch { lazyListState.scrollToItem(0) }
+  }
   ChatLoadedScreen(
     uiState = uiState,
     lazyListState = lazyListState,
@@ -129,12 +132,16 @@ internal fun CbmChatLoadedScreen(
       ChatInput(
         onSendMessage = {
           onSendMessage(it)
-          coroutineScope.launch {
-            lazyListState.scrollToItem(0)
-          }
+          scrollToBottom()
         },
-        onSendPhoto = onSendPhoto,
-        onSendMedia = onSendMedia,
+        onSendPhoto = {
+          onSendPhoto(it)
+          scrollToBottom()
+        },
+        onSendMedia = {
+          onSendMedia(it)
+          scrollToBottom()
+        },
         appPackageId = appPackageId,
         modifier = Modifier.padding(16.dp),
       )
@@ -238,7 +245,8 @@ private fun ChatLazyColumn(
           is CbmChatMessage.ChatMessageGif -> "ChatMessage.ChatMessageGif"
           is CbmChatMessage.ChatMessageText -> "ChatMessage.ChatMessageText"
           is CbmChatMessage.FailedToBeSent.ChatMessageText -> "ChatMessage.FailedToBeSent.ChatMessageText"
-          is CbmChatMessage.FailedToBeSent.ChatMessageUri -> "ChatMessage.FailedToBeSent.ChatMessageUri"
+          is CbmChatMessage.FailedToBeSent.ChatMessagePhoto -> "ChatMessage.FailedToBeSent.ChatMessagePhoto"
+          is CbmChatMessage.FailedToBeSent.ChatMessageMedia -> "ChatMessage.FailedToBeSent.ChatMessageMedia"
         }
       },
     ) { index: Int ->
@@ -369,43 +377,12 @@ private fun ChatBubble(
               }
             }
 
-            is CbmChatMessage.FailedToBeSent.ChatMessageUri -> {
-              val image = Icons.Hedvig.RestartOneArrow
-              val retryIconPainter = rememberVectorPainter(
-                defaultWidth = image.defaultWidth,
-                defaultHeight = image.defaultHeight,
-                viewportWidth = image.viewportWidth,
-                viewportHeight = image.viewportHeight,
-                name = image.name,
-                tintColor = Color.White,
-                tintBlendMode = image.tintBlendMode,
-                autoMirror = image.autoMirror,
-                content = { _, _ -> RenderVectorGroup(group = image.root) },
-              )
-              ChatAsyncImage(
-                model = chatMessage.uri,
-                imageLoader = imageLoader,
-                isRetryable = true,
-                modifier = Modifier
-                  .clip(MaterialTheme.shapes.squircleMedium)
-                  .clickable { onRetrySendChatMessage(chatMessage.id) }
-                  .drawWithContent {
-                    drawContent()
-                    drawRect(color = Color.Black, alpha = DisabledAlpha)
-                    withTransform(
-                      transformBlock = {
-                        translate(
-                          left = (size.width - retryIconPainter.intrinsicSize.width) / 2,
-                          top = (size.height - retryIconPainter.intrinsicSize.height) / 2,
-                        )
-                      },
-                    ) {
-                      with(retryIconPainter) {
-                        draw(retryIconPainter.intrinsicSize)
-                      }
-                    }
-                  },
-              )
+            is CbmChatMessage.FailedToBeSent.ChatMessagePhoto -> {
+              FailedToBeSentUri(chatMessage.id, chatMessage.uri, onRetrySendChatMessage, imageLoader)
+            }
+
+            is CbmChatMessage.FailedToBeSent.ChatMessageMedia -> {
+              FailedToBeSentUri(chatMessage.id, chatMessage.uri, onRetrySendChatMessage, imageLoader)
             }
           }
         }
@@ -414,6 +391,51 @@ private fun ChatBubble(
     uiChatMessage = uiChatMessage,
     chatItemIndex = chatItemIndex,
     modifier = modifier,
+  )
+}
+
+@Composable
+private fun FailedToBeSentUri(
+  messageId: String,
+  messageUri: Uri,
+  onRetrySendChatMessage: (messageId: String) -> Unit,
+  imageLoader: ImageLoader,
+) {
+  val image = Icons.Hedvig.RestartOneArrow
+  val retryIconPainter = rememberVectorPainter(
+    defaultWidth = image.defaultWidth,
+    defaultHeight = image.defaultHeight,
+    viewportWidth = image.viewportWidth,
+    viewportHeight = image.viewportHeight,
+    name = image.name,
+    tintColor = Color.White,
+    tintBlendMode = image.tintBlendMode,
+    autoMirror = image.autoMirror,
+    content = { _, _ -> RenderVectorGroup(group = image.root) },
+  )
+  ChatAsyncImage(
+    model = messageUri,
+    imageLoader = imageLoader,
+    isRetryable = true,
+    modifier = Modifier
+      .clip(MaterialTheme.shapes.squircleMedium)
+      .clickable { onRetrySendChatMessage(messageId) }
+      .drawWithContent {
+        drawContent()
+        drawRect(color = Color.Black, alpha = DisabledAlpha)
+        withTransform(
+          transformBlock = {
+            translate(
+              left = (size.width - retryIconPainter.intrinsicSize.width) / 2,
+              top = (size.height - retryIconPainter.intrinsicSize.height) / 2,
+            )
+          },
+        ) {
+          with(retryIconPainter) {
+            draw(retryIconPainter.intrinsicSize)
+          }
+        }
+      },
   )
 }
 

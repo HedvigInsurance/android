@@ -74,13 +74,11 @@ internal fun CbmChatDestination(
     },
     onSendPhoto = { uri: Uri ->
       logcat { "viewModel.emit(ChatEvent.SendPhotoMessage(uri)):${uri.path} to vm:${viewModel.hashCode()}" }
-      // todo cmb photo
-//      viewModel.emit(CbmChatEvent.SendPhotoMessage(uri))
+      viewModel.emit(CbmChatEvent.SendPhotoMessage(uri))
     },
     onSendMedia = { uri: Uri ->
       logcat { "viewModel.emit(CbmChatEvent.SendMediaMessage(uri)):${uri.path} to vm:${viewModel.hashCode()}" }
-      // todo cbm media
-//      viewModel.emit(CbmChatEvent.SendMediaMessage(uri))
+      viewModel.emit(CbmChatEvent.SendMediaMessage(uri))
     },
     onRetrySendChatMessage = { messageId ->
       viewModel.emit(CbmChatEvent.RetrySendChatMessage(messageId))

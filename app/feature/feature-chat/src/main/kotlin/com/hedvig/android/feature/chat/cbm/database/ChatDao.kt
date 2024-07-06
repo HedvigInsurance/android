@@ -48,7 +48,7 @@ interface ChatDao {
     """
     SELECT id FROM chat_messages
     WHERE conversationId LIKE :conversationId
-    AND failedToSend = 0
+        AND failedToSend IS NULL
     ORDER BY sentAt DESC
     LIMIT 1
     """,
@@ -66,7 +66,9 @@ interface ChatDao {
   @Query(
     """
     SELECT * FROM chat_messages
-    WHERE conversationId LIKE :conversationId AND failedToSend = 1 AND id LIKE :messageId
+    WHERE conversationId LIKE :conversationId
+        AND failedToSend IS NOT NULL 
+        AND id LIKE :messageId
     LIMIT 1
     """,
   )

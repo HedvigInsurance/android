@@ -1,9 +1,12 @@
 package com.hedvig.android.feature.chat.cbm
 
+import android.net.Uri
 import android.util.Patterns
+import androidx.core.net.toFile
 import androidx.room.withTransaction
 import arrow.core.Either
 import arrow.core.left
+import arrow.core.raise.Raise
 import arrow.core.raise.either
 import arrow.core.raise.ensureNotNull
 import com.apollographql.apollo3.ApolloClient
@@ -13,12 +16,22 @@ import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.benasher44.uuid.Uuid
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
+import com.hedvig.android.core.fileupload.FileService
+import com.hedvig.android.core.retrofit.toErrorMessage
 import com.hedvig.android.feature.chat.cbm.database.AppDatabase
 import com.hedvig.android.feature.chat.cbm.database.ChatDao
+import com.hedvig.android.feature.chat.cbm.database.ChatMessageEntity.FailedToSendType.MEDIA
+import com.hedvig.android.feature.chat.cbm.database.ChatMessageEntity.FailedToSendType.PHOTO
+import com.hedvig.android.feature.chat.cbm.database.ChatMessageEntity.FailedToSendType.TEXT
 import com.hedvig.android.feature.chat.cbm.database.RemoteKeyDao
 import com.hedvig.android.feature.chat.cbm.model.CbmChatMessage
 import com.hedvig.android.feature.chat.cbm.model.toChatMessageEntity
 import com.hedvig.android.feature.chat.cbm.model.toSender
+import com.hedvig.android.feature.chat.data.BotServiceService
+import com.hedvig.android.feature.chat.data.uploadFile
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.LogPriority.ERROR
+import com.hedvig.android.logger.logcat
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
@@ -31,12 +44,15 @@ import octopus.ConversationSendMessageMutation
 import octopus.fragment.ChatMessageFileChatMessageFragment
 import octopus.fragment.ChatMessageFragment
 import octopus.fragment.ChatMessageTextChatMessageFragment
+import okhttp3.MediaType.Companion.toMediaType
 
 internal class CbmChatRepository(
   private val apolloClient: ApolloClient,
   private val database: AppDatabase,
   private val chatDao: ChatDao,
   private val remoteKeyDao: RemoteKeyDao,
+  private val fileService: FileService,
+  private val botServiceService: BotServiceService,
   private val clock: Clock,
 ) {
   suspend fun chatMessages(
@@ -69,19 +85,57 @@ internal class CbmChatRepository(
     }
   }
 
-  suspend fun retrySendMessage(conversationId: Uuid, messageId: String): Either<String, CbmChatMessage> {
-    val messageToRetry = database.withTransaction {
-      val message = chatDao.getFailedMessage(conversationId, messageId)
-      chatDao.deleteMessage(conversationId, messageId)
-      message
-    } ?: return "Message not found".left()
-    return sendText(conversationId, messageToRetry.text!!)
-  }
-
   suspend fun sendText(conversationId: Uuid, text: String): Either<String, CbmChatMessage> {
     return sendMessage(conversationId, ConversationInput.Text(text)).onLeft {
       val failedMessage = CbmChatMessage.FailedToBeSent.ChatMessageText(Uuid.randomUUID().toString(), clock.now(), text)
       chatDao.insertAll(listOf(failedMessage.toChatMessageEntity(conversationId)))
+    }
+  }
+
+  suspend fun retrySendMessage(conversationId: Uuid, messageId: String): Either<String, CbmChatMessage> {
+    return either {
+      val messageToRetry = database.withTransaction {
+        val message = chatDao.getFailedMessage(conversationId, messageId)
+        chatDao.deleteMessage(conversationId, messageId)
+        message
+      } ?: return "Message not found".left()
+      ensureNotNull(messageToRetry) {
+        logcat(ERROR) { "Tried to retry sending a message which did not exist in the database:$messageId" }
+        "Message not found"
+      }
+      return with(messageToRetry) {
+        when {
+          failedToSend == TEXT && text != null -> sendText(conversationId, text)
+          failedToSend == PHOTO && url != null -> sendPhoto(conversationId, Uri.parse(url))
+          failedToSend == MEDIA && url != null -> sendMedia(conversationId, Uri.parse(url))
+          else -> {
+            logcat(ERROR) { "Tried to retry sending a message which had a wrong structure:$messageToRetry" }
+            raise("Unknown message type")
+          }
+        }
+      }
+    }
+  }
+
+  suspend fun sendMedia(conversationId: Uuid, uri: Uri): Either<String, CbmChatMessage> {
+    return either {
+      val uploadToken = uploadMediaToBotService(uri)
+      return sendMessage(conversationId, ConversationInput.File(uploadToken)).onLeft {
+        val failedMessage =
+          CbmChatMessage.FailedToBeSent.ChatMessageMedia(Uuid.randomUUID().toString(), clock.now(), uri)
+        chatDao.insertAll(listOf(failedMessage.toChatMessageEntity(conversationId)))
+      }
+    }
+  }
+
+  suspend fun sendPhoto(conversationId: Uuid, uri: Uri): Either<String, CbmChatMessage> {
+    return either {
+      val uploadToken = uploadPhotoToBotService(uri)
+      return sendMessage(conversationId, ConversationInput.File(uploadToken)).onLeft {
+        val failedMessage =
+          CbmChatMessage.FailedToBeSent.ChatMessagePhoto(Uuid.randomUUID().toString(), clock.now(), uri)
+        chatDao.insertAll(listOf(failedMessage.toChatMessageEntity(conversationId)))
+      }
     }
   }
 
@@ -125,6 +179,39 @@ internal class CbmChatRepository(
         olderToken = messagePage.olderToken,
       )
     }
+  }
+
+  private suspend fun Raise<String>.uploadPhotoToBotService(uri: Uri): String {
+    val contentType = fileService.getMimeType(uri).toMediaType()
+    val file = uri.toFile()
+    val uploadToken = botServiceService
+      .uploadFile(file, contentType)
+      .onLeft {
+      }.mapLeft {
+        val errorMessage = "Failed to upload file with path:${file.absolutePath}. Error:$it"
+        logcat(LogPriority.ERROR) { errorMessage }
+        it.toErrorMessage().message ?: errorMessage
+      }.bind()
+      .firstOrNull()
+      ?.uploadToken
+    ensureNotNull(uploadToken) { "No upload token" }
+    logcat { "Uploaded file with path:${file.absolutePath}. UploadToken:$uploadToken" }
+    return uploadToken
+  }
+
+  private suspend fun Raise<String>.uploadMediaToBotService(uri: Uri): String {
+    val uploadToken = botServiceService
+      .uploadFile(fileService.createFormData(uri))
+      .mapLeft {
+        val errorMessage = "Failed to upload media with uri:$uri. Error:$it"
+        logcat(LogPriority.ERROR) { errorMessage }
+        it.toErrorMessage().message ?: errorMessage
+      }.bind()
+      .firstOrNull()
+      ?.uploadToken
+    ensureNotNull(uploadToken) { "No upload token" }
+    logcat { "Uploaded file with uri:$uri. UploadToken:$uploadToken" }
+    return uploadToken
   }
 }
 

@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.chat.cbm
 
+import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
@@ -14,6 +15,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.flatMap
 import androidx.paging.map
 import com.benasher44.uuid.Uuid
 import com.hedvig.android.feature.chat.cbm.database.AppDatabase
@@ -67,8 +69,8 @@ internal class CbmChatPresenter(
         pagingSourceFactory = { chatDao.messages(conversationId) },
       ).flow
         .map { value ->
-          value.map { it.toChatMessage() }
-        }
+          value.flatMap { listOfNotNull(it.toChatMessage()) }
+        }.cachedIn(coroutineScope)
     }
     val pagingData = remember(pagingDataFlow, chatDao) {
       combine(pagingDataFlow, chatDao.lastDeliveredMessage(conversationId)) { pagingData, lastDeliveredMessageId ->
@@ -99,7 +101,12 @@ internal class CbmChatPresenter(
         is CbmChatEvent.SendTextMessage -> launch {
           chatRepository.sendText(conversationId, event.message)
         }
-
+        is CbmChatEvent.SendPhotoMessage -> launch {
+          chatRepository.sendPhoto(conversationId, event.uri)
+        }
+        is CbmChatEvent.SendMediaMessage -> launch {
+          chatRepository.sendMedia(conversationId, event.uri)
+        }
         is CbmChatEvent.RetrySendChatMessage -> launch {
           chatRepository.retrySendMessage(conversationId, event.messageId)
         }
@@ -120,6 +127,14 @@ internal sealed interface CbmChatEvent {
 
   data class RetrySendChatMessage(
     val messageId: String,
+  ) : CbmChatEvent
+
+  data class SendPhotoMessage(
+    val uri: Uri,
+  ) : CbmChatEvent
+
+  data class SendMediaMessage(
+    val uri: Uri,
   ) : CbmChatEvent
 }
 

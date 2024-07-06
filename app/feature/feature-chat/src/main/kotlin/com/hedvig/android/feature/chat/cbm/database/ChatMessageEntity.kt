@@ -16,10 +16,16 @@ data class ChatMessageEntity(
   val gifUrl: String?,
   val url: String?,
   val mimeType: String?,
-  val failedToSend: Boolean,
+  val failedToSend: FailedToSendType?,
 ) {
   enum class Sender {
     HEDVIG,
     MEMBER,
+  }
+
+  enum class FailedToSendType {
+    TEXT,
+    PHOTO,
+    MEDIA,
   }
 }

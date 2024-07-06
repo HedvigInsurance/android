@@ -113,6 +113,8 @@ val chatModule = module {
       get<AppDatabase>(),
       get<ChatDao>(),
       get<RemoteKeyDao>(),
+      get<FileService>(),
+      get<BotServiceService>(),
       get<Clock>(),
     )
   }
