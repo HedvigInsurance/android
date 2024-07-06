@@ -91,7 +91,7 @@ internal class CbmChatPresenter(
         .collectLatest { poll ->
           if (poll) {
             chatRepository.pollNewestMessages(conversationId).collect {
-              println("Stelios: Polling error: $it")
+              println("Polling error: $it")
             }
           }
         }

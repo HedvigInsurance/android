@@ -25,7 +25,6 @@ internal class ChatRemoteMediator(
   private val chatRepository: CbmChatRepository,
 ) : RemoteMediator<Int, ChatMessageEntity>() {
   override suspend fun load(loadType: LoadType, state: PagingState<Int, ChatMessageEntity>): MediatorResult {
-    println("Stelios@@ loadType:$loadType")
     val pagingToken = when (loadType) {
       LoadType.REFRESH -> null
       LoadType.PREPEND -> {
