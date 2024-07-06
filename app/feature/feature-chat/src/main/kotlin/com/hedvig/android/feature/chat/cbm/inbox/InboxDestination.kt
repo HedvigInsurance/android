@@ -273,7 +273,11 @@ private val mockInboxConversation1 = InboxConversation(
     title = "Claim",
     subtitle = "Broken phone",
   ),
-  latestMessage = InboxConversation.LatestMessage.Text("Please tell as more about how the phone broke.", Sender.HEDVIG, Clock.System.now()),
+  latestMessage = InboxConversation.LatestMessage.Text(
+    "Please tell as more about how the phone broke.",
+    Sender.HEDVIG,
+    Clock.System.now(),
+  ),
   hasNewMessages = true,
   createdAt = Clock.System.now(),
 )
