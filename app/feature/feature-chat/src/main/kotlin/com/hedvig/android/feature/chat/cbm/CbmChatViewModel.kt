@@ -55,7 +55,7 @@ internal class CbmChatPresenter(
   override fun MoleculePresenterScope<CbmChatEvent>.present(lastState: CbmChatUiState): CbmChatUiState {
     val coroutineScope = rememberCoroutineScope()
     val latestMessage by remember(chatDao) {
-      chatDao.latestMessage(conversationId).filterNotNull().map(ChatMessageEntity::toChatMessage)
+      chatDao.latestMessage(conversationId).filterNotNull().map(ChatMessageEntity::toLatestChatMessage)
     }.collectAsState(null)
     val pagingData = remember {
       Pager(
@@ -120,6 +120,7 @@ internal sealed interface CbmChatUiState {
     // The list of messages, ordered from the newest one to the oldest one
     val messages: LazyPagingItems<CbmChatMessage>,
     val latestMessage: CbmChatMessage?,
+    val latestMessage: LatestChatMessage?,
     val bannerText: String?,
   ) : CbmChatUiState
 }

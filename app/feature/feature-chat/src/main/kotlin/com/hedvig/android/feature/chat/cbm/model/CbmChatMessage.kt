@@ -145,3 +145,7 @@ internal fun ChatMessageEntity.toChatMessage(): CbmChatMessage {
     else -> error("Unknown ChatMessage type. Message entity:$this")
   }
 }
+
+internal fun ChatMessageEntity.toLatestChatMessage(): LatestChatMessage {
+  return LatestChatMessage(id, this.sender.toSender())
+}

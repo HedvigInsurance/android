@@ -144,7 +144,7 @@ private fun ChatLoadedScreen(
       ChatLazyColumn(
         lazyListState = lazyListState,
         messages = uiState.messages,
-        latestMessage = uiState.latestMessage,
+        latestChatMessage = uiState.latestMessage,
         imageLoader = imageLoader,
         openUrl = openUrl,
         onRetrySendChatMessage = onRetrySendChatMessage,
@@ -176,21 +176,17 @@ private fun ChatLoadedScreen(
 }
 
 @Composable
-private fun ScrollToBottomEffect(
-  chatMessages: LazyPagingItems<CbmChatMessage>,
-  lazyListState: LazyListState,
-  latestChatMessage: CbmChatMessage?,
-) {
+private fun ScrollToBottomEffect(lazyListState: LazyListState, latestChatMessage: LatestChatMessage?) {
   val updatedLatestChatMessage by rememberUpdatedState(latestChatMessage)
-  LaunchedEffect(chatMessages, lazyListState) {
+  LaunchedEffect(lazyListState) {
     snapshotFlow { updatedLatestChatMessage }
       .filterNotNull()
-      .distinctUntilChangedBy(CbmChatMessage::id)
+      .distinctUntilChangedBy(LatestChatMessage::id)
       .collectLatest { chatMessage ->
         val senderIsMember = chatMessage.sender == Sender.MEMBER
         val isAlreadyCloseToTheBottom = lazyListState.firstVisibleItemIndex <= 2
         if (senderIsMember || isAlreadyCloseToTheBottom) {
-          lazyListState.scrollBy(Float.MAX_VALUE)
+          lazyListState.scrollToItem(0)
         }
       }
   }
@@ -201,6 +197,7 @@ private fun ChatLazyColumn(
   lazyListState: LazyListState,
   messages: LazyPagingItems<CbmChatMessage>,
   latestMessage: CbmChatMessage?,
+  latestChatMessage: LatestChatMessage?,
   imageLoader: ImageLoader,
   openUrl: (String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
@@ -209,7 +206,7 @@ private fun ChatLazyColumn(
   ScrollToBottomEffect(
     chatMessages = messages,
     lazyListState = lazyListState,
-    latestChatMessage = latestMessage,
+    latestChatMessage = latestChatMessage,
   )
   val loadingMore by remember(messages) {
     derivedStateOf { messages.loadState.append == LoadState.Loading }
