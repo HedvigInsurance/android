@@ -2,6 +2,7 @@ package com.hedvig.android.feature.chat.cbm.model
 
 import android.net.Uri
 import com.benasher44.uuid.Uuid
+import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Loaded.LatestChatMessage
 import com.hedvig.android.feature.chat.cbm.database.ChatMessageEntity
 import kotlinx.datetime.Instant
 
@@ -67,59 +68,59 @@ internal sealed interface CbmChatMessage {
 internal fun CbmChatMessage.toChatMessageEntity(conversationId: Uuid): ChatMessageEntity {
   return when (this) {
     is CbmChatMessage.ChatMessageFile -> ChatMessageEntity(
-      Uuid.fromString(id),
-      conversationId,
-      sender.toSender(),
-      sentAt,
-      null,
-      null,
-      url,
-      mimeType.name,
-      false,
+      id = Uuid.fromString(id),
+      conversationId = conversationId,
+      sender = sender.toSender(),
+      sentAt = sentAt,
+      text = null,
+      gifUrl = null,
+      url = url,
+      mimeType = mimeType.name,
+      failedToSend = false,
     )
     is CbmChatMessage.ChatMessageGif -> ChatMessageEntity(
-      Uuid.fromString(id),
-      conversationId,
-      sender.toSender(),
-      sentAt,
-      null,
-      gifUrl,
-      null,
-      null,
-      false,
+      id = Uuid.fromString(id),
+      conversationId = conversationId,
+      sender = sender.toSender(),
+      sentAt = sentAt,
+      text = null,
+      gifUrl = gifUrl,
+      url = null,
+      mimeType = null,
+      failedToSend = false,
     )
     is CbmChatMessage.ChatMessageText -> ChatMessageEntity(
-      Uuid.fromString(id),
-      conversationId,
-      sender.toSender(),
-      sentAt,
-      text,
-      null,
-      null,
-      null,
-      false,
+      id = Uuid.fromString(id),
+      conversationId = conversationId,
+      sender = sender.toSender(),
+      sentAt = sentAt,
+      text = text,
+      gifUrl = null,
+      url = null,
+      mimeType = null,
+      failedToSend = false,
     )
     is CbmChatMessage.FailedToBeSent.ChatMessageText -> ChatMessageEntity(
-      Uuid.fromString(id),
-      conversationId,
-      sender.toSender(),
-      sentAt,
-      text,
-      null,
-      null,
-      null,
-      true,
+      id = Uuid.fromString(id),
+      conversationId = conversationId,
+      sender = sender.toSender(),
+      sentAt = sentAt,
+      text = text,
+      gifUrl = null,
+      url = null,
+      mimeType = null,
+      failedToSend = true,
     )
     is CbmChatMessage.FailedToBeSent.ChatMessageUri -> ChatMessageEntity(
-      Uuid.fromString(id),
-      conversationId,
-      sender.toSender(),
-      sentAt,
-      null,
-      null,
-      uri.toString(),
-      null,
-      true,
+      id = Uuid.fromString(id),
+      conversationId = conversationId,
+      sender = sender.toSender(),
+      sentAt = sentAt,
+      text = null,
+      gifUrl = null,
+      url = uri.toString(),
+      mimeType = null,
+      failedToSend = true,
     )
   }
 }
