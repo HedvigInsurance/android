@@ -21,12 +21,15 @@ import com.hedvig.android.feature.chat.cbm.database.ChatDao
 import com.hedvig.android.feature.chat.cbm.database.ChatMessageEntity
 import com.hedvig.android.feature.chat.cbm.database.RemoteKeyDao
 import com.hedvig.android.feature.chat.cbm.model.CbmChatMessage
+import com.hedvig.android.feature.chat.cbm.model.Sender
 import com.hedvig.android.feature.chat.cbm.model.toChatMessage
+import com.hedvig.android.feature.chat.cbm.model.toLatestChatMessage
 import com.hedvig.android.feature.chat.cbm.paging.ChatRemoteMediator
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
@@ -57,17 +60,25 @@ internal class CbmChatPresenter(
     val latestMessage by remember(chatDao) {
       chatDao.latestMessage(conversationId).filterNotNull().map(ChatMessageEntity::toLatestChatMessage)
     }.collectAsState(null)
-    val pagingData = remember {
+    val pagingDataFlow = remember {
       Pager(
         config = PagingConfig(pageSize = 50, prefetchDistance = 50, jumpThreshold = 10),
         remoteMediator = ChatRemoteMediator(conversationId, database, chatDao, remoteKeyDao, chatRepository),
-        pagingSourceFactory = {
-          chatDao.messages(conversationId)
-        },
+        pagingSourceFactory = { chatDao.messages(conversationId) },
       ).flow
-        .map { pagingData ->
-          pagingData.map { it.toChatMessage() }
-        }.cachedIn(coroutineScope)
+        .map { value ->
+          value.map { it.toChatMessage() }
+        }
+    }
+    val pagingData = remember(pagingDataFlow, chatDao) {
+      combine(pagingDataFlow, chatDao.lastDeliveredMessage(conversationId)) { pagingData, lastDeliveredMessageId ->
+        pagingData.map { cbmChatMessage ->
+          CbmUiChatMessage(
+            cbmChatMessage,
+            cbmChatMessage.id == lastDeliveredMessageId.toString(),
+          )
+        }
+      }.cachedIn(coroutineScope)
     }
     val lazyPagingItems = pagingData.collectAsLazyPagingItems()
 
@@ -118,9 +129,18 @@ internal sealed interface CbmChatUiState {
   @Immutable
   data class Loaded(
     // The list of messages, ordered from the newest one to the oldest one
-    val messages: LazyPagingItems<CbmChatMessage>,
-    val latestMessage: CbmChatMessage?,
+    val messages: LazyPagingItems<CbmUiChatMessage>,
     val latestMessage: LatestChatMessage?,
     val bannerText: String?,
-  ) : CbmChatUiState
+  ) : CbmChatUiState {
+    data class LatestChatMessage(
+      val id: Uuid,
+      val sender: Sender,
+    )
+  }
 }
+
+internal data class CbmUiChatMessage(
+  val chatMessage: CbmChatMessage,
+  val isLastDeliveredMessage: Boolean,
+)
