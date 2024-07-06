@@ -3,7 +3,6 @@ package com.hedvig.android.feature.chat.cbm.ui
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,6 +39,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -70,11 +70,14 @@ import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import coil.request.ImageRequest
 import coil.request.NullRequestDataException
+import com.hedvig.android.compose.ui.withoutPlacement
 import com.hedvig.android.core.designsystem.animation.ThreeDotsLoading
 import com.hedvig.android.core.designsystem.material3.DisabledAlpha
+import com.hedvig.android.core.designsystem.material3.infoElement
 import com.hedvig.android.core.designsystem.material3.rememberShapedColorPainter
 import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.hedvig.normal.CircleWithCheckmarkFilled
 import com.hedvig.android.core.icons.hedvig.normal.InfoFilled
 import com.hedvig.android.core.icons.hedvig.normal.MultipleDocuments
 import com.hedvig.android.core.icons.hedvig.normal.RestartOneArrow
@@ -82,6 +85,8 @@ import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.core.ui.layout.adjustSizeToImageRatio
 import com.hedvig.android.feature.chat.cbm.CbmChatUiState
+import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Loaded.LatestChatMessage
+import com.hedvig.android.feature.chat.cbm.CbmUiChatMessage
 import com.hedvig.android.feature.chat.cbm.model.CbmChatMessage
 import com.hedvig.android.feature.chat.cbm.model.Sender
 import com.hedvig.android.feature.chat.ui.ChatBanner
@@ -90,10 +95,12 @@ import com.hedvig.android.feature.chat.ui.TextWithClickableUrls
 import com.hedvig.android.placeholder.PlaceholderHighlight
 import com.hedvig.android.placeholder.fade
 import com.hedvig.android.placeholder.placeholder
+import com.hedvig.android.placeholder.shimmer
 import hedvig.resources.R
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.launch
 
 @Composable
 internal fun CbmChatLoadedScreen(
@@ -108,8 +115,11 @@ internal fun CbmChatLoadedScreen(
   onSendPhoto: (Uri) -> Unit,
   onSendMedia: (Uri) -> Unit,
 ) {
+  val lazyListState = rememberLazyListState()
+  val coroutineScope = rememberCoroutineScope()
   ChatLoadedScreen(
     uiState = uiState,
+    lazyListState = lazyListState,
     imageLoader = imageLoader,
     topAppBarScrollBehavior = topAppBarScrollBehavior,
     openUrl = openUrl,
@@ -117,7 +127,12 @@ internal fun CbmChatLoadedScreen(
     onRetrySendChatMessage = onRetrySendChatMessage,
     chatInput = {
       ChatInput(
-        onSendMessage = onSendMessage,
+        onSendMessage = {
+          onSendMessage(it)
+          coroutineScope.launch {
+            lazyListState.scrollToItem(0)
+          }
+        },
         onSendPhoto = onSendPhoto,
         onSendMedia = onSendMedia,
         appPackageId = appPackageId,
@@ -130,6 +145,7 @@ internal fun CbmChatLoadedScreen(
 @Composable
 private fun ChatLoadedScreen(
   uiState: CbmChatUiState.Loaded,
+  lazyListState: LazyListState,
   imageLoader: ImageLoader,
   topAppBarScrollBehavior: TopAppBarScrollBehavior,
   openUrl: (String) -> Unit,
@@ -137,8 +153,6 @@ private fun ChatLoadedScreen(
   onRetrySendChatMessage: (messageId: String) -> Unit,
   chatInput: @Composable () -> Unit,
 ) {
-  val lazyListState = rememberLazyListState()
-
   SelectionContainer {
     Column {
       ChatLazyColumn(
@@ -195,8 +209,7 @@ private fun ScrollToBottomEffect(lazyListState: LazyListState, latestChatMessage
 @Composable
 private fun ChatLazyColumn(
   lazyListState: LazyListState,
-  messages: LazyPagingItems<CbmChatMessage>,
-  latestMessage: CbmChatMessage?,
+  messages: LazyPagingItems<CbmUiChatMessage>,
   latestChatMessage: LatestChatMessage?,
   imageLoader: ImageLoader,
   openUrl: (String) -> Unit,
@@ -204,7 +217,6 @@ private fun ChatLazyColumn(
   modifier: Modifier = Modifier,
 ) {
   ScrollToBottomEffect(
-    chatMessages = messages,
     lazyListState = lazyListState,
     latestChatMessage = latestChatMessage,
   )
@@ -219,9 +231,9 @@ private fun ChatLazyColumn(
   ) {
     items(
       count = messages.itemCount,
-      key = messages.itemKey(CbmChatMessage::id),
+      key = messages.itemKey { it.chatMessage.id },
       contentType = messages.itemContentType { uiChatMessage ->
-        when (uiChatMessage) {
+        when (uiChatMessage.chatMessage) {
           is CbmChatMessage.ChatMessageFile -> "ChatMessage.ChatMessageFile"
           is CbmChatMessage.ChatMessageGif -> "ChatMessage.ChatMessageGif"
           is CbmChatMessage.ChatMessageText -> "ChatMessage.ChatMessageText"
@@ -230,27 +242,23 @@ private fun ChatLazyColumn(
         }
       },
     ) { index: Int ->
-      val chatMessage = messages[index]
-      if (chatMessage != null) {
-        val alignment: Alignment.Horizontal = chatMessage.messageHorizontalAlignment()
-        ChatBubble(
-          chatMessage = chatMessage,
-          imageLoader = imageLoader,
-          openUrl = openUrl,
-          onRetrySendChatMessage = onRetrySendChatMessage,
-          modifier = Modifier
-            .fillParentMaxWidth()
-            .padding(horizontal = 16.dp)
-            .wrapContentWidth(alignment)
-            .fillParentMaxWidth(0.8f)
-            .wrapContentWidth(alignment)
-            .padding(bottom = 8.dp),
-        )
-      }
+      val uiChatMessage = messages[index]
+      val alignment: Alignment.Horizontal = uiChatMessage?.chatMessage.messageHorizontalAlignment(index)
+      ChatBubble(
+        uiChatMessage = uiChatMessage,
+        chatItemIndex = index,
+        imageLoader = imageLoader,
+        openUrl = openUrl,
+        onRetrySendChatMessage = onRetrySendChatMessage,
+        modifier = Modifier
+          .fillParentMaxWidth()
+          .padding(horizontal = 16.dp)
+          .wrapContentWidth(alignment)
+          .fillParentMaxWidth(0.8f)
+          .wrapContentWidth(alignment)
+          .padding(bottom = 8.dp),
+      )
     }
-    // We want to show other items only when there are already some chat messages, to have first messages appear at the
-    // bottom of the UI when the screen is first opened
-    // todo do we need this here too?
     if (loadingMore) {
       item {
         Box(
@@ -273,15 +281,48 @@ private fun ChatLazyColumn(
 
 @Composable
 private fun ChatBubble(
-  chatMessage: CbmChatMessage,
+  uiChatMessage: CbmUiChatMessage?,
+  chatItemIndex: Int,
   imageLoader: ImageLoader,
   openUrl: (String) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val chatMessage = uiChatMessage?.chatMessage
   ChatMessageWithTimeAndDeliveryStatus(
     messageSlot = {
       when (chatMessage) {
+        null -> {
+          Box(
+            Modifier
+              .clip(shape = MaterialTheme.shapes.squircleMedium)
+              .placeholder(true, highlight = PlaceholderHighlight.shimmer()),
+          ) {
+            Text(
+              text = "HHHHHHHHHH",
+              style = LocalTextStyle.current,
+              modifier = Modifier
+                .padding(horizontal = 16.dp, vertical = 12.dp)
+                .withoutPlacement(),
+            )
+          }
+        }
+
+        is CbmChatMessage.ChatMessageText -> {
+          Surface(
+            shape = MaterialTheme.shapes.squircleMedium,
+            color = chatMessage.backgroundColor(),
+            contentColor = chatMessage.onBackgroundColor(),
+          ) {
+            TextWithClickableUrls(
+              text = chatMessage.text,
+              onUrlClicked = openUrl,
+              style = LocalTextStyle.current.copy(color = LocalContentColor.current),
+              modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+            )
+          }
+        }
+
         is CbmChatMessage.ChatMessageFile -> {
           when (chatMessage.mimeType) {
             CbmChatMessage.ChatMessageFile.MimeType.IMAGE -> {
@@ -299,21 +340,6 @@ private fun ChatBubble(
 
         is CbmChatMessage.ChatMessageGif -> {
           ChatAsyncImage(model = chatMessage.gifUrl, imageLoader = imageLoader, cacheKey = chatMessage.id)
-        }
-
-        is CbmChatMessage.ChatMessageText -> {
-          Surface(
-            shape = MaterialTheme.shapes.squircleMedium,
-            color = chatMessage.backgroundColor(),
-            contentColor = chatMessage.onBackgroundColor(),
-          ) {
-            TextWithClickableUrls(
-              text = chatMessage.text,
-              onUrlClicked = openUrl,
-              style = LocalTextStyle.current.copy(color = LocalContentColor.current),
-              modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-            )
-          }
         }
 
         is CbmChatMessage.FailedToBeSent -> {
@@ -385,7 +411,8 @@ private fun ChatBubble(
         }
       }
     },
-    chatMessage = chatMessage,
+    uiChatMessage = uiChatMessage,
+    chatItemIndex = chatItemIndex,
     modifier = modifier,
   )
 }
@@ -516,11 +543,13 @@ private fun ChatAsyncImage(
 @Composable
 internal fun ChatMessageWithTimeAndDeliveryStatus(
   messageSlot: @Composable () -> Unit,
-  chatMessage: CbmChatMessage,
+  uiChatMessage: CbmUiChatMessage?,
+  chatItemIndex: Int,
   modifier: Modifier = Modifier,
 ) {
+  val chatMessage = uiChatMessage?.chatMessage
   Column(
-    horizontalAlignment = chatMessage.messageHorizontalAlignment(),
+    horizontalAlignment = chatMessage.messageHorizontalAlignment(chatItemIndex),
     modifier = modifier,
   ) {
     val failedToBeSent = chatMessage is CbmChatMessage.FailedToBeSent
@@ -542,35 +571,44 @@ internal fun ChatMessageWithTimeAndDeliveryStatus(
     Row(
       verticalAlignment = Alignment.CenterVertically,
       modifier = Modifier
-        .align(chatMessage.messageHorizontalAlignment())
+        .align(chatMessage.messageHorizontalAlignment(chatItemIndex))
         .padding(horizontal = 2.dp),
     ) {
       Text(
         text = buildString {
-          if (failedToBeSent) {
-            append(stringResource(R.string.CHAT_FAILED_TO_SEND))
-            append(" • ")
+          if (chatMessage == null) {
+            append("HHHH.HH.HH")
+          } else {
+            if (failedToBeSent) {
+              append(stringResource(R.string.CHAT_FAILED_TO_SEND))
+              append(" • ")
+            }
+            append(chatMessage.formattedDateTime(getLocale()))
+            if (uiChatMessage.isLastDeliveredMessage) {
+              append(" • ")
+              append(stringResource(R.string.CHAT_DELIVERED_MESSAGE))
+            }
           }
-          append(chatMessage.formattedDateTime(getLocale()))
-          // todo cbm add isLastDeliveredMessage
-//          if (isLastDeliveredMessage) {
-//            append(" • ")
-//            append(stringResource(R.string.CHAT_DELIVERED_MESSAGE))
-//          }
         },
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.then(
+          if (chatMessage == null) {
+            Modifier.placeholder(visible = true, highlight = PlaceholderHighlight.shimmer())
+          } else {
+            Modifier
+          },
+        ),
       )
-      // todo cbm add isLastDeliveredMessage
-//      if (chatMessage.isLastDeliveredMessage) {
-//        Spacer(Modifier.width(4.dp))
-//        Icon(
-//          Icons.Hedvig.CircleWithCheckmarkFilled,
-//          null,
-//          Modifier.size(16.dp),
-//          tint = MaterialTheme.colorScheme.infoElement,
-//        )
-//      }
+      if (uiChatMessage?.isLastDeliveredMessage == true) {
+        Spacer(Modifier.width(4.dp))
+        Icon(
+          Icons.Hedvig.CircleWithCheckmarkFilled,
+          null,
+          Modifier.size(16.dp),
+          tint = MaterialTheme.colorScheme.infoElement,
+        )
+      }
     }
   }
 }

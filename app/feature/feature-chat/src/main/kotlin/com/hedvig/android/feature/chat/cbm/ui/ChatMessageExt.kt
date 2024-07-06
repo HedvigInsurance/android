@@ -33,7 +33,9 @@ internal fun CbmChatMessage.onBackgroundColor(): Color = when (sender) {
   Sender.MEMBER -> MaterialTheme.colorScheme.onInfoContainer
 }
 
-internal fun CbmChatMessage.messageHorizontalAlignment(): Alignment.Horizontal = when (sender) {
+// Align by the sender if present, otherwise alternate between the two
+internal fun CbmChatMessage?.messageHorizontalAlignment(index: Int): Alignment.Horizontal = when (this?.sender) {
+  null -> if (index % 2 == 0) Alignment.Start else Alignment.End
   Sender.HEDVIG -> Alignment.Start
   Sender.MEMBER -> Alignment.End
 }
@@ -53,6 +55,10 @@ internal fun CbmChatMessage.formattedDateTime(locale: Locale): String {
 }
 
 private fun getStartOfThisYear(nowLocalDateTime: LocalDateTime, timeZone: TimeZone): Instant {
-  return nowLocalDateTime.toJavaLocalDateTime().with(TemporalAdjusters.firstDayOfYear())
-    .toKotlinLocalDateTime().date.atStartOfDayIn(timeZone)
+  return nowLocalDateTime
+    .toJavaLocalDateTime()
+    .with(TemporalAdjusters.firstDayOfYear())
+    .toKotlinLocalDateTime()
+    .date
+    .atStartOfDayIn(timeZone)
 }
