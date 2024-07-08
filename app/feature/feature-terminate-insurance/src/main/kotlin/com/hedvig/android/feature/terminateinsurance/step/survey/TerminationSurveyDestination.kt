@@ -199,25 +199,13 @@ private fun TerminationSurveyScreen(
             Column {
               val suggestion = reason.surveyOption.suggestion
               if (suggestion != null) {
-                val text = when (suggestion) {
-                  SurveyOptionSuggestion.Action.UpdateAddress -> stringResource(
-                    id = R.string.TERMINATION_SURVEY_MOVING_SUGGESTION,
-                  )
-
-                  is SurveyOptionSuggestion.Redirect -> suggestion.description
-                }
-                val buttonText = when (suggestion) {
-                  SurveyOptionSuggestion.Action.UpdateAddress -> stringResource(
-                    R.string.TERMINATION_SURVEY_MOVING_BUTTON,
-                  )
-
-                  is SurveyOptionSuggestion.Redirect -> suggestion.buttonTitle
-                }
+                val text = suggestion.description
+                val buttonText = suggestion.buttonTitle
                 val onSuggestionButtonClick: () -> Unit = when (suggestion) {
-                  SurveyOptionSuggestion.Action.UpdateAddress -> { -> navigateToMovingFlow() }
-
+                  is SurveyOptionSuggestion.Action.UpdateAddress -> { -> navigateToMovingFlow() }
                   is SurveyOptionSuggestion.Redirect -> { -> openUrl(suggestion.url) }
                 }
+
                 VectorInfoCard(
                   text = text,
                   icon = Icons.Hedvig.Campaign,
@@ -591,7 +579,7 @@ private val previewReason1 = TerminationReason(
         listIndex = 2,
       ),
     ),
-    suggestion = SurveyOptionSuggestion.Action.UpdateAddress,
+    suggestion = SurveyOptionSuggestion.Action.UpdateAddress("test description", "test"),
     feedBackRequired = true,
     listIndex = 0,
   ),
