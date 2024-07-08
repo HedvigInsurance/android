@@ -23,7 +23,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,7 +42,6 @@ import com.hedvig.android.core.designsystem.material3.lightTypeContainer
 import com.hedvig.android.core.designsystem.material3.onInfoContainer
 import com.hedvig.android.core.designsystem.material3.squircleExtraSmall
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
@@ -55,11 +53,9 @@ import com.hedvig.android.feature.chat.cbm.model.InboxConversation.LatestMessage
 import com.hedvig.android.feature.chat.cbm.model.InboxConversation.LatestMessage.Text
 import com.hedvig.android.feature.chat.cbm.model.InboxConversation.LatestMessage.Unknown
 import com.hedvig.android.feature.chat.cbm.model.Sender
+import com.hedvig.android.feature.chat.ui.formattedChatDateTime
 import hedvig.resources.R
 import kotlinx.datetime.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toJavaLocalDateTime
-import kotlinx.datetime.toLocalDateTime
 
 @Composable
 internal fun InboxDestination(
@@ -181,12 +177,8 @@ private fun ConversationCard(
             }
           } else {
             val locale = getLocale()
-            val lastMessageSentFormatter =
-              remember(locale, conversation.latestMessage?.sentAt ?: conversation.createdAt) {
-                HedvigDateTimeFormatterDefaults
-                  .isoLocalDateWithDots(locale)
-                  .format(conversation.createdAt.toLocalDateTime(TimeZone.currentSystemDefault()).toJavaLocalDateTime())
-              }
+
+            val lastMessageSentFormatter = conversation.lastMessageTimestamp.formattedChatDateTime(locale)
             Text(
               text = lastMessageSentFormatter,
               style = MaterialTheme.typography.labelLarge,
