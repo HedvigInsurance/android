@@ -59,7 +59,7 @@ internal class CbmChatRepository(
   private val botServiceService: BotServiceService,
   private val clock: Clock,
 ) {
-  fun bannerText(conversationId: Uuid): Flow<String?> {
+  fun bannerText(conversationId: Uuid): Flow<BannerText?> {
     return flow {
       while (currentCoroutineContext().isActive) {
         val result = apolloClient
@@ -72,8 +72,18 @@ internal class CbmChatRepository(
           }
 
           is Right -> {
-            val statusMessage = result.value.conversation?.statusMessage
-            emit(statusMessage)
+            val conversation = result.value.conversation
+            emit(
+              when {
+                conversation == null -> null
+                conversation.isOpen == false -> BannerText.ClosedConversation
+                conversation.statusMessage != null -> BannerText.Text(conversation.statusMessage)
+                else -> {
+                  logcat(LogPriority.ERROR) { "Got unknown conversation status message:$conversation" }
+                  null
+                }
+              },
+            )
             break
           }
         }
@@ -239,6 +249,14 @@ internal class CbmChatRepository(
     logcat { "Uploaded file with uri:$uri. UploadToken:$uploadToken" }
     return uploadToken
   }
+}
+
+sealed interface BannerText {
+  data object ClosedConversation : BannerText
+
+  data class Text(
+    val text: String,
+  ) : BannerText
 }
 
 private sealed interface ConversationInput {

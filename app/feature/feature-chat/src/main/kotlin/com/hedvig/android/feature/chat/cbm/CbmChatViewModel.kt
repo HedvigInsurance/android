@@ -119,9 +119,9 @@ internal class CbmChatPresenter(
       }
     }
     return CbmChatUiState.Loaded(
-      lazyPagingItems,
-      latestMessage,
-      bannerText,
+      messages = lazyPagingItems,
+      latestMessage = latestMessage,
+      bannerText = bannerText,
     )
   }
 }
@@ -152,7 +152,7 @@ internal sealed interface CbmChatUiState {
     // The list of messages, ordered from the newest one to the oldest one
     val messages: LazyPagingItems<CbmUiChatMessage>,
     val latestMessage: LatestChatMessage?,
-    val bannerText: String?,
+    val bannerText: BannerText?,
   ) : CbmChatUiState {
     data class LatestChatMessage(
       val id: Uuid,
