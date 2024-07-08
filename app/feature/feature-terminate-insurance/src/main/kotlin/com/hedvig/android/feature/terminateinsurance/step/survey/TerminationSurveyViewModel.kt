@@ -156,7 +156,7 @@ internal data class TerminationSurveyState(
   val navigationStepLoadingForReason: TerminationReason? = null,
   val errorWhileLoadingNextStep: Boolean = false,
 ) {
-  val continueAllowed: Boolean = selectedOption != null
+  val continueAllowed: Boolean = selectedOption != null && selectedOption.suggestion == null
 }
 
 internal sealed interface SurveyNavigationStep {
