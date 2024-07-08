@@ -1,11 +1,15 @@
 package com.hedvig.android.feature.chat.cbm.ui
 
 import android.net.Uri
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -13,6 +17,7 @@ import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imeAnimationTarget
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
@@ -153,6 +158,7 @@ internal fun CbmChatLoadedScreen(
   )
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun ChatLoadedScreen(
   uiState: CbmChatUiState.Loaded,
@@ -180,12 +186,20 @@ private fun ChatLoadedScreen(
           .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
       )
       if (uiState.bannerText != null) {
-        HorizontalDivider(Modifier.fillMaxWidth())
-        ChatBanner(
-          text = uiState.bannerText,
-          onBannerLinkClicked = onBannerLinkClicked,
-          modifier = Modifier.fillMaxWidth(),
-        )
+        AnimatedVisibility(
+          visible = WindowInsets.imeAnimationTarget.asPaddingValues().calculateBottomPadding() == 0.dp,
+          enter = expandVertically(),
+          exit = shrinkVertically(),
+        ) {
+          Column {
+            HorizontalDivider(Modifier.fillMaxWidth())
+            ChatBanner(
+              text = uiState.bannerText,
+              onBannerLinkClicked = onBannerLinkClicked,
+              modifier = Modifier.fillMaxWidth(),
+            )
+          }
+        }
       }
       HorizontalDivider(Modifier.fillMaxWidth())
       Box(
