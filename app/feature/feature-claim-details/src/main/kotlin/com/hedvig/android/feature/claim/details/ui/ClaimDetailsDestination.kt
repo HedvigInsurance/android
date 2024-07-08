@@ -90,7 +90,7 @@ internal fun ClaimDetailsDestination(
   imageLoader: ImageLoader,
   appPackageId: String,
   navigateUp: () -> Unit,
-  onChatClick: () -> Unit,
+  navigateToConversation: (String) -> Unit,
   onFilesToUploadSelected: (List<Uri>, targetUploadUrl: String) -> Unit,
   openUrl: (String) -> Unit,
   sharePdf: (File) -> Unit,
@@ -104,7 +104,7 @@ internal fun ClaimDetailsDestination(
     onDismissUploadError = { viewModel.emit(ClaimDetailsEvent.DismissUploadError) },
     retry = { viewModel.emit(ClaimDetailsEvent.Retry) },
     navigateUp = navigateUp,
-    onChatClick = onChatClick,
+    navigateToConversation = navigateToConversation,
     onFilesToUploadSelected = onFilesToUploadSelected,
     downloadFromUrl = { viewModel.emit(ClaimDetailsEvent.DownloadPdf(it)) },
     sharePdf = {
@@ -124,7 +124,7 @@ private fun ClaimDetailScreen(
   onDismissUploadError: () -> Unit,
   retry: () -> Unit,
   navigateUp: () -> Unit,
-  onChatClick: () -> Unit,
+  navigateToConversation: (String) -> Unit,
   onFilesToUploadSelected: (files: List<Uri>, uploadUri: String) -> Unit,
   downloadFromUrl: (String) -> Unit,
   sharePdf: (File) -> Unit,
@@ -159,7 +159,7 @@ private fun ClaimDetailScreen(
           }
           ClaimDetailScreen(
             uiState = uiState,
-            onChatClick = onChatClick,
+            navigateToConversation = navigateToConversation,
             onDismissUploadError = onDismissUploadError,
             openUrl = openUrl,
             imageLoader = imageLoader,
@@ -182,7 +182,7 @@ private fun ClaimDetailScreen(
 @Composable
 private fun ClaimDetailScreen(
   uiState: ClaimDetailUiState.Content,
-  onChatClick: () -> Unit,
+  navigateToConversation: (String) -> Unit,
   openUrl: (String) -> Unit,
   onDismissUploadError: () -> Unit,
   imageLoader: ImageLoader,
@@ -241,7 +241,7 @@ private fun ClaimDetailScreen(
         BeforeGridContent(
           downloadFromUrl = downloadFromUrl,
           uiState = uiState,
-          onChatClick = onChatClick,
+          navigateToConversation = navigateToConversation,
         )
       },
       files = uiState.files,
@@ -263,7 +263,7 @@ private fun ClaimDetailScreen(
 @Composable
 private fun BeforeGridContent(
   uiState: ClaimDetailUiState.Content,
-  onChatClick: () -> Unit,
+  navigateToConversation: (String) -> Unit,
   downloadFromUrl: (url: String) -> Unit,
 ) {
   Column {
@@ -275,7 +275,7 @@ private fun BeforeGridContent(
       insuranceDisplayName = uiState.insuranceDisplayName,
     )
     Spacer(Modifier.height(8.dp))
-    ClaimInfoCard(uiState.claimStatus, uiState.claimOutcome, onChatClick)
+    ClaimInfoCard(uiState.claimStatus, uiState.claimOutcome, { navigateToConversation(uiState.conversationId) })
     Spacer(Modifier.height(24.dp))
     Text(
       stringResource(R.string.claim_status_claim_details_title),
@@ -406,7 +406,7 @@ private fun TermsConditionsCard(onClick: () -> Unit, isLoading: Boolean, modifie
 internal fun ClaimInfoCard(
   claimStatus: ClaimDetailUiState.Content.ClaimStatus,
   claimOutcome: ClaimDetailUiState.Content.ClaimOutcome,
-  onChatClick: () -> Unit,
+  navigateToConversation: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   HedvigCard(modifier = modifier) {
@@ -441,7 +441,7 @@ internal fun ClaimInfoCard(
           )
         }
         Spacer(Modifier.width(4.dp))
-        IconButton(onClick = onChatClick) {
+        IconButton(onClick = navigateToConversation) {
           Image(
             imageVector = Icons.Hedvig.Chat,
             contentDescription = stringResource(R.string.claim_status_detail_chat_button_description),
@@ -554,6 +554,7 @@ private fun PreviewClaimDetailScreen() {
       ClaimDetailScreen(
         uiState = ClaimDetailUiState.Content(
           claimId = "id",
+          conversationId = "idd",
           submittedContent = ClaimDetailUiState.Content.SubmittedContent.FreeText("Some free input text"),
           claimStatusCardUiState = ClaimStatusCardUiState(
             id = "id",
@@ -640,7 +641,7 @@ private fun PreviewClaimDetailScreen() {
           downloadError = null,
           isLoadingPdf = false,
         ),
-        onChatClick = {},
+        navigateToConversation = {},
         openUrl = {},
         imageLoader = rememberPreviewImageLoader(),
         onDismissUploadError = {},

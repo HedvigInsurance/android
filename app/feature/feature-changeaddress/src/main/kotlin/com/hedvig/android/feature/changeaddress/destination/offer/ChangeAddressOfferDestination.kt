@@ -76,7 +76,7 @@ import kotlinx.datetime.toLocalDateTime
 @Composable
 internal fun ChangeAddressOfferDestination(
   viewModel: ChangeAddressOfferViewModel,
-  openChat: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   navigateUp: () -> Unit,
   onChangeAddressResult: (LocalDate?) -> Unit,
   openUrl: (String) -> Unit,
@@ -100,7 +100,7 @@ internal fun ChangeAddressOfferDestination(
   } else {
     ChangeAddressOfferScreen(
       uiState = uiState,
-      openChat = openChat,
+      onNavigateToNewConversation = onNavigateToNewConversation,
       navigateUp = navigateUp,
       onErrorDialogDismissed = { viewModel.emit(ChangeAddressOfferEvent.DismissErrorDialog) },
       onExpandQuote = { viewModel.emit(ChangeAddressOfferEvent.ExpandQuote(it)) },
@@ -113,7 +113,7 @@ internal fun ChangeAddressOfferDestination(
 @Composable
 private fun ChangeAddressOfferScreen(
   uiState: ChangeAddressOfferUiState,
-  openChat: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   navigateUp: () -> Unit,
   onErrorDialogDismissed: () -> Unit,
   onExpandQuote: (MoveQuote) -> Unit,
@@ -231,7 +231,7 @@ private fun ChangeAddressOfferScreen(
       Spacer(Modifier.height(24.dp))
       Button(
         shape = MaterialTheme.shapes.squircleMedium,
-        onClick = { openChat() },
+        onClick = onNavigateToNewConversation,
         modifier = Modifier
           .fillMaxWidth()
           .padding(horizontal = 16.dp)
@@ -372,12 +372,12 @@ private fun Documents(quote: MoveQuote, openUrl: (String) -> Unit) {
 @Preview(
   name = "lightMode portrait",
   uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL,
-  device = "spec:width=1080px,height=10000px,dpi=440",
+  device = "spec:width=1080px,height=5000px,dpi=440",
 )
 @Preview(
   name = "darkMode portrait",
   uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL,
-  device = "spec:width=1080px,height=10000px,dpi=440",
+  device = "spec:width=1080px,height=5000px,dpi=440",
 )
 @Composable
 private fun PreviewChangeAddressOfferScreen() {

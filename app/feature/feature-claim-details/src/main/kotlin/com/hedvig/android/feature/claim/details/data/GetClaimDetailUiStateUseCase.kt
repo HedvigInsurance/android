@@ -49,8 +49,7 @@ internal class GetClaimDetailUiStateUseCase(
         } else {
           fetchPolicy(FetchPolicy.CacheAndNetwork)
         }
-      }
-      .safeFlow { _, _ -> Error.NetworkError }
+      }.safeFlow { _, _ -> Error.NetworkError }
       .map { response: Either<Error.NetworkError, ClaimsQuery.Data> ->
         either {
           val claimsQueryData = response.bind()
@@ -71,10 +70,14 @@ internal class GetClaimDetailUiStateUseCase(
     val submittedAt = claim.submittedAt.toLocalDateTime(TimeZone.currentSystemDefault())
     val insuranceDisplayName = claim.productVariant?.displayName
     val termsConditionsUrl =
-      claim.productVariant?.documents?.firstOrNull { it.type == InsuranceDocumentType.TERMS_AND_CONDITIONS }?.url
+      claim.productVariant
+        ?.documents
+        ?.firstOrNull { it.type == InsuranceDocumentType.TERMS_AND_CONDITIONS }
+        ?.url
 
     return ClaimDetailUiState.Content(
       claimId = claim.id,
+      conversationId = claim.conversation.id,
       submittedContent = when {
         audioUrl != null -> {
           ClaimDetailUiState.Content.SubmittedContent.Audio(SignedAudioUrl.fromSignedAudioUrlString(audioUrl))

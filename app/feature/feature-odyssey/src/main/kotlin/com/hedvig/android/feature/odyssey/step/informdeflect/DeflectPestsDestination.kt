@@ -35,17 +35,17 @@ import hedvig.resources.R
 
 @Composable
 internal fun DeflectPestsDestination(
-  deflectPests: ClaimFlowDestination.DeflectPests,
-  openChat: () -> Unit,
-  closeClaimFlow: () -> Unit,
-  windowSizeClass: WindowSizeClass,
-  navigateUp: () -> Unit,
-  imageLoader: ImageLoader,
-  openUrl: (String) -> Unit,
+    deflectPests: ClaimFlowDestination.DeflectPests,
+    onNavigateToNewConversation: () -> Unit,
+    closeClaimFlow: () -> Unit,
+    windowSizeClass: WindowSizeClass,
+    navigateUp: () -> Unit,
+    imageLoader: ImageLoader,
+    openUrl: (String) -> Unit,
 ) {
   DeflectPestsScreen(
     partners = deflectPests.partners,
-    openChat = openChat,
+    onNavigateToNewConversation = onNavigateToNewConversation,
     closeClaimFlow = closeClaimFlow,
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
@@ -57,7 +57,7 @@ internal fun DeflectPestsDestination(
 @Composable
 private fun DeflectPestsScreen(
   partners: List<DeflectPartner>,
-  openChat: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   closeClaimFlow: () -> Unit,
   windowSizeClass: WindowSizeClass,
   navigateUp: () -> Unit,
@@ -158,7 +158,7 @@ private fun DeflectPestsScreen(
     Spacer(Modifier.height(24.dp))
     HedvigContainedSmallButton(
       text = stringResource(R.string.open_chat),
-      onClick = openChat,
+      onClick = onNavigateToNewConversation,
       modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth().wrapContentWidth(Alignment.CenterHorizontally),
     )
     Spacer(Modifier.height(16.dp))
@@ -177,7 +177,7 @@ private fun DeflectPestsScreenPreview() {
         url = "test",
       ),
     ),
-    openChat = {},
+    onNavigateToNewConversation = {},
     closeClaimFlow = {},
     windowSizeClass = WindowSizeClass.calculateForPreview(),
     navigateUp = {},

@@ -32,15 +32,15 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import hedvig.resources.R
 
 @Composable
-internal fun ClaimSuccessDestination(openChat: () -> Unit, closeSuccessScreen: () -> Unit) {
+internal fun ClaimSuccessDestination(onNavigateToNewConversation: () -> Unit, closeSuccessScreen: () -> Unit) {
   ClaimSuccessScreen(
-    openChat = openChat,
+    onNavigateToNewConversation = onNavigateToNewConversation,
     closeSuccessScreen = closeSuccessScreen,
   )
 }
 
 @Composable
-private fun ClaimSuccessScreen(openChat: () -> Unit, closeSuccessScreen: () -> Unit) {
+private fun ClaimSuccessScreen(onNavigateToNewConversation: () -> Unit, closeSuccessScreen: () -> Unit) {
   Surface(
     color = MaterialTheme.colorScheme.background,
     modifier = Modifier.fillMaxSize(),
@@ -81,7 +81,7 @@ private fun ClaimSuccessScreen(openChat: () -> Unit, closeSuccessScreen: () -> U
       Spacer(Modifier.height(16.dp))
       HedvigContainedButton(
         text = stringResource(R.string.open_chat),
-        onClick = openChat,
+        onClick = onNavigateToNewConversation,
         modifier = Modifier
           .padding(horizontal = 16.dp)
           .fillMaxWidth(),

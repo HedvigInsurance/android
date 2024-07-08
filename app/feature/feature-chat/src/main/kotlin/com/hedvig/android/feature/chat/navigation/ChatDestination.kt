@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 object ChatDestination : Destination
 
-internal sealed interface ChatDestinations {
+sealed interface ChatDestinations {
   @Serializable
   object Inbox : ChatDestinations, Destination
 
