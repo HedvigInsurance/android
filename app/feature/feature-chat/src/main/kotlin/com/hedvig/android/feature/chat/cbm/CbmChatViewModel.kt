@@ -62,6 +62,9 @@ internal class CbmChatPresenter(
     val latestMessage by remember(chatDao) {
       chatDao.latestMessage(conversationId).filterNotNull().map(ChatMessageEntity::toLatestChatMessage)
     }.collectAsState(null)
+    val bannerText by remember(conversationId, chatRepository) {
+      chatRepository.bannerText(conversationId)
+    }.collectAsState(null)
     val pagingDataFlow = remember {
       Pager(
         config = PagingConfig(pageSize = 50, prefetchDistance = 50, jumpThreshold = 10),
@@ -101,12 +104,15 @@ internal class CbmChatPresenter(
         is CbmChatEvent.SendTextMessage -> launch {
           chatRepository.sendText(conversationId, event.message)
         }
+
         is CbmChatEvent.SendPhotoMessage -> launch {
           chatRepository.sendPhoto(conversationId, event.uri)
         }
+
         is CbmChatEvent.SendMediaMessage -> launch {
           chatRepository.sendMedia(conversationId, event.uri)
         }
+
         is CbmChatEvent.RetrySendChatMessage -> launch {
           chatRepository.retrySendMessage(conversationId, event.messageId)
         }
@@ -115,7 +121,7 @@ internal class CbmChatPresenter(
     return CbmChatUiState.Loaded(
       lazyPagingItems,
       latestMessage,
-      null,
+      bannerText,
     )
   }
 }

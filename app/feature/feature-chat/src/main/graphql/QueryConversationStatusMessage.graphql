@@ -1,0 +1,5 @@
+query ConversationStatusMessage($conversationId: UUID!) {
+  conversation(id: $conversationId) {
+    statusMessage
+  }
+}

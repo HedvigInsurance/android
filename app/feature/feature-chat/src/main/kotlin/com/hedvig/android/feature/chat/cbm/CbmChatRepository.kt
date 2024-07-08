@@ -5,6 +5,8 @@ import android.util.Patterns
 import androidx.core.net.toFile
 import androidx.room.withTransaction
 import arrow.core.Either
+import arrow.core.Either.Left
+import arrow.core.Either.Right
 import arrow.core.left
 import arrow.core.raise.Raise
 import arrow.core.raise.either
@@ -16,6 +18,7 @@ import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.benasher44.uuid.Uuid
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
+import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.fileupload.FileService
 import com.hedvig.android.core.retrofit.toErrorMessage
 import com.hedvig.android.feature.chat.cbm.database.AppDatabase
@@ -41,6 +44,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.datetime.Clock
 import octopus.ConversationQuery
 import octopus.ConversationSendMessageMutation
+import octopus.ConversationStatusMessageQuery
 import octopus.fragment.ChatMessageFileChatMessageFragment
 import octopus.fragment.ChatMessageFragment
 import octopus.fragment.ChatMessageTextChatMessageFragment
@@ -55,6 +59,28 @@ internal class CbmChatRepository(
   private val botServiceService: BotServiceService,
   private val clock: Clock,
 ) {
+  fun bannerText(conversationId: Uuid): Flow<String?> {
+    return flow {
+      while (currentCoroutineContext().isActive) {
+        val result = apolloClient
+          .query(ConversationStatusMessageQuery(conversationId.toString()))
+          .safeExecute()
+          .toEither(::ErrorMessage)
+        when (result) {
+          is Left -> {
+            delay(10.seconds)
+          }
+
+          is Right -> {
+            val statusMessage = result.value.conversation?.statusMessage
+            emit(statusMessage)
+            break
+          }
+        }
+      }
+    }
+  }
+
   suspend fun chatMessages(
     conversationId: Uuid,
     pagingToken: PagingToken?,
