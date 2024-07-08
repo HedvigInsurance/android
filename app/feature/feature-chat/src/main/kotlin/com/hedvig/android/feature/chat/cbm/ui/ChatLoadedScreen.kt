@@ -97,10 +97,14 @@ import com.hedvig.android.placeholder.fade
 import com.hedvig.android.placeholder.placeholder
 import com.hedvig.android.placeholder.shimmer
 import hedvig.resources.R
+import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 
 @Composable
 internal fun CbmChatLoadedScreen(
@@ -197,13 +201,28 @@ private fun ChatLoadedScreen(
 }
 
 @Composable
-private fun ScrollToBottomEffect(lazyListState: LazyListState, latestChatMessage: LatestChatMessage?) {
+private fun ScrollToBottomEffect(
+  lazyListState: LazyListState,
+  latestChatMessage: LatestChatMessage?,
+  messages: LazyPagingItems<CbmUiChatMessage>,
+) {
   val updatedLatestChatMessage by rememberUpdatedState(latestChatMessage)
   LaunchedEffect(lazyListState) {
     snapshotFlow { updatedLatestChatMessage }
       .filterNotNull()
       .distinctUntilChangedBy(LatestChatMessage::id)
       .collectLatest { chatMessage ->
+        val idToScrollTo = chatMessage.id
+        withTimeout(1.seconds) {
+          snapshotFlow {
+            messages.itemSnapshotList
+              .getOrNull(0)
+              ?.chatMessage
+              ?.id
+          }.filterNotNull()
+            .first { it == idToScrollTo.toString() }
+        }
+        ensureActive()
         val senderIsMember = chatMessage.sender == Sender.MEMBER
         val isAlreadyCloseToTheBottom = lazyListState.firstVisibleItemIndex <= 2
         if (senderIsMember || isAlreadyCloseToTheBottom) {
@@ -226,6 +245,7 @@ private fun ChatLazyColumn(
   ScrollToBottomEffect(
     lazyListState = lazyListState,
     latestChatMessage = latestChatMessage,
+    messages = messages,
   )
   val loadingMore by remember(messages) {
     derivedStateOf { messages.loadState.append == LoadState.Loading }
