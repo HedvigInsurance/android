@@ -10,16 +10,16 @@ import arrow.core.raise.ensure
 import arrow.core.raise.ensureNotNull
 import arrow.core.right
 import arrow.retrofit.adapter.either.networkhandling.CallError
-import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.api.ApolloResponse
-import com.apollographql.apollo3.cache.normalized.FetchPolicy
-import com.apollographql.apollo3.cache.normalized.api.CacheHeaders
-import com.apollographql.apollo3.cache.normalized.apolloStore
-import com.apollographql.apollo3.cache.normalized.doNotStore
-import com.apollographql.apollo3.cache.normalized.fetchPolicy
-import com.apollographql.apollo3.cache.normalized.watch
-import com.apollographql.apollo3.exception.ApolloCompositeException
-import com.apollographql.apollo3.exception.CacheMissException
+import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.api.ApolloResponse
+import com.apollographql.apollo.cache.normalized.FetchPolicy
+import com.apollographql.apollo.cache.normalized.api.CacheHeaders
+import com.apollographql.apollo.cache.normalized.apolloStore
+import com.apollographql.apollo.cache.normalized.doNotStore
+import com.apollographql.apollo.cache.normalized.fetchPolicy
+import com.apollographql.apollo.cache.normalized.watch
+import com.apollographql.apollo.exception.ApolloException
+import com.apollographql.apollo.exception.CacheMissException
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
@@ -86,7 +86,7 @@ internal class ChatRepositoryImpl(
   override fun watchMessages(): Flow<Either<ErrorMessage, List<ChatMessage>>> {
     return apolloClient.query(ChatMessagesQuery(null))
       .fetchPolicy(FetchPolicy.CacheOnly)
-      .watch(fetchThrows = true)
+      .watch()
       .map { apolloResponse: ApolloResponse<ChatMessagesQuery.Data> ->
         either {
           ensure(apolloResponse.errors.isNullOrEmpty()) {
@@ -106,7 +106,7 @@ internal class ChatRepositoryImpl(
       }
       .retryWhen { cause, _ ->
         val shouldRetry = cause is CacheMissException ||
-          (cause is ApolloCompositeException && cause.suppressedExceptions.any { it is CacheMissException })
+          (cause is ApolloException && cause.suppressedExceptions.any { it is CacheMissException })
         if (shouldRetry) {
           emit(emptyList<ChatMessage>().right())
           delay(1.seconds)

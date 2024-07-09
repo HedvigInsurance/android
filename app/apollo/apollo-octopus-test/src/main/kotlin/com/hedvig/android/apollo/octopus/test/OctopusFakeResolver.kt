@@ -1,8 +1,8 @@
 package com.hedvig.android.apollo.octopus.test
 
-import com.apollographql.apollo3.api.DefaultFakeResolver
-import com.apollographql.apollo3.api.FakeResolver
-import com.apollographql.apollo3.api.FakeResolverContext
+import com.apollographql.apollo.api.DefaultFakeResolver
+import com.apollographql.apollo.api.FakeResolver
+import com.apollographql.apollo.api.FakeResolverContext
 import com.hedvig.android.core.markdown.MarkdownString
 import java.util.UUID
 import kotlinx.datetime.Clock

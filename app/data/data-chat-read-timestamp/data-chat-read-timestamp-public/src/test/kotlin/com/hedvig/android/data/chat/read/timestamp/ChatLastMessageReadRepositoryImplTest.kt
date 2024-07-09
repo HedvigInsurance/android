@@ -2,10 +2,10 @@ package com.hedvig.android.data.chat.read.timestamp
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.annotations.ApolloExperimental
-import com.apollographql.apollo3.testing.enqueueTestNetworkError
-import com.apollographql.apollo3.testing.enqueueTestResponse
+import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.annotations.ApolloExperimental
+import com.apollographql.apollo.testing.enqueueTestNetworkError
+import com.apollographql.apollo.testing.enqueueTestResponse
 import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.hedvig.android.apollo.octopus.test.OctopusFakeResolver

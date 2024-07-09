@@ -30,7 +30,7 @@ apollo { // Octopus client
     srcDir(file("src/main/graphql/com/hedvig/android/apollo/octopus/graphql"))
 
     packageName.set("octopus")
-    codegenModels.set(com.apollographql.apollo3.compiler.MODELS_RESPONSE_BASED)
+    codegenModels.set(com.apollographql.apollo.compiler.MODELS_RESPONSE_BASED)
 
     generateApolloMetadata.set(true)
     generateDataBuilders.set(true)
@@ -60,9 +60,9 @@ apollo { // Octopus client
     outputDirConnection {
       connectToKotlinSourceSet("main") // main is by default but setting this explicitly fixed the warning "Duplicate content roots detected.
     }
-    mapScalar("Date", "kotlinx.datetime.LocalDate", "com.apollographql.apollo3.adapter.KotlinxLocalDateAdapter")
-    mapScalar("DateTime", "kotlinx.datetime.Instant", "com.apollographql.apollo3.adapter.KotlinxInstantAdapter")
-    mapScalar("Instant", "kotlinx.datetime.Instant", "com.apollographql.apollo3.adapter.KotlinxInstantAdapter")
+    mapScalar("Date", "kotlinx.datetime.LocalDate", "com.apollographql.apollo.adapter.KotlinxLocalDateAdapter")
+    mapScalar("DateTime", "kotlinx.datetime.Instant", "com.apollographql.apollo.adapter.KotlinxInstantAdapter")
+    mapScalar("Instant", "kotlinx.datetime.Instant", "com.apollographql.apollo.adapter.KotlinxInstantAdapter")
     mapScalar(
       "Markdown",
       "com.hedvig.android.core.markdown.MarkdownString",

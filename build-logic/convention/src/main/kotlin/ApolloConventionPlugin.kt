@@ -12,7 +12,7 @@ class ApolloConventionPlugin : Plugin<Project> {
         apply(libs.plugins.apollo.get().pluginId)
       }
 
-      tasks.withType<com.apollographql.apollo3.gradle.internal.ApolloDownloadSchemaTask>().configureEach {
+      tasks.withType<com.apollographql.apollo.gradle.internal.ApolloDownloadSchemaTask>().configureEach {
         val rootDirVar = rootDir
         doLast {
           val schemaPath = schema.get()

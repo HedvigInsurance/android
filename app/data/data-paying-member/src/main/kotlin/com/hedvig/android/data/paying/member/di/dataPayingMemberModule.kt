@@ -1,6 +1,6 @@
 package com.hedvig.android.data.paying.member.di
 
-import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCaseDemo
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCaseImpl

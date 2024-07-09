@@ -2,8 +2,8 @@ package com.hedvig.android.feature.editcoinsured.data
 
 import arrow.core.Either
 import arrow.core.raise.either
-import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.api.Optional.Companion.presentIfNotNull
+import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.api.Optional.Companion.presentIfNotNull
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage

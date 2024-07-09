@@ -1,6 +1,6 @@
 package com.hedvig.android.data.termination.di
 
-import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.data.termination.data.GetTerminatableContractsUseCase
 import com.hedvig.android.data.termination.data.GetTerminatableContractsUseCaseImpl
 import com.hedvig.android.featureflags.FeatureManager
