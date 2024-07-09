@@ -17,7 +17,7 @@ interface RemoteKeyDao {
     WHERE conversationId = :conversationId
     """,
   )
-  suspend fun remoteKeyForConversation(conversationId: Uuid): RemoteKeyEntity
+  suspend fun remoteKeyForConversation(conversationId: Uuid): RemoteKeyEntity?
 
   @Query(
     """

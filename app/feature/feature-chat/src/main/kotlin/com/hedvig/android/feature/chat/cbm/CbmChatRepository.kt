@@ -27,6 +27,7 @@ import com.hedvig.android.feature.chat.cbm.database.ChatMessageEntity.FailedToSe
 import com.hedvig.android.feature.chat.cbm.database.ChatMessageEntity.FailedToSendType.PHOTO
 import com.hedvig.android.feature.chat.cbm.database.ChatMessageEntity.FailedToSendType.TEXT
 import com.hedvig.android.feature.chat.cbm.database.RemoteKeyDao
+import com.hedvig.android.feature.chat.cbm.database.RemoteKeyEntity
 import com.hedvig.android.feature.chat.cbm.model.CbmChatMessage
 import com.hedvig.android.feature.chat.cbm.model.toChatMessageEntity
 import com.hedvig.android.feature.chat.cbm.model.toSender
@@ -42,8 +43,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
 import kotlinx.datetime.Clock
+import octopus.ConversationExistsQuery
 import octopus.ConversationQuery
 import octopus.ConversationSendMessageMutation
+import octopus.ConversationStartMutation
 import octopus.ConversationStatusMessageQuery
 import octopus.fragment.ChatMessageFileChatMessageFragment
 import octopus.fragment.ChatMessageFragment
@@ -59,6 +62,30 @@ internal class CbmChatRepository(
   private val botServiceService: BotServiceService,
   private val clock: Clock,
 ) {
+  suspend fun createConversation(conversationId: Uuid): Either<ErrorMessage, String> {
+    return either {
+      apolloClient
+        .mutation(ConversationStartMutation(conversationId.toString()))
+        .safeExecute()
+        .toEither(::ErrorMessage)
+        .bind()
+        .conversationStart
+        .id
+    }
+  }
+
+  suspend fun getConversation(conversationId: Uuid): Either<ErrorMessage, String?> {
+    return either {
+      val backendConvesation = apolloClient
+        .query(ConversationExistsQuery(conversationId.toString()))
+        .safeExecute()
+        .toEither(::ErrorMessage)
+        .bind()
+        .conversation
+      backendConvesation?.id
+    }
+  }
+
   fun bannerText(conversationId: Uuid): Flow<BannerText?> {
     return flow {
       while (currentCoroutineContext().isActive) {
@@ -101,7 +128,7 @@ internal class CbmChatRepository(
   fun pollNewestMessages(conversationId: Uuid): Flow<String> {
     return flow {
       while (currentCoroutineContext().isActive) {
-        val newerTokenOrNull = remoteKeyDao.remoteKeyForConversation(conversationId).newerToken?.let {
+        val newerTokenOrNull = remoteKeyDao.remoteKeyForConversation(conversationId)?.newerToken?.let {
           PagingToken.NewerToken(it)
         }
         internalChatMessages(conversationId, newerTokenOrNull).fold(
@@ -111,6 +138,7 @@ internal class CbmChatRepository(
           ifRight = { messagePageResponse ->
             database.withTransaction {
               val existingRemoteKey = remoteKeyDao.remoteKeyForConversation(conversationId)
+                ?: RemoteKeyEntity(conversationId, null, null)
               remoteKeyDao.insert(existingRemoteKey.copy(newerToken = messagePageResponse.newerToken))
               chatDao.insertAll(messagePageResponse.messages.map { it.toChatMessageEntity(conversationId) })
             }
@@ -176,12 +204,14 @@ internal class CbmChatRepository(
   }
 
   private suspend fun sendMessage(conversationId: Uuid, input: ConversationInput): Either<String, CbmChatMessage> {
-    val response = apolloClient
-      .mutation(ConversationSendMessageMutation(conversationId.toString(), input.text, input.fileUploadToken))
-      .execute()
     return either {
-      val data = response.data ?: raise(response.errors.toString())
-      data.conversationSendMessage.message?.toChatMessage() ?: raise("Unknown chat message type")
+      val response = apolloClient
+        .mutation(ConversationSendMessageMutation(conversationId.toString(), input.text, input.fileUploadToken))
+        .safeExecute()
+        .toEither(::ErrorMessage)
+        .mapLeft { it.toString() }
+        .bind()
+      response.conversationSendMessage.message?.toChatMessage() ?: raise("Unknown chat message type")
     }
   }
 

@@ -1,0 +1,5 @@
+mutation ConversationStart($id: UUID!) {
+  conversationStart(input: { id: $id }) {
+    id
+  }
+}

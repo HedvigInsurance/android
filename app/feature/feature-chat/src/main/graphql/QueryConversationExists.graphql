@@ -1,0 +1,5 @@
+query ConversationExists($id: UUID!) {
+  conversation(id: $id) {
+    id
+  }
+}

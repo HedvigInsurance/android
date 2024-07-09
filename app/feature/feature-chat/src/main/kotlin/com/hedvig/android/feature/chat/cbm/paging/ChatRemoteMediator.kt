@@ -28,12 +28,12 @@ internal class ChatRemoteMediator(
     val pagingToken = when (loadType) {
       LoadType.REFRESH -> null
       LoadType.PREPEND -> {
-        val newerToken = remoteKeyDao.remoteKeyForConversation(conversationId).newerToken
+        val newerToken = remoteKeyDao.remoteKeyForConversation(conversationId)?.newerToken
         newerToken ?: return MediatorResult.Success(endOfPaginationReached = true)
         PagingToken.NewerToken(newerToken)
       }
       LoadType.APPEND -> {
-        val olderToken = remoteKeyDao.remoteKeyForConversation(conversationId).olderToken
+        val olderToken = remoteKeyDao.remoteKeyForConversation(conversationId)?.olderToken
         olderToken ?: return MediatorResult.Success(endOfPaginationReached = true)
         PagingToken.OlderToken(olderToken)
       }
@@ -44,8 +44,8 @@ internal class ChatRemoteMediator(
     val isRefreshingDueToJumping = loadType == LoadType.REFRESH && state.pages.isNotEmpty()
     if (isRefreshingDueToJumping) {
       database.withTransaction {
-        val existingOlderToken = remoteKeyDao.remoteKeyForConversation(conversationId).olderToken
-        remoteKeyDao.insert(RemoteKeyEntity(conversationId, existingOlderToken, response.newerToken!!))
+        val existingOlderToken = remoteKeyDao.remoteKeyForConversation(conversationId)?.olderToken
+        remoteKeyDao.insert(RemoteKeyEntity(conversationId, existingOlderToken, response.newerToken))
         chatDao.insertAll(response.messages.map { it.toChatMessageEntity(conversationId) })
       }
     } else {
@@ -55,9 +55,9 @@ internal class ChatRemoteMediator(
           remoteKeyDao.deleteAllForConversation(conversationId)
         }
         val remoteKeyEntityToSave = when (loadType) {
-          LoadType.REFRESH -> RemoteKeyEntity(conversationId, response.olderToken, response.newerToken!!)
+          LoadType.REFRESH -> RemoteKeyEntity(conversationId, response.olderToken, response.newerToken)
           LoadType.PREPEND -> {
-            val existingOlderToken = remoteKeyDao.remoteKeyForConversation(conversationId).olderToken
+            val existingOlderToken = remoteKeyDao.remoteKeyForConversation(conversationId)?.olderToken
             RemoteKeyEntity(
               conversationId = conversationId,
               olderToken = existingOlderToken,
@@ -65,7 +65,7 @@ internal class ChatRemoteMediator(
             )
           }
           LoadType.APPEND -> {
-            val existingNewerToken = remoteKeyDao.remoteKeyForConversation(conversationId).newerToken
+            val existingNewerToken = remoteKeyDao.remoteKeyForConversation(conversationId)?.newerToken
             RemoteKeyEntity(
               conversationId = conversationId,
               olderToken = response.olderToken,
@@ -80,7 +80,7 @@ internal class ChatRemoteMediator(
     return MediatorResult.Success(
       endOfPaginationReached = when (loadType) {
         LoadType.REFRESH -> false
-        LoadType.PREPEND -> response.messages.isEmpty() // backend never returns null "newerToken"
+        LoadType.PREPEND -> response.messages.isEmpty()
         LoadType.APPEND -> response.olderToken == null
       },
     )

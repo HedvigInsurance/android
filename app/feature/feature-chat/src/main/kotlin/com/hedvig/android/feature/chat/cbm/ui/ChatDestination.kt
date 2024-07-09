@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import com.hedvig.android.core.common.safeCast
+import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.tracking.ActionType
 import com.hedvig.android.core.tracking.logAction
@@ -32,6 +33,7 @@ import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.feature.chat.ChatUiState
 import com.hedvig.android.feature.chat.cbm.CbmChatEvent
 import com.hedvig.android.feature.chat.cbm.CbmChatUiState
+import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Error
 import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Initializing
 import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Loaded
 import com.hedvig.android.feature.chat.cbm.CbmChatViewModel
@@ -83,6 +85,9 @@ internal fun CbmChatDestination(
     onRetrySendChatMessage = { messageId ->
       viewModel.emit(CbmChatEvent.RetrySendChatMessage(messageId))
     },
+    onRetryLoadingChat = {
+      viewModel.emit(CbmChatEvent.RetryLoadingChat)
+    },
   )
 }
 
@@ -99,6 +104,7 @@ private fun ChatScreen(
   onSendPhoto: (Uri) -> Unit,
   onSendMedia: (Uri) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
+  onRetryLoadingChat: () -> Unit,
 ) {
   Surface(
     color = MaterialTheme.colorScheme.background,
@@ -122,29 +128,27 @@ private fun ChatScreen(
           .consumeWindowInsets(PaddingValues(top = topAppBarHeight)),
         propagateMinConstraints = true,
       ) {
-        if (uiState is CbmChatUiState.Loaded) {
-          CbmChatLoadedScreen(
-            uiState = uiState,
-            imageLoader = imageLoader,
-            appPackageId = appPackageId,
-            topAppBarScrollBehavior = topAppBarScrollBehavior,
-            openUrl = openUrl,
-            onBannerLinkClicked = onBannerLinkClicked,
-            onRetrySendChatMessage = onRetrySendChatMessage,
-            onSendMessage = onSendMessage,
-            onSendPhoto = onSendPhoto,
-            onSendMedia = onSendMedia,
-          )
-        }
-        val shouldShowLoadingIndicator = when (uiState) {
-          Initializing -> true
-          is Loaded -> {
-            uiState.messages.itemCount == 0 && !uiState.messages.loadState.isIdle
+        when (uiState) {
+          Initializing -> {
+            HedvigFullScreenCenterAlignedProgress()
           }
-        }
-        // todo cbm check if indicator should show here
-        if (shouldShowLoadingIndicator) {
-          HedvigFullScreenCenterAlignedProgress()
+          Error -> {
+            HedvigErrorSection(onRetryLoadingChat)
+          }
+          is Loaded -> {
+            CbmChatLoadedScreen(
+              uiState = uiState,
+              imageLoader = imageLoader,
+              appPackageId = appPackageId,
+              topAppBarScrollBehavior = topAppBarScrollBehavior,
+              openUrl = openUrl,
+              onBannerLinkClicked = onBannerLinkClicked,
+              onRetrySendChatMessage = onRetrySendChatMessage,
+              onSendMessage = onSendMessage,
+              onSendPhoto = onSendPhoto,
+              onSendMedia = onSendMedia,
+            )
+          }
         }
       }
     }
