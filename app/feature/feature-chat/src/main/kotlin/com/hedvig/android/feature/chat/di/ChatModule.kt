@@ -109,23 +109,24 @@ val chatModule = module {
 
   single<CbmChatRepository> {
     CbmChatRepository(
-      get<ApolloClient>(),
-      get<AppDatabase>(),
-      get<ChatDao>(),
-      get<RemoteKeyDao>(),
-      get<FileService>(),
-      get<BotServiceService>(),
-      get<Clock>(),
+      apolloClient = get<ApolloClient>(),
+      database = get<AppDatabase>(),
+      chatDao = get<ChatDao>(),
+      remoteKeyDao = get<RemoteKeyDao>(),
+      fileService = get<FileService>(),
+      botServiceService = get<BotServiceService>(),
+      clock = get<Clock>(),
     )
   }
 
   viewModel<CbmChatViewModel> { (conversationId: String) ->
     CbmChatViewModel(
       conversationId = conversationId,
-      get<AppDatabase>(),
-      get<ChatDao>(),
-      get<RemoteKeyDao>(),
-      get<CbmChatRepository>(),
+      database = get<AppDatabase>(),
+      chatDao = get<ChatDao>(),
+      remoteKeyDao = get<RemoteKeyDao>(),
+      chatRepository = get<CbmChatRepository>(),
+      clock = get<Clock>(),
     )
   }
 }
