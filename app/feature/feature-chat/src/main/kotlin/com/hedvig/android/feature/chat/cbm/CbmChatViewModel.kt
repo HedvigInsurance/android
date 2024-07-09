@@ -178,7 +178,7 @@ private fun presentLoadedChat(
       pagingData.map { cbmChatMessage ->
         CbmUiChatMessage(
           cbmChatMessage,
-          cbmChatMessage.id == lastDeliveredMessageId.toString(),
+          cbmChatMessage.sender == Sender.MEMBER && cbmChatMessage.id == lastDeliveredMessageId.toString(),
         )
       }
     }.cachedIn(coroutineScope)
