@@ -44,6 +44,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
 
 internal class CbmChatViewModel(
   conversationId: String,
@@ -51,9 +52,10 @@ internal class CbmChatViewModel(
   chatDao: ChatDao,
   remoteKeyDao: RemoteKeyDao,
   chatRepository: CbmChatRepository, // todo cbm: Make this a provider for demo mode
+  clock: Clock,
 ) : MoleculeViewModel<CbmChatEvent, CbmChatUiState>(
     CbmChatUiState.Initializing,
-    CbmChatPresenter(Uuid.fromString(conversationId), database, chatDao, remoteKeyDao, chatRepository),
+    CbmChatPresenter(Uuid.fromString(conversationId), database, chatDao, remoteKeyDao, chatRepository, clock),
   )
 
 internal class CbmChatPresenter(
@@ -62,6 +64,7 @@ internal class CbmChatPresenter(
   private val chatDao: ChatDao,
   private val remoteKeyDao: RemoteKeyDao,
   private val chatRepository: CbmChatRepository,
+  private val clock: Clock,
 ) : MoleculePresenter<CbmChatEvent, CbmChatUiState> {
   @OptIn(ExperimentalPagingApi::class)
   @Composable
@@ -132,7 +135,6 @@ internal class CbmChatPresenter(
       Initializing -> CbmChatUiState.Initializing
       Failed -> CbmChatUiState.Error
       is Loaded -> {
-        logcat { "Stelios Loaded" }
         presentLoadedChat(
           conversationIdStatusValue.backendConversationId,
           conversationId,
@@ -140,6 +142,7 @@ internal class CbmChatPresenter(
           chatDao,
           remoteKeyDao,
           chatRepository,
+          clock,
         )
       }
     }
@@ -155,6 +158,7 @@ private fun presentLoadedChat(
   chatDao: ChatDao,
   remoteKeyDao: RemoteKeyDao,
   chatRepository: CbmChatRepository,
+  clock: Clock,
 ): CbmChatUiState.Loaded {
   val coroutineScope = rememberCoroutineScope()
   val latestMessage by remember(chatDao) {
@@ -166,7 +170,7 @@ private fun presentLoadedChat(
   val pagingDataFlow = remember(backendConversationId) {
     Pager(
       config = PagingConfig(pageSize = 50, prefetchDistance = 50, jumpThreshold = 10),
-      remoteMediator = ChatRemoteMediator(conversationId, database, chatDao, remoteKeyDao, chatRepository),
+      remoteMediator = ChatRemoteMediator(conversationId, database, chatDao, remoteKeyDao, chatRepository, clock),
       pagingSourceFactory = { chatDao.messages(conversationId) },
     ).flow
       .map { value ->

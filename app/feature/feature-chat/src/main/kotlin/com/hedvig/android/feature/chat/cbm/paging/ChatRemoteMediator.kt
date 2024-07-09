@@ -15,6 +15,8 @@ import com.hedvig.android.feature.chat.cbm.database.ChatMessageEntity
 import com.hedvig.android.feature.chat.cbm.database.RemoteKeyDao
 import com.hedvig.android.feature.chat.cbm.database.RemoteKeyEntity
 import com.hedvig.android.feature.chat.cbm.model.toChatMessageEntity
+import kotlin.time.Duration.Companion.hours
+import kotlinx.datetime.Clock
 
 @OptIn(ExperimentalPagingApi::class)
 internal class ChatRemoteMediator(
@@ -23,6 +25,7 @@ internal class ChatRemoteMediator(
   private val chatDao: ChatDao,
   private val remoteKeyDao: RemoteKeyDao,
   private val chatRepository: CbmChatRepository,
+  private val clock: Clock,
 ) : RemoteMediator<Int, ChatMessageEntity>() {
   override suspend fun load(loadType: LoadType, state: PagingState<Int, ChatMessageEntity>): MediatorResult {
     val pagingToken = when (loadType) {
@@ -51,7 +54,7 @@ internal class ChatRemoteMediator(
     } else {
       database.withTransaction {
         if (loadType == LoadType.REFRESH) {
-          chatDao.clearRemoteMessages(conversationId)
+          chatDao.clearRemoteMessagesAndOldUnsentMessages(conversationId, clock.now().minus(12.hours))
           remoteKeyDao.deleteAllForConversation(conversationId)
         }
         val remoteKeyEntityToSave = when (loadType) {

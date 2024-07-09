@@ -7,23 +7,28 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.benasher44.uuid.Uuid
 import kotlinx.coroutines.flow.Flow
+import kotlinx.datetime.Instant
 
 @Dao
 interface ChatDao {
+  @Insert(onConflict = OnConflictStrategy.IGNORE)
+  suspend fun insert(message: ChatMessageEntity)
+
   @Insert(onConflict = OnConflictStrategy.IGNORE)
   suspend fun insertAll(messages: List<ChatMessageEntity>)
 
   /**
    * Clears all remotely fetched messages and leaves the failed to be sent ones in the DB so that even after a refresh
-   * they can still be retried
+   * they can still be retried. Does remove old messages that failed to be sent according to [deleteUnsentMessagesOlderThan].
    */
   @Query(
     """
     DELETE FROM chat_messages
     WHERE conversationId LIKE :conversationId 
+        AND (failedToSend IS NULL OR sentAt <= :deleteUnsentMessagesOlderThan)
     """,
   )
-  suspend fun clearRemoteMessages(conversationId: Uuid)
+  suspend fun clearRemoteMessagesAndOldUnsentMessages(conversationId: Uuid, deleteUnsentMessagesOlderThan: Instant)
 
   @Query(
     """
