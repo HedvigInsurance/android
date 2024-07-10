@@ -1,12 +1,11 @@
 package com.hedvig.android.core.icons.hedvig.colored.hedvig
 
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.PathFillType.Companion.NonZero
+import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.graphics.vector.ImageVector.Builder
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.icons.HedvigIcons
@@ -17,52 +16,55 @@ public val HedvigIcons.Chat: ImageVector
     if (_chat != null) {
       return _chat!!
     }
-    _chat = Builder(
-      name = "Chat",
-      defaultWidth = 32.0.dp,
-      defaultHeight = 32.0.dp,
-      viewportWidth = 32.0f,
-      viewportHeight = 32.0f,
-    ).apply {
-      path(
-        fill = SolidColor(Color(0xFF59BFFA)),
-        strokeLineCap = StrokeCap.Butt,
-        strokeLineJoin = StrokeJoin.Miter,
-        pathFillType = NonZero,
-      ) {
-        moveTo(32.0f, 16.0f)
-        curveTo(32.0f, 24.8366f, 24.8366f, 32.0f, 16.0f, 32.0f)
-        curveTo(7.1634f, 32.0f, 0.0f, 24.8366f, 0.0f, 16.0f)
-        curveTo(0.0f, 7.1634f, 7.1634f, 0.0f, 16.0f, 0.0f)
-        curveTo(24.8366f, 0.0f, 32.0f, 7.1634f, 32.0f, 16.0f)
-        close()
-      }
-      path(
-        fill = SolidColor(Color(0xFFFAFAFA)),
-        strokeLineCap = StrokeCap.Butt,
-        strokeLineJoin = StrokeJoin.Miter,
-        pathFillType = NonZero,
-      ) {
-        moveTo(16.0f, 23.9927f)
-        curveTo(20.4183f, 23.9927f, 24.0f, 20.4126f, 24.0f, 15.9963f)
-        curveTo(24.0f, 11.5801f, 20.4183f, 8.0f, 16.0f, 8.0f)
-        curveTo(11.5817f, 8.0f, 8.0f, 11.5801f, 8.0f, 15.9963f)
-        curveTo(8.0f, 16.3329f, 8.0208f, 16.6647f, 8.0612f, 16.9904f)
-        curveTo(8.1394f, 17.6553f, 8.3027f, 18.3078f, 8.5474f, 18.9316f)
-        curveTo(8.6964f, 19.3116f, 8.7709f, 19.5016f, 8.7749f, 19.6569f)
-        curveTo(8.7789f, 19.8121f, 8.7243f, 19.9758f, 8.6152f, 20.3031f)
-        lineTo(8.193f, 21.5692f)
-        curveTo(7.7046f, 23.0336f, 7.4604f, 23.7658f, 7.8471f, 24.1523f)
-        curveTo(8.2338f, 24.5388f, 8.9663f, 24.2947f, 10.4314f, 23.8066f)
-        lineTo(11.698f, 23.3846f)
-        curveTo(12.0255f, 23.2755f, 12.1893f, 23.2209f, 12.3446f, 23.2249f)
-        curveTo(12.4999f, 23.229f, 12.69f, 23.3034f, 13.0701f, 23.4523f)
-        curveTo(13.9592f, 23.8006f, 14.9065f, 23.9841f, 15.8651f, 23.9915f)
-        curveTo(15.91f, 23.9923f, 15.9549f, 23.9927f, 16.0f, 23.9927f)
-        close()
-      }
-    }
-      .build()
+    _chat = ImageVector
+      .Builder(
+        name = "Chat",
+        defaultWidth = 32.0.dp,
+        defaultHeight = 32.0.dp,
+        viewportWidth = 32.0f,
+        viewportHeight = 32.0f,
+      ).apply {
+        path(
+          fill = SolidColor(Color(0xFF000000)),
+          fillAlpha = 1.0f,
+          stroke = null,
+          strokeAlpha = 1.0f,
+          strokeLineWidth = 1.0f,
+          strokeLineCap = StrokeCap.Butt,
+          strokeLineJoin = StrokeJoin.Miter,
+          strokeLineMiter = 1.0f,
+          pathFillType = PathFillType.EvenOdd,
+        ) {
+          moveTo(16f, 32.0001f)
+          curveTo(24.8366f, 32.0001f, 32f, 24.8366f, 32f, 16.0001f)
+          curveTo(32f, 7.1635f, 24.8366f, 0.0001f, 16f, 0.0001f)
+          curveTo(7.1634f, 0.0001f, 0f, 7.1635f, 0f, 16.0001f)
+          curveTo(0f, 24.8366f, 7.1634f, 32.0001f, 16f, 32.0001f)
+          close()
+          moveTo(7.5f, 11.5f)
+          curveTo(7.5f, 10.3954f, 8.3954f, 9.5f, 9.5f, 9.5f)
+          horizontalLineTo(22.5f)
+          curveTo(23.6046f, 9.5f, 24.5f, 10.3954f, 24.5f, 11.5f)
+          verticalLineTo(20.5f)
+          curveTo(24.5f, 21.6046f, 23.6046f, 22.5f, 22.5f, 22.5f)
+          horizontalLineTo(9.5f)
+          curveTo(8.3954f, 22.5f, 7.5f, 21.6046f, 7.5f, 20.5f)
+          verticalLineTo(11.5f)
+          close()
+          moveTo(9.82169f, 13.4264f)
+          lineTo(15.4495f, 17.1371f)
+          curveTo(15.7835f, 17.3572f, 16.2165f, 17.3572f, 16.5505f, 17.1371f)
+          lineTo(22.1783f, 13.4264f)
+          curveTo(22.3791f, 13.294f, 22.5f, 13.0695f, 22.5f, 12.829f)
+          curveTo(22.5f, 12.2591f, 21.8663f, 11.9178f, 21.3905f, 12.2315f)
+          lineTo(16.5505f, 15.4228f)
+          curveTo(16.2165f, 15.643f, 15.7835f, 15.643f, 15.4495f, 15.4228f)
+          lineTo(10.6095f, 12.2315f)
+          curveTo(10.1337f, 11.9178f, 9.5f, 12.2591f, 9.5f, 12.829f)
+          curveTo(9.5f, 13.0695f, 9.6209f, 13.294f, 9.8217f, 13.4264f)
+          close()
+        }
+      }.build()
     return _chat!!
   }
 
