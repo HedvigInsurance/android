@@ -52,6 +52,7 @@ dependencies {
   implementation(projects.coreRetrofit)
   implementation(projects.coreUi)
   implementation(projects.coreUiData)
+  implementation(projects.designSystemHedvig)
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
   implementation(projects.navigationCore)

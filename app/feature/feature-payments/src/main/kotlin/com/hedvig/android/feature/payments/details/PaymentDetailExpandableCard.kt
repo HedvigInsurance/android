@@ -38,6 +38,7 @@ import com.hedvig.android.core.icons.hedvig.normal.ChevronDown
 import com.hedvig.android.core.ui.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.design.system.hedvig.ripple
 import com.hedvig.android.feature.payments.data.MemberCharge
 import hedvig.resources.R
 import java.time.format.DateTimeFormatter
@@ -65,7 +66,7 @@ internal fun PaymentDetailExpandableCard(
         .fillMaxWidth()
         .clickable(
           interactionSource = remember { MutableInteractionSource() },
-          indication = rememberRipple(
+          indication = ripple(
             bounded = false,
             // This fixes the problem of the ripple not properly resizing as the card expands
             radius = 1000.dp,
