@@ -4,7 +4,6 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -21,15 +20,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -39,6 +40,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -51,6 +53,7 @@ import coil.ImageLoader
 import com.hedvig.android.audio.player.HedvigAudioPlayer
 import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
 import com.hedvig.android.compose.photo.capture.state.rememberPhotoCaptureState
+import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
@@ -60,9 +63,9 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.fileupload.ui.FilePickerBottomSheet
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.colored.hedvig.Chat
+import com.hedvig.android.core.icons.hedvig.normal.ArrowBack
 import com.hedvig.android.core.icons.hedvig.small.hedvig.ArrowNorthEast
 import com.hedvig.android.core.ui.DynamicFilesGridBetweenOtherThings
-import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
 import com.hedvig.android.core.ui.dialog.ErrorDialog
 import com.hedvig.android.core.ui.plus
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
@@ -135,9 +138,11 @@ private fun ClaimDetailScreen(
     modifier = Modifier.fillMaxSize(),
   ) {
     Column(Modifier.fillMaxSize()) {
-      TopAppBarWithBack(
-        onClick = navigateUp,
-        title = stringResource(R.string.CLAIMS_YOUR_CLAIM),
+      ClaimDetailTopAppBar(
+        navigateUp = navigateUp,
+        navigateToConversation = uiState.safeCast<ClaimDetailUiState.Content>()?.let {
+          { navigateToConversation(it.conversationId) }
+        },
       )
       when (uiState) {
         is ClaimDetailUiState.Content -> {
@@ -253,11 +258,54 @@ private fun ClaimDetailScreen(
         }
       },
       onRemoveFile = null,
-      contentPadding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing.only(
-        WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom,
-      ).asPaddingValues(),
+      contentPadding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
+        .only(
+          WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom,
+        ).asPaddingValues(),
     )
   }
+}
+
+@Composable
+private fun ClaimDetailTopAppBar(navigateUp: () -> Unit, navigateToConversation: (() -> Unit)?) {
+  TopAppBar(
+    title = {
+      Text(
+        text = stringResource(R.string.CLAIMS_YOUR_CLAIM),
+        style = MaterialTheme.typography.bodyLarge,
+      )
+    },
+    windowInsets = TopAppBarDefaults.windowInsets,
+    navigationIcon = {
+      IconButton(
+        onClick = navigateUp,
+        content = {
+          Icon(
+            imageVector = Icons.Hedvig.ArrowBack,
+            contentDescription = null,
+          )
+        },
+      )
+    },
+    actions = {
+      if (navigateToConversation != null) {
+        IconButton(navigateToConversation, Modifier.size(40.dp)) {
+          Icon(
+            imageVector = Icons.Hedvig.Chat,
+            contentDescription = stringResource(R.string.DASHBOARD_OPEN_CHAT),
+            tint = com.hedvig.android.design.system.hedvig.HedvigTheme.colorScheme.fillSecondary,
+            modifier = Modifier
+              .size(32.dp)
+              .clip(CircleShape),
+          )
+          // TopAppBar has a default 4.dp padding horizontally
+          // https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3/AppBar.kt;l=2890?q=private%20val%20TopAppBarHorizontalPadding%20%3D%204.dp&sq=&ss=androidx%2Fplatform%2Fframeworks%2Fsupport
+          Spacer(Modifier.width((16 - 4).dp))
+        }
+      }
+    },
+    colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
+  )
 }
 
 @Composable
@@ -275,7 +323,7 @@ private fun BeforeGridContent(
       insuranceDisplayName = uiState.insuranceDisplayName,
     )
     Spacer(Modifier.height(8.dp))
-    ClaimInfoCard(uiState.claimStatus, uiState.claimOutcome, { navigateToConversation(uiState.conversationId) })
+    ClaimInfoCard(uiState.claimStatus, uiState.claimOutcome)
     Spacer(Modifier.height(24.dp))
     Text(
       stringResource(R.string.claim_status_claim_details_title),
@@ -406,49 +454,18 @@ private fun TermsConditionsCard(onClick: () -> Unit, isLoading: Boolean, modifie
 internal fun ClaimInfoCard(
   claimStatus: ClaimDetailUiState.Content.ClaimStatus,
   claimOutcome: ClaimDetailUiState.Content.ClaimOutcome,
-  navigateToConversation: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   HedvigCard(modifier = modifier) {
-    Column {
-      val claimIsInUndeterminedState = claimStatus == ClaimDetailUiState.Content.ClaimStatus.CLOSED &&
-        claimOutcome == ClaimDetailUiState.Content.ClaimOutcome.UNKNOWN
-      if (!claimIsInUndeterminedState) {
-        Text(
-          text = statusParagraphText(claimStatus, claimOutcome),
-          style = MaterialTheme.typography.bodyLarge,
-          modifier = Modifier.padding(16.dp),
-        )
-        Spacer(Modifier.height(4.dp))
-        HorizontalDivider()
-      }
-      Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-          .padding(16.dp)
-          .fillMaxWidth(),
-      ) {
-        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-          Text(
-            text = stringResource(R.string.claim_status_contact_generic_subtitle),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-          )
-          Text(
-            text = stringResource(R.string.claim_status_contact_generic_title),
-            style = MaterialTheme.typography.bodyLarge,
-          )
-        }
-        Spacer(Modifier.width(4.dp))
-        IconButton(onClick = navigateToConversation) {
-          Image(
-            imageVector = Icons.Hedvig.Chat,
-            contentDescription = stringResource(R.string.claim_status_detail_chat_button_description),
-            modifier = Modifier.size(32.dp),
-          )
-        }
-      }
+    val claimIsInUndeterminedState = claimStatus == ClaimDetailUiState.Content.ClaimStatus.CLOSED &&
+      claimOutcome == ClaimDetailUiState.Content.ClaimOutcome.UNKNOWN
+    if (!claimIsInUndeterminedState) {
+      Text(
+        text = statusParagraphText(claimStatus, claimOutcome),
+        style = MaterialTheme.typography.bodyLarge,
+        modifier = Modifier.padding(16.dp),
+      )
+      Spacer(Modifier.height(4.dp))
     }
   }
 }
@@ -652,6 +669,18 @@ private fun PreviewClaimDetailScreen() {
         onTakePhoto = {},
         onPickFile = {},
       )
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewClaimDetailTopAppBar() {
+  HedvigTheme {
+    com.hedvig.android.design.system.hedvig.HedvigTheme {
+      Surface(color = MaterialTheme.colorScheme.background) {
+        ClaimDetailTopAppBar({}, {})
+      }
     }
   }
 }
