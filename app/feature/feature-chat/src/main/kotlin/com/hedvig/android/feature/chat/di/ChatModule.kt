@@ -16,6 +16,7 @@ import com.hedvig.android.feature.chat.cbm.data.GetAllConversationsUseCase
 import com.hedvig.android.feature.chat.cbm.data.GetAllConversationsUseCaseImpl
 import com.hedvig.android.feature.chat.cbm.database.AppDatabase
 import com.hedvig.android.feature.chat.cbm.database.ChatDao
+import com.hedvig.android.feature.chat.cbm.database.ConversationDao
 import com.hedvig.android.feature.chat.cbm.database.RemoteKeyDao
 import com.hedvig.android.feature.chat.cbm.inbox.InboxViewModel
 import com.hedvig.android.feature.chat.data.BotServiceService
@@ -102,6 +103,9 @@ val chatModule = module {
   single<RemoteKeyDao> {
     get<AppDatabase>().remoteKeyDao()
   }
+  single<ConversationDao> {
+    get<AppDatabase>().conversationDao()
+  }
 
   viewModel<InboxViewModel> {
     InboxViewModel(get<GetAllConversationsUseCase>())
@@ -125,6 +129,7 @@ val chatModule = module {
       database = get<AppDatabase>(),
       chatDao = get<ChatDao>(),
       remoteKeyDao = get<RemoteKeyDao>(),
+      conversationDao = get<ConversationDao>(),
       chatRepository = get<CbmChatRepository>(),
       clock = get<Clock>(),
     )

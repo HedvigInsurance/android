@@ -28,6 +28,7 @@ import com.hedvig.android.feature.chat.cbm.ConversationIdStatus.Loaded
 import com.hedvig.android.feature.chat.cbm.database.AppDatabase
 import com.hedvig.android.feature.chat.cbm.database.ChatDao
 import com.hedvig.android.feature.chat.cbm.database.ChatMessageEntity
+import com.hedvig.android.feature.chat.cbm.database.ConversationDao
 import com.hedvig.android.feature.chat.cbm.database.RemoteKeyDao
 import com.hedvig.android.feature.chat.cbm.model.CbmChatMessage
 import com.hedvig.android.feature.chat.cbm.model.Sender
@@ -51,11 +52,20 @@ internal class CbmChatViewModel(
   database: AppDatabase,
   chatDao: ChatDao,
   remoteKeyDao: RemoteKeyDao,
+  conversationDao: ConversationDao,
   chatRepository: CbmChatRepository, // todo cbm: Make this a provider for demo mode
   clock: Clock,
 ) : MoleculeViewModel<CbmChatEvent, CbmChatUiState>(
     CbmChatUiState.Initializing,
-    CbmChatPresenter(Uuid.fromString(conversationId), database, chatDao, remoteKeyDao, chatRepository, clock),
+    CbmChatPresenter(
+      Uuid.fromString(conversationId),
+      database,
+      chatDao,
+      remoteKeyDao,
+      conversationDao,
+      chatRepository,
+      clock,
+    ),
   )
 
 internal class CbmChatPresenter(
@@ -63,6 +73,7 @@ internal class CbmChatPresenter(
   private val database: AppDatabase,
   private val chatDao: ChatDao,
   private val remoteKeyDao: RemoteKeyDao,
+  private val conversationDao: ConversationDao,
   private val chatRepository: CbmChatRepository,
   private val clock: Clock,
 ) : MoleculePresenter<CbmChatEvent, CbmChatUiState> {
@@ -141,6 +152,7 @@ internal class CbmChatPresenter(
           database,
           chatDao,
           remoteKeyDao,
+          conversationDao,
           chatRepository,
           clock,
         )
@@ -157,6 +169,7 @@ private fun presentLoadedChat(
   database: AppDatabase,
   chatDao: ChatDao,
   remoteKeyDao: RemoteKeyDao,
+  conversationDao: ConversationDao,
   chatRepository: CbmChatRepository,
   clock: Clock,
 ): CbmChatUiState.Loaded {
@@ -168,9 +181,11 @@ private fun presentLoadedChat(
     chatRepository.bannerText(conversationId)
   }.collectAsState(null)
   val pagingDataFlow = remember(backendConversationId) {
+    val remoteMediator =
+      ChatRemoteMediator(conversationId, database, chatDao, remoteKeyDao, conversationDao, chatRepository, clock)
     Pager(
       config = PagingConfig(pageSize = 50, prefetchDistance = 50, jumpThreshold = 10),
-      remoteMediator = ChatRemoteMediator(conversationId, database, chatDao, remoteKeyDao, chatRepository, clock),
+      remoteMediator = remoteMediator,
       pagingSourceFactory = { chatDao.messages(conversationId) },
     ).flow
       .map { value ->

@@ -121,7 +121,7 @@ internal class CbmChatRepository(
   suspend fun chatMessages(
     conversationId: Uuid,
     pagingToken: PagingToken?,
-  ): Either<Throwable?, ChatMessagePageResponse> {
+  ): Either<Throwable, ChatMessagePageResponse> {
     return internalChatMessages(conversationId, pagingToken).mapLeft { Exception(it) }
   }
 
@@ -133,7 +133,7 @@ internal class CbmChatRepository(
         }
         internalChatMessages(conversationId, newerTokenOrNull).fold(
           ifLeft = { errorMessage ->
-            emit(errorMessage ?: "Unknown error")
+            emit(errorMessage)
           },
           ifRight = { messagePageResponse ->
             database.withTransaction {
@@ -229,7 +229,7 @@ internal class CbmChatRepository(
   private suspend fun internalChatMessages(
     conversationId: Uuid,
     pagingToken: PagingToken?,
-  ): Either<String?, ChatMessagePageResponse> {
+  ): Either<String, ChatMessagePageResponse> {
     return either {
       val data = apolloClient
         .query(

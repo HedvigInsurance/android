@@ -11,3 +11,6 @@ data class ConversationEntity(
   val id: Uuid,
   val lastMessageReadTimestamp: Instant,
 )
+
+val List<ConversationEntity>.asIdToTimestampMap: Map<Uuid, Instant>
+  get() = associate { it.id to it.lastMessageReadTimestamp }

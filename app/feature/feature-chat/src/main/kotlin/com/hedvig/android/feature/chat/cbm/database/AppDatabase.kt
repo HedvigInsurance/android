@@ -15,4 +15,6 @@ abstract class AppDatabase : RoomDatabase() {
   abstract fun chatDao(): ChatDao
 
   abstract fun remoteKeyDao(): RemoteKeyDao
+
+  abstract fun conversationDao(): ConversationDao
 }
