@@ -48,9 +48,7 @@ internal class ChatRemoteMediator(
     val response = chatRepository.chatMessages(conversationId, pagingToken).getOrElse {
       return MediatorResult.Error(it)
     }
-    response.messages.firstOrNull()?.sentAt?.let { newestMessageTimestamp ->
-      conversationDao.insertNewLatestTimestampIfApplicable(ConversationEntity(conversationId, newestMessageTimestamp))
-    }
+    conversationDao.insertNewLatestTimestampIfApplicable(ConversationEntity(conversationId, clock.now()))
     // The mediator gets a [LoadType.REFRESH] request when we jump enough items to trigger the jumpThreshold of the
     // Pager. This is distinguished from the initial Refresh by seeing if we already have pages loaded.
     // This normally clears the entire cache, but we do not want to do that here, so that already loaded messages are
