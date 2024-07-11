@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
@@ -16,12 +16,14 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -79,35 +81,47 @@ private fun InboxScreen(
   onConversationClick: (id: String) -> Unit,
   reload: () -> Unit,
 ) {
-  Column(
-    Modifier
-      .fillMaxSize()
-      .consumeWindowInsets(
-        WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
-      ),
+  Surface(
+    color = MaterialTheme.colorScheme.background,
+    modifier = Modifier.fillMaxSize(),
   ) {
-    TopAppBarWithBack(
-      title = stringResource(R.string.CHAT_CONVERSATION_INBOX),
-      onClick = navigateUp,
-    )
-    when (uiState) {
-      InboxUiState.Loading -> HedvigFullScreenCenterAlignedProgressDebounced()
-      InboxUiState.Failure -> HedvigErrorSection(
-        onButtonClick = reload,
-        modifier = Modifier.weight(1f),
+    Column {
+      TopAppBarWithBack(
+        title = stringResource(R.string.CHAT_CONVERSATION_INBOX),
+        onClick = navigateUp,
       )
+      when (uiState) {
+        InboxUiState.Loading -> HedvigFullScreenCenterAlignedProgressDebounced()
+        InboxUiState.Failure -> HedvigErrorSection(
+          onButtonClick = reload,
+          modifier = Modifier.weight(1f),
+        )
 
-      is InboxUiState.Success -> InboxSuccessScreen(
-        uiState.inboxConversations,
-        onConversationClick,
-      )
+        is InboxUiState.Success -> InboxSuccessScreen(
+          uiState.inboxConversations,
+          onConversationClick,
+        )
+      }
     }
   }
 }
 
 @Composable
 private fun InboxSuccessScreen(inboxConversations: List<InboxConversation>, onConversationClick: (id: String) -> Unit) {
-  LazyColumn {
+  val lazyListState = rememberLazyListState()
+  SideEffect {
+    // Keep at the top of the list if we are already at the top and there is a re-arrangement
+    // https://slack-chats.kotlinlang.org/t/20209529/ujn92aya0-wave-i-have-a-reversed-lazycolumn-and-its-last-ite#e0eabbdf-ae4b-420a-9bca-2a9de96ed2bd
+    if (!lazyListState.canScrollBackward) {
+      lazyListState.requestScrollToItem(0)
+    }
+  }
+  LazyColumn(
+    state = lazyListState,
+    contentPadding = WindowInsets.safeDrawing
+      .only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal)
+      .asPaddingValues(),
+  ) {
     itemsIndexed(
       items = inboxConversations,
       key = { _, item -> item.conversationId },
