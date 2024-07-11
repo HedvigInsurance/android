@@ -24,6 +24,7 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.ui.claimstatus.model.ClaimPillType
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
+import kotlinx.datetime.Instant
 
 @Composable
 fun ClaimStatusCards(
@@ -36,8 +37,6 @@ fun ClaimStatusCards(
     ClaimStatusCard(
       uiState = claimStatusCardsUiState.first(),
       onClick = onClick,
-      claimType = claimStatusCardsUiState.first().claimType,
-      insuranceDisplayName = claimStatusCardsUiState.first().insuranceDisplayName,
       modifier = modifier.padding(contentPadding),
     )
   } else {
@@ -54,8 +53,6 @@ fun ClaimStatusCards(
         ClaimStatusCard(
           uiState = claimStatusUiState,
           onClick = onClick,
-          claimType = claimStatusUiState.claimType,
-          insuranceDisplayName = claimStatusUiState.insuranceDisplayName,
           modifier = Modifier.fillMaxWidth(),
         )
       }
@@ -88,6 +85,7 @@ private fun PreviewClaimStatusCards() {
             ),
             claimType = "Broken item",
             insuranceDisplayName = "Home Insurance Homeowner",
+            submittedDate = Instant.parse("2024-05-01T00:00:00Z"),
           )
         }.toNonEmptyListOrNull()!!,
       )
