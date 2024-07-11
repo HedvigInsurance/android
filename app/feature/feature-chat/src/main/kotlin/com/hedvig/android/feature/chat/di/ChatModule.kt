@@ -85,7 +85,7 @@ val chatModule = module {
 
   // cbm
   single<GetAllConversationsUseCase> {
-    GetAllConversationsUseCaseImpl(get<ApolloClient>())
+    GetAllConversationsUseCaseImpl(get<ApolloClient>(), get<ConversationDao>())
   }
 
   single<AppDatabase> {

@@ -6,6 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import com.benasher44.uuid.Uuid
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ConversationDao {
@@ -14,7 +15,7 @@ interface ConversationDao {
       SELECT * FROM conversations
     """,
   )
-  suspend fun getConversations(): List<ConversationEntity>
+  fun getConversations(): Flow<List<ConversationEntity>>
 
   @Query(
     """
