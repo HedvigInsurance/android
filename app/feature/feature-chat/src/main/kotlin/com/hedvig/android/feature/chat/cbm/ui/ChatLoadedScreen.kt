@@ -63,6 +63,7 @@ import androidx.compose.ui.graphics.vector.VectorProperty
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -128,7 +129,9 @@ internal fun CbmChatLoadedScreen(
 ) {
   val lazyListState = rememberLazyListState()
   val coroutineScope = rememberCoroutineScope()
-  val scrollToBottom = {
+  val focusManager = LocalFocusManager.current
+  val onMessageSent = {
+    focusManager.clearFocus()
     coroutineScope.launch { lazyListState.scrollToItem(0) }
   }
   ChatLoadedScreen(
@@ -143,15 +146,15 @@ internal fun CbmChatLoadedScreen(
       ChatInput(
         onSendMessage = {
           onSendMessage(it)
-          scrollToBottom()
+          onMessageSent()
         },
         onSendPhoto = {
           onSendPhoto(it)
-          scrollToBottom()
+          onMessageSent()
         },
         onSendMedia = {
           onSendMedia(it)
-          scrollToBottom()
+          onMessageSent()
         },
         appPackageId = appPackageId,
         modifier = Modifier.padding(16.dp),
