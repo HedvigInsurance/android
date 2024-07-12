@@ -27,10 +27,7 @@ internal class AndroidAccessTokenProvider(
       val authTokens = authTokenService.getTokens() ?: return@withLock null.also {
         logcat(LogPriority.VERBOSE) { "$requestId Tokens were not stored, proceeding unauthenticated" }
       }
-      if (authTokens.accessToken.expiryDate
-          .isExpired()
-          .not()
-      ) {
+      if (authTokens.accessToken.expiryDate.isExpired().not()) {
         logcat(LogPriority.VERBOSE) { "$requestId After lock, token was refreshed, proceeding with refreshed token" }
         return@withLock authTokens.accessToken.token
       }
@@ -44,12 +41,11 @@ internal class AndroidAccessTokenProvider(
       logcat(LogPriority.VERBOSE) {
         "$requestId Access token expired, but not expired refresh token, refreshing tokens now"
       }
-//      val refreshedAccessToken = authTokenService.refreshAndGetAccessToken() ?: return@withLock null.also {
-//        logcat(LogPriority.VERBOSE) { "$requestId Refreshing failed, proceed unauthenticated" }
-//      }
-//      logcat(LogPriority.VERBOSE) { "$requestId Refreshing succeeded, proceeding with refreshed tokens" }
-//      refreshedAccessToken.token
-      TODO("todo does not work without authlib")
+      val refreshedAccessToken = authTokenService.refreshAndGetAccessToken() ?: return@withLock null.also {
+        logcat(LogPriority.VERBOSE) { "$requestId Refreshing failed, proceed unauthenticated" }
+      }
+      logcat(LogPriority.VERBOSE) { "$requestId Refreshing succeeded, proceeding with refreshed tokens" }
+      refreshedAccessToken.token
     }
   }
 

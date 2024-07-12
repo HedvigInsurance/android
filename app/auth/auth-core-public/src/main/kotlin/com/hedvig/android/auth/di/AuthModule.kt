@@ -14,10 +14,17 @@ import com.hedvig.android.auth.event.AuthEventListener
 import com.hedvig.android.auth.event.AuthEventStorage
 import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
 import com.hedvig.android.auth.storage.AuthTokenStorage
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.di.ioDispatcherQualifier
 import com.hedvig.android.initializable.Initializable
+import com.hedvig.authlib.AuthEnvironment
+import com.hedvig.authlib.AuthRepository
+import com.hedvig.authlib.OkHttpNetworkAuthRepository
+import com.hedvig.authlib.connectpayment.OkHttpNetworkPaymentRepository
+import com.hedvig.authlib.connectpayment.PaymentRepository
 import kotlin.coroutines.CoroutineContext
+import okhttp3.OkHttpClient
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
@@ -27,7 +34,7 @@ val authModule = module {
   single<AuthTokenService> {
     AuthTokenServiceImpl(
       get<AuthTokenStorage>(),
-//      get<AuthRepository>(),
+      get<AuthRepository>(),
       get<AuthEventStorage>(),
       get<ApplicationScope>(),
     )
@@ -49,28 +56,28 @@ val authModule = module {
     )
   }
 
-//  single<AuthRepository> {
-//    OkHttpNetworkAuthRepository(
-//      environment = if (get<HedvigBuildConstants>().isProduction) {
-//        AuthEnvironment.PRODUCTION
-//      } else {
-//        AuthEnvironment.STAGING
-//      },
-//      additionalHttpHeadersProvider = { emptyMap() },
-//      okHttpClientBuilder = get<OkHttpClient.Builder>(),
-//    )
-//  }
-//  single<PaymentRepository> {
-//    OkHttpNetworkPaymentRepository(
-//      environment = if (get<HedvigBuildConstants>().isProduction) {
-//        AuthEnvironment.PRODUCTION
-//      } else {
-//        AuthEnvironment.STAGING
-//      },
-//      additionalHttpHeadersProvider = { emptyMap() },
-//      okHttpClientBuilder = get<OkHttpClient.Builder>().addInterceptor(get<AuthTokenRefreshingInterceptor>()),
-//    )
-//  }
+  single<AuthRepository> {
+    OkHttpNetworkAuthRepository(
+      environment = if (get<HedvigBuildConstants>().isProduction) {
+        AuthEnvironment.PRODUCTION
+      } else {
+        AuthEnvironment.STAGING
+      },
+      additionalHttpHeadersProvider = { emptyMap() },
+      okHttpClientBuilder = get<OkHttpClient.Builder>(),
+    )
+  }
+  single<PaymentRepository> {
+    OkHttpNetworkPaymentRepository(
+      environment = if (get<HedvigBuildConstants>().isProduction) {
+        AuthEnvironment.PRODUCTION
+      } else {
+        AuthEnvironment.STAGING
+      },
+      additionalHttpHeadersProvider = { emptyMap() },
+      okHttpClientBuilder = get<OkHttpClient.Builder>().addInterceptor(get<AuthTokenRefreshingInterceptor>()),
+    )
+  }
 
   single<LogoutUseCase> {
     LogoutUseCaseImpl(

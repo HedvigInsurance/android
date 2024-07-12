@@ -14,6 +14,14 @@ dependencyResolutionManagement {
   repositories {
     google()
     mavenCentral()
+    maven("https://maven.pkg.github.com/HedvigInsurance/odyssey") {
+      name = "odyssey"
+      credentials(PasswordCredentials::class)
+    }
+    maven("https://maven.pkg.github.com/HedvigInsurance/authlib") {
+      name = "authlib"
+      credentials(PasswordCredentials::class)
+    }
     maven("https://jitpack.io")
   }
 }
@@ -25,7 +33,8 @@ private val File.gradleModuleDescendants: Sequence<File>
     ?.asSequence()
     ?.filter {
       it.isDirectory
-    }?.flatMap {
+    }
+    ?.flatMap {
       if (File(it, "build.gradle.kts").exists()) {
         sequenceOf(it)
       } else {
@@ -44,3 +53,4 @@ rootProject.projectDir
 include("design-showcase")
 project(":design-showcase").projectDir = rootProject.projectDir.resolve("micro-apps").resolve("design-showcase")
 include("hedvig-lint")
+

@@ -19,12 +19,18 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.app.MainActivity
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.authlib.AuthRepository
+import com.hedvig.authlib.AuthTokenResult
+import com.hedvig.authlib.AuthorizationCodeGrant
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.androidx.viewmodel.ext.android.getViewModel
@@ -50,7 +56,8 @@ class ImpersonationReceiverActivity : ComponentActivity() {
       .onEach {
         startActivity(MainActivity.newInstance(this, withoutHistory = true))
         finish()
-      }.launchIn(lifecycleScope)
+      }
+      .launchIn(lifecycleScope)
 
     setContent {
       val state by viewModel.state.collectAsStateWithLifecycle()
@@ -80,7 +87,7 @@ class ImpersonationReceiverActivity : ComponentActivity() {
   companion object {
     val module = module {
       viewModel { params ->
-        ImpersonationReceiverViewModel(params.get(), get() /*get()*/)
+        ImpersonationReceiverViewModel(params.get(), get(), get())
       }
     }
   }
@@ -89,16 +96,14 @@ class ImpersonationReceiverActivity : ComponentActivity() {
 class ImpersonationReceiverViewModel(
   exchangeToken: String,
   authTokenService: AuthTokenService,
-//  authRepository: AuthRepository,
+  authRepository: AuthRepository,
 ) : ViewModel() {
   sealed class ViewState {
     object Loading : ViewState()
 
     object Success : ViewState()
 
-    data class Error(
-      val message: String?,
-    ) : ViewState()
+    data class Error(val message: String?) : ViewState()
   }
 
   private val _state = MutableStateFlow<ViewState>(ViewState.Loading)
@@ -111,16 +116,15 @@ class ImpersonationReceiverViewModel(
 
   init {
     viewModelScope.launch {
-//      when (val result = authRepository.exchange(AuthorizationCodeGrant(exchangeToken))) {
-//        is AuthTokenResult.Error -> _state.update { ViewState.Error(result.toString()) }
-//        is AuthTokenResult.Success -> {
-//          authTokenService.loginWithTokens(result.accessToken, result.refreshToken)
-//          _state.update { ViewState.Success }
-//          delay(500.milliseconds)
-//          _events.send(GoToLoggedInActivityEvent)
-//        }
-//      }
-      TODO("todo does not work without authlib")
+      when (val result = authRepository.exchange(AuthorizationCodeGrant(exchangeToken))) {
+        is AuthTokenResult.Error -> _state.update { ViewState.Error(result.toString()) }
+        is AuthTokenResult.Success -> {
+          authTokenService.loginWithTokens(result.accessToken, result.refreshToken)
+          _state.update { ViewState.Success }
+          delay(500.milliseconds)
+          _events.send(GoToLoggedInActivityEvent)
+        }
+      }
     }
   }
 }

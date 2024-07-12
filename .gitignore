@@ -14,6 +14,10 @@ sentry.properties
 .kotlin
 mapping.txt
 
+# graphql
+schema.json
+schema.graphqls
+
 # adyen credentials
 adyen.xml
 

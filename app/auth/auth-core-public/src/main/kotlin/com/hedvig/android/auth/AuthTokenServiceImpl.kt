@@ -4,6 +4,13 @@ import com.hedvig.android.auth.event.AuthEventStorage
 import com.hedvig.android.auth.storage.AuthTokenStorage
 import com.hedvig.android.auth.token.AuthTokens
 import com.hedvig.android.auth.token.LocalRefreshToken
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
+import com.hedvig.authlib.AccessToken
+import com.hedvig.authlib.AuthRepository
+import com.hedvig.authlib.AuthTokenResult
+import com.hedvig.authlib.RefreshToken
+import com.hedvig.authlib.RefreshTokenGrant
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -13,16 +20,16 @@ import kotlinx.coroutines.flow.stateIn
 
 internal class AuthTokenServiceImpl(
   private val authTokenStorage: AuthTokenStorage,
-//  private val authRepository: AuthRepository,
+  private val authRepository: AuthRepository,
   private val authEventStorage: AuthEventStorage,
   coroutineScope: CoroutineScope,
 ) : AuthTokenService {
-  override val authStatus: StateFlow<AuthStatus?> = authTokenStorage
-    .getTokens()
+  override val authStatus: StateFlow<AuthStatus?> = authTokenStorage.getTokens()
     .mapLatest { authTokens ->
       val (accessToken, refreshToken) = authTokens ?: return@mapLatest AuthStatus.LoggedOut
       AuthStatus.LoggedIn(accessToken, refreshToken)
-    }.stateIn(
+    }
+    .stateIn(
       coroutineScope,
       SharingStarted.Eagerly,
       null,
@@ -32,26 +39,26 @@ internal class AuthTokenServiceImpl(
     return authTokenStorage.getTokens().first()
   }
 
-//  override suspend fun refreshAndGetAccessToken(): AccessToken? {
-//    val refreshToken = getRefreshToken() ?: return null
-//    return when (val result = authRepository.exchange(RefreshTokenGrant(refreshToken.token))) {
-//      is AuthTokenResult.Error -> {
-//        logcat { "Refreshing token failed. Invalidating present tokens" }
-//        logoutAndInvalidateTokens()
-//        null
-//      }
-//      is AuthTokenResult.Success -> {
-//        logcat(LogPriority.VERBOSE) { "Refreshing token success. Updating tokens" }
-//        authTokenStorage.updateTokens(result.accessToken, result.refreshToken)
-//        result.accessToken
-//      }
-//    }
-//  }
+  override suspend fun refreshAndGetAccessToken(): AccessToken? {
+    val refreshToken = getRefreshToken() ?: return null
+    return when (val result = authRepository.exchange(RefreshTokenGrant(refreshToken.token))) {
+      is AuthTokenResult.Error -> {
+        logcat { "Refreshing token failed. Invalidating present tokens" }
+        logoutAndInvalidateTokens()
+        null
+      }
+      is AuthTokenResult.Success -> {
+        logcat(LogPriority.VERBOSE) { "Refreshing token success. Updating tokens" }
+        authTokenStorage.updateTokens(result.accessToken, result.refreshToken)
+        result.accessToken
+      }
+    }
+  }
 
-//  override suspend fun loginWithTokens(accessToken: AccessToken, refreshToken: RefreshToken) {
-//    authTokenStorage.updateTokens(accessToken, refreshToken)
-//    authEventStorage.loggedIn(accessToken.token, refreshToken.token)
-//  }
+  override suspend fun loginWithTokens(accessToken: AccessToken, refreshToken: RefreshToken) {
+    authTokenStorage.updateTokens(accessToken, refreshToken)
+    authEventStorage.loggedIn(accessToken.token, refreshToken.token)
+  }
 
   override suspend fun logoutAndInvalidateTokens() {
     authTokenStorage.clearTokens()

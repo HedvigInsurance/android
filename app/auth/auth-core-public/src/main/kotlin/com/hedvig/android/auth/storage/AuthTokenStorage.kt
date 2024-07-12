@@ -7,6 +7,11 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.hedvig.android.auth.token.AuthTokens
 import com.hedvig.android.auth.token.LocalAccessToken
 import com.hedvig.android.auth.token.LocalRefreshToken
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
+import com.hedvig.authlib.AccessToken
+import com.hedvig.authlib.RefreshToken
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.Clock
@@ -34,27 +39,27 @@ class AuthTokenStorage(
       }
   }
 
-//  suspend fun updateTokens(accessToken: AccessToken, refreshToken: RefreshToken) {
-//    dataStore.edit { preferences ->
-//      val now = clock.now()
-//
-//      preferences[accessTokenPreferenceKey] = accessToken.token
-//      val accessTokenExpirationInstant = now + accessToken.expiryInSeconds.seconds
-//      preferences[accessTokenExpirationIso8601PreferenceKey] = accessTokenExpirationInstant.toString()
-//
-//      preferences[refreshTokenPreferenceKey] = refreshToken.token
-//      val refreshTokenExpirationInstant = now + refreshToken.expiryInSeconds.seconds
-//      preferences[refreshTokenExpirationIso8601PreferenceKey] = refreshTokenExpirationInstant.toString()
-//      logcat(LogPriority.VERBOSE) {
-//        buildString {
-//          append("Saved tokens with expiration instants: ")
-//          append("Access token:$accessTokenExpirationInstant")
-//          append(" | ")
-//          append("Refresh token:$refreshTokenExpirationInstant")
-//        }
-//      }
-//    }
-//  }
+  suspend fun updateTokens(accessToken: AccessToken, refreshToken: RefreshToken) {
+    dataStore.edit { preferences ->
+      val now = clock.now()
+
+      preferences[accessTokenPreferenceKey] = accessToken.token
+      val accessTokenExpirationInstant = now + accessToken.expiryInSeconds.seconds
+      preferences[accessTokenExpirationIso8601PreferenceKey] = accessTokenExpirationInstant.toString()
+
+      preferences[refreshTokenPreferenceKey] = refreshToken.token
+      val refreshTokenExpirationInstant = now + refreshToken.expiryInSeconds.seconds
+      preferences[refreshTokenExpirationIso8601PreferenceKey] = refreshTokenExpirationInstant.toString()
+      logcat(LogPriority.VERBOSE) {
+        buildString {
+          append("Saved tokens with expiration instants: ")
+          append("Access token:$accessTokenExpirationInstant")
+          append(" | ")
+          append("Refresh token:$refreshTokenExpirationInstant")
+        }
+      }
+    }
+  }
 
   suspend fun clearTokens() {
     dataStore.edit { preferences ->
