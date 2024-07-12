@@ -6,6 +6,9 @@ import com.apollographql.apollo3.cache.normalized.FetchPolicy
 import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
+import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.featureflags.flags.Feature
+import kotlinx.coroutines.flow.first
 import kotlinx.datetime.Instant
 import octopus.ChatLatestMessageTimestampsQuery
 
@@ -25,8 +28,10 @@ interface ChatLastMessageReadRepository {
 internal class ChatLastMessageReadRepositoryImpl(
   private val chatMessageTimestampStorage: ChatMessageTimestampStorage,
   private val apolloClient: ApolloClient,
+  private val featureManager: FeatureManager,
 ) : ChatLastMessageReadRepository {
   override suspend fun storeLatestReadTimestamp(timestamp: Instant) {
+    if (featureManager.isFeatureEnabled(Feature.ENABLE_CBM).first()) return
     val existingTimestamp = chatMessageTimestampStorage.getLatestReadTimestamp()
     if (existingTimestamp != null && existingTimestamp > timestamp) {
       return
@@ -35,20 +40,25 @@ internal class ChatLastMessageReadRepositoryImpl(
   }
 
   override suspend fun isNewestMessageNewerThanLastReadTimestamp(): Boolean {
-    val lastReadMessageTimestamp: Instant? = chatMessageTimestampStorage.getLatestReadTimestamp()
-    val messages = apolloClient.query(ChatLatestMessageTimestampsQuery())
-      .fetchPolicy(FetchPolicy.NetworkFirst)
-      .safeExecute()
-      .toEither()
-      .getOrNull()
-      ?.chat
-      ?.messages
-      ?.toNonEmptyListOrNull() ?: return false
-    if (lastReadMessageTimestamp == null) {
-      // If there are existing messages, but we have seen none of them, there always is an unread message
-      return true
+    if (featureManager.isFeatureEnabled(Feature.ENABLE_CBM).first()) {
+      return false // todo cbm notification dot for home screen
+    } else {
+      val lastReadMessageTimestamp: Instant? = chatMessageTimestampStorage.getLatestReadTimestamp()
+      val messages = apolloClient
+        .query(ChatLatestMessageTimestampsQuery())
+        .fetchPolicy(FetchPolicy.NetworkFirst)
+        .safeExecute()
+        .toEither()
+        .getOrNull()
+        ?.chat
+        ?.messages
+        ?.toNonEmptyListOrNull() ?: return false
+      if (lastReadMessageTimestamp == null) {
+        // If there are existing messages, but we have seen none of them, there always is an unread message
+        return true
+      }
+      val newestChatMessageTimestamp = messages.maxOf { it.sentAt }
+      return lastReadMessageTimestamp < newestChatMessageTimestamp
     }
-    val newestChatMessageTimestamp = messages.maxOf { it.sentAt }
-    return lastReadMessageTimestamp < newestChatMessageTimestamp
   }
 }
