@@ -17,6 +17,7 @@ import com.hedvig.android.feature.chat.cbm.database.ConversationEntity
 import com.hedvig.android.feature.chat.cbm.database.RemoteKeyDao
 import com.hedvig.android.feature.chat.cbm.database.RemoteKeyEntity
 import com.hedvig.android.feature.chat.cbm.model.toChatMessageEntity
+import com.hedvig.android.logger.logcat
 import kotlin.time.Duration.Companion.hours
 import kotlinx.datetime.Clock
 
@@ -55,6 +56,7 @@ internal class ChatRemoteMediator(
     // kept in the DB and we can simply scroll up again without re-fetching everything.
     val isRefreshingDueToJumping = loadType == LoadType.REFRESH && state.pages.isNotEmpty()
     if (isRefreshingDueToJumping) {
+      logcat { "ChatRemoteMediator: Refreshing due to jumping" }
       database.withTransaction {
         val existingOlderToken = remoteKeyDao.remoteKeyForConversation(conversationId)?.olderToken
         remoteKeyDao.insert(RemoteKeyEntity(conversationId, existingOlderToken, response.newerToken))
