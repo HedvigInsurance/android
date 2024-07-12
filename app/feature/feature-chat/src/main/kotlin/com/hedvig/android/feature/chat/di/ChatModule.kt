@@ -1,7 +1,7 @@
 package com.hedvig.android.feature.chat.di
 
 import arrow.retrofit.adapter.either.EitherCallAdapterFactory
-import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.fileupload.FileService

@@ -1,6 +1,6 @@
 package com.hedvig.android.feature.claim.details.di
 
-import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.core.fileupload.DownloadPdfUseCase
 import com.hedvig.android.core.fileupload.UploadFileUseCase
 import com.hedvig.android.feature.claim.details.data.GetClaimDetailUiStateUseCase

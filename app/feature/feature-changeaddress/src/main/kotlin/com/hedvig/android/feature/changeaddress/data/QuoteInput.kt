@@ -1,6 +1,6 @@
 package com.hedvig.android.feature.changeaddress.data
 
-import com.apollographql.apollo3.api.Optional
+import com.apollographql.apollo.api.Optional
 import kotlinx.datetime.LocalDate
 import octopus.MoveIntentRequestMutation
 import octopus.type.MoveApartmentSubType

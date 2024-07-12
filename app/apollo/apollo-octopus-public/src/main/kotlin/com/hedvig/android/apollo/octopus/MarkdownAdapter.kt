@@ -1,10 +1,10 @@
 
 package com.hedvig.android.apollo.octopus
 
-import com.apollographql.apollo3.api.Adapter
-import com.apollographql.apollo3.api.CustomScalarAdapters
-import com.apollographql.apollo3.api.json.JsonReader
-import com.apollographql.apollo3.api.json.JsonWriter
+import com.apollographql.apollo.api.Adapter
+import com.apollographql.apollo.api.CustomScalarAdapters
+import com.apollographql.apollo.api.json.JsonReader
+import com.apollographql.apollo.api.json.JsonWriter
 import com.hedvig.android.core.markdown.MarkdownString
 
 object MarkdownStringAdapter : Adapter<MarkdownString> {
