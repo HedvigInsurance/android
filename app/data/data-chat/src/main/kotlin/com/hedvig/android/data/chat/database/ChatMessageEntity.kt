@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.chat.cbm.database
+package com.hedvig.android.data.chat.database
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

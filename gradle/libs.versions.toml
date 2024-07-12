@@ -73,13 +73,14 @@ playServicesBase = "18.5.0"
 retrofit = "2.11.0"
 retrofitArrow = "1.2.4"
 robolectric = "4.12.2"
-room = "2.7.0-alpha04"
+room = "2.7.0-alpha05"
 slimber = "2.0.0"
-sqlite = "2.5.0-alpha04"
+sqlite = "2.5.0-alpha05"
 testParameterInjector = "1.16"
 timber = "5.0.1"
 turbine = "1.1.0"
 unleash = "1.0.0"
+uuid = "0.8.4"
 zXing = "3.5.3"
 zoomable = "1.6.1"
 
@@ -203,6 +204,7 @@ testParameterInjector = { module = "com.google.testparameterinjector:test-parame
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 unleash = { module = "io.getunleash:unleash-android-proxy-sdk", version.ref = "unleash" }
+uuid = { module = "com.benasher44:uuid", version.ref = "uuid" }
 zXing = { module = "com.google.zxing:core", version.ref = "zXing" }
 zoomable = { module = "net.engawapg.lib:zoomable", version.ref = "zoomable" }
 # Plugin libraries for build-logic's convention plugins to use to resolve the types/tasks coming from these plugins

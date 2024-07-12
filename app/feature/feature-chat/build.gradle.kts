@@ -4,8 +4,6 @@ plugins {
   id("hedvig.android.library")
   id("hedvig.android.library.compose")
   alias(libs.plugins.apollo)
-  alias(libs.plugins.ksp)
-  alias(libs.plugins.room)
   alias(libs.plugins.serialization)
   alias(libs.plugins.squareSortDependencies)
 }
@@ -36,12 +34,8 @@ dependencies {
   implementation(libs.retrofit)
   implementation(libs.retrofitArrow)
   implementation(libs.retrofitKotlinxSerializationConverter)
-  implementation(libs.paging.common)
   implementation(libs.paging.compose)
-  implementation(libs.room.paging)
   implementation(libs.room.runtime)
-  implementation(libs.sqlite.bundled)
-  ksp(libs.room.ksp)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.composePhotoCaptureState)
@@ -57,6 +51,7 @@ dependencies {
   implementation(projects.coreResources)
   implementation(projects.coreRetrofit)
   implementation(projects.coreUi)
+  implementation(projects.dataChat)
   implementation(projects.dataChatReadTimestampPublic)
   implementation(projects.designSystemHedvig)
   implementation(projects.featureFlagsPublic)
@@ -75,15 +70,4 @@ apollo {
     generateDataBuilders.set(true)
     generateOptionalOperationVariables.set(false)
   }
-}
-
-room {
-  schemaDirectory(
-    project
-      .rootDir
-      .resolve("app")
-      .resolve("database")
-      .resolve("schemas")
-      .absolutePath,
-  )
 }

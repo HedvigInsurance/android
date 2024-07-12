@@ -21,13 +21,13 @@ import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.fileupload.FileService
 import com.hedvig.android.core.retrofit.toErrorMessage
-import com.hedvig.android.feature.chat.cbm.database.AppDatabase
-import com.hedvig.android.feature.chat.cbm.database.ChatDao
-import com.hedvig.android.feature.chat.cbm.database.ChatMessageEntity.FailedToSendType.MEDIA
-import com.hedvig.android.feature.chat.cbm.database.ChatMessageEntity.FailedToSendType.PHOTO
-import com.hedvig.android.feature.chat.cbm.database.ChatMessageEntity.FailedToSendType.TEXT
-import com.hedvig.android.feature.chat.cbm.database.RemoteKeyDao
-import com.hedvig.android.feature.chat.cbm.database.RemoteKeyEntity
+import com.hedvig.android.data.chat.database.AppDatabase
+import com.hedvig.android.data.chat.database.ChatDao
+import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.MEDIA
+import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.PHOTO
+import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.TEXT
+import com.hedvig.android.data.chat.database.RemoteKeyDao
+import com.hedvig.android.data.chat.database.RemoteKeyEntity
 import com.hedvig.android.feature.chat.cbm.model.CbmChatMessage
 import com.hedvig.android.feature.chat.cbm.model.toChatMessageEntity
 import com.hedvig.android.feature.chat.cbm.model.toSender
@@ -163,7 +163,7 @@ internal class CbmChatRepository(
       }
       return with(messageToRetry) {
         when {
-          failedToSend == TEXT && text != null -> sendText(conversationId, text)
+          failedToSend == TEXT && text != null -> sendText(conversationId, text!!)
           failedToSend == PHOTO && url != null -> sendPhoto(conversationId, Uri.parse(url))
           failedToSend == MEDIA && url != null -> sendMedia(conversationId, Uri.parse(url))
           else -> {

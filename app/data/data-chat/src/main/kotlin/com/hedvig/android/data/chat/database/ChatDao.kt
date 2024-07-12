@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.chat.cbm.database
+package com.hedvig.android.data.chat.database
 
 import androidx.paging.PagingSource
 import androidx.room.Dao

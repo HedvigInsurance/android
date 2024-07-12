@@ -2,12 +2,11 @@ package com.hedvig.android.feature.chat.cbm.model
 
 import android.net.Uri
 import com.benasher44.uuid.Uuid
+import com.hedvig.android.data.chat.database.ChatMessageEntity
+import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.MEDIA
+import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.PHOTO
+import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.TEXT
 import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Loaded.LatestChatMessage
-import com.hedvig.android.feature.chat.cbm.database.ChatMessageEntity
-import com.hedvig.android.feature.chat.cbm.database.ChatMessageEntity.FailedToSendType
-import com.hedvig.android.feature.chat.cbm.database.ChatMessageEntity.FailedToSendType.MEDIA
-import com.hedvig.android.feature.chat.cbm.database.ChatMessageEntity.FailedToSendType.PHOTO
-import com.hedvig.android.feature.chat.cbm.database.ChatMessageEntity.FailedToSendType.TEXT
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import kotlinx.datetime.Instant
@@ -130,7 +129,7 @@ internal fun CbmChatMessage.toChatMessageEntity(conversationId: Uuid): ChatMessa
       gifUrl = null,
       url = null,
       mimeType = null,
-      failedToSend = FailedToSendType.TEXT,
+      failedToSend = TEXT,
     )
 
     is CbmChatMessage.FailedToBeSent.ChatMessagePhoto -> ChatMessageEntity(
@@ -142,7 +141,7 @@ internal fun CbmChatMessage.toChatMessageEntity(conversationId: Uuid): ChatMessa
       gifUrl = null,
       url = uri.toString(),
       mimeType = null,
-      failedToSend = FailedToSendType.PHOTO,
+      failedToSend = PHOTO,
     )
 
     is CbmChatMessage.FailedToBeSent.ChatMessageMedia -> ChatMessageEntity(
@@ -154,7 +153,7 @@ internal fun CbmChatMessage.toChatMessageEntity(conversationId: Uuid): ChatMessa
       gifUrl = null,
       url = uri.toString(),
       mimeType = null,
-      failedToSend = FailedToSendType.MEDIA,
+      failedToSend = MEDIA,
     )
   }
 }
@@ -165,7 +164,7 @@ internal fun ChatMessageEntity.toChatMessage(): CbmChatMessage? {
     failedToSend != null -> {
       when {
         failedToSend == TEXT && text != null -> {
-          CbmChatMessage.FailedToBeSent.ChatMessageText(id.toString(), sentAt, text)
+          CbmChatMessage.FailedToBeSent.ChatMessageText(id.toString(), sentAt, text!!)
         }
 
         failedToSend == PHOTO && url != null -> {
@@ -185,11 +184,11 @@ internal fun ChatMessageEntity.toChatMessage(): CbmChatMessage? {
       }
     }
 
-    text != null -> CbmChatMessage.ChatMessageText(id.toString(), sender, sentAt, text)
-    gifUrl != null -> CbmChatMessage.ChatMessageGif(id.toString(), sender, sentAt, gifUrl)
+    text != null -> CbmChatMessage.ChatMessageText(id.toString(), sender, sentAt, text!!)
+    gifUrl != null -> CbmChatMessage.ChatMessageGif(id.toString(), sender, sentAt, gifUrl!!)
     url != null && mimeType != null -> {
-      val mimeType = CbmChatMessage.ChatMessageFile.MimeType.valueOf(mimeType)
-      CbmChatMessage.ChatMessageFile(id.toString(), sender, sentAt, url, mimeType)
+      val mimeType = CbmChatMessage.ChatMessageFile.MimeType.valueOf(mimeType!!)
+      CbmChatMessage.ChatMessageFile(id.toString(), sender, sentAt, url!!, mimeType)
     }
 
     else -> error("Unknown ChatMessage type. Message entity:$this")

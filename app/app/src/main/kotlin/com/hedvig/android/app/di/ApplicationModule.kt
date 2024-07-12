@@ -35,10 +35,12 @@ import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
 import com.hedvig.android.core.appreview.di.coreAppReviewModule
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.di.coreCommonModule
+import com.hedvig.android.core.common.di.databaseFileQualifier
 import com.hedvig.android.core.common.di.datastoreFileQualifier
 import com.hedvig.android.core.datastore.di.dataStoreModule
 import com.hedvig.android.core.demomode.di.demoModule
 import com.hedvig.android.core.fileupload.fileUploadModule
+import com.hedvig.android.data.chat.di.dataChatModule
 import com.hedvig.android.data.chat.read.timestamp.di.chatReadTimestampModule
 import com.hedvig.android.data.claimflow.di.claimFlowDataModule
 import com.hedvig.android.data.paying.member.di.dataPayingMemberModule
@@ -96,7 +98,8 @@ private val networkModule = module {
   }
   factory<OkHttpClient.Builder> {
     val languageService = get<LanguageService>()
-    val builder: OkHttpClient.Builder = OkHttpClient.Builder()
+    val builder: OkHttpClient.Builder = OkHttpClient
+      .Builder()
       .addDatadogConfiguration(get<HedvigBuildConstants>())
       .addInterceptor { chain ->
         chain.proceed(
@@ -115,8 +118,7 @@ private val networkModule = module {
             .header("X-Model", "${Build.MANUFACTURER} ${Build.MODEL}")
             .build(),
         )
-      }
-      .addInterceptor(DeviceIdInterceptor(get(), get()))
+      }.addInterceptor(DeviceIdInterceptor(get(), get()))
     if (!get<HedvigBuildConstants>().isProduction) {
       val logger = HttpLoggingInterceptor { message ->
         if (message.contains("Content-Disposition")) {
@@ -140,13 +142,15 @@ private val networkModule = module {
   single<DatadogInterceptor> { DatadogInterceptor() } bind ApolloInterceptor::class
   single<ApolloClient.Builder> {
     val interceptors = getAll<ApolloInterceptor>().distinct()
-    ApolloClient.Builder()
+    ApolloClient
+      .Builder()
       .okHttpClient(get<OkHttpClient>())
       .normalizedCache(get<NormalizedCacheFactory>())
       .addInterceptors(interceptors)
   }
   single<ApolloClient> {
-    get<ApolloClient.Builder>().copy()
+    get<ApolloClient.Builder>()
+      .copy()
       .httpServerUrl(get<HedvigBuildConstants>().urlGraphqlOctopus)
       .build()
   }
@@ -224,10 +228,20 @@ private val datastoreAndroidModule = module {
   }
 }
 
+private val databaseChatAndroidModule = module {
+  single<File>(databaseFileQualifier) {
+    val applicationContext = get<Context>()
+    val dbFile = applicationContext.getDatabasePath("hedvig_chat_database.db")
+    // https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:datastore/datastore/src/main/java/androidx/datastore/DataStoreFile.kt;l=35-36
+    dbFile
+  }
+}
+
 private val coilModule = module {
   single<ImageLoader> {
     val applicationContext = get<Context>().applicationContext
-    ImageLoader.Builder(get())
+    ImageLoader
+      .Builder(get())
       .okHttpClient(get<OkHttpClient.Builder>().build())
       .components {
         add(SvgDecoder.Factory())
@@ -236,16 +250,14 @@ private val coilModule = module {
         } else {
           add(GifDecoder.Factory())
         }
-      }
-      .memoryCache {
+      }.memoryCache {
         MemoryCache.Builder(applicationContext).build()
-      }
-      .diskCache {
-        DiskCache.Builder()
+      }.diskCache {
+        DiskCache
+          .Builder()
           .directory(applicationContext.cacheDir.resolve("coil_image_cache"))
           .build()
-      }
-      .build()
+      }.build()
   }
 }
 
@@ -279,8 +291,10 @@ val applicationModule = module {
       connectPaymentTrustlyModule,
       coreAppReviewModule,
       coreCommonModule,
+      dataChatModule,
       dataPayingMemberModule,
       dataStoreModule,
+      databaseChatAndroidModule,
       datadogDemoTrackingModule,
       datadogModule,
       datastoreAndroidModule,

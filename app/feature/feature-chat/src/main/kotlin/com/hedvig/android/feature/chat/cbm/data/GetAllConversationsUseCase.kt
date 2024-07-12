@@ -8,8 +8,8 @@ import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.feature.chat.cbm.database.ConversationDao
-import com.hedvig.android.feature.chat.cbm.database.asIdToTimestampMap
+import com.hedvig.android.data.chat.database.ConversationDao
+import com.hedvig.android.data.chat.database.asIdToTimestampMap
 import com.hedvig.android.feature.chat.cbm.model.InboxConversation
 import com.hedvig.android.feature.chat.cbm.model.InboxConversation.LatestMessage
 import com.hedvig.android.feature.chat.cbm.model.Sender
