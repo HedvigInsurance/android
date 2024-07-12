@@ -6,7 +6,7 @@ plugins {
 }
 
 dependencies {
-  api(libs.apollo.adapters)
+  api(libs.apollo.adapters.datetime)
   api(libs.apollo.api)
   api(libs.kotlinx.datetime)
 
@@ -17,7 +17,8 @@ dependencies {
   implementation(projects.coreMarkdown)
 }
 
-apollo { // Octopus client
+apollo {
+  // Octopus client
   service("octopus") {
     introspection {
       endpointUrl.set("https://apollo-router.dev.hedvigit.com")
@@ -38,11 +39,12 @@ apollo { // Octopus client
     // https://www.apollographql.com/docs/android/advanced/operation-variables/#make-nullable-variables-non-optional
     generateOptionalOperationVariables.set(false)
     outputDirConnection {
-      connectToKotlinSourceSet("main") // main is by default but setting this explicitly fixed the warning "Duplicate content roots detected.
+      // main is by default but setting this explicitly fixed the warning "Duplicate content roots detected.
+      connectToKotlinSourceSet("main")
     }
-    mapScalar("Date", "kotlinx.datetime.LocalDate", "com.apollographql.apollo.adapter.KotlinxLocalDateAdapter")
-    mapScalar("DateTime", "kotlinx.datetime.Instant", "com.apollographql.apollo.adapter.KotlinxInstantAdapter")
-    mapScalar("Instant", "kotlinx.datetime.Instant", "com.apollographql.apollo.adapter.KotlinxInstantAdapter")
+    mapScalar("Date", "kotlinx.datetime.LocalDate", "com.apollographql.adapter.datetime.KotlinxLocalDateAdapter")
+    mapScalar("DateTime", "kotlinx.datetime.Instant", "com.apollographql.adapter.datetime.KotlinxInstantAdapter")
+    mapScalar("Instant", "kotlinx.datetime.Instant", "com.apollographql.adapter.datetime.KotlinxInstantAdapter")
     mapScalar(
       "Markdown",
       "com.hedvig.android.core.markdown.MarkdownString",
