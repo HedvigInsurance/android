@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.chat.cbm.navigation
 
-import androidx.compose.runtime.getValue
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
 import coil.ImageLoader
@@ -50,7 +49,6 @@ fun NavGraphBuilder.cbmChatGraph(
         viewModel = viewModel,
         imageLoader = imageLoader,
         appPackageId = hedvigBuildConstants.appId,
-        hedvigDeepLinkContainer = hedvigDeepLinkContainer,
         openUrl = openUrl,
         onNavigateUp = navigator::navigateUp,
       )

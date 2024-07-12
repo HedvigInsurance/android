@@ -43,7 +43,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
 import kotlinx.datetime.Clock
-import octopus.ConversationExistsQuery
+import kotlinx.datetime.Instant
+import octopus.ConversationInfoQuery
 import octopus.ConversationQuery
 import octopus.ConversationSendMessageMutation
 import octopus.ConversationStartMutation
@@ -62,7 +63,7 @@ internal class CbmChatRepository(
   private val botServiceService: BotServiceService,
   private val clock: Clock,
 ) {
-  suspend fun createConversation(conversationId: Uuid): Either<ErrorMessage, String> {
+  suspend fun createConversation(conversationId: Uuid): Either<ErrorMessage, ConversationInfo> {
     return either {
       apolloClient
         .mutation(ConversationStartMutation(conversationId.toString()))
@@ -70,19 +71,19 @@ internal class CbmChatRepository(
         .toEither(::ErrorMessage)
         .bind()
         .conversationStart
-        .id
+        .toConversationInfo()
     }
   }
 
-  suspend fun getConversation(conversationId: Uuid): Either<ErrorMessage, String?> {
+  suspend fun getConversationInfo(conversationId: Uuid): Either<ErrorMessage, ConversationInfo?> {
     return either {
-      val backendConvesation = apolloClient
-        .query(ConversationExistsQuery(conversationId.toString()))
+      apolloClient
+        .query(ConversationInfoQuery(conversationId.toString()))
         .safeExecute()
         .toEither(::ErrorMessage)
         .bind()
         .conversation
-      backendConvesation?.id
+        ?.toConversationInfo()
     }
   }
 
@@ -292,7 +293,18 @@ internal class CbmChatRepository(
   }
 }
 
-sealed interface BannerText {
+internal data class ConversationInfo(
+  val conversationId: String?,
+  val title: String,
+  val createdAt: Instant,
+  val isLegacy: Boolean,
+)
+
+private fun octopus.fragment.ConversationInfo.toConversationInfo(): ConversationInfo {
+  return ConversationInfo(conversationId = id, title = title, createdAt = createdAt, isLegacy = isLegacy)
+}
+
+internal sealed interface BannerText {
   data object ClosedConversation : BannerText
 
   data class Text(

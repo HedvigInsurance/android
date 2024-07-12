@@ -24,23 +24,22 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
-import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
-import com.hedvig.android.core.tracking.ActionType
-import com.hedvig.android.core.tracking.logAction
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
-import com.hedvig.android.feature.chat.ChatUiState
+import com.hedvig.android.feature.chat.cbm.BannerText.Text
 import com.hedvig.android.feature.chat.cbm.CbmChatEvent
 import com.hedvig.android.feature.chat.cbm.CbmChatUiState
 import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Error
 import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Initializing
 import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Loaded
+import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Loaded.TopAppBarText
+import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Loaded.TopAppBarText.Legacy
+import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Loaded.TopAppBarText.Unknown
 import com.hedvig.android.feature.chat.cbm.CbmChatViewModel
 import com.hedvig.android.feature.chat.ui.chatScrollBehavior
 import com.hedvig.android.feature.chat.ui.chatTopAppBarWindowInsets
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import hedvig.resources.R
 
 @Composable
@@ -48,28 +47,16 @@ internal fun CbmChatDestination(
   viewModel: CbmChatViewModel,
   imageLoader: ImageLoader,
   appPackageId: String,
-  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   openUrl: (String) -> Unit,
   onNavigateUp: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  val onBannerLinkClicked: (String) -> Unit = { url: String ->
-    if (url == hedvigDeepLinkContainer.helpCenter) {
-      val haveSentAtLeastOneMessage = uiState.safeCast<ChatUiState.Loaded>()?.haveSentAtLeastOneMessage ?: false
-      logAction(
-        ActionType.CUSTOM,
-        "Help center opened from the chat",
-        mapOf("haveSentAMessage" to haveSentAtLeastOneMessage),
-      )
-    }
-    openUrl(url)
-  }
   ChatScreen(
     uiState = uiState,
     imageLoader = imageLoader,
     appPackageId = appPackageId,
     openUrl = openUrl,
-    onBannerLinkClicked = onBannerLinkClicked,
+    onBannerLinkClicked = openUrl,
     onNavigateUp = onNavigateUp,
     onSendMessage = { message: String ->
       viewModel.emit(CbmChatEvent.SendTextMessage(message))
@@ -115,6 +102,7 @@ private fun ChatScreen(
       val density = LocalDensity.current
       var topAppBarHeight by remember { mutableStateOf(0.dp) }
       ChatTopAppBar(
+        uiState = uiState,
         onNavigateUp = onNavigateUp,
         topAppBarScrollBehavior = topAppBarScrollBehavior,
         modifier = Modifier.onSizeChanged {
@@ -157,12 +145,20 @@ private fun ChatScreen(
 
 @Composable
 private fun ChatTopAppBar(
+  uiState: CbmChatUiState,
   onNavigateUp: () -> Unit,
   topAppBarScrollBehavior: TopAppBarScrollBehavior,
   modifier: Modifier = Modifier,
 ) {
   TopAppBarWithBack(
-    title = stringResource(R.string.CHAT_TITLE),
+    title = when (uiState) {
+      is Loaded -> when (val topAppBarText = uiState.topAppBarText) {
+        Legacy -> stringResource(R.string.CHAT_CONVERSATION_HISTORY_TITLE)
+        is TopAppBarText.Text -> topAppBarText.title
+        Unknown -> stringResource(R.string.CHAT_TITLE)
+      }
+      else -> stringResource(R.string.CHAT_TITLE)
+    },
     onClick = onNavigateUp,
     scrollBehavior = topAppBarScrollBehavior,
     windowInsets = chatTopAppBarWindowInsets(TopAppBarDefaults.windowInsets, topAppBarScrollBehavior),
