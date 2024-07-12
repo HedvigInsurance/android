@@ -1,2 +1,3 @@
 #Generated from `./gradlew downloadStrings` therefore ignored
 src/main/res/**/strings.xml
+!src/main/res/values/strings.xml

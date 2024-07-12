@@ -1,6 +1,6 @@
 package com.hedvig.android.notification.badge.data.di
 
-import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.notification.badge.data.crosssell.CrossSellCardNotificationBadgeServiceProvider
 import com.hedvig.android.notification.badge.data.crosssell.CrossSellNotificationBadgeService

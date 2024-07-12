@@ -6,7 +6,6 @@ plugins {
 }
 
 dependencies {
-  api(libs.hedvig.authlib)
   api(libs.kotlinx.datetime)
 
   implementation(libs.androidx.datastore.core)

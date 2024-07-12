@@ -1,6 +1,6 @@
 package com.hedvig.android.feature.connect.payment.trustly.di
 
-import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.feature.connect.payment.trustly.StartTrustlySessionUseCase

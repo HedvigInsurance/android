@@ -4,8 +4,8 @@ import arrow.core.Either
 import arrow.core.raise.Raise
 import arrow.core.raise.either
 import arrow.retrofit.adapter.either.networkhandling.CallError
-import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.api.Optional
+import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.api.Optional
 import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
