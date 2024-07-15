@@ -534,7 +534,7 @@ private fun VeryImportantMessageCard(
         if (veryImportantMessage.link != null) {
           Spacer(modifier = Modifier.width(8.dp))
           InfoCardTextButton(
-            text = stringResource(R.string.important_message_read_more),
+            text = veryImportantMessage.buttonText ?: stringResource(R.string.important_message_read_more),
             onClick = { openUrl(veryImportantMessage.link) },
             modifier = Modifier.weight(1f),
           )
@@ -631,6 +631,7 @@ private fun PreviewHomeScreen(
             HomeData.VeryImportantMessage(
               "id",
               "Beware of the earthquake",
+              "Read more",
               "",
             ),
           ),

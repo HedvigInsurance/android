@@ -75,7 +75,8 @@ internal class GetHomeDataUseCaseImpl(
           HomeData.VeryImportantMessage(
             id = it.id,
             message = it.message,
-            link = it.link.ifEmpty { null },
+            buttonText = it.linkInfo?.buttonText?.ifEmpty { null },
+            link = it.linkInfo?.url?.ifEmpty { null },
           )
         }
         val crossSells = homeQueryData.currentMember.crossSells.map { crossSell ->
@@ -300,6 +301,7 @@ internal data class HomeData(
   data class VeryImportantMessage(
     val id: String,
     val message: String,
+    val buttonText: String?,
     val link: String?,
   )
 
