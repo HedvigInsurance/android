@@ -105,12 +105,14 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.Instant
 import kotlinx.datetime.toJavaLocalDate
 
 @Composable
 internal fun HomeDestination(
   viewModel: HomeViewModel,
-  onStartChat: () -> Unit,
+  onNavigateToInbox: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   onClaimDetailCardClicked: (String) -> Unit,
   navigateToConnectPayment: () -> Unit,
   onStartClaim: () -> Unit,
@@ -126,7 +128,8 @@ internal fun HomeDestination(
     uiState = uiState,
     notificationPermissionState = notificationPermissionState,
     reload = { viewModel.emit(HomeEvent.RefreshData) },
-    onStartChat = onStartChat,
+    onNavigateToInbox = onNavigateToInbox,
+    onNavigateToNewConversation = onNavigateToNewConversation,
     onClaimDetailCardClicked = onClaimDetailCardClicked,
     navigateToConnectPayment = navigateToConnectPayment,
     onStartClaim = onStartClaim,
@@ -145,7 +148,8 @@ private fun HomeScreen(
   uiState: HomeUiState,
   notificationPermissionState: NotificationPermissionState,
   reload: () -> Unit,
-  onStartChat: () -> Unit,
+  onNavigateToInbox: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   onClaimDetailCardClicked: (String) -> Unit,
   navigateToConnectPayment: () -> Unit,
   onStartClaim: () -> Unit,
@@ -218,7 +222,7 @@ private fun HomeScreen(
             openAppSettings = openAppSettings,
             openUrl = openUrl,
             navigateToMissingInfo = navigateToMissingInfo,
-            openChat = onStartChat,
+            onNavigateToNewConversation = onNavigateToNewConversation,
             markMessageAsSeen = markMessageAsSeen,
           )
         }
@@ -240,7 +244,7 @@ private fun HomeScreen(
             }
             when (action) {
               HomeTopBarAction.ChatAction -> ToolbarChatIcon(
-                onClick = onStartChat,
+                onClick = onNavigateToInbox,
                 modifier = Modifier.notificationCircle(uiState.hasUnseenChatMessages),
               )
 
@@ -268,7 +272,11 @@ private fun HomeScreen(
         ChatTooltip(
           showTooltip = shouldShowTooltip,
           tooltipShown = {
-            context.setLastEpochDayWhenChatTooltipWasShown(java.time.LocalDate.now().toEpochDay())
+            context.setLastEpochDayWhenChatTooltipWasShown(
+              java.time.LocalDate
+                .now()
+                .toEpochDay(),
+            )
           },
           modifier = Modifier
             .align(Alignment.End)
@@ -286,7 +294,9 @@ private fun HomeScreen(
 }
 
 private suspend fun daysSinceLastTooltipShown(context: Context): Boolean {
-  val currentEpochDay = java.time.LocalDate.now().toEpochDay()
+  val currentEpochDay = java.time.LocalDate
+    .now()
+    .toEpochDay()
   val lastEpochDayOpened = withContext(Dispatchers.IO) {
     context.getLastEpochDayWhenChatTooltipWasShown()
   }
@@ -310,7 +320,7 @@ private fun HomeScreenSuccess(
   openUrl: (String) -> Unit,
   markMessageAsSeen: (String) -> Unit,
   navigateToMissingInfo: (String) -> Unit,
-  openChat: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   var fullScreenSize: IntSize? by remember { mutableStateOf(null) }
@@ -365,7 +375,7 @@ private fun HomeScreenSuccess(
             memberReminders = memberReminders,
             navigateToConnectPayment = navigateToConnectPayment,
             navigateToAddMissingInfo = navigateToMissingInfo,
-            openChat = openChat,
+            onNavigateToNewConversation = onNavigateToNewConversation,
             openUrl = openUrl,
             contentPadding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
               .exclude(consumedWindowInsets)
@@ -588,6 +598,7 @@ private fun PreviewHomeScreen(
                 ),
                 claimType = "Broken item",
                 insuranceDisplayName = "Home Insurance Homeowner",
+                submittedDate = Instant.parse("2024-05-01T00:00:00Z"),
               ),
             ),
           ),
@@ -620,7 +631,8 @@ private fun PreviewHomeScreen(
         ),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
         reload = {},
-        onStartChat = {},
+        onNavigateToInbox = {},
+        onNavigateToNewConversation = {},
         onClaimDetailCardClicked = {},
         navigateToConnectPayment = {},
         onStartClaim = {},

@@ -1,6 +1,6 @@
 package com.hedvig.android.feature.changeaddress.di
 
-import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.core.appreview.SelfServiceCompletedEventManager
 import com.hedvig.android.feature.changeaddress.data.ChangeAddressRepository
 import com.hedvig.android.feature.changeaddress.data.NetworkChangeAddressRepository

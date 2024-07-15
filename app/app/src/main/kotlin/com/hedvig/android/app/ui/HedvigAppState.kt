@@ -127,6 +127,14 @@ internal class HedvigAppState(
       false,
     )
 
+  val isCbmEnabled: StateFlow<Boolean> = featureManager
+    .isFeatureEnabled(Feature.ENABLE_CBM)
+    .stateIn(
+      coroutineScope,
+      SharingStarted.Eagerly,
+      false,
+    )
+
   val topLevelGraphs: StateFlow<Set<TopLevelGraph>> = flow {
     val onlyHasNonPayingContracts = getOnlyHasNonPayingContractsUseCase.provide().invoke().getOrNull()
     emit(
@@ -152,21 +160,24 @@ internal class HedvigAppState(
   )
 
   val topLevelGraphsWithNotifications: StateFlow<Set<TopLevelGraph>> =
-    tabNotificationBadgeService.unseenTabNotificationBadges().map { bottomNavTabs: Set<BottomNavTab> ->
-      bottomNavTabs.map { bottomNavTab ->
-        when (bottomNavTab) {
-          BottomNavTab.HOME -> TopLevelGraph.Home
-          BottomNavTab.INSURANCE -> TopLevelGraph.Insurances
-          BottomNavTab.FOREVER -> TopLevelGraph.Forever
-          BottomNavTab.PAYMENTS -> TopLevelGraph.Payments
-          BottomNavTab.PROFILE -> TopLevelGraph.Profile
-        }
-      }.toSet()
-    }.stateIn(
-      scope = coroutineScope,
-      started = SharingStarted.WhileSubscribed(5.seconds),
-      initialValue = setOf(),
-    )
+    tabNotificationBadgeService
+      .unseenTabNotificationBadges()
+      .map { bottomNavTabs: Set<BottomNavTab> ->
+        bottomNavTabs
+          .map { bottomNavTab ->
+            when (bottomNavTab) {
+              BottomNavTab.HOME -> TopLevelGraph.Home
+              BottomNavTab.INSURANCE -> TopLevelGraph.Insurances
+              BottomNavTab.FOREVER -> TopLevelGraph.Forever
+              BottomNavTab.PAYMENTS -> TopLevelGraph.Payments
+              BottomNavTab.PROFILE -> TopLevelGraph.Profile
+            }
+          }.toSet()
+      }.stateIn(
+        scope = coroutineScope,
+        started = SharingStarted.WhileSubscribed(5.seconds),
+        initialValue = setOf(),
+      )
 
   /**
    * UI logic for navigating to a top level destination in the app. Top level destinations have
@@ -228,7 +239,9 @@ internal class HedvigAppState(
 }
 
 @JvmInline
-value class NavigationSuiteType private constructor(private val description: String) {
+value class NavigationSuiteType private constructor(
+  private val description: String,
+) {
   override fun toString(): String = description
 
   companion object {

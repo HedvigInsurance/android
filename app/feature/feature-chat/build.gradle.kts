@@ -9,7 +9,6 @@ plugins {
 }
 
 dependencies {
-  apolloMetadata(projects.apolloOctopusPublic)
 
   implementation(libs.androidx.datastore.core)
   implementation(libs.androidx.datastore.preferencesCore)
@@ -34,6 +33,8 @@ dependencies {
   implementation(libs.retrofit)
   implementation(libs.retrofitArrow)
   implementation(libs.retrofitKotlinxSerializationConverter)
+  implementation(libs.paging.compose)
+  implementation(libs.room.runtime)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.composePhotoCaptureState)
@@ -49,7 +50,9 @@ dependencies {
   implementation(projects.coreResources)
   implementation(projects.coreRetrofit)
   implementation(projects.coreUi)
+  implementation(projects.dataChat)
   implementation(projects.dataChatReadTimestampPublic)
+  implementation(projects.designSystemHedvig)
   implementation(projects.featureFlagsPublic)
   implementation(projects.languageCore)
   implementation(projects.moleculeAndroid)
@@ -63,7 +66,7 @@ dependencies {
 apollo {
   service("octopus") {
     packageName.set("octopus")
-    generateDataBuilders.set(true)
     generateOptionalOperationVariables.set(false)
+      dependsOn(projects.apolloOctopusPublic, true)
   }
 }

@@ -51,7 +51,7 @@ import hedvig.resources.R
 @Composable
 internal fun DeflectGlassDamageDestination(
   deflectGlassDamage: ClaimFlowDestination.DeflectGlassDamage,
-  openChat: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   closeClaimFlow: () -> Unit,
   windowSizeClass: WindowSizeClass,
   navigateUp: () -> Unit,
@@ -60,7 +60,7 @@ internal fun DeflectGlassDamageDestination(
 ) {
   DeflectGlassDamageScreen(
     partners = deflectGlassDamage.partners,
-    openChat = openChat,
+    onNavigateToNewConversation = onNavigateToNewConversation,
     closeClaimFlow = closeClaimFlow,
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
@@ -72,7 +72,7 @@ internal fun DeflectGlassDamageDestination(
 @Composable
 private fun DeflectGlassDamageScreen(
   partners: List<DeflectPartner>,
-  openChat: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   closeClaimFlow: () -> Unit,
   windowSizeClass: WindowSizeClass,
   navigateUp: () -> Unit,
@@ -186,7 +186,7 @@ private fun DeflectGlassDamageScreen(
     Spacer(Modifier.height(24.dp))
     HedvigContainedSmallButton(
       text = stringResource(R.string.open_chat),
-      onClick = openChat,
+      onClick = onNavigateToNewConversation,
       modifier = Modifier
         .padding(horizontal = 16.dp)
         .fillMaxWidth()
@@ -249,7 +249,7 @@ private fun PreviewDeflectGlassDamageScreen() {
             url = "test2",
           ),
         ),
-        openChat = {},
+        onNavigateToNewConversation = {},
         closeClaimFlow = {},
         windowSizeClass = WindowSizeClass.calculateForPreview(),
         navigateUp = {},

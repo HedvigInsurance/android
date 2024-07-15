@@ -1,0 +1,5 @@
+query ConversationInfo($id: UUID!) {
+  conversation(id: $id) {
+    ...ConversationInfo
+  }
+}

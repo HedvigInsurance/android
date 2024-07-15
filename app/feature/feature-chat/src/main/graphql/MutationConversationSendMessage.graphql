@@ -1,0 +1,10 @@
+mutation ConversationSendMessage($conversationId: UUID!, $text: String, $fileUploadToken: String) {
+  conversationSendMessage(input: {id: $conversationId, text: $text, fileUploadToken: $fileUploadToken}) {
+    message {
+      ...ChatMessageFragment
+    }
+    userError {
+      message
+    }
+  }
+}

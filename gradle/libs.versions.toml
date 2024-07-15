@@ -10,7 +10,8 @@ lintGradlePlugin = "8.4.2"
 
 # gradlePlugin versions
 androidGradlePlugin = "8.4.2"
-apollo = "3.8.4"
+apolloAdapters = "0.0.2"
+apollo = "4.0.0-rc.1"
 cacheFix = "3.0.1"
 crashlytics = "3.0.1"
 datadogPlugin = "1.14.0"
@@ -19,6 +20,7 @@ easylauncher = "6.4.0"
 googleServices = "4.4.2"
 kotlin = "2.0.0"
 kotlinter = "4.4.0"
+ksp = "2.0.0-1.0.21"
 ktor = "2.3.11"
 license = "0.9.8"
 molecule = "2.0.0"
@@ -30,7 +32,6 @@ androidx-activity-compose = "1.9.0"
 androidx-activity-core = "1.9.0"
 androidx-annotation = "1.8.0"
 androidx-composeBom = "2024.06.00"
-
 androidx-datastore = "1.1.1"
 androidx-junit = "1.1.5"
 androidx-lifecycle = "2.8.2"
@@ -67,16 +68,20 @@ moneta = "1.4.4"
 navigationRecentsUrlSharing = "1.0.0"
 okhttp = "4.12.0"
 okio = "3.9.0"
+paging = "3.3.0"
 playReview = "2.0.1"
 playServicesBase = "18.5.0"
 retrofit = "2.11.0"
 retrofitArrow = "1.2.4"
 robolectric = "4.12.2"
+room = "2.7.0-alpha05"
 slimber = "2.0.0"
+sqlite = "2.5.0-alpha05"
 testParameterInjector = "1.16"
 timber = "5.0.1"
 turbine = "1.1.0"
 unleash = "1.0.0"
+uuid = "0.8.4"
 zXing = "3.5.3"
 zoomable = "1.6.1"
 
@@ -95,7 +100,6 @@ androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
 androidx-compose-material3-windowSizeClass = { module = "androidx.compose.material3:material3-window-size-class" }
 androidx-compose-materialIconsCore = { module = "androidx.compose.material:material-icons-core" }
 androidx-compose-materialIconsExtended = { module = "androidx.compose.material:material-icons-extended" }
-material-components = { module = "com.google.android.material:material", version = "1.12.0" }
 androidx-compose-materialRipple = { module = "androidx.compose.material:material-ripple", version = "1.7.0-beta03" }
 androidx-compose-runtime = { module = "androidx.compose.runtime:runtime" }
 androidx-compose-runtime-livedata = { module = "androidx.compose.runtime:runtime-livedata" }
@@ -130,12 +134,12 @@ androidx-other-workManager = { module = "androidx.work:work-runtime-ktx", versio
 androidx-profileInstaller = { module = "androidx.profileinstaller:profileinstaller", version.ref = "androidx-profileInstaller" }
 androidx-test = { module = "androidx.test:core-ktx", version.ref = "androidx-test" }
 androidx-testRunners = { module = "androidx.test:runner", version.ref = "androidx-testRunners" }
-apollo-adapters = { module = "com.apollographql.apollo3:apollo-adapters", version.ref = "apollo" }
-apollo-annotations = { module = "com.apollographql.apollo3:apollo-annotations", version.ref = "apollo" }
-apollo-api = { module = "com.apollographql.apollo3:apollo-api", version.ref = "apollo" }
-apollo-normalizedCache = { module = "com.apollographql.apollo3:apollo-normalized-cache", version.ref = "apollo" }
-apollo-runtime = { module = "com.apollographql.apollo3:apollo-runtime", version.ref = "apollo" }
-apollo-testingSupport = { module = "com.apollographql.apollo3:apollo-testing-support", version.ref = "apollo" }
+apollo-adapters-datetime = { module = "com.apollographql.adapters:apollo-adapters-kotlinx-datetime", version.ref = "apolloAdapters" }
+apollo-annotations = { module = "com.apollographql.apollo:apollo-annotations", version.ref = "apollo" }
+apollo-api = { module = "com.apollographql.apollo:apollo-api", version.ref = "apollo" }
+apollo-normalizedCache = { module = "com.apollographql.apollo:apollo-normalized-cache", version.ref = "apollo" }
+apollo-runtime = { module = "com.apollographql.apollo:apollo-runtime", version.ref = "apollo" }
+apollo-testingSupport = { module = "com.apollographql.apollo:apollo-testing-support", version.ref = "apollo" }
 arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
 arrow-fx = { module = "io.arrow-kt:arrow-fx-coroutines", version.ref = "arrow" }
 assertK = { module = "com.willowtreeapps.assertk:assertk-jvm", version.ref = "assertK" }
@@ -176,6 +180,7 @@ kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 ktor = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
 leakCanary = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakCanary" }
+material-components = { module = "com.google.android.material:material", version = "1.12.0" }
 molecule = { module = "app.cash.molecule:molecule-runtime", version.ref = "molecule" }
 moneta = { module = "org.javamoney.moneta:moneta-core", version.ref = "moneta" }
 navigationRecentsUrlSharing = { module = "com.stylianosgakis.navigation.recents.url.sharing:navigation-recents-url-sharing", version.ref = "navigationRecentsUrlSharing" }
@@ -183,26 +188,33 @@ okhttp-core = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 okhttp-loggingInterceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
 okhttp-mockWebServer = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "okhttp" }
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
+paging-common = { module = "androidx.paging:paging-common", version.ref = "paging" }
+paging-compose = { module = "androidx.paging:paging-compose", version.ref = "paging" }
 playReview = { module = "com.google.android.play:review-ktx", version.ref = "playReview" }
 playServicesBase = { module = "com.google.android.gms:play-services-base", version.ref = "playServicesBase" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofitArrow = { module = "io.arrow-kt:arrow-core-retrofit", version.ref = "retrofitArrow" }
 retrofitKotlinxSerializationConverter = { module = "com.squareup.retrofit2:converter-kotlinx-serialization", version.ref = "retrofit" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
+room-ksp = { module = "androidx.room:room-compiler", version.ref = "room" }
+room-paging = { module = "androidx.room:room-paging", version.ref = "room" }
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 slimber = { module = "com.github.PaulWoitaschek:Slimber", version.ref = "slimber" }
+sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 testParameterInjector = { module = "com.google.testparameterinjector:test-parameter-injector", version.ref = "testParameterInjector" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 unleash = { module = "io.getunleash:unleash-android-proxy-sdk", version.ref = "unleash" }
+uuid = { module = "com.benasher44:uuid", version.ref = "uuid" }
 zXing = { module = "com.google.zxing:core", version.ref = "zXing" }
 zoomable = { module = "net.engawapg.lib:zoomable", version.ref = "zoomable" }
 # Plugin libraries for build-logic's convention plugins to use to resolve the types/tasks coming from these plugins
 android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "androidGradlePlugin" }
-apollo-gradlePlugin = { module = "com.apollographql.apollo3:apollo-gradle-plugin", version.ref = "apollo" }
+apollo-gradlePlugin = { module = "com.apollographql.apollo:apollo-gradle-plugin", version.ref = "apollo" }
+compose-compilerGradlePlugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin"}
 firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" }
 kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlinter-gradlePlugin = { module = "org.jmailen.gradle:kotlinter-gradle", version.ref = "kotlinter" }
-compose-compilerGradlePlugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin"}
 
 # lint dependencies
 lintApi = { module = "com.android.tools.lint:lint-api", version.ref = "lintApi" }
@@ -213,7 +225,7 @@ lintApi = { module = "com.android.tools.lint:lint-api", version.ref = "lintApi" 
 
 androidApplication = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 androidLibrary = { id = "com.android.library", version.ref = "androidGradlePlugin" }
-apollo = { id = "com.apollographql.apollo3", version.ref = "apollo" }
+apollo = { id = "com.apollographql.apollo", version.ref = "apollo" }
 appIconBannerGenerator = { id = "com.starter.easylauncher", version.ref = "easylauncher" }
 cacheFix = { id = "org.gradle.android.cache-fix", version.ref = "cacheFix" }
 composeCompilerGradlePlugin = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
@@ -225,7 +237,9 @@ googleServices = { id = "com.google.gms.google-services", version.ref = "googleS
 kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinter = { id = "org.jmailen.kotlinter", version.ref = "kotlinter" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 license = { id = "com.jaredsburrows.license", version.ref = "license" }
 lintGradlePlugin = { id = "com.android.lint", version.ref = "lintGradlePlugin" }
+room = { id = "androidx.room", version.ref = "room" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 squareSortDependencies = { id = "com.squareup.sort-dependencies", version.ref = "squareSortDependencies" }

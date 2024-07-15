@@ -1,7 +1,7 @@
 package com.hedvig.android.apollo
 
-import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.cache.normalized.apolloStore
+import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.cache.normalized.apolloStore
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 

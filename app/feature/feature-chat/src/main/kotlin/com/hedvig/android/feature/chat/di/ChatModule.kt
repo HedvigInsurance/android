@@ -1,12 +1,21 @@
 package com.hedvig.android.feature.chat.di
 
 import arrow.retrofit.adapter.either.EitherCallAdapterFactory
-import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.fileupload.FileService
+import com.hedvig.android.data.chat.database.AppDatabase
+import com.hedvig.android.data.chat.database.ChatDao
+import com.hedvig.android.data.chat.database.ConversationDao
+import com.hedvig.android.data.chat.database.RemoteKeyDao
 import com.hedvig.android.data.chat.read.timestamp.ChatLastMessageReadRepository
 import com.hedvig.android.feature.chat.ChatViewModel
+import com.hedvig.android.feature.chat.cbm.CbmChatRepository
+import com.hedvig.android.feature.chat.cbm.CbmChatViewModel
+import com.hedvig.android.feature.chat.cbm.data.GetAllConversationsUseCase
+import com.hedvig.android.feature.chat.cbm.data.GetAllConversationsUseCaseImpl
+import com.hedvig.android.feature.chat.cbm.inbox.InboxViewModel
 import com.hedvig.android.feature.chat.data.BotServiceService
 import com.hedvig.android.feature.chat.data.ChatRepository
 import com.hedvig.android.feature.chat.data.ChatRepositoryDemo
@@ -51,7 +60,8 @@ val chatModule = module {
   }
 
   single<BotServiceService> {
-    val retrofit = Retrofit.Builder()
+    val retrofit = Retrofit
+      .Builder()
       .callFactory(get<OkHttpClient>())
       .baseUrl("${get<HedvigBuildConstants>().urlBotService}/api/")
       .addCallAdapterFactory(EitherCallAdapterFactory.create())
@@ -67,5 +77,38 @@ val chatModule = module {
    */
   single<ChatRepository> {
     get<ChatRepositoryImpl>()
+  }
+
+  // cbm
+  single<GetAllConversationsUseCase> {
+    GetAllConversationsUseCaseImpl(get<ApolloClient>(), get<ConversationDao>())
+  }
+
+  viewModel<InboxViewModel> {
+    InboxViewModel(get<GetAllConversationsUseCase>())
+  }
+
+  single<CbmChatRepository> {
+    CbmChatRepository(
+      apolloClient = get<ApolloClient>(),
+      database = get<AppDatabase>(),
+      chatDao = get<ChatDao>(),
+      remoteKeyDao = get<RemoteKeyDao>(),
+      fileService = get<FileService>(),
+      botServiceService = get<BotServiceService>(),
+      clock = get<Clock>(),
+    )
+  }
+
+  viewModel<CbmChatViewModel> { (conversationId: String) ->
+    CbmChatViewModel(
+      conversationId = conversationId,
+      database = get<AppDatabase>(),
+      chatDao = get<ChatDao>(),
+      remoteKeyDao = get<RemoteKeyDao>(),
+      conversationDao = get<ConversationDao>(),
+      chatRepository = get<CbmChatRepository>(),
+      clock = get<Clock>(),
+    )
   }
 }
