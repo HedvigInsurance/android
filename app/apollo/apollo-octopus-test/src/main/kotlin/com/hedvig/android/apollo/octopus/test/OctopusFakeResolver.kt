@@ -8,14 +8,22 @@ import java.util.UUID
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import octopus.type.__Schema
+import octopus.schema.__Schema
 
 private val delegate = DefaultFakeResolver(__Schema.all)
 
 object OctopusFakeResolver : FakeResolver by delegate {
   override fun resolveLeaf(context: FakeResolverContext): Any {
-    return when (context.mergedField.type.rawType().name) {
-      "Date" -> Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+    return when (
+      context.mergedField.type
+        .rawType()
+        .name
+    ) {
+      "Date" ->
+        Clock.System
+          .now()
+          .toLocalDateTime(TimeZone.currentSystemDefault())
+          .date
       "UUID" -> UUID.randomUUID().toString()
       "Url" -> """www.example.com"""
       "Instant" -> kotlinx.datetime.Instant.DISTANT_FUTURE
