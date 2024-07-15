@@ -110,7 +110,7 @@ private fun PaymentsScreen(
   val systemBarInsetTopDp = with(LocalDensity.current) {
     WindowInsets.systemBars.getTop(this).toDp()
   }
-  val isRefreshing = uiState.safeCast<PaymentsUiState.Content>()?.isLoading == true
+  val isRefreshing = uiState.safeCast<PaymentsUiState.Content>()?.isRetrying == true
   val pullRefreshState = rememberPullRefreshState(
     refreshing = isRefreshing,
     onRefresh = onRetry,
@@ -450,6 +450,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
     add(
       PaymentsUiState.Content(
         isLoading = false,
+        isRetrying = false,
         upcomingPayment = null,
         upcomingPaymentInfo = null,
         connectedPaymentInfo = PaymentsUiState.Content.ConnectedPaymentInfo.Connected("Card", "****1234"),
@@ -458,6 +459,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
     add(
       PaymentsUiState.Content(
         isLoading = false,
+        isRetrying = false,
         upcomingPayment = PaymentsUiState.Content.UpcomingPayment(
           UiMoney(100.0, CurrencyCode.SEK),
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
@@ -470,6 +472,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
     add(
       PaymentsUiState.Content(
         isLoading = false,
+        isRetrying = false,
         upcomingPayment = PaymentsUiState.Content.UpcomingPayment(
           UiMoney(100.0, CurrencyCode.SEK),
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
@@ -482,6 +485,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
     add(
       PaymentsUiState.Content(
         isLoading = false,
+        isRetrying = false,
         upcomingPayment = PaymentsUiState.Content.UpcomingPayment(
           UiMoney(100.0, CurrencyCode.SEK),
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
@@ -497,6 +501,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
     add(
       PaymentsUiState.Content(
         isLoading = false,
+        isRetrying = false,
         upcomingPayment = PaymentsUiState.Content.UpcomingPayment(
           UiMoney(100.0, CurrencyCode.SEK),
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
@@ -509,6 +514,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
     add(
       PaymentsUiState.Content(
         isLoading = false,
+        isRetrying = false,
         upcomingPayment = PaymentsUiState.Content.UpcomingPayment(
           UiMoney(100.0, CurrencyCode.SEK),
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
@@ -521,6 +527,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
     add(
       PaymentsUiState.Content(
         isLoading = false,
+        isRetrying = false,
         upcomingPayment = PaymentsUiState.Content.UpcomingPayment(
           UiMoney(100.0, CurrencyCode.SEK),
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
@@ -536,6 +543,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
     add(
       PaymentsUiState.Content(
         isLoading = false,
+        isRetrying = false,
         upcomingPayment = PaymentsUiState.Content.UpcomingPayment(
           UiMoney(100.0, CurrencyCode.SEK),
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,

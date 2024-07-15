@@ -34,9 +34,9 @@ internal class PaymentsPresenter(
     LaunchedEffect(loadIteration) {
       val currentPaymentUiState = paymentUiState
       paymentUiState = if (currentPaymentUiState is PaymentsUiState.Content) {
-        currentPaymentUiState.copy(isLoading = true)
+        currentPaymentUiState.copy(isRetrying = true)
       } else {
-        PaymentsUiState.Content.createEmptyLoadingContent()
+        currentPaymentUiState
       }
       getUpcomingPaymentUseCase.provide().invoke().fold(
         ifLeft = {
@@ -45,6 +45,7 @@ internal class PaymentsPresenter(
         ifRight = { paymentOverview ->
           paymentUiState = PaymentsUiState.Content(
             isLoading = false,
+            isRetrying = false,
             upcomingPayment = paymentOverview.memberChargeShortInfo?.let { memberCharge ->
               PaymentsUiState.Content.UpcomingPayment(
                 netAmount = memberCharge.netAmount,
@@ -94,6 +95,7 @@ internal sealed interface PaymentsUiState {
 
   data class Content(
     val isLoading: Boolean,
+    val isRetrying: Boolean,
     val upcomingPayment: UpcomingPayment?,
     val upcomingPaymentInfo: UpcomingPaymentInfo?,
     val connectedPaymentInfo: ConnectedPaymentInfo,
@@ -128,14 +130,13 @@ internal sealed interface PaymentsUiState {
 
     companion object {
       // Used for displaying placeholders before content is fetched from back-end
-      fun createEmptyLoadingContent(): Content {
-        return Content(
+      val Loading: Content = Content(
           isLoading = true,
+          isRetrying = false,
           upcomingPayment = UpcomingPayment(UiMoney(0.0, SEK), dueDate = LocalDate.fromEpochDays(300), ""),
           upcomingPaymentInfo = null,
-          connectedPaymentInfo = ConnectedPaymentInfo.Connected("", "")
-        )
-      }
+          connectedPaymentInfo = ConnectedPaymentInfo.Connected("", ""),
+      )
     }
   }
 }

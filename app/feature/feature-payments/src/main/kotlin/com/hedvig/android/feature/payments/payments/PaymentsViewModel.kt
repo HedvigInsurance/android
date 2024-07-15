@@ -7,7 +7,7 @@ import com.hedvig.android.molecule.android.MoleculeViewModel
 internal class PaymentsViewModel(
   getUpcomingPaymentUseCase: Provider<GetUpcomingPaymentUseCase>,
 ) : MoleculeViewModel<PaymentsEvent, PaymentsUiState>(
-    PaymentsUiState.Content.createEmptyLoadingContent(),
+    PaymentsUiState.Content.Loading,
     PaymentsPresenter(
       getUpcomingPaymentUseCase = getUpcomingPaymentUseCase,
     ),
