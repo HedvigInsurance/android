@@ -632,7 +632,7 @@ private fun PreviewHomeScreen(
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
         reload = {},
         onNavigateToInbox = {},
-          onNavigateToNewConversation = {},
+        onNavigateToNewConversation = {},
         onClaimDetailCardClicked = {},
         navigateToConnectPayment = {},
         onStartClaim = {},

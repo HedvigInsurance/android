@@ -296,8 +296,8 @@ private fun ClaimDetailTopAppBar(navigateUp: () -> Unit, navigateToConversation:
             contentDescription = stringResource(R.string.DASHBOARD_OPEN_CHAT),
             tint = com.hedvig.android.design.system.hedvig.HedvigTheme.colorScheme.fillSecondary,
             modifier = Modifier
-                .size(32.dp)
-                .clip(CircleShape),
+              .size(32.dp)
+              .clip(CircleShape),
           )
         }
         // TopAppBar has a default 4.dp padding horizontally
@@ -352,8 +352,8 @@ private fun BeforeGridContent(uiState: ClaimDetailUiState.Content, downloadFromU
       submitDate = uiState.submittedAt.date,
       incidentDate = uiState.incidentDate,
       modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 2.dp),
+        .fillMaxWidth()
+        .padding(horizontal = 2.dp),
     )
     if (uiState.termsConditionsUrl != null) {
       Spacer(Modifier.height(16.dp))
@@ -401,8 +401,8 @@ private fun AfterGridContent(
       text = stringResource(id = R.string.claim_status_uploaded_files_upload_text),
       textAlign = TextAlign.Center,
       modifier = Modifier
-          .padding(horizontal = 2.dp)
-          .fillMaxWidth(),
+        .padding(horizontal = 2.dp)
+        .fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))
     val text = if (uiState.files.isNotEmpty()) {

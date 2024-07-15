@@ -31,7 +31,7 @@ private fun HedvigTheme(
     LocalShapes provides shapes,
     LocalTextSelectionColors provides selectionColors,
     LocalTypography provides typography,
-    LocalContentColor provides colorScheme.textPrimary
+    LocalContentColor provides colorScheme.textPrimary,
   ) {
     ProvideTextStyle(value = typography.bodySmall, content = content)
   }

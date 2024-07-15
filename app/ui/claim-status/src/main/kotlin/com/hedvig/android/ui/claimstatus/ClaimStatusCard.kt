@@ -25,7 +25,6 @@ import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import hedvig.resources.R
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toJavaInstant
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime
 

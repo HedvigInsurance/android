@@ -27,7 +27,10 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import hedvig.resources.R
 
 @Composable
-internal fun UnknownErrorDestination(onNavigateToNewConversation: () -> Unit, closeFailureScreenDestination: () -> Unit) {
+internal fun UnknownErrorDestination(
+  onNavigateToNewConversation: () -> Unit,
+  closeFailureScreenDestination: () -> Unit,
+) {
   UnknownErrorScreen(
     onNavigateToNewConversation = onNavigateToNewConversation,
     closeFailureScreenDestination = closeFailureScreenDestination,

@@ -35,13 +35,13 @@ import hedvig.resources.R
 
 @Composable
 internal fun DeflectPestsDestination(
-    deflectPests: ClaimFlowDestination.DeflectPests,
-    onNavigateToNewConversation: () -> Unit,
-    closeClaimFlow: () -> Unit,
-    windowSizeClass: WindowSizeClass,
-    navigateUp: () -> Unit,
-    imageLoader: ImageLoader,
-    openUrl: (String) -> Unit,
+  deflectPests: ClaimFlowDestination.DeflectPests,
+  onNavigateToNewConversation: () -> Unit,
+  closeClaimFlow: () -> Unit,
+  windowSizeClass: WindowSizeClass,
+  navigateUp: () -> Unit,
+  imageLoader: ImageLoader,
+  openUrl: (String) -> Unit,
 ) {
   DeflectPestsScreen(
     partners = deflectPests.partners,
