@@ -9,7 +9,6 @@ plugins {
 }
 
 dependencies {
-
   implementation(libs.androidx.datastore.core)
   implementation(libs.androidx.datastore.preferencesCore)
   implementation(libs.androidx.lifecycle.compose)
@@ -30,11 +29,14 @@ dependencies {
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)
+  implementation(libs.paging.common)
+  implementation(libs.paging.compose)
   implementation(libs.retrofit)
   implementation(libs.retrofitArrow)
   implementation(libs.retrofitKotlinxSerializationConverter)
-  implementation(libs.paging.compose)
+  implementation(libs.room.paging)
   implementation(libs.room.runtime)
+  implementation(libs.sqlite.bundled)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.composePhotoCaptureState)
@@ -67,6 +69,6 @@ apollo {
   service("octopus") {
     packageName.set("octopus")
     generateOptionalOperationVariables.set(false)
-      dependsOn(projects.apolloOctopusPublic, true)
+    dependsOn(projects.apolloOctopusPublic, true)
   }
 }

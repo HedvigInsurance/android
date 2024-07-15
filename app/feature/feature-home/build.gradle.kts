@@ -15,7 +15,6 @@ android {
 
 dependencies {
 
-  implementation(libs.accompanist.pagerIndicators)
   implementation(libs.accompanist.permissions)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material3)
@@ -38,6 +37,7 @@ dependencies {
   implementation(projects.audioPlayerData)
   implementation(projects.audioPlayerUi)
   implementation(projects.claimStatus)
+  implementation(projects.composePagerIndicator)
   implementation(projects.composeUi)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
