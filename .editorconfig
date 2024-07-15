@@ -63,6 +63,10 @@ ktlint_standard_multiline-expression-wrapping=disabled
 ktlint_standard_string-template-indent=disabled
 # https://pinterest.github.io/ktlint/latest/rules/standard/#function-expression-body
 ktlint_standard_function-expression-body = disabled
+# https://pinterest.github.io/ktlint/latest/rules/standard/#class-signature
+ktlint_standard_class-signature = disabled
+# https://pinterest.github.io/ktlint/latest/rules/standard/#chain-method-continuation
+ktlint_standard_chain-method-continuation = disabled
 
 [*.xml]
 indent_size=2

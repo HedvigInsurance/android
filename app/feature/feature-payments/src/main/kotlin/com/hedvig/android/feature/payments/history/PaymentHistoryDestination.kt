@@ -20,8 +20,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.compose.ui.preview.TripleBooleanCollectionPreviewParameterProvider
-import com.hedvig.android.compose.ui.preview.TripleCase
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.information.HedvigInformationSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
@@ -68,40 +66,36 @@ private fun PaymentHistoryScreen(
         HedvigErrorSection(onButtonClick = reload, modifier = Modifier.weight(1f))
       }
     }
+
     PaymentHistoryUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
     is PaymentHistoryUiState.Success -> {
       val updatedOnChargeClicked by rememberUpdatedState(onChargeClicked)
-      val (
-        paymentHistory: PaymentHistory, onChargeClickedAfterTransform: (
-          String,
-        ) -> Unit,
-      ) = remember(uiState.paymentHistory) {
-        if (uiState.paymentHistory.isEmpty()) {
-          PaymentHistory.NoHistoryData to {
-              s: String ->
-          }
-        } else {
-          PaymentHistory.PastCharges(
-            chargesInYear = uiState.paymentHistory.sortedBy { it.dueDate }.groupBy { it.dueDate.year }.map {
-                (year, charges) ->
-              PaymentHistory.PastCharges.YearCharges(
-                year = year,
-                charge = charges.map { charge ->
-                  PaymentHistory.PastCharges.YearCharges.Charge(
-                    id = charge.id,
-                    dueDate = charge.dueDate,
-                    netAmount = charge.netAmount,
-                    hasFailedCharge = charge.status == MemberCharge.MemberChargeStatus.FAILED,
+      val (paymentHistory: PaymentHistory, onChargeClickedAfterTransform: (String) -> Unit) =
+        remember(uiState.paymentHistory) {
+          if (uiState.paymentHistory.isEmpty()) {
+            PaymentHistory.NoHistoryData to { _ -> }
+          } else {
+            PaymentHistory.PastCharges(
+              chargesInYear = uiState.paymentHistory.sortedBy { it.dueDate }.groupBy { it.dueDate.year }
+                .map { (year, charges) ->
+                  PaymentHistory.PastCharges.YearCharges(
+                    year = year,
+                    charge = charges.map { charge ->
+                      PaymentHistory.PastCharges.YearCharges.Charge(
+                        id = charge.id,
+                        dueDate = charge.dueDate,
+                        netAmount = charge.netAmount,
+                        hasFailedCharge = charge.status == MemberCharge.MemberChargeStatus.FAILED,
+                      )
+                    },
                   )
                 },
-              )
-            },
-            showInfoAboutOlderCharges = uiState.paymentHistory.size > 11,
-          ) to { chargeId: String ->
-            updatedOnChargeClicked(uiState.paymentHistory.first { it.id == chargeId }.id)
+              showInfoAboutOlderCharges = uiState.paymentHistory.size > 11,
+            ) to { chargeId: String ->
+              updatedOnChargeClicked(uiState.paymentHistory.first { it.id == chargeId }.id)
+            }
           }
         }
-      }
       PaymentHistorySuccessScreen(
         paymentHistory = paymentHistory,
         onChargeClicked = onChargeClickedAfterTransform,
