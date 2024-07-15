@@ -17,8 +17,6 @@ import androidx.core.graphics.drawable.IconCompat
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.app.notification.getMutablePendingIntentFlags
 import com.hedvig.android.core.common.android.notification.setupNotificationChannel
-import com.hedvig.android.logger.LogPriority
-import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
@@ -39,12 +37,6 @@ class ChatNotificationSender(
   }
 
   override fun sendNotification(type: String, remoteMessage: RemoteMessage) {
-    // todo chat: Consider still not showing the notification when chat is on the foreground
-//    if (context.getStoredBoolean(ChatFragment.ACTIVITY_IS_IN_FOREGROUND)) {
-//      logcat(LogPriority.INFO) { "ChatNotificationSender ignoring notification since chat is open" }
-//      return
-//    }
-
     val hedvigPerson = hedvigPerson.toBuilder()
       .also { person ->
         val overriddenTitle = remoteMessage.data.titleFromCustomerIoData()
@@ -54,11 +46,7 @@ class ChatNotificationSender(
       }
       .build()
 
-    val messageText = remoteMessage.data.bodyFromCustomerIoData() ?: remoteMessage.data[DATA_NEW_MESSAGE_BODY]
-    if (messageText == null) {
-      logcat(LogPriority.ERROR) { "GCM message came without a valid message. Data:${remoteMessage.data}" }
-      return
-    }
+    val messageText = context.getString(R.string.NOTIFICATION_CHAT_NEW_MESSAGE_BODY)
 
     val message = NotificationCompat.MessagingStyle.Message(
       messageText,
@@ -204,14 +192,7 @@ class ChatNotificationSender(
     internal const val CHAT_REPLY_DATA_NOTIFICATION_ID = "CHAT_REPLY_DATA_NOTIFICATION_ID"
     private const val CHAT_REPLY_REQUEST_CODE = 2380
 
-    internal const val DATA_NEW_MESSAGE_BODY = "DATA_NEW_MESSAGE_BODY"
-
     private const val NOTIFICATION_TYPE_NEW_MESSAGE = "NEW_MESSAGE"
-
-    private fun Map<String, String>.bodyFromCustomerIoData(): String? {
-      // From customerIO https://www.customer.io/docs/send-push/#standard-payload
-      return get("body")
-    }
 
     private fun Map<String, String>.titleFromCustomerIoData(): String? {
       // From customerIO https://www.customer.io/docs/send-push/#standard-payload
