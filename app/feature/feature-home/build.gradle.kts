@@ -87,6 +87,6 @@ dependencies {
 apollo {
   service("octopus") {
     packageName.set("octopus")
-      dependsOn(projects.apolloOctopusPublic, true)
+    dependsOn(projects.apolloOctopusPublic, true)
   }
 }
