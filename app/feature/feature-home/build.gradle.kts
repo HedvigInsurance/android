@@ -14,7 +14,6 @@ android {
 }
 
 dependencies {
-  apolloMetadata(projects.apolloOctopusPublic)
 
   implementation(libs.accompanist.permissions)
   implementation(libs.androidx.compose.foundation)
@@ -88,6 +87,6 @@ dependencies {
 apollo {
   service("octopus") {
     packageName.set("octopus")
-    generateDataBuilders.set(true)
+      dependsOn(projects.apolloOctopusPublic, true)
   }
 }

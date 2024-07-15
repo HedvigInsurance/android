@@ -13,7 +13,6 @@ android {
 }
 
 dependencies {
-  apolloMetadata(projects.apolloOctopusPublic)
 
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material3)
@@ -52,6 +51,7 @@ dependencies {
   implementation(projects.coreRetrofit)
   implementation(projects.coreUi)
   implementation(projects.coreUiData)
+  implementation(projects.designSystemHedvig)
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
   implementation(projects.navigationCore)
@@ -61,5 +61,6 @@ dependencies {
 apollo {
   service("octopus") {
     packageName.set("octopus")
+      dependsOn(projects.apolloOctopusPublic, true)
   }
 }

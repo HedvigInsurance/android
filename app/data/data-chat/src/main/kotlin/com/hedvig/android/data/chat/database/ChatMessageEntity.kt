@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.chat.cbm.database
+package com.hedvig.android.data.chat.database
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -16,10 +16,16 @@ data class ChatMessageEntity(
   val gifUrl: String?,
   val url: String?,
   val mimeType: String?,
-  val failedToSend: Boolean,
+  val failedToSend: FailedToSendType?,
 ) {
   enum class Sender {
     HEDVIG,
     MEMBER,
+  }
+
+  enum class FailedToSendType {
+    TEXT,
+    PHOTO,
+    MEDIA,
   }
 }

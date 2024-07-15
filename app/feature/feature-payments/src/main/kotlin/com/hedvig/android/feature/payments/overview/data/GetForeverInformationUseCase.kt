@@ -1,9 +1,9 @@
 package com.hedvig.android.feature.payments.overview.data
 
 import arrow.core.Either
-import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.cache.normalized.FetchPolicy
-import com.apollographql.apollo3.cache.normalized.fetchPolicy
+import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.cache.normalized.FetchPolicy
+import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage

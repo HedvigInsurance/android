@@ -2,14 +2,16 @@ package com.hedvig.android.data.chat.read.timestamp
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.annotations.ApolloExperimental
-import com.apollographql.apollo3.testing.enqueueTestNetworkError
-import com.apollographql.apollo3.testing.enqueueTestResponse
+import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.annotations.ApolloExperimental
+import com.apollographql.apollo.testing.enqueueTestNetworkError
+import com.apollographql.apollo.testing.enqueueTestResponse
 import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.hedvig.android.apollo.octopus.test.OctopusFakeResolver
 import com.hedvig.android.apollo.test.TestApolloClientRule
+import com.hedvig.android.featureflags.flags.Feature
+import com.hedvig.android.featureflags.test.FakeFeatureManager2
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.Instant
 import octopus.ChatLatestMessageTimestampsQuery
@@ -35,6 +37,7 @@ class ChatLastMessageReadRepositoryImplTest {
     val chatLastMessageReadRepositoryImpl = ChatLastMessageReadRepositoryImpl(
       chatMessageTimestampStorage = chatMessageTimestampStorage,
       apolloClient = apolloClient,
+      featureManager = FakeFeatureManager2(mapOf(Feature.ENABLE_CBM to false)),
     )
     apolloClient.enqueueTestResponse(
       ChatLatestMessageTimestampsQuery(),
@@ -65,6 +68,7 @@ class ChatLastMessageReadRepositoryImplTest {
     val chatLastMessageReadRepositoryImpl = ChatLastMessageReadRepositoryImpl(
       chatMessageTimestampStorage = chatMessageTimestampStorage,
       apolloClient = apolloClient,
+      featureManager = FakeFeatureManager2(mapOf(Feature.ENABLE_CBM to false)),
     )
     val lastReadMessageTimestamp = Instant.parse("2022-01-01T00:00:01Z")
     apolloClient.enqueueTestResponse(
@@ -101,6 +105,7 @@ class ChatLastMessageReadRepositoryImplTest {
     val chatLastMessageReadRepositoryImpl = ChatLastMessageReadRepositoryImpl(
       chatMessageTimestampStorage = chatMessageTimestampStorage,
       apolloClient = apolloClient,
+      featureManager = FakeFeatureManager2(mapOf(Feature.ENABLE_CBM to false)),
     )
     val enqueueBackendResponse = {
       apolloClient.enqueueTestResponse(
@@ -135,6 +140,7 @@ class ChatLastMessageReadRepositoryImplTest {
     val chatLastMessageReadRepositoryImpl = ChatLastMessageReadRepositoryImpl(
       chatMessageTimestampStorage = chatMessageTimestampStorage,
       apolloClient = apolloClient,
+      featureManager = FakeFeatureManager2(mapOf(Feature.ENABLE_CBM to false)),
     )
     apolloClient.enqueueTestNetworkError()
     if (hasStoredTimestamp) {
@@ -153,6 +159,7 @@ class ChatLastMessageReadRepositoryImplTest {
       val chatLastMessageReadRepositoryImpl = ChatLastMessageReadRepositoryImpl(
         chatMessageTimestampStorage = chatMessageTimestampStorage,
         apolloClient = apolloClient,
+        featureManager = FakeFeatureManager2(mapOf(Feature.ENABLE_CBM to false)),
       )
       apolloClient.enqueueTestResponse(
         ChatLatestMessageTimestampsQuery(),

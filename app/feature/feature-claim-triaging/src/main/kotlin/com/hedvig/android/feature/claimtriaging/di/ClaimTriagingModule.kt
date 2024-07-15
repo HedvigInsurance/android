@@ -1,6 +1,6 @@
 package com.hedvig.android.feature.claimtriaging.di
 
-import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.data.claimflow.ClaimFlowRepository
 import com.hedvig.android.data.claimtriaging.EntryPoint
 import com.hedvig.android.data.claimtriaging.EntryPointId

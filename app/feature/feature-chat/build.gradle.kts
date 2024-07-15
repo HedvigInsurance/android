@@ -4,14 +4,11 @@ plugins {
   id("hedvig.android.library")
   id("hedvig.android.library.compose")
   alias(libs.plugins.apollo)
-  alias(libs.plugins.ksp)
-  alias(libs.plugins.room)
   alias(libs.plugins.serialization)
   alias(libs.plugins.squareSortDependencies)
 }
 
 dependencies {
-  apolloMetadata(projects.apolloOctopusPublic)
 
   ksp(libs.room.ksp)
 
@@ -58,7 +55,9 @@ dependencies {
   implementation(projects.coreResources)
   implementation(projects.coreRetrofit)
   implementation(projects.coreUi)
+  implementation(projects.dataChat)
   implementation(projects.dataChatReadTimestampPublic)
+  implementation(projects.designSystemHedvig)
   implementation(projects.featureFlagsPublic)
   implementation(projects.languageCore)
   implementation(projects.moleculeAndroid)
@@ -72,18 +71,7 @@ dependencies {
 apollo {
   service("octopus") {
     packageName.set("octopus")
-    generateDataBuilders.set(true)
     generateOptionalOperationVariables.set(false)
+    dependsOn(projects.apolloOctopusPublic, true)
   }
-}
-
-room {
-  schemaDirectory(
-    project
-      .rootDir
-      .resolve("app")
-      .resolve("database")
-      .resolve("schemas")
-      .absolutePath,
-  )
 }

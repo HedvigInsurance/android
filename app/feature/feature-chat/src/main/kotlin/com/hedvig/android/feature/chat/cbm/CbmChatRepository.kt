@@ -1,24 +1,41 @@
 package com.hedvig.android.feature.chat.cbm
 
+import android.net.Uri
 import android.util.Patterns
+import androidx.core.net.toFile
 import androidx.room.withTransaction
 import arrow.core.Either
+import arrow.core.Either.Left
+import arrow.core.Either.Right
 import arrow.core.left
+import arrow.core.raise.Raise
 import arrow.core.raise.either
 import arrow.core.raise.ensureNotNull
-import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.cache.normalized.FetchPolicy
-import com.apollographql.apollo3.cache.normalized.doNotStore
-import com.apollographql.apollo3.cache.normalized.fetchPolicy
+import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.cache.normalized.FetchPolicy
+import com.apollographql.apollo.cache.normalized.doNotStore
+import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.benasher44.uuid.Uuid
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
-import com.hedvig.android.feature.chat.cbm.database.AppDatabase
-import com.hedvig.android.feature.chat.cbm.database.ChatDao
-import com.hedvig.android.feature.chat.cbm.database.RemoteKeyDao
+import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.fileupload.FileService
+import com.hedvig.android.core.retrofit.toErrorMessage
+import com.hedvig.android.data.chat.database.AppDatabase
+import com.hedvig.android.data.chat.database.ChatDao
+import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.MEDIA
+import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.PHOTO
+import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.TEXT
+import com.hedvig.android.data.chat.database.RemoteKeyDao
+import com.hedvig.android.data.chat.database.RemoteKeyEntity
 import com.hedvig.android.feature.chat.cbm.model.CbmChatMessage
 import com.hedvig.android.feature.chat.cbm.model.toChatMessageEntity
 import com.hedvig.android.feature.chat.cbm.model.toSender
+import com.hedvig.android.feature.chat.data.BotServiceService
+import com.hedvig.android.feature.chat.data.uploadFile
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.LogPriority.ERROR
+import com.hedvig.android.logger.logcat
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
@@ -26,39 +43,103 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
 import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
+import octopus.ConversationInfoQuery
 import octopus.ConversationQuery
 import octopus.ConversationSendMessageMutation
+import octopus.ConversationStartMutation
+import octopus.ConversationStatusMessageQuery
 import octopus.fragment.ChatMessageFileChatMessageFragment
 import octopus.fragment.ChatMessageFragment
 import octopus.fragment.ChatMessageTextChatMessageFragment
+import okhttp3.MediaType.Companion.toMediaType
 
 internal class CbmChatRepository(
   private val apolloClient: ApolloClient,
   private val database: AppDatabase,
   private val chatDao: ChatDao,
   private val remoteKeyDao: RemoteKeyDao,
+  private val fileService: FileService,
+  private val botServiceService: BotServiceService,
   private val clock: Clock,
 ) {
+  suspend fun createConversation(conversationId: Uuid): Either<ErrorMessage, ConversationInfo> {
+    return either {
+      apolloClient
+        .mutation(ConversationStartMutation(conversationId.toString()))
+        .safeExecute()
+        .toEither(::ErrorMessage)
+        .bind()
+        .conversationStart
+        .toConversationInfo()
+    }
+  }
+
+  suspend fun getConversationInfo(conversationId: Uuid): Either<ErrorMessage, ConversationInfo?> {
+    return either {
+      apolloClient
+        .query(ConversationInfoQuery(conversationId.toString()))
+        .safeExecute()
+        .toEither(::ErrorMessage)
+        .bind()
+        .conversation
+        ?.toConversationInfo()
+    }
+  }
+
+  fun bannerText(conversationId: Uuid): Flow<BannerText?> {
+    return flow {
+      while (currentCoroutineContext().isActive) {
+        val result = apolloClient
+          .query(ConversationStatusMessageQuery(conversationId.toString()))
+          .safeExecute()
+          .toEither(::ErrorMessage)
+        when (result) {
+          is Left -> {
+            delay(10.seconds)
+          }
+
+          is Right -> {
+            val conversation = result.value.conversation
+            emit(
+              when {
+                conversation == null -> null
+                conversation.isOpen == false -> BannerText.ClosedConversation
+                conversation.statusMessage != null -> BannerText.Text(conversation.statusMessage)
+                else -> {
+                  logcat(LogPriority.ERROR) { "Got unknown conversation status message:$conversation" }
+                  null
+                }
+              },
+            )
+            break
+          }
+        }
+      }
+    }
+  }
+
   suspend fun chatMessages(
     conversationId: Uuid,
     pagingToken: PagingToken?,
-  ): Either<Throwable?, ChatMessagePageResponse> {
+  ): Either<Throwable, ChatMessagePageResponse> {
     return internalChatMessages(conversationId, pagingToken).mapLeft { Exception(it) }
   }
 
   fun pollNewestMessages(conversationId: Uuid): Flow<String> {
     return flow {
       while (currentCoroutineContext().isActive) {
-        val newerTokenOrNull = remoteKeyDao.remoteKeyForConversation(conversationId).newerToken?.let {
+        val newerTokenOrNull = remoteKeyDao.remoteKeyForConversation(conversationId)?.newerToken?.let {
           PagingToken.NewerToken(it)
         }
         internalChatMessages(conversationId, newerTokenOrNull).fold(
           ifLeft = { errorMessage ->
-            emit(errorMessage ?: "Unknown error")
+            emit(errorMessage)
           },
           ifRight = { messagePageResponse ->
             database.withTransaction {
               val existingRemoteKey = remoteKeyDao.remoteKeyForConversation(conversationId)
+                ?: RemoteKeyEntity(conversationId, null, null)
               remoteKeyDao.insert(existingRemoteKey.copy(newerToken = messagePageResponse.newerToken))
               chatDao.insertAll(messagePageResponse.messages.map { it.toChatMessageEntity(conversationId) })
             }
@@ -70,35 +151,86 @@ internal class CbmChatRepository(
   }
 
   suspend fun retrySendMessage(conversationId: Uuid, messageId: String): Either<String, CbmChatMessage> {
-    val messageToRetry = database.withTransaction {
-      val message = chatDao.getFailedMessage(conversationId, messageId)
-      chatDao.deleteMessage(conversationId, messageId)
-      message
-    } ?: return "Message not found".left()
-    return sendText(conversationId, messageToRetry.text!!)
+    return either {
+      val messageToRetry = database.withTransaction {
+        val message = chatDao.getFailedMessage(conversationId, messageId)
+        chatDao.deleteMessage(conversationId, messageId)
+        message
+      } ?: return "Message not found".left()
+      ensureNotNull(messageToRetry) {
+        logcat(ERROR) { "Tried to retry sending a message which did not exist in the database:$messageId" }
+        "Message not found"
+      }
+      return with(messageToRetry) {
+        when {
+          failedToSend == TEXT && text != null -> sendText(conversationId, text!!)
+          failedToSend == PHOTO && url != null -> sendPhoto(conversationId, Uri.parse(url))
+          failedToSend == MEDIA && url != null -> sendMedia(conversationId, Uri.parse(url))
+          else -> {
+            logcat(ERROR) { "Tried to retry sending a message which had a wrong structure:$messageToRetry" }
+            raise("Unknown message type")
+          }
+        }
+      }
+    }
   }
 
   suspend fun sendText(conversationId: Uuid, text: String): Either<String, CbmChatMessage> {
     return sendMessage(conversationId, ConversationInput.Text(text)).onLeft {
       val failedMessage = CbmChatMessage.FailedToBeSent.ChatMessageText(Uuid.randomUUID().toString(), clock.now(), text)
-      chatDao.insertAll(listOf(failedMessage.toChatMessageEntity(conversationId)))
+      chatDao.insert(failedMessage.toChatMessageEntity(conversationId))
+    }
+  }
+
+  suspend fun sendPhoto(conversationId: Uuid, uri: Uri): Either<String, CbmChatMessage> {
+    return either {
+      val uploadToken = uploadPhotoToBotService(uri)
+      sendMessage(conversationId, ConversationInput.File(uploadToken)).bind()
+    }.onLeft {
+      val failedMessage =
+        CbmChatMessage.FailedToBeSent.ChatMessagePhoto(Uuid.randomUUID().toString(), clock.now(), uri)
+      chatDao.insert(failedMessage.toChatMessageEntity(conversationId))
+    }
+  }
+
+  suspend fun sendMedia(conversationId: Uuid, uri: Uri): Either<String, CbmChatMessage> {
+    return either {
+      val uploadToken = uploadMediaToBotService(uri)
+      sendMessage(conversationId, ConversationInput.File(uploadToken)).bind()
+    }.onLeft {
+      val failedMessage =
+        CbmChatMessage.FailedToBeSent.ChatMessageMedia(Uuid.randomUUID().toString(), clock.now(), uri)
+      chatDao.insert(failedMessage.toChatMessageEntity(conversationId))
     }
   }
 
   private suspend fun sendMessage(conversationId: Uuid, input: ConversationInput): Either<String, CbmChatMessage> {
-    val response = apolloClient
-      .mutation(ConversationSendMessageMutation(conversationId.toString(), input.text, input.fileUploadToken))
-      .execute()
     return either {
-      val data = response.data ?: raise(response.errors.toString())
-      data.conversationSendMessage.message?.toChatMessage() ?: raise("Unknown chat message type")
+      val response = apolloClient
+        .mutation(ConversationSendMessageMutation(conversationId.toString(), input.text, input.fileUploadToken))
+        .safeExecute()
+        .toEither(::ErrorMessage)
+        .mapLeft { it.toString() }
+        .bind()
+      val sentMessage = response.conversationSendMessage.message
+      ensureNotNull(sentMessage) {
+        "Sent message resulted in no response from backend"
+      }
+      val chatMessage = response.conversationSendMessage.message.toChatMessage()
+      ensureNotNull(chatMessage) {
+        "Unknown chat message type"
+      }
+      chatDao.insert(chatMessage.toChatMessageEntity(conversationId))
+      chatMessage
+    }.onLeft {
+      logcat { "Failed to send message, with error message:$it" }
     }
   }
 
   private suspend fun internalChatMessages(
     conversationId: Uuid,
     pagingToken: PagingToken?,
-  ): Either<String?, ChatMessagePageResponse> {
+  ): Either<String, ChatMessagePageResponse> {
     return either {
       val data = apolloClient
         .query(
@@ -126,6 +258,58 @@ internal class CbmChatRepository(
       )
     }
   }
+
+  private suspend fun Raise<String>.uploadPhotoToBotService(uri: Uri): String {
+    val contentType = fileService.getMimeType(uri).toMediaType()
+    val file = uri.toFile()
+    val uploadToken = botServiceService
+      .uploadFile(file, contentType)
+      .onLeft {
+      }.mapLeft {
+        val errorMessage = "Failed to upload file with path:${file.absolutePath}. Error:$it"
+        logcat(LogPriority.ERROR) { errorMessage }
+        it.toErrorMessage().message ?: errorMessage
+      }.bind()
+      .firstOrNull()
+      ?.uploadToken
+    ensureNotNull(uploadToken) { "No upload token" }
+    logcat { "Uploaded file with path:${file.absolutePath}. UploadToken:$uploadToken" }
+    return uploadToken
+  }
+
+  private suspend fun Raise<String>.uploadMediaToBotService(uri: Uri): String {
+    val uploadToken = botServiceService
+      .uploadFile(fileService.createFormData(uri))
+      .mapLeft {
+        val errorMessage = "Failed to upload media with uri:$uri. Error:$it"
+        logcat(LogPriority.ERROR) { errorMessage }
+        it.toErrorMessage().message ?: errorMessage
+      }.bind()
+      .firstOrNull()
+      ?.uploadToken
+    ensureNotNull(uploadToken) { "No upload token" }
+    logcat { "Uploaded file with uri:$uri. UploadToken:$uploadToken" }
+    return uploadToken
+  }
+}
+
+internal data class ConversationInfo(
+  val conversationId: String?,
+  val title: String,
+  val createdAt: Instant,
+  val isLegacy: Boolean,
+)
+
+private fun octopus.fragment.ConversationInfo.toConversationInfo(): ConversationInfo {
+  return ConversationInfo(conversationId = id, title = title, createdAt = createdAt, isLegacy = isLegacy)
+}
+
+internal sealed interface BannerText {
+  data object ClosedConversation : BannerText
+
+  data class Text(
+    val text: String,
+  ) : BannerText
 }
 
 private sealed interface ConversationInput {

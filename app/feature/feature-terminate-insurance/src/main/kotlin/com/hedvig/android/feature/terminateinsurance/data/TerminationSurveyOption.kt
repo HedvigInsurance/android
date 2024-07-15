@@ -14,17 +14,23 @@ internal data class TerminationSurveyOption(
 
 @Serializable
 internal sealed interface SurveyOptionSuggestion {
+  val description: String
+  val buttonTitle: String
+
   @Serializable
   sealed interface Action : SurveyOptionSuggestion {
     @Serializable
-    data object UpdateAddress : Action
+    data class UpdateAddress(
+      override val description: String,
+      override val buttonTitle: String,
+    ) : Action
   }
 
   @Serializable
   data class Redirect(
     val url: String,
-    val description: String,
-    val buttonTitle: String,
+    override val description: String,
+    override val buttonTitle: String,
   ) : SurveyOptionSuggestion
 }
 

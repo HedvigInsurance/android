@@ -6,7 +6,6 @@ plugins {
 }
 
 dependencies {
-  apolloMetadata(projects.apolloOctopusPublic)
 
   implementation(libs.androidx.datastore.core)
   implementation(libs.androidx.datastore.preferencesCore)
@@ -17,6 +16,8 @@ dependencies {
   implementation(libs.kotlinx.datetime)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
+  implementation(projects.dataChat)
+  implementation(projects.featureFlagsPublic)
 
   testImplementation(libs.apollo.testingSupport)
   testImplementation(libs.assertK)
@@ -26,11 +27,12 @@ dependencies {
   testImplementation(libs.turbine)
   testImplementation(projects.apolloOctopusTest)
   testImplementation(projects.apolloTest)
+  testImplementation(projects.featureFlagsTest)
 }
 
 apollo {
   service("octopus") {
     packageName.set("octopus")
-    generateDataBuilders.set(true)
+    dependsOn(projects.apolloOctopusPublic, true)
   }
 }

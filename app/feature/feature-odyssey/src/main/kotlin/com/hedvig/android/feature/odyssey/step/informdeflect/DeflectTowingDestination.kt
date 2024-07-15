@@ -54,7 +54,7 @@ import hedvig.resources.R
 @Composable
 internal fun DeflectTowingDestination(
   deflectTowing: ClaimFlowDestination.DeflectTowing,
-  openChat: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   closeClaimFlow: () -> Unit,
   windowSizeClass: WindowSizeClass,
   navigateUp: () -> Unit,
@@ -62,7 +62,7 @@ internal fun DeflectTowingDestination(
 ) {
   DeflectTowingScreen(
     partners = deflectTowing.partners,
-    openChat = openChat,
+    onNavigateToNewConversation = onNavigateToNewConversation,
     closeClaimFlow = closeClaimFlow,
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
@@ -73,7 +73,7 @@ internal fun DeflectTowingDestination(
 @Composable
 private fun DeflectTowingScreen(
   partners: List<DeflectPartner>,
-  openChat: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   closeClaimFlow: () -> Unit,
   windowSizeClass: WindowSizeClass,
   navigateUp: () -> Unit,
@@ -195,7 +195,7 @@ private fun DeflectTowingScreen(
     Spacer(Modifier.height(24.dp))
     HedvigContainedSmallButton(
       text = stringResource(R.string.open_chat),
-      onClick = openChat,
+      onClick = onNavigateToNewConversation,
       modifier = Modifier
         .padding(horizontal = 16.dp)
         .fillMaxWidth()
@@ -252,7 +252,7 @@ private fun PreviewDeflectTowingScreen() {
             url = "test2",
           ),
         ),
-        openChat = {},
+        onNavigateToNewConversation = {},
         closeClaimFlow = {},
         windowSizeClass = WindowSizeClass.calculateForPreview(),
         navigateUp = {},

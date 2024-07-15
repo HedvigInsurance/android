@@ -1,11 +1,15 @@
 package com.hedvig.android.feature.chat.cbm.ui
 
 import android.net.Uri
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -13,6 +17,7 @@ import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imeAnimationTarget
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
@@ -58,6 +63,7 @@ import androidx.compose.ui.graphics.vector.VectorProperty
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -84,6 +90,8 @@ import com.hedvig.android.core.icons.hedvig.normal.RestartOneArrow
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.core.ui.layout.adjustSizeToImageRatio
+import com.hedvig.android.feature.chat.cbm.BannerText.ClosedConversation
+import com.hedvig.android.feature.chat.cbm.BannerText.Text
 import com.hedvig.android.feature.chat.cbm.CbmChatUiState
 import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Loaded.LatestChatMessage
 import com.hedvig.android.feature.chat.cbm.CbmUiChatMessage
@@ -97,10 +105,14 @@ import com.hedvig.android.placeholder.fade
 import com.hedvig.android.placeholder.placeholder
 import com.hedvig.android.placeholder.shimmer
 import hedvig.resources.R
+import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 
 @Composable
 internal fun CbmChatLoadedScreen(
@@ -117,6 +129,11 @@ internal fun CbmChatLoadedScreen(
 ) {
   val lazyListState = rememberLazyListState()
   val coroutineScope = rememberCoroutineScope()
+  val focusManager = LocalFocusManager.current
+  val onMessageSent = {
+    focusManager.clearFocus()
+    coroutineScope.launch { lazyListState.scrollToItem(0) }
+  }
   ChatLoadedScreen(
     uiState = uiState,
     lazyListState = lazyListState,
@@ -129,12 +146,16 @@ internal fun CbmChatLoadedScreen(
       ChatInput(
         onSendMessage = {
           onSendMessage(it)
-          coroutineScope.launch {
-            lazyListState.scrollToItem(0)
-          }
+          onMessageSent()
         },
-        onSendPhoto = onSendPhoto,
-        onSendMedia = onSendMedia,
+        onSendPhoto = {
+          onSendPhoto(it)
+          onMessageSent()
+        },
+        onSendMedia = {
+          onSendMedia(it)
+          onMessageSent()
+        },
         appPackageId = appPackageId,
         modifier = Modifier.padding(16.dp),
       )
@@ -142,6 +163,7 @@ internal fun CbmChatLoadedScreen(
   )
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun ChatLoadedScreen(
   uiState: CbmChatUiState.Loaded,
@@ -169,12 +191,23 @@ private fun ChatLoadedScreen(
           .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
       )
       if (uiState.bannerText != null) {
-        HorizontalDivider(Modifier.fillMaxWidth())
-        ChatBanner(
-          text = uiState.bannerText,
-          onBannerLinkClicked = onBannerLinkClicked,
-          modifier = Modifier.fillMaxWidth(),
-        )
+        AnimatedVisibility(
+          visible = WindowInsets.imeAnimationTarget.asPaddingValues().calculateBottomPadding() == 0.dp,
+          enter = expandVertically(),
+          exit = shrinkVertically(),
+        ) {
+          Column {
+            HorizontalDivider(Modifier.fillMaxWidth())
+            ChatBanner(
+              text = when (uiState.bannerText) {
+                ClosedConversation -> stringResource(R.string.CHAT_CONVERSATION_CLOSED_INFO)
+                is Text -> uiState.bannerText.text
+              },
+              onBannerLinkClicked = onBannerLinkClicked,
+              modifier = Modifier.fillMaxWidth(),
+            )
+          }
+        }
       }
       HorizontalDivider(Modifier.fillMaxWidth())
       Box(
@@ -190,13 +223,28 @@ private fun ChatLoadedScreen(
 }
 
 @Composable
-private fun ScrollToBottomEffect(lazyListState: LazyListState, latestChatMessage: LatestChatMessage?) {
+private fun ScrollToBottomEffect(
+  lazyListState: LazyListState,
+  latestChatMessage: LatestChatMessage?,
+  messages: LazyPagingItems<CbmUiChatMessage>,
+) {
   val updatedLatestChatMessage by rememberUpdatedState(latestChatMessage)
   LaunchedEffect(lazyListState) {
     snapshotFlow { updatedLatestChatMessage }
       .filterNotNull()
       .distinctUntilChangedBy(LatestChatMessage::id)
       .collectLatest { chatMessage ->
+        val idToScrollTo = chatMessage.id
+        withTimeout(1.seconds) {
+          snapshotFlow {
+            messages.itemSnapshotList
+              .getOrNull(0)
+              ?.chatMessage
+              ?.id
+          }.filterNotNull()
+            .first { it == idToScrollTo.toString() }
+        }
+        ensureActive()
         val senderIsMember = chatMessage.sender == Sender.MEMBER
         val isAlreadyCloseToTheBottom = lazyListState.firstVisibleItemIndex <= 2
         if (senderIsMember || isAlreadyCloseToTheBottom) {
@@ -219,6 +267,7 @@ private fun ChatLazyColumn(
   ScrollToBottomEffect(
     lazyListState = lazyListState,
     latestChatMessage = latestChatMessage,
+    messages = messages,
   )
   val loadingMore by remember(messages) {
     derivedStateOf { messages.loadState.append == LoadState.Loading }
@@ -238,7 +287,8 @@ private fun ChatLazyColumn(
           is CbmChatMessage.ChatMessageGif -> "ChatMessage.ChatMessageGif"
           is CbmChatMessage.ChatMessageText -> "ChatMessage.ChatMessageText"
           is CbmChatMessage.FailedToBeSent.ChatMessageText -> "ChatMessage.FailedToBeSent.ChatMessageText"
-          is CbmChatMessage.FailedToBeSent.ChatMessageUri -> "ChatMessage.FailedToBeSent.ChatMessageUri"
+          is CbmChatMessage.FailedToBeSent.ChatMessagePhoto -> "ChatMessage.FailedToBeSent.ChatMessagePhoto"
+          is CbmChatMessage.FailedToBeSent.ChatMessageMedia -> "ChatMessage.FailedToBeSent.ChatMessageMedia"
         }
       },
     ) { index: Int ->
@@ -369,43 +419,12 @@ private fun ChatBubble(
               }
             }
 
-            is CbmChatMessage.FailedToBeSent.ChatMessageUri -> {
-              val image = Icons.Hedvig.RestartOneArrow
-              val retryIconPainter = rememberVectorPainter(
-                defaultWidth = image.defaultWidth,
-                defaultHeight = image.defaultHeight,
-                viewportWidth = image.viewportWidth,
-                viewportHeight = image.viewportHeight,
-                name = image.name,
-                tintColor = Color.White,
-                tintBlendMode = image.tintBlendMode,
-                autoMirror = image.autoMirror,
-                content = { _, _ -> RenderVectorGroup(group = image.root) },
-              )
-              ChatAsyncImage(
-                model = chatMessage.uri,
-                imageLoader = imageLoader,
-                isRetryable = true,
-                modifier = Modifier
-                  .clip(MaterialTheme.shapes.squircleMedium)
-                  .clickable { onRetrySendChatMessage(chatMessage.id) }
-                  .drawWithContent {
-                    drawContent()
-                    drawRect(color = Color.Black, alpha = DisabledAlpha)
-                    withTransform(
-                      transformBlock = {
-                        translate(
-                          left = (size.width - retryIconPainter.intrinsicSize.width) / 2,
-                          top = (size.height - retryIconPainter.intrinsicSize.height) / 2,
-                        )
-                      },
-                    ) {
-                      with(retryIconPainter) {
-                        draw(retryIconPainter.intrinsicSize)
-                      }
-                    }
-                  },
-              )
+            is CbmChatMessage.FailedToBeSent.ChatMessagePhoto -> {
+              FailedToBeSentUri(chatMessage.id, chatMessage.uri, onRetrySendChatMessage, imageLoader)
+            }
+
+            is CbmChatMessage.FailedToBeSent.ChatMessageMedia -> {
+              FailedToBeSentUri(chatMessage.id, chatMessage.uri, onRetrySendChatMessage, imageLoader)
             }
           }
         }
@@ -414,6 +433,51 @@ private fun ChatBubble(
     uiChatMessage = uiChatMessage,
     chatItemIndex = chatItemIndex,
     modifier = modifier,
+  )
+}
+
+@Composable
+private fun FailedToBeSentUri(
+  messageId: String,
+  messageUri: Uri,
+  onRetrySendChatMessage: (messageId: String) -> Unit,
+  imageLoader: ImageLoader,
+) {
+  val image = Icons.Hedvig.RestartOneArrow
+  val retryIconPainter = rememberVectorPainter(
+    defaultWidth = image.defaultWidth,
+    defaultHeight = image.defaultHeight,
+    viewportWidth = image.viewportWidth,
+    viewportHeight = image.viewportHeight,
+    name = image.name,
+    tintColor = Color.White,
+    tintBlendMode = image.tintBlendMode,
+    autoMirror = image.autoMirror,
+    content = { _, _ -> RenderVectorGroup(group = image.root) },
+  )
+  ChatAsyncImage(
+    model = messageUri,
+    imageLoader = imageLoader,
+    isRetryable = true,
+    modifier = Modifier
+      .clip(MaterialTheme.shapes.squircleMedium)
+      .clickable { onRetrySendChatMessage(messageId) }
+      .drawWithContent {
+        drawContent()
+        drawRect(color = Color.Black, alpha = DisabledAlpha)
+        withTransform(
+          transformBlock = {
+            translate(
+              left = (size.width - retryIconPainter.intrinsicSize.width) / 2,
+              top = (size.height - retryIconPainter.intrinsicSize.height) / 2,
+            )
+          },
+        ) {
+          with(retryIconPainter) {
+            draw(retryIconPainter.intrinsicSize)
+          }
+        }
+      },
   )
 }
 

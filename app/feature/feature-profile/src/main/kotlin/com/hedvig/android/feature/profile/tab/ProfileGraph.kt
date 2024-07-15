@@ -35,7 +35,7 @@ fun NavGraphBuilder.profileGraph(
   navigateToAddMissingInfo: (navBackStackEntry: NavBackStackEntry, contractId: String) -> Unit,
   navigateToDeleteAccountFeature: (navBackStackEntry: NavBackStackEntry) -> Unit,
   openAppSettings: () -> Unit,
-  openChat: (navBackStackEntry: NavBackStackEntry) -> Unit,
+  onNavigateToNewConversation: (navBackStackEntry: NavBackStackEntry) -> Unit,
   openUrl: (String) -> Unit,
 ) {
   navigation<ProfileDestination.Graph>(
@@ -72,8 +72,8 @@ fun NavGraphBuilder.profileGraph(
         openAppSettings = openAppSettings,
         openUrl = openUrl,
         viewModel = viewModel,
-        openChat = {
-          openChat(backStackEntry)
+        onNavigateToNewConversation = {
+          onNavigateToNewConversation(backStackEntry)
         },
       )
     }

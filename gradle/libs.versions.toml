@@ -10,7 +10,8 @@ lintGradlePlugin = "8.4.2"
 
 # gradlePlugin versions
 androidGradlePlugin = "8.4.2"
-apollo = "3.8.4"
+apolloAdapters = "0.0.2"
+apollo = "4.0.0-rc.1"
 cacheFix = "3.0.1"
 crashlytics = "3.0.1"
 datadogPlugin = "1.14.0"
@@ -18,7 +19,7 @@ doctor = "0.10.0"
 easylauncher = "6.4.0"
 googleServices = "4.4.2"
 kotlin = "2.0.0"
-kotlinter = "4.3.0"
+kotlinter = "4.4.0"
 ksp = "2.0.0-1.0.21"
 ktor = "2.3.11"
 license = "0.9.8"
@@ -73,13 +74,14 @@ playServicesBase = "18.5.0"
 retrofit = "2.11.0"
 retrofitArrow = "1.2.4"
 robolectric = "4.12.2"
-room = "2.7.0-alpha04"
+room = "2.7.0-alpha05"
 slimber = "2.0.0"
-sqlite = "2.5.0-alpha04"
+sqlite = "2.5.0-alpha05"
 testParameterInjector = "1.16"
 timber = "5.0.1"
 turbine = "1.1.0"
 unleash = "1.0.0"
+uuid = "0.8.4"
 zXing = "3.5.3"
 zoomable = "1.6.1"
 
@@ -131,12 +133,12 @@ androidx-other-workManager = { module = "androidx.work:work-runtime-ktx", versio
 androidx-profileInstaller = { module = "androidx.profileinstaller:profileinstaller", version.ref = "androidx-profileInstaller" }
 androidx-test = { module = "androidx.test:core-ktx", version.ref = "androidx-test" }
 androidx-testRunners = { module = "androidx.test:runner", version.ref = "androidx-testRunners" }
-apollo-adapters = { module = "com.apollographql.apollo3:apollo-adapters", version.ref = "apollo" }
-apollo-annotations = { module = "com.apollographql.apollo3:apollo-annotations", version.ref = "apollo" }
-apollo-api = { module = "com.apollographql.apollo3:apollo-api", version.ref = "apollo" }
-apollo-normalizedCache = { module = "com.apollographql.apollo3:apollo-normalized-cache", version.ref = "apollo" }
-apollo-runtime = { module = "com.apollographql.apollo3:apollo-runtime", version.ref = "apollo" }
-apollo-testingSupport = { module = "com.apollographql.apollo3:apollo-testing-support", version.ref = "apollo" }
+apollo-adapters-datetime = { module = "com.apollographql.adapters:apollo-adapters-kotlinx-datetime", version.ref = "apolloAdapters" }
+apollo-annotations = { module = "com.apollographql.apollo:apollo-annotations", version.ref = "apollo" }
+apollo-api = { module = "com.apollographql.apollo:apollo-api", version.ref = "apollo" }
+apollo-normalizedCache = { module = "com.apollographql.apollo:apollo-normalized-cache", version.ref = "apollo" }
+apollo-runtime = { module = "com.apollographql.apollo:apollo-runtime", version.ref = "apollo" }
+apollo-testingSupport = { module = "com.apollographql.apollo:apollo-testing-support", version.ref = "apollo" }
 arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
 arrow-fx = { module = "io.arrow-kt:arrow-fx-coroutines", version.ref = "arrow" }
 assertK = { module = "com.willowtreeapps.assertk:assertk-jvm", version.ref = "assertK" }
@@ -202,11 +204,12 @@ testParameterInjector = { module = "com.google.testparameterinjector:test-parame
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 unleash = { module = "io.getunleash:unleash-android-proxy-sdk", version.ref = "unleash" }
+uuid = { module = "com.benasher44:uuid", version.ref = "uuid" }
 zXing = { module = "com.google.zxing:core", version.ref = "zXing" }
 zoomable = { module = "net.engawapg.lib:zoomable", version.ref = "zoomable" }
 # Plugin libraries for build-logic's convention plugins to use to resolve the types/tasks coming from these plugins
 android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "androidGradlePlugin" }
-apollo-gradlePlugin = { module = "com.apollographql.apollo3:apollo-gradle-plugin", version.ref = "apollo" }
+apollo-gradlePlugin = { module = "com.apollographql.apollo:apollo-gradle-plugin", version.ref = "apollo" }
 compose-compilerGradlePlugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin"}
 firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" }
 kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
@@ -221,7 +224,7 @@ lintApi = { module = "com.android.tools.lint:lint-api", version.ref = "lintApi" 
 
 androidApplication = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 androidLibrary = { id = "com.android.library", version.ref = "androidGradlePlugin" }
-apollo = { id = "com.apollographql.apollo3", version.ref = "apollo" }
+apollo = { id = "com.apollographql.apollo", version.ref = "apollo" }
 appIconBannerGenerator = { id = "com.starter.easylauncher", version.ref = "easylauncher" }
 cacheFix = { id = "org.gradle.android.cache-fix", version.ref = "cacheFix" }
 composeCompilerGradlePlugin = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

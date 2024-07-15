@@ -144,13 +144,14 @@ private fun ChatScreen(
             onFetchMoreMessages = onFetchMoreMessages,
           )
         }
-        val shouldShowLoadingIndicator = uiState is ChatUiState.Initializing || run {
-          uiState as? ChatUiState.Loaded ?: return@run false
-          val stillLoadingInitialMessages =
-            uiState.fetchMoreMessagesUiState is ChatUiState.Loaded.FetchMoreMessagesUiState.StillInitializing ||
-              uiState.fetchMoreMessagesUiState is ChatUiState.Loaded.FetchMoreMessagesUiState.FetchingMore
-          uiState.messages.isEmpty() && stillLoadingInitialMessages
-        }
+        val shouldShowLoadingIndicator = uiState is ChatUiState.Initializing ||
+          run {
+            uiState as? ChatUiState.Loaded ?: return@run false
+            val stillLoadingInitialMessages =
+              uiState.fetchMoreMessagesUiState is ChatUiState.Loaded.FetchMoreMessagesUiState.StillInitializing ||
+                uiState.fetchMoreMessagesUiState is ChatUiState.Loaded.FetchMoreMessagesUiState.FetchingMore
+            uiState.messages.isEmpty() && stillLoadingInitialMessages
+          }
         if (shouldShowLoadingIndicator) {
           HedvigFullScreenCenterAlignedProgress()
         }

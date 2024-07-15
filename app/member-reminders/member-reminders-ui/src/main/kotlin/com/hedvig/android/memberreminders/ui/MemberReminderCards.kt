@@ -45,7 +45,7 @@ fun MemberReminderCardsWithoutNotification(
   navigateToConnectPayment: () -> Unit,
   openUrl: (String) -> Unit,
   navigateToAddMissingInfo: (String) -> Unit,
-  openChat: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   contentPadding: PaddingValues,
   modifier: Modifier = Modifier,
 ) {
@@ -54,7 +54,7 @@ fun MemberReminderCardsWithoutNotification(
     navigateToConnectPayment = navigateToConnectPayment,
     openUrl = openUrl,
     navigateToAddMissingInfo = navigateToAddMissingInfo,
-    openChat = openChat,
+    onNavigateToNewConversation = onNavigateToNewConversation,
     snoozeNotificationPermissionReminder = {},
     notificationPermissionState = null,
     contentPadding = contentPadding,
@@ -69,7 +69,7 @@ fun MemberReminderCards(
   openUrl: (String) -> Unit,
   navigateToAddMissingInfo: (String) -> Unit,
   snoozeNotificationPermissionReminder: () -> Unit,
-  openChat: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   notificationPermissionState: NotificationPermissionState?,
   contentPadding: PaddingValues,
   modifier: Modifier = Modifier,
@@ -81,7 +81,7 @@ fun MemberReminderCards(
         navigateToAddMissingInfo = navigateToAddMissingInfo,
         navigateToConnectPayment = navigateToConnectPayment,
         openUrl = openUrl,
-        openChat = openChat,
+        onNavigateToNewConversation = onNavigateToNewConversation,
         snoozeNotificationPermissionReminder = snoozeNotificationPermissionReminder,
         notificationPermissionState = notificationPermissionState,
         modifier = modifier.padding(contentPadding),
@@ -103,7 +103,7 @@ fun MemberReminderCards(
           navigateToAddMissingInfo = navigateToAddMissingInfo,
           navigateToConnectPayment = navigateToConnectPayment,
           openUrl = openUrl,
-          openChat = openChat,
+          onNavigateToNewConversation = onNavigateToNewConversation,
           snoozeNotificationPermissionReminder = snoozeNotificationPermissionReminder,
           notificationPermissionState = notificationPermissionState,
           modifier = modifier.fillMaxWidth(),
@@ -131,7 +131,7 @@ private fun ColumnScope.MemberReminderCard(
   navigateToConnectPayment: () -> Unit,
   openUrl: (String) -> Unit,
   snoozeNotificationPermissionReminder: () -> Unit,
-  openChat: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   notificationPermissionState: NotificationPermissionState?,
   modifier: Modifier = Modifier,
 ) {
@@ -150,7 +150,7 @@ private fun ColumnScope.MemberReminderCard(
 
     is MemberReminder.PaymentReminder.TerminationDueToMissedPayments -> ReminderCardMissingPayment(
       terminationDate = memberReminder.terminationDate,
-      openChat = openChat,
+      onNavigateToNewConversation = onNavigateToNewConversation,
       modifier = modifier,
     )
 
@@ -231,7 +231,7 @@ private fun ReminderCardConnectPayment(navigateToConnectPayment: () -> Unit, mod
 @Composable
 private fun ReminderCardMissingPayment(
   terminationDate: LocalDate,
-  openChat: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   VectorWarningCard(
@@ -239,7 +239,7 @@ private fun ReminderCardMissingPayment(
     modifier = modifier,
   ) {
     InfoCardTextButton(
-      onClick = openChat,
+      onClick = onNavigateToNewConversation,
       text = stringResource(R.string.open_chat),
       modifier = Modifier.fillMaxWidth(),
     )

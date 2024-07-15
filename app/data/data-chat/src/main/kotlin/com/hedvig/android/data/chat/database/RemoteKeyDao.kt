@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.chat.cbm.database
+package com.hedvig.android.data.chat.database
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -17,7 +17,7 @@ interface RemoteKeyDao {
     WHERE conversationId = :conversationId
     """,
   )
-  suspend fun remoteKeyForConversation(conversationId: Uuid): RemoteKeyEntity
+  suspend fun remoteKeyForConversation(conversationId: Uuid): RemoteKeyEntity?
 
   @Query(
     """
