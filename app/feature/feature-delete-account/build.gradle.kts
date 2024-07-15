@@ -8,7 +8,6 @@ plugins {
 }
 
 dependencies {
-  apolloMetadata(projects.apolloOctopusPublic)
 
   implementation(libs.androidx.datastore.core)
   implementation(libs.androidx.datastore.preferencesCore)
@@ -41,6 +40,6 @@ dependencies {
 apollo {
   service("octopus") {
     packageName.set("octopus")
-    generateDataBuilders.set(true)
+      dependsOn(projects.apolloOctopusPublic, true)
   }
 }

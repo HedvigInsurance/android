@@ -1,6 +1,6 @@
 package com.hedvig.android.feature.insurances.di
 
-import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCaseDemo

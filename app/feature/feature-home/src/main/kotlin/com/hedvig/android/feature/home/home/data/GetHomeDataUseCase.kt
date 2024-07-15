@@ -8,12 +8,12 @@ import arrow.core.raise.either
 import arrow.core.raise.ensureNotNull
 import arrow.core.raise.nullable
 import arrow.core.toNonEmptyListOrNull
-import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.cache.normalized.FetchPolicy
-import com.apollographql.apollo3.cache.normalized.fetchPolicy
-import com.apollographql.apollo3.cache.normalized.watch
-import com.apollographql.apollo3.exception.ApolloCompositeException
-import com.apollographql.apollo3.exception.CacheMissException
+import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.cache.normalized.FetchPolicy
+import com.apollographql.apollo.cache.normalized.fetchPolicy
+import com.apollographql.apollo.cache.normalized.watch
+import com.apollographql.apollo.exception.ApolloException
+import com.apollographql.apollo.exception.CacheMissException
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.contract.android.CrossSell
@@ -130,7 +130,7 @@ internal class GetHomeDataUseCaseImpl(
 
   private fun isEligibleToShowTheChatIcon(): Flow<Either<ErrorMessage, Boolean>> {
     return apolloClient.query(NumberOfChatMessagesQuery())
-      .watch(fetchThrows = true)
+      .watch()
       .map { apolloResponse ->
         either {
           val data = ensureNotNull(apolloResponse.data) {
@@ -151,7 +151,7 @@ internal class GetHomeDataUseCaseImpl(
       }
       .retryWhen { cause, attempt ->
         val shouldRetry = cause is CacheMissException ||
-          (cause is ApolloCompositeException && cause.suppressedExceptions.any { it is CacheMissException })
+          (cause is ApolloException && cause.suppressedExceptions.any { it is CacheMissException })
         if (shouldRetry) {
           emit(ErrorMessage("").left())
           delay(attempt.coerceAtMost(3).seconds)

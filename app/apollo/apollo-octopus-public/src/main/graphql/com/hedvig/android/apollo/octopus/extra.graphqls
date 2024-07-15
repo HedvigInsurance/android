@@ -1,3 +1,9 @@
+extend schema
+@link(
+    url: "https://specs.apollo.dev/kotlin_labs/v0.3",
+    import: ["@typePolicy"]
+)
+
 extend type Member @typePolicy(keyFields: "id")
 
 extend type Chat @typePolicy(keyFields: "id")
