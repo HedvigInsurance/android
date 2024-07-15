@@ -15,6 +15,7 @@ import com.hedvig.android.feature.payments.overview.data.GetUpcomingPaymentUseCa
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import kotlinx.datetime.LocalDate
+import octopus.type.CurrencyCode.SEK
 
 internal class PaymentsPresenter(
   val getUpcomingPaymentUseCase: Provider<GetUpcomingPaymentUseCase>,
@@ -35,7 +36,7 @@ internal class PaymentsPresenter(
       paymentUiState = if (currentPaymentUiState is PaymentsUiState.Content) {
         currentPaymentUiState.copy(isLoading = true)
       } else {
-        PaymentsUiState.Loading
+        PaymentsUiState.Content.createEmptyLoadingContent()
       }
       getUpcomingPaymentUseCase.provide().invoke().fold(
         ifLeft = {
@@ -89,8 +90,6 @@ internal sealed interface PaymentsEvent {
 }
 
 internal sealed interface PaymentsUiState {
-  data object Loading : PaymentsUiState
-
   data object Error : PaymentsUiState
 
   data class Content(
@@ -125,6 +124,18 @@ internal sealed interface PaymentsUiState {
         val displayName: String,
         val maskedAccountNumber: String,
       ) : ConnectedPaymentInfo
+    }
+
+    companion object {
+      // Used for displaying placeholders before content is fetched from back-end
+      fun createEmptyLoadingContent(): Content {
+        return Content(
+          isLoading = true,
+          upcomingPayment = UpcomingPayment(UiMoney(0.0, SEK), dueDate = LocalDate.fromEpochDays(300), ""),
+          upcomingPaymentInfo = null,
+          connectedPaymentInfo = ConnectedPaymentInfo.Connected("", "")
+        )
+      }
     }
   }
 }

@@ -64,8 +64,12 @@ import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
 import com.hedvig.android.core.ui.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.placeholder.PlaceholderHighlight
+import com.hedvig.android.placeholder.placeholder
+import com.hedvig.android.placeholder.shimmer
 import com.hedvig.android.pullrefresh.PullRefreshDefaults
 import com.hedvig.android.pullrefresh.PullRefreshIndicator
+import com.hedvig.android.pullrefresh.pullRefresh
 import com.hedvig.android.pullrefresh.rememberPullRefreshState
 import hedvig.resources.R
 import kotlin.time.Duration.Companion.days
@@ -106,14 +110,16 @@ private fun PaymentsScreen(
   val systemBarInsetTopDp = with(LocalDensity.current) {
     WindowInsets.systemBars.getTop(this).toDp()
   }
-  val isRefreshing =
-    uiState is PaymentsUiState.Loading || uiState.safeCast<PaymentsUiState.Content>()?.isLoading == true
+  val isRefreshing = uiState.safeCast<PaymentsUiState.Content>()?.isLoading == true
   val pullRefreshState = rememberPullRefreshState(
     refreshing = isRefreshing,
     onRefresh = onRetry,
     refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
   )
-  Box(Modifier.fillMaxSize()) {
+  Box(
+    Modifier
+      .fillMaxSize()
+      .pullRefresh(pullRefreshState)) {
     Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.fillMaxSize()) {
       Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
         TopAppBar(
@@ -129,10 +135,6 @@ private fun PaymentsScreen(
         )
         Spacer(Modifier.height(8.dp))
         when (uiState) {
-          PaymentsUiState.Loading -> {
-            // Pull to refresh handles this case
-          }
-
           PaymentsUiState.Error -> HedvigErrorSection(onButtonClick = onRetry, Modifier.weight(1f))
           is PaymentsUiState.Content -> {
             PaymentsContent(
@@ -182,7 +184,8 @@ private fun PaymentsContent(
         onCardClicked = onUpcomingPaymentClicked,
         modifier = Modifier
           .padding(horizontal = 16.dp)
-          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+          .placeholder(uiState.isLoading, highlight = PlaceholderHighlight.shimmer()),
       )
     } else {
       HedvigInformationSection(stringResource(R.string.PAYMENTS_NO_PAYMENTS_IN_PROGRESS))
@@ -191,7 +194,8 @@ private fun PaymentsContent(
       uiState = uiState,
       modifier = Modifier
         .padding(horizontal = 16.dp)
-        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+        .placeholder(uiState.isLoading, highlight = PlaceholderHighlight.shimmer()),
     )
 
     if (uiState.connectedPaymentInfo is PaymentsUiState.Content.ConnectedPaymentInfo.NotConnected) {
@@ -212,7 +216,8 @@ private fun PaymentsContent(
         onClick = onChangeBankAccount,
         modifier = Modifier
           .padding(horizontal = 16.dp)
-          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+          .placeholder(uiState.isLoading, highlight = PlaceholderHighlight.shimmer()),
       )
     }
     if (uiState.connectedPaymentInfo is PaymentsUiState.Content.ConnectedPaymentInfo.Pending) {
@@ -307,7 +312,8 @@ private fun PaymentsListItems(
         .clickable(onClick = onDiscountClicked)
         .then(listItemsSideSpacingModifier)
         .padding(vertical = 16.dp)
-        .fillMaxWidth(),
+        .fillMaxWidth()
+        .placeholder(uiState.isLoading, highlight = PlaceholderHighlight.shimmer()),
     )
     HorizontalDivider(modifier = listItemsSideSpacingModifier)
     PaymentsListItem(
@@ -323,7 +329,8 @@ private fun PaymentsListItems(
         .clickable(onClick = onPaymentHistoryClicked)
         .then(listItemsSideSpacingModifier)
         .padding(vertical = 16.dp)
-        .fillMaxWidth(),
+        .fillMaxWidth()
+        .placeholder(uiState.isLoading, highlight = PlaceholderHighlight.shimmer()),
     )
     if (uiState.connectedPaymentInfo is PaymentsUiState.Content.ConnectedPaymentInfo.Connected) {
       HorizontalDivider(listItemsSideSpacingModifier)
@@ -345,7 +352,8 @@ private fun PaymentsListItems(
         },
         modifier = listItemsSideSpacingModifier
           .padding(vertical = 16.dp)
-          .fillMaxWidth(),
+          .fillMaxWidth()
+          .placeholder(uiState.isLoading, highlight = PlaceholderHighlight.shimmer()),
       )
     }
   }
