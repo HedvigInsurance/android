@@ -9,9 +9,6 @@ plugins {
 }
 
 dependencies {
-
-  ksp(libs.room.ksp)
-
   implementation(libs.androidx.datastore.core)
   implementation(libs.androidx.datastore.preferencesCore)
   implementation(libs.androidx.lifecycle.compose)
