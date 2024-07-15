@@ -43,10 +43,10 @@ dependencies {
   implementation(projects.dataProductVariantAndroid)
   implementation(projects.dataProductVariantPublic)
   implementation(projects.languageCore)
+  implementation(projects.moleculeAndroid)
+  implementation(projects.moleculePublic)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
-  implementation(projects.moleculePublic)
-  implementation(projects.moleculeAndroid)
 
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
