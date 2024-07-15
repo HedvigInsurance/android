@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import arrow.core.NonEmptyList
 import arrow.core.toNonEmptyListOrNull
-import com.google.accompanist.pager.HorizontalPagerIndicator
+import com.hedvig.android.compose.pager.indicator.HorizontalPagerIndicator
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.ui.claimstatus.model.ClaimPillType

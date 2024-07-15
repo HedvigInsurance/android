@@ -85,7 +85,6 @@ zoomable = "1.6.1"
 
 [libraries]
 
-accompanist-pagerIndicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanist" }
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity-compose" }
 androidx-activity-core = { module = "androidx.activity:activity", version.ref = "androidx-activity-core" }

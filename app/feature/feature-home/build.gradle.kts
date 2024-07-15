@@ -16,7 +16,7 @@ android {
 dependencies {
   apolloMetadata(projects.apolloOctopusPublic)
 
-  implementation(libs.accompanist.pagerIndicators)
+  implementation(projects.composePagerIndicator)
   implementation(libs.accompanist.permissions)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material3)
