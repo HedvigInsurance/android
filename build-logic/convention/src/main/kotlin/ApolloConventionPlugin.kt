@@ -9,14 +9,16 @@ class ApolloConventionPlugin : Plugin<Project> {
     with(target) {
       val libs = the<LibrariesForLibs>()
       with(pluginManager) {
-        apply(libs.plugins.apollo.get().pluginId)
+        apply(
+          libs.plugins.apollo
+            .get()
+            .pluginId,
+        )
       }
 
       tasks.withType<com.apollographql.apollo.gradle.internal.ApolloDownloadSchemaTask>().configureEach {
-        val rootDirVar = rootDir
         doLast {
-          val schemaPath = schema.get()
-          val schemaFile = rootDirVar.resolve(schemaPath)
+          val schemaFile = outputFile.get().asFile
           val schemaText = schemaFile.readText()
           val convertedSchema = schemaText.performClientSideChanges()
           schemaFile.writeText(convertedSchema)
