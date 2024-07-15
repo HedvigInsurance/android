@@ -137,16 +137,12 @@ internal class ChatRepositoryImpl(
 
     val error = result.error
     val message = result.message
-    val status = result.status
 
     ensure(error == null) {
       ErrorMessage("Uploading file failed with error message:${error?.message}. Result:$result")
     }
     ensureNotNull(message) {
       ErrorMessage("No data")
-    }
-    if (status != null) {
-      logcat { "Status was: ${status.message}" }
     }
 
     val chatMessage: ChatMessage = ensureNotNull(message.toChatMessage()) {
@@ -202,16 +198,12 @@ internal class ChatRepositoryImpl(
 
     val error = result.error
     val message: ChatSendFileMutation.Data.ChatSendFile.Message? = result.message
-    val status = result.status
 
     ensure(error == null) {
       ErrorMessage("Uploading file failed with error message:${error?.message}. Result:$result")
     }
     ensureNotNull(message) {
       ErrorMessage("No data")
-    }
-    if (status != null) {
-      logcat { "Status was: ${status.message}" }
     }
 
     val chatMessage: ChatMessage = ensureNotNull(message.toChatMessage()) {
@@ -258,17 +250,12 @@ internal class ChatRepositoryImpl(
 
     val error = result.error
     val message: ChatSendMessageMutation.Data.ChatSendText.Message? = result.message
-    val status = result.status
 
     ensure(error == null) {
       ErrorMessage("Failed with error response: ${error?.message}")
     }
     ensureNotNull(message) {
       ErrorMessage("No data")
-    }
-    // todo chat: Consider using status which prints stuff like "Chat is closed, we'll answer asap" in the UI somehow
-    if (status != null) {
-      logcat(LogPriority.WARN) { "Status was: ${status.message}" }
     }
 
     val chatMessage = ensureNotNull(message.toChatMessage()) {
