@@ -21,8 +21,8 @@ apollo {
   // Octopus client
   service("octopus") {
     introspection {
-      endpointUrl.set("https://apollo-router.dev.hedvigit.com")
-      schemaFile.set(file("src/main/graphql/com/hedvig/android/apollo/octopus/schema.graphqls"))
+      endpointUrl = "https://apollo-router.dev.hedvigit.com"
+      schemaFile = file("src/main/graphql/com/hedvig/android/apollo/octopus/schema.graphqls")
     }
     schemaFiles.setFrom(
       file("src/main/graphql/com/hedvig/android/apollo/octopus/schema.graphqls"),
@@ -30,14 +30,14 @@ apollo {
     )
     srcDir(file("src/main/graphql/com/hedvig/android/apollo/octopus/graphql"))
 
-    packageName.set("octopus")
-    codegenModels.set(com.apollographql.apollo.compiler.MODELS_RESPONSE_BASED)
+    packageName = "octopus"
+    codegenModels = com.apollographql.apollo.compiler.MODELS_RESPONSE_BASED
 
-    generateApolloMetadata.set(true)
-    generateDataBuilders.set(true)
+    generateApolloMetadata = true
+    generateDataBuilders = true
 
     // https://www.apollographql.com/docs/android/advanced/operation-variables/#make-nullable-variables-non-optional
-    generateOptionalOperationVariables.set(false)
+    generateOptionalOperationVariables = false
     outputDirConnection {
       // main is by default but setting this explicitly fixed the warning "Duplicate content roots detected.
       connectToKotlinSourceSet("main")
