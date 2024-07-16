@@ -46,14 +46,9 @@ internal class HomePresenter(
     val alreadySeenImportantMessages: List<String>
       by seenImportantMessagesStorage.seenMessages.collectAsState()
 
-    val hasUnseenChatMessages by produceState(
-      lastState.safeCast<HomeUiState.Success>()?.hasUnseenChatMessages ?: false,
-    ) {
-      while (isActive) {
-        value = chatLastMessageReadRepository.isNewestMessageNewerThanLastReadTimestamp()
-        delay(10.seconds)
-      }
-    }
+    val hasUnseenChatMessages by remember(chatLastMessageReadRepository) {
+      chatLastMessageReadRepository.isNewestMessageNewerThanLastReadTimestamp()
+    }.collectAsState(lastState.safeCast<HomeUiState.Success>()?.hasUnseenChatMessages ?: false)
 
     CollectEvents { homeEvent: HomeEvent ->
       when (homeEvent) {
