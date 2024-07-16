@@ -6,6 +6,7 @@ import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
+import com.hedvig.android.data.chat.database.ChatDao
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import kotlinx.coroutines.flow.first
@@ -16,6 +17,8 @@ interface ChatLastMessageReadRepository {
   /**
    * Reports the timestamp of the newest message which the member has seen. Ignores it if an already newer timestamp
    * has been reported.
+   *
+   * TODO remove when CBM is enabled. With it, the stored timestamp happens from the RemoteMediator directly to the DB
    */
   suspend fun storeLatestReadTimestamp(timestamp: Instant)
 
@@ -29,6 +32,7 @@ internal class ChatLastMessageReadRepositoryImpl(
   private val chatMessageTimestampStorage: ChatMessageTimestampStorage,
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,
+  private val chatDao: ChatDao,
 ) : ChatLastMessageReadRepository {
   override suspend fun storeLatestReadTimestamp(timestamp: Instant) {
     if (featureManager.isFeatureEnabled(Feature.ENABLE_CBM).first()) return
