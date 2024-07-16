@@ -3,11 +3,13 @@ query CbmChatLatestMessageTimestamps {
     legacyConversation {
       newestMessage {
         sentAt
+        sender
       }
     }
     conversations {
       newestMessage {
         sentAt
+        sender
       }
     }
   }

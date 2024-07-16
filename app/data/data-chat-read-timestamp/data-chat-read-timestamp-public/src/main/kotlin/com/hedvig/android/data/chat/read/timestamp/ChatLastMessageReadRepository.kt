@@ -1,6 +1,5 @@
 package com.hedvig.android.data.chat.read.timestamp
 
-import arrow.core.identity
 import arrow.core.merge
 import arrow.core.raise.either
 import arrow.core.toNonEmptyListOrNull
@@ -23,8 +22,8 @@ import kotlinx.coroutines.isActive
 import kotlinx.datetime.Instant
 import octopus.CbmChatLatestMessageTimestampsQuery
 import octopus.CbmChatLatestMessageTimestampsQuery.Data.CurrentMember
-import octopus.CbmChatLatestMessageTimestampsQuery.Data.CurrentMember.LegacyConversation
 import octopus.ChatLatestMessageTimestampsQuery
+import octopus.type.ChatMessageSender.MEMBER
 
 interface ChatLastMessageReadRepository {
   /**
@@ -68,13 +67,13 @@ internal class ChatLastMessageReadRepositoryImpl(
               .toEither()
               .bind()
               .currentMember
-            val allConversations = buildList {
-              add(currentMember.legacyConversation?.toConversation())
-              addAll(currentMember.conversations.map { it.toConversation() })
+            val allNewestHedvigMessages = buildList {
+              add(currentMember.legacyConversation?.toNewestHedvigMessage())
+              addAll(currentMember.conversations.map { it.toNewestHedvigMessage() })
             }.filterNotNull()
-            val backendTimestamps = allConversations.associate { it.id to it.lastMessageTimestamp }
+            val backendTimestamps = allNewestHedvigMessages.associate { it.conversationId to it.lastMessageTimestamp }
             val databaseTimestamps: Map<String, Instant> = conversationDao
-              .getLatestTimestamps(allConversations.map { Uuid.fromString(it.id) })
+              .getLatestTimestamps(allNewestHedvigMessages.map { Uuid.fromString(it.conversationId) })
               .associate { it.id.toString() to it.lastMessageReadTimestamp }
             for ((id, backendTimestamp) in backendTimestamps) {
               val databaseTimestamp = databaseTimestamps[id]
@@ -114,12 +113,18 @@ internal class ChatLastMessageReadRepositoryImpl(
   }
 }
 
-private data class Conversation(val id: String, val lastMessageTimestamp: Instant)
+/**
+ * Represents the timestamp [lastMessageTimestamp] of the newest message sent inside a conversation with
+ * [conversationId]. This class *never* represents a message sent by the member.
+ */
+private data class NewestMessageFromHedvig(val conversationId: String, val lastMessageTimestamp: Instant)
 
-private fun CurrentMember.Conversation.toConversation(): Conversation? {
-  return newestMessage?.sentAt?.let { Conversation(id, newestMessage.sentAt)  }
+private fun CurrentMember.Conversation.toNewestHedvigMessage(): NewestMessageFromHedvig? {
+  if (newestMessage?.sender == MEMBER) return null
+  return newestMessage?.sentAt?.let { NewestMessageFromHedvig(id, newestMessage.sentAt) }
 }
 
-private fun LegacyConversation.toConversation(): Conversation? {
-  return newestMessage?.sentAt?.let { Conversation(id, newestMessage.sentAt) }
+private fun CurrentMember.LegacyConversation.toNewestHedvigMessage(): NewestMessageFromHedvig? {
+  if (newestMessage?.sender == MEMBER) return null
+  return newestMessage?.sentAt?.let { NewestMessageFromHedvig(id, newestMessage.sentAt) }
 }
