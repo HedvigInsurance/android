@@ -31,6 +31,7 @@ class ApolloConventionPlugin : Plugin<Project> {
 private fun String.performClientSideChanges(): String {
   return this
     .withoutDoubleLineBreaks()
+    .makeClaimConversationNullable()
 }
 
 /**
@@ -38,4 +39,37 @@ private fun String.performClientSideChanges(): String {
  */
 private fun String.withoutDoubleLineBreaks(): String {
   return replace("\n\n", "\n")
+}
+
+/**
+ * Sometimes the backend wrongly sends null for the conversation field
+ * Context: https://hedviginsurance.slack.com/archives/C075NGQ600Z/p1721134166246409
+ */
+private fun String.makeClaimConversationNullable(): String {
+  val oldValue = """
+|  ${'"'}""
+|  Return the relevant conversation for this claim.
+|  These conversations can be one of two kinds:
+|  - either it will be a dedicated conversation for this specific claim
+|  - or it will be the "legacy conversation", containing the entire old chat history
+|  The first one will be given for claims that are newer, created after the release of conversations.
+|  The second one for all other (older) claims.
+|  ${'"'}""
+|  conversation: Conversation!
+  """.trimMargin()
+  val newValue = """
+|  ${'"'}""
+|  Return the relevant conversation for this claim.
+|  These conversations can be one of two kinds:
+|  - either it will be a dedicated conversation for this specific claim
+|  - or it will be the "legacy conversation", containing the entire old chat history
+|  The first one will be given for claims that are newer, created after the release of conversations.
+|  The second one for all other (older) claims.
+|  ${'"'}""
+|  conversation: Conversation
+  """.trimMargin()
+  return replace(
+    oldValue,
+    newValue,
+  )
 }
