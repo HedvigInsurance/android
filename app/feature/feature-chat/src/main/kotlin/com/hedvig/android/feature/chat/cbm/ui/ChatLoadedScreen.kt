@@ -2,6 +2,9 @@ package com.hedvig.android.feature.chat.cbm.ui
 
 import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.VisibilityThreshold
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
@@ -193,8 +196,18 @@ private fun ChatLoadedScreen(
       if (uiState.bannerText != null) {
         AnimatedVisibility(
           visible = WindowInsets.imeAnimationTarget.asPaddingValues().calculateBottomPadding() == 0.dp,
-          enter = expandVertically(),
-          exit = shrinkVertically(),
+          enter = expandVertically(
+            spring(
+              stiffness = Spring.StiffnessMedium,
+              visibilityThreshold = IntSize.VisibilityThreshold,
+            ),
+          ),
+          exit = shrinkVertically(
+            spring(
+              stiffness = Spring.StiffnessMedium,
+              visibilityThreshold = IntSize.VisibilityThreshold,
+            ),
+          ),
         ) {
           Column {
             HorizontalDivider(Modifier.fillMaxWidth())
@@ -498,7 +511,8 @@ private fun AttachedFileMessage(
           drawContent()
           drawPath(path, borderColor, style = stroke)
         }
-      }.clip(MaterialTheme.shapes.squircleMedium)
+      }
+      .clip(MaterialTheme.shapes.squircleMedium)
       .background(containerColor)
       .clickable(onClick = onClick),
   ) {
@@ -600,7 +614,8 @@ private fun ChatAsyncImage(
         } else {
           Modifier
         },
-      ).clip(MaterialTheme.shapes.squircleMedium),
+      )
+      .clip(MaterialTheme.shapes.squircleMedium),
   )
 }
 
