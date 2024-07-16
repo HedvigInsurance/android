@@ -37,13 +37,16 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import octopus.CbmNumberOfChatMessagesQuery
 import octopus.HomeQuery
 import octopus.NumberOfChatMessagesQuery
 import octopus.type.ChatMessageSender
 import octopus.type.buildChat
+import octopus.type.buildChatMessagePage
 import octopus.type.buildChatMessageText
 import octopus.type.buildClaim
 import octopus.type.buildContract
+import octopus.type.buildConversation
 import octopus.type.buildMember
 import octopus.type.buildMemberImportantMessage
 import octopus.type.buildPendingContract
@@ -381,11 +384,13 @@ internal class GetHomeUseCaseTest {
   fun `showing the chat button is true when there are any messages by the member, or more than 1 by Hedvig`(
     @TestParameter hasAtLeastOneMessageByMember: Boolean,
     @TestParameter("0", "1", "2") numberOfMessagesByHedvig: Int,
+    @TestParameter isCbmEnabled: Boolean,
   ) = runTest {
     val featureManager = FakeFeatureManager2(
       mapOf(
         Feature.DISABLE_CHAT to false,
         Feature.HELP_CENTER to true,
+        Feature.ENABLE_CBM to isCbmEnabled,
       ),
     )
     val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)
@@ -394,29 +399,59 @@ internal class GetHomeUseCaseTest {
       HomeQuery(),
       HomeQuery.Data(OctopusFakeResolver),
     )
-    apolloClient.registerTestResponse(
-      NumberOfChatMessagesQuery(),
-      NumberOfChatMessagesQuery.Data(OctopusFakeResolver) {
-        chat = buildChat {
-          messages = buildList {
-            if (hasAtLeastOneMessageByMember) {
-              add(
-                buildChatMessageText {
-                  sender = ChatMessageSender.MEMBER
+    if (isCbmEnabled) {
+      apolloClient.registerTestResponse(
+        CbmNumberOfChatMessagesQuery(),
+        CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver) {
+          this.currentMember = buildMember {
+            this.legacyConversation = buildConversation {
+              this.messagePage = buildChatMessagePage {
+                this.messages = buildList {
+                  if (hasAtLeastOneMessageByMember) {
+                    add(
+                      buildChatMessageText {
+                        this.sender = ChatMessageSender.MEMBER
+                      },
+                    )
+                  }
+                  addAll(
+                    List(numberOfMessagesByHedvig) {
+                      buildChatMessageText {
+                        this.sender = ChatMessageSender.HEDVIG
+                      }
+                    },
+                  )
+                }
+              }
+            }
+          }
+        },
+      )
+    } else {
+      apolloClient.registerTestResponse(
+        NumberOfChatMessagesQuery(),
+        NumberOfChatMessagesQuery.Data(OctopusFakeResolver) {
+          chat = buildChat {
+            messages = buildList {
+              if (hasAtLeastOneMessageByMember) {
+                add(
+                  buildChatMessageText {
+                    sender = ChatMessageSender.MEMBER
+                  },
+                )
+              }
+              addAll(
+                List(numberOfMessagesByHedvig) {
+                  buildChatMessageText {
+                    sender = ChatMessageSender.HEDVIG
+                  }
                 },
               )
             }
-            addAll(
-              List(numberOfMessagesByHedvig) {
-                buildChatMessageText {
-                  sender = ChatMessageSender.HEDVIG
-                }
-              },
-            )
           }
-        }
-      },
-    )
+        },
+      )
+    }
     val result = getHomeDataUseCase.invoke(true).first()
 
     assertThat(result)
@@ -437,11 +472,13 @@ internal class GetHomeUseCaseTest {
     @TestParameter chatIsKillSwitched: Boolean,
     @TestParameter helpCenterIsEnabled: Boolean,
     @TestParameter isEligibleToSeeTheChatButton: Boolean,
+    @TestParameter isCbmEnabled: Boolean,
   ) = runTest {
     val featureManager = FakeFeatureManager2(
       mapOf(
         Feature.DISABLE_CHAT to chatIsKillSwitched,
         Feature.HELP_CENTER to helpCenterIsEnabled,
+        Feature.ENABLE_CBM to isCbmEnabled,
       ),
     )
     val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)
@@ -450,22 +487,45 @@ internal class GetHomeUseCaseTest {
       HomeQuery(),
       HomeQuery.Data(OctopusFakeResolver),
     )
-    apolloClient.registerTestResponse(
-      NumberOfChatMessagesQuery(),
-      NumberOfChatMessagesQuery.Data(OctopusFakeResolver) {
-        chat = buildChat {
-          messages = if (isEligibleToSeeTheChatButton) {
-            listOf(
-              buildChatMessageText {
-                sender = ChatMessageSender.MEMBER
-              },
-            )
-          } else {
-            emptyList()
+    if (isCbmEnabled) {
+      apolloClient.registerTestResponse(
+        CbmNumberOfChatMessagesQuery(),
+        CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver) {
+          this.currentMember = buildMember {
+            this.legacyConversation = buildConversation {
+              this.messagePage = buildChatMessagePage {
+                this.messages = if (isEligibleToSeeTheChatButton) {
+                  listOf(
+                    buildChatMessageText {
+                      sender = ChatMessageSender.MEMBER
+                    },
+                  )
+                } else {
+                  emptyList()
+                }
+              }
+            }
           }
-        }
-      },
-    )
+        },
+      )
+    } else {
+      apolloClient.registerTestResponse(
+        NumberOfChatMessagesQuery(),
+        NumberOfChatMessagesQuery.Data(OctopusFakeResolver) {
+          chat = buildChat {
+            messages = if (isEligibleToSeeTheChatButton) {
+              listOf(
+                buildChatMessageText {
+                  sender = ChatMessageSender.MEMBER
+                },
+              )
+            } else {
+              emptyList()
+            }
+          }
+        },
+      )
+    }
     val result = getHomeDataUseCase.invoke(true).first()
 
     assertThat(result)
@@ -496,11 +556,13 @@ internal class GetHomeUseCaseTest {
   @Test
   fun `the disable help center feature flag determines if we show it or not`(
     @TestParameter helpCenterIsEnabled: Boolean,
+    @TestParameter isCbmEnabled: Boolean,
   ) = runTest {
     val featureManager = FakeFeatureManager2(
       mapOf(
         Feature.DISABLE_CHAT to true,
         Feature.HELP_CENTER to helpCenterIsEnabled,
+        Feature.ENABLE_CBM to isCbmEnabled,
       ),
     )
     val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)
@@ -509,10 +571,18 @@ internal class GetHomeUseCaseTest {
       HomeQuery(),
       HomeQuery.Data(OctopusFakeResolver),
     )
-    apolloClient.registerTestResponse(
-      NumberOfChatMessagesQuery(),
-      NumberOfChatMessagesQuery.Data(OctopusFakeResolver),
-    )
+    if (isCbmEnabled) {
+      apolloClient.registerTestResponse(
+        CbmNumberOfChatMessagesQuery(),
+        CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver),
+      )
+    } else {
+      apolloClient.registerTestResponse(
+        NumberOfChatMessagesQuery(),
+        NumberOfChatMessagesQuery.Data(OctopusFakeResolver),
+      )
+    }
+
     val result = getHomeDataUseCase.invoke(true).first()
 
     assertThat(result)
