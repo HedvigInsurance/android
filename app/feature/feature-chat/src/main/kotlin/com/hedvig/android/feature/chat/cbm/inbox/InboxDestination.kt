@@ -53,6 +53,7 @@ import com.hedvig.android.feature.chat.cbm.model.InboxConversation.LatestMessage
 import com.hedvig.android.feature.chat.cbm.model.InboxConversation.LatestMessage.Unknown
 import com.hedvig.android.feature.chat.cbm.model.Sender
 import com.hedvig.android.feature.chat.ui.formattedChatDateTime
+import com.hedvig.android.logger.logcat
 import hedvig.resources.R
 import kotlinx.datetime.Clock
 
@@ -109,7 +110,7 @@ private fun InboxSuccessScreen(inboxConversations: List<InboxConversation>, onCo
   SideEffect {
     // Keep at the top of the list if we are already at the top and there is a re-arrangement
     // https://slack-chats.kotlinlang.org/t/20209529/ujn92aya0-wave-i-have-a-reversed-lazycolumn-and-its-last-ite#e0eabbdf-ae4b-420a-9bca-2a9de96ed2bd
-    if (!lazyListState.canScrollBackward) {
+    if (!lazyListState.canScrollBackward && lazyListState.layoutInfo.visibleItemsInfo.isNotEmpty()) {
       lazyListState.requestScrollToItem(0)
     }
   }
@@ -162,8 +163,8 @@ private fun ConversationCard(
   ) {
     Column(
       modifier = Modifier
-        .padding(horizontal = 16.dp)
-        .padding(top = 16.dp, bottom = 18.dp),
+          .padding(horizontal = 16.dp)
+          .padding(top = 16.dp, bottom = 18.dp),
     ) {
       HorizontalItemsWithMaximumSpaceTaken(
         {
