@@ -1,7 +1,5 @@
 package com.hedvig.android.data.chat.read.timestamp
 
-import androidx.paging.PagingSource
-import androidx.room.Room
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import com.apollographql.apollo.ApolloClient
@@ -13,10 +11,8 @@ import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.hedvig.android.apollo.octopus.test.OctopusFakeResolver
 import com.hedvig.android.apollo.test.TestApolloClientRule
-import com.hedvig.android.data.chat.database.AppDatabase
-import com.hedvig.android.data.chat.database.ChatDao
-import com.hedvig.android.data.chat.database.ChatMessageEntity
-import com.hedvig.android.database.test.TestAppDatabaseRule
+import com.hedvig.android.data.chat.database.ConversationDao
+import com.hedvig.android.data.chat.database.ConversationEntity
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.featureflags.test.FakeFeatureManager2
 import kotlinx.coroutines.flow.Flow
@@ -52,7 +48,7 @@ class ChatLastMessageReadRepositoryImplTest {
       chatMessageTimestampStorage = chatMessageTimestampStorage,
       apolloClient = apolloClient,
       featureManager = FakeFeatureManager2(mapOf(Feature.ENABLE_CBM to false)),
-      chatDao = NoopChatDao(),
+      conversationDao = NoopConversationDao(),
     )
     apolloClient.enqueueTestResponse(
       ChatLatestMessageTimestampsQuery(),
@@ -84,7 +80,7 @@ class ChatLastMessageReadRepositoryImplTest {
       chatMessageTimestampStorage = chatMessageTimestampStorage,
       apolloClient = apolloClient,
       featureManager = FakeFeatureManager2(mapOf(Feature.ENABLE_CBM to false)),
-      chatDao = NoopChatDao(),
+      conversationDao = NoopConversationDao(),
     )
     val lastReadMessageTimestamp = Instant.parse("2022-01-01T00:00:01Z")
     apolloClient.enqueueTestResponse(
@@ -122,7 +118,7 @@ class ChatLastMessageReadRepositoryImplTest {
       chatMessageTimestampStorage = chatMessageTimestampStorage,
       apolloClient = apolloClient,
       featureManager = FakeFeatureManager2(mapOf(Feature.ENABLE_CBM to false)),
-      chatDao = NoopChatDao(),
+      conversationDao = NoopConversationDao(),
     )
     val enqueueBackendResponse = {
       apolloClient.enqueueTestResponse(
@@ -158,7 +154,7 @@ class ChatLastMessageReadRepositoryImplTest {
       chatMessageTimestampStorage = chatMessageTimestampStorage,
       apolloClient = apolloClient,
       featureManager = FakeFeatureManager2(mapOf(Feature.ENABLE_CBM to false)),
-      chatDao = NoopChatDao(),
+      conversationDao = NoopConversationDao(),
     )
     apolloClient.enqueueTestNetworkError()
     if (hasStoredTimestamp) {
@@ -178,7 +174,7 @@ class ChatLastMessageReadRepositoryImplTest {
         chatMessageTimestampStorage = chatMessageTimestampStorage,
         apolloClient = apolloClient,
         featureManager = FakeFeatureManager2(mapOf(Feature.ENABLE_CBM to false)),
-        chatDao = NoopChatDao(),
+        conversationDao = NoopConversationDao(),
       )
       apolloClient.enqueueTestResponse(
         ChatLatestMessageTimestampsQuery(),
@@ -204,39 +200,20 @@ class ChatLastMessageReadRepositoryImplTest {
 
 enum class TimeComparedToLastReadMessage { NEWER, OLDER, SAME }
 
-private class NoopChatDao : ChatDao {
-  override suspend fun insert(message: ChatMessageEntity) {
+private class NoopConversationDao : ConversationDao {
+  override fun getConversations(): Flow<List<ConversationEntity>> {
     error("noop")
   }
 
-  override suspend fun insertAll(messages: List<ChatMessageEntity>) {
+  override suspend fun getConversation(id: Uuid): ConversationEntity? {
     error("noop")
   }
 
-  override suspend fun clearRemoteMessagesAndOldUnsentMessages(
-    conversationId: Uuid,
-    deleteUnsentMessagesOlderThan: Instant,
-  ) {
+  override suspend fun getLatestTimestamps(forConversationIds: List<Uuid>): List<ConversationEntity> {
     error("noop")
   }
 
-  override fun messages(conversationId: Uuid): PagingSource<Int, ChatMessageEntity> {
-    error("noop")
-  }
-
-  override fun latestMessage(conversationId: Uuid): Flow<ChatMessageEntity?> {
-    error("noop")
-  }
-
-  override fun lastDeliveredMessage(conversationId: Uuid): Flow<Uuid?> {
-    error("noop")
-  }
-
-  override suspend fun deleteMessage(conversationId: Uuid, messageId: String) {
-    error("noop")
-  }
-
-  override suspend fun getFailedMessage(conversationId: Uuid, messageId: String): ChatMessageEntity? {
+  override suspend fun insertConversation(conversationEntity: ConversationEntity) {
     error("noop")
   }
 }

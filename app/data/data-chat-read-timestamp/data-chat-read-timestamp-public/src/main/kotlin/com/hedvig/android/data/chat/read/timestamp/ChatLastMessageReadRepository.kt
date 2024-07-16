@@ -1,12 +1,16 @@
 package com.hedvig.android.data.chat.read.timestamp
 
+import arrow.core.identity
+import arrow.core.merge
+import arrow.core.raise.either
 import arrow.core.toNonEmptyListOrNull
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.fetchPolicy
+import com.benasher44.uuid.Uuid
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
-import com.hedvig.android.data.chat.database.ChatDao
+import com.hedvig.android.data.chat.database.ConversationDao
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import kotlin.time.Duration.Companion.seconds
@@ -17,6 +21,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.isActive
 import kotlinx.datetime.Instant
+import octopus.CbmChatLatestMessageTimestampsQuery
+import octopus.CbmChatLatestMessageTimestampsQuery.Data.CurrentMember
+import octopus.CbmChatLatestMessageTimestampsQuery.Data.CurrentMember.LegacyConversation
 import octopus.ChatLatestMessageTimestampsQuery
 
 interface ChatLastMessageReadRepository {
@@ -39,7 +46,7 @@ internal class ChatLastMessageReadRepositoryImpl(
   private val chatMessageTimestampStorage: ChatMessageTimestampStorage,
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,
-  private val chatDao: ChatDao,
+  private val conversationDao: ConversationDao,
 ) : ChatLastMessageReadRepository {
   override suspend fun storeLatestReadTimestamp(timestamp: Instant) {
     if (featureManager.isFeatureEnabled(Feature.ENABLE_CBM).first()) return
@@ -54,12 +61,37 @@ internal class ChatLastMessageReadRepositoryImpl(
     return featureManager.isFeatureEnabled(Feature.ENABLE_CBM).transformLatest { isCbmEnabled ->
       while (currentCoroutineContext().isActive) {
         if (isCbmEnabled) {
-          emit(false) // todo cbm notification dot for home screen
+          val isNewestMessageNewerThanLastReadTimestamp = either {
+            val currentMember = apolloClient.query(CbmChatLatestMessageTimestampsQuery())
+              .fetchPolicy(FetchPolicy.NetworkOnly)
+              .safeExecute()
+              .toEither()
+              .bind()
+              .currentMember
+            val allConversations = buildList {
+              add(currentMember.legacyConversation?.toConversation())
+              addAll(currentMember.conversations.map { it.toConversation() })
+            }.filterNotNull()
+            val backendTimestamps = allConversations.associate { it.id to it.lastMessageTimestamp }
+            val databaseTimestamps: Map<String, Instant> = conversationDao
+              .getLatestTimestamps(allConversations.map { Uuid.fromString(it.id) })
+              .associate { it.id.toString() to it.lastMessageReadTimestamp }
+            for ((id, backendTimestamp) in backendTimestamps) {
+              val databaseTimestamp = databaseTimestamps[id]
+              if (databaseTimestamp != null && databaseTimestamp < backendTimestamp) {
+                return@either true
+              }
+            }
+            false
+          }
+            .mapLeft { false }
+            .merge()
+          emit(isNewestMessageNewerThanLastReadTimestamp)
         } else {
           val lastReadMessageTimestamp: Instant? = chatMessageTimestampStorage.getLatestReadTimestamp()
           val messages = apolloClient
             .query(ChatLatestMessageTimestampsQuery())
-            .fetchPolicy(FetchPolicy.NetworkFirst)
+            .fetchPolicy(FetchPolicy.NetworkOnly)
             .safeExecute()
             .toEither()
             .getOrNull()
@@ -80,4 +112,14 @@ internal class ChatLastMessageReadRepositoryImpl(
       }
     }
   }
+}
+
+private data class Conversation(val id: String, val lastMessageTimestamp: Instant)
+
+private fun CurrentMember.Conversation.toConversation(): Conversation? {
+  return newestMessage?.sentAt?.let { Conversation(id, newestMessage.sentAt)  }
+}
+
+private fun LegacyConversation.toConversation(): Conversation? {
+  return newestMessage?.sentAt?.let { Conversation(id, newestMessage.sentAt) }
 }
