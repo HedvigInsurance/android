@@ -155,8 +155,13 @@ internal class GetHomeDataUseCaseImpl(
                 if (eligibleFromLegacyConversation) {
                   return@map true
                 }
-                val hasAnyOpenConversation = result.currentMember.conversations.any { it.isOpen }
-                hasAnyOpenConversation
+                val conversations = result.currentMember.conversations
+                val showChatIcon = conversations.any { conversation ->
+                  val isOpenConversation = conversation.isOpen
+                  val hasAnyMessageSent = conversation.newestMessage != null
+                  isOpenConversation || hasAnyMessageSent
+                }
+                showChatIcon
               }
               .merge()
               .right(),

@@ -598,6 +598,61 @@ internal class GetHomeUseCaseTest {
       }
   }
 
+  @Test
+  fun `without legacy conversations, show the chat icon depending on the other conversations status`(
+    @TestParameter hasAtLeastOneOpenConversation: Boolean,
+    @TestParameter closedConversationHasAtLeastOneMessage: Boolean,
+  ) = runTest {
+    val featureManager = FakeFeatureManager2(
+      mapOf(
+        Feature.DISABLE_CHAT to false,
+        Feature.HELP_CENTER to true,
+        Feature.ENABLE_CBM to true,
+      ),
+    )
+    val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)
+
+    apolloClient.registerTestResponse(
+      HomeQuery(),
+      HomeQuery.Data(OctopusFakeResolver),
+    )
+    apolloClient.registerTestResponse(
+      CbmNumberOfChatMessagesQuery(),
+      CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver) {
+        this.currentMember = buildMember {
+          val openConversation = this.buildConversation {
+            this.isOpen = true
+          }
+          val closedConversation = this.buildConversation {
+            this.isOpen = false
+            this.newestMessage = buildChatMessageText {}.takeIf { closedConversationHasAtLeastOneMessage }
+          }
+          this.conversations = buildList {
+            if (hasAtLeastOneOpenConversation) {
+              add(openConversation)
+            }
+            add(closedConversation)
+          }
+          this.legacyConversation = null
+        }
+      },
+    )
+
+    val result = getHomeDataUseCase.invoke(true).first()
+
+    assertThat(result)
+      .isNotNull()
+      .isRight()
+      .prop(HomeData::showChatIcon)
+      .apply {
+        when {
+          hasAtLeastOneOpenConversation -> isTrue()
+          closedConversationHasAtLeastOneMessage -> isTrue()
+          else -> isFalse()
+        }
+      }
+  }
+
   // Used as a convenience to get a use case without any enqueued apollo responses, but some sane defaults for the
   // other dependencies
   private fun testUseCaseWithoutReminders(
