@@ -3,7 +3,6 @@ package com.hedvig.android.data.chat.read.timestamp.di
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.apollographql.apollo.ApolloClient
-import com.hedvig.android.data.chat.database.ChatDao
 import com.hedvig.android.data.chat.database.ConversationDao
 import com.hedvig.android.data.chat.read.timestamp.ChatLastMessageReadRepository
 import com.hedvig.android.data.chat.read.timestamp.ChatLastMessageReadRepositoryImpl

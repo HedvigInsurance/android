@@ -7,7 +7,6 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.benasher44.uuid.Uuid
 import kotlinx.coroutines.flow.Flow
-import kotlinx.datetime.Instant
 
 @Dao
 interface ConversationDao {

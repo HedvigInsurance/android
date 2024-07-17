@@ -45,8 +45,8 @@ fun ClaimStatusCard(
         text = stringResource(R.string.claim_status_claim_details_button),
         onClick = { onClick(uiState.id) },
         enabled = true,
-buttonStyle = Secondary,
-buttonSize = Medium,
+        buttonStyle = Secondary,
+        buttonSize = Medium,
         modifier = Modifier
           .padding(horizontal = 16.dp)
           .fillMaxWidth(),
