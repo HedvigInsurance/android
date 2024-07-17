@@ -103,17 +103,20 @@ import com.hedvig.android.feature.chat.cbm.model.Sender
 import com.hedvig.android.feature.chat.ui.ChatBanner
 import com.hedvig.android.feature.chat.ui.ChatInput
 import com.hedvig.android.feature.chat.ui.TextWithClickableUrls
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.placeholder.PlaceholderHighlight
 import com.hedvig.android.placeholder.fade
 import com.hedvig.android.placeholder.placeholder
 import com.hedvig.android.placeholder.shimmer
 import hedvig.resources.R
 import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 
@@ -282,8 +285,8 @@ private fun ChatLazyColumn(
     latestChatMessage = latestChatMessage,
     messages = messages,
   )
-  val loadingMore by remember(messages) {
-    derivedStateOf { messages.loadState.append == LoadState.Loading }
+  val appendStatus by remember(messages) {
+    derivedStateOf { messages.loadState.append }
   }
   LazyColumn(
     state = lazyListState,
@@ -322,21 +325,25 @@ private fun ChatLazyColumn(
           .padding(bottom = 8.dp),
       )
     }
-    if (loadingMore) {
-      item {
-        Box(
-          Modifier
-            .fillMaxWidth()
-            .wrapContentWidth()
-            .padding(24.dp),
-        ) {
-          ThreeDotsLoading(
-            Modifier
-              .padding(24.dp)
-              .fillParentMaxWidth()
-              .wrapContentWidth(Alignment.CenterHorizontally),
-          )
+    if (appendStatus !is LoadState.NotLoading) {
+      item(
+        key = "fetching_more",
+        contentType = "fetching_more",
+      ) {
+        LaunchedEffect(Unit) {
+          while (isActive) {
+            if (appendStatus is LoadState.Error) {
+              messages.retry()
+            }
+            delay(5.seconds)
+          }
         }
+        ThreeDotsLoading(
+          Modifier
+            .fillParentMaxWidth()
+            .wrapContentWidth()
+            .padding(24.dp)
+        )
       }
     }
   }
