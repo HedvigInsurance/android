@@ -46,6 +46,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
@@ -338,11 +339,22 @@ private fun ChatLazyColumn(
             delay(5.seconds)
           }
         }
+        val hideForFirstFrames by produceState(true) {
+          delay(200)
+          value = false
+        }
         ThreeDotsLoading(
           Modifier
             .fillParentMaxWidth()
             .wrapContentWidth()
             .padding(24.dp)
+            .then(
+              if (hideForFirstFrames) {
+                Modifier.withoutPlacement()
+              } else {
+                Modifier
+              }
+            )
         )
       }
     }

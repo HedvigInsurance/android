@@ -31,6 +31,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.ArrowBack
 import com.hedvig.android.core.ui.HedvigDateTimeFormatterDefaults
@@ -131,7 +132,7 @@ private fun ChatScreen(
       ) {
         when (uiState) {
           Initializing -> {
-            HedvigFullScreenCenterAlignedProgress()
+            HedvigFullScreenCenterAlignedProgressDebounced()
           }
 
           Error -> {
