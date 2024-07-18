@@ -26,6 +26,8 @@ import com.hedvig.android.data.chat.database.ChatDao
 import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.MEDIA
 import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.PHOTO
 import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.TEXT
+import com.hedvig.android.data.chat.database.ConversationDao
+import com.hedvig.android.data.chat.database.ConversationEntity
 import com.hedvig.android.data.chat.database.RemoteKeyDao
 import com.hedvig.android.data.chat.database.RemoteKeyEntity
 import com.hedvig.android.feature.chat.cbm.model.CbmChatMessage
@@ -59,6 +61,7 @@ internal class CbmChatRepository(
   private val database: AppDatabase,
   private val chatDao: ChatDao,
   private val remoteKeyDao: RemoteKeyDao,
+  private val conversationDao: ConversationDao,
   private val fileService: FileService,
   private val botServiceService: BotServiceService,
   private val clock: Clock,
@@ -221,6 +224,7 @@ internal class CbmChatRepository(
         "Unknown chat message type"
       }
       chatDao.insert(chatMessage.toChatMessageEntity(conversationId))
+      conversationDao.insertNewLatestTimestampIfApplicable(ConversationEntity(conversationId, clock.now()))
       chatMessage
     }.onLeft {
       logcat { "Failed to send message, with error message:$it" }

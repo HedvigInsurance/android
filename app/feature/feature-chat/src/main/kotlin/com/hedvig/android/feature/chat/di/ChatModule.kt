@@ -94,6 +94,7 @@ val chatModule = module {
       database = get<AppDatabase>(),
       chatDao = get<ChatDao>(),
       remoteKeyDao = get<RemoteKeyDao>(),
+      conversationDao = get<ConversationDao>(),
       fileService = get<FileService>(),
       botServiceService = get<BotServiceService>(),
       clock = get<Clock>(),
