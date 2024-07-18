@@ -101,7 +101,6 @@ import com.hedvig.android.core.ui.layout.adjustSizeToImageRatio
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.feature.chat.cbm.BannerText
 import com.hedvig.android.feature.chat.cbm.BannerText.ClosedConversation
-import com.hedvig.android.feature.chat.cbm.BannerText.Text
 import com.hedvig.android.feature.chat.cbm.CbmChatUiState
 import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Loaded
 import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Loaded.LatestChatMessage
@@ -231,7 +230,7 @@ private fun ChatLoadedScreen(
             ChatBanner(
               text = when (uiState.bannerText) {
                 ClosedConversation -> stringResource(R.string.CHAT_CONVERSATION_CLOSED_INFO)
-                is Text -> uiState.bannerText.text
+                is BannerText.Text -> uiState.bannerText.text
               },
               onBannerLinkClicked = onBannerLinkClicked,
               modifier = Modifier.fillMaxWidth(),
@@ -739,8 +738,8 @@ private fun PreviewChatLoadedScreen() {
             CbmChatMessage.ChatMessageFile("3", MEMBER, Instant.parse("2024-05-01T00:00:00Z"), "", IMAGE),
             CbmChatMessage.FailedToBeSent.ChatMessageMedia("4", Instant.parse("2024-05-01T00:00:00Z"), Uri.EMPTY),
             CbmChatMessage.FailedToBeSent.ChatMessagePhoto("5", Instant.parse("2024-05-01T00:01:00Z"), Uri.EMPTY),
-            CbmChatMessage.FailedToBeSent.ChatMessageText("6", Instant.parse("2024-05-01T00:02:00Z"), "Failed"),
-            CbmChatMessage.ChatMessageText("7", HEDVIG, Instant.parse("2024-05-01T00:03:00Z"), "Last"),
+            CbmChatMessage.FailedToBeSent.ChatMessageText("6", Instant.parse("2024-05-01T00:02:00Z"), "Failed message"),
+            CbmChatMessage.ChatMessageText("7", HEDVIG, Instant.parse("2024-05-01T00:03:00Z"), "Last message"),
           )
             .reversed()
             .mapIndexed { index, item ->
