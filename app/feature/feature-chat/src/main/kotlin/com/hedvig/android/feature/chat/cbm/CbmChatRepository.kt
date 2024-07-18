@@ -145,6 +145,7 @@ internal class CbmChatRepository(
                 ?: RemoteKeyEntity(conversationId, null, null)
               remoteKeyDao.insert(existingRemoteKey.copy(newerToken = messagePageResponse.newerToken))
               chatDao.insertAll(messagePageResponse.messages.map { it.toChatMessageEntity(conversationId) })
+              conversationDao.insertNewLatestTimestampIfApplicable(ConversationEntity(conversationId, clock.now()))
             }
           },
         )
