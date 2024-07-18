@@ -17,6 +17,7 @@ import com.apollographql.apollo.cache.normalized.doNotStore
 import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.benasher44.uuid.Uuid
 import com.hedvig.android.apollo.safeExecute
+import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.fileupload.FileService
@@ -43,6 +44,7 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.isActive
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -78,16 +80,14 @@ internal class CbmChatRepository(
     }
   }
 
-  suspend fun getConversationInfo(conversationId: Uuid): Either<ErrorMessage, ConversationInfo?> {
-    return either {
-      apolloClient
-        .query(ConversationInfoQuery(conversationId.toString()))
-        .safeExecute()
-        .toEither(::ErrorMessage)
-        .bind()
-        .conversation
-        ?.toConversationInfo()
-    }
+  fun getConversationInfo(conversationId: Uuid): Flow<Either<ErrorMessage, ConversationInfo?>> {
+    return apolloClient
+      .query(ConversationInfoQuery(conversationId.toString()))
+      .fetchPolicy(FetchPolicy.CacheAndNetwork)
+      .safeFlow(::ErrorMessage)
+      .map { response ->
+        response.map { it.conversation?.toConversationInfo() }
+      }
   }
 
   fun bannerText(conversationId: Uuid): Flow<BannerText?> {

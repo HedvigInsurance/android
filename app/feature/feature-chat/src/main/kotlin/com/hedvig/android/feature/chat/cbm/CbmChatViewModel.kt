@@ -97,14 +97,16 @@ internal class CbmChatPresenter(
         return@LaunchedEffect
       }
       conversationInfoStatus = ConversationInfoStatus.Initializing
-      chatRepository.getConversationInfo(conversationId).fold(
-        ifLeft = {
-          conversationInfoStatus = ConversationInfoStatus.Failed
-        },
-        ifRight = { conversationInfo ->
-          conversationInfoStatus = ConversationInfoStatus.Loaded(conversationInfo)
-        },
-      )
+      chatRepository.getConversationInfo(conversationId).collect { result ->
+        result.fold(
+          ifLeft = {
+            conversationInfoStatus = ConversationInfoStatus.Failed
+          },
+          ifRight = { conversationInfo ->
+            conversationInfoStatus = ConversationInfoStatus.Loaded(conversationInfo)
+          },
+        )
+      }
     }
 
     val updatedConversationIdStatus by rememberUpdatedState(conversationInfoStatus)
