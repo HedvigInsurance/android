@@ -40,6 +40,7 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -72,7 +73,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
+import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import coil.ImageLoader
@@ -86,6 +89,7 @@ import com.hedvig.android.core.designsystem.material3.DisabledAlpha
 import com.hedvig.android.core.designsystem.material3.infoElement
 import com.hedvig.android.core.designsystem.material3.rememberShapedColorPainter
 import com.hedvig.android.core.designsystem.material3.squircleMedium
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.CircleWithCheckmarkFilled
 import com.hedvig.android.core.icons.hedvig.normal.InfoFilled
@@ -94,17 +98,24 @@ import com.hedvig.android.core.icons.hedvig.normal.RestartOneArrow
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.core.ui.layout.adjustSizeToImageRatio
+import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
+import com.hedvig.android.feature.chat.cbm.BannerText
 import com.hedvig.android.feature.chat.cbm.BannerText.ClosedConversation
 import com.hedvig.android.feature.chat.cbm.BannerText.Text
 import com.hedvig.android.feature.chat.cbm.CbmChatUiState
+import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Loaded
 import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Loaded.LatestChatMessage
 import com.hedvig.android.feature.chat.cbm.CbmUiChatMessage
+import com.hedvig.android.feature.chat.cbm.ConversationInfo
 import com.hedvig.android.feature.chat.cbm.model.CbmChatMessage
+import com.hedvig.android.feature.chat.cbm.model.CbmChatMessage.ChatMessageFile.MimeType.IMAGE
 import com.hedvig.android.feature.chat.cbm.model.Sender
+import com.hedvig.android.feature.chat.cbm.model.Sender.HEDVIG
+import com.hedvig.android.feature.chat.cbm.model.Sender.MEMBER
 import com.hedvig.android.feature.chat.ui.ChatBanner
 import com.hedvig.android.feature.chat.ui.ChatInput
 import com.hedvig.android.feature.chat.ui.TextWithClickableUrls
-import com.hedvig.android.logger.logcat
+import com.hedvig.android.feature.chat.ui.chatScrollBehavior
 import com.hedvig.android.placeholder.PlaceholderHighlight
 import com.hedvig.android.placeholder.fade
 import com.hedvig.android.placeholder.placeholder
@@ -117,9 +128,11 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
+import kotlinx.datetime.Instant
 
 @Composable
 internal fun CbmChatLoadedScreen(
@@ -353,8 +366,8 @@ private fun ChatLazyColumn(
                 Modifier.withoutPlacement()
               } else {
                 Modifier
-              }
-            )
+              },
+            ),
         )
       }
     }
@@ -711,4 +724,45 @@ internal fun ChatMessageWithTimeAndDeliveryStatus(
   }
 }
 
-// todo cbm preview
+@HedvigPreview
+@Composable
+private fun PreviewChatLoadedScreen() {
+  com.hedvig.android.core.designsystem.theme.HedvigTheme {
+    com.hedvig.android.design.system.hedvig.HedvigTheme {
+      androidx.compose.material3.Surface(color = MaterialTheme.colorScheme.background) {
+        com.hedvig.android.design.system.hedvig.Surface(
+          color = com.hedvig.android.design.system.hedvig.HedvigTheme.colorScheme.backgroundPrimary,
+        ) {
+          val fakeChatMessages: List<CbmUiChatMessage> = listOf(
+            CbmChatMessage.ChatMessageFile("1", MEMBER, Instant.parse("2024-05-01T00:00:00Z"), "", IMAGE),
+            CbmChatMessage.ChatMessageGif("2", HEDVIG, Instant.parse("2024-05-01T00:00:00Z"), ""),
+            CbmChatMessage.ChatMessageFile("3", MEMBER, Instant.parse("2024-05-01T00:00:00Z"), "", IMAGE),
+            CbmChatMessage.FailedToBeSent.ChatMessageMedia("4", Instant.parse("2024-05-01T00:00:00Z"), Uri.EMPTY),
+            CbmChatMessage.FailedToBeSent.ChatMessagePhoto("5", Instant.parse("2024-05-01T00:01:00Z"), Uri.EMPTY),
+            CbmChatMessage.FailedToBeSent.ChatMessageText("6", Instant.parse("2024-05-01T00:02:00Z"), "Failed"),
+            CbmChatMessage.ChatMessageText("7", HEDVIG, Instant.parse("2024-05-01T00:03:00Z"), "Last"),
+          )
+            .reversed()
+            .mapIndexed { index, item ->
+              CbmUiChatMessage(item, index == 0)
+            }
+          ChatLoadedScreen(
+            uiState = Loaded(
+              backendConversationInfo = ConversationInfo("1", "Title", Instant.parse("2024-05-01T00:00:00Z"), false),
+              messages = flowOf(PagingData.from(fakeChatMessages)).collectAsLazyPagingItems(),
+              latestMessage = null,
+              bannerText = BannerText.ClosedConversation,
+            ),
+            lazyListState = rememberLazyListState(),
+            imageLoader = rememberPreviewImageLoader(),
+            topAppBarScrollBehavior = TopAppBarDefaults.chatScrollBehavior(),
+            openUrl = {},
+            onBannerLinkClicked = {},
+            onRetrySendChatMessage = {},
+            chatInput = {},
+          )
+        }
+      }
+    }
+  }
+}
