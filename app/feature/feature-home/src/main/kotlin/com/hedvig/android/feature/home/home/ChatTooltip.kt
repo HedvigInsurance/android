@@ -122,22 +122,26 @@ private fun Shape.withTopRightPointingArrow(): Shape {
       )
       val squirclePath: Path = (squircleOutline as Outline.Generic).path
       val arrowPath: Path = Path().apply {
+        // first 4 dps are straight, the tip is only curved
+        val straightLineSize = with(density) { 4.dp.toPx() }
         val halfArrowWidth = arrowWidth / 2
         relativeLineTo(-halfArrowWidth, 0f)
         // How far further right the first control point and further left the second control point are in order to
         // achieve the desired curve
-        val bezierOverlap = 3f
+        val bezierOverlap = -2.5f
         // required so that the arrow height is actually as high as it must, since bezier curves need to overshoot a
         // bit on their control points to actually reach the desired height
-        val bezierVerticalOvershoot = 5f
+        val bezierVerticalOvershoot = 4f
+        relativeLineTo(straightLineSize, -straightLineSize)
         cubicTo(
           bezierOverlap,
-          -arrowHeight - bezierVerticalOvershoot,
+          -straightLineSize -bezierVerticalOvershoot,
           -bezierOverlap,
-          -arrowHeight - bezierVerticalOvershoot,
-          halfArrowWidth,
-          0f,
+          -straightLineSize -bezierVerticalOvershoot,
+          halfArrowWidth - straightLineSize,
+          -straightLineSize,
         )
+        relativeLineTo(straightLineSize, straightLineSize)
         close()
       }
       return Outline.Generic(
