@@ -162,7 +162,7 @@ internal class CbmChatRepository(
         val message = chatDao.getFailedMessage(conversationId, messageId)
         chatDao.deleteMessage(conversationId, messageId)
         message
-      } ?: return "Message not found".left()
+      }
       ensureNotNull(messageToRetry) {
         logcat(ERROR) { "Tried to retry sending a message which did not exist in the database:$messageId" }
         "Message not found"
