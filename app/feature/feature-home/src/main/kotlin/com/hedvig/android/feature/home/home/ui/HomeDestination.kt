@@ -42,7 +42,9 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
@@ -82,6 +84,7 @@ import com.hedvig.android.core.ui.plus
 import com.hedvig.android.crosssells.CrossSellsSection
 import com.hedvig.android.data.contract.android.CrossSell
 import com.hedvig.android.feature.home.home.ChatTooltip
+import com.hedvig.android.feature.home.home.ChatTooltipMessage
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminders
@@ -104,6 +107,8 @@ import hedvig.resources.R
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Instant
 import kotlinx.datetime.toJavaLocalDate
@@ -195,8 +200,8 @@ private fun HomeScreen(
         HomeUiState.Loading -> {
           HedvigFullScreenCenterAlignedProgressDebounced(
             modifier = Modifier
-              .fillMaxSize()
-              .windowInsetsPadding(WindowInsets.safeDrawing),
+                .fillMaxSize()
+                .windowInsetsPadding(WindowInsets.safeDrawing),
           )
         }
 
@@ -204,8 +209,8 @@ private fun HomeScreen(
           HedvigErrorSection(
             onButtonClick = reload,
             modifier = Modifier
-              .padding(16.dp)
-              .windowInsetsPadding(WindowInsets.safeDrawing),
+                .padding(16.dp)
+                .windowInsetsPadding(WindowInsets.safeDrawing),
           )
         }
 
@@ -265,23 +270,43 @@ private fun HomeScreen(
         }
       }
       if ((uiState as? HomeUiState.Success)?.chatAction != null) {
-        val shouldShowTooltip by produceState(false) {
+        val shouldShowGotQuestionsTooltip by produceState(false) {
           val daysSinceLastTooltipShown = daysSinceLastTooltipShown(context)
           value = daysSinceLastTooltipShown
         }
-        ChatTooltip(
-          showTooltip = shouldShowTooltip,
-          tooltipShown = {
-            context.setLastEpochDayWhenChatTooltipWasShown(
-              java.time.LocalDate
-                .now()
-                .toEpochDay(),
-            )
-          },
-          modifier = Modifier
-            .align(Alignment.End)
-            .padding(horizontal = 16.dp),
-        )
+        val updatedHasUnseenChatMessages by rememberUpdatedState(uiState.hasUnseenChatMessages)
+        val shouldShowNewMessageTooltip by produceState(false) {
+          snapshotFlow { updatedHasUnseenChatMessages }
+            .drop(1)
+            .collectLatest {
+              value = it
+            }
+        }
+        if (shouldShowGotQuestionsTooltip) {
+          ChatTooltip(
+            chatTooltipMessage = ChatTooltipMessage.GotQuestions,
+            showTooltip = shouldShowGotQuestionsTooltip,
+            tooltipShown = {
+              context.setLastEpochDayWhenChatTooltipWasShown(
+                java.time.LocalDate
+                  .now()
+                  .toEpochDay(),
+              )
+            },
+            modifier = Modifier
+                .align(Alignment.End)
+                .padding(horizontal = 16.dp),
+          )
+        } else if (shouldShowNewMessageTooltip) {
+          ChatTooltip(
+            chatTooltipMessage = ChatTooltipMessage.NewMessage,
+            showTooltip = shouldShowNewMessageTooltip,
+            tooltipShown = {},
+            modifier = Modifier
+                .align(Alignment.End)
+                .padding(horizontal = 16.dp),
+          )
+        }
       }
     }
     PullRefreshIndicator(
@@ -326,10 +351,10 @@ private fun HomeScreenSuccess(
   var fullScreenSize: IntSize? by remember { mutableStateOf(null) }
   Box(
     modifier = modifier
-      .fillMaxSize()
-      .onSizeChanged { fullScreenSize = it }
-      .pullRefresh(pullRefreshState)
-      .verticalScroll(rememberScrollState()),
+        .fillMaxSize()
+        .onSizeChanged { fullScreenSize = it }
+        .pullRefresh(pullRefreshState)
+        .verticalScroll(rememberScrollState()),
   ) {
     NotificationPermissionDialog(notificationPermissionState, openAppSettings)
     val fullScreenSizeValue = fullScreenSize
@@ -340,9 +365,9 @@ private fun HomeScreenSuccess(
           WelcomeMessage(
             homeText = uiState.homeText,
             modifier = Modifier
-              .padding(horizontal = 24.dp)
-              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
-              .testTag("welcome_message"),
+                .padding(horizontal = 24.dp)
+                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+                .testTag("welcome_message"),
           )
         },
         claimStatusCards = {
@@ -389,8 +414,8 @@ private fun HomeScreenSuccess(
             text = stringResource(R.string.home_tab_claim_button_text),
             onClick = onStartClaimClicked,
             modifier = Modifier
-              .padding(horizontal = 16.dp)
-              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+                .padding(horizontal = 16.dp)
+                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
           )
         },
         helpCenterButton = {
@@ -399,23 +424,23 @@ private fun HomeScreenSuccess(
               text = stringResource(R.string.home_tab_get_help),
               onClick = navigateToHelpCenter,
               modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+                  .padding(horizontal = 16.dp)
+                  .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
             )
           }
         },
         topSpacer = {
           Spacer(
-            Modifier
-              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top))
-              .height(toolbarHeight),
+              Modifier
+                  .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top))
+                  .height(toolbarHeight),
           )
         },
         bottomSpacer = {
           Spacer(
-            Modifier
-              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom))
-              .height(16.dp),
+              Modifier
+                  .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom))
+                  .height(16.dp),
           )
         },
       )
@@ -455,8 +480,8 @@ private fun ImportantMessages(
           beyondViewportPageCount = 1,
           pageSpacing = 8.dp,
           modifier = Modifier
-            .fillMaxWidth()
-            .systemGestureExclusion(),
+              .fillMaxWidth()
+              .systemGestureExclusion(),
         ) { page: Int ->
           val currentMessage = animatedList[page]
           VeryImportantMessageCard(
@@ -471,8 +496,8 @@ private fun ImportantMessages(
           pageCount = animatedList.size,
           activeColor = LocalContentColor.current,
           modifier = Modifier
-            .align(Alignment.CenterHorizontally)
-            .padding(contentPadding),
+              .align(Alignment.CenterHorizontally)
+              .padding(contentPadding),
         )
       }
     }

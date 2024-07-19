@@ -35,22 +35,30 @@ import com.hedvig.android.core.designsystem.material3.onInfoContainer
 import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.feature.home.home.ChatTooltipMessage.GotQuestions
+import com.hedvig.android.feature.home.home.ChatTooltipMessage.NewMessage
 import hedvig.resources.R
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
 
 @Composable
-internal fun ChatTooltip(showTooltip: Boolean, tooltipShown: () -> Unit, modifier: Modifier = Modifier) {
+internal fun ChatTooltip(
+  chatTooltipMessage: ChatTooltipMessage,
+  showTooltip: Boolean,
+  tooltipShown: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
   var transientShowTooltip by remember { mutableStateOf(false) }
   LaunchedEffect(showTooltip) {
     if (!showTooltip) return@LaunchedEffect
-    delay(1.seconds)
+    delay(0.5.seconds)
     transientShowTooltip = showTooltip
     tooltipShown()
     delay(5.seconds)
     transientShowTooltip = false
   }
   InnerChatTooltip(
+    chatTooltipMessage = chatTooltipMessage,
     show = transientShowTooltip,
     onClick = {
       transientShowTooltip = false
@@ -60,8 +68,19 @@ internal fun ChatTooltip(showTooltip: Boolean, tooltipShown: () -> Unit, modifie
   )
 }
 
+internal sealed interface ChatTooltipMessage {
+  data object GotQuestions : ChatTooltipMessage
+
+  data object NewMessage : ChatTooltipMessage
+}
+
 @Composable
-private fun InnerChatTooltip(show: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun InnerChatTooltip(
+  chatTooltipMessage: ChatTooltipMessage,
+  show: Boolean,
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
   Box(
     modifier
       .size(width = 40.dp, height = 0.dp)
@@ -80,8 +99,13 @@ private fun InnerChatTooltip(show: Boolean, onClick: () -> Unit, modifier: Modif
           modifier = Modifier.widthIn(max = 200.dp),
         ) {
           Text(
-            text = stringResource(R.string.home_tab_chat_hint_text),
-            modifier = Modifier.padding(12.dp).padding(top = arrowHeightDp),
+            text = when (chatTooltipMessage) {
+              GotQuestions -> stringResource(R.string.home_tab_chat_hint_text)
+              NewMessage -> stringResource(R.string.CHAT_NEW_MESSAGE)
+            },
+            modifier = Modifier
+              .padding(horizontal = 12.dp, vertical = 7.dp)
+              .padding(top = arrowHeightDp),
           )
         }
       }
@@ -134,7 +158,7 @@ private fun PreviewChatTooltip() {
         contentAlignment = Alignment.TopEnd,
         modifier = Modifier.padding(40.dp),
       ) {
-        InnerChatTooltip(true, {})
+        InnerChatTooltip(ChatTooltipMessage.NewMessage, true, {})
       }
     }
   }
