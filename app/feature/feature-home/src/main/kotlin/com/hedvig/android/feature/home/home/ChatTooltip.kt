@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.home.home
 
+import com.hedvig.android.core.designsystem.preview.HedvigPreview as asd
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
@@ -10,9 +11,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -30,11 +28,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.material3.infoContainer
-import com.hedvig.android.core.designsystem.material3.onInfoContainer
-import com.hedvig.android.core.designsystem.material3.squircleMedium
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.feature.home.home.ChatTooltipMessage.GotQuestions
 import com.hedvig.android.feature.home.home.ChatTooltipMessage.NewMessage
 import hedvig.resources.R
@@ -90,15 +86,15 @@ private fun InnerChatTooltip(
   ) {
     Crossfade(show, label = "chat tooltip") { crossfadeShow ->
       if (crossfadeShow) {
-        val squircleMedium = MaterialTheme.shapes.squircleMedium
+        val shape = HedvigTheme.shapes.cornerSmall
         Surface(
           onClick = onClick,
-          color = MaterialTheme.colorScheme.infoContainer,
-          contentColor = MaterialTheme.colorScheme.onInfoContainer,
-          shape = remember(squircleMedium) { squircleMedium.withTopRightPointingArrow() },
+          color = HedvigTheme.colorScheme.fillSecondary,
+          contentColor = HedvigTheme.colorScheme.fillNegative,
+          shape = remember(shape) { shape.withTopRightPointingArrow() },
           modifier = Modifier.widthIn(max = 200.dp),
         ) {
-          Text(
+          HedvigText(
             text = when (chatTooltipMessage) {
               GotQuestions -> stringResource(R.string.home_tab_chat_hint_text)
               NewMessage -> stringResource(R.string.CHAT_NEW_MESSAGE)
@@ -117,7 +113,7 @@ private fun Shape.withTopRightPointingArrow(): Shape {
   return object : Shape {
     override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
       val iconWidth: Float = with(density) { 40.dp.toPx() }
-      val arrowWidth = with(density) { 15.dp.toPx() }
+      val arrowWidth = with(density) { 12.dp.toPx() }
       val arrowHeight = with(density) { arrowHeightDp.toPx() }
       val squircleOutline = this@withTopRightPointingArrow.createOutline(
         size.copy(height = size.height - arrowHeight),
@@ -126,10 +122,22 @@ private fun Shape.withTopRightPointingArrow(): Shape {
       )
       val squirclePath: Path = (squircleOutline as Outline.Generic).path
       val arrowPath: Path = Path().apply {
-        relativeLineTo(-(arrowWidth / 2), 0f)
-        relativeLineTo(arrowWidth / 2, -arrowHeight)
-        relativeLineTo(arrowWidth / 2, arrowHeight)
-        relativeLineTo(0f, 20f)
+        val halfArrowWidth = arrowWidth / 2
+        relativeLineTo(-halfArrowWidth, 0f)
+        // How far further right the first control point and further left the second control point are in order to
+        // achieve the desired curve
+        val bezierOverlap = 3f
+        // required so that the arrow height is actually as high as it must, since bezier curves need to overshoot a
+        // bit on their control points to actually reach the desired height
+        val bezierVerticalOvershoot = 5f
+        cubicTo(
+          bezierOverlap,
+          -arrowHeight - bezierVerticalOvershoot,
+          -bezierOverlap,
+          -arrowHeight - bezierVerticalOvershoot,
+          halfArrowWidth,
+          0f,
+        )
         close()
       }
       return Outline.Generic(
@@ -142,14 +150,14 @@ private fun Shape.withTopRightPointingArrow(): Shape {
   }
 }
 
-private val arrowHeightDp = 8.dp
+private val arrowHeightDp = 5.dp
 
-@HedvigPreview
+@asd
 @Composable
 private fun PreviewChatTooltip() {
   HedvigTheme {
     Surface(
-      color = MaterialTheme.colorScheme.background,
+      color = HedvigTheme.colorScheme.backgroundPrimary,
       modifier = Modifier
         .width(300.dp)
         .height(150.dp),
