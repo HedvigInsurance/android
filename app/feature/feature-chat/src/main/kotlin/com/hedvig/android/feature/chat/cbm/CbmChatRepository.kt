@@ -68,7 +68,7 @@ internal class CbmChatRepository(
   private val botServiceService: BotServiceService,
   private val clock: Clock,
 ) {
-  suspend fun createConversation(conversationId: Uuid): Either<ErrorMessage, ConversationInfo> {
+  suspend fun createConversation(conversationId: Uuid): Either<ErrorMessage, ConversationInfo.Info> {
     return either {
       apolloClient
         .mutation(ConversationStartMutation(conversationId.toString()))
@@ -80,13 +80,15 @@ internal class CbmChatRepository(
     }
   }
 
-  fun getConversationInfo(conversationId: Uuid): Flow<Either<ErrorMessage, ConversationInfo?>> {
+  fun getConversationInfo(conversationId: Uuid): Flow<Either<ErrorMessage, ConversationInfo>> {
     return apolloClient
       .query(ConversationInfoQuery(conversationId.toString()))
       .fetchPolicy(FetchPolicy.CacheAndNetwork)
       .safeFlow(::ErrorMessage)
       .map { response ->
-        response.map { it.conversation?.toConversationInfo() }
+        response.map {
+          it.conversation.toConversationInfo()
+        }
       }
   }
 
@@ -298,15 +300,37 @@ internal class CbmChatRepository(
   }
 }
 
-internal data class ConversationInfo(
-  val conversationId: String?,
-  val title: String,
-  val createdAt: Instant,
-  val isLegacy: Boolean,
-)
+internal sealed interface ConversationInfo {
+  data object NoConversation : ConversationInfo
 
-private fun octopus.fragment.ConversationInfo.toConversationInfo(): ConversationInfo {
-  return ConversationInfo(conversationId = id, title = title, createdAt = createdAt, isLegacy = isLegacy)
+  data class Info(
+    val conversationId: String,
+    val title: String,
+    val createdAt: Instant,
+    val isLegacy: Boolean,
+  ) : ConversationInfo
+}
+
+private fun octopus.fragment.ConversationInfo?.toConversationInfo(): ConversationInfo {
+  return if (this == null) {
+    ConversationInfo.NoConversation
+  } else {
+    ConversationInfo.Info(
+      conversationId = id,
+      title = title,
+      createdAt = createdAt,
+      isLegacy = isLegacy,
+    )
+  }
+}
+
+private fun octopus.fragment.ConversationInfo.toConversationInfo(): ConversationInfo.Info {
+  return ConversationInfo.Info(
+    conversationId = id,
+    title = title,
+    createdAt = createdAt,
+    isLegacy = isLegacy,
+  )
 }
 
 internal sealed interface BannerText {
