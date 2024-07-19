@@ -127,17 +127,17 @@ internal class CbmChatPresenter(
         CbmChatEvent.RetryLoadingChat -> conversationIdStatusLoadIteration++
         is CbmChatEvent.SendTextMessage -> launch {
           startConversationIfNecessary()
-          chatRepository.sendText(conversationId, event.message)
+          chatRepository.sendText(conversationId, null, event.message)
         }
 
         is CbmChatEvent.SendPhotoMessage -> launch {
           startConversationIfNecessary()
-          chatRepository.sendPhoto(conversationId, event.uri)
+          chatRepository.sendPhoto(conversationId, null, event.uri)
         }
 
         is CbmChatEvent.SendMediaMessage -> launch {
           startConversationIfNecessary()
-          chatRepository.sendMedia(conversationId, event.uri)
+          chatRepository.sendMedia(conversationId, null, event.uri)
         }
 
         is CbmChatEvent.RetrySendChatMessage -> launch {

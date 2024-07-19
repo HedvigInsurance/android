@@ -158,54 +158,58 @@ internal class CbmChatRepository(
 
   suspend fun retrySendMessage(conversationId: Uuid, messageId: String): Either<String, CbmChatMessage> {
     return either {
-      val messageToRetry = database.withTransaction {
-        val message = chatDao.getFailedMessage(conversationId, messageId)
-        chatDao.deleteMessage(conversationId, messageId)
-        message
-      }
+      val messageToRetry = chatDao.getFailedMessage(conversationId, messageId)
       ensureNotNull(messageToRetry) {
         logcat(ERROR) { "Tried to retry sending a message which did not exist in the database:$messageId" }
         "Message not found"
       }
       return with(messageToRetry) {
         when {
-          failedToSend == TEXT && text != null -> sendText(conversationId, text!!)
-          failedToSend == PHOTO && url != null -> sendPhoto(conversationId, Uri.parse(url))
-          failedToSend == MEDIA && url != null -> sendMedia(conversationId, Uri.parse(url))
+          failedToSend == TEXT && text != null -> sendText(conversationId, messageToRetry.id, text!!)
+          failedToSend == PHOTO && url != null -> sendPhoto(conversationId, messageToRetry.id, Uri.parse(url))
+          failedToSend == MEDIA && url != null -> sendMedia(conversationId, messageToRetry.id, Uri.parse(url))
           else -> {
             logcat(ERROR) { "Tried to retry sending a message which had a wrong structure:$messageToRetry" }
             raise("Unknown message type")
           }
+        }.onRight {
+          chatDao.deleteMessage(conversationId, messageId)
         }
       }
     }
   }
 
-  suspend fun sendText(conversationId: Uuid, text: String): Either<String, CbmChatMessage> {
+  suspend fun sendText(conversationId: Uuid, messageId: Uuid?, text: String): Either<String, CbmChatMessage> {
     return sendMessage(conversationId, ConversationInput.Text(text)).onLeft {
-      val failedMessage = CbmChatMessage.FailedToBeSent.ChatMessageText(Uuid.randomUUID().toString(), clock.now(), text)
+      val failedMessage = CbmChatMessage.FailedToBeSent.ChatMessageText(
+        messageId?.toString() ?: Uuid.randomUUID().toString(), clock.now(), text,
+      )
       chatDao.insert(failedMessage.toChatMessageEntity(conversationId))
     }
   }
 
-  suspend fun sendPhoto(conversationId: Uuid, uri: Uri): Either<String, CbmChatMessage> {
+  suspend fun sendPhoto(conversationId: Uuid, messageId: Uuid?, uri: Uri): Either<String, CbmChatMessage> {
     return either {
       val uploadToken = uploadPhotoToBotService(uri)
       sendMessage(conversationId, ConversationInput.File(uploadToken)).bind()
     }.onLeft {
       val failedMessage =
-        CbmChatMessage.FailedToBeSent.ChatMessagePhoto(Uuid.randomUUID().toString(), clock.now(), uri)
+        CbmChatMessage.FailedToBeSent.ChatMessagePhoto(
+          messageId?.toString() ?: Uuid.randomUUID().toString(), clock.now(), uri
+        )
       chatDao.insert(failedMessage.toChatMessageEntity(conversationId))
     }
   }
 
-  suspend fun sendMedia(conversationId: Uuid, uri: Uri): Either<String, CbmChatMessage> {
+  suspend fun sendMedia(conversationId: Uuid, messageId: Uuid?, uri: Uri): Either<String, CbmChatMessage> {
     return either {
       val uploadToken = uploadMediaToBotService(uri)
       sendMessage(conversationId, ConversationInput.File(uploadToken)).bind()
     }.onLeft {
       val failedMessage =
-        CbmChatMessage.FailedToBeSent.ChatMessageMedia(Uuid.randomUUID().toString(), clock.now(), uri)
+        CbmChatMessage.FailedToBeSent.ChatMessageMedia(
+          messageId?.toString() ?: Uuid.randomUUID().toString(), clock.now(), uri
+        )
       chatDao.insert(failedMessage.toChatMessageEntity(conversationId))
     }
   }
