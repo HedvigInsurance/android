@@ -25,6 +25,14 @@ interface ConversationDao {
   )
   suspend fun getConversation(id: Uuid): ConversationEntity?
 
+  @Query(
+    """
+    SELECT * FROM conversations
+    WHERE id IN (:forConversationIds)
+    """,
+  )
+  suspend fun getLatestTimestamps(forConversationIds: List<Uuid>): List<ConversationEntity>
+
   @Insert(onConflict = OnConflictStrategy.REPLACE)
   suspend fun insertConversation(conversationEntity: ConversationEntity)
 

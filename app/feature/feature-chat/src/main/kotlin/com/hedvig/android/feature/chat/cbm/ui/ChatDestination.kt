@@ -26,15 +26,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
+import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.ArrowBack
 import com.hedvig.android.core.ui.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.core.ui.getLocale
+import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.LocalTextStyle
@@ -43,9 +47,9 @@ import com.hedvig.android.feature.chat.cbm.CbmChatUiState
 import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Error
 import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Initializing
 import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Loaded
-import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Loaded.TopAppBarText
 import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Loaded.TopAppBarText.Legacy
-import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Loaded.TopAppBarText.Unknown
+import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Loaded.TopAppBarText.NewConversation
+import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Loaded.TopAppBarText.Text
 import com.hedvig.android.feature.chat.cbm.CbmChatViewModel
 import com.hedvig.android.feature.chat.ui.chatScrollBehavior
 import com.hedvig.android.feature.chat.ui.chatTopAppBarWindowInsets
@@ -131,7 +135,7 @@ private fun ChatScreen(
       ) {
         when (uiState) {
           Initializing -> {
-            HedvigFullScreenCenterAlignedProgress()
+            HedvigFullScreenCenterAlignedProgressDebounced()
           }
 
           Error -> {
@@ -168,25 +172,37 @@ private fun ChatTopAppBar(
   TopAppBar(
     modifier = modifier.fillMaxWidth(),
     title = {
-      if (uiState is Loaded) {
-        CompositionLocalProvider(LocalTextStyle provides HedvigTheme.typography.headlineSmall) {
-          when (val topAppBarText = uiState.topAppBarText) {
-            is TopAppBarText.Text -> {
-              Column {
-                HedvigText(topAppBarText.title)
-                topAppBarText.submittedAt?.let { submittedAt ->
-                  val formattedDate = HedvigDateTimeFormatterDefaults
-                    .monthDateAndYear(getLocale())
-                    .format(submittedAt.toLocalDateTime(TimeZone.currentSystemDefault()).toJavaLocalDateTime())
-                  val subtitle = "${stringResource(R.string.claim_status_detail_submitted)} $formattedDate"
-                  HedvigText(subtitle, color = HedvigTheme.colorScheme.textSecondary)
+      CompositionLocalProvider(LocalTextStyle provides HedvigTheme.typography.headlineSmall) {
+        when (uiState) {
+          is Loaded -> {
+            when (val topAppBarText = uiState.topAppBarText) {
+              Legacy -> HedvigText(stringResource(R.string.CHAT_CONVERSATION_HISTORY_TITLE))
+              NewConversation -> {
+                Column {
+                  HedvigText(stringResource(R.string.CHAT_NEW_CONVERSATION_TITLE))
+                  HedvigText(
+                    stringResource(R.string.CHAT_NEW_CONVERSATION_SUBTITLE),
+                    color = HedvigTheme.colorScheme.textSecondary,
+                  )
+                }
+              }
+
+              is Text -> {
+                Column {
+                  HedvigText(topAppBarText.title)
+                  topAppBarText.submittedAt?.let { submittedAt ->
+                    val formattedDate = HedvigDateTimeFormatterDefaults
+                      .monthDateAndYear(getLocale())
+                      .format(submittedAt.toLocalDateTime(TimeZone.currentSystemDefault()).toJavaLocalDateTime())
+                    val subtitle = "${stringResource(R.string.claim_status_detail_submitted)} $formattedDate"
+                    HedvigText(subtitle, color = HedvigTheme.colorScheme.textSecondary)
+                  }
                 }
               }
             }
-
-            Legacy -> HedvigText(stringResource(R.string.CHAT_CONVERSATION_HISTORY_TITLE))
-            Unknown -> HedvigText(stringResource(R.string.CHAT_TITLE))
           }
+
+          else -> HedvigText(stringResource(R.string.CHAT_TITLE))
         }
       }
     },
@@ -205,62 +221,32 @@ private fun ChatTopAppBar(
   )
 }
 
-// todo cbm preview
-// @HedvigPreview
-// @Composable
-// private fun ChatScreenPreview(
-//  @PreviewParameter(ChatUiStateProvider::class) chatUiState: ChatUiState,
-// ) {
-//  HedvigTheme {
-//    Surface(
-//      color = MaterialTheme.colorScheme.background,
-//      modifier = Modifier.fillMaxSize(),
-//    ) {
-//      ChatScreen(
-//        uiState = chatUiState,
-//        imageLoader = rememberPreviewImageLoader(),
-//        appPackageId = "com.hedvig",
-//        openUrl = {},
-//        onBannerLinkClicked = {},
-//        onNavigateUp = {},
-//        onSendMessage = {},
-//        onSendPhoto = {},
-//        onSendMedia = {},
-//        onRetrySendChatMessage = {},
-//        onFetchMoreMessages = {},
-//      )
-//    }
-//  }
-// }
-//
-// private class ChatUiStateProvider :
-//  CollectionPreviewParameterProvider<ChatUiState>(
-//    listOf(
-//      ChatUiState.Initializing,
-//      ChatUiState.Loaded(
-//        List(10) { index ->
-//          ChatMessage.ChatMessageText(
-//            id = index.toString(),
-//            sender = if (index % 2 == 0 || index > 7) ChatMessage.Sender.MEMBER else ChatMessage.Sender.HEDVIG,
-//            sentAt = Clock.System.now().plus(index.seconds),
-//            text = "Hello #$index" + if (index == 0) {
-//              "long".repeat(15)
-//            } else {
-//              ""
-//            },
-//          )
-//        }.plus(
-//          ChatMessage.FailedToBeSent.ChatMessageText(
-//            id = "failed",
-//            sentAt = Clock.System.now(),
-//            text = "Failed to be sent",
-//          ),
-//        ).map {
-//          ChatUiState.Loaded.UiChatMessage(it, false)
-//        },
-//        fetchMoreMessagesUiState = ChatUiState.Loaded.FetchMoreMessagesUiState.FetchingMore,
-//        bannerText = "Test",
-//        haveSentAtLeastOneMessage = false,
-//      ),
-//    ),
-//  )
+@HedvigPreview
+@Composable
+private fun PreviewChatScreen(
+  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) isError: Boolean,
+) {
+  com.hedvig.android.core.designsystem.theme.HedvigTheme {
+    com.hedvig.android.design.system.hedvig.HedvigTheme {
+      androidx.compose.material3.Surface(color = MaterialTheme.colorScheme.background) {
+        com.hedvig.android.design.system.hedvig.Surface(
+          color = com.hedvig.android.design.system.hedvig.HedvigTheme.colorScheme.backgroundPrimary,
+        ) {
+          ChatScreen(
+            uiState = if (isError) CbmChatUiState.Error else CbmChatUiState.Initializing,
+            imageLoader = rememberPreviewImageLoader(),
+            appPackageId = "",
+            openUrl = {},
+            onBannerLinkClicked = {},
+            onNavigateUp = {},
+            onSendMessage = {},
+            onSendPhoto = {},
+            onSendMedia = {},
+            onRetrySendChatMessage = {},
+            onRetryLoadingChat = {},
+          )
+        }
+      }
+    }
+  }
+}

@@ -22,11 +22,14 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.flatMap
 import androidx.paging.map
 import com.benasher44.uuid.Uuid
+import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.chat.database.AppDatabase
 import com.hedvig.android.data.chat.database.ChatDao
 import com.hedvig.android.data.chat.database.ChatMessageEntity
 import com.hedvig.android.data.chat.database.ConversationDao
 import com.hedvig.android.data.chat.database.RemoteKeyDao
+import com.hedvig.android.feature.chat.cbm.ConversationInfo.Info
+import com.hedvig.android.feature.chat.cbm.ConversationInfo.NoConversation
 import com.hedvig.android.feature.chat.cbm.ConversationInfoStatus.Failed
 import com.hedvig.android.feature.chat.cbm.ConversationInfoStatus.Initializing
 import com.hedvig.android.feature.chat.cbm.ConversationInfoStatus.Loaded
@@ -42,7 +45,9 @@ import com.hedvig.android.molecule.public.MoleculePresenterScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
@@ -54,7 +59,7 @@ internal class CbmChatViewModel(
   chatDao: ChatDao,
   remoteKeyDao: RemoteKeyDao,
   conversationDao: ConversationDao,
-  chatRepository: CbmChatRepository, // todo cbm: Make this a provider for demo mode
+  chatRepository: Provider<CbmChatRepository>,
   clock: Clock,
 ) : MoleculeViewModel<CbmChatEvent, CbmChatUiState>(
     CbmChatUiState.Initializing,
@@ -75,7 +80,7 @@ internal class CbmChatPresenter(
   private val chatDao: ChatDao,
   private val remoteKeyDao: RemoteKeyDao,
   private val conversationDao: ConversationDao,
-  private val chatRepository: CbmChatRepository,
+  private val chatRepository: Provider<CbmChatRepository>,
   private val clock: Clock,
 ) : MoleculePresenter<CbmChatEvent, CbmChatUiState> {
   @OptIn(ExperimentalPagingApi::class)
@@ -97,14 +102,16 @@ internal class CbmChatPresenter(
         return@LaunchedEffect
       }
       conversationInfoStatus = ConversationInfoStatus.Initializing
-      chatRepository.getConversationInfo(conversationId).fold(
-        ifLeft = {
-          conversationInfoStatus = ConversationInfoStatus.Failed
-        },
-        ifRight = { conversationInfo ->
-          conversationInfoStatus = ConversationInfoStatus.Loaded(conversationInfo)
-        },
-      )
+      chatRepository.provide().getConversationInfo(conversationId).collect { result ->
+        result.fold(
+          ifLeft = {
+            conversationInfoStatus = ConversationInfoStatus.Failed
+          },
+          ifRight = { conversationInfo ->
+            conversationInfoStatus = ConversationInfoStatus.Loaded(conversationInfo)
+          },
+        )
+      }
     }
 
     val updatedConversationIdStatus by rememberUpdatedState(conversationInfoStatus)
@@ -114,7 +121,7 @@ internal class CbmChatPresenter(
         val conversationAlreadyStarted =
           (conversationIdStatusValue as? ConversationInfoStatus.Loaded)?.conversationInfo != null
         if (!conversationAlreadyStarted) {
-          chatRepository.createConversation(conversationId).onRight { backendConversationInfo ->
+          chatRepository.provide().createConversation(conversationId).onRight { backendConversationInfo ->
             conversationInfoStatus = ConversationInfoStatus.Loaded(backendConversationInfo)
           }
         }
@@ -123,22 +130,22 @@ internal class CbmChatPresenter(
         CbmChatEvent.RetryLoadingChat -> conversationIdStatusLoadIteration++
         is CbmChatEvent.SendTextMessage -> launch {
           startConversationIfNecessary()
-          chatRepository.sendText(conversationId, event.message)
+          chatRepository.provide().sendText(conversationId, null, event.message)
         }
 
         is CbmChatEvent.SendPhotoMessage -> launch {
           startConversationIfNecessary()
-          chatRepository.sendPhoto(conversationId, event.uri)
+          chatRepository.provide().sendPhoto(conversationId, null, event.uri)
         }
 
         is CbmChatEvent.SendMediaMessage -> launch {
           startConversationIfNecessary()
-          chatRepository.sendMedia(conversationId, event.uri)
+          chatRepository.provide().sendMedia(conversationId, null, event.uri)
         }
 
         is CbmChatEvent.RetrySendChatMessage -> launch {
           startConversationIfNecessary()
-          chatRepository.retrySendMessage(conversationId, event.messageId)
+          chatRepository.provide().retrySendMessage(conversationId, event.messageId)
         }
       }
     }
@@ -165,13 +172,13 @@ internal class CbmChatPresenter(
 @OptIn(ExperimentalPagingApi::class)
 @Composable
 private fun presentLoadedChat(
-  backendConversationInfo: ConversationInfo?,
+  backendConversationInfo: ConversationInfo,
   conversationId: Uuid,
   database: AppDatabase,
   chatDao: ChatDao,
   remoteKeyDao: RemoteKeyDao,
   conversationDao: ConversationDao,
-  chatRepository: CbmChatRepository,
+  chatRepository: Provider<CbmChatRepository>,
   clock: Clock,
 ): CbmChatUiState.Loaded {
   val coroutineScope = rememberCoroutineScope()
@@ -179,9 +186,9 @@ private fun presentLoadedChat(
     chatDao.latestMessage(conversationId).filterNotNull().map(ChatMessageEntity::toLatestChatMessage)
   }.collectAsState(null)
   val bannerText by remember(conversationId, chatRepository) {
-    chatRepository.bannerText(conversationId)
+    flow { emitAll(chatRepository.provide().bannerText(conversationId)) }
   }.collectAsState(null)
-  val pagingDataFlow = remember(backendConversationInfo?.conversationId) {
+  val pagingDataFlow = remember(backendConversationInfo) {
     val remoteMediator =
       ChatRemoteMediator(conversationId, database, chatDao, remoteKeyDao, conversationDao, chatRepository, clock)
     Pager(
@@ -205,14 +212,14 @@ private fun presentLoadedChat(
   }
   val lazyPagingItems = pagingData.collectAsLazyPagingItems()
 
-  LaunchedEffect(backendConversationInfo?.conversationId, conversationId, lazyPagingItems) {
-    if (backendConversationInfo?.conversationId == null) return@LaunchedEffect
+  LaunchedEffect(backendConversationInfo, conversationId, lazyPagingItems) {
+    if (backendConversationInfo is ConversationInfo.NoConversation) return@LaunchedEffect
     snapshotFlow { lazyPagingItems.itemCount }
       .map { it > 0 }
       .distinctUntilChanged()
       .collectLatest { poll ->
         if (poll) {
-          chatRepository.pollNewestMessages(conversationId).collect {
+          chatRepository.provide().pollNewestMessages(conversationId).collect {
             logcat { "Polling error: $it" }
           }
         }
@@ -253,16 +260,20 @@ internal sealed interface CbmChatUiState {
 
   @Immutable
   data class Loaded(
-    val backendConversationInfo: ConversationInfo?,
+    val backendConversationInfo: ConversationInfo,
     // The list of messages, ordered from the newest one to the oldest one
     val messages: LazyPagingItems<CbmUiChatMessage>,
     val latestMessage: LatestChatMessage?,
     val bannerText: BannerText?,
   ) : CbmChatUiState {
-    val topAppBarText: TopAppBarText = when {
-      backendConversationInfo == null -> TopAppBarText.Unknown
-      backendConversationInfo.isLegacy -> TopAppBarText.Legacy
-      else -> TopAppBarText.Text(backendConversationInfo.title, backendConversationInfo.createdAt)
+    val topAppBarText: TopAppBarText = when (backendConversationInfo) {
+      NoConversation -> TopAppBarText.NewConversation
+      is Info -> {
+        when {
+          backendConversationInfo.isLegacy -> TopAppBarText.Legacy
+          else -> TopAppBarText.Text(backendConversationInfo.title, backendConversationInfo.createdAt)
+        }
+      }
     }
 
     data class LatestChatMessage(
@@ -271,7 +282,7 @@ internal sealed interface CbmChatUiState {
     )
 
     sealed interface TopAppBarText {
-      data object Unknown : TopAppBarText
+      data object NewConversation : TopAppBarText
 
       data object Legacy : TopAppBarText
 
@@ -294,6 +305,6 @@ private sealed interface ConversationInfoStatus {
   data object Failed : ConversationInfoStatus
 
   data class Loaded(
-    val conversationInfo: ConversationInfo?,
+    val conversationInfo: ConversationInfo,
   ) : ConversationInfoStatus
 }

@@ -2,6 +2,7 @@ package com.hedvig.android.ui.claimstatus
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -17,6 +18,9 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.core.ui.getLocale
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Medium
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
+import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.ui.claimstatus.internal.ClaimPillsRow
 import com.hedvig.android.ui.claimstatus.internal.ClaimProgressRow
 import com.hedvig.android.ui.claimstatus.model.ClaimPillType
@@ -31,18 +35,27 @@ import kotlinx.datetime.toLocalDateTime
 @Composable
 fun ClaimStatusCard(
   uiState: ClaimStatusCardUiState,
-  onClick: ((claimId: String) -> Unit)?,
+  onClick: (claimId: String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   HedvigCard(
-    onClick = if (onClick != null) {
-      { onClick.invoke(uiState.id) }
-    } else {
-      null
-    },
+    onClick = { onClick(uiState.id) },
     modifier = modifier,
   ) {
-    ClaimStatusCardContent(uiState)
+    Column {
+      ClaimStatusCardContent(uiState)
+      HedvigButton(
+        text = stringResource(R.string.claim_status_claim_details_button),
+        onClick = { onClick(uiState.id) },
+        enabled = true,
+        buttonStyle = Secondary,
+        buttonSize = Medium,
+        modifier = Modifier
+          .padding(horizontal = 16.dp)
+          .fillMaxWidth(),
+      )
+      Spacer(Modifier.height(16.dp))
+    }
   }
 }
 

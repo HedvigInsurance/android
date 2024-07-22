@@ -42,7 +42,9 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
@@ -56,8 +58,8 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.nonEmptyListOf
-import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.permissions.isGranted
+import com.hedvig.android.compose.pager.indicator.HorizontalPagerIndicator
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.designsystem.component.bottomsheet.HedvigBottomSheet
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
@@ -82,7 +84,9 @@ import com.hedvig.android.core.ui.plus
 import com.hedvig.android.crosssells.CrossSellsSection
 import com.hedvig.android.data.contract.android.CrossSell
 import com.hedvig.android.feature.home.home.ChatTooltip
+import com.hedvig.android.feature.home.home.ChatTooltipMessage
 import com.hedvig.android.feature.home.home.data.HomeData
+import com.hedvig.android.feature.home.home.data.HomeData.VeryImportantMessage.LinkInfo
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.memberreminders.ui.MemberReminderCardsWithoutNotification
@@ -104,6 +108,8 @@ import hedvig.resources.R
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Instant
 import kotlinx.datetime.toJavaLocalDate
@@ -265,23 +271,43 @@ private fun HomeScreen(
         }
       }
       if ((uiState as? HomeUiState.Success)?.chatAction != null) {
-        val shouldShowTooltip by produceState(false) {
+        val shouldShowGotQuestionsTooltip by produceState(false) {
           val daysSinceLastTooltipShown = daysSinceLastTooltipShown(context)
           value = daysSinceLastTooltipShown
         }
-        ChatTooltip(
-          showTooltip = shouldShowTooltip,
-          tooltipShown = {
-            context.setLastEpochDayWhenChatTooltipWasShown(
-              java.time.LocalDate
-                .now()
-                .toEpochDay(),
-            )
-          },
-          modifier = Modifier
-            .align(Alignment.End)
-            .padding(horizontal = 16.dp),
-        )
+        val updatedHasUnseenChatMessages by rememberUpdatedState(uiState.hasUnseenChatMessages)
+        val shouldShowNewMessageTooltip by produceState(false) {
+          snapshotFlow { updatedHasUnseenChatMessages }
+            .drop(1)
+            .collectLatest {
+              value = it
+            }
+        }
+        if (shouldShowGotQuestionsTooltip) {
+          ChatTooltip(
+            chatTooltipMessage = ChatTooltipMessage.GotQuestions,
+            showTooltip = shouldShowGotQuestionsTooltip,
+            tooltipShown = {
+              context.setLastEpochDayWhenChatTooltipWasShown(
+                java.time.LocalDate
+                  .now()
+                  .toEpochDay(),
+              )
+            },
+            modifier = Modifier
+              .align(Alignment.End)
+              .padding(horizontal = 16.dp),
+          )
+        } else if (shouldShowNewMessageTooltip) {
+          ChatTooltip(
+            chatTooltipMessage = ChatTooltipMessage.NewMessage,
+            showTooltip = shouldShowNewMessageTooltip,
+            tooltipShown = {},
+            modifier = Modifier
+              .align(Alignment.End)
+              .padding(horizontal = 16.dp),
+          )
+        }
       }
     }
     PullRefreshIndicator(
@@ -506,11 +532,11 @@ private fun VeryImportantMessageCard(
           onClick = { hideImportantMessage(veryImportantMessage.id) },
           modifier = Modifier.weight(1f),
         )
-        if (veryImportantMessage.link != null) {
+        if (veryImportantMessage.linkInfo != null) {
           Spacer(modifier = Modifier.width(8.dp))
           InfoCardTextButton(
-            text = stringResource(R.string.important_message_read_more),
-            onClick = { openUrl(veryImportantMessage.link) },
+            text = veryImportantMessage.linkInfo.buttonText ?: stringResource(R.string.important_message_read_more),
+            onClick = { openUrl(veryImportantMessage.linkInfo.link) },
             modifier = Modifier.weight(1f),
           )
         }
@@ -606,7 +632,10 @@ private fun PreviewHomeScreen(
             HomeData.VeryImportantMessage(
               "id",
               "Beware of the earthquake",
-              "",
+              LinkInfo(
+                "Read more",
+                "",
+              ),
             ),
           ),
           memberReminders = MemberReminders(

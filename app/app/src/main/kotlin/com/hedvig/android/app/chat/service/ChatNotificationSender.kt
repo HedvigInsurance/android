@@ -6,11 +6,8 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
-import androidx.core.app.PendingIntentCompat
 import androidx.core.app.Person
-import androidx.core.app.RemoteInput
 import androidx.core.app.TaskStackBuilder
 import androidx.core.content.getSystemService
 import androidx.core.graphics.drawable.IconCompat
@@ -21,7 +18,6 @@ import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
 import hedvig.resources.R
-import kotlinx.datetime.Instant
 
 class ChatNotificationSender(
   private val context: Context,
@@ -31,12 +27,18 @@ class ChatNotificationSender(
     setupNotificationChannel(
       context,
       CHAT_CHANNEL_ID,
-      context.resources.getString(hedvig.resources.R.string.NOTIFICATION_CHAT_CHANNEL_NAME),
-      context.resources.getString(hedvig.resources.R.string.NOTIFICATION_CHAT_CHANNEL_DESCRIPTION),
+      context.resources.getString(R.string.NOTIFICATION_CHAT_CHANNEL_NAME),
+      context.resources.getString(R.string.NOTIFICATION_CHAT_CHANNEL_DESCRIPTION),
     )
   }
 
   override fun sendNotification(type: String, remoteMessage: RemoteMessage) {
+    // todo chat: Consider still not showing the notification when chat is on the foreground
+//    if (context.getStoredBoolean(ChatFragment.ACTIVITY_IS_IN_FOREGROUND)) {
+//      logcat(LogPriority.INFO) { "ChatNotificationSender ignoring notification since chat is open" }
+//      return
+//    }
+
     val hedvigPerson = hedvigPerson.toBuilder()
       .also { person ->
         val overriddenTitle = remoteMessage.data.titleFromCustomerIoData()
@@ -93,39 +95,13 @@ class ChatNotificationSender(
       .addNextIntent(chatIntent)
       .getPendingIntent(0, getMutablePendingIntentFlags())
 
-    val replyPendingIntent = PendingIntentCompat.getBroadcast(
-      context,
-      CHAT_REPLY_REQUEST_CODE,
-      Intent(context, ChatMessageNotificationReceiver::class.java).apply {
-        putExtra(
-          CHAT_REPLY_DATA_NOTIFICATION_ID,
-          CHAT_NOTIFICATION_ID,
-        )
-      },
-      PendingIntent.FLAG_UPDATE_CURRENT,
-      true,
-    )
-
-    val replyAction = NotificationCompat.Action.Builder(
-      android.R.drawable.ic_menu_send,
-      context.getString(hedvig.resources.R.string.notifications_chat_reply_action),
-      replyPendingIntent,
-    )
-      .addRemoteInput(
-        RemoteInput.Builder(CHAT_REPLY_KEY)
-          .setLabel(context.getString(R.string.notifications_chat_reply_action))
-          .build(),
-      )
-      .build()
-
     val notification = NotificationCompat
       .Builder(
         context,
         CHAT_CHANNEL_ID,
       )
-      .setSmallIcon(hedvig.resources.R.drawable.ic_hedvig_h)
+      .setSmallIcon(R.drawable.ic_hedvig_h)
       .setStyle(style)
-      .addAction(replyAction)
       .setPriority(NotificationCompat.PRIORITY_MAX)
       .setAutoCancel(true)
       .setChannelId(CHAT_CHANNEL_ID)
@@ -143,41 +119,15 @@ class ChatNotificationSender(
     )
   }
 
-  @RequiresApi(Build.VERSION_CODES.N)
-  fun addReplyToExistingChatNotification(
-    context: Context,
-    notificationId: Int,
-    replyText: String,
-    replyTimestamp: Instant,
-  ) {
-    val notificationManager = context.getSystemService<NotificationManager>() ?: return
-
-    val existingChatNotification = notificationManager
-      .activeNotifications
-      .firstOrNull { it.id == notificationId }
-      ?.notification ?: return
-
-    val style = NotificationCompat.MessagingStyle.extractMessagingStyleFromNotification(
-      existingChatNotification,
-    ) ?: return
-    style.addMessage(replyText, replyTimestamp.toEpochMilliseconds(), style.user)
-
-    sendChatNotificationInner(
-      context,
-      style,
-      alertOnlyOnce = true,
-    )
-  }
-
   private val hedvigPerson: Person = Person.Builder()
-    .setName(context.getString(hedvig.resources.R.string.NOTIFICATION_CHAT_TITLE))
+    .setName(context.getString(R.string.NOTIFICATION_CHAT_TITLE))
     .setImportant(true)
     .setKey(HEDVIG_PERSON_KEY)
-    .setIcon(IconCompat.createWithResource(context, hedvig.resources.R.drawable.ic_hedvig_h))
+    .setIcon(IconCompat.createWithResource(context, R.drawable.ic_hedvig_h))
     .build()
 
   private val youPerson: Person = Person.Builder()
-    .setName(context.getString(hedvig.resources.R.string.notifications_chat_you))
+    .setName(context.getString(R.string.notifications_chat_you))
     .setImportant(true)
     .setKey(YOU_PERSON_KEY)
     .build()
@@ -187,10 +137,6 @@ class ChatNotificationSender(
     private const val CHAT_NOTIFICATION_ID = 1
     private const val HEDVIG_PERSON_KEY = "HEDVIG"
     private const val YOU_PERSON_KEY = "YOU"
-
-    internal const val CHAT_REPLY_KEY = "CHAT_REPLY_KEY"
-    internal const val CHAT_REPLY_DATA_NOTIFICATION_ID = "CHAT_REPLY_DATA_NOTIFICATION_ID"
-    private const val CHAT_REPLY_REQUEST_CODE = 2380
 
     private const val NOTIFICATION_TYPE_NEW_MESSAGE = "NEW_MESSAGE"
 

@@ -197,7 +197,9 @@ internal fun YourInfoTab(
           InfoCardTextButton(
             onClick = { openUrl(upcomingChangesInsuranceAgreement.certificateUrl) },
             text = stringResource(R.string.CONTRACT_VIEW_CERTIFICATE_BUTTON),
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(horizontal = 16.dp),
           )
         }
       } else {

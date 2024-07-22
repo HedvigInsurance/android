@@ -42,7 +42,7 @@ dependencies {
 
 apollo {
   service("octopus") {
-    packageName.set("octopus")
-      dependsOn(projects.apolloOctopusPublic, true)
+    packageName = "octopus"
+    dependsOn(projects.apolloOctopusPublic, true)
   }
 }

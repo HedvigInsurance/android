@@ -14,8 +14,6 @@ android {
 }
 
 dependencies {
-
-  implementation(libs.accompanist.pagerIndicators)
   implementation(libs.accompanist.permissions)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material3)
@@ -38,6 +36,7 @@ dependencies {
   implementation(projects.audioPlayerData)
   implementation(projects.audioPlayerUi)
   implementation(projects.claimStatus)
+  implementation(projects.composePagerIndicator)
   implementation(projects.composeUi)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
@@ -50,6 +49,7 @@ dependencies {
   implementation(projects.crossSells)
   implementation(projects.dataChatReadTimestampPublic)
   implementation(projects.dataContractAndroid)
+  implementation(projects.designSystemHedvig)
   implementation(projects.featureFlagsPublic)
   implementation(projects.languageCore)
   implementation(projects.marketCore)
@@ -86,7 +86,7 @@ dependencies {
 
 apollo {
   service("octopus") {
-    packageName.set("octopus")
-      dependsOn(projects.apolloOctopusPublic, true)
+    packageName = "octopus"
+    dependsOn(projects.apolloOctopusPublic, true)
   }
 }

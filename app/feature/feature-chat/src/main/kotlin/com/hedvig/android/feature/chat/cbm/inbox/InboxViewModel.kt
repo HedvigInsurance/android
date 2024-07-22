@@ -46,7 +46,9 @@ internal class InboxPresenter(
       getAllConversationsUseCase.invoke().collectLatest { result ->
         result.fold(
           ifLeft = {
-            currentState = InboxUiState.Failure
+            if (currentState is InboxUiState.Loading) {
+              currentState = InboxUiState.Failure
+            }
           },
           ifRight = { conversations ->
             currentState = InboxUiState.Success(conversations)

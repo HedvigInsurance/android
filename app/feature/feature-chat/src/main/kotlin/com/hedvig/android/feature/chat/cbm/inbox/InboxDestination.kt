@@ -109,7 +109,7 @@ private fun InboxSuccessScreen(inboxConversations: List<InboxConversation>, onCo
   SideEffect {
     // Keep at the top of the list if we are already at the top and there is a re-arrangement
     // https://slack-chats.kotlinlang.org/t/20209529/ujn92aya0-wave-i-have-a-reversed-lazycolumn-and-its-last-ite#e0eabbdf-ae4b-420a-9bca-2a9de96ed2bd
-    if (!lazyListState.canScrollBackward) {
+    if (!lazyListState.canScrollBackward && lazyListState.layoutInfo.visibleItemsInfo.isNotEmpty()) {
       lazyListState.requestScrollToItem(0)
     }
   }
