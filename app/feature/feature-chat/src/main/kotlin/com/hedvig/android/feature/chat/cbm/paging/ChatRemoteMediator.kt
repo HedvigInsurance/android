@@ -17,6 +17,7 @@ import com.hedvig.android.data.chat.database.RemoteKeyEntity
 import com.hedvig.android.feature.chat.cbm.CbmChatRepository
 import com.hedvig.android.feature.chat.cbm.PagingToken
 import com.hedvig.android.feature.chat.cbm.model.toChatMessageEntity
+import com.hedvig.android.logger.LogPriority.VERBOSE
 import com.hedvig.android.logger.logcat
 import kotlin.time.Duration.Companion.hours
 import kotlinx.datetime.Clock
@@ -32,6 +33,7 @@ internal class ChatRemoteMediator(
   private val clock: Clock,
 ) : RemoteMediator<Int, ChatMessageEntity>() {
   override suspend fun load(loadType: LoadType, state: PagingState<Int, ChatMessageEntity>): MediatorResult {
+    logcat(VERBOSE) { "ChatRemoteMediator: called with loadType: $loadType and state: $state" }
     val pagingToken = when (loadType) {
       LoadType.REFRESH -> null
       LoadType.PREPEND -> {
@@ -47,6 +49,7 @@ internal class ChatRemoteMediator(
       }
     }
     val response = chatRepository.chatMessages(conversationId, pagingToken).getOrElse {
+      logcat { "ChatRemoteMediator: Failed to fetch chat messages: $it [MediatorResult.Error(it)]" }
       return MediatorResult.Error(it)
     }
     conversationDao.insertNewLatestTimestampIfApplicable(ConversationEntity(conversationId, clock.now()))

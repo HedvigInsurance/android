@@ -4,9 +4,11 @@ import androidx.compose.runtime.Immutable
 import arrow.core.Either
 import arrow.core.NonEmptyList
 import arrow.core.left
+import arrow.core.merge
 import arrow.core.raise.either
 import arrow.core.raise.ensureNotNull
 import arrow.core.raise.nullable
+import arrow.core.right
 import arrow.core.toNonEmptyListOrNull
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.cache.normalized.FetchPolicy
@@ -14,7 +16,9 @@ import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.apollographql.apollo.cache.normalized.watch
 import com.apollographql.apollo.exception.ApolloException
 import com.apollographql.apollo.exception.CacheMissException
+import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.safeFlow
+import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.contract.android.CrossSell
 import com.hedvig.android.featureflags.FeatureManager
@@ -29,12 +33,15 @@ import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.retryWhen
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
+import octopus.CbmNumberOfChatMessagesQuery
 import octopus.HomeQuery
 import octopus.NumberOfChatMessagesQuery
 import octopus.type.ChatMessageSender
@@ -129,35 +136,65 @@ internal class GetHomeDataUseCaseImpl(
   }
 
   private fun isEligibleToShowTheChatIcon(): Flow<Either<ErrorMessage, Boolean>> {
-    return apolloClient.query(NumberOfChatMessagesQuery())
-      .watch()
-      .map { apolloResponse ->
-        either {
-          val data = ensureNotNull(apolloResponse.data) {
-            ErrorMessage("Home failed to fetch chat history")
-          }
-          val chatMessages = data.chat.messages.map { message ->
-            ChatMessage(
-              message.id,
-              when (message.sender) {
-                ChatMessageSender.MEMBER -> ChatMessage.Sender.MEMBER
-                ChatMessageSender.HEDVIG -> ChatMessage.Sender.HEDVIG
-                ChatMessageSender.UNKNOWN__ -> ChatMessage.Sender.HEDVIG
-              },
-            )
-          }
-          chatMessages.isEligibleToShowTheChatIcon()
+    return featureManager.isFeatureEnabled(Feature.ENABLE_CBM).flatMapLatest { isCbmEnabled ->
+      if (isCbmEnabled) {
+        flow {
+          emit(
+            apolloClient.query(CbmNumberOfChatMessagesQuery())
+              .safeExecute()
+              .toEither()
+              .mapLeft { false }
+              .map { result ->
+                val eligibleFromLegacyConversation = result
+                  .currentMember
+                  .legacyConversation
+                  ?.messagePage
+                  ?.messages
+                  ?.map { ChatMessage(it.id, it.sender.toChatMessageSender()) }
+                  ?.isEligibleToShowTheChatIcon() == true
+                if (eligibleFromLegacyConversation) {
+                  return@map true
+                }
+                val conversations = result.currentMember.conversations
+                val showChatIcon = conversations.any { conversation ->
+                  val isOpenConversation = conversation.isOpen
+                  val hasAnyMessageSent = conversation.newestMessage != null
+                  isOpenConversation || hasAnyMessageSent
+                }
+                showChatIcon
+              }
+              .merge()
+              .right(),
+          )
         }
+      } else {
+        apolloClient.query(NumberOfChatMessagesQuery())
+          .watch()
+          .map { apolloResponse ->
+            either {
+              val data = ensureNotNull(apolloResponse.data) {
+                ErrorMessage("Home failed to fetch chat history")
+              }
+              val chatMessages = data.chat.messages.map { message ->
+                ChatMessage(
+                  message.id,
+                  message.sender.toChatMessageSender(),
+                )
+              }
+              chatMessages.isEligibleToShowTheChatIcon()
+            }
+          }
+          .retryWhen { cause, attempt ->
+            val shouldRetry = cause is CacheMissException ||
+              (cause is ApolloException && cause.suppressedExceptions.any { it is CacheMissException })
+            if (shouldRetry) {
+              emit(ErrorMessage("").left())
+              delay(attempt.coerceAtMost(3).seconds)
+            }
+            shouldRetry
+          }
       }
-      .retryWhen { cause, attempt ->
-        val shouldRetry = cause is CacheMissException ||
-          (cause is ApolloException && cause.suppressedExceptions.any { it is CacheMissException })
-        if (shouldRetry) {
-          emit(ErrorMessage("").left())
-          delay(attempt.coerceAtMost(3).seconds)
-        }
-        shouldRetry
-      }
+    }
   }
 
   private fun List<ChatMessage>.isEligibleToShowTheChatIcon(): Boolean {
@@ -227,13 +264,21 @@ private fun HomeQuery.Data.claimStatusCards(): HomeData.ClaimStatusCardsData? {
   return HomeData.ClaimStatusCardsData(claimStatusCards.map(ClaimStatusCardUiState::fromClaimStatusCardsQuery))
 }
 
-internal data class ChatMessage(
+private data class ChatMessage(
   val id: String,
   val sender: Sender,
 ) {
   enum class Sender {
     HEDVIG,
     MEMBER,
+  }
+}
+
+private fun ChatMessageSender.toChatMessageSender(): ChatMessage.Sender {
+  return when (this) {
+    ChatMessageSender.MEMBER -> ChatMessage.Sender.MEMBER
+    ChatMessageSender.HEDVIG -> ChatMessage.Sender.HEDVIG
+    ChatMessageSender.UNKNOWN__ -> ChatMessage.Sender.HEDVIG
   }
 }
 

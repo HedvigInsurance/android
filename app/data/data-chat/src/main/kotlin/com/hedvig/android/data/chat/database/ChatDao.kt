@@ -11,7 +11,7 @@ import kotlinx.datetime.Instant
 
 @Dao
 interface ChatDao {
-  @Insert(onConflict = OnConflictStrategy.IGNORE)
+  @Insert(onConflict = OnConflictStrategy.REPLACE)
   suspend fun insert(message: ChatMessageEntity)
 
   @Insert(onConflict = OnConflictStrategy.IGNORE)

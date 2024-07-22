@@ -17,6 +17,7 @@ import com.apollographql.apollo.cache.normalized.doNotStore
 import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.benasher44.uuid.Uuid
 import com.hedvig.android.apollo.safeExecute
+import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.fileupload.FileService
@@ -26,6 +27,8 @@ import com.hedvig.android.data.chat.database.ChatDao
 import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.MEDIA
 import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.PHOTO
 import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.TEXT
+import com.hedvig.android.data.chat.database.ConversationDao
+import com.hedvig.android.data.chat.database.ConversationEntity
 import com.hedvig.android.data.chat.database.RemoteKeyDao
 import com.hedvig.android.data.chat.database.RemoteKeyEntity
 import com.hedvig.android.feature.chat.cbm.model.CbmChatMessage
@@ -41,6 +44,7 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.isActive
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -59,11 +63,12 @@ internal class CbmChatRepository(
   private val database: AppDatabase,
   private val chatDao: ChatDao,
   private val remoteKeyDao: RemoteKeyDao,
+  private val conversationDao: ConversationDao,
   private val fileService: FileService,
   private val botServiceService: BotServiceService,
   private val clock: Clock,
 ) {
-  suspend fun createConversation(conversationId: Uuid): Either<ErrorMessage, ConversationInfo> {
+  suspend fun createConversation(conversationId: Uuid): Either<ErrorMessage, ConversationInfo.Info> {
     return either {
       apolloClient
         .mutation(ConversationStartMutation(conversationId.toString()))
@@ -75,16 +80,16 @@ internal class CbmChatRepository(
     }
   }
 
-  suspend fun getConversationInfo(conversationId: Uuid): Either<ErrorMessage, ConversationInfo?> {
-    return either {
-      apolloClient
-        .query(ConversationInfoQuery(conversationId.toString()))
-        .safeExecute()
-        .toEither(::ErrorMessage)
-        .bind()
-        .conversation
-        ?.toConversationInfo()
-    }
+  fun getConversationInfo(conversationId: Uuid): Flow<Either<ErrorMessage, ConversationInfo>> {
+    return apolloClient
+      .query(ConversationInfoQuery(conversationId.toString()))
+      .fetchPolicy(FetchPolicy.CacheAndNetwork)
+      .safeFlow(::ErrorMessage)
+      .map { response ->
+        response.map {
+          it.conversation.toConversationInfo()
+        }
+      }
   }
 
   fun bannerText(conversationId: Uuid): Flow<BannerText?> {
@@ -142,6 +147,7 @@ internal class CbmChatRepository(
                 ?: RemoteKeyEntity(conversationId, null, null)
               remoteKeyDao.insert(existingRemoteKey.copy(newerToken = messagePageResponse.newerToken))
               chatDao.insertAll(messagePageResponse.messages.map { it.toChatMessageEntity(conversationId) })
+              conversationDao.insertNewLatestTimestampIfApplicable(ConversationEntity(conversationId, clock.now()))
             }
           },
         )
@@ -152,54 +158,58 @@ internal class CbmChatRepository(
 
   suspend fun retrySendMessage(conversationId: Uuid, messageId: String): Either<String, CbmChatMessage> {
     return either {
-      val messageToRetry = database.withTransaction {
-        val message = chatDao.getFailedMessage(conversationId, messageId)
-        chatDao.deleteMessage(conversationId, messageId)
-        message
-      } ?: return "Message not found".left()
+      val messageToRetry = chatDao.getFailedMessage(conversationId, messageId)
       ensureNotNull(messageToRetry) {
         logcat(ERROR) { "Tried to retry sending a message which did not exist in the database:$messageId" }
         "Message not found"
       }
       return with(messageToRetry) {
         when {
-          failedToSend == TEXT && text != null -> sendText(conversationId, text!!)
-          failedToSend == PHOTO && url != null -> sendPhoto(conversationId, Uri.parse(url))
-          failedToSend == MEDIA && url != null -> sendMedia(conversationId, Uri.parse(url))
+          failedToSend == TEXT && text != null -> sendText(conversationId, messageToRetry.id, text!!)
+          failedToSend == PHOTO && url != null -> sendPhoto(conversationId, messageToRetry.id, Uri.parse(url))
+          failedToSend == MEDIA && url != null -> sendMedia(conversationId, messageToRetry.id, Uri.parse(url))
           else -> {
             logcat(ERROR) { "Tried to retry sending a message which had a wrong structure:$messageToRetry" }
             raise("Unknown message type")
           }
+        }.onRight {
+          chatDao.deleteMessage(conversationId, messageId)
         }
       }
     }
   }
 
-  suspend fun sendText(conversationId: Uuid, text: String): Either<String, CbmChatMessage> {
+  suspend fun sendText(conversationId: Uuid, messageId: Uuid?, text: String): Either<String, CbmChatMessage> {
     return sendMessage(conversationId, ConversationInput.Text(text)).onLeft {
-      val failedMessage = CbmChatMessage.FailedToBeSent.ChatMessageText(Uuid.randomUUID().toString(), clock.now(), text)
+      val failedMessage = CbmChatMessage.FailedToBeSent.ChatMessageText(
+        messageId?.toString() ?: Uuid.randomUUID().toString(), clock.now(), text,
+      )
       chatDao.insert(failedMessage.toChatMessageEntity(conversationId))
     }
   }
 
-  suspend fun sendPhoto(conversationId: Uuid, uri: Uri): Either<String, CbmChatMessage> {
+  suspend fun sendPhoto(conversationId: Uuid, messageId: Uuid?, uri: Uri): Either<String, CbmChatMessage> {
     return either {
       val uploadToken = uploadPhotoToBotService(uri)
       sendMessage(conversationId, ConversationInput.File(uploadToken)).bind()
     }.onLeft {
       val failedMessage =
-        CbmChatMessage.FailedToBeSent.ChatMessagePhoto(Uuid.randomUUID().toString(), clock.now(), uri)
+        CbmChatMessage.FailedToBeSent.ChatMessagePhoto(
+          messageId?.toString() ?: Uuid.randomUUID().toString(), clock.now(), uri
+        )
       chatDao.insert(failedMessage.toChatMessageEntity(conversationId))
     }
   }
 
-  suspend fun sendMedia(conversationId: Uuid, uri: Uri): Either<String, CbmChatMessage> {
+  suspend fun sendMedia(conversationId: Uuid, messageId: Uuid?, uri: Uri): Either<String, CbmChatMessage> {
     return either {
       val uploadToken = uploadMediaToBotService(uri)
       sendMessage(conversationId, ConversationInput.File(uploadToken)).bind()
     }.onLeft {
       val failedMessage =
-        CbmChatMessage.FailedToBeSent.ChatMessageMedia(Uuid.randomUUID().toString(), clock.now(), uri)
+        CbmChatMessage.FailedToBeSent.ChatMessageMedia(
+          messageId?.toString() ?: Uuid.randomUUID().toString(), clock.now(), uri
+        )
       chatDao.insert(failedMessage.toChatMessageEntity(conversationId))
     }
   }
@@ -221,6 +231,7 @@ internal class CbmChatRepository(
         "Unknown chat message type"
       }
       chatDao.insert(chatMessage.toChatMessageEntity(conversationId))
+      conversationDao.insertNewLatestTimestampIfApplicable(ConversationEntity(conversationId, clock.now()))
       chatMessage
     }.onLeft {
       logcat { "Failed to send message, with error message:$it" }
@@ -293,15 +304,37 @@ internal class CbmChatRepository(
   }
 }
 
-internal data class ConversationInfo(
-  val conversationId: String?,
-  val title: String,
-  val createdAt: Instant,
-  val isLegacy: Boolean,
-)
+internal sealed interface ConversationInfo {
+  data object NoConversation : ConversationInfo
 
-private fun octopus.fragment.ConversationInfo.toConversationInfo(): ConversationInfo {
-  return ConversationInfo(conversationId = id, title = title, createdAt = createdAt, isLegacy = isLegacy)
+  data class Info(
+    val conversationId: String,
+    val title: String,
+    val createdAt: Instant,
+    val isLegacy: Boolean,
+  ) : ConversationInfo
+}
+
+private fun octopus.fragment.ConversationInfo?.toConversationInfo(): ConversationInfo {
+  return if (this == null) {
+    ConversationInfo.NoConversation
+  } else {
+    ConversationInfo.Info(
+      conversationId = id,
+      title = title,
+      createdAt = createdAt,
+      isLegacy = isLegacy,
+    )
+  }
+}
+
+private fun octopus.fragment.ConversationInfo.toConversationInfo(): ConversationInfo.Info {
+  return ConversationInfo.Info(
+    conversationId = id,
+    title = title,
+    createdAt = createdAt,
+    isLegacy = isLegacy,
+  )
 }
 
 internal sealed interface BannerText {

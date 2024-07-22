@@ -77,7 +77,7 @@ internal class GetClaimDetailUiStateUseCase(
 
     return ClaimDetailUiState.Content(
       claimId = claim.id,
-      conversationId = claim.conversation.id,
+      conversationId = claim.conversation?.id,
       submittedContent = when {
         audioUrl != null -> {
           ClaimDetailUiState.Content.SubmittedContent.Audio(SignedAudioUrl.fromSignedAudioUrlString(audioUrl))

@@ -144,8 +144,8 @@ private fun ClaimDetailScreen(
     Column(Modifier.fillMaxSize()) {
       ClaimDetailTopAppBar(
         navigateUp = navigateUp,
-        navigateToConversation = uiState.safeCast<ClaimDetailUiState.Content>()?.let {
-          { navigateToConversation(it.conversationId) }
+        navigateToConversation = uiState.safeCast<ClaimDetailUiState.Content>()?.conversationId?.let {
+          { navigateToConversation(it) }
         },
       )
       when (uiState) {

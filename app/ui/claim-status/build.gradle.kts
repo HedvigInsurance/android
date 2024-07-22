@@ -18,4 +18,5 @@ dependencies {
   implementation(projects.coreResources)
   implementation(projects.coreUi)
   implementation(projects.coreUiData)
+  implementation(projects.designSystemHedvig)
 }

@@ -28,7 +28,7 @@ import kotlinx.datetime.Instant
 
 @Composable
 fun ClaimStatusCards(
-  onClick: ((claimId: String) -> Unit)?,
+  onClick: (claimId: String) -> Unit,
   claimStatusCardsUiState: NonEmptyList<ClaimStatusCardUiState>,
   contentPadding: PaddingValues,
   modifier: Modifier = Modifier,

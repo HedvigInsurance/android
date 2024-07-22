@@ -8,12 +8,11 @@ plugins {
 
 dependencies {
   ksp(libs.room.ksp)
-
+  api(libs.paging.common)
+  api(libs.room.runtime)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.datetime)
-  implementation(libs.paging.common)
   implementation(libs.room.paging)
-  implementation(libs.room.runtime)
   implementation(libs.sqlite.bundled)
   implementation(libs.uuid)
   implementation(projects.coreCommonPublic)

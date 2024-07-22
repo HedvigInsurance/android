@@ -45,12 +45,12 @@ internal class GetAllConversationsUseCaseImpl(
       backendConversationsResult.map { backendConversations ->
         backendConversations.map { backendConversation ->
           val newestStoredSeenTimestamp = idToTimestampMap[backendConversation.conversationId]
-          val newestMessageInConverstation = backendConversation.latestMessage?.sentAt
+          val newestMessageInConversation = backendConversation.latestMessage?.sentAt
           val latestMessageIsFromMember = backendConversation.latestMessage?.sender == Sender.MEMBER
-          if (newestStoredSeenTimestamp == null || newestMessageInConverstation == null || latestMessageIsFromMember) {
+          if (newestStoredSeenTimestamp == null || newestMessageInConversation == null || latestMessageIsFromMember) {
             backendConversation
           } else {
-            backendConversation.copy(hasNewMessages = newestMessageInConverstation > newestStoredSeenTimestamp)
+            backendConversation.copy(hasNewMessages = newestMessageInConversation > newestStoredSeenTimestamp)
           }
         }
       }
