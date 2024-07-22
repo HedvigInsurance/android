@@ -30,6 +30,7 @@ import com.hedvig.android.data.chat.database.ConversationDao
 import com.hedvig.android.data.chat.database.ConversationEntity
 import com.hedvig.android.data.chat.database.RemoteKeyDao
 import com.hedvig.android.data.chat.database.RemoteKeyEntity
+import com.hedvig.android.feature.chat.cbm.ConversationInfo.Info
 import com.hedvig.android.feature.chat.cbm.model.CbmChatMessage
 import com.hedvig.android.feature.chat.cbm.model.toChatMessageEntity
 import com.hedvig.android.feature.chat.cbm.model.toSender
@@ -57,7 +58,27 @@ import octopus.fragment.ChatMessageFragment
 import octopus.fragment.ChatMessageTextChatMessageFragment
 import okhttp3.MediaType.Companion.toMediaType
 
-internal class CbmChatRepository(
+internal interface CbmChatRepository {
+  suspend fun createConversation(conversationId: Uuid): Either<ErrorMessage, Info>
+
+  fun getConversationInfo(conversationId: Uuid): Flow<Either<ErrorMessage, ConversationInfo>>
+
+  fun bannerText(conversationId: Uuid): Flow<BannerText?>
+
+  suspend fun chatMessages(conversationId: Uuid, pagingToken: PagingToken?): Either<Throwable, ChatMessagePageResponse>
+
+  fun pollNewestMessages(conversationId: Uuid): Flow<String>
+
+  suspend fun retrySendMessage(conversationId: Uuid, messageId: String): Either<String, CbmChatMessage>
+
+  suspend fun sendText(conversationId: Uuid, messageId: Uuid?, text: String): Either<String, CbmChatMessage>
+
+  suspend fun sendPhoto(conversationId: Uuid, messageId: Uuid?, uri: Uri): Either<String, CbmChatMessage>
+
+  suspend fun sendMedia(conversationId: Uuid, messageId: Uuid?, uri: Uri): Either<String, CbmChatMessage>
+}
+
+internal class CbmChatRepositoryImpl(
   private val apolloClient: ApolloClient,
   private val database: AppDatabase,
   private val chatDao: ChatDao,
@@ -66,8 +87,8 @@ internal class CbmChatRepository(
   private val fileService: FileService,
   private val botServiceService: BotServiceService,
   private val clock: Clock,
-) {
-  suspend fun createConversation(conversationId: Uuid): Either<ErrorMessage, ConversationInfo.Info> {
+) : CbmChatRepository {
+  override suspend fun createConversation(conversationId: Uuid): Either<ErrorMessage, ConversationInfo.Info> {
     return either {
       apolloClient
         .mutation(ConversationStartMutation(conversationId.toString()))
@@ -79,7 +100,7 @@ internal class CbmChatRepository(
     }
   }
 
-  fun getConversationInfo(conversationId: Uuid): Flow<Either<ErrorMessage, ConversationInfo>> {
+  override fun getConversationInfo(conversationId: Uuid): Flow<Either<ErrorMessage, ConversationInfo>> {
     return apolloClient
       .query(ConversationInfoQuery(conversationId.toString()))
       .fetchPolicy(FetchPolicy.CacheAndNetwork)
@@ -91,7 +112,7 @@ internal class CbmChatRepository(
       }
   }
 
-  fun bannerText(conversationId: Uuid): Flow<BannerText?> {
+  override fun bannerText(conversationId: Uuid): Flow<BannerText?> {
     return flow {
       while (currentCoroutineContext().isActive) {
         val result = apolloClient
@@ -123,14 +144,14 @@ internal class CbmChatRepository(
     }
   }
 
-  suspend fun chatMessages(
+  override suspend fun chatMessages(
     conversationId: Uuid,
     pagingToken: PagingToken?,
   ): Either<Throwable, ChatMessagePageResponse> {
     return internalChatMessages(conversationId, pagingToken).mapLeft { Exception(it) }
   }
 
-  fun pollNewestMessages(conversationId: Uuid): Flow<String> {
+  override fun pollNewestMessages(conversationId: Uuid): Flow<String> {
     return flow {
       while (currentCoroutineContext().isActive) {
         val newerTokenOrNull = remoteKeyDao.remoteKeyForConversation(conversationId)?.newerToken?.let {
@@ -155,7 +176,7 @@ internal class CbmChatRepository(
     }
   }
 
-  suspend fun retrySendMessage(conversationId: Uuid, messageId: String): Either<String, CbmChatMessage> {
+  override suspend fun retrySendMessage(conversationId: Uuid, messageId: String): Either<String, CbmChatMessage> {
     return either {
       val messageToRetry = chatDao.getFailedMessage(conversationId, messageId)
       ensureNotNull(messageToRetry) {
@@ -178,7 +199,7 @@ internal class CbmChatRepository(
     }
   }
 
-  suspend fun sendText(conversationId: Uuid, messageId: Uuid?, text: String): Either<String, CbmChatMessage> {
+  override suspend fun sendText(conversationId: Uuid, messageId: Uuid?, text: String): Either<String, CbmChatMessage> {
     return sendMessage(conversationId, ConversationInput.Text(text)).onLeft {
       val failedMessage = CbmChatMessage.FailedToBeSent.ChatMessageText(
         messageId?.toString() ?: Uuid.randomUUID().toString(),
@@ -189,7 +210,7 @@ internal class CbmChatRepository(
     }
   }
 
-  suspend fun sendPhoto(conversationId: Uuid, messageId: Uuid?, uri: Uri): Either<String, CbmChatMessage> {
+  override suspend fun sendPhoto(conversationId: Uuid, messageId: Uuid?, uri: Uri): Either<String, CbmChatMessage> {
     return either {
       val uploadToken = uploadPhotoToBotService(uri)
       sendMessage(conversationId, ConversationInput.File(uploadToken)).bind()
@@ -204,7 +225,7 @@ internal class CbmChatRepository(
     }
   }
 
-  suspend fun sendMedia(conversationId: Uuid, messageId: Uuid?, uri: Uri): Either<String, CbmChatMessage> {
+  override suspend fun sendMedia(conversationId: Uuid, messageId: Uuid?, uri: Uri): Either<String, CbmChatMessage> {
     return either {
       val uploadToken = uploadMediaToBotService(uri)
       sendMessage(conversationId, ConversationInput.File(uploadToken)).bind()
@@ -420,7 +441,7 @@ private fun ChatMessageFragment.toChatMessage(): CbmChatMessage? = when (this) {
   }
 
   else -> {
-//    logcat(LogPriority.WARN) { "Got unknown message type, can not map message:$this" }
+    logcat(LogPriority.WARN) { "Got unknown message type, can not map message:$this" }
     null
   }
 }
