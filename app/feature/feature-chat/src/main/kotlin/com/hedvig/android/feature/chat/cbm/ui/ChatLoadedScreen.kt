@@ -747,7 +747,12 @@ private fun PreviewChatLoadedScreen() {
             }
           ChatLoadedScreen(
             uiState = Loaded(
-              backendConversationInfo = ConversationInfo.Info("1", "Title", Instant.parse("2024-05-01T00:00:00Z"), false),
+              backendConversationInfo = ConversationInfo.Info(
+                "1",
+                "Title",
+                Instant.parse("2024-05-01T00:00:00Z"),
+                false,
+              ),
               messages = flowOf(PagingData.from(fakeChatMessages)).collectAsLazyPagingItems(),
               latestMessage = null,
               bannerText = BannerText.ClosedConversation,

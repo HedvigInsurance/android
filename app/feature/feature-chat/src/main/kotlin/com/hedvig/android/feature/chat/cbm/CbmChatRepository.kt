@@ -7,7 +7,6 @@ import androidx.room.withTransaction
 import arrow.core.Either
 import arrow.core.Either.Left
 import arrow.core.Either.Right
-import arrow.core.left
 import arrow.core.raise.Raise
 import arrow.core.raise.either
 import arrow.core.raise.ensureNotNull
@@ -182,7 +181,9 @@ internal class CbmChatRepository(
   suspend fun sendText(conversationId: Uuid, messageId: Uuid?, text: String): Either<String, CbmChatMessage> {
     return sendMessage(conversationId, ConversationInput.Text(text)).onLeft {
       val failedMessage = CbmChatMessage.FailedToBeSent.ChatMessageText(
-        messageId?.toString() ?: Uuid.randomUUID().toString(), clock.now(), text,
+        messageId?.toString() ?: Uuid.randomUUID().toString(),
+        clock.now(),
+        text,
       )
       chatDao.insert(failedMessage.toChatMessageEntity(conversationId))
     }
@@ -195,7 +196,9 @@ internal class CbmChatRepository(
     }.onLeft {
       val failedMessage =
         CbmChatMessage.FailedToBeSent.ChatMessagePhoto(
-          messageId?.toString() ?: Uuid.randomUUID().toString(), clock.now(), uri
+          messageId?.toString() ?: Uuid.randomUUID().toString(),
+          clock.now(),
+          uri,
         )
       chatDao.insert(failedMessage.toChatMessageEntity(conversationId))
     }
@@ -208,7 +211,9 @@ internal class CbmChatRepository(
     }.onLeft {
       val failedMessage =
         CbmChatMessage.FailedToBeSent.ChatMessageMedia(
-          messageId?.toString() ?: Uuid.randomUUID().toString(), clock.now(), uri
+          messageId?.toString() ?: Uuid.randomUUID().toString(),
+          clock.now(),
+          uri,
         )
       chatDao.insert(failedMessage.toChatMessageEntity(conversationId))
     }

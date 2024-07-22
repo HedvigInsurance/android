@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.home.home
 
-import com.hedvig.android.core.designsystem.preview.HedvigPreview as asd
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
@@ -28,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.preview.HedvigPreview as asd
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
@@ -135,9 +135,9 @@ private fun Shape.withTopRightPointingArrow(): Shape {
         relativeLineTo(straightLineSize, -straightLineSize)
         cubicTo(
           bezierOverlap,
-          -straightLineSize -bezierVerticalOvershoot,
+          -straightLineSize - bezierVerticalOvershoot,
           -bezierOverlap,
-          -straightLineSize -bezierVerticalOvershoot,
+          -straightLineSize - bezierVerticalOvershoot,
           halfArrowWidth - straightLineSize,
           -straightLineSize,
         )

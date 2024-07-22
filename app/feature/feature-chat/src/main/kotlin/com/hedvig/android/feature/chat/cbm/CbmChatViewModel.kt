@@ -263,7 +263,7 @@ internal sealed interface CbmChatUiState {
     val latestMessage: LatestChatMessage?,
     val bannerText: BannerText?,
   ) : CbmChatUiState {
-    val topAppBarText: TopAppBarText = when(backendConversationInfo) {
+    val topAppBarText: TopAppBarText = when (backendConversationInfo) {
       NoConversation -> TopAppBarText.NewConversation
       is Info -> {
         when {
@@ -302,6 +302,6 @@ private sealed interface ConversationInfoStatus {
   data object Failed : ConversationInfoStatus
 
   data class Loaded(
-    val conversationInfo: ConversationInfo
+    val conversationInfo: ConversationInfo,
   ) : ConversationInfoStatus
 }
