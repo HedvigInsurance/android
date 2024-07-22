@@ -11,7 +11,6 @@ import com.hedvig.android.data.chat.database.ConversationDao
 import com.hedvig.android.data.chat.database.RemoteKeyDao
 import com.hedvig.android.data.chat.read.timestamp.ChatLastMessageReadRepository
 import com.hedvig.android.feature.chat.ChatViewModel
-import com.hedvig.android.feature.chat.cbm.CbmChatRepository
 import com.hedvig.android.feature.chat.cbm.CbmChatRepositoryImpl
 import com.hedvig.android.feature.chat.cbm.CbmChatViewModel
 import com.hedvig.android.feature.chat.cbm.data.CbmChatRepositoryDemo
@@ -20,7 +19,6 @@ import com.hedvig.android.feature.chat.cbm.data.GetAllConversationsUseCaseImpl
 import com.hedvig.android.feature.chat.cbm.data.GetCbmChatRepositoryProvider
 import com.hedvig.android.feature.chat.cbm.inbox.InboxViewModel
 import com.hedvig.android.feature.chat.data.BotServiceService
-import com.hedvig.android.feature.chat.data.ChatRepository
 import com.hedvig.android.feature.chat.data.ChatRepositoryDemo
 import com.hedvig.android.feature.chat.data.ChatRepositoryImpl
 import com.hedvig.android.feature.chat.data.GetChatRepositoryProvider
