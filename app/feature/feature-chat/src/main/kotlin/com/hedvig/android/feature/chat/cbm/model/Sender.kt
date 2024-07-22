@@ -1,6 +1,6 @@
 package com.hedvig.android.feature.chat.cbm.model
 
-import com.hedvig.android.feature.chat.cbm.database.ChatMessageEntity
+import com.hedvig.android.data.chat.database.ChatMessageEntity
 import octopus.type.ChatMessageSender
 
 internal enum class Sender {

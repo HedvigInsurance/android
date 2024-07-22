@@ -27,7 +27,7 @@ import org.koin.core.parameter.parametersOf
 
 fun NavGraphBuilder.changeAddressGraph(
   navController: NavController,
-  openChat: (NavBackStackEntry) -> Unit,
+  onNavigateToNewConversation: (NavBackStackEntry) -> Unit,
   openUrl: (String) -> Unit,
 ) {
   navigation<ChangeAddress>(
@@ -73,7 +73,7 @@ fun NavGraphBuilder.changeAddressGraph(
       val viewModel: ChangeAddressOfferViewModel = koinViewModel { parametersOf(previousDestinationParameters) }
       ChangeAddressOfferDestination(
         viewModel = viewModel,
-        openChat = { openChat(backStackEntry) },
+        onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry) },
         navigateUp = navController::navigateUp,
         onChangeAddressResult = { movingDate ->
           navController.navigate(AddressResult(movingDate)) {

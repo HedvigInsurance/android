@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.chat.cbm.database
+package com.hedvig.android.data.chat.database
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -11,3 +11,6 @@ data class ConversationEntity(
   val id: Uuid,
   val lastMessageReadTimestamp: Instant,
 )
+
+val List<ConversationEntity>.asIdToTimestampMap: Map<String, Instant>
+  get() = associate { it.id.toString() to it.lastMessageReadTimestamp }

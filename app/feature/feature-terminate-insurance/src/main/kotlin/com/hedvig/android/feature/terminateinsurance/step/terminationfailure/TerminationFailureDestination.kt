@@ -23,14 +23,14 @@ import hedvig.resources.R
 internal fun TerminationFailureDestination(
   windowSizeClass: WindowSizeClass,
   errorMessage: ErrorMessage,
-  openChat: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   navigateUp: () -> Unit,
   navigateBack: () -> Unit,
 ) {
   TerminationFailureScreen(
     windowSizeClass = windowSizeClass,
     errorMessage = errorMessage,
-    openChat = openChat,
+    onNavigateToNewConversation = onNavigateToNewConversation,
     navigateUp = navigateUp,
     navigateBack = navigateBack,
   )
@@ -40,7 +40,7 @@ internal fun TerminationFailureDestination(
 private fun TerminationFailureScreen(
   windowSizeClass: WindowSizeClass,
   errorMessage: ErrorMessage,
-  openChat: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   navigateUp: () -> Unit,
   navigateBack: () -> Unit,
 ) {
@@ -54,7 +54,7 @@ private fun TerminationFailureScreen(
     Column {
       HedvigOutlinedTextButton(
         text = stringResource(id = R.string.open_chat),
-        onClick = openChat,
+        onClick = onNavigateToNewConversation,
       )
       Spacer(Modifier.height(16.dp))
       HedvigContainedButton(

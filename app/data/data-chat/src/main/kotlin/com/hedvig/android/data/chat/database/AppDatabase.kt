@@ -1,10 +1,10 @@
-package com.hedvig.android.feature.chat.cbm.database
+package com.hedvig.android.data.chat.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.hedvig.android.feature.chat.cbm.database.converter.InstantConverter
-import com.hedvig.android.feature.chat.cbm.database.converter.UuidConverter
+import com.hedvig.android.data.chat.database.converter.InstantConverter
+import com.hedvig.android.data.chat.database.converter.UuidConverter
 
 @Database(
   entities = [ConversationEntity::class, ChatMessageEntity::class, RemoteKeyEntity::class],
@@ -15,4 +15,6 @@ abstract class AppDatabase : RoomDatabase() {
   abstract fun chatDao(): ChatDao
 
   abstract fun remoteKeyDao(): RemoteKeyDao
+
+  abstract fun conversationDao(): ConversationDao
 }

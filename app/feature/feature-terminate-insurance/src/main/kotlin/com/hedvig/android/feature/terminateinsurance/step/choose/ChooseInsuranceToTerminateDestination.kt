@@ -48,7 +48,7 @@ import kotlinx.datetime.LocalDate
 internal fun ChooseInsuranceToTerminateDestination(
   viewModel: ChooseInsuranceToTerminateViewModel,
   navigateUp: () -> Unit,
-  openChat: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   closeTerminationFlow: () -> Unit,
   navigateToNextStep: (step: TerminateInsuranceStep, terminatableInsurance: TerminatableInsurance) -> Unit,
 ) {
@@ -63,7 +63,7 @@ internal fun ChooseInsuranceToTerminateDestination(
   ChooseInsuranceToTerminateScreen(
     uiState = uiState,
     navigateUp = navigateUp,
-    openChat = openChat,
+    openChat = onNavigateToNewConversation,
     closeTerminationFlow = closeTerminationFlow,
     reload = { viewModel.emit(ChooseInsuranceToTerminateEvent.RetryLoadData) },
     fetchTerminationStep = { viewModel.emit(ChooseInsuranceToTerminateEvent.SubmitSelectedInsuranceToTerminate(it)) },

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -26,9 +27,10 @@ import hedvig.resources.R
 
 @Composable
 fun ToolbarChatIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
-  Image(
+  Icon(
     imageVector = Icons.Hedvig.Chat,
     contentDescription = stringResource(R.string.DASHBOARD_OPEN_CHAT),
+    tint = com.hedvig.android.design.system.hedvig.HedvigTheme.colorScheme.fillSecondary,
     modifier = modifier
       .size(40.dp)
       .shadow(4.dp, CircleShape)

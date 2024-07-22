@@ -13,7 +13,6 @@ android {
 }
 
 dependencies {
-  apolloMetadata(projects.apolloOctopusPublic)
 
   implementation(libs.accompanist.permissions)
   implementation(libs.androidx.activity.compose)
@@ -48,6 +47,7 @@ dependencies {
   implementation(projects.dataContractPublic)
   implementation(projects.dataPayingMember)
   implementation(projects.dataSettingsDatastorePublic)
+  implementation(projects.designSystemHedvig)
   implementation(projects.featureFlagsPublic)
   implementation(projects.foreverUi)
   implementation(projects.languageCore)
@@ -80,6 +80,7 @@ dependencies {
 
 apollo {
   service("octopus") {
-    packageName.set("octopus")
+    packageName = "octopus"
+    dependsOn(projects.apolloOctopusPublic, true)
   }
 }

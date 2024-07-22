@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.chat.cbm.database.converter
+package com.hedvig.android.data.chat.database.converter
 
 import androidx.room.TypeConverter
 import com.benasher44.uuid.Uuid

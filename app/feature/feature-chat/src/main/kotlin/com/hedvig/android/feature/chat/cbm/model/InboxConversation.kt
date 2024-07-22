@@ -9,6 +9,8 @@ internal data class InboxConversation(
   val hasNewMessages: Boolean,
   val createdAt: Instant,
 ) {
+  val lastMessageTimestamp: Instant = latestMessage?.sentAt ?: createdAt
+
   sealed interface LatestMessage {
     val sender: Sender
     val sentAt: Instant

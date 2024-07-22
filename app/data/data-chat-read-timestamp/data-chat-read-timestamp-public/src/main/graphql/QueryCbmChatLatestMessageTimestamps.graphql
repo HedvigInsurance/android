@@ -1,0 +1,16 @@
+query CbmChatLatestMessageTimestamps {
+  currentMember {
+    legacyConversation {
+      newestMessage {
+        sentAt
+        sender
+      }
+    }
+    conversations {
+      newestMessage {
+        sentAt
+        sender
+      }
+    }
+  }
+}

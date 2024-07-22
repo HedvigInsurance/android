@@ -8,11 +8,16 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material.icons.Icons
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,69 +26,71 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
-import com.hedvig.android.core.common.safeCast
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
-import com.hedvig.android.core.tracking.ActionType
-import com.hedvig.android.core.tracking.logAction
-import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
-import com.hedvig.android.feature.chat.ChatUiState
+import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
+import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
+import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.hedvig.normal.ArrowBack
+import com.hedvig.android.core.ui.HedvigDateTimeFormatterDefaults
+import com.hedvig.android.core.ui.getLocale
+import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.feature.chat.cbm.CbmChatEvent
 import com.hedvig.android.feature.chat.cbm.CbmChatUiState
+import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Error
 import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Initializing
 import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Loaded
+import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Loaded.TopAppBarText.Legacy
+import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Loaded.TopAppBarText.NewConversation
+import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Loaded.TopAppBarText.Text
 import com.hedvig.android.feature.chat.cbm.CbmChatViewModel
 import com.hedvig.android.feature.chat.ui.chatScrollBehavior
 import com.hedvig.android.feature.chat.ui.chatTopAppBarWindowInsets
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import hedvig.resources.R
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toJavaLocalDateTime
+import kotlinx.datetime.toLocalDateTime
 
 @Composable
 internal fun CbmChatDestination(
   viewModel: CbmChatViewModel,
   imageLoader: ImageLoader,
   appPackageId: String,
-  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   openUrl: (String) -> Unit,
   onNavigateUp: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  val onBannerLinkClicked: (String) -> Unit = { url: String ->
-    if (url == hedvigDeepLinkContainer.helpCenter) {
-      val haveSentAtLeastOneMessage = uiState.safeCast<ChatUiState.Loaded>()?.haveSentAtLeastOneMessage ?: false
-      logAction(
-        ActionType.CUSTOM,
-        "Help center opened from the chat",
-        mapOf("haveSentAMessage" to haveSentAtLeastOneMessage),
-      )
-    }
-    openUrl(url)
-  }
   ChatScreen(
     uiState = uiState,
     imageLoader = imageLoader,
     appPackageId = appPackageId,
     openUrl = openUrl,
-    onBannerLinkClicked = onBannerLinkClicked,
+    onBannerLinkClicked = openUrl,
     onNavigateUp = onNavigateUp,
     onSendMessage = { message: String ->
       viewModel.emit(CbmChatEvent.SendTextMessage(message))
     },
     onSendPhoto = { uri: Uri ->
       logcat { "viewModel.emit(ChatEvent.SendPhotoMessage(uri)):${uri.path} to vm:${viewModel.hashCode()}" }
-      // todo cmb photo
-//      viewModel.emit(CbmChatEvent.SendPhotoMessage(uri))
+      viewModel.emit(CbmChatEvent.SendPhotoMessage(uri))
     },
     onSendMedia = { uri: Uri ->
       logcat { "viewModel.emit(CbmChatEvent.SendMediaMessage(uri)):${uri.path} to vm:${viewModel.hashCode()}" }
-      // todo cbm media
-//      viewModel.emit(CbmChatEvent.SendMediaMessage(uri))
+      viewModel.emit(CbmChatEvent.SendMediaMessage(uri))
     },
     onRetrySendChatMessage = { messageId ->
       viewModel.emit(CbmChatEvent.RetrySendChatMessage(messageId))
+    },
+    onRetryLoadingChat = {
+      viewModel.emit(CbmChatEvent.RetryLoadingChat)
     },
   )
 }
@@ -101,6 +108,7 @@ private fun ChatScreen(
   onSendPhoto: (Uri) -> Unit,
   onSendMedia: (Uri) -> Unit,
   onRetrySendChatMessage: (messageId: String) -> Unit,
+  onRetryLoadingChat: () -> Unit,
 ) {
   Surface(
     color = MaterialTheme.colorScheme.background,
@@ -111,6 +119,7 @@ private fun ChatScreen(
       val density = LocalDensity.current
       var topAppBarHeight by remember { mutableStateOf(0.dp) }
       ChatTopAppBar(
+        uiState = uiState,
         onNavigateUp = onNavigateUp,
         topAppBarScrollBehavior = topAppBarScrollBehavior,
         modifier = Modifier.onSizeChanged {
@@ -124,29 +133,29 @@ private fun ChatScreen(
           .consumeWindowInsets(PaddingValues(top = topAppBarHeight)),
         propagateMinConstraints = true,
       ) {
-        if (uiState is CbmChatUiState.Loaded) {
-          CbmChatLoadedScreen(
-            uiState = uiState,
-            imageLoader = imageLoader,
-            appPackageId = appPackageId,
-            topAppBarScrollBehavior = topAppBarScrollBehavior,
-            openUrl = openUrl,
-            onBannerLinkClicked = onBannerLinkClicked,
-            onRetrySendChatMessage = onRetrySendChatMessage,
-            onSendMessage = onSendMessage,
-            onSendPhoto = onSendPhoto,
-            onSendMedia = onSendMedia,
-          )
-        }
-        val shouldShowLoadingIndicator = when (uiState) {
-          Initializing -> true
-          is Loaded -> {
-            uiState.messages.itemCount == 0 && !uiState.messages.loadState.isIdle
+        when (uiState) {
+          Initializing -> {
+            HedvigFullScreenCenterAlignedProgressDebounced()
           }
-        }
-        // todo cbm check if indicator should show here
-        if (shouldShowLoadingIndicator) {
-          HedvigFullScreenCenterAlignedProgress()
+
+          Error -> {
+            HedvigErrorSection(onRetryLoadingChat)
+          }
+
+          is Loaded -> {
+            CbmChatLoadedScreen(
+              uiState = uiState,
+              imageLoader = imageLoader,
+              appPackageId = appPackageId,
+              topAppBarScrollBehavior = topAppBarScrollBehavior,
+              openUrl = openUrl,
+              onBannerLinkClicked = onBannerLinkClicked,
+              onRetrySendChatMessage = onRetrySendChatMessage,
+              onSendMessage = onSendMessage,
+              onSendPhoto = onSendPhoto,
+              onSendMedia = onSendMedia,
+            )
+          }
         }
       }
     }
@@ -155,75 +164,89 @@ private fun ChatScreen(
 
 @Composable
 private fun ChatTopAppBar(
+  uiState: CbmChatUiState,
   onNavigateUp: () -> Unit,
   topAppBarScrollBehavior: TopAppBarScrollBehavior,
   modifier: Modifier = Modifier,
 ) {
-  TopAppBarWithBack(
-    title = stringResource(R.string.CHAT_TITLE),
-    onClick = onNavigateUp,
-    scrollBehavior = topAppBarScrollBehavior,
-    windowInsets = chatTopAppBarWindowInsets(TopAppBarDefaults.windowInsets, topAppBarScrollBehavior),
+  TopAppBar(
     modifier = modifier.fillMaxWidth(),
+    title = {
+      CompositionLocalProvider(LocalTextStyle provides HedvigTheme.typography.headlineSmall) {
+        when (uiState) {
+          is Loaded -> {
+            when (val topAppBarText = uiState.topAppBarText) {
+              Legacy -> HedvigText(stringResource(R.string.CHAT_CONVERSATION_HISTORY_TITLE))
+              NewConversation -> {
+                Column {
+                  HedvigText(stringResource(R.string.CHAT_NEW_CONVERSATION_TITLE))
+                  HedvigText(
+                    stringResource(R.string.CHAT_NEW_CONVERSATION_SUBTITLE),
+                    color = HedvigTheme.colorScheme.textSecondary,
+                  )
+                }
+              }
+
+              is Text -> {
+                Column {
+                  HedvigText(topAppBarText.title)
+                  topAppBarText.submittedAt?.let { submittedAt ->
+                    val formattedDate = HedvigDateTimeFormatterDefaults
+                      .monthDateAndYear(getLocale())
+                      .format(submittedAt.toLocalDateTime(TimeZone.currentSystemDefault()).toJavaLocalDateTime())
+                    val subtitle = "${stringResource(R.string.claim_status_detail_submitted)} $formattedDate"
+                    HedvigText(subtitle, color = HedvigTheme.colorScheme.textSecondary)
+                  }
+                }
+              }
+            }
+          }
+
+          else -> HedvigText(stringResource(R.string.CHAT_TITLE))
+        }
+      }
+    },
+    navigationIcon = {
+      IconButton(
+        onClick = onNavigateUp,
+        content = { Icon(imageVector = Icons.Hedvig.ArrowBack, contentDescription = null) },
+      )
+    },
+    windowInsets = chatTopAppBarWindowInsets(TopAppBarDefaults.windowInsets, topAppBarScrollBehavior),
+    colors = TopAppBarDefaults.topAppBarColors(
+      containerColor = MaterialTheme.colorScheme.background,
+      scrolledContainerColor = MaterialTheme.colorScheme.surface,
+    ),
+    scrollBehavior = topAppBarScrollBehavior,
   )
 }
 
-// todo cbm preview
-// @HedvigPreview
-// @Composable
-// private fun ChatScreenPreview(
-//  @PreviewParameter(ChatUiStateProvider::class) chatUiState: ChatUiState,
-// ) {
-//  HedvigTheme {
-//    Surface(
-//      color = MaterialTheme.colorScheme.background,
-//      modifier = Modifier.fillMaxSize(),
-//    ) {
-//      ChatScreen(
-//        uiState = chatUiState,
-//        imageLoader = rememberPreviewImageLoader(),
-//        appPackageId = "com.hedvig",
-//        openUrl = {},
-//        onBannerLinkClicked = {},
-//        onNavigateUp = {},
-//        onSendMessage = {},
-//        onSendPhoto = {},
-//        onSendMedia = {},
-//        onRetrySendChatMessage = {},
-//        onFetchMoreMessages = {},
-//      )
-//    }
-//  }
-// }
-//
-// private class ChatUiStateProvider :
-//  CollectionPreviewParameterProvider<ChatUiState>(
-//    listOf(
-//      ChatUiState.Initializing,
-//      ChatUiState.Loaded(
-//        List(10) { index ->
-//          ChatMessage.ChatMessageText(
-//            id = index.toString(),
-//            sender = if (index % 2 == 0 || index > 7) ChatMessage.Sender.MEMBER else ChatMessage.Sender.HEDVIG,
-//            sentAt = Clock.System.now().plus(index.seconds),
-//            text = "Hello #$index" + if (index == 0) {
-//              "long".repeat(15)
-//            } else {
-//              ""
-//            },
-//          )
-//        }.plus(
-//          ChatMessage.FailedToBeSent.ChatMessageText(
-//            id = "failed",
-//            sentAt = Clock.System.now(),
-//            text = "Failed to be sent",
-//          ),
-//        ).map {
-//          ChatUiState.Loaded.UiChatMessage(it, false)
-//        },
-//        fetchMoreMessagesUiState = ChatUiState.Loaded.FetchMoreMessagesUiState.FetchingMore,
-//        bannerText = "Test",
-//        haveSentAtLeastOneMessage = false,
-//      ),
-//    ),
-//  )
+@HedvigPreview
+@Composable
+private fun PreviewChatScreen(
+  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) isError: Boolean,
+) {
+  com.hedvig.android.core.designsystem.theme.HedvigTheme {
+    com.hedvig.android.design.system.hedvig.HedvigTheme {
+      androidx.compose.material3.Surface(color = MaterialTheme.colorScheme.background) {
+        com.hedvig.android.design.system.hedvig.Surface(
+          color = com.hedvig.android.design.system.hedvig.HedvigTheme.colorScheme.backgroundPrimary,
+        ) {
+          ChatScreen(
+            uiState = if (isError) CbmChatUiState.Error else CbmChatUiState.Initializing,
+            imageLoader = rememberPreviewImageLoader(),
+            appPackageId = "",
+            openUrl = {},
+            onBannerLinkClicked = {},
+            onNavigateUp = {},
+            onSendMessage = {},
+            onSendPhoto = {},
+            onSendMedia = {},
+            onRetrySendChatMessage = {},
+            onRetryLoadingChat = {},
+          )
+        }
+      }
+    }
+  }
+}

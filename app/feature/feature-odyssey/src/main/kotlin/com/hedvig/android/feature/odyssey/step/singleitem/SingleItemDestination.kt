@@ -23,7 +23,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -146,6 +145,7 @@ private fun SingleItemScreen(
         )
         Spacer(Modifier.height(2.dp))
       }
+
       ModelUi.JustModelDialog -> {
         ModelPicker(
           uiState = uiState,
@@ -153,6 +153,7 @@ private fun SingleItemScreen(
           modifier = sideSpacingModifier,
         )
       }
+
       is ModelUi.BothDialogAndCustom -> {
         ModelPicker(
           uiState = uiState,
@@ -197,7 +198,13 @@ private fun SingleItemScreen(
     }
     Spacer(Modifier.height(14.dp))
     VectorInfoCard(
-      stringResource(R.string.CLAIMS_SINGLE_ITEM_NOTICE_LABEL),
+      stringResource(
+        if (uiState.purchasePriceApplicable) {
+          R.string.CLAIMS_SINGLE_ITEM_NOTICE_LABEL
+        } else {
+          R.string.CLAIMS_SINGLE_ITEM_NOTICE_WITHOUT_PRICE_LABEL
+        },
+      ),
       sideSpacingModifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))
@@ -322,7 +329,6 @@ private fun DateOfPurchase(uiState: DatePickerUiState, canInteract: Boolean, mod
   )
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun PriceOfPurchase(uiState: PurchasePriceUiState, canInteract: Boolean, modifier: Modifier = Modifier) {
   val focusRequester = remember { FocusRequester() }

@@ -1,6 +1,6 @@
 package com.hedvig.android.feature.editcoinsured.di
 
-import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.core.appreview.SelfServiceCompletedEventManager
 import com.hedvig.android.feature.editcoinsured.data.CommitMidtermChangeUseCase
