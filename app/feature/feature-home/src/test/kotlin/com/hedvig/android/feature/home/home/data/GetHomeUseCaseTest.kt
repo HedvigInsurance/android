@@ -22,6 +22,7 @@ import com.hedvig.android.apollo.octopus.test.OctopusFakeResolverWithFilledLists
 import com.hedvig.android.apollo.test.TestApolloClientRule
 import com.hedvig.android.apollo.test.TestNetworkTransportType
 import com.hedvig.android.core.common.test.isRight
+import com.hedvig.android.feature.home.home.data.HomeData.VeryImportantMessage.LinkInfo
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.featureflags.test.FakeFeatureManager2
@@ -47,6 +48,7 @@ import octopus.type.buildChatMessageText
 import octopus.type.buildClaim
 import octopus.type.buildContract
 import octopus.type.buildConversation
+import octopus.type.buildLinkInfo
 import octopus.type.buildMember
 import octopus.type.buildMemberImportantMessage
 import octopus.type.buildPendingContract
@@ -150,7 +152,10 @@ internal class GetHomeUseCaseTest {
             buildMemberImportantMessage {
               id = "$index"
               message = "message#$index"
-              link = "link#$index"
+              linkInfo = buildLinkInfo {
+                this.buttonText = "buttonText#$index"
+                this.url = "link#$index"
+              }
             }
           }
         }
@@ -167,9 +172,9 @@ internal class GetHomeUseCaseTest {
       .isRight()
       .prop(HomeData::veryImportantMessages)
       .containsExactly(
-        HomeData.VeryImportantMessage("0", "message#0", "link#0"),
-        HomeData.VeryImportantMessage("1", "message#1", "link#1"),
-        HomeData.VeryImportantMessage("2", "message#2", "link#2"),
+        HomeData.VeryImportantMessage("0", "message#0", LinkInfo("buttonText#0", "link#0")),
+        HomeData.VeryImportantMessage("1", "message#1", LinkInfo("buttonText#1", "link#1")),
+        HomeData.VeryImportantMessage("2", "message#2", LinkInfo("buttonText#2", "link#2")),
       )
   }
 

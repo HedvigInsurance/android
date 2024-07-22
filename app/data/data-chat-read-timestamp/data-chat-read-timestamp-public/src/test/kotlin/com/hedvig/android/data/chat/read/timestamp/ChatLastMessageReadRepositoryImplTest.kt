@@ -16,6 +16,7 @@ import com.hedvig.android.data.chat.database.ConversationEntity
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.featureflags.test.FakeFeatureManager2
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.Instant
 import octopus.ChatLatestMessageTimestampsQuery
@@ -37,7 +38,7 @@ class ChatLastMessageReadRepositoryImplTest {
 //  val appDatabaseRule = TestAppDatabaseRule(AppDatabase::class.java)
 //  val appDatabase: AppDatabase
 //    get() = appDatabaseRule.appDatabase as AppDatabase
-  // TODO CBM: Test with in-memory JVM Room database once wew figure out how to do that
+  // TODO CBM: Test with in-memory JVM Room database once we figure out how to do that
 
   @Test
   fun `With no timestamp stored, we get that there is a new message if any messages exist`(
@@ -66,7 +67,7 @@ class ChatLastMessageReadRepositoryImplTest {
         }
       },
     )
-    val result = chatLastMessageReadRepositoryImpl.isNewestMessageNewerThanLastReadTimestamp()
+    val result = chatLastMessageReadRepositoryImpl.isNewestMessageNewerThanLastReadTimestamp().first()
 
     assertThat(result).isEqualTo(messagesExist)
   }
@@ -100,7 +101,7 @@ class ChatLastMessageReadRepositoryImplTest {
       },
     )
     chatMessageTimestampStorage.setLatestReadTimestamp(lastReadMessageTimestamp)
-    val result = chatLastMessageReadRepositoryImpl.isNewestMessageNewerThanLastReadTimestamp()
+    val result = chatLastMessageReadRepositoryImpl.isNewestMessageNewerThanLastReadTimestamp().first()
 
     assertThat(result).isEqualTo(
       when (timeComparedToLastReadMessage) {
@@ -136,12 +137,12 @@ class ChatLastMessageReadRepositoryImplTest {
     }
     enqueueBackendResponse()
     chatMessageTimestampStorage.setLatestReadTimestamp(Instant.parse("2022-01-01T00:00:00Z"))
-    val firstResult = chatLastMessageReadRepositoryImpl.isNewestMessageNewerThanLastReadTimestamp()
+    val firstResult = chatLastMessageReadRepositoryImpl.isNewestMessageNewerThanLastReadTimestamp().first()
     assertThat(firstResult).isEqualTo(false)
 
     enqueueBackendResponse()
     chatMessageTimestampStorage.clearLatestReadTimestamp()
-    val secondResult = chatLastMessageReadRepositoryImpl.isNewestMessageNewerThanLastReadTimestamp()
+    val secondResult = chatLastMessageReadRepositoryImpl.isNewestMessageNewerThanLastReadTimestamp().first()
     assertThat(secondResult).isEqualTo(true)
   }
 
@@ -162,7 +163,7 @@ class ChatLastMessageReadRepositoryImplTest {
     } else {
       chatMessageTimestampStorage.clearLatestReadTimestamp()
     }
-    val firstResult = chatLastMessageReadRepositoryImpl.isNewestMessageNewerThanLastReadTimestamp()
+    val firstResult = chatLastMessageReadRepositoryImpl.isNewestMessageNewerThanLastReadTimestamp().first()
     assertThat(firstResult).isEqualTo(false)
   }
 
@@ -193,7 +194,7 @@ class ChatLastMessageReadRepositoryImplTest {
         },
       )
       chatMessageTimestampStorage.setLatestReadTimestamp(Instant.parse("2022-01-01T00:00:04Z"))
-      val firstResult = chatLastMessageReadRepositoryImpl.isNewestMessageNewerThanLastReadTimestamp()
+      val firstResult = chatLastMessageReadRepositoryImpl.isNewestMessageNewerThanLastReadTimestamp().first()
       assertThat(firstResult).isEqualTo(true)
     }
 }

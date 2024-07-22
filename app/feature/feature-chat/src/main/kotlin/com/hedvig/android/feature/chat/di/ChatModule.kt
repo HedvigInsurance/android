@@ -12,9 +12,12 @@ import com.hedvig.android.data.chat.database.RemoteKeyDao
 import com.hedvig.android.data.chat.read.timestamp.ChatLastMessageReadRepository
 import com.hedvig.android.feature.chat.ChatViewModel
 import com.hedvig.android.feature.chat.cbm.CbmChatRepository
+import com.hedvig.android.feature.chat.cbm.CbmChatRepositoryImpl
 import com.hedvig.android.feature.chat.cbm.CbmChatViewModel
+import com.hedvig.android.feature.chat.cbm.data.CbmChatRepositoryDemo
 import com.hedvig.android.feature.chat.cbm.data.GetAllConversationsUseCase
 import com.hedvig.android.feature.chat.cbm.data.GetAllConversationsUseCaseImpl
+import com.hedvig.android.feature.chat.cbm.data.GetCbmChatRepositoryProvider
 import com.hedvig.android.feature.chat.cbm.inbox.InboxViewModel
 import com.hedvig.android.feature.chat.data.BotServiceService
 import com.hedvig.android.feature.chat.data.ChatRepository
@@ -88,8 +91,8 @@ val chatModule = module {
     InboxViewModel(get<GetAllConversationsUseCase>())
   }
 
-  single<CbmChatRepository> {
-    CbmChatRepository(
+  single<CbmChatRepositoryImpl> {
+    CbmChatRepositoryImpl(
       apolloClient = get<ApolloClient>(),
       database = get<AppDatabase>(),
       chatDao = get<ChatDao>(),
@@ -100,6 +103,17 @@ val chatModule = module {
       clock = get<Clock>(),
     )
   }
+  single<CbmChatRepositoryDemo> {
+    CbmChatRepositoryDemo(get<Clock>())
+  }
+
+  single<GetCbmChatRepositoryProvider> {
+    GetCbmChatRepositoryProvider(
+      demoManager = get<DemoManager>(),
+      demoImpl = get<CbmChatRepositoryDemo>(),
+      prodImpl = get<CbmChatRepositoryImpl>(),
+    )
+  }
 
   viewModel<CbmChatViewModel> { (conversationId: String) ->
     CbmChatViewModel(
@@ -108,7 +122,7 @@ val chatModule = module {
       chatDao = get<ChatDao>(),
       remoteKeyDao = get<RemoteKeyDao>(),
       conversationDao = get<ConversationDao>(),
-      chatRepository = get<CbmChatRepository>(),
+      chatRepository = get<GetCbmChatRepositoryProvider>(),
       clock = get<Clock>(),
     )
   }
