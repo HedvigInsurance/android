@@ -73,15 +73,6 @@ val chatModule = module {
     retrofit.create(BotServiceService::class.java)
   }
 
-  /**
-   * [com.hedvig.app.feature.chat.service.ReplyWorker] also needs an instance of ChatRepository itself, without
-   * necessarily caring about demo mode or not. If there is a notification arriving, even if they are in demo mode
-   * somehow, the real chat repository should be used.
-   */
-  single<ChatRepository> {
-    get<ChatRepositoryImpl>()
-  }
-
   // cbm
   single<GetAllConversationsUseCase> {
     GetAllConversationsUseCaseImpl(get<ApolloClient>(), get<ConversationDao>())
