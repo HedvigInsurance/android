@@ -86,6 +86,7 @@ import com.hedvig.android.data.contract.android.CrossSell
 import com.hedvig.android.feature.home.home.ChatTooltip
 import com.hedvig.android.feature.home.home.ChatTooltipMessage
 import com.hedvig.android.feature.home.home.data.HomeData
+import com.hedvig.android.feature.home.home.data.HomeData.VeryImportantMessage.LinkInfo
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.memberreminders.ui.MemberReminderCardsWithoutNotification
@@ -531,11 +532,11 @@ private fun VeryImportantMessageCard(
           onClick = { hideImportantMessage(veryImportantMessage.id) },
           modifier = Modifier.weight(1f),
         )
-        if (veryImportantMessage.link != null) {
+        if (veryImportantMessage.linkInfo != null) {
           Spacer(modifier = Modifier.width(8.dp))
           InfoCardTextButton(
-            text = veryImportantMessage.buttonText ?: stringResource(R.string.important_message_read_more),
-            onClick = { openUrl(veryImportantMessage.link) },
+            text = veryImportantMessage.linkInfo.buttonText ?: stringResource(R.string.important_message_read_more),
+            onClick = { openUrl(veryImportantMessage.linkInfo.link) },
             modifier = Modifier.weight(1f),
           )
         }
@@ -631,8 +632,10 @@ private fun PreviewHomeScreen(
             HomeData.VeryImportantMessage(
               "id",
               "Beware of the earthquake",
-              "Read more",
-              "",
+              LinkInfo(
+                "Read more",
+                "",
+              ),
             ),
           ),
           memberReminders = MemberReminders(

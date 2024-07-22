@@ -75,8 +75,21 @@ internal class GetHomeDataUseCaseImpl(
           HomeData.VeryImportantMessage(
             id = it.id,
             message = it.message,
-            buttonText = it.linkInfo?.buttonText?.ifEmpty { null },
-            link = it.linkInfo?.url?.ifEmpty { null },
+            linkInfo = it.linkInfo?.let { linkInfo ->
+              if (linkInfo.url.isEmpty()) {
+                logcat(LogPriority.ERROR) { "Backend should never return a present linkInfo with an empty url string" }
+                null
+              } else {
+                val buttonText = linkInfo.buttonText.takeIf { it.isNotEmpty() }
+                if (buttonText == null) {
+                  logcat(LogPriority.ERROR) { "Backend should never return a present buttonText with an empty string" }
+                }
+                HomeData.VeryImportantMessage.LinkInfo(
+                  buttonText = buttonText,
+                  link = linkInfo.url,
+                )
+              }
+            },
           )
         }
         val crossSells = homeQueryData.currentMember.crossSells.map { crossSell ->
@@ -301,9 +314,13 @@ internal data class HomeData(
   data class VeryImportantMessage(
     val id: String,
     val message: String,
-    val buttonText: String?,
-    val link: String?,
-  )
+    val linkInfo: LinkInfo?,
+  ) {
+    data class LinkInfo(
+      val buttonText: String?,
+      val link: String,
+    )
+  }
 
   sealed interface ContractStatus {
     data object Active : ContractStatus
