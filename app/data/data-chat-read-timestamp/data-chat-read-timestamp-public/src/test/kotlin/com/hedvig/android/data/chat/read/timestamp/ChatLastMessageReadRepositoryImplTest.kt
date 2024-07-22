@@ -37,7 +37,7 @@ class ChatLastMessageReadRepositoryImplTest {
 //  val appDatabaseRule = TestAppDatabaseRule(AppDatabase::class.java)
 //  val appDatabase: AppDatabase
 //    get() = appDatabaseRule.appDatabase as AppDatabase
-  // TODO CBM: Test with in-memory JVM Room database once wew figure out how to do that
+  // TODO CBM: Test with in-memory JVM Room database once we figure out how to do that
 
   @Test
   fun `With no timestamp stored, we get that there is a new message if any messages exist`(
