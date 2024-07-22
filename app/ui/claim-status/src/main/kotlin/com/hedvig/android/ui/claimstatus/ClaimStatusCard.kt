@@ -38,7 +38,10 @@ fun ClaimStatusCard(
   onClick: (claimId: String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  HedvigCard(modifier = modifier) {
+  HedvigCard(
+    onClick = { onClick(uiState.id) },
+    modifier = modifier,
+  ) {
     Column {
       ClaimStatusCardContent(uiState)
       HedvigButton(
