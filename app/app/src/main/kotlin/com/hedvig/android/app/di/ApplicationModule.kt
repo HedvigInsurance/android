@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.os.Build
-import androidx.work.WorkerParameters
 import coil.ImageLoader
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
@@ -25,7 +24,6 @@ import com.hedvig.android.apollo.di.networkCacheManagerModule
 import com.hedvig.android.app.apollo.DatadogInterceptor
 import com.hedvig.android.app.apollo.DeviceIdInterceptor
 import com.hedvig.android.app.chat.service.ChatNotificationSender
-import com.hedvig.android.app.chat.service.ReplyWorker
 import com.hedvig.android.app.notification.senders.CrossSellNotificationSender
 import com.hedvig.android.app.notification.senders.GenericNotificationSender
 import com.hedvig.android.app.notification.senders.PaymentNotificationSender
@@ -50,7 +48,6 @@ import com.hedvig.android.datadog.core.addDatadogConfiguration
 import com.hedvig.android.datadog.core.di.datadogModule
 import com.hedvig.android.datadog.demo.tracking.di.datadogDemoTrackingModule
 import com.hedvig.android.feature.changeaddress.di.changeAddressModule
-import com.hedvig.android.feature.chat.data.ChatRepository
 import com.hedvig.android.feature.chat.di.chatModule
 import com.hedvig.android.feature.claim.details.di.claimDetailsModule
 import com.hedvig.android.feature.claimtriaging.di.claimTriagingModule
@@ -86,8 +83,6 @@ import com.hedvig.app.R
 import java.io.File
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import org.koin.androidx.workmanager.dsl.worker
-import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import timber.log.Timber
@@ -261,17 +256,6 @@ private val coilModule = module {
   }
 }
 
-private val workManagerModule = module {
-  worker<ReplyWorker>(named<ReplyWorker>()) {
-    ReplyWorker(
-      context = get<Context>(),
-      params = get<WorkerParameters>(),
-      chatRepository = get<ChatRepository>(),
-      chatNotificationSender = get<ChatNotificationSender>(),
-    )
-  }
-}
-
 val applicationModule = module {
   includes(
     listOf(
@@ -329,7 +313,6 @@ val applicationModule = module {
       terminationDataModule,
       trackingDatadogModule,
       travelCertificateModule,
-      workManagerModule,
     ),
   )
 }
