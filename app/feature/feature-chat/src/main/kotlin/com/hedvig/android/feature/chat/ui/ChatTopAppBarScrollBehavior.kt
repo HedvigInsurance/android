@@ -81,8 +81,12 @@ internal fun TopAppBarDefaults.chatScrollBehavior(
 )
 
 /**
- * From:
+ * Inspired from:
  * https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3/AppBar.kt;l=2791?q=TopAppBarScrollBehavior&ss=androidx%2Fplatform%2Fframeworks%2Fsupport
+ * Adusted so that it only changes the heightOffset. It also does not dismis the top app bar when there is nothing to
+ * scroll anyway on the content. Since we can not disable the scrolling effect on when dragging the app bar itself, it
+ * also takes care of actually forwarding the scroll when scrolling down on the content itself, even if there is no
+ * content to scroll, only to bring back the top app bar after having dismissed it this way.
  */
 private class ChatScrollBehavior(
   override val state: TopAppBarState,
@@ -92,28 +96,10 @@ private class ChatScrollBehavior(
 ) : TopAppBarScrollBehavior {
   override val isPinned: Boolean = false
   override var nestedScrollConnection = object : NestedScrollConnection {
-    override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-      if (!canScroll()) return Offset.Zero
-      val prevHeightOffset = state.heightOffset
-      state.heightOffset = state.heightOffset + available.y
-      return if (prevHeightOffset != state.heightOffset) {
-        // We're in the middle of top app bar collapse or expand.
-        // Consume only the scroll on the Y axis.
-        available.copy(x = 0f)
-      } else {
-        Offset.Zero
-      }
-    }
-
     override fun onPostScroll(consumed: Offset, available: Offset, source: NestedScrollSource): Offset {
       if (!canScroll()) return Offset.Zero
-      state.contentOffset += consumed.y
-      if (state.heightOffset == 0f || state.heightOffset == state.heightOffsetLimit) {
-        if (consumed.y == 0f && available.y > 0f) {
-          // Reset the total content offset to zero when scrolling all the way down.
-          // This will eliminate some float precision inaccuracies.
-          state.contentOffset = 0f
-        }
+      if (available.y > 0) {
+        state.heightOffset += available.y
       }
       state.heightOffset = state.heightOffset + consumed.y
       return Offset.Zero
