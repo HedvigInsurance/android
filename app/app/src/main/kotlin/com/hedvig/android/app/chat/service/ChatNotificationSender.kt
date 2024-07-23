@@ -144,5 +144,9 @@ class ChatNotificationSender(
       // From customerIO https://www.customer.io/docs/send-push/#standard-payload
       return get("title")
     }
+
+    private fun Map<String, String>.conversationIdFromCustomerIoData(): String? {
+      return get("conversationId")
+    }
   }
 }
