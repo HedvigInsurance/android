@@ -8,6 +8,7 @@ import java.util.UUID
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -31,8 +32,8 @@ internal class DeviceIdDataStoreImpl(
     }
   }
 
-  override fun observeDeviceId(): Flow<String> {
-    return dataStore.data.map { it[key] ?: "" }
+  override fun observeDeviceId(): Flow<String> { // todo return null instead of "" for uninitialized cases?
+    return dataStore.data.map { it[key] ?: "" }.distinctUntilChanged()
   }
 
   private suspend fun generateDeviceId() {

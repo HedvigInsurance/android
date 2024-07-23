@@ -3,6 +3,7 @@ package com.hedvig.android.auth
 import android.util.Base64
 import com.hedvig.android.auth.storage.AuthTokenStorage
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
@@ -19,7 +20,7 @@ class MemberIdService(
       authTokens?.accessToken?.token?.let { stringToken ->
         extractMemberIdFromAccessToken(stringToken)
       }
-    }
+    }.distinctUntilChanged()
   }
 
   /**
