@@ -19,6 +19,7 @@ import androidx.navigation.navOptions
 import com.datadog.android.compose.ExperimentalTrackingApi
 import com.datadog.android.compose.NavigationViewTrackingEffect
 import com.hedvig.android.app.navigation.RootGraph
+import com.hedvig.android.app.notification.senders.CurrentDestinationInMemoryStorage
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
@@ -63,7 +64,7 @@ internal fun rememberHedvigAppState(
   coroutineScope: CoroutineScope = rememberCoroutineScope(),
 ): HedvigAppState {
   NavigationViewTrackingEffect(navController = navHostController)
-  TopLevelDestinationNavigationSideEffect(navHostController, tabNotificationBadgeService, coroutineScope)
+  RegisterOnDestinationChangedListenerSideEffect(navHostController, tabNotificationBadgeService, coroutineScope)
   return remember(
     navHostController,
     windowSizeClass,
@@ -252,13 +253,14 @@ value class NavigationSuiteType private constructor(
 }
 
 @Composable
-private fun TopLevelDestinationNavigationSideEffect(
+private fun RegisterOnDestinationChangedListenerSideEffect(
   navController: NavController,
   tabNotificationBadgeService: TabNotificationBadgeService,
   coroutineScope: CoroutineScope,
 ) {
   DisposableEffect(navController, tabNotificationBadgeService, coroutineScope) {
     val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
+      CurrentDestinationInMemoryStorage.currentDestination = destination.route
       val topLevelDestination = destination.toTopLevelAppDestination() ?: return@OnDestinationChangedListener
       when (topLevelDestination) {
         TopLevelDestination.Home -> {
