@@ -4,17 +4,12 @@ import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.HedvigUnleashClient
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
 internal class UnleashFeatureFlagProvider(
   private val hedvigUnleashClient: HedvigUnleashClient,
-  private val alwaysEnableCbm: Boolean = false,
 ) : FeatureManager {
   override fun isFeatureEnabled(feature: Feature): Flow<Boolean> {
-    if (alwaysEnableCbm && feature == Feature.ENABLE_CBM) {
-      return flowOf(true)
-    }
     return hedvigUnleashClient.featureUpdatedFlow
       .map {
         when (feature) {

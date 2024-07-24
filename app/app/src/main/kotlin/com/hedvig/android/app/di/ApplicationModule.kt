@@ -64,6 +64,7 @@ import com.hedvig.android.feature.payments.di.paymentsModule
 import com.hedvig.android.feature.profile.di.profileModule
 import com.hedvig.android.feature.terminateinsurance.di.terminateInsuranceModule
 import com.hedvig.android.feature.travelcertificate.di.travelCertificateModule
+import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.di.featureManagerModule
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.language.di.languageMigrationModule
@@ -200,9 +201,11 @@ private val buildConstantsModule = module {
 private val notificationModule = module {
   single { PaymentNotificationSender(get(), get(), get()) } bind NotificationSender::class
   single { CrossSellNotificationSender(get(), get()) } bind NotificationSender::class
-  single { ChatNotificationSender(get(), get<HedvigDeepLinkContainer>()) } bind NotificationSender::class
   single { ReferralsNotificationSender(get(), get()) } bind NotificationSender::class
   single { GenericNotificationSender(get()) } bind NotificationSender::class
+  single<ChatNotificationSender> {
+    ChatNotificationSender(get(), get<HedvigDeepLinkContainer>(), get<FeatureManager>(), get<HedvigBuildConstants>())
+  } bind NotificationSender::class
 }
 
 private val clockModule = module {

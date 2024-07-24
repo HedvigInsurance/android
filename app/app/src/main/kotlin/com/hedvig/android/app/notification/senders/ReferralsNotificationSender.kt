@@ -32,7 +32,7 @@ class ReferralsNotificationSender(
     )
   }
 
-  override fun sendNotification(type: String, remoteMessage: RemoteMessage) {
+  override suspend fun sendNotification(type: String, remoteMessage: RemoteMessage) {
     when (type) {
       NOTIFICATION_TYPE_REFERRAL_SUCCESS -> sendReferralSuccessfulNotification(remoteMessage)
       NOTIFICATION_TYPE_REFERRALS_CAMPAIGN -> sendReferralCampaignNotification(remoteMessage)

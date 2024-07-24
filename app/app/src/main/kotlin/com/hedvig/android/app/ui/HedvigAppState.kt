@@ -259,7 +259,8 @@ private fun RegisterOnDestinationChangedListenerSideEffect(
   coroutineScope: CoroutineScope,
 ) {
   DisposableEffect(navController, tabNotificationBadgeService, coroutineScope) {
-    val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
+    val listener = NavController.OnDestinationChangedListener { _, destination, bundle ->
+      logcat { "Navigated to route:${destination.route} | bundle:${bundle}" }
       CurrentDestinationInMemoryStorage.currentDestination = destination.route
       val topLevelDestination = destination.toTopLevelAppDestination() ?: return@OnDestinationChangedListener
       when (topLevelDestination) {

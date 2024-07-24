@@ -2,6 +2,7 @@ package com.hedvig.android.app.notification.senders
 
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -9,17 +10,21 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.MessagingStyle
 import androidx.core.app.Person
-import androidx.core.app.TaskStackBuilder
 import androidx.core.content.getSystemService
 import androidx.core.graphics.drawable.IconCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ProcessLifecycleOwner
+import com.benasher44.uuid.Uuid
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.app.notification.getMutablePendingIntentFlags
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.android.notification.setupNotificationChannel
 import com.hedvig.android.feature.chat.navigation.ChatDestinations
 import com.hedvig.android.feature.claim.details.navigation.ClaimDetailDestinations
 import com.hedvig.android.feature.home.home.navigation.HomeDestination
+import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.featureflags.flags.Feature
+import com.hedvig.android.logger.LogPriority.ERROR
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
@@ -27,6 +32,7 @@ import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import hedvig.resources.R
+import kotlinx.coroutines.flow.first
 
 /**
  * An in-memory storage of the current route, used to *not* show the chat notification if we are in a select list of
@@ -52,6 +58,8 @@ private val listOfDestinationsWhichShouldNotShowChatNotification = setOf(
 class ChatNotificationSender(
   private val context: Context,
   private val hedvigDeepLinkContainer: HedvigDeepLinkContainer,
+  private val featureManager: FeatureManager,
+  private val buildConstants: HedvigBuildConstants,
 ) : NotificationSender {
   override fun createChannel() {
     setupNotificationChannel(
@@ -62,7 +70,7 @@ class ChatNotificationSender(
     )
   }
 
-  override fun sendNotification(type: String, remoteMessage: RemoteMessage) {
+  override suspend fun sendNotification(type: String, remoteMessage: RemoteMessage) {
     val isAppForegrounded = ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)
     val currentDestination = CurrentDestinationInMemoryStorage.currentDestination
     if (currentDestination in listOfDestinationsWhichShouldNotShowChatNotification && isAppForegrounded) {
@@ -104,8 +112,10 @@ class ChatNotificationSender(
     }
 
     sendChatNotificationInner(
-      context,
-      messagingStyle,
+      context = context,
+      style = messagingStyle,
+      remoteMessage = remoteMessage,
+      isCbmEnabled = featureManager.isFeatureEnabled(Feature.ENABLE_CBM).first(),
     )
   }
 
@@ -116,15 +126,36 @@ class ChatNotificationSender(
 
   private fun sendChatNotificationInner(
     context: Context,
-    style: NotificationCompat.MessagingStyle,
-    alertOnlyOnce: Boolean = false,
+    style: MessagingStyle,
+    remoteMessage: RemoteMessage,
+    isCbmEnabled: Boolean,
   ) {
-    val chatIntent = Intent(Intent.ACTION_VIEW, Uri.parse(hedvigDeepLinkContainer.chat))
+    val intentUri = Uri.parse(
+      if (isCbmEnabled) {
+        val conversationId = remoteMessage.data.conversationIdFromCustomerIoData()
+        val isValidUuid = conversationId.isValidUuid()
+        if (conversationId != null && isValidUuid) {
+          hedvigDeepLinkContainer.conversation.replace("{conversationId}", conversationId)
+        } else {
+          hedvigDeepLinkContainer.inbox
+        }
+      } else {
+        hedvigDeepLinkContainer.chat
+      },
+    )
+    logcat { "ChatNotificationSender sending notification with isCbmEnabled:$isCbmEnabled to uri:$intentUri" }
+    val chatIntent = Intent().apply {
+      action = Intent.ACTION_VIEW
+      data = intentUri
+      component = ComponentName(buildConstants.appId, MainActivityFullyQualifiedName)
+    }
 
-    val pendingIntent: PendingIntent? = TaskStackBuilder
-      .create(context)
-      .addNextIntent(chatIntent)
-      .getPendingIntent(0, getMutablePendingIntentFlags())
+    val chatPendingIntent: PendingIntent? = PendingIntent.getActivity(
+      /* context = */ context,
+      /* requestCode = */ 0,
+      /* intent = */ chatIntent,
+      /* flags = */ getMutablePendingIntentFlags(),
+    )
 
     val notification = NotificationCompat
       .Builder(
@@ -138,8 +169,7 @@ class ChatNotificationSender(
       .setChannelId(CHAT_CHANNEL_ID)
       .setCategory(NotificationCompat.CATEGORY_MESSAGE)
       .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
-      .setContentIntent(pendingIntent)
-      .setOnlyAlertOnce(alertOnlyOnce)
+      .setContentIntent(chatPendingIntent)
       .build()
 
     sendHedvigNotification(
@@ -163,7 +193,24 @@ class ChatNotificationSender(
     .setKey(YOU_PERSON_KEY)
     .build()
 
+  private fun String?.isValidUuid(): Boolean {
+    if (this == null) {
+      return false
+    }
+    return try {
+      Uuid.fromString(this)
+      true
+    } catch (e: IllegalArgumentException) {
+      logcat(ERROR) {
+        "ChatNotificationSender got a conersationId which was not a UUID: $this"
+      }
+      false
+    }
+  }
+
   companion object {
+    private const val MainActivityFullyQualifiedName = "com.hedvig.android.app.MainActivity"
+
     private const val CHAT_CHANNEL_ID = "hedvig-chat"
     private const val CHAT_NOTIFICATION_ID = 1
     private const val HEDVIG_PERSON_KEY = "HEDVIG"

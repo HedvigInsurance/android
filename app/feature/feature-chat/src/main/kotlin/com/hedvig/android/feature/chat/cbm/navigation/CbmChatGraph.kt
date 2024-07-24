@@ -27,11 +27,12 @@ fun NavGraphBuilder.cbmChatGraph(
 ) {
   navigation<ChatDestination>(
     startDestination = createRoutePattern<ChatDestinations.Inbox>(),
-    deepLinks = listOf(
-      navDeepLink { uriPattern = hedvigDeepLinkContainer.chat },
-    ),
   ) {
-    composable<ChatDestinations.Inbox> { backStackEntry ->
+    composable<ChatDestinations.Inbox>(
+      deepLinks = listOf(
+        navDeepLink { uriPattern = hedvigDeepLinkContainer.inbox },
+      ),
+    ) { backStackEntry ->
       val viewModel: InboxViewModel = koinViewModel()
       InboxDestination(
         viewModel = viewModel,
@@ -43,7 +44,11 @@ fun NavGraphBuilder.cbmChatGraph(
         },
       )
     }
-    composable<ChatDestinations.Chat> {
+    composable<ChatDestinations.Chat>(
+      deepLinks = listOf(
+        navDeepLink { uriPattern = hedvigDeepLinkContainer.conversation },
+      ),
+    ) {
       val viewModel = koinViewModel<CbmChatViewModel> { parametersOf(this.conversationId) }
       CbmChatDestination(
         viewModel = viewModel,

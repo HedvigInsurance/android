@@ -30,6 +30,8 @@ interface HedvigDeepLinkContainer {
   val deleteAccount: String // The screen where the member may request for their account data to be GDPR wiped
 
   val chat: String // Hedvig Chat
+  val inbox: String // Hedvig CBM inbox
+  val conversation: String // Hedvig specific CBM conversation
 }
 
 internal class HedvigDeepLinkContainerImpl(
@@ -63,6 +65,8 @@ internal class HedvigDeepLinkContainerImpl(
   override val deleteAccount: String = "$baseDeepLinkDomain/delete-account"
 
   override val chat: String = "$baseDeepLinkDomain/chat"
+  override val inbox: String = "$baseDeepLinkDomain/inbox"
+  override val conversation: String = "$baseDeepLinkDomain/conversation/{conversationId}"
 }
 
 val HedvigDeepLinkContainer.allDeepLinkUriPatterns: List<String>
@@ -83,4 +87,6 @@ val HedvigDeepLinkContainer.allDeepLinkUriPatterns: List<String>
     payments,
     deleteAccount,
     chat,
+    inbox,
+    conversation,
   )
