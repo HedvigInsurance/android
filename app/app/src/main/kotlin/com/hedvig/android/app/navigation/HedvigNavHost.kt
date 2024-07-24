@@ -152,7 +152,7 @@ internal fun HedvigNavHost(
       urlBaseWeb = hedvigBuildConstants.urlBaseWeb,
       openUrl = openUrl,
       onOpenEmailApp = externalNavigator::openEmailApp,
-      startLoggedInActivity = hedvigAppState::navigateToLoggedIn,
+      onNavigateToLoggedIn = hedvigAppState::navigateToLoggedIn,
     )
     homeGraph(
       nestedGraphs = {
