@@ -141,7 +141,11 @@ private val networkModule = module {
       .Builder()
       .okHttpClient(get<OkHttpClient>())
       .normalizedCache(get<NormalizedCacheFactory>())
-      .addInterceptors(interceptors)
+      .apply {
+        for (interceptor in interceptors) {
+          addInterceptor(interceptor)
+        }
+      }
   }
   single<ApolloClient> {
     get<ApolloClient.Builder>()

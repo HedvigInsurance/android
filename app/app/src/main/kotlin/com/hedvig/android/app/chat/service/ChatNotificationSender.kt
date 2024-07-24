@@ -14,8 +14,6 @@ import androidx.core.graphics.drawable.IconCompat
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.app.notification.getMutablePendingIntentFlags
 import com.hedvig.android.core.common.android.notification.setupNotificationChannel
-import com.hedvig.android.logger.LogPriority
-import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
@@ -50,11 +48,7 @@ class ChatNotificationSender(
       }
       .build()
 
-    val messageText = remoteMessage.data.bodyFromCustomerIoData() ?: remoteMessage.data[DATA_NEW_MESSAGE_BODY]
-    if (messageText == null) {
-      logcat(LogPriority.ERROR) { "GCM message came without a valid message. Data:${remoteMessage.data}" }
-      return
-    }
+    val messageText = context.getString(R.string.NOTIFICATION_CHAT_NEW_MESSAGE_BODY)
 
     val message = NotificationCompat.MessagingStyle.Message(
       messageText,
@@ -144,18 +138,15 @@ class ChatNotificationSender(
     private const val HEDVIG_PERSON_KEY = "HEDVIG"
     private const val YOU_PERSON_KEY = "YOU"
 
-    internal const val DATA_NEW_MESSAGE_BODY = "DATA_NEW_MESSAGE_BODY"
-
     private const val NOTIFICATION_TYPE_NEW_MESSAGE = "NEW_MESSAGE"
-
-    private fun Map<String, String>.bodyFromCustomerIoData(): String? {
-      // From customerIO https://www.customer.io/docs/send-push/#standard-payload
-      return get("body")
-    }
 
     private fun Map<String, String>.titleFromCustomerIoData(): String? {
       // From customerIO https://www.customer.io/docs/send-push/#standard-payload
       return get("title")
+    }
+
+    private fun Map<String, String>.conversationIdFromCustomerIoData(): String? {
+      return get("conversationId")
     }
   }
 }
