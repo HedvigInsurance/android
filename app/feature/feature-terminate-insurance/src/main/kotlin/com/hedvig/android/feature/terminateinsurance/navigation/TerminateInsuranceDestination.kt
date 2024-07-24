@@ -1,6 +1,6 @@
 package com.hedvig.android.feature.terminateinsurance.navigation
 
-import com.hedvig.android.data.contract.ContractGroup
+import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
 import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.SerialName
@@ -20,13 +20,22 @@ internal sealed interface TerminateInsuranceDestination : Destination {
   data object StartStep : TerminateInsuranceDestination
 
   @Serializable
+  data class TerminationSurveyFirstStep(
+    val options: List<TerminationSurveyOption>,
+    val commonParams: TerminationGraphParameters,
+  ) : TerminateInsuranceDestination
+
+  @Serializable
+  data class TerminationSurveySecondStep(
+    val subOptions: List<TerminationSurveyOption>,
+    val commonParams: TerminationGraphParameters,
+  ) : TerminateInsuranceDestination
+
+  @Serializable
   data class TerminationDate(
     val minDate: LocalDate,
     val maxDate: LocalDate,
-    val insuranceDisplayName: String,
-    val exposureName: String,
-    val activeFrom: LocalDate,
-    val contractGroup: ContractGroup,
+    val commonParams: TerminationGraphParameters,
   ) : TerminateInsuranceDestination
 
   /**
@@ -35,7 +44,7 @@ internal sealed interface TerminateInsuranceDestination : Destination {
   @Serializable
   data class TerminationConfirmation(
     val terminationType: TerminationType,
-    val parameters: TerminationConfirmationParameters,
+    val commonParams: TerminationGraphParameters,
   ) : TerminateInsuranceDestination {
     @Serializable
     sealed interface TerminationType {
@@ -49,19 +58,11 @@ internal sealed interface TerminateInsuranceDestination : Destination {
 
   @Serializable
   data class TerminationSuccess(
-    val insuranceDisplayName: String,
-    val exposureName: String,
     val terminationDate: LocalDate?,
-    val surveyUrl: String,
   ) : TerminateInsuranceDestination
 
   @Serializable
-  data class InsuranceDeletion(
-    val insuranceDisplayName: String,
-    val exposureName: String,
-    val activeFrom: LocalDate,
-    val contractGroup: ContractGroup,
-  ) : TerminateInsuranceDestination
+  data class InsuranceDeletion(val commonParams: TerminationGraphParameters) : TerminateInsuranceDestination
 
   @Serializable
   data class TerminationFailure(
@@ -73,17 +74,14 @@ internal sealed interface TerminateInsuranceDestination : Destination {
 }
 
 @Serializable
-internal data class TerminationDataParameters(
+internal data class TerminationDateParameters(
   val minDate: LocalDate,
   val maxDate: LocalDate,
-  val insuranceDisplayName: String,
-  val exposureName: String,
+  val commonParams: TerminationGraphParameters,
 )
 
 @Serializable
-internal data class TerminationConfirmationParameters(
+internal data class TerminationGraphParameters(
   val insuranceDisplayName: String,
   val exposureName: String,
-  val activeFrom: LocalDate,
-  val contractGroup: ContractGroup,
 )

@@ -1,0 +1,19 @@
+query CbmNumberOfChatMessages {
+  currentMember {
+    legacyConversation {
+      messagePage(newerToken: null, olderToken: null) {
+        messages {
+          id
+          sender
+        }
+      }
+    }
+    conversations {
+      isOpen
+      newestMessage {
+        # noinspection ApolloUnusedField
+        id
+      }
+    }
+  }
+}

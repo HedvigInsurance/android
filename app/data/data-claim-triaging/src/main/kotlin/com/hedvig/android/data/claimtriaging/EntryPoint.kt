@@ -1,15 +1,12 @@
 package com.hedvig.android.data.claimtriaging
 
-import com.hedvig.android.navigation.compose.typed.SerializableImmutableList
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class EntryPoint(
   val id: EntryPointId,
   val displayName: String,
-  val entryPointOptions: SerializableImmutableList<EntryPointOption>?,
+  val entryPointOptions: List<EntryPointOption>?,
 )
 
 @Serializable
@@ -26,11 +23,11 @@ data class EntryPointOption(
 @JvmInline
 value class EntryPointOptionId(val id: String)
 
-fun List<octopus.fragment.EntryPoint.Option>.toEntryPointOptions(): ImmutableList<EntryPointOption> {
+fun List<octopus.fragment.EntryPoint.Option>.toEntryPointOptions(): List<EntryPointOption> {
   return map { option ->
     EntryPointOption(
       EntryPointOptionId(option.id),
       option.displayName,
     )
-  }.toImmutableList()
+  }
 }

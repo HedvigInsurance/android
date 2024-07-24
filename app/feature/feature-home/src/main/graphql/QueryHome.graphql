@@ -14,7 +14,10 @@ query Home {
     importantMessages {
       id
       message
-      link
+      linkInfo {
+        url
+        buttonText
+      }
     }
     crossSells {
       id

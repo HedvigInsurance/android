@@ -102,10 +102,17 @@ class PullRefreshState internal constructor(
 
   private val adjustedDistancePulled by derivedStateOf { distancePulled * DragMultiplier }
 
+  @Suppress("ktlint:standard:backing-property-naming")
   private var _refreshing by mutableStateOf(false)
+
+  @Suppress("ktlint:standard:backing-property-naming")
   private var _position by mutableFloatStateOf(0f)
   private var distancePulled by mutableFloatStateOf(0f)
+
+  @Suppress("ktlint:standard:backing-property-naming")
   private var _threshold by mutableFloatStateOf(threshold)
+
+  @Suppress("ktlint:standard:backing-property-naming")
   private var _refreshingOffset by mutableFloatStateOf(refreshingOffset)
 
   internal fun onPull(pullDelta: Float): Float {

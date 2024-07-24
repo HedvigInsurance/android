@@ -3,7 +3,6 @@ package com.hedvig.android.feature.help.center.model
 import androidx.annotation.StringRes
 import com.hedvig.android.navigation.core.AppDestination
 import hedvig.resources.R
-import kotlinx.collections.immutable.persistentListOf
 
 internal enum class Topic(
   @StringRes val titleRes: Int,
@@ -109,7 +108,7 @@ internal enum class Topic(
   ),
 }
 
-internal val commonTopics = persistentListOf(
+internal val commonTopics = listOf(
   Topic.PAYMENTS,
   Topic.CLAIMS,
   Topic.INSURANCE,

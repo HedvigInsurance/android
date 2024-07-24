@@ -50,13 +50,11 @@ import com.hedvig.android.data.claimflow.DeflectPartner
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import hedvig.resources.R
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 internal fun DeflectTowingDestination(
   deflectTowing: ClaimFlowDestination.DeflectTowing,
-  openChat: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   closeClaimFlow: () -> Unit,
   windowSizeClass: WindowSizeClass,
   navigateUp: () -> Unit,
@@ -64,7 +62,7 @@ internal fun DeflectTowingDestination(
 ) {
   DeflectTowingScreen(
     partners = deflectTowing.partners,
-    openChat = openChat,
+    onNavigateToNewConversation = onNavigateToNewConversation,
     closeClaimFlow = closeClaimFlow,
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
@@ -74,8 +72,8 @@ internal fun DeflectTowingDestination(
 
 @Composable
 private fun DeflectTowingScreen(
-  partners: ImmutableList<DeflectPartner>,
-  openChat: () -> Unit,
+  partners: List<DeflectPartner>,
+  onNavigateToNewConversation: () -> Unit,
   closeClaimFlow: () -> Unit,
   windowSizeClass: WindowSizeClass,
   navigateUp: () -> Unit,
@@ -197,7 +195,7 @@ private fun DeflectTowingScreen(
     Spacer(Modifier.height(24.dp))
     HedvigContainedSmallButton(
       text = stringResource(R.string.open_chat),
-      onClick = openChat,
+      onClick = onNavigateToNewConversation,
       modifier = Modifier
         .padding(horizontal = 16.dp)
         .fillMaxWidth()
@@ -240,7 +238,7 @@ private fun PreviewDeflectTowingScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       DeflectTowingScreen(
-        partners = persistentListOf(
+        partners = listOf(
           DeflectPartner(
             id = "1",
             imageUrl = "test",
@@ -254,7 +252,7 @@ private fun PreviewDeflectTowingScreen() {
             url = "test2",
           ),
         ),
-        openChat = {},
+        onNavigateToNewConversation = {},
         closeClaimFlow = {},
         windowSizeClass = WindowSizeClass.calculateForPreview(),
         navigateUp = {},

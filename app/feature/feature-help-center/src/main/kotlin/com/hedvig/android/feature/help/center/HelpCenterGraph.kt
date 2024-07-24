@@ -27,7 +27,7 @@ fun NavGraphBuilder.helpCenterGraph(
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   navigator: Navigator,
   onNavigateToQuickLink: (NavBackStackEntry, QuickLinkDestination.OuterDestination) -> Unit,
-  openChat: (NavBackStackEntry, AppDestination.Chat.ChatContext?) -> Unit,
+  onNavigateToNewConversation: (NavBackStackEntry, AppDestination.Chat.ChatContext?) -> Unit,
 ) {
   navigation<HelpCenterDestination>(
     startDestination = createRoutePattern<HelpCenterDestinations.HelpCenter>(),
@@ -69,7 +69,7 @@ fun NavGraphBuilder.helpCenterGraph(
           }
         },
         openChat = {
-          openChat(backStackEntry, null)
+          onNavigateToNewConversation(backStackEntry, null)
         },
         onNavigateUp = navigator::navigateUp,
       )
@@ -84,7 +84,7 @@ fun NavGraphBuilder.helpCenterGraph(
         onNavigateUp = navigator::navigateUp,
         onNavigateBack = navigator::popBackStack,
         openChat = {
-          openChat(backStackEntry, topic.chatContext)
+          onNavigateToNewConversation(backStackEntry, topic.chatContext)
         },
       )
     }
@@ -98,7 +98,7 @@ fun NavGraphBuilder.helpCenterGraph(
         onNavigateUp = navigator::navigateUp,
         onNavigateBack = navigator::popBackStack,
         openChat = {
-          openChat(backStackEntry, question.chatContext)
+          onNavigateToNewConversation(backStackEntry, question.chatContext)
         },
       )
     }

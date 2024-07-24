@@ -3,7 +3,7 @@ package com.hedvig.android.feature.help.center.data
 import arrow.core.Either
 import arrow.core.raise.either
 import arrow.fx.coroutines.parZip
-import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
@@ -75,7 +75,8 @@ internal data class DeflectPartner(
   val url: String?,
 )
 
-private fun MemberActionsQuery.Data.CurrentMember.MemberActions.FirstVetAction.toVetAction(): MemberActionWithDetails.FirstVetAction {
+private fun MemberActionsQuery.Data.CurrentMember.MemberActions.FirstVetAction.toVetAction():
+  MemberActionWithDetails.FirstVetAction {
   val sections = this.sections.map {
     FirstVetSection(
       buttonTitle = it.buttonTitle,
@@ -89,7 +90,8 @@ private fun MemberActionsQuery.Data.CurrentMember.MemberActions.FirstVetAction.t
   )
 }
 
-private fun MemberActionsQuery.Data.CurrentMember.MemberActions.SickAbroadAction?.toSickAbroadAction(): MemberActionWithDetails.SickAbroadAction {
+private fun MemberActionsQuery.Data.CurrentMember.MemberActions.SickAbroadAction?.toSickAbroadAction():
+  MemberActionWithDetails.SickAbroadAction {
   val partners = this?.partners?.map {
     DeflectPartner(
       id = it.id,

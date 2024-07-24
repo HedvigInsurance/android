@@ -6,11 +6,10 @@ import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.MemberChargeShortInfo
 import com.hedvig.android.feature.payments.data.PaymentConnection
 import com.hedvig.android.feature.payments.data.PaymentOverview
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate
 import octopus.type.CurrencyCode
 
-internal val periodsPreviewData = persistentListOf(
+internal val periodsPreviewData = listOf(
   MemberCharge.ChargeBreakdown.Period(
     amount = UiMoney(200.0, CurrencyCode.SEK),
     fromDate = LocalDate.fromEpochDays(200),
@@ -75,7 +74,7 @@ internal val chargeHistoryPreviewData = listOf(
       fromDate = LocalDate.fromEpochDays(200),
       toDate = LocalDate.fromEpochDays(201),
     ),
-    chargeBreakdowns = persistentListOf(
+    chargeBreakdowns = listOf(
       MemberCharge.ChargeBreakdown(
         contractDisplayName = "Bilforsakring",
         contractDetails = "ABH 234",
@@ -103,7 +102,7 @@ internal val chargeHistoryPreviewData = listOf(
       fromDate = LocalDate.fromEpochDays(200),
       toDate = LocalDate.fromEpochDays(201),
     ),
-    chargeBreakdowns = persistentListOf(
+    chargeBreakdowns = listOf(
       MemberCharge.ChargeBreakdown(
         contractDisplayName = "Bilforsakring",
         contractDetails = "ABH 234",
@@ -131,7 +130,7 @@ internal val chargeHistoryPreviewData = listOf(
       fromDate = LocalDate.fromEpochDays(200),
       toDate = LocalDate.fromEpochDays(201),
     ),
-    chargeBreakdowns = persistentListOf(
+    chargeBreakdowns = listOf(
       MemberCharge.ChargeBreakdown(
         contractDisplayName = "Bilforsakring",
         contractDetails = "ABH 234",
@@ -159,7 +158,7 @@ internal val chargeHistoryPreviewData = listOf(
       fromDate = LocalDate.fromEpochDays(200),
       toDate = LocalDate.fromEpochDays(201),
     ),
-    chargeBreakdowns = persistentListOf(
+    chargeBreakdowns = listOf(
       MemberCharge.ChargeBreakdown(
         contractDisplayName = "Bilforsakring",
         contractDetails = "ABH 234",
@@ -187,7 +186,7 @@ internal val chargeHistoryPreviewData = listOf(
       fromDate = LocalDate.fromEpochDays(200),
       toDate = LocalDate.fromEpochDays(201),
     ),
-    chargeBreakdowns = persistentListOf(
+    chargeBreakdowns = listOf(
       MemberCharge.ChargeBreakdown(
         contractDisplayName = "Bilforsakring",
         contractDetails = "ABH 234",
@@ -234,7 +233,7 @@ internal val paymentDetailsPreviewData = MemberCharge(
     fromDate = LocalDate.fromEpochDays(200),
     toDate = LocalDate.fromEpochDays(201),
   ),
-  chargeBreakdowns = persistentListOf(
+  chargeBreakdowns = listOf(
     MemberCharge.ChargeBreakdown(
       contractDisplayName = "Bilforsakring",
       contractDetails = "ABH 234",

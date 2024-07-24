@@ -6,7 +6,6 @@ plugins {
 }
 
 dependencies {
-  apolloMetadata(projects.apolloOctopusPublic)
 
   api(libs.kotlinx.datetime)
 
@@ -18,7 +17,6 @@ dependencies {
   implementation(libs.arrow.fx)
   implementation(libs.coroutines.core)
   implementation(libs.koin.core)
-  implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)
   implementation(projects.apolloCore)
@@ -48,7 +46,7 @@ dependencies {
 
 apollo {
   service("octopus") {
-    packageName.set("octopus")
-    generateDataBuilders.set(true)
+    packageName = "octopus"
+    dependsOn(projects.apolloOctopusPublic, true)
   }
 }

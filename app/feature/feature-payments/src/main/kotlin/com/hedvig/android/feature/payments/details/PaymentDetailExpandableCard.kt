@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
@@ -38,10 +37,10 @@ import com.hedvig.android.core.icons.hedvig.normal.ChevronDown
 import com.hedvig.android.core.ui.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.design.system.hedvig.ripple
 import com.hedvig.android.feature.payments.data.MemberCharge
 import hedvig.resources.R
 import java.time.format.DateTimeFormatter
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
 import octopus.type.CurrencyCode
@@ -66,7 +65,7 @@ internal fun PaymentDetailExpandableCard(
         .fillMaxWidth()
         .clickable(
           interactionSource = remember { MutableInteractionSource() },
-          indication = rememberRipple(
+          indication = ripple(
             bounded = false,
             // This fixes the problem of the ripple not properly resizing as the card expands
             radius = 1000.dp,
@@ -202,7 +201,7 @@ private fun PaymentDetailExpandableCardPreview() {
         displayName = "Bilförsäkring",
         subtitle = "ABH 234",
         totalAmount = "978 kr",
-        periods = persistentListOf(
+        periods = listOf(
           MemberCharge.ChargeBreakdown.Period(
             amount = UiMoney(200.0, CurrencyCode.SEK),
             fromDate = LocalDate.fromEpochDays(200),
@@ -244,7 +243,7 @@ private fun PaymentDetailExpandableCardExpandedPreview() {
         displayName = "Bilförsäkring",
         subtitle = "ABH 234",
         totalAmount = "978 kr",
-        periods = persistentListOf(
+        periods = listOf(
           MemberCharge.ChargeBreakdown.Period(
             amount = UiMoney(200.0, CurrencyCode.SEK),
             fromDate = LocalDate.fromEpochDays(200),

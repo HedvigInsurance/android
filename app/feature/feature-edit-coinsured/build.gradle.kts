@@ -13,7 +13,6 @@ android {
 }
 
 dependencies {
-  apolloMetadata(projects.apolloOctopusPublic)
 
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.compose.material3)
@@ -27,11 +26,11 @@ dependencies {
   implementation(libs.koin.android)
   implementation(libs.koin.compose)
   implementation(libs.kotlinx.datetime)
-  implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.apolloCore)
   implementation(projects.apolloNetworkCacheManager)
   implementation(projects.apolloOctopusPublic)
+  implementation(projects.coreAppReview)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDemoMode)
   implementation(projects.coreDesignSystem)
@@ -43,7 +42,6 @@ dependencies {
   implementation(projects.moleculePublic)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
-  implementation(projects.coreAppReview)
 
   testImplementation(libs.apollo.testingSupport)
   testImplementation(libs.assertK)
@@ -64,6 +62,7 @@ dependencies {
 
 apollo {
   service("octopus") {
-    packageName.set("octopus")
+    packageName = "octopus"
+    dependsOn(projects.apolloOctopusPublic, true)
   }
 }

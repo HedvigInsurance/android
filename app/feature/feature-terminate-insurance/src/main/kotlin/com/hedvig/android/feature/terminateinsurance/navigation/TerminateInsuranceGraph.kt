@@ -13,6 +13,8 @@ import com.hedvig.android.feature.terminateinsurance.data.toTerminateInsuranceDe
 import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateDestination
 import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateViewModel
 import com.hedvig.android.feature.terminateinsurance.step.deletion.InsuranceDeletionDestination
+import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyDestination
+import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyViewModel
 import com.hedvig.android.feature.terminateinsurance.step.terminationdate.TerminationDateDestination
 import com.hedvig.android.feature.terminateinsurance.step.terminationdate.TerminationDateViewModel
 import com.hedvig.android.feature.terminateinsurance.step.terminationfailure.TerminationFailureDestination
@@ -36,33 +38,18 @@ fun NavGraphBuilder.terminateInsuranceGraph(
   navigator: Navigator,
   navController: NavController,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
-  openChat: (NavBackStackEntry) -> Unit,
+  onNavigateToNewConversation: (NavBackStackEntry) -> Unit,
   openUrl: (String) -> Unit,
+  navigateToMovingFlow: (NavBackStackEntry) -> Unit,
   openPlayStore: () -> Unit,
   navigateToInsurances: (NavOptions) -> Unit,
   closeTerminationFlow: () -> Unit,
 ) {
-  composable<TerminateInsuranceDestination.TerminationSuccess> { backStackEntry ->
-    TerminationSuccessDestination(
-      terminationDate = terminationDate,
-      onSurveyClicked = { openUrl(surveyUrl) },
-      onDone = {
-        if (!navController.popBackStack()) {
-          // In the deep link situation, we want to navigate to Insurances when we're successfully done with this flow
-          navigateToInsurances(
-            navOptions {
-              popUpTo<TerminateInsuranceDestination.TerminationSuccess> { inclusive = true }
-            },
-          )
-        }
-      },
-    )
-  }
   composable<TerminateInsuranceDestination.TerminationFailure> { backStackEntry ->
     TerminationFailureDestination(
       windowSizeClass = windowSizeClass,
       errorMessage = ErrorMessage(message),
-      openChat = { openChat(backStackEntry) },
+      onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry) },
       navigateUp = navigator::navigateUp,
       navigateBack = navigator::popBackStack,
     )
@@ -75,6 +62,23 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       navigateBack = navigator::popBackStack,
     )
   }
+
+  composable<TerminateInsuranceDestination.TerminationSuccess> { backStackEntry ->
+    TerminationSuccessDestination(
+      terminationDate = terminationDate,
+      onDone = {
+        if (!navController.popBackStack()) {
+          // In the deep link situation, we want to navigate to Insurances when we're successfully done with this flow
+          navigateToInsurances(
+            navOptions {
+              popUpTo<TerminateInsuranceDestination.TerminationSuccess> { inclusive = true }
+            },
+          )
+        }
+      },
+    )
+  }
+
   navigation<TerminateInsuranceGraphDestination>(
     startDestination = createRoutePattern<TerminateInsuranceDestination.StartStep>(),
     deepLinks = listOf(
@@ -90,29 +94,71 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       ChooseInsuranceToTerminateDestination(
         viewModel = viewModel,
         navigateUp = navigator::navigateUp,
-        openChat = { openChat(backStackEntry) },
+        onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry) },
         closeTerminationFlow = closeTerminationFlow,
         navigateToNextStep = { step, insuranceForCancellation: TerminatableInsurance ->
+          val commonParams = TerminationGraphParameters(
+            insuranceForCancellation.displayName,
+            insuranceForCancellation.contractExposure,
+          )
           navigator.navigateToTerminateFlowDestination(
-            destination = step.toTerminateInsuranceDestination(
-              insuranceForCancellation.displayName,
-              insuranceForCancellation.contractExposure,
-              insuranceForCancellation.activateFrom,
-              insuranceForCancellation.contractGroup,
-              /**
-               * Another possible solution will be just to make an inner graph to go from Start,
-               * and keep all these arguments common for all the destination inside that inner graph.
-               * To not to drag these three args around from destination to destination
-               */
-            ),
+            destination = step.toTerminateInsuranceDestination(commonParams),
           )
         },
       )
     }
 
-    composable<TerminateInsuranceDestination.TerminationDate> {
+    composable<TerminateInsuranceDestination.TerminationSurveyFirstStep> { backStackEntry ->
+      val viewModel: TerminationSurveyViewModel = koinViewModel {
+        parametersOf(options)
+      }
+      TerminationSurveyDestination(
+        viewModel,
+        navigateUp = navigator::navigateUp,
+        closeTerminationFlow = closeTerminationFlow,
+        navigateToSubOptions = { subOptions ->
+          navController.navigate(
+            TerminateInsuranceDestination.TerminationSurveySecondStep(subOptions, commonParams),
+          )
+        },
+        navigateToNextStep = { step ->
+          navigator.navigateToTerminateFlowDestination(
+            destination = step.toTerminateInsuranceDestination(commonParams),
+          )
+        },
+        navigateToMovingFlow = { navigateToMovingFlow(backStackEntry) },
+        openUrl = openUrl,
+      )
+    }
+
+    composable<TerminateInsuranceDestination.TerminationSurveySecondStep> { backStackEntry ->
+      val viewModel: TerminationSurveyViewModel = koinViewModel {
+        parametersOf(subOptions)
+      }
+      TerminationSurveyDestination(
+        viewModel,
+        navigateUp = navigator::navigateUp,
+        closeTerminationFlow = closeTerminationFlow,
+        navigateToSubOptions = null,
+        navigateToNextStep = { step ->
+          navigator.navigateToTerminateFlowDestination(
+            destination = step.toTerminateInsuranceDestination(commonParams),
+          )
+        },
+        navigateToMovingFlow = { navigateToMovingFlow(backStackEntry) },
+        openUrl = openUrl,
+      )
+    }
+
+    composable<TerminateInsuranceDestination.TerminationDate> { backStackEntry ->
       val viewModel: TerminationDateViewModel = koinViewModel {
-        parametersOf(TerminationDataParameters(minDate, maxDate, insuranceDisplayName, exposureName))
+        parametersOf(
+          TerminationDateParameters(
+            minDate = minDate,
+            maxDate = maxDate,
+            commonParams,
+          ),
+        )
       }
       TerminationDateDestination(
         viewModel = viewModel,
@@ -122,12 +168,24 @@ fun NavGraphBuilder.terminateInsuranceGraph(
               terminationType = TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Termination(
                 localDate,
               ),
-              parameters = TerminationConfirmationParameters(
-                insuranceDisplayName = insuranceDisplayName,
-                exposureName = exposureName,
-                activeFrom = activeFrom,
-                contractGroup = contractGroup,
-              ),
+              commonParams,
+            ),
+          )
+        },
+        navigateUp = navigator::navigateUp,
+        closeTerminationFlow = closeTerminationFlow,
+      )
+    }
+
+    composable<TerminateInsuranceDestination.InsuranceDeletion> { backStackEntry ->
+      InsuranceDeletionDestination(
+        displayName = commonParams.insuranceDisplayName,
+        exposureName = commonParams.exposureName,
+        onContinue = {
+          navController.navigate(
+            TerminateInsuranceDestination.TerminationConfirmation(
+              terminationType = TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Deletion,
+              commonParams,
             ),
           )
         },
@@ -148,37 +206,10 @@ fun NavGraphBuilder.terminateInsuranceGraph(
         navigateToNextStep = { terminationStep ->
           viewModel.handledNextStepNavigation()
           navigator.navigateToTerminateFlowDestination(
-            destination = terminationStep.toTerminateInsuranceDestination(
-              insuranceDisplayName = parameters.insuranceDisplayName,
-              exposureName = parameters.exposureName,
-              activeFrom = parameters.activeFrom,
-              contractGroup = parameters.contractGroup,
-            ),
+            destination = terminationStep.toTerminateInsuranceDestination(commonParams),
           )
         },
         navigateUp = navigator::navigateUp,
-      )
-    }
-
-    composable<TerminateInsuranceDestination.InsuranceDeletion> {
-      InsuranceDeletionDestination(
-        displayName = insuranceDisplayName,
-        exposureName = exposureName,
-        onContinue = {
-          navController.navigate(
-            TerminateInsuranceDestination.TerminationConfirmation(
-              terminationType = TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Deletion,
-              parameters = TerminationConfirmationParameters(
-                insuranceDisplayName = insuranceDisplayName,
-                exposureName = exposureName,
-                activeFrom = activeFrom,
-                contractGroup = contractGroup,
-              ),
-            ),
-          )
-        },
-        navigateUp = navigator::navigateUp,
-        closeTerminationFlow = closeTerminationFlow,
       )
     }
   }

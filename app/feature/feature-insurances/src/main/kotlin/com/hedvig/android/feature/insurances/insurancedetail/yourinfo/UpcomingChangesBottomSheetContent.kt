@@ -19,14 +19,12 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import hedvig.resources.R
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 internal fun UpcomingChangesBottomSheetContent(
   infoText: String,
-  sections: ImmutableList<Pair<String, String>>,
-  onOpenChat: () -> Unit,
+  sections: List<Pair<String, String>>,
+  onNavigateToNewConversation: () -> Unit,
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -51,7 +49,7 @@ internal fun UpcomingChangesBottomSheetContent(
     Spacer(modifier = Modifier.height(16.dp))
     HedvigContainedButton(
       text = stringResource(id = R.string.open_chat),
-      onClick = onOpenChat,
+      onClick = onNavigateToNewConversation,
     )
     Spacer(modifier = Modifier.height(8.dp))
     HedvigTextButton(
@@ -69,11 +67,11 @@ private fun PreviewUpcomingChangesBottomSheetContent() {
     Surface(color = MaterialTheme.colorScheme.background) {
       UpcomingChangesBottomSheetContent(
         infoText = "Test",
-        sections = persistentListOf(
+        sections = listOf(
           "1" to "2",
         ),
         onDismiss = {},
-        onOpenChat = {},
+        onNavigateToNewConversation = {},
         modifier = Modifier.padding(horizontal = 16.dp),
       )
     }

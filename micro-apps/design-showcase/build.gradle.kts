@@ -25,7 +25,7 @@ android {
       isDebuggable = true
     }
     val release by getting {
-      signingConfig = debug.signingConfig // uncomment to run release build locally
+      signingConfig = debug.signingConfig
       applicationIdSuffix = ".app"
       isMinifyEnabled = true
       isShrinkResources = true
@@ -48,7 +48,10 @@ dependencies {
   implementation(libs.androidx.graphicsShapes)
   implementation(libs.coil.coil)
   implementation(libs.datadog.sdk.core)
+  implementation(libs.material.components)
+  implementation(libs.timber)
   implementation(libs.zoomable)
+  implementation(projects.composeUi)
   implementation(projects.designSystemHedvig)
   implementation(projects.loggingAndroid)
   implementation(projects.trackingCore)

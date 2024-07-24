@@ -19,6 +19,7 @@ import androidx.navigation.navOptions
 import com.datadog.android.compose.ExperimentalTrackingApi
 import com.datadog.android.compose.NavigationViewTrackingEffect
 import com.hedvig.android.app.navigation.RootGraph
+import com.hedvig.android.app.notification.senders.CurrentDestinationInMemoryStorage
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
@@ -42,10 +43,6 @@ import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigate
 import com.kiwi.navigationcompose.typed.popUpTo
 import kotlin.time.Duration.Companion.seconds
-import kotlinx.collections.immutable.ImmutableSet
-import kotlinx.collections.immutable.PersistentSet
-import kotlinx.collections.immutable.persistentSetOf
-import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -67,7 +64,7 @@ internal fun rememberHedvigAppState(
   coroutineScope: CoroutineScope = rememberCoroutineScope(),
 ): HedvigAppState {
   NavigationViewTrackingEffect(navController = navHostController)
-  TopLevelDestinationNavigationSideEffect(navHostController, tabNotificationBadgeService, coroutineScope)
+  RegisterOnDestinationChangedListenerSideEffect(navHostController, tabNotificationBadgeService, coroutineScope)
   return remember(
     navHostController,
     windowSizeClass,
@@ -131,7 +128,15 @@ internal class HedvigAppState(
       false,
     )
 
-  val topLevelGraphs: StateFlow<ImmutableSet<TopLevelGraph>> = flow {
+  val isCbmEnabled: StateFlow<Boolean> = featureManager
+    .isFeatureEnabled(Feature.ENABLE_CBM)
+    .stateIn(
+      coroutineScope,
+      SharingStarted.Eagerly,
+      false,
+    )
+
+  val topLevelGraphs: StateFlow<Set<TopLevelGraph>> = flow {
     val onlyHasNonPayingContracts = getOnlyHasNonPayingContractsUseCase.provide().invoke().getOrNull()
     emit(
       buildList {
@@ -142,12 +147,12 @@ internal class HedvigAppState(
         }
         add(TopLevelGraph.Payments)
         add(TopLevelGraph.Profile)
-      }.toPersistentSet(),
+      }.toSet(),
     )
   }.stateIn(
     coroutineScope,
     SharingStarted.Eagerly,
-    persistentSetOf(
+    setOf(
       TopLevelGraph.Home,
       TopLevelGraph.Insurances,
       TopLevelGraph.Payments,
@@ -155,22 +160,25 @@ internal class HedvigAppState(
     ),
   )
 
-  val topLevelGraphsWithNotifications: StateFlow<PersistentSet<TopLevelGraph>> =
-    tabNotificationBadgeService.unseenTabNotificationBadges().map { bottomNavTabs: Set<BottomNavTab> ->
-      bottomNavTabs.map { bottomNavTab ->
-        when (bottomNavTab) {
-          BottomNavTab.HOME -> TopLevelGraph.Home
-          BottomNavTab.INSURANCE -> TopLevelGraph.Insurances
-          BottomNavTab.FOREVER -> TopLevelGraph.Forever
-          BottomNavTab.PAYMENTS -> TopLevelGraph.Payments
-          BottomNavTab.PROFILE -> TopLevelGraph.Profile
-        }
-      }.toPersistentSet()
-    }.stateIn(
-      scope = coroutineScope,
-      started = SharingStarted.WhileSubscribed(5.seconds),
-      initialValue = persistentSetOf(),
-    )
+  val topLevelGraphsWithNotifications: StateFlow<Set<TopLevelGraph>> =
+    tabNotificationBadgeService
+      .unseenTabNotificationBadges()
+      .map { bottomNavTabs: Set<BottomNavTab> ->
+        bottomNavTabs
+          .map { bottomNavTab ->
+            when (bottomNavTab) {
+              BottomNavTab.HOME -> TopLevelGraph.Home
+              BottomNavTab.INSURANCE -> TopLevelGraph.Insurances
+              BottomNavTab.FOREVER -> TopLevelGraph.Forever
+              BottomNavTab.PAYMENTS -> TopLevelGraph.Payments
+              BottomNavTab.PROFILE -> TopLevelGraph.Profile
+            }
+          }.toSet()
+      }.stateIn(
+        scope = coroutineScope,
+        started = SharingStarted.WhileSubscribed(5.seconds),
+        initialValue = setOf(),
+      )
 
   /**
    * UI logic for navigating to a top level destination in the app. Top level destinations have
@@ -232,7 +240,9 @@ internal class HedvigAppState(
 }
 
 @JvmInline
-value class NavigationSuiteType private constructor(private val description: String) {
+value class NavigationSuiteType private constructor(
+  private val description: String,
+) {
   override fun toString(): String = description
 
   companion object {
@@ -243,13 +253,14 @@ value class NavigationSuiteType private constructor(private val description: Str
 }
 
 @Composable
-private fun TopLevelDestinationNavigationSideEffect(
+private fun RegisterOnDestinationChangedListenerSideEffect(
   navController: NavController,
   tabNotificationBadgeService: TabNotificationBadgeService,
   coroutineScope: CoroutineScope,
 ) {
   DisposableEffect(navController, tabNotificationBadgeService, coroutineScope) {
     val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
+      CurrentDestinationInMemoryStorage.currentDestination = destination.route
       val topLevelDestination = destination.toTopLevelAppDestination() ?: return@OnDestinationChangedListener
       when (topLevelDestination) {
         TopLevelDestination.Home -> {

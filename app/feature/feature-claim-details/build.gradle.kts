@@ -13,7 +13,6 @@ android {
 }
 
 dependencies {
-  apolloMetadata(projects.apolloOctopusPublic)
 
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material3)
@@ -30,7 +29,6 @@ dependencies {
   implementation(libs.koin.compose)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.datetime)
-  implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)
   implementation(libs.retrofit)
@@ -39,8 +37,8 @@ dependencies {
   implementation(projects.apolloCore)
   implementation(projects.apolloNetworkCacheManager)
   implementation(projects.apolloOctopusPublic)
-  implementation(projects.audioPlayerUi)
   implementation(projects.audioPlayerData)
+  implementation(projects.audioPlayerUi)
   implementation(projects.claimStatus)
   implementation(projects.composePhotoCaptureState)
   implementation(projects.coreBuildConstants)
@@ -53,6 +51,7 @@ dependencies {
   implementation(projects.coreRetrofit)
   implementation(projects.coreUi)
   implementation(projects.coreUiData)
+  implementation(projects.designSystemHedvig)
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
   implementation(projects.navigationCore)
@@ -61,6 +60,7 @@ dependencies {
 
 apollo {
   service("octopus") {
-    packageName.set("octopus")
+    packageName = "octopus"
+    dependsOn(projects.apolloOctopusPublic, true)
   }
 }

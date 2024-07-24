@@ -6,7 +6,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
@@ -22,13 +21,8 @@ import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.notification.badge.data.crosssell.card.CrossSellCardNotificationBadgeService
 import com.hedvig.android.ui.emergency.FirstVetSection
-import kotlin.time.Duration.Companion.seconds
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 
@@ -48,14 +42,9 @@ internal class HomePresenter(
     val alreadySeenImportantMessages: List<String>
       by seenImportantMessagesStorage.seenMessages.collectAsState()
 
-    val hasUnseenChatMessages by produceState(
-      lastState.safeCast<HomeUiState.Success>()?.hasUnseenChatMessages ?: false,
-    ) {
-      while (isActive) {
-        value = chatLastMessageReadRepository.isNewestMessageNewerThanLastReadTimestamp()
-        delay(10.seconds)
-      }
-    }
+    val hasUnseenChatMessages by remember(chatLastMessageReadRepository) {
+      chatLastMessageReadRepository.isNewestMessageNewerThanLastReadTimestamp()
+    }.collectAsState(lastState.safeCast<HomeUiState.Success>()?.hasUnseenChatMessages ?: false)
 
     CollectEvents { homeEvent: HomeEvent ->
       when (homeEvent) {
@@ -111,7 +100,7 @@ internal class HomePresenter(
           memberReminders = successData.memberReminders,
           veryImportantMessages = successData.veryImportantMessages.filter {
             !alreadySeenImportantMessages.contains(it.id)
-          }.toPersistentList(),
+          },
           isHelpCenterEnabled = successData.showHelpCenter,
           hasUnseenChatMessages = hasUnseenChatMessages,
           chatAction = successData.chatAction,
@@ -145,7 +134,7 @@ internal sealed interface HomeUiState {
     override val isReloading: Boolean = false,
     val homeText: HomeText,
     val claimStatusCardsData: HomeData.ClaimStatusCardsData?,
-    val veryImportantMessages: ImmutableList<HomeData.VeryImportantMessage>,
+    val veryImportantMessages: List<HomeData.VeryImportantMessage>,
     val memberReminders: MemberReminders,
     val chatAction: HomeTopBarAction.ChatAction?,
     val firstVetAction: HomeTopBarAction.FirstVetAction?,
@@ -162,7 +151,7 @@ internal sealed interface HomeUiState {
 private data class SuccessData(
   val homeText: HomeText,
   val claimStatusCardsData: HomeData.ClaimStatusCardsData?,
-  val veryImportantMessages: ImmutableList<HomeData.VeryImportantMessage>,
+  val veryImportantMessages: List<HomeData.VeryImportantMessage>,
   val memberReminders: MemberReminders,
   val showHelpCenter: Boolean,
   val chatAction: HomeTopBarAction.ChatAction?,
@@ -240,6 +229,6 @@ sealed interface HomeTopBarAction {
   ) : HomeTopBarAction
 
   data class CrossSellsAction(
-    val crossSells: ImmutableList<CrossSell>,
+    val crossSells: List<CrossSell>,
   ) : HomeTopBarAction
 }

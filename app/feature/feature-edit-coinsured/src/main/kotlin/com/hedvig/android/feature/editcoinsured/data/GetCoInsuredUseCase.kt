@@ -3,13 +3,10 @@ package com.hedvig.android.feature.editcoinsured.data
 import arrow.core.Either
 import arrow.core.raise.either
 import arrow.core.raise.ensureNotNull
-import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toImmutableList
 import octopus.CoInsuredQuery
 
 internal interface GetCoInsuredUseCase {
@@ -36,15 +33,13 @@ internal class GetCoInsuredUseCaseImpl(
       it.coInsured
         ?.filter { it.terminatesOn == null }
         ?.map { it.toCoInsured() }
-        ?.toImmutableList()
-        ?: persistentListOf()
+        ?: listOf()
     }
 
     val allCoInsured = result.currentMember.activeContracts
       .mapNotNull { it.coInsured?.map { it.toCoInsured() } }
       .flatten()
       .filterNot { coinsured -> coinsured.hasMissingInfo || coInsuredOnContract.any { it.id == coinsured.id } }
-      .toImmutableList()
 
     CoInsuredResult(
       member = Member(
@@ -74,6 +69,6 @@ internal sealed interface CoInsuredError {
 
 internal data class CoInsuredResult(
   val member: Member,
-  val coInsuredOnContract: ImmutableList<CoInsured>,
-  val allCoInsured: ImmutableList<CoInsured>,
+  val coInsuredOnContract: List<CoInsured>,
+  val allCoInsured: List<CoInsured>,
 )

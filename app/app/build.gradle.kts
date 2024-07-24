@@ -25,7 +25,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "12.6.9"
+    versionName = "12.7.0"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -38,7 +38,8 @@ android {
       excludes += "README.txt"
       excludes += "META-INF/LGPL2.1"
       excludes += "META-INF/AL2.0"
-      excludes += "META-INF/versions/9/previous-compilation-data.bin" // https://github.com/Kotlin/kotlinx-datetime/issues/304
+      // https://github.com/Kotlin/kotlinx-datetime/issues/304
+      excludes += "META-INF/versions/9/previous-compilation-data.bin"
     }
   }
 
@@ -147,25 +148,26 @@ dependencies {
   implementation(libs.firebase.crashlytics)
   implementation(libs.firebase.dynamicLinks)
   implementation(libs.firebase.messaging)
-  implementation(libs.firebase.playServicesBase)
   implementation(libs.kiwi.navigationCompose)
   implementation(libs.koin.android)
   implementation(libs.koin.compose)
   implementation(libs.koin.workManager)
   implementation(libs.kotlin.reflect)
   implementation(libs.kotlinx.datetime)
-  implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.moneta)
   implementation(libs.navigationRecentsUrlSharing)
   implementation(libs.okhttp.core)
   implementation(libs.okhttp.loggingInterceptor)
   implementation(libs.playReview)
+  implementation(libs.playServicesBase)
   implementation(libs.timber)
   implementation(projects.apolloAuthListeners)
   implementation(projects.apolloCore)
   implementation(projects.apolloNetworkCacheManager)
   implementation(projects.authCorePublic)
+  implementation(projects.composeUi)
+  implementation(projects.coreAppReview)
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
@@ -176,13 +178,17 @@ dependencies {
   implementation(projects.coreIcons)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
+  implementation(projects.crossSells)
+  implementation(projects.dataChat)
   implementation(projects.dataChatReadTimestampPublic)
   implementation(projects.dataClaimFlow)
   implementation(projects.dataContractPublic)
   implementation(projects.dataPayingMember)
   implementation(projects.dataSettingsDatastorePublic)
+  implementation(projects.dataTermination)
   implementation(projects.datadogCore)
   implementation(projects.datadogDemoTracking)
+  implementation(projects.designSystemHedvig)
   implementation(projects.featureChangeaddress)
   implementation(projects.featureChat)
   implementation(projects.featureClaimDetails)
@@ -203,6 +209,7 @@ dependencies {
   implementation(projects.featureProfile)
   implementation(projects.featureTerminateInsurance)
   implementation(projects.featureTravelCertificate)
+  implementation(projects.foreverUi)
   implementation(projects.initializable)
   implementation(projects.languageCore)
   implementation(projects.languageData)
@@ -221,10 +228,6 @@ dependencies {
   implementation(projects.theme)
   implementation(projects.trackingCore)
   implementation(projects.trackingDatadog)
-  implementation(projects.coreAppReview)
-  implementation(projects.dataTermination)
-  implementation(projects.foreverUi)
-  implementation(projects.crossSells)
 
   debugImplementation(libs.androidx.compose.uiTestManifest)
   debugImplementation(libs.androidx.compose.uiTooling)

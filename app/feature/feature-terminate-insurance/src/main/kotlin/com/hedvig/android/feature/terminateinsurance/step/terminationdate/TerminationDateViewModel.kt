@@ -6,7 +6,7 @@ import androidx.compose.material3.SelectableDates
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
-import com.hedvig.android.feature.terminateinsurance.navigation.TerminationDataParameters
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminationDateParameters
 import com.hedvig.android.language.LanguageService
 import java.util.Locale
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +17,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 
 internal class TerminationDateViewModel(
-  parameters: TerminationDataParameters,
+  parameters: TerminationDateParameters,
   languageService: LanguageService,
 ) : ViewModel() {
   private val datePickerConfiguration = DatePickerConfiguration(
@@ -30,8 +30,8 @@ internal class TerminationDateViewModel(
     TerminateInsuranceUiState(
       datePickerState = datePickerConfiguration.datePickerState,
       isLoading = false,
-      exposureName = parameters.exposureName,
-      displayName = parameters.insuranceDisplayName,
+      exposureName = parameters.commonParams.exposureName,
+      displayName = parameters.commonParams.insuranceDisplayName,
       isCheckBoxChecked = false,
     ),
   )

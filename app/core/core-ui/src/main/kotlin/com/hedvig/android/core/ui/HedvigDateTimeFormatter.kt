@@ -1,5 +1,6 @@
 package com.hedvig.android.core.ui
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import java.time.format.DateTimeFormatter
@@ -26,7 +27,7 @@ fun hedvigMonthDateTimeFormatter(locale: Locale): DateTimeFormatter {
  * Example output: "910113"
  */
 fun hedvigSecondaryBirthDateDateTimeFormatter(locale: Locale): DateTimeFormatter {
-  return DateTimeFormatter.ofPattern("yyMMd", locale)
+  return DateTimeFormatter.ofPattern("yyMMdd", locale)
 }
 
 @Composable
@@ -65,6 +66,10 @@ object HedvigDateTimeFormatterDefaults {
     return monthDateAndTime.toFormatter(locale)
   }
 
+  fun monthDateAndYear(locale: Locale): DateTimeFormatter {
+    return monthDateAndYear.toFormatter(locale)
+  }
+
   fun yearMonthDateAndTime(locale: Locale): DateTimeFormatter {
     return yearMonthDateAndTime.toFormatter(locale)
   }
@@ -73,6 +78,7 @@ object HedvigDateTimeFormatterDefaults {
 /**
  * Example output: "2021.07.01"
  */
+@SuppressLint("NewApi") // We do have desugaring enabled
 private val isoLocalDateWithDots: DateTimeFormatterBuilder = DateTimeFormatterBuilder()
   .appendValue(ChronoField.YEAR, 4, 10, SignStyle.EXCEEDS_PAD)
   .appendLiteral('.')
@@ -83,6 +89,7 @@ private val isoLocalDateWithDots: DateTimeFormatterBuilder = DateTimeFormatterBu
 /**
  * Example output: "12:34"
  */
+@SuppressLint("NewApi")
 private val timeOnly: DateTimeFormatterBuilder = DateTimeFormatterBuilder()
   .appendValue(ChronoField.HOUR_OF_DAY, 2)
   .appendLiteral(':')
@@ -91,6 +98,7 @@ private val timeOnly: DateTimeFormatterBuilder = DateTimeFormatterBuilder()
 /**
  * Example output: "Fri 12:34"
  */
+@SuppressLint("NewApi")
 private val dayOfTheWeekAndTime: DateTimeFormatterBuilder = DateTimeFormatterBuilder()
   .appendPattern("EEE")
   .appendLiteral(' ')
@@ -101,7 +109,8 @@ private val dayOfTheWeekAndTime: DateTimeFormatterBuilder = DateTimeFormatterBui
 /**
  * Example output: "Nov 11 9:04"
  */
-private val monthDateAndTime: DateTimeFormatterBuilder = DateTimeFormatterBuilder()
+@SuppressLint("NewApi")
+private val monthDateAndTime: DateTimeFormatterBuilder = DateTimeFormatterBuilder() // .appendPattern("MMM dd HH:mm")
   .appendPattern("MMM")
   .appendLiteral(' ')
   .appendValue(ChronoField.DAY_OF_MONTH, 2)
@@ -111,8 +120,20 @@ private val monthDateAndTime: DateTimeFormatterBuilder = DateTimeFormatterBuilde
   .appendValue(ChronoField.MINUTE_OF_HOUR, 2)
 
 /**
+ * Example output: "Nov 11 2024"
+ */
+@SuppressLint("NewApi")
+private val monthDateAndYear: DateTimeFormatterBuilder = DateTimeFormatterBuilder() // .appendPattern("MMM dd HH:mm")
+  .appendPattern("MMM")
+  .appendLiteral(' ')
+  .appendValue(ChronoField.DAY_OF_MONTH, 2)
+  .appendLiteral(' ')
+  .appendValue(ChronoField.YEAR, 4)
+
+/**
  * Example output: "2022 Nov 11 9:04"
  */
+@SuppressLint("NewApi")
 private val yearMonthDateAndTime: DateTimeFormatterBuilder = DateTimeFormatterBuilder()
   .appendPattern("yyyy")
   .appendLiteral(' ')

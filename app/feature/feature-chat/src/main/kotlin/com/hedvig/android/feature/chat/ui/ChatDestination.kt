@@ -42,7 +42,6 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import hedvig.resources.R
 import kotlin.time.Duration.Companion.seconds
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.Clock
 
 @Composable
@@ -145,13 +144,14 @@ private fun ChatScreen(
             onFetchMoreMessages = onFetchMoreMessages,
           )
         }
-        val shouldShowLoadingIndicator = uiState is ChatUiState.Initializing || run {
-          uiState as? ChatUiState.Loaded ?: return@run false
-          val stillLoadingInitialMessages =
-            uiState.fetchMoreMessagesUiState is ChatUiState.Loaded.FetchMoreMessagesUiState.StillInitializing ||
-              uiState.fetchMoreMessagesUiState is ChatUiState.Loaded.FetchMoreMessagesUiState.FetchingMore
-          uiState.messages.isEmpty() && stillLoadingInitialMessages
-        }
+        val shouldShowLoadingIndicator = uiState is ChatUiState.Initializing ||
+          run {
+            uiState as? ChatUiState.Loaded ?: return@run false
+            val stillLoadingInitialMessages =
+              uiState.fetchMoreMessagesUiState is ChatUiState.Loaded.FetchMoreMessagesUiState.StillInitializing ||
+                uiState.fetchMoreMessagesUiState is ChatUiState.Loaded.FetchMoreMessagesUiState.FetchingMore
+            uiState.messages.isEmpty() && stillLoadingInitialMessages
+          }
         if (shouldShowLoadingIndicator) {
           HedvigFullScreenCenterAlignedProgress()
         }
@@ -227,8 +227,7 @@ private class ChatUiStateProvider : CollectionPreviewParameterProvider<ChatUiSta
         )
         .map {
           ChatUiState.Loaded.UiChatMessage(it, false)
-        }
-        .toImmutableList(),
+        },
       fetchMoreMessagesUiState = ChatUiState.Loaded.FetchMoreMessagesUiState.FetchingMore,
       bannerText = "Test",
       haveSentAtLeastOneMessage = false,

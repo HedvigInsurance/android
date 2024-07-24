@@ -156,6 +156,7 @@ internal sealed interface ClaimDetailUiState {
 
   data class Content(
     val claimId: String,
+    val conversationId: String?,
     val submittedContent: SubmittedContent?,
     val files: List<UiFile>,
     val claimStatusCardUiState: ClaimStatusCardUiState,

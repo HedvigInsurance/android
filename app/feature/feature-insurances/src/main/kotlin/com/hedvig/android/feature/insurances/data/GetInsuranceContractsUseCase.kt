@@ -2,9 +2,9 @@ package com.hedvig.android.feature.insurances.data
 
 import arrow.core.Either
 import arrow.core.raise.either
-import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.cache.normalized.FetchPolicy
-import com.apollographql.apollo3.cache.normalized.fetchPolicy
+import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.cache.normalized.FetchPolicy
+import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.formatName
@@ -12,8 +12,6 @@ import com.hedvig.android.core.common.formatSsn
 import com.hedvig.android.data.productVariant.android.toProductVariant
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import octopus.InsuranceContractsQuery
@@ -98,7 +96,7 @@ private fun ContractFragment.toContract(
       },
       productVariant = currentAgreement.productVariant.toProductVariant(),
       certificateUrl = currentAgreement.certificateUrl,
-      coInsured = coInsured?.map { it.toCoInsured() }?.toPersistentList() ?: persistentListOf(),
+      coInsured = coInsured?.map { it.toCoInsured() } ?: listOf(),
       creationCause = currentAgreement.creationCause.toCreationCause(),
     ),
     upcomingInsuranceAgreement = upcomingChangedAgreement?.let {
@@ -113,7 +111,7 @@ private fun ContractFragment.toContract(
         },
         productVariant = it.productVariant.toProductVariant(),
         certificateUrl = it.certificateUrl,
-        coInsured = coInsured?.map { it.toCoInsured() }?.toPersistentList() ?: persistentListOf(),
+        coInsured = coInsured?.map { it.toCoInsured() } ?: listOf(),
         creationCause = it.creationCause.toCreationCause(),
       )
     },

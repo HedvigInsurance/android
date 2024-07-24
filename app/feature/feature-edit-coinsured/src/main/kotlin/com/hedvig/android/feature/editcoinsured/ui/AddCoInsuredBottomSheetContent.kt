@@ -4,11 +4,18 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.DatePickerDialog
@@ -49,14 +56,13 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.SelectableHedvigCard
 import com.hedvig.android.core.ui.getLocale
-import com.hedvig.android.core.ui.rememberHedvigBirthDateDateTimeFormatter
+import com.hedvig.android.core.ui.infocard.VectorWarningCard
+import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.ui.text.WarningTextWithIconForInput
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.AddBottomSheetState
 import hedvig.resources.R
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -136,13 +142,23 @@ internal fun AddCoInsuredBottomSheetContent(
             Switch(
               checked = bottomSheetState.showManualInput,
               onCheckedChange = onManualInputSwitchChanged,
+              modifier = Modifier.wrapContentSize(Alignment.CenterEnd),
             )
           },
           spaceBetween = 4.dp,
         )
       }
+      AnimatedVisibility(bottomSheetState.showUnderAgedInfo) {
+        Column {
+          Spacer(Modifier.height(4.dp))
+          VectorWarningCard(
+            text = stringResource(
+              id = R.string.COINSURED_WITHOUT_SSN_INFO,
+            ),
+          )
+        }
+      }
     }
-
     Spacer(Modifier.height(16.dp))
     HedvigContainedButton(
       text = stringResource(id = bottomSheetState.getSaveLabel().stringRes()),
@@ -156,13 +172,14 @@ internal fun AddCoInsuredBottomSheetContent(
       text = stringResource(id = R.string.general_cancel_button),
       modifier = Modifier.fillMaxWidth(),
     )
-    Spacer(Modifier.height(32.dp))
+    Spacer(Modifier.height(16.dp))
+    Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
   }
 }
 
 @Composable
 internal fun SelectableCoInsuredList(
-  selectableCoInsured: ImmutableList<CoInsured>,
+  selectableCoInsured: List<CoInsured>,
   selectedCoInsured: CoInsured?,
   errorMessage: String?,
   onAddNewCoInsured: () -> Unit,
@@ -331,6 +348,7 @@ private fun ManualInputFields(
       },
       spaceBetween = 4.dp,
     )
+
     Spacer(Modifier.height(4.dp))
     AnimatedVisibility(
       visible = errorMessage != null,
@@ -348,7 +366,7 @@ internal fun DatePickerWithDialog(birthDate: LocalDate?, onSave: (LocalDate) -> 
 
   val selectedDateMillis: Long? = datePickerState.selectedDateMillis
   val locale = getLocale()
-  val hedvigDateTimeFormatter = rememberHedvigBirthDateDateTimeFormatter()
+  val hedvigDateTimeFormatter = rememberHedvigDateTimeFormatter()
   val selectedDate = remember(locale, selectedDateMillis) {
     if (selectedDateMillis == null) {
       null
@@ -394,22 +412,38 @@ internal fun DatePickerWithDialog(birthDate: LocalDate?, onSave: (LocalDate) -> 
     onClick = { showDatePicker = true },
     modifier = modifier,
   ) {
-    Text(
-      text = if (birthDate != null) {
-        hedvigDateTimeFormatter.format(birthDate.toJavaLocalDate())
+    Column(Modifier.padding(top = 4.dp, bottom = 8.dp)) {
+      val paddingForBirthDate = if (birthDate == null) {
+        PaddingValues(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 8.dp)
       } else {
-        stringResource(id = R.string.CONTRACT_BIRTH_DATE)
-      },
-      color = if (birthDate != null) {
-        Color.Unspecified
-      } else {
-        MaterialTheme.colorScheme.onSurfaceVariant
-      },
-      modifier = Modifier.padding(
-        horizontal = 16.dp,
-        vertical = 16.dp,
-      ),
-    )
+        PaddingValues(horizontal = 16.dp)
+      }
+      if (birthDate != null) {
+        Text(
+          text = stringResource(id = R.string.CONTRACT_BIRTH_DATE),
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+          fontSize = MaterialTheme.typography.labelMedium.fontSize,
+          modifier = Modifier.padding(
+            horizontal = 16.dp,
+          ),
+        )
+      }
+      Text(
+        text = if (birthDate != null) {
+          hedvigDateTimeFormatter.format(birthDate.toJavaLocalDate())
+        } else {
+          stringResource(id = R.string.CONTRACT_BIRTH_DATE)
+        },
+        color = if (birthDate != null) {
+          Color.Unspecified
+        } else {
+          MaterialTheme.colorScheme.onSurfaceVariant
+        },
+        modifier = Modifier.padding(
+          paddingForBirthDate,
+        ),
+      )
+    }
   }
 }
 
@@ -426,7 +460,7 @@ private fun AddCoInsuredBottomSheetContentPreview() {
       AddCoInsuredBottomSheetContent(
         bottomSheetState = AddBottomSheetState(
           errorMessage = "Error",
-          selectableCoInsured = persistentListOf(
+          selectableCoInsured = listOf(
             CoInsured(
               "Test",
               "Testersson",
@@ -463,7 +497,12 @@ private fun AddCoInsuredBottomSheetContentWithCoInsuredPreview() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       AddCoInsuredBottomSheetContent(
-        bottomSheetState = AddBottomSheetState(errorMessage = "errorMessage"),
+        bottomSheetState = AddBottomSheetState(
+          errorMessage = "errorMessage",
+          showUnderAgedInfo = true,
+          showManualInput = true,
+          birthDate = LocalDate(2016, 7, 28),
+        ),
         onSsnChanged = {},
         onContinue = {},
         onManualInputSwitchChanged = {},

@@ -23,10 +23,6 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.notification.badge.data.crosssell.card.CrossSellCardNotificationBadgeService
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toImmutableList
-import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
@@ -41,8 +37,8 @@ internal sealed interface InsuranceScreenEvent {
 }
 
 internal data class InsuranceUiState(
-  val contracts: ImmutableList<InsuranceContract>,
-  val crossSells: ImmutableList<CrossSell>,
+  val contracts: List<InsuranceContract>,
+  val crossSells: List<CrossSell>,
   val showNotificationBadge: Boolean,
   val quantityOfCancelledInsurances: Int,
   val hasError: Boolean,
@@ -51,8 +47,8 @@ internal data class InsuranceUiState(
 ) {
   companion object {
     val initialState = InsuranceUiState(
-      contracts = persistentListOf(),
-      crossSells = persistentListOf(),
+      contracts = listOf(),
+      crossSells = listOf(),
       showNotificationBadge = false,
       quantityOfCancelledInsurances = 0,
       hasError = false,
@@ -155,7 +151,7 @@ private suspend fun loadInsuranceData(
       ->
       val insuranceCards = contracts
         .filterNot(InsuranceContract::isTerminated)
-        .toImmutableList()
+
       val crossSells = crossSellsData.map { crossSell ->
         CrossSell(
           id = crossSell.id,
@@ -170,7 +166,7 @@ private suspend fun loadInsuranceData(
             CrossSellType.UNKNOWN__ -> CrossSell.CrossSellType.UNKNOWN
           },
         )
-      }.toPersistentList()
+      }
       InsuranceData(
         contracts = insuranceCards,
         crossSells = crossSells,
@@ -185,8 +181,8 @@ private suspend fun loadInsuranceData(
 }
 
 private data class InsuranceData(
-  val contracts: ImmutableList<InsuranceContract>,
-  val crossSells: ImmutableList<CrossSell>,
+  val contracts: List<InsuranceContract>,
+  val crossSells: List<CrossSell>,
   val quantityOfCancelledInsurances: Int,
 ) {
   companion object {
@@ -199,8 +195,8 @@ private data class InsuranceData(
     }
 
     val Empty: InsuranceData = InsuranceData(
-      contracts = persistentListOf(),
-      crossSells = persistentListOf(),
+      contracts = listOf(),
+      crossSells = listOf(),
       quantityOfCancelledInsurances = 0,
     )
   }

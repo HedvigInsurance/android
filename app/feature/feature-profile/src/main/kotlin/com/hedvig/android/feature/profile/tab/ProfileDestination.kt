@@ -51,6 +51,7 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.isGranted
+import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -62,7 +63,6 @@ import com.hedvig.android.core.icons.hedvig.normal.MultipleDocuments
 import com.hedvig.android.core.icons.hedvig.normal.Settings
 import com.hedvig.android.core.ui.dialog.HedvigAlertDialog
 import com.hedvig.android.core.ui.plus
-import com.hedvig.android.core.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
 import com.hedvig.android.memberreminders.ui.MemberReminderCards
 import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
@@ -86,13 +86,13 @@ internal fun ProfileDestination(
   navigateToAddMissingInfo: (contractId: String) -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
-  openChat: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   viewModel: ProfileViewModel,
 ) {
-  val uiState by viewModel.data.collectAsStateWithLifecycle()
+  val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   ProfileScreen(
     uiState = uiState,
-    reload = viewModel::reload,
+    reload = { viewModel.emit(ProfileUiEvent.Reload) },
     navigateToEurobonus = navigateToEurobonus,
     navigateToMyInfo = navigateToMyInfo,
     navigateToAboutApp = navigateToAboutApp,
@@ -102,9 +102,9 @@ internal fun ProfileDestination(
     navigateToAddMissingInfo = navigateToAddMissingInfo,
     openAppSettings = openAppSettings,
     openUrl = openUrl,
-    snoozeNotificationPermission = viewModel::snoozeNotificationPermission,
-    onLogout = viewModel::onLogout,
-    openChat = openChat,
+    snoozeNotificationPermission = { viewModel.emit(ProfileUiEvent.SnoozeNotificationPermission) },
+    onLogout = { viewModel.emit(ProfileUiEvent.Logout) },
+    onNavigateToNewConversation = onNavigateToNewConversation,
   )
 }
 
@@ -121,7 +121,7 @@ private fun ProfileScreen(
   navigateToAddMissingInfo: (contractId: String) -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
-  openChat: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   snoozeNotificationPermission: () -> Unit,
   onLogout: () -> Unit,
 ) {
@@ -195,7 +195,7 @@ private fun ProfileScreen(
             .only(WindowInsetsSides.Horizontal)
             .asPaddingValues(),
           modifier = Modifier.onConsumedWindowInsetsChanged { consumedWindowInsets = it },
-          openChat = openChat,
+          onNavigateToNewConversation = onNavigateToNewConversation,
         )
         if (memberReminders.isNotEmpty()) {
           Spacer(Modifier.height(16.dp))
@@ -372,40 +372,39 @@ private fun PreviewProfileItemRows() {
     Surface(color = MaterialTheme.colorScheme.background) {
       PreviewContentWithProvidedParametersAnimatedOnClick(
         parametersList = ProfileUiStateProvider().values.toList(),
-        content = {
-            uiState ->
-          Column {
-            ProfileRows(
-              uiState,
-              {},
-              {},
-              {},
-              {},
-              {},
-            )
-          }
-        },
-      )
+      ) { uiState ->
+        Column {
+          ProfileRows(
+            uiState,
+            {},
+            {},
+            {},
+            {},
+            {},
+          )
+        }
+      }
     }
   }
 }
 
-private class ProfileUiStateProvider : CollectionPreviewParameterProvider<ProfileUiState>(
-  listOf(
-    ProfileUiState.Loading,
-    ProfileUiState.Success(
-      travelCertificateAvailable = true,
+private class ProfileUiStateProvider :
+  CollectionPreviewParameterProvider<ProfileUiState>(
+    listOf(
+      ProfileUiState.Loading,
+      ProfileUiState.Success(
+        travelCertificateAvailable = true,
+      ),
+      ProfileUiState.Loading,
+      ProfileUiState.Success(
+        euroBonus = EuroBonus("jsdhgwmehg"),
+        travelCertificateAvailable = true,
+      ),
+      ProfileUiState.Loading,
+      ProfileUiState.Success(
+        euroBonus = EuroBonus("jsdhgwmehg"),
+        travelCertificateAvailable = false,
+      ),
+      ProfileUiState.Loading,
     ),
-    ProfileUiState.Loading,
-    ProfileUiState.Success(
-      euroBonus = EuroBonus("jsdhgwmehg"),
-      travelCertificateAvailable = true,
-    ),
-    ProfileUiState.Loading,
-    ProfileUiState.Success(
-      euroBonus = EuroBonus("jsdhgwmehg"),
-      travelCertificateAvailable = false,
-    ),
-    ProfileUiState.Loading,
-  ),
-)
+  )

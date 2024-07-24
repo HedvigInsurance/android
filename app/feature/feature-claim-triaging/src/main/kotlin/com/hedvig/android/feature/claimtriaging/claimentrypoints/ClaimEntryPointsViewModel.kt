@@ -6,14 +6,13 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.data.claimflow.ClaimFlowRepository
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimtriaging.EntryPoint
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class ClaimEntryPointsViewModel(
-  private val entryPoints: ImmutableList<EntryPoint>,
+  private val entryPoints: List<EntryPoint>,
   private val claimFlowRepository: ClaimFlowRepository,
 ) : ViewModel() {
   private val _uiState = MutableStateFlow(ClaimEntryPointsUiState(entryPoints))
@@ -60,7 +59,7 @@ internal class ClaimEntryPointsViewModel(
 
 @Immutable
 internal data class ClaimEntryPointsUiState(
-  val entryPoints: ImmutableList<EntryPoint>,
+  val entryPoints: List<EntryPoint>,
   val selectedEntryPoint: EntryPoint? = null,
   val haveTriedContinuingWithoutSelection: Boolean = false,
   val isLoading: Boolean = false,

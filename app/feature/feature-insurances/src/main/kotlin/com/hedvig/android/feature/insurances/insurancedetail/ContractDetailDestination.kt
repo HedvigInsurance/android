@@ -41,7 +41,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
-import com.hedvig.android.core.designsystem.animation.animateContentHeight
+import com.hedvig.android.compose.ui.animateContentHeight
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -63,9 +63,6 @@ import com.hedvig.android.feature.insurances.insurancedetail.yourinfo.YourInfoTa
 import com.hedvig.android.feature.insurances.ui.createChips
 import com.hedvig.android.feature.insurances.ui.createPainter
 import hedvig.resources.R
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 
@@ -76,7 +73,7 @@ internal fun ContractDetailDestination(
   onMissingInfoClick: (String) -> Unit,
   onChangeAddressClick: () -> Unit,
   onCancelInsuranceClick: (cancelInsuranceData: CancelInsuranceData) -> Unit,
-  openChat: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   openUrl: (String) -> Unit,
   navigateUp: () -> Unit,
   navigateBack: () -> Unit,
@@ -91,7 +88,7 @@ internal fun ContractDetailDestination(
     onMissingInfoClick = onMissingInfoClick,
     onChangeAddressClick = onChangeAddressClick,
     onCancelInsuranceClick = onCancelInsuranceClick,
-    openChat = openChat,
+    onNavigateToNewConversation = onNavigateToNewConversation,
     openUrl = openUrl,
     navigateUp = navigateUp,
     navigateBack = navigateBack,
@@ -110,7 +107,7 @@ private fun ContractDetailScreen(
   onCancelInsuranceClick: (cancelInsuranceData: CancelInsuranceData) -> Unit,
   navigateUp: () -> Unit,
   navigateBack: () -> Unit,
-  openChat: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   openUrl: (String) -> Unit,
 ) {
   Column(
@@ -213,8 +210,7 @@ private fun ContractDetailScreen(
                   0 -> {
                     YourInfoTab(
                       coverageItems = state.insuranceContract.currentInsuranceAgreement.displayItems
-                        .map { it.title to it.value }
-                        .toImmutableList(),
+                        .map { it.title to it.value },
                       coInsured = state.insuranceContract.currentInsuranceAgreement.coInsured,
                       allowEditCoInsured = state.insuranceContract.supportsEditCoInsured,
                       contractHolderDisplayName = state.insuranceContract.contractHolderDisplayName,
@@ -228,7 +224,7 @@ private fun ContractDetailScreen(
                         onMissingInfoClick(state.insuranceContract.id)
                       },
                       onChangeAddressClick = onChangeAddressClick,
-                      openChat = openChat,
+                      onNavigateToNewConversation = onNavigateToNewConversation,
                       openUrl = openUrl,
                       onCancelInsuranceClick = {
                         val contractGroup =
@@ -276,7 +272,7 @@ private fun ContractDetailScreen(
 }
 
 @Composable
-private fun InsuranceContract.getAllDocuments(): ImmutableList<InsuranceVariantDocument> = buildList {
+private fun InsuranceContract.getAllDocuments(): List<InsuranceVariantDocument> = buildList {
   addAll(currentInsuranceAgreement.productVariant.documents)
   if (currentInsuranceAgreement.certificateUrl != null) {
     val certificate = InsuranceVariantDocument(
@@ -286,7 +282,7 @@ private fun InsuranceContract.getAllDocuments(): ImmutableList<InsuranceVariantD
     )
     add(certificate)
   }
-}.toImmutableList()
+}
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -338,18 +334,18 @@ private fun PreviewContractDetailScreen() {
             currentInsuranceAgreement = InsuranceAgreement(
               activeFrom = LocalDate.fromEpochDays(240),
               activeTo = LocalDate.fromEpochDays(340),
-              displayItems = persistentListOf(),
+              displayItems = listOf(),
               productVariant = ProductVariant(
                 displayName = "Variant",
                 contractGroup = ContractGroup.RENTAL,
                 contractType = ContractType.SE_APARTMENT_RENT,
                 partner = null,
-                perils = persistentListOf(),
-                insurableLimits = persistentListOf(),
-                documents = persistentListOf(),
+                perils = listOf(),
+                insurableLimits = listOf(),
+                documents = listOf(),
               ),
               certificateUrl = null,
-              coInsured = persistentListOf(),
+              coInsured = listOf(),
               creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
             ),
             upcomingInsuranceAgreement = null,
@@ -370,7 +366,7 @@ private fun PreviewContractDetailScreen() {
         },
         navigateUp = {},
         navigateBack = {},
-        openChat = {},
+        onNavigateToNewConversation = {},
         onMissingInfoClick = {},
         openUrl = {},
       )

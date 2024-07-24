@@ -22,7 +22,6 @@ import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.card.InsuranceCard
-import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.data.contract.ContractGroup
@@ -32,7 +31,6 @@ import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceContract
 import com.hedvig.android.feature.insurances.ui.createChips
 import hedvig.resources.R
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate
 
 @Composable
@@ -79,11 +77,6 @@ private fun TerminatedContractsScreen(
         )
       }
       is TerminatedContractsUiState.Success -> {
-        VectorInfoCard(
-          text = stringResource(R.string.insurances_tab_cancelled_insurances_note),
-          modifier = Modifier.padding(horizontal = 16.dp),
-        )
-        Spacer(Modifier.height(16.dp))
         for ((index, contract) in uiState.insuranceContracts.withIndex()) {
           InsuranceCard(
             chips = contract.createChips(),
@@ -129,7 +122,7 @@ private class PreviewTerminatedContractsUiStateProvider :
       TerminatedContractsUiState.NoTerminatedInsurances,
       TerminatedContractsUiState.Error,
       TerminatedContractsUiState.Success(
-        persistentListOf(
+        listOf(
           InsuranceContract(
             "1",
             "Test123",
@@ -139,18 +132,18 @@ private class PreviewTerminatedContractsUiStateProvider :
             currentInsuranceAgreement = InsuranceAgreement(
               activeFrom = LocalDate.fromEpochDays(240),
               activeTo = LocalDate.fromEpochDays(340),
-              displayItems = persistentListOf(),
+              displayItems = listOf(),
               productVariant = ProductVariant(
                 displayName = "Variant",
                 contractGroup = ContractGroup.RENTAL,
                 contractType = ContractType.SE_APARTMENT_RENT,
                 partner = null,
-                perils = persistentListOf(),
-                insurableLimits = persistentListOf(),
-                documents = persistentListOf(),
+                perils = listOf(),
+                insurableLimits = listOf(),
+                documents = listOf(),
               ),
               certificateUrl = null,
-              coInsured = persistentListOf(),
+              coInsured = listOf(),
               creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
             ),
             upcomingInsuranceAgreement = null,

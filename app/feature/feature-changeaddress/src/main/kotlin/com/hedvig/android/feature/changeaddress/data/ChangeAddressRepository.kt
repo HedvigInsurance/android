@@ -3,7 +3,7 @@ package com.hedvig.android.feature.changeaddress.data
 import arrow.core.Either
 import arrow.core.raise.either
 import arrow.core.raise.ensureNotNull
-import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.appreview.SelfServiceCompletedEventManager
@@ -11,7 +11,6 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.productVariant.android.toProductVariant
 import com.hedvig.android.logger.logcat
-import kotlinx.collections.immutable.toImmutableList
 import octopus.MoveIntentCommitMutation
 import octopus.MoveIntentCreateMutation
 import octopus.MoveIntentRequestMutation
@@ -128,8 +127,7 @@ private fun MoveIntentRequestMutation.Data.MoveIntentRequest.MoveIntent.toMoveQu
       startDate = quote.startDate,
       productVariant = quote.productVariant.toProductVariant(),
       displayItems = quote.displayItems
-        .map { it.displayTitle to it.displayValue }
-        .toImmutableList(),
+        .map { it.displayTitle to it.displayValue },
     )
   }
 }

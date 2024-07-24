@@ -9,8 +9,8 @@ plugins {
 }
 
 dependencies {
-  apolloMetadata(projects.apolloOctopusPublic)
-
+  implementation(libs.accompanist.permissions)
+  implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.apollo.normalizedCache)
@@ -25,10 +25,10 @@ dependencies {
   implementation(libs.coroutines.core)
   implementation(libs.koin.compose)
   implementation(libs.koin.core)
-  implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
+  implementation(projects.composeUi)
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDesignSystem)
@@ -36,19 +36,19 @@ dependencies {
   implementation(projects.coreResources)
   implementation(projects.coreUi)
   implementation(projects.dataContractPublic)
+  implementation(projects.dataTermination)
   implementation(projects.featureFlagsPublic)
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
+  implementation(projects.placeholder)
   implementation(projects.uiEmergency)
-  implementation(project(":placeholder"))
-  implementation(projects.dataTermination)
 }
 
 apollo {
   service("octopus") {
-    packageName.set("octopus")
-    generateDataBuilders.set(true)
+    packageName = "octopus"
+    dependsOn(projects.apolloOctopusPublic, true)
   }
 }

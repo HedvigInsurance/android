@@ -1,6 +1,6 @@
 package com.hedvig.android.shared.foreverui.ui.di
 
-import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.shared.foreverui.ui.data.ForeverRepositoryDemo
 import com.hedvig.android.shared.foreverui.ui.data.ForeverRepositoryImpl

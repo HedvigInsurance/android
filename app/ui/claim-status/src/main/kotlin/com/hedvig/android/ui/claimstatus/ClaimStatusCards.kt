@@ -18,16 +18,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import arrow.core.NonEmptyList
 import arrow.core.toNonEmptyListOrNull
-import com.google.accompanist.pager.HorizontalPagerIndicator
+import com.hedvig.android.compose.pager.indicator.HorizontalPagerIndicator
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.ui.claimstatus.model.ClaimPillType
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
+import kotlinx.datetime.Instant
 
 @Composable
 fun ClaimStatusCards(
-  onClick: ((claimId: String) -> Unit)?,
+  onClick: (claimId: String) -> Unit,
   claimStatusCardsUiState: NonEmptyList<ClaimStatusCardUiState>,
   contentPadding: PaddingValues,
   modifier: Modifier = Modifier,
@@ -36,8 +37,6 @@ fun ClaimStatusCards(
     ClaimStatusCard(
       uiState = claimStatusCardsUiState.first(),
       onClick = onClick,
-      claimType = claimStatusCardsUiState.first().claimType,
-      insuranceDisplayName = claimStatusCardsUiState.first().insuranceDisplayName,
       modifier = modifier.padding(contentPadding),
     )
   } else {
@@ -46,7 +45,7 @@ fun ClaimStatusCards(
       HorizontalPager(
         state = pagerState,
         contentPadding = contentPadding,
-        beyondBoundsPageCount = 1,
+        beyondViewportPageCount = 1,
         pageSpacing = 8.dp,
         modifier = Modifier.fillMaxWidth().systemGestureExclusion(),
       ) { page: Int ->
@@ -54,8 +53,6 @@ fun ClaimStatusCards(
         ClaimStatusCard(
           uiState = claimStatusUiState,
           onClick = onClick,
-          claimType = claimStatusUiState.claimType,
-          insuranceDisplayName = claimStatusUiState.insuranceDisplayName,
           modifier = Modifier.fillMaxWidth(),
         )
       }
@@ -88,6 +85,7 @@ private fun PreviewClaimStatusCards() {
             ),
             claimType = "Broken item",
             insuranceDisplayName = "Home Insurance Homeowner",
+            submittedDate = Instant.parse("2024-05-01T00:00:00Z"),
           )
         }.toNonEmptyListOrNull()!!,
       )

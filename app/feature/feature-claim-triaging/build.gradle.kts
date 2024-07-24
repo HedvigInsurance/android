@@ -9,14 +9,15 @@ plugins {
 
 dependencies {
   implementation(libs.androidx.compose.material3)
+  implementation(libs.androidx.compose.material3.windowSizeClass)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.koin.compose)
   implementation(libs.koin.core)
-  implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
+  implementation(projects.composeUi)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDesignSystem)
@@ -26,5 +27,4 @@ dependencies {
   implementation(projects.dataClaimTriaging)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
-  implementation(libs.androidx.compose.material3.windowSizeClass)
 }

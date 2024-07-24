@@ -1,6 +1,6 @@
 package com.hedvig.android.apollo.auth.listeners.di
 
-import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.auth.listeners.UploadLanguagePreferenceToBackendAuthListener
 import com.hedvig.android.apollo.auth.listeners.UploadLanguagePreferenceToBackendUseCase
 import com.hedvig.android.apollo.auth.listeners.UploadLanguagePreferenceToBackendUseCaseImpl

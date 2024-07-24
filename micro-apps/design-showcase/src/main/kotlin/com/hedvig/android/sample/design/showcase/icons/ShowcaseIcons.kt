@@ -90,7 +90,7 @@ import com.hedvig.android.design.system.hedvig.icon.flag.FlagUk
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun ShowcaseIcons(modifier: Modifier = Modifier) {
+internal fun ShowcaseIcons(modifier: Modifier = Modifier) {
   CompositionLocalProvider(LocalContentColor provides Color.Black) {
     Column(modifier) {
       FlowRow {

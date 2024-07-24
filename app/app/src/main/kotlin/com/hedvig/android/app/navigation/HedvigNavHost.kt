@@ -7,15 +7,20 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.navOptions
 import coil.ImageLoader
+import com.benasher44.uuid.Uuid
 import com.hedvig.android.app.ui.HedvigAppState
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.toClaimFlowDestination
 import com.hedvig.android.feature.changeaddress.navigation.changeAddressGraph
+import com.hedvig.android.feature.chat.cbm.navigation.cbmChatGraph
+import com.hedvig.android.feature.chat.navigation.ChatDestination
+import com.hedvig.android.feature.chat.navigation.ChatDestinations
 import com.hedvig.android.feature.chat.navigation.chatGraph
 import com.hedvig.android.feature.claim.details.navigation.claimDetailsGraph
 import com.hedvig.android.feature.claimtriaging.ClaimTriagingDestination
@@ -47,6 +52,7 @@ import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.Market
 import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.core.AppDestination
+import com.hedvig.android.navigation.core.AppDestination.Chat.ChatContext
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
 import com.hedvig.app.BuildConfig
@@ -81,6 +87,54 @@ internal fun HedvigNavHost(
       -> hedvigAppState.navController.navigate(AppDestination.ConnectPaymentAdyen)
     }
   }
+  val navigateToInbox = { backStackEntry: NavBackStackEntry ->
+    with(navigator) {
+      if (hedvigAppState.isCbmEnabled.value) {
+        backStackEntry.navigate(ChatDestination)
+      } else {
+        backStackEntry.navigate(AppDestination.Chat())
+      }
+    }
+  }
+  val navigateToNewConversation = { backStackEntry: NavBackStackEntry ->
+    with(navigator) {
+      if (hedvigAppState.isCbmEnabled.value) {
+        backStackEntry.navigate(ChatDestinations.Chat(Uuid.randomUUID().toString()))
+      } else {
+        backStackEntry.navigate(AppDestination.Chat())
+      }
+    }
+  }
+  val navigateToNewConversationWithOptions = {
+      backStackEntry: NavBackStackEntry,
+      builder: (NavOptionsBuilder.() -> Unit)?,
+    ->
+    with(navigator) {
+      if (hedvigAppState.isCbmEnabled.value) {
+        backStackEntry.navigate(ChatDestinations.Chat(Uuid.randomUUID().toString()), builder ?: {})
+      } else {
+        backStackEntry.navigate(AppDestination.Chat(), builder ?: {})
+      }
+    }
+  }
+  val navigateToConversation = { backStackEntry: NavBackStackEntry, conversationId: String ->
+    with(navigator) {
+      if (hedvigAppState.isCbmEnabled.value) {
+        backStackEntry.navigate(ChatDestinations.Chat(conversationId))
+      } else {
+        backStackEntry.navigate(AppDestination.Chat())
+      }
+    }
+  }
+  val navigateToNewConversationWithContext = { backStackEntry: NavBackStackEntry, chatContext: ChatContext? ->
+    with(navigator) {
+      if (hedvigAppState.isCbmEnabled.value) {
+        backStackEntry.navigate(ChatDestinations.Chat(Uuid.randomUUID().toString()))
+      } else {
+        backStackEntry.navigate(AppDestination.Chat(chatContext))
+      }
+    }
+  }
 
   NavHost(
     navController = hedvigAppState.navController,
@@ -98,7 +152,7 @@ internal fun HedvigNavHost(
       urlBaseWeb = hedvigBuildConstants.urlBaseWeb,
       openUrl = openUrl,
       onOpenEmailApp = externalNavigator::openEmailApp,
-      startLoggedInActivity = hedvigAppState::navigateToLoggedIn,
+      onNavigateToLoggedIn = hedvigAppState::navigateToLoggedIn,
     )
     homeGraph(
       nestedGraphs = {
@@ -111,13 +165,16 @@ internal fun HedvigNavHost(
           externalNavigator = externalNavigator,
           imageLoader = imageLoader,
           openUrl = openUrl,
+          navigateToNewConversation = navigateToNewConversationWithOptions,
+          navigateToConversation = navigateToConversation,
         )
       },
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-      onStartChat = { backStackEntry ->
-        with(navigator) {
-          backStackEntry.navigate(AppDestination.Chat())
-        }
+      onNavigateToInbox = { backStackEntry ->
+        navigateToInbox(backStackEntry)
+      },
+      onNavigateToNewConversation = { backStackEntry ->
+        navigateToNewConversation(backStackEntry)
       },
       onStartClaim = { backStackEntry ->
         with(navigator) { backStackEntry.navigate(AppDestination.ClaimsFlow) }
@@ -142,16 +199,26 @@ internal fun HedvigNavHost(
           windowSizeClass = hedvigAppState.windowSizeClass,
           navigator = navigator,
           navController = hedvigAppState.navController,
-          openChat = { backStackEntry ->
-            with(navigator) {
-              backStackEntry.navigate(AppDestination.Chat())
-            }
+          onNavigateToNewConversation = { backStackEntry ->
+            navigateToNewConversation(backStackEntry)
           },
           openUrl = openUrl,
           openPlayStore = externalNavigator::tryOpenPlayStore,
           hedvigDeepLinkContainer = hedvigDeepLinkContainer,
           navigateToInsurances = { navOptions ->
             hedvigAppState.navController.navigate(InsurancesDestination.Graph, navOptions)
+          },
+          navigateToMovingFlow = { backStackEntry ->
+            with(navigator) {
+              backStackEntry.navigate(
+                destination = AppDestination.ChangeAddress,
+                navOptions = navOptions {
+                  popUpTo<TerminateInsuranceGraphDestination> {
+                    inclusive = true
+                  }
+                },
+              )
+            }
           },
           closeTerminationFlow = {
             /**
@@ -168,10 +235,8 @@ internal fun HedvigNavHost(
       },
       navigator = navigator,
       openUrl = openUrl,
-      openChat = { backStackEntry ->
-        with(navigator) {
-          backStackEntry.navigate(AppDestination.Chat())
-        }
+      onNavigateToNewConversation = { backStackEntry ->
+        navigateToNewConversation(backStackEntry)
       },
       startMovingFlow = { backStackEntry ->
         with(navigator) {
@@ -229,13 +294,18 @@ internal fun HedvigNavHost(
       },
       openAppSettings = externalNavigator::openAppSettings,
       openUrl = openUrl,
-      openChat = { backStackEntry ->
-        with(navigator) {
-          backStackEntry.navigate(AppDestination.Chat())
-        }
+      onNavigateToNewConversation = { backStackEntry ->
+        navigateToNewConversation(backStackEntry)
       },
     )
     chatGraph(
+      hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+      hedvigBuildConstants = hedvigBuildConstants,
+      imageLoader = imageLoader,
+      openUrl = openUrl,
+      navigator = navigator,
+    )
+    cbmChatGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       hedvigBuildConstants = hedvigBuildConstants,
       imageLoader = imageLoader,
@@ -282,10 +352,9 @@ internal fun HedvigNavHost(
           backStackEntry.navigate(destination)
         }
       },
-      openChat = { backStackEntry, chatContext ->
-        with(navigator) {
-          backStackEntry.navigate(AppDestination.Chat(chatContext))
-        }
+      onNavigateToNewConversation = { backStackEntry, chatContext ->
+        // todo cbm check if we're gonna use chatContext
+        navigateToNewConversationWithContext(backStackEntry, chatContext)
       },
     )
   }
@@ -300,6 +369,8 @@ private fun NavGraphBuilder.nestedHomeGraphs(
   externalNavigator: ExternalNavigator,
   imageLoader: ImageLoader,
   openUrl: (String) -> Unit,
+  navigateToNewConversation: (NavBackStackEntry, (NavOptionsBuilder.() -> Unit)?) -> Unit,
+  navigateToConversation: (NavBackStackEntry, String) -> Unit,
 ) {
   claimDetailsGraph(
     navigator = navigator,
@@ -307,19 +378,15 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     openUrl = openUrl,
     navigateUp = navigator::navigateUp,
     appPackageId = hedvigBuildConstants.appId,
-    openChat = { backStackEntry ->
-      with(navigator) {
-        backStackEntry.navigate(AppDestination.Chat())
-      }
+    navigateToConversation = { backStackEntry, conversationId ->
+      navigateToConversation(backStackEntry, conversationId)
     },
     applicationId = BuildConfig.APPLICATION_ID,
   )
   changeAddressGraph(
     navController = hedvigAppState.navController,
-    openChat = { backStackEntry ->
-      with(navigator) {
-        backStackEntry.navigate(AppDestination.Chat())
-      }
+    onNavigateToNewConversation = { backStackEntry ->
+      navigateToNewConversation(backStackEntry, null)
     },
     openUrl = openUrl,
   )
@@ -352,10 +419,8 @@ private fun NavGraphBuilder.nestedHomeGraphs(
       )
     },
     openUrl = openUrl,
-    openChat = { backStackEntry ->
-      with(navigator) {
-        backStackEntry.navigate(AppDestination.Chat())
-      }
+    onNavigateToNewConversation = { backStackEntry ->
+      navigateToNewConversation(backStackEntry, null)
     },
     imageLoader = imageLoader,
     appPackageId = hedvigBuildConstants.appId,
@@ -366,11 +431,9 @@ private fun NavGraphBuilder.nestedHomeGraphs(
       navigator.popBackStack()
       externalNavigator.tryOpenPlayStore()
     },
-    openChat = { backStackEntry ->
-      with(navigator) {
-        backStackEntry.navigate(destination = AppDestination.Chat()) {
-          popUpTo<HomeDestination.Home>()
-        }
+    onNavigateToNewConversation = { backStackEntry ->
+      navigateToNewConversation(backStackEntry) {
+        popUpTo<HomeDestination.Home>()
       }
     },
   )

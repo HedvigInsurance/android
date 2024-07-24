@@ -7,7 +7,6 @@ import com.hedvig.android.data.claimflow.ClaimFlowRepository
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimtriaging.EntryPointId
 import com.hedvig.android.data.claimtriaging.EntryPointOption
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -15,7 +14,7 @@ import kotlinx.coroutines.launch
 
 internal class ClaimEntryPointOptionsViewModel(
   private val entryPointId: EntryPointId,
-  entryPointOptions: ImmutableList<EntryPointOption>,
+  entryPointOptions: List<EntryPointOption>,
   private val claimFlowRepository: ClaimFlowRepository,
 ) : ViewModel() {
   private val _uiState = MutableStateFlow(ClaimEntryPointOptionsUiState(entryPointOptions))
@@ -61,7 +60,7 @@ internal class ClaimEntryPointOptionsViewModel(
 
 @Immutable
 internal data class ClaimEntryPointOptionsUiState(
-  val entryPointOptions: ImmutableList<EntryPointOption>,
+  val entryPointOptions: List<EntryPointOption>,
   val selectedEntryPointOption: EntryPointOption? = null,
   val haveTriedContinuingWithoutSelection: Boolean = false,
   val isLoading: Boolean = false,

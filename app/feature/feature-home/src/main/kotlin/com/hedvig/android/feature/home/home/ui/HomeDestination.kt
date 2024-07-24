@@ -42,7 +42,9 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
@@ -56,8 +58,9 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.nonEmptyListOf
-import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.permissions.isGranted
+import com.hedvig.android.compose.pager.indicator.HorizontalPagerIndicator
+import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.designsystem.component.bottomsheet.HedvigBottomSheet
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigSecondaryContainedButton
@@ -78,11 +81,12 @@ import com.hedvig.android.core.ui.appbar.m3.TopAppBarLayoutForActions
 import com.hedvig.android.core.ui.infocard.InfoCardTextButton
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.plus
-import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.crosssells.CrossSellsSection
 import com.hedvig.android.data.contract.android.CrossSell
 import com.hedvig.android.feature.home.home.ChatTooltip
+import com.hedvig.android.feature.home.home.ChatTooltipMessage
 import com.hedvig.android.feature.home.home.data.HomeData
+import com.hedvig.android.feature.home.home.data.HomeData.VeryImportantMessage.LinkInfo
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.memberreminders.ui.MemberReminderCardsWithoutNotification
@@ -103,16 +107,18 @@ import com.hedvig.android.ui.emergency.FirstVetSection
 import hedvig.resources.R
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.Instant
 import kotlinx.datetime.toJavaLocalDate
 
 @Composable
 internal fun HomeDestination(
   viewModel: HomeViewModel,
-  onStartChat: () -> Unit,
+  onNavigateToInbox: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   onClaimDetailCardClicked: (String) -> Unit,
   navigateToConnectPayment: () -> Unit,
   onStartClaim: () -> Unit,
@@ -128,7 +134,8 @@ internal fun HomeDestination(
     uiState = uiState,
     notificationPermissionState = notificationPermissionState,
     reload = { viewModel.emit(HomeEvent.RefreshData) },
-    onStartChat = onStartChat,
+    onNavigateToInbox = onNavigateToInbox,
+    onNavigateToNewConversation = onNavigateToNewConversation,
     onClaimDetailCardClicked = onClaimDetailCardClicked,
     navigateToConnectPayment = navigateToConnectPayment,
     onStartClaim = onStartClaim,
@@ -147,7 +154,8 @@ private fun HomeScreen(
   uiState: HomeUiState,
   notificationPermissionState: NotificationPermissionState,
   reload: () -> Unit,
-  onStartChat: () -> Unit,
+  onNavigateToInbox: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   onClaimDetailCardClicked: (String) -> Unit,
   navigateToConnectPayment: () -> Unit,
   onStartClaim: () -> Unit,
@@ -168,7 +176,7 @@ private fun HomeScreen(
     onRefresh = reload,
     refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
   )
-  var crossSellsForBottomSheet by remember { mutableStateOf<ImmutableList<CrossSell>?>(null) }
+  var crossSellsForBottomSheet by remember { mutableStateOf<List<CrossSell>?>(null) }
   if (crossSellsForBottomSheet != null) {
     val list = crossSellsForBottomSheet
     if (list != null) {
@@ -220,7 +228,7 @@ private fun HomeScreen(
             openAppSettings = openAppSettings,
             openUrl = openUrl,
             navigateToMissingInfo = navigateToMissingInfo,
-            openChat = onStartChat,
+            onNavigateToNewConversation = onNavigateToNewConversation,
             markMessageAsSeen = markMessageAsSeen,
           )
         }
@@ -242,7 +250,7 @@ private fun HomeScreen(
             }
             when (action) {
               HomeTopBarAction.ChatAction -> ToolbarChatIcon(
-                onClick = onStartChat,
+                onClick = onNavigateToInbox,
                 modifier = Modifier.notificationCircle(uiState.hasUnseenChatMessages),
               )
 
@@ -263,19 +271,43 @@ private fun HomeScreen(
         }
       }
       if ((uiState as? HomeUiState.Success)?.chatAction != null) {
-        val shouldShowTooltip by produceState(false) {
+        val shouldShowGotQuestionsTooltip by produceState(false) {
           val daysSinceLastTooltipShown = daysSinceLastTooltipShown(context)
           value = daysSinceLastTooltipShown
         }
-        ChatTooltip(
-          showTooltip = shouldShowTooltip,
-          tooltipShown = {
-            context.setLastEpochDayWhenChatTooltipWasShown(java.time.LocalDate.now().toEpochDay())
-          },
-          modifier = Modifier
-            .align(Alignment.End)
-            .padding(horizontal = 16.dp),
-        )
+        val updatedHasUnseenChatMessages by rememberUpdatedState(uiState.hasUnseenChatMessages)
+        val shouldShowNewMessageTooltip by produceState(false) {
+          snapshotFlow { updatedHasUnseenChatMessages }
+            .drop(1)
+            .collectLatest {
+              value = it
+            }
+        }
+        if (shouldShowGotQuestionsTooltip) {
+          ChatTooltip(
+            chatTooltipMessage = ChatTooltipMessage.GotQuestions,
+            showTooltip = shouldShowGotQuestionsTooltip,
+            tooltipShown = {
+              context.setLastEpochDayWhenChatTooltipWasShown(
+                java.time.LocalDate
+                  .now()
+                  .toEpochDay(),
+              )
+            },
+            modifier = Modifier
+              .align(Alignment.End)
+              .padding(horizontal = 16.dp),
+          )
+        } else if (shouldShowNewMessageTooltip) {
+          ChatTooltip(
+            chatTooltipMessage = ChatTooltipMessage.NewMessage,
+            showTooltip = shouldShowNewMessageTooltip,
+            tooltipShown = {},
+            modifier = Modifier
+              .align(Alignment.End)
+              .padding(horizontal = 16.dp),
+          )
+        }
       }
     }
     PullRefreshIndicator(
@@ -288,7 +320,9 @@ private fun HomeScreen(
 }
 
 private suspend fun daysSinceLastTooltipShown(context: Context): Boolean {
-  val currentEpochDay = java.time.LocalDate.now().toEpochDay()
+  val currentEpochDay = java.time.LocalDate
+    .now()
+    .toEpochDay()
   val lastEpochDayOpened = withContext(Dispatchers.IO) {
     context.getLastEpochDayWhenChatTooltipWasShown()
   }
@@ -312,7 +346,7 @@ private fun HomeScreenSuccess(
   openUrl: (String) -> Unit,
   markMessageAsSeen: (String) -> Unit,
   navigateToMissingInfo: (String) -> Unit,
-  openChat: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   var fullScreenSize: IntSize? by remember { mutableStateOf(null) }
@@ -367,7 +401,7 @@ private fun HomeScreenSuccess(
             memberReminders = memberReminders,
             navigateToConnectPayment = navigateToConnectPayment,
             navigateToAddMissingInfo = navigateToMissingInfo,
-            openChat = openChat,
+            onNavigateToNewConversation = onNavigateToNewConversation,
             openUrl = openUrl,
             contentPadding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
               .exclude(consumedWindowInsets)
@@ -444,7 +478,7 @@ private fun ImportantMessages(
         HorizontalPager(
           state = pagerState,
           contentPadding = contentPadding,
-          beyondBoundsPageCount = 1,
+          beyondViewportPageCount = 1,
           pageSpacing = 8.dp,
           modifier = Modifier
             .fillMaxWidth()
@@ -498,11 +532,11 @@ private fun VeryImportantMessageCard(
           onClick = { hideImportantMessage(veryImportantMessage.id) },
           modifier = Modifier.weight(1f),
         )
-        if (veryImportantMessage.link != null) {
+        if (veryImportantMessage.linkInfo != null) {
           Spacer(modifier = Modifier.width(8.dp))
           InfoCardTextButton(
-            text = stringResource(R.string.important_message_read_more),
-            onClick = { openUrl(veryImportantMessage.link) },
+            text = veryImportantMessage.linkInfo.buttonText ?: stringResource(R.string.important_message_read_more),
+            onClick = { openUrl(veryImportantMessage.linkInfo.link) },
             modifier = Modifier.weight(1f),
           )
         }
@@ -536,7 +570,7 @@ private fun WelcomeMessage(homeText: HomeText, modifier: Modifier = Modifier) {
 
 @Composable
 private fun CrossSellBottomSheet(
-  crossSells: ImmutableList<CrossSell>,
+  crossSells: List<CrossSell>,
   onDismissed: () -> Unit,
   onCrossSellClick: (String) -> Unit,
 ) {
@@ -590,14 +624,18 @@ private fun PreviewHomeScreen(
                 ),
                 claimType = "Broken item",
                 insuranceDisplayName = "Home Insurance Homeowner",
+                submittedDate = Instant.parse("2024-05-01T00:00:00Z"),
               ),
             ),
           ),
-          veryImportantMessages = persistentListOf(
+          veryImportantMessages = listOf(
             HomeData.VeryImportantMessage(
               "id",
               "Beware of the earthquake",
-              "",
+              LinkInfo(
+                "Read more",
+                "",
+              ),
             ),
           ),
           memberReminders = MemberReminders(
@@ -606,7 +644,7 @@ private fun PreviewHomeScreen(
           isHelpCenterEnabled = true,
           hasUnseenChatMessages = hasUnseenChatMessages,
           crossSellsAction = HomeTopBarAction.CrossSellsAction(
-            persistentListOf(CrossSell("rf", "erf", "", "", CrossSell.CrossSellType.ACCIDENT)),
+            listOf(CrossSell("rf", "erf", "", "", CrossSell.CrossSellType.ACCIDENT)),
           ),
           firstVetAction = HomeTopBarAction.FirstVetAction(
             listOf(
@@ -622,7 +660,8 @@ private fun PreviewHomeScreen(
         ),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
         reload = {},
-        onStartChat = {},
+        onNavigateToInbox = {},
+        onNavigateToNewConversation = {},
         onClaimDetailCardClicked = {},
         navigateToConnectPayment = {},
         onStartClaim = {},

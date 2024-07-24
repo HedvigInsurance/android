@@ -97,7 +97,7 @@ private fun ClaimProgress(text: String, color: Color, contentAlpha: ContentAlpha
     Text(
       text = text,
       textAlign = TextAlign.Center,
-      style = MaterialTheme.typography.bodySmall,
+      style = MaterialTheme.typography.bodyMedium,
       color = LocalContentColor.current.copy(alpha = contentAlpha.value),
       modifier = Modifier.fillMaxWidth(),
     )

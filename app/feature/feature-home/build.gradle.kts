@@ -14,9 +14,6 @@ android {
 }
 
 dependencies {
-  implementation(projects.notificationBadgeDataPublic)
-  apolloMetadata(projects.apolloOctopusPublic)
-
   implementation(libs.accompanist.permissions)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material3)
@@ -32,23 +29,27 @@ dependencies {
   implementation(libs.coil.compose)
   implementation(libs.koin.compose)
   implementation(libs.kotlinx.datetime)
-  implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.moneta)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
-  implementation(projects.audioPlayerUi)
   implementation(projects.audioPlayerData)
+  implementation(projects.audioPlayerUi)
   implementation(projects.claimStatus)
+  implementation(projects.composePagerIndicator)
+  implementation(projects.composeUi)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
-  implementation(projects.coreMarkdown)
   implementation(projects.coreDemoMode)
   implementation(projects.coreDesignSystem)
   implementation(projects.coreIcons)
+  implementation(projects.coreMarkdown)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
+  implementation(projects.crossSells)
   implementation(projects.dataChatReadTimestampPublic)
+  implementation(projects.dataContractAndroid)
+  implementation(projects.designSystemHedvig)
   implementation(projects.featureFlagsPublic)
   implementation(projects.languageCore)
   implementation(projects.marketCore)
@@ -59,11 +60,9 @@ dependencies {
   implementation(projects.navigationActivity)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
+  implementation(projects.notificationBadgeDataPublic)
   implementation(projects.notificationPermission)
   implementation(projects.pullrefresh)
-  implementation(projects.dataContractAndroid)
-  implementation(libs.accompanist.pagerIndicators)
-  implementation(projects.crossSells)
   implementation(projects.uiEmergency)
 
   testImplementation(libs.apollo.testingSupport)
@@ -81,13 +80,13 @@ dependencies {
   testImplementation(projects.loggingTest)
   testImplementation(projects.memberRemindersTest)
   testImplementation(projects.moleculeTest)
-  testImplementation(projects.testClock)
   testImplementation(projects.notificationBadgeDataFake)
+  testImplementation(projects.testClock)
 }
 
 apollo {
   service("octopus") {
-    packageName.set("octopus")
-    generateDataBuilders.set(true)
+    packageName = "octopus"
+    dependsOn(projects.apolloOctopusPublic, true)
   }
 }

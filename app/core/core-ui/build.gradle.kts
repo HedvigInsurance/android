@@ -2,7 +2,6 @@ plugins {
   id("hedvig.android.library")
   id("hedvig.android.library.compose")
   id("hedvig.android.ktlint")
-  alias(libs.plugins.molecule)
   alias(libs.plugins.serialization)
   alias(libs.plugins.squareSortDependencies)
 }
@@ -20,12 +19,14 @@ dependencies {
   implementation(libs.androidx.other.appCompat)
   implementation(libs.coil.coil)
   implementation(libs.coil.compose)
-  implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)
+  implementation(libs.molecule)
   implementation(projects.apolloOctopusPublic)
+  implementation(projects.composeUi)
   implementation(projects.coreDesignSystem)
   implementation(projects.coreResources)
   implementation(projects.coreUiData)
+  implementation(projects.designSystemHedvig)
   implementation(projects.placeholder)
 }

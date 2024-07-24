@@ -1,9 +1,9 @@
 package com.hedvig.android.apollo.test
 
-import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.annotations.ApolloExperimental
-import com.apollographql.apollo3.testing.MapTestNetworkTransport
-import com.apollographql.apollo3.testing.QueueTestNetworkTransport
+import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.annotations.ApolloExperimental
+import com.apollographql.apollo.testing.MapTestNetworkTransport
+import com.apollographql.apollo.testing.QueueTestNetworkTransport
 import org.junit.rules.ExternalResource
 
 /**
