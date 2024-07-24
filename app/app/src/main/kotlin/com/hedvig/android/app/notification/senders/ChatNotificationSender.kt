@@ -1,4 +1,4 @@
-package com.hedvig.android.app.chat.service
+package com.hedvig.android.app.notification.senders
 
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -7,17 +7,47 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationCompat.MessagingStyle
 import androidx.core.app.Person
 import androidx.core.app.TaskStackBuilder
 import androidx.core.content.getSystemService
 import androidx.core.graphics.drawable.IconCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ProcessLifecycleOwner
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.app.notification.getMutablePendingIntentFlags
 import com.hedvig.android.core.common.android.notification.setupNotificationChannel
+import com.hedvig.android.feature.chat.navigation.ChatDestinations
+import com.hedvig.android.feature.claim.details.navigation.ClaimDetailDestinations
+import com.hedvig.android.feature.home.home.navigation.HomeDestination
+import com.hedvig.android.logger.logcat
+import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
+import com.kiwi.navigationcompose.typed.createRoutePattern
 import hedvig.resources.R
+
+/**
+ * An in-memory storage of the current route, used to *not* show the chat notification if we are in a select list of
+ * screens where we do not want to show the system notification, but we want to let the in-app screen indicate that
+ * there is a new message.
+ * This is not persistent storage, and will just be wiped in scenarios like the process being killed, but this is part
+ * of what we want, since we only care to do this if the app is resumed anyway. On top of this, we'd rather experience
+ * cases where we show the notification when we shouldn't rather than cases where we do not show the notification even
+ * thought we should.
+ */
+object CurrentDestinationInMemoryStorage {
+  var currentDestination: String? = null
+}
+
+private val listOfDestinationsWhichShouldNotShowChatNotification = setOf(
+  createRoutePattern<ChatDestinations.Chat>(),
+  createRoutePattern<ChatDestinations.Inbox>(),
+  createRoutePattern<AppDestination.Chat>(),
+  createRoutePattern<HomeDestination.Home>(),
+  createRoutePattern<ClaimDetailDestinations.ClaimOverviewDestination>(),
+)
 
 class ChatNotificationSender(
   private val context: Context,
@@ -33,11 +63,12 @@ class ChatNotificationSender(
   }
 
   override fun sendNotification(type: String, remoteMessage: RemoteMessage) {
-    // todo chat: Consider still not showing the notification when chat is on the foreground
-//    if (context.getStoredBoolean(ChatFragment.ACTIVITY_IS_IN_FOREGROUND)) {
-//      logcat(LogPriority.INFO) { "ChatNotificationSender ignoring notification since chat is open" }
-//      return
-//    }
+    val isAppForegrounded = ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)
+    val currentDestination = CurrentDestinationInMemoryStorage.currentDestination
+    if (currentDestination in listOfDestinationsWhichShouldNotShowChatNotification && isAppForegrounded) {
+      logcat { "ChatNotificationSender ignoring notification since we are showing destination $currentDestination" }
+      return
+    }
 
     val hedvigPerson = hedvigPerson.toBuilder()
       .also { person ->
@@ -80,7 +111,7 @@ class ChatNotificationSender(
 
   override fun handlesNotificationType(notificationType: String) = notificationType == NOTIFICATION_TYPE_NEW_MESSAGE
 
-  private fun defaultMessagingStyle(message: NotificationCompat.MessagingStyle.Message) =
+  private fun defaultMessagingStyle(message: NotificationCompat.MessagingStyle.Message): MessagingStyle =
     NotificationCompat.MessagingStyle(youPerson).addMessage(message)
 
   private fun sendChatNotificationInner(

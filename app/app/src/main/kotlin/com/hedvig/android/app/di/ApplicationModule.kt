@@ -23,7 +23,7 @@ import com.hedvig.android.apollo.auth.listeners.di.languageAuthListenersModule
 import com.hedvig.android.apollo.di.networkCacheManagerModule
 import com.hedvig.android.app.apollo.DatadogInterceptor
 import com.hedvig.android.app.apollo.DeviceIdInterceptor
-import com.hedvig.android.app.chat.service.ChatNotificationSender
+import com.hedvig.android.app.notification.senders.ChatNotificationSender
 import com.hedvig.android.app.notification.senders.CrossSellNotificationSender
 import com.hedvig.android.app.notification.senders.GenericNotificationSender
 import com.hedvig.android.app.notification.senders.PaymentNotificationSender

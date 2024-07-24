@@ -62,7 +62,7 @@ import kotlinx.coroutines.isActive
 fun OtpInputDestination(
   viewModel: OtpInputViewModel,
   navigateUp: () -> Unit,
-  startLoggedInActivity: () -> Unit,
+  onNavigateToLoggedIn: () -> Unit,
   onOpenEmailApp: () -> Unit,
 ) {
   val snackbarHostState = remember { SnackbarHostState() }
@@ -70,7 +70,7 @@ fun OtpInputDestination(
   LaunchedEffect(viewModel) {
     viewModel.events.collectLatest { event ->
       when (event) {
-        is OtpInputViewModel.Event.Success -> startLoggedInActivity()
+        is OtpInputViewModel.Event.Success -> onNavigateToLoggedIn()
         OtpInputViewModel.Event.CodeResent -> {
           delay(1.seconds)
           snackbarHostState.showSnackbar(snackbarResendMessage)
