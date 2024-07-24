@@ -389,12 +389,13 @@ private fun PaymentAmountCard(
   onCardClicked: (PaymentsUiState.Content.UpcomingPayment.Content) -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val onClick = if (upcomingPayment != null) {
+    { onCardClicked(upcomingPayment) }
+  } else {
+    null
+  }
   HedvigCard(
-    onClick = if (upcomingPayment != null) {
-      { onCardClicked(upcomingPayment) }
-    } else {
-      null
-    },
+    onClick = onClick,
     modifier = modifier,
   ) {
     Column(
@@ -440,6 +441,7 @@ private fun PaymentAmountCard(
             )
           }
         },
+        spaceBetween = 4.dp
       )
       Spacer(Modifier.height(2.dp))
       Text(
