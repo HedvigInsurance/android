@@ -373,10 +373,9 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     navigateToConversation = { backStackEntry, conversationId ->
       navigateToConversation(backStackEntry, conversationId)
     },
-    applicationId = BuildConfig.APPLICATION_ID,
+    applicationId = hedvigBuildConstants.appId,
   )
   changeAddressGraph(
-    navController = hedvigAppState.navController,
     navigator = navigator,
     onNavigateToNewConversation = { backStackEntry ->
       navigateToNewConversation(backStackEntry, null)
@@ -386,7 +385,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
   travelCertificateGraph(
     density = density,
     navigator = navigator,
-    applicationId = BuildConfig.APPLICATION_ID,
+    applicationId = hedvigBuildConstants.appId,
   )
   claimFlowGraph(
     windowSizeClass = hedvigAppState.windowSizeClass,
