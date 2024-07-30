@@ -13,6 +13,7 @@ plugins {
   alias(libs.plugins.kotlin) apply false
   alias(libs.plugins.kotlinJvm) apply false
   alias(libs.plugins.kotlinter) apply false
+  alias(libs.plugins.ksp) apply false
   alias(libs.plugins.license) apply false
   alias(libs.plugins.lintGradlePlugin) apply false
   alias(libs.plugins.serialization) apply false

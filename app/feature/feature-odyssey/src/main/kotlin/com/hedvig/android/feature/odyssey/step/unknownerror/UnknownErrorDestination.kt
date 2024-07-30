@@ -27,15 +27,18 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import hedvig.resources.R
 
 @Composable
-internal fun UnknownErrorDestination(openChat: () -> Unit, closeFailureScreenDestination: () -> Unit) {
+internal fun UnknownErrorDestination(
+  onNavigateToNewConversation: () -> Unit,
+  closeFailureScreenDestination: () -> Unit,
+) {
   UnknownErrorScreen(
-    openChat = openChat,
+    onNavigateToNewConversation = onNavigateToNewConversation,
     closeFailureScreenDestination = closeFailureScreenDestination,
   )
 }
 
 @Composable
-private fun UnknownErrorScreen(openChat: () -> Unit, closeFailureScreenDestination: () -> Unit) {
+private fun UnknownErrorScreen(onNavigateToNewConversation: () -> Unit, closeFailureScreenDestination: () -> Unit) {
   Surface(
     color = MaterialTheme.colorScheme.background,
     modifier = Modifier.fillMaxSize(),
@@ -55,7 +58,7 @@ private fun UnknownErrorScreen(openChat: () -> Unit, closeFailureScreenDestinati
       ) {
         HedvigErrorSection(
           buttonText = stringResource(R.string.open_chat),
-          onButtonClick = openChat,
+          onButtonClick = onNavigateToNewConversation,
         )
       }
       Spacer(Modifier.height(16.dp))

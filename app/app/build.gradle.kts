@@ -25,7 +25,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "12.6.11"
+    versionName = "12.7.1"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -118,7 +118,6 @@ dependencies {
   implementation(libs.androidx.compose.uiUnit)
   implementation(libs.androidx.lifecycle.common)
   implementation(libs.androidx.lifecycle.compose)
-  implementation(libs.androidx.lifecycle.liveData)
   implementation(libs.androidx.lifecycle.process)
   implementation(libs.androidx.lifecycle.runtime)
   implementation(libs.androidx.lifecycle.viewModel)
@@ -178,6 +177,7 @@ dependencies {
   implementation(projects.coreResources)
   implementation(projects.coreUi)
   implementation(projects.crossSells)
+  implementation(projects.dataChat)
   implementation(projects.dataChatReadTimestampPublic)
   implementation(projects.dataClaimFlow)
   implementation(projects.dataContractPublic)

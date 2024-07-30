@@ -180,7 +180,7 @@ private fun LogoutOnInvalidCredentialsEffect(
   val authStatusLog: (AuthStatus?) -> Unit = { authStatus ->
     logcat {
       buildString {
-        append("Owner: LoggedInActivity | Received authStatus: ")
+        append("Owner: MainActivity | Received authStatus: ")
         append(
           when (authStatus) {
             is AuthStatus.LoggedIn -> "LoggedIn"

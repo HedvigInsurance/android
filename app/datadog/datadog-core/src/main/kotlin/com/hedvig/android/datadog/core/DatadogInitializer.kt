@@ -17,14 +17,9 @@ import com.datadog.android.trace.AndroidTracer
 import com.datadog.android.trace.Trace
 import com.datadog.android.trace.TraceConfiguration
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
-import com.hedvig.android.core.common.ApplicationScope
-import com.hedvig.android.core.datastore.DeviceIdDataStore
-import com.hedvig.android.datadog.core.attributestracking.DatadogAttributesManager
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import io.opentracing.util.GlobalTracer
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import timber.log.Timber
@@ -32,9 +27,6 @@ import timber.log.Timber
 // Used in /app/src/main/AndroidManifest.xml
 abstract class DatadogInitializer : Initializer<Unit>, KoinComponent {
   private val hedvigBuildConstants by inject<HedvigBuildConstants>()
-  private val deviceIdDataStore by inject<DeviceIdDataStore>()
-  private val applicationScope by inject<ApplicationScope>()
-  private val datadogAttributesManager by inject<DatadogAttributesManager>()
 
   override fun create(context: Context) {
     val clientToken = "pub185bcba7ed324e83d068b80e25a81359"
@@ -96,13 +88,5 @@ abstract class DatadogInitializer : Initializer<Unit>, KoinComponent {
       .build()
 
     Timber.plant(DatadogLoggingTree(logger))
-
-    applicationScope.launch {
-      val deviceId = deviceIdDataStore.observeDeviceId().first()
-      datadogAttributesManager.storeAttribute(DEVICE_ID_KEY, deviceId)
-      logcat(LogPriority.VERBOSE) { "Datadog stored device id attribute: $deviceId" }
-    }
   }
 }
-
-private const val DEVICE_ID_KEY = "device_id"

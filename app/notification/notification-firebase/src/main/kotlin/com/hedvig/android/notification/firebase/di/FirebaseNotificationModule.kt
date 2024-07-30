@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.work.WorkerParameters
-import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.auth.event.AuthEventListener
 import com.hedvig.android.notification.firebase.DatastoreFCMTokenStorage
 import com.hedvig.android.notification.firebase.FCMTokenAuthEventListener

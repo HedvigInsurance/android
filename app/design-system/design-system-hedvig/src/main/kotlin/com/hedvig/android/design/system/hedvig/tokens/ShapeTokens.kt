@@ -23,6 +23,7 @@ internal object ShapeTokens {
   val CornerSmall: Shape = FigmaShape(8.dp)
   val CornerExtraSmall: Shape = FigmaShape(4.dp)
   val CornerNone: Shape = RectangleShape
+  val CornerTopOnlyXLarge: Shape = SquircleTopShape(16.dp)
 }
 
 private fun RoundedPolygon.Companion.squircle(
@@ -46,12 +47,54 @@ private fun RoundedPolygon.Companion.squircle(
   ).toPath().asComposePath()
 }
 
+@Suppress("unused")
+private fun RoundedPolygon.Companion.squircleTop(
+  width: Float,
+  height: Float,
+  cornerRadius: Float,
+  @FloatRange(from = 0.0, to = 1.0) smoothing: Float,
+): Path {
+  if (width == 0f || height == 0f) {
+    return Path()
+  }
+  @Suppress("ktlint:standard:argument-list-wrapping")
+  return RoundedPolygon(
+    vertices = floatArrayOf(
+      0f, 0f,
+      width, 0f,
+      width, height,
+      0f, height,
+    ),
+    perVertexRounding = listOf(
+      CornerRounding(cornerRadius, smoothing),
+      CornerRounding(cornerRadius, smoothing),
+      CornerRounding.Unrounded,
+      CornerRounding.Unrounded,
+    ),
+  ).toPath().asComposePath()
+}
+
 private class FigmaShape(
   private val radius: Dp,
   @FloatRange(from = 0.0, to = 1.0) private val smoothing: Float = 0.6f,
 ) : Shape {
   override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
     val squirclePath = RoundedPolygon.squircle(
+      width = size.width,
+      height = size.height,
+      cornerRadius = with(density) { radius.toPx() },
+      smoothing = smoothing,
+    )
+    return Outline.Generic(squirclePath)
+  }
+}
+
+private class SquircleTopShape(
+  private val radius: Dp,
+  @FloatRange(from = 0.0, to = 1.0) private val smoothing: Float = 0.6f,
+) : Shape {
+  override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
+    val squirclePath = RoundedPolygon.squircleTop(
       width = size.width,
       height = size.height,
       cornerRadius = with(density) { radius.toPx() },

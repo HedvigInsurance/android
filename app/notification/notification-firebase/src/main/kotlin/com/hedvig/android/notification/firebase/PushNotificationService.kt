@@ -44,7 +44,11 @@ class PushNotificationService : FirebaseMessagingService() {
       .firstOrNull { notificationSender ->
         notificationSender.handlesNotificationType(type)
       }
-      ?.sendNotification(type, remoteMessage)
+      ?.run {
+        coroutineScope.launch {
+          sendNotification(type, remoteMessage)
+        }
+      }
   }
 
   override fun onDestroy() {

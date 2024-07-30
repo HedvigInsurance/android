@@ -22,7 +22,7 @@ import org.koin.core.parameter.parametersOf
 fun NavGraphBuilder.insuranceGraph(
   nestedGraphs: NavGraphBuilder.() -> Unit,
   navigator: Navigator,
-  openChat: (NavBackStackEntry) -> Unit,
+  onNavigateToNewConversation: (NavBackStackEntry) -> Unit,
   openUrl: (String) -> Unit,
   startMovingFlow: (NavBackStackEntry) -> Unit,
   startTerminationFlow: (backStackEntry: NavBackStackEntry, cancelInsuranceData: CancelInsuranceData) -> Unit,
@@ -74,7 +74,7 @@ fun NavGraphBuilder.insuranceGraph(
             cancelInsuranceData,
           )
         },
-        openChat = { openChat(backStackEntry) },
+        onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry) },
         openUrl = openUrl,
         navigateUp = navigator::navigateUp,
         navigateBack = navigator::popBackStack,

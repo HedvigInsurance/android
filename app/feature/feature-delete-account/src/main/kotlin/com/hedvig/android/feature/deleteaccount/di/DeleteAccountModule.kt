@@ -2,7 +2,7 @@ package com.hedvig.android.feature.deleteaccount.di
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.auth.MemberIdService
 import com.hedvig.android.feature.chat.DeleteAccountViewModel
 import com.hedvig.android.feature.deleteaccount.data.DeleteAccountRequestStorage

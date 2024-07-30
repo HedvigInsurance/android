@@ -31,7 +31,7 @@ class PaymentNotificationSender(
     )
   }
 
-  override fun sendNotification(type: String, remoteMessage: RemoteMessage) {
+  override suspend fun sendNotification(type: String, remoteMessage: RemoteMessage) {
     when (type) {
       NOTIFICATION_TYPE_CONNECT_DIRECT_DEBIT -> sendConnectDirectDebitNotification()
       NOTIFICATION_TYPE_PAYMENT_FAILED -> sendPaymentFailedNotification()

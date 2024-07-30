@@ -6,7 +6,6 @@ plugins {
 }
 
 dependencies {
-  implementation(libs.accompanist.pagerIndicators)
   implementation(libs.androidx.compose.foundationLayout)
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.compose.runtime)
@@ -14,7 +13,10 @@ dependencies {
   implementation(libs.androidx.compose.uiUtil)
   implementation(libs.arrow.core)
   implementation(projects.apolloOctopusPublic)
+  implementation(projects.composePagerIndicator)
   implementation(projects.coreDesignSystem)
   implementation(projects.coreResources)
+  implementation(projects.coreUi)
   implementation(projects.coreUiData)
+  implementation(projects.designSystemHedvig)
 }

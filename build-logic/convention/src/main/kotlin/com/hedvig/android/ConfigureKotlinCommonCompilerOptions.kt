@@ -20,8 +20,10 @@ internal fun KotlinCommonCompilerOptions.configureKotlinCompilerOptions() {
 private fun KotlinCommonCompilerOptions.configureCommonKotlinCompilerOptions(
   extraFreeCompilerArgs: List<String> = emptyList(),
 ) {
-  apiVersion.set(KotlinVersion.KOTLIN_2_0)
-  languageVersion.set(KotlinVersion.KOTLIN_2_0)
+  // todo bump to 2_0 again after ksp is no longer in beta and we have use the ksp2
+  //  https://github.com/google/ksp/issues/1942
+  apiVersion.set(KotlinVersion.KOTLIN_1_9)
+  languageVersion.set(KotlinVersion.KOTLIN_1_9)
   freeCompilerArgs.addAll(commonFreeCompilerArgs().plus(extraFreeCompilerArgs))
 }
 

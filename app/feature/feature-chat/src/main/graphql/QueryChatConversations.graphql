@@ -1,0 +1,27 @@
+query ChatConversations {
+  currentMember {
+    conversations {
+      ...ConversationFragment
+    }
+    legacyConversation {
+      ...ConversationFragment
+    }
+  }
+}
+
+fragment ConversationFragment on Conversation {
+  id
+  title
+  subtitle
+  createdAt
+  newestMessage {
+    sender
+    sentAt
+    ... on ChatMessageText {
+      text
+    }
+    ... on ChatMessageFile {
+      __typename
+    }
+  }
+}
