@@ -30,9 +30,9 @@ import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
-import com.kiwi.navigationcompose.typed.createRoutePattern
 import hedvig.resources.R
 import kotlinx.coroutines.flow.first
+import kotlinx.serialization.serializer
 
 /**
  * An in-memory storage of the current route, used to *not* show the chat notification if we are in a select list of
@@ -44,15 +44,15 @@ import kotlinx.coroutines.flow.first
  * thought we should.
  */
 object CurrentDestinationInMemoryStorage {
-  var currentDestination: String? = null
+  var currentDestinationId: Int? = null
 }
 
 private val listOfDestinationsWhichShouldNotShowChatNotification = setOf(
-  createRoutePattern<ChatDestinations.Chat>(),
-  createRoutePattern<ChatDestinations.Inbox>(),
-  createRoutePattern<AppDestination.Chat>(),
-  createRoutePattern<HomeDestination.Home>(),
-  createRoutePattern<ClaimDetailDestinations.ClaimOverviewDestination>(),
+  serializer<ChatDestinations.Chat>().hashCode(),
+  serializer<ChatDestinations.Inbox>().hashCode(),
+  serializer<AppDestination.Chat>().hashCode(),
+  serializer<HomeDestination.Home>().hashCode(),
+  serializer<ClaimDetailDestinations.ClaimOverviewDestination>().hashCode(),
 )
 
 class ChatNotificationSender(
@@ -72,7 +72,7 @@ class ChatNotificationSender(
 
   override suspend fun sendNotification(type: String, remoteMessage: RemoteMessage) {
     val isAppForegrounded = ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)
-    val currentDestination = CurrentDestinationInMemoryStorage.currentDestination
+    val currentDestination = CurrentDestinationInMemoryStorage.currentDestinationId
     if (currentDestination in listOfDestinationsWhichShouldNotShowChatNotification && isAppForegrounded) {
       logcat { "ChatNotificationSender ignoring notification since we are showing destination $currentDestination" }
       return
