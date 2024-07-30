@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.changeaddress.navigation
 
 import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.feature.changeaddress.destination.ChangeAddressResultDestination
 import com.hedvig.android.feature.changeaddress.destination.enternewaddress.EnterNewAddressDestination
@@ -17,12 +16,11 @@ import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.AppDestination.ChangeAddress
-import com.kiwi.navigationcompose.typed.navigate
+import com.hedvig.android.navigation.core.Navigator
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 fun NavGraphBuilder.changeAddressGraph(
-  navController: NavController,
   navigator: Navigator,
   onNavigateToNewConversation: (NavBackStackEntry) -> Unit,
   openUrl: (String) -> Unit,
@@ -41,41 +39,47 @@ fun NavGraphBuilder.changeAddressGraph(
       )
     }
 
-    navdestination<ChangeAddressDestination.EnterNewAddress> { _ ->
-      val viewModel: EnterNewAddressViewModel = koinViewModel { parametersOf(previousDestinationParameters) }
+    navdestination<ChangeAddressDestination.EnterNewAddress>(
+      ChangeAddressDestination.EnterNewAddress,
+    ) { navBackStackEntry ->
+      val viewModel: EnterNewAddressViewModel = koinViewModel { parametersOf(this.previousDestinationParameters) }
       EnterNewAddressDestination(
         viewModel = viewModel,
         onNavigateToVillaInformationDestination = { newAddressParameters ->
           with(navigator) {
-            navBackStackEntry.navigate(EnterVillaInformation(newAddressParameters))
+            navBackStackEntry.navigate(ChangeAddressDestination.EnterVillaInformation(newAddressParameters))
           }
         },
         navigateUp = navigator::navigateUp,
         onNavigateToOfferDestination = { movingParameters ->
-          navigator.navigateUnsafe(Offer(movingParameters))
+          navigator.navigateUnsafe(ChangeAddressDestination.Offer(movingParameters))
         },
       )
     }
 
-    navdestination<ChangeAddressDestination.EnterVillaInformation> { _ ->
+    navdestination<ChangeAddressDestination.EnterVillaInformation>(
+      ChangeAddressDestination.EnterVillaInformation
+    ) { _ ->
       val viewModel: EnterVillaInformationViewModel = koinViewModel { parametersOf(previousDestinationParameters) }
       EnterVillaInformationDestination(
         viewModel = viewModel,
         navigateUp = navigator::navigateUp,
         onNavigateToOfferDestination = { params ->
-          navigator.navigateUnsafe(Offer(params))
+          navigator.navigateUnsafe(ChangeAddressDestination.Offer(params))
         },
       )
     }
 
-    navdestination<ChangeAddressDestination.Offer> { backStackEntry ->
+    navdestination<ChangeAddressDestination.Offer>(
+      ChangeAddressDestination.Offer,
+    ) { backStackEntry ->
       val viewModel: ChangeAddressOfferViewModel = koinViewModel { parametersOf(previousDestinationParameters) }
       ChangeAddressOfferDestination(
         viewModel = viewModel,
         onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry) },
         navigateUp = navigator::navigateUp,
         onChangeAddressResult = { movingDate ->
-          navigator.navigateUnsafe(AddressResult(movingDate)) {
+          navigator.navigateUnsafe(ChangeAddressDestination.AddressResult(movingDate)) {
             typedPopUpTo<ChangeAddress> {
               inclusive = true
             }
@@ -87,7 +91,7 @@ fun NavGraphBuilder.changeAddressGraph(
   }
   navdestination<ChangeAddressDestination.AddressResult>(
     ChangeAddressDestination.AddressResult,
-  ) { navBackStackEntry ->
+  ) {
     ChangeAddressResultDestination(
       movingDate = movingDate,
       popBackstack = navigator::popBackStack,

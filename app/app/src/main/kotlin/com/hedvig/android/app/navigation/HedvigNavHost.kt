@@ -56,7 +56,6 @@ import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.AppDestination.Chat.ChatContext
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
-import com.hedvig.app.BuildConfig
 
 @Composable
 internal fun HedvigNavHost(

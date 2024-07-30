@@ -10,11 +10,10 @@ import com.hedvig.android.feature.chat.cbm.inbox.InboxViewModel
 import com.hedvig.android.feature.chat.cbm.ui.CbmChatDestination
 import com.hedvig.android.feature.chat.navigation.ChatDestination
 import com.hedvig.android.feature.chat.navigation.ChatDestinations
+import com.hedvig.android.navigation.compose.navdestination
+import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
-import com.kiwi.navigationcompose.typed.composable
-import com.kiwi.navigationcompose.typed.createRoutePattern
-import com.kiwi.navigationcompose.typed.navigation
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -25,10 +24,10 @@ fun NavGraphBuilder.cbmChatGraph(
   openUrl: (String) -> Unit,
   navigator: Navigator,
 ) {
-  navigation<ChatDestination>(
-    startDestination = createRoutePattern<ChatDestinations.Inbox>(),
+  navgraph<ChatDestination>(
+    startDestination = ChatDestinations.Inbox::class,
   ) {
-    composable<ChatDestinations.Inbox>(
+    navdestination<ChatDestinations.Inbox>(
       deepLinks = listOf(
         navDeepLink { uriPattern = hedvigDeepLinkContainer.inbox },
       ),
@@ -44,7 +43,7 @@ fun NavGraphBuilder.cbmChatGraph(
         },
       )
     }
-    composable<ChatDestinations.Chat>(
+    navdestination<ChatDestinations.Chat>(
       deepLinks = listOf(
         navDeepLink { uriPattern = hedvigDeepLinkContainer.conversation },
       ),
