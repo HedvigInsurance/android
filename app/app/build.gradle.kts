@@ -118,7 +118,6 @@ dependencies {
   implementation(libs.androidx.compose.uiUnit)
   implementation(libs.androidx.lifecycle.common)
   implementation(libs.androidx.lifecycle.compose)
-  implementation(libs.androidx.lifecycle.liveData)
   implementation(libs.androidx.lifecycle.process)
   implementation(libs.androidx.lifecycle.runtime)
   implementation(libs.androidx.lifecycle.viewModel)

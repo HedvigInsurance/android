@@ -22,7 +22,6 @@ import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.logger.logcat
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -30,11 +29,6 @@ fun ShowcaseBottomSheet() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        val isSomeStuffVisible = remember { mutableStateOf(false) }
-//        BackHandler {
-//          isSomeStuffVisible.value = true
-//        }
-
         val isBottomSheetVisible = remember { mutableStateOf(false) }
 
         val textFieldValue = remember { mutableStateOf("enter your name") }
@@ -44,9 +38,6 @@ fun ShowcaseBottomSheet() {
           Modifier.padding(horizontal = 16.dp),
         )
         Spacer(Modifier.height(40.dp))
-        if (isSomeStuffVisible.value) {
-          HedvigText("Some stuff is visible!")
-        }
         Spacer(Modifier.height(40.dp))
         HedvigButton(enabled = true, onClick = { isBottomSheetVisible.value = true }) { HedvigText("Open sheet") }
         Spacer(Modifier.height(40.dp))
@@ -55,53 +46,43 @@ fun ShowcaseBottomSheet() {
           onVisibleChange = { bool ->
             isBottomSheetVisible.value = bool
           },
-          onSystemBack = {
-            isSomeStuffVisible.value = true
-            logcat {
-              "mariia: onSystemBack is called, setting isSomeStuffVisible.value to true. isSomeStuffVisible = ${isSomeStuffVisible.value}"
-            }
-          },
-          content = {
-            Column(
-              Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState()),
-              horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-              HedvigText(
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-              )
-              Spacer(Modifier.height(40.dp))
-              BasicTextField(
-                value = textFieldValue.value,
-                modifier = Modifier.background(Color.Red),
-                onValueChange = {
-                  textFieldValue.value = it
-                },
-              )
-              Spacer(Modifier.height(40.dp))
-              if (isSomeStuffVisible.value) {
-                HedvigText("Some stuff is visible!")
-              }
-              Spacer(Modifier.height(40.dp))
-              HedvigButton(
-                enabled = textFieldValue.value != "",
-                onClick = {
-                  isBottomSheetVisible.value = false
-                },
-              ) { HedvigText("Save") }
-              Spacer(Modifier.height(40.dp))
-              HedvigButton(
-                enabled = true,
-                onClick = {
-                  isBottomSheetVisible.value = false
-                  textFieldValue.value = ""
-                },
-              ) { HedvigText("Cancel") }
-            }
-          },
-        )
+        ) {
+          Column(
+            Modifier
+              .fillMaxWidth()
+              .padding(16.dp)
+              .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
+          ) {
+            HedvigText(
+              "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+            )
+            Spacer(Modifier.height(40.dp))
+            BasicTextField(
+              value = textFieldValue.value,
+              modifier = Modifier.background(Color.Red),
+              onValueChange = {
+                textFieldValue.value = it
+              },
+            )
+            Spacer(Modifier.height(40.dp))
+            Spacer(Modifier.height(40.dp))
+            HedvigButton(
+              enabled = textFieldValue.value != "",
+              onClick = {
+                isBottomSheetVisible.value = false
+              },
+            ) { HedvigText("Save") }
+            Spacer(Modifier.height(40.dp))
+            HedvigButton(
+              enabled = true,
+              onClick = {
+                isBottomSheetVisible.value = false
+                textFieldValue.value = ""
+              },
+            ) { HedvigText("Cancel") }
+          }
+        }
       }
     }
   }

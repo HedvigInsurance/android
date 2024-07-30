@@ -26,10 +26,10 @@ import eu.wewox.modalsheet.ModalSheet
 fun HedvigBottomSheet(
   isVisible: Boolean,
   onVisibleChange: (Boolean) -> Unit,
-  content: @Composable ColumnScope.() -> Unit,
-  onSystemBack: (() -> Unit)? = null,
+  onSystemBack: (() -> Unit)? = { onVisibleChange(false) },
   sheetPadding: PaddingValues? = null,
   cancelable: Boolean = true,
+  content: @Composable ColumnScope.() -> Unit,
 ) {
   val isImeVisible = WindowInsets.isImeVisible
   val defaultPadding = if (isImeVisible) {
@@ -39,8 +39,6 @@ fun HedvigBottomSheet(
       .only(WindowInsetsSides.Bottom).asPaddingValues()
   }
   val finalSheetPadding = sheetPadding ?: defaultPadding
-  val finalOnSystemBack = onSystemBack ?: { onVisibleChange(false) }
-  logcat { "mariia: finalOnSystemBack is onSystemBack: ${finalOnSystemBack == onSystemBack}" }
   ModalSheet(
     visible = isVisible,
     onVisibleChange = onVisibleChange,
@@ -50,7 +48,7 @@ fun HedvigBottomSheet(
     backgroundColor = bottomSheetColors.bottomSheetBackgroundColor,
     contentColor = bottomSheetColors.contentColor,
     sheetPadding = finalSheetPadding,
-    onSystemBack = finalOnSystemBack,
+    onSystemBack = onSystemBack,
     shape = bottomSheetShape.shape,
   )
 }

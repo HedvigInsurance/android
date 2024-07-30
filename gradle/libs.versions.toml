@@ -64,7 +64,7 @@ koinBom = "3.5.6"
 kotlinx-serialization = "1.7.1"
 kotlinxDatetime = "0.6.0"
 leakCanary = "2.14"
-modalSheet = "0.6.0"
+modalSheet = "0.7.0-alpha02"
 moneta = "1.4.4"
 navigationRecentsUrlSharing = "1.0.0"
 okhttp = "4.12.0"
@@ -94,13 +94,13 @@ androidx-activity-core = { module = "androidx.activity:activity", version.ref = 
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
 androidx-compose-animation = { module = "androidx.compose.animation:animation-core" }
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "androidx-composeBom" }
-androidx-compose-foundation = { module = "androidx.compose.foundation:foundation", version = "1.7.0-beta05" }
+androidx-compose-foundation = { module = "androidx.compose.foundation:foundation", version = "1.7.0-beta06" }
 androidx-compose-foundationLayout = { module = "androidx.compose.foundation:foundation-layout" }
 androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
 androidx-compose-material3-windowSizeClass = { module = "androidx.compose.material3:material3-window-size-class" }
 androidx-compose-materialIconsCore = { module = "androidx.compose.material:material-icons-core" }
 androidx-compose-materialIconsExtended = { module = "androidx.compose.material:material-icons-extended" }
-androidx-compose-materialRipple = { module = "androidx.compose.material:material-ripple", version = "1.7.0-beta05" }
+androidx-compose-materialRipple = { module = "androidx.compose.material:material-ripple", version = "1.7.0-beta06" }
 androidx-compose-runtime = { module = "androidx.compose.runtime:runtime" }
 androidx-compose-runtime-livedata = { module = "androidx.compose.runtime:runtime-livedata" }
 androidx-compose-uiCore = { module = "androidx.compose.ui:ui" }
@@ -116,10 +116,9 @@ androidx-graphicsShapes = { module = "androidx.graphics:graphics-shapes", versio
 androidx-junit = { module = "androidx.test.ext:junit-ktx", version.ref = "androidx-junit" }
 androidx-lifecycle-common = { module = "androidx.lifecycle:lifecycle-common-java8", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
-androidx-lifecycle-liveData = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-process = { module = "androidx.lifecycle:lifecycle-process", version.ref = "androidx-lifecycle" }
-androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "androidx-lifecycle" }
-androidx-lifecycle-viewModel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-viewModel = { module = "androidx.lifecycle:lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodelCompose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
 androidx-navigation-common = { module = "androidx.navigation:navigation-common", version.ref = "androidx-navigation" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "androidx-navigation" }
@@ -161,7 +160,7 @@ datadog-sdk-okhttp = { module = "com.datadoghq:dd-sdk-android-okhttp", version.r
 datadog-sdk-rum = { module = "com.datadoghq:dd-sdk-android-rum", version.ref = "datadog" }
 datadog-sdk-trace = { module = "com.datadoghq:dd-sdk-android-trace", version.ref = "datadog" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics-ktx" }
-firebase-bom = "com.google.firebase:firebase-bom:33.1.0"
+firebase-bom = "com.google.firebase:firebase-bom:33.1.2"
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics-ktx" }
 firebase-dynamicLinks = { module = "com.google.firebase:firebase-dynamic-links" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging-ktx" }
