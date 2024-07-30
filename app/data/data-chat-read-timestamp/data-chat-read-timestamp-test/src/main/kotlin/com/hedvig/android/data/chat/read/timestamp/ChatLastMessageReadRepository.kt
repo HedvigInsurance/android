@@ -1,6 +1,8 @@
 package com.hedvig.android.data.chat.read.timestamp
 
 import app.cash.turbine.Turbine
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.datetime.Instant
 
 class FakeChatLastMessageReadRepository : ChatLastMessageReadRepository {
@@ -10,7 +12,7 @@ class FakeChatLastMessageReadRepository : ChatLastMessageReadRepository {
     error("Not implemented")
   }
 
-  override suspend fun isNewestMessageNewerThanLastReadTimestamp(): Boolean {
-    return isNewestMessageNewerThanLastReadTimestamp.awaitItem()
+  override fun isNewestMessageNewerThanLastReadTimestamp(): Flow<Boolean> {
+    return isNewestMessageNewerThanLastReadTimestamp.asChannel().receiveAsFlow()
   }
 }

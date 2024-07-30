@@ -3,7 +3,7 @@ package com.hedvig.android.feature.help.center.data
 import arrow.core.Either
 import arrow.core.raise.either
 import arrow.fx.coroutines.parZip
-import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage

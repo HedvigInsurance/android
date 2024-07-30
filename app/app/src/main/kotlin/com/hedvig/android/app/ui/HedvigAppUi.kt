@@ -30,6 +30,7 @@ import coil.ImageLoader
 import com.hedvig.android.app.navigation.HedvigNavHost
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.designsystem.material3.motion.MotionTokens
+import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.Market
 import com.hedvig.android.navigation.activity.ExternalNavigator
@@ -53,29 +54,34 @@ internal fun HedvigAppUi(
     contentColor = MaterialTheme.colorScheme.onBackground,
     modifier = Modifier.fillMaxSize(),
   ) {
-    NavigationSuite(
-      navigationSuiteType = hedvigAppState.navigationSuiteType,
-      topLevelGraphs = hedvigAppState.topLevelGraphs.collectAsState().value,
-      topLevelGraphsWithNotifications = hedvigAppState.topLevelGraphsWithNotifications.collectAsState().value,
-      currentDestination = hedvigAppState.currentDestination,
-      onNavigateToTopLevelGraph = hedvigAppState::navigateToTopLevelGraph,
+    com.hedvig.android.design.system.hedvig.Surface(
+      color = HedvigTheme.colorScheme.backgroundPrimary,
+      contentColor = HedvigTheme.colorScheme.textPrimary,
     ) {
-      HedvigNavHost(
-        hedvigAppState = hedvigAppState,
-        hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-        externalNavigator = externalNavigator,
-        finishApp = finishApp,
-        shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-        openUrl = openUrl,
-        imageLoader = imageLoader,
-        market = market,
-        languageService = languageService,
-        hedvigBuildConstants = hedvigBuildConstants,
-        modifier = Modifier
-          .fillMaxHeight()
-          .weight(1f)
-          .animatedNavigationBarInsetsConsumption(hedvigAppState),
-      )
+      NavigationSuite(
+        navigationSuiteType = hedvigAppState.navigationSuiteType,
+        topLevelGraphs = hedvigAppState.topLevelGraphs.collectAsState().value,
+        topLevelGraphsWithNotifications = hedvigAppState.topLevelGraphsWithNotifications.collectAsState().value,
+        currentDestination = hedvigAppState.currentDestination,
+        onNavigateToTopLevelGraph = hedvigAppState::navigateToTopLevelGraph,
+      ) {
+        HedvigNavHost(
+          hedvigAppState = hedvigAppState,
+          hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+          externalNavigator = externalNavigator,
+          finishApp = finishApp,
+          shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+          openUrl = openUrl,
+          imageLoader = imageLoader,
+          market = market,
+          languageService = languageService,
+          hedvigBuildConstants = hedvigBuildConstants,
+          modifier = Modifier
+            .fillMaxHeight()
+            .weight(1f)
+            .animatedNavigationBarInsetsConsumption(hedvigAppState),
+        )
+      }
     }
   }
 }
@@ -91,8 +97,11 @@ private fun Modifier.animatedNavigationBarInsetsConsumption(hedvigAppState: Hedv
   val density = LocalDensity.current
   val insetsToConsume = when (hedvigAppState.navigationSuiteType) {
     NavigationSuiteType.NavigationBar -> WindowInsets.systemBars.only(WindowInsetsSides.Bottom).asPaddingValues(density)
-    NavigationSuiteType.NavigationRail -> WindowInsets.systemBars.union(WindowInsets.displayCutout)
-      .only(WindowInsetsSides.Left).asPaddingValues(density)
+    NavigationSuiteType.NavigationRail ->
+      WindowInsets.systemBars
+        .union(WindowInsets.displayCutout)
+        .only(WindowInsetsSides.Left)
+        .asPaddingValues(density)
 
     else -> PaddingValues(0.dp)
   }

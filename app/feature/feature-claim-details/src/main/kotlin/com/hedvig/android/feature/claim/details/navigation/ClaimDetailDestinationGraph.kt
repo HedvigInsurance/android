@@ -23,7 +23,7 @@ fun NavGraphBuilder.claimDetailsGraph(
   appPackageId: String,
   openUrl: (String) -> Unit,
   navigateUp: () -> Unit,
-  openChat: (NavBackStackEntry) -> Unit,
+  navigateToConversation: (NavBackStackEntry, String) -> Unit,
   navigator: Navigator,
   applicationId: String,
 ) {
@@ -38,7 +38,7 @@ fun NavGraphBuilder.claimDetailsGraph(
         imageLoader = imageLoader,
         appPackageId = appPackageId,
         navigateUp = navigateUp,
-        onChatClick = { openChat(backStackEntry) },
+        navigateToConversation = { conversationId -> navigateToConversation(backStackEntry, conversationId) },
         onFilesToUploadSelected = { filesUri: List<Uri>, uploadUri: String ->
           if (filesUri.isNotEmpty()) {
             navigator.navigateUnsafe(

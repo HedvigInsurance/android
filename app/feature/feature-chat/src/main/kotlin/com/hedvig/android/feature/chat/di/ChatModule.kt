@@ -1,14 +1,24 @@
 package com.hedvig.android.feature.chat.di
 
 import arrow.retrofit.adapter.either.EitherCallAdapterFactory
-import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.fileupload.FileService
+import com.hedvig.android.data.chat.database.AppDatabase
+import com.hedvig.android.data.chat.database.ChatDao
+import com.hedvig.android.data.chat.database.ConversationDao
+import com.hedvig.android.data.chat.database.RemoteKeyDao
 import com.hedvig.android.data.chat.read.timestamp.ChatLastMessageReadRepository
 import com.hedvig.android.feature.chat.ChatViewModel
+import com.hedvig.android.feature.chat.cbm.CbmChatRepositoryImpl
+import com.hedvig.android.feature.chat.cbm.CbmChatViewModel
+import com.hedvig.android.feature.chat.cbm.data.CbmChatRepositoryDemo
+import com.hedvig.android.feature.chat.cbm.data.GetAllConversationsUseCase
+import com.hedvig.android.feature.chat.cbm.data.GetAllConversationsUseCaseImpl
+import com.hedvig.android.feature.chat.cbm.data.GetCbmChatRepositoryProvider
+import com.hedvig.android.feature.chat.cbm.inbox.InboxViewModel
 import com.hedvig.android.feature.chat.data.BotServiceService
-import com.hedvig.android.feature.chat.data.ChatRepository
 import com.hedvig.android.feature.chat.data.ChatRepositoryDemo
 import com.hedvig.android.feature.chat.data.ChatRepositoryImpl
 import com.hedvig.android.feature.chat.data.GetChatRepositoryProvider
@@ -51,7 +61,8 @@ val chatModule = module {
   }
 
   single<BotServiceService> {
-    val retrofit = Retrofit.Builder()
+    val retrofit = Retrofit
+      .Builder()
       .callFactory(get<OkHttpClient>())
       .baseUrl("${get<HedvigBuildConstants>().urlBotService}/api/")
       .addCallAdapterFactory(EitherCallAdapterFactory.create())
@@ -60,12 +71,48 @@ val chatModule = module {
     retrofit.create(BotServiceService::class.java)
   }
 
-  /**
-   * [com.hedvig.app.feature.chat.service.ReplyWorker] also needs an instance of ChatRepository itself, without
-   * necessarily caring about demo mode or not. If there is a notification arriving, even if they are in demo mode
-   * somehow, the real chat repository should be used.
-   */
-  single<ChatRepository> {
-    get<ChatRepositoryImpl>()
+  // cbm
+  single<GetAllConversationsUseCase> {
+    GetAllConversationsUseCaseImpl(get<ApolloClient>(), get<ConversationDao>())
+  }
+
+  viewModel<InboxViewModel> {
+    InboxViewModel(get<GetAllConversationsUseCase>())
+  }
+
+  single<CbmChatRepositoryImpl> {
+    CbmChatRepositoryImpl(
+      apolloClient = get<ApolloClient>(),
+      database = get<AppDatabase>(),
+      chatDao = get<ChatDao>(),
+      remoteKeyDao = get<RemoteKeyDao>(),
+      conversationDao = get<ConversationDao>(),
+      fileService = get<FileService>(),
+      botServiceService = get<BotServiceService>(),
+      clock = get<Clock>(),
+    )
+  }
+  single<CbmChatRepositoryDemo> {
+    CbmChatRepositoryDemo(get<Clock>())
+  }
+
+  single<GetCbmChatRepositoryProvider> {
+    GetCbmChatRepositoryProvider(
+      demoManager = get<DemoManager>(),
+      demoImpl = get<CbmChatRepositoryDemo>(),
+      prodImpl = get<CbmChatRepositoryImpl>(),
+    )
+  }
+
+  viewModel<CbmChatViewModel> { (conversationId: String) ->
+    CbmChatViewModel(
+      conversationId = conversationId,
+      database = get<AppDatabase>(),
+      chatDao = get<ChatDao>(),
+      remoteKeyDao = get<RemoteKeyDao>(),
+      conversationDao = get<ConversationDao>(),
+      chatRepository = get<GetCbmChatRepositoryProvider>(),
+      clock = get<Clock>(),
+    )
   }
 }

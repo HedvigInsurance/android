@@ -13,7 +13,6 @@ android {
 }
 
 dependencies {
-  apolloMetadata(projects.apolloOctopusPublic)
 
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.compose.material3)
@@ -63,6 +62,7 @@ dependencies {
 
 apollo {
   service("octopus") {
-    packageName.set("octopus")
+    packageName = "octopus"
+    dependsOn(projects.apolloOctopusPublic, true)
   }
 }

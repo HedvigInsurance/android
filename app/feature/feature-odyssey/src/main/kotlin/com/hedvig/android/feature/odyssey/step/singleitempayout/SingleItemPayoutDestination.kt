@@ -53,7 +53,7 @@ import octopus.type.CurrencyCode
 internal fun SingleItemPayoutDestination(
   viewModel: SingleItemPayoutViewModel,
   onDoneAfterPayout: () -> Unit,
-  openChat: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   closePayoutScreen: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -61,7 +61,7 @@ internal fun SingleItemPayoutDestination(
     uiState = uiState,
     retryPayout = viewModel::requestPayout,
     onDoneAfterPayout = onDoneAfterPayout,
-    openChat = openChat,
+    onNavigateToNewConversation = onNavigateToNewConversation,
     closePayoutScreen = closePayoutScreen,
   )
 }
@@ -71,7 +71,7 @@ private fun SingleItemPayoutScreen(
   uiState: PayoutUiState,
   retryPayout: () -> Unit,
   onDoneAfterPayout: () -> Unit,
-  openChat: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   closePayoutScreen: () -> Unit,
 ) {
   Surface(
@@ -87,7 +87,7 @@ private fun SingleItemPayoutScreen(
         allowInteraction = uiState.status is PayoutUiState.Status.Error,
         exitFlow = closePayoutScreen,
         retryPayout = retryPayout,
-        openChat = openChat,
+        onNavigateToNewConversation = onNavigateToNewConversation,
       )
       PaidOutContent(
         status = uiState.status,
@@ -104,7 +104,7 @@ private fun BoxScope.ErrorContent(
   allowInteraction: Boolean,
   exitFlow: () -> Unit,
   retryPayout: () -> Unit,
-  openChat: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
 ) {
   PoppingContent(
     show = show,
@@ -143,7 +143,7 @@ private fun BoxScope.ErrorContent(
     ) {
       item {
         HedvigOutlinedButton(
-          onClick = openChat,
+          onClick = onNavigateToNewConversation,
           enabled = allowInteraction,
         ) {
           Text(stringResource(hedvig.resources.R.string.open_chat))

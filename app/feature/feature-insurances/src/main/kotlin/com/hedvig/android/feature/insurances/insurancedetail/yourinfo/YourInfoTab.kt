@@ -77,7 +77,7 @@ internal fun YourInfoTab(
   onEditCoInsuredClick: () -> Unit,
   onMissingInfoClick: () -> Unit,
   onChangeAddressClick: () -> Unit,
-  openChat: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   openUrl: (String) -> Unit,
   onCancelInsuranceClick: () -> Unit,
   isTerminated: Boolean,
@@ -157,11 +157,11 @@ internal fun YourInfoTab(
         ),
         sections = upcomingChangesInsuranceAgreement.displayItems
           .map { it.title to it.value },
-        onOpenChat = {
+        onNavigateToNewConversation = {
           coroutineScope.launch {
             sheetState.hide()
             showUpcomingChangesBottomSheet = false
-            openChat()
+            onNavigateToNewConversation()
           }
         },
         onDismiss = {
@@ -197,7 +197,9 @@ internal fun YourInfoTab(
           InfoCardTextButton(
             onClick = { openUrl(upcomingChangesInsuranceAgreement.certificateUrl) },
             text = stringResource(R.string.CONTRACT_VIEW_CERTIFICATE_BUTTON),
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(horizontal = 16.dp),
           )
         }
       } else {
@@ -530,7 +532,7 @@ private fun PreviewYourInfoTab() {
         ),
         onEditCoInsuredClick = {},
         onChangeAddressClick = {},
-        openChat = {},
+        onNavigateToNewConversation = {},
         onCancelInsuranceClick = {},
         isTerminated = false,
         contractHolderDisplayName = "Hugo Linder",

@@ -32,7 +32,7 @@ class TerminationSurveyPresenterTest {
       title = "I'm moving",
       subOptions = listOf(),
       listIndex = 0,
-      suggestion = SurveyOptionSuggestion.Action.UpdateAddress,
+      suggestion = SurveyOptionSuggestion.Action.UpdateAddress("description", "buttonTitle"),
     ),
     TerminationSurveyOption(
       id = "id2",
@@ -128,9 +128,11 @@ class TerminationSurveyPresenterTest {
       skipItems(1)
       sendEvent(TerminationSurveyEvent.ChangeFeedbackForSelectedReason("new feedback22!"))
       assertThat(
-        awaitItem().reasons.first {
-          it.surveyOption == listOfOptionsForHome[2]
-        }.feedBack,
+        awaitItem()
+          .reasons
+          .first {
+            it.surveyOption == listOfOptionsForHome[2]
+          }.feedBack,
       ).isEqualTo("new feedback22!")
     }
   }
@@ -202,21 +204,16 @@ class TerminationSurveyPresenterTest {
 private class FakeTerminateInsuranceRepository : TerminateInsuranceRepository {
   val terminationFlowTurbine = Turbine<Either<ErrorMessage, TerminateInsuranceStep>>()
 
-  override suspend fun startTerminationFlow(insuranceId: InsuranceId): Either<ErrorMessage, TerminateInsuranceStep> {
-    return terminationFlowTurbine.awaitItem()
-  }
+  override suspend fun startTerminationFlow(insuranceId: InsuranceId): Either<ErrorMessage, TerminateInsuranceStep> =
+    terminationFlowTurbine.awaitItem()
 
-  override suspend fun setTerminationDate(terminationDate: LocalDate): Either<ErrorMessage, TerminateInsuranceStep> {
-    return terminationFlowTurbine.awaitItem()
-  }
+  override suspend fun setTerminationDate(terminationDate: LocalDate): Either<ErrorMessage, TerminateInsuranceStep> =
+    terminationFlowTurbine.awaitItem()
 
   override suspend fun submitReasonForCancelling(
     reason: TerminationReason,
-  ): Either<ErrorMessage, TerminateInsuranceStep> {
-    return terminationFlowTurbine.awaitItem()
-  }
+  ): Either<ErrorMessage, TerminateInsuranceStep> = terminationFlowTurbine.awaitItem()
 
-  override suspend fun confirmDeletion(): Either<ErrorMessage, TerminateInsuranceStep> {
-    return terminationFlowTurbine.awaitItem()
-  }
+  override suspend fun confirmDeletion(): Either<ErrorMessage, TerminateInsuranceStep> =
+    terminationFlowTurbine.awaitItem()
 }

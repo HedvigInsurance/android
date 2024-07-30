@@ -11,7 +11,6 @@ android {
   testOptions.unitTests.isReturnDefaultValues = true
 }
 
-
 dependencies {
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.compose.material3)
@@ -42,11 +41,12 @@ dependencies {
   implementation(projects.dataContractPublic)
   implementation(projects.dataProductVariantAndroid)
   implementation(projects.dataProductVariantPublic)
+  implementation(projects.designSystemHedvig)
   implementation(projects.languageCore)
+  implementation(projects.moleculeAndroid)
+  implementation(projects.moleculePublic)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
-  implementation(projects.moleculePublic)
-  implementation(projects.moleculeAndroid)
 
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)

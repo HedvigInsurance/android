@@ -6,7 +6,6 @@ plugins {
 }
 
 dependencies {
-  apolloMetadata(projects.apolloOctopusPublic)
 
   api(libs.kotlinx.datetime)
 
@@ -47,7 +46,7 @@ dependencies {
 
 apollo {
   service("octopus") {
-    packageName.set("octopus")
-    generateDataBuilders.set(true)
+    packageName = "octopus"
+    dependsOn(projects.apolloOctopusPublic, true)
   }
 }

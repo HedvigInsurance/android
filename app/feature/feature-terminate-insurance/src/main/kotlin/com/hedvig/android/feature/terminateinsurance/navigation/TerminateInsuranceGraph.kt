@@ -38,7 +38,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
   navigator: Navigator,
   navController: NavController,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
-  openChat: (NavBackStackEntry) -> Unit,
+  onNavigateToNewConversation: (NavBackStackEntry) -> Unit,
   openUrl: (String) -> Unit,
   navigateToMovingFlow: (NavBackStackEntry) -> Unit,
   openPlayStore: () -> Unit,
@@ -49,7 +49,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
     TerminationFailureDestination(
       windowSizeClass = windowSizeClass,
       errorMessage = ErrorMessage(message),
-      openChat = { openChat(backStackEntry) },
+      onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry) },
       navigateUp = navigator::navigateUp,
       navigateBack = navigator::popBackStack,
     )
@@ -94,7 +94,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       ChooseInsuranceToTerminateDestination(
         viewModel = viewModel,
         navigateUp = navigator::navigateUp,
-        openChat = { openChat(backStackEntry) },
+        onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry) },
         closeTerminationFlow = closeTerminationFlow,
         navigateToNextStep = { step, insuranceForCancellation: TerminatableInsurance ->
           val commonParams = TerminationGraphParameters(
