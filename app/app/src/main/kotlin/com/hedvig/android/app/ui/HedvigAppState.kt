@@ -322,25 +322,25 @@ private val bottomNavPermittedDestinations: List<KClass<out Destination>> = buil
 }
 
 private sealed interface TopLevelDestination {
-  val destination: Any
+  val destination: Destination
 
   object Home : TopLevelDestination {
-    override val destination: Any = HomeDestination.Home
+    override val destination: Destination = HomeDestination.Home
   }
 
   object Insurances : TopLevelDestination {
-    override val destination: Any = InsurancesDestination.Insurances
+    override val destination: Destination = InsurancesDestination.Insurances
   }
 
   object Forever : TopLevelDestination {
-    override val destination: Any = ForeverDestination.Forever
+    override val destination: Destination = ForeverDestination.Forever
   }
 
   object Payments : TopLevelDestination {
-    override val destination: Any = PaymentsDestination.Payments
+    override val destination: Destination = PaymentsDestination.Payments
   }
 
   object Profile : TopLevelDestination {
-    override val destination: Any = ProfileDestination.Profile
+    override val destination: Destination = ProfileDestination.Profile
   }
 }
