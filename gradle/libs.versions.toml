@@ -1,7 +1,7 @@
 [versions]
 # androidSdkVersions
 compileSdkVersion = "34"
-targetSdkVersion = "33"
+targetSdkVersion = "34"
 minSdkVersion = "23"
 
 # lint versions
