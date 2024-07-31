@@ -59,7 +59,6 @@ import com.hedvig.android.feature.odyssey.ui.DatePickerWithDialog
 import com.hedvig.android.feature.odyssey.ui.MonetaryAmountInput
 import hedvig.resources.R
 import java.util.Locale
-import octopus.type.CurrencyCode
 
 @Composable
 internal fun SingleItemDestination(
