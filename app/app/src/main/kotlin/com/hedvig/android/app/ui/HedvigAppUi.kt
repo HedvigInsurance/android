@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
 import coil.ImageLoader
 import com.hedvig.android.app.navigation.HedvigNavHost
@@ -121,10 +122,10 @@ private fun Modifier.animatedNavigationBarInsetsConsumption(hedvigAppState: Hedv
       val topPadding = animationVector4d.v3
       val bottomPadding = animationVector4d.v4
       PaddingValues(
-        start = leftPadding.dp,
-        end = rightPadding.dp,
-        top = topPadding.dp,
-        bottom = bottomPadding.dp,
+        start = leftPadding.dp.coerceAtLeast(0.dp),
+        end = rightPadding.dp.coerceAtLeast(0.dp),
+        top = topPadding.dp.coerceAtLeast(0.dp),
+        bottom = bottomPadding.dp.coerceAtLeast(0.dp),
       )
     },
   )
