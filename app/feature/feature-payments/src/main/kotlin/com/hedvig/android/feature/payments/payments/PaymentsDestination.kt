@@ -441,7 +441,7 @@ private fun PaymentAmountCard(
             )
           }
         },
-        spaceBetween = 4.dp
+        spaceBetween = 4.dp,
       )
       Spacer(Modifier.height(2.dp))
       Text(

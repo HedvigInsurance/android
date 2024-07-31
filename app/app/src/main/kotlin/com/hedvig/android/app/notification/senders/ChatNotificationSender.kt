@@ -151,10 +151,10 @@ class ChatNotificationSender(
     }
 
     val chatPendingIntent: PendingIntent? = PendingIntent.getActivity(
-      /* context = */ context,
-      /* requestCode = */ 0,
-      /* intent = */ chatIntent,
-      /* flags = */ getMutablePendingIntentFlags(),
+      context,
+      0,
+      chatIntent,
+      getMutablePendingIntentFlags(),
     )
 
     val notification = NotificationCompat

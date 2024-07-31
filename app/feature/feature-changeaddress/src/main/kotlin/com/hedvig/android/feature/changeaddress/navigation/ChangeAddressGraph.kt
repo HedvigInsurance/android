@@ -58,7 +58,7 @@ fun NavGraphBuilder.changeAddressGraph(
     }
 
     navdestination<ChangeAddressDestination.EnterVillaInformation>(
-      ChangeAddressDestination.EnterVillaInformation
+      ChangeAddressDestination.EnterVillaInformation,
     ) { _ ->
       val viewModel: EnterVillaInformationViewModel = koinViewModel { parametersOf(previousDestinationParameters) }
       EnterVillaInformationDestination(

@@ -17,7 +17,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import com.hedvig.android.design.system.hedvig.tokens.BottomSheetTokens
 import com.hedvig.android.design.system.hedvig.tokens.LargeSizeButtonTokens
-import com.hedvig.android.logger.logcat
 import eu.wewox.modalsheet.ExperimentalSheetApi
 import eu.wewox.modalsheet.ModalSheet
 

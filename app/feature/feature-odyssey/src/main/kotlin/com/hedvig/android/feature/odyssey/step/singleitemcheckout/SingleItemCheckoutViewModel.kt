@@ -48,8 +48,9 @@ internal sealed interface SingleItemCheckoutUiState {
       val availableCheckoutMethods = singleItemCheckout.availableCheckoutMethods.toNonEmptyListOrNull()
       val initiallySelectedCheckoutMethod =
         availableCheckoutMethods?.firstOrNull() ?: return Unavailable
-      val checkedCompensation = singleItemCheckout.compensation as? ClaimFlowDestination.SingleItemCheckout.Compensation.Known
-        ?: return Unavailable
+      val checkedCompensation =
+        singleItemCheckout.compensation as? ClaimFlowDestination.SingleItemCheckout.Compensation.Known
+          ?: return Unavailable
       val modelName = singleItemCheckout.modelName ?: singleItemCheckout.customName
         ?: singleItemCheckout.brandName ?: "-"
       return Content(
