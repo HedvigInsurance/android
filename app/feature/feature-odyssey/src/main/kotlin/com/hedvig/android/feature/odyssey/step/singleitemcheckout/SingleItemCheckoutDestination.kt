@@ -57,11 +57,11 @@ import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.scaffold.ClaimFlowScaffold
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.claimflow.CheckoutMethod
 import com.hedvig.android.data.claimflow.ClaimFlowDestination
 import hedvig.resources.R
-import octopus.type.CurrencyCode
 
 @Composable
 internal fun SingleItemCheckoutDestination(
@@ -377,7 +377,7 @@ private fun PreviewSingleItemCheckoutScreenWithRepair() {
   val checkoutNr1 = CheckoutMethod.Known.AutomaticAutogiro(
     "#1",
     "Fancy payment method",
-    UiMoney(2499.0, CurrencyCode.SEK),
+    UiMoney(2499.0, UiCurrencyCode.SEK),
   )
   var selected: CheckoutMethod.Known by remember { mutableStateOf(checkoutNr1) }
   HedvigTheme {
@@ -385,9 +385,9 @@ private fun PreviewSingleItemCheckoutScreenWithRepair() {
       SingleItemCheckoutScreen(
         uiState = SingleItemCheckoutUiState.Content(
           compensation = ClaimFlowDestination.SingleItemCheckout.Compensation.Known.RepairCompensation(
-            repairCost = UiMoney(3999.0, CurrencyCode.SEK),
-            deductible = UiMoney(1000.0, CurrencyCode.SEK),
-            payoutAmount = UiMoney(2999.0, CurrencyCode.SEK),
+            repairCost = UiMoney(3999.0, UiCurrencyCode.SEK),
+            deductible = UiMoney(1000.0, UiCurrencyCode.SEK),
+            payoutAmount = UiMoney(2999.0, UiCurrencyCode.SEK),
           ),
           availableCheckoutMethods = buildList {
             add(checkoutNr1)
@@ -413,12 +413,12 @@ private fun PreviewSingleItemCheckoutScreenValueCompensation(
   val checkoutNr1 = CheckoutMethod.Known.AutomaticAutogiro(
     "#1",
     "Autogiro".repeat(4),
-    UiMoney(2499.0, CurrencyCode.SEK),
+    UiMoney(2499.0, UiCurrencyCode.SEK),
   )
   val checkoutNr2 = CheckoutMethod.Known.AutomaticAutogiro(
     "#2",
     "Bankenbanken",
-    UiMoney(2499.0, CurrencyCode.SEK),
+    UiMoney(2499.0, UiCurrencyCode.SEK),
   )
   var selected: CheckoutMethod.Known by remember { mutableStateOf(checkoutNr1) }
   HedvigTheme {
@@ -426,10 +426,10 @@ private fun PreviewSingleItemCheckoutScreenValueCompensation(
       SingleItemCheckoutScreen(
         SingleItemCheckoutUiState.Content(
           ClaimFlowDestination.SingleItemCheckout.Compensation.Known.ValueCompensation(
-            price = UiMoney(3999.0, CurrencyCode.SEK),
-            depreciation = UiMoney(500.0, CurrencyCode.SEK),
-            deductible = UiMoney(1000.0, CurrencyCode.SEK),
-            payoutAmount = UiMoney(2499.0, CurrencyCode.SEK),
+            price = UiMoney(3999.0, UiCurrencyCode.SEK),
+            depreciation = UiMoney(500.0, UiCurrencyCode.SEK),
+            deductible = UiMoney(1000.0, UiCurrencyCode.SEK),
+            payoutAmount = UiMoney(2499.0, UiCurrencyCode.SEK),
           ),
           buildList {
             add(checkoutNr1)

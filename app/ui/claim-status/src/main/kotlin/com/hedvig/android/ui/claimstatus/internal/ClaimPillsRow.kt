@@ -18,10 +18,10 @@ import com.hedvig.android.core.designsystem.material3.onWarningContainer
 import com.hedvig.android.core.designsystem.material3.warningContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.ui.claimstatus.model.ClaimPillType
 import hedvig.resources.R
-import octopus.type.CurrencyCode
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -72,7 +72,7 @@ private fun PreviewClaimPillsRow() {
         listOf(
           ClaimPillType.Open,
           ClaimPillType.Reopened,
-          ClaimPillType.PaymentAmount(UiMoney(990.0, CurrencyCode.SEK)),
+          ClaimPillType.PaymentAmount(UiMoney(990.0, UiCurrencyCode.SEK)),
           ClaimPillType.Unknown,
           ClaimPillType.Closed.NotCovered,
           ClaimPillType.Closed.NotCompensated,

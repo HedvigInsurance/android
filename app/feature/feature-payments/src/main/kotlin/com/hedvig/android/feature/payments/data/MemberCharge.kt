@@ -140,7 +140,7 @@ internal fun MemberChargeFragment.toMemberCharge(
       }?.onlyApplicableToContracts?.firstOrNull()?.exposureDisplayName,
       description = relatedRedeemedCampaign?.description,
       expiredState = Discount.ExpiredState.from(relatedRedeemedCampaign?.expiresAt, clock),
-      amount = UiMoney(discountBreakdown.discount.amount.unaryMinus(), discountBreakdown.discount.currencyCode),
+      amount = UiMoney.fromMoneyFragment(discountBreakdown.discount),
       isReferral = discountBreakdown.isReferral,
     )
   },

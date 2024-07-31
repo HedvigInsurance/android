@@ -68,6 +68,7 @@ import com.hedvig.android.core.ui.infocard.VectorWarningCard
 import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
 import com.hedvig.android.core.ui.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.payments.payments.PaymentsUiState.Content.ConnectedPaymentInfo.Connected
 import com.hedvig.android.feature.payments.payments.PaymentsUiState.Content.ConnectedPaymentInfo.NotConnected
@@ -87,7 +88,6 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toLocalDateTime
-import octopus.type.CurrencyCode
 
 @Composable
 internal fun PaymentsDestination(
@@ -517,7 +517,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
       PaymentsUiState.Content(
         isRetrying = false,
         upcomingPayment = PaymentsUiState.Content.UpcomingPayment.Content(
-          UiMoney(100.0, CurrencyCode.SEK),
+          UiMoney(100.0, UiCurrencyCode.SEK),
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
           "rdg",
         ),
@@ -529,7 +529,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
       PaymentsUiState.Content(
         isRetrying = false,
         upcomingPayment = PaymentsUiState.Content.UpcomingPayment.Content(
-          UiMoney(100.0, CurrencyCode.SEK),
+          UiMoney(100.0, UiCurrencyCode.SEK),
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
           "iky",
         ),
@@ -541,7 +541,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
       PaymentsUiState.Content(
         isRetrying = false,
         upcomingPayment = PaymentsUiState.Content.UpcomingPayment.Content(
-          UiMoney(100.0, CurrencyCode.SEK),
+          UiMoney(100.0, UiCurrencyCode.SEK),
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
           "pwe",
         ),
@@ -556,7 +556,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
       PaymentsUiState.Content(
         isRetrying = false,
         upcomingPayment = PaymentsUiState.Content.UpcomingPayment.Content(
-          UiMoney(100.0, CurrencyCode.SEK),
+          UiMoney(100.0, UiCurrencyCode.SEK),
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
           "fkjse",
         ),
@@ -568,7 +568,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
       PaymentsUiState.Content(
         isRetrying = false,
         upcomingPayment = PaymentsUiState.Content.UpcomingPayment.Content(
-          UiMoney(100.0, CurrencyCode.SEK),
+          UiMoney(100.0, UiCurrencyCode.SEK),
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
           "qrdfgeth",
         ),
@@ -580,7 +580,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
       PaymentsUiState.Content(
         isRetrying = false,
         upcomingPayment = PaymentsUiState.Content.UpcomingPayment.Content(
-          UiMoney(100.0, CurrencyCode.SEK),
+          UiMoney(100.0, UiCurrencyCode.SEK),
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
           "w345423t6",
         ),
@@ -595,7 +595,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
       PaymentsUiState.Content(
         isRetrying = false,
         upcomingPayment = PaymentsUiState.Content.UpcomingPayment.Content(
-          UiMoney(100.0, CurrencyCode.SEK),
+          UiMoney(100.0, UiCurrencyCode.SEK),
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
           "42345",
         ),

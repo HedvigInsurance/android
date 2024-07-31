@@ -11,6 +11,7 @@ sealed interface AppDestination {
   data class Chat(
     val chatContext: ChatContext? = null,
   ) : AppDestination, Destination {
+    @Serializable
     enum class ChatContext {
       PAYMENT,
       CLAIMS,

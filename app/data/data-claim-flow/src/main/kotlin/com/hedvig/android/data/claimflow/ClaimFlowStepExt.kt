@@ -1,5 +1,6 @@
 package com.hedvig.android.data.claimflow
 
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.core.uidata.UiNullableMoney
@@ -46,7 +47,7 @@ fun ClaimFlowStep.toClaimFlowDestination(): Destination {
 
     is ClaimFlowStep.ClaimSingleItemStep -> {
       ClaimFlowDestination.SingleItem(
-        preferredCurrency = preferredCurrency,
+        preferredCurrency = UiCurrencyCode.fromCurrencyCode(preferredCurrency),
         purchaseDate = purchaseDate,
         purchasePrice = UiNullableMoney.fromMoneyFragment(purchasePrice),
         purchasePriceApplicable = purchasePriceApplicable,
@@ -67,7 +68,7 @@ fun ClaimFlowStep.toClaimFlowDestination(): Destination {
         locationOptions = options.map { it.toLocationOption() },
         dateOfOccurrence = dateOfOccurrence,
         maxDate = maxDate,
-        preferredCurrency = preferredCurrency,
+        preferredCurrency = preferredCurrency?.let { UiCurrencyCode.fromCurrencyCode(it) },
         purchaseDate = purchaseDate,
         customName = customName,
         purchasePrice = UiNullableMoney.fromMoneyFragment(purchasePrice),

@@ -61,12 +61,12 @@ import com.hedvig.android.core.ui.infocard.InfoCardTextButton
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.payments.data.Discount
 import com.hedvig.android.feature.payments.overview.data.ForeverInformation
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
-import octopus.type.CurrencyCode
 
 @Composable
 internal fun DiscountsDestination(
@@ -286,7 +286,7 @@ private fun PaymentDetailsScreenPreview(
                 "display name of referral",
                 "description",
                 Discount.ExpiredState.NotExpired,
-                UiMoney(10.0, CurrencyCode.SEK),
+                UiMoney(10.0, UiCurrencyCode.SEK),
                 true,
               ),
               Discount(
@@ -294,7 +294,7 @@ private fun PaymentDetailsScreenPreview(
                 "display name of non referral",
                 "description",
                 Discount.ExpiredState.NotExpired,
-                UiMoney(10.0, CurrencyCode.SEK),
+                UiMoney(10.0, UiCurrencyCode.SEK),
                 false,
               ),
               Discount(
@@ -302,7 +302,7 @@ private fun PaymentDetailsScreenPreview(
                 "display name of expiring soon",
                 "description",
                 Discount.ExpiredState.ExpiringInTheFuture(LocalDate(2124, 12, 14)),
-                UiMoney(10.0, CurrencyCode.SEK),
+                UiMoney(10.0, UiCurrencyCode.SEK),
                 false,
               ),
               Discount(
@@ -310,7 +310,7 @@ private fun PaymentDetailsScreenPreview(
                 "display name of expired",
                 "description",
                 Discount.ExpiredState.AlreadyExpired(LocalDate(2014, 12, 14)),
-                UiMoney(10.0, CurrencyCode.SEK),
+                UiMoney(10.0, UiCurrencyCode.SEK),
                 false,
               ),
             )
@@ -319,8 +319,8 @@ private fun PaymentDetailsScreenPreview(
           },
           foreverInformation = ForeverInformation(
             "MYDISCOUNT1",
-            UiMoney(23.0, CurrencyCode.SEK),
-            UiMoney(10.0, CurrencyCode.SEK),
+            UiMoney(23.0, UiCurrencyCode.SEK),
+            UiMoney(10.0, UiCurrencyCode.SEK),
           ).takeIf { hasForeverAndDiscounts },
         ),
         navigateUp = {},

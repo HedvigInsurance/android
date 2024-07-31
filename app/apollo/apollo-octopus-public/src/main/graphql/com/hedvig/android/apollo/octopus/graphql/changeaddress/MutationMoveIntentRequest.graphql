@@ -4,8 +4,7 @@ mutation MoveIntentRequest($intentId: ID!, $input: MoveIntentRequestInput!) {
       id
       quotes {
         premium {
-          amount
-          currencyCode
+          ...MoneyFragment
         }
         displayItems {
           displayValue

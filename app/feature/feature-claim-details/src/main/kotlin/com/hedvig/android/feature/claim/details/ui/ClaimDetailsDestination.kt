@@ -70,6 +70,7 @@ import com.hedvig.android.core.ui.plus
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.design.system.hedvig.HedvigTheme
@@ -89,7 +90,6 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.toJavaLocalDate
-import octopus.type.CurrencyCode
 
 @Composable
 internal fun ClaimDetailsDestination(
@@ -580,7 +580,7 @@ private fun PreviewClaimDetailScreen() {
                 ClaimPillType.Open,
                 ClaimPillType.Reopened,
                 ClaimPillType.Closed.Paid,
-                ClaimPillType.PaymentAmount(UiMoney(399.0, CurrencyCode.SEK)),
+                ClaimPillType.PaymentAmount(UiMoney(399.0, UiCurrencyCode.SEK)),
                 ClaimPillType.Closed.NotCompensated,
                 ClaimPillType.Closed.NotCovered,
               ),

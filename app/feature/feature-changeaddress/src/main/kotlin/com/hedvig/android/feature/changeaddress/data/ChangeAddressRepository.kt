@@ -120,10 +120,7 @@ private fun MoveIntentRequestMutation.Data.MoveIntentRequest.MoveIntent.toMoveQu
       id = id,
       insuranceName = quote.exposureName ?: quote.productVariant.displayName,
       moveIntentId = MoveIntentId(id),
-      premium = UiMoney(
-        amount = quote.premium.amount,
-        currencyCode = quote.premium.currencyCode,
-      ),
+      premium = UiMoney.fromMoneyFragment(quote.premium),
       startDate = quote.startDate,
       productVariant = quote.productVariant.toProductVariant(),
       displayItems = quote.displayItems

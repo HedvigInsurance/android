@@ -29,12 +29,12 @@ import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.payments.data.MemberCharge
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
-import octopus.type.CurrencyCode
 
 @Composable
 internal fun PaymentHistoryDestination(
@@ -216,7 +216,7 @@ internal fun PaymentHistoryScreenPreview(
           PaymentHistory.PastCharges.YearCharges.Charge(
             id = "$index",
             dueDate = LocalDate(2021, 7, 1 + index),
-            netAmount = UiMoney(index * 100.0, CurrencyCode.SEK),
+            netAmount = UiMoney(index * 100.0, UiCurrencyCode.SEK),
             hasFailedCharge = index % 2 == 0,
           )
         }

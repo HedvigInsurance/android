@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.NonEmptyList
 import arrow.core.toNonEmptyListOrNull
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiNullableMoney
 import com.hedvig.android.data.claimflow.ClaimFlowDestination
 import com.hedvig.android.data.claimflow.ClaimFlowRepository
@@ -30,7 +31,6 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import octopus.type.CurrencyCode
 import octopus.type.FlowClaimItemBrandInput
 import octopus.type.FlowClaimItemModelInput
 
@@ -329,7 +329,7 @@ internal data class SingleItemUiState(
   }
 }
 
-internal class PurchasePriceUiState(amount: Double?, preferredCurrency: CurrencyCode) {
+internal class PurchasePriceUiState(amount: Double?, preferredCurrency: UiCurrencyCode) {
   var uiMoney: UiNullableMoney by mutableStateOf(UiNullableMoney(amount, preferredCurrency))
     private set
 
