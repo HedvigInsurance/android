@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.payments.data
 
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
@@ -140,7 +141,10 @@ internal fun MemberChargeFragment.toMemberCharge(
       }?.onlyApplicableToContracts?.firstOrNull()?.exposureDisplayName,
       description = relatedRedeemedCampaign?.description,
       expiredState = Discount.ExpiredState.from(relatedRedeemedCampaign?.expiresAt, clock),
-      amount = UiMoney.fromMoneyFragment(discountBreakdown.discount),
+      amount = UiMoney(
+        discountBreakdown.discount.amount.unaryMinus(),
+        UiCurrencyCode.fromCurrencyCode(discountBreakdown.discount.currencyCode),
+      ),
       isReferral = discountBreakdown.isReferral,
     )
   },
