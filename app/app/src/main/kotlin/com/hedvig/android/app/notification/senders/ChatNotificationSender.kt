@@ -14,6 +14,8 @@ import androidx.core.content.getSystemService
 import androidx.core.graphics.drawable.IconCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ProcessLifecycleOwner
+import androidx.navigation.NavDestination
+import androidx.navigation.NavDestination.Companion.hasRoute
 import com.benasher44.uuid.Uuid
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.app.notification.getMutablePendingIntentFlags
@@ -32,7 +34,6 @@ import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
 import hedvig.resources.R
 import kotlinx.coroutines.flow.first
-import kotlinx.serialization.serializer
 
 /**
  * An in-memory storage of the current route, used to *not* show the chat notification if we are in a select list of
@@ -44,15 +45,15 @@ import kotlinx.serialization.serializer
  * thought we should.
  */
 object CurrentDestinationInMemoryStorage {
-  var currentDestinationId: Int? = null
+  var currentDestination: NavDestination? = null
 }
 
 private val listOfDestinationsWhichShouldNotShowChatNotification = setOf(
-  serializer<ChatDestinations.Chat>().hashCode(),
-  serializer<ChatDestinations.Inbox>().hashCode(),
-  serializer<AppDestination.Chat>().hashCode(),
-  serializer<HomeDestination.Home>().hashCode(),
-  serializer<ClaimDetailDestinations.ClaimOverviewDestination>().hashCode(),
+  ChatDestinations.Chat::class,
+  ChatDestinations.Inbox::class,
+  AppDestination.Chat::class,
+  HomeDestination.Home::class,
+  ClaimDetailDestinations.ClaimOverviewDestination::class,
 )
 
 class ChatNotificationSender(
@@ -72,8 +73,12 @@ class ChatNotificationSender(
 
   override suspend fun sendNotification(type: String, remoteMessage: RemoteMessage) {
     val isAppForegrounded = ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)
-    val currentDestination = CurrentDestinationInMemoryStorage.currentDestinationId
-    if (currentDestination in listOfDestinationsWhichShouldNotShowChatNotification && isAppForegrounded) {
+    val currentDestination = CurrentDestinationInMemoryStorage.currentDestination
+    val currentlyOnDestinationWhichForbidsShowingChatNotification =
+      listOfDestinationsWhichShouldNotShowChatNotification.any { clazz ->
+        currentDestination?.hasRoute(clazz) == true
+      }
+    if (currentlyOnDestinationWhichForbidsShowingChatNotification && isAppForegrounded) {
       logcat { "ChatNotificationSender ignoring notification since we are showing destination $currentDestination" }
       return
     }
