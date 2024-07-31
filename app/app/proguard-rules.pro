@@ -8,9 +8,5 @@
 -dontwarn java.beans.ConstructorProperties
 -dontwarn java.beans.Transient
 
-# Workaround for https://issuetracker.google.com/issues/353898971
-# https://stackoverflow.com/questions/14059888/android-proguard-keep-inner-class
--keep class com.hedvig.android.navigation.core.AppDestination$EditCoInsured
-
 # Crashlytics https://firebase.google.com/docs/crashlytics/get-deobfuscated-reports?platform=android#config-r8-proguard-dexguard
 -keepattributes SourceFile,LineNumberTable        # Keep file names and line numbers.
