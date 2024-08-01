@@ -25,7 +25,4 @@ fragment ClaimFragment on Claim {
   }
   incidentDate
   submittedAt
-  conversation {
-    id
-  }
 }

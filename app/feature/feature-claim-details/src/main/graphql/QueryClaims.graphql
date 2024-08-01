@@ -1,7 +1,10 @@
-query Claims {
+query Claims($isCbmEnabled: Boolean!) {
   currentMember {
     claims {
       ...ClaimFragment
+      conversation @include(if: $isCbmEnabled) {
+        id
+      }
     }
   }
 }
