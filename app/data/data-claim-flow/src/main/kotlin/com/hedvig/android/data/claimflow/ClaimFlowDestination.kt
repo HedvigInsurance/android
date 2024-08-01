@@ -3,6 +3,7 @@ package com.hedvig.android.data.claimflow
 import android.content.res.Resources
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Immutable
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.core.uidata.UiNullableMoney
@@ -17,7 +18,6 @@ import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
-import octopus.type.CurrencyCode
 
 sealed interface ClaimFlowDestination {
   @Serializable
@@ -93,7 +93,7 @@ sealed interface ClaimFlowDestination {
 
   @Serializable
   data class SingleItem(
-    val preferredCurrency: CurrencyCode,
+    val preferredCurrency: UiCurrencyCode,
     val purchaseDate: LocalDate?,
     val purchasePrice: UiNullableMoney?,
     val purchasePriceApplicable: Boolean,
@@ -107,7 +107,7 @@ sealed interface ClaimFlowDestination {
   ) : ClaimFlowDestination, Destination {
     companion object : DestinationNavTypeAware {
       override val typeList: List<KType> = listOf(
-        typeOf<CurrencyCode>(),
+        typeOf<UiCurrencyCode>(),
         typeOf<LocalDate?>(),
         typeOf<UiNullableMoney?>(),
         typeOf<List<ItemBrand>?>(),
@@ -183,7 +183,7 @@ sealed interface ClaimFlowDestination {
     val locationOptions: List<LocationOption>,
     val dateOfOccurrence: LocalDate?,
     val maxDate: LocalDate,
-    val preferredCurrency: CurrencyCode?,
+    val preferredCurrency: UiCurrencyCode?,
     val purchaseDate: LocalDate?,
     val purchasePrice: UiNullableMoney?,
     val availableItemBrands: List<ItemBrand>?,
@@ -201,7 +201,7 @@ sealed interface ClaimFlowDestination {
         typeOf<List<LocationOption>>(),
         typeOf<LocalDate?>(),
         typeOf<LocalDate>(),
-        typeOf<CurrencyCode?>(),
+        typeOf<UiCurrencyCode?>(),
         typeOf<UiNullableMoney?>(),
         typeOf<List<ItemBrand>?>(),
         typeOf<List<ItemModel>?>(),

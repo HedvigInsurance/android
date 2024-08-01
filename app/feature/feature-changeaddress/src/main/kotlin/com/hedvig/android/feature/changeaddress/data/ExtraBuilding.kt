@@ -1,8 +1,10 @@
 package com.hedvig.android.feature.changeaddress.data
 
 import java.util.UUID
+import kotlinx.serialization.Serializable
 import octopus.type.MoveExtraBuildingType
 
+@Serializable
 internal data class ExtraBuilding(
   val id: String = UUID.randomUUID().toString(),
   val size: Int,

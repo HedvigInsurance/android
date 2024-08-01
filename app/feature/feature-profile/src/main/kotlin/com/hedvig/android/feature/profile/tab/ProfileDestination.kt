@@ -86,7 +86,7 @@ internal fun ProfileDestination(
   navigateToAddMissingInfo: (contractId: String) -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
-  openChat: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   viewModel: ProfileViewModel,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -104,7 +104,7 @@ internal fun ProfileDestination(
     openUrl = openUrl,
     snoozeNotificationPermission = { viewModel.emit(ProfileUiEvent.SnoozeNotificationPermission) },
     onLogout = { viewModel.emit(ProfileUiEvent.Logout) },
-    openChat = openChat,
+    onNavigateToNewConversation = onNavigateToNewConversation,
   )
 }
 
@@ -121,7 +121,7 @@ private fun ProfileScreen(
   navigateToAddMissingInfo: (contractId: String) -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
-  openChat: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   snoozeNotificationPermission: () -> Unit,
   onLogout: () -> Unit,
 ) {
@@ -195,7 +195,7 @@ private fun ProfileScreen(
             .only(WindowInsetsSides.Horizontal)
             .asPaddingValues(),
           modifier = Modifier.onConsumedWindowInsetsChanged { consumedWindowInsets = it },
-          openChat = openChat,
+          onNavigateToNewConversation = onNavigateToNewConversation,
         )
         if (memberReminders.isNotEmpty()) {
           Spacer(Modifier.height(16.dp))
@@ -388,22 +388,23 @@ private fun PreviewProfileItemRows() {
   }
 }
 
-private class ProfileUiStateProvider : CollectionPreviewParameterProvider<ProfileUiState>(
-  listOf(
-    ProfileUiState.Loading,
-    ProfileUiState.Success(
-      travelCertificateAvailable = true,
+private class ProfileUiStateProvider :
+  CollectionPreviewParameterProvider<ProfileUiState>(
+    listOf(
+      ProfileUiState.Loading,
+      ProfileUiState.Success(
+        travelCertificateAvailable = true,
+      ),
+      ProfileUiState.Loading,
+      ProfileUiState.Success(
+        euroBonus = EuroBonus("jsdhgwmehg"),
+        travelCertificateAvailable = true,
+      ),
+      ProfileUiState.Loading,
+      ProfileUiState.Success(
+        euroBonus = EuroBonus("jsdhgwmehg"),
+        travelCertificateAvailable = false,
+      ),
+      ProfileUiState.Loading,
     ),
-    ProfileUiState.Loading,
-    ProfileUiState.Success(
-      euroBonus = EuroBonus("jsdhgwmehg"),
-      travelCertificateAvailable = true,
-    ),
-    ProfileUiState.Loading,
-    ProfileUiState.Success(
-      euroBonus = EuroBonus("jsdhgwmehg"),
-      travelCertificateAvailable = false,
-    ),
-    ProfileUiState.Loading,
-  ),
-)
+  )

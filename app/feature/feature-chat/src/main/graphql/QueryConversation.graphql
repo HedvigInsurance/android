@@ -1,0 +1,28 @@
+query Conversation($id: UUID!, $newerToken: String, $olderToken: String) {
+  conversation(id: $id) {
+    messagePage(newerToken: $newerToken, olderToken: $olderToken) {
+      ...ChatMessagePageFragment
+    }
+  }
+}
+
+fragment ChatMessagePageFragment on ChatMessagePage {
+  newerToken
+  olderToken
+  messages {
+    ...ChatMessageFragment
+  }
+}
+
+fragment ChatMessageFragment on ChatMessage {
+  id
+  sentAt
+  sender
+  ... on ChatMessageFile {
+    signedUrl
+    mimeType
+  }
+  ... on ChatMessageText {
+    text
+  }
+}

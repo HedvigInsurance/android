@@ -24,7 +24,7 @@ import hedvig.resources.R
 internal fun UpcomingChangesBottomSheetContent(
   infoText: String,
   sections: List<Pair<String, String>>,
-  onOpenChat: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -49,7 +49,7 @@ internal fun UpcomingChangesBottomSheetContent(
     Spacer(modifier = Modifier.height(16.dp))
     HedvigContainedButton(
       text = stringResource(id = R.string.open_chat),
-      onClick = onOpenChat,
+      onClick = onNavigateToNewConversation,
     )
     Spacer(modifier = Modifier.height(8.dp))
     HedvigTextButton(
@@ -71,7 +71,7 @@ private fun PreviewUpcomingChangesBottomSheetContent() {
           "1" to "2",
         ),
         onDismiss = {},
-        onOpenChat = {},
+        onNavigateToNewConversation = {},
         modifier = Modifier.padding(horizontal = 16.dp),
       )
     }

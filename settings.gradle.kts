@@ -4,7 +4,12 @@ pluginManagement {
   includeBuild("build-logic")
   includeBuild("lokalise-gradle-plugin")
   repositories {
-    google()
+    google {
+      mavenContent {
+        includeGroupByRegex(".*android.*")
+        includeGroupByRegex(".*google.*")
+      }
+    }
     gradlePluginPortal()
   }
 }
@@ -12,12 +17,13 @@ pluginManagement {
 dependencyResolutionManagement {
   repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
   repositories {
-    google()
-    mavenCentral()
-    maven("https://maven.pkg.github.com/HedvigInsurance/odyssey") {
-      name = "odyssey"
-      credentials(PasswordCredentials::class)
+    google {
+      mavenContent {
+        includeGroupByRegex(".*android.*")
+        includeGroupByRegex(".*google.*")
+      }
     }
+    mavenCentral()
     maven("https://maven.pkg.github.com/HedvigInsurance/authlib") {
       name = "authlib"
       credentials(PasswordCredentials::class)

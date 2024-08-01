@@ -6,6 +6,7 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.SizeTransform
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDeepLink
 import androidx.navigation.NavGraphBuilder
@@ -43,7 +44,7 @@ inline fun <reified T : Destination> NavGraphBuilder.navdestination(
     sizeTransform = sizeTransform,
     content = { navBackStackEntry ->
       CompositionLocalProvider(LocalNavAnimatedVisibilityScope provides this) {
-        val destination = navBackStackEntry.toRoute<T>()
+        val destination = remember(navBackStackEntry) { navBackStackEntry.toRoute<T>() }
         destination.content(navBackStackEntry)
       }
     },

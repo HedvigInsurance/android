@@ -2,14 +2,21 @@ package com.hedvig.android.data.chat.read.timestamp
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.annotations.ApolloExperimental
-import com.apollographql.apollo3.testing.enqueueTestNetworkError
-import com.apollographql.apollo3.testing.enqueueTestResponse
+import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.annotations.ApolloExperimental
+import com.apollographql.apollo.testing.enqueueTestNetworkError
+import com.apollographql.apollo.testing.enqueueTestResponse
+import com.benasher44.uuid.Uuid
 import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.hedvig.android.apollo.octopus.test.OctopusFakeResolver
 import com.hedvig.android.apollo.test.TestApolloClientRule
+import com.hedvig.android.data.chat.database.ConversationDao
+import com.hedvig.android.data.chat.database.ConversationEntity
+import com.hedvig.android.featureflags.flags.Feature
+import com.hedvig.android.featureflags.test.FakeFeatureManager2
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.Instant
 import octopus.ChatLatestMessageTimestampsQuery
@@ -27,6 +34,12 @@ class ChatLastMessageReadRepositoryImplTest {
   val apolloClient: ApolloClient
     get() = testApolloClientRule.apolloClient
 
+//  @get:Rule
+//  val appDatabaseRule = TestAppDatabaseRule(AppDatabase::class.java)
+//  val appDatabase: AppDatabase
+//    get() = appDatabaseRule.appDatabase as AppDatabase
+  // TODO CBM: Test with in-memory JVM Room database once we figure out how to do that
+
   @Test
   fun `With no timestamp stored, we get that there is a new message if any messages exist`(
     @TestParameter messagesExist: Boolean,
@@ -35,6 +48,8 @@ class ChatLastMessageReadRepositoryImplTest {
     val chatLastMessageReadRepositoryImpl = ChatLastMessageReadRepositoryImpl(
       chatMessageTimestampStorage = chatMessageTimestampStorage,
       apolloClient = apolloClient,
+      featureManager = FakeFeatureManager2(mapOf(Feature.ENABLE_CBM to false)),
+      conversationDao = NoopConversationDao(),
     )
     apolloClient.enqueueTestResponse(
       ChatLatestMessageTimestampsQuery(),
@@ -52,7 +67,7 @@ class ChatLastMessageReadRepositoryImplTest {
         }
       },
     )
-    val result = chatLastMessageReadRepositoryImpl.isNewestMessageNewerThanLastReadTimestamp()
+    val result = chatLastMessageReadRepositoryImpl.isNewestMessageNewerThanLastReadTimestamp().first()
 
     assertThat(result).isEqualTo(messagesExist)
   }
@@ -65,6 +80,8 @@ class ChatLastMessageReadRepositoryImplTest {
     val chatLastMessageReadRepositoryImpl = ChatLastMessageReadRepositoryImpl(
       chatMessageTimestampStorage = chatMessageTimestampStorage,
       apolloClient = apolloClient,
+      featureManager = FakeFeatureManager2(mapOf(Feature.ENABLE_CBM to false)),
+      conversationDao = NoopConversationDao(),
     )
     val lastReadMessageTimestamp = Instant.parse("2022-01-01T00:00:01Z")
     apolloClient.enqueueTestResponse(
@@ -84,7 +101,7 @@ class ChatLastMessageReadRepositoryImplTest {
       },
     )
     chatMessageTimestampStorage.setLatestReadTimestamp(lastReadMessageTimestamp)
-    val result = chatLastMessageReadRepositoryImpl.isNewestMessageNewerThanLastReadTimestamp()
+    val result = chatLastMessageReadRepositoryImpl.isNewestMessageNewerThanLastReadTimestamp().first()
 
     assertThat(result).isEqualTo(
       when (timeComparedToLastReadMessage) {
@@ -101,6 +118,8 @@ class ChatLastMessageReadRepositoryImplTest {
     val chatLastMessageReadRepositoryImpl = ChatLastMessageReadRepositoryImpl(
       chatMessageTimestampStorage = chatMessageTimestampStorage,
       apolloClient = apolloClient,
+      featureManager = FakeFeatureManager2(mapOf(Feature.ENABLE_CBM to false)),
+      conversationDao = NoopConversationDao(),
     )
     val enqueueBackendResponse = {
       apolloClient.enqueueTestResponse(
@@ -118,12 +137,12 @@ class ChatLastMessageReadRepositoryImplTest {
     }
     enqueueBackendResponse()
     chatMessageTimestampStorage.setLatestReadTimestamp(Instant.parse("2022-01-01T00:00:00Z"))
-    val firstResult = chatLastMessageReadRepositoryImpl.isNewestMessageNewerThanLastReadTimestamp()
+    val firstResult = chatLastMessageReadRepositoryImpl.isNewestMessageNewerThanLastReadTimestamp().first()
     assertThat(firstResult).isEqualTo(false)
 
     enqueueBackendResponse()
     chatMessageTimestampStorage.clearLatestReadTimestamp()
-    val secondResult = chatLastMessageReadRepositoryImpl.isNewestMessageNewerThanLastReadTimestamp()
+    val secondResult = chatLastMessageReadRepositoryImpl.isNewestMessageNewerThanLastReadTimestamp().first()
     assertThat(secondResult).isEqualTo(true)
   }
 
@@ -135,6 +154,8 @@ class ChatLastMessageReadRepositoryImplTest {
     val chatLastMessageReadRepositoryImpl = ChatLastMessageReadRepositoryImpl(
       chatMessageTimestampStorage = chatMessageTimestampStorage,
       apolloClient = apolloClient,
+      featureManager = FakeFeatureManager2(mapOf(Feature.ENABLE_CBM to false)),
+      conversationDao = NoopConversationDao(),
     )
     apolloClient.enqueueTestNetworkError()
     if (hasStoredTimestamp) {
@@ -142,7 +163,7 @@ class ChatLastMessageReadRepositoryImplTest {
     } else {
       chatMessageTimestampStorage.clearLatestReadTimestamp()
     }
-    val firstResult = chatLastMessageReadRepositoryImpl.isNewestMessageNewerThanLastReadTimestamp()
+    val firstResult = chatLastMessageReadRepositoryImpl.isNewestMessageNewerThanLastReadTimestamp().first()
     assertThat(firstResult).isEqualTo(false)
   }
 
@@ -153,6 +174,8 @@ class ChatLastMessageReadRepositoryImplTest {
       val chatLastMessageReadRepositoryImpl = ChatLastMessageReadRepositoryImpl(
         chatMessageTimestampStorage = chatMessageTimestampStorage,
         apolloClient = apolloClient,
+        featureManager = FakeFeatureManager2(mapOf(Feature.ENABLE_CBM to false)),
+        conversationDao = NoopConversationDao(),
       )
       apolloClient.enqueueTestResponse(
         ChatLatestMessageTimestampsQuery(),
@@ -171,9 +194,27 @@ class ChatLastMessageReadRepositoryImplTest {
         },
       )
       chatMessageTimestampStorage.setLatestReadTimestamp(Instant.parse("2022-01-01T00:00:04Z"))
-      val firstResult = chatLastMessageReadRepositoryImpl.isNewestMessageNewerThanLastReadTimestamp()
+      val firstResult = chatLastMessageReadRepositoryImpl.isNewestMessageNewerThanLastReadTimestamp().first()
       assertThat(firstResult).isEqualTo(true)
     }
 }
 
 enum class TimeComparedToLastReadMessage { NEWER, OLDER, SAME }
+
+private class NoopConversationDao : ConversationDao {
+  override fun getConversations(): Flow<List<ConversationEntity>> {
+    error("noop")
+  }
+
+  override suspend fun getConversation(id: Uuid): ConversationEntity? {
+    error("noop")
+  }
+
+  override suspend fun getLatestTimestamps(forConversationIds: List<Uuid>): List<ConversationEntity> {
+    error("noop")
+  }
+
+  override suspend fun insertConversation(conversationEntity: ConversationEntity) {
+    error("noop")
+  }
+}

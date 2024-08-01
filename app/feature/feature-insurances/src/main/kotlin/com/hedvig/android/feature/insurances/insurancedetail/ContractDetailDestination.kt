@@ -78,7 +78,7 @@ internal fun ContractDetailDestination(
   onMissingInfoClick: (String) -> Unit,
   onChangeAddressClick: () -> Unit,
   onCancelInsuranceClick: (cancelInsuranceData: CancelInsuranceData) -> Unit,
-  openChat: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   openUrl: (String) -> Unit,
   navigateUp: () -> Unit,
   navigateBack: () -> Unit,
@@ -93,7 +93,7 @@ internal fun ContractDetailDestination(
     onMissingInfoClick = onMissingInfoClick,
     onChangeAddressClick = onChangeAddressClick,
     onCancelInsuranceClick = onCancelInsuranceClick,
-    openChat = openChat,
+    onNavigateToNewConversation = onNavigateToNewConversation,
     openUrl = openUrl,
     navigateUp = navigateUp,
     navigateBack = navigateBack,
@@ -112,7 +112,7 @@ private fun ContractDetailScreen(
   onCancelInsuranceClick: (cancelInsuranceData: CancelInsuranceData) -> Unit,
   navigateUp: () -> Unit,
   navigateBack: () -> Unit,
-  openChat: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   openUrl: (String) -> Unit,
 ) {
   Column(
@@ -235,7 +235,7 @@ private fun ContractDetailScreen(
                         onMissingInfoClick(state.insuranceContract.id)
                       },
                       onChangeAddressClick = onChangeAddressClick,
-                      openChat = openChat,
+                      onNavigateToNewConversation = onNavigateToNewConversation,
                       openUrl = openUrl,
                       onCancelInsuranceClick = {
                         val contractGroup =
@@ -377,7 +377,7 @@ private fun PreviewContractDetailScreen() {
         },
         navigateUp = {},
         navigateBack = {},
-        openChat = {},
+        onNavigateToNewConversation = {},
         onMissingInfoClick = {},
         openUrl = {},
       )

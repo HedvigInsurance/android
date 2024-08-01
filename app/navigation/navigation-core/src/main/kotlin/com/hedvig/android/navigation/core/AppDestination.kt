@@ -1,5 +1,6 @@
 package com.hedvig.android.navigation.core
 
+import androidx.annotation.Keep
 import com.hedvig.android.navigation.compose.Destination
 import com.hedvig.android.navigation.compose.DestinationNavTypeAware
 import kotlin.reflect.KType
@@ -11,6 +12,7 @@ sealed interface AppDestination {
   data class Chat(
     val chatContext: ChatContext? = null,
   ) : AppDestination, Destination {
+    @Serializable
     enum class ChatContext {
       PAYMENT,
       CLAIMS,
@@ -27,6 +29,8 @@ sealed interface AppDestination {
   @Serializable
   data object ChangeAddress : AppDestination, Destination
 
+  // Workaround for https://issuetracker.google.com/issues/353898971
+  @Keep
   @Serializable
   data object EditCoInsured : AppDestination, Destination
 

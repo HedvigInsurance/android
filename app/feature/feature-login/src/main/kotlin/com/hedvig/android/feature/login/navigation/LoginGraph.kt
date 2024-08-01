@@ -27,7 +27,7 @@ fun NavGraphBuilder.loginGraph(
   urlBaseWeb: String,
   openUrl: (String) -> Unit,
   onOpenEmailApp: () -> Unit,
-  startLoggedInActivity: () -> Unit,
+  onNavigateToLoggedIn: () -> Unit,
 ) {
   navgraph<LoginDestination>(
     startDestination = LoginDestinations.Marketing::class,
@@ -66,7 +66,7 @@ fun NavGraphBuilder.loginGraph(
             backStackEntry.navigate(LoginDestinations.GenericAuthCredentialsInput)
           }
         },
-        startLoggedInActivity = startLoggedInActivity,
+        onNavigateToLoggedIn = onNavigateToLoggedIn,
       )
     }
     navdestination<LoginDestinations.GenericAuthCredentialsInput> { backStackEntry ->
@@ -91,7 +91,7 @@ fun NavGraphBuilder.loginGraph(
       OtpInputDestination(
         viewModel = viewModel,
         navigateUp = navigator::navigateUp,
-        startLoggedInActivity = startLoggedInActivity,
+        onNavigateToLoggedIn = onNavigateToLoggedIn,
         onOpenEmailApp = onOpenEmailApp,
       )
     }

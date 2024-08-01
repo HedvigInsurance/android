@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
@@ -37,13 +36,14 @@ import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.ChevronDown
 import com.hedvig.android.core.ui.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.design.system.hedvig.ripple
 import com.hedvig.android.feature.payments.data.MemberCharge
 import hedvig.resources.R
 import java.time.format.DateTimeFormatter
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
-import octopus.type.CurrencyCode
 
 @Composable
 internal fun PaymentDetailExpandableCard(
@@ -65,7 +65,7 @@ internal fun PaymentDetailExpandableCard(
         .fillMaxWidth()
         .clickable(
           interactionSource = remember { MutableInteractionSource() },
-          indication = rememberRipple(
+          indication = ripple(
             bounded = false,
             // This fixes the problem of the ripple not properly resizing as the card expands
             radius = 1000.dp,
@@ -203,25 +203,25 @@ private fun PaymentDetailExpandableCardPreview() {
         totalAmount = "978 kr",
         periods = listOf(
           MemberCharge.ChargeBreakdown.Period(
-            amount = UiMoney(200.0, CurrencyCode.SEK),
+            amount = UiMoney(200.0, UiCurrencyCode.SEK),
             fromDate = LocalDate.fromEpochDays(200),
             toDate = LocalDate.fromEpochDays(300),
             isPreviouslyFailedCharge = false,
           ),
           MemberCharge.ChargeBreakdown.Period(
-            amount = UiMoney(200.0, CurrencyCode.SEK),
+            amount = UiMoney(200.0, UiCurrencyCode.SEK),
             fromDate = LocalDate.fromEpochDays(200),
             toDate = LocalDate.fromEpochDays(300),
             isPreviouslyFailedCharge = false,
           ),
           MemberCharge.ChargeBreakdown.Period(
-            amount = UiMoney(400.0, CurrencyCode.SEK),
+            amount = UiMoney(400.0, UiCurrencyCode.SEK),
             fromDate = LocalDate.fromEpochDays(200),
             toDate = LocalDate.fromEpochDays(300),
             isPreviouslyFailedCharge = true,
           ),
           MemberCharge.ChargeBreakdown.Period(
-            amount = UiMoney(150.0, CurrencyCode.SEK),
+            amount = UiMoney(150.0, UiCurrencyCode.SEK),
             fromDate = LocalDate.fromEpochDays(200),
             toDate = LocalDate.fromEpochDays(300),
             isPreviouslyFailedCharge = false,
@@ -245,25 +245,25 @@ private fun PaymentDetailExpandableCardExpandedPreview() {
         totalAmount = "978 kr",
         periods = listOf(
           MemberCharge.ChargeBreakdown.Period(
-            amount = UiMoney(200.0, CurrencyCode.SEK),
+            amount = UiMoney(200.0, UiCurrencyCode.SEK),
             fromDate = LocalDate.fromEpochDays(200),
             toDate = LocalDate.fromEpochDays(300),
             isPreviouslyFailedCharge = false,
           ),
           MemberCharge.ChargeBreakdown.Period(
-            amount = UiMoney(200.0, CurrencyCode.SEK),
+            amount = UiMoney(200.0, UiCurrencyCode.SEK),
             fromDate = LocalDate.fromEpochDays(200),
             toDate = LocalDate.fromEpochDays(300),
             isPreviouslyFailedCharge = false,
           ),
           MemberCharge.ChargeBreakdown.Period(
-            amount = UiMoney(400.0, CurrencyCode.SEK),
+            amount = UiMoney(400.0, UiCurrencyCode.SEK),
             fromDate = LocalDate.fromEpochDays(200),
             toDate = LocalDate.fromEpochDays(300),
             isPreviouslyFailedCharge = true,
           ),
           MemberCharge.ChargeBreakdown.Period(
-            amount = UiMoney(150.0, CurrencyCode.SEK),
+            amount = UiMoney(150.0, UiCurrencyCode.SEK),
             fromDate = LocalDate.fromEpochDays(200),
             toDate = LocalDate.fromEpochDays(300),
             isPreviouslyFailedCharge = false,

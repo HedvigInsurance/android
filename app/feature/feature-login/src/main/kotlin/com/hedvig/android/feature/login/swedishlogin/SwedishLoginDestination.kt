@@ -64,13 +64,13 @@ internal fun SwedishLoginDestination(
   swedishLoginViewModel: SwedishLoginViewModel,
   navigateUp: () -> Unit,
   navigateToEmailLogin: () -> Unit,
-  startLoggedInActivity: () -> Unit,
+  onNavigateToLoggedIn: () -> Unit,
 ) {
   val uiState by swedishLoginViewModel.uiState.collectAsStateWithLifecycle()
   val navigateToLoginScreen = uiState.navigateToLoginScreen
   LaunchedEffect(navigateToLoginScreen) {
     if (!navigateToLoginScreen) return@LaunchedEffect
-    startLoggedInActivity()
+    onNavigateToLoggedIn()
   }
   SwedishLoginScreen(
     uiState = uiState.bankIdUiState,

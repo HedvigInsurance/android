@@ -9,7 +9,6 @@ plugins {
 }
 
 dependencies {
-  apolloMetadata(projects.apolloOctopusPublic)
 
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.compose.material3)
@@ -36,6 +35,7 @@ dependencies {
   implementation(projects.coreResources)
   implementation(projects.coreUi)
   implementation(projects.dataContractPublic)
+  implementation(projects.designSystemHedvig)
   implementation(projects.languageCore)
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
@@ -59,6 +59,7 @@ dependencies {
 
 apollo {
   service("octopus") {
-    packageName.set("octopus")
+    packageName = "octopus"
+    dependsOn(projects.apolloOctopusPublic, true)
   }
 }

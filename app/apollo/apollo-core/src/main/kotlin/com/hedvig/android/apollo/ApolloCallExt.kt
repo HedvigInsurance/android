@@ -1,10 +1,10 @@
 package com.hedvig.android.apollo
 
 import arrow.core.Either
-import com.apollographql.apollo3.ApolloCall
-import com.apollographql.apollo3.api.ApolloResponse
-import com.apollographql.apollo3.api.Operation
-import com.apollographql.apollo3.exception.ApolloException
+import com.apollographql.apollo.ApolloCall
+import com.apollographql.apollo.api.ApolloResponse
+import com.apollographql.apollo.api.Operation
+import com.apollographql.apollo.exception.ApolloException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.map
 
 suspend fun <D : Operation.Data> ApolloCall<D>.safeExecute(): OperationResult<D> {
   return try {
-    execute().toOperationResult()
+    executeV3().toOperationResult()
   } catch (apolloException: ApolloException) {
     OperationResult.Error.NetworkError(apolloException)
   } catch (throwable: Throwable) {
@@ -26,7 +26,7 @@ suspend fun <D : Operation.Data> ApolloCall<D>.safeExecute(): OperationResult<D>
 fun <D : Operation.Data, ErrorType> ApolloCall<D>.safeFlow(
   ifEmpty: (message: String?, throwable: Throwable?) -> ErrorType,
 ): Flow<Either<ErrorType, D>> {
-  return toFlow()
+  return toFlowV3()
     .map(ApolloResponse<D>::toOperationResult)
     .map { it.toEither(ifEmpty) }
     .catch { throwable ->

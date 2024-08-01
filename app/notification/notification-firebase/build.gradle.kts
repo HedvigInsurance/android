@@ -19,5 +19,6 @@ dependencies {
   implementation(projects.authEventCore)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDemoMode)
+  implementation(projects.featureFlagsPublic)
   implementation(projects.notificationCore)
 }

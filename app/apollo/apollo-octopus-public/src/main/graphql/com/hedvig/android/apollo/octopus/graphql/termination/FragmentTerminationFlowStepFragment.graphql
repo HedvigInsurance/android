@@ -47,6 +47,8 @@ fragment FlowTerminationSurveyOptionSuggestionFragment on FlowTerminationSurveyO
   ... on FlowTerminationSurveyOptionSuggestionAction {
     id
     action
+    description
+    buttonTitle
   }
   ... on FlowTerminationSurveyOptionSuggestionRedirect {
     buttonTitle

@@ -28,6 +28,7 @@ import com.hedvig.android.ui.emergency.FirstVetSection
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.test.runTest
+import kotlinx.datetime.Instant
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -110,6 +111,7 @@ internal class HomePresenterTest {
                 claimProgressItemsUiState = emptyList(),
                 claimType = "Broken item",
                 insuranceDisplayName = "Home Insurance",
+                submittedDate = Instant.parse("2024-05-01T00:00:00Z"),
               ),
             ),
           ),
@@ -133,6 +135,7 @@ internal class HomePresenterTest {
                 claimProgressItemsUiState = emptyList(),
                 claimType = "Broken item",
                 insuranceDisplayName = "Home Insurance",
+                submittedDate = Instant.parse("2024-05-01T00:00:00Z"),
               ),
             ),
           ),
@@ -482,7 +485,7 @@ internal class HomePresenterTest {
     }
   }
 
-  private class TestGetHomeDataUseCase() : GetHomeDataUseCase {
+  private class TestGetHomeDataUseCase : GetHomeDataUseCase {
     val forceNetworkFetchTurbine = Turbine<Boolean>()
     val responseTurbine = Turbine<Either<ErrorMessage, HomeData>>()
 

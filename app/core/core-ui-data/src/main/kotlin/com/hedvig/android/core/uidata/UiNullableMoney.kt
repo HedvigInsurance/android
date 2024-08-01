@@ -4,11 +4,10 @@ import androidx.compose.runtime.Immutable
 import java.text.DecimalFormat
 import kotlinx.serialization.Serializable
 import octopus.fragment.MoneyFragment
-import octopus.type.CurrencyCode
 
 @Immutable
 @Serializable
-data class UiNullableMoney(val amount: Double?, val currencyCode: CurrencyCode) {
+data class UiNullableMoney(val amount: Double?, val currencyCode: UiCurrencyCode) {
   override fun toString(): String {
     return buildString {
       if (amount != null) {
@@ -19,10 +18,9 @@ data class UiNullableMoney(val amount: Double?, val currencyCode: CurrencyCode) 
       append(" ")
       append(
         when (currencyCode) {
-          CurrencyCode.SEK -> "kr"
-          CurrencyCode.DKK -> currencyCode.toString()
-          CurrencyCode.NOK -> currencyCode.toString()
-          CurrencyCode.UNKNOWN__ -> error("Unknown currency code")
+          UiCurrencyCode.SEK -> "kr"
+          UiCurrencyCode.DKK -> currencyCode.toString()
+          UiCurrencyCode.NOK -> currencyCode.toString()
         },
       )
     }
@@ -31,7 +29,7 @@ data class UiNullableMoney(val amount: Double?, val currencyCode: CurrencyCode) 
   companion object {
     fun fromMoneyFragment(fragment: MoneyFragment?): UiNullableMoney? {
       fragment ?: return null
-      return UiNullableMoney(fragment.amount, fragment.currencyCode)
+      return UiNullableMoney(fragment.amount, fragment.currencyCode.toUiCurrencyCode())
     }
   }
 }

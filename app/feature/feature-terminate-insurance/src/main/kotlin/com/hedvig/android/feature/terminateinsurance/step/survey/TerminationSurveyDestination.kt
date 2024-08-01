@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
@@ -66,7 +65,6 @@ import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmal
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextFieldDefaults
 import com.hedvig.android.core.designsystem.material3.alwaysBlackContainer
-import com.hedvig.android.core.designsystem.material3.borderSecondary
 import com.hedvig.android.core.designsystem.material3.onAlwaysBlackContainer
 import com.hedvig.android.core.designsystem.material3.onTypeContainer
 import com.hedvig.android.core.designsystem.material3.typeContainer
@@ -75,10 +73,13 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.small.hedvig.Campaign
-import com.hedvig.android.core.ui.SelectIndicationCircle
 import com.hedvig.android.core.ui.infocard.InfoCardTextButton
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.text.WarningTextWithIcon
+import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
+import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
+import com.hedvig.android.design.system.hedvig.RadioOption
+import com.hedvig.android.design.system.hedvig.RadioOptionDefaults
 import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 import com.hedvig.android.feature.terminateinsurance.data.TerminationReason
@@ -183,63 +184,32 @@ private fun TerminationSurveyScreen(
       }
       for (reason in uiState.reasons) {
         Column {
-          HedvigCard(
-            onClick = { selectOption(reason.surveyOption) },
-            colors = CardDefaults.outlinedCardColors(
-              containerColor = MaterialTheme.colorScheme.surface,
-            ),
+          RadioOption(
+            optionText = reason.surveyOption.title,
+            chosenState = if (uiState.selectedOption == reason.surveyOption) Chosen else NotChosen,
             modifier = Modifier
               .fillMaxWidth()
               .padding(horizontal = 16.dp),
-          ) {
-            Row(
-              verticalAlignment = Alignment.CenterVertically,
-              modifier = Modifier
-                .heightIn(64.dp)
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 10.dp),
-            ) {
-              Text(
-                text = reason.surveyOption.title,
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.weight(1f),
-              )
-              Spacer(Modifier.width(8.dp))
-              SelectIndicationCircle(
-                uiState.selectedOption == reason.surveyOption,
-                selectedIndicationColor = MaterialTheme.colorScheme.typeElement,
-                unselectedCircleColor = MaterialTheme.colorScheme.borderSecondary,
-              )
-            }
-          }
+            onClick = { selectOption(reason.surveyOption) },
+            radioOptionSize = RadioOptionDefaults.RadioOptionSize.Medium,
+          )
+
           Spacer(modifier = (Modifier.height(4.dp)))
           AnimatedVisibility(visible = reason.surveyOption == uiState.selectedOption) {
             Column {
               val suggestion = reason.surveyOption.suggestion
               if (suggestion != null) {
-                val text = when (suggestion) {
-                  SurveyOptionSuggestion.Action.UpdateAddress -> stringResource(
-                    id = R.string.TERMINATION_SURVEY_MOVING_SUGGESTION,
-                  )
-
-                  is SurveyOptionSuggestion.Redirect -> suggestion.description
-                }
-                val buttonText = when (suggestion) {
-                  SurveyOptionSuggestion.Action.UpdateAddress -> stringResource(
-                    R.string.TERMINATION_SURVEY_MOVING_BUTTON,
-                  )
-
-                  is SurveyOptionSuggestion.Redirect -> suggestion.buttonTitle
-                }
+                val text = suggestion.description
+                val buttonText = suggestion.buttonTitle
                 val onSuggestionButtonClick: () -> Unit = when (suggestion) {
-                  SurveyOptionSuggestion.Action.UpdateAddress -> {
+                  is SurveyOptionSuggestion.Action.UpdateAddress -> {
                     { navigateToMovingFlow() }
                   }
-
                   is SurveyOptionSuggestion.Redirect -> {
                     { openUrl(suggestion.url) }
                   }
                 }
+
                 VectorInfoCard(
                   text = text,
                   icon = Icons.Hedvig.Campaign,
@@ -356,7 +326,8 @@ private fun FeedbackEditableText(
                 .fillMaxSize()
                 .windowInsetsPadding(
                   WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Vertical),
-                ).animateEnterExit(
+                )
+                .animateEnterExit(
                   enter = slideInVertically(initialOffsetY = { it / 2 }),
                   exit = ExitTransition.None,
                 ),
@@ -612,7 +583,7 @@ private val previewReason1 = TerminationReason(
         listIndex = 2,
       ),
     ),
-    suggestion = SurveyOptionSuggestion.Action.UpdateAddress,
+    suggestion = SurveyOptionSuggestion.Action.UpdateAddress("test description", "test"),
     feedBackRequired = true,
     listIndex = 0,
   ),
@@ -629,18 +600,6 @@ private val previewReason2 = TerminationReason(
     listIndex = 1,
   ),
   feedBack = LoremIpsum(25).values.first(),
-)
-
-private val previewReason2filled = TerminationReason(
-  TerminationSurveyOption(
-    id = "2",
-    title = "I got a better offer elsewhere",
-    subOptions = listOf(),
-    suggestion = null,
-    feedBackRequired = true,
-    listIndex = 2,
-  ),
-  "Got a great all included offer from If",
 )
 
 private val previewReason3 = TerminationReason(

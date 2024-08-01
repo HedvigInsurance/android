@@ -1,11 +1,11 @@
 package com.hedvig.android.app.apollo
 
-import com.apollographql.apollo3.api.ApolloRequest
-import com.apollographql.apollo3.api.ApolloResponse
-import com.apollographql.apollo3.api.Error
-import com.apollographql.apollo3.api.Operation
-import com.apollographql.apollo3.interceptor.ApolloInterceptor
-import com.apollographql.apollo3.interceptor.ApolloInterceptorChain
+import com.apollographql.apollo.api.ApolloRequest
+import com.apollographql.apollo.api.ApolloResponse
+import com.apollographql.apollo.api.Error
+import com.apollographql.apollo.api.Operation
+import com.apollographql.apollo.interceptor.ApolloInterceptor
+import com.apollographql.apollo.interceptor.ApolloInterceptorChain
 import com.hedvig.android.core.tracking.ErrorSource
 import com.hedvig.android.core.tracking.logError
 import kotlinx.coroutines.flow.Flow

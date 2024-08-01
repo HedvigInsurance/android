@@ -17,7 +17,8 @@ fun NavGraphBuilder.homeGraph(
   nestedGraphs: NavGraphBuilder.() -> Unit,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   navigator: Navigator,
-  onStartChat: (NavBackStackEntry) -> Unit,
+  onNavigateToInbox: (NavBackStackEntry) -> Unit,
+  onNavigateToNewConversation: (NavBackStackEntry) -> Unit,
   onStartClaim: (NavBackStackEntry) -> Unit,
   navigateToClaimDetails: (NavBackStackEntry, claimId: String) -> Unit,
   navigateToPayinScreen: () -> Unit,
@@ -39,7 +40,8 @@ fun NavGraphBuilder.homeGraph(
       val viewModel: HomeViewModel = koinViewModel()
       HomeDestination(
         viewModel = viewModel,
-        onStartChat = { onStartChat(backStackEntry) },
+        onNavigateToInbox = { onNavigateToInbox(backStackEntry) },
+        onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry) },
         onClaimDetailCardClicked = { claimId: String ->
           navigateToClaimDetails(backStackEntry, claimId)
         },

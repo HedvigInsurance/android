@@ -1,5 +1,8 @@
 package com.hedvig.android.feature.payments.payments
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.expandVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,6 +21,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -31,6 +35,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -63,9 +68,19 @@ import com.hedvig.android.core.ui.infocard.VectorWarningCard
 import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
 import com.hedvig.android.core.ui.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.feature.payments.payments.PaymentsUiState.Content.ConnectedPaymentInfo.Connected
+import com.hedvig.android.feature.payments.payments.PaymentsUiState.Content.ConnectedPaymentInfo.NotConnected
+import com.hedvig.android.feature.payments.payments.PaymentsUiState.Content.ConnectedPaymentInfo.Pending
+import com.hedvig.android.feature.payments.payments.PaymentsUiState.Content.UpcomingPayment
+import com.hedvig.android.feature.payments.payments.PaymentsUiState.Content.UpcomingPaymentInfo
+import com.hedvig.android.placeholder.PlaceholderHighlight
+import com.hedvig.android.placeholder.placeholder
+import com.hedvig.android.placeholder.shimmer
 import com.hedvig.android.pullrefresh.PullRefreshDefaults
 import com.hedvig.android.pullrefresh.PullRefreshIndicator
+import com.hedvig.android.pullrefresh.pullRefresh
 import com.hedvig.android.pullrefresh.rememberPullRefreshState
 import hedvig.resources.R
 import kotlin.time.Duration.Companion.days
@@ -73,7 +88,6 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toLocalDateTime
-import octopus.type.CurrencyCode
 
 @Composable
 internal fun PaymentsDestination(
@@ -107,13 +121,17 @@ private fun PaymentsScreen(
     WindowInsets.systemBars.getTop(this).toDp()
   }
   val isRefreshing =
-    uiState is PaymentsUiState.Loading || uiState.safeCast<PaymentsUiState.Content>()?.isLoading == true
+    uiState is PaymentsUiState.Loading || uiState.safeCast<PaymentsUiState.Content>()?.isRetrying == true
   val pullRefreshState = rememberPullRefreshState(
     refreshing = isRefreshing,
     onRefresh = onRetry,
     refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
   )
-  Box(Modifier.fillMaxSize()) {
+  Box(
+    modifier = Modifier
+      .fillMaxSize()
+      .pullRefresh(pullRefreshState),
+  ) {
     Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.fillMaxSize()) {
       Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
         TopAppBar(
@@ -129,20 +147,12 @@ private fun PaymentsScreen(
         )
         Spacer(Modifier.height(8.dp))
         when (uiState) {
-          PaymentsUiState.Loading -> {
-            // Pull to refresh handles this case
-          }
-
           PaymentsUiState.Error -> HedvigErrorSection(onButtonClick = onRetry, Modifier.weight(1f))
-          is PaymentsUiState.Content -> {
+          else -> {
             PaymentsContent(
               uiState = uiState,
-              onUpcomingPaymentClicked = {
-                onUpcomingPaymentClicked(
-                  // `onUpcomingPaymentClicked` is never called with a null memberCharge
-                  //  Can be improved by not getting all the content here and passing it as args to the other screens
-                  uiState.upcomingPayment!!.id,
-                )
+              onUpcomingPaymentClicked = { upcomingPayment ->
+                onUpcomingPaymentClicked(upcomingPayment.id)
               },
               onChangeBankAccount = onChangeBankAccount,
               onDiscountClicked = onDiscountClicked,
@@ -165,8 +175,8 @@ private fun PaymentsScreen(
 
 @Composable
 private fun PaymentsContent(
-  uiState: PaymentsUiState.Content,
-  onUpcomingPaymentClicked: () -> Unit,
+  uiState: PaymentsUiState,
+  onUpcomingPaymentClicked: (PaymentsUiState.Content.UpcomingPayment.Content) -> Unit,
   onChangeBankAccount: () -> Unit,
   onDiscountClicked: () -> Unit,
   onPaymentHistoryClicked: () -> Unit,
@@ -176,27 +186,34 @@ private fun PaymentsContent(
     modifier = modifier,
     verticalArrangement = Arrangement.spacedBy(8.dp),
   ) {
-    if (uiState.upcomingPayment != null) {
+    val upcomingPayment = (uiState as? PaymentsUiState.Content)?.upcomingPayment
+    if (upcomingPayment == PaymentsUiState.Content.UpcomingPayment.NoUpcomingPayment) {
+      HedvigInformationSection(stringResource(R.string.PAYMENTS_NO_PAYMENTS_IN_PROGRESS))
+    } else {
       PaymentAmountCard(
-        upcomingPayment = uiState.upcomingPayment,
+        upcomingPayment = upcomingPayment as? PaymentsUiState.Content.UpcomingPayment.Content,
         onCardClicked = onUpcomingPaymentClicked,
         modifier = Modifier
           .padding(horizontal = 16.dp)
           .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
       )
-    } else {
-      HedvigInformationSection(stringResource(R.string.PAYMENTS_NO_PAYMENTS_IN_PROGRESS))
     }
     UpcomingPaymentInfoCard(
-      uiState = uiState,
+      upcomingPaymentInfo = (uiState as? PaymentsUiState.Content)?.upcomingPaymentInfo,
       modifier = Modifier
         .padding(horizontal = 16.dp)
         .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
     )
-
-    if (uiState.connectedPaymentInfo is PaymentsUiState.Content.ConnectedPaymentInfo.NotConnected) {
+    val showConnectedPaymentInfo = uiState is PaymentsUiState.Content &&
+      uiState.connectedPaymentInfo is PaymentsUiState.Content.ConnectedPaymentInfo.NotConnected
+    AnimatedVisibility(
+      visibleState = remember { MutableTransitionState(showConnectedPaymentInfo) }.apply {
+        targetState = showConnectedPaymentInfo
+      },
+      enter = expandVertically(expandFrom = Alignment.CenterVertically),
+    ) {
       CardNotConnectedWarningCard(
-        connectedPaymentInfo = uiState.connectedPaymentInfo,
+        connectedPaymentInfo = (uiState as? PaymentsUiState.Content)?.connectedPaymentInfo as? PaymentsUiState.Content.ConnectedPaymentInfo.NotConnected,
         onChangeBankAccount = onChangeBankAccount,
         modifier = Modifier
           .padding(horizontal = 16.dp)
@@ -205,35 +222,43 @@ private fun PaymentsContent(
     }
 
     PaymentsListItems(uiState, onDiscountClicked, onPaymentHistoryClicked)
-    if (uiState.connectedPaymentInfo is PaymentsUiState.Content.ConnectedPaymentInfo.Connected) {
-      Spacer(Modifier.weight(1f))
-      HedvigSecondaryContainedButton(
-        text = stringResource(R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT),
-        onClick = onChangeBankAccount,
-        modifier = Modifier
-          .padding(horizontal = 16.dp)
-          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-      )
-    }
-    if (uiState.connectedPaymentInfo is PaymentsUiState.Content.ConnectedPaymentInfo.Pending) {
-      VectorInfoCard(
-        text = stringResource(R.string.MY_PAYMENT_UPDATING_MESSAGE),
-        modifier = Modifier
-          .padding(horizontal = 16.dp)
-          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-      )
+    if (uiState is PaymentsUiState.Content) {
+      when (uiState.connectedPaymentInfo) {
+        is Connected -> {
+          Spacer(Modifier.weight(1f))
+          HedvigSecondaryContainedButton(
+            text = stringResource(R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT),
+            onClick = onChangeBankAccount,
+            modifier = Modifier
+              .padding(horizontal = 16.dp)
+              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+              .placeholder(uiState.isRetrying, highlight = PlaceholderHighlight.shimmer()),
+          )
+        }
+
+        is NotConnected -> {
+          VectorInfoCard(
+            text = stringResource(R.string.MY_PAYMENT_UPDATING_MESSAGE),
+            modifier = Modifier
+              .padding(horizontal = 16.dp)
+              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+          )
+        }
+
+        Pending -> {}
+      }
     }
   }
 }
 
 @Composable
 private fun CardNotConnectedWarningCard(
-  connectedPaymentInfo: PaymentsUiState.Content.ConnectedPaymentInfo.NotConnected,
+  connectedPaymentInfo: PaymentsUiState.Content.ConnectedPaymentInfo.NotConnected?,
   onChangeBankAccount: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val dateTimeFormatter = rememberHedvigDateTimeFormatter()
-  val text = if (connectedPaymentInfo.dueDateToConnect != null) {
+  val text = if (connectedPaymentInfo?.dueDateToConnect != null) {
     stringResource(
       R.string.info_card_missing_payment_body_with_date,
       dateTimeFormatter.format(connectedPaymentInfo.dueDateToConnect.toJavaLocalDate()),
@@ -259,9 +284,13 @@ private fun CardNotConnectedWarningCard(
 }
 
 @Composable
-private fun UpcomingPaymentInfoCard(uiState: PaymentsUiState.Content, modifier: Modifier = Modifier) {
+private fun UpcomingPaymentInfoCard(
+  upcomingPaymentInfo: PaymentsUiState.Content.UpcomingPaymentInfo?,
+  modifier: Modifier = Modifier,
+) {
   Box(modifier) {
-    when (uiState.upcomingPaymentInfo) {
+    when (upcomingPaymentInfo) {
+      PaymentsUiState.Content.UpcomingPaymentInfo.NoInfo -> {}
       PaymentsUiState.Content.UpcomingPaymentInfo.InProgress -> {
         VectorInfoCard(text = stringResource(id = R.string.PAYMENTS_IN_PROGRESS))
       }
@@ -271,8 +300,8 @@ private fun UpcomingPaymentInfoCard(uiState: PaymentsUiState.Content, modifier: 
         VectorErrorCard(
           text = stringResource(
             R.string.PAYMENTS_MISSED_PAYMENT,
-            monthDateFormatter.format(uiState.upcomingPaymentInfo.failedPaymentStartDate.toJavaLocalDate()),
-            monthDateFormatter.format(uiState.upcomingPaymentInfo.failedPaymentEndDate.toJavaLocalDate()),
+            monthDateFormatter.format(upcomingPaymentInfo.failedPaymentStartDate.toJavaLocalDate()),
+            monthDateFormatter.format(upcomingPaymentInfo.failedPaymentEndDate.toJavaLocalDate()),
           ),
         )
       }
@@ -284,7 +313,7 @@ private fun UpcomingPaymentInfoCard(uiState: PaymentsUiState.Content, modifier: 
 
 @Composable
 private fun PaymentsListItems(
-  uiState: PaymentsUiState.Content,
+  uiState: PaymentsUiState,
   onDiscountClicked: () -> Unit,
   onPaymentHistoryClicked: () -> Unit,
 ) {
@@ -325,40 +354,48 @@ private fun PaymentsListItems(
         .padding(vertical = 16.dp)
         .fillMaxWidth(),
     )
-    if (uiState.connectedPaymentInfo is PaymentsUiState.Content.ConnectedPaymentInfo.Connected) {
-      HorizontalDivider(listItemsSideSpacingModifier)
-      PaymentsListItem(
-        text = uiState.connectedPaymentInfo.displayName,
-        icon = {
-          Icon(
-            imageVector = Icons.Hedvig.CreditCard,
-            contentDescription = null,
-            modifier = Modifier.size(24.dp),
-          )
-        },
-        endSlot = {
-          Text(
-            text = uiState.connectedPaymentInfo.maskedAccountNumber,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.End,
-          )
-        },
-        modifier = listItemsSideSpacingModifier
-          .padding(vertical = 16.dp)
-          .fillMaxWidth(),
-      )
+    if (uiState is PaymentsUiState.Content) {
+      if (uiState.connectedPaymentInfo is PaymentsUiState.Content.ConnectedPaymentInfo.Connected) {
+        HorizontalDivider(listItemsSideSpacingModifier)
+        PaymentsListItem(
+          text = uiState.connectedPaymentInfo.displayName,
+          icon = {
+            Icon(
+              imageVector = Icons.Hedvig.CreditCard,
+              contentDescription = null,
+              modifier = Modifier.size(24.dp),
+            )
+          },
+          endSlot = {
+            Text(
+              text = uiState.connectedPaymentInfo.maskedAccountNumber,
+              color = MaterialTheme.colorScheme.onSurfaceVariant,
+              textAlign = TextAlign.End,
+            )
+          },
+          modifier = listItemsSideSpacingModifier
+            .padding(vertical = 16.dp)
+            .fillMaxWidth()
+            .placeholder(uiState.isRetrying, highlight = PlaceholderHighlight.shimmer()),
+        )
+      }
     }
   }
 }
 
 @Composable
 private fun PaymentAmountCard(
-  upcomingPayment: PaymentsUiState.Content.UpcomingPayment,
-  onCardClicked: () -> Unit,
+  upcomingPayment: PaymentsUiState.Content.UpcomingPayment.Content?,
+  onCardClicked: (PaymentsUiState.Content.UpcomingPayment.Content) -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val onClick = if (upcomingPayment != null) {
+    { onCardClicked(upcomingPayment) }
+  } else {
+    null
+  }
   HedvigCard(
-    onClick = onCardClicked,
+    onClick = onClick,
     modifier = modifier,
   ) {
     Column(
@@ -367,14 +404,32 @@ private fun PaymentAmountCard(
         .fillMaxWidth(),
     ) {
       HorizontalItemsWithMaximumSpaceTaken(
-        startSlot = { Text(stringResource(R.string.PAYMENTS_UPCOMING_PAYMENT)) },
+        startSlot = {
+          Text(
+            stringResource(R.string.PAYMENTS_UPCOMING_PAYMENT),
+            Modifier.placeholder(
+              visible = upcomingPayment == null,
+              highlight = PlaceholderHighlight.shimmer(),
+            ),
+          )
+        },
         endSlot = {
           Row(
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+              .wrapContentWidth(Alignment.End)
+              .placeholder(
+                visible = upcomingPayment == null,
+                highlight = PlaceholderHighlight.shimmer(),
+              ),
           ) {
             Text(
-              text = upcomingPayment.netAmount.toString(),
+              text = if (upcomingPayment != null) {
+                upcomingPayment.netAmount.toString()
+              } else {
+                "100 kr >>"
+              },
               textAlign = TextAlign.End,
             )
             Spacer(Modifier.width(8.dp))
@@ -386,10 +441,20 @@ private fun PaymentAmountCard(
             )
           }
         },
+        spaceBetween = 4.dp,
       )
+      Spacer(Modifier.height(2.dp))
       Text(
-        text = rememberHedvigDateTimeFormatter().format(upcomingPayment.dueDate.toJavaLocalDate()),
+        text = if (upcomingPayment != null) {
+          rememberHedvigDateTimeFormatter().format(upcomingPayment.dueDate.toJavaLocalDate())
+        } else {
+          "22 Jul 2024"
+        },
         color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.placeholder(
+          visible = upcomingPayment == null,
+          highlight = PlaceholderHighlight.shimmer(),
+        ),
       )
     }
   }
@@ -439,31 +504,32 @@ private fun PreviewPaymentScreen(
 private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<PaymentsUiState>(
   buildList {
     add(PaymentsUiState.Error)
+    add(PaymentsUiState.Loading)
     add(
       PaymentsUiState.Content(
-        isLoading = false,
-        upcomingPayment = null,
-        upcomingPaymentInfo = null,
+        isRetrying = false,
+        upcomingPayment = UpcomingPayment.NoUpcomingPayment,
+        upcomingPaymentInfo = UpcomingPaymentInfo.NoInfo,
         connectedPaymentInfo = PaymentsUiState.Content.ConnectedPaymentInfo.Connected("Card", "****1234"),
       ),
     )
     add(
       PaymentsUiState.Content(
-        isLoading = false,
-        upcomingPayment = PaymentsUiState.Content.UpcomingPayment(
-          UiMoney(100.0, CurrencyCode.SEK),
+        isRetrying = false,
+        upcomingPayment = PaymentsUiState.Content.UpcomingPayment.Content(
+          UiMoney(100.0, UiCurrencyCode.SEK),
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
           "rdg",
         ),
-        upcomingPaymentInfo = null,
+        upcomingPaymentInfo = UpcomingPaymentInfo.NoInfo,
         connectedPaymentInfo = PaymentsUiState.Content.ConnectedPaymentInfo.Connected("Card", "****1234"),
       ),
     )
     add(
       PaymentsUiState.Content(
-        isLoading = false,
-        upcomingPayment = PaymentsUiState.Content.UpcomingPayment(
-          UiMoney(100.0, CurrencyCode.SEK),
+        isRetrying = false,
+        upcomingPayment = PaymentsUiState.Content.UpcomingPayment.Content(
+          UiMoney(100.0, UiCurrencyCode.SEK),
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
           "iky",
         ),
@@ -473,9 +539,9 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
     )
     add(
       PaymentsUiState.Content(
-        isLoading = false,
-        upcomingPayment = PaymentsUiState.Content.UpcomingPayment(
-          UiMoney(100.0, CurrencyCode.SEK),
+        isRetrying = false,
+        upcomingPayment = PaymentsUiState.Content.UpcomingPayment.Content(
+          UiMoney(100.0, UiCurrencyCode.SEK),
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
           "pwe",
         ),
@@ -488,33 +554,33 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
     )
     add(
       PaymentsUiState.Content(
-        isLoading = false,
-        upcomingPayment = PaymentsUiState.Content.UpcomingPayment(
-          UiMoney(100.0, CurrencyCode.SEK),
+        isRetrying = false,
+        upcomingPayment = PaymentsUiState.Content.UpcomingPayment.Content(
+          UiMoney(100.0, UiCurrencyCode.SEK),
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
           "fkjse",
         ),
-        upcomingPaymentInfo = null,
+        upcomingPaymentInfo = UpcomingPaymentInfo.NoInfo,
         connectedPaymentInfo = PaymentsUiState.Content.ConnectedPaymentInfo.Pending,
       ),
     )
     add(
       PaymentsUiState.Content(
-        isLoading = false,
-        upcomingPayment = PaymentsUiState.Content.UpcomingPayment(
-          UiMoney(100.0, CurrencyCode.SEK),
+        isRetrying = false,
+        upcomingPayment = PaymentsUiState.Content.UpcomingPayment.Content(
+          UiMoney(100.0, UiCurrencyCode.SEK),
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
           "qrdfgeth",
         ),
-        upcomingPaymentInfo = null,
+        upcomingPaymentInfo = UpcomingPaymentInfo.NoInfo,
         connectedPaymentInfo = PaymentsUiState.Content.ConnectedPaymentInfo.NotConnected(null),
       ),
     )
     add(
       PaymentsUiState.Content(
-        isLoading = false,
-        upcomingPayment = PaymentsUiState.Content.UpcomingPayment(
-          UiMoney(100.0, CurrencyCode.SEK),
+        isRetrying = false,
+        upcomingPayment = PaymentsUiState.Content.UpcomingPayment.Content(
+          UiMoney(100.0, UiCurrencyCode.SEK),
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
           "w345423t6",
         ),
@@ -527,9 +593,9 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
     )
     add(
       PaymentsUiState.Content(
-        isLoading = false,
-        upcomingPayment = PaymentsUiState.Content.UpcomingPayment(
-          UiMoney(100.0, CurrencyCode.SEK),
+        isRetrying = false,
+        upcomingPayment = PaymentsUiState.Content.UpcomingPayment.Content(
+          UiMoney(100.0, UiCurrencyCode.SEK),
           Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
           "42345",
         ),

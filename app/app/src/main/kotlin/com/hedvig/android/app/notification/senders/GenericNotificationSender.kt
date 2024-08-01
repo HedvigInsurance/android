@@ -27,7 +27,7 @@ class GenericNotificationSender(
     )
   }
 
-  override fun sendNotification(type: String, remoteMessage: RemoteMessage) {
+  override suspend fun sendNotification(type: String, remoteMessage: RemoteMessage) {
     val title = remoteMessage.data[DATA_MESSAGE_TITLE]
     val body = remoteMessage.data[DATA_MESSAGE_BODY]
     val pendingIntent = TaskStackBuilder

@@ -98,7 +98,10 @@ private fun FlowTerminationSurveyOptionSuggestionFragment.toSuggestion(): Survey
   return when (this) {
     is FlowTerminationSurveyOptionSuggestionActionFlowTerminationSurveyOptionSuggestionFragment -> {
       if (action == FlowTerminationSurveyRedirectAction.UPDATE_ADDRESS) {
-        SurveyOptionSuggestion.Action.UpdateAddress
+        SurveyOptionSuggestion.Action.UpdateAddress(
+          description = description,
+          buttonTitle = buttonTitle,
+        )
       } else {
         logcat(
           LogPriority.WARN,

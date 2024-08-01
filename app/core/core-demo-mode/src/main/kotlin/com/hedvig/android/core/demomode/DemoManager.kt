@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
 interface DemoManager {
@@ -19,7 +20,7 @@ internal class DataStoreDemoManager(
   override fun isDemoMode(): Flow<Boolean> {
     return dataStore.data.map {
       it[demoModeKey] ?: false
-    }
+    }.distinctUntilChanged()
   }
 
   override suspend fun setDemoMode(demoMode: Boolean) {

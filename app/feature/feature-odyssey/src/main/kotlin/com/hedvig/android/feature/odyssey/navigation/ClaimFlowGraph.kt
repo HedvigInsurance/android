@@ -60,7 +60,7 @@ fun NavGraphBuilder.claimFlowGraph(
   navigateToTriaging: () -> Unit,
   openAppSettings: () -> Unit,
   closeClaimFlow: () -> Unit,
-  openChat: (NavBackStackEntry) -> Unit,
+  onNavigateToNewConversation: (NavBackStackEntry) -> Unit,
   openUrl: (String) -> Unit,
   imageLoader: ImageLoader,
   nestedGraphs: NavGraphBuilder.() -> Unit,
@@ -265,8 +265,8 @@ fun NavGraphBuilder.claimFlowGraph(
     ) { navBackStackEntry ->
       DeflectGlassDamageDestination(
         deflectGlassDamage = this,
-        openChat = {
-          openChat(navBackStackEntry)
+        onNavigateToNewConversation = {
+          onNavigateToNewConversation(navBackStackEntry)
         },
         windowSizeClass = windowSizeClass,
         navigateUp = navigator::navigateUp,
@@ -280,8 +280,8 @@ fun NavGraphBuilder.claimFlowGraph(
     ) { navBackStackEntry ->
       DeflectTowingDestination(
         deflectTowing = this,
-        openChat = {
-          openChat(navBackStackEntry)
+        onNavigateToNewConversation = {
+          onNavigateToNewConversation(navBackStackEntry)
         },
         windowSizeClass = windowSizeClass,
         navigateUp = navigator::navigateUp,
@@ -315,8 +315,8 @@ fun NavGraphBuilder.claimFlowGraph(
     ) { navBackStackEntry ->
       DeflectPestsDestination(
         deflectPests = this,
-        openChat = {
-          openChat(navBackStackEntry)
+        onNavigateToNewConversation = {
+          onNavigateToNewConversation(navBackStackEntry)
         },
         navigateUp = navigator::navigateUp,
         openUrl = openUrl,
@@ -352,7 +352,7 @@ fun NavGraphBuilder.claimFlowGraph(
 fun NavGraphBuilder.terminalClaimFlowStepDestinations(
   navigator: Navigator,
   openPlayStore: () -> Unit,
-  openChat: (NavBackStackEntry) -> Unit,
+  onNavigateToNewConversation: (NavBackStackEntry) -> Unit,
 ) {
   navdestination<ClaimFlowDestination.SingleItemPayout>(
     ClaimFlowDestination.SingleItemPayout,
@@ -362,13 +362,13 @@ fun NavGraphBuilder.terminalClaimFlowStepDestinations(
     SingleItemPayoutDestination(
       viewModel = viewModel,
       onDoneAfterPayout = navigator::popBackStack,
-      openChat = { openChat(backStackEntry) },
+      onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry) },
       closePayoutScreen = navigator::popBackStack,
     )
   }
   navdestination<ClaimFlowDestination.ClaimSuccess> { backStackEntry ->
     ClaimSuccessDestination(
-      openChat = { openChat(backStackEntry) },
+      onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry) },
       closeSuccessScreen = navigator::popBackStack,
     )
   }
@@ -380,7 +380,7 @@ fun NavGraphBuilder.terminalClaimFlowStepDestinations(
   }
   navdestination<ClaimFlowDestination.Failure> { backStackEntry ->
     UnknownErrorDestination(
-      openChat = { openChat(backStackEntry) },
+      onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry) },
       closeFailureScreenDestination = navigator::popBackStack,
     )
   }

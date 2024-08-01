@@ -1,5 +1,9 @@
 package com.hedvig.android.feature.changeaddress.navigation
 
+import com.hedvig.android.feature.changeaddress.data.AddressId
+import com.hedvig.android.feature.changeaddress.data.ExtraBuilding
+import com.hedvig.android.feature.changeaddress.data.ExtraBuildingType
+import com.hedvig.android.feature.changeaddress.data.HousingType
 import com.hedvig.android.navigation.compose.Destination
 import com.hedvig.android.navigation.compose.DestinationNavTypeAware
 import kotlin.reflect.KType
@@ -12,13 +16,31 @@ internal sealed interface ChangeAddressDestination {
   data object SelectHousingType : ChangeAddressDestination, Destination
 
   @Serializable
-  data object EnterNewAddress : ChangeAddressDestination, Destination
+  data class EnterNewAddress(
+    val previousDestinationParameters: SelectHousingTypeParameters,
+  ) : ChangeAddressDestination, Destination {
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<SelectHousingTypeParameters>())
+    }
+  }
 
   @Serializable
-  data object EnterVillaInformation : ChangeAddressDestination, Destination
+  data class EnterVillaInformation(
+    val previousDestinationParameters: MovingParameters,
+  ) : ChangeAddressDestination, Destination {
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<MovingParameters>())
+    }
+  }
 
   @Serializable
-  data object Offer : ChangeAddressDestination, Destination
+  data class Offer(
+    val previousDestinationParameters: MovingParameters,
+  ) : ChangeAddressDestination, Destination {
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<MovingParameters>())
+    }
+  }
 
   @Serializable
   data class AddressResult(
@@ -29,3 +51,43 @@ internal sealed interface ChangeAddressDestination {
     }
   }
 }
+
+@Serializable
+internal data class MovingParameters(
+  val selectHousingTypeParameters: SelectHousingTypeParameters,
+  val newAddressParameters: NewAddressParameters,
+  val villaOnlyParameters: VillaOnlyParameters?,
+)
+
+@Serializable
+internal data class VillaOnlyParameters(
+  val yearOfConstruction: String?,
+  val ancillaryArea: String?,
+  val numberOfBathrooms: String?,
+  val isSublet: Boolean,
+  val extraBuildings: List<ExtraBuilding>,
+)
+
+@Serializable
+internal data class SelectHousingTypeParameters(
+  val isEligibleForStudent: Boolean,
+  val maxNumberCoInsured: Int?,
+  val maxSquareMeters: Int?,
+  val extraBuildingTypes: List<ExtraBuildingType>,
+  val moveFromAddressId: AddressId?,
+  val minDate: LocalDate,
+  val maxDate: LocalDate,
+  val suggestedNumberInsured: String,
+  val moveIntentId: String,
+  val housingType: HousingType?,
+)
+
+@Serializable
+internal data class NewAddressParameters(
+  val street: String,
+  val postalCode: String,
+  val squareMeters: String,
+  val isStudent: Boolean,
+  val movingDate: LocalDate,
+  val numberInsured: String,
+)
