@@ -6,11 +6,12 @@ import com.hedvig.android.core.fileupload.UploadFileUseCase
 import com.hedvig.android.feature.claim.details.data.GetClaimDetailUiStateUseCase
 import com.hedvig.android.feature.claim.details.ui.AddFilesViewModel
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailsViewModel
+import com.hedvig.android.featureflags.FeatureManager
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val claimDetailsModule = module {
-  single<GetClaimDetailUiStateUseCase> { GetClaimDetailUiStateUseCase(get<ApolloClient>()) }
+  single<GetClaimDetailUiStateUseCase> { GetClaimDetailUiStateUseCase(get<ApolloClient>(), get<FeatureManager>()) }
   viewModel<AddFilesViewModel> { (targetUploadUrl: String, initialFilesUri: List<String>) ->
     AddFilesViewModel(
       uploadFileUseCase = get(),
