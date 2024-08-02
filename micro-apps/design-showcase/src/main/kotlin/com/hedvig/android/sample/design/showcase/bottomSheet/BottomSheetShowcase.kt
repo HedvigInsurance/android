@@ -7,9 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,8 +48,7 @@ fun ShowcaseBottomSheet() {
         ) {
           Column(
             Modifier
-              .fillMaxWidth()
-              .verticalScroll(rememberScrollState()),
+              .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
           ) {
             HedvigText(

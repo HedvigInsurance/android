@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
@@ -49,7 +51,7 @@ fun HedvigBottomSheet(
     WindowInsets.ime.asPaddingValues()
   } else {
     WindowInsets.safeDrawing
-      .only(WindowInsetsSides.Bottom).asPaddingValues()
+      .only(WindowInsetsSides.Bottom + WindowInsetsSides.Top).asPaddingValues()
   }
   val finalSheetPadding = sheetPadding ?: defaultPadding
   ModalSheet(
@@ -64,7 +66,8 @@ fun HedvigBottomSheet(
     shape = bottomSheetShape.shape,
   ) {
     Column(
-      modifier = Modifier.padding(horizontal = bottomSheetShape.contentHorizontalPadding),
+      modifier = Modifier.padding(horizontal = bottomSheetShape.contentHorizontalPadding)
+        .verticalScroll(rememberScrollState()),
     ) {
       Spacer(modifier = Modifier.height(8.dp))
       Surface(
