@@ -7,22 +7,15 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.NestedScrollSource
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
@@ -39,13 +32,15 @@ internal fun ExtraBuildingTypeContainer(
   modifier: Modifier = Modifier,
 ) {
   HedvigCard(modifier) {
-    val nestedScrollConnection = remember {
-      object : NestedScrollConnection {
-        // to intercept scrolling gesture and do not close the sheet while scrolling the list
-        override fun onPostScroll(consumed: Offset, available: Offset, source: NestedScrollSource) = available
-      }
-    }
-    Column(Modifier.nestedScroll(nestedScrollConnection).verticalScroll(rememberScrollState())) {
+//    val nestedScrollConnection = remember {
+//      object : NestedScrollConnection {
+//        // to intercept scrolling gesture and do not close the sheet while scrolling the list
+//        override fun onPostScroll(consumed: Offset, available: Offset, source: NestedScrollSource) = available
+//      }
+//    }
+    Column(
+      // Modifier.nestedScroll(nestedScrollConnection).verticalScroll(rememberScrollState())
+    ) {
       Text(
         text = stringResource(hedvig.resources.R.string.CHANGE_ADDRESS_EXTRA_BUILDING_CONTAINER_TITLE),
         style = MaterialTheme.typography.labelLarge,

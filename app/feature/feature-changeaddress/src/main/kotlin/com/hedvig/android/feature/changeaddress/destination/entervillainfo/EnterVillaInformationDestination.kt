@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.changeaddress.destination.entervillainfo
 
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -8,7 +9,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -54,7 +54,7 @@ internal fun EnterVillaInformationDestination(
   }
 
   var showExtraBuildingsBottomSheet by rememberSaveable { mutableStateOf(false) }
-  val sheetState = rememberModalBottomSheetState(true)
+
   if (showExtraBuildingsBottomSheet) {
     ExtraBuildingBottomSheet(
       extraBuildingTypes = uiState.extraBuildingTypes,
@@ -65,7 +65,8 @@ internal fun EnterVillaInformationDestination(
         showExtraBuildingsBottomSheet = false
         viewModel.emit(EnterVillaInformationEvent.AddExtraBuilding(it))
       },
-      sheetState = sheetState,
+      isVisible = showExtraBuildingsBottomSheet,
+      onVisibleChange = { showExtraBuildingsBottomSheet = it },
     )
   }
 
@@ -173,12 +174,14 @@ private fun ChangeAddressEnterVillaInformationScreen(
       ),
     )
     Spacer(modifier = Modifier.height(8.dp))
-    ChangeAddressSwitch(
-      label = stringResource(id = R.string.CHANGE_ADDRESS_SUBLET_LABEL),
-      checked = uiState.isSublet.input,
-      onCheckedChange = onIsSubletSelected,
-      onClick = { onIsSubletSelected(!uiState.isSublet.input) },
-    )
+    Row(modifier = Modifier.padding(horizontal = 16.dp)) {
+      ChangeAddressSwitch(
+        label = stringResource(id = R.string.CHANGE_ADDRESS_SUBLET_LABEL),
+        checked = uiState.isSublet.input,
+        onCheckedChange = onIsSubletSelected,
+        onClick = { onIsSubletSelected(!uiState.isSublet.input) },
+      )
+    }
     Spacer(modifier = Modifier.height(8.dp))
     ExtraBuildingContainer(
       extraBuildings = uiState.extraBuildings,
