@@ -26,7 +26,6 @@ internal fun ChangeAddressSwitch(
   HedvigCard(
     modifier = Modifier
       .fillMaxWidth()
-      .padding(horizontal = 16.dp)
       .clip(MaterialTheme.shapes.squircleMedium)
       .clickable { onClick() },
   ) {
