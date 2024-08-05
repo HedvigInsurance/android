@@ -114,12 +114,20 @@ internal class CbmChatPresenter(
       }
     }
 
-    val updatedConversationIdStatus by rememberUpdatedState(conversationInfoStatus)
+    val updatedConversationInfoStatus by rememberUpdatedState(conversationInfoStatus)
     CollectEvents { event ->
       val startConversationIfNecessary = suspend {
-        val conversationIdStatusValue = updatedConversationIdStatus
-        val conversationAlreadyStarted =
-          (conversationIdStatusValue as? ConversationInfoStatus.Loaded)?.conversationInfo != null
+        val conversationInfoStatusValue = updatedConversationInfoStatus
+        val conversationAlreadyStarted = when (conversationInfoStatusValue) {
+          Failed -> false
+          Initializing -> false
+          is Loaded -> {
+            when (conversationInfoStatusValue.conversationInfo) {
+              NoConversation -> false
+              is Info -> true
+            }
+          }
+        }
         if (!conversationAlreadyStarted) {
           chatRepository.provide().createConversation(conversationId).onRight { backendConversationInfo ->
             conversationInfoStatus = ConversationInfoStatus.Loaded(backendConversationInfo)
