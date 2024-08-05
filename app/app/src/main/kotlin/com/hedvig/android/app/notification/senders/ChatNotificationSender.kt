@@ -15,7 +15,6 @@ import androidx.core.graphics.drawable.IconCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.navigation.NavDestination
-import androidx.navigation.NavDestination.Companion.hasRoute
 import com.benasher44.uuid.Uuid
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.app.notification.getMutablePendingIntentFlags
@@ -28,6 +27,7 @@ import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority.ERROR
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.navigation.compose.typedHasRoute
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.core.NotificationSender
@@ -76,7 +76,7 @@ class ChatNotificationSender(
     val currentDestination = CurrentDestinationInMemoryStorage.currentDestination
     val currentlyOnDestinationWhichForbidsShowingChatNotification =
       listOfDestinationsWhichShouldNotShowChatNotification.any { clazz ->
-        currentDestination?.hasRoute(clazz) == true
+        currentDestination?.typedHasRoute(clazz) == true
       }
     if (currentlyOnDestinationWhichForbidsShowingChatNotification && isAppForegrounded) {
       logcat { "ChatNotificationSender ignoring notification since we are showing destination $currentDestination" }
