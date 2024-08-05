@@ -14,6 +14,11 @@ internal object ToggleColorTokens {
   val ToggleBackgroundOffColor = ColorSchemeKeyTokens.FillDisabled
 }
 
+internal object ToggleIconSizeTokens {
+  val ToggleHeight = 18.dp
+  val ToggleWidth = 28.dp
+}
+
 internal object LargeSizeDefaultToggleTokens {
   val HorizontalPadding = 16.dp
   val TopPadding = 16.dp

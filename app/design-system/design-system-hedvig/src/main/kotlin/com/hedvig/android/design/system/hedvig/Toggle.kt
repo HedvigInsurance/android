@@ -1,15 +1,40 @@
 package com.hedvig.android.design.system.hedvig
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleStyle
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleStyle.Default
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleStyle.Detailed
 import com.hedvig.android.design.system.hedvig.tokens.LargeSizeDefaultToggleTokens
@@ -18,18 +43,148 @@ import com.hedvig.android.design.system.hedvig.tokens.MediumSizeDefaultToggleTok
 import com.hedvig.android.design.system.hedvig.tokens.SmallSizeDefaultToggleTokens
 import com.hedvig.android.design.system.hedvig.tokens.SmallSizeDetailedToggleTokens
 import com.hedvig.android.design.system.hedvig.tokens.ToggleColorTokens
+import com.hedvig.android.design.system.hedvig.tokens.ToggleIconSizeTokens
 
 @Composable
-fun HedvigToggle() {
+fun HedvigToggle(
+  labelText: String,
+  turnedOn: Boolean,
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+  toggleStyle: ToggleStyle = ToggleDefaults.toggleStyle,
+) {
+  when (toggleStyle) {
+    is Default -> DefaultToggle(
+      size = toggleStyle.size,
+      labelText = labelText,
+      turnedOn = turnedOn,
+      onClick = onClick,
+      modifier = modifier,
+    )
+
+    is Detailed -> DetailedToggle(
+      size = toggleStyle.size,
+      labelText = labelText,
+      turnedOn = turnedOn,
+      onClick = onClick,
+      descriptionText = toggleStyle.descriptionText,
+      modifier = modifier,
+    )
+  }
+}
+
+@Composable
+private fun DefaultToggle(
+  size: ToggleDefaults.ToggleDefaultStyleSize,
+  labelText: String,
+  turnedOn: Boolean,
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  // todo!!
+
+  AnimatedContent(
+    targetState = turnedOn,
+    transitionSpec = {
+      fadeIn().togetherWith(fadeOut())
+    },
+  ) { animatedEnabled ->
+    Toggle(
+      enabled = animatedEnabled,
+      onClick = onClick,
+    )
+  }
+}
+
+@Composable
+private fun DetailedToggle(
+  size: ToggleDefaults.ToggleDetailedStyleSize,
+  labelText: String,
+  descriptionText: String,
+  turnedOn: Boolean,
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  // todo!!
+
+  AnimatedContent(
+    targetState = turnedOn,
+    transitionSpec = {
+      fadeIn().togetherWith(fadeOut())
+    },
+  ) { animatedEnabled ->
+    Toggle(
+      enabled = animatedEnabled,
+      onClick = onClick,
+    )
+  }
+}
+
+@Composable
+private fun Toggle(enabled: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
+  val backgroundColor = if (enabled) toggleColors.toggleBackgroundOnColor else toggleColors.toggleBackgroundOffColor
+  val interactionSource = remember { MutableInteractionSource() }
+  val modifierNoIndication = modifier
+    .clickable(
+      role = Role.Switch,
+      interactionSource = interactionSource,
+      indication = null,
+      onClick = onClick,
+    )
+  Box(modifierNoIndication) {
+    ToggleBackground(backgroundColor)
+    ToggleTop(
+      backgroundColor = backgroundColor,
+      interactionSource = interactionSource,
+      onClick = onClick,
+      modifier = Modifier.align(if (enabled) Alignment.CenterEnd else Alignment.CenterStart),
+    )
+  }
+}
+
+@Composable
+private fun ToggleBackground(color: Color) {
+  Surface(
+    modifier = Modifier
+      .height(toggleIconSize.height)
+      .width(toggleIconSize.width),
+    color = color,
+    shape = ShapeDefaults.CornerLarge,
+  ) {}
+}
+
+@Composable
+private fun ToggleTop(
+  backgroundColor: Color,
+  interactionSource: MutableInteractionSource,
+  onClick: () -> Unit,
+  modifier: Modifier,
+) {
+  Surface(
+    modifier = modifier
+      .size(toggleIconSize.height)
+      .clip(CircleShape)
+      .clickable(
+        interactionSource = interactionSource,
+        indication = ripple(),
+        onClick = { onClick() },
+      ),
+    color = toggleColors.toggleTopColor,
+    shape = CircleShape,
+    border = BorderStroke(1.dp, backgroundColor),
+  ) {}
 }
 
 object ToggleDefaults {
   internal val toggleStyle: ToggleStyle = Default(ToggleDefaultStyleSize.Large)
 
   sealed class ToggleStyle {
-    class Default(size: ToggleDefaultStyleSize) : ToggleStyle()
+    class Default(val size: ToggleDefaultStyleSize) : ToggleStyle()
 
-    class Detailed(size: ToggleDetailedStyleSize) : ToggleStyle()
+    class Detailed(
+      val size: ToggleDetailedStyleSize,
+      val descriptionText: String,
+    ) : ToggleStyle()
   }
 
   enum class ToggleDefaultStyleSize {
@@ -43,12 +198,6 @@ object ToggleDefaults {
     Small,
   }
 }
-
-private val ToggleDefaults.ToggleStyle.style: ToggleStyle
-  get() = when (this) {
-    is Default -> ToggleStyle.Default
-    is Detailed -> ToggleStyle.Detailed
-  }
 
 private val ToggleDefaults.ToggleDefaultStyleSize.size: ToggleDefaultStyleSize
   get() = when (this) {
@@ -199,7 +348,7 @@ private sealed interface ToggleDetailedStyleSize {
     override val descriptionTextStyle: TextStyle
       @Composable
       @ReadOnlyComposable
-      get() = LargeSizeDetailedToggleTokens.LabelTextFont.value
+      get() = LargeSizeDetailedToggleTokens.DescriptionTextFont.value
 
     override val shape: Shape
       @Composable
@@ -220,7 +369,7 @@ private sealed interface ToggleDetailedStyleSize {
     override val descriptionTextStyle: TextStyle
       @Composable
       @ReadOnlyComposable
-      get() = SmallSizeDetailedToggleTokens.LabelTextFont.value
+      get() = SmallSizeDetailedToggleTokens.DescriptionTextFont.value
 
     override val labelTextStyle: TextStyle
       @Composable
@@ -234,26 +383,49 @@ private sealed interface ToggleDetailedStyleSize {
   }
 }
 
-private sealed interface ToggleStyle {
-  val toggleColors: ToggleColors
-    @Composable
-    get() = with(HedvigTheme.colorScheme) {
-      remember(this) {
-        ToggleColors(
-          containerColor = fromToken(ToggleColorTokens.ContainerColor),
-          labelColor = fromToken(ToggleColorTokens.ContainerColor),
-          descriptionColor = fromToken(ToggleColorTokens.ContainerColor),
-          pulsatingContainerColor = fromToken(ToggleColorTokens.ContainerColor),
-          pulsatingLabelColor = fromToken(ToggleColorTokens.ContainerColor),
-          pulsatingDescriptionColor = fromToken(ToggleColorTokens.ContainerColor),
-          toggleTopColor = fromToken(ToggleColorTokens.ContainerColor),
-          toggleBackgroundOnColor = fromToken(ToggleColorTokens.ContainerColor),
-          toggleBackgroundOffColor = fromToken(ToggleColorTokens.ContainerColor),
+private val toggleColors: ToggleColors
+  @Composable
+  get() = with(HedvigTheme.colorScheme) {
+    remember(this) {
+      ToggleColors(
+        containerColor = fromToken(ToggleColorTokens.ContainerColor),
+        labelColor = fromToken(ToggleColorTokens.LabelColor),
+        descriptionColor = fromToken(ToggleColorTokens.DescriptionColor),
+        pulsatingContainerColor = fromToken(ToggleColorTokens.PulsatingContainerColor),
+        pulsatingLabelColor = fromToken(ToggleColorTokens.PulsatingLabelColor),
+        pulsatingDescriptionColor = fromToken(ToggleColorTokens.PulsatingDescriptionColor),
+        toggleTopColor = fromToken(ToggleColorTokens.ToggleTopColor),
+        toggleBackgroundOnColor = fromToken(ToggleColorTokens.ToggleBackgroundOnColor),
+        toggleBackgroundOffColor = fromToken(ToggleColorTokens.ToggleBackgroundOffColor),
+      )
+    }
+  }
+
+private data class ToggleIconSize(
+  val height: Dp,
+  val width: Dp,
+)
+
+private val toggleIconSize: ToggleIconSize = ToggleIconSize(
+  height = ToggleIconSizeTokens.ToggleHeight,
+  width = ToggleIconSizeTokens.ToggleWidth,
+)
+
+@Preview
+@Composable
+private fun TogglePreview() {
+  HedvigTheme {
+    Surface {
+      var enabled by remember { mutableStateOf(false) }
+      Column(Modifier.padding(horizontal = 16.dp)) {
+        Spacer(Modifier.height(8.dp))
+        HedvigToggle(
+          turnedOn = enabled,
+          onClick = { enabled = !enabled },
+          labelText = "Label",
         )
+        Spacer(Modifier.height(8.dp))
       }
     }
-
-  data object Default : ToggleStyle
-
-  data object Detailed : ToggleStyle
+  }
 }
