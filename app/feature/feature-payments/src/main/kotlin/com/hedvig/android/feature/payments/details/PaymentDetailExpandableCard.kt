@@ -3,6 +3,8 @@ package com.hedvig.android.feature.payments.details
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,14 +36,14 @@ import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.ChevronDown
 import com.hedvig.android.core.ui.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.design.system.hedvig.ripple
 import com.hedvig.android.feature.payments.data.MemberCharge
 import hedvig.resources.R
 import java.time.format.DateTimeFormatter
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
-import octopus.type.CurrencyCode
 
 @Composable
 internal fun PaymentDetailExpandableCard(
@@ -54,16 +57,25 @@ internal fun PaymentDetailExpandableCard(
 ) {
   val dateTimeFormatter = rememberHedvigMonthDateTimeFormatter()
   HedvigCard(
-    onClick = onClick,
     modifier = modifier,
   ) {
     Column(
       modifier = Modifier
         .padding(horizontal = 16.dp, vertical = 12.dp)
-        .fillMaxWidth(),
+        .fillMaxWidth()
+        .clickable(
+          interactionSource = remember { MutableInteractionSource() },
+          indication = ripple(
+            bounded = false,
+            // This fixes the problem of the ripple not properly resizing as the card expands
+            radius = 1000.dp,
+          ),
+          onClick = onClick,
+        ),
     ) {
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = { Text(displayName) },
+        spaceBetween = 8.dp,
         endSlot = {
           Row(
             Modifier.fillMaxWidth(),
@@ -189,27 +201,27 @@ private fun PaymentDetailExpandableCardPreview() {
         displayName = "Bilförsäkring",
         subtitle = "ABH 234",
         totalAmount = "978 kr",
-        periods = persistentListOf(
+        periods = listOf(
           MemberCharge.ChargeBreakdown.Period(
-            amount = UiMoney(200.0, CurrencyCode.SEK),
+            amount = UiMoney(200.0, UiCurrencyCode.SEK),
             fromDate = LocalDate.fromEpochDays(200),
             toDate = LocalDate.fromEpochDays(300),
             isPreviouslyFailedCharge = false,
           ),
           MemberCharge.ChargeBreakdown.Period(
-            amount = UiMoney(200.0, CurrencyCode.SEK),
+            amount = UiMoney(200.0, UiCurrencyCode.SEK),
             fromDate = LocalDate.fromEpochDays(200),
             toDate = LocalDate.fromEpochDays(300),
             isPreviouslyFailedCharge = false,
           ),
           MemberCharge.ChargeBreakdown.Period(
-            amount = UiMoney(400.0, CurrencyCode.SEK),
+            amount = UiMoney(400.0, UiCurrencyCode.SEK),
             fromDate = LocalDate.fromEpochDays(200),
             toDate = LocalDate.fromEpochDays(300),
             isPreviouslyFailedCharge = true,
           ),
           MemberCharge.ChargeBreakdown.Period(
-            amount = UiMoney(150.0, CurrencyCode.SEK),
+            amount = UiMoney(150.0, UiCurrencyCode.SEK),
             fromDate = LocalDate.fromEpochDays(200),
             toDate = LocalDate.fromEpochDays(300),
             isPreviouslyFailedCharge = false,
@@ -231,27 +243,27 @@ private fun PaymentDetailExpandableCardExpandedPreview() {
         displayName = "Bilförsäkring",
         subtitle = "ABH 234",
         totalAmount = "978 kr",
-        periods = persistentListOf(
+        periods = listOf(
           MemberCharge.ChargeBreakdown.Period(
-            amount = UiMoney(200.0, CurrencyCode.SEK),
+            amount = UiMoney(200.0, UiCurrencyCode.SEK),
             fromDate = LocalDate.fromEpochDays(200),
             toDate = LocalDate.fromEpochDays(300),
             isPreviouslyFailedCharge = false,
           ),
           MemberCharge.ChargeBreakdown.Period(
-            amount = UiMoney(200.0, CurrencyCode.SEK),
+            amount = UiMoney(200.0, UiCurrencyCode.SEK),
             fromDate = LocalDate.fromEpochDays(200),
             toDate = LocalDate.fromEpochDays(300),
             isPreviouslyFailedCharge = false,
           ),
           MemberCharge.ChargeBreakdown.Period(
-            amount = UiMoney(400.0, CurrencyCode.SEK),
+            amount = UiMoney(400.0, UiCurrencyCode.SEK),
             fromDate = LocalDate.fromEpochDays(200),
             toDate = LocalDate.fromEpochDays(300),
             isPreviouslyFailedCharge = true,
           ),
           MemberCharge.ChargeBreakdown.Period(
-            amount = UiMoney(150.0, CurrencyCode.SEK),
+            amount = UiMoney(150.0, UiCurrencyCode.SEK),
             fromDate = LocalDate.fromEpochDays(200),
             toDate = LocalDate.fromEpochDays(300),
             isPreviouslyFailedCharge = false,

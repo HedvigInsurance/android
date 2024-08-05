@@ -2,9 +2,9 @@ package com.hedvig.android.feature.payments.data
 
 import arrow.core.Either
 import arrow.core.raise.either
-import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.cache.normalized.FetchPolicy
-import com.apollographql.apollo3.cache.normalized.fetchPolicy
+import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.cache.normalized.FetchPolicy
+import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
@@ -16,14 +16,14 @@ import octopus.PaymentHistoryWithDetailsQuery
 import octopus.type.MemberPaymentConnectionStatus
 
 internal interface GetChargeDetailsUseCase {
-  suspend fun invoke(id: String): Either<ErrorMessage, PaymentDetails>
+  suspend fun invoke(id: String?): Either<ErrorMessage, PaymentDetails>
 }
 
 internal class GetChargeDetailsUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val clock: Clock,
 ) : GetChargeDetailsUseCase {
-  override suspend fun invoke(id: String): Either<ErrorMessage, PaymentDetails> = either {
+  override suspend fun invoke(id: String?): Either<ErrorMessage, PaymentDetails> = either {
     val result = apolloClient.query(PaymentHistoryWithDetailsQuery())
       .fetchPolicy(FetchPolicy.NetworkFirst)
       .safeExecute()

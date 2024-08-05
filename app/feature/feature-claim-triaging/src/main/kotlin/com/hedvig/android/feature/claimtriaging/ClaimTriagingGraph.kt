@@ -14,29 +14,41 @@ import com.hedvig.android.feature.claimtriaging.claimentrypoints.ClaimEntryPoint
 import com.hedvig.android.feature.claimtriaging.claimentrypoints.ClaimEntryPointsViewModel
 import com.hedvig.android.feature.claimtriaging.claimgroups.ClaimGroupsDestination
 import com.hedvig.android.feature.claimtriaging.claimgroups.ClaimGroupsViewModel
-import com.hedvig.android.navigation.compose.typed.SerializableImmutableList
+import com.hedvig.android.navigation.compose.Destination
+import com.hedvig.android.navigation.compose.DestinationNavTypeAware
+import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.core.Navigator
-import com.kiwi.navigationcompose.typed.Destination
-import com.kiwi.navigationcompose.typed.composable
-import kotlinx.collections.immutable.ImmutableList
+import kotlin.reflect.KType
+import kotlin.reflect.typeOf
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-sealed interface ClaimTriagingDestination : Destination {
+sealed interface ClaimTriagingDestination {
   @Serializable
-  object ClaimGroups : ClaimTriagingDestination
+  object ClaimGroups : ClaimTriagingDestination, Destination
 
   @Serializable
   data class ClaimEntryPoints(
-    val entryPoints: SerializableImmutableList<EntryPoint>,
-  ) : ClaimTriagingDestination
+    val entryPoints: List<EntryPoint>,
+  ) : ClaimTriagingDestination, Destination {
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<List<EntryPoint>>())
+    }
+  }
 
   @Serializable
   data class ClaimEntryPointOptions(
     val entryPointId: EntryPointId,
-    val entryPointOptions: SerializableImmutableList<EntryPointOption>,
-  ) : ClaimTriagingDestination
+    val entryPointOptions: List<EntryPointOption>,
+  ) : ClaimTriagingDestination, Destination {
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(
+        typeOf<EntryPointId>(),
+        typeOf<List<EntryPointOption>>(),
+      )
+    }
+  }
 }
 
 fun NavGraphBuilder.claimTriagingDestinations(
@@ -45,7 +57,7 @@ fun NavGraphBuilder.claimTriagingDestinations(
   startClaimFlow: (NavBackStackEntry, ClaimFlowStep) -> Unit,
   closeClaimFlow: () -> Unit,
 ) {
-  composable<ClaimTriagingDestination.ClaimGroups> { backStackEntry ->
+  navdestination<ClaimTriagingDestination.ClaimGroups> { backStackEntry ->
     val viewModel: ClaimGroupsViewModel = koinViewModel()
     ClaimGroupsDestination(
       viewModel = viewModel,
@@ -63,8 +75,10 @@ fun NavGraphBuilder.claimTriagingDestinations(
       windowSizeClass = windowSizeClass,
     )
   }
-  composable<ClaimTriagingDestination.ClaimEntryPoints> { backStackEntry ->
-    val entryPoints: ImmutableList<EntryPoint> = this.entryPoints
+  navdestination<ClaimTriagingDestination.ClaimEntryPoints>(
+    ClaimTriagingDestination.ClaimEntryPoints,
+  ) { backStackEntry ->
+    val entryPoints: List<EntryPoint> = this.entryPoints
     val viewModel: ClaimEntryPointsViewModel = koinViewModel { parametersOf(entryPoints) }
     ClaimEntryPointsDestination(
       viewModel = viewModel,
@@ -82,9 +96,11 @@ fun NavGraphBuilder.claimTriagingDestinations(
       windowSizeClass = windowSizeClass,
     )
   }
-  composable<ClaimTriagingDestination.ClaimEntryPointOptions> { backStackEntry ->
+  navdestination<ClaimTriagingDestination.ClaimEntryPointOptions>(
+    ClaimTriagingDestination.ClaimEntryPointOptions,
+  ) { backStackEntry ->
     val entryPointId: EntryPointId = this.entryPointId
-    val entryPointOptions: ImmutableList<EntryPointOption> = this.entryPointOptions
+    val entryPointOptions: List<EntryPointOption> = this.entryPointOptions
     val viewModel: ClaimEntryPointOptionsViewModel = koinViewModel { parametersOf(entryPointId, entryPointOptions) }
     ClaimEntryPointOptionsDestination(
       viewModel = viewModel,

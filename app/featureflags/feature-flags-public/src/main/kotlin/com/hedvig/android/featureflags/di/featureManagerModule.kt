@@ -21,7 +21,7 @@ val featureManagerModule = module {
   }
 
   single<FeatureManager> {
-    if (get<HedvigBuildConstants>().isProduction) {
+    if (get<HedvigBuildConstants>().isDebug) {
       UnleashFeatureFlagProvider(get<HedvigUnleashClient>())
     } else {
       UnleashFeatureFlagProvider(get<HedvigUnleashClient>())

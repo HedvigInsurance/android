@@ -43,17 +43,17 @@ import com.hedvig.android.core.designsystem.component.button.HedvigOutlinedButto
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
-import octopus.type.CurrencyCode
 
 @Composable
 internal fun SingleItemPayoutDestination(
   viewModel: SingleItemPayoutViewModel,
   onDoneAfterPayout: () -> Unit,
-  openChat: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   closePayoutScreen: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -61,7 +61,7 @@ internal fun SingleItemPayoutDestination(
     uiState = uiState,
     retryPayout = viewModel::requestPayout,
     onDoneAfterPayout = onDoneAfterPayout,
-    openChat = openChat,
+    onNavigateToNewConversation = onNavigateToNewConversation,
     closePayoutScreen = closePayoutScreen,
   )
 }
@@ -71,7 +71,7 @@ private fun SingleItemPayoutScreen(
   uiState: PayoutUiState,
   retryPayout: () -> Unit,
   onDoneAfterPayout: () -> Unit,
-  openChat: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   closePayoutScreen: () -> Unit,
 ) {
   Surface(
@@ -87,7 +87,7 @@ private fun SingleItemPayoutScreen(
         allowInteraction = uiState.status is PayoutUiState.Status.Error,
         exitFlow = closePayoutScreen,
         retryPayout = retryPayout,
-        openChat = openChat,
+        onNavigateToNewConversation = onNavigateToNewConversation,
       )
       PaidOutContent(
         status = uiState.status,
@@ -104,7 +104,7 @@ private fun BoxScope.ErrorContent(
   allowInteraction: Boolean,
   exitFlow: () -> Unit,
   retryPayout: () -> Unit,
-  openChat: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
 ) {
   PoppingContent(
     show = show,
@@ -143,7 +143,7 @@ private fun BoxScope.ErrorContent(
     ) {
       item {
         HedvigOutlinedButton(
-          onClick = openChat,
+          onClick = onNavigateToNewConversation,
           enabled = allowInteraction,
         ) {
           Text(stringResource(hedvig.resources.R.string.open_chat))
@@ -284,11 +284,11 @@ private fun PreviewPayoutScreenLoading(
 
 private class PayoutUiStatePreviewProvider() : CollectionPreviewParameterProvider<PayoutUiState>(
   listOf(
-    PayoutUiState(UiMoney(1499.0, CurrencyCode.SEK), PayoutUiState.Status.NotStarted),
-    PayoutUiState(UiMoney(1499.0, CurrencyCode.SEK), PayoutUiState.Status.Loading),
-    PayoutUiState(UiMoney(1499.0, CurrencyCode.SEK), PayoutUiState.Status.Error),
+    PayoutUiState(UiMoney(1499.0, UiCurrencyCode.SEK), PayoutUiState.Status.NotStarted),
+    PayoutUiState(UiMoney(1499.0, UiCurrencyCode.SEK), PayoutUiState.Status.Loading),
+    PayoutUiState(UiMoney(1499.0, UiCurrencyCode.SEK), PayoutUiState.Status.Error),
     PayoutUiState(
-      UiMoney(1499.0, CurrencyCode.SEK),
+      UiMoney(1499.0, UiCurrencyCode.SEK),
       PayoutUiState.Status.PaidOut,
     ),
   ),
@@ -298,7 +298,7 @@ private class PayoutUiStatePreviewProvider() : CollectionPreviewParameterProvide
 @Composable
 private fun PreviewPayoutScreenAnimations() {
   val uiState by produceState(
-    PayoutUiState(UiMoney(1499.0, CurrencyCode.SEK), PayoutUiState.Status.Loading),
+    PayoutUiState(UiMoney(1499.0, UiCurrencyCode.SEK), PayoutUiState.Status.Loading),
   ) {
     while (isActive) {
       delay(2.seconds)

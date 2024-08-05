@@ -38,6 +38,11 @@ internal fun ChatMessage.messageHorizontalAlignment(): Alignment.Horizontal = wh
 }
 
 internal fun ChatMessage.formattedDateTime(locale: Locale): String {
+  return sentAt.formattedChatDateTime(locale)
+}
+
+internal fun Instant.formattedChatDateTime(locale: Locale): String {
+  val sentAt = this
   val now = Clock.System.now()
   val timeZone = TimeZone.currentSystemDefault()
   val nowLocalDateTime: LocalDateTime = now.toLocalDateTime(timeZone)

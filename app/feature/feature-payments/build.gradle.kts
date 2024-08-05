@@ -13,7 +13,6 @@ android {
 }
 
 dependencies {
-  apolloMetadata(projects.apolloOctopusPublic)
 
   implementation(libs.accompanist.permissions)
   implementation(libs.androidx.activity.compose)
@@ -27,13 +26,13 @@ dependencies {
   implementation(libs.koin.android)
   implementation(libs.koin.compose)
   implementation(libs.koin.core)
-  implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.moneta)
   implementation(projects.apolloCore)
   implementation(projects.apolloNetworkCacheManager)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.authCorePublic)
+  implementation(projects.composeUi)
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
@@ -48,7 +47,9 @@ dependencies {
   implementation(projects.dataContractPublic)
   implementation(projects.dataPayingMember)
   implementation(projects.dataSettingsDatastorePublic)
+  implementation(projects.designSystemHedvig)
   implementation(projects.featureFlagsPublic)
+  implementation(projects.foreverUi)
   implementation(projects.languageCore)
   implementation(projects.languageData)
   implementation(projects.marketCore)
@@ -56,13 +57,13 @@ dependencies {
   implementation(projects.memberRemindersUi)
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
+  implementation(projects.navigationCompose)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
   implementation(projects.notificationPermission)
   implementation(projects.placeholder)
   implementation(projects.pullrefresh)
   implementation(projects.theme)
-  implementation(projects.foreverUi)
 
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
@@ -76,11 +77,11 @@ dependencies {
   testImplementation(projects.marketTest)
   testImplementation(projects.memberRemindersTest)
   testImplementation(projects.moleculeTest)
-
 }
 
 apollo {
   service("octopus") {
-    packageName.set("octopus")
+    packageName = "octopus"
+    dependsOn(projects.apolloOctopusPublic, true)
   }
 }

@@ -15,24 +15,23 @@ import com.hedvig.android.feature.help.center.navigation.HelpCenterDestination
 import com.hedvig.android.feature.help.center.navigation.HelpCenterDestinations
 import com.hedvig.android.feature.help.center.question.HelpCenterQuestionDestination
 import com.hedvig.android.feature.help.center.topic.HelpCenterTopicDestination
+import com.hedvig.android.navigation.compose.navdestination
+import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
-import com.kiwi.navigationcompose.typed.composable
-import com.kiwi.navigationcompose.typed.createRoutePattern
-import com.kiwi.navigationcompose.typed.navigation
 import org.koin.androidx.compose.koinViewModel
 
 fun NavGraphBuilder.helpCenterGraph(
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   navigator: Navigator,
   onNavigateToQuickLink: (NavBackStackEntry, QuickLinkDestination.OuterDestination) -> Unit,
-  openChat: (NavBackStackEntry, AppDestination.Chat.ChatContext?) -> Unit,
+  onNavigateToNewConversation: (NavBackStackEntry, AppDestination.Chat.ChatContext?) -> Unit,
 ) {
-  navigation<HelpCenterDestination>(
-    startDestination = createRoutePattern<HelpCenterDestinations.HelpCenter>(),
+  navgraph<HelpCenterDestination>(
+    startDestination = HelpCenterDestinations.HelpCenter::class,
   ) {
-    composable<HelpCenterDestinations.HelpCenter>(
+    navdestination<HelpCenterDestinations.HelpCenter>(
       deepLinks = listOf(
         navDeepLink { uriPattern = hedvigDeepLinkContainer.helpCenter },
       ),
@@ -69,12 +68,14 @@ fun NavGraphBuilder.helpCenterGraph(
           }
         },
         openChat = {
-          openChat(backStackEntry, null)
+          onNavigateToNewConversation(backStackEntry, null)
         },
         onNavigateUp = navigator::navigateUp,
       )
     }
-    composable<HelpCenterDestinations.Topic> { backStackEntry ->
+    navdestination<HelpCenterDestinations.Topic>(
+      HelpCenterDestinations.Topic,
+    ) { backStackEntry ->
       val resources = LocalContext.current.resources
       HelpCenterTopicDestination(
         topic = topic,
@@ -84,11 +85,13 @@ fun NavGraphBuilder.helpCenterGraph(
         onNavigateUp = navigator::navigateUp,
         onNavigateBack = navigator::popBackStack,
         openChat = {
-          openChat(backStackEntry, topic.chatContext)
+          onNavigateToNewConversation(backStackEntry, topic.chatContext)
         },
       )
     }
-    composable<HelpCenterDestinations.Question> { backStackEntry ->
+    navdestination<HelpCenterDestinations.Question>(
+      HelpCenterDestinations.Question,
+    ) { backStackEntry ->
       val resources = LocalContext.current.resources
       HelpCenterQuestionDestination(
         questionId = question,
@@ -98,18 +101,20 @@ fun NavGraphBuilder.helpCenterGraph(
         onNavigateUp = navigator::navigateUp,
         onNavigateBack = navigator::popBackStack,
         openChat = {
-          openChat(backStackEntry, question.chatContext)
+          onNavigateToNewConversation(backStackEntry, question.chatContext)
         },
       )
     }
-    composable<HelpCenterDestinations.FirstVet> {
+    navdestination<HelpCenterDestinations.FirstVet>(
+      HelpCenterDestinations.FirstVet,
+    ) {
       FirstVetDestination(
         sections = sections,
         navigateUp = navigator::navigateUp,
         navigateBack = navigator::popBackStack,
       )
     }
-    composable<HelpCenterDestinations.Emergency> {
+    navdestination<HelpCenterDestinations.Emergency> {
       EmergencyDestination(
         emergencyNumber = emergencyNumber,
         navigateUp = navigator::navigateUp,

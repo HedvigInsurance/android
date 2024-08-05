@@ -16,4 +16,5 @@ enum class Feature(
   ),
   EDIT_COINSURED("Let member edit co insured"),
   HELP_CENTER("Enable the help center screens"),
+  ENABLE_CBM("Use the new conversational based messaging system, and the new paging backend API"),
 }

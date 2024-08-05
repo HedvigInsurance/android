@@ -10,12 +10,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import coil.ImageLoader
@@ -27,7 +26,6 @@ import com.hedvig.android.core.appreview.WaitUntilAppReviewDialogShouldBeOpenedU
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.Provider
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.feature.force.upgrade.ForceUpgradeBlockingScreen
@@ -37,11 +35,12 @@ import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.navigation.activity.ExternalNavigator
+import com.hedvig.android.navigation.compose.typedHasRoute
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
-import com.kiwi.navigationcompose.typed.createRoutePattern
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -118,6 +117,19 @@ internal fun HedvigApp(
   }
 }
 
+/**
+ * Temporary measure as both design systems need to live side-by-side.
+ * When everything can come from com.hedvig.android.design.system.hedvig, then this can potentially be removed.
+ */
+@Composable
+private fun HedvigTheme(darkTheme: Boolean, content: @Composable () -> Unit) {
+  com.hedvig.android.core.designsystem.theme.HedvigTheme(darkTheme = darkTheme) {
+    com.hedvig.android.design.system.hedvig.HedvigTheme(darkTheme = darkTheme) {
+      content()
+    }
+  }
+}
+
 @Composable
 private fun EnableEdgeToEdgeSideEffect(
   darkTheme: Boolean,
@@ -168,7 +180,7 @@ private fun LogoutOnInvalidCredentialsEffect(
   val authStatusLog: (AuthStatus?) -> Unit = { authStatus ->
     logcat {
       buildString {
-        append("Owner: LoggedInActivity | Received authStatus: ")
+        append("Owner: MainActivity | Received authStatus: ")
         append(
           when (authStatus) {
             is AuthStatus.LoggedIn -> "LoggedIn"
@@ -181,25 +193,22 @@ private fun LogoutOnInvalidCredentialsEffect(
   }
   val lifecycle = LocalLifecycleOwner.current.lifecycle
   LaunchedEffect(lifecycle, hedvigAppState, authTokenService, demoManager) {
-    val loginGraphRoute = createRoutePattern<LoginDestination>()
     lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
       combine(
         authTokenService.authStatus.onEach(authStatusLog).filterNotNull().distinctUntilChanged(),
         demoManager.isDemoMode().distinctUntilChanged(),
-      ) { authStatus: AuthStatus, isDemoMode: Boolean ->
-        authStatus to isDemoMode
-      }.collect { (authStatus, isDemoMode) ->
-        val navBackStackEntry: NavBackStackEntry = hedvigAppState.navController.currentBackStackEntryFlow.first()
+        hedvigAppState.navController.currentBackStackEntryFlow,
+      ) { authStatus: AuthStatus, isDemoMode: Boolean, navBackStackEntry ->
         val isLoggedOut = navBackStackEntry.destination.hierarchy.any { navDestination ->
-          navDestination.route?.contains(loginGraphRoute) == true
+          navDestination.typedHasRoute<LoginDestination>()
         }
         if (isLoggedOut) {
-          return@collect
+          return@combine
         }
         if (!isDemoMode && authStatus !is AuthStatus.LoggedIn) {
           hedvigAppState.navigateToLoggedOut()
         }
-      }
+      }.collect()
     }
   }
 }

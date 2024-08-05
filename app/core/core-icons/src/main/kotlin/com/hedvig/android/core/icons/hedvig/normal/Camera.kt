@@ -113,4 +113,5 @@ public val HedvigIcons.Camera: ImageVector
     return _camera!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _camera: ImageVector? = null

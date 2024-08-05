@@ -80,6 +80,14 @@ internal fun TopAppBarDefaults.chatScrollBehavior(
   canScroll = canScroll,
 )
 
+/**
+ * Inspired from:
+ * https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3/AppBar.kt;l=2791?q=TopAppBarScrollBehavior&ss=androidx%2Fplatform%2Fframeworks%2Fsupport
+ * Adusted so that it only changes the heightOffset. It also does not dismis the top app bar when there is nothing to
+ * scroll anyway on the content. Since we can not disable the scrolling effect on when dragging the app bar itself, it
+ * also takes care of actually forwarding the scroll when scrolling down on the content itself, even if there is no
+ * content to scroll, only to bring back the top app bar after having dismissed it this way.
+ */
 private class ChatScrollBehavior(
   override val state: TopAppBarState,
   override val snapAnimationSpec: AnimationSpec<Float>?,
@@ -88,26 +96,18 @@ private class ChatScrollBehavior(
 ) : TopAppBarScrollBehavior {
   override val isPinned: Boolean = false
   override var nestedScrollConnection = object : NestedScrollConnection {
-    override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-      if (!canScroll()) return Offset.Zero
-      state.heightOffset = state.heightOffset + (available.y / 3)
-      return Offset.Zero
-    }
-
     override fun onPostScroll(consumed: Offset, available: Offset, source: NestedScrollSource): Offset {
       if (!canScroll()) return Offset.Zero
-      state.heightOffset = state.heightOffset + (consumed.y / 3)
+      if (available.y > 0) {
+        state.heightOffset += available.y
+      }
+      state.heightOffset = state.heightOffset + consumed.y
       return Offset.Zero
     }
 
     override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity {
       val superConsumed = super.onPostFling(consumed, available)
-      return superConsumed + settleAppBar(
-        state,
-        available.y,
-        flingAnimationSpec,
-        snapAnimationSpec,
-      )
+      return superConsumed + settleAppBar(state, available.y, flingAnimationSpec, snapAnimationSpec)
     }
   }
 }
@@ -133,17 +133,16 @@ private suspend fun settleAppBar(
     AnimationState(
       initialValue = 0f,
       initialVelocity = velocity,
-    )
-      .animateDecay(flingAnimationSpec) {
-        val delta = value - lastValue
-        val initialHeightOffset = state.heightOffset
-        state.heightOffset = initialHeightOffset + delta
-        val consumed = abs(initialHeightOffset - state.heightOffset)
-        lastValue = value
-        remainingVelocity = this.velocity
-        // avoid rounding errors and stop if anything is unconsumed
-        if (abs(delta - consumed) > 0.5f) this.cancelAnimation()
-      }
+    ).animateDecay(flingAnimationSpec) {
+      val delta = value - lastValue
+      val initialHeightOffset = state.heightOffset
+      state.heightOffset = initialHeightOffset + delta
+      val consumed = abs(initialHeightOffset - state.heightOffset)
+      lastValue = value
+      remainingVelocity = this.velocity
+      // avoid rounding errors and stop if anything is unconsumed
+      if (abs(delta - consumed) > 0.5f) this.cancelAnimation()
+    }
   }
   // Snap if animation specs were provided.
   if (snapAnimationSpec != null) {

@@ -36,15 +36,11 @@ import com.hedvig.android.core.designsystem.material3.typeContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
-import com.hedvig.android.core.ui.preview.DoubleBooleanCollectionPreviewParameterProvider
 import com.hedvig.android.feature.help.center.model.Question
 import com.hedvig.android.feature.help.center.ui.HelpCenterSection
 import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
 import com.hedvig.android.feature.help.center.ui.StillNeedHelpSection
 import hedvig.resources.R
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 internal fun HelpCenterQuestionDestination(
@@ -59,9 +55,8 @@ internal fun HelpCenterQuestionDestination(
   val relatedQuestions = question
     ?.relatedQuestionIds
     ?.mapNotNull { id ->
-      Question.entries.find { it == id }
-    }
-    ?.toPersistentList() ?: persistentListOf()
+      Question.entries.firstOrNull { it == id }
+    } ?: listOf()
   HelpCenterQuestionScreen(
     question = question,
     relatedQuestions = relatedQuestions,
@@ -75,7 +70,7 @@ internal fun HelpCenterQuestionDestination(
 @Composable
 private fun HelpCenterQuestionScreen(
   question: Question?,
-  relatedQuestions: ImmutableList<Question>,
+  relatedQuestions: List<Question>,
   onNavigateToQuestion: (questionId: Question) -> Unit,
   onNavigateUp: () -> Unit,
   onNavigateBack: () -> Unit,
@@ -170,7 +165,9 @@ private fun HelpCenterQuestionScreen(
 @HedvigPreview
 @Composable
 private fun PreviewHelpCenterQuestionScreen(
-  @PreviewParameter(DoubleBooleanCollectionPreviewParameterProvider::class) input: Pair<Boolean, Boolean>,
+  @PreviewParameter(
+    com.hedvig.android.compose.ui.preview.DoubleBooleanCollectionPreviewParameterProvider::class,
+  ) input: Pair<Boolean, Boolean>,
 ) {
   val hasQuestion = input.first
   val hasRelatedQuestions = input.second
@@ -179,11 +176,11 @@ private fun PreviewHelpCenterQuestionScreen(
       HelpCenterQuestionScreen(
         question = Question.CLAIMS_Q1.takeIf { hasQuestion },
         relatedQuestions = if (hasRelatedQuestions) {
-          persistentListOf(
+          listOf(
             Question.CLAIMS_Q1,
           )
         } else {
-          persistentListOf()
+          listOf()
         },
         onNavigateToQuestion = {},
         onNavigateUp = {},

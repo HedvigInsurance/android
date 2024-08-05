@@ -1,14 +1,12 @@
 package com.hedvig.android.feature.changeaddress.data
 
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.InsurableLimit
 import com.hedvig.android.data.productvariant.ProductVariant
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate
-import octopus.type.CurrencyCode
 
 internal data class MoveQuote(
   val id: String,
@@ -18,7 +16,7 @@ internal data class MoveQuote(
   val startDate: LocalDate,
   val productVariant: ProductVariant,
   val isExpanded: Boolean = false,
-  val displayItems: ImmutableList<Pair<String, String>>,
+  val displayItems: List<Pair<String, String>>,
 ) {
   companion object {
     @Suppress("ktlint:standard:function-naming")
@@ -29,7 +27,7 @@ internal data class MoveQuote(
         id = index.toString(),
         insuranceName = "Insurance #$index",
         moveIntentId = MoveIntentId(""),
-        premium = UiMoney(99.0 * index, CurrencyCode.SEK),
+        premium = UiMoney(99.0 * index, UiCurrencyCode.SEK),
         startDate = LocalDate(2023, 5, 13),
         isExpanded = index == 1,
         productVariant = ProductVariant(
@@ -37,8 +35,8 @@ internal data class MoveQuote(
           contractGroup = ContractGroup.RENTAL,
           contractType = ContractType.SE_APARTMENT_RENT,
           partner = "test",
-          perils = persistentListOf(),
-          insurableLimits = persistentListOf(
+          perils = listOf(),
+          insurableLimits = listOf(
             InsurableLimit(
               label = "test",
               description = "long".repeat(10),
@@ -46,9 +44,9 @@ internal data class MoveQuote(
               type = InsurableLimit.InsurableLimitType.BIKE,
             ),
           ),
-          documents = persistentListOf(),
+          documents = listOf(),
         ),
-        displayItems = persistentListOf(),
+        displayItems = listOf(),
       )
     }
   }

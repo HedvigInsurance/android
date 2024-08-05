@@ -97,7 +97,7 @@ private fun PhoneNumberScreen(
       withNewDesign = true,
       enabled = uiState.status != PhoneNumberUiState.Status.LOADING,
       keyboardOptions = KeyboardOptions(
-        autoCorrect = false,
+        autoCorrectEnabled = false,
         keyboardType = KeyboardType.Phone,
         imeAction = ImeAction.Done,
       ),

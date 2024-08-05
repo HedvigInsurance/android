@@ -13,7 +13,6 @@ android {
 }
 
 dependencies {
-  apolloMetadata(projects.apolloOctopusPublic)
 
   implementation(libs.accompanist.permissions)
   implementation(libs.androidx.activity.compose)
@@ -23,17 +22,16 @@ dependencies {
   implementation(libs.apollo.normalizedCache)
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
-  implementation(libs.kiwi.navigationCompose)
   implementation(libs.koin.android)
   implementation(libs.koin.compose)
   implementation(libs.koin.core)
-  implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.moneta)
   implementation(projects.apolloCore)
   implementation(projects.apolloNetworkCacheManager)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.authCorePublic)
+  implementation(projects.composeUi)
   implementation(projects.composeWebview)
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonAndroidPublic)
@@ -46,7 +44,6 @@ dependencies {
   implementation(projects.coreUi)
   implementation(projects.coreUiData)
   implementation(projects.dataSettingsDatastorePublic)
-  implementation(projects.dataTravelCertificatePublic)
   implementation(projects.featureFlagsPublic)
   implementation(projects.languageCore)
   implementation(projects.languageData)
@@ -55,7 +52,7 @@ dependencies {
   implementation(projects.memberRemindersUi)
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
-  implementation(projects.navigationComposeTyped)
+  implementation(projects.navigationCompose)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
   implementation(projects.notificationPermission)
@@ -72,6 +69,7 @@ dependencies {
   testImplementation(projects.dataSettingsDatastoreTest)
   testImplementation(projects.featureFlagsTest)
   testImplementation(projects.languageTest)
+  testImplementation(projects.loggingTest)
   testImplementation(projects.marketTest)
   testImplementation(projects.memberRemindersTest)
   testImplementation(projects.moleculeTest)
@@ -79,6 +77,7 @@ dependencies {
 
 apollo {
   service("octopus") {
-    packageName.set("octopus")
+    packageName = "octopus"
+    dependsOn(projects.apolloOctopusPublic, true)
   }
 }

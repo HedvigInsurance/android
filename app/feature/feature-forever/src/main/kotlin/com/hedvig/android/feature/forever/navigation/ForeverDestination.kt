@@ -1,6 +1,6 @@
 package com.hedvig.android.feature.forever.navigation
 
-import com.kiwi.navigationcompose.typed.Destination
+import com.hedvig.android.navigation.compose.Destination
 import kotlinx.serialization.Serializable
 
 sealed interface ForeverDestination {

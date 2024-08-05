@@ -1,4 +1,4 @@
-import com.hedvig.android.configureJavaAndKotlin
+import com.hedvig.android.configureKotlin
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -17,7 +17,7 @@ class KotlinLibraryConventionPlugin : Plugin<Project> {
         apply("hedvig.lint")
       }
 
-      configureJavaAndKotlin()
+      configureKotlin()
 
       dependencies {
         val koinBom = libs.koin.bom

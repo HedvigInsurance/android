@@ -11,7 +11,6 @@ dependencies {
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
   implementation(libs.koin.core)
-  implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)
   implementation(libs.retrofit)
@@ -29,5 +28,6 @@ dependencies {
   implementation(projects.coreRetrofit)
   implementation(projects.coreUiData)
   implementation(projects.dataClaimTriaging)
+  implementation(projects.navigationCompose)
   implementation(projects.navigationComposeTyped)
 }

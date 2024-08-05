@@ -71,7 +71,7 @@ import kotlinx.datetime.toJavaLocalDate
 @Composable
 internal fun PaymentDetailsDestination(
   viewModel: PaymentDetailsViewModel,
-  onFailedChargeClick: (String) -> Unit,
+  onFailedChargeClick: (String?) -> Unit,
   navigateUp: () -> Unit,
 ) {
   var selectedCharge by remember { mutableStateOf<MemberCharge.ChargeBreakdown?>(null) }
@@ -99,7 +99,7 @@ private fun MemberChargeDetailsScreen(
   selectedCharge: MemberCharge.ChargeBreakdown?,
   onCardClick: (MemberCharge.ChargeBreakdown) -> Unit,
   reload: () -> Unit,
-  onFailedChargeClick: (String) -> Unit,
+  onFailedChargeClick: (String?) -> Unit,
   navigateUp: () -> Unit,
 ) {
   when (uiState) {

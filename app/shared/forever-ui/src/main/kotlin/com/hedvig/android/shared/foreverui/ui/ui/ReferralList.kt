@@ -28,11 +28,11 @@ import com.hedvig.android.core.designsystem.material3.typeElement
 import com.hedvig.android.core.designsystem.material3.warningElement
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.shared.foreverui.ui.data.Referral
 import com.hedvig.android.shared.foreverui.ui.data.ReferralState
 import hedvig.resources.R
-import octopus.type.CurrencyCode
 
 @Composable
 internal fun ReferralList(
@@ -134,13 +134,13 @@ private fun PreviewReferralList() {
   HedvigTheme {
     Surface {
       ReferralList(
-        grossPriceAmount = UiMoney(138.0, CurrencyCode.SEK),
-        currentNetAmount = UiMoney(118.0, CurrencyCode.SEK),
+        grossPriceAmount = UiMoney(138.0, UiCurrencyCode.SEK),
+        currentNetAmount = UiMoney(118.0, UiCurrencyCode.SEK),
         referrals = listOf(
           Referral(
             name = "Ermir",
             state = ReferralState.ACTIVE,
-            discount = UiMoney(10.0, CurrencyCode.SEK),
+            discount = UiMoney(10.0, UiCurrencyCode.SEK),
           ),
           Referral(
             name = "Genc",
@@ -150,7 +150,7 @@ private fun PreviewReferralList() {
           Referral(
             name = "Ermir",
             state = ReferralState.TERMINATED,
-            discount = UiMoney(10.0, CurrencyCode.SEK),
+            discount = UiMoney(10.0, UiCurrencyCode.SEK),
           ),
         ),
       )

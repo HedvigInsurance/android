@@ -12,6 +12,7 @@ dependencies {
   implementation(libs.androidx.annotation)
   implementation(libs.androidx.graphicsShapes)
   implementation(libs.kotlinx.datetime)
+  implementation(projects.composeUi)
   implementation(projects.coreIcons)
   implementation(projects.coreResources)
 }

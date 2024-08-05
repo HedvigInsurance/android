@@ -57,7 +57,7 @@ import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.offset
-import com.hedvig.android.core.designsystem.animation.animateContentHeight
+import com.hedvig.android.compose.ui.animateContentHeight
 import com.hedvig.android.core.designsystem.material3.warningElement
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.Info

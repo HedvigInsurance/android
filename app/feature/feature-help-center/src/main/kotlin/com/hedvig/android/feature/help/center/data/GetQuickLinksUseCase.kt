@@ -2,7 +2,7 @@ package com.hedvig.android.feature.help.center.data
 
 import arrow.core.Either
 import arrow.core.raise.either
-import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
@@ -11,9 +11,8 @@ import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.ui.emergency.FirstVetSection
 import hedvig.resources.R
-import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.first
 import octopus.AvailableSelfServiceOnContractsQuery
 
@@ -22,25 +21,16 @@ internal class GetQuickLinksUseCase(
   private val featureManager: FeatureManager,
   private val getMemberActionsUseCase: GetMemberActionsUseCase,
 ) {
-  suspend fun invoke(): Either<ErrorMessage, PersistentList<QuickAction>> = either {
+  suspend fun invoke(): Either<ErrorMessage, List<QuickAction>> = either {
     val memberActionOptions = getMemberActionsUseCase.invoke().bind()
 
     buildList {
-      if (memberActionOptions.isTravelCertificateEnabled) {
+      if (memberActionOptions.isMovingEnabled) {
         add(
           QuickAction.StandaloneQuickLink(
-            quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkTravelCertificate,
-            titleRes = R.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE,
-            hintTextRes = R.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE_SUBTITLE,
-          ),
-        )
-      }
-      if (memberActionOptions.isCancelInsuranceEnabled) {
-        add(
-          QuickAction.StandaloneQuickLink(
-            quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkTermination,
-            titleRes = R.string.HC_QUICK_ACTIONS_CANCELLATION_TITLE,
-            hintTextRes = R.string.HC_QUICK_ACTIONS_CANCELLATION_SUBTITLE,
+            quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkChangeAddress,
+            titleRes = R.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_TITLE,
+            hintTextRes = R.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_SUBTITLE,
           ),
         )
       }
@@ -53,12 +43,37 @@ internal class GetQuickLinksUseCase(
           ),
         )
       }
-      if (memberActionOptions.isMovingEnabled) {
+      if (memberActionOptions.isEditCoInsuredEnabled) {
+        val contracts = apolloClient.query(AvailableSelfServiceOnContractsQuery())
+          .safeExecute()
+          .toEither(::ErrorMessage)
+          .onLeft { logcat(LogPriority.ERROR) { "Could not fetch common claims ${it.message}" } }
+          .bind()
+          .currentMember
+          .activeContracts
+        contracts
+          .filter { it.supportsCoInsured }
+          .takeIf { featureManager.isFeatureEnabled(Feature.EDIT_COINSURED).first() }
+          ?.createCoInsuredQuickLink()
+          ?.let { quickAction ->
+            add(quickAction)
+          }
+      }
+      if (memberActionOptions.isCancelInsuranceEnabled) {
         add(
           QuickAction.StandaloneQuickLink(
-            quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkChangeAddress,
-            titleRes = R.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_TITLE,
-            hintTextRes = R.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_SUBTITLE,
+            quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkTermination,
+            titleRes = R.string.HC_QUICK_ACTIONS_CANCELLATION_TITLE,
+            hintTextRes = R.string.HC_QUICK_ACTIONS_CANCELLATION_SUBTITLE,
+          ),
+        )
+      }
+      if (memberActionOptions.isTravelCertificateEnabled) {
+        add(
+          QuickAction.StandaloneQuickLink(
+            quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkTravelCertificate,
+            titleRes = R.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE,
+            hintTextRes = R.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE_SUBTITLE,
           ),
         )
       }
@@ -84,27 +99,12 @@ internal class GetQuickLinksUseCase(
           ),
         )
       }
-      if (memberActionOptions.isEditCoInsuredEnabled) {
-        val contracts = apolloClient.query(AvailableSelfServiceOnContractsQuery())
-          .safeExecute()
-          .toEither(::ErrorMessage)
-          .onLeft { logcat(LogPriority.ERROR) { "Could not fetch common claims ${it.message}" } }
-          .bind()
-          .currentMember
-          .activeContracts
-        contracts
-          .filter { it.supportsCoInsured }
-          .takeIf { featureManager.isFeatureEnabled(Feature.EDIT_COINSURED).first() }
-          ?.createCoInsuredQuickLink()
-          ?.let { quickAction ->
-            add(quickAction)
-          }
-      }
-    }.toPersistentList()
+    }
   }
 }
 
-private fun List<AvailableSelfServiceOnContractsQuery.Data.CurrentMember.ActiveContract>.createCoInsuredQuickLink(): QuickAction? {
+private fun List<AvailableSelfServiceOnContractsQuery.Data.CurrentMember.ActiveContract>.createCoInsuredQuickLink():
+  QuickAction? {
   if (this.size > 1) {
     val links = this.map { contract ->
       if (contract.coInsured?.any { it.hasMissingInfo } == true) {

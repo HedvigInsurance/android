@@ -6,7 +6,7 @@ plugins {
 }
 
 dependencies {
-  api(libs.apollo.adapters)
+  api(libs.apollo.adapters.datetime)
   api(libs.apollo.api)
   api(libs.kotlinx.datetime)
 
@@ -17,44 +17,40 @@ dependencies {
   implementation(projects.coreMarkdown)
 }
 
-apollo { // Octopus client
+apollo {
+  // Octopus client
   service("octopus") {
     introspection {
-      endpointUrl.set("https://apollo-router.dev.hedvigit.com")
-      schemaFile.set(file("src/main/graphql/com/hedvig/android/apollo/octopus/schema.graphqls"))
+      endpointUrl = "https://apollo-router.dev.hedvigit.com"
+      schemaFile = file("src/main/graphql/com/hedvig/android/apollo/octopus/schema.graphqls")
     }
-    schemaFile.set(file("src/main/graphql/com/hedvig/android/apollo/octopus/schema.graphqls"))
+    schemaFiles.setFrom(
+      file("src/main/graphql/com/hedvig/android/apollo/octopus/schema.graphqls"),
+      file("src/main/graphql/com/hedvig/android/apollo/octopus/extra.graphqls"),
+    )
     srcDir(file("src/main/graphql/com/hedvig/android/apollo/octopus/graphql"))
 
-    packageName.set("octopus")
-    codegenModels.set(com.apollographql.apollo3.compiler.MODELS_RESPONSE_BASED)
+    packageName = "octopus"
+    codegenModels = com.apollographql.apollo.compiler.MODELS_RESPONSE_BASED
 
-    generateApolloMetadata.set(true)
-    generateDataBuilders.set(true)
-    // https://slack-chats.kotlinlang.org/t/16051277/so-speaking-of-more-multi-module-stuff-i-got-a-query-like-th#976bd846-3cb0-4815-80a1-f73a853fe962
-    alwaysGenerateTypesMatching.set(listOf(
-      "CrossSell",
-      "CrossSellType",
-      "MemberMutationOutput",
-      "Chat",
-      "ChatMessage",
-      "ChatMessageSender",
-      "MemberChargeContractBreakdownItem",
-      "MemberCharge",
-      "MemberInsuranceCost",
-      "MemberReferral",
-      "MemberReferralInformation"
-    ))
+    generateApolloMetadata = true
+    generateDataBuilders = true
 
+    failOnWarnings = true
     // https://www.apollographql.com/docs/android/advanced/operation-variables/#make-nullable-variables-non-optional
-    generateOptionalOperationVariables.set(false)
+    generateOptionalOperationVariables = false
     outputDirConnection {
-      connectToKotlinSourceSet("main") // main is by default but setting this explicitly fixed the warning "Duplicate content roots detected.
+      // main is by default but setting this explicitly fixed the warning "Duplicate content roots detected.
+      connectToKotlinSourceSet("main")
     }
-    mapScalar("Date", "kotlinx.datetime.LocalDate", "com.apollographql.apollo3.adapter.KotlinxLocalDateAdapter")
-    mapScalar("DateTime", "kotlinx.datetime.Instant", "com.apollographql.apollo3.adapter.KotlinxInstantAdapter")
-    mapScalar("Instant", "kotlinx.datetime.Instant", "com.apollographql.apollo3.adapter.KotlinxInstantAdapter")
-    mapScalar("Markdown", "com.hedvig.android.core.markdown.MarkdownString", "com.hedvig.android.apollo.octopus.MarkdownStringAdapter")
+    mapScalar("Date", "kotlinx.datetime.LocalDate", "com.apollographql.adapter.datetime.KotlinxLocalDateAdapter")
+    mapScalar("DateTime", "kotlinx.datetime.Instant", "com.apollographql.adapter.datetime.KotlinxInstantAdapter")
+    mapScalar("Instant", "kotlinx.datetime.Instant", "com.apollographql.adapter.datetime.KotlinxInstantAdapter")
+    mapScalar(
+      "Markdown",
+      "com.hedvig.android.core.markdown.MarkdownString",
+      "com.hedvig.android.apollo.octopus.MarkdownStringAdapter",
+    )
     mapScalarToKotlinString("UUID")
     mapScalarToKotlinString("Url")
     mapScalarToKotlinString("FlowContext")

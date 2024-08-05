@@ -3,5 +3,10 @@ query GetPayinMethodStatus {
     paymentInformation {
       status
     }
+    activeContracts {
+      terminationDate
+      terminationDueToMissedPayments
+      id
+    }
   }
 }

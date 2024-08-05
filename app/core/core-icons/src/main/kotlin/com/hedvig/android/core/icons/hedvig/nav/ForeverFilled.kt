@@ -64,4 +64,5 @@ public val HedvigIcons.ForeverFilled: ImageVector
     return _foreverFilled!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _foreverFilled: ImageVector? = null

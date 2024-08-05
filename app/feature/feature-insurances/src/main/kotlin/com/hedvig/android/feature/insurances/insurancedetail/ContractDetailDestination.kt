@@ -1,7 +1,11 @@
 package com.hedvig.android.feature.insurances.insurancedetail
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -37,14 +41,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
-import com.hedvig.android.core.designsystem.animation.FadeAnimatedContent
-import com.hedvig.android.core.designsystem.animation.animateContentHeight
+import com.hedvig.android.compose.ui.animateContentHeight
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.card.InsuranceCard
+import com.hedvig.android.core.ui.card.InsuranceCardPlaceholder
 import com.hedvig.android.core.ui.plus
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.data.contract.ContractGroup
@@ -60,9 +63,6 @@ import com.hedvig.android.feature.insurances.insurancedetail.yourinfo.YourInfoTa
 import com.hedvig.android.feature.insurances.ui.createChips
 import com.hedvig.android.feature.insurances.ui.createPainter
 import hedvig.resources.R
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 
@@ -73,7 +73,7 @@ internal fun ContractDetailDestination(
   onMissingInfoClick: (String) -> Unit,
   onChangeAddressClick: () -> Unit,
   onCancelInsuranceClick: (cancelInsuranceData: CancelInsuranceData) -> Unit,
-  openChat: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   openUrl: (String) -> Unit,
   navigateUp: () -> Unit,
   navigateBack: () -> Unit,
@@ -83,12 +83,12 @@ internal fun ContractDetailDestination(
   ContractDetailScreen(
     uiState = uiState,
     imageLoader = imageLoader,
-    retry = viewModel::retryLoadingContract,
+    retry = { viewModel.emit(ContractDetailsEvent.RetryLoadingContract) },
     onEditCoInsuredClick = onEditCoInsuredClick,
     onMissingInfoClick = onMissingInfoClick,
     onChangeAddressClick = onChangeAddressClick,
     onCancelInsuranceClick = onCancelInsuranceClick,
-    openChat = openChat,
+    onNavigateToNewConversation = onNavigateToNewConversation,
     openUrl = openUrl,
     navigateUp = navigateUp,
     navigateBack = navigateBack,
@@ -107,16 +107,22 @@ private fun ContractDetailScreen(
   onCancelInsuranceClick: (cancelInsuranceData: CancelInsuranceData) -> Unit,
   navigateUp: () -> Unit,
   navigateBack: () -> Unit,
-  openChat: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   openUrl: (String) -> Unit,
 ) {
-  Column(Modifier.fillMaxSize()) {
+  Column(
+    Modifier
+      .fillMaxSize()
+      .consumeWindowInsets(
+        WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
+      ),
+  ) {
     TopAppBarWithBack(
       title = stringResource(R.string.insurance_details_view_title),
       onClick = navigateUp,
     )
     val pagerState = rememberPagerState(pageCount = { 3 })
-    FadeAnimatedContent(
+    AnimatedContent(
       targetState = uiState,
       contentKey = { uiState ->
         when (uiState) {
@@ -128,13 +134,29 @@ private fun ContractDetailScreen(
       },
       label = "contract detail screen fade animated content",
       modifier = Modifier.weight(1f),
+      transitionSpec = { fadeIn() togetherWith fadeOut() },
     ) { state ->
       when (state) {
         ContractDetailsUiState.Error -> HedvigErrorSection(onButtonClick = retry, modifier = Modifier.fillMaxSize())
-        ContractDetailsUiState.Loading -> HedvigFullScreenCenterAlignedProgressDebounced(
-          show = state is ContractDetailsUiState.Loading,
-          modifier = Modifier.fillMaxSize(),
-        )
+        ContractDetailsUiState.Loading -> {
+          Column(
+            Modifier
+              .fillMaxSize()
+              .padding(
+                WindowInsets
+                  .safeDrawing
+                  .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
+                  .asPaddingValues()
+                  .plus(PaddingValues(top = 16.dp)),
+              ),
+          ) {
+            InsuranceCardPlaceholder(
+              imageLoader = imageLoader,
+              modifier = Modifier.padding(horizontal = 16.dp),
+            )
+          }
+        }
+
         ContractDetailsUiState.NoContractFound -> {
           HedvigErrorSection(
             subTitle = stringResource(R.string.CONTRACT_DETAILS_ERROR),
@@ -169,6 +191,7 @@ private fun ContractDetailScreen(
                 imageLoader = imageLoader,
                 modifier = Modifier.padding(horizontal = 16.dp),
                 fallbackPainter = contract.createPainter(),
+                isLoading = false,
               )
             }
             item(key = 2, contentType = "space") { Spacer(Modifier.height(16.dp)) }
@@ -187,8 +210,7 @@ private fun ContractDetailScreen(
                   0 -> {
                     YourInfoTab(
                       coverageItems = state.insuranceContract.currentInsuranceAgreement.displayItems
-                        .map { it.title to it.value }
-                        .toImmutableList(),
+                        .map { it.title to it.value },
                       coInsured = state.insuranceContract.currentInsuranceAgreement.coInsured,
                       allowEditCoInsured = state.insuranceContract.supportsEditCoInsured,
                       contractHolderDisplayName = state.insuranceContract.contractHolderDisplayName,
@@ -202,7 +224,7 @@ private fun ContractDetailScreen(
                         onMissingInfoClick(state.insuranceContract.id)
                       },
                       onChangeAddressClick = onChangeAddressClick,
-                      openChat = openChat,
+                      onNavigateToNewConversation = onNavigateToNewConversation,
                       openUrl = openUrl,
                       onCancelInsuranceClick = {
                         val contractGroup =
@@ -250,7 +272,7 @@ private fun ContractDetailScreen(
 }
 
 @Composable
-private fun InsuranceContract.getAllDocuments(): ImmutableList<InsuranceVariantDocument> = buildList {
+private fun InsuranceContract.getAllDocuments(): List<InsuranceVariantDocument> = buildList {
   addAll(currentInsuranceAgreement.productVariant.documents)
   if (currentInsuranceAgreement.certificateUrl != null) {
     val certificate = InsuranceVariantDocument(
@@ -260,7 +282,7 @@ private fun InsuranceContract.getAllDocuments(): ImmutableList<InsuranceVariantD
     )
     add(certificate)
   }
-}.toImmutableList()
+}
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -312,18 +334,18 @@ private fun PreviewContractDetailScreen() {
             currentInsuranceAgreement = InsuranceAgreement(
               activeFrom = LocalDate.fromEpochDays(240),
               activeTo = LocalDate.fromEpochDays(340),
-              displayItems = persistentListOf(),
+              displayItems = listOf(),
               productVariant = ProductVariant(
                 displayName = "Variant",
                 contractGroup = ContractGroup.RENTAL,
                 contractType = ContractType.SE_APARTMENT_RENT,
                 partner = null,
-                perils = persistentListOf(),
-                insurableLimits = persistentListOf(),
-                documents = persistentListOf(),
+                perils = listOf(),
+                insurableLimits = listOf(),
+                documents = listOf(),
               ),
               certificateUrl = null,
-              coInsured = persistentListOf(),
+              coInsured = listOf(),
               creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
             ),
             upcomingInsuranceAgreement = null,
@@ -344,7 +366,7 @@ private fun PreviewContractDetailScreen() {
         },
         navigateUp = {},
         navigateBack = {},
-        openChat = {},
+        onNavigateToNewConversation = {},
         onMissingInfoClick = {},
         openUrl = {},
       )

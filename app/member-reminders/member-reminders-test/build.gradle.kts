@@ -5,7 +5,6 @@ plugins {
 }
 
 dependencies {
-  implementation(libs.kotlinx.immutable.collections)
   implementation(libs.turbine)
   implementation(projects.memberRemindersPublic)
 }

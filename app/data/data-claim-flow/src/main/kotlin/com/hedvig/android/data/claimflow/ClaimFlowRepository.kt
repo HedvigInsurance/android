@@ -4,8 +4,8 @@ import arrow.core.Either
 import arrow.core.raise.Raise
 import arrow.core.raise.either
 import arrow.retrofit.adapter.either.networkhandling.CallError
-import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.api.Optional
+import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.api.Optional
 import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
@@ -33,11 +33,29 @@ import octopus.FlowClaimSingleItemNextMutation
 import octopus.FlowClaimStartMutation
 import octopus.FlowClaimSummaryNextMutation
 import octopus.fragment.ClaimFlowStepFragment
+import octopus.type.FlowClaimAudioRecordingStep
+import octopus.type.FlowClaimConfirmEmergencyStep
+import octopus.type.FlowClaimContractSelectStep
+import octopus.type.FlowClaimDateOfOccurrencePlusLocationStep
+import octopus.type.FlowClaimDateOfOccurrenceStep
+import octopus.type.FlowClaimDeflectEirStep
+import octopus.type.FlowClaimDeflectEmergencyStep
+import octopus.type.FlowClaimDeflectGlassDamageStep
+import octopus.type.FlowClaimDeflectPestsStep
+import octopus.type.FlowClaimDeflectTowingStep
+import octopus.type.FlowClaimFailedStep
 import octopus.type.FlowClaimFileUploadInput
+import octopus.type.FlowClaimFileUploadStep
 import octopus.type.FlowClaimItemBrandInput
 import octopus.type.FlowClaimItemModelInput
+import octopus.type.FlowClaimLocationStep
+import octopus.type.FlowClaimPhoneNumberStep
+import octopus.type.FlowClaimSingleItemCheckoutStep
 import octopus.type.FlowClaimSingleItemInput
+import octopus.type.FlowClaimSingleItemStep
+import octopus.type.FlowClaimSuccessStep
 import octopus.type.FlowClaimSummaryInput
+import octopus.type.FlowClaimSummaryStep
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -107,7 +125,13 @@ internal class ClaimFlowRepositoryImpl(
   ): Either<ErrorMessage, ClaimFlowStep> {
     return either {
       val result = apolloClient
-        .mutation(FlowClaimStartMutation(entryPointId?.id, entryPointOptionId?.id))
+        .mutation(
+          FlowClaimStartMutation(
+            entrypointId = entryPointId?.id,
+            entryPointOptionId = entryPointOptionId?.id,
+            supportedSteps = supportedSteps,
+          ),
+        )
         .safeExecute()
         .toEither(::ErrorMessage)
         .bind()
@@ -370,12 +394,15 @@ private suspend fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(
     is ClaimFlowStepFragment.FlowClaimAudioRecordingStepCurrentStep -> {
       ClaimFlowStep.ClaimAudioRecordingStep(flowId, questions, audioContent)
     }
+
     is ClaimFlowStepFragment.FlowClaimDateOfOccurrenceStepCurrentStep -> {
       ClaimFlowStep.ClaimDateOfOccurrenceStep(flowId, dateOfOccurrence, maxDate)
     }
+
     is ClaimFlowStepFragment.FlowClaimLocationStepCurrentStep -> {
       ClaimFlowStep.ClaimLocationStep(flowId, location, options)
     }
+
     is ClaimFlowStepFragment.FlowClaimDateOfOccurrencePlusLocationStepCurrentStep -> {
       ClaimFlowStep.ClaimDateOfOccurrencePlusLocationStep(
         flowId,
@@ -385,15 +412,18 @@ private suspend fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(
         locationStep.options,
       )
     }
+
     is ClaimFlowStepFragment.FlowClaimPhoneNumberStepCurrentStep -> {
       ClaimFlowStep.ClaimPhoneNumberStep(flowId, phoneNumber)
     }
+
     is ClaimFlowStepFragment.FlowClaimSingleItemStepCurrentStep -> {
       ClaimFlowStep.ClaimSingleItemStep(
         flowId,
         preferredCurrency,
         purchaseDate,
         purchasePrice,
+        purchasePriceApplicable,
         availableItemBrands,
         selectedItemBrand,
         availableItemModels,
@@ -407,11 +437,9 @@ private suspend fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(
     is ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep -> {
       ClaimFlowStep.ClaimResolutionSingleItemStep(
         flowId,
-        price,
-        depreciation,
-        deductible,
-        payoutAmount,
+        compensation,
         availableCheckoutMethods,
+        singleItemStep,
       )
     }
 
@@ -443,6 +471,7 @@ private suspend fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(
       selfServiceCompletedEventManager.completedSelfServiceSuccessfully()
       ClaimFlowStep.ClaimSuccessStep(flowId)
     }
+
     is ClaimFlowStepFragment.FlowClaimContractSelectStepCurrentStep -> ClaimFlowStep.ClaimSelectContractStep(
       flowId,
       options,
@@ -490,3 +519,28 @@ private suspend fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(
     else -> ClaimFlowStep.UnknownStep(flowId)
   }
 }
+
+/**
+ * Very important that these match the list of the supported steps in the
+ * [ClaimFlowStepFragment.CurrentStep.toClaimFlowStep] function above
+ */
+private val supportedSteps: List<String> = listOf(
+  FlowClaimAudioRecordingStep.type.name,
+  FlowClaimDateOfOccurrenceStep.type.name,
+  FlowClaimLocationStep.type.name,
+  FlowClaimDateOfOccurrencePlusLocationStep.type.name,
+  FlowClaimPhoneNumberStep.type.name,
+  FlowClaimSingleItemStep.type.name,
+  FlowClaimSingleItemCheckoutStep.type.name,
+  FlowClaimSummaryStep.type.name,
+  FlowClaimFailedStep.type.name,
+  FlowClaimSuccessStep.type.name,
+  FlowClaimContractSelectStep.type.name,
+  FlowClaimDeflectGlassDamageStep.type.name,
+  FlowClaimDeflectTowingStep.type.name,
+  FlowClaimDeflectEirStep.type.name,
+  FlowClaimConfirmEmergencyStep.type.name,
+  FlowClaimDeflectEmergencyStep.type.name,
+  FlowClaimDeflectPestsStep.type.name,
+  FlowClaimFileUploadStep.type.name,
+)

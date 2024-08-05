@@ -43,4 +43,5 @@ public val HedvigIcons.Waiting: ImageVector
     return _waiting!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _waiting: ImageVector? = null

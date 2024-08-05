@@ -7,6 +7,8 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,14 +25,17 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
+import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
@@ -40,6 +45,7 @@ import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.core.ui.hedvigDateTimeFormatter
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.data.contract.android.toPillow
+import com.hedvig.android.design.system.hedvig.ripple
 import com.hedvig.android.feature.changeaddress.data.MoveQuote
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
@@ -54,8 +60,16 @@ internal fun QuoteCard(
   modifier: Modifier = Modifier,
 ) {
   HedvigCard(
-    onClick = { onExpandClicked() },
-    modifier = modifier,
+    modifier = modifier
+      .clip(MaterialTheme.shapes.squircleMedium)
+      .clickable(
+        interactionSource = remember { MutableInteractionSource() },
+        indication = ripple(
+          bounded = true,
+          radius = 1000.dp,
+        ),
+        onClick = { onExpandClicked() },
+      ),
   ) {
     Column(Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp)) {
       PillAndBasicInfo(quote, movingDate)
@@ -127,9 +141,9 @@ private fun QuoteDetailsAndPrice(isExpanded: Boolean, quote: MoveQuote) {
         Spacer(Modifier.width(8.dp))
         val angle = animateFloatAsState(
           targetValue = if (isExpanded) {
-            0f
-          } else {
             -180f
+          } else {
+            0f
           },
           label = "",
         )

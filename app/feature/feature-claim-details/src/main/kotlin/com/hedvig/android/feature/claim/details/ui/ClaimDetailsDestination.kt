@@ -4,8 +4,6 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -22,15 +20,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -40,6 +40,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -52,39 +53,43 @@ import coil.ImageLoader
 import com.hedvig.android.audio.player.HedvigAudioPlayer
 import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
 import com.hedvig.android.compose.photo.capture.state.rememberPhotoCaptureState
+import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.fileupload.ui.FilePickerBottomSheet
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.colored.hedvig.Chat
+import com.hedvig.android.core.icons.hedvig.normal.ArrowBack
 import com.hedvig.android.core.icons.hedvig.small.hedvig.ArrowNorthEast
 import com.hedvig.android.core.ui.DynamicFilesGridBetweenOtherThings
-import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
 import com.hedvig.android.core.ui.dialog.ErrorDialog
 import com.hedvig.android.core.ui.plus
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HorizontalDivider
+import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.ClaimOutcome.UNKNOWN
+import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.ClaimStatus.CLOSED
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.ui.claimstatus.ClaimStatusCard
+import com.hedvig.android.ui.claimstatus.ClaimStatusCardContent
 import com.hedvig.android.ui.claimstatus.model.ClaimPillType
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
-import com.hedvig.audio.player.data.AudioPlayerState
 import com.hedvig.audio.player.data.PlayableAudioSource
 import com.hedvig.audio.player.data.SignedAudioUrl
 import hedvig.resources.R
 import java.io.File
+import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.toJavaLocalDate
-import octopus.type.CurrencyCode
 
 @Composable
 internal fun ClaimDetailsDestination(
@@ -92,7 +97,7 @@ internal fun ClaimDetailsDestination(
   imageLoader: ImageLoader,
   appPackageId: String,
   navigateUp: () -> Unit,
-  onChatClick: () -> Unit,
+  navigateToConversation: (String) -> Unit,
   onFilesToUploadSelected: (List<Uri>, targetUploadUrl: String) -> Unit,
   openUrl: (String) -> Unit,
   sharePdf: (File) -> Unit,
@@ -106,7 +111,7 @@ internal fun ClaimDetailsDestination(
     onDismissUploadError = { viewModel.emit(ClaimDetailsEvent.DismissUploadError) },
     retry = { viewModel.emit(ClaimDetailsEvent.Retry) },
     navigateUp = navigateUp,
-    onChatClick = onChatClick,
+    navigateToConversation = navigateToConversation,
     onFilesToUploadSelected = onFilesToUploadSelected,
     downloadFromUrl = { viewModel.emit(ClaimDetailsEvent.DownloadPdf(it)) },
     sharePdf = {
@@ -126,7 +131,7 @@ private fun ClaimDetailScreen(
   onDismissUploadError: () -> Unit,
   retry: () -> Unit,
   navigateUp: () -> Unit,
-  onChatClick: () -> Unit,
+  navigateToConversation: (String) -> Unit,
   onFilesToUploadSelected: (files: List<Uri>, uploadUri: String) -> Unit,
   downloadFromUrl: (String) -> Unit,
   sharePdf: (File) -> Unit,
@@ -137,9 +142,11 @@ private fun ClaimDetailScreen(
     modifier = Modifier.fillMaxSize(),
   ) {
     Column(Modifier.fillMaxSize()) {
-      TopAppBarWithBack(
-        onClick = navigateUp,
-        title = stringResource(R.string.CLAIMS_YOUR_CLAIM),
+      ClaimDetailTopAppBar(
+        navigateUp = navigateUp,
+        navigateToConversation = uiState.safeCast<ClaimDetailUiState.Content>()?.conversationId?.let {
+          { navigateToConversation(it) }
+        },
       )
       when (uiState) {
         is ClaimDetailUiState.Content -> {
@@ -161,7 +168,6 @@ private fun ClaimDetailScreen(
           }
           ClaimDetailScreen(
             uiState = uiState,
-            onChatClick = onChatClick,
             onDismissUploadError = onDismissUploadError,
             openUrl = openUrl,
             imageLoader = imageLoader,
@@ -184,7 +190,6 @@ private fun ClaimDetailScreen(
 @Composable
 private fun ClaimDetailScreen(
   uiState: ClaimDetailUiState.Content,
-  onChatClick: () -> Unit,
   openUrl: (String) -> Unit,
   onDismissUploadError: () -> Unit,
   imageLoader: ImageLoader,
@@ -243,7 +248,6 @@ private fun ClaimDetailScreen(
         BeforeGridContent(
           downloadFromUrl = downloadFromUrl,
           uiState = uiState,
-          onChatClick = onChatClick,
         )
       },
       files = uiState.files,
@@ -255,29 +259,88 @@ private fun ClaimDetailScreen(
         }
       },
       onRemoveFile = null,
-      contentPadding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing.only(
-        WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom,
-      ).asPaddingValues(),
+      contentPadding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
+        .only(
+          WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom,
+        ).asPaddingValues(),
     )
   }
 }
 
 @Composable
-private fun BeforeGridContent(
-  uiState: ClaimDetailUiState.Content,
-  onChatClick: () -> Unit,
-  downloadFromUrl: (url: String) -> Unit,
-) {
+private fun ClaimDetailTopAppBar(navigateUp: () -> Unit, navigateToConversation: (() -> Unit)?) {
+  TopAppBar(
+    title = {
+      Text(
+        text = stringResource(R.string.CLAIMS_YOUR_CLAIM),
+        style = MaterialTheme.typography.bodyLarge,
+      )
+    },
+    windowInsets = TopAppBarDefaults.windowInsets,
+    navigationIcon = {
+      IconButton(
+        onClick = navigateUp,
+        content = {
+          Icon(
+            imageVector = Icons.Hedvig.ArrowBack,
+            contentDescription = null,
+          )
+        },
+      )
+    },
+    actions = {
+      if (navigateToConversation != null) {
+        IconButton(navigateToConversation, Modifier.size(40.dp)) {
+          Icon(
+            imageVector = Icons.Hedvig.Chat,
+            contentDescription = stringResource(R.string.DASHBOARD_OPEN_CHAT),
+            tint = com.hedvig.android.design.system.hedvig.HedvigTheme.colorScheme.fillSecondary,
+            modifier = Modifier
+              .size(32.dp)
+              .clip(CircleShape),
+          )
+        }
+        // TopAppBar has a default 4.dp padding horizontally
+        // https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3/AppBar.kt;l=2890?q=private%20val%20TopAppBarHorizontalPadding%20%3D%204.dp&sq=&ss=androidx%2Fplatform%2Fframeworks%2Fsupport
+        Spacer(Modifier.width((16 - 4).dp))
+      }
+    },
+    colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
+  )
+}
+
+@Composable
+private fun BeforeGridContent(uiState: ClaimDetailUiState.Content, downloadFromUrl: (url: String) -> Unit) {
   Column {
     Spacer(Modifier.height(8.dp))
-    ClaimStatusCard(
-      uiState = uiState.claimStatusCardUiState,
-      onClick = null,
-      claimType = uiState.claimType,
-      insuranceDisplayName = uiState.insuranceDisplayName,
-    )
-    Spacer(Modifier.height(8.dp))
-    ClaimInfoCard(uiState.claimStatus, uiState.claimOutcome, onChatClick)
+    HedvigCard {
+      Column {
+        ClaimStatusCardContent(uiState = uiState.claimStatusCardUiState)
+        val claimIsInUndeterminedState = uiState.claimStatus == CLOSED && uiState.claimOutcome == UNKNOWN
+        if (!claimIsInUndeterminedState) {
+          HorizontalDivider()
+          Column(
+            Modifier.padding(
+              start = 18.dp,
+              end = 18.dp,
+              top = 16.dp,
+              bottom = 18.dp,
+            ),
+          ) {
+            Text(
+              text = stringResource(R.string.claim_status_title),
+              style = com.hedvig.android.design.system.hedvig.HedvigTheme.typography.label,
+            )
+            Text(
+              text = statusParagraphText(uiState.claimStatus, uiState.claimOutcome),
+              style = com.hedvig.android.design.system.hedvig.HedvigTheme.typography.label.copy(
+                color = HedvigTheme.colorScheme.textSecondary,
+              ),
+            )
+          }
+        }
+      }
+    }
     Spacer(Modifier.height(24.dp))
     Text(
       stringResource(R.string.claim_status_claim_details_title),
@@ -405,57 +468,6 @@ private fun TermsConditionsCard(onClick: () -> Unit, isLoading: Boolean, modifie
 }
 
 @Composable
-internal fun ClaimInfoCard(
-  claimStatus: ClaimDetailUiState.Content.ClaimStatus,
-  claimOutcome: ClaimDetailUiState.Content.ClaimOutcome,
-  onChatClick: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  HedvigCard(modifier = modifier) {
-    Column {
-      val claimIsInUndeterminedState = claimStatus == ClaimDetailUiState.Content.ClaimStatus.CLOSED &&
-        claimOutcome == ClaimDetailUiState.Content.ClaimOutcome.UNKNOWN
-      if (!claimIsInUndeterminedState) {
-        Text(
-          text = statusParagraphText(claimStatus, claimOutcome),
-          style = MaterialTheme.typography.bodyLarge,
-          modifier = Modifier.padding(16.dp),
-        )
-        Spacer(Modifier.height(4.dp))
-        HorizontalDivider()
-      }
-      Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-          .padding(16.dp)
-          .fillMaxWidth(),
-      ) {
-        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-          Text(
-            text = stringResource(R.string.claim_status_contact_generic_subtitle),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-          )
-          Text(
-            text = stringResource(R.string.claim_status_contact_generic_title),
-            style = MaterialTheme.typography.bodyLarge,
-          )
-        }
-        Spacer(Modifier.width(4.dp))
-        IconButton(onClick = onChatClick) {
-          Image(
-            imageVector = Icons.Hedvig.Chat,
-            contentDescription = stringResource(R.string.claim_status_detail_chat_button_description),
-            modifier = Modifier.size(32.dp),
-          )
-        }
-      }
-    }
-  }
-}
-
-@Composable
 private fun statusParagraphText(
   claimStatus: ClaimDetailUiState.Content.ClaimStatus,
   claimOutcome: ClaimDetailUiState.Content.ClaimOutcome,
@@ -487,15 +499,6 @@ private fun ClaimDetailHedvigAudioPlayerItem(signedAudioUrl: SignedAudioUrl, mod
   Column(modifier) {
     val audioPlayer = rememberAudioPlayer(playableAudioSource = PlayableAudioSource.RemoteUrl(signedAudioUrl))
     HedvigAudioPlayer(audioPlayer = audioPlayer)
-    Spacer(Modifier.height(8.dp))
-    val audioPlayerState by audioPlayer.audioPlayerState.collectAsStateWithLifecycle()
-    AnimatedVisibility(visible = audioPlayerState !is AudioPlayerState.Failed) {
-      Text(
-        text = stringResource(R.string.claim_status_files_claim_audio_footer),
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-      )
-    }
   }
 }
 
@@ -560,108 +563,123 @@ private fun ClaimTypeAndDatesSection(
 @HedvigPreview
 @Composable
 private fun PreviewClaimDetailScreen() {
-  HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
-      ClaimDetailScreen(
-        uiState = ClaimDetailUiState.Content(
-          claimId = "id",
-          submittedContent = ClaimDetailUiState.Content.SubmittedContent.FreeText("Some free input text"),
-          claimStatusCardUiState = ClaimStatusCardUiState(
-            id = "id",
-            pillTypes = listOf(
-              ClaimPillType.Open,
-              ClaimPillType.Reopened,
-              ClaimPillType.Closed.Paid,
-              ClaimPillType.PaymentAmount(UiMoney(399.0, CurrencyCode.SEK)),
-              ClaimPillType.Closed.NotCompensated,
-              ClaimPillType.Closed.NotCovered,
+  com.hedvig.android.core.designsystem.theme.HedvigTheme {
+    com.hedvig.android.design.system.hedvig.HedvigTheme {
+      Surface(color = MaterialTheme.colorScheme.background) {
+        ClaimDetailScreen(
+          uiState = ClaimDetailUiState.Content(
+            claimId = "id",
+            conversationId = "idd",
+            submittedContent = ClaimDetailUiState.Content.SubmittedContent.FreeText("Some free input text"),
+            claimStatusCardUiState = ClaimStatusCardUiState(
+              id = "id",
+              claimType = "Broken item",
+              insuranceDisplayName = null, // "Home Insurance Homeowner",
+              submittedDate = Instant.parse("2024-05-01T00:00:00Z"),
+              pillTypes = listOf(
+                ClaimPillType.Open,
+                ClaimPillType.Reopened,
+                ClaimPillType.Closed.Paid,
+                ClaimPillType.PaymentAmount(UiMoney(399.0, UiCurrencyCode.SEK)),
+                ClaimPillType.Closed.NotCompensated,
+                ClaimPillType.Closed.NotCovered,
+              ),
+              claimProgressItemsUiState = listOf(
+                ClaimProgressSegment(
+                  ClaimProgressSegment.SegmentText.Submitted,
+                  ClaimProgressSegment.SegmentType.PAID,
+                ),
+                ClaimProgressSegment(
+                  ClaimProgressSegment.SegmentText.BeingHandled,
+                  ClaimProgressSegment.SegmentType.PAID,
+                ),
+                ClaimProgressSegment(
+                  ClaimProgressSegment.SegmentText.Closed,
+                  ClaimProgressSegment.SegmentType.PAID,
+                ),
+              ),
             ),
-            claimProgressItemsUiState = listOf(
-              ClaimProgressSegment(
-                ClaimProgressSegment.SegmentText.Submitted,
-                ClaimProgressSegment.SegmentType.PAID,
+            claimStatus = ClaimDetailUiState.Content.ClaimStatus.CLOSED,
+            claimOutcome = ClaimDetailUiState.Content.ClaimOutcome.PAID,
+            files = listOf(
+              UiFile(
+                id = "1",
+                name = "test",
+                mimeType = "",
+                url = "1",
+                localPath = null,
               ),
-              ClaimProgressSegment(
-                ClaimProgressSegment.SegmentText.BeingHandled,
-                ClaimProgressSegment.SegmentType.PAID,
+              UiFile(
+                id = "2",
+                name = "test".repeat(10),
+                mimeType = "",
+                url = "1",
+                localPath = null,
               ),
-              ClaimProgressSegment(
-                ClaimProgressSegment.SegmentText.Closed,
-                ClaimProgressSegment.SegmentType.PAID,
+              UiFile(
+                id = "3",
+                name = "test",
+                mimeType = "",
+                url = "1",
+                localPath = null,
+              ),
+              UiFile(
+                id = "4",
+                name = "test4",
+                mimeType = "",
+                url = "1",
+                localPath = null,
+              ),
+              UiFile(
+                id = "5",
+                name = "test5",
+                mimeType = "",
+                url = "1",
+                localPath = null,
+              ),
+              UiFile(
+                id = "6",
+                name = "test6",
+                mimeType = "",
+                url = "",
+                localPath = null,
               ),
             ),
-            claimType = "Broken item",
-            insuranceDisplayName = "Home Insurance Homeowner",
+            isUploadingFile = false,
+            uploadUri = "",
+            uploadError = null,
+            claimType = "Theft",
+            incidentDate = LocalDate(2023, 1, 2),
+            submittedAt = LocalDateTime(2023, 1, 5, 12, 35),
+            insuranceDisplayName = "Home insurance",
+            termsConditionsUrl = "url",
+            savedFileUri = null,
+            downloadError = null,
+            isLoadingPdf = false,
           ),
-          claimStatus = ClaimDetailUiState.Content.ClaimStatus.CLOSED,
-          claimOutcome = ClaimDetailUiState.Content.ClaimOutcome.PAID,
-          files = listOf(
-            UiFile(
-              id = "1",
-              name = "test",
-              mimeType = "",
-              url = "1",
-              localPath = null,
-            ),
-            UiFile(
-              id = "2",
-              name = "test".repeat(10),
-              mimeType = "",
-              url = "1",
-              localPath = null,
-            ),
-            UiFile(
-              id = "3",
-              name = "test",
-              mimeType = "",
-              url = "1",
-              localPath = null,
-            ),
-            UiFile(
-              id = "4",
-              name = "test4",
-              mimeType = "",
-              url = "1",
-              localPath = null,
-            ),
-            UiFile(
-              id = "5",
-              name = "test5",
-              mimeType = "",
-              url = "1",
-              localPath = null,
-            ),
-            UiFile(
-              id = "6",
-              name = "test6",
-              mimeType = "",
-              url = "",
-              localPath = null,
-            ),
-          ),
-          isUploadingFile = false,
-          uploadUri = "",
-          uploadError = null,
-          claimType = "Theft",
-          incidentDate = LocalDate(2023, 1, 2),
-          submittedAt = LocalDateTime(2023, 1, 5, 12, 35),
-          insuranceDisplayName = "Home insurance",
-          termsConditionsUrl = "url",
-          savedFileUri = null,
-          downloadError = null,
-          isLoadingPdf = false,
-        ),
-        onChatClick = {},
-        openUrl = {},
-        imageLoader = rememberPreviewImageLoader(),
-        onDismissUploadError = {},
-        downloadFromUrl = {},
-        sharePdf = {},
-        onDismissDownloadError = {},
-        onLaunchMediaRequest = {},
-        onTakePhoto = {},
-        onPickFile = {},
-      )
+          openUrl = {},
+          imageLoader = rememberPreviewImageLoader(),
+          onDismissUploadError = {},
+          downloadFromUrl = {},
+          sharePdf = {},
+          onDismissDownloadError = {},
+          onLaunchMediaRequest = {},
+          onTakePhoto = {},
+          onPickFile = {},
+        )
+      }
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewClaimDetailTopAppBar() {
+  com.hedvig.android.core.designsystem.theme.HedvigTheme {
+    com.hedvig.android.design.system.hedvig.HedvigTheme {
+      Surface(color = MaterialTheme.colorScheme.background) {
+        ClaimDetailTopAppBar({}, {})
+      }
     }
   }
 }

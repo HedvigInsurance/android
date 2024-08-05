@@ -5,11 +5,11 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import com.hedvig.android.core.common.test.MainCoroutineRule
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.claimflow.CheckoutMethod
 import com.hedvig.android.data.claimflow.ClaimFlowDestination
 import kotlinx.coroutines.test.runTest
-import octopus.type.CurrencyCode
 import org.junit.Rule
 import org.junit.Test
 
@@ -30,13 +30,13 @@ class SingleItemCheckoutViewModelTest {
 
   @Test
   fun `providing a list of available checkout methods automatically selects the first one`() = runTest {
-    val firstCheckoutMethod = CheckoutMethod.Known.AutomaticAutogiro("#1", "", UiMoney(0.0, CurrencyCode.SEK))
+    val firstCheckoutMethod = CheckoutMethod.Known.AutomaticAutogiro("#1", "", UiMoney(0.0, UiCurrencyCode.SEK))
     val viewModel = SingleItemCheckoutViewModel(
       testSingleItemCheckout(
         availableCheckoutMethods = listOf(
           firstCheckoutMethod,
-          CheckoutMethod.Known.AutomaticAutogiro("#2", "", UiMoney(0.0, CurrencyCode.SEK)),
-          CheckoutMethod.Known.AutomaticAutogiro("#3", "", UiMoney(0.0, CurrencyCode.SEK)),
+          CheckoutMethod.Known.AutomaticAutogiro("#2", "", UiMoney(0.0, UiCurrencyCode.SEK)),
+          CheckoutMethod.Known.AutomaticAutogiro("#3", "", UiMoney(0.0, UiCurrencyCode.SEK)),
         ),
       ),
     )
@@ -51,13 +51,13 @@ class SingleItemCheckoutViewModelTest {
   @Test
   fun `selecting the second item, updates the amount of money of the selected item`() = runTest {
     val secondCheckoutMethod =
-      CheckoutMethod.Known.AutomaticAutogiro("#2", "", UiMoney(2.0, CurrencyCode.SEK))
+      CheckoutMethod.Known.AutomaticAutogiro("#2", "", UiMoney(2.0, UiCurrencyCode.SEK))
     val viewModel = SingleItemCheckoutViewModel(
       testSingleItemCheckout(
         availableCheckoutMethods = listOf(
-          CheckoutMethod.Known.AutomaticAutogiro("#1", "", UiMoney(1.0, CurrencyCode.SEK)),
+          CheckoutMethod.Known.AutomaticAutogiro("#1", "", UiMoney(1.0, UiCurrencyCode.SEK)),
           secondCheckoutMethod,
-          CheckoutMethod.Known.AutomaticAutogiro("#3", "", UiMoney(3.0, CurrencyCode.SEK)),
+          CheckoutMethod.Known.AutomaticAutogiro("#3", "", UiMoney(3.0, UiCurrencyCode.SEK)),
         ),
       ),
     )
@@ -70,16 +70,24 @@ class SingleItemCheckoutViewModelTest {
   companion object {
     private fun testSingleItemCheckout(
       availableCheckoutMethods: List<CheckoutMethod.Known>,
-      price: UiMoney = UiMoney(100.0, CurrencyCode.SEK),
-      depreciation: UiMoney = UiMoney(100.0, CurrencyCode.SEK),
-      deductible: UiMoney = UiMoney(100.0, CurrencyCode.SEK),
-      payoutAmount: UiMoney = UiMoney(100.0, CurrencyCode.SEK),
+      price: UiMoney = UiMoney(100.0, UiCurrencyCode.SEK),
+      depreciation: UiMoney = UiMoney(100.0, UiCurrencyCode.SEK),
+      deductible: UiMoney = UiMoney(100.0, UiCurrencyCode.SEK),
+      payoutAmount: UiMoney = UiMoney(100.0, UiCurrencyCode.SEK),
+      modelName: String? = "IPhone 12",
+      brandName: String? = null,
+      customName: String? = null,
     ) = ClaimFlowDestination.SingleItemCheckout(
-      price,
-      depreciation,
-      deductible,
-      payoutAmount,
+      compensation = ClaimFlowDestination.SingleItemCheckout.Compensation.Known.ValueCompensation(
+        price,
+        depreciation,
+        deductible,
+        payoutAmount,
+      ),
       availableCheckoutMethods,
+      modelName,
+      brandName,
+      customName,
     )
   }
 }

@@ -2,16 +2,15 @@ package com.hedvig.android.data.productvariant
 
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
-import kotlinx.collections.immutable.ImmutableList
 
 data class ProductVariant(
   val displayName: String,
   val contractGroup: ContractGroup,
   val contractType: ContractType,
   val partner: String?,
-  val perils: ImmutableList<ProductVariantPeril>,
-  val insurableLimits: ImmutableList<InsurableLimit>,
-  val documents: ImmutableList<InsuranceVariantDocument>,
+  val perils: List<ProductVariantPeril>,
+  val insurableLimits: List<InsurableLimit>,
+  val documents: List<InsuranceVariantDocument>,
 )
 
 data class ProductVariantPeril(

@@ -14,7 +14,27 @@ query Home {
     importantMessages {
       id
       message
-      link
+      linkInfo {
+        url
+        buttonText
+      }
+    }
+    crossSells {
+      id
+      title
+      description
+      storeUrl
+      type
+    }
+    memberActions {
+      firstVetAction {
+        sections {
+          title
+          buttonTitle
+          description
+          url
+        }
+      }
     }
     activeContracts {
       masterInceptionDate

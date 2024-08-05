@@ -26,7 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.pager.HorizontalPagerIndicator
+import com.hedvig.android.compose.pager.indicator.HorizontalPagerIndicator
 import com.hedvig.android.core.common.android.time.daysUntil
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -36,16 +36,16 @@ import com.hedvig.android.core.ui.infocard.VectorWarningCard
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.notification.permission.NotificationPermissionState
 import hedvig.resources.R
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 
 @Composable
 fun MemberReminderCardsWithoutNotification(
-  memberReminders: ImmutableList<MemberReminder>,
+  memberReminders: List<MemberReminder>,
   navigateToConnectPayment: () -> Unit,
   openUrl: (String) -> Unit,
   navigateToAddMissingInfo: (String) -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   contentPadding: PaddingValues,
   modifier: Modifier = Modifier,
 ) {
@@ -54,6 +54,7 @@ fun MemberReminderCardsWithoutNotification(
     navigateToConnectPayment = navigateToConnectPayment,
     openUrl = openUrl,
     navigateToAddMissingInfo = navigateToAddMissingInfo,
+    onNavigateToNewConversation = onNavigateToNewConversation,
     snoozeNotificationPermissionReminder = {},
     notificationPermissionState = null,
     contentPadding = contentPadding,
@@ -63,11 +64,12 @@ fun MemberReminderCardsWithoutNotification(
 
 @Composable
 fun MemberReminderCards(
-  memberReminders: ImmutableList<MemberReminder>,
+  memberReminders: List<MemberReminder>,
   navigateToConnectPayment: () -> Unit,
   openUrl: (String) -> Unit,
   navigateToAddMissingInfo: (String) -> Unit,
   snoozeNotificationPermissionReminder: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   notificationPermissionState: NotificationPermissionState?,
   contentPadding: PaddingValues,
   modifier: Modifier = Modifier,
@@ -79,6 +81,7 @@ fun MemberReminderCards(
         navigateToAddMissingInfo = navigateToAddMissingInfo,
         navigateToConnectPayment = navigateToConnectPayment,
         openUrl = openUrl,
+        onNavigateToNewConversation = onNavigateToNewConversation,
         snoozeNotificationPermissionReminder = snoozeNotificationPermissionReminder,
         notificationPermissionState = notificationPermissionState,
         modifier = modifier.padding(contentPadding),
@@ -88,7 +91,7 @@ fun MemberReminderCards(
       HorizontalPager(
         state = pagerState,
         contentPadding = contentPadding,
-        beyondBoundsPageCount = 1,
+        beyondViewportPageCount = 1,
         pageSpacing = 8.dp,
         key = { index -> memberReminders[index].id },
         modifier = Modifier
@@ -100,6 +103,7 @@ fun MemberReminderCards(
           navigateToAddMissingInfo = navigateToAddMissingInfo,
           navigateToConnectPayment = navigateToConnectPayment,
           openUrl = openUrl,
+          onNavigateToNewConversation = onNavigateToNewConversation,
           snoozeNotificationPermissionReminder = snoozeNotificationPermissionReminder,
           notificationPermissionState = notificationPermissionState,
           modifier = modifier.fillMaxWidth(),
@@ -127,6 +131,7 @@ private fun ColumnScope.MemberReminderCard(
   navigateToConnectPayment: () -> Unit,
   openUrl: (String) -> Unit,
   snoozeNotificationPermissionReminder: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   notificationPermissionState: NotificationPermissionState?,
   modifier: Modifier = Modifier,
 ) {
@@ -138,8 +143,14 @@ private fun ColumnScope.MemberReminderCard(
       modifier = modifier,
     )
 
-    is MemberReminder.ConnectPayment -> ReminderCardConnectPayment(
+    is MemberReminder.PaymentReminder.ConnectPayment -> ReminderCardConnectPayment(
       navigateToConnectPayment = navigateToConnectPayment,
+      modifier = modifier,
+    )
+
+    is MemberReminder.PaymentReminder.TerminationDueToMissedPayments -> ReminderCardMissingPayment(
+      terminationDate = memberReminder.terminationDate,
+      onNavigateToNewConversation = onNavigateToNewConversation,
       modifier = modifier,
     )
 
@@ -212,6 +223,24 @@ private fun ReminderCardConnectPayment(navigateToConnectPayment: () -> Unit, mod
     InfoCardTextButton(
       onClick = navigateToConnectPayment,
       text = stringResource(R.string.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON),
+      modifier = Modifier.fillMaxWidth(),
+    )
+  }
+}
+
+@Composable
+private fun ReminderCardMissingPayment(
+  terminationDate: LocalDate,
+  onNavigateToNewConversation: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  VectorWarningCard(
+    text = stringResource(R.string.info_card_missing_payment_missing_payments_body, terminationDate),
+    modifier = modifier,
+  ) {
+    InfoCardTextButton(
+      onClick = onNavigateToNewConversation,
+      text = stringResource(R.string.open_chat),
       modifier = Modifier.fillMaxWidth(),
     )
   }

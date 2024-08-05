@@ -5,14 +5,19 @@ plugins {
   id("hedvig.android.library.compose")
   alias(libs.plugins.serialization)
   alias(libs.plugins.squareSortDependencies)
+  alias(libs.plugins.apollo)
 }
 
 dependencies {
+
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.androidx.navigation.common)
+  implementation(libs.androidx.navigation.compose)
   implementation(libs.androidx.navigation.runtime)
+  implementation(libs.apollo.normalizedCache)
+  implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
   implementation(libs.arrow.fx)
   implementation(libs.coroutines.core)
@@ -22,18 +27,39 @@ dependencies {
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
+  implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDesignSystem)
+  implementation(projects.coreFileUpload)
   implementation(projects.coreIcons)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
-  implementation(projects.dataTravelCertificatePublic)
+  implementation(projects.dataContractPublic)
+  implementation(projects.designSystemHedvig)
   implementation(projects.languageCore)
-  implementation(projects.navigationComposeTyped)
-  implementation(projects.navigationCore)
-  implementation(projects.navigationActivity)
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
-  implementation(projects.coreCommonAndroidPublic)
-  implementation(projects.coreFileUpload)
+  implementation(projects.navigationActivity)
+  implementation(projects.navigationCompose)
+  implementation(projects.navigationComposeTyped)
+  implementation(projects.navigationCore)
+
+  testImplementation(libs.apollo.testingSupport)
+  testImplementation(libs.assertK)
+  testImplementation(libs.coroutines.test)
+  testImplementation(libs.junit)
+  testImplementation(libs.testParameterInjector)
+  testImplementation(libs.turbine)
+  testImplementation(projects.apolloOctopusTest)
+  testImplementation(projects.apolloTest)
+  testImplementation(projects.coreCommonTest)
+  testImplementation(projects.featureFlagsTest)
+  testImplementation(projects.loggingTest)
+}
+
+apollo {
+  service("octopus") {
+    packageName = "octopus"
+    dependsOn(projects.apolloOctopusPublic, true)
+  }
 }

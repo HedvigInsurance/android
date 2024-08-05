@@ -15,7 +15,6 @@ dependencies {
   implementation(libs.androidx.navigation.runtime)
   implementation(libs.arrow.core)
   implementation(libs.hedvig.authlib)
-  implementation(libs.kiwi.navigationCompose)
   implementation(libs.koin.compose)
   implementation(libs.koin.core)
   implementation(projects.composeWebview)
@@ -26,5 +25,6 @@ dependencies {
   implementation(projects.languageCore)
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
+  implementation(projects.navigationCompose)
   implementation(projects.navigationCore)
 }

@@ -12,9 +12,9 @@ internal data class PaymentOverview(
 
 @Serializable
 internal data class MemberChargeShortInfo(
-  val grossAmount: UiMoney,
+  val netAmount: UiMoney,
   val dueDate: LocalDate,
-  val id: String,
+  val id: String?,
   val status: MemberCharge.MemberChargeStatus,
   val failedCharge: MemberCharge.FailedCharge?,
 )

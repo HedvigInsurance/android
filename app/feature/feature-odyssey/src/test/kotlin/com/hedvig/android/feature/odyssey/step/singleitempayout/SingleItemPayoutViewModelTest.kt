@@ -7,6 +7,7 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.test.MainCoroutineRule
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.claimflow.CheckoutMethod
 import com.hedvig.android.data.claimflow.ClaimFlowDestination
@@ -14,7 +15,6 @@ import com.hedvig.android.feature.odyssey.data.TestClaimFlowRepository
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
-import octopus.type.CurrencyCode
 import org.junit.Rule
 import org.junit.Test
 
@@ -28,7 +28,7 @@ class SingleItemPayoutViewModelTest {
   @Test
   fun `succeeding a payout updates the status to be considered PaidOut`() = runTest {
     val claimFlowRepository = TestClaimFlowRepository()
-    val checkoutMethod = CheckoutMethod.Known.AutomaticAutogiro("#1", "", UiMoney(1.0, CurrencyCode.SEK))
+    val checkoutMethod = CheckoutMethod.Known.AutomaticAutogiro("#1", "", UiMoney(1.0, UiCurrencyCode.SEK))
     val viewModel = SingleItemPayoutViewModel(
       ClaimFlowDestination.SingleItemPayout(checkoutMethod),
       claimFlowRepository,
@@ -46,7 +46,7 @@ class SingleItemPayoutViewModelTest {
   @Test
   fun `failing the payout network request, you can retry and succeed the second time`() = runTest {
     val claimFlowRepository = TestClaimFlowRepository()
-    val checkoutMethod = CheckoutMethod.Known.AutomaticAutogiro("#1", "", UiMoney(1.0, CurrencyCode.SEK))
+    val checkoutMethod = CheckoutMethod.Known.AutomaticAutogiro("#1", "", UiMoney(1.0, UiCurrencyCode.SEK))
     val viewModel = SingleItemPayoutViewModel(
       ClaimFlowDestination.SingleItemPayout(checkoutMethod),
       claimFlowRepository,

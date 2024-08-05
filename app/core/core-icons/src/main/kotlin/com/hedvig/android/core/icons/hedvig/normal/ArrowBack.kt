@@ -46,4 +46,5 @@ public val HedvigIcons.ArrowBack: ImageVector
     return _arrowBack!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _arrowBack: ImageVector? = null

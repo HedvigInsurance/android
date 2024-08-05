@@ -71,6 +71,8 @@ class HedvigMaterial3ColorScheme(
   val onTypeElement: Color,
   val typeContainer: Color,
   val onTypeContainer: Color,
+  val lightTypeContainer: Color,
+  val onLightTypeContainer: Color,
   val typeHighlight: Color,
   // Information related content. Like information cards and so on.
   val infoElement: Color,
@@ -158,6 +160,16 @@ val ColorScheme.onTypeElement: Color
   @ReadOnlyComposable
   @Composable
   get() = LocalHedvigMaterial3ColorScheme.current.onTypeElement
+
+val ColorScheme.lightTypeContainer: Color
+  @ReadOnlyComposable
+  @Composable
+  get() = LocalHedvigMaterial3ColorScheme.current.lightTypeContainer
+
+val ColorScheme.onLightTypeContainer: Color
+  @ReadOnlyComposable
+  @Composable
+  get() = LocalHedvigMaterial3ColorScheme.current.onLightTypeContainer
 
 val ColorScheme.typeContainer: Color
   @ReadOnlyComposable
@@ -286,6 +298,8 @@ internal fun HedvigMaterial3ColorScheme.fromToken(value: HedvigColorSchemeKeyTok
     HedvigColorSchemeKeyTokens.OnTypeElement -> onTypeElement
     HedvigColorSchemeKeyTokens.TypeContainer -> typeContainer
     HedvigColorSchemeKeyTokens.OnTypeContainer -> onTypeContainer
+    HedvigColorSchemeKeyTokens.LightTypeContainer -> lightTypeContainer
+    HedvigColorSchemeKeyTokens.OnLightTypeContainer -> onLightTypeContainer
     HedvigColorSchemeKeyTokens.TypeHighlight -> typeHighlight
 
     HedvigColorSchemeKeyTokens.BorderSecondary -> borderSecondary

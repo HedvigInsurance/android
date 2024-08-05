@@ -23,7 +23,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -50,6 +49,7 @@ import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.scaffold.ClaimFlowScaffold
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.ItemBrand
 import com.hedvig.android.data.claimflow.ItemModel
@@ -59,7 +59,6 @@ import com.hedvig.android.feature.odyssey.ui.DatePickerWithDialog
 import com.hedvig.android.feature.odyssey.ui.MonetaryAmountInput
 import hedvig.resources.R
 import java.util.Locale
-import octopus.type.CurrencyCode
 
 @Composable
 internal fun SingleItemDestination(
@@ -146,6 +145,7 @@ private fun SingleItemScreen(
         )
         Spacer(Modifier.height(2.dp))
       }
+
       ModelUi.JustModelDialog -> {
         ModelPicker(
           uiState = uiState,
@@ -153,6 +153,7 @@ private fun SingleItemScreen(
           modifier = sideSpacingModifier,
         )
       }
+
       is ModelUi.BothDialogAndCustom -> {
         ModelPicker(
           uiState = uiState,
@@ -175,13 +176,16 @@ private fun SingleItemScreen(
 
     Spacer(Modifier.height(2.dp))
     DateOfPurchase(uiState.datePickerUiState, uiState.canSubmit, sideSpacingModifier.fillMaxWidth())
-    Spacer(Modifier.height(4.dp))
-    PriceOfPurchase(
-      uiState = uiState.purchasePriceUiState,
-      canInteract = uiState.canSubmit,
-      modifier = sideSpacingModifier.fillMaxWidth(),
-    )
     Spacer(Modifier.height(2.dp))
+    if (uiState.purchasePriceApplicable) {
+      Spacer(Modifier.height(2.dp))
+      PriceOfPurchase(
+        uiState = uiState.purchasePriceUiState,
+        canInteract = uiState.canSubmit,
+        modifier = sideSpacingModifier.fillMaxWidth(),
+      )
+      Spacer(Modifier.height(2.dp))
+    }
     uiState.itemProblemsUiState.asContent()?.let { itemProblemsUiState ->
       Spacer(Modifier.height(2.dp))
       ItemProblems(
@@ -194,7 +198,13 @@ private fun SingleItemScreen(
     }
     Spacer(Modifier.height(14.dp))
     VectorInfoCard(
-      stringResource(R.string.CLAIMS_SINGLE_ITEM_NOTICE_LABEL),
+      stringResource(
+        if (uiState.purchasePriceApplicable) {
+          R.string.CLAIMS_SINGLE_ITEM_NOTICE_LABEL
+        } else {
+          R.string.CLAIMS_SINGLE_ITEM_NOTICE_WITHOUT_PRICE_LABEL
+        },
+      ),
       sideSpacingModifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))
@@ -319,7 +329,6 @@ private fun DateOfPurchase(uiState: DatePickerUiState, canInteract: Boolean, mod
   )
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun PriceOfPurchase(uiState: PurchasePriceUiState, canInteract: Boolean, modifier: Modifier = Modifier) {
   val focusRequester = remember { FocusRequester() }
@@ -328,7 +337,7 @@ private fun PriceOfPurchase(uiState: PurchasePriceUiState, canInteract: Boolean,
     hintText = stringResource(R.string.claims_payout_purchase_price),
     canInteract = canInteract,
     onInput = { uiState.updateAmount(it) },
-    currency = uiState.uiMoney.currencyCode.rawValue,
+    currency = uiState.uiMoney.currencyCode.name,
     focusRequester = focusRequester,
     modifier = modifier,
   )
@@ -351,7 +360,7 @@ private fun CustomModelInput(initialValue: String, onInput: (String?) -> Unit, m
     textStyle = LocalTextStyle.current,
     label = { Text(stringResource(id = R.string.claims_item_enter_model_name)) },
     keyboardOptions = KeyboardOptions(
-      autoCorrect = false,
+      autoCorrectEnabled = false,
       keyboardType = KeyboardType.Text,
       imeAction = ImeAction.Done,
     ),
@@ -407,7 +416,7 @@ private fun PreviewSingleItemScreen(
       SingleItemScreen(
         SingleItemUiState(
           datePickerUiState = remember { DatePickerUiState(Locale.ENGLISH, null) },
-          purchasePriceUiState = PurchasePriceUiState(if (hasPriceInput) 299.90 else null, CurrencyCode.SEK),
+          purchasePriceUiState = PurchasePriceUiState(if (hasPriceInput) 299.90 else null, UiCurrencyCode.SEK),
           itemBrandsUiState = ItemBrandsUiState.Content(
             nonEmptyListOf(ItemBrand.Known("Item Brand", "", "")),
             ItemBrand.Known("Item Brand #1", "", ""),
@@ -425,6 +434,7 @@ private fun PreviewSingleItemScreen(
           isLoading = isLoading,
           hasError = false,
           nextStep = null,
+          purchasePriceApplicable = true,
         ),
         WindowSizeClass.calculateForPreview(),
         {},

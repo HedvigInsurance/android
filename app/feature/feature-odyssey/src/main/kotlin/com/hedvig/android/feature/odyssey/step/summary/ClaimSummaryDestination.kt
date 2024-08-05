@@ -40,6 +40,7 @@ import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.core.ui.scaffold.ClaimFlowScaffold
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.core.uidata.UiNullableMoney
 import com.hedvig.android.data.claimflow.ClaimFlowStep
@@ -50,7 +51,6 @@ import com.hedvig.android.data.claimflow.SubmittedContent
 import com.hedvig.audio.player.data.PlayableAudioSource
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
-import octopus.type.CurrencyCode
 
 @Composable
 internal fun ClaimSummaryDestination(
@@ -200,7 +200,7 @@ private fun PreviewClaimSummaryScreen() {
             dateOfPurchase = LocalDate.parse("2015-03-26"),
             priceOfPurchase = UiNullableMoney(
               amount = 3990.0,
-              currencyCode = CurrencyCode.SEK,
+              currencyCode = UiCurrencyCode.SEK,
             ),
             itemProblems = listOf(
               ItemProblem(displayName = "Other", itemProblemId = ""),

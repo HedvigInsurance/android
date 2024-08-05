@@ -1,15 +1,22 @@
 package com.hedvig.android.feature.profile.di
 
-import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.auth.listeners.UploadLanguagePreferenceToBackendUseCase
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
-import com.hedvig.android.data.travelcertificate.CheckTravelCertificateDestinationAvailabilityUseCase
 import com.hedvig.android.feature.profile.aboutapp.AboutAppViewModel
+import com.hedvig.android.feature.profile.data.ChangeEmailSubscriptionPreferencesUseCase
+import com.hedvig.android.feature.profile.data.ChangeEmailSubscriptionPreferencesUseCaseImpl
+import com.hedvig.android.feature.profile.data.CheckTravelCertificateDestinationAvailabilityUseCase
+import com.hedvig.android.feature.profile.data.CheckTravelCertificateDestinationAvailabilityUseCaseImpl
+import com.hedvig.android.feature.profile.data.GetEurobonusDataUseCase
+import com.hedvig.android.feature.profile.data.GetEurobonusDataUseCaseImpl
 import com.hedvig.android.feature.profile.data.ProfileRepositoryDemo
 import com.hedvig.android.feature.profile.data.ProfileRepositoryImpl
+import com.hedvig.android.feature.profile.data.UpdateEurobonusNumberUseCase
+import com.hedvig.android.feature.profile.data.UpdateEurobonusNumberUseCaseImpl
 import com.hedvig.android.feature.profile.eurobonus.EurobonusViewModel
 import com.hedvig.android.feature.profile.myinfo.MyInfoViewModel
 import com.hedvig.android.feature.profile.settings.SettingsViewModel
@@ -36,8 +43,26 @@ val profileModule = module {
       get<LogoutUseCase>(),
     )
   }
-  viewModel<EurobonusViewModel> { EurobonusViewModel(get<ApolloClient>()) }
+  viewModel<EurobonusViewModel> {
+    EurobonusViewModel(
+      getEurobonusDataUseCase = get<GetEurobonusDataUseCase>(),
+      updateEurobonusNumberUseCase = get<UpdateEurobonusNumberUseCase>(),
+    )
+  }
 
+  single<GetEurobonusDataUseCase> {
+    GetEurobonusDataUseCaseImpl(apolloClient = get<ApolloClient>())
+  }
+
+  single<UpdateEurobonusNumberUseCase> {
+    UpdateEurobonusNumberUseCaseImpl(apolloClient = get<ApolloClient>())
+  }
+
+  single<ChangeEmailSubscriptionPreferencesUseCase> {
+    ChangeEmailSubscriptionPreferencesUseCaseImpl(
+      apolloClient = get<ApolloClient>(),
+    )
+  }
   single<ProfileRepositoryImpl> {
     ProfileRepositoryImpl(
       apolloClient = get<ApolloClient>(),
@@ -63,6 +88,7 @@ val profileModule = module {
       enableNotificationsReminderManager = get<EnableNotificationsReminderManager>(),
       cacheManager = get<NetworkCacheManager>(),
       uploadLanguagePreferenceToBackendUseCase = get<UploadLanguagePreferenceToBackendUseCase>(),
+      changeEmailSubscriptionPreferencesUseCase = get<ChangeEmailSubscriptionPreferencesUseCase>(),
     )
   }
 
@@ -70,4 +96,9 @@ val profileModule = module {
     MyInfoViewModel(get<ProfileRepositoryProvider>())
   }
   viewModel<AboutAppViewModel> { AboutAppViewModel(get<ApolloClient>()) }
+  single<CheckTravelCertificateDestinationAvailabilityUseCase> {
+    CheckTravelCertificateDestinationAvailabilityUseCaseImpl(
+      get<ApolloClient>(),
+    )
+  }
 }

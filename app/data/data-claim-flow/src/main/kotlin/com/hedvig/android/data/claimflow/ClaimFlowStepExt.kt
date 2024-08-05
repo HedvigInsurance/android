@@ -1,11 +1,12 @@
 package com.hedvig.android.data.claimflow
 
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.core.uidata.UiNullableMoney
 import com.hedvig.android.data.claimflow.model.AudioUrl
+import com.hedvig.android.navigation.compose.Destination
 import com.hedvig.audio.player.data.SignedAudioUrl
-import kotlinx.collections.immutable.toPersistentList
 import octopus.fragment.AudioContentFragment
 import octopus.fragment.AutomaticAutogiroPayoutFragment
 import octopus.fragment.CheckoutMethodFragment
@@ -16,7 +17,7 @@ import octopus.fragment.FlowClaimFileUploadFragment
 import octopus.fragment.FlowClaimLocationStepFragment
 import octopus.fragment.FlowClaimSingleItemStepFragment
 
-fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
+fun ClaimFlowStep.toClaimFlowDestination(): Destination {
   return when (this) {
     is ClaimFlowStep.ClaimAudioRecordingStep -> {
       ClaimFlowDestination.AudioRecording(flowId, questions, audioContent?.toAudioContent())
@@ -43,11 +44,13 @@ fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
     }
 
     is ClaimFlowStep.ClaimPhoneNumberStep -> ClaimFlowDestination.PhoneNumber(phoneNumber)
+
     is ClaimFlowStep.ClaimSingleItemStep -> {
       ClaimFlowDestination.SingleItem(
-        preferredCurrency = preferredCurrency,
+        preferredCurrency = UiCurrencyCode.fromCurrencyCode(preferredCurrency),
         purchaseDate = purchaseDate,
         purchasePrice = UiNullableMoney.fromMoneyFragment(purchasePrice),
+        purchasePriceApplicable = purchasePriceApplicable,
         availableItemBrands = availableItemBrands?.map { it.toItemBrand() },
         selectedItemBrand = selectedItemBrand,
         availableItemModels = availableItemModels?.map { it.toItemModel() },
@@ -65,7 +68,7 @@ fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
         locationOptions = options.map { it.toLocationOption() },
         dateOfOccurrence = dateOfOccurrence,
         maxDate = maxDate,
-        preferredCurrency = preferredCurrency,
+        preferredCurrency = preferredCurrency?.let { UiCurrencyCode.fromCurrencyCode(it) },
         purchaseDate = purchaseDate,
         customName = customName,
         purchasePrice = UiNullableMoney.fromMoneyFragment(purchasePrice),
@@ -91,12 +94,18 @@ fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
     }
 
     is ClaimFlowStep.ClaimResolutionSingleItemStep -> {
+      val modelName = singleItemStep?.availableItemModels?.firstOrNull {
+        it.itemModelId == singleItemStep.selectedItemModel
+      }?.displayName
+      val compensation: ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep.Compensation =
+        this.compensation
       ClaimFlowDestination.SingleItemCheckout(
-        UiMoney.fromMoneyFragment(price),
-        UiMoney.fromMoneyFragment(depreciation),
-        UiMoney.fromMoneyFragment(deductible),
-        UiMoney.fromMoneyFragment(payoutAmount),
-        availableCheckoutMethods.map(CheckoutMethodFragment::toCheckoutMethod).filterIsInstance<CheckoutMethod.Known>(),
+        compensation = compensation.toCompensation(),
+        availableCheckoutMethods = availableCheckoutMethods.map(CheckoutMethodFragment::toCheckoutMethod)
+          .filterIsInstance<CheckoutMethod.Known>(),
+        modelName = modelName,
+        brandName = singleItemStep?.selectedItemBrand,
+        customName = singleItemStep?.customName,
       )
     }
 
@@ -108,15 +117,15 @@ fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
     )
 
     is ClaimFlowStep.ClaimDeflectGlassDamageStep -> ClaimFlowDestination.DeflectGlassDamage(
-      partners.map { it.toLocalPartner() }.toPersistentList(),
+      partners.map { it.toLocalPartner() },
     )
 
     is ClaimFlowStep.ClaimDeflectTowingStep -> ClaimFlowDestination.DeflectTowing(
-      partners.map { it.toLocalPartner() }.toPersistentList(),
+      partners.map { it.toLocalPartner() },
     )
 
     is ClaimFlowStep.ClaimDeflectEirStep -> ClaimFlowDestination.DeflectCarOtherDamage(
-      partners.map { it.toLocalPartner() }.toPersistentList(),
+      partners.map { it.toLocalPartner() },
     )
 
     is ClaimFlowStep.ClaimConfirmEmergencyStep -> ClaimFlowDestination.ConfirmEmergency(
@@ -126,17 +135,17 @@ fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
     )
 
     is ClaimFlowStep.ClaimDeflectEmergencyStep -> ClaimFlowDestination.DeflectEmergency(
-      partners.map { it.toLocalPartner() }.toPersistentList(),
+      partners.map { it.toLocalPartner() },
     )
 
     is ClaimFlowStep.ClaimDeflectPestsStep -> ClaimFlowDestination.DeflectPests(
-      partners.map { it.toLocalPartner() }.toPersistentList(),
+      partners.map { it.toLocalPartner() },
     )
 
     is ClaimFlowStep.ClaimFileUploadStep -> ClaimFlowDestination.FileUpload(
       title,
       targetUploadUrl,
-      uploads.map { it.toLocalUpload() }.toPersistentList(),
+      uploads.map { it.toLocalUpload() },
     )
   }
 }
@@ -168,6 +177,34 @@ private fun CheckoutMethodFragment.toCheckoutMethod(): CheckoutMethod {
     }
 
     else -> CheckoutMethod.Unknown
+  }
+}
+
+private fun ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep.Compensation.toCompensation():
+  ClaimFlowDestination.SingleItemCheckout.Compensation {
+  return when (this) {
+    is ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep
+      .FlowClaimSingleItemCheckoutRepairCompensationCompensation,
+    -> {
+      ClaimFlowDestination.SingleItemCheckout.Compensation.Known.RepairCompensation(
+        repairCost = UiMoney.fromMoneyFragment(repairCost),
+        deductible = UiMoney.fromMoneyFragment(deductible),
+        payoutAmount = UiMoney.fromMoneyFragment(payoutAmount),
+      )
+    }
+
+    is ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep
+      .FlowClaimSingleItemCheckoutValueCompensationCompensation,
+    -> {
+      ClaimFlowDestination.SingleItemCheckout.Compensation.Known.ValueCompensation(
+        price = UiMoney.fromMoneyFragment(price),
+        deductible = UiMoney.fromMoneyFragment(deductible),
+        depreciation = UiMoney.fromMoneyFragment(depreciation),
+        payoutAmount = UiMoney.fromMoneyFragment(payoutAmount),
+      )
+    }
+
+    else -> ClaimFlowDestination.SingleItemCheckout.Compensation.Unknown
   }
 }
 

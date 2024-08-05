@@ -47,4 +47,5 @@ public val HedvigIcons.ArrowDown: ImageVector
     return _arrowDown!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _arrowDown: ImageVector? = null

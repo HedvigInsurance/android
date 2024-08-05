@@ -25,7 +25,7 @@ android {
       isDebuggable = true
     }
     val release by getting {
-      signingConfig = debug.signingConfig // uncomment to run release build locally
+      signingConfig = debug.signingConfig
       applicationIdSuffix = ".app"
       isMinifyEnabled = true
       isShrinkResources = true
@@ -43,24 +43,17 @@ dependencies {
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.foundationLayout)
-  implementation(libs.androidx.compose.material3)
-  implementation(libs.androidx.compose.material3.windowSizeClass)
   implementation(libs.androidx.compose.materialIconsExtended)
   implementation(libs.androidx.compose.runtime)
   implementation(libs.androidx.graphicsShapes)
   implementation(libs.coil.coil)
   implementation(libs.datadog.sdk.core)
-  implementation(libs.kotlinx.immutable.collections)
+  implementation(libs.material.components)
+  implementation(libs.timber)
   implementation(libs.zoomable)
-  implementation(projects.audioPlayerUi)
-  implementation(projects.audioPlayerData)
-  implementation(projects.coreDesignSystem)
-  implementation(projects.coreIcons)
-  implementation(projects.coreUi)
+  implementation(projects.composeUi)
+  implementation(projects.designSystemHedvig)
   implementation(projects.loggingAndroid)
-  implementation(projects.memberRemindersPublic)
-  implementation(projects.memberRemindersUi)
-  implementation(projects.notificationPermission)
   implementation(projects.trackingCore)
   implementation(projects.trackingDatadog)
 }

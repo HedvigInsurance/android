@@ -34,14 +34,13 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.dialog.ErrorDialog
 import com.hedvig.android.core.ui.infocard.VectorWarningCard
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.data.Member
 import hedvig.resources.R
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
-import octopus.type.CurrencyCode
 
 @Composable
 internal fun EditCoInsuredAddMissingInfoDestination(
@@ -198,7 +197,7 @@ private fun EditCoInsuredScreen(
             HedvigContainedButton(
               text = stringResource(id = R.string.GENERAL_SAVE_CHANGES_BUTTON),
               onClick = onCommitChanges,
-              enabled = uiState.listState.noCoInsuredHaveMissingInfo(),
+              enabled = true,
               isLoading = uiState.listState.isCommittingUpdate,
               modifier = Modifier.padding(horizontal = 16.dp),
             )
@@ -229,7 +228,7 @@ private fun EditCoInsuredScreenEditablePreview() {
         navigateUp = { },
         uiState = EditCoInsuredState.Loaded(
           listState = EditCoInsuredState.Loaded.CoInsuredListState(
-            originalCoInsured = persistentListOf(
+            originalCoInsured = listOf(
               CoInsured(
                 "Test",
                 "Testersson",
@@ -245,7 +244,7 @@ private fun EditCoInsuredScreenEditablePreview() {
                 hasMissingInfo = true,
               ),
             ),
-            updatedCoInsured = persistentListOf(
+            updatedCoInsured = listOf(
               CoInsured(
                 "Test",
                 "Testersson",
@@ -274,11 +273,11 @@ private fun EditCoInsuredScreenEditablePreview() {
               ssn = "197312331093",
             ),
             priceInfo = EditCoInsuredState.Loaded.PriceInfo(
-              previousPrice = UiMoney(100.0, CurrencyCode.SEK),
-              newPrice = UiMoney(200.0, CurrencyCode.SEK),
+              previousPrice = UiMoney(100.0, UiCurrencyCode.SEK),
+              newPrice = UiMoney(200.0, UiCurrencyCode.SEK),
               validFrom = LocalDate.fromEpochDays(400),
             ),
-            allCoInsured = persistentListOf(),
+            allCoInsured = listOf(),
           ),
           addBottomSheetState = EditCoInsuredState.Loaded.AddBottomSheetState(
             isLoading = false,
@@ -312,7 +311,7 @@ private fun EditCoInsuredScreenNonEditablePreview() {
         navigateUp = { },
         uiState = EditCoInsuredState.Loaded(
           listState = EditCoInsuredState.Loaded.CoInsuredListState(
-            originalCoInsured = persistentListOf(
+            originalCoInsured = listOf(
               CoInsured(
                 "Test",
                 "Testersson",
@@ -333,7 +332,7 @@ private fun EditCoInsuredScreenNonEditablePreview() {
               lastName = "Membersson",
               ssn = "197312331093",
             ),
-            allCoInsured = persistentListOf(),
+            allCoInsured = listOf(),
           ),
           addBottomSheetState = EditCoInsuredState.Loaded.AddBottomSheetState(
             isLoading = false,

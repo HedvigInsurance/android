@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -36,6 +37,7 @@ import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenC
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.clearFocusOnTap
+import com.hedvig.android.core.ui.dialog.HedvigAlertDialog
 import com.hedvig.android.core.ui.dialog.SingleSelectDialog
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.language.Language
@@ -63,6 +65,9 @@ internal fun SettingsDestination(
     onLanguageSelected = { viewModel.emit(SettingsEvent.ChangeLanguage(it)) },
     onThemeSelected = { viewModel.emit(SettingsEvent.ChangeTheme(it)) },
     onTerminateAccountClicked = onNavigateToDeleteAccountFeature,
+    changeSubscriptionPreference = {
+      viewModel.emit(SettingsEvent.ChangeSubscriptionPreference(it))
+    },
   )
 }
 
@@ -71,6 +76,7 @@ private fun SettingsScreen(
   uiState: SettingsUiState,
   notificationPermissionState: NotificationPermissionState,
   navigateUp: () -> Unit,
+  changeSubscriptionPreference: (Boolean) -> Unit,
   openAppSettings: () -> Unit,
   onNotificationInfoDismissed: () -> Unit,
   onLanguageSelected: (Language) -> Unit,
@@ -128,7 +134,20 @@ private fun SettingsScreen(
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         )
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(4.dp))
+        if (uiState.showEmailSubscriptionPreferences) {
+          EmailSubscriptionWithDialog(
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(horizontal = 16.dp),
+            onConfirmUnsubscribeClick = { changeSubscriptionPreference(false) },
+            onSubscribeClick = { changeSubscriptionPreference(true) },
+            isSubscribedToEmails = uiState.isSubscribedToEmails ?: true,
+            enabled = true,
+            hasError = uiState.emailSubscriptionPreferenceError,
+          )
+          Spacer(Modifier.height(16.dp))
+        }
 
         AnimatedVisibility(
           visible = uiState.showNotificationReminder && !notificationPermissionState.status.isGranted,
@@ -154,39 +173,6 @@ private fun SettingsScreen(
         )
         Spacer(Modifier.height(16.dp))
       }
-    }
-  }
-}
-
-@Composable
-@HedvigPreview
-fun PreviewSettingsScreen() {
-  HedvigTheme {
-    Surface {
-      SettingsScreen(
-        uiState = SettingsUiState.Loaded(
-          selectedLanguage = Language.SV_SE,
-          languageOptions = listOf(Language.SV_SE, Language.EN_SE),
-          selectedTheme = Theme.SYSTEM_DEFAULT,
-          showNotificationReminder = true,
-        ),
-        notificationPermissionState = object : NotificationPermissionState {
-          override val showDialog = false
-
-          override fun dismissDialog() {}
-
-          override fun launchPermissionRequest() {}
-
-          override val permission: String = ""
-          override val status: PermissionStatus = PermissionStatus.Granted
-        },
-        navigateUp = {},
-        openAppSettings = {},
-        onNotificationInfoDismissed = {},
-        onLanguageSelected = {},
-        onThemeSelected = {},
-        onTerminateAccountClicked = {},
-      )
     }
   }
 }
@@ -220,6 +206,55 @@ internal fun LanguageWithDialog(
     enabled = enabled,
     modifier = modifier,
   )
+}
+
+@Composable
+internal fun EmailSubscriptionWithDialog(
+  onConfirmUnsubscribeClick: () -> Unit,
+  onSubscribeClick: () -> Unit,
+  isSubscribedToEmails: Boolean,
+  enabled: Boolean,
+  hasError: Boolean,
+  modifier: Modifier = Modifier,
+) {
+  var showLanguagePickerDialog by rememberSaveable { mutableStateOf(false) }
+  if (showLanguagePickerDialog) {
+    HedvigAlertDialog(
+      title = stringResource(R.string.SETTINGS_SCREEN_EMAIL_PREFERENCES),
+      text = stringResource(R.string.SETTINGS_SCREEN_UNSUBSCRIBE_DESCRIPTION),
+      onConfirmClick = onConfirmUnsubscribeClick,
+      onDismissRequest = { showLanguagePickerDialog = false },
+      confirmButtonLabel = stringResource(R.string.SETTINGS_SCREEN_CONFIRM_UNSUBSCRIBE),
+      dismissButtonLabel = stringResource(R.string.general_close_button),
+    )
+  }
+  Column {
+    HedvigBigCard(
+      onClick = {
+        if (isSubscribedToEmails) {
+          showLanguagePickerDialog = true
+        } else {
+          onSubscribeClick()
+        }
+      },
+      hintText = stringResource(id = R.string.SETTINGS_SCREEN_EMAIL_PREFERENCES),
+      inputText = if (isSubscribedToEmails) {
+        stringResource(id = R.string.GENERAL_SUBSCRIBED)
+      } else {
+        stringResource(id = R.string.GENERAL_UNSUBSCRIBED)
+      },
+      enabled = enabled,
+      modifier = modifier,
+    )
+    AnimatedVisibility(visible = hasError) {
+      Text(
+        text = stringResource(id = R.string.something_went_wrong),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.error,
+        modifier = Modifier.padding(horizontal = 32.dp),
+      )
+    }
+  }
 }
 
 @Composable
@@ -285,6 +320,43 @@ private fun Theme.apply() = when (this) {
       AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
     } else {
       AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY)
+    }
+  }
+}
+
+@Composable
+@HedvigPreview
+fun PreviewSettingsScreen() {
+  HedvigTheme {
+    Surface {
+      SettingsScreen(
+        uiState = SettingsUiState.Loaded(
+          selectedLanguage = Language.SV_SE,
+          languageOptions = listOf(Language.SV_SE, Language.EN_SE),
+          selectedTheme = Theme.SYSTEM_DEFAULT,
+          showNotificationReminder = true,
+          isSubscribedToEmails = true,
+          showEmailSubscriptionPreferences = true,
+          emailSubscriptionPreferenceError = true,
+        ),
+        notificationPermissionState = object : NotificationPermissionState {
+          override val showDialog = false
+
+          override fun dismissDialog() {}
+
+          override fun launchPermissionRequest() {}
+
+          override val permission: String = ""
+          override val status: PermissionStatus = PermissionStatus.Granted
+        },
+        navigateUp = {},
+        openAppSettings = {},
+        onNotificationInfoDismissed = {},
+        onLanguageSelected = {},
+        onThemeSelected = {},
+        onTerminateAccountClicked = {},
+        changeSubscriptionPreference = {},
+      )
     }
   }
 }

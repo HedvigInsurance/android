@@ -61,4 +61,5 @@ public val HedvigIcons.Heart: ImageVector
     return _heart!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _heart: ImageVector? = null

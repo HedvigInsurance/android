@@ -7,10 +7,10 @@ import coil.ImageLoader
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.feature.chat.ChatViewModel
 import com.hedvig.android.feature.chat.ui.ChatDestination
+import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
-import com.kiwi.navigationcompose.typed.composable
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -21,7 +21,8 @@ fun NavGraphBuilder.chatGraph(
   openUrl: (String) -> Unit,
   navigator: Navigator,
 ) {
-  composable<AppDestination.Chat>(
+  navdestination<AppDestination.Chat>(
+    AppDestination.Chat,
     deepLinks = listOf(
       navDeepLink { uriPattern = hedvigDeepLinkContainer.chat },
     ),

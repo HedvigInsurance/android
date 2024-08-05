@@ -15,16 +15,20 @@ import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.chat.read.timestamp.FakeChatLastMessageReadRepository
+import com.hedvig.android.data.contract.android.CrossSell
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
+import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorageImpl
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.test.test
+import com.hedvig.android.notification.badge.data.crosssell.card.FakeCrossSellCardNotificationBadgeService
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
-import kotlinx.collections.immutable.persistentListOf
+import com.hedvig.android.ui.emergency.FirstVetSection
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.test.runTest
+import kotlinx.datetime.Instant
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -36,6 +40,9 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       FakeChatLastMessageReadRepository(),
+      SeenImportantMessagesStorageImpl(),
+      { FakeCrossSellCardNotificationBadgeService() },
+      backgroundScope,
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -60,6 +67,9 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       FakeChatLastMessageReadRepository(),
+      SeenImportantMessagesStorageImpl(),
+      { FakeCrossSellCardNotificationBadgeService() },
+      backgroundScope,
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -82,6 +92,9 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       FakeChatLastMessageReadRepository(),
+      SeenImportantMessagesStorageImpl(),
+      { FakeCrossSellCardNotificationBadgeService() },
+      backgroundScope,
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -98,13 +111,16 @@ internal class HomePresenterTest {
                 claimProgressItemsUiState = emptyList(),
                 claimType = "Broken item",
                 insuranceDisplayName = "Home Insurance",
+                submittedDate = Instant.parse("2024-05-01T00:00:00Z"),
               ),
             ),
           ),
-          veryImportantMessages = persistentListOf(),
+          veryImportantMessages = listOf(),
           memberReminders = MemberReminders(),
-          showChatIcon = false,
+          showChatIcon = true,
           showHelpCenter = false,
+          crossSells = listOf(),
+          firstVetSections = listOf(),
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -119,13 +135,16 @@ internal class HomePresenterTest {
                 claimProgressItemsUiState = emptyList(),
                 claimType = "Broken item",
                 insuranceDisplayName = "Home Insurance",
+                submittedDate = Instant.parse("2024-05-01T00:00:00Z"),
               ),
             ),
           ),
-          veryImportantMessages = persistentListOf(),
+          veryImportantMessages = listOf(),
           memberReminders = MemberReminders(),
           isHelpCenterEnabled = false,
-          showChatIcon = false,
+          firstVetAction = null,
+          crossSellsAction = null,
+          chatAction = HomeTopBarAction.ChatAction,
           hasUnseenChatMessages = false,
         ),
       )
@@ -138,6 +157,9 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       FakeChatLastMessageReadRepository(),
+      SeenImportantMessagesStorageImpl(),
+      { FakeCrossSellCardNotificationBadgeService() },
+      backgroundScope,
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -147,11 +169,13 @@ internal class HomePresenterTest {
         HomeData(
           contractStatus = HomeData.ContractStatus.Active,
           claimStatusCardsData = null,
-          veryImportantMessages = persistentListOf(),
+          veryImportantMessages = listOf(),
           memberReminders = MemberReminders(
             enableNotifications = MemberReminder.EnableNotifications(),
           ),
           showChatIcon = false,
+          crossSells = listOf(),
+          firstVetSections = listOf(),
           showHelpCenter = false,
         ).right(),
       )
@@ -160,13 +184,15 @@ internal class HomePresenterTest {
           isReloading = false,
           homeText = HomeText.Active,
           claimStatusCardsData = null,
-          veryImportantMessages = persistentListOf(),
+          veryImportantMessages = listOf(),
           memberReminders = MemberReminders(
             connectPayment = null,
           ),
           isHelpCenterEnabled = false,
-          showChatIcon = false,
           hasUnseenChatMessages = false,
+          chatAction = null,
+          firstVetAction = null,
+          crossSellsAction = null,
         ),
       )
     }
@@ -178,6 +204,9 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       FakeChatLastMessageReadRepository(),
+      SeenImportantMessagesStorageImpl(),
+      { FakeCrossSellCardNotificationBadgeService() },
+      backgroundScope,
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -200,6 +229,9 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       chatLastMessageReadRepository,
+      SeenImportantMessagesStorageImpl(),
+      { FakeCrossSellCardNotificationBadgeService() },
+      backgroundScope,
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -210,21 +242,250 @@ internal class HomePresenterTest {
         HomeData(
           contractStatus = HomeData.ContractStatus.Active,
           claimStatusCardsData = null,
-          veryImportantMessages = persistentListOf(),
+          veryImportantMessages = listOf(),
           memberReminders = MemberReminders(
             enableNotifications = MemberReminder.EnableNotifications(),
           ),
           showChatIcon = false,
           showHelpCenter = false,
+          firstVetSections = listOf(),
+          crossSells = listOf(),
         ).right(),
       )
       assertThat(awaitItem())
-        .isInstanceOf<HomeUiState.Success>().prop(HomeUiState.Success::hasUnseenChatMessages)
+        .isInstanceOf<HomeUiState.Success>()
+        .prop(HomeUiState.Success::hasUnseenChatMessages)
         .isEqualTo(hasNotification)
     }
   }
 
-  private class TestGetHomeDataUseCase() : GetHomeDataUseCase {
+  @Test
+  fun `if firstVet sections and crossSells lists are empty do not show first vet icon and crossSells icon`() = runTest {
+    val getHomeDataUseCase = TestGetHomeDataUseCase()
+    val homePresenter = HomePresenter(
+      { getHomeDataUseCase },
+      FakeChatLastMessageReadRepository(),
+      SeenImportantMessagesStorageImpl(),
+      { FakeCrossSellCardNotificationBadgeService() },
+      backgroundScope,
+    )
+
+    homePresenter.test(HomeUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
+
+      getHomeDataUseCase.responseTurbine.add(
+        HomeData(
+          contractStatus = HomeData.ContractStatus.Active,
+          claimStatusCardsData = null,
+          veryImportantMessages = listOf(),
+          memberReminders = MemberReminders(),
+          showChatIcon = false,
+          crossSells = listOf(),
+          firstVetSections = listOf(),
+          showHelpCenter = false,
+        ).right(),
+      )
+      assertThat(awaitItem()).isEqualTo(
+        HomeUiState.Success(
+          isReloading = false,
+          homeText = HomeText.Active,
+          claimStatusCardsData = null,
+          veryImportantMessages = listOf(),
+          memberReminders = MemberReminders(),
+          isHelpCenterEnabled = false,
+          hasUnseenChatMessages = false,
+          chatAction = null,
+          firstVetAction = null,
+          crossSellsAction = null,
+        ),
+      )
+    }
+  }
+
+  @Test
+  fun `if not empty firstVet sections list state should have first vet action with same firstVetSections`() = runTest {
+    val getHomeDataUseCase = TestGetHomeDataUseCase()
+    val homePresenter = HomePresenter(
+      { getHomeDataUseCase },
+      FakeChatLastMessageReadRepository(),
+      SeenImportantMessagesStorageImpl(),
+      { FakeCrossSellCardNotificationBadgeService() },
+      backgroundScope,
+    )
+    val firstVet = FirstVetSection(
+      buttonTitle = "ButtonTitle",
+      description = "description",
+      title = "title",
+      url = null,
+    )
+    homePresenter.test(HomeUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
+
+      getHomeDataUseCase.responseTurbine.add(
+        HomeData(
+          contractStatus = HomeData.ContractStatus.Active,
+          claimStatusCardsData = null,
+          veryImportantMessages = listOf(),
+          memberReminders = MemberReminders(),
+          showChatIcon = false,
+          crossSells = listOf(),
+          firstVetSections = listOf(
+            firstVet,
+          ),
+          showHelpCenter = false,
+        ).right(),
+      )
+      assertThat(awaitItem()).isEqualTo(
+        HomeUiState.Success(
+          isReloading = false,
+          homeText = HomeText.Active,
+          claimStatusCardsData = null,
+          veryImportantMessages = listOf(),
+          memberReminders = MemberReminders(),
+          isHelpCenterEnabled = false,
+          hasUnseenChatMessages = false,
+          chatAction = null,
+          firstVetAction = HomeTopBarAction.FirstVetAction(listOf(firstVet)),
+          crossSellsAction = null,
+        ),
+      )
+    }
+  }
+
+  @Test
+  fun `if not empty crossSells list show crossSells icon`() = runTest {
+    val getHomeDataUseCase = TestGetHomeDataUseCase()
+    val homePresenter = HomePresenter(
+      { getHomeDataUseCase },
+      FakeChatLastMessageReadRepository(),
+      SeenImportantMessagesStorageImpl(),
+      { FakeCrossSellCardNotificationBadgeService() },
+      backgroundScope,
+    )
+    val crossSell = CrossSell(
+      id = "id",
+      title = "title",
+      storeUrl = "url",
+      subtitle = "subt",
+      type = CrossSell.CrossSellType.HOME,
+    )
+    homePresenter.test(HomeUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
+
+      getHomeDataUseCase.responseTurbine.add(
+        HomeData(
+          contractStatus = HomeData.ContractStatus.Active,
+          claimStatusCardsData = null,
+          veryImportantMessages = listOf(),
+          memberReminders = MemberReminders(),
+          showChatIcon = false,
+          crossSells = listOf(crossSell),
+          firstVetSections = listOf(),
+          showHelpCenter = false,
+        ).right(),
+      )
+      assertThat(awaitItem()).isEqualTo(
+        HomeUiState.Success(
+          isReloading = false,
+          homeText = HomeText.Active,
+          claimStatusCardsData = null,
+          veryImportantMessages = listOf(),
+          memberReminders = MemberReminders(),
+          isHelpCenterEnabled = false,
+          hasUnseenChatMessages = false,
+          chatAction = null,
+          firstVetAction = null,
+          crossSellsAction = HomeTopBarAction.CrossSellsAction(listOf(crossSell)),
+        ),
+      )
+    }
+  }
+
+  @Test
+  fun `if should show chat show chat icon`() = runTest {
+    val getHomeDataUseCase = TestGetHomeDataUseCase()
+    val homePresenter = HomePresenter(
+      { getHomeDataUseCase },
+      FakeChatLastMessageReadRepository(),
+      SeenImportantMessagesStorageImpl(),
+      { FakeCrossSellCardNotificationBadgeService() },
+      backgroundScope,
+    )
+    homePresenter.test(HomeUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
+
+      getHomeDataUseCase.responseTurbine.add(
+        HomeData(
+          contractStatus = HomeData.ContractStatus.Active,
+          claimStatusCardsData = null,
+          veryImportantMessages = listOf(),
+          memberReminders = MemberReminders(),
+          showChatIcon = true,
+          crossSells = listOf(),
+          firstVetSections = listOf(),
+          showHelpCenter = false,
+        ).right(),
+      )
+      assertThat(awaitItem()).isEqualTo(
+        HomeUiState.Success(
+          isReloading = false,
+          homeText = HomeText.Active,
+          claimStatusCardsData = null,
+          veryImportantMessages = listOf(),
+          memberReminders = MemberReminders(),
+          isHelpCenterEnabled = false,
+          hasUnseenChatMessages = false,
+          chatAction = HomeTopBarAction.ChatAction,
+          firstVetAction = null,
+          crossSellsAction = null,
+        ),
+      )
+    }
+  }
+
+  @Test
+  fun `if shouldn't show chat do not show chat icon`() = runTest {
+    val getHomeDataUseCase = TestGetHomeDataUseCase()
+    val homePresenter = HomePresenter(
+      { getHomeDataUseCase },
+      FakeChatLastMessageReadRepository(),
+      SeenImportantMessagesStorageImpl(),
+      { FakeCrossSellCardNotificationBadgeService() },
+      backgroundScope,
+    )
+    homePresenter.test(HomeUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
+
+      getHomeDataUseCase.responseTurbine.add(
+        HomeData(
+          contractStatus = HomeData.ContractStatus.Active,
+          claimStatusCardsData = null,
+          veryImportantMessages = listOf(),
+          memberReminders = MemberReminders(),
+          showChatIcon = false,
+          crossSells = listOf(),
+          firstVetSections = listOf(),
+          showHelpCenter = false,
+        ).right(),
+      )
+      assertThat(awaitItem()).isEqualTo(
+        HomeUiState.Success(
+          isReloading = false,
+          homeText = HomeText.Active,
+          claimStatusCardsData = null,
+          veryImportantMessages = listOf(),
+          memberReminders = MemberReminders(),
+          isHelpCenterEnabled = false,
+          hasUnseenChatMessages = false,
+          chatAction = null,
+          firstVetAction = null,
+          crossSellsAction = null,
+        ),
+      )
+    }
+  }
+
+  private class TestGetHomeDataUseCase : GetHomeDataUseCase {
     val forceNetworkFetchTurbine = Turbine<Boolean>()
     val responseTurbine = Turbine<Either<ErrorMessage, HomeData>>()
 
@@ -237,9 +498,11 @@ internal class HomePresenterTest {
   private val someIrrelevantHomeDataInstance: HomeData = HomeData(
     contractStatus = HomeData.ContractStatus.Active,
     claimStatusCardsData = null,
-    veryImportantMessages = persistentListOf(),
+    veryImportantMessages = listOf(),
     memberReminders = MemberReminders(),
     showChatIcon = false,
     showHelpCenter = false,
+    firstVetSections = listOf(),
+    crossSells = listOf(),
   )
 }

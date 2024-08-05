@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.BottomSheetDefaults
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -41,12 +40,10 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.core.content.getSystemService
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.designsystem.component.bottomsheet.HedvigInfoBottomSheet
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.button.HedvigSecondaryContainedButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
-import com.hedvig.android.core.designsystem.material3.containedButtonContainer
-import com.hedvig.android.core.designsystem.material3.onContainedButtonContainer
 import com.hedvig.android.core.designsystem.material3.onSecondaryContainedButtonContainer
 import com.hedvig.android.core.designsystem.material3.onTypeContainer
 import com.hedvig.android.core.designsystem.material3.secondaryContainedButtonContainer
@@ -60,16 +57,16 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.InfoFilled
 import com.hedvig.android.core.icons.hedvig.small.hedvig.Campaign
+import com.hedvig.android.core.ui.infocard.InfoCardTextButton
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
-import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.payments.data.Discount
 import com.hedvig.android.feature.payments.overview.data.ForeverInformation
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
-import octopus.type.CurrencyCode
 
 @Composable
 internal fun DiscountsDestination(
@@ -261,13 +258,8 @@ private fun ForeverSection(
         contentColor = MaterialTheme.colorScheme.onTypeContainer,
       ),
       underTextContent = {
-        HedvigContainedSmallButton(
+        InfoCardTextButton(
           modifier = Modifier.fillMaxWidth(),
-          colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.containedButtonContainer,
-            contentColor = MaterialTheme.colorScheme.onContainedButtonContainer,
-          ),
-          textStyle = MaterialTheme.typography.bodyMedium,
           text = stringResource(R.string.important_message_read_more),
           onClick = navigateToForever,
         )
@@ -279,7 +271,9 @@ private fun ForeverSection(
 @Composable
 @HedvigPreview
 private fun PaymentDetailsScreenPreview(
-  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) hasForeverAndDiscounts: Boolean,
+  @PreviewParameter(
+    com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider::class,
+  ) hasForeverAndDiscounts: Boolean,
 ) {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
@@ -292,7 +286,7 @@ private fun PaymentDetailsScreenPreview(
                 "display name of referral",
                 "description",
                 Discount.ExpiredState.NotExpired,
-                UiMoney(10.0, CurrencyCode.SEK),
+                UiMoney(10.0, UiCurrencyCode.SEK),
                 true,
               ),
               Discount(
@@ -300,7 +294,7 @@ private fun PaymentDetailsScreenPreview(
                 "display name of non referral",
                 "description",
                 Discount.ExpiredState.NotExpired,
-                UiMoney(10.0, CurrencyCode.SEK),
+                UiMoney(10.0, UiCurrencyCode.SEK),
                 false,
               ),
               Discount(
@@ -308,7 +302,7 @@ private fun PaymentDetailsScreenPreview(
                 "display name of expiring soon",
                 "description",
                 Discount.ExpiredState.ExpiringInTheFuture(LocalDate(2124, 12, 14)),
-                UiMoney(10.0, CurrencyCode.SEK),
+                UiMoney(10.0, UiCurrencyCode.SEK),
                 false,
               ),
               Discount(
@@ -316,7 +310,7 @@ private fun PaymentDetailsScreenPreview(
                 "display name of expired",
                 "description",
                 Discount.ExpiredState.AlreadyExpired(LocalDate(2014, 12, 14)),
-                UiMoney(10.0, CurrencyCode.SEK),
+                UiMoney(10.0, UiCurrencyCode.SEK),
                 false,
               ),
             )
@@ -325,8 +319,8 @@ private fun PaymentDetailsScreenPreview(
           },
           foreverInformation = ForeverInformation(
             "MYDISCOUNT1",
-            UiMoney(23.0, CurrencyCode.SEK),
-            UiMoney(10.0, CurrencyCode.SEK),
+            UiMoney(23.0, UiCurrencyCode.SEK),
+            UiMoney(10.0, UiCurrencyCode.SEK),
           ).takeIf { hasForeverAndDiscounts },
         ),
         navigateUp = {},

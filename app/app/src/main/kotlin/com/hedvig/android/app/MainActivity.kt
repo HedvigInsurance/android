@@ -172,7 +172,7 @@ class MainActivity : AppCompatActivity() {
   companion object {
     fun newInstance(context: Context, withoutHistory: Boolean = false): Intent =
       Intent(context, MainActivity::class.java).apply {
-        logcat(LogPriority.INFO) { "LoggedInActivity.newInstance was called. withoutHistory:$withoutHistory" }
+        logcat(LogPriority.INFO) { "MainActivity.newInstance was called. withoutHistory:$withoutHistory" }
         if (withoutHistory) {
           addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
           addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)

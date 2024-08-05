@@ -11,6 +11,7 @@ sentry.properties
 *.li
 .classpath
 .project
+.kotlin
 mapping.txt
 
 # graphql

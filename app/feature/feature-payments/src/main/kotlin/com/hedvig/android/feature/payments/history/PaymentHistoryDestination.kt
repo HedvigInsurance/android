@@ -26,17 +26,15 @@ import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenC
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
-import com.hedvig.android.core.ui.preview.TripleBooleanCollectionPreviewParameterProvider
-import com.hedvig.android.core.ui.preview.TripleCase
 import com.hedvig.android.core.ui.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.payments.data.MemberCharge
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
-import octopus.type.CurrencyCode
 
 @Composable
 internal fun PaymentHistoryDestination(
@@ -68,38 +66,36 @@ private fun PaymentHistoryScreen(
         HedvigErrorSection(onButtonClick = reload, modifier = Modifier.weight(1f))
       }
     }
+
     PaymentHistoryUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
     is PaymentHistoryUiState.Success -> {
       val updatedOnChargeClicked by rememberUpdatedState(onChargeClicked)
-      val (
-        paymentHistory: PaymentHistory, onChargeClickedAfterTransform: (
-          String,
-        ) -> Unit,
-      ) = remember(uiState.paymentHistory) {
-        if (uiState.paymentHistory.isEmpty()) {
-          PaymentHistory.NoHistoryData to { _ -> }
-        } else {
-          PaymentHistory.PastCharges(
-            chargesInYear = uiState.paymentHistory.sortedBy { it.dueDate }.groupBy { it.dueDate.year }.map {
-                (year, charges) ->
-              PaymentHistory.PastCharges.YearCharges(
-                year = year,
-                charge = charges.map { charge ->
-                  PaymentHistory.PastCharges.YearCharges.Charge(
-                    id = charge.id,
-                    dueDate = charge.dueDate,
-                    netAmount = charge.netAmount,
-                    hasFailedCharge = charge.status == MemberCharge.MemberChargeStatus.FAILED,
+      val (paymentHistory: PaymentHistory, onChargeClickedAfterTransform: (String) -> Unit) =
+        remember(uiState.paymentHistory) {
+          if (uiState.paymentHistory.isEmpty()) {
+            PaymentHistory.NoHistoryData to { _ -> }
+          } else {
+            PaymentHistory.PastCharges(
+              chargesInYear = uiState.paymentHistory.sortedBy { it.dueDate }.groupBy { it.dueDate.year }
+                .map { (year, charges) ->
+                  PaymentHistory.PastCharges.YearCharges(
+                    year = year,
+                    charge = charges.map { charge ->
+                      PaymentHistory.PastCharges.YearCharges.Charge(
+                        id = charge.id,
+                        dueDate = charge.dueDate,
+                        netAmount = charge.netAmount,
+                        hasFailedCharge = charge.status == MemberCharge.MemberChargeStatus.FAILED,
+                      )
+                    },
                   )
                 },
-              )
-            },
-            showInfoAboutOlderCharges = uiState.paymentHistory.size > 11,
-          ) to { chargeId: String ->
-            updatedOnChargeClicked(uiState.paymentHistory.first { it.id == chargeId }.id)
+              showInfoAboutOlderCharges = uiState.paymentHistory.size > 11,
+            ) to { chargeId: String ->
+              updatedOnChargeClicked(uiState.paymentHistory.first { it.id == chargeId }.id)
+            }
           }
         }
-      }
       PaymentHistorySuccessScreen(
         paymentHistory = paymentHistory,
         onChargeClicked = onChargeClickedAfterTransform,
@@ -209,7 +205,9 @@ private fun PaymentHistory.PastCharges.YearCharges.Charge.color(): Color {
 @Composable
 @HedvigPreview
 internal fun PaymentHistoryScreenPreview(
-  @PreviewParameter(TripleBooleanCollectionPreviewParameterProvider::class) cases: TripleCase,
+  @PreviewParameter(
+    com.hedvig.android.compose.ui.preview.TripleBooleanCollectionPreviewParameterProvider::class,
+  ) cases: com.hedvig.android.compose.ui.preview.TripleCase,
 ) {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
@@ -218,15 +216,15 @@ internal fun PaymentHistoryScreenPreview(
           PaymentHistory.PastCharges.YearCharges.Charge(
             id = "$index",
             dueDate = LocalDate(2021, 7, 1 + index),
-            netAmount = UiMoney(index * 100.0, CurrencyCode.SEK),
+            netAmount = UiMoney(index * 100.0, UiCurrencyCode.SEK),
             hasFailedCharge = index % 2 == 0,
           )
         }
       }
       PaymentHistorySuccessScreen(
         paymentHistory = when (cases) {
-          TripleCase.FIRST -> PaymentHistory.NoHistoryData
-          TripleCase.SECOND -> PaymentHistory.PastCharges(
+          com.hedvig.android.compose.ui.preview.TripleCase.FIRST -> PaymentHistory.NoHistoryData
+          com.hedvig.android.compose.ui.preview.TripleCase.SECOND -> PaymentHistory.PastCharges(
             listOf(
               PaymentHistory.PastCharges.YearCharges(
                 year = 2021,
@@ -236,7 +234,7 @@ internal fun PaymentHistoryScreenPreview(
             false,
           )
 
-          TripleCase.THIRD -> PaymentHistory.PastCharges(
+          com.hedvig.android.compose.ui.preview.TripleCase.THIRD -> PaymentHistory.PastCharges(
             List(3) {
               PaymentHistory.PastCharges.YearCharges(
                 year = 2021 + it,

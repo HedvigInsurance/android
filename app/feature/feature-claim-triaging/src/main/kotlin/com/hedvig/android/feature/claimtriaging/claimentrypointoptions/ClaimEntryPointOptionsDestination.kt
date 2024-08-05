@@ -38,7 +38,6 @@ import com.hedvig.android.data.claimtriaging.EntryPointOption
 import com.hedvig.android.data.claimtriaging.EntryPointOptionId
 import com.hedvig.android.feature.claimtriaging.OptionChipsFlowRow
 import hedvig.resources.R
-import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 internal fun ClaimEntryPointOptionsDestination(
@@ -151,7 +150,7 @@ private fun PreviewClaimEntryPointOptionsScreen() {
         List(12) {
           val displayName = buildString { repeat((4..14).random()) { append(('a'..'z').random()) } }
           EntryPointOption(EntryPointOptionId(it.toString()), displayName)
-        }.toImmutableList()
+        }
       }
       ClaimEntryPointOptionsScreen(
         uiState = ClaimEntryPointOptionsUiState(

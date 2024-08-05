@@ -71,4 +71,5 @@ public val HedvigIcons.Basketball: ImageVector
     return _basketball!!
   }
 
+@Suppress("ktlint:standard:backing-property-naming")
 private var _basketball: ImageVector? = null

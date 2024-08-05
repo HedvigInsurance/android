@@ -68,7 +68,7 @@ class GetMemberRemindersUseCaseTest {
     getMemberRemindersUseCase.invoke().test {
       expectNoEvents()
       enableNotificationsReminderManager.showNotification.add(true)
-      getConnectPaymentReminderUseCase.turbine.add(ShowConnectPaymentReminder.right())
+      getConnectPaymentReminderUseCase.turbine.add(PaymentReminder.ShowConnectPaymentReminder.right())
       getUpcomingRenewalRemindersUseCase.turbine.add(
         nonEmptyListOf(UpcomingRenewal("", LocalDate.parse("2023-01-01"), "", testId)).right(),
       )
@@ -91,9 +91,9 @@ class GetMemberRemindersUseCaseTest {
   }
 
   class TestGetConnectPaymentReminderUseCase : GetConnectPaymentReminderUseCase {
-    val turbine = Turbine<Either<ConnectPaymentReminderError, ShowConnectPaymentReminder>>()
+    val turbine = Turbine<Either<ConnectPaymentReminderError, PaymentReminder.ShowConnectPaymentReminder>>()
 
-    override suspend fun invoke(): Either<ConnectPaymentReminderError, ShowConnectPaymentReminder> {
+    override suspend fun invoke(): Either<ConnectPaymentReminderError, PaymentReminder.ShowConnectPaymentReminder> {
       return turbine.awaitItem()
     }
   }

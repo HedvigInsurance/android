@@ -3,7 +3,7 @@ package com.hedvig.android.data.claimflow.di
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import arrow.retrofit.adapter.either.EitherCallAdapterFactory
-import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.core.appreview.SelfServiceCompletedEventManager
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants

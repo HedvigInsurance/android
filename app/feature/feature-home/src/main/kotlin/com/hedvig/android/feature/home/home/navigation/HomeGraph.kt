@@ -4,18 +4,21 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
+import com.hedvig.android.feature.home.home.ui.FirstVetDestination
 import com.hedvig.android.feature.home.home.ui.HomeDestination
 import com.hedvig.android.feature.home.home.ui.HomeViewModel
+import com.hedvig.android.navigation.compose.navdestination
+import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import com.kiwi.navigationcompose.typed.composable
-import com.kiwi.navigationcompose.typed.createRoutePattern
-import com.kiwi.navigationcompose.typed.navigation
+import com.hedvig.android.navigation.core.Navigator
 import org.koin.androidx.compose.koinViewModel
 
 fun NavGraphBuilder.homeGraph(
   nestedGraphs: NavGraphBuilder.() -> Unit,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
-  onStartChat: (NavBackStackEntry) -> Unit,
+  navigator: Navigator,
+  onNavigateToInbox: (NavBackStackEntry) -> Unit,
+  onNavigateToNewConversation: (NavBackStackEntry) -> Unit,
   onStartClaim: (NavBackStackEntry) -> Unit,
   navigateToClaimDetails: (NavBackStackEntry, claimId: String) -> Unit,
   navigateToPayinScreen: () -> Unit,
@@ -24,10 +27,10 @@ fun NavGraphBuilder.homeGraph(
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
 ) {
-  navigation<HomeDestination.Graph>(
-    startDestination = createRoutePattern<HomeDestination.Home>(),
+  navgraph<HomeDestination.Graph>(
+    startDestination = HomeDestination.Home::class,
   ) {
-    composable<HomeDestination.Home>(
+    navdestination<HomeDestination.Home>(
       deepLinks = listOf(
         navDeepLink { uriPattern = hedvigDeepLinkContainer.home },
       ),
@@ -37,7 +40,8 @@ fun NavGraphBuilder.homeGraph(
       val viewModel: HomeViewModel = koinViewModel()
       HomeDestination(
         viewModel = viewModel,
-        onStartChat = { onStartChat(backStackEntry) },
+        onNavigateToInbox = { onNavigateToInbox(backStackEntry) },
+        onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry) },
         onClaimDetailCardClicked = { claimId: String ->
           navigateToClaimDetails(backStackEntry, claimId)
         },
@@ -47,6 +51,20 @@ fun NavGraphBuilder.homeGraph(
         navigateToHelpCenter = { navigateToHelpCenter(backStackEntry) },
         openUrl = openUrl,
         openAppSettings = openAppSettings,
+        navigateToFirstVet = { sections ->
+          with(navigator) {
+            backStackEntry.navigate(HomeDestination.FirstVet(sections))
+          }
+        },
+      )
+    }
+    navdestination<HomeDestination.FirstVet>(
+      HomeDestination.FirstVet,
+    ) {
+      FirstVetDestination(
+        sections,
+        navigateUp = navigator::navigateUp,
+        navigateBack = navigator::popBackStack,
       )
     }
     nestedGraphs()

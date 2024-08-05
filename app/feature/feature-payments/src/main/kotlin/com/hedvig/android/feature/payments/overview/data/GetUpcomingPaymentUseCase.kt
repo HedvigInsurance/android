@@ -3,12 +3,13 @@ package com.hedvig.android.feature.payments.overview.data
 import arrow.core.Either
 import arrow.core.raise.either
 import arrow.core.right
-import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.cache.normalized.FetchPolicy
-import com.apollographql.apollo3.cache.normalized.fetchPolicy
+import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.cache.normalized.FetchPolicy
+import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.MemberChargeShortInfo
@@ -23,7 +24,6 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import octopus.UpcomingPaymentQuery
 import octopus.fragment.MemberChargeFragment
-import octopus.type.CurrencyCode
 import octopus.type.MemberChargeStatus
 import octopus.type.MemberPaymentConnectionStatus
 
@@ -69,8 +69,8 @@ internal data class GetUpcomingPaymentUseCaseImpl(
 }
 
 private fun MemberChargeFragment.toMemberChargeShortInfo() = MemberChargeShortInfo(
-  id = id ?: "",
-  grossAmount = UiMoney.fromMoneyFragment(gross),
+  id = id,
+  netAmount = UiMoney.fromMoneyFragment(net),
   dueDate = date,
   failedCharge = toFailedCharge(),
   status = when (status) {
@@ -88,7 +88,7 @@ internal class GetUpcomingPaymentUseCaseDemo(
   override suspend fun invoke(): Either<ErrorMessage, PaymentOverview> {
     return PaymentOverview(
       MemberChargeShortInfo(
-        grossAmount = UiMoney(100.0, CurrencyCode.SEK),
+        netAmount = UiMoney(100.0, UiCurrencyCode.SEK),
         id = "id",
         status = MemberCharge.MemberChargeStatus.SUCCESS,
         dueDate = (clock.now() + 10.days).toLocalDateTime(TimeZone.UTC).date,
