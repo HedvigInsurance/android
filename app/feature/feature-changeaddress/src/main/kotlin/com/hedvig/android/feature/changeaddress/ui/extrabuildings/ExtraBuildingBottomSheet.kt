@@ -24,6 +24,7 @@ import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.feature.changeaddress.data.ExtraBuilding
 import com.hedvig.android.feature.changeaddress.data.ExtraBuildingType
+import com.hedvig.android.feature.changeaddress.data.ExtraBuildingType.CARPORT
 import com.hedvig.android.feature.changeaddress.ui.ChangeAddressSwitch
 import com.hedvig.android.feature.changeaddress.ui.InputTextField
 import hedvig.resources.R
@@ -94,7 +95,7 @@ internal fun ExtraBuildingBottomSheet(
           if (isInputValid(sizeInput, selectedType)) {
             val newExtraBuilding = ExtraBuilding(
               size = sizeInput?.toIntOrNull() ?: 0,
-              type = selectedType ?: ExtraBuildingType.CARPORT,
+              type = selectedType ?: CARPORT,
               hasWaterConnected = hasWaterConnected,
             )
             onSave(newExtraBuilding)
@@ -120,7 +121,7 @@ private fun PreviewExtraBuildingBottomSheet() {
   HedvigTheme {
     Surface {
       ExtraBuildingBottomSheet(
-        extraBuildingTypes = listOf(ExtraBuildingType.BARN, ExtraBuildingType.CARPORT),
+        extraBuildingTypes = listOf(ExtraBuildingType.BARN, CARPORT),
         onDismiss = {},
         onSave = {},
         isVisible = true,

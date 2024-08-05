@@ -7,6 +7,7 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
@@ -30,8 +31,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -59,6 +63,13 @@ fun HedvigBottomSheet(
   cancelable: Boolean = true,
   content: @Composable ColumnScope.() -> Unit,
 ) {
+  val scrollState = rememberScrollState()
+  var scrollDown by remember { mutableStateOf(false) }
+  LaunchedEffect(scrollDown) {
+    if (scrollDown) {
+      scrollState.animateScrollTo(scrollState.maxValue)
+    }
+  }
   val isImeVisible = WindowInsets.isImeVisible
   val defaultPadding = if (isImeVisible) {
     WindowInsets.ime.asPaddingValues()
@@ -67,7 +78,7 @@ fun HedvigBottomSheet(
       .only(WindowInsetsSides.Bottom + WindowInsetsSides.Top).asPaddingValues()
   }
   val finalSheetPadding = sheetPadding ?: defaultPadding
-  val scrollState = rememberScrollState()
+
   ModalSheet(
     visible = isVisible,
     onVisibleChange = onVisibleChange,
@@ -97,8 +108,10 @@ fun HedvigBottomSheet(
         )
         Spacer(modifier = Modifier.height(32.dp))
       }
-      if (scrollState.canScrollForward) {
-        HintArrowDown()
+      if (scrollState.canScrollForward && !scrollDown) {
+        HintArrowDown {
+          scrollDown = true
+        }
       }
     }
   }
@@ -119,7 +132,7 @@ private fun ColumnScope.LittleUpperChip() {
 }
 
 @Composable
-private fun BoxScope.HintArrowDown() {
+private fun BoxScope.HintArrowDown(onClick: () -> Unit) {
   val infiniteTransition = rememberInfiniteTransition(label = "arrowDownAlpha")
   val arrowAlpha by infiniteTransition.animateFloat(
     initialValue = 1f,
@@ -137,7 +150,7 @@ private fun BoxScope.HintArrowDown() {
     Icon(
       HedvigIcons.ArrowDown,
       null,
-      Modifier.alpha(arrowAlpha),
+      Modifier.alpha(arrowAlpha).clickable { onClick() },
     )
   }
 }
