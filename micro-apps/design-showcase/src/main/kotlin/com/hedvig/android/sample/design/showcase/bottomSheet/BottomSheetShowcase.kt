@@ -3,10 +3,15 @@ package com.hedvig.android.sample.design.showcase.bottomSheet
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,7 +43,12 @@ fun ShowcaseBottomSheet() {
       BottomSheetWithList(isBottomSheetWithListVisible.value) { isBottomSheetWithListVisible.value = it }
       BottomSheetWithEditText(isBottomSheetWithEditTextVisible.value) { isBottomSheetWithEditTextVisible.value = it }
       BottomSheetWithLongList(isBottomSheetWithLongListVisible.value) { isBottomSheetWithLongListVisible.value = it }
-      Column(horizontalAlignment = Alignment.CenterHorizontally) {
+      Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+          .padding(WindowInsets.safeDrawing.asPaddingValues())
+          .verticalScroll(rememberScrollState()),
+      ) {
         Spacer(Modifier.height(64.dp))
         HedvigText(
           "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore uis aute.",
