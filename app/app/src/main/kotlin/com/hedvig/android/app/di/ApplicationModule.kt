@@ -22,6 +22,7 @@ import com.hedvig.android.apollo.auth.listeners.di.languageAuthListenersModule
 import com.hedvig.android.apollo.di.networkCacheManagerModule
 import com.hedvig.android.app.apollo.DeviceIdInterceptor
 import com.hedvig.android.app.apollo.LoggingInterceptor
+import com.hedvig.android.app.apollo.LogoutOnUnauthenticatedInterceptor
 import com.hedvig.android.app.notification.senders.ChatNotificationSender
 import com.hedvig.android.app.notification.senders.CrossSellNotificationSender
 import com.hedvig.android.app.notification.senders.GenericNotificationSender
@@ -140,6 +141,7 @@ private val networkModule = module {
       .okHttpClient(get<OkHttpClient>())
       .normalizedCache(get<NormalizedCacheFactory>())
       .addInterceptor(LoggingInterceptor())
+      .addInterceptor(LogoutOnUnauthenticatedInterceptor(get()))
   }
   single<ApolloClient> {
     get<ApolloClient.Builder>()

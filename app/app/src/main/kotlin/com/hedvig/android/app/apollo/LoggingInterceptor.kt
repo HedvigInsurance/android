@@ -9,6 +9,7 @@ import com.apollographql.apollo.exception.CacheMissException
 import com.apollographql.apollo.interceptor.ApolloInterceptor
 import com.apollographql.apollo.interceptor.ApolloInterceptorChain
 import com.hedvig.android.app.apollo.GraphqlError.Extensions.ErrorType
+import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.tracking.ErrorSource
 import com.hedvig.android.core.tracking.logError
 import com.hedvig.android.logger.LogPriority
@@ -57,6 +58,20 @@ internal class LoggingInterceptor : ApolloInterceptor {
       source = ErrorSource.NETWORK,
       attributes = errorAttributes,
     )
+  }
+}
+
+internal class LogoutOnUnauthenticatedInterceptor(
+  private val authTokenService: AuthTokenService,
+) : ApolloInterceptor {
+  override fun <D : Data> intercept(request: ApolloRequest<D>, chain: ApolloInterceptorChain): Flow<ApolloResponse<D>> {
+    return chain.proceed(request).onEach { response ->
+      val errors = response.errors.orEmpty().map { it.toGraphqlError() }
+      val isUnauthenticated = errors.isUnathenticated()
+      if (isUnauthenticated) {
+        authTokenService.logoutAndInvalidateTokens()
+      }
+    }
   }
 }
 
