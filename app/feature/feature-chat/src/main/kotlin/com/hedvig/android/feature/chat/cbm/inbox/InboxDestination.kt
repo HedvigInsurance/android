@@ -46,8 +46,9 @@ import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.feature.chat.cbm.model.InboxConversation
 import com.hedvig.android.feature.chat.cbm.model.InboxConversation.Header
-import com.hedvig.android.feature.chat.cbm.model.InboxConversation.Header.Conversation
+import com.hedvig.android.feature.chat.cbm.model.InboxConversation.Header.ClaimConversation
 import com.hedvig.android.feature.chat.cbm.model.InboxConversation.Header.Legacy
+import com.hedvig.android.feature.chat.cbm.model.InboxConversation.Header.ServiceConversation
 import com.hedvig.android.feature.chat.cbm.model.InboxConversation.LatestMessage.File
 import com.hedvig.android.feature.chat.cbm.model.InboxConversation.LatestMessage.Text
 import com.hedvig.android.feature.chat.cbm.model.InboxConversation.LatestMessage.Unknown
@@ -169,8 +170,9 @@ private fun ConversationCard(
         {
           Text(
             text = when (val header = conversation.header) {
-              is Conversation -> header.title
               Legacy -> stringResource(R.string.CHAT_CONVERSATION_HISTORY_TITLE)
+              is ClaimConversation -> stringResource(R.string.home_claim_card_pill_claim)
+              ServiceConversation -> stringResource(R.string.CHAT_CONVERSATION_QUESTION_TITLE)
             },
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.wrapContentSize(Alignment.TopStart),
@@ -203,9 +205,14 @@ private fun ConversationCard(
         },
         spaceBetween = 8.dp,
       )
-      if (conversation.header is Conversation && conversation.header.subtitle != null) {
+      val subtitle = when (val header = conversation.header) {
+        Legacy -> null
+        is ClaimConversation -> header.claimType
+        ServiceConversation -> null
+      }
+      if (subtitle != null) {
         Text(
-          text = conversation.header.subtitle,
+          text = subtitle,
           style = MaterialTheme.typography.bodyLarge.copy(color = HedvigTheme.colorScheme.textSecondary),
           modifier = Modifier.wrapContentSize(Alignment.TopStart),
         )
@@ -281,10 +288,7 @@ private fun ConversationCardPreview(
 
 private val mockInboxConversation1 = InboxConversation(
   conversationId = "1",
-  header = Header.Conversation(
-    title = "Claim",
-    subtitle = "Broken phone",
-  ),
+  header = Header.ClaimConversation("claimType"),
   latestMessage = InboxConversation.LatestMessage.Text(
     "Please tell as more about how the phone broke.",
     Sender.HEDVIG,
@@ -296,10 +300,7 @@ private val mockInboxConversation1 = InboxConversation(
 
 private val mockInboxConversation2 = InboxConversation(
   conversationId = "2",
-  header = Header.Conversation(
-    title = "Question",
-    subtitle = "Termination",
-  ),
+  header = Header.ClaimConversation("claimType"),
   latestMessage = InboxConversation.LatestMessage.File(Sender.MEMBER, Clock.System.now()),
   hasNewMessages = false,
   createdAt = Clock.System.now(),

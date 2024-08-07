@@ -279,7 +279,12 @@ internal sealed interface CbmChatUiState {
       is Info -> {
         when {
           backendConversationInfo.isLegacy -> TopAppBarText.Legacy
-          else -> TopAppBarText.Text(backendConversationInfo.title, backendConversationInfo.createdAt)
+          backendConversationInfo.claimInfo != null -> TopAppBarText.ClaimConversation(
+            backendConversationInfo.claimInfo.claimType,
+            backendConversationInfo.createdAt,
+          )
+
+          else -> TopAppBarText.ServiceConversation(backendConversationInfo.createdAt)
         }
       }
     }
@@ -294,10 +299,9 @@ internal sealed interface CbmChatUiState {
 
       data object Legacy : TopAppBarText
 
-      data class Text(
-        val title: String,
-        val submittedAt: Instant?,
-      ) : TopAppBarText
+      data class ClaimConversation(val claimType: String?, val createdAt: Instant) : TopAppBarText
+
+      data class ServiceConversation(val createdAt: Instant) : TopAppBarText
     }
   }
 }
