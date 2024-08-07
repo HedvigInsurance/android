@@ -1,6 +1,8 @@
 fragment ConversationInfo on Conversation {
   id
-  title
   createdAt
   isLegacy
+  claim {
+    claimType
+  }
 }

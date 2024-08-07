@@ -3,7 +3,9 @@ package com.hedvig.android.feature.help.center.model
 import androidx.annotation.StringRes
 import com.hedvig.android.navigation.core.AppDestination
 import hedvig.resources.R
+import kotlinx.serialization.Serializable
 
+@Serializable
 internal enum class Question(
   @StringRes val titleRes: Int,
   @StringRes val questionRes: Int,
