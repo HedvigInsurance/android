@@ -48,6 +48,7 @@ dependencies {
   implementation(projects.navigationCompose)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
+  implementation(projects.designSystemHedvig)
 
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)

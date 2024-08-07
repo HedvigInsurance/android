@@ -22,11 +22,11 @@ internal fun ChangeAddressSwitch(
   checked: Boolean,
   onClick: () -> Unit,
   onCheckedChange: (Boolean) -> Unit,
+  modifier: Modifier = Modifier,
 ) {
   HedvigCard(
-    modifier = Modifier
+    modifier = modifier
       .fillMaxWidth()
-      .padding(horizontal = 16.dp)
       .clip(MaterialTheme.shapes.squircleMedium)
       .clickable { onClick() },
   ) {
