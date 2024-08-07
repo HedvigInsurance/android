@@ -174,14 +174,13 @@ private fun ChangeAddressEnterVillaInformationScreen(
       ),
     )
     Spacer(modifier = Modifier.height(8.dp))
-    Row(modifier = Modifier.padding(horizontal = 16.dp)) {
-      ChangeAddressSwitch(
+    ChangeAddressSwitch(
         label = stringResource(id = R.string.CHANGE_ADDRESS_SUBLET_LABEL),
         checked = uiState.isSublet.input,
         onCheckedChange = onIsSubletSelected,
         onClick = { onIsSubletSelected(!uiState.isSublet.input) },
+        modifier = Modifier.padding(horizontal = 16.dp)
       )
-    }
     Spacer(modifier = Modifier.height(8.dp))
     ExtraBuildingContainer(
       extraBuildings = uiState.extraBuildings,
