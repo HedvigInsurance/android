@@ -1,11 +1,8 @@
 package com.hedvig.android.design.system.hedvig
 
 import androidx.compose.animation.Animatable
-import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -212,13 +209,10 @@ private fun Toggle(enabled: Boolean, onClick: (Boolean) -> Unit, modifier: Modif
         onClick(!enabled)
       },
     )
-  AnimatedContent(
+  Crossfade(
     // todo: looks fine without animating too, bc the is this container color change anyway
     targetState = enabled,
-    transitionSpec = {
-      fadeIn(animationSpec = tween(400))
-        .togetherWith(fadeOut(animationSpec = tween(200)))
-    },
+    animationSpec = tween(400),
   ) { animatedEnabled ->
     Box(modifierNoIndication) {
       ToggleBackground(backgroundColor)
