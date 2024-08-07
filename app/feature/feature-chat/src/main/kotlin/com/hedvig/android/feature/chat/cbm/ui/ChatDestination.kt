@@ -47,14 +47,16 @@ import com.hedvig.android.feature.chat.cbm.CbmChatUiState
 import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Error
 import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Initializing
 import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Loaded
+import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Loaded.TopAppBarText.ClaimConversation
 import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Loaded.TopAppBarText.Legacy
 import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Loaded.TopAppBarText.NewConversation
-import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Loaded.TopAppBarText.Text
+import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Loaded.TopAppBarText.ServiceConversation
 import com.hedvig.android.feature.chat.cbm.CbmChatViewModel
 import com.hedvig.android.feature.chat.ui.chatScrollBehavior
 import com.hedvig.android.feature.chat.ui.chatTopAppBarWindowInsets
 import com.hedvig.android.logger.logcat
 import hedvig.resources.R
+import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime
@@ -187,16 +189,19 @@ private fun ChatTopAppBar(
                 }
               }
 
-              is Text -> {
+              is ClaimConversation -> {
                 Column {
-                  HedvigText(topAppBarText.title)
-                  topAppBarText.submittedAt?.let { submittedAt ->
-                    val formattedDate = HedvigDateTimeFormatterDefaults
-                      .monthDateAndYear(getLocale())
-                      .format(submittedAt.toLocalDateTime(TimeZone.currentSystemDefault()).toJavaLocalDateTime())
-                    val subtitle = "${stringResource(R.string.claim_status_detail_submitted)} $formattedDate"
-                    HedvigText(subtitle, color = HedvigTheme.colorScheme.textSecondary)
-                  }
+                  HedvigText(topAppBarText.claimType ?: stringResource(R.string.home_claim_card_pill_claim))
+                  val subtitle = chatTopAppBarFormattedSubtitle(topAppBarText.createdAt)
+                  HedvigText(subtitle, color = HedvigTheme.colorScheme.textSecondary)
+                }
+              }
+
+              is ServiceConversation -> {
+                Column {
+                  HedvigText(stringResource(R.string.HC_QUESTION_TITLE))
+                  val subtitle = chatTopAppBarFormattedSubtitle(topAppBarText.createdAt)
+                  HedvigText(subtitle, color = HedvigTheme.colorScheme.textSecondary)
                 }
               }
             }
@@ -219,6 +224,22 @@ private fun ChatTopAppBar(
     ),
     scrollBehavior = topAppBarScrollBehavior,
   )
+}
+
+@Composable
+private fun chatTopAppBarFormattedSubtitle(createdAt: Instant): String {
+  val locale = getLocale()
+  val stringResource = stringResource(R.string.claim_status_detail_submitted)
+  return remember(locale, stringResource, createdAt) {
+    val formattedDate = HedvigDateTimeFormatterDefaults
+      .monthDateAndYear(locale)
+      .format(
+        createdAt.toLocalDateTime(
+          TimeZone.currentSystemDefault(),
+        ).toJavaLocalDateTime(),
+      )
+    "$stringResource $formattedDate"
+  }
 }
 
 @HedvigPreview

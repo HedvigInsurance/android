@@ -21,14 +21,4 @@
       "groupName": "kotlin"
     },
   ],
-  "hostRules": [
-    {
-      "hostType": "maven",
-      "matchHost": "https://maven.pkg.github.com/HedvigInsurance/odyssey",
-      "encrypted": {
-        "username": "wcFMA/xDdHCJBTolAQ//URYExT43xQ3Mc49Sy6semM2Fwv/D8SZYoG8HbVQ4gyFSbUYK6R+JWP7LpqurukHjWjqZuWk1cdAKLI31PzkW2+JdD9Qnp07J5/oPrvh5hVZ3AvYpe0svQWr5vD4yZ0/KkmHu6zEUrI5vaPlYBUqIgO6u+A1+/mjeYPfsLeoXzdU4qTk1mcwzoA9sn16xA9CteDoGfmBzoyoUzuo6ft8/cbISicOHVJp8hKqqSEnN6EHL/N5mtl0umOGyu1rjAyi0KNVpJcxLO/0PeBAEr/roCu2QHS7NuwFnVuo6QSc/5tZDnA3bcXFIQ0NL/Ouw5AK5VvYz3XraKjUNo0eNbK7rG0XrDbOwTQa+LA+Pr7d9NNeew683yDHOX+57MjtNp2xp5btVGDIiz/ScaAWel91lwd6GdtMEi4V8tzixAsFfFviQ6w2qLVO5dhvbVBjv2KUuqnuvxMmKk/rO/bTAivRABeQKzwSMf/EDlZtiUqzT5mJhfWnsBUh1O1C3ueP1EfnPOku2TVetJ/5y84AgpIK9aw9RNnAOTip4YAYtb6pvaqjDpfk+ZzvQ2lwLtGcdejsRj3j5oJj1+aZdbqeHPQDcLEttLmbC2qOa6nU3ay9z0tsSuRqT+7ocSUAXplSgbKVd03qYTkLZqu4dIoqDMmFdJwC4RvRizN8xreT1FPJsmePSawEtvMAvxF91RlIhrPyJyrL+FL+gguPmYcmwDI6HYA+5XK8QIyUxeHbckBjfcsWai4KsI6ivAU1BH+l86lTrkspHKMJFehWOlCkVtWmei8VqERuJDQ4uauatwivAJHnx0kPGqqFq3q7b4zJ+",
-        "password": "wcFMA/xDdHCJBTolAQ//St6LndLjdtKaJoBGPXdasT0y+vn6nfCLUgHYVeN1ZZvWdMxWERraBmbWNagn+Esx5VMJXNMwk5KxelDx36n6iL312+rtTvKZ9xG2ShZWZ5gzLUbvyPMAsgY2+Zxb9eBfwuZL6G51lR/uj8mL1tbnj6laYw0MbQQi9wOxNUQBaK13eSBOISMNo3WxtYK5I9va9Sn8XRyRNd1VHM1I9JA4YYDRLx3C6WiDltQhh0zleSsiYHa/aS8AQKFZ7YTvgHUybEurEGkrNxwY+mhj+CndqYYTdtGRNEwZUvMtM/BuEEJ88L8oZ/XKCxCbjHgYnXiMbf9ud5/U6n5zRxM1u048DyL4xuiB1BXVoxoUty5DxMPJncJfpklsYUhAzjLkVKgzsp6s3V7XzgDETsW7lbTSrbkW7j67ARXvCvvlM1NYAvSWe1IXilHpEmyLs8XrbfmIz3YBWoXisd7XqhCI/LytePIgJclMBKXZyu7/ruPnXUhOoKjYM7LGAXfAuMVVFmwm0ppUuP9rOq3xJyGfzwm16e9oSAiCNGERp0G8sZkCGZoAoirBacIGoGhcv7WVT2d9zQ+hQTtX1R2Pbh0Cj7VtoYl1ERaGua4WUZDH9ZjAIelJJQ7jOCOqrajqhofYYmqudR0XffGE63bV272+ZOe5x37IZVsgdRGUlBAf59GQ9x/ShQHXIHaLh5hESl1tSiXwdY1ZRrEkp0hdfcExZTFb15GfC6ur69XW8Ng/m4DilSO8iBSO0Lq/GNLYQUkXkPio0oe4Riq6jks0AYZyG0VNlwZaRIAYiGcMnoS32KalZYA5fu+C0U7TAaPVkR37bEyC7jg1Eu2OPjDROGkf74Ya+vQ9Lu0bag0"
-      }
-    }
-  ]
 }

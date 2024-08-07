@@ -93,13 +93,10 @@ private fun ConversationFragment.toInboxConversation(isLegacy: Boolean): InboxCo
   }
   return InboxConversation(
     conversationId = id,
-    header = if (isLegacy) {
-      InboxConversation.Header.Legacy
-    } else {
-      InboxConversation.Header.Conversation(
-        title = title,
-        subtitle = subtitle,
-      )
+    header = when {
+      isLegacy -> InboxConversation.Header.Legacy
+      claim != null -> InboxConversation.Header.ClaimConversation(claim!!.claimType)
+      else -> InboxConversation.Header.ServiceConversation
     },
     latestMessage = latestMessage,
     hasNewMessages = false,

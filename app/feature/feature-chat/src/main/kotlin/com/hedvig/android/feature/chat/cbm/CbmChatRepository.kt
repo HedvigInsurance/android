@@ -335,31 +335,30 @@ internal sealed interface ConversationInfo {
 
   data class Info(
     val conversationId: String,
-    val title: String,
+    val claimInfo: ClaimInfo?,
     val createdAt: Instant,
     val isLegacy: Boolean,
-  ) : ConversationInfo
+  ) : ConversationInfo {
+    data class ClaimInfo(val claimType: String?)
+  }
 }
 
 private fun octopus.fragment.ConversationInfo?.toConversationInfo(): ConversationInfo {
   return if (this == null) {
     ConversationInfo.NoConversation
   } else {
-    ConversationInfo.Info(
-      conversationId = id,
-      title = title,
-      createdAt = createdAt,
-      isLegacy = isLegacy,
-    )
+    toConversationInfo()
   }
 }
 
 private fun octopus.fragment.ConversationInfo.toConversationInfo(): ConversationInfo.Info {
   return ConversationInfo.Info(
     conversationId = id,
-    title = title,
     createdAt = createdAt,
     isLegacy = isLegacy,
+    claimInfo = claim?.let {
+      ConversationInfo.Info.ClaimInfo(it.claimType)
+    },
   )
 }
 
