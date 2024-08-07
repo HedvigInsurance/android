@@ -23,6 +23,8 @@ internal object LargeSizeDefaultToggleTokens {
   val HorizontalPadding = 16.dp
   val TopPadding = 16.dp
   val BottomPadding = 18.dp
+  val ToggleTopPadding = 7.dp
+  val ToggleBottomPadding = 5.dp
   val ContainerShape = ShapeKeyTokens.CornerLarge
   val LabelTextFont = TypographyKeyTokens.BodyMedium
 }
@@ -31,6 +33,8 @@ internal object MediumSizeDefaultToggleTokens {
   val HorizontalPadding = 16.dp
   val TopPadding = 16.dp
   val BottomPadding = 18.dp
+  val ToggleTopPadding = 7.dp
+  val ToggleBottomPadding = 5.dp
   val ContainerShape = ShapeKeyTokens.CornerLarge
   val LabelTextFont = TypographyKeyTokens.BodySmall
 }
@@ -39,6 +43,8 @@ internal object SmallSizeDefaultToggleTokens {
   val HorizontalPadding = 14.dp
   val TopPadding = 15.dp
   val BottomPadding = 17.dp
+  val ToggleTopPadding = 0.dp
+  val ToggleBottomPadding = 0.dp
   val ContainerShape = ShapeKeyTokens.CornerLarge
   val LabelTextFont = TypographyKeyTokens.BodySmall
 }
