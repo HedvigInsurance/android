@@ -51,24 +51,19 @@ internal fun EnterVillaInformationDestination(
       onNavigateToOfferDestination(movingParameters)
     }
   }
-
   var showExtraBuildingsBottomSheet by rememberSaveable { mutableStateOf(false) }
-
-  if (showExtraBuildingsBottomSheet) {
-    ExtraBuildingBottomSheet(
-      extraBuildingTypes = uiState.extraBuildingTypes,
-      onDismiss = {
-        showExtraBuildingsBottomSheet = false
-      },
-      onSave = {
-        showExtraBuildingsBottomSheet = false
-        viewModel.emit(EnterVillaInformationEvent.AddExtraBuilding(it))
-      },
-      isVisible = showExtraBuildingsBottomSheet,
-      onVisibleChange = { showExtraBuildingsBottomSheet = it },
-    )
-  }
-
+  ExtraBuildingBottomSheet(
+    extraBuildingTypes = uiState.extraBuildingTypes,
+    onDismiss = {
+      showExtraBuildingsBottomSheet = false
+    },
+    onSave = {
+      showExtraBuildingsBottomSheet = false
+      viewModel.emit(EnterVillaInformationEvent.AddExtraBuilding(it))
+    },
+    isVisible = showExtraBuildingsBottomSheet,
+    onVisibleChange = { showExtraBuildingsBottomSheet = it },
+  )
   ChangeAddressEnterVillaInformationScreen(
     uiState = uiState,
     navigateUp = navigateUp,
