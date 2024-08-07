@@ -172,7 +172,7 @@ private fun ConversationCard(
             text = when (val header = conversation.header) {
               Legacy -> stringResource(R.string.CHAT_CONVERSATION_HISTORY_TITLE)
               is ClaimConversation -> stringResource(R.string.home_claim_card_pill_claim)
-              ServiceConversation -> stringResource(R.string.HC_QUESTION_TITLE)
+              ServiceConversation -> stringResource(R.string.CHAT_CONVERSATION_QUESTION_TITLE)
             },
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.wrapContentSize(Alignment.TopStart),

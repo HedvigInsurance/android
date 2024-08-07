@@ -199,7 +199,7 @@ private fun ChatTopAppBar(
 
               is ServiceConversation -> {
                 Column {
-                  HedvigText(stringResource(R.string.HC_QUESTION_TITLE))
+                  HedvigText(stringResource(R.string.CHAT_CONVERSATION_QUESTION_TITLE))
                   val subtitle = chatTopAppBarFormattedSubtitle(topAppBarText.createdAt)
                   HedvigText(subtitle, color = HedvigTheme.colorScheme.textSecondary)
                 }
