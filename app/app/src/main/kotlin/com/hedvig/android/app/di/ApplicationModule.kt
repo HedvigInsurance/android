@@ -16,13 +16,12 @@ import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.cache.normalized.api.MemoryCacheFactory
 import com.apollographql.apollo.cache.normalized.api.NormalizedCacheFactory
 import com.apollographql.apollo.cache.normalized.normalizedCache
-import com.apollographql.apollo.interceptor.ApolloInterceptor
 import com.apollographql.apollo.network.okHttpClient
 import com.hedvig.android.apollo.auth.listeners.di.apolloAuthListenersModule
 import com.hedvig.android.apollo.auth.listeners.di.languageAuthListenersModule
 import com.hedvig.android.apollo.di.networkCacheManagerModule
-import com.hedvig.android.app.apollo.DatadogInterceptor
 import com.hedvig.android.app.apollo.DeviceIdInterceptor
+import com.hedvig.android.app.apollo.LoggingInterceptor
 import com.hedvig.android.app.notification.senders.ChatNotificationSender
 import com.hedvig.android.app.notification.senders.CrossSellNotificationSender
 import com.hedvig.android.app.notification.senders.GenericNotificationSender
@@ -135,18 +134,12 @@ private val networkModule = module {
     val okHttpBuilder = get<OkHttpClient.Builder>().addInterceptor(get<AuthTokenRefreshingInterceptor>())
     okHttpBuilder.build()
   }
-  single<DatadogInterceptor> { DatadogInterceptor() } bind ApolloInterceptor::class
   single<ApolloClient.Builder> {
-    val interceptors = getAll<ApolloInterceptor>().distinct()
     ApolloClient
       .Builder()
       .okHttpClient(get<OkHttpClient>())
       .normalizedCache(get<NormalizedCacheFactory>())
-      .apply {
-        for (interceptor in interceptors) {
-          addInterceptor(interceptor)
-        }
-      }
+      .addInterceptor(LoggingInterceptor())
   }
   single<ApolloClient> {
     get<ApolloClient.Builder>()
