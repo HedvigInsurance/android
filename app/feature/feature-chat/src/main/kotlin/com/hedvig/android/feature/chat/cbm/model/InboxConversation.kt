@@ -35,9 +35,10 @@ internal data class InboxConversation(
   sealed interface Header {
     object Legacy : Header
 
-    data class Conversation(
-      val title: String,
-      val subtitle: String?,
+    data class ClaimConversation(
+      val claimType: String?,
     ) : Header
+
+    data object ServiceConversation : Header
   }
 }

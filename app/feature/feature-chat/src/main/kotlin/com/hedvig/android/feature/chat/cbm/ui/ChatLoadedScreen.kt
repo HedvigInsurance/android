@@ -106,6 +106,7 @@ import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Loaded
 import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Loaded.LatestChatMessage
 import com.hedvig.android.feature.chat.cbm.CbmUiChatMessage
 import com.hedvig.android.feature.chat.cbm.ConversationInfo
+import com.hedvig.android.feature.chat.cbm.ConversationInfo.Info.ClaimInfo
 import com.hedvig.android.feature.chat.cbm.model.CbmChatMessage
 import com.hedvig.android.feature.chat.cbm.model.CbmChatMessage.ChatMessageFile.MimeType.IMAGE
 import com.hedvig.android.feature.chat.cbm.model.Sender
@@ -749,7 +750,7 @@ private fun PreviewChatLoadedScreen() {
             uiState = Loaded(
               backendConversationInfo = ConversationInfo.Info(
                 "1",
-                "Title",
+                ClaimInfo("claimType"),
                 Instant.parse("2024-05-01T00:00:00Z"),
                 false,
               ),
