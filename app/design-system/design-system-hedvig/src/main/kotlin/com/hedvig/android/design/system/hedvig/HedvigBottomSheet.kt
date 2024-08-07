@@ -122,11 +122,12 @@ private fun HintArrowDown(onClick: () -> Unit, modifier: Modifier = Modifier) {
   Row(modifier = modifier) {
     IconButton(
       onClick = onClick,
-      modifier = Modifier.clip(CircleShape).background(Color.White), // todo: Change colors here!!
+      modifier = Modifier.clip(CircleShape).background(bottomSheetColors.arrowBackgroundColor),
     ) {
       Icon(
         HedvigIcons.ArrowDown,
         null,
+        tint = bottomSheetColors.arrowColor,
       )
     }
   }
@@ -138,6 +139,8 @@ internal data class BottomSheetColors(
   val bottomSheetBackgroundColor: Color,
   val contentColor: Color,
   val chipColor: Color,
+  val arrowColor: Color,
+  val arrowBackgroundColor: Color,
 )
 
 internal val bottomSheetColors: BottomSheetColors
@@ -149,6 +152,8 @@ internal val bottomSheetColors: BottomSheetColors
         bottomSheetBackgroundColor = fromToken(BottomSheetTokens.BottomSheetBackgroundColor),
         contentColor = fromToken(BottomSheetTokens.ContentColor),
         chipColor = fromToken(BottomSheetTokens.UpperChipColor),
+        arrowColor = fromToken(BottomSheetTokens.ArrowColor),
+        arrowBackgroundColor = fromToken(BottomSheetTokens.ArrowColorBackground),
       )
     }
   }
