@@ -10,6 +10,7 @@ import com.hedvig.android.feature.chat.cbm.BannerText
 import com.hedvig.android.feature.chat.cbm.CbmChatRepository
 import com.hedvig.android.feature.chat.cbm.ChatMessagePageResponse
 import com.hedvig.android.feature.chat.cbm.ConversationInfo
+import com.hedvig.android.feature.chat.cbm.ConversationInfo.Info.ClaimInfo
 import com.hedvig.android.feature.chat.cbm.PagingToken
 import com.hedvig.android.feature.chat.cbm.model.CbmChatMessage
 import kotlinx.coroutines.flow.Flow
@@ -23,7 +24,7 @@ import kotlinx.datetime.Clock
 internal class CbmChatRepositoryDemo(
   private val clock: Clock,
 ) : CbmChatRepository {
-  private val info = ConversationInfo.Info("1", "Conversation", clock.now(), true)
+  private val info = ConversationInfo.Info("1", null, clock.now(), true)
   private val demoErrorMessage = "No chat impl for demo"
 
   override suspend fun createConversation(conversationId: Uuid): Either<ErrorMessage, ConversationInfo.Info> {
