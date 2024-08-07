@@ -11,9 +11,10 @@ query ChatConversations {
 
 fragment ConversationFragment on Conversation {
   id
-  title
-  subtitle
   createdAt
+  claim {
+    claimType
+  }
   newestMessage {
     sender
     sentAt
