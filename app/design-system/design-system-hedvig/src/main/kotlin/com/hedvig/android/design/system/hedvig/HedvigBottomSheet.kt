@@ -96,7 +96,7 @@ fun HedvigBottomSheet(
           .verticalScroll(scrollState),
       ) {
         Spacer(modifier = Modifier.height(8.dp))
-        LittleUpperChip()
+        DragHandle(modifier = Modifier.align(Alignment.CenterHorizontally))
         Spacer(modifier = Modifier.height(20.dp))
         content()
         HedvigButton(
@@ -118,12 +118,11 @@ fun HedvigBottomSheet(
 }
 
 @Composable
-private fun ColumnScope.LittleUpperChip() {
+private fun DragHandle(modifier: Modifier = Modifier) {
   Surface(
-    modifier = Modifier
+    modifier = modifier
       .width(40.dp)
       .height(4.dp)
-      .align(Alignment.CenterHorizontally)
       .background(
         shape = ShapeDefaults.CornerSmall,
         color = bottomSheetColors.chipColor,
@@ -147,11 +146,13 @@ private fun BoxScope.HintArrowDown(onClick: () -> Unit) {
     label = "arrowDownAlpha animation",
   )
   Row(Modifier.align(Alignment.BottomEnd).padding(horizontal = 32.dp, vertical = 16.dp)) {
-    Icon(
-      HedvigIcons.ArrowDown,
-      null,
-      Modifier.alpha(arrowAlpha).clickable { onClick() },
-    )
+    IconButton(onClick = onClick) {
+      Icon(
+        HedvigIcons.ArrowDown,
+        null,
+        Modifier.alpha(arrowAlpha),
+      )
+    }
   }
 }
 

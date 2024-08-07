@@ -32,15 +32,7 @@ internal fun ExtraBuildingTypeContainer(
   modifier: Modifier = Modifier,
 ) {
   HedvigCard(modifier) {
-//    val nestedScrollConnection = remember {
-//      object : NestedScrollConnection {
-//        // to intercept scrolling gesture and do not close the sheet while scrolling the list
-//        override fun onPostScroll(consumed: Offset, available: Offset, source: NestedScrollSource) = available
-//      }
-//    }
-    Column(
-      // Modifier.nestedScroll(nestedScrollConnection).verticalScroll(rememberScrollState())
-    ) {
+    Column {
       Text(
         text = stringResource(hedvig.resources.R.string.CHANGE_ADDRESS_EXTRA_BUILDING_CONTAINER_TITLE),
         style = MaterialTheme.typography.labelLarge,
