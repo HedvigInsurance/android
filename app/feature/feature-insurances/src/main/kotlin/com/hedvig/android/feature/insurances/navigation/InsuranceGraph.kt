@@ -86,10 +86,7 @@ fun NavGraphBuilder.insuranceGraph(
       TerminatedContractsDestination(
         viewModel = viewModel,
         navigateToContractDetail = { contractId: String ->
-          // todo stelios remove this null if we need it to be default null anyway for deep link reasons
-          with(navigator) {
-            backStackEntry.navigate(InsurancesDestinations.InsuranceContractDetail(contractId, null))
-          }
+          with(navigator) { backStackEntry.navigate(InsurancesDestinations.InsuranceContractDetail(contractId)) }
         },
         navigateUp = navigator::navigateUp,
         imageLoader = imageLoader,

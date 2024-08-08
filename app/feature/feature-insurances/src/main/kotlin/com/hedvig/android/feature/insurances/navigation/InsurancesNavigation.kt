@@ -21,7 +21,7 @@ internal sealed interface InsurancesDestinations {
     @SerialName("contractId")
     val contractId: String,
     @DrawableRes
-    val contractCardDrawableId: Int?,
+    val contractCardDrawableId: Int? = null,
   ) : InsurancesDestinations, Destination
 
   @Serializable
