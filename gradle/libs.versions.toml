@@ -6,10 +6,10 @@ minSdkVersion = "23"
 
 # lint versions
 lintApi = "31.5.1"
-lintGradlePlugin = "8.5.1"
+lintGradlePlugin = "8.6.0-rc01"
 
 # gradlePlugin versions
-androidGradlePlugin = "8.5.1"
+androidGradlePlugin = "8.6.0-rc01"
 apolloAdapters = "0.0.2"
 apollo = "4.0.0"
 cacheFix = "3.0.1"
