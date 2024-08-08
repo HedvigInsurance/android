@@ -1,11 +1,17 @@
 package com.hedvig.android.design.system.hedvig
 
+import androidx.compose.animation.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
@@ -13,6 +19,7 @@ import com.hedvig.android.design.system.hedvig.StepperDefaults.StepperSize.Large
 import com.hedvig.android.design.system.hedvig.StepperDefaults.StepperStyle
 import com.hedvig.android.design.system.hedvig.StepperDefaults.StepperStyle.Default
 import com.hedvig.android.design.system.hedvig.StepperDefaults.StepperStyle.Labeled
+import com.hedvig.android.design.system.hedvig.tokens.AnimationTokens
 import com.hedvig.android.design.system.hedvig.tokens.LargeSizeDefaultStepperTokens
 import com.hedvig.android.design.system.hedvig.tokens.LargeSizeLabeledStepperTokens
 import com.hedvig.android.design.system.hedvig.tokens.MediumSizeDefaultStepperTokens
@@ -20,6 +27,136 @@ import com.hedvig.android.design.system.hedvig.tokens.MediumSizeLabeledStepperTo
 import com.hedvig.android.design.system.hedvig.tokens.SmallSizeDefaultStepperTokens
 import com.hedvig.android.design.system.hedvig.tokens.SmallSizeLabeledStepperTokens
 import com.hedvig.android.design.system.hedvig.tokens.StepperColorTokens
+import kotlinx.coroutines.launch
+
+@Composable
+fun HedvigStepper(
+  text: String,
+  onMinusClick: () -> Unit,
+  onPlusClick: () -> Unit,
+  isPlusEnabled: Boolean,
+  isMinusEnabled: Boolean,
+  modifier: Modifier = Modifier,
+  stepperStyle: StepperDefaults.StepperStyle = StepperDefaults.stepperStyle,
+  stepperSize: StepperDefaults.StepperSize = StepperDefaults.stepperSize,
+  showError: Boolean = false,
+  errorText: String? = null,
+) {
+  val enabled by remember(showError) { mutableStateOf(showError) }
+  val initialContainerColor = stepperColors.containerColor(false)
+  val pulsatingContainerColor = stepperColors.containerColor(true)
+  val containerColor = remember { Animatable(initialContainerColor) }
+  val initialLabelColor = stepperColors.labelColor(false)
+  val pulsatingLabelColor = stepperColors.labelColor(true)
+  val labelColor = remember { Animatable(initialLabelColor) }
+  val initialTextColor = stepperColors.textColor(false)
+  val pulsatingTextColor = stepperColors.textColor(true)
+  val textColor = remember { Animatable(initialTextColor) }
+  val initialMinusColor = if (isMinusEnabled) stepperColors.enabledSymbolColor(false) else stepperColors.disabledSymbolColor(false)
+  val initialPlusColor = if (isPlusEnabled) stepperColors.enabledSymbolColor(false) else stepperColors.disabledSymbolColor(false)
+  val pulsatingSymbolColor = stepperColors.enabledSymbolColor(true)
+  val plusColor = remember { Animatable(initialPlusColor) }
+  val minusColor = remember { Animatable(initialMinusColor) }
+  val enterAnimationSpec = tween<Color>(AnimationTokens().pulsatingAnimationDuration)
+  val exitAnimationSpec = tween<Color>(AnimationTokens().pulsatingAnimationDurationExit)
+  LaunchedEffect(enabled) {
+    if (enabled) {
+      launch {
+        containerColor.animateTo(pulsatingContainerColor, animationSpec = enterAnimationSpec)
+        containerColor.animateTo(initialContainerColor, animationSpec = exitAnimationSpec)
+      }
+      launch {
+        labelColor.animateTo(pulsatingLabelColor, animationSpec = enterAnimationSpec)
+        labelColor.animateTo(initialLabelColor, animationSpec = exitAnimationSpec)
+      }
+      launch {
+        textColor.animateTo(pulsatingTextColor, animationSpec = enterAnimationSpec)
+        textColor.animateTo(initialTextColor, animationSpec = exitAnimationSpec)
+      }
+      launch {
+        plusColor.animateTo(pulsatingSymbolColor, animationSpec = enterAnimationSpec)
+        plusColor.animateTo(initialPlusColor, animationSpec = exitAnimationSpec)
+      }
+      launch {
+        minusColor.animateTo(pulsatingSymbolColor, animationSpec = enterAnimationSpec)
+        minusColor.animateTo(initialMinusColor, animationSpec = exitAnimationSpec)
+      }
+    } else {
+      launch { containerColor.animateTo(initialContainerColor, animationSpec = enterAnimationSpec) }
+      launch { labelColor.animateTo(initialLabelColor, animationSpec = enterAnimationSpec) }
+      launch { textColor.animateTo(initialTextColor, animationSpec = enterAnimationSpec) }
+      launch { plusColor.animateTo(initialPlusColor, animationSpec = enterAnimationSpec) }
+      launch { minusColor.animateTo(initialMinusColor, animationSpec = enterAnimationSpec) }
+    }
+  }
+  when (stepperStyle) {
+    Default -> DefaultStepper(
+      stepperSize = stepperSize,
+      text = text,
+      onMinusClick = onMinusClick,
+      onPlusClick = onPlusClick,
+      containerColor = containerColor.value,
+      textColor = textColor.value,
+      plusColor = plusColor.value,
+      minusColor = minusColor.value,
+      showError = showError,
+      errorText = errorText,
+      modifier = modifier
+    )
+    is Labeled -> LabeledStepper(
+      stepperSize = stepperSize,
+      text = text,
+      labelText = stepperStyle.labelText,
+      onMinusClick = onMinusClick,
+      onPlusClick = onPlusClick,
+      containerColor = containerColor.value,
+      textColor = textColor.value,
+      labelColor = labelColor.value,
+      plusColor = plusColor.value,
+      minusColor = minusColor.value,
+      showError = showError,
+      errorText = errorText,
+      modifier = modifier
+    )
+  }
+}
+
+@Composable
+private fun DefaultStepper(
+  stepperSize: StepperDefaults.StepperSize,
+  text: String,
+  onMinusClick: () -> Unit,
+  onPlusClick: () -> Unit,
+  containerColor: Color,
+  textColor: Color,
+  plusColor: Color,
+  minusColor: Color,
+  showError: Boolean,
+  errorText: String?,
+  modifier: Modifier = Modifier,
+) {
+  //todo
+}
+
+@Composable
+private fun LabeledStepper(
+  stepperSize: StepperDefaults.StepperSize,
+  text: String,
+  labelText: String,
+  onMinusClick: () -> Unit,
+  onPlusClick: () -> Unit,
+  containerColor: Color,
+  textColor: Color,
+  labelColor: Color,
+  plusColor: Color,
+  minusColor: Color,
+  showError: Boolean,
+  errorText: String?,
+  modifier: Modifier = Modifier,
+) {
+  //todo
+}
+
 
 object StepperDefaults {
   internal val stepperStyle: StepperStyle = Default
