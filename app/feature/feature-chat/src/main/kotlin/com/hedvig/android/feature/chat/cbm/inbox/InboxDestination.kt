@@ -169,7 +169,7 @@ private fun ConversationCard(
       HorizontalItemsWithMaximumSpaceTaken(
         {
           Text(
-            text = when (val header = conversation.header) {
+            text = when (conversation.header) {
               Legacy -> stringResource(R.string.CHAT_CONVERSATION_HISTORY_TITLE)
               is ClaimConversation -> stringResource(R.string.home_claim_card_pill_claim)
               ServiceConversation -> stringResource(R.string.CHAT_CONVERSATION_QUESTION_TITLE)

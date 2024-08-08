@@ -17,9 +17,7 @@ internal fun FirstVetDestination(sections: List<FirstVetSection>, navigateUp: ()
 
 @HedvigPreview
 @Composable
-private fun PreviewCommonClaimDestination(
-  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) isManyPets: Boolean,
-) {
+private fun PreviewCommonClaimDestination() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       FirstVetDestination(

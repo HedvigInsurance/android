@@ -26,6 +26,7 @@ internal fun RemoveCoInsuredBottomSheetContent(
   onRemove: (CoInsured) -> Unit,
   onDismiss: () -> Unit,
   isLoading: Boolean,
+  // todo: At some point in vcs we should check where this was used and why it is no longer used
   errorMessage: String?,
   coInsured: CoInsured,
 ) {

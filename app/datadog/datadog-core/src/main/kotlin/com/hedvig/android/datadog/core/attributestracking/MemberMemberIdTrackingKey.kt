@@ -14,7 +14,7 @@ internal class DatadogMemberIdProviderImpl(
     return memberIdService
       .getMemberId()
       .map { MEMBER_ID_TRACKING_KEY to it }
-      .onEach { (key, memberId) ->
+      .onEach { (_, memberId) ->
         logcat(LogPriority.INFO) {
           if (memberId == null) {
             "Removing from global RUM attribute:$MEMBER_ID_TRACKING_KEY"
