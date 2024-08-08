@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.insurances.navigation
 
+import androidx.annotation.DrawableRes
 import com.hedvig.android.navigation.compose.Destination
 import kotlin.reflect.KClass
 import kotlinx.serialization.SerialName
@@ -19,6 +20,8 @@ internal sealed interface InsurancesDestinations {
     /** Must match the name of the param inside [com.hedvig.android.navigation.core.HedvigDeepLinkContainer.contract] */
     @SerialName("contractId")
     val contractId: String,
+    @DrawableRes
+    val contractCardDrawableId: Int?,
   ) : InsurancesDestinations, Destination
 
   @Serializable

@@ -1,6 +1,5 @@
 package com.hedvig.android.core.ui.card
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -56,30 +55,22 @@ fun InsuranceCard(
   isLoading: Boolean,
   modifier: Modifier = Modifier,
   shape: Shape = MaterialTheme.shapes.squircleMedium,
-  fallbackPainter: Painter = ColorPainter(Color.Black.copy(alpha = 0.7f)),
+  fallbackPainter: Painter? = null,
   backgroundImageUrl: String? = null,
 ) {
+  @Suppress("NAME_SHADOWING")
+  val fallbackPainter = fallbackPainter ?: ColorPainter(Color.Black.copy(alpha = 0.7f))
   Box(modifier.clip(shape)) {
-    if (isLoading) {
-      Image(
-        painter = ColorPainter(Color.Black.copy(alpha = 0.3f)),
-        modifier = Modifier
-          .matchParentSize()
-          .placeholder(visible = true, highlight = PlaceholderHighlight.shimmer()),
-        contentDescription = null,
-      )
-    } else {
-      AsyncImage(
-        model = backgroundImageUrl,
-        contentDescription = null,
-        placeholder = fallbackPainter,
-        error = fallbackPainter,
-        fallback = fallbackPainter,
-        imageLoader = imageLoader,
-        contentScale = ContentScale.Crop,
-        modifier = Modifier.matchParentSize(),
-      )
-    }
+    AsyncImage(
+      model = backgroundImageUrl,
+      contentDescription = null,
+      placeholder = fallbackPainter,
+      error = fallbackPainter,
+      fallback = fallbackPainter,
+      imageLoader = imageLoader,
+      contentScale = ContentScale.Crop,
+      modifier = Modifier.matchParentSize(),
+    )
     HedvigTheme(darkTheme = true) {
       Column(Modifier.padding(16.dp)) {
         Row(Modifier.heightIn(86.dp)) {
@@ -100,8 +91,8 @@ fun InsuranceCard(
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier
-              .size(24.dp)
-              .padding(top = 2.dp),
+                .size(24.dp)
+                .padding(top = 2.dp),
           )
         }
         Spacer(Modifier.height(8.dp))
@@ -127,10 +118,10 @@ private fun Chip(text: String, modifier: Modifier = Modifier) {
     modifier.clip(shape = MaterialTheme.shapes.squircleExtraSmall),
   ) {
     Box(
-      Modifier
-        .alpha(DisabledAlpha)
-        .background(MaterialTheme.colorScheme.background)
-        .matchParentSize(),
+        Modifier
+            .alpha(DisabledAlpha)
+            .background(MaterialTheme.colorScheme.background)
+            .matchParentSize(),
     )
     Text(
       text = text,
@@ -141,13 +132,18 @@ private fun Chip(text: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun InsuranceCardPlaceholder(imageLoader: ImageLoader, modifier: Modifier = Modifier) {
+fun InsuranceCardPlaceholder(
+  imageLoader: ImageLoader,
+  modifier: Modifier = Modifier,
+  fallbackPainter: Painter? = null,
+) {
   InsuranceCard(
     chips = listOf(),
     topText = "",
     bottomText = "",
     imageLoader = imageLoader,
     isLoading = true,
+    fallbackPainter = fallbackPainter,
     modifier = modifier,
   )
 }
