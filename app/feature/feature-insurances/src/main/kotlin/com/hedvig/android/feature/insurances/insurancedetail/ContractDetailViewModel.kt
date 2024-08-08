@@ -21,7 +21,7 @@ internal class ContractDetailViewModel(
   featureManager: FeatureManager,
   getContractForContractIdUseCase: GetContractForContractIdUseCase,
 ) : MoleculeViewModel<ContractDetailsEvent, ContractDetailsUiState>(
-    initialState = ContractDetailsUiState.Loading,
+    initialState = ContractDetailsUiState.Loading(contractId),
     presenter = ContractDetailPresenter(contractId, featureManager, getContractForContractIdUseCase),
   )
 
@@ -29,8 +29,7 @@ internal class ContractDetailPresenter(
   private val contractId: String,
   private val featureManager: FeatureManager,
   private val getContractForContractIdUseCase: GetContractForContractIdUseCase,
-) :
-  MoleculePresenter<ContractDetailsEvent, ContractDetailsUiState> {
+) : MoleculePresenter<ContractDetailsEvent, ContractDetailsUiState> {
   @Composable
   override fun MoleculePresenterScope<ContractDetailsEvent>.present(
     lastState: ContractDetailsUiState,
@@ -46,7 +45,7 @@ internal class ContractDetailPresenter(
 
     LaunchedEffect(dataLoadIteration) {
       if (currentState !is ContractDetailsUiState.Success) {
-        currentState = ContractDetailsUiState.Loading
+        currentState = ContractDetailsUiState.Loading(contractId)
       }
       combine(
         getContractForContractIdUseCase.invoke(contractId),
@@ -85,7 +84,7 @@ internal sealed interface ContractDetailsUiState {
 
   data object NoContractFound : ContractDetailsUiState
 
-  data object Loading : ContractDetailsUiState
+  data class Loading(val contractId: String) : ContractDetailsUiState
 }
 
 internal interface ContractDetailsEvent {
