@@ -10,7 +10,6 @@ import com.hedvig.android.feature.chat.cbm.BannerText
 import com.hedvig.android.feature.chat.cbm.CbmChatRepository
 import com.hedvig.android.feature.chat.cbm.ChatMessagePageResponse
 import com.hedvig.android.feature.chat.cbm.ConversationInfo
-import com.hedvig.android.feature.chat.cbm.ConversationInfo.Info.ClaimInfo
 import com.hedvig.android.feature.chat.cbm.PagingToken
 import com.hedvig.android.feature.chat.cbm.model.CbmChatMessage
 import kotlinx.coroutines.flow.Flow

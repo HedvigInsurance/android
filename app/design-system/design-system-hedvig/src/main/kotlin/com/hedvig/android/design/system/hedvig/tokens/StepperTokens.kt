@@ -7,10 +7,10 @@ internal object StepperColorTokens {
   val EnabledSymbolColor = ColorSchemeKeyTokens.FillPrimary
   val DisabledSymbolColor = ColorSchemeKeyTokens.FillDisabled
   val TextColor = ColorSchemeKeyTokens.TextPrimary
-  val LabelColor = ColorSchemeKeyTokens.TextSecondaryTranslucent //todo: should we use Translucent?
+  val LabelColor = ColorSchemeKeyTokens.TextSecondaryTranslucent // todo: should we use Translucent?
   val PulsatingContainerColor = ColorSchemeKeyTokens.SignalAmberFill
   val PulsatingContentColor = ColorSchemeKeyTokens.SignalAmberText
-  val ErrorDescriptionColor = ColorSchemeKeyTokens.TextSecondaryTranslucent //todo: should we use Translucent?
+  val ErrorDescriptionColor = ColorSchemeKeyTokens.TextSecondaryTranslucent // todo: should we use Translucent?
 }
 
 internal object LargeSizeDefaultStepperTokens {
@@ -20,7 +20,7 @@ internal object LargeSizeDefaultStepperTokens {
   val StepperTopPadding = 0.dp
   val StepperBottomPadding = 0.dp
   val ContainerShape = ShapeKeyTokens.CornerLarge
-  val LabelTextFont = TypographyKeyTokens.BodyMedium
+  val TextFont = TypographyKeyTokens.BodyMedium
 }
 
 internal object MediumSizeDefaultStepperTokens {
@@ -30,7 +30,7 @@ internal object MediumSizeDefaultStepperTokens {
   val StepperTopPadding = 4.dp
   val StepperBottomPadding = 2.dp
   val ContainerShape = ShapeKeyTokens.CornerLarge
-  val LabelTextFont = TypographyKeyTokens.BodySmall
+  val TextFont = TypographyKeyTokens.BodySmall
 }
 
 internal object SmallSizeDefaultStepperTokens {
@@ -40,7 +40,7 @@ internal object SmallSizeDefaultStepperTokens {
   val StepperTopPadding = 0.dp
   val StepperBottomPadding = 0.dp
   val ContainerShape = ShapeKeyTokens.CornerLarge
-  val LabelTextFont = TypographyKeyTokens.BodySmall
+  val TextFont = TypographyKeyTokens.BodySmall
 }
 
 internal object LargeSizeLabeledStepperTokens {
@@ -48,8 +48,8 @@ internal object LargeSizeLabeledStepperTokens {
   val TopPadding = 10.dp
   val BottomPadding = 9.dp
   val ContainerShape = ShapeKeyTokens.CornerLarge
-  val LabelTextFont = TypographyKeyTokens.BodyMedium
-  val DescriptionTextFont = TypographyKeyTokens.Label
+  val LabelTextFont = TypographyKeyTokens.Label
+  val TextFont = TypographyKeyTokens.BodyMedium
 }
 
 internal object MediumSizeLabeledStepperTokens {
@@ -57,15 +57,15 @@ internal object MediumSizeLabeledStepperTokens {
   val TopPadding = 11.dp
   val BottomPadding = 12.dp
   val ContainerShape = ShapeKeyTokens.CornerLarge
-  val LabelTextFont = TypographyKeyTokens.BodySmall
-  val DescriptionTextFont = TypographyKeyTokens.Label
+  val LabelTextFont = TypographyKeyTokens.Label
+  val TextFont = TypographyKeyTokens.BodySmall
 }
 
 internal object SmallSizeLabeledStepperTokens {
   val HorizontalPadding = 14.dp
   val TopPadding = 7.dp
-  val BottomPadding = 8.dp //todo: reversed?
+  val BottomPadding = 8.dp // todo: reversed?
   val ContainerShape = ShapeKeyTokens.CornerLarge
-  val LabelTextFont = TypographyKeyTokens.BodySmall
-  val DescriptionTextFont = TypographyKeyTokens.Label
+  val LabelTextFont = TypographyKeyTokens.Label
+  val TextFont = TypographyKeyTokens.BodySmall
 }
