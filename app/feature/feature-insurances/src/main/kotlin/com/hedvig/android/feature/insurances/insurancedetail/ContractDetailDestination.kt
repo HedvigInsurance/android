@@ -35,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -58,6 +59,8 @@ import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceContract
+import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailsUiState.Loading
+import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailsUiState.Success
 import com.hedvig.android.feature.insurances.insurancedetail.coverage.CoverageTab
 import com.hedvig.android.feature.insurances.insurancedetail.documents.DocumentsTab
 import com.hedvig.android.feature.insurances.insurancedetail.yourinfo.YourInfoTab
@@ -127,30 +130,6 @@ private fun ContractDetailScreen(
     Box(modifier = Modifier.weight(1f)) {
       when (uiState) {
         ContractDetailsUiState.Error -> HedvigErrorSection(onButtonClick = retry, modifier = Modifier.fillMaxSize())
-        is ContractDetailsUiState.Loading -> {
-          Column(
-            Modifier
-              .fillMaxSize()
-              .padding(
-                WindowInsets
-                  .safeDrawing
-                  .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
-                  .asPaddingValues()
-                  .plus(PaddingValues(top = 16.dp)),
-              ),
-          ) {
-            InsuranceCardPlaceholder(
-              imageLoader = imageLoader,
-              modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .sharedElement(
-                  LocalSharedTransitionScope.current,
-                  LocalNavAnimatedVisibilityScope.current,
-                  rememberSharedContentState(uiState.contractId),
-                ),
-            )
-          }
-        }
 
         ContractDetailsUiState.NoContractFound -> {
           HedvigErrorSection(
@@ -161,7 +140,9 @@ private fun ContractDetailScreen(
           )
         }
 
-        is ContractDetailsUiState.Success -> {
+        is ContractDetailsUiState.Success,
+        is ContractDetailsUiState.Loading,
+        -> {
           LazyColumn(
             contentPadding = WindowInsets
               .safeDrawing
@@ -178,90 +159,111 @@ private fun ContractDetailScreen(
               key = 1,
               contentType = "InsuranceCard",
             ) {
-              val contract = uiState.insuranceContract
-              InsuranceCard(
-                chips = contract.createChips(),
-                topText = contract.currentInsuranceAgreement.productVariant.displayName,
-                bottomText = contract.exposureDisplayName,
-                imageLoader = imageLoader,
-                fallbackPainter = contract.createPainter(),
-                isLoading = false,
-                modifier = Modifier
-                  .padding(horizontal = 16.dp)
-                  .sharedElement(
-                    LocalSharedTransitionScope.current,
-                    LocalNavAnimatedVisibilityScope.current,
-                    rememberSharedContentState(contract.id),
-                  ),
-              )
+              when (uiState) {
+                is Loading -> {
+                  InsuranceCardPlaceholder(
+                    imageLoader = imageLoader,
+                    fallbackPainter = uiState.insuranceCardImageId?.let { painterResource(it) },
+                    modifier = Modifier
+                      .padding(horizontal = 16.dp)
+                      .sharedElement(
+                        LocalSharedTransitionScope.current,
+                        LocalNavAnimatedVisibilityScope.current,
+                        rememberSharedContentState(uiState.contractId),
+                      ),
+                  )
+                }
+
+                is Success -> {
+                  InsuranceCard(
+                    chips = uiState.insuranceContract.createChips(),
+                    topText = uiState.insuranceContract.currentInsuranceAgreement.productVariant.displayName,
+                    bottomText = uiState.insuranceContract.exposureDisplayName,
+                    imageLoader = imageLoader,
+                    fallbackPainter = uiState.insuranceContract.createPainter(),
+                    isLoading = false,
+                    modifier = Modifier
+                      .padding(horizontal = 16.dp)
+                      .sharedElement(
+                        LocalSharedTransitionScope.current,
+                        LocalNavAnimatedVisibilityScope.current,
+                        rememberSharedContentState(uiState.insuranceContract.id),
+                      ),
+                  )
+                }
+
+                else -> {}
+              }
             }
-            item(key = 2, contentType = "space") { Spacer(Modifier.height(16.dp)) }
-            stickyHeader(key = 3, contentType = "PagerSelector") { PagerSelector(pagerState) }
-            item(
-              key = 4,
-              contentType = "Pager",
-            ) {
-              HorizontalPager(
-                state = pagerState,
-                key = { it },
-                verticalAlignment = Alignment.Top,
-                modifier = Modifier.animateContentHeight(spring(stiffness = Spring.StiffnessLow)),
-              ) { pageIndex ->
-                when (pageIndex) {
-                  0 -> {
-                    YourInfoTab(
-                      coverageItems = uiState.insuranceContract.currentInsuranceAgreement.displayItems
-                        .map { it.title to it.value },
-                      coInsured = uiState.insuranceContract.currentInsuranceAgreement.coInsured,
-                      allowEditCoInsured = uiState.insuranceContract.supportsEditCoInsured,
-                      contractHolderDisplayName = uiState.insuranceContract.contractHolderDisplayName,
-                      contractHolderSSN = uiState.insuranceContract.contractHolderSSN,
-                      allowChangeAddress = uiState.insuranceContract.supportsAddressChange,
-                      allowTerminatingInsurance = uiState.allowTerminatingInsurance,
-                      onEditCoInsuredClick = {
-                        onEditCoInsuredClick(uiState.insuranceContract.id)
-                      },
-                      onMissingInfoClick = {
-                        onMissingInfoClick(uiState.insuranceContract.id)
-                      },
-                      onChangeAddressClick = onChangeAddressClick,
-                      onNavigateToNewConversation = onNavigateToNewConversation,
-                      openUrl = openUrl,
-                      onCancelInsuranceClick = {
-                        val contractGroup =
-                          uiState.insuranceContract.currentInsuranceAgreement.productVariant.contractGroup
-                        val contractDisplayName =
-                          uiState.insuranceContract.currentInsuranceAgreement.productVariant.displayName
-                        onCancelInsuranceClick(
-                          CancelInsuranceData(
-                            contractId = uiState.insuranceContract.id,
-                            contractDisplayName = contractDisplayName,
-                            contractExposure = uiState.insuranceContract.exposureDisplayName,
-                            contractGroup = contractGroup,
-                            activateFrom = uiState.insuranceContract.currentInsuranceAgreement.activeFrom,
-                          ),
-                        )
-                      },
-                      upcomingChangesInsuranceAgreement = uiState.insuranceContract.upcomingInsuranceAgreement,
-                      isTerminated = uiState.insuranceContract.isTerminated,
-                    )
-                  }
+            if (uiState is ContractDetailsUiState.Success) {
+              item(key = 2, contentType = "space") { Spacer(Modifier.height(16.dp)) }
+              stickyHeader(key = 3, contentType = "PagerSelector") { PagerSelector(pagerState) }
+              item(
+                key = 4,
+                contentType = "Pager",
+              ) {
+                HorizontalPager(
+                  state = pagerState,
+                  key = { it },
+                  verticalAlignment = Alignment.Top,
+                  modifier = Modifier.animateContentHeight(spring(stiffness = Spring.StiffnessLow)),
+                ) { pageIndex ->
+                  when (pageIndex) {
+                    0 -> {
+                      YourInfoTab(
+                        coverageItems = uiState.insuranceContract.currentInsuranceAgreement.displayItems
+                          .map { it.title to it.value },
+                        coInsured = uiState.insuranceContract.currentInsuranceAgreement.coInsured,
+                        allowEditCoInsured = uiState.insuranceContract.supportsEditCoInsured,
+                        contractHolderDisplayName = uiState.insuranceContract.contractHolderDisplayName,
+                        contractHolderSSN = uiState.insuranceContract.contractHolderSSN,
+                        allowChangeAddress = uiState.insuranceContract.supportsAddressChange,
+                        allowTerminatingInsurance = uiState.allowTerminatingInsurance,
+                        onEditCoInsuredClick = {
+                          onEditCoInsuredClick(uiState.insuranceContract.id)
+                        },
+                        onMissingInfoClick = {
+                          onMissingInfoClick(uiState.insuranceContract.id)
+                        },
+                        onChangeAddressClick = onChangeAddressClick,
+                        onNavigateToNewConversation = onNavigateToNewConversation,
+                        openUrl = openUrl,
+                        onCancelInsuranceClick = {
+                          val contractGroup =
+                            uiState.insuranceContract.currentInsuranceAgreement.productVariant.contractGroup
+                          val contractDisplayName =
+                            uiState.insuranceContract.currentInsuranceAgreement.productVariant.displayName
+                          onCancelInsuranceClick(
+                            CancelInsuranceData(
+                              contractId = uiState.insuranceContract.id,
+                              contractDisplayName = contractDisplayName,
+                              contractExposure = uiState.insuranceContract.exposureDisplayName,
+                              contractGroup = contractGroup,
+                              activateFrom = uiState.insuranceContract.currentInsuranceAgreement.activeFrom,
+                            ),
+                          )
+                        },
+                        upcomingChangesInsuranceAgreement = uiState.insuranceContract.upcomingInsuranceAgreement,
+                        isTerminated = uiState.insuranceContract.isTerminated,
+                      )
+                    }
 
-                  1 -> {
-                    CoverageTab(
-                      uiState.insuranceContract.currentInsuranceAgreement.productVariant.insurableLimits,
-                      uiState.insuranceContract.currentInsuranceAgreement.productVariant.perils,
-                    )
-                  }
+                    1 -> {
+                      CoverageTab(
+                        uiState.insuranceContract.currentInsuranceAgreement.productVariant.insurableLimits,
+                        uiState.insuranceContract.currentInsuranceAgreement.productVariant.perils,
+                      )
+                    }
 
-                  2 -> {
-                    DocumentsTab(
-                      documents = uiState.insuranceContract.getAllDocuments(),
-                      onDocumentClicked = openUrl,
-                    )
-                  }
+                    2 -> {
+                      DocumentsTab(
+                        documents = uiState.insuranceContract.getAllDocuments(),
+                        onDocumentClicked = openUrl,
+                      )
+                    }
 
-                  else -> {}
+                    else -> {}
+                  }
                 }
               }
             }
