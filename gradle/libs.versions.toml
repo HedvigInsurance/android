@@ -1,6 +1,6 @@
 [versions]
 # androidSdkVersions
-compileSdkVersion = "34"
+compileSdkVersion = "35"
 targetSdkVersion = "34"
 minSdkVersion = "23"
 
