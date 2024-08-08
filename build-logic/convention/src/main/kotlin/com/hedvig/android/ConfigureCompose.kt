@@ -6,8 +6,6 @@ import org.gradle.kotlin.dsl.assign
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 
 internal fun ComposeCompilerGradlePluginExtension.configureComposeCompiler(project: Project) {
-  enableStrongSkippingMode = true
-
   with(project) {
     fun Provider<String>.onlyIfTrue() = flatMap { provider { it.takeIf(String::toBoolean) } }
 

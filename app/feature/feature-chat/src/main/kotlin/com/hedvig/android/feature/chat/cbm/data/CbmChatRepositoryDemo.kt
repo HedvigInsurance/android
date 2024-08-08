@@ -23,7 +23,7 @@ import kotlinx.datetime.Clock
 internal class CbmChatRepositoryDemo(
   private val clock: Clock,
 ) : CbmChatRepository {
-  private val info = ConversationInfo.Info("1", "Conversation", clock.now(), true)
+  private val info = ConversationInfo.Info("1", null, clock.now(), true)
   private val demoErrorMessage = "No chat impl for demo"
 
   override suspend fun createConversation(conversationId: Uuid): Either<ErrorMessage, ConversationInfo.Info> {

@@ -114,12 +114,20 @@ internal class CbmChatPresenter(
       }
     }
 
-    val updatedConversationIdStatus by rememberUpdatedState(conversationInfoStatus)
+    val updatedConversationInfoStatus by rememberUpdatedState(conversationInfoStatus)
     CollectEvents { event ->
       val startConversationIfNecessary = suspend {
-        val conversationIdStatusValue = updatedConversationIdStatus
-        val conversationAlreadyStarted =
-          (conversationIdStatusValue as? ConversationInfoStatus.Loaded)?.conversationInfo != null
+        val conversationInfoStatusValue = updatedConversationInfoStatus
+        val conversationAlreadyStarted = when (conversationInfoStatusValue) {
+          Failed -> false
+          Initializing -> false
+          is Loaded -> {
+            when (conversationInfoStatusValue.conversationInfo) {
+              NoConversation -> false
+              is Info -> true
+            }
+          }
+        }
         if (!conversationAlreadyStarted) {
           chatRepository.provide().createConversation(conversationId).onRight { backendConversationInfo ->
             conversationInfoStatus = ConversationInfoStatus.Loaded(backendConversationInfo)
@@ -271,7 +279,12 @@ internal sealed interface CbmChatUiState {
       is Info -> {
         when {
           backendConversationInfo.isLegacy -> TopAppBarText.Legacy
-          else -> TopAppBarText.Text(backendConversationInfo.title, backendConversationInfo.createdAt)
+          backendConversationInfo.claimInfo != null -> TopAppBarText.ClaimConversation(
+            backendConversationInfo.claimInfo.claimType,
+            backendConversationInfo.createdAt,
+          )
+
+          else -> TopAppBarText.ServiceConversation(backendConversationInfo.createdAt)
         }
       }
     }
@@ -286,10 +299,9 @@ internal sealed interface CbmChatUiState {
 
       data object Legacy : TopAppBarText
 
-      data class Text(
-        val title: String,
-        val submittedAt: Instant?,
-      ) : TopAppBarText
+      data class ClaimConversation(val claimType: String?, val createdAt: Instant) : TopAppBarText
+
+      data class ServiceConversation(val createdAt: Instant) : TopAppBarText
     }
   }
 }

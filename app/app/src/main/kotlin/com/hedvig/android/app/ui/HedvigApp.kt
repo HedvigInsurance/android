@@ -19,7 +19,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import coil.ImageLoader
@@ -46,6 +45,7 @@ import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -208,20 +208,18 @@ private fun LogoutOnInvalidCredentialsEffect(
       combine(
         authTokenService.authStatus.onEach(authStatusLog).filterNotNull().distinctUntilChanged(),
         demoManager.isDemoMode().distinctUntilChanged(),
-      ) { authStatus: AuthStatus, isDemoMode: Boolean ->
-        authStatus to isDemoMode
-      }.collect { (authStatus, isDemoMode) ->
-        val navBackStackEntry: NavBackStackEntry = hedvigAppState.navController.currentBackStackEntryFlow.first()
+        hedvigAppState.navController.currentBackStackEntryFlow,
+      ) { authStatus: AuthStatus, isDemoMode: Boolean, navBackStackEntry ->
         val isLoggedOut = navBackStackEntry.destination.hierarchy.any { navDestination ->
           navDestination.typedHasRoute<LoginDestination>()
         }
         if (isLoggedOut) {
-          return@collect
+          return@combine
         }
         if (!isDemoMode && authStatus !is AuthStatus.LoggedIn) {
           hedvigAppState.navigateToLoggedOut()
         }
-      }
+      }.collect()
     }
   }
 }

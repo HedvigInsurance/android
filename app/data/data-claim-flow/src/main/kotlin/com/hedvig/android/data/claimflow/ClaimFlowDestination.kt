@@ -152,7 +152,6 @@ sealed interface ClaimFlowDestination {
   ) : ClaimFlowDestination, Destination {
     companion object : DestinationNavTypeAware {
       override val typeList: List<KType> = listOf(
-        typeOf<Boolean?>(),
         typeOf<List<EmergencyOption>>(),
       )
     }
@@ -182,8 +181,6 @@ sealed interface ClaimFlowDestination {
     val selectedLocation: String?,
     val locationOptions: List<LocationOption>,
     val dateOfOccurrence: LocalDate?,
-    val maxDate: LocalDate,
-    val preferredCurrency: UiCurrencyCode?,
     val purchaseDate: LocalDate?,
     val purchasePrice: UiNullableMoney?,
     val availableItemBrands: List<ItemBrand>?,
@@ -200,8 +197,6 @@ sealed interface ClaimFlowDestination {
       override val typeList: List<KType> = listOf(
         typeOf<List<LocationOption>>(),
         typeOf<LocalDate?>(),
-        typeOf<LocalDate>(),
-        typeOf<UiCurrencyCode?>(),
         typeOf<UiNullableMoney?>(),
         typeOf<List<ItemBrand>?>(),
         typeOf<List<ItemModel>?>(),

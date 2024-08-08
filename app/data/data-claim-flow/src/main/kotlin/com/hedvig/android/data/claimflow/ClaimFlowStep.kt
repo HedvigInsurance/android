@@ -83,8 +83,6 @@ sealed interface ClaimFlowStep {
     val location: String?,
     val options: List<FlowClaimLocationStepFragment.Option>,
     val dateOfOccurrence: LocalDate?,
-    val maxDate: LocalDate,
-    val preferredCurrency: CurrencyCode?,
     val purchaseDate: LocalDate?,
     val purchasePrice: MoneyFragment?,
     val availableItemBrands: List<FlowClaimSingleItemStepFragment.AvailableItemBrand>?,
