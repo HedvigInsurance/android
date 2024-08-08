@@ -67,8 +67,6 @@ fun ClaimFlowStep.toClaimFlowDestination(): Destination {
         selectedLocation = location,
         locationOptions = options.map { it.toLocationOption() },
         dateOfOccurrence = dateOfOccurrence,
-        maxDate = maxDate,
-        preferredCurrency = preferredCurrency?.let { UiCurrencyCode.fromCurrencyCode(it) },
         purchaseDate = purchaseDate,
         customName = customName,
         purchasePrice = UiNullableMoney.fromMoneyFragment(purchasePrice),
