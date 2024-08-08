@@ -42,6 +42,7 @@ import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleDetailedStyl
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleStyle
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleStyle.Default
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleStyle.Detailed
+import com.hedvig.android.design.system.hedvig.tokens.AnimationTokens
 import com.hedvig.android.design.system.hedvig.tokens.LargeSizeDefaultToggleTokens
 import com.hedvig.android.design.system.hedvig.tokens.LargeSizeDetailedToggleTokens
 import com.hedvig.android.design.system.hedvig.tokens.MediumSizeDefaultToggleTokens
@@ -72,21 +73,21 @@ fun HedvigToggle(
   LaunchedEffect(enabled) {
     if (enabled) {
       launch {
-        containerColor.animateTo(pulsatingContainerColor, animationSpec = tween(400))
-        containerColor.animateTo(initialContainerColor, animationSpec = tween(600))
+        containerColor.animateTo(pulsatingContainerColor, animationSpec = animationSpec)
+        containerColor.animateTo(initialContainerColor, animationSpec = animationSpecExit)
       }
       launch {
-        labelColor.animateTo(pulsatingLabelColor, animationSpec = tween(400))
-        labelColor.animateTo(initialLabelColor, animationSpec = tween(600))
+        labelColor.animateTo(pulsatingLabelColor, animationSpec = animationSpec)
+        labelColor.animateTo(initialLabelColor, animationSpec = animationSpecExit)
       }
       launch {
-        descriptionColor.animateTo(pulsatingDescriptionColor, animationSpec = tween(400))
-        descriptionColor.animateTo(initialDescriptionColor, animationSpec = tween(600))
+        descriptionColor.animateTo(pulsatingDescriptionColor, animationSpec = animationSpec)
+        descriptionColor.animateTo(initialDescriptionColor, animationSpec = animationSpecExit)
       }
     } else {
-      launch { containerColor.animateTo(initialContainerColor, animationSpec = tween(400)) }
-      launch { labelColor.animateTo(initialLabelColor, animationSpec = tween(400)) }
-      launch { descriptionColor.animateTo(initialDescriptionColor, animationSpec = tween(400)) }
+      launch { containerColor.animateTo(initialContainerColor, animationSpec = animationSpec) }
+      launch { labelColor.animateTo(initialLabelColor, animationSpec = animationSpec) }
+      launch { descriptionColor.animateTo(initialDescriptionColor, animationSpec = animationSpec) }
     }
   }
   when (toggleStyle) {
@@ -212,7 +213,7 @@ private fun Toggle(enabled: Boolean, onClick: (Boolean) -> Unit, modifier: Modif
   Crossfade(
     // todo: looks fine without animating too, bc the is this container color change anyway
     targetState = enabled,
-    animationSpec = tween(400),
+    animationSpec = tween(AnimationTokens().pulsatingAnimationDuration),
   ) { animatedEnabled ->
     Box(modifierNoIndication) {
       ToggleBackground(backgroundColor)
@@ -502,6 +503,9 @@ private val toggleColors: ToggleColors
       )
     }
   }
+
+private val animationSpec = tween<Color>(AnimationTokens().pulsatingAnimationDuration)
+private val animationSpecExit = tween<Color>(AnimationTokens().pulsatingAnimationDurationExit)
 
 private data class ToggleIconSize(
   val height: Dp,
