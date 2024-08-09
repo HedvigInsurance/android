@@ -60,7 +60,6 @@ fun HedvigToggle(
   modifier: Modifier = Modifier,
   toggleStyle: ToggleStyle = ToggleDefaults.toggleStyle,
 ) {
-  val enabled by remember(turnedOn) { mutableStateOf(turnedOn) }
   val initialContainerColor = toggleColors.containerColor(false)
   val pulsatingContainerColor = toggleColors.containerColor(true)
   val containerColor = remember { Animatable(initialContainerColor) }
@@ -70,8 +69,8 @@ fun HedvigToggle(
   val initialDescriptionColor = toggleColors.descriptionColor(false)
   val pulsatingDescriptionColor = toggleColors.descriptionColor(true)
   val descriptionColor = remember { Animatable(initialDescriptionColor) }
-  LaunchedEffect(enabled) {
-    if (enabled) {
+  LaunchedEffect(turnedOn) {
+    if (turnedOn) {
       launch {
         containerColor.animateTo(pulsatingContainerColor, animationSpec = animationSpec)
         containerColor.animateTo(initialContainerColor, animationSpec = animationSpecExit)
@@ -95,7 +94,7 @@ fun HedvigToggle(
       DefaultToggle(
         size = toggleStyle.size,
         labelText = labelText,
-        turnedOn = enabled,
+        turnedOn = turnedOn,
         onClick = onClick,
         modifier = modifier,
         containerColor = containerColor.value,
@@ -107,7 +106,7 @@ fun HedvigToggle(
       DetailedToggle(
         size = toggleStyle.size,
         labelText = labelText,
-        turnedOn = enabled,
+        turnedOn = turnedOn,
         modifier = modifier,
         onClick = onClick,
         descriptionText = toggleStyle.descriptionText,
@@ -201,7 +200,7 @@ private fun DetailedToggle(
 private fun Toggle(enabled: Boolean, onClick: (Boolean) -> Unit, modifier: Modifier = Modifier) {
   val backgroundColor = toggleColors.toggleBackgroundColor(enabled)
   val interactionSource = remember { MutableInteractionSource() }
-  val modifierNoIndication = modifier
+  val modifierNoIndication = Modifier
     .clickable(
       role = Role.Switch,
       interactionSource = interactionSource,
@@ -211,33 +210,45 @@ private fun Toggle(enabled: Boolean, onClick: (Boolean) -> Unit, modifier: Modif
       },
     )
   Crossfade(
-    // todo: looks fine without animating too, bc the is this container color change anyway
     targetState = enabled,
     animationSpec = tween(AnimationTokens().pulsatingAnimationDuration),
+    modifier = modifier
   ) { animatedEnabled ->
     Box(modifierNoIndication) {
-      ToggleBackground(backgroundColor)
-      ToggleTop(
-        backgroundColor = backgroundColor,
-        interactionSource = interactionSource,
-        onClick = {
-          onClick(!animatedEnabled)
+      ToggleBackground(
+        color = backgroundColor,
+        toggleTop = {
+          ToggleTop(
+            backgroundColor = backgroundColor,
+            interactionSource = interactionSource,
+            onClick = {
+              onClick(!animatedEnabled)
+            },
+            modifier = Modifier.align(if (animatedEnabled) Alignment.CenterEnd else Alignment.CenterStart),
+          )
         },
-        modifier = Modifier.align(if (animatedEnabled) Alignment.CenterEnd else Alignment.CenterStart),
       )
     }
   }
 }
 
 @Composable
-private fun ToggleBackground(color: Color) {
+private fun ToggleBackground(
+  color: Color,
+  toggleTop: @Composable () -> Unit,
+  modifier: Modifier = Modifier
+  ) {
   Surface(
-    modifier = Modifier
+    modifier = modifier
       .height(toggleIconSize.height)
       .width(toggleIconSize.width),
     color = color,
     shape = ShapeDefaults.CornerLarge,
-  ) {}
+  ) {
+    Box {
+      toggleTop()
+    }
+  }
 }
 
 @Composable
