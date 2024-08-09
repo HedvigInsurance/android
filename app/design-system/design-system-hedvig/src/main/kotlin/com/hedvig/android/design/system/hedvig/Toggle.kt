@@ -1,6 +1,6 @@
 package com.hedvig.android.design.system.hedvig
 
-import androidx.compose.animation.Animatable
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.foundation.BorderStroke
@@ -27,11 +27,14 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -61,7 +64,9 @@ import com.hedvig.android.design.system.hedvig.tokens.SmallSizeDetailedToggleTok
 import com.hedvig.android.design.system.hedvig.tokens.ToggleColorTokens
 import com.hedvig.android.design.system.hedvig.tokens.ToggleIconSizeTokens
 import kotlin.math.roundToInt
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.drop
 
 @Composable
 fun HedvigToggle(
@@ -71,35 +76,9 @@ fun HedvigToggle(
   modifier: Modifier = Modifier,
   toggleStyle: ToggleStyle = ToggleDefaults.toggleStyle,
 ) {
-  val initialContainerColor = toggleColors.containerColor(false)
-  val pulsatingContainerColor = toggleColors.containerColor(true)
-  val containerColor = remember { Animatable(initialContainerColor) }
-  val initialLabelColor = toggleColors.labelColor(false)
-  val pulsatingLabelColor = toggleColors.labelColor(true)
-  val labelColor = remember { Animatable(initialLabelColor) }
-  val initialDescriptionColor = toggleColors.descriptionColor(false)
-  val pulsatingDescriptionColor = toggleColors.descriptionColor(true)
-  val descriptionColor = remember { Animatable(initialDescriptionColor) }
-  LaunchedEffect(turnedOn) {
-    if (turnedOn) {
-      launch {
-        containerColor.animateTo(pulsatingContainerColor, animationSpec = animationSpec)
-        containerColor.animateTo(initialContainerColor, animationSpec = animationSpecExit)
-      }
-      launch {
-        labelColor.animateTo(pulsatingLabelColor, animationSpec = animationSpec)
-        labelColor.animateTo(initialLabelColor, animationSpec = animationSpecExit)
-      }
-      launch {
-        descriptionColor.animateTo(pulsatingDescriptionColor, animationSpec = animationSpec)
-        descriptionColor.animateTo(initialDescriptionColor, animationSpec = animationSpecExit)
-      }
-    } else {
-      launch { containerColor.animateTo(initialContainerColor, animationSpec = animationSpec) }
-      launch { labelColor.animateTo(initialLabelColor, animationSpec = animationSpec) }
-      launch { descriptionColor.animateTo(initialDescriptionColor, animationSpec = animationSpec) }
-    }
-  }
+  val containerColor = toggleColors.containerColor(turnedOn)
+  val labelColor = toggleColors.labelColor(turnedOn)
+  val descriptionColor = toggleColors.descriptionColor(turnedOn)
   when (toggleStyle) {
     is Default -> {
       DefaultToggle(
@@ -376,28 +355,73 @@ private data class ToggleColors(
   private val toggleBackgroundOnColor: Color,
   private val toggleBackgroundOffColor: Color,
 ) {
+  @Composable
+  fun labelColor(isTurnedOn: Boolean): State<Color> {
+    val shouldPulsate = shouldPulsate(isTurnedOn)
+    val targetValue = when {
+      shouldPulsate -> pulsatingLabelColor
+      else -> labelColor
+    }
+    return animateColorAsState(
+      targetValue = targetValue,
+      animationSpec = tween(
+        durationMillis = AnimationTokens().pulsatingAnimationDuration,
+      ),
+    )
+  }
+
+  @Composable
+  fun containerColor(isTurnedOn: Boolean): State<Color> {
+    val shouldPulsate = shouldPulsate(isTurnedOn)
+    val targetValue = when {
+      shouldPulsate -> pulsatingContainerColor
+      else -> containerColor
+    }
+    return animateColorAsState(
+      targetValue = targetValue,
+      animationSpec = tween(
+        durationMillis = AnimationTokens().pulsatingAnimationDuration,
+      ),
+    )
+  }
+
+  @Composable
+  fun descriptionColor(isTurnedOn: Boolean): State<Color> {
+    val shouldPulsate = shouldPulsate(isTurnedOn)
+    val targetValue = when {
+      shouldPulsate -> pulsatingDescriptionColor
+      else -> descriptionColor
+    }
+    return animateColorAsState(
+      targetValue = targetValue,
+      animationSpec = tween(
+        durationMillis = AnimationTokens().pulsatingAnimationDuration,
+      ),
+    )
+  }
+
+  @Composable
+  private fun shouldPulsate(isTurnedOn: Boolean): Boolean {
+    var shouldPulsate by remember { mutableStateOf(false) }
+    val updatedValue by rememberUpdatedState(isTurnedOn)
+    LaunchedEffect(Unit) {
+      snapshotFlow { updatedValue }
+        .drop(1)
+        .collectLatest { latest ->
+          if (latest) {
+            shouldPulsate = true
+            delay(AnimationTokens().pulsatingAnimationDuration.toLong())
+            shouldPulsate = false
+          }
+        }
+    }
+    return shouldPulsate
+  }
+
   @Stable
   fun toggleBackgroundColor(enabled: Boolean): Color = when {
     enabled -> toggleBackgroundOnColor
     else -> toggleBackgroundOffColor
-  }
-
-  @Stable
-  fun containerColor(pulsating: Boolean): Color = when {
-    pulsating -> pulsatingContainerColor
-    else -> containerColor
-  }
-
-  @Stable
-  fun labelColor(pulsating: Boolean): Color = when {
-    pulsating -> pulsatingLabelColor
-    else -> labelColor
-  }
-
-  @Stable
-  fun descriptionColor(pulsating: Boolean): Color = when {
-    pulsating -> pulsatingDescriptionColor
-    else -> descriptionColor
   }
 }
 
@@ -568,9 +592,6 @@ private val toggleColors: ToggleColors
       )
     }
   }
-
-private val animationSpec = tween<Color>(AnimationTokens().pulsatingAnimationDuration)
-private val animationSpecExit = tween<Color>(AnimationTokens().pulsatingAnimationDurationExit)
 
 private data class ToggleIconSize(
   val height: Dp,
