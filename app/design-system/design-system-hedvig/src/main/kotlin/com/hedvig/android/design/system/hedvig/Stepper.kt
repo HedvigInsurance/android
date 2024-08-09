@@ -570,84 +570,95 @@ private val stepperColors: StepperColors
     }
   }
 
-@Preview
+@Preview(device = "spec:parent=pixel_5,orientation=landscape")
 @Composable
 private fun StepperPreview() {
   HedvigTheme {
     Surface(color = Color.White) {
       Column(Modifier.padding(horizontal = 16.dp)) {
         Spacer(Modifier.height(8.dp))
-        StepperPreviewWithParameters(
-          text = "Large",
-          stepperStyle = Default,
-          size = Large,
-          quantity = 1,
-          showError = false,
-          onPlusClick = { },
-          onMinusClick = { },
-          isPlusEnabled = true,
-          isMinusEnabled = true,
-        )
+        Row {
+          StepperPreviewWithParameters(
+            text = "Large",
+            stepperStyle = Default,
+            size = Large,
+            quantity = 1,
+            showError = false,
+            onPlusClick = { },
+            onMinusClick = { },
+            isPlusEnabled = true,
+            isMinusEnabled = true,
+            modifier = Modifier.weight(1f),
+          )
+          Spacer(Modifier.width(2.dp))
+          StepperPreviewWithParameters(
+            text = "Medium",
+            stepperStyle = Default,
+            size = Medium,
+            quantity = 6,
+            showError = true,
+            onPlusClick = { },
+            onMinusClick = { },
+            isPlusEnabled = false,
+            isMinusEnabled = true,
+            modifier = Modifier.weight(1f),
+          )
+          Spacer(Modifier.width(2.dp))
+          StepperPreviewWithParameters(
+            text = "Small",
+            stepperStyle = Default,
+            size = Small,
+            quantity = 0,
+            showError = false,
+            onPlusClick = { },
+            onMinusClick = { },
+            isPlusEnabled = true,
+            isMinusEnabled = false,
+            modifier = Modifier.weight(1f),
+          )
+        }
         Spacer(Modifier.height(8.dp))
-        StepperPreviewWithParameters(
-          text = "Medium",
-          stepperStyle = Default,
-          size = Medium,
-          quantity = 6,
-          showError = true,
-          onPlusClick = { },
-          onMinusClick = { },
-          isPlusEnabled = false,
-          isMinusEnabled = true,
-        )
-        Spacer(Modifier.height(8.dp))
-        StepperPreviewWithParameters(
-          text = "Small",
-          stepperStyle = Default,
-          size = Small,
-          quantity = 0,
-          showError = false,
-          onPlusClick = { },
-          onMinusClick = { },
-          isPlusEnabled = true,
-          isMinusEnabled = false,
-        )
-        Spacer(Modifier.height(8.dp))
-        StepperPreviewWithParameters(
-          text = "Large",
-          stepperStyle = Labeled("Label"),
-          size = Large,
-          quantity = 1,
-          showError = false,
-          onPlusClick = { },
-          onMinusClick = { },
-          isPlusEnabled = true,
-          isMinusEnabled = true,
-        )
-        Spacer(Modifier.height(8.dp))
-        StepperPreviewWithParameters(
-          text = "Medium",
-          stepperStyle = Labeled("Label"),
-          size = Medium,
-          quantity = 1,
-          showError = false,
-          onPlusClick = { },
-          onMinusClick = { },
-          isPlusEnabled = true,
-          isMinusEnabled = true,
-        )
-        Spacer(Modifier.height(8.dp))
-        StepperPreviewWithParameters(
-          text = "Small",
-          stepperStyle = Labeled("Label"),
-          size = Small,
-          quantity = 1,
-          showError = false,
-          onPlusClick = { },
-          onMinusClick = { },
-          isPlusEnabled = true,
-          isMinusEnabled = true,
-        )
+        Row {
+          StepperPreviewWithParameters(
+            text = "Large",
+            stepperStyle = Labeled("Label"),
+            size = Large,
+            quantity = 1,
+            showError = false,
+            onPlusClick = { },
+            onMinusClick = { },
+            isPlusEnabled = true,
+            isMinusEnabled = true,
+            modifier = Modifier.weight(1f),
+          )
+          Spacer(Modifier.width(2.dp))
+          StepperPreviewWithParameters(
+            text = "Medium",
+            stepperStyle = Labeled("Label"),
+            size = Medium,
+            quantity = 1,
+            showError = false,
+            onPlusClick = { },
+            onMinusClick = { },
+            isPlusEnabled = true,
+            isMinusEnabled = true,
+            modifier = Modifier.weight(1f),
+          )
+          Spacer(Modifier.width(2.dp))
+          StepperPreviewWithParameters(
+            text = "Small",
+            stepperStyle = Labeled("Label"),
+            size = Small,
+            quantity = 1,
+            showError = false,
+            onPlusClick = { },
+            onMinusClick = { },
+            isPlusEnabled = true,
+            isMinusEnabled = true,
+            modifier = Modifier.weight(1f),
+          )
+        }
+
         Spacer(Modifier.height(8.dp))
       }
     }
@@ -665,16 +676,18 @@ private fun StepperPreviewWithParameters(
   showError: Boolean,
   isPlusEnabled: Boolean,
   isMinusEnabled: Boolean,
+  modifier: Modifier,
 ) {
   HedvigStepper(
     showError = showError,
     onPlusClick = onPlusClick,
     onMinusClick = onMinusClick,
-    text = "$text, quantity: $quantity",
+    text = "$text: $quantity",
     stepperStyle = stepperStyle,
     stepperSize = size,
     isPlusEnabled = isPlusEnabled,
     isMinusEnabled = isMinusEnabled,
     errorText = "That would be too much or too little",
+    modifier = modifier,
   )
 }
