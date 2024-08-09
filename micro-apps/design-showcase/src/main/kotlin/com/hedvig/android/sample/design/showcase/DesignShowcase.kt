@@ -8,6 +8,7 @@ import com.hedvig.android.sample.design.showcase.button.ShowcaseButton
 import com.hedvig.android.sample.design.showcase.icons.ShowcaseIcons
 import com.hedvig.android.sample.design.showcase.radio.ShowCaseRadioGroups
 import com.hedvig.android.sample.design.showcase.textfield.ShowcaseTextField
+import com.hedvig.android.sample.design.showcase.toggle.ToggleShowcase
 
 @Composable
 internal fun DesignShowcase(modifier: Modifier = Modifier) {
@@ -20,8 +21,10 @@ internal fun DesignShowcase(modifier: Modifier = Modifier) {
       ShowcaseBottomSheet()
     } else if (showTextField) {
       ShowcaseTextField()
-    } else {
+    } else if (showRadio) {
       ShowCaseRadioGroups()
+    } else if (showToggle) {
+      ToggleShowcase()
     }
   }
 }
@@ -29,4 +32,6 @@ internal fun DesignShowcase(modifier: Modifier = Modifier) {
 private val showIcons = false
 private val showButton = false
 private val showTextField = false
-private val showBottomSheet = true
+private val showBottomSheet = false
+private val showRadio = false
+private val showToggle = true
