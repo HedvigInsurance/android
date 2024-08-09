@@ -1,18 +1,23 @@
 package com.hedvig.android.design.system.hedvig
 
 import androidx.compose.animation.Animatable
-import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.AnchoredDraggableState
+import androidx.compose.foundation.gestures.DraggableAnchors
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -25,16 +30,19 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleDefaultStyleSize.Medium
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleDetailedStyleSize.Large
@@ -42,6 +50,8 @@ import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleDetailedStyl
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleStyle
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleStyle.Default
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleStyle.Detailed
+import com.hedvig.android.design.system.hedvig.ToggleDragAnchors.End
+import com.hedvig.android.design.system.hedvig.ToggleDragAnchors.Start
 import com.hedvig.android.design.system.hedvig.tokens.AnimationTokens
 import com.hedvig.android.design.system.hedvig.tokens.LargeSizeDefaultToggleTokens
 import com.hedvig.android.design.system.hedvig.tokens.LargeSizeDetailedToggleTokens
@@ -50,6 +60,7 @@ import com.hedvig.android.design.system.hedvig.tokens.SmallSizeDefaultToggleToke
 import com.hedvig.android.design.system.hedvig.tokens.SmallSizeDetailedToggleTokens
 import com.hedvig.android.design.system.hedvig.tokens.ToggleColorTokens
 import com.hedvig.android.design.system.hedvig.tokens.ToggleIconSizeTokens
+import kotlin.math.roundToInt
 import kotlinx.coroutines.launch
 
 @Composable
@@ -147,7 +158,11 @@ private fun DefaultToggle(
       Toggle(
         enabled = turnedOn,
         onClick = onClick,
-        modifier = Modifier.padding(size.size.togglePadding),
+        modifier = Modifier
+          .padding(
+            size.size.togglePadding,
+          )
+          .size(width = toggleIconSize.width, height = toggleIconSize.height),
       )
     }
   }
@@ -184,6 +199,7 @@ private fun DetailedToggle(
         Toggle(
           enabled = turnedOn,
           onClick = onClick,
+          modifier = Modifier.size(width = toggleIconSize.width, height = toggleIconSize.height),
         )
       }
       Spacer(Modifier.height(size.size.spacerHeight))
@@ -198,75 +214,113 @@ private fun DetailedToggle(
 
 @Composable
 private fun Toggle(enabled: Boolean, onClick: (Boolean) -> Unit, modifier: Modifier = Modifier) {
+  val density = LocalDensity.current
+  val positionalThreshold = { distance: Float -> distance * 0.3f }
+  val velocityThreshold = { with(density) { 100.dp.toPx() } }
+  val animationSpec = tween<Float>()
+  val decayAnimationSpec = rememberSplineBasedDecay<Float>()
+  val state = rememberSaveable(
+    density,
+    saver = AnchoredDraggableState.Saver(
+      snapAnimationSpec = animationSpec,
+      decayAnimationSpec = decayAnimationSpec,
+      positionalThreshold = positionalThreshold,
+      velocityThreshold = velocityThreshold,
+    ),
+  ) {
+    AnchoredDraggableState(
+      initialValue = if (enabled) End else Start,
+      positionalThreshold = positionalThreshold,
+      velocityThreshold = velocityThreshold,
+      snapAnimationSpec = animationSpec,
+      decayAnimationSpec = decayAnimationSpec,
+    )
+  }
+  LaunchedEffect(state.settledValue) {
+    when (state.settledValue) {
+      Start -> if (enabled) onClick(false)
+      End -> if (!enabled) onClick(true)
+    }
+  }
+  val contentSize = toggleIconSize.height
+  val contentSizePx = with(density) { contentSize.toPx() }
   val backgroundColor = toggleColors.toggleBackgroundColor(enabled)
   val interactionSource = remember { MutableInteractionSource() }
-  val modifierNoIndication = Modifier
-    .clickable(
-      role = Role.Switch,
-      interactionSource = interactionSource,
-      indication = null,
-      onClick = {
-        onClick(!enabled)
-      },
-    )
-  Crossfade(
-    targetState = enabled,
-    animationSpec = tween(AnimationTokens().pulsatingAnimationDuration),
-    modifier = modifier
-  ) { animatedEnabled ->
-    Box(modifierNoIndication) {
-      ToggleBackground(
-        color = backgroundColor,
-        toggleTop = {
-          ToggleTop(
-            backgroundColor = backgroundColor,
-            interactionSource = interactionSource,
-            onClick = {
-              onClick(!animatedEnabled)
+  Box(
+    modifier
+      .height(toggleIconSize.height)
+      .width(toggleIconSize.width),
+  ) {
+    ToggleBackground(
+      modifier = Modifier
+        .fillMaxSize()
+        .onSizeChanged { layoutSize ->
+          val dragEndPoint = layoutSize.width - contentSizePx
+          state.updateAnchors(
+            DraggableAnchors {
+              ToggleDragAnchors.entries
+                .forEach { anchor ->
+                  anchor at dragEndPoint * anchor.fraction
+                }
             },
-            modifier = Modifier.align(if (animatedEnabled) Alignment.CenterEnd else Alignment.CenterStart),
           )
         },
+      color = backgroundColor,
+      interactionSource = interactionSource,
+      contentSize = contentSize,
+      draggableState = state,
+    )
+  }
+}
+
+private enum class ToggleDragAnchors(val fraction: Float) {
+  Start(0f),
+  End(1f),
+}
+
+@Composable
+private fun ToggleBackground(
+  color: Color,
+  interactionSource: MutableInteractionSource,
+  contentSize: Dp,
+  draggableState: AnchoredDraggableState<ToggleDragAnchors>,
+  modifier: Modifier = Modifier,
+) {
+  Surface(
+    color = color,
+    shape = ShapeDefaults.CornerLarge,
+    modifier = modifier,
+  ) {
+    Box {
+      ToggleTop(
+        backgroundColor = color,
+        modifier = Modifier
+          .size(width = contentSize, height = contentSize)
+          .offset {
+            IntOffset(
+              x = draggableState
+                .requireOffset()
+                .roundToInt(),
+              y = 0,
+            )
+          }
+          .anchoredDraggable(
+            draggableState,
+            Orientation.Horizontal,
+            interactionSource = interactionSource,
+          ),
       )
     }
   }
 }
 
 @Composable
-private fun ToggleBackground(
-  color: Color,
-  toggleTop: @Composable () -> Unit,
-  modifier: Modifier = Modifier
-  ) {
+private fun ToggleTop(backgroundColor: Color, modifier: Modifier) {
   Surface(
     modifier = modifier
-      .height(toggleIconSize.height)
-      .width(toggleIconSize.width),
-    color = color,
-    shape = ShapeDefaults.CornerLarge,
-  ) {
-    Box {
-      toggleTop()
-    }
-  }
-}
-
-@Composable
-private fun ToggleTop(
-  backgroundColor: Color,
-  interactionSource: MutableInteractionSource,
-  onClick: () -> Unit,
-  modifier: Modifier,
-) {
-  Surface(
-    modifier = modifier
-      .size(toggleIconSize.height)
-      .clip(CircleShape)
-      .clickable(
-        interactionSource = interactionSource,
-        indication = ripple(),
-        onClick = { onClick() },
-      ),
+      .minimumInteractiveComponentSize()
+      .fillMaxSize()
+      .clip(CircleShape),
     color = toggleColors.toggleTopColor,
     shape = CircleShape,
     border = BorderStroke(1.dp, backgroundColor),
