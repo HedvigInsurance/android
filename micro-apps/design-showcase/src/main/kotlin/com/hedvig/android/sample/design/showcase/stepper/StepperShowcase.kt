@@ -146,6 +146,6 @@ private fun StepperPreviewWithParameters(
     stepperSize = size,
     isPlusEnabled = isPlusEnabled,
     isMinusEnabled = isMinusEnabled,
-    errorText = "Out of bounds",
+    errorText = "That would be out of bounds",
   )
 }
