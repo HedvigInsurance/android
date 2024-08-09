@@ -112,7 +112,7 @@ internal class ChangeAddressOfferPresenter(
       )
       currentState = currentState.copy(error = false, isLoading = true)
       changeAddressRepository.createQuotes(input).fold(
-        ifLeft = { error ->
+        ifLeft = {
           currentState = currentState.copy(
             isLoading = false,
             error = true,

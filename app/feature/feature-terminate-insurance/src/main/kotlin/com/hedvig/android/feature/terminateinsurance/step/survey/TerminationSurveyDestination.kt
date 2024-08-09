@@ -502,8 +502,7 @@ private fun ShowSurveyScreenPreview(
         navigateUp = {},
         navigateToMovingFlow = {},
         closeTerminationFlow = {},
-        changeFeedbackForSelectedReason = { String ->
-        },
+        changeFeedbackForSelectedReason = {},
         onContinueClick = {},
         onCloseFullScreenEditText = {},
         onLaunchFullScreenEditText = {},

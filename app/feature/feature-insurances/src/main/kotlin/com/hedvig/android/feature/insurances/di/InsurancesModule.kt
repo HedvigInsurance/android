@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.insurances.di
 
+import androidx.lifecycle.SavedStateHandle
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.demomode.DemoManager
@@ -30,8 +31,8 @@ val insurancesModule = module {
   viewModel<TerminatedContractsViewModel> {
     TerminatedContractsViewModel(get<GetInsuranceContractsUseCaseProvider>())
   }
-  viewModel<ContractDetailViewModel> { (contractId: String) ->
-    ContractDetailViewModel(contractId, get<FeatureManager>(), get<GetContractForContractIdUseCase>())
+  viewModel<ContractDetailViewModel> {
+    ContractDetailViewModel(get<SavedStateHandle>(), get<FeatureManager>(), get<GetContractForContractIdUseCase>())
   }
   single<GetContractForContractIdUseCase> {
     GetContractForContractIdUseCaseImpl(get<GetInsuranceContractsUseCaseProvider>())

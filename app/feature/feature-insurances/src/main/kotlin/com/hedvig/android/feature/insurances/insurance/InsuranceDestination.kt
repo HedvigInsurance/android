@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.insurances.insurance
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
@@ -43,8 +44,11 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
+import com.hedvig.android.compose.ui.LocalSharedTransitionScope
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
+import com.hedvig.android.compose.ui.rememberSharedContentState
+import com.hedvig.android.compose.ui.sharedElement
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.information.HedvigInformationSection
@@ -67,6 +71,8 @@ import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceUiS
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceViewModel
 import com.hedvig.android.feature.insurances.ui.createChips
 import com.hedvig.android.feature.insurances.ui.createPainter
+import com.hedvig.android.feature.insurances.ui.painterResourceId
+import com.hedvig.android.navigation.compose.LocalNavAnimatedVisibilityScope
 import com.hedvig.android.pullrefresh.PullRefreshDefaults
 import com.hedvig.android.pullrefresh.PullRefreshIndicator
 import com.hedvig.android.pullrefresh.pullRefresh
@@ -77,7 +83,7 @@ import kotlinx.datetime.LocalDate
 @Composable
 internal fun InsuranceDestination(
   viewModel: InsuranceViewModel,
-  onInsuranceCardClick: (contractId: String) -> Unit,
+  onInsuranceCardClick: (contractId: String, contractCardDrawableId: Int?) -> Unit,
   onCrossSellClick: (String) -> Unit,
   navigateToCancelledInsurances: () -> Unit,
   imageLoader: ImageLoader,
@@ -115,7 +121,7 @@ internal fun InsuranceDestination(
 private fun InsuranceScreen(
   uiState: InsuranceUiState,
   reload: () -> Unit,
-  onInsuranceCardClick: (contractId: String) -> Unit,
+  onInsuranceCardClick: (contractId: String, contractCardDrawableId: Int?) -> Unit,
   onCrossSellClick: (String) -> Unit,
   navigateToCancelledInsurances: () -> Unit,
   imageLoader: ImageLoader,
@@ -193,7 +199,7 @@ private fun ColumnScope.InsuranceScreenContent(
   uiState: InsuranceUiState,
   imageLoader: ImageLoader,
   showNotificationBadge: Boolean,
-  onInsuranceCardClick: (contractId: String) -> Unit,
+  onInsuranceCardClick: (contractId: String, contractCardDrawableId: Int?) -> Unit,
   onCrossSellClick: (String) -> Unit,
   navigateToCancelledInsurances: () -> Unit,
   quantityOfCancelledInsurances: Int,
@@ -241,7 +247,7 @@ private fun ColumnScope.InsuranceScreenContent(
 private fun ColumnScope.ContractsSection(
   contracts: List<InsuranceContract>,
   imageLoader: ImageLoader,
-  onInsuranceCardClick: (contractId: String) -> Unit,
+  onInsuranceCardClick: (contractId: String, contractCardDrawableId: Int?) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   if (contracts.isEmpty()) {
@@ -256,7 +262,9 @@ private fun ColumnScope.ContractsSection(
         contract = contract,
         imageLoader = imageLoader,
         modifier = modifier,
-        onInsuranceCardClick = onInsuranceCardClick,
+        onInsuranceCardClick = {
+          onInsuranceCardClick(contract.id, contract.painterResourceId())
+        },
       )
       if (index != contracts.lastIndex) {
         Spacer(Modifier.height(8.dp))
@@ -265,12 +273,13 @@ private fun ColumnScope.ContractsSection(
   }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun InsuranceCard(
   contract: InsuranceContract,
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
-  onInsuranceCardClick: (contractId: String) -> Unit,
+  onInsuranceCardClick: () -> Unit,
 ) {
   InsuranceCard(
     backgroundImageUrl = null,
@@ -279,9 +288,12 @@ fun InsuranceCard(
     bottomText = contract.exposureDisplayName,
     imageLoader = imageLoader,
     modifier = modifier
-      .clickable {
-        onInsuranceCardClick(contract.id)
-      },
+      .sharedElement(
+        LocalSharedTransitionScope.current,
+        LocalNavAnimatedVisibilityScope.current,
+        rememberSharedContentState(contract.id),
+      )
+      .clickable(onClick = onInsuranceCardClick),
     shape = MaterialTheme.shapes.squircleMedium,
     fallbackPainter = contract.createPainter(),
     isLoading = false,
@@ -336,7 +348,7 @@ private fun PreviewInsuranceScreen(
           isRetrying = false,
         ),
         {},
-        {},
+        { _, _ -> },
         {},
         {},
         rememberPreviewImageLoader(),
@@ -358,7 +370,7 @@ private fun PreviewInsuranceDestinationAnimation() {
             uiState = insuranceUiState,
             imageLoader = rememberPreviewImageLoader(),
             reload = {},
-            onInsuranceCardClick = {},
+            onInsuranceCardClick = { _, _ -> },
             onCrossSellClick = {},
             navigateToCancelledInsurances = {},
           )

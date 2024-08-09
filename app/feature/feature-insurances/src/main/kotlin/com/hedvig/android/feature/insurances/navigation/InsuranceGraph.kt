@@ -17,7 +17,6 @@ import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
 import org.koin.androidx.compose.koinViewModel
-import org.koin.core.parameter.parametersOf
 
 fun NavGraphBuilder.insuranceGraph(
   nestedGraphs: NavGraphBuilder.() -> Unit,
@@ -46,8 +45,10 @@ fun NavGraphBuilder.insuranceGraph(
       val viewModel: InsuranceViewModel = koinViewModel()
       InsuranceDestination(
         viewModel = viewModel,
-        onInsuranceCardClick = { contractId: String ->
-          with(navigator) { backStackEntry.navigate(InsurancesDestinations.InsuranceContractDetail(contractId)) }
+        onInsuranceCardClick = { contractId: String, contractCardDrawableId: Int? ->
+          with(navigator) {
+            backStackEntry.navigate(InsurancesDestinations.InsuranceContractDetail(contractId, contractCardDrawableId))
+          }
         },
         onCrossSellClick = openUrl,
         navigateToCancelledInsurances = {
@@ -61,8 +62,7 @@ fun NavGraphBuilder.insuranceGraph(
         navDeepLink { uriPattern = hedvigDeepLinkContainer.contract },
       ),
     ) { backStackEntry ->
-      val contractDetail = this
-      val viewModel: ContractDetailViewModel = koinViewModel { parametersOf(contractDetail.contractId) }
+      val viewModel: ContractDetailViewModel = koinViewModel()
       ContractDetailDestination(
         viewModel = viewModel,
         onEditCoInsuredClick = { contractId: String -> startEditCoInsured(backStackEntry, contractId) },

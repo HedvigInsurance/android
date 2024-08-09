@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.insurances.ui
 
+import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
@@ -52,11 +53,19 @@ internal fun InsuranceContract.createChips(): List<String> {
 
 @Composable
 internal fun InsuranceContract.createPainter(): Painter {
-  return if (isTerminated) {
-    ColorPainter(Color.Black.copy(alpha = 0.7f))
+  val painterResourceId = painterResourceId()
+  return if (painterResourceId != null) {
+    painterResource(id = painterResourceId)
   } else {
-    currentInsuranceAgreement.productVariant.contractGroup
-      .toDrawableRes()
-      .let { drawableRes -> painterResource(id = drawableRes) }
+    ColorPainter(Color.Black.copy(alpha = 0.7f))
+  }
+}
+
+@DrawableRes
+internal fun InsuranceContract.painterResourceId(): Int? {
+  return if (isTerminated) {
+    null
+  } else {
+    currentInsuranceAgreement.productVariant.contractGroup.toDrawableRes()
   }
 }
