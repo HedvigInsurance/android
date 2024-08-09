@@ -29,7 +29,7 @@ import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleStyle.Detail
 fun ToggleShowcase() {
   Surface(color = Color.White, modifier = Modifier.fillMaxSize()) {
     var enabled by remember { mutableStateOf(false) }
-    var enabled2 by remember { mutableStateOf(false) }
+    var enabled2 by remember { mutableStateOf(true) }
     var enabled3 by remember { mutableStateOf(false) }
     var enabled4 by remember { mutableStateOf(false) }
     var enabled5 by remember { mutableStateOf(false) }
