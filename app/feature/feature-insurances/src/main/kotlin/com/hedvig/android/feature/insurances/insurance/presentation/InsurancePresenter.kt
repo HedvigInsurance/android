@@ -18,6 +18,7 @@ import com.hedvig.android.data.contract.android.CrossSell
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCase
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
 import com.hedvig.android.feature.insurances.data.InsuranceContract
+import com.hedvig.android.feature.insurances.ui.UiInsuranceContract
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -37,7 +38,7 @@ internal sealed interface InsuranceScreenEvent {
 }
 
 internal data class InsuranceUiState(
-  val contracts: List<InsuranceContract>,
+  val contracts: List<UiInsuranceContract>,
   val crossSells: List<CrossSell>,
   val showNotificationBadge: Boolean,
   val quantityOfCancelledInsurances: Int,
@@ -168,7 +169,7 @@ private suspend fun loadInsuranceData(
         )
       }
       InsuranceData(
-        contracts = insuranceCards,
+        contracts = insuranceCards.map(UiInsuranceContract::fromInsuranceContract),
         crossSells = crossSells,
         quantityOfCancelledInsurances = contracts.count(InsuranceContract::isTerminated),
       )
@@ -181,7 +182,7 @@ private suspend fun loadInsuranceData(
 }
 
 private data class InsuranceData(
-  val contracts: List<InsuranceContract>,
+  val contracts: List<UiInsuranceContract>,
   val crossSells: List<CrossSell>,
   val quantityOfCancelledInsurances: Int,
 ) {
@@ -195,8 +196,8 @@ private data class InsuranceData(
     }
 
     val Empty: InsuranceData = InsuranceData(
-      contracts = listOf(),
-      crossSells = listOf(),
+      contracts = emptyList(),
+      crossSells = emptyList(),
       quantityOfCancelledInsurances = 0,
     )
   }

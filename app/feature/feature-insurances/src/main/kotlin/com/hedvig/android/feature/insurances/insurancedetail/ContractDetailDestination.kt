@@ -35,7 +35,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -64,8 +63,9 @@ import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailsUiSt
 import com.hedvig.android.feature.insurances.insurancedetail.coverage.CoverageTab
 import com.hedvig.android.feature.insurances.insurancedetail.documents.DocumentsTab
 import com.hedvig.android.feature.insurances.insurancedetail.yourinfo.YourInfoTab
-import com.hedvig.android.feature.insurances.ui.createChips
-import com.hedvig.android.feature.insurances.ui.createPainter
+import com.hedvig.android.feature.insurances.ui.UiInsuranceContract
+import com.hedvig.android.feature.insurances.ui.contractGroupCardPainter
+import com.hedvig.android.feature.insurances.ui.toStringResource
 import com.hedvig.android.navigation.compose.LocalNavAnimatedVisibilityScope
 import hedvig.resources.R
 import kotlinx.coroutines.launch
@@ -163,7 +163,7 @@ private fun ContractDetailScreen(
                 is Loading -> {
                   InsuranceCardPlaceholder(
                     imageLoader = imageLoader,
-                    fallbackPainter = uiState.insuranceCardImageId?.let { painterResource(it) },
+                    fallbackPainter = uiState.uiContractGroup?.contractGroupCardPainter(),
                     modifier = Modifier
                       .padding(horizontal = 16.dp)
                       .sharedElement(
@@ -176,18 +176,18 @@ private fun ContractDetailScreen(
 
                 is Success -> {
                   InsuranceCard(
-                    chips = uiState.insuranceContract.createChips(),
-                    topText = uiState.insuranceContract.currentInsuranceAgreement.productVariant.displayName,
-                    bottomText = uiState.insuranceContract.exposureDisplayName,
+                    chips = uiState.uiInsuranceContract.chips.map { stringResource(it.toStringResource()) },
+                    topText = uiState.uiInsuranceContract.displayName,
+                    bottomText = uiState.uiInsuranceContract.exposureDisplayName,
                     imageLoader = imageLoader,
-                    fallbackPainter = uiState.insuranceContract.createPainter(),
+                    fallbackPainter = uiState.uiInsuranceContract.contractGroupCardPainter(),
                     isLoading = false,
                     modifier = Modifier
                       .padding(horizontal = 16.dp)
                       .sharedElement(
                         LocalSharedTransitionScope.current,
                         LocalNavAnimatedVisibilityScope.current,
-                        rememberSharedContentState(uiState.insuranceContract.id),
+                        rememberSharedContentState(uiState.uiInsuranceContract.id),
                       ),
                   )
                 }
@@ -326,39 +326,41 @@ private fun PagerSelector(pagerState: PagerState) {
 private fun PreviewContractDetailScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
+      val insuranceContract = InsuranceContract(
+        "1",
+        "Test123",
+        exposureDisplayName = "Test exposure",
+        inceptionDate = LocalDate.fromEpochDays(200),
+        terminationDate = LocalDate.fromEpochDays(400),
+        currentInsuranceAgreement = InsuranceAgreement(
+          activeFrom = LocalDate.fromEpochDays(240),
+          activeTo = LocalDate.fromEpochDays(340),
+          displayItems = listOf(),
+          productVariant = ProductVariant(
+            displayName = "Variant",
+            contractGroup = ContractGroup.RENTAL,
+            contractType = ContractType.SE_APARTMENT_RENT,
+            partner = null,
+            perils = listOf(),
+            insurableLimits = listOf(),
+            documents = listOf(),
+          ),
+          certificateUrl = null,
+          coInsured = listOf(),
+          creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
+        ),
+        upcomingInsuranceAgreement = null,
+        renewalDate = LocalDate.fromEpochDays(500),
+        supportsAddressChange = false,
+        supportsEditCoInsured = true,
+        isTerminated = false,
+        contractHolderDisplayName = "Hugo Linder",
+        contractHolderSSN = "199101131093",
+      )
       ContractDetailScreen(
         uiState = ContractDetailsUiState.Success(
-          InsuranceContract(
-            "1",
-            "Test123",
-            exposureDisplayName = "Test exposure",
-            inceptionDate = LocalDate.fromEpochDays(200),
-            terminationDate = LocalDate.fromEpochDays(400),
-            currentInsuranceAgreement = InsuranceAgreement(
-              activeFrom = LocalDate.fromEpochDays(240),
-              activeTo = LocalDate.fromEpochDays(340),
-              displayItems = listOf(),
-              productVariant = ProductVariant(
-                displayName = "Variant",
-                contractGroup = ContractGroup.RENTAL,
-                contractType = ContractType.SE_APARTMENT_RENT,
-                partner = null,
-                perils = listOf(),
-                insurableLimits = listOf(),
-                documents = listOf(),
-              ),
-              certificateUrl = null,
-              coInsured = listOf(),
-              creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
-            ),
-            upcomingInsuranceAgreement = null,
-            renewalDate = LocalDate.fromEpochDays(500),
-            supportsAddressChange = false,
-            supportsEditCoInsured = true,
-            isTerminated = false,
-            contractHolderDisplayName = "Hugo Linder",
-            contractHolderSSN = "199101131093",
-          ),
+          UiInsuranceContract.fromInsuranceContract(insuranceContract),
+          insuranceContract,
           true,
         ),
         imageLoader = rememberPreviewImageLoader(),

@@ -60,30 +60,25 @@ import com.hedvig.android.core.ui.card.InsuranceCardPlaceholder
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.crosssells.CrossSellItemPlaceholder
 import com.hedvig.android.crosssells.CrossSellsSection
-import com.hedvig.android.data.contract.ContractGroup
-import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.contract.android.CrossSell
-import com.hedvig.android.data.productvariant.ProductVariant
-import com.hedvig.android.feature.insurances.data.InsuranceAgreement
-import com.hedvig.android.feature.insurances.data.InsuranceContract
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceScreenEvent
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceUiState
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceViewModel
-import com.hedvig.android.feature.insurances.ui.createChips
-import com.hedvig.android.feature.insurances.ui.createPainter
-import com.hedvig.android.feature.insurances.ui.painterResourceId
+import com.hedvig.android.feature.insurances.ui.UiInsuranceContract
+import com.hedvig.android.feature.insurances.ui.UiInsuranceContract.UiContractGroup.Rental
+import com.hedvig.android.feature.insurances.ui.contractGroupCardPainter
+import com.hedvig.android.feature.insurances.ui.toStringResource
 import com.hedvig.android.navigation.compose.LocalNavAnimatedVisibilityScope
 import com.hedvig.android.pullrefresh.PullRefreshDefaults
 import com.hedvig.android.pullrefresh.PullRefreshIndicator
 import com.hedvig.android.pullrefresh.pullRefresh
 import com.hedvig.android.pullrefresh.rememberPullRefreshState
 import hedvig.resources.R
-import kotlinx.datetime.LocalDate
 
 @Composable
 internal fun InsuranceDestination(
   viewModel: InsuranceViewModel,
-  onInsuranceCardClick: (contractId: String, contractCardDrawableId: Int?) -> Unit,
+  onInsuranceCardClick: (UiInsuranceContract) -> Unit,
   onCrossSellClick: (String) -> Unit,
   navigateToCancelledInsurances: () -> Unit,
   imageLoader: ImageLoader,
@@ -121,7 +116,7 @@ internal fun InsuranceDestination(
 private fun InsuranceScreen(
   uiState: InsuranceUiState,
   reload: () -> Unit,
-  onInsuranceCardClick: (contractId: String, contractCardDrawableId: Int?) -> Unit,
+  onInsuranceCardClick: (UiInsuranceContract) -> Unit,
   onCrossSellClick: (String) -> Unit,
   navigateToCancelledInsurances: () -> Unit,
   imageLoader: ImageLoader,
@@ -199,7 +194,7 @@ private fun ColumnScope.InsuranceScreenContent(
   uiState: InsuranceUiState,
   imageLoader: ImageLoader,
   showNotificationBadge: Boolean,
-  onInsuranceCardClick: (contractId: String, contractCardDrawableId: Int?) -> Unit,
+  onInsuranceCardClick: (UiInsuranceContract) -> Unit,
   onCrossSellClick: (String) -> Unit,
   navigateToCancelledInsurances: () -> Unit,
   quantityOfCancelledInsurances: Int,
@@ -245,9 +240,9 @@ private fun ColumnScope.InsuranceScreenContent(
 
 @Composable
 private fun ColumnScope.ContractsSection(
-  contracts: List<InsuranceContract>,
+  contracts: List<UiInsuranceContract>,
   imageLoader: ImageLoader,
-  onInsuranceCardClick: (contractId: String, contractCardDrawableId: Int?) -> Unit,
+  onInsuranceCardClick: (UiInsuranceContract) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   if (contracts.isEmpty()) {
@@ -263,7 +258,7 @@ private fun ColumnScope.ContractsSection(
         imageLoader = imageLoader,
         modifier = modifier,
         onInsuranceCardClick = {
-          onInsuranceCardClick(contract.id, contract.painterResourceId())
+          onInsuranceCardClick(contract)
         },
       )
       if (index != contracts.lastIndex) {
@@ -275,16 +270,16 @@ private fun ColumnScope.ContractsSection(
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun InsuranceCard(
-  contract: InsuranceContract,
+private fun InsuranceCard(
+  contract: UiInsuranceContract,
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
   onInsuranceCardClick: () -> Unit,
 ) {
   InsuranceCard(
     backgroundImageUrl = null,
-    chips = contract.createChips(),
-    topText = contract.currentInsuranceAgreement.productVariant.displayName,
+    chips = contract.chips.map { stringResource(it.toStringResource()) },
+    topText = contract.displayName,
     bottomText = contract.exposureDisplayName,
     imageLoader = imageLoader,
     modifier = modifier
@@ -295,7 +290,7 @@ fun InsuranceCard(
       )
       .clickable(onClick = onInsuranceCardClick),
     shape = MaterialTheme.shapes.squircleMedium,
-    fallbackPainter = contract.createPainter(),
+    fallbackPainter = contract.contractGroupCardPainter(),
     isLoading = false,
   )
 }
@@ -348,7 +343,7 @@ private fun PreviewInsuranceScreen(
           isRetrying = false,
         ),
         {},
-        { _, _ -> },
+        {},
         {},
         {},
         rememberPreviewImageLoader(),
@@ -370,7 +365,7 @@ private fun PreviewInsuranceDestinationAnimation() {
             uiState = insuranceUiState,
             imageLoader = rememberPreviewImageLoader(),
             reload = {},
-            onInsuranceCardClick = { _, _ -> },
+            onInsuranceCardClick = {},
             onCrossSellClick = {},
             navigateToCancelledInsurances = {},
           )
@@ -463,34 +458,11 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
   ),
 )
 
-private val previewInsurance = InsuranceContract(
-  "1",
-  "Test123",
-  exposureDisplayName = "",
-  inceptionDate = LocalDate.fromEpochDays(200),
-  terminationDate = LocalDate.fromEpochDays(400),
-  currentInsuranceAgreement = InsuranceAgreement(
-    activeFrom = LocalDate.fromEpochDays(240),
-    activeTo = LocalDate.fromEpochDays(340),
-    displayItems = listOf(),
-    productVariant = ProductVariant(
-      displayName = "",
-      contractGroup = ContractGroup.RENTAL,
-      contractType = ContractType.SE_APARTMENT_RENT,
-      partner = null,
-      perils = listOf(),
-      insurableLimits = listOf(),
-      documents = listOf(),
-    ),
-    certificateUrl = null,
-    coInsured = listOf(),
-    creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
-  ),
-  upcomingInsuranceAgreement = null,
-  renewalDate = LocalDate.fromEpochDays(500),
-  supportsAddressChange = false,
-  supportsEditCoInsured = true,
+private val previewInsurance = UiInsuranceContract(
+  id = "1",
+  chips = listOf(UiInsuranceContract.UiInsuranceChipInfo.Active),
+  uiContractGroup = Rental,
+  displayName = "displayName",
+  exposureDisplayName = "exposureDisplayName",
   isTerminated = false,
-  contractHolderDisplayName = "Hhhhh Hhhhh",
-  contractHolderSSN = "19910913-1893",
 )

@@ -45,9 +45,14 @@ fun NavGraphBuilder.insuranceGraph(
       val viewModel: InsuranceViewModel = koinViewModel()
       InsuranceDestination(
         viewModel = viewModel,
-        onInsuranceCardClick = { contractId: String, contractCardDrawableId: Int? ->
+        onInsuranceCardClick = { uiInsuranceContract ->
           with(navigator) {
-            backStackEntry.navigate(InsurancesDestinations.InsuranceContractDetail(contractId, contractCardDrawableId))
+            backStackEntry.navigate(
+              InsurancesDestinations.InsuranceContractDetail(
+                contractId = uiInsuranceContract.id,
+                uiContractGroup = uiInsuranceContract.uiContractGroup,
+              ),
+            )
           }
         },
         onCrossSellClick = openUrl,

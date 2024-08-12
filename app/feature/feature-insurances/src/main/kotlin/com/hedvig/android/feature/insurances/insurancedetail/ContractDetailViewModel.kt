@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.insurances.insurancedetail
 
-import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -11,6 +10,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import com.hedvig.android.feature.insurances.data.InsuranceContract
 import com.hedvig.android.feature.insurances.navigation.InsurancesDestinations
+import com.hedvig.android.feature.insurances.ui.UiInsuranceContract
+import com.hedvig.android.feature.insurances.ui.UiInsuranceContract.UiContractGroup
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.molecule.android.MoleculeViewModel
@@ -22,14 +23,14 @@ import kotlinx.coroutines.flow.combine
 
 internal class ContractDetailViewModel(
   val contractId: String,
-  @DrawableRes val contractCardDrawableId: Int?,
+  val uiContractGroup: UiContractGroup?,
   featureManager: FeatureManager,
   getContractForContractIdUseCase: GetContractForContractIdUseCase,
 ) : MoleculeViewModel<ContractDetailsEvent, ContractDetailsUiState>(
-    initialState = ContractDetailsUiState.Loading(contractId, contractCardDrawableId),
+    initialState = ContractDetailsUiState.Loading(contractId, uiContractGroup),
     presenter = ContractDetailPresenter(
       contractId,
-      contractCardDrawableId,
+      uiContractGroup,
       featureManager,
       getContractForContractIdUseCase,
     ),
@@ -43,7 +44,7 @@ internal class ContractDetailViewModel(
       val insuranceContractDetail = savedStateHandle.typedToRoute<InsurancesDestinations.InsuranceContractDetail>()
       return ContractDetailViewModel(
         insuranceContractDetail.contractId,
-        insuranceContractDetail.contractCardDrawableId,
+        insuranceContractDetail.uiContractGroup,
         featureManager,
         getContractForContractIdUseCase,
       )
@@ -53,7 +54,7 @@ internal class ContractDetailViewModel(
 
 internal class ContractDetailPresenter(
   private val contractId: String,
-  private val insuranceCardImageId: Int?,
+  private val uiContractGroup: UiContractGroup?,
   private val featureManager: FeatureManager,
   private val getContractForContractIdUseCase: GetContractForContractIdUseCase,
 ) : MoleculePresenter<ContractDetailsEvent, ContractDetailsUiState> {
@@ -72,7 +73,7 @@ internal class ContractDetailPresenter(
 
     LaunchedEffect(dataLoadIteration) {
       if (currentState !is ContractDetailsUiState.Success) {
-        currentState = ContractDetailsUiState.Loading(contractId, insuranceCardImageId)
+        currentState = ContractDetailsUiState.Loading(contractId, uiContractGroup)
       }
       combine(
         getContractForContractIdUseCase.invoke(contractId),
@@ -90,6 +91,7 @@ internal class ContractDetailPresenter(
           ifRight = { contract ->
             val noTerminationDateYet = contract.terminationDate == null
             currentState = ContractDetailsUiState.Success(
+              uiInsuranceContract = UiInsuranceContract.fromInsuranceContract(contract),
               insuranceContract = contract,
               allowTerminatingInsurance = isTerminationFlowEnabled && noTerminationDateYet,
             )
@@ -103,6 +105,7 @@ internal class ContractDetailPresenter(
 
 internal sealed interface ContractDetailsUiState {
   data class Success(
+    val uiInsuranceContract: UiInsuranceContract,
     val insuranceContract: InsuranceContract,
     val allowTerminatingInsurance: Boolean,
   ) : ContractDetailsUiState
@@ -113,7 +116,7 @@ internal sealed interface ContractDetailsUiState {
 
   data class Loading(
     val contractId: String,
-    @DrawableRes val insuranceCardImageId: Int?,
+    val uiContractGroup: UiContractGroup?,
   ) : ContractDetailsUiState
 }
 

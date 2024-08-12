@@ -44,7 +44,7 @@ import com.hedvig.android.core.icons.hedvig.normal.InfoFilled
 import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.core.ui.hedvigDateTimeFormatter
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
-import com.hedvig.android.data.contract.android.toPillow
+import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.design.system.hedvig.ripple
 import com.hedvig.android.feature.changeaddress.data.MoveQuote
 import hedvig.resources.R
@@ -199,4 +199,17 @@ private fun PreviewQuoteCard() {
       )
     }
   }
+}
+
+private fun ContractGroup.toPillow(): Int = when (this) {
+  ContractGroup.HOMEOWNER -> R.drawable.ic_pillow_homeowner
+  ContractGroup.HOUSE -> R.drawable.ic_pillow_villa
+  ContractGroup.RENTAL -> R.drawable.ic_pillow_rental
+  ContractGroup.STUDENT -> R.drawable.ic_pillow_student
+  ContractGroup.ACCIDENT -> R.drawable.ic_pillow_accident
+  ContractGroup.CAR -> R.drawable.ic_pillow_car
+  ContractGroup.CAT -> R.drawable.ic_pillow_cat
+  ContractGroup.DOG -> R.drawable.ic_pillow_dog
+  ContractGroup.TRAVEL -> R.drawable.ic_pillow_homeowner
+  ContractGroup.UNKNOWN -> R.drawable.ic_pillow_homeowner
 }
