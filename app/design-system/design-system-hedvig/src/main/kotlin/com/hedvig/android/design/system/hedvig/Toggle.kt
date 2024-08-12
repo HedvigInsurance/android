@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -266,8 +267,8 @@ private fun ToggleBackground(
     shape = ShapeDefaults.CornerLarge,
     modifier = modifier,
   ) {
-    Box{
       Box(modifier = Modifier
+        .wrapContentSize(align = Alignment.TopStart)
         .size(width = contentSize, height = contentSize)
         .offset {
           IntOffset(
@@ -284,7 +285,6 @@ private fun ToggleBackground(
         ),) {
         content()
       }
-    }
   }
 }
 
