@@ -32,7 +32,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -55,6 +54,7 @@ import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleStyle.Defaul
 import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleStyle.Detailed
 import com.hedvig.android.design.system.hedvig.ToggleDragAnchors.End
 import com.hedvig.android.design.system.hedvig.ToggleDragAnchors.Start
+import com.hedvig.android.design.system.hedvig.internal.rememberAnchorDraggableState
 import com.hedvig.android.design.system.hedvig.tokens.AnimationTokens
 import com.hedvig.android.design.system.hedvig.tokens.LargeSizeDefaultToggleTokens
 import com.hedvig.android.design.system.hedvig.tokens.LargeSizeDetailedToggleTokens
@@ -76,9 +76,9 @@ fun HedvigToggle(
   modifier: Modifier = Modifier,
   toggleStyle: ToggleStyle = ToggleDefaults.toggleStyle,
 ) {
-  val containerColor = toggleColors.containerColor(turnedOn)
-  val labelColor = toggleColors.labelColor(turnedOn)
-  val descriptionColor = toggleColors.descriptionColor(turnedOn)
+  val containerColor by toggleColors.containerColor(turnedOn)
+  val labelColor by toggleColors.labelColor(turnedOn)
+  val descriptionColor by toggleColors.descriptionColor(turnedOn)
   when (toggleStyle) {
     is Default -> {
       DefaultToggle(
@@ -87,8 +87,8 @@ fun HedvigToggle(
         turnedOn = turnedOn,
         onClick = onClick,
         modifier = modifier,
-        containerColor = containerColor.value,
-        labelColor = labelColor.value,
+        containerColor = containerColor,
+        labelColor = labelColor,
       )
     }
 
@@ -100,9 +100,9 @@ fun HedvigToggle(
         modifier = modifier,
         onClick = onClick,
         descriptionText = toggleStyle.descriptionText,
-        containerColor = containerColor.value,
-        descriptionColor = descriptionColor.value,
-        labelColor = labelColor.value,
+        containerColor = containerColor,
+        descriptionColor = descriptionColor,
+        labelColor = labelColor,
       )
     }
   }
@@ -198,23 +198,13 @@ private fun Toggle(enabled: Boolean, onClick: (Boolean) -> Unit, modifier: Modif
   val velocityThreshold = { with(density) { 100.dp.toPx() } }
   val animationSpec = tween<Float>()
   val decayAnimationSpec = rememberSplineBasedDecay<Float>()
-  val state = rememberSaveable(
-    density,
-    saver = AnchoredDraggableState.Saver(
-      snapAnimationSpec = animationSpec,
-      decayAnimationSpec = decayAnimationSpec,
-      positionalThreshold = positionalThreshold,
-      velocityThreshold = velocityThreshold,
-    ),
-  ) {
-    AnchoredDraggableState(
-      initialValue = if (enabled) End else Start,
-      positionalThreshold = positionalThreshold,
-      velocityThreshold = velocityThreshold,
-      snapAnimationSpec = animationSpec,
-      decayAnimationSpec = decayAnimationSpec,
-    )
-  }
+  val state = rememberAnchorDraggableState(
+    initialValue = if (enabled) End else Start,
+    positionalThreshold = positionalThreshold,
+    velocityThreshold = velocityThreshold,
+    snapAnimationSpec = animationSpec,
+    decayAnimationSpec = decayAnimationSpec,
+  )
   LaunchedEffect(state.settledValue) {
     when (state.settledValue) {
       Start -> if (enabled) onClick(false)
@@ -270,26 +260,24 @@ private fun ToggleBackground(
     shape = ShapeDefaults.CornerLarge,
     modifier = modifier,
   ) {
-    Box {
-      ToggleTop(
-        backgroundColor = color,
-        modifier = Modifier
-          .size(width = contentSize, height = contentSize)
-          .offset {
-            IntOffset(
-              x = draggableState
-                .requireOffset()
-                .roundToInt(),
-              y = 0,
-            )
-          }
-          .anchoredDraggable(
-            draggableState,
-            Orientation.Horizontal,
-            interactionSource = interactionSource,
-          ),
-      )
-    }
+    ToggleTop(
+      backgroundColor = color,
+      modifier = Modifier
+        .size(width = contentSize, height = contentSize)
+        .offset {
+          IntOffset(
+            x = draggableState
+              .requireOffset()
+              .roundToInt(),
+            y = 0,
+          )
+        }
+        .anchoredDraggable(
+          draggableState,
+          Orientation.Horizontal,
+          interactionSource = interactionSource,
+        ),
+    )
   }
 }
 
