@@ -4,6 +4,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -46,7 +49,7 @@ fun StepperShowcase() {
           quantity -= 1
         }
       }
-      Column(Modifier.padding(horizontal = 16.dp)) {
+      Column(Modifier.safeContentPadding().padding(16.dp).verticalScroll(rememberScrollState())) {
         Spacer(Modifier.height(120.dp))
         StepperPreviewWithParameters(
           text = "Large",
@@ -141,7 +144,7 @@ private fun StepperPreviewWithParameters(
     showError = showError,
     onPlusClick = onPlusClick,
     onMinusClick = onMinusClick,
-    text = "$text, lalalalallalalalla lalalalallalalallalalalalallalalallaquantity: $quantity",
+    text = "$text, quantity: $quantity",
     stepperStyle = stepperStyle,
     stepperSize = size,
     isPlusEnabled = isPlusEnabled,
