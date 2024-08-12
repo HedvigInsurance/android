@@ -37,7 +37,7 @@ import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmal
 import com.hedvig.android.core.designsystem.material3.lightTypeContainer
 import com.hedvig.android.core.designsystem.material3.onLightTypeContainer
 import com.hedvig.android.core.designsystem.material3.squircleLarge
-import com.hedvig.android.data.contract.android.CrossSell
+import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.placeholder.PlaceholderHighlight
 import com.hedvig.android.placeholder.fade
 import com.hedvig.android.placeholder.placeholder
@@ -47,7 +47,7 @@ import hedvig.resources.R
 @Composable
 fun ColumnScope.CrossSellsSection(
   showNotificationBadge: Boolean,
-  crossSells: List<CrossSell>,
+  crossSells: List<com.hedvig.android.data.contract.CrossSell>,
   onCrossSellClick: (String) -> Unit,
 ) {
   CrossSellsSubHeaderWithDivider(showNotificationBadge)
@@ -66,7 +66,7 @@ fun ColumnScope.CrossSellItemPlaceholder() {
     crossSellTitle = "HHHH",
     crossSellSubtitle = "HHHHHHHH\nHHHHHHHHHHH",
     storeUrl = "",
-    type = CrossSell.CrossSellType.HOME,
+    type = com.hedvig.android.data.contract.CrossSell.CrossSellType.HOME,
     onCrossSellClick = {},
     isLoading = true,
     modifier = Modifier.padding(horizontal = 16.dp),
@@ -87,7 +87,11 @@ private fun ColumnScope.CrossSellsSubHeaderWithDivider(showNotificationBadge: Bo
 }
 
 @Composable
-private fun CrossSellItem(crossSell: CrossSell, onCrossSellClick: (String) -> Unit, modifier: Modifier = Modifier) {
+private fun CrossSellItem(
+  crossSell: com.hedvig.android.data.contract.CrossSell,
+  onCrossSellClick: (String) -> Unit,
+  modifier: Modifier = Modifier,
+) {
   CrossSellItem(
     crossSellTitle = crossSell.title,
     crossSellSubtitle = crossSell.subtitle,
@@ -104,7 +108,7 @@ private fun CrossSellItem(
   crossSellTitle: String,
   crossSellSubtitle: String,
   storeUrl: String,
-  type: CrossSell.CrossSellType,
+  type: com.hedvig.android.data.contract.CrossSell.CrossSellType,
   onCrossSellClick: (String) -> Unit,
   isLoading: Boolean,
   modifier: Modifier = Modifier,
@@ -195,10 +199,10 @@ private fun NotificationSubheading(text: String, showNotification: Boolean, modi
   }
 }
 
-private fun CrossSell.CrossSellType.iconRes(): Int = when (this) {
-  CrossSell.CrossSellType.PET -> R.drawable.ic_pillow_pet
-  CrossSell.CrossSellType.HOME -> R.drawable.ic_pillow_home
-  CrossSell.CrossSellType.ACCIDENT -> R.drawable.ic_pillow_accident
-  CrossSell.CrossSellType.CAR -> R.drawable.ic_pillow_car
-  CrossSell.CrossSellType.UNKNOWN -> R.drawable.ic_pillow_home
+private fun com.hedvig.android.data.contract.CrossSell.CrossSellType.iconRes(): Int = when (this) {
+  com.hedvig.android.data.contract.CrossSell.CrossSellType.PET -> R.drawable.ic_pillow_pet
+  com.hedvig.android.data.contract.CrossSell.CrossSellType.HOME -> R.drawable.ic_pillow_home
+  com.hedvig.android.data.contract.CrossSell.CrossSellType.ACCIDENT -> R.drawable.ic_pillow_accident
+  com.hedvig.android.data.contract.CrossSell.CrossSellType.CAR -> R.drawable.ic_pillow_car
+  com.hedvig.android.data.contract.CrossSell.CrossSellType.UNKNOWN -> R.drawable.ic_pillow_home
 }

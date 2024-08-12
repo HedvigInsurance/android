@@ -1,4 +1,4 @@
-package com.hedvig.android.data.contract.android
+package com.hedvig.android.data.contract
 
 data class CrossSell(
   val id: String,

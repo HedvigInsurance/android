@@ -12,7 +12,7 @@ import androidx.compose.runtime.snapshots.Snapshot
 import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.chat.read.timestamp.ChatLastMessageReadRepository
-import com.hedvig.android.data.contract.android.CrossSell
+import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorage
@@ -229,6 +229,6 @@ sealed interface HomeTopBarAction {
   ) : HomeTopBarAction
 
   data class CrossSellsAction(
-    val crossSells: List<CrossSell>,
+    val crossSells: List<com.hedvig.android.data.contract.CrossSell>,
   ) : HomeTopBarAction
 }

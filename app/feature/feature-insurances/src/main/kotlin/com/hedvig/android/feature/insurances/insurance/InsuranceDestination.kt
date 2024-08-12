@@ -60,7 +60,9 @@ import com.hedvig.android.core.ui.card.InsuranceCardPlaceholder
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.crosssells.CrossSellItemPlaceholder
 import com.hedvig.android.crosssells.CrossSellsSection
-import com.hedvig.android.data.contract.android.CrossSell
+import com.hedvig.android.data.contract.CrossSell
+import com.hedvig.android.data.contract.CrossSell.CrossSellType.HOME
+import com.hedvig.android.data.contract.CrossSell.CrossSellType.PET
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceScreenEvent
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceUiState
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceViewModel
@@ -333,7 +335,7 @@ private fun PreviewInsuranceScreen(
               title = "Pet",
               subtitle = "Unlimited FirstVet calls",
               storeUrl = "",
-              type = CrossSell.CrossSellType.HOME,
+              type = HOME,
             ),
           ),
           showNotificationBadge = false,
@@ -395,7 +397,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
           title = "Pet",
           subtitle = "Unlimited FirstVet calls",
           storeUrl = "",
-          type = CrossSell.CrossSellType.HOME,
+          type = HOME,
         ),
       ),
       showNotificationBadge = false,
@@ -421,14 +423,14 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
           title = "Home",
           subtitle = "Unlimited home",
           storeUrl = "",
-          type = CrossSell.CrossSellType.HOME,
+          type = HOME,
         ),
         CrossSell(
           id = "2",
           title = "Pet",
           subtitle = "Unlimited FirstVet calls".repeat(2),
           storeUrl = "",
-          type = CrossSell.CrossSellType.PET,
+          type = PET,
         ),
       ),
       hasError = false,
