@@ -141,7 +141,7 @@ private fun StepperPreviewWithParameters(
     showError = showError,
     onPlusClick = onPlusClick,
     onMinusClick = onMinusClick,
-    text = "$text, quantity: $quantity",
+    text = "$text, lalalalallalalalla lalalalallalalallalalalalallalalallaquantity: $quantity",
     stepperStyle = stepperStyle,
     stepperSize = size,
     isPlusEnabled = isPlusEnabled,

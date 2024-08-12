@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,7 +25,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
@@ -125,25 +125,26 @@ private fun DefaultStepper(
       color = containerColor,
       modifier = Modifier.defaultMinSize(minHeight = stepperSize.size.minHeight(Default)),
     ) {
-      Row(
-        Modifier.padding(stepperSize.size.contentPadding(Default)),
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
-        HedvigText(
-          text = text,
-          style = stepperSize.size.textStyle(Default),
-          color = textColor,
-        )
-        Spacer(Modifier.weight(1f))
-        Spacer(Modifier.width(4.dp))
-        StepperSymbols(
-          onMinusClick,
-          onPlusClick,
-          plusColor,
-          minusColor,
-          modifier = Modifier.padding(stepperSize.size.symbolsPadding),
-        )
-      }
+      HorizontalItemsWithMaximumSpaceTaken(
+        startSlot = {
+          HedvigText(
+            text = text,
+            style = stepperSize.size.textStyle(Default),
+            color = textColor,
+          )
+        },
+        endSlot = {
+          StepperSymbols(
+            onMinusClick,
+            onPlusClick,
+            plusColor,
+            minusColor,
+            modifier = Modifier.padding(stepperSize.size.symbolsPadding),
+          )
+        },
+        spaceBetween = 4.dp,
+        modifier = Modifier.padding(stepperSize.size.contentPadding(Default)),
+      )
     }
     AnimatedVisibility(showError) {
       if (errorText != null) {
@@ -167,7 +168,7 @@ private fun StepperSymbols(
   modifier: Modifier = Modifier,
 ) {
   Row(
-    modifier,
+    modifier.wrapContentSize(),
     horizontalArrangement = Arrangement.spacedBy((-8).dp),
   ) {
     IconButton(onClick = onMinusClick) {
@@ -201,26 +202,27 @@ private fun LabeledStepper(
       color = containerColor,
       modifier = Modifier.defaultMinSize(minHeight = stepperSize.size.minHeight(Labeled(labelText))),
     ) {
-      Row(
-        Modifier.padding(stepperSize.size.contentPadding(Labeled(labelText))),
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
-        Column {
-          HedvigText(
-            text = labelText,
-            style = stepperSize.size.labelTextStyle,
-            color = labelColor,
-          )
-          HedvigText(
-            text = text,
-            style = stepperSize.size.textStyle(Labeled(labelText)),
-            color = textColor,
-          )
-        }
-        Spacer(Modifier.weight(1f))
-        Spacer(Modifier.width(4.dp))
-        StepperSymbols(onMinusClick, onPlusClick, plusColor, minusColor)
-      }
+      HorizontalItemsWithMaximumSpaceTaken(
+        modifier = Modifier.padding(stepperSize.size.contentPadding(Labeled(labelText))),
+        startSlot = {
+          Column {
+            HedvigText(
+              text = labelText,
+              style = stepperSize.size.labelTextStyle,
+              color = labelColor,
+            )
+            HedvigText(
+              text = text,
+              style = stepperSize.size.textStyle(Labeled(labelText)),
+              color = textColor,
+            )
+          }
+        },
+        endSlot = {
+          StepperSymbols(onMinusClick, onPlusClick, plusColor, minusColor)
+        },
+        spaceBetween = 4.dp,
+      )
     }
     if (showError && errorText != null) {
       HedvigText(
