@@ -7,7 +7,7 @@ internal object StepperColorTokens {
   val EnabledSymbolColor = ColorSchemeKeyTokens.FillPrimary
   val DisabledSymbolColor = ColorSchemeKeyTokens.FillDisabled
   val TextColor = ColorSchemeKeyTokens.TextPrimary
-  val LabelColor = ColorSchemeKeyTokens.TextSecondaryTranslucent // todo: should we use Translucent?
+  val LabelColor = ColorSchemeKeyTokens.TextSecondary
   val PulsatingContainerColor = ColorSchemeKeyTokens.SignalAmberFill
   val PulsatingContentColor = ColorSchemeKeyTokens.SignalAmberText
 }
