@@ -1,6 +1,7 @@
 package com.hedvig.android.design.system.hedvig
 
-import androidx.compose.animation.Animatable
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,8 +17,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.ReadOnlyComposable
-import androidx.compose.runtime.Stable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,7 +49,9 @@ import com.hedvig.android.design.system.hedvig.tokens.MediumSizeLabeledStepperTo
 import com.hedvig.android.design.system.hedvig.tokens.SmallSizeDefaultStepperTokens
 import com.hedvig.android.design.system.hedvig.tokens.SmallSizeLabeledStepperTokens
 import com.hedvig.android.design.system.hedvig.tokens.StepperColorTokens
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.drop
 
 @Composable
 fun HedvigStepper(
@@ -58,72 +66,12 @@ fun HedvigStepper(
   showError: Boolean = false,
   errorText: String? = null,
 ) {
-  val initialContainerColor = stepperColors.containerColor(false)
-  val pulsatingContainerColor = stepperColors.containerColor(true)
-  val containerColor = remember { Animatable(initialContainerColor) }
-  val initialLabelColor = stepperColors.labelColor(false)
-  val pulsatingLabelColor = stepperColors.labelColor(true)
-  val labelColor = remember { Animatable(initialLabelColor) }
-  val initialTextColor = stepperColors.textColor(false)
-  val pulsatingTextColor = stepperColors.textColor(true)
-  val textColor = remember { Animatable(initialTextColor) }
-  val disabledSymbolColor = stepperColors.disabledSymbolColor(false)
-  val enabledSymbolColor = stepperColors.enabledSymbolColor(false)
-  val initialMinusColor =
-    if (isMinusEnabled) enabledSymbolColor else disabledSymbolColor
-  val initialPlusColor =
-    if (isPlusEnabled) enabledSymbolColor else disabledSymbolColor
-  val pulsatingSymbolColor = stepperColors.enabledSymbolColor(true)
-  val plusColor = remember { Animatable(initialPlusColor) }
-  val minusColor = remember { Animatable(initialMinusColor) }
-  val enterAnimationSpec = tween<Color>(AnimationTokens().pulsatingAnimationDuration)
-  val exitAnimationSpec = tween<Color>(AnimationTokens().pulsatingAnimationDurationExit)
-  LaunchedEffect(isPlusEnabled, showError) {
-    if (!isPlusEnabled && !showError) {
-      plusColor.animateTo(disabledSymbolColor, animationSpec = exitAnimationSpec)
-    } else if (!isPlusEnabled) {
-      plusColor.animateTo(pulsatingSymbolColor, animationSpec = enterAnimationSpec)
-      plusColor.animateTo(disabledSymbolColor, animationSpec = exitAnimationSpec)
-    } else if (showError) {
-      plusColor.animateTo(pulsatingSymbolColor, animationSpec = enterAnimationSpec)
-      plusColor.animateTo(enabledSymbolColor, animationSpec = exitAnimationSpec)
-    } else {
-      plusColor.animateTo(enabledSymbolColor, animationSpec = exitAnimationSpec)
-    }
-  }
-  LaunchedEffect(isMinusEnabled, showError) {
-    if (!isMinusEnabled && !showError) {
-      minusColor.animateTo(disabledSymbolColor, animationSpec = exitAnimationSpec)
-    } else if (!isMinusEnabled) {
-      minusColor.animateTo(pulsatingSymbolColor, animationSpec = enterAnimationSpec)
-      minusColor.animateTo(disabledSymbolColor, animationSpec = exitAnimationSpec)
-    } else if (showError) {
-      minusColor.animateTo(pulsatingSymbolColor, animationSpec = enterAnimationSpec)
-      minusColor.animateTo(enabledSymbolColor, animationSpec = exitAnimationSpec)
-    } else {
-      minusColor.animateTo(enabledSymbolColor, animationSpec = exitAnimationSpec)
-    }
-  }
-  LaunchedEffect(showError) {
-    if (showError) {
-      launch {
-        containerColor.animateTo(pulsatingContainerColor, animationSpec = enterAnimationSpec)
-        containerColor.animateTo(initialContainerColor, animationSpec = exitAnimationSpec)
-      }
-      launch {
-        labelColor.animateTo(pulsatingLabelColor, animationSpec = enterAnimationSpec)
-        labelColor.animateTo(initialLabelColor, animationSpec = exitAnimationSpec)
-      }
-      launch {
-        textColor.animateTo(pulsatingTextColor, animationSpec = enterAnimationSpec)
-        textColor.animateTo(initialTextColor, animationSpec = exitAnimationSpec)
-      }
-    } else {
-      launch { containerColor.animateTo(initialContainerColor, animationSpec = enterAnimationSpec) }
-      launch { labelColor.animateTo(initialLabelColor, animationSpec = enterAnimationSpec) }
-      launch { textColor.animateTo(initialTextColor, animationSpec = enterAnimationSpec) }
-    }
-  }
+  val containerColor = stepperColors.containerColor(showError)
+  val labelColor = stepperColors.labelColor(showError)
+  val textColor = stepperColors.textColor(showError)
+  val plusColor = stepperColors.symbolColor(showError, isPlusEnabled)
+  val minusColor = stepperColors.symbolColor(showError, isMinusEnabled)
+
   when (stepperStyle) {
     Default -> DefaultStepper(
       stepperSize = stepperSize,
@@ -197,13 +145,15 @@ private fun DefaultStepper(
         )
       }
     }
-    if (showError && errorText != null) {
-      HedvigText(
-        text = errorText,
-        color = stepperColors.errorTextColor,
-        style = stepperSize.size.labelTextStyle,
-        modifier = Modifier.padding(stepperSize.size.errorTextPadding(Default)),
-      )
+    AnimatedVisibility(showError) {
+      if (errorText != null) {
+        HedvigText(
+          text = errorText,
+          color = stepperColors.errorTextColor,
+          style = stepperSize.size.labelTextStyle,
+          modifier = Modifier.padding(stepperSize.size.errorTextPadding(Default)),
+        )
+      }
     }
   }
 }
@@ -216,8 +166,10 @@ private fun StepperSymbols(
   minusColor: Color,
   modifier: Modifier = Modifier,
 ) {
-  Row(modifier,
-    horizontalArrangement = Arrangement.spacedBy((-8).dp)) {
+  Row(
+    modifier,
+    horizontalArrangement = Arrangement.spacedBy((-8).dp),
+  ) {
     IconButton(onClick = onMinusClick) {
       Icon(HedvigIcons.Minus, null, tint = minusColor, modifier = Modifier.size(24.dp))
     }
@@ -525,34 +477,87 @@ private data class StepperColors(
   private val pulsatingContentColor: Color,
   val errorTextColor: Color,
 ) {
-  @Stable
-  fun containerColor(pulsating: Boolean): Color = when {
-    pulsating -> pulsatingContainerColor
-    else -> containerColor
+  @Composable
+  fun containerColor(showError: Boolean): State<Color> {
+    val shouldPulsate = shouldPulsate(showError)
+    val targetValue = when {
+      shouldPulsate -> pulsatingContainerColor
+      else -> containerColor
+    }
+    return animateColorAsState(
+      targetValue = targetValue,
+      animationSpec = tween(
+        durationMillis = AnimationTokens().errorPulsatingDuration,
+      ),
+      label = "",
+    )
   }
 
-  @Stable
-  fun labelColor(pulsating: Boolean): Color = when {
-    pulsating -> pulsatingContentColor
-    else -> labelColor
+  @Composable
+  fun labelColor(showError: Boolean): State<Color> {
+    val shouldPulsate = shouldPulsate(showError)
+    val targetValue = when {
+      shouldPulsate -> pulsatingContentColor
+      else -> labelColor
+    }
+    return animateColorAsState(
+      targetValue = targetValue,
+      animationSpec = tween(
+        durationMillis = AnimationTokens().errorPulsatingDuration,
+      ),
+      label = "",
+    )
   }
 
-  @Stable
-  fun textColor(pulsating: Boolean): Color = when {
-    pulsating -> pulsatingContentColor
-    else -> textColor
+  @Composable
+  fun textColor(showError: Boolean): State<Color> {
+    val shouldPulsate = shouldPulsate(showError)
+    val targetValue = when {
+      shouldPulsate -> pulsatingContentColor
+      else -> textColor
+    }
+    return animateColorAsState(
+      targetValue = targetValue,
+      animationSpec = tween(
+        durationMillis = AnimationTokens().errorPulsatingDuration,
+      ),
+      label = "",
+    )
   }
 
-  @Stable
-  fun enabledSymbolColor(pulsating: Boolean): Color = when {
-    pulsating -> pulsatingContentColor
-    else -> enabledSymbolColor
+  @Composable
+  fun symbolColor(showError: Boolean, isEnabled: Boolean): State<Color> {
+    val shouldPulsate = shouldPulsate(showError)
+    val targetValue = when {
+      shouldPulsate -> pulsatingContentColor
+      isEnabled -> enabledSymbolColor
+      else -> disabledSymbolColor
+    }
+    return animateColorAsState(
+      targetValue = targetValue,
+      animationSpec = tween(
+        durationMillis = AnimationTokens().errorPulsatingDuration,
+      ),
+      label = "",
+    )
   }
 
-  @Stable
-  fun disabledSymbolColor(pulsating: Boolean): Color = when {
-    pulsating -> pulsatingContentColor
-    else -> disabledSymbolColor
+  @Composable
+  private fun shouldPulsate(isError: Boolean): Boolean {
+    var shouldPulsate by remember { mutableStateOf(false) }
+    val updatedValue by rememberUpdatedState(isError)
+    LaunchedEffect(Unit) {
+      snapshotFlow { updatedValue }
+        .drop(1)
+        .collectLatest { latest ->
+          if (latest) {
+            shouldPulsate = true
+            delay(AnimationTokens().errorPulsatingDuration.toLong())
+            shouldPulsate = false
+          }
+        }
+    }
+    return shouldPulsate
   }
 }
 
