@@ -1,15 +1,15 @@
 [versions]
 # androidSdkVersions
-compileSdkVersion = "34"
+compileSdkVersion = "35"
 targetSdkVersion = "34"
 minSdkVersion = "23"
 
 # lint versions
-lintApi = "31.5.1"
-lintGradlePlugin = "8.5.1"
+lintApi = "31.5.2"
+lintGradlePlugin = "8.6.0-rc01"
 
 # gradlePlugin versions
-androidGradlePlugin = "8.5.1"
+androidGradlePlugin = "8.6.0-rc01"
 apolloAdapters = "0.0.2"
 apollo = "4.0.0"
 cacheFix = "3.0.1"
@@ -30,19 +30,19 @@ squareSortDependencies = "0.8"
 accompanist = "0.34.0"
 androidx-activity-compose = "1.9.1"
 androidx-activity-core = "1.9.1"
-androidx-annotation = "1.8.1"
+androidx-annotation = "1.8.2"
 androidx-composeBom = "2024.06.00"
 androidx-datastore = "1.1.1"
 androidx-junit = "1.2.1"
 androidx-lifecycle = "2.8.4"
-androidx-navigation = "2.8.0-beta06"
+androidx-navigation = "2.8.0-beta07"
 androidx-other-appCompat = "1.7.0"
 androidx-other-browser = "1.8.0"
 androidx-other-constraintLayout = "2.1.4"
 androidx-other-core = "1.13.1"
 androidx-other-splashscreen = "1.2.0-alpha01"
 androidx-other-startup = "1.1.1"
-androidx-other-workManager = "2.9.0"
+androidx-other-workManager = "2.9.1"
 androidx-profileInstaller = "1.3.1"
 androidx-test = "1.6.1"
 androidx-testRunners = "1.6.1"
@@ -68,15 +68,15 @@ moneta = "1.4.4"
 navigationRecentsUrlSharing = "1.0.0"
 okhttp = "4.12.0"
 okio = "3.9.0"
-paging = "3.3.1"
+paging = "3.3.2"
 playReview = "2.0.1"
 playServicesBase = "18.5.0"
 retrofit = "2.11.0"
 retrofitArrow = "1.2.4"
 robolectric = "4.13"
-room = "2.7.0-alpha05"
+room = "2.7.0-alpha06"
 slimber = "2.0.0"
-sqlite = "2.5.0-alpha05"
+sqlite = "2.5.0-alpha06"
 testParameterInjector = "1.16"
 timber = "5.0.1"
 turbine = "1.1.0"
@@ -93,13 +93,13 @@ androidx-activity-core = { module = "androidx.activity:activity", version.ref = 
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
 androidx-compose-animation = { module = "androidx.compose.animation:animation-core" }
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "androidx-composeBom" }
-androidx-compose-foundation = { module = "androidx.compose.foundation:foundation", version = "1.7.0-beta06" }
+androidx-compose-foundation = { module = "androidx.compose.foundation:foundation", version = "1.7.0-beta07" }
 androidx-compose-foundationLayout = { module = "androidx.compose.foundation:foundation-layout" }
 androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
 androidx-compose-material3-windowSizeClass = { module = "androidx.compose.material3:material3-window-size-class" }
 androidx-compose-materialIconsCore = { module = "androidx.compose.material:material-icons-core" }
 androidx-compose-materialIconsExtended = { module = "androidx.compose.material:material-icons-extended" }
-androidx-compose-materialRipple = { module = "androidx.compose.material:material-ripple", version = "1.7.0-beta06" }
+androidx-compose-materialRipple = { module = "androidx.compose.material:material-ripple", version = "1.7.0-beta07" }
 androidx-compose-runtime = { module = "androidx.compose.runtime:runtime" }
 androidx-compose-runtime-livedata = { module = "androidx.compose.runtime:runtime-livedata" }
 androidx-compose-uiCore = { module = "androidx.compose.ui:ui" }
