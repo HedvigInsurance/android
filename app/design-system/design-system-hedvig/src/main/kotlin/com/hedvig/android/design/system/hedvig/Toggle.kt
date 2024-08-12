@@ -9,6 +9,7 @@ import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -123,27 +124,37 @@ private fun DefaultToggle(
     color = containerColor,
     modifier = modifier,
   ) {
-    Row(
-      Modifier.padding(size.size.contentPadding),
-      verticalAlignment = Alignment.CenterVertically,
-    ) {
-      HedvigText(
-        text = labelText,
-        style = size.size.textStyle,
-        color = labelColor,
-      )
-      Spacer(Modifier.weight(1f))
-      Spacer(Modifier.width(4.dp))
-      Toggle(
-        enabled = turnedOn,
-        onClick = onClick,
-        modifier = Modifier
-          .padding(
-            size.size.togglePadding,
+    HorizontalItemsWithMaximumSpaceTaken(
+      startSlot = {
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
+          HedvigText(
+            text = labelText,
+            style = size.size.textStyle,
+            color = labelColor,
           )
-          .size(width = toggleIconSize.width, height = toggleIconSize.height),
-      )
-    }
+        }
+      },
+      endSlot = {
+        Row(
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+          Toggle(
+              enabled = turnedOn,
+              onClick = onClick,
+              modifier = Modifier
+                  .padding(
+                      size.size.togglePadding,
+                  ),
+          )
+        }
+      },
+      spaceBetween = 4.dp,
+      modifier = Modifier.padding(size.size.contentPadding),
+    )
+
   }
 }
 
@@ -165,22 +176,32 @@ private fun DetailedToggle(
     modifier = modifier,
   ) {
     Column(Modifier.padding(size.size.contentPadding)) {
-      Row(
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
-        HedvigText(
-          text = labelText,
-          style = size.size.labelTextStyle,
-          color = labelColor,
-        )
-        Spacer(Modifier.weight(1f))
-        Spacer(Modifier.width(4.dp))
-        Toggle(
-          enabled = turnedOn,
-          onClick = onClick,
-          modifier = Modifier.size(width = toggleIconSize.width, height = toggleIconSize.height),
-        )
-      }
+      HorizontalItemsWithMaximumSpaceTaken(
+        startSlot = {
+          Row(
+            verticalAlignment = Alignment.CenterVertically,
+          ) {
+            HedvigText(
+              text = labelText,
+              style = size.size.labelTextStyle,
+              color = labelColor,
+            )
+          }
+        },
+        endSlot = {
+          Row(
+              horizontalArrangement = Arrangement.End,
+              verticalAlignment = Alignment.CenterVertically,
+          ) {
+            Toggle(
+              enabled = turnedOn,
+              onClick = onClick,
+              modifier = Modifier.size(width = toggleIconSize.width, height = toggleIconSize.height),
+            )
+          }
+        },
+        spaceBetween = 4.dp,
+      )
       Spacer(Modifier.height(size.size.spacerHeight))
       HedvigText(
         text = descriptionText,
@@ -216,34 +237,33 @@ private fun Toggle(enabled: Boolean, onClick: (Boolean) -> Unit, modifier: Modif
   val contentSizePx = with(density) { contentSize.toPx() }
   val backgroundColor = toggleColors.toggleBackgroundColor(enabled)
   val interactionSource = remember { MutableInteractionSource() }
-  Box(
-    modifier
-      .height(toggleIconSize.height)
-      .width(toggleIconSize.width),
-  ) {
+  Box() {
     ToggleBackground(
-      modifier = Modifier
-        .fillMaxSize()
-        .onSizeChanged { layoutSize ->
-          val dragEndPoint = layoutSize.width - contentSizePx
-          state.updateAnchors(
-            DraggableAnchors {
-              ToggleDragAnchors.entries
-                .forEach { anchor ->
-                  anchor at dragEndPoint * anchor.fraction
-                }
+        modifier =
+        modifier
+            .height(toggleIconSize.height)
+            .width(toggleIconSize.width)
+            .fillMaxSize()
+            .onSizeChanged { layoutSize ->
+                val dragEndPoint = layoutSize.width - contentSizePx
+                state.updateAnchors(
+                    DraggableAnchors {
+                        ToggleDragAnchors.entries
+                            .forEach { anchor ->
+                                anchor at dragEndPoint * anchor.fraction
+                            }
+                    },
+                )
             },
-          )
+        color = backgroundColor.value,
+        interactionSource = interactionSource,
+        contentSize = contentSize,
+        draggableState = state,
+        content = {
+            ToggleTop(
+                backgroundColor = backgroundColor.value,
+            )
         },
-      color = backgroundColor.value,
-      interactionSource = interactionSource,
-      contentSize = contentSize,
-      draggableState = state,
-      content = {
-        ToggleTop(
-          backgroundColor = backgroundColor.value,
-        )
-      }
     )
   }
 }
@@ -267,24 +287,26 @@ private fun ToggleBackground(
     shape = ShapeDefaults.CornerLarge,
     modifier = modifier,
   ) {
-      Box(modifier = Modifier
-        .wrapContentSize(align = Alignment.TopStart)
-        .size(width = contentSize, height = contentSize)
-        .offset {
-          IntOffset(
-            x = draggableState
-              .requireOffset()
-              .roundToInt(),
-            y = 0,
-          )
-        }
-        .anchoredDraggable(
-          draggableState,
-          Orientation.Horizontal,
-          interactionSource = interactionSource,
-        ),) {
-        content()
-      }
+    Box(
+      modifier = Modifier
+          .wrapContentSize(align = Alignment.TopStart)
+          .size(width = contentSize, height = contentSize)
+          .offset {
+              IntOffset(
+                  x = draggableState
+                      .requireOffset()
+                      .roundToInt(),
+                  y = 0,
+              )
+          }
+          .anchoredDraggable(
+              draggableState,
+              Orientation.Horizontal,
+              interactionSource = interactionSource,
+          ),
+    ) {
+      content()
+    }
   }
 }
 
@@ -292,9 +314,9 @@ private fun ToggleBackground(
 private fun ToggleTop(backgroundColor: Color, modifier: Modifier = Modifier) {
   Surface(
     modifier = modifier
-      .minimumInteractiveComponentSize()
-      .fillMaxSize()
-      .clip(CircleShape),
+        .minimumInteractiveComponentSize()
+        .fillMaxSize()
+        .clip(CircleShape),
     color = toggleColors.toggleTopColor,
     shape = CircleShape,
     border = BorderStroke(1.dp, backgroundColor),
@@ -621,7 +643,7 @@ private fun TogglePreview() {
         HedvigToggle(
           turnedOn = enabled,
           onClick = { enabled = !enabled },
-          labelText = "Large",
+          labelText = "LargeLarge optionLarge optionLarge optionLarge optionLarge optionLarge optionLarge optionLarge optionLarge optionLarge optionLarge optionLarge optionLarge option",
           toggleStyle = Default(ToggleDefaults.ToggleDefaultStyleSize.Large),
         )
         Spacer(Modifier.height(8.dp))
