@@ -43,7 +43,6 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -262,24 +261,26 @@ private fun ToggleBackground(
     shape = ShapeDefaults.CornerLarge,
     modifier = modifier,
   ) {
-    ToggleTop(
-      backgroundColor = color,
-      modifier = Modifier
-        .size(width = contentSize, height = contentSize)
-        .offset {
-          IntOffset(
-            x = draggableState
-              .requireOffset()
-              .roundToInt(),
-            y = 0,
-          )
-        }
-        .anchoredDraggable(
-          draggableState,
-          Orientation.Horizontal,
-          interactionSource = interactionSource,
-        ),
-    )
+    Box {
+      ToggleTop(
+        backgroundColor = color,
+        modifier = Modifier
+          .size(width = contentSize, height = contentSize)
+          .offset {
+            IntOffset(
+              x = draggableState
+                .requireOffset()
+                .roundToInt(),
+              y = 0,
+            )
+          }
+          .anchoredDraggable(
+            draggableState,
+            Orientation.Horizontal,
+            interactionSource = interactionSource,
+          ),
+      )
+    }
   }
 }
 
