@@ -32,7 +32,7 @@ internal fun DesignShowcase(modifier: Modifier = Modifier) {
   }
 }
 
-private val showStepper = true
+private val showStepper = false
 private val showIcons = false
 private val showButton = false
 private val showTextField = false
