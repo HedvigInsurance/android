@@ -7,6 +7,7 @@ import com.hedvig.android.sample.design.showcase.bottomSheet.ShowcaseBottomSheet
 import com.hedvig.android.sample.design.showcase.button.ShowcaseButton
 import com.hedvig.android.sample.design.showcase.icons.ShowcaseIcons
 import com.hedvig.android.sample.design.showcase.radio.ShowCaseRadioGroups
+import com.hedvig.android.sample.design.showcase.stepper.StepperShowcase
 import com.hedvig.android.sample.design.showcase.textfield.ShowcaseTextField
 import com.hedvig.android.sample.design.showcase.toggle.ToggleShowcase
 
@@ -19,6 +20,8 @@ internal fun DesignShowcase(modifier: Modifier = Modifier) {
       ShowcaseButton()
     } else if (showBottomSheet) {
       ShowcaseBottomSheet()
+    } else if (showStepper) {
+      StepperShowcase()
     } else if (showTextField) {
       ShowcaseTextField()
     } else if (showRadio) {
@@ -29,6 +32,7 @@ internal fun DesignShowcase(modifier: Modifier = Modifier) {
   }
 }
 
+private val showStepper = true
 private val showIcons = false
 private val showButton = false
 private val showTextField = false
