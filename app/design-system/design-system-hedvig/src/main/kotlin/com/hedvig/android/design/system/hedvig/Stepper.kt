@@ -25,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
@@ -127,20 +128,27 @@ private fun DefaultStepper(
     ) {
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
-          HedvigText(
-            text = text,
-            style = stepperSize.size.textStyle(Default),
-            color = textColor,
-          )
+          Row(verticalAlignment = Alignment.CenterVertically) {
+            HedvigText(
+              text = text,
+              style = stepperSize.size.textStyle(Default),
+              color = textColor,
+            )
+          }
         },
         endSlot = {
-          StepperSymbols(
-            onMinusClick,
-            onPlusClick,
-            plusColor,
-            minusColor,
-            modifier = Modifier.padding(stepperSize.size.symbolsPadding),
-          )
+          Row(
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically,
+          ) {
+            StepperSymbols(
+              onMinusClick,
+              onPlusClick,
+              plusColor,
+              minusColor,
+              modifier = Modifier.padding(stepperSize.size.symbolsPadding),
+            )
+          }
         },
         spaceBetween = 4.dp,
         modifier = Modifier.padding(stepperSize.size.contentPadding(Default)),
@@ -205,7 +213,7 @@ private fun LabeledStepper(
       HorizontalItemsWithMaximumSpaceTaken(
         modifier = Modifier.padding(stepperSize.size.contentPadding(Labeled(labelText))),
         startSlot = {
-          Column {
+          Column(verticalArrangement = Arrangement.Center) {
             HedvigText(
               text = labelText,
               style = stepperSize.size.labelTextStyle,
@@ -219,7 +227,18 @@ private fun LabeledStepper(
           }
         },
         endSlot = {
-          StepperSymbols(onMinusClick, onPlusClick, plusColor, minusColor)
+          Row(
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically,
+          ) {
+            StepperSymbols(
+              onMinusClick,
+              onPlusClick,
+              plusColor,
+              minusColor,
+              modifier = Modifier.padding(stepperSize.size.symbolsPadding),
+            )
+          }
         },
         spaceBetween = 4.dp,
       )
