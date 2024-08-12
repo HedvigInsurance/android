@@ -238,6 +238,11 @@ private fun Toggle(enabled: Boolean, onClick: (Boolean) -> Unit, modifier: Modif
       interactionSource = interactionSource,
       contentSize = contentSize,
       draggableState = state,
+      content = {
+        ToggleTop(
+          backgroundColor = backgroundColor.value,
+        )
+      }
     )
   }
 }
@@ -253,6 +258,7 @@ private fun ToggleBackground(
   interactionSource: MutableInteractionSource,
   contentSize: Dp,
   draggableState: AnchoredDraggableState<ToggleDragAnchors>,
+  content: @Composable () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Surface(
@@ -260,31 +266,30 @@ private fun ToggleBackground(
     shape = ShapeDefaults.CornerLarge,
     modifier = modifier,
   ) {
-    Box {
-      ToggleTop(
-        backgroundColor = color,
-        modifier = Modifier
-          .size(width = contentSize, height = contentSize)
-          .offset {
-            IntOffset(
-              x = draggableState
-                .requireOffset()
-                .roundToInt(),
-              y = 0,
-            )
-          }
-          .anchoredDraggable(
-            draggableState,
-            Orientation.Horizontal,
-            interactionSource = interactionSource,
-          ),
-      )
+    Box{
+      Box(modifier = Modifier
+        .size(width = contentSize, height = contentSize)
+        .offset {
+          IntOffset(
+            x = draggableState
+              .requireOffset()
+              .roundToInt(),
+            y = 0,
+          )
+        }
+        .anchoredDraggable(
+          draggableState,
+          Orientation.Horizontal,
+          interactionSource = interactionSource,
+        ),) {
+        content()
+      }
     }
   }
 }
 
 @Composable
-private fun ToggleTop(backgroundColor: Color, modifier: Modifier) {
+private fun ToggleTop(backgroundColor: Color, modifier: Modifier = Modifier) {
   Surface(
     modifier = modifier
       .minimumInteractiveComponentSize()
