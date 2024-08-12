@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -124,7 +123,6 @@ private fun DefaultStepper(
     Surface(
       shape = stepperSize.size.shape,
       color = containerColor,
-      modifier = Modifier.defaultMinSize(minHeight = stepperSize.size.minHeight(Default)),
     ) {
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
@@ -175,15 +173,27 @@ private fun StepperSymbols(
   minusColor: Color,
   modifier: Modifier = Modifier,
 ) {
-  Row(
-    modifier.wrapContentSize(),
-    horizontalArrangement = Arrangement.spacedBy((-8).dp),
-  ) {
-    IconButton(onClick = onMinusClick) {
-      Icon(HedvigIcons.Minus, null, tint = minusColor, modifier = Modifier.size(24.dp))
+  Row(modifier) {
+    IconButton(
+      onClick = onMinusClick,
+      modifier = Modifier.size(24.dp),
+    ) {
+      Icon(
+        HedvigIcons.Minus,
+        null,
+        tint = minusColor,
+      )
     }
-    IconButton(onClick = onPlusClick) {
-      Icon(HedvigIcons.Plus, null, tint = plusColor, modifier = Modifier.size(24.dp))
+    Spacer(Modifier.width(16.dp))
+    IconButton(
+      onClick = onPlusClick,
+      modifier = Modifier.size(24.dp),
+    ) {
+      Icon(
+        HedvigIcons.Plus,
+        null,
+        tint = plusColor,
+      )
     }
   }
 }
@@ -208,12 +218,15 @@ private fun LabeledStepper(
     Surface(
       shape = stepperSize.size.shape,
       color = containerColor,
-      modifier = Modifier.defaultMinSize(minHeight = stepperSize.size.minHeight(Labeled(labelText))),
+      //  modifier = Modifier.defaultMinSize(minHeight = stepperSize.size.minHeight(Labeled(labelText))),
     ) {
       HorizontalItemsWithMaximumSpaceTaken(
         modifier = Modifier.padding(stepperSize.size.contentPadding(Labeled(labelText))),
         startSlot = {
-          Column(verticalArrangement = Arrangement.Center) {
+          Column(
+            modifier = Modifier.wrapContentSize(align = Alignment.CenterStart),
+            verticalArrangement = Arrangement.spacedBy((-3).dp),
+          ) {
             HedvigText(
               text = labelText,
               style = stepperSize.size.labelTextStyle,
@@ -301,12 +314,12 @@ private sealed class StepperSize {
   @get:Composable
   abstract val shape: Shape
 
-  fun minHeight(stepperStyle: StepperStyle): Dp {
-    return when (stepperStyle) {
-      Default -> defaultMinHeight
-      is Labeled -> labelMinHeight
-    }
-  }
+//  fun minHeight(stepperStyle: StepperStyle): Dp {
+//    return when (stepperStyle) {
+//      Default -> defaultMinHeight
+//      is Labeled -> labelMinHeight
+//    }
+//  }
 
   fun errorTextPadding(stepperStyle: StepperStyle): PaddingValues {
     return when (stepperStyle) {
