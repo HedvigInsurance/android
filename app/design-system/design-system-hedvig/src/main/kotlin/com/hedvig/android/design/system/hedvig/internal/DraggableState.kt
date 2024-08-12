@@ -6,16 +6,18 @@ import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 
 @Composable
 internal fun <T : Any> rememberAnchorDraggableState(
+  density: Density,
   positionalThreshold: (Float) -> Float,
   velocityThreshold: () -> Float,
   snapAnimationSpec: TweenSpec<Float>,
   decayAnimationSpec: DecayAnimationSpec<Float>,
   initialValue: T,
 ): AnchoredDraggableState<T> {
-  val density = LocalDensity.current
+
   return rememberSaveable(
     density,
     saver = AnchoredDraggableState.Saver(

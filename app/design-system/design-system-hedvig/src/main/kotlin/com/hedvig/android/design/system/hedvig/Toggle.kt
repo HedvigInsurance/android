@@ -43,6 +43,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -76,9 +77,9 @@ fun HedvigToggle(
   modifier: Modifier = Modifier,
   toggleStyle: ToggleStyle = ToggleDefaults.toggleStyle,
 ) {
-  val containerColor by toggleColors.containerColor(turnedOn)
-  val labelColor by toggleColors.labelColor(turnedOn)
-  val descriptionColor by toggleColors.descriptionColor(turnedOn)
+  val containerColor = toggleColors.containerColor(turnedOn)
+  val labelColor = toggleColors.labelColor(turnedOn)
+  val descriptionColor = toggleColors.descriptionColor(turnedOn)
   when (toggleStyle) {
     is Default -> {
       DefaultToggle(
@@ -87,8 +88,8 @@ fun HedvigToggle(
         turnedOn = turnedOn,
         onClick = onClick,
         modifier = modifier,
-        containerColor = containerColor,
-        labelColor = labelColor,
+        containerColor = containerColor.value,
+        labelColor = labelColor.value,
       )
     }
 
@@ -100,9 +101,9 @@ fun HedvigToggle(
         modifier = modifier,
         onClick = onClick,
         descriptionText = toggleStyle.descriptionText,
-        containerColor = containerColor,
-        descriptionColor = descriptionColor,
-        labelColor = labelColor,
+        containerColor = containerColor.value,
+        descriptionColor = descriptionColor.value,
+        labelColor = labelColor.value,
       )
     }
   }
@@ -199,6 +200,7 @@ private fun Toggle(enabled: Boolean, onClick: (Boolean) -> Unit, modifier: Modif
   val animationSpec = tween<Float>()
   val decayAnimationSpec = rememberSplineBasedDecay<Float>()
   val state = rememberAnchorDraggableState(
+    density = density,
     initialValue = if (enabled) End else Start,
     positionalThreshold = positionalThreshold,
     velocityThreshold = velocityThreshold,
