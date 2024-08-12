@@ -243,7 +243,7 @@ private fun Toggle(enabled: Boolean, onClick: (Boolean) -> Unit, modifier: Modif
         ToggleTop(
           backgroundColor = backgroundColor.value,
         )
-      }
+      },
     )
   }
 }
@@ -267,7 +267,8 @@ private fun ToggleBackground(
     shape = ShapeDefaults.CornerLarge,
     modifier = modifier,
   ) {
-      Box(modifier = Modifier
+    Box(
+      modifier = Modifier
         .wrapContentSize(align = Alignment.TopStart)
         .size(width = contentSize, height = contentSize)
         .offset {
@@ -282,9 +283,10 @@ private fun ToggleBackground(
           draggableState,
           Orientation.Horizontal,
           interactionSource = interactionSource,
-        ),) {
-        content()
-      }
+        ),
+    ) {
+      content()
+    }
   }
 }
 
