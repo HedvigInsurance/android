@@ -39,7 +39,6 @@ dependencies {
   implementation(projects.coreResources)
   implementation(projects.coreUi)
   implementation(projects.crossSells)
-  implementation(projects.dataContractAndroid)
   implementation(projects.dataContractPublic)
   implementation(projects.dataProductVariantAndroid)
   implementation(projects.dataProductVariantPublic)

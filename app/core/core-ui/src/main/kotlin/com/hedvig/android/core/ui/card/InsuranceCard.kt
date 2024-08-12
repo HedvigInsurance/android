@@ -91,8 +91,8 @@ fun InsuranceCard(
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier
-                .size(24.dp)
-                .padding(top = 2.dp),
+              .size(24.dp)
+              .padding(top = 2.dp),
           )
         }
         Spacer(Modifier.height(8.dp))
@@ -118,10 +118,10 @@ private fun Chip(text: String, modifier: Modifier = Modifier) {
     modifier.clip(shape = MaterialTheme.shapes.squircleExtraSmall),
   ) {
     Box(
-        Modifier
-            .alpha(DisabledAlpha)
-            .background(MaterialTheme.colorScheme.background)
-            .matchParentSize(),
+      Modifier
+        .alpha(DisabledAlpha)
+        .background(MaterialTheme.colorScheme.background)
+        .matchParentSize(),
     )
     Text(
       text = text,
