@@ -2,6 +2,7 @@ package com.hedvig.android.design.system.hedvig
 
 import androidx.compose.animation.Animatable
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -214,12 +216,13 @@ private fun StepperSymbols(
   minusColor: Color,
   modifier: Modifier = Modifier,
 ) {
-  Row(modifier) {
+  Row(modifier,
+    horizontalArrangement = Arrangement.spacedBy((-8).dp)) {
     IconButton(onClick = onMinusClick) {
-      Icon(HedvigIcons.Minus, null, tint = minusColor)
+      Icon(HedvigIcons.Minus, null, tint = minusColor, modifier = Modifier.size(24.dp))
     }
     IconButton(onClick = onPlusClick) {
-      Icon(HedvigIcons.Plus, null, tint = plusColor)
+      Icon(HedvigIcons.Plus, null, tint = plusColor, modifier = Modifier.size(24.dp))
     }
   }
 }
