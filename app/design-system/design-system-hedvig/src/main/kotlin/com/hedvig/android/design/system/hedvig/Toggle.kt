@@ -26,7 +26,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.ReadOnlyComposable
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -76,9 +75,9 @@ fun HedvigToggle(
   modifier: Modifier = Modifier,
   toggleStyle: ToggleStyle = ToggleDefaults.toggleStyle,
 ) {
-  val containerColor = toggleColors.containerColor(turnedOn)
-  val labelColor = toggleColors.labelColor(turnedOn)
-  val descriptionColor = toggleColors.descriptionColor(turnedOn)
+  val containerColor by toggleColors.containerColor(turnedOn)
+  val labelColor by toggleColors.labelColor(turnedOn)
+  val descriptionColor by toggleColors.descriptionColor(turnedOn)
   when (toggleStyle) {
     is Default -> {
       DefaultToggle(
@@ -87,8 +86,8 @@ fun HedvigToggle(
         turnedOn = turnedOn,
         onClick = onClick,
         modifier = modifier,
-        containerColor = containerColor.value,
-        labelColor = labelColor.value,
+        containerColor = containerColor,
+        labelColor = labelColor,
       )
     }
 
@@ -100,9 +99,9 @@ fun HedvigToggle(
         modifier = modifier,
         onClick = onClick,
         descriptionText = toggleStyle.descriptionText,
-        containerColor = containerColor.value,
-        descriptionColor = descriptionColor.value,
-        labelColor = labelColor.value,
+        containerColor = containerColor,
+        descriptionColor = descriptionColor,
+        labelColor = labelColor,
       )
     }
   }
@@ -235,7 +234,7 @@ private fun Toggle(enabled: Boolean, onClick: (Boolean) -> Unit, modifier: Modif
             },
           )
         },
-      color = backgroundColor,
+      color = backgroundColor.value,
       interactionSource = interactionSource,
       contentSize = contentSize,
       draggableState = state,
@@ -409,10 +408,18 @@ private data class ToggleColors(
     return shouldPulsate
   }
 
-  @Stable
-  fun toggleBackgroundColor(enabled: Boolean): Color = when {
-    enabled -> toggleBackgroundOnColor
-    else -> toggleBackgroundOffColor
+  @Composable
+  fun toggleBackgroundColor(enabled: Boolean): State<Color> {
+    val targetValue = when {
+      enabled -> toggleBackgroundOnColor
+      else -> toggleBackgroundOffColor
+    }
+    return animateColorAsState(
+      targetValue = targetValue,
+      animationSpec = tween(
+        durationMillis = AnimationTokens().pulsatingAnimationDuration,
+      ),
+    )
   }
 }
 
@@ -426,7 +433,7 @@ private sealed interface ToggleDefaultStyleSize {
   @get:Composable
   val shape: Shape
 
-  object Large : ToggleDefaultStyleSize {
+  data object Large : ToggleDefaultStyleSize {
     override val contentPadding: PaddingValues = PaddingValues(
       top = LargeSizeDefaultToggleTokens.TopPadding,
       bottom = LargeSizeDefaultToggleTokens.BottomPadding,
@@ -450,7 +457,7 @@ private sealed interface ToggleDefaultStyleSize {
       get() = LargeSizeDefaultToggleTokens.ContainerShape.value
   }
 
-  object Medium : ToggleDefaultStyleSize {
+  data object Medium : ToggleDefaultStyleSize {
     override val contentPadding: PaddingValues = PaddingValues(
       top = MediumSizeDefaultToggleTokens.TopPadding,
       bottom = MediumSizeDefaultToggleTokens.BottomPadding,
@@ -474,7 +481,7 @@ private sealed interface ToggleDefaultStyleSize {
       get() = MediumSizeDefaultToggleTokens.ContainerShape.value
   }
 
-  object Small : ToggleDefaultStyleSize {
+  data object Small : ToggleDefaultStyleSize {
     override val contentPadding: PaddingValues = PaddingValues(
       top = SmallSizeDefaultToggleTokens.TopPadding,
       bottom = SmallSizeDefaultToggleTokens.BottomPadding,
@@ -513,7 +520,7 @@ private sealed interface ToggleDetailedStyleSize {
   @get:Composable
   val shape: Shape
 
-  object Large : ToggleDetailedStyleSize {
+  data object Large : ToggleDetailedStyleSize {
     override val contentPadding: PaddingValues = PaddingValues(
       top = LargeSizeDetailedToggleTokens.TopPadding,
       bottom = LargeSizeDetailedToggleTokens.BottomPadding,
@@ -539,7 +546,7 @@ private sealed interface ToggleDetailedStyleSize {
       get() = LargeSizeDetailedToggleTokens.ContainerShape.value
   }
 
-  object Small : ToggleDetailedStyleSize {
+  data object Small : ToggleDetailedStyleSize {
     override val contentPadding: PaddingValues = PaddingValues(
       top = SmallSizeDetailedToggleTokens.TopPadding,
       bottom = SmallSizeDetailedToggleTokens.BottomPadding,
