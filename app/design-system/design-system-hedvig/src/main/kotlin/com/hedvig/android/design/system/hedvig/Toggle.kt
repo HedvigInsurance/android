@@ -138,23 +138,22 @@ private fun DefaultToggle(
       },
       endSlot = {
         Row(
-            horizontalArrangement = Arrangement.End,
-            verticalAlignment = Alignment.CenterVertically,
+          horizontalArrangement = Arrangement.End,
+          verticalAlignment = Alignment.CenterVertically,
         ) {
           Toggle(
-              enabled = turnedOn,
-              onClick = onClick,
-              modifier = Modifier
-                  .padding(
-                      size.size.togglePadding,
-                  ),
+            enabled = turnedOn,
+            onClick = onClick,
+            modifier = Modifier
+              .padding(
+                size.size.togglePadding,
+              ),
           )
         }
       },
       spaceBetween = 4.dp,
       modifier = Modifier.padding(size.size.contentPadding),
     )
-
   }
 }
 
@@ -190,8 +189,8 @@ private fun DetailedToggle(
         },
         endSlot = {
           Row(
-              horizontalArrangement = Arrangement.End,
-              verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically,
           ) {
             Toggle(
               enabled = turnedOn,
@@ -237,33 +236,33 @@ private fun Toggle(enabled: Boolean, onClick: (Boolean) -> Unit, modifier: Modif
   val contentSizePx = with(density) { contentSize.toPx() }
   val backgroundColor = toggleColors.toggleBackgroundColor(enabled)
   val interactionSource = remember { MutableInteractionSource() }
-  Box() {
+  Box {
     ToggleBackground(
-        modifier =
+      modifier =
         modifier
-            .height(toggleIconSize.height)
-            .width(toggleIconSize.width)
-            .fillMaxSize()
-            .onSizeChanged { layoutSize ->
-                val dragEndPoint = layoutSize.width - contentSizePx
-                state.updateAnchors(
-                    DraggableAnchors {
-                        ToggleDragAnchors.entries
-                            .forEach { anchor ->
-                                anchor at dragEndPoint * anchor.fraction
-                            }
-                    },
-                )
-            },
-        color = backgroundColor.value,
-        interactionSource = interactionSource,
-        contentSize = contentSize,
-        draggableState = state,
-        content = {
-            ToggleTop(
-                backgroundColor = backgroundColor.value,
+          .height(toggleIconSize.height)
+          .width(toggleIconSize.width)
+          .fillMaxSize()
+          .onSizeChanged { layoutSize ->
+            val dragEndPoint = layoutSize.width - contentSizePx
+            state.updateAnchors(
+              DraggableAnchors {
+                ToggleDragAnchors.entries
+                  .forEach { anchor ->
+                    anchor at dragEndPoint * anchor.fraction
+                  }
+              },
             )
-        },
+          },
+      color = backgroundColor.value,
+      interactionSource = interactionSource,
+      contentSize = contentSize,
+      draggableState = state,
+      content = {
+        ToggleTop(
+          backgroundColor = backgroundColor.value,
+        )
+      },
     )
   }
 }
@@ -289,21 +288,21 @@ private fun ToggleBackground(
   ) {
     Box(
       modifier = Modifier
-          .wrapContentSize(align = Alignment.TopStart)
-          .size(width = contentSize, height = contentSize)
-          .offset {
-              IntOffset(
-                  x = draggableState
-                      .requireOffset()
-                      .roundToInt(),
-                  y = 0,
-              )
-          }
-          .anchoredDraggable(
-              draggableState,
-              Orientation.Horizontal,
-              interactionSource = interactionSource,
-          ),
+        .wrapContentSize(align = Alignment.TopStart)
+        .size(width = contentSize, height = contentSize)
+        .offset {
+          IntOffset(
+            x = draggableState
+              .requireOffset()
+              .roundToInt(),
+            y = 0,
+          )
+        }
+        .anchoredDraggable(
+          draggableState,
+          Orientation.Horizontal,
+          interactionSource = interactionSource,
+        ),
     ) {
       content()
     }
@@ -314,9 +313,9 @@ private fun ToggleBackground(
 private fun ToggleTop(backgroundColor: Color, modifier: Modifier = Modifier) {
   Surface(
     modifier = modifier
-        .minimumInteractiveComponentSize()
-        .fillMaxSize()
-        .clip(CircleShape),
+      .minimumInteractiveComponentSize()
+      .fillMaxSize()
+      .clip(CircleShape),
     color = toggleColors.toggleTopColor,
     shape = CircleShape,
     border = BorderStroke(1.dp, backgroundColor),
