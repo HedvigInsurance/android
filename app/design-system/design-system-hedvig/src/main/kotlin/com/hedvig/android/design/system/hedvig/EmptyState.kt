@@ -30,6 +30,7 @@ import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIcon
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.INFO
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.NO_ICON
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.SUCCESS
+import com.hedvig.android.design.system.hedvig.icon.BankId
 import com.hedvig.android.design.system.hedvig.icon.CheckFilled
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.ID
@@ -125,11 +126,9 @@ private fun ColumnScope.EmptyStateIcon(iconStyle: EmptyStateIconStyle) {
 
     BANK_ID -> {
       Icon(
-        HedvigIcons.ID,
+        HedvigIcons.BankId,
         null,
         modifier = sizeModifier,
-// todo: add tint
-        // todo: Where is BankId icon??
       )
       Spacer(Modifier.height(16.dp))
     }
