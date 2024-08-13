@@ -28,6 +28,7 @@ import com.hedvig.android.app.notification.senders.CrossSellNotificationSender
 import com.hedvig.android.app.notification.senders.GenericNotificationSender
 import com.hedvig.android.app.notification.senders.PaymentNotificationSender
 import com.hedvig.android.app.notification.senders.ReferralsNotificationSender
+import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.di.authModule
 import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
 import com.hedvig.android.core.appreview.di.coreAppReviewModule
@@ -141,7 +142,7 @@ private val networkModule = module {
       .okHttpClient(get<OkHttpClient>())
       .normalizedCache(get<NormalizedCacheFactory>())
       .addInterceptor(LoggingInterceptor())
-      .addInterceptor(LogoutOnUnauthenticatedInterceptor(get()))
+      .addInterceptor(LogoutOnUnauthenticatedInterceptor(get<AuthTokenService>()))
   }
   single<ApolloClient> {
     get<ApolloClient.Builder>()
