@@ -113,30 +113,40 @@ internal class CbmChatRepositoryImpl(
   }
 
   override fun bannerText(conversationId: Uuid): Flow<BannerText?> {
+    fun ConversationStatusMessageQuery.Data.toBannerText(): BannerText? {
+      return when {
+        conversation == null -> null
+        conversation.isOpen == false -> BannerText.ClosedConversation
+        conversation.statusMessage != null -> BannerText.Text(conversation.statusMessage)
+        else -> {
+          logcat(LogPriority.ERROR) { "Got unknown conversation status message:$conversation" }
+          null
+        }
+      }
+    }
     return flow {
+      apolloClient
+        .query(ConversationStatusMessageQuery(conversationId.toString()))
+        .fetchPolicy(FetchPolicy.CacheOnly)
+        .safeExecute()
+        .toEither(::ErrorMessage)
+        .onRight {
+          emit(it.toBannerText())
+        }
       while (currentCoroutineContext().isActive) {
         val result = apolloClient
           .query(ConversationStatusMessageQuery(conversationId.toString()))
+          .fetchPolicy(FetchPolicy.NetworkOnly)
           .safeExecute()
           .toEither(::ErrorMessage)
         when (result) {
           is Left -> {
+            emit(null)
             delay(10.seconds)
           }
 
           is Right -> {
-            val conversation = result.value.conversation
-            emit(
-              when {
-                conversation == null -> null
-                conversation.isOpen == false -> BannerText.ClosedConversation
-                conversation.statusMessage != null -> BannerText.Text(conversation.statusMessage)
-                else -> {
-                  logcat(LogPriority.ERROR) { "Got unknown conversation status message:$conversation" }
-                  null
-                }
-              },
-            )
+            emit(result.value.toBannerText())
             break
           }
         }
