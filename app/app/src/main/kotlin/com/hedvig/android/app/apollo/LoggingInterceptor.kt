@@ -22,9 +22,10 @@ internal class LoggingInterceptor : ApolloInterceptor {
     chain: ApolloInterceptorChain,
   ): Flow<ApolloResponse<D>> {
     return chain.proceed(request).onEach { response ->
+      val data = response.data
       val errors = response.errors.orEmpty().map { it.toGraphqlError() }
       if (errors.isNotEmpty() && !errors.isUnathenticated()) {
-        logError(errors, request, response)
+        logError(data, errors, request, response)
       }
       if (response.exception != null && response.exception !is CacheMissException) {
         logcat(LogPriority.WARN) {
@@ -35,6 +36,7 @@ internal class LoggingInterceptor : ApolloInterceptor {
   }
 
   private fun <D : Operation.Data> logError(
+    data: D?,
     errors: List<LoggableGraphqlError>,
     request: ApolloRequest<D>,
     response: ApolloResponse<D>,
@@ -45,12 +47,19 @@ internal class LoggingInterceptor : ApolloInterceptor {
       "data" to response.data,
       "errors" to errors,
     )
+
     logcat(LogPriority.ERROR) {
       buildString {
         append(errorMessage)
         append(" attributes: ")
         append(errorAttributes)
+        if (data != null) {
+          append(" There was data and errors at the same time! Data:$data")
+        }
       }
+    }
+    logcat(LogPriority.ERROR) {
+      buildString {}
     }
     logError(
       message = errorMessage,
