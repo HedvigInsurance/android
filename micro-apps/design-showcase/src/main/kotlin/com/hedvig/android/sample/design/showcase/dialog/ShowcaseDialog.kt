@@ -20,6 +20,7 @@ import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButt
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.INFO
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigDialog
+import com.hedvig.android.design.system.hedvig.HedvigDialogError
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.Surface
 
@@ -51,6 +52,17 @@ fun DialogShowcase() {
       )
     }
   }
+  var isErrorDialogVisible by rememberSaveable { mutableStateOf(false) }
+  if (isErrorDialogVisible) {
+    HedvigDialogError(
+      onDismissRequest = { isErrorDialogVisible = false },
+      buttonText = "Try again",
+      onButtonClick = {},
+      titleText = "There is something wrong",
+      descriptionText = "Internet connection seems to be lost",
+    )
+  }
+
   Surface(
     modifier = Modifier
       .fillMaxSize(),
@@ -68,7 +80,16 @@ fun DialogShowcase() {
           isDialogVisible = true
         },
       ) {
-        HedvigText("Open the dialog")
+        HedvigText("Open custom info dialog")
+      }
+      Spacer(Modifier.height(16.dp))
+      HedvigButton(
+        enabled = true,
+        onClick = {
+          isErrorDialogVisible = true
+        },
+      ) {
+        HedvigText("Open error dialog")
       }
     }
   }

@@ -24,6 +24,8 @@ import com.hedvig.android.design.system.hedvig.DialogDefaults.ButtonSize.SMALL
 import com.hedvig.android.design.system.hedvig.DialogDefaults.DialogStyle
 import com.hedvig.android.design.system.hedvig.DialogDefaults.DialogStyle.Buttons
 import com.hedvig.android.design.system.hedvig.DialogDefaults.DialogStyle.NoButtons
+import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButtonStyle
+import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.ERROR
 import com.hedvig.android.design.system.hedvig.tokens.DialogTokens
 
 @Composable
@@ -38,8 +40,9 @@ fun HedvigDialog(
     properties = DialogDefaults.defaultProperties,
   ) {
     (LocalView.current.parent as DialogWindowProvider).window.setDimAmount(0.2f)
-    // todo: so - not sure about this, but this is the only way I've managed to change the overlay
-    // dimming background too much, otherwise in the dark theme the overlay becomes the same as the background color of the dialog itself
+    // todo: so - very not sure about this, but this is the only way I've managed to stop the overlay from
+    //  dimming background too much, otherwise in the dark theme the overlay becomes the same as the background
+    //  color of the dialog itself. Material uses tonalElevation for this, but I was not able to make it work
     Surface(
       shape = DialogDefaults.shape,
       color = DialogDefaults.containerColor,
@@ -152,7 +155,6 @@ object DialogDefaults {
       }
     }
 
-  internal val elevation = DialogTokens.ShadowElevation
   internal val padding = PaddingValues(DialogTokens.Padding)
 
   sealed class DialogStyle {
@@ -170,5 +172,31 @@ object DialogDefaults {
   enum class ButtonSize {
     BIG,
     SMALL,
+  }
+}
+
+@Composable
+fun HedvigDialogError(
+  titleText: String,
+  descriptionText: String,
+  buttonText: String,
+  onButtonClick: () -> Unit,
+  onDismissRequest: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  HedvigDialog(
+    style = NoButtons,
+    onDismissRequest = onDismissRequest,
+    modifier = modifier,
+  ) {
+    EmptyState(
+      text = titleText,
+      description = descriptionText,
+      iconStyle = ERROR,
+      buttonStyle = EmptyStateButtonStyle.Button(
+        buttonText = buttonText,
+        onButtonClick = onButtonClick,
+      ),
+    )
   }
 }
