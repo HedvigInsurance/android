@@ -110,7 +110,7 @@ private fun SmallHorizontalButtons(
 }
 
 @Composable
-internal fun BigVerticalButtons(
+private fun BigVerticalButtons(
   onDismissRequest: () -> Unit,
   dismissButtonText: String,
   onConfirmButtonClick: () -> Unit,
