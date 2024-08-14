@@ -18,7 +18,6 @@ import com.hedvig.android.design.system.hedvig.DialogDefaults.ButtonSize.SMALL
 import com.hedvig.android.design.system.hedvig.EmptyState
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButtonStyle.NoButton
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.INFO
-import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.SUCCESS
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigDialog
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -54,11 +53,12 @@ fun DialogShowcase() {
   }
   Surface(
     modifier = Modifier
-      .safeContentPadding()
       .fillMaxSize(),
-
   ) {
-    Column (
+    Column(
+      modifier = Modifier
+        .safeContentPadding()
+        .fillMaxSize(),
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       Spacer(Modifier.height(16.dp))

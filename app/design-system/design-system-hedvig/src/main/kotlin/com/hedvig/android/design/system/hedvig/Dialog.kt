@@ -1,39 +1,30 @@
 package com.hedvig.android.design.system.hedvig
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.compositeOver
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.window.DialogWindowProvider
 import com.hedvig.android.design.system.hedvig.DialogDefaults.ButtonSize.BIG
 import com.hedvig.android.design.system.hedvig.DialogDefaults.ButtonSize.SMALL
 import com.hedvig.android.design.system.hedvig.DialogDefaults.DialogStyle
 import com.hedvig.android.design.system.hedvig.DialogDefaults.DialogStyle.Buttons
 import com.hedvig.android.design.system.hedvig.DialogDefaults.DialogStyle.NoButtons
-import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.SurfacePrimary
 import com.hedvig.android.design.system.hedvig.tokens.DialogTokens
-import kotlin.math.ln
 
 @Composable
 fun HedvigDialog(
@@ -42,55 +33,49 @@ fun HedvigDialog(
   style: DialogStyle = DialogDefaults.defaultDialogStyle,
   content: @Composable () -> Unit,
 ) {
-    Dialog(
-      onDismissRequest = onDismissRequest,
-      properties = DialogDefaults.defaultProperties,
+  Dialog(
+    onDismissRequest = onDismissRequest,
+    properties = DialogDefaults.defaultProperties,
+  ) {
+    (LocalView.current.parent as DialogWindowProvider).window.setDimAmount(0.2f)
+    // todo: so - not sure about this, but this is the only way I've managed to change the overlay
+    // dimming background too much, otherwise in the dark theme the overlay becomes the same as the background color of the dialog itself
+    Surface(
+      shape = DialogDefaults.shape,
+      color = DialogDefaults.containerColor,
+      modifier = modifier,
     ) {
-      Surface(
-        shape = DialogDefaults.shape,
-        color = DialogDefaults.containerColor,
-        modifier = modifier
-          .graphicsLayer(
-            shadowElevation =
-            with(LocalDensity.current) { DialogDefaults.elevation.toPx() },
-            shape = DialogDefaults.shape,
-            clip = false,
-          )
-//          .shadow(
-//            elevation = DialogDefaults.elevation,
-//          ),
+      Column(
+        Modifier.padding(DialogDefaults.padding),
       ) {
-        Column(
-          Modifier.padding(DialogDefaults.padding),
-        ) {
-          when (style) {
-            is Buttons -> {
-              content()
-              Spacer(Modifier.height(16.dp))
-              when (style.buttonSize) {
-                BIG -> {
-                  BigVerticalButtons(
-                    onDismissRequest = style.onDismissRequest,
-                    dismissButtonText = style.dismissButtonText,
-                    onConfirmButtonClick = style.onConfirmButtonClick,
-                    confirmButtonText = style.confirmButtonText,
-                  )
-                }
-                SMALL -> {
-                  SmallHorizontalButtons(
-                    onDismissRequest = style.onDismissRequest,
-                    dismissButtonText = style.dismissButtonText,
-                    onConfirmButtonClick = style.onConfirmButtonClick,
-                    confirmButtonText = style.confirmButtonText,
-                  )
-                }
+        when (style) {
+          is Buttons -> {
+            content()
+            Spacer(Modifier.height(16.dp))
+            when (style.buttonSize) {
+              BIG -> {
+                BigVerticalButtons(
+                  onDismissRequest = style.onDismissRequest,
+                  dismissButtonText = style.dismissButtonText,
+                  onConfirmButtonClick = style.onConfirmButtonClick,
+                  confirmButtonText = style.confirmButtonText,
+                )
+              }
+              SMALL -> {
+                SmallHorizontalButtons(
+                  onDismissRequest = style.onDismissRequest,
+                  dismissButtonText = style.dismissButtonText,
+                  onConfirmButtonClick = style.onConfirmButtonClick,
+                  confirmButtonText = style.confirmButtonText,
+                )
               }
             }
-            NoButtons -> content()
           }
+          NoButtons -> content()
         }
       }
     }
+  }
 }
 
 @Composable
@@ -186,16 +171,4 @@ object DialogDefaults {
     BIG,
     SMALL,
   }
-}
-
-@Composable
-internal fun elevationColor(): Color {
-  return Color.White
-//  return with(HedvigTheme.colorScheme) {
-//    val elevation = DialogTokens.TonalElevation
-//    val surfaceColor = fromToken(SurfacePrimary)
-//    val surfaceTint = fromToken(DialogTokens.ElevationColor)
-//    val alpha = ((4.5f * ln(elevation.value + 1)) + 2f) / 100f
-//    surfaceTint.copy(alpha = alpha).compositeOver(surfaceColor)
-//  }
 }
