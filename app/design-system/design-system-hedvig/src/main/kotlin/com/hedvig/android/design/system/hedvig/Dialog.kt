@@ -82,7 +82,7 @@ fun HedvigDialog(
 }
 
 @Composable
-internal fun SmallHorizontalButtons(
+private fun SmallHorizontalButtons(
   onDismissRequest: () -> Unit,
   dismissButtonText: String,
   onConfirmButtonClick: () -> Unit,
