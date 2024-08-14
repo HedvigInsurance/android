@@ -2,13 +2,12 @@ package com.hedvig.android.app.apollo
 
 import com.apollographql.apollo.api.ApolloRequest
 import com.apollographql.apollo.api.ApolloResponse
+import com.apollographql.apollo.api.Error as ApolloKotlinError
 import com.apollographql.apollo.api.Operation
 import com.apollographql.apollo.api.Operation.Data
 import com.apollographql.apollo.exception.CacheMissException
 import com.apollographql.apollo.interceptor.ApolloInterceptor
 import com.apollographql.apollo.interceptor.ApolloInterceptorChain
-import com.hedvig.android.apollo.GraphqlError
-import com.hedvig.android.apollo.toGraphqlError
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.tracking.ErrorSource
 import com.hedvig.android.core.tracking.logError
@@ -36,7 +35,7 @@ internal class LoggingInterceptor : ApolloInterceptor {
   }
 
   private fun <D : Operation.Data> logError(
-    errors: List<GraphqlError>,
+    errors: List<LoggableGraphqlError>,
     request: ApolloRequest<D>,
     response: ApolloResponse<D>,
   ) {
@@ -75,6 +74,46 @@ internal class LogoutOnUnauthenticatedInterceptor(
   }
 }
 
-private fun List<GraphqlError>.isUnathenticated(): Boolean {
-  return any { it.extensions.errorType == GraphqlError.Extensions.ErrorType.Unauthenticated }
+private data class LoggableGraphqlError(
+  val message: String,
+  val locations: List<Location>?,
+  val paths: List<Path>?,
+  val extensions: Extensions,
+) {
+  data class Location(
+    val line: Int,
+    val column: Int,
+  )
+
+  data class Path(
+    val message: String,
+  )
+
+  data class Extensions(
+    val errorType: ErrorType?,
+    val uncategorizedExtensions: Map<String, Any?>?,
+  ) {
+    @JvmInline
+    value class ErrorType(val value: String) {
+      companion object {
+        val Unauthenticated = ErrorType("UNAUTHENTICATED")
+      }
+    }
+  }
+}
+
+private fun List<LoggableGraphqlError>.isUnathenticated(): Boolean {
+  return any { it.extensions.errorType == LoggableGraphqlError.Extensions.ErrorType.Unauthenticated }
+}
+
+private fun ApolloKotlinError.toGraphqlError(): LoggableGraphqlError {
+  return LoggableGraphqlError(
+    message = this.message,
+    locations = this.locations?.map { LoggableGraphqlError.Location(it.line, it.column) },
+    paths = this.path?.map { LoggableGraphqlError.Path(it.toString()) },
+    extensions = LoggableGraphqlError.Extensions(
+      errorType = this.extensions?.get("errorType")?.let { LoggableGraphqlError.Extensions.ErrorType(it.toString()) },
+      uncategorizedExtensions = this.extensions?.minus("errorType"),
+    ),
+  )
 }

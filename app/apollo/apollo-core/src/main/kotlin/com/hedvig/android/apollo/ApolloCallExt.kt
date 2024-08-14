@@ -3,7 +3,6 @@ package com.hedvig.android.apollo
 import arrow.core.Either
 import com.apollographql.apollo.ApolloCall
 import com.apollographql.apollo.api.ApolloResponse
-import com.apollographql.apollo.api.Error as ApolloKotlinError
 import com.apollographql.apollo.api.Operation
 import com.apollographql.apollo.exception.ApolloException
 import com.hedvig.android.apollo.ApolloOperationError.OperationError
@@ -13,46 +12,6 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
-
-data class GraphqlError(
-  val message: String,
-  val locations: List<Location>?,
-  val paths: List<Path>?,
-  val extensions: Extensions,
-) {
-  data class Location(
-    val line: Int,
-    val column: Int,
-  )
-
-  data class Path(
-    val message: String,
-  )
-
-  data class Extensions(
-    val errorType: ErrorType?,
-    val uncategorizedExtensions: Map<String, Any?>?,
-  ) {
-    @JvmInline
-    value class ErrorType(val value: String) {
-      companion object {
-        val Unauthenticated = ErrorType("UNAUTHENTICATED")
-      }
-    }
-  }
-}
-
-fun ApolloKotlinError.toGraphqlError(): GraphqlError {
-  return GraphqlError(
-    message = this.message,
-    locations = this.locations?.map { GraphqlError.Location(it.line, it.column) },
-    paths = this.path?.map { GraphqlError.Path(it.toString()) },
-    extensions = GraphqlError.Extensions(
-      errorType = this.extensions?.get("errorType")?.let { GraphqlError.Extensions.ErrorType(it.toString()) },
-      uncategorizedExtensions = this.extensions?.minus("errorType"),
-    ),
-  )
-}
 
 suspend fun <D : Operation.Data> ApolloCall<D>.safeExecute(): Either<ApolloOperationError, D> {
 }
