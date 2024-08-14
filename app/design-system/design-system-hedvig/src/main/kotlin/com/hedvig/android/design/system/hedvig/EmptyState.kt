@@ -33,7 +33,6 @@ import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIcon
 import com.hedvig.android.design.system.hedvig.icon.BankId
 import com.hedvig.android.design.system.hedvig.icon.CheckFilled
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import com.hedvig.android.design.system.hedvig.icon.ID
 import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.icon.WarningFilled
 import com.hedvig.android.design.system.hedvig.tokens.EmptyStateTokens
@@ -52,7 +51,7 @@ fun EmptyState(
       .padding(horizontal = 16.dp),
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
-    Spacer(Modifier.height(32.dp))
+    Spacer(Modifier.height(24.dp))
     EmptyStateIcon(iconStyle)
     HedvigText(
       text = text,
@@ -86,7 +85,7 @@ fun EmptyState(
       }
       NoButton -> {}
     }
-    Spacer(Modifier.height(32.dp))
+    Spacer(Modifier.height(24.dp))
   }
 }
 

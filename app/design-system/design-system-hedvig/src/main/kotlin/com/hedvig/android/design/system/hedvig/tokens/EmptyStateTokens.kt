@@ -6,7 +6,7 @@ internal object EmptyStateTokens {
   val TextFont = TypographyKeyTokens.BodySmall
   val ContainerColor = ColorSchemeKeyTokens.Transparent
   val TextColor = ColorSchemeKeyTokens.TextPrimary
-  val DescriptionColor = ColorSchemeKeyTokens.TextSecondary
+  val DescriptionColor = ColorSchemeKeyTokens.TextSecondaryTranslucent
   val ErrorIconColor = ColorSchemeKeyTokens.SignalAmberElement
   val InfoIconColor = ColorSchemeKeyTokens.SignalBlueElement
   val SuccessIconColor = ColorSchemeKeyTokens.SignalGreenElement
