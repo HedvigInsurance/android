@@ -20,43 +20,42 @@ import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
 
 @Composable
 fun FreeTextShowcase() {
-
   var isFreeTextVisible by rememberSaveable { mutableStateOf(false) }
   var textValue by rememberSaveable { mutableStateOf<String?>(null) }
 
   FreeTextOverlay(
-      freeTextValue = textValue,
-      freeTextHint = "Please let us know more",
-      freeTextOnCancelClick = {
-          isFreeTextVisible = false
-      },
-      freeTextOnSaveClick = { s ->
-          textValue = s
-          isFreeTextVisible = false
-      },
-      shouldShowOverlay = isFreeTextVisible,
-      overlaidContent = {
-          Surface(
-              modifier = Modifier
-                  .fillMaxSize(),
+    freeTextValue = textValue,
+    freeTextHint = "Please let us know more",
+    freeTextOnCancelClick = {
+      isFreeTextVisible = false
+    },
+    freeTextOnSaveClick = { s ->
+      textValue = s
+      isFreeTextVisible = false
+    },
+    shouldShowOverlay = isFreeTextVisible,
+    overlaidContent = {
+      Surface(
+        modifier = Modifier
+          .fillMaxSize(),
+      ) {
+        Column(
+          modifier = Modifier
+            .safeContentPadding()
+            .fillMaxSize(),
+          horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+          Spacer(Modifier.height(16.dp))
+          HedvigButton(
+            enabled = true,
+            onClick = {
+              isFreeTextVisible = true
+            },
           ) {
-              Column(
-                  modifier = Modifier
-                      .safeContentPadding()
-                      .fillMaxSize(),
-                  horizontalAlignment = Alignment.CenterHorizontally,
-              ) {
-                  Spacer(Modifier.height(16.dp))
-                  HedvigButton(
-                      enabled = true,
-                      onClick = {
-                          isFreeTextVisible = true
-                      },
-                  ) {
-                      HedvigText("Open free text overlay")
-                  }
-              }
+            HedvigText("Open free text overlay")
           }
-      },
+        }
+      }
+    },
   )
 }

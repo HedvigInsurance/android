@@ -163,11 +163,11 @@ private fun FreeTextOverlayContent(
     onCancelClick()
   }
   Column(
-      modifier
-          .fillMaxSize()
-          .imePadding()
-          .safeContentPadding()
-          .padding(FreeTextDefaults.fieldPadding),
+    modifier
+      .fillMaxSize()
+      .imePadding()
+      .safeContentPadding()
+      .padding(FreeTextDefaults.fieldPadding),
   ) {
     BasicTextField(
       value = textValue,
@@ -176,15 +176,14 @@ private fun FreeTextOverlayContent(
       },
       cursorBrush = SolidColor(freeTextColors.cursorBrushColor),
       modifier = Modifier
-          .weight(1f)
-          .focusRequester(focusRequester)
-          .background(
-              color = freeTextColors.textFieldColor,
-              shape = FreeTextDefaults.shape,
-          ),
+        .weight(1f)
+        .focusRequester(focusRequester)
+        .background(
+          color = freeTextColors.textFieldColor,
+          shape = FreeTextDefaults.shape,
+        ),
       textStyle = FreeTextDefaults.textStyle.value.copy(color = freeTextColors.textColor),
       // todo: not sure we are inverting text and textField colors properly for dark/light
-
       decorationBox = @Composable { innerTextField ->
         Column {
           Row(
@@ -203,25 +202,23 @@ private fun FreeTextOverlayContent(
               },
               innerTextField = innerTextField,
               visualTransformation = VisualTransformation.None,
-              contentPadding = PaddingValues(16.dp), //todo: add token
+              contentPadding = PaddingValues(16.dp), // todo: add token
               container = {
                 Box(
                   modifier.background(
                     color = freeTextColors.textFieldColor,
                     shape = FreeTextDefaults.shape,
-                  ), //todo: Wat?!
+                  ), // todo: Wat?!
                 )
               },
             )
           }
 
-
-
           Row(
             horizontalArrangement = Arrangement.End,
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
+              .fillMaxWidth()
+              .padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
           ) {
             HedvigText(
               text = "${textValue.text.length}/$textMaxLength",
@@ -306,6 +303,7 @@ private data class FreeTextColors(
   val textFieldColor: Color,
   val textColor: Color,
   val labelColor: Color,
+  val hintColor: Color,
 )
 
 private val freeTextColors: FreeTextColors
@@ -317,10 +315,10 @@ private val freeTextColors: FreeTextColors
         textFieldColor = fromToken(SurfacePrimary),
         textColor = fromToken(TextPrimary),
         labelColor = fromToken(TextTertiary),
+        hintColor = fromToken(TextTertiary),
       )
     }
   }
-
 
 @Composable
 private fun HedvigFreeTextDecorationBox(
@@ -340,7 +338,7 @@ private fun HedvigFreeTextDecorationBox(
       @Composable { modifier ->
         Box(modifier) {
           Decoration(
-            contentColor = freeTextColors.labelColor, //todo: add specific hint color here.
+            contentColor = freeTextColors.hintColor,
             typography = FreeTextDefaults.textStyle.value,
             content = placeholder,
           )
