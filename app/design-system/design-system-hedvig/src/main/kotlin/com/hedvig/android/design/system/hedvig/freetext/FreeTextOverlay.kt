@@ -112,7 +112,7 @@ private fun FreeTextOverlayAnimated(
   ) { showFullScreenEditText: Boolean ->
     Box(Modifier.fillMaxSize()) {
       if (showFullScreenEditText) {
-        HedvigTheme(darkTheme = true) {
+        HedvigTheme {
           Surface(
             color = freeTextColors.backgroundColor,
             modifier = Modifier.fillMaxSize(),
@@ -183,7 +183,6 @@ private fun FreeTextOverlayContent(
           shape = FreeTextDefaults.shape,
         ),
       textStyle = FreeTextDefaults.textStyle.value.copy(color = freeTextColors.textColor),
-      // todo: not sure we are inverting text and textField colors properly for dark/light
       decorationBox = @Composable { innerTextField ->
         Column {
           Row(
@@ -202,13 +201,13 @@ private fun FreeTextOverlayContent(
               },
               innerTextField = innerTextField,
               visualTransformation = VisualTransformation.None,
-              contentPadding = PaddingValues(16.dp), // todo: add token
+              contentPadding = FreeTextDefaults.textPadding,
               container = {
                 Box(
                   modifier.background(
                     color = freeTextColors.textFieldColor,
                     shape = FreeTextDefaults.shape,
-                  ), // todo: Wat?!
+                  ),
                 )
               },
             )
@@ -230,35 +229,39 @@ private fun FreeTextOverlayContent(
       },
     )
     Spacer(modifier = Modifier.height(8.dp))
-    Row(
-      modifier = Modifier
-        .fillMaxWidth(),
-      horizontalArrangement = Arrangement.Center,
+    HedvigTheme(
+      darkTheme = true,
     ) {
-      HedvigButton(
-        enabled = true,
-        text = cancelButtonText ?: stringResource(id = R.string.general_cancel_button),
-        onClick = {
-          focusManager.clearFocus()
-          onCancelClick()
-        },
-        buttonSize = ButtonSize.Medium,
-        buttonStyle = Secondary,
-        modifier = Modifier.weight(1f),
-      )
-      Spacer(modifier = Modifier.width(8.dp))
-      HedvigButton(
-        enabled = true,
-        text = confirmButtonText ?: stringResource(id = R.string.general_save_button),
-        onClick = {
-          focusManager.clearFocus()
-          val valueToSave = textValue.text.ifEmpty { null }
-          onSaveClick(valueToSave)
-        },
-        buttonSize = ButtonSize.Medium,
-        buttonStyle = Primary,
-        modifier = Modifier.weight(1f),
-      )
+      Row(
+        modifier = Modifier
+          .fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center,
+      ) {
+        HedvigButton(
+          enabled = true,
+          text = cancelButtonText ?: stringResource(id = R.string.general_cancel_button),
+          onClick = {
+            focusManager.clearFocus()
+            onCancelClick()
+          },
+          buttonSize = ButtonSize.Medium,
+          buttonStyle = Secondary,
+          modifier = Modifier.weight(1f),
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        HedvigButton(
+          enabled = true,
+          text = confirmButtonText ?: stringResource(id = R.string.general_save_button),
+          onClick = {
+            focusManager.clearFocus()
+            val valueToSave = textValue.text.ifEmpty { null }
+            onSaveClick(valueToSave)
+          },
+          buttonSize = ButtonSize.Medium,
+          buttonStyle = Primary,
+          modifier = Modifier.weight(1f),
+        )
+      }
     }
   }
 }
@@ -289,6 +292,7 @@ internal object FreeTextDefaults {
     start = FreeTextTokens.FieldPadding,
     end = FreeTextTokens.FieldPadding,
   )
+  val textPadding = PaddingValues(FreeTextTokens.TextPadding)
   val textStyle = FreeTextTokens.TextStyle
   val countLabelStyle = FreeTextTokens.countLabel
   val shape
