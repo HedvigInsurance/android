@@ -7,7 +7,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,8 +34,10 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
@@ -46,14 +47,10 @@ import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Primar
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigText
-import com.hedvig.android.design.system.hedvig.HedvigTextFieldDecorationBox
-import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
-import com.hedvig.android.design.system.hedvig.HedvigTextFieldSize
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.colors
-import com.hedvig.android.design.system.hedvig.configuration
 import com.hedvig.android.design.system.hedvig.fromToken
+import com.hedvig.android.design.system.hedvig.internal.Decoration
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.BackgroundBlack
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.SurfacePrimary
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.TextPrimary
@@ -69,8 +66,8 @@ fun FreeTextOverlay(
   freeTextHint: String,
   freeTextOnSaveClick: (String?) -> Unit,
   freeTextOnCancelClick: () -> Unit,
-  shouldShowOverlay: Boolean,
   modifier: Modifier = Modifier,
+  shouldShowOverlay: Boolean = false,
   freeTextMaxLength: Int = FreeTextDefaults.maxLength,
   cancelButtonText: String? = null,
   confirmButtonText: String? = null,
@@ -166,11 +163,11 @@ private fun FreeTextOverlayContent(
     onCancelClick()
   }
   Column(
-    modifier
-      .fillMaxSize()
-      .imePadding()
-      .safeContentPadding()
-      .padding(FreeTextDefaults.fieldPadding),
+      modifier
+          .fillMaxSize()
+          .imePadding()
+          .safeContentPadding()
+          .padding(FreeTextDefaults.fieldPadding),
   ) {
     BasicTextField(
       value = textValue,
@@ -179,13 +176,15 @@ private fun FreeTextOverlayContent(
       },
       cursorBrush = SolidColor(freeTextColors.cursorBrushColor),
       modifier = Modifier
-        .weight(1f)
-        .focusRequester(focusRequester)
-        .background(
-          color = freeTextColors.textFieldColor,
-          shape = FreeTextDefaults.shape,
-        ),
+          .weight(1f)
+          .focusRequester(focusRequester)
+          .background(
+              color = freeTextColors.textFieldColor,
+              shape = FreeTextDefaults.shape,
+          ),
       textStyle = FreeTextDefaults.textStyle.value.copy(color = freeTextColors.textColor),
+      // todo: not sure we are inverting text and textField colors properly for dark/light
+
       decorationBox = @Composable { innerTextField ->
         Column {
           Row(
@@ -193,35 +192,36 @@ private fun FreeTextOverlayContent(
             horizontalArrangement = Arrangement.Start,
             modifier = Modifier.weight(1f),
           ) {
-            HedvigTextFieldDecorationBox(
+            HedvigFreeTextDecorationBox(
               value = textValue.text,
-              colors = HedvigTextFieldDefaults.colors(
-                containerColor = Color.Transparent,
-              ), // todo???? indication etc?
-              label = {
-                if (freeTextValue == null) {
-                  HedvigText(
-                    text = hintText,
-                    modifier = Modifier.fillMaxSize(),
-                    style = FreeTextDefaults.textStyle.value,
-                  )
-                } else {
-                }
+              placeholder = {
+                HedvigText(
+                  text = hintText,
+                  modifier = Modifier.fillMaxSize(),
+                  style = FreeTextDefaults.textStyle.value,
+                )
               },
               innerTextField = innerTextField,
-              enabled = true,
-              //  singleLine = false,
-              interactionSource = remember { MutableInteractionSource() },
               visualTransformation = VisualTransformation.None,
-              configuration = HedvigTextFieldDefaults.configuration(), // ??? todo
-              size = HedvigTextFieldSize.Large, // ??? todo
+              contentPadding = PaddingValues(16.dp), //todo: add token
+              container = {
+                Box(
+                  modifier.background(
+                    color = freeTextColors.textFieldColor,
+                    shape = FreeTextDefaults.shape,
+                  ), //todo: Wat?!
+                )
+              },
             )
           }
+
+
+
           Row(
             horizontalArrangement = Arrangement.End,
             modifier = Modifier
-              .fillMaxWidth()
-              .padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
           ) {
             HedvigText(
               text = "${textValue.text.length}/$textMaxLength",
@@ -320,3 +320,50 @@ private val freeTextColors: FreeTextColors
       )
     }
   }
+
+
+@Composable
+private fun HedvigFreeTextDecorationBox(
+  value: String,
+  innerTextField: @Composable () -> Unit,
+  visualTransformation: VisualTransformation,
+  placeholder: @Composable (() -> Unit)? = null,
+  contentPadding: PaddingValues,
+  container: @Composable () -> Unit,
+) {
+  val transformedText = remember(value, visualTransformation) {
+    visualTransformation.filter(AnnotatedString(value))
+  }.text.text
+
+  val decoratedPlaceholder: @Composable ((Modifier) -> Unit)? =
+    if (placeholder != null && transformedText.isEmpty()) {
+      @Composable { modifier ->
+        Box(modifier) {
+          Decoration(
+            contentColor = freeTextColors.labelColor, //todo: add specific hint color here.
+            typography = FreeTextDefaults.textStyle.value,
+            content = placeholder,
+          )
+        }
+      }
+    } else {
+      null
+    }
+  Box(
+    Modifier.padding(contentPadding),
+    content = {
+      container()
+      if (decoratedPlaceholder != null) {
+        decoratedPlaceholder(
+          Modifier.layoutId("placeholder"),
+        )
+      }
+      Box(
+        modifier = Modifier.layoutId("inner text field"),
+        propagateMinConstraints = true,
+      ) {
+        innerTextField()
+      }
+    },
+  )
+}
