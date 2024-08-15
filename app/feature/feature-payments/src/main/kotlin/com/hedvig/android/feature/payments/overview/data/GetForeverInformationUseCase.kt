@@ -4,8 +4,8 @@ import arrow.core.Either
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.fetchPolicy
+import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiMoney
 import octopus.ForeverInformationQuery
@@ -19,8 +19,7 @@ internal class GetForeverInformationUseCaseImpl(private val apolloClient: Apollo
     return apolloClient
       .query(ForeverInformationQuery())
       .fetchPolicy(FetchPolicy.NetworkOnly)
-      .safeExecute()
-      .toEither(::ErrorMessage)
+      .safeExecute(::ErrorMessage)
       .map { foreverInformationData ->
         with(foreverInformationData.currentMember) {
           ForeverInformation(

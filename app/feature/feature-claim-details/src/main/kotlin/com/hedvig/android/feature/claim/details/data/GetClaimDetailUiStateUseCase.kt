@@ -57,7 +57,8 @@ internal class GetClaimDetailUiStateUseCase(
         } else {
           fetchPolicy(FetchPolicy.CacheAndNetwork)
         }
-      }.safeFlow { _, _ -> Error.NetworkError }
+      }
+      .safeFlow { Error.NetworkError }
       .map { response: Either<Error.NetworkError, ClaimsQuery.Data> ->
         either {
           val claimsQueryData = response.bind()

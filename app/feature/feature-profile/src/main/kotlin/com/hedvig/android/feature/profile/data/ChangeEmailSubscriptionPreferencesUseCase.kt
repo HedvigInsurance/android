@@ -5,7 +5,6 @@ import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
 import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.apollo.toEither
 import octopus.UpdateSubscriptionPreferenceMutation
 
 /**
@@ -23,7 +22,6 @@ internal class ChangeEmailSubscriptionPreferencesUseCaseImpl(
       val data: UpdateSubscriptionPreferenceMutation.Data = apolloClient
         .mutation(UpdateSubscriptionPreferenceMutation(Optional.present(subscribe)))
         .safeExecute()
-        .toEither()
         .mapLeft {
           SubPrefError(it.message)
         }

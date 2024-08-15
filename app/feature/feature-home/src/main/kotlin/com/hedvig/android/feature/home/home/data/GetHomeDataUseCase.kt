@@ -16,9 +16,9 @@ import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.apollographql.apollo.cache.normalized.watch
 import com.apollographql.apollo.exception.ApolloException
 import com.apollographql.apollo.exception.CacheMissException
+import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.safeFlow
-import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.contract.android.CrossSell
 import com.hedvig.android.featureflags.FeatureManager
@@ -156,7 +156,6 @@ internal class GetHomeDataUseCaseImpl(
           emit(
             apolloClient.query(CbmNumberOfChatMessagesQuery())
               .safeExecute()
-              .toEither()
               .mapLeft { false }
               .map { result ->
                 val eligibleFromLegacyConversation = result

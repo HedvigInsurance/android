@@ -5,9 +5,8 @@ import arrow.core.raise.either
 import arrow.core.raise.ensureNotNull
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.NetworkCacheManager
-import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.apollo.toEither
+import com.hedvig.android.logger.logcat
 import octopus.MemberUpdateEmailMutation
 import octopus.MemberUpdatePhoneNumberMutation
 import octopus.ProfileQuery
@@ -18,21 +17,19 @@ internal class ProfileRepositoryImpl(
   private val apolloClient: ApolloClient,
   private val networkCacheManager: NetworkCacheManager,
 ) : ProfileRepository {
-  override suspend fun profile(): Either<OperationResult.Error, ProfileData> = either {
+  override suspend fun profile(): Either<Unit, ProfileData> = either {
     val member = apolloClient
       .query(ProfileQuery())
-      .safeExecute()
-      .toEither()
+      .safeExecute { Unit }
       .bind()
       .toMember()
 
     ProfileData(member = member)
   }
 
-  override suspend fun updateEmail(input: String): Either<OperationResult.Error, ProfileData.Member> = either {
+  override suspend fun updateEmail(input: String): Either<Unit, ProfileData.Member> = either {
     val result = apolloClient.mutation(MemberUpdateEmailMutation(MemberUpdateEmailInput(input)))
-      .safeExecute()
-      .toEither()
+      .safeExecute { Unit }
       .bind()
 
     networkCacheManager.clearCache()
@@ -41,18 +38,19 @@ internal class ProfileRepositoryImpl(
     val member = result.memberUpdateEmail.member
 
     if (error != null) {
-      raise(OperationResult.Error.GeneralError(error.message))
+      logcat { "UpdateEmail error: ${error.message}" }
+      raise(Unit)
     }
     ensureNotNull(member) {
-      OperationResult.Error.NoDataError("No member data")
+      logcat { "UpdateEmail no member data" }
+      Unit
     }
     member.toMember()
   }
 
-  override suspend fun updatePhoneNumber(input: String): Either<OperationResult.Error, ProfileData.Member> = either {
+  override suspend fun updatePhoneNumber(input: String): Either<Unit, ProfileData.Member> = either {
     val result = apolloClient.mutation(MemberUpdatePhoneNumberMutation(MemberUpdatePhoneNumberInput(input)))
-      .safeExecute()
-      .toEither()
+      .safeExecute { Unit }
       .bind()
 
     networkCacheManager.clearCache()
@@ -61,10 +59,12 @@ internal class ProfileRepositoryImpl(
     val member = result.memberUpdatePhoneNumber.member
 
     if (error != null) {
-      raise(OperationResult.Error.GeneralError(error.message))
+      logcat { "UpdatePhoneNumber error: ${error.message}" }
+      raise(Unit)
     }
     ensureNotNull(member) {
-      OperationResult.Error.NoDataError("No member data")
+      logcat { "UpdatePhoneNumber no member data" }
+      Unit
     }
     member.toMember()
   }

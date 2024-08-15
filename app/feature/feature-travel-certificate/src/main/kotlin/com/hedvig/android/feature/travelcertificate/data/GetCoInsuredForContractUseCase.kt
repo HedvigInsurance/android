@@ -4,8 +4,8 @@ import arrow.core.Either
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.fetchPolicy
+import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import kotlinx.datetime.LocalDate
 import octopus.CoInsuredForContractQuery
@@ -20,8 +20,7 @@ internal class GetCoInsuredForContractUseCaseImpl(
   override suspend fun invoke(contractId: String): Either<ErrorMessage, CoInsuredDataWithMember> {
     return apolloClient.query(CoInsuredForContractQuery(contractId))
       .fetchPolicy(FetchPolicy.NetworkOnly)
-      .safeExecute()
-      .toEither(::ErrorMessage)
+      .safeExecute(::ErrorMessage)
       .map { data ->
         val coInsured = data.contract.coInsured ?: listOf()
         val resultList = coInsured.map {

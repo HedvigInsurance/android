@@ -16,11 +16,19 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 sealed interface ApolloOperationError {
-  data class CacheMiss(val exception: CacheMissException) : ApolloOperationError
+  val throwable: Throwable?
 
-  data class OperationException(val exception: ApolloException) : ApolloOperationError
+  // todo remove this and just do toString instead.
+  val message: String
+    get() = toString()
 
-  data class OperationError(val message: String) : ApolloOperationError
+  data class CacheMiss(override val throwable: CacheMissException) : ApolloOperationError
+
+  data class OperationException(override val throwable: ApolloException) : ApolloOperationError
+
+  data class OperationError(override val message: String) : ApolloOperationError {
+    override val throwable: Throwable? = null
+  }
 }
 
 suspend fun <D : Operation.Data> ApolloCall<D>.safeExecute(): Either<ApolloOperationError, D> {
@@ -53,12 +61,12 @@ fun ErrorMessage(apolloOperationError: ApolloOperationError): ErrorMessage = obj
   override val message = when (apolloOperationError) {
     is CacheMiss -> "Cache miss"
     is OperationError -> apolloOperationError.message
-    is OperationException -> apolloOperationError.exception.message
+    is OperationException -> apolloOperationError.throwable.message
   }
   override val throwable = when (apolloOperationError) {
-    is CacheMiss -> apolloOperationError.exception
+    is CacheMiss -> apolloOperationError.throwable
     is OperationError -> null
-    is OperationException -> apolloOperationError.exception
+    is OperationException -> apolloOperationError.throwable
   }
 
   override fun toString(): String {

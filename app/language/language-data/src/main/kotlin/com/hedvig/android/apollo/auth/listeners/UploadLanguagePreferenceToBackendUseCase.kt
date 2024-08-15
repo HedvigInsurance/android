@@ -2,7 +2,6 @@ package com.hedvig.android.apollo.auth.listeners
 
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.apollo.toEither
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
@@ -22,7 +21,6 @@ internal class UploadLanguagePreferenceToBackendUseCaseImpl(
     apolloClient
       .mutation(MemberUpdateLanguageMutation(ietfLanguageTag))
       .safeExecute()
-      .toEither()
       .fold(
         ifLeft = {
           logcat(LogPriority.WARN, it.throwable) {
