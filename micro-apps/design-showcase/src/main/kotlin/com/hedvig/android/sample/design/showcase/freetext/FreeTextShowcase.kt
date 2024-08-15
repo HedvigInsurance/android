@@ -1,9 +1,11 @@
 package com.hedvig.android.sample.design.showcase.freetext
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -12,10 +14,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.design.system.hedvig.HedvigButton
-import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.freetext.FreeTextDisplay
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
 
 @Composable
@@ -41,19 +43,20 @@ fun FreeTextShowcase() {
       ) {
         Column(
           modifier = Modifier
-            .safeContentPadding()
-            .fillMaxSize(),
+              .safeContentPadding()
+              .fillMaxSize()
+            .background(Color.White),
           horizontalAlignment = Alignment.CenterHorizontally,
         ) {
           Spacer(Modifier.height(16.dp))
-          HedvigButton(
-            enabled = true,
+          FreeTextDisplay(
+            modifier = Modifier.padding(16.dp),
             onClick = {
               isFreeTextVisible = true
             },
-          ) {
-            HedvigText("Open free text overlay")
-          }
+            freeTextValue = textValue,
+            freeTextPlaceholder = "What do you think?"
+          )
         }
       }
     },

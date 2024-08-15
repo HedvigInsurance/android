@@ -9,5 +9,6 @@ internal object FreeTextTokens {
   val FieldTopPadding = 0.dp
   val TextPadding = 16.dp
   val TextStyle = TypographyKeyTokens.BodySmall
-  val countLabel = TypographyKeyTokens.Label
+  val CountLabel = TypographyKeyTokens.Label
+  val DisplayContainerShape = ShapeKeyTokens.CornerLarge
 }

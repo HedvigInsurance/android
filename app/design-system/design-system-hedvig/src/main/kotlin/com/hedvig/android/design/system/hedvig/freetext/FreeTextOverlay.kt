@@ -52,6 +52,7 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.fromToken
 import com.hedvig.android.design.system.hedvig.internal.Decoration
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.BackgroundBlack
+import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.SignalAmberElement
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.SurfacePrimary
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.TextPrimary
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.TextTertiary
@@ -62,6 +63,8 @@ import hedvig.resources.R
 @Composable
 fun FreeTextOverlay(
   overlaidContent: @Composable () -> Unit,
+  // the content that shows on the screen first and triggers the visibility of full-screen freeTextOverlay -
+  // for example, FreeTextDisplay or some Button.
   freeTextValue: String?,
   freeTextHint: String,
   freeTextOnSaveClick: (String?) -> Unit,
@@ -71,7 +74,6 @@ fun FreeTextOverlay(
   freeTextMaxLength: Int = FreeTextDefaults.maxLength,
   cancelButtonText: String? = null,
   confirmButtonText: String? = null,
-  // the content that shows on the screen first and triggers the visibility of free text full-screen overlay.
 ) {
   Box(modifier) {
     overlaidContent()
@@ -217,7 +219,7 @@ private fun FreeTextOverlayContent(
             horizontalArrangement = Arrangement.End,
             modifier = Modifier
               .fillMaxWidth()
-              .padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
+              .padding(start = 16.dp, end = 16.dp, bottom = 12.dp),  // todo: real value and into token here
           ) {
             HedvigText(
               text = "${textValue.text.length}/$textMaxLength",
@@ -294,23 +296,25 @@ internal object FreeTextDefaults {
   )
   val textPadding = PaddingValues(FreeTextTokens.TextPadding)
   val textStyle = FreeTextTokens.TextStyle
-  val countLabelStyle = FreeTextTokens.countLabel
+  val countLabelStyle = FreeTextTokens.CountLabel
   val shape
     @Composable
     @ReadOnlyComposable
     get() = FreeTextTokens.ContainerShape.value
 }
 
-private data class FreeTextColors(
+internal data class FreeTextColors(
   val backgroundColor: Color,
   val cursorBrushColor: Color,
   val textFieldColor: Color,
   val textColor: Color,
   val labelColor: Color,
   val hintColor: Color,
+  val displayContainerColor: Color,
+  val warningIconColor: Color
 )
 
-private val freeTextColors: FreeTextColors
+internal val freeTextColors: FreeTextColors
   @Composable get() = with(HedvigTheme.colorScheme) {
     remember(this) {
       FreeTextColors(
@@ -320,6 +324,8 @@ private val freeTextColors: FreeTextColors
         textColor = fromToken(TextPrimary),
         labelColor = fromToken(TextTertiary),
         hintColor = fromToken(TextTertiary),
+        displayContainerColor = fromToken(SurfacePrimary),
+        warningIconColor = fromToken(SignalAmberElement)
       )
     }
   }
