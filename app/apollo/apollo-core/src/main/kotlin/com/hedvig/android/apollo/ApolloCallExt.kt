@@ -6,6 +6,8 @@ import arrow.core.raise.either
 import com.apollographql.apollo.ApolloCall
 import com.apollographql.apollo.api.ApolloResponse
 import com.apollographql.apollo.api.Operation
+import com.apollographql.apollo.api.Query
+import com.apollographql.apollo.cache.normalized.watch
 import com.apollographql.apollo.exception.ApolloException
 import com.apollographql.apollo.exception.CacheMissException
 import com.hedvig.android.apollo.ApolloOperationError.CacheMiss
@@ -36,9 +38,7 @@ sealed interface ApolloOperationError {
 }
 
 suspend fun <D : Operation.Data> ApolloCall<D>.safeExecute(): Either<ApolloOperationError, D> {
-  return either {
-    parseResponse(execute())
-  }
+  return either { parseResponse(execute()) }
 }
 
 suspend fun <D : Operation.Data, ErrorType> ApolloCall<D>.safeExecute(
@@ -49,9 +49,7 @@ suspend fun <D : Operation.Data, ErrorType> ApolloCall<D>.safeExecute(
 
 fun <D : Operation.Data> ApolloCall<D>.safeFlow(): Flow<Either<ApolloOperationError, D>> {
   return toFlow().map {
-    either {
-      parseResponse(it)
-    }
+    either { parseResponse(it) }
   }
 }
 
@@ -59,6 +57,12 @@ fun <D : Operation.Data, ErrorType> ApolloCall<D>.safeFlow(
   mapError: (ApolloOperationError) -> ErrorType,
 ): Flow<Either<ErrorType, D>> {
   return safeFlow().map { it.mapLeft(mapError) }
+}
+
+fun <D : Query.Data> ApolloCall<D>.safeWatch(): Flow<Either<ApolloOperationError, D>> {
+  return this.watch().map {
+    either { parseResponse(it) }
+  }
 }
 
 fun ErrorMessage(apolloOperationError: ApolloOperationError): ErrorMessage = object : ErrorMessage {

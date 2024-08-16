@@ -5,20 +5,18 @@ import arrow.core.Either
 import arrow.core.NonEmptyList
 import arrow.core.left
 import arrow.core.raise.either
-import arrow.core.raise.ensureNotNull
 import arrow.core.raise.nullable
 import arrow.core.toNonEmptyListOrNull
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.fetchPolicy
-import com.apollographql.apollo.cache.normalized.watch
-import com.apollographql.apollo.exception.ApolloException
 import com.apollographql.apollo.exception.CacheMissException
 import com.hedvig.android.apollo.ApolloOperationError.CacheMiss
 import com.hedvig.android.apollo.ApolloOperationError.OperationError
 import com.hedvig.android.apollo.ApolloOperationError.OperationException
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeFlow
+import com.hedvig.android.apollo.safeWatch
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.contract.android.CrossSell
 import com.hedvig.android.featureflags.FeatureManager
@@ -41,7 +39,6 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import octopus.CbmNumberOfChatMessagesQuery
-import octopus.CbmNumberOfChatMessagesQuery.Data
 import octopus.HomeQuery
 import octopus.NumberOfChatMessagesQuery
 import octopus.type.ChatMessageSender
@@ -193,12 +190,17 @@ internal class GetHomeDataUseCaseImpl(
           }
       } else {
         apolloClient.query(NumberOfChatMessagesQuery())
-          .watch()
-          .map { apolloResponse ->
+          .safeWatch()
+          .map { result ->
             either {
-              val data = ensureNotNull(apolloResponse.data) {
-                ErrorMessage("Home failed to fetch chat history")
-              }
+              val data = result
+                .onLeft { apolloOperationError ->
+                  if (apolloOperationError is CacheMiss) {
+                    throw apolloOperationError.throwable
+                  }
+                }
+                .mapLeft(::ErrorMessage)
+                .bind()
               val chatMessages = data.chat.messages.map { message ->
                 ChatMessage(
                   message.id,
@@ -209,8 +211,7 @@ internal class GetHomeDataUseCaseImpl(
             }
           }
           .retryWhen { cause, attempt ->
-            val shouldRetry = cause is CacheMissException ||
-              (cause is ApolloException && cause.suppressedExceptions.any { it is CacheMissException })
+            val shouldRetry = cause is CacheMissException
             if (shouldRetry) {
               emit(ErrorMessage("").left())
               delay(attempt.coerceAtMost(3).seconds)
