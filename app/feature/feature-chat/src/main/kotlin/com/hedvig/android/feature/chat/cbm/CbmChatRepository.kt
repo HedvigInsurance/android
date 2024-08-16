@@ -286,7 +286,7 @@ internal class CbmChatRepositoryImpl(
         .fetchPolicy(FetchPolicy.NetworkOnly)
         .safeExecute()
         .mapLeft {
-          "${it.message} + ${it.throwable?.message}"
+          "$it + ${it.throwable?.message}"
         }.bind()
       val messagePage = data.conversation?.messagePage
       ensureNotNull(messagePage) {

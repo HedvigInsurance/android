@@ -29,7 +29,7 @@ internal class RequestAccountDeletionUseCase(
       val userErrorMessage = apolloClient.mutation(MemberDeletionRequestMutation())
         .safeExecute {
           logcat(LogPriority.WARN, it.throwable) {
-            "RequestAccountDeletionUseCase failed to request account deletion. Message:${it.message}."
+            "RequestAccountDeletionUseCase failed to request account deletion. Message:$it."
           }
           RequestAccountError.NetworkError
         }

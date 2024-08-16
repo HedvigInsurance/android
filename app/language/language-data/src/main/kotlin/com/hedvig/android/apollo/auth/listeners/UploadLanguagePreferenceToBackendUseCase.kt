@@ -24,7 +24,7 @@ internal class UploadLanguagePreferenceToBackendUseCaseImpl(
       .fold(
         ifLeft = {
           logcat(LogPriority.WARN, it.throwable) {
-            "UploadLanguagePreferenceToBackendUseCase: Failed to upload new language:$ietfLanguageTag to backend. Message:${it.message}"
+            "UploadLanguagePreferenceToBackendUseCase: Failed to upload new language:$ietfLanguageTag to backend. Message:$it"
           }
         },
         ifRight = { response ->
