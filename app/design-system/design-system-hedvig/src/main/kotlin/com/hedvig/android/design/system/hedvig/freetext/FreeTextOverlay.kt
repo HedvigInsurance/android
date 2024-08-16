@@ -49,6 +49,7 @@ import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.freetext.FreeTextDefaults.counterPadding
 import com.hedvig.android.design.system.hedvig.fromToken
 import com.hedvig.android.design.system.hedvig.internal.Decoration
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.BackgroundBlack
@@ -219,7 +220,7 @@ private fun FreeTextOverlayContent(
             horizontalArrangement = Arrangement.End,
             modifier = Modifier
               .fillMaxWidth()
-              .padding(start = 16.dp, end = 16.dp, bottom = 12.dp),  // todo: real value and into token here
+              .padding(counterPadding),
           ) {
             HedvigText(
               text = "${textValue.text.length}/$textMaxLength",
@@ -295,6 +296,12 @@ internal object FreeTextDefaults {
     end = FreeTextTokens.FieldPadding,
   )
   val textPadding = PaddingValues(FreeTextTokens.TextPadding)
+  val counterPadding = PaddingValues(
+    start = FreeTextTokens.OverlayCounterPaddingStart,
+    bottom = FreeTextTokens.OverlayCounterPaddingBottom,
+    end = FreeTextTokens.OverlayCounterPaddingEnd,
+    top = FreeTextTokens.OverlayCounterPaddingTop,
+  )
   val textStyle = FreeTextTokens.TextStyle
   val countLabelStyle = FreeTextTokens.CountLabel
   val shape
@@ -311,7 +318,7 @@ internal data class FreeTextColors(
   val labelColor: Color,
   val hintColor: Color,
   val displayContainerColor: Color,
-  val warningIconColor: Color
+  val warningIconColor: Color,
 )
 
 internal val freeTextColors: FreeTextColors
@@ -325,7 +332,7 @@ internal val freeTextColors: FreeTextColors
         labelColor = fromToken(TextTertiary),
         hintColor = fromToken(TextTertiary),
         displayContainerColor = fromToken(SurfacePrimary),
-        warningIconColor = fromToken(SignalAmberElement)
+        warningIconColor = fromToken(SignalAmberElement),
       )
     }
   }

@@ -3,6 +3,7 @@ package com.hedvig.android.design.system.hedvig.freetext
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,23 +12,42 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextDisplayDefaults.Height
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextDisplayDefaults.Height.Limited
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextDisplayDefaults.Height.Unlimited
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextDisplayDefaults.Style
+import com.hedvig.android.design.system.hedvig.freetext.FreeTextDisplayDefaults.Style.Labeled
+import com.hedvig.android.design.system.hedvig.freetext.FreeTextDisplayDefaults.contentPadding
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextDisplayDefaults.defaultHeight
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextDisplayDefaults.defaultStyle
+import com.hedvig.android.design.system.hedvig.freetext.FreeTextDisplayDefaults.supportingTextPadding
+import com.hedvig.android.design.system.hedvig.fromToken
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.WarningFilled
+import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.TextPrimary
+import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.TextSecondaryTranslucent
+import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.TextTertiary
 import com.hedvig.android.design.system.hedvig.tokens.FreeTextTokens
+import com.hedvig.android.design.system.hedvig.tokens.FreeTextTokens.DisplayContentPaddingBottom
+import com.hedvig.android.design.system.hedvig.tokens.FreeTextTokens.DisplayContentPaddingEnd
+import com.hedvig.android.design.system.hedvig.tokens.FreeTextTokens.DisplayContentPaddingStart
+import com.hedvig.android.design.system.hedvig.tokens.FreeTextTokens.DisplayContentPaddingTop
+import com.hedvig.android.design.system.hedvig.tokens.FreeTextTokens.DisplaySupportingTextPaddingBottom
+import com.hedvig.android.design.system.hedvig.tokens.FreeTextTokens.DisplaySupportingTextPaddingEnd
+import com.hedvig.android.design.system.hedvig.tokens.FreeTextTokens.DisplaySupportingTextPaddingStart
+import com.hedvig.android.design.system.hedvig.tokens.FreeTextTokens.DisplaySupportingTextPaddingTop
 import com.hedvig.android.design.system.hedvig.value
 
 @Composable
@@ -48,51 +68,71 @@ fun FreeTextDisplay(
     Surface(
       onClick = onClick,
       modifier =
-      when (height) {
-        is Limited -> Modifier.height(
-          height.requiredHeight,
-        )
+        when (height) {
+          is Limited -> Modifier.height(
+            height.requiredHeight,
+          )
 
-        Unlimited -> Modifier
-      },
+          Unlimited -> Modifier
+        },
       shape = FreeTextDisplayDefaults.shape,
       color = freeTextColors.displayContainerColor,
     ) {
-      Column {
-        if (style is Style.Labeled) {
-          //todo: label
-        }
-        HedvigText(
-          text = freeTextValue ?: freeTextPlaceholder,
-          style = FreeTextDisplayDefaults.textStyle.value,
-          color = if (freeTextValue != null) Color.Black else Color.Gray, //todo: real colors here
-        )
-      }
-
-      Row(
-        horizontalArrangement = Arrangement.End,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp, bottom = 13.dp),  // todo: real value and into token here
+      Column(
+        Modifier.padding(contentPadding),
       ) {
-        AnimatedVisibility(textValue.length == maxLength) {
-          Icon(HedvigIcons.WarningFilled, null, tint = freeTextColors.warningIconColor)
+        if (style is Labeled && freeTextValue != null) {
+          Row(Modifier.fillMaxWidth()) {
+            HedvigText(
+              text = style.labelText,
+              color = displayColors.labelColor,
+              style = FreeTextDisplayDefaults.countLabelStyle.value,
+            )
+          }
         }
-        Spacer(Modifier.width(2.dp))
-        HedvigText(
-          text = "${textValue.length}/$maxLength",
-          style = FreeTextDisplayDefaults.countLabelStyle.value,
-          color = Color.Black, // todo: real value and into token here
-        )
+        Row(
+          modifier = if (height is Limited) Modifier.weight(1f) else Modifier,
+        ) {
+          val text = freeTextValue ?: if (style is Labeled) style.labelText else freeTextPlaceholder
+          HedvigText(
+            modifier = Modifier.weight(1f),
+            overflow = TextOverflow.Ellipsis,
+            text = text,
+            style = FreeTextDisplayDefaults.textStyle.value,
+            color = if (freeTextValue != null) displayColors.textColor else displayColors.placeHolderColor,
+          )
+          AnimatedVisibility(hasError) {
+            if (hasError) {
+              Icon(HedvigIcons.WarningFilled, null, tint = freeTextColors.warningIconColor)
+            }
+          }
+        }
+        Spacer(Modifier.height(8.dp))
+        Row(
+          horizontalArrangement = Arrangement.End,
+          verticalAlignment = Alignment.CenterVertically,
+          modifier = Modifier
+            .fillMaxWidth(),
+        ) {
+          AnimatedVisibility(textValue.length >= maxLength) {
+            Icon(HedvigIcons.WarningFilled, null, tint = freeTextColors.warningIconColor)
+          }
+          Spacer(Modifier.width(2.dp))
+          HedvigText(
+            text = "${textValue.length}/$maxLength",
+            style = FreeTextDisplayDefaults.countLabelStyle.value,
+            color = displayColors.counterColor,
+          )
+        }
       }
     }
     AnimatedVisibility(hasError) {
       if (hasError && supportingText != null) {
         HedvigText(
           text = supportingText,
-          color = Color.Black, // todo: real value and into token here
+          color = displayColors.supportingTextColor,
           style = FreeTextDisplayDefaults.countLabelStyle.value,
-          modifier = Modifier.padding(16.dp), // todo: real value and into token here
+          modifier = Modifier.padding(supportingTextPadding),
         )
       }
     }
@@ -105,6 +145,18 @@ object FreeTextDisplayDefaults {
   internal val textStyle = FreeTextTokens.TextStyle
   internal val maxLength: Int = FreeTextTokens.TextDefaultMaxLength
   internal val countLabelStyle = FreeTextTokens.CountLabel
+  internal val supportingTextPadding = PaddingValues(
+    bottom = DisplaySupportingTextPaddingBottom,
+    top = DisplaySupportingTextPaddingTop,
+    start = DisplaySupportingTextPaddingStart,
+    end = DisplaySupportingTextPaddingEnd,
+  )
+  internal val contentPadding = PaddingValues(
+    bottom = DisplayContentPaddingBottom,
+    top = DisplayContentPaddingTop,
+    start = DisplayContentPaddingStart,
+    end = DisplayContentPaddingEnd,
+  )
 
   val shape: Shape
     @Composable
@@ -113,15 +165,38 @@ object FreeTextDisplayDefaults {
 
   sealed class Height {
     data object Unlimited : Height()
+
     data class Limited(
-      val requiredHeight: Dp = 124.dp, // todo: real value and into token here
+      val requiredHeight: Dp = FreeTextTokens.DisplayDefaultHeight,
     ) : Height()
   }
 
   sealed class Style {
     data object Default : Style()
+
     data class Labeled(
       val labelText: String,
     ) : Style()
   }
 }
+
+private data class FreeTextDisplayColors(
+  val placeHolderColor: Color,
+  val textColor: Color,
+  val supportingTextColor: Color,
+  val labelColor: Color,
+  val counterColor: Color,
+)
+
+private val displayColors
+  @Composable get() = with(HedvigTheme.colorScheme) {
+    remember(this) {
+      FreeTextDisplayColors(
+        textColor = fromToken(TextPrimary),
+        labelColor = fromToken(TextSecondaryTranslucent),
+        placeHolderColor = fromToken(TextTertiary),
+        counterColor = fromToken(TextTertiary),
+        supportingTextColor = fromToken(TextSecondaryTranslucent),
+      )
+    }
+  }
