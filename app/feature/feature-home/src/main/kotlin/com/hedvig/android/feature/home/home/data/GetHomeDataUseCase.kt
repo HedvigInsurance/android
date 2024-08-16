@@ -177,7 +177,7 @@ internal class GetHomeDataUseCaseImpl(
                 ?.map { ChatMessage(it.id, it.sender.toChatMessageSender()) }
                 ?.isEligibleToShowTheChatIcon() == true
               if (eligibleFromLegacyConversation) {
-                return@map true
+                return@either true
               }
               val conversations = data.currentMember.conversations
               val showChatIcon = conversations.any { conversation ->

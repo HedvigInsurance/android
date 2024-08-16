@@ -23,7 +23,7 @@ internal class ChangeEmailSubscriptionPreferencesUseCaseImpl(
         .mutation(UpdateSubscriptionPreferenceMutation(Optional.present(subscribe)))
         .safeExecute()
         .mapLeft {
-          SubPrefError(it.message)
+          SubPrefError(it.toString())
         }
         .bind()
       val userErrorMessage = data.memberUpdateSubscriptionPreference?.message
