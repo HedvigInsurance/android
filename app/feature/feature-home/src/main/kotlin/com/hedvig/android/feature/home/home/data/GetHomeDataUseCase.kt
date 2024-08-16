@@ -4,11 +4,9 @@ import androidx.compose.runtime.Immutable
 import arrow.core.Either
 import arrow.core.NonEmptyList
 import arrow.core.left
-import arrow.core.merge
 import arrow.core.raise.either
 import arrow.core.raise.ensureNotNull
 import arrow.core.raise.nullable
-import arrow.core.right
 import arrow.core.toNonEmptyListOrNull
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.cache.normalized.FetchPolicy
@@ -16,8 +14,10 @@ import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.apollographql.apollo.cache.normalized.watch
 import com.apollographql.apollo.exception.ApolloException
 import com.apollographql.apollo.exception.CacheMissException
+import com.hedvig.android.apollo.ApolloOperationError.CacheMiss
+import com.hedvig.android.apollo.ApolloOperationError.OperationError
+import com.hedvig.android.apollo.ApolloOperationError.OperationException
 import com.hedvig.android.apollo.ErrorMessage
-import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.contract.android.CrossSell
@@ -34,7 +34,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.retryWhen
 import kotlinx.datetime.Clock
@@ -42,6 +41,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import octopus.CbmNumberOfChatMessagesQuery
+import octopus.CbmNumberOfChatMessagesQuery.Data
 import octopus.HomeQuery
 import octopus.NumberOfChatMessagesQuery
 import octopus.type.ChatMessageSender
@@ -152,34 +152,45 @@ internal class GetHomeDataUseCaseImpl(
   private fun isEligibleToShowTheChatIcon(): Flow<Either<ErrorMessage, Boolean>> {
     return featureManager.isFeatureEnabled(Feature.ENABLE_CBM).flatMapLatest { isCbmEnabled ->
       if (isCbmEnabled) {
-        flow {
-          emit(
-            apolloClient.query(CbmNumberOfChatMessagesQuery())
-              .safeExecute()
-              .mapLeft { false }
-              .map { result ->
-                val eligibleFromLegacyConversation = result
-                  .currentMember
-                  .legacyConversation
-                  ?.messagePage
-                  ?.messages
-                  ?.map { ChatMessage(it.id, it.sender.toChatMessageSender()) }
-                  ?.isEligibleToShowTheChatIcon() == true
-                if (eligibleFromLegacyConversation) {
-                  return@map true
+        apolloClient.query(CbmNumberOfChatMessagesQuery())
+          .fetchPolicy(FetchPolicy.CacheAndNetwork)
+          .safeFlow()
+          .map { result ->
+            either {
+              val data = result
+                .onLeft { apolloOperationError ->
+                  when (apolloOperationError) {
+                    is CacheMiss -> return@either false
+                    is OperationError,
+                    is OperationException,
+                    -> {
+                      logcat(LogPriority.ERROR, apolloOperationError.throwable) {
+                        "isEligibleToShowTheChatIcon cant determine if the chat icon should be shown. $apolloOperationError"
+                      }
+                    }
+                  }
                 }
-                val conversations = result.currentMember.conversations
-                val showChatIcon = conversations.any { conversation ->
-                  val isOpenConversation = conversation.isOpen
-                  val hasAnyMessageSent = conversation.newestMessage != null
-                  isOpenConversation || hasAnyMessageSent
-                }
-                showChatIcon
+                .mapLeft(::ErrorMessage)
+                .bind()
+              val eligibleFromLegacyConversation = data
+                .currentMember
+                .legacyConversation
+                ?.messagePage
+                ?.messages
+                ?.map { ChatMessage(it.id, it.sender.toChatMessageSender()) }
+                ?.isEligibleToShowTheChatIcon() == true
+              if (eligibleFromLegacyConversation) {
+                return@map true
               }
-              .merge()
-              .right(),
-          )
-        }
+              val conversations = data.currentMember.conversations
+              val showChatIcon = conversations.any { conversation ->
+                val isOpenConversation = conversation.isOpen
+                val hasAnyMessageSent = conversation.newestMessage != null
+                isOpenConversation || hasAnyMessageSent
+              }
+              showChatIcon
+            }
+          }
       } else {
         apolloClient.query(NumberOfChatMessagesQuery())
           .watch()
