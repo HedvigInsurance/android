@@ -20,6 +20,8 @@ import kotlinx.coroutines.flow.map
 sealed interface ApolloOperationError {
   val throwable: Throwable?
 
+  fun isCacheMiss(): Boolean = this is CacheMiss
+
   data class CacheMiss(override val throwable: CacheMissException) : ApolloOperationError {
     override fun toString(): String {
       return "CacheMiss(throwableMessage=${throwable.message}, throwable=$throwable)"

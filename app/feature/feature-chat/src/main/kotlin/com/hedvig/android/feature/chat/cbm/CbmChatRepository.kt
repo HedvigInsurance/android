@@ -15,6 +15,7 @@ import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.doNotStore
 import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.benasher44.uuid.Uuid
+import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.safeFlow
@@ -61,7 +62,7 @@ import okhttp3.MediaType.Companion.toMediaType
 internal interface CbmChatRepository {
   suspend fun createConversation(conversationId: Uuid): Either<ErrorMessage, Info>
 
-  fun getConversationInfo(conversationId: Uuid): Flow<Either<ErrorMessage, ConversationInfo>>
+  fun getConversationInfo(conversationId: Uuid): Flow<Either<ApolloOperationError, ConversationInfo>>
 
   fun bannerText(conversationId: Uuid): Flow<BannerText?>
 
@@ -99,11 +100,11 @@ internal class CbmChatRepositoryImpl(
     }
   }
 
-  override fun getConversationInfo(conversationId: Uuid): Flow<Either<ErrorMessage, ConversationInfo>> {
+  override fun getConversationInfo(conversationId: Uuid): Flow<Either<ApolloOperationError, ConversationInfo>> {
     return apolloClient
       .query(ConversationInfoQuery(conversationId.toString()))
       .fetchPolicy(FetchPolicy.CacheAndNetwork)
-      .safeFlow(::ErrorMessage)
+      .safeFlow()
       .map { response ->
         response.map {
           it.conversation.toConversationInfo()
