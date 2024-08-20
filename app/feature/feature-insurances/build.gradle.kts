@@ -14,6 +14,7 @@ android {
 
 dependencies {
 
+  implementation(libs.androidx.compose.animation)
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.apollo.normalizedCache)
@@ -38,7 +39,6 @@ dependencies {
   implementation(projects.coreResources)
   implementation(projects.coreUi)
   implementation(projects.crossSells)
-  implementation(projects.dataContractAndroid)
   implementation(projects.dataContractPublic)
   implementation(projects.dataProductVariantAndroid)
   implementation(projects.dataProductVariantPublic)

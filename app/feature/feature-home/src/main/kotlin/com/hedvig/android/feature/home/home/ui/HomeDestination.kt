@@ -82,7 +82,7 @@ import com.hedvig.android.core.ui.infocard.InfoCardTextButton
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.plus
 import com.hedvig.android.crosssells.CrossSellsSection
-import com.hedvig.android.data.contract.android.CrossSell
+import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.feature.home.home.ChatTooltip
 import com.hedvig.android.feature.home.home.ChatTooltipMessage
 import com.hedvig.android.feature.home.home.data.HomeData
@@ -176,7 +176,7 @@ private fun HomeScreen(
     onRefresh = reload,
     refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
   )
-  var crossSellsForBottomSheet by remember { mutableStateOf<List<CrossSell>?>(null) }
+  var crossSellsForBottomSheet by remember { mutableStateOf<List<com.hedvig.android.data.contract.CrossSell>?>(null) }
   if (crossSellsForBottomSheet != null) {
     val list = crossSellsForBottomSheet
     if (list != null) {
@@ -570,7 +570,7 @@ private fun WelcomeMessage(homeText: HomeText, modifier: Modifier = Modifier) {
 
 @Composable
 private fun CrossSellBottomSheet(
-  crossSells: List<CrossSell>,
+  crossSells: List<com.hedvig.android.data.contract.CrossSell>,
   onDismissed: () -> Unit,
   onCrossSellClick: (String) -> Unit,
 ) {
@@ -644,7 +644,15 @@ private fun PreviewHomeScreen(
           isHelpCenterEnabled = true,
           hasUnseenChatMessages = hasUnseenChatMessages,
           crossSellsAction = HomeTopBarAction.CrossSellsAction(
-            listOf(CrossSell("rf", "erf", "", "", CrossSell.CrossSellType.ACCIDENT)),
+            listOf(
+              com.hedvig.android.data.contract.CrossSell(
+                "rf",
+                "erf",
+                "",
+                "",
+                com.hedvig.android.data.contract.CrossSell.CrossSellType.ACCIDENT,
+              ),
+            ),
           ),
           firstVetAction = HomeTopBarAction.FirstVetAction(
             listOf(

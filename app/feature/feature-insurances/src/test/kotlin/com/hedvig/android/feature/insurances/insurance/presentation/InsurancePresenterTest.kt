@@ -17,6 +17,7 @@ import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCase
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceContract
+import com.hedvig.android.feature.insurances.ui.UiInsuranceContract
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
 import com.hedvig.android.notification.badge.data.crosssell.card.FakeCrossSellCardNotificationBadgeService
@@ -313,7 +314,7 @@ internal class InsurancePresenterTest {
       getCrossSellsUseCase.crossSells.add(validCrossSells)
       awaitItem().also { uiState ->
         assertAll {
-          assertThat(uiState.contracts.map(InsuranceContract::id))
+          assertThat(uiState.contracts.map(UiInsuranceContract::id))
             .containsSubList(allContracts.filterNot(InsuranceContract::isTerminated).map(InsuranceContract::id))
           assertThat(uiState.quantityOfCancelledInsurances)
             .isEqualTo(allContracts.count(InsuranceContract::isTerminated))

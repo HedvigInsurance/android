@@ -30,6 +30,7 @@ import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceContract
 import com.hedvig.android.feature.insurances.ui.createChips
+import com.hedvig.android.feature.insurances.ui.toStringResource
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 
@@ -79,7 +80,7 @@ private fun TerminatedContractsScreen(
       is TerminatedContractsUiState.Success -> {
         for ((index, contract) in uiState.insuranceContracts.withIndex()) {
           InsuranceCard(
-            chips = contract.createChips(),
+            chips = contract.createChips().map { stringResource(it.toStringResource()) },
             topText = contract.currentInsuranceAgreement.productVariant.displayName,
             bottomText = contract.exposureDisplayName,
             imageLoader = imageLoader,

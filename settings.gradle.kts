@@ -39,8 +39,7 @@ private val File.gradleModuleDescendants: Sequence<File>
     ?.asSequence()
     ?.filter {
       it.isDirectory
-    }
-    ?.flatMap {
+    }?.flatMap {
       if (File(it, "build.gradle.kts").exists()) {
         sequenceOf(it)
       } else {

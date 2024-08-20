@@ -20,7 +20,7 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.data.contract.android.CrossSell
+import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
@@ -45,7 +45,11 @@ import octopus.CbmNumberOfChatMessagesQuery
 import octopus.HomeQuery
 import octopus.NumberOfChatMessagesQuery
 import octopus.type.ChatMessageSender
-import octopus.type.CrossSellType
+import octopus.type.CrossSellType.ACCIDENT
+import octopus.type.CrossSellType.CAR
+import octopus.type.CrossSellType.HOME
+import octopus.type.CrossSellType.PET
+import octopus.type.CrossSellType.UNKNOWN__
 
 internal interface GetHomeDataUseCase {
   fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, HomeData>>
@@ -93,17 +97,17 @@ internal class GetHomeDataUseCaseImpl(
           )
         }
         val crossSells = homeQueryData.currentMember.crossSells.map { crossSell ->
-          CrossSell(
+          com.hedvig.android.data.contract.CrossSell(
             id = crossSell.id,
             title = crossSell.title,
             subtitle = crossSell.description,
             storeUrl = crossSell.storeUrl,
             type = when (crossSell.type) {
-              CrossSellType.CAR -> CrossSell.CrossSellType.CAR
-              CrossSellType.HOME -> CrossSell.CrossSellType.HOME
-              CrossSellType.ACCIDENT -> CrossSell.CrossSellType.ACCIDENT
-              CrossSellType.PET -> CrossSell.CrossSellType.PET
-              CrossSellType.UNKNOWN__ -> CrossSell.CrossSellType.UNKNOWN
+              CAR -> com.hedvig.android.data.contract.CrossSell.CrossSellType.CAR
+              HOME -> com.hedvig.android.data.contract.CrossSell.CrossSellType.HOME
+              ACCIDENT -> com.hedvig.android.data.contract.CrossSell.CrossSellType.ACCIDENT
+              PET -> com.hedvig.android.data.contract.CrossSell.CrossSellType.PET
+              UNKNOWN__ -> com.hedvig.android.data.contract.CrossSell.CrossSellType.UNKNOWN
             },
           )
         }
@@ -304,7 +308,7 @@ internal data class HomeData(
   val showChatIcon: Boolean,
   val showHelpCenter: Boolean,
   val firstVetSections: List<FirstVetSection>,
-  val crossSells: List<CrossSell>,
+  val crossSells: List<com.hedvig.android.data.contract.CrossSell>,
 ) {
   @Immutable
   data class ClaimStatusCardsData(

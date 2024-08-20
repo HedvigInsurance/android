@@ -7,30 +7,57 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.SavedStateHandle
 import com.hedvig.android.feature.insurances.data.InsuranceContract
+import com.hedvig.android.feature.insurances.navigation.InsurancesDestinations
+import com.hedvig.android.feature.insurances.ui.UiInsuranceContract
+import com.hedvig.android.feature.insurances.ui.UiInsuranceContract.UiContractGroup
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import com.hedvig.android.navigation.compose.typedToRoute
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 
 internal class ContractDetailViewModel(
-  contractId: String,
+  val contractId: String,
+  val uiContractGroup: UiContractGroup?,
   featureManager: FeatureManager,
   getContractForContractIdUseCase: GetContractForContractIdUseCase,
 ) : MoleculeViewModel<ContractDetailsEvent, ContractDetailsUiState>(
-    initialState = ContractDetailsUiState.Loading,
-    presenter = ContractDetailPresenter(contractId, featureManager, getContractForContractIdUseCase),
-  )
+    initialState = ContractDetailsUiState.Loading(contractId, uiContractGroup),
+    presenter = ContractDetailPresenter(
+      contractId,
+      uiContractGroup,
+      featureManager,
+      getContractForContractIdUseCase,
+    ),
+  ) {
+  companion object {
+    operator fun invoke(
+      savedStateHandle: SavedStateHandle,
+      featureManager: FeatureManager,
+      getContractForContractIdUseCase: GetContractForContractIdUseCase,
+    ): ContractDetailViewModel {
+      val insuranceContractDetail = savedStateHandle.typedToRoute<InsurancesDestinations.InsuranceContractDetail>()
+      return ContractDetailViewModel(
+        insuranceContractDetail.contractId,
+        insuranceContractDetail.uiContractGroup,
+        featureManager,
+        getContractForContractIdUseCase,
+      )
+    }
+  }
+}
 
 internal class ContractDetailPresenter(
   private val contractId: String,
+  private val uiContractGroup: UiContractGroup?,
   private val featureManager: FeatureManager,
   private val getContractForContractIdUseCase: GetContractForContractIdUseCase,
-) :
-  MoleculePresenter<ContractDetailsEvent, ContractDetailsUiState> {
+) : MoleculePresenter<ContractDetailsEvent, ContractDetailsUiState> {
   @Composable
   override fun MoleculePresenterScope<ContractDetailsEvent>.present(
     lastState: ContractDetailsUiState,
@@ -46,7 +73,7 @@ internal class ContractDetailPresenter(
 
     LaunchedEffect(dataLoadIteration) {
       if (currentState !is ContractDetailsUiState.Success) {
-        currentState = ContractDetailsUiState.Loading
+        currentState = ContractDetailsUiState.Loading(contractId, uiContractGroup)
       }
       combine(
         getContractForContractIdUseCase.invoke(contractId),
@@ -64,6 +91,7 @@ internal class ContractDetailPresenter(
           ifRight = { contract ->
             val noTerminationDateYet = contract.terminationDate == null
             currentState = ContractDetailsUiState.Success(
+              uiInsuranceContract = UiInsuranceContract.fromInsuranceContract(contract),
               insuranceContract = contract,
               allowTerminatingInsurance = isTerminationFlowEnabled && noTerminationDateYet,
             )
@@ -77,6 +105,7 @@ internal class ContractDetailPresenter(
 
 internal sealed interface ContractDetailsUiState {
   data class Success(
+    val uiInsuranceContract: UiInsuranceContract,
     val insuranceContract: InsuranceContract,
     val allowTerminatingInsurance: Boolean,
   ) : ContractDetailsUiState
@@ -85,7 +114,10 @@ internal sealed interface ContractDetailsUiState {
 
   data object NoContractFound : ContractDetailsUiState
 
-  data object Loading : ContractDetailsUiState
+  data class Loading(
+    val contractId: String,
+    val uiContractGroup: UiContractGroup?,
+  ) : ContractDetailsUiState
 }
 
 internal interface ContractDetailsEvent {

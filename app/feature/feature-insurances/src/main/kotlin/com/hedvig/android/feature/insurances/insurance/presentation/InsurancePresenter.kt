@@ -14,10 +14,12 @@ import arrow.core.raise.either
 import arrow.fx.coroutines.parZip
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.demomode.Provider
-import com.hedvig.android.data.contract.android.CrossSell
+import com.hedvig.android.data.contract.CrossSell
+import com.hedvig.android.data.contract.CrossSell.CrossSellType.UNKNOWN
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCase
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
 import com.hedvig.android.feature.insurances.data.InsuranceContract
+import com.hedvig.android.feature.insurances.ui.UiInsuranceContract
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -28,7 +30,11 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import octopus.CrossSellsQuery
-import octopus.type.CrossSellType
+import octopus.type.CrossSellType.ACCIDENT
+import octopus.type.CrossSellType.CAR
+import octopus.type.CrossSellType.HOME
+import octopus.type.CrossSellType.PET
+import octopus.type.CrossSellType.UNKNOWN__
 
 internal sealed interface InsuranceScreenEvent {
   data object RetryLoading : InsuranceScreenEvent
@@ -37,7 +43,7 @@ internal sealed interface InsuranceScreenEvent {
 }
 
 internal data class InsuranceUiState(
-  val contracts: List<InsuranceContract>,
+  val contracts: List<UiInsuranceContract>,
   val crossSells: List<CrossSell>,
   val showNotificationBadge: Boolean,
   val quantityOfCancelledInsurances: Int,
@@ -159,16 +165,16 @@ private suspend fun loadInsuranceData(
           subtitle = crossSell.description,
           storeUrl = crossSell.storeUrl,
           type = when (crossSell.type) {
-            CrossSellType.CAR -> CrossSell.CrossSellType.CAR
-            CrossSellType.HOME -> CrossSell.CrossSellType.HOME
-            CrossSellType.ACCIDENT -> CrossSell.CrossSellType.ACCIDENT
-            CrossSellType.PET -> CrossSell.CrossSellType.PET
-            CrossSellType.UNKNOWN__ -> CrossSell.CrossSellType.UNKNOWN
+            CAR -> CrossSell.CrossSellType.CAR
+            HOME -> CrossSell.CrossSellType.HOME
+            ACCIDENT -> CrossSell.CrossSellType.ACCIDENT
+            PET -> CrossSell.CrossSellType.PET
+            UNKNOWN__ -> UNKNOWN
           },
         )
       }
       InsuranceData(
-        contracts = insuranceCards,
+        contracts = insuranceCards.map(UiInsuranceContract::fromInsuranceContract),
         crossSells = crossSells,
         quantityOfCancelledInsurances = contracts.count(InsuranceContract::isTerminated),
       )
@@ -181,7 +187,7 @@ private suspend fun loadInsuranceData(
 }
 
 private data class InsuranceData(
-  val contracts: List<InsuranceContract>,
+  val contracts: List<UiInsuranceContract>,
   val crossSells: List<CrossSell>,
   val quantityOfCancelledInsurances: Int,
 ) {
@@ -195,8 +201,8 @@ private data class InsuranceData(
     }
 
     val Empty: InsuranceData = InsuranceData(
-      contracts = listOf(),
-      crossSells = listOf(),
+      contracts = emptyList(),
+      crossSells = emptyList(),
       quantityOfCancelledInsurances = 0,
     )
   }

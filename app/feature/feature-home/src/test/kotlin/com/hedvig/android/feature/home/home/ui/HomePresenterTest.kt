@@ -15,7 +15,7 @@ import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.chat.read.timestamp.FakeChatLastMessageReadRepository
-import com.hedvig.android.data.contract.android.CrossSell
+import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorageImpl
@@ -362,12 +362,12 @@ internal class HomePresenterTest {
       { FakeCrossSellCardNotificationBadgeService() },
       backgroundScope,
     )
-    val crossSell = CrossSell(
+    val crossSell = com.hedvig.android.data.contract.CrossSell(
       id = "id",
       title = "title",
       storeUrl = "url",
       subtitle = "subt",
-      type = CrossSell.CrossSellType.HOME,
+      type = com.hedvig.android.data.contract.CrossSell.CrossSellType.HOME,
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)

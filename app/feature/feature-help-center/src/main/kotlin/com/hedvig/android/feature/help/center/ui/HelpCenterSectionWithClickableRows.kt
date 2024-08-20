@@ -41,9 +41,17 @@ internal fun <T> HelpCenterSectionWithClickableRows(
     content = {
       Column {
         for ((index, question) in items.withIndex()) {
+          if (index != 0) {
+            HorizontalDivider(
+              Modifier
+                .padding(horizontal = 16.dp)
+                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+            )
+          }
           Column(
             verticalArrangement = Arrangement.spacedBy(4.dp),
-            modifier = Modifier.clickable { onClickItem(question) }
+            modifier = Modifier
+              .clickable { onClickItem(question) }
               .padding(vertical = 16.dp, horizontal = 16.dp)
               .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
           ) {
@@ -62,12 +70,6 @@ internal fun <T> HelpCenterSectionWithClickableRows(
               )
             }
           }
-
-          HorizontalDivider(
-            Modifier
-              .padding(horizontal = 16.dp)
-              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-          )
         }
       }
     },
