@@ -17,6 +17,7 @@ import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.benasher44.uuid.Uuid
 import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.apollo.ErrorMessage
+import com.hedvig.android.apollo.filterCacheMisses
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
@@ -105,6 +106,7 @@ internal class CbmChatRepositoryImpl(
       .query(ConversationInfoQuery(conversationId.toString()))
       .fetchPolicy(FetchPolicy.CacheAndNetwork)
       .safeFlow()
+      .filterCacheMisses()
       .map { response ->
         response.map {
           it.conversation.toConversationInfo()

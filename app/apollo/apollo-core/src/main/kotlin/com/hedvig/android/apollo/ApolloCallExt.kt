@@ -14,7 +14,10 @@ import com.hedvig.android.apollo.ApolloOperationError.CacheMiss
 import com.hedvig.android.apollo.ApolloOperationError.OperationError
 import com.hedvig.android.apollo.ApolloOperationError.OperationException
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.map
 
 sealed interface ApolloOperationError {
@@ -50,9 +53,19 @@ suspend fun <D : Operation.Data, ErrorType> ApolloCall<D>.safeExecute(
 }
 
 fun <D : Operation.Data> ApolloCall<D>.safeFlow(): Flow<Either<ApolloOperationError, D>> {
-  return toFlow().map {
-    either { parseResponse(it) }
-  }
+  return toFlow()
+    .filterNot { response ->
+      val isTemporaryCacheMiss = !response.isLast && response.exception is CacheMissException
+      // If we get a cache miss, but we know that we are awaiting a new response after that anyway, we do not need to
+      // emit the cache miss at all. We can just wait for the next response to come instead.
+      if (isTemporaryCacheMiss) {
+        logcat(LogPriority.DEBUG) {
+          "Apollo call:${this.operation.name()} emitted a cache miss, but another response is coming"
+        }
+      }
+      isTemporaryCacheMiss
+    }
+    .map { either { parseResponse(it) } }
 }
 
 fun <D : Operation.Data, ErrorType> ApolloCall<D>.safeFlow(
@@ -62,9 +75,12 @@ fun <D : Operation.Data, ErrorType> ApolloCall<D>.safeFlow(
 }
 
 fun <D : Query.Data> ApolloCall<D>.safeWatch(): Flow<Either<ApolloOperationError, D>> {
-  return this.watch().map {
-    either { parseResponse(it) }
-  }
+  return this.watch().map { either { parseResponse(it) } }
+}
+
+fun <D : Operation.Data> Flow<Either<ApolloOperationError, D>>.filterCacheMisses():
+  Flow<Either<ApolloOperationError, D>> {
+  return this.filterNot { it.leftOrNull()?.isCacheMiss() == true }
 }
 
 fun ErrorMessage(apolloOperationError: ApolloOperationError): ErrorMessage = object : ErrorMessage {
