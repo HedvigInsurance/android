@@ -91,9 +91,9 @@ fun HedvigDatePickerInternal(
 @Composable
 fun HedvigDatePicker(
   datePickerState: DatePickerState,
+  colors: DatePickerColors,
   modifier: Modifier = Modifier,
   dateFormatter: DatePickerFormatter = remember { DatePickerDefaults.dateFormatter() },
-  colors: DatePickerColors = DatePickerDefaults.colors(),
 ) {
   DatePicker(
     state = datePickerState,
