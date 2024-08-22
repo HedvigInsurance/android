@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -65,13 +65,12 @@ fun FreeTextShowcase() {
     shouldShowOverlay = isFreeTextVisible,
     overlaidContent = {
       Surface(
-        modifier = Modifier
-          .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         color = HedvigTheme.colorScheme.backgroundPrimary,
       ) {
         Column(
           modifier = Modifier
-            .safeContentPadding()
+            .safeDrawingPadding()
             .fillMaxSize(),
           horizontalAlignment = Alignment.CenterHorizontally,
         ) {
