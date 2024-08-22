@@ -314,13 +314,6 @@ private sealed class StepperSize {
   @get:Composable
   abstract val shape: Shape
 
-//  fun minHeight(stepperStyle: StepperStyle): Dp {
-//    return when (stepperStyle) {
-//      Default -> defaultMinHeight
-//      is Labeled -> labelMinHeight
-//    }
-//  }
-
   fun errorTextPadding(stepperStyle: StepperStyle): PaddingValues {
     return when (stepperStyle) {
       Default -> defaultStyleErrorTextPadding

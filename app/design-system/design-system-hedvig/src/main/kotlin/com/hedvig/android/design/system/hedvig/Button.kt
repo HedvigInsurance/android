@@ -129,6 +129,25 @@ fun HedvigButton(
   }
 }
 
+@Composable
+fun HedvigTextButton(
+  text: String,
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+  enabled: Boolean = true,
+  interactionSource: MutableInteractionSource? = null,
+) {
+  HedvigButton(
+    text = text,
+    onClick = onClick,
+    enabled = enabled,
+    modifier = modifier,
+    buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
+    buttonSize = ButtonDefaults.ButtonSize.Medium,
+    interactionSource = interactionSource,
+  )
+}
+
 object ButtonDefaults {
   internal val buttonStyle: ButtonStyle = ButtonStyle.Primary
   internal val buttonSize: ButtonSize = ButtonSize.Large
