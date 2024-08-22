@@ -10,6 +10,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.fromToken
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens
+import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.TextNegative
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.TextPrimary
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.TextTertiary
 import com.hedvig.android.design.system.internals.HedvigDatePickerColors
@@ -78,7 +79,7 @@ private val hedvigDatePickerColors: HedvigDatePickerColors
         yearContentColor = fromToken(TextPrimary),
         disabledYearContentColor = fromToken(TextTertiary),
         currentYearContentColor = fromToken(TextPrimary),
-        selectedYearContentColor = fromToken(TextPrimary),
+        selectedYearContentColor = fromToken(TextNegative),
         disabledSelectedYearContentColor = fromToken(TextTertiary),
         selectedYearContainerColor = fromToken(TextPrimary),
         dayContentColor = fromToken(TextPrimary),
