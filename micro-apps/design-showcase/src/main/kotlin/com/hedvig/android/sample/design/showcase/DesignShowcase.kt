@@ -7,6 +7,7 @@ import com.hedvig.android.sample.design.showcase.bottomSheet.ShowcaseBottomSheet
 import com.hedvig.android.sample.design.showcase.button.ShowcaseButton
 import com.hedvig.android.sample.design.showcase.datepicker.DatePickerShowcase
 import com.hedvig.android.sample.design.showcase.dialog.DialogShowcase
+import com.hedvig.android.sample.design.showcase.freetext.FreeTextShowcase
 import com.hedvig.android.sample.design.showcase.icons.ShowcaseIcons
 import com.hedvig.android.sample.design.showcase.radio.ShowCaseRadioGroups
 import com.hedvig.android.sample.design.showcase.stepper.StepperShowcase
@@ -34,6 +35,8 @@ internal fun DesignShowcase(modifier: Modifier = Modifier) {
       DialogShowcase()
     } else if (showDatePicker) {
       DatePickerShowcase()
+    } else if (showFreeTextOverlay) {
+      FreeTextShowcase()
     }
   }
 }
@@ -46,4 +49,5 @@ private val showBottomSheet = false
 private val showRadio = false
 private val showToggle = false
 private val showDialog = false
-private val showDatePicker = true
+private val showDatePicker = false
+private val showFreeTextOverlay = true
