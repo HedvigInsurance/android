@@ -112,26 +112,10 @@ private fun FreeTextOverlayAnimated(
     transitionSpec = {
       fadeIn() togetherWith fadeOut()
     },
-    modifier = Modifier.fillMaxSize(),
+    modifier = modifier.fillMaxSize(),
   ) { showFullScreenEditText: Boolean ->
     Box(Modifier.fillMaxSize(), propagateMinConstraints = true) {
       if (showFullScreenEditText) {
-        HedvigTheme {
-          Surface(
-            color = freeTextColors.backgroundColor,
-            modifier = Modifier.fillMaxSize(),
-          ) {
-            FreeTextOverlayContent(
-              freeTextValue = freeTextValue,
-              hintText = hintText,
-              onSaveClick = onSaveClick,
-              onCancelClick = onCancelClick,
-              textMaxLength = textMaxLength,
-              modifier = modifier,
-              cancelButtonText = cancelButtonText,
-              confirmButtonText = confirmButtonText,
-            )
-          }
         Surface(color = freeTextColors.backgroundColor) {
           FreeTextOverlayContent(
             freeTextValue = freeTextValue,
@@ -139,6 +123,7 @@ private fun FreeTextOverlayAnimated(
             onSaveClick = onSaveClick,
             onCancelClick = onCancelClick,
             textMaxLength = textMaxLength,
+            modifier = Modifier,
             cancelButtonText = cancelButtonText,
             confirmButtonText = confirmButtonText,
           )
