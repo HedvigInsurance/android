@@ -43,11 +43,13 @@ internal class LoggingInterceptor : ApolloInterceptor {
   ) {
     val errorMessagesJoinedToString = errors.joinToString(", ", "[", "]") { it.message }
     val errorMessage = "GraphQL errors for ${request.operation.name()}: $errorMessagesJoinedToString"
-    val errorAttributes = mapOf(
-      "data" to response.data,
-      "errors" to errors,
-    )
-
+    val errorAttributes = buildMap {
+      put("data", response.data)
+      put("errors", errors)
+      if (response.extensions.isNotEmpty()) {
+        put("extensions", response.extensions.toList().joinToString(", ", "[", "]") { it.toString() })
+      }
+    }
     logcat(LogPriority.ERROR) {
       buildString {
         append(errorMessage)
@@ -57,9 +59,6 @@ internal class LoggingInterceptor : ApolloInterceptor {
           append(" There was data and errors at the same time! Data:$data")
         }
       }
-    }
-    logcat(LogPriority.ERROR) {
-      buildString {}
     }
     logError(
       message = errorMessage,
