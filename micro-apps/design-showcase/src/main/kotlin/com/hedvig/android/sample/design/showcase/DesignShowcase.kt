@@ -6,6 +6,7 @@ import androidx.compose.ui.Modifier
 import com.hedvig.android.sample.design.showcase.bottomSheet.ShowcaseBottomSheet
 import com.hedvig.android.sample.design.showcase.button.ShowcaseButton
 import com.hedvig.android.sample.design.showcase.dialog.DialogShowcase
+import com.hedvig.android.sample.design.showcase.freetext.FreeTextShowcase
 import com.hedvig.android.sample.design.showcase.icons.ShowcaseIcons
 import com.hedvig.android.sample.design.showcase.radio.ShowCaseRadioGroups
 import com.hedvig.android.sample.design.showcase.stepper.StepperShowcase
@@ -31,6 +32,8 @@ internal fun DesignShowcase(modifier: Modifier = Modifier) {
       ToggleShowcase()
     } else if (showDialog) {
       DialogShowcase()
+    } else if (showFreeTextOverlay) {
+      FreeTextShowcase()
     }
   }
 }
@@ -42,4 +45,5 @@ private val showTextField = false
 private val showBottomSheet = false
 private val showRadio = false
 private val showToggle = false
-private val showDialog = true
+private val showDialog = false
+private val showFreeTextOverlay = true
