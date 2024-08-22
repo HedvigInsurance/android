@@ -69,8 +69,7 @@ fun HedvigTooltip(
   beakDirection: BeakDirection = BottomCenter,
   maxWidth: Dp = TooltipDefaults.defaultMaxWidth,
 ) {
-  // var transientShowTooltip by remember { mutableStateOf(false) } //todo: uncomment before merging
-  var transientShowTooltip by remember { mutableStateOf(true) } // todo: uncomment for preview
+  var transientShowTooltip by remember { mutableStateOf(false) }
   LaunchedEffect(showTooltip) {
     if (!showTooltip) return@LaunchedEffect
     delay(0.5.seconds)
@@ -100,8 +99,8 @@ private fun InnerChatTooltip(
   onClick: () -> Unit,
   tooltipStyle: TooltipStyle,
   beakDirection: BeakDirection,
-  maxWidth: Dp,
   modifier: Modifier = Modifier,
+  maxWidth: Dp = TooltipDefaults.defaultMaxWidth,
 ) {
   val generalOffsetY = when (beakDirection) {
     BottomCenter, BottomStart, BottomEnd -> arrowHeightDp
@@ -435,21 +434,21 @@ private fun PreviewRadioOptionStyles(
           .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
       ) {
-        HedvigTooltip("50% off for 3 months", true, {}, beakDirection = TopEnd, tooltipStyle = style)
+        InnerChatTooltip("50% off for 3 months", true, {}, beakDirection = TopEnd, tooltipStyle = style)
         Spacer(Modifier.height(16.dp))
-        HedvigTooltip("50% off for 3 months", true, {}, beakDirection = TopStart, tooltipStyle = style)
+        InnerChatTooltip("50% off for 3 months", true, {}, beakDirection = TopStart, tooltipStyle = style)
         Spacer(Modifier.height(16.dp))
-        HedvigTooltip("50% off for 3 months", true, {}, beakDirection = TopCenter, tooltipStyle = style)
+        InnerChatTooltip("50% off for 3 months", true, {}, beakDirection = TopCenter, tooltipStyle = style)
         Spacer(Modifier.height(16.dp))
-        HedvigTooltip("50% off for 3 months", true, {}, beakDirection = BottomEnd, tooltipStyle = style)
+        InnerChatTooltip("50% off for 3 months", true, {}, beakDirection = BottomEnd, tooltipStyle = style)
         Spacer(Modifier.height(16.dp))
-        HedvigTooltip("50% off for 3 months", true, {}, beakDirection = BottomStart, tooltipStyle = style)
+        InnerChatTooltip("50% off for 3 months", true, {}, beakDirection = BottomStart, tooltipStyle = style)
         Spacer(Modifier.height(16.dp))
-        HedvigTooltip("50% off for 3 months", true, {}, beakDirection = BottomCenter, tooltipStyle = style)
+        InnerChatTooltip("50% off for 3 months", true, {}, beakDirection = BottomCenter, tooltipStyle = style)
         Spacer(Modifier.height(16.dp))
-        HedvigTooltip("50% off for 3 months", true, {}, beakDirection = Start, tooltipStyle = style)
+        InnerChatTooltip("50% off for 3 months", true, {}, beakDirection = Start, tooltipStyle = style)
         Spacer(Modifier.height(16.dp))
-        HedvigTooltip("50% off for 3 months", true, {}, beakDirection = End, tooltipStyle = style)
+        InnerChatTooltip("50% off for 3 months", true, {}, beakDirection = End, tooltipStyle = style)
       }
     }
   }
