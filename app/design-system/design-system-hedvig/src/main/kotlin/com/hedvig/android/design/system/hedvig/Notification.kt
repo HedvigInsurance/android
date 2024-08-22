@@ -84,24 +84,26 @@ fun NotificationCard(
           HedvigText(text = message)
           if (style is Buttons) {
             Row {
-              HedvigButton(
-                enabled = true,
-                onClick = style.onLeftButtonClick,
-                buttonStyle = ButtonDefaults.ButtonStyle.SecondaryAlt,
-                buttonSize = ButtonDefaults.ButtonSize.Small,
-                modifier = Modifier.weight(1f),
-              ) {
-                HedvigText(style.leftButtonText, style = textStyle)
-              }
-              Spacer(Modifier.width(4.dp))
-              HedvigButton(
-                enabled = true,
-                onClick = style.onRightButtonClick,
-                buttonStyle = ButtonDefaults.ButtonStyle.SecondaryAlt,
-                buttonSize = ButtonDefaults.ButtonSize.Small,
-                modifier = Modifier.weight(1f),
-              ) {
-                HedvigText(style.rightButtonText, style = textStyle)
+              HedvigTheme(darkTheme  = false) {
+                HedvigButton(
+                  enabled = true,
+                  onClick = style.onLeftButtonClick,
+                  buttonStyle = ButtonDefaults.ButtonStyle.SecondaryAlt,
+                  buttonSize = ButtonDefaults.ButtonSize.Small,
+                  modifier = Modifier.weight(1f),
+                ) {
+                  HedvigText(style.leftButtonText, style = textStyle)
+                }
+                Spacer(Modifier.width(4.dp))
+                HedvigButton(
+                  enabled = true,
+                  onClick = style.onRightButtonClick,
+                  buttonStyle = ButtonDefaults.ButtonStyle.SecondaryAlt,
+                  buttonSize = ButtonDefaults.ButtonSize.Small,
+                  modifier = Modifier.weight(1f),
+                ) {
+                  HedvigText(style.rightButtonText, style = textStyle)
+                }
               }
             }
           }
@@ -229,8 +231,6 @@ object NotificationDefaults {
 internal data class NotificationColors(
   val containerColor: Color,
   val textColor: Color,
-//  val buttonContainerColor: Color, todo: those don't change according to the dark/light mode in figma
-//  val buttonTextColor: Color,
   val iconColor: Color,
 )
 
@@ -239,7 +239,7 @@ internal data class NotificationColors(
 private fun PreviewNotificationCard(
   @PreviewParameter(NotificationCardPriorityProvider::class) priority: NotificationPriority,
 ) {
-  HedvigTheme {
+  HedvigTheme(darkTheme = true) {
     Surface(color = HedvigTheme.colorScheme.backgroundWhite) {
       Column(
         Modifier
