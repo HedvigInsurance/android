@@ -5,6 +5,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.fromToken
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens
@@ -12,6 +14,7 @@ import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.TextP
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.TextTertiary
 import com.hedvig.android.design.system.internals.HedvigDatePickerColors
 import com.hedvig.android.design.system.internals.HedvigDatePickerInternal
+import hedvig.resources.R
 import java.util.Locale
 
 data class HedvigDatePickerState(
@@ -40,12 +43,17 @@ fun HedvigDatePicker(
         minDateInMillis = minDateInMillis,
         maxDateInMillis = maxDateInMillis,
         onDismissRequest = onDismissRequest,
-        onConfirmRequest = onConfirmRequest,
         hedvigDatePickerColors = hedvigDatePickerColors,
         onSelectedDateChanged = onSelectedDateChanged,
         modifier = Modifier.background(
           hedvigDatePickerColors.containerColor,
         ),
+        confirmButton = {
+          HedvigTextButton(
+            text = stringResource(R.string.general_save_button),
+            onClick = onConfirmRequest,
+          )
+        },
       )
     }
   }

@@ -1,16 +1,12 @@
 package com.hedvig.android.design.system.internals
 
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerColors
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DatePickerFormatter
 import androidx.compose.material3.DatePickerState
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SelectableDates
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
@@ -19,8 +15,6 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
-import hedvig.resources.R
 
 @Composable
 fun HedvigDatePickerInternal(
@@ -30,9 +24,9 @@ fun HedvigDatePickerInternal(
   minDateInMillis: Long,
   maxDateInMillis: Long,
   onDismissRequest: () -> Unit,
-  onConfirmRequest: () -> Unit,
   onSelectedDateChanged: (Long?) -> Unit,
   hedvigDatePickerColors: HedvigDatePickerColors,
+  confirmButton: @Composable () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val hedvigColors = with(hedvigDatePickerColors) {
@@ -84,18 +78,7 @@ fun HedvigDatePickerInternal(
   DatePickerDialog(
     onDismissRequest = onDismissRequest,
     colors = hedvigColors,
-    confirmButton = {
-      TextButton(
-        shape = MaterialTheme.shapes.medium,
-        onClick = onConfirmRequest,
-        colors = ButtonDefaults.buttonColors(
-          contentColor = hedvigDatePickerColors.textButtonColor,
-          containerColor = Color.Transparent,
-        ),
-      ) {
-        Text(text = stringResource(R.string.general_save_button))
-      }
-    },
+    confirmButton = confirmButton,
   ) {
     HedvigDatePicker(
       modifier = modifier,
