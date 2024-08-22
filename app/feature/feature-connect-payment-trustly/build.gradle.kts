@@ -8,7 +8,6 @@ plugins {
 }
 
 dependencies {
-
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.androidx.lifecycle.viewModel)
@@ -33,8 +32,8 @@ dependencies {
   implementation(projects.marketCore)
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
-  implementation(projects.navigationCore)
   implementation(projects.navigationCompose)
+  implementation(projects.navigationCore)
 }
 
 apollo {

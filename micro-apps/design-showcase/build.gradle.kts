@@ -48,6 +48,7 @@ dependencies {
   implementation(libs.androidx.graphicsShapes)
   implementation(libs.coil.coil)
   implementation(libs.datadog.sdk.core)
+  implementation(libs.kotlinx.datetime)
   implementation(libs.material.components)
   implementation(libs.timber)
   implementation(libs.zoomable)
@@ -56,5 +57,4 @@ dependencies {
   implementation(projects.loggingAndroid)
   implementation(projects.trackingCore)
   implementation(projects.trackingDatadog)
-  implementation(libs.kotlinx.datetime)
 }

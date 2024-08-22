@@ -5,8 +5,6 @@ plugins {
   alias(libs.plugins.squareSortDependencies)
 }
 
-
-
 dependencies {
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.foundationLayout)
@@ -18,4 +16,3 @@ dependencies {
   implementation(projects.coreResources)
   implementation(projects.designSystemInternals)
 }
-

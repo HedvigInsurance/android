@@ -187,6 +187,7 @@ dependencies {
   implementation(projects.datadogCore)
   implementation(projects.datadogDemoTracking)
   implementation(projects.designSystemHedvig)
+  implementation(projects.designSystemInternals)
   implementation(projects.featureChangeaddress)
   implementation(projects.featureChat)
   implementation(projects.featureClaimDetails)
@@ -227,7 +228,6 @@ dependencies {
   implementation(projects.theme)
   implementation(projects.trackingCore)
   implementation(projects.trackingDatadog)
-  implementation(projects.designSystemInternals)
 
   debugImplementation(libs.androidx.compose.uiTestManifest)
   debugImplementation(libs.androidx.compose.uiTooling)
