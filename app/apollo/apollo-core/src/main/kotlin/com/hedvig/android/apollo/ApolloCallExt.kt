@@ -23,8 +23,6 @@ import kotlinx.coroutines.flow.map
 sealed interface ApolloOperationError {
   val throwable: Throwable?
 
-  fun isCacheMiss(): Boolean = this is CacheMiss
-
   data class CacheMiss(override val throwable: CacheMissException) : ApolloOperationError {
     override fun toString(): String {
       return "CacheMiss(throwableMessage=${throwable.message}, throwable=$throwable)"
@@ -76,11 +74,6 @@ fun <D : Operation.Data, ErrorType> ApolloCall<D>.safeFlow(
 
 fun <D : Query.Data> ApolloCall<D>.safeWatch(): Flow<Either<ApolloOperationError, D>> {
   return this.watch().map { either { parseResponse(it) } }
-}
-
-fun <D : Operation.Data> Flow<Either<ApolloOperationError, D>>.filterCacheMisses():
-  Flow<Either<ApolloOperationError, D>> {
-  return this.filterNot { it.leftOrNull()?.isCacheMiss() == true }
 }
 
 fun ErrorMessage(apolloOperationError: ApolloOperationError): ErrorMessage = object : ErrorMessage {

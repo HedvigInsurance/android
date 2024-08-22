@@ -104,7 +104,7 @@ internal class CbmChatPresenter(
       conversationInfoStatus = ConversationInfoStatus.Initializing
       chatRepository.provide().getConversationInfo(conversationId).collect { result ->
         result.fold(
-          ifLeft = { apolloOperationError ->
+          ifLeft = {
             conversationInfoStatus = ConversationInfoStatus.Failed
           },
           ifRight = { conversationInfo ->
