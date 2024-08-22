@@ -187,6 +187,7 @@ dependencies {
   implementation(projects.datadogCore)
   implementation(projects.datadogDemoTracking)
   implementation(projects.designSystemHedvig)
+  implementation(projects.designSystemInternals)
   implementation(projects.featureChangeaddress)
   implementation(projects.featureChat)
   implementation(projects.featureClaimDetails)
