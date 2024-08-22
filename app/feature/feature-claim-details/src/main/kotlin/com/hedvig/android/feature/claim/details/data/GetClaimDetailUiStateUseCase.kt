@@ -34,30 +34,20 @@ internal class GetClaimDetailUiStateUseCase(
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,
 ) {
-  operator fun invoke(claimId: String, forceNetworkFetch: Boolean): Flow<Either<Error, ClaimDetailUiState.Content>> {
+  operator fun invoke(claimId: String): Flow<Either<Error, ClaimDetailUiState.Content>> {
     return featureManager.isFeatureEnabled(Feature.ENABLE_CBM).transformLatest { isCbmEnabled ->
       while (currentCoroutineContext().isActive) {
-        val queryFlow = queryFlow(forceNetworkFetch, claimId, isCbmEnabled)
+        val queryFlow = queryFlow(claimId, isCbmEnabled)
         emitAll(queryFlow)
         delay(POLL_INTERVAL)
       }
     }
   }
 
-  private fun queryFlow(
-    forceNetworkFetch: Boolean,
-    claimId: String,
-    isCbmEnabled: Boolean,
-  ): Flow<Either<Error, ClaimDetailUiState.Content>> {
+  private fun queryFlow(claimId: String, isCbmEnabled: Boolean): Flow<Either<Error, ClaimDetailUiState.Content>> {
     return apolloClient
       .query(ClaimsQuery(isCbmEnabled))
-      .apply {
-        if (forceNetworkFetch) {
-          fetchPolicy(FetchPolicy.NetworkOnly)
-        } else {
-          fetchPolicy(FetchPolicy.CacheAndNetwork)
-        }
-      }
+      .fetchPolicy(FetchPolicy.CacheAndNetwork)
       .safeFlow { Error.NetworkError }
       .map { response: Either<Error.NetworkError, ClaimsQuery.Data> ->
         either {

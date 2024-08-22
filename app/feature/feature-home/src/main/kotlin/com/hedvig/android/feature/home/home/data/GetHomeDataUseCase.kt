@@ -153,6 +153,7 @@ internal class GetHomeDataUseCaseImpl(
           .fetchPolicy(FetchPolicy.CacheAndNetwork)
           .safeFlow()
           .map { result ->
+            logcat { "GQL Operation CbmNumberOfChatMessagesQuery:$result" }
             either {
               val data = result
                 .onLeft { apolloOperationError ->
