@@ -523,7 +523,7 @@ private fun HedvigTextField(
 }
 
 @Composable
-internal fun HedvigTextFieldDecorationBox(
+private fun HedvigTextFieldDecorationBox(
   value: String,
   innerTextField: @Composable () -> Unit,
   enabled: Boolean,
