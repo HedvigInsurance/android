@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.hedvig.android.sample.design.showcase.bottomSheet.ShowcaseBottomSheet
 import com.hedvig.android.sample.design.showcase.button.ShowcaseButton
+import com.hedvig.android.sample.design.showcase.datepicker.DatePickerShowcase
 import com.hedvig.android.sample.design.showcase.dialog.DialogShowcase
 import com.hedvig.android.sample.design.showcase.freetext.FreeTextShowcase
 import com.hedvig.android.sample.design.showcase.icons.ShowcaseIcons
@@ -32,6 +33,8 @@ internal fun DesignShowcase(modifier: Modifier = Modifier) {
       ToggleShowcase()
     } else if (showDialog) {
       DialogShowcase()
+    } else if (showDatePicker) {
+      DatePickerShowcase()
     } else if (showFreeTextOverlay) {
       FreeTextShowcase()
     }
@@ -46,4 +49,5 @@ private val showBottomSheet = false
 private val showRadio = false
 private val showToggle = false
 private val showDialog = false
+private val showDatePicker = false
 private val showFreeTextOverlay = true
