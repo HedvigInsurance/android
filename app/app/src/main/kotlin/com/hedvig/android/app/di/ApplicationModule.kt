@@ -140,9 +140,9 @@ private val networkModule = module {
     ApolloClient
       .Builder()
       .okHttpClient(get<OkHttpClient>())
-      .normalizedCache(get<NormalizedCacheFactory>())
       .addInterceptor(LoggingInterceptor())
       .addInterceptor(LogoutOnUnauthenticatedInterceptor(get<AuthTokenService>()))
+      .normalizedCache(get<NormalizedCacheFactory>())
   }
   single<ApolloClient> {
     get<ApolloClient.Builder>()
