@@ -16,10 +16,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -113,7 +114,7 @@ private fun FreeTextOverlayAnimated(
     },
     modifier = Modifier.fillMaxSize(),
   ) { showFullScreenEditText: Boolean ->
-    Box(Modifier.fillMaxSize()) {
+    Box(Modifier.fillMaxSize(), propagateMinConstraints = true) {
       if (showFullScreenEditText) {
         HedvigTheme {
           Surface(
@@ -131,6 +132,16 @@ private fun FreeTextOverlayAnimated(
               confirmButtonText = confirmButtonText,
             )
           }
+        Surface(color = freeTextColors.backgroundColor) {
+          FreeTextOverlayContent(
+            freeTextValue = freeTextValue,
+            hintText = hintText,
+            onSaveClick = onSaveClick,
+            onCancelClick = onCancelClick,
+            textMaxLength = textMaxLength,
+            cancelButtonText = cancelButtonText,
+            confirmButtonText = confirmButtonText,
+          )
         }
       }
     }
@@ -168,8 +179,7 @@ private fun FreeTextOverlayContent(
   Column(
     modifier
       .fillMaxSize()
-      .imePadding()
-      .safeContentPadding()
+      .safeDrawingPadding()
       .padding(FreeTextDefaults.fieldPadding),
   ) {
     BasicTextField(
@@ -188,46 +198,40 @@ private fun FreeTextOverlayContent(
       textStyle = FreeTextDefaults.textStyle.value.copy(color = freeTextColors.textColor),
       decorationBox = @Composable { innerTextField ->
         Column {
-          Row(
-            verticalAlignment = Alignment.Top,
-            horizontalArrangement = Arrangement.Start,
-            modifier = Modifier.weight(1f),
-          ) {
-            HedvigFreeTextDecorationBox(
-              value = textValue.text,
-              placeholder = {
-                HedvigText(
-                  text = hintText,
-                  modifier = Modifier.fillMaxSize(),
-                  style = FreeTextDefaults.textStyle.value,
-                )
-              },
-              innerTextField = innerTextField,
-              visualTransformation = VisualTransformation.None,
-              contentPadding = FreeTextDefaults.textPadding,
-              container = {
-                Box(
-                  modifier.background(
-                    color = freeTextColors.textFieldColor,
-                    shape = FreeTextDefaults.shape,
-                  ),
-                )
-              },
-            )
-          }
+          HedvigFreeTextDecorationBox(
+            value = textValue.text,
+            placeholder = {
+              HedvigText(
+                text = hintText,
+                modifier = Modifier.fillMaxSize(),
+                style = FreeTextDefaults.textStyle.value,
+              )
+            },
+            innerTextField = innerTextField,
+            visualTransformation = VisualTransformation.None,
+            contentPadding = FreeTextDefaults.textPadding,
+            container = {
+              Box(
+                Modifier.background(
+                  color = freeTextColors.textFieldColor,
+                  shape = FreeTextDefaults.shape,
+                ),
+              )
+            },
+            modifier = Modifier
+              .weight(1f)
+              .wrapContentSize(Alignment.TopStart),
+          )
 
-          Row(
-            horizontalArrangement = Arrangement.End,
+          HedvigText(
+            text = "${textValue.text.length}/$textMaxLength",
+            style = FreeTextDefaults.countLabelStyle.value,
+            color = freeTextColors.labelColor,
             modifier = Modifier
               .fillMaxWidth()
-              .padding(counterPadding),
-          ) {
-            HedvigText(
-              text = "${textValue.text.length}/$textMaxLength",
-              style = FreeTextDefaults.countLabelStyle.value,
-              color = freeTextColors.labelColor,
-            )
-          }
+              .padding(counterPadding)
+              .wrapContentWidth(Alignment.End),
+          )
         }
       },
     )
@@ -269,7 +273,7 @@ private fun FreeTextOverlayContent(
   }
 }
 
-fun TextFieldValue.ofMaxLength(maxLength: Int): TextFieldValue {
+private fun TextFieldValue.ofMaxLength(maxLength: Int): TextFieldValue {
   val overLength = text.length - maxLength
   return if (overLength > 0) {
     val headIndex = selection.end - overLength
@@ -342,9 +346,10 @@ private fun HedvigFreeTextDecorationBox(
   value: String,
   innerTextField: @Composable () -> Unit,
   visualTransformation: VisualTransformation,
-  placeholder: @Composable (() -> Unit)? = null,
   contentPadding: PaddingValues,
   container: @Composable () -> Unit,
+  modifier: Modifier = Modifier,
+  placeholder: @Composable (() -> Unit)? = null,
 ) {
   val transformedText = remember(value, visualTransformation) {
     visualTransformation.filter(AnnotatedString(value))
@@ -365,7 +370,7 @@ private fun HedvigFreeTextDecorationBox(
       null
     }
   Box(
-    Modifier.padding(contentPadding),
+    modifier.padding(contentPadding),
     content = {
       container()
       if (decoratedPlaceholder != null) {
