@@ -83,6 +83,12 @@ internal object ColorLightTokens {
   val HighlightYellowFill1: Color = PaletteTokens.Yellow100
   val HighlightYellowFill2: Color = PaletteTokens.Yellow200
   val HighlightYellowFill3: Color = PaletteTokens.Yellow300
+  val HighlightAmberFill1: Color = PaletteTokens.Amber100
+  val HighlightAmberFill2: Color = PaletteTokens.Amber200
+  val HighlightAmberFill3: Color = PaletteTokens.Amber300
+  val HighlightRedFill1: Color = PaletteTokens.Red100
+  val HighlightRedFill2: Color = PaletteTokens.Red200
+  val HighlightRedFill3: Color = PaletteTokens.Red300
   val HighlightGreenFill1: Color = PaletteTokens.Green100
   val HighlightGreenFill2: Color = PaletteTokens.Green200
   val HighlightGreenFill3: Color = PaletteTokens.Green300

@@ -21,7 +21,7 @@ internal object ShapeTokens {
   val CornerLarge: Shape = FigmaShape(12.dp)
   val CornerMedium: Shape = FigmaShape(10.dp)
   val CornerSmall: Shape = FigmaShape(8.dp)
-  val CornerExtraSmall: Shape = FigmaShape(4.dp)
+  val CornerExtraSmall: Shape = FigmaShape(6.dp)
   val CornerNone: Shape = RectangleShape
   val CornerTopOnlyXLarge: Shape = SquircleTopShape(16.dp)
 }
