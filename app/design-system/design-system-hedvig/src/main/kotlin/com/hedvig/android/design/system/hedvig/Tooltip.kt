@@ -1,17 +1,16 @@
 package com.hedvig.android.design.system.hedvig
 
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,9 +24,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Matrix
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PathOperation
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.layout.onPlaced
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -51,9 +54,9 @@ import com.hedvig.android.design.system.hedvig.TooltipDefaults.TooltipStyle.Camp
 import com.hedvig.android.design.system.hedvig.TooltipDefaults.TooltipStyle.Campaign.Brightness.BLEAK
 import com.hedvig.android.design.system.hedvig.TooltipDefaults.TooltipStyle.Campaign.Brightness.BRIGHT
 import com.hedvig.android.design.system.hedvig.TooltipDefaults.arrowHeightDp
+import com.hedvig.android.design.system.hedvig.TooltipDefaults.arrowSpaceFromEdgeWhenOffCenteredDp
 import com.hedvig.android.design.system.hedvig.TooltipDefaults.arrowWidthDp
 import com.hedvig.android.design.system.hedvig.TooltipDefaults.defaultStyle
-import com.hedvig.android.design.system.hedvig.TooltipDefaults.iconWidth
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens
 import com.hedvig.android.design.system.hedvig.tokens.TooltipTokens
 import kotlin.time.Duration.Companion.seconds
@@ -102,52 +105,53 @@ private fun InnerChatTooltip(
   modifier: Modifier = Modifier,
   maxWidth: Dp = TooltipDefaults.defaultMaxWidth,
 ) {
-  val generalOffsetY = when (beakDirection) {
-    BottomCenter, BottomStart, BottomEnd -> arrowHeightDp
-    TopCenter, TopStart, TopEnd -> -arrowHeightDp
-    Start -> 0.dp
-    End -> 0.dp
-  }
-  val generalOffsetX = 0.dp
-  Box(
-    modifier
-      .widthIn(max = maxWidth)
-      .wrapContentHeight(Alignment.Top, true)
-      .wrapContentWidth(Alignment.End, true)
-      .offset(y = generalOffsetY, x = generalOffsetX),
-  ) {
-    Crossfade(show, label = "tooltip") { crossfadeShow ->
-      if (crossfadeShow) {
-        val shape = TooltipDefaults.shape
-        Surface(
-          onClick = onClick,
-          color = tooltipStyle.containerColor,
-          shape = remember(shape) { shape.withBeak(beakDirection) },
+  val shape = TooltipDefaults.shape
+  val density = LocalDensity.current
+  // Save the height before the minimumInteractiveComponentSize is applied, so that the layout can take up only the
+  // space it needs, but still let the touch size be accessible
+  var knownHeight by remember { mutableStateOf(0.dp) }
+  Crossfade(
+    targetState = show,
+    label = "tooltip",
+    modifier = modifier,
+  ) { crossfadeShow ->
+    if (crossfadeShow) {
+      Surface(
+        color = tooltipStyle.containerColor,
+        shape = remember(shape) { shape.withBeak(beakDirection) },
+        modifier = Modifier
+          .widthIn(
+            min = TooltipDefaults.defaultMinWidth,
+            max = maxWidth,
+          )
+          .height(knownHeight)
+          .wrapContentHeight(unbounded = true)
+          .minimumInteractiveComponentSize()
+          .clickable(onClick = onClick)
+          .onPlaced { knownHeight = with(density) { it.size.height.toDp() } },
+      ) {
+        val padding = when (beakDirection) {
+          BottomCenter, BottomEnd, BottomStart -> TooltipDefaults.paddingForBottomBeak
+          TopCenter, TopStart, TopEnd -> TooltipDefaults.paddingForTopBeak
+          Start -> TooltipDefaults.paddingForStartBeak
+          End -> TooltipDefaults.paddingForEndBeak
+        }
+        Column(
+          modifier = Modifier.padding(padding),
+          horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-          val padding = when (beakDirection) {
-            BottomCenter, BottomEnd, BottomStart -> TooltipDefaults.paddingForBottomBeak
-            TopCenter, TopStart, TopEnd -> TooltipDefaults.paddingForTopBeak
-            Start -> TooltipDefaults.paddingForStartBeak
-            End -> TooltipDefaults.paddingForEndBeak
-          }
-          Column(
-            modifier = Modifier
-              .padding(padding),
-            horizontalAlignment = Alignment.CenterHorizontally,
-          ) {
+          HedvigText(
+            text = message,
+            style = TooltipDefaults.textStyle,
+            textAlign = TextAlign.Center,
+          )
+          if (tooltipStyle is Campaign) {
             HedvigText(
-              text = message,
+              text = tooltipStyle.subMessage,
+              color = tooltipStyle.subMessageColor,
               style = TooltipDefaults.textStyle,
               textAlign = TextAlign.Center,
             )
-            if (tooltipStyle is Campaign) {
-              HedvigText(
-                color = tooltipStyle.subMessageColor,
-                style = TooltipDefaults.textStyle,
-                text = tooltipStyle.subMessage,
-                textAlign = TextAlign.Center,
-              )
-            }
           }
         }
       }
@@ -158,15 +162,17 @@ private fun InnerChatTooltip(
 private fun Shape.withBeak(beakDirection: BeakDirection): Shape {
   return object : Shape {
     override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
-      val iconWidth: Float = with(density) { iconWidth.toPx() }
+      val arrowSpaceFromEdgeWhenOffCentered: Float = with(density) { arrowSpaceFromEdgeWhenOffCenteredDp.toPx() }
       val arrowWidth = with(density) { arrowWidthDp.toPx() }
       val arrowHeight = with(density) { arrowHeightDp.toPx() }
       val squircleSize: Size = when (beakDirection) {
-        BottomCenter, BottomStart, BottomEnd, TopCenter, TopStart, TopEnd -> size.copy(
-          height =
-            size.height - arrowHeight,
-        )
-        Start, End -> size.copy(width = size.width - arrowHeight)
+        BottomCenter, BottomStart, BottomEnd, TopCenter, TopStart, TopEnd -> {
+          size.copy(height = size.height - arrowHeight)
+        }
+
+        Start, End -> {
+          size.copy(width = size.width - arrowHeight)
+        }
       }
       val squircleOutline = this@withBeak.createOutline(
         squircleSize,
@@ -174,33 +180,37 @@ private fun Shape.withBeak(beakDirection: BeakDirection): Shape {
         density,
       )
       val squirclePath: Path = (squircleOutline as Outline.Generic).path
-      val beakPath = when (beakDirection) {
-        BottomCenter, BottomStart, BottomEnd -> beakToBottom(density, arrowWidth)
-        TopCenter, TopStart, TopEnd -> beakToTop(density, arrowWidth)
-        Start -> beakToStart(density, arrowWidth)
-        End -> beakToEnd(density, arrowWidth)
-      }
       val squircleOffset: Offset = when (beakDirection) {
-        BottomCenter, BottomStart, BottomEnd -> Offset(x = 0f, y = -arrowHeight)
+        BottomCenter, BottomStart, BottomEnd -> Offset(x = 0f, y = 0f)
         TopCenter, TopStart, TopEnd -> Offset(x = 0f, y = arrowHeight)
         Start -> Offset(x = arrowHeight, y = 0f)
         End -> Offset(0f, y = 0f)
       }
+      val beakPath = beakToTop(density, arrowWidth).apply {
+        when (beakDirection) {
+          BottomCenter, BottomStart, BottomEnd -> transform(Matrix().apply { rotateZ(180f) })
+          TopCenter, TopStart, TopEnd -> Unit
+          Start -> transform(Matrix().apply { rotateZ(270f) })
+          End -> transform(Matrix().apply { rotateZ(90f) })
+        }
+      }
+      val offsetFromEdgeWhenOffCentered = arrowSpaceFromEdgeWhenOffCentered + (arrowWidth / 2)
       val beakOffset: Offset = when (beakDirection) {
-        BottomCenter -> Offset(x = size.width / 2, y = size.height - 2 * arrowHeight)
-        BottomStart -> Offset(x = iconWidth / 2, y = size.height - 2 * arrowHeight)
-        BottomEnd -> Offset(x = size.width - (iconWidth / 2), y = size.height - 2 * arrowHeight)
-        TopEnd -> Offset(x = size.width - (iconWidth / 2), y = arrowHeight)
-        TopCenter -> Offset(x = size.width / 2, y = arrowHeight)
-        TopStart -> Offset(x = iconWidth / 2, y = arrowHeight)
-        Start -> Offset(x = arrowHeight, y = size.height / 2)
-        End -> Offset(x = size.width - arrowHeight, y = size.height / 2)
+        BottomStart -> Offset(x = offsetFromEdgeWhenOffCentered, y = squircleSize.height)
+        BottomCenter -> Offset(x = squircleSize.width / 2, y = squircleSize.height)
+        BottomEnd -> Offset(x = squircleSize.width - offsetFromEdgeWhenOffCentered, y = squircleSize.height)
+        TopStart -> Offset(x = arrowSpaceFromEdgeWhenOffCentered, y = arrowHeight)
+        TopCenter -> Offset(x = squircleSize.width / 2, y = arrowHeight)
+        TopEnd -> Offset(x = squircleSize.width - offsetFromEdgeWhenOffCentered, y = arrowHeight)
+        Start -> Offset(x = arrowHeight, y = squircleSize.height / 2)
+        End -> Offset(x = squircleSize.width, y = squircleSize.height / 2)
       }
       return Outline.Generic(
-        Path().apply {
-          addPath(path = squirclePath, offset = squircleOffset)
-          addPath(path = beakPath, offset = beakOffset)
-        },
+        Path.combine(
+          PathOperation.Union,
+          beakPath.apply { translate(beakOffset) },
+          squirclePath.apply { translate(squircleOffset) },
+        ),
       )
     }
   }
@@ -232,79 +242,17 @@ private fun beakToTop(density: Density, arrowWidth: Float): Path {
   }
 }
 
-private fun beakToBottom(density: Density, arrowWidth: Float): Path {
-  return Path().apply {
-    val straightLineSize = with(density) { 4.dp.toPx() }
-    val halfArrowWidth = arrowWidth / 2
-    relativeLineTo(-halfArrowWidth, 0f)
-    val bezierOverlap = -2.5f
-    val bezierVerticalOvershoot = 4f
-    relativeLineTo(straightLineSize, straightLineSize)
-    cubicTo(
-      x1 = bezierOverlap,
-      y1 = straightLineSize + bezierVerticalOvershoot,
-      x2 = -bezierOverlap,
-      y2 = straightLineSize + bezierVerticalOvershoot,
-      x3 = halfArrowWidth - straightLineSize,
-      y3 = straightLineSize,
-    )
-    relativeLineTo(straightLineSize, -straightLineSize)
-    close()
-  }
-}
-
-private fun beakToStart(density: Density, arrowWidth: Float): Path {
-  return Path().apply {
-    val straightLineSize = with(density) { 4.dp.toPx() }
-    val halfArrowWidth = arrowWidth / 2
-    relativeLineTo(0f, halfArrowWidth)
-    val bezierOverlap = -2.5f
-    val bezierHorizontalOvershoot = 4f
-    relativeLineTo(-straightLineSize, -straightLineSize)
-    cubicTo(
-      x1 = -straightLineSize - bezierHorizontalOvershoot,
-      y1 = bezierOverlap,
-      x2 = -straightLineSize - bezierHorizontalOvershoot,
-      y2 = -bezierOverlap,
-      x3 = -straightLineSize,
-      y3 = -halfArrowWidth + straightLineSize,
-    )
-    relativeLineTo(straightLineSize, -straightLineSize)
-    close()
-  }
-}
-
-private fun beakToEnd(density: Density, arrowWidth: Float): Path {
-  return Path().apply {
-    val straightLineSize = with(density) { 4.dp.toPx() }
-    val halfArrowWidth = arrowWidth / 2
-    relativeLineTo(0f, halfArrowWidth)
-    val bezierOverlap = -2.5f
-    val bezierHorizontalOvershoot = 4f
-    relativeLineTo(dx = straightLineSize, dy = -straightLineSize)
-    cubicTo(
-      x1 = straightLineSize + bezierHorizontalOvershoot,
-      y1 = bezierOverlap,
-      x2 = straightLineSize + bezierHorizontalOvershoot,
-      y2 = -bezierOverlap,
-      x3 = straightLineSize,
-      y3 = -halfArrowWidth + straightLineSize,
-    )
-    relativeLineTo(-straightLineSize, -straightLineSize)
-    close()
-  }
-}
-
 object TooltipDefaults {
   val textStyle: TextStyle
     @Composable
     @ReadOnlyComposable
     get() = TooltipTokens.TextFont.value
+  val defaultMinWidth = TooltipTokens.DefaultMinWidth
   val defaultMaxWidth = TooltipTokens.DefaultMaxWidth
   val defaultStyle = TooltipStyle.Default
   val arrowHeightDp = TooltipTokens.ArrowHeightDp
   val arrowWidthDp = TooltipTokens.ArrowWidthDp
-  val iconWidth = TooltipTokens.IconWidth
+  val arrowSpaceFromEdgeWhenOffCenteredDp = TooltipTokens.ArrowSpaceFromEdgeWhenOffCentered
   val shape
     @Composable
     @ReadOnlyComposable
@@ -318,7 +266,8 @@ object TooltipDefaults {
   val paddingForBottomBeak = PaddingValues(
     start = TooltipTokens.PaddingStart,
     end = TooltipTokens.PaddingEnd,
-    bottom = TooltipTokens.PaddingBottom + arrowHeightDp + TooltipTokens.PaddingTop,
+    top = TooltipTokens.PaddingTop,
+    bottom = TooltipTokens.PaddingBottom + arrowHeightDp,
   )
   val paddingForStartBeak = PaddingValues(
     start = TooltipTokens.PaddingStart + arrowHeightDp,
@@ -334,11 +283,11 @@ object TooltipDefaults {
   )
 
   enum class BeakDirection {
-    BottomCenter,
     BottomStart,
+    BottomCenter,
     BottomEnd,
-    TopCenter,
     TopStart,
+    TopCenter,
     TopEnd,
     Start,
     End,
@@ -421,44 +370,39 @@ private val tooltipColors: TooltipColors
     }
   }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Preview
 @Composable
 private fun PreviewRadioOptionStyles(
   @PreviewParameter(TooltipStyleProvider::class) style: TooltipStyle,
 ) {
+  val texts = remember { listOf("50% off for 3 months", "50%") }
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundWhite) {
-      Column(
-        Modifier
-          .fillMaxSize()
-          .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
+      FlowRow(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier.padding(8.dp),
       ) {
-        InnerChatTooltip("50% off for 3 months", true, {}, beakDirection = TopEnd, tooltipStyle = style)
-        Spacer(Modifier.height(16.dp))
-        InnerChatTooltip("50% off for 3 months", true, {}, beakDirection = TopStart, tooltipStyle = style)
-        Spacer(Modifier.height(16.dp))
-        InnerChatTooltip("50% off for 3 months", true, {}, beakDirection = TopCenter, tooltipStyle = style)
-        Spacer(Modifier.height(16.dp))
-        InnerChatTooltip("50% off for 3 months", true, {}, beakDirection = BottomEnd, tooltipStyle = style)
-        Spacer(Modifier.height(16.dp))
-        InnerChatTooltip("50% off for 3 months", true, {}, beakDirection = BottomStart, tooltipStyle = style)
-        Spacer(Modifier.height(16.dp))
-        InnerChatTooltip("50% off for 3 months", true, {}, beakDirection = BottomCenter, tooltipStyle = style)
-        Spacer(Modifier.height(16.dp))
-        InnerChatTooltip("50% off for 3 months", true, {}, beakDirection = Start, tooltipStyle = style)
-        Spacer(Modifier.height(16.dp))
-        InnerChatTooltip("50% off for 3 months", true, {}, beakDirection = End, tooltipStyle = style)
+        for (text in texts) {
+          for (beakDirection in BeakDirection.entries) {
+            InnerChatTooltip(
+              text,
+              true,
+              {},
+              beakDirection = beakDirection,
+              tooltipStyle = style,
+            )
+          }
+        }
       }
     }
   }
 }
 
-private class TooltipStyleProvider :
-  CollectionPreviewParameterProvider<TooltipStyle>(
-    listOf(
-      TooltipStyle.Default,
-      Campaign("Then you pay 399 kr/mo", BRIGHT),
-      Campaign("Then you pay 399 kr/mo", BLEAK),
-    ),
-  )
+private class TooltipStyleProvider : CollectionPreviewParameterProvider<TooltipStyle>(
+  listOf(
+    TooltipStyle.Default,
+    Campaign("Then you pay 399 kr/mo", BRIGHT),
+    Campaign("Then you pay 399 kr/mo", BLEAK),
+  ),
+)
