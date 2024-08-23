@@ -1,8 +1,12 @@
 package com.hedvig.android.design.system.hedvig
 
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
@@ -129,23 +133,18 @@ private fun DrawScope.drawLinearIndicatorTrack(
 fun CircularProgressBar(
   modifier: Modifier = Modifier,
 ) {
+  val AnimationDuration = 2000
+  val AnimationSegment = AnimationDuration / 10
   val infiniteTransition = rememberInfiniteTransition(label = "rememberInfiniteTransition")
   val repeatable =   infiniteRepeatable<Float>(
-    tween(2000), RepeatMode.Restart,
+      tween(2000), RepeatMode.Restart,
   )
   val animatedArcStart = infiniteTransition.animateFloat(
-    -90f,
-    270f,
+    -135f,
+    225f,
     repeatable,
     label = "animatedProgress",
   )
-  val animatedArcEnd = infiniteTransition.animateFloat(
-    0f,
-    360f,
-    repeatable,
-    label = "animatedProgress",
-  )
-
   Box(
     modifier = modifier
   ) {
@@ -168,7 +167,7 @@ fun CircularProgressBar(
       drawArc(
         color = Color.Black,
         startAngle = animatedArcStart.value,
-        sweepAngle = animatedArcEnd.value,
+        sweepAngle = 90F,
         topLeft = Offset(offsetX,offsetY),
         useCenter = false,
         size = Size((width/2).toPx(),(width/2).toPx()),
