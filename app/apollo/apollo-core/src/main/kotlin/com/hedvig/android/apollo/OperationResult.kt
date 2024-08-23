@@ -1,12 +1,5 @@
 package com.hedvig.android.apollo
 
-import com.hedvig.android.core.common.await
-import java.io.IOException
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import okhttp3.Call
-import org.json.JSONObject
-
 sealed interface OperationResult<out T> {
   data class Success<T>(val data: T) : OperationResult<T>
 
@@ -73,30 +66,5 @@ sealed interface OperationResult<out T> {
         }
       }
     }
-  }
-}
-
-/**
- * Only to be used when making GraphQL calls.
- * Returns [OperationResult.Success] only when the network request is successful and there are no graphQL error messages.
- * Returns [OperationResult.Error] on all other cases.
- */
-suspend fun Call.safeGraphqlCall(): OperationResult<JSONObject> = withContext(Dispatchers.IO) {
-  try {
-    val response = await()
-    if (response.isSuccessful.not()) return@withContext OperationResult.Error.NetworkError(response.message)
-
-    val responseBody = response.body ?: return@withContext OperationResult.Error.NoDataError("No data")
-    val jsonObject = JSONObject(responseBody.string())
-
-    val errorJsonObject = jsonObject.optJSONArray("errors")?.getJSONObject(0)
-    if (errorJsonObject != null) {
-      val errorMessage = errorJsonObject.optString("message")
-      return@withContext OperationResult.Error.OperationError(errorMessage)
-    }
-
-    OperationResult.Success(jsonObject)
-  } catch (ioException: IOException) {
-    OperationResult.Error.GeneralError(ioException.localizedMessage)
   }
 }

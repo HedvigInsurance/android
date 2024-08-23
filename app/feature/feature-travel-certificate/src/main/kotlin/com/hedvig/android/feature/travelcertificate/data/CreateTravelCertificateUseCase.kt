@@ -4,8 +4,8 @@ import arrow.core.Either
 import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
+import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.travelcertificate.ui.generatewho.CoInsured
 import com.hedvig.android.logger.LogPriority
@@ -47,8 +47,7 @@ internal class CreateTravelCertificateUseCase(
 
       val pdfUrl = apolloClient
         .mutation(query)
-        .safeExecute()
-        .toEither(::ErrorMessage)
+        .safeExecute(::ErrorMessage)
         .onLeft {
           logcat(
             priority = LogPriority.ERROR,

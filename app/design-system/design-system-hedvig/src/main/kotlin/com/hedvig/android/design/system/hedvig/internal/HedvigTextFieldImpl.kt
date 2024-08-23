@@ -144,7 +144,6 @@ internal fun HedvigDecorationBox(
   } else {
     null
   }
-
   Column {
     AnimatedTextFieldContent(
       inputPhase = inputPhase,

@@ -6,8 +6,8 @@ import arrow.core.raise.either
 import arrow.core.raise.ensureNotNull
 import arrow.core.toNonEmptyListOrNull
 import com.apollographql.apollo.ApolloClient
+import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -27,8 +27,7 @@ internal class GetUpcomingRenewalRemindersUseCaseImpl(
   override suspend fun invoke(): Either<UpcomingRenewalReminderError, NonEmptyList<MemberReminder.UpcomingRenewal>> {
     return either {
       val contracts = apolloClient.query(GetUpcomingRenewalReminderQuery())
-        .safeExecute()
-        .toEither(::ErrorMessage)
+        .safeExecute(::ErrorMessage)
         .mapLeft(UpcomingRenewalReminderError::NetworkError)
         .bind()
         .currentMember

@@ -4,7 +4,6 @@ import arrow.core.Either
 import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.contract.supportsTravelCertificate
 import com.hedvig.android.data.contract.toContractType
@@ -22,9 +21,8 @@ internal class CheckTravelCertificateAvailabilityForCurrentContractsUseCaseImpl(
   override suspend fun invoke(): Either<ErrorMessage, Boolean> {
     return either {
       val contracts = apolloClient.query(CurrentContractsQuery())
-        .safeExecute()
-        .toEither { message, _ ->
-          ErrorMessage("CheckTravelCertificateAvailabilityForCurrentContractsUseCase: $message")
+        .safeExecute {
+          ErrorMessage("CheckTravelCertificateAvailabilityForCurrentContractsUseCase: $it")
         }
         .map {
           it.currentMember.activeContracts

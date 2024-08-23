@@ -3,9 +3,9 @@ package com.hedvig.android.feature.editcoinsured.data
 import arrow.core.Either
 import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
+import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.appreview.SelfServiceCompletedEventManager
 import com.hedvig.android.core.common.ErrorMessage
 import kotlinx.datetime.LocalDate
@@ -25,8 +25,7 @@ internal class CommitMidtermChangeUseCaseImpl(
     val mutation = CommitMidtermChangeMutation(intentId)
 
     val result = apolloClient.mutation(mutation)
-      .safeExecute()
-      .toEither(::ErrorMessage)
+      .safeExecute(::ErrorMessage)
       .bind()
 
     val userError = result.midtermChangeIntentCommit.userError

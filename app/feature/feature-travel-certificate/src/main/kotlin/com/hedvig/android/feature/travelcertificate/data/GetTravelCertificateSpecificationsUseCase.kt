@@ -4,8 +4,8 @@ import arrow.core.Either
 import arrow.core.raise.either
 import arrow.core.raise.ensureNotNull
 import com.apollographql.apollo.ApolloClient
+import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.logger.logcat
 import kotlinx.datetime.LocalDate
@@ -22,8 +22,7 @@ internal class GetTravelCertificateSpecificationsUseCaseImpl(
     return either {
       val member = apolloClient
         .query(TravelCertificateSpecificationsQuery())
-        .safeExecute()
-        .toEither(::ErrorMessage)
+        .safeExecute(::ErrorMessage)
         .mapLeft(TravelCertificateError::Error)
         .onLeft {
           logcat(throwable = it.throwable) {

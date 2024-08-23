@@ -3,8 +3,8 @@ package com.hedvig.android.feature.editcoinsured.data
 import arrow.core.Either
 import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
+import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
@@ -19,8 +19,7 @@ internal class FetchCoInsuredPersonalInformationUseCaseImpl(
 ) : FetchCoInsuredPersonalInformationUseCase {
   override suspend fun invoke(ssn: String): Either<ErrorMessage, CoInsuredPersonalInformation> = either {
     val result = apolloClient.query(PersonalInformationQuery(ssn))
-      .safeExecute()
-      .toEither(::ErrorMessage)
+      .safeExecute(::ErrorMessage)
       .bind()
     if (result.personalInformation == null) {
       val birthdate = convertSsnToBirthDateOrNull(ssn)

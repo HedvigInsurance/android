@@ -10,7 +10,6 @@ import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isTrue
 import assertk.assertions.prop
-import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.feature.profile.data.ProfileData
 import com.hedvig.android.feature.profile.data.ProfileRepository
 import com.hedvig.android.logger.TestLogcatLoggingRule
@@ -115,8 +114,8 @@ class MyInfoPresenterTest {
       assertThat(awaitItem()).isInstanceOf<MyInfoUiState.Success>()
       sendEvent(MyInfoEvent.EmailChanged("newemail@gmail.com"))
       awaitItem()
-      profileRepository.phoneResponseTurbine.add(OperationResult.Error.NetworkError(null, null).left())
-      profileRepository.emailResponseTurbine.add(OperationResult.Error.NetworkError(null, null).left())
+      profileRepository.phoneResponseTurbine.add(Unit.left())
+      profileRepository.emailResponseTurbine.add(Unit.left())
       sendEvent(MyInfoEvent.UpdateEmailAndPhoneNumber)
       assertThat(awaitItem()).isEqualTo(MyInfoUiState.Error)
     }
@@ -136,7 +135,7 @@ class MyInfoPresenterTest {
       skipItems(1)
       sendEvent(MyInfoEvent.UpdateEmailAndPhoneNumber)
       skipItems(1)
-      profileRepository.emailResponseTurbine.add(OperationResult.Error.NetworkError(null, null).left())
+      profileRepository.emailResponseTurbine.add(Unit.left())
       assertThat(awaitItem()).isInstanceOf<MyInfoUiState.Error>()
       sendEvent(MyInfoEvent.Reload)
       assertThat(awaitItem()).isInstanceOf<MyInfoUiState.Loading>()
@@ -149,19 +148,19 @@ class MyInfoPresenterTest {
 }
 
 internal class FakeProfileRepository : ProfileRepository {
-  val profileResponseTurbine = Turbine<Either<OperationResult.Error, ProfileData>>()
-  val emailResponseTurbine = Turbine<Either<OperationResult.Error, ProfileData.Member>>()
-  val phoneResponseTurbine = Turbine<Either<OperationResult.Error, ProfileData.Member>>()
+  val profileResponseTurbine = Turbine<Either<Unit, ProfileData>>()
+  val emailResponseTurbine = Turbine<Either<Unit, ProfileData.Member>>()
+  val phoneResponseTurbine = Turbine<Either<Unit, ProfileData.Member>>()
 
-  override suspend fun profile(): Either<OperationResult.Error, ProfileData> {
+  override suspend fun profile(): Either<Unit, ProfileData> {
     return profileResponseTurbine.awaitItem()
   }
 
-  override suspend fun updateEmail(input: String): Either<OperationResult.Error, ProfileData.Member> {
+  override suspend fun updateEmail(input: String): Either<Unit, ProfileData.Member> {
     return emailResponseTurbine.awaitItem()
   }
 
-  override suspend fun updatePhoneNumber(input: String): Either<OperationResult.Error, ProfileData.Member> {
+  override suspend fun updatePhoneNumber(input: String): Either<Unit, ProfileData.Member> {
     return phoneResponseTurbine.awaitItem()
   }
 }
