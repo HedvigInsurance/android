@@ -100,7 +100,8 @@ fun NotificationsSnackbarShowcase() {
           .align(Alignment.BottomCenter),
       )
       HedvigSnackbar(
-        snackbarText = "Could not connect to server Could not connect to serverCould not connect to server Could not connect to server Could not connect to server Could not connect to server",
+        snackbarText = "Could not connect to server Could not connect to serverCould not connect to server " +
+          "Could not connect to server Could not connect to server Could not connect to server",
         priority = NotificationPriority.Error,
         showSnackbar = showErrorSnack,
         showedSnackbar = {
