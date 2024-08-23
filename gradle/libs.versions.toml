@@ -20,7 +20,7 @@ easylauncher = "6.4.0"
 googleServices = "4.4.2"
 kotlin = "2.0.20"
 kotlinter = "4.4.1"
-ksp = "2.0.20-RC2-1.0.24"
+ksp = "2.0.20-1.0.24"
 ktor = "2.3.12"
 license = "0.9.8"
 molecule = "2.0.0"
@@ -159,7 +159,7 @@ datadog-sdk-okhttp = { module = "com.datadoghq:dd-sdk-android-okhttp", version.r
 datadog-sdk-rum = { module = "com.datadoghq:dd-sdk-android-rum", version.ref = "datadog" }
 datadog-sdk-trace = { module = "com.datadoghq:dd-sdk-android-trace", version.ref = "datadog" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics-ktx" }
-firebase-bom = "com.google.firebase:firebase-bom:33.1.2"
+firebase-bom = "com.google.firebase:firebase-bom:33.2.0"
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics-ktx" }
 firebase-dynamicLinks = { module = "com.google.firebase:firebase-dynamic-links" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging-ktx" }
