@@ -6,9 +6,9 @@ import arrow.core.raise.either
 import arrow.retrofit.adapter.either.networkhandling.CallError
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
+import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.appreview.SelfServiceCompletedEventManager
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.retrofit.toErrorMessage
@@ -132,8 +132,7 @@ internal class ClaimFlowRepositoryImpl(
             supportedSteps = supportedSteps,
           ),
         )
-        .safeExecute()
-        .toEither(::ErrorMessage)
+        .safeExecute(::ErrorMessage)
         .bind()
         .flowClaimStart
       claimFlowContextStorage.saveContext(result.context)
@@ -160,8 +159,7 @@ internal class ClaimFlowRepositoryImpl(
     return either {
       val result = apolloClient
         .mutation(FlowClaimDateOfOccurrenceNextMutation(dateOfOccurrence, claimFlowContextStorage.getContext()))
-        .safeExecute()
-        .toEither(::ErrorMessage)
+        .safeExecute(::ErrorMessage)
         .bind()
         .flowClaimDateOfOccurrenceNext
       claimFlowContextStorage.saveContext(result.context)
@@ -173,8 +171,7 @@ internal class ClaimFlowRepositoryImpl(
     return either {
       val result = apolloClient
         .mutation(FlowClaimLocationNextMutation(location, claimFlowContextStorage.getContext()))
-        .safeExecute()
-        .toEither(::ErrorMessage)
+        .safeExecute(::ErrorMessage)
         .bind()
         .flowClaimLocationNext
       claimFlowContextStorage.saveContext(result.context)
@@ -186,8 +183,7 @@ internal class ClaimFlowRepositoryImpl(
     return either {
       val result = apolloClient
         .mutation(FlowClaimContractNextMutation(contract, claimFlowContextStorage.getContext()))
-        .safeExecute()
-        .toEither(::ErrorMessage)
+        .safeExecute(::ErrorMessage)
         .bind()
         .flowClaimContractSelectNext
       claimFlowContextStorage.saveContext(result.context)
@@ -208,8 +204,7 @@ internal class ClaimFlowRepositoryImpl(
             claimFlowContextStorage.getContext(),
           ),
         )
-        .safeExecute()
-        .toEither(::ErrorMessage)
+        .safeExecute(::ErrorMessage)
         .bind()
         .flowClaimDateOfOccurrencePlusLocationNext
       claimFlowContextStorage.saveContext(result.context)
@@ -221,8 +216,7 @@ internal class ClaimFlowRepositoryImpl(
     return either {
       val result = apolloClient
         .mutation(FlowClaimPhoneNumberNextMutation(phoneNumber, claimFlowContextStorage.getContext()))
-        .safeExecute()
-        .toEither(::ErrorMessage)
+        .safeExecute(::ErrorMessage)
         .bind()
         .flowClaimPhoneNumberNext
       claimFlowContextStorage.saveContext(result.context)
@@ -254,8 +248,7 @@ internal class ClaimFlowRepositoryImpl(
             claimFlowContextStorage.getContext(),
           ),
         )
-        .safeExecute()
-        .toEither(::ErrorMessage)
+        .safeExecute(::ErrorMessage)
         .bind()
         .flowClaimSingleItemNext
       claimFlowContextStorage.saveContext(result.context)
@@ -272,8 +265,7 @@ internal class ClaimFlowRepositoryImpl(
             claimFlowContextStorage.getContext(),
           ),
         )
-        .safeExecute()
-        .toEither(::ErrorMessage)
+        .safeExecute(::ErrorMessage)
         .bind()
         .flowClaimSingleItemCheckoutNext
       claimFlowContextStorage.saveContext(result.context)
@@ -306,8 +298,7 @@ internal class ClaimFlowRepositoryImpl(
             claimFlowContextStorage.getContext(),
           ),
         )
-        .safeExecute()
-        .toEither(::ErrorMessage)
+        .safeExecute(::ErrorMessage)
         .bind()
         .flowClaimSummaryNext
       claimFlowContextStorage.saveContext(result.context)
@@ -325,8 +316,7 @@ internal class ClaimFlowRepositoryImpl(
             claimFlowContextStorage.getContext(),
           ),
         )
-        .safeExecute()
-        .toEither(::ErrorMessage)
+        .safeExecute(::ErrorMessage)
         .bind()
         .flowClaimConfirmEmergencyNext
 
@@ -344,8 +334,7 @@ internal class ClaimFlowRepositoryImpl(
             context = claimFlowContextStorage.getContext(),
           ),
         )
-        .safeExecute()
-        .toEither(::ErrorMessage)
+        .safeExecute(::ErrorMessage)
         .bind()
         .flowClaimFileUploadNext
 
@@ -376,8 +365,7 @@ internal class ClaimFlowRepositoryImpl(
   private suspend fun Raise<ErrorMessage>.nextClaimFlowStepWithAudioUrl(audioUrl: AudioUrl): ClaimFlowStep {
     val result = apolloClient
       .mutation(FlowClaimAudioRecordingNextMutation(audioUrl.value, claimFlowContextStorage.getContext()))
-      .safeExecute()
-      .toEither(::ErrorMessage)
+      .safeExecute(::ErrorMessage)
       .bind()
       .flowClaimAudioRecordingNext
     logcat { "Submitted audio file to GQL with URL $audioUrl" }

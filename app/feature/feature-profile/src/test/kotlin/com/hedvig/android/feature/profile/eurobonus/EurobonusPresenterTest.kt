@@ -6,7 +6,7 @@ import arrow.core.left
 import arrow.core.right
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import com.hedvig.android.apollo.OperationResult
+import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.feature.profile.data.GetEurobonusDataUseCase
 import com.hedvig.android.feature.profile.data.UpdateEurobonusNumberUseCase
 import com.hedvig.android.molecule.test.test
@@ -73,9 +73,7 @@ class EurobonusPresenterTest {
       ),
     ) {
       awaitItem()
-      getEurobonusDataUseCase.responseTurbine.add(
-        OperationResult.Error.GeneralError("msg").left(),
-      )
+      getEurobonusDataUseCase.responseTurbine.add(ApolloOperationError.OperationError("msg").left())
       assertThat(awaitItem()).isEqualTo(
         EurobonusUiState(
           canSubmit = false,
@@ -153,7 +151,7 @@ class EurobonusPresenterTest {
       awaitItem()
       sendEvent(EurobonusEvent.SubmitEditedEurobonus)
       awaitItem()
-      updateEurobonusNumberUseCase.responseTurbine.add(OperationResult.Error.OperationError("msg").left())
+      updateEurobonusNumberUseCase.responseTurbine.add(ApolloOperationError.OperationError("msg").left())
       assertThat(awaitItem().hasError).isEqualTo(true)
     }
   }
@@ -184,19 +182,19 @@ class EurobonusPresenterTest {
 }
 
 private class FakeUpdateEurobonusNumberUseCase : UpdateEurobonusNumberUseCase {
-  val responseTurbine = Turbine<Either<OperationResult.Error, UpdateEurobonusNumberMutation.Data>>()
+  val responseTurbine = Turbine<Either<ApolloOperationError, UpdateEurobonusNumberMutation.Data>>()
 
   override suspend fun invoke(
     newValueToSubmit: String,
-  ): Either<OperationResult.Error, UpdateEurobonusNumberMutation.Data> {
+  ): Either<ApolloOperationError, UpdateEurobonusNumberMutation.Data> {
     return responseTurbine.awaitItem()
   }
 }
 
 private class FakeGetEurobonusDataUseCase : GetEurobonusDataUseCase {
-  val responseTurbine = Turbine<Either<OperationResult.Error, EurobonusDataQuery.Data>>()
+  val responseTurbine = Turbine<Either<ApolloOperationError, EurobonusDataQuery.Data>>()
 
-  override suspend fun invoke(): Either<OperationResult.Error, EurobonusDataQuery.Data> {
+  override suspend fun invoke(): Either<ApolloOperationError, EurobonusDataQuery.Data> {
     return responseTurbine.awaitItem()
   }
 }

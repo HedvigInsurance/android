@@ -20,8 +20,8 @@ import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.apollographql.apollo.cache.normalized.watch
 import com.apollographql.apollo.exception.ApolloException
 import com.apollographql.apollo.exception.CacheMissException
+import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.fileupload.FileService
 import com.hedvig.android.core.retrofit.toErrorMessage
@@ -68,8 +68,7 @@ internal class ChatRepositoryImpl(
       val result = apolloClient.query(ChatMessagesQuery(until))
         .fetchPolicy(FetchPolicy.NetworkOnly)
         .doNotStore(true)
-        .safeExecute()
-        .toEither(::ErrorMessage)
+        .safeExecute(::ErrorMessage)
         .bind()
 
       populateCacheWithNewMessageData(result)
@@ -130,8 +129,7 @@ internal class ChatRepositoryImpl(
     logcat { "Chat sendPhoto uploading photo with uri:$uri" }
     val uploadToken = uploadFile(uri)
     val result = apolloClient.mutation(ChatSendFileMutation(uploadToken, context?.toChatMessageContext()))
-      .safeExecute()
-      .toEither(::ErrorMessage)
+      .safeExecute(::ErrorMessage)
       .bind()
       .chatSendFile
 
@@ -191,8 +189,7 @@ internal class ChatRepositoryImpl(
     logcat { "Chat sendMedia uploading media with uri:$uri" }
     val uploadToken = uploadMedia(uri)
     val result = apolloClient.mutation(ChatSendFileMutation(uploadToken, context?.toChatMessageContext()))
-      .safeExecute()
-      .toEither(::ErrorMessage)
+      .safeExecute(::ErrorMessage)
       .bind()
       .chatSendFile
 
@@ -243,8 +240,7 @@ internal class ChatRepositoryImpl(
   ): Either<ErrorMessage, ChatMessage> = either {
     logcat { "Chat sendMessage uploading text:$text" }
     val result = apolloClient.mutation(ChatSendMessageMutation(text, context?.toChatMessageContext()))
-      .safeExecute()
-      .toEither(::ErrorMessage)
+      .safeExecute(::ErrorMessage)
       .bind()
       .chatSendText
 

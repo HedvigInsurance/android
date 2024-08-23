@@ -16,7 +16,7 @@ internal class DeleteAccountStateUseCase(
   suspend fun invoke(): Flow<DeleteAccountState> {
     return combine(
       deleteAccountRequestStorage.hasRequestedTermination(),
-      apolloClient.query(DeleteAccountStateQuery()).fetchPolicy(FetchPolicy.CacheAndNetwork).safeFlow { _, _ ->
+      apolloClient.query(DeleteAccountStateQuery()).fetchPolicy(FetchPolicy.CacheAndNetwork).safeFlow {
         DeleteAccountState.NetworkError
       },
     ) { hasRequestedTermination, queryResponse ->

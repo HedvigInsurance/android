@@ -5,8 +5,8 @@ import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.fetchPolicy
+import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.chat.database.ConversationDao
 import com.hedvig.android.data.chat.database.asIdToTimestampMap
@@ -63,8 +63,7 @@ internal class GetAllConversationsUseCaseImpl(
         val response = apolloClient
           .query(ChatConversationsQuery())
           .fetchPolicy(FetchPolicy.NetworkOnly)
-          .safeExecute()
-          .toEither(::ErrorMessage)
+          .safeExecute(::ErrorMessage)
           .bind()
         buildList {
           addAll(response.currentMember.conversations.map { it.toInboxConversation(isLegacy = false) })

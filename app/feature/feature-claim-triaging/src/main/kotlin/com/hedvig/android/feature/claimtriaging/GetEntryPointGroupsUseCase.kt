@@ -5,8 +5,8 @@ import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.fetchPolicy
+import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.claimtriaging.ClaimGroup
 import com.hedvig.android.data.claimtriaging.ClaimGroupId
@@ -23,8 +23,7 @@ internal class GetEntryPointGroupsUseCase(
       val data = apolloClient
         .query(EntryPointGroupsQuery())
         .fetchPolicy(FetchPolicy.NetworkOnly)
-        .safeExecute()
-        .toEither(::ErrorMessage)
+        .safeExecute(::ErrorMessage)
         .bind()
 
       data.entrypointGroups.map { entryPointGroup: EntryPointGroupsQuery.Data.EntrypointGroup ->

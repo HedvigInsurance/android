@@ -4,8 +4,8 @@ import arrow.core.Either
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.fetchPolicy
+import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
@@ -25,8 +25,7 @@ internal class GetTravelCertificatesHistoryUseCaseImpl(
   override suspend fun invoke(): Either<ErrorMessage, List<TravelCertificate>> {
     return apolloClient.query(TravelCertificatesQuery())
       .fetchPolicy(FetchPolicy.NetworkOnly)
-      .safeExecute()
-      .toEither(::ErrorMessage)
+      .safeExecute(::ErrorMessage)
       .map {
         it.currentMember.travelCertificates.map { certificate ->
           val now = clock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date

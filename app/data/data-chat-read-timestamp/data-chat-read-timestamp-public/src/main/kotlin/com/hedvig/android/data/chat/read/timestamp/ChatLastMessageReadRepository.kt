@@ -8,7 +8,6 @@ import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.benasher44.uuid.Uuid
 import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.apollo.toEither
 import com.hedvig.android.data.chat.database.ConversationDao
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
@@ -64,7 +63,6 @@ internal class ChatLastMessageReadRepositoryImpl(
             val currentMember = apolloClient.query(CbmChatLatestMessageTimestampsQuery())
               .fetchPolicy(FetchPolicy.NetworkOnly)
               .safeExecute()
-              .toEither()
               .bind()
               .currentMember
             val allNewestHedvigMessages = buildList {
@@ -92,7 +90,6 @@ internal class ChatLastMessageReadRepositoryImpl(
             .query(ChatLatestMessageTimestampsQuery())
             .fetchPolicy(FetchPolicy.NetworkOnly)
             .safeExecute()
-            .toEither()
             .getOrNull()
             ?.chat
             ?.messages
