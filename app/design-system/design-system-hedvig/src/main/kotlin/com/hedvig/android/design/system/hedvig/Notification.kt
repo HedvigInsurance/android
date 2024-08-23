@@ -12,7 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -25,9 +25,11 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults.Notification
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Campaign
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Error
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
-import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.NeutralToast
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.defaultSnackbarPriority
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.defaultStyle
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.paddingNoIcon
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.paddingWithIcon
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.snackBarShape
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.textStyle
 import com.hedvig.android.design.system.hedvig.icon.Campaign
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -49,14 +51,16 @@ import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.Signa
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.SurfacePrimary
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.TextSecondaryTranslucent
 import com.hedvig.android.design.system.hedvig.tokens.NotificationsTokens
+import com.hedvig.android.design.system.internals.InternalSnackBar
+import com.hedvig.android.design.system.internals.NotificationColors
 
 @Composable
-fun NotificationCard(
+fun HedvigNotificationCard(
   message: String,
   priority: NotificationPriority,
   modifier: Modifier = Modifier,
   withIcon: Boolean = NotificationDefaults.withIconDefault,
-  style: InfoCardStyle = NotificationDefaults.defaultStyle,
+  style: InfoCardStyle = defaultStyle,
 ) {
   val padding = if (withIcon) paddingWithIcon else paddingNoIcon
   Surface(
@@ -67,13 +71,8 @@ fun NotificationCard(
     ProvideTextStyle(textStyle) {
       Row(Modifier.padding(padding)) {
         if (withIcon) {
-          val icon = when (priority) {
-            Attention, Error -> HedvigIcons.WarningFilled
-            Campaign -> HedvigIcons.Campaign
-            Info, NeutralToast -> HedvigIcons.InfoFilled
-          }
           Icon(
-            imageVector = icon,
+            imageVector = priority.icon,
             contentDescription = null,
             tint = priority.colors.iconColor,
             modifier = Modifier.size(18.dp),
@@ -84,7 +83,7 @@ fun NotificationCard(
           HedvigText(text = message)
           if (style is Buttons) {
             Row {
-              HedvigTheme(darkTheme  = false) {
+              HedvigTheme(darkTheme = false) {
                 HedvigButton(
                   enabled = true,
                   onClick = style.onLeftButtonClick,
@@ -114,7 +113,34 @@ fun NotificationCard(
 }
 
 @Composable
-fun NotificationToast() {
+fun HedvigSnackbar(
+  snackbarText: String,
+  showSnackbar: Boolean,
+  showedSnackbar: () -> Unit,
+  modifier: Modifier = Modifier,
+  priority: NotificationPriority = defaultSnackbarPriority,
+  action: (() -> Unit)? = null,
+  actionLabel: String? = null,
+) {
+  InternalSnackBar(
+    colors = priority.colors,
+    shape = snackBarShape,
+    snackbarText = snackbarText,
+    showSnackbar = showSnackbar,
+    showedSnackbar = showedSnackbar,
+    modifier = modifier,
+    action = action,
+    actionLabel = actionLabel,
+    textStyle = textStyle,
+    icon = {
+      Icon(
+        imageVector = priority.icon,
+        contentDescription = null,
+        tint = priority.colors.iconColor,
+        modifier = Modifier.size(18.dp),
+      )
+    },
+  )
 }
 
 object NotificationDefaults {
@@ -132,10 +158,15 @@ object NotificationDefaults {
   )
   internal val withIconDefault = true
   internal val defaultStyle: InfoCardStyle = Default
+  internal val defaultSnackbarPriority = NotificationPriority.NeutralToast
   internal val shape
     @Composable
     @ReadOnlyComposable
     get() = NotificationsTokens.ContainerShape.value
+  internal val snackBarShape
+    @Composable
+    @ReadOnlyComposable
+    get() = NotificationsTokens.SnackbarContainerShape.value
   internal val textStyle
     @Composable
     @ReadOnlyComposable
@@ -144,6 +175,9 @@ object NotificationDefaults {
   sealed class NotificationPriority() {
     @get:Composable
     internal abstract val colors: NotificationColors
+
+    @get:Composable
+    internal abstract val icon: ImageVector
 
     data object Attention : NotificationPriority() {
       override val colors: NotificationColors
@@ -157,6 +191,10 @@ object NotificationDefaults {
             )
           }
         }
+      override val icon: ImageVector
+        @Composable
+        get() =
+          HedvigIcons.WarningFilled
     }
 
     data object Error : NotificationPriority() {
@@ -171,6 +209,10 @@ object NotificationDefaults {
             )
           }
         }
+      override val icon: ImageVector
+        @Composable
+        get() =
+          HedvigIcons.WarningFilled
     }
 
     data object Info : NotificationPriority() {
@@ -185,6 +227,10 @@ object NotificationDefaults {
             )
           }
         }
+      override val icon: ImageVector
+        @Composable
+        get() =
+          HedvigIcons.InfoFilled
     }
 
     data object Campaign : NotificationPriority() {
@@ -199,6 +245,10 @@ object NotificationDefaults {
             )
           }
         }
+      override val icon: ImageVector
+        @Composable
+        get() =
+          HedvigIcons.Campaign
     }
 
     data object NeutralToast : NotificationPriority() {
@@ -213,6 +263,10 @@ object NotificationDefaults {
             )
           }
         }
+      override val icon: ImageVector
+        @Composable
+        get() =
+          HedvigIcons.InfoFilled
     }
   }
 
@@ -228,12 +282,6 @@ object NotificationDefaults {
   }
 }
 
-internal data class NotificationColors(
-  val containerColor: Color,
-  val textColor: Color,
-  val iconColor: Color,
-)
-
 @Preview
 @Composable
 private fun PreviewNotificationCard(
@@ -246,28 +294,28 @@ private fun PreviewNotificationCard(
           .width(330.dp)
           .padding(16.dp),
       ) {
-        NotificationCard(
+        HedvigNotificationCard(
           priority = priority,
           message = "A short message about something that needs attention.",
           withIcon = false,
           style = Default,
         )
         Spacer(Modifier.height(16.dp))
-        NotificationCard(
+        HedvigNotificationCard(
           priority = priority,
           message = "A short message about something that needs attention.",
           withIcon = true,
           style = Default,
         )
         Spacer(Modifier.height(16.dp))
-        NotificationCard(
+        HedvigNotificationCard(
           priority = priority,
           message = "A short message about something that needs attention.",
           withIcon = false,
           style = Buttons("Left", "Right", {}, {}),
         )
         Spacer(Modifier.height(16.dp))
-        NotificationCard(
+        HedvigNotificationCard(
           priority = priority,
           message = "A short message about something that needs attention.",
           withIcon = true,
