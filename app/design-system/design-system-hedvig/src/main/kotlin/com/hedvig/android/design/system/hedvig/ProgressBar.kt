@@ -1,25 +1,19 @@
 package com.hedvig.android.design.system.hedvig
 
-import androidx.compose.animation.animateColor
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
-import androidx.compose.runtime.asFloatState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -33,12 +27,10 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.design.system.hedvig.tokens.AnimationTokens
 import com.hedvig.android.design.system.hedvig.tokens.RadioOptionColorTokens
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.max
-import kotlinx.coroutines.delay
 
 @Composable
 fun HedvigLinearProgressBar(
@@ -137,121 +129,55 @@ private fun DrawScope.drawLinearIndicatorTrack(
 fun CircularProgressBar(
   modifier: Modifier = Modifier,
 ) {
-  var iteration by remember { mutableStateOf(0) }
   val infiniteTransition = rememberInfiniteTransition(label = "rememberInfiniteTransition")
   val repeatable =   infiniteRepeatable<Float>(
     tween(2000), RepeatMode.Restart,
   )
-  val animatedProgress = infiniteTransition.animateFloat(
-    0f,
-    1f,
+  val animatedArcStart = infiniteTransition.animateFloat(
+    -90f,
+    270f,
     repeatable,
     label = "animatedProgress",
   )
-  LaunchedEffect(Unit) {
-    while(true) {
-      delay(2000)
-      iteration+=1
+  val animatedArcEnd = infiniteTransition.animateFloat(
+    0f,
+    360f,
+    repeatable,
+    label = "animatedProgress",
+  )
+
+  Box(
+    modifier = modifier
+  ) {
+    val stroke = 4.dp
+    val cap = StrokeCap.Round
+    val width = 96.dp
+    Canvas(
+      modifier = Modifier
+        .size(100.dp)
+        .clipToBounds()
+    ) {
+      drawCircle(
+        radius = (width /4).toPx(),
+        color = Color.LightGray,
+        style = Stroke(stroke.toPx(), cap = cap)
+      )
+      val offsetX = this.center.x - (width/4).toPx()
+      val offsetY = this.center.y - (width/4).toPx()
+
+      drawArc(
+        color = Color.Black,
+        startAngle = animatedArcStart.value,
+        sweepAngle = animatedArcEnd.value,
+        topLeft = Offset(offsetX,offsetY),
+        useCenter = false,
+        size = Size((width/2).toPx(),(width/2).toPx()),
+        style = Stroke(stroke.toPx(), cap = cap)
+      )
     }
   }
-  val progressLambda = { animatedProgress.value }
-  CircularProgressIndicator(
-    progress = progressLambda,
-    modifier = modifier,
-    color = progressColors.circularIndicatorColor(iteration%2!=0),
-    strokeWidth = 4.dp, //todo: to defaults
-    trackColor = progressColors.circularTrackColor(iteration%2!=0),
-    strokeCap = ProgressDefaults.strokeCap,
-  )
 }
 
-@Composable
-private fun CircularProgressIndicator(
-  progress: () -> Float,
-  modifier: Modifier = Modifier,
-  color: Color,
-  strokeWidth: Dp,
-  trackColor: Color,
-  strokeCap: StrokeCap,
-) {
-  val coercedProgress = { progress().coerceIn(0f, 1f) }
-  val stroke = with(LocalDensity.current) {
-    Stroke(width = strokeWidth.toPx(), cap = strokeCap)
-  }
-  Canvas(
-    modifier
-      .semantics(mergeDescendants = true) {
-        progressBarRangeInfo = ProgressBarRangeInfo(coercedProgress(), 0f..1f)
-      }
-      .size(ProgressDefaults.circularIndicatorDiameter.dp)
-  ) {
-    // Start at 12 o'clock
-    val startAngle = 270f
-    val sweep = coercedProgress() * 360f
-    drawCircularIndicatorTrack(trackColor, stroke)
-    drawDeterminateCircularIndicator(startAngle = startAngle, sweep = sweep, color = color, stroke = stroke)
-  }
-}
-
-private fun DrawScope.drawCircularIndicatorTrack(
-  color: Color,
-  stroke: Stroke
-) = drawCircularIndicator(0f, 360f, color, stroke)
-
-private fun DrawScope.drawDeterminateCircularIndicator(
-  startAngle: Float,
-  sweep: Float,
-  color: Color,
-  stroke: Stroke
-) = drawCircularIndicator(startAngle, sweep, color, stroke)
-
-private fun DrawScope.drawIndeterminateCircularIndicator(
-  startAngle: Float,
-  strokeWidth: Dp,
-  sweep: Float,
-  color: Color,
-  stroke: Stroke
-) {
-  val strokeCapOffset = if (stroke.cap == StrokeCap.Butt) {
-    0f
-  } else {
-    // Length of arc is angle * radius
-    // Angle (radians) is length / radius
-    // The length should be the same as the stroke width for calculating the min angle
-    (180.0 / PI).toFloat() * (strokeWidth / (ProgressDefaults.circularIndicatorDiameter.dp / 2)) / 2f
-  }
-
-  // Adding a stroke cap draws half the stroke width behind the start point, so we want to
-  // move it forward by that amount so the arc visually appears in the correct place
-  val adjustedStartAngle = startAngle + strokeCapOffset
-
-  // When the start and end angles are in the same place, we still want to draw a small sweep, so
-  // the stroke caps get added on both ends and we draw the correct minimum length arc
-  val adjustedSweep = max(sweep, 0.1f)
-
-  drawCircularIndicator(adjustedStartAngle, adjustedSweep, color, stroke)
-}
-
-private fun DrawScope.drawCircularIndicator(
-  startAngle: Float,
-  sweep: Float,
-  color: Color,
-  stroke: Stroke
-) {
-  // To draw this circle we need a rect with edges that line up with the midpoint of the stroke.
-  // To do this we need to remove half the stroke width from the total diameter for both sides.
-  val diameterOffset = stroke.width / 2
-  val arcDimen = size.width - 2 * diameterOffset
-  drawArc(
-    color = color,
-    startAngle = startAngle,
-    sweepAngle = sweep,
-    useCenter = false,
-    topLeft = Offset(diameterOffset, diameterOffset),
-    size = Size(arcDimen, arcDimen),
-    style = stroke
-  )
-}
 
 private object ProgressDefaults{
   val strokeCap = StrokeCap.Round
@@ -262,25 +188,7 @@ private object ProgressDefaults{
 private data class ProgressColors(
   val trackColor: Color,
   val indicatorColor: Color,
-) {
-  @Composable
-  fun circularTrackColor(isReverse: Boolean): Color {
-    val targetValue = when {
-      isReverse -> indicatorColor
-      else -> trackColor
-    }
-    return targetValue
-  }
-  @Composable
-  fun circularIndicatorColor(isReverse: Boolean): Color {
-    val targetValue = when {
-      isReverse -> trackColor
-      else -> indicatorColor
-    }
-    return targetValue
-  }
-}
-
+)
 
 private val progressColors: ProgressColors
   @Composable
