@@ -1,12 +1,8 @@
 package com.hedvig.android.design.system.hedvig
 
-import androidx.compose.animation.core.FastOutLinearInEasing
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
@@ -24,26 +20,26 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.design.system.hedvig.tokens.RadioOptionColorTokens
-import kotlin.math.PI
+import com.hedvig.android.design.system.hedvig.ProgressDefaults.arcSweepAngle
+import com.hedvig.android.design.system.hedvig.ProgressDefaults.circularBaseWidth
+import com.hedvig.android.design.system.hedvig.ProgressDefaults.progressAnimationDuration
+import com.hedvig.android.design.system.hedvig.ProgressDefaults.stroke
+import com.hedvig.android.design.system.hedvig.ProgressDefaults.strokeCap
+import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.FillPrimary
+import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.SurfaceSecondary
 import kotlin.math.abs
-import kotlin.math.max
 
 @Composable
-fun HedvigLinearProgressBar(
-  modifier: Modifier = Modifier,
-) {
-
+fun HedvigLinearProgressBar(modifier: Modifier = Modifier) {
   val infiniteTransition = rememberInfiniteTransition(label = "rememberInfiniteTransition")
   val repeatable = infiniteRepeatable<Float>(
-    tween(2000), RepeatMode.Restart,
+    tween(progressAnimationDuration),
+    RepeatMode.Restart,
   )
   val animatedProgress = infiniteTransition.animateFloat(
     0f,
@@ -53,11 +49,11 @@ fun HedvigLinearProgressBar(
   )
 
   LinearProgressIndicator(
-      progress = { animatedProgress.value },
-      modifier = modifier.fillMaxWidth(),
-      color = progressColors.indicatorColor,
-      trackColor = progressColors.trackColor,
-      strokeCap = ProgressDefaults.strokeCap,
+    progress = { animatedProgress.value },
+    modifier = modifier.fillMaxWidth(),
+    color = progressColors.indicatorColor,
+    trackColor = progressColors.trackColor,
+    strokeCap = strokeCap,
   )
 }
 
@@ -71,11 +67,11 @@ private fun LinearProgressIndicator(
 ) {
   val coercedProgress = { progress().coerceIn(0f, 1f) }
   Canvas(
-      modifier
-          .semantics(mergeDescendants = true) {
-              progressBarRangeInfo = ProgressBarRangeInfo(coercedProgress(), 0f..1f)
-          }
-          .height(4.dp), //todo: to tokens
+    modifier
+      .semantics(mergeDescendants = true) {
+        progressBarRangeInfo = ProgressBarRangeInfo(coercedProgress(), 0f..1f)
+      }
+      .height(stroke),
   ) {
     val strokeWidth = size.height
     drawLinearIndicatorTrack(trackColor, strokeWidth, strokeCap)
@@ -92,26 +88,21 @@ private fun DrawScope.drawLinearIndicator(
 ) {
   val width = size.width
   val height = size.height
-  // Start drawing from the vertical center of the stroke
   val yOffset = height / 2
 
   val isLtr = layoutDirection == LayoutDirection.Ltr
   val barStart = (if (isLtr) startFraction else 1f - endFraction) * width
   val barEnd = (if (isLtr) endFraction else 1f - startFraction) * width
 
-  // if there isn't enough space to draw the stroke caps, fall back to StrokeCap.Butt
   if (strokeCap == StrokeCap.Butt || height > width) {
-    // Progress line
     drawLine(color, Offset(barStart, yOffset), Offset(barEnd, yOffset), strokeWidth)
   } else {
-    // need to adjust barStart and barEnd for the stroke caps
     val strokeCapOffset = strokeWidth / 2
     val coerceRange = strokeCapOffset..(width - strokeCapOffset)
     val adjustedBarStart = barStart.coerceIn(coerceRange)
     val adjustedBarEnd = barEnd.coerceIn(coerceRange)
 
     if (abs(endFraction - startFraction) > 0) {
-      // Progress line
       drawLine(
         color,
         Offset(adjustedBarStart, yOffset),
@@ -123,66 +114,59 @@ private fun DrawScope.drawLinearIndicator(
   }
 }
 
-private fun DrawScope.drawLinearIndicatorTrack(
-  color: Color,
-  strokeWidth: Float,
-  strokeCap: StrokeCap,
-) = drawLinearIndicator(0f, 1f, color, strokeWidth, strokeCap)
+private fun DrawScope.drawLinearIndicatorTrack(color: Color, strokeWidth: Float, strokeCap: StrokeCap) =
+  drawLinearIndicator(0f, 1f, color, strokeWidth, strokeCap)
 
 @Composable
-fun CircularProgressBar(
-  modifier: Modifier = Modifier,
-) {
-  val AnimationDuration = 2000
-  val AnimationSegment = AnimationDuration / 10
+fun HedvigCircularProgressBar(modifier: Modifier = Modifier) {
   val infiniteTransition = rememberInfiniteTransition(label = "rememberInfiniteTransition")
-  val repeatable =   infiniteRepeatable<Float>(
-      tween(2000), RepeatMode.Restart,
+  val repeatable = infiniteRepeatable<Float>(
+    tween(progressAnimationDuration),
+    RepeatMode.Restart,
   )
   val animatedArcStart = infiniteTransition.animateFloat(
-    -135f,
-    225f,
+    -180f,
+    180f,
     repeatable,
     label = "animatedProgress",
   )
   Box(
-    modifier = modifier
+    modifier = modifier,
   ) {
-    val stroke = 4.dp
-    val cap = StrokeCap.Round
-    val width = 96.dp
+    val arcColor = progressColors.indicatorColor
+    val trackColor = progressColors.trackColor
     Canvas(
       modifier = Modifier
         .size(100.dp)
-        .clipToBounds()
+        .clipToBounds(),
     ) {
       drawCircle(
-        radius = (width /4).toPx(),
-        color = Color.LightGray,
-        style = Stroke(stroke.toPx(), cap = cap)
+        radius = (circularBaseWidth / 2).toPx(),
+        color = trackColor,
+        style = Stroke(stroke.toPx(), cap = strokeCap),
       )
-      val offsetX = this.center.x - (width/4).toPx()
-      val offsetY = this.center.y - (width/4).toPx()
-
+      val offsetX = this.center.x - (circularBaseWidth / 2).toPx()
+      val offsetY = this.center.y - (circularBaseWidth / 2).toPx()
       drawArc(
-        color = Color.Black,
+        color = arcColor,
         startAngle = animatedArcStart.value,
-        sweepAngle = 90F,
-        topLeft = Offset(offsetX,offsetY),
+        sweepAngle = arcSweepAngle,
+        topLeft = Offset(offsetX, offsetY),
         useCenter = false,
-        size = Size((width/2).toPx(),(width/2).toPx()),
-        style = Stroke(stroke.toPx(), cap = cap)
+        size = Size((circularBaseWidth).toPx(), (circularBaseWidth).toPx()),
+        style = Stroke(stroke.toPx(), cap = strokeCap),
       )
     }
   }
 }
 
-
-private object ProgressDefaults{
+private object ProgressDefaults {
   val strokeCap = StrokeCap.Round
-  val circularIndicatorDiameter = 48f
+  val progressAnimationDuration = 1800
+  val stroke = 4.dp
+  val circularBaseWidth = 48.dp
+  val arcSweepAngle = 180F
 }
-
 
 private data class ProgressColors(
   val trackColor: Color,
@@ -194,8 +178,8 @@ private val progressColors: ProgressColors
   get() = with(HedvigTheme.colorScheme) {
     remember(this) {
       ProgressColors(
-          trackColor = fromToken(RadioOptionColorTokens.ContainerColor),
-          indicatorColor = fromToken(RadioOptionColorTokens.OptionTextColor),
+        trackColor = fromToken(SurfaceSecondary),
+        indicatorColor = fromToken(FillPrimary),
       )
     }
   }
