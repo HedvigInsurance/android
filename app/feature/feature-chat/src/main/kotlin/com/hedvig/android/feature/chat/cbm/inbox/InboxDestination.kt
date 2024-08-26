@@ -232,7 +232,7 @@ private fun ConversationCard(
         val message = when (latestMessage) {
           is Text -> latestMessage.text
           is File -> stringResource(R.string.CHAT_SENT_A_FILE)
-          is Unknown -> "Sent a message" // todo copy
+          is Unknown -> stringResource(R.string.CHAT_SENT_A_MESSAGE)
         }
         Text(
           text = "$sender: $message",
