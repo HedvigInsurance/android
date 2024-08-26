@@ -111,7 +111,7 @@ private fun ChatScreen(
     color = MaterialTheme.colorScheme.background,
     modifier = Modifier.fillMaxSize(),
   ) {
-    val topAppBarScrollBehavior = TopAppBarDefaults.chatScrollBehavior()
+    val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     Column {
       val density = LocalDensity.current
       var topAppBarHeight by remember { mutableStateOf(0.dp) }
@@ -170,7 +170,6 @@ private fun ChatTopAppBar(
     title = stringResource(R.string.CHAT_TITLE),
     onClick = onNavigateUp,
     scrollBehavior = topAppBarScrollBehavior,
-    windowInsets = chatTopAppBarWindowInsets(TopAppBarDefaults.windowInsets, topAppBarScrollBehavior),
     modifier = modifier.fillMaxWidth(),
   )
 }
