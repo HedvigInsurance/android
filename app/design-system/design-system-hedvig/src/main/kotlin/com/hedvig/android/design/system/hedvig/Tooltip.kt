@@ -7,10 +7,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,8 +27,6 @@ import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathOperation
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.layout.onPlaced
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -106,10 +102,6 @@ private fun InnerChatTooltip(
   maxWidth: Dp = TooltipDefaults.defaultMaxWidth,
 ) {
   val shape = TooltipDefaults.shape
-  val density = LocalDensity.current
-  // Save the height before the minimumInteractiveComponentSize is applied, so that the layout can take up only the
-  // space it needs, but still let the touch size be accessible
-  var knownHeight by remember { mutableStateOf(0.dp) }
   Crossfade(
     targetState = show,
     label = "tooltip",
@@ -124,11 +116,7 @@ private fun InnerChatTooltip(
             min = TooltipDefaults.defaultMinWidth,
             max = maxWidth,
           )
-          .height(knownHeight)
-          .wrapContentHeight(unbounded = true)
-          .minimumInteractiveComponentSize()
-          .clickable(onClick = onClick)
-          .onPlaced { knownHeight = with(density) { it.size.height.toDp() } },
+          .clickable(onClick = onClick),
       ) {
         val padding = when (beakDirection) {
           BottomCenter, BottomEnd, BottomStart -> TooltipDefaults.paddingForBottomBeak
@@ -380,7 +368,7 @@ private fun PreviewRadioOptionStyles(
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundWhite) {
       FlowRow(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = Modifier.padding(8.dp),
       ) {
         for (text in texts) {
