@@ -259,7 +259,16 @@ private fun InboxSuccessScreenPreview() {
     com.hedvig.android.design.system.hedvig.HedvigTheme {
       Surface(color = MaterialTheme.colorScheme.background) {
         InboxScreen(
-          InboxUiState.Success(listOf(mockInboxConversation1, mockInboxConversation2, mockInboxConversationLegacy)),
+          InboxUiState.Success(
+            listOf(
+              mockInboxConversation1,
+              mockInboxConversation2,
+              mockInboxConversation3,
+              mockInboxConversation2.copy(conversationId = "100"),
+              mockInboxConversation3.copy(conversationId = "101"),
+              mockInboxConversationLegacy,
+            ),
+          ),
           {},
           {},
           {},
@@ -311,8 +320,16 @@ private val mockInboxConversation2 = InboxConversation(
   createdAt = Clock.System.now(),
 )
 
-private val mockInboxConversationLegacy = InboxConversation(
+private val mockInboxConversation3 = InboxConversation(
   conversationId = "3",
+  header = Header.ServiceConversation,
+  latestMessage = InboxConversation.LatestMessage.File(Sender.MEMBER, Clock.System.now()),
+  hasNewMessages = false,
+  createdAt = Clock.System.now(),
+)
+
+private val mockInboxConversationLegacy = InboxConversation(
+  conversationId = "999",
   header = Header.Legacy,
   latestMessage = InboxConversation.LatestMessage.File(Sender.MEMBER, Clock.System.now()),
   hasNewMessages = true,
