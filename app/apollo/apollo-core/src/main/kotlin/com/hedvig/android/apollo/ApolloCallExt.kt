@@ -14,10 +14,8 @@ import com.hedvig.android.apollo.ApolloOperationError.CacheMiss
 import com.hedvig.android.apollo.ApolloOperationError.OperationError
 import com.hedvig.android.apollo.ApolloOperationError.OperationException
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.logger.LogPriority
-import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filterNot
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
 sealed interface ApolloOperationError {
@@ -51,19 +49,25 @@ suspend fun <D : Operation.Data, ErrorType> ApolloCall<D>.safeExecute(
 }
 
 fun <D : Operation.Data> ApolloCall<D>.safeFlow(): Flow<Either<ApolloOperationError, D>> {
-  return toFlow()
-    .filterNot { response ->
-      val isTemporaryCacheMiss = !response.isLast && response.exception is CacheMissException
-      // If we get a cache miss, but we know that we are awaiting a new response after that anyway, we do not need to
-      // emit the cache miss at all. We can just wait for the next response to come instead.
-      if (isTemporaryCacheMiss) {
-        logcat(LogPriority.DEBUG) {
-          "Apollo call:${this.operation.name()} emitted a cache miss, but another response is coming"
-        }
+  return flow<ApolloResponse<D>> {
+    var hasEmitted = false
+    var errorResponse: ApolloResponse<D>? = null
+    toFlow().collect {
+      if (it.exception != null) {
+        // Some errors may be followed by valid responses.
+        // In that case, wait for the next response to come instead.
+        errorResponse = it
+      } else {
+        hasEmitted = true
+        emit(it)
       }
-      isTemporaryCacheMiss
     }
-    .map { either { parseResponse(it) } }
+    val errorResponseValue = errorResponse
+    if (!hasEmitted && errorResponseValue != null) {
+      // Flow has terminated without a valid response, emit the error one if it exists.
+      emit(errorResponseValue)
+    }
+  }.map { either { parseResponse(it) } }
 }
 
 fun <D : Operation.Data, ErrorType> ApolloCall<D>.safeFlow(
