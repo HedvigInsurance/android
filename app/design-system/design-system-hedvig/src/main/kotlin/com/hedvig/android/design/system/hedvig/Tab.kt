@@ -8,10 +8,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -23,15 +23,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateMap
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.layout.onPlaced
+import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -39,6 +42,7 @@ import com.hedvig.android.design.system.hedvig.TabDefaults.TabSize
 import com.hedvig.android.design.system.hedvig.TabDefaults.TabSize.Mini
 import com.hedvig.android.design.system.hedvig.TabDefaults.TabStyle
 import com.hedvig.android.design.system.hedvig.TabDefaults.TabStyle.Default
+import com.hedvig.android.design.system.hedvig.TabDefaults.maxItemsInTheRow
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.ButtonSecondaryAltResting
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.ButtonSecondaryResting
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.SurfacePrimary
@@ -48,6 +52,7 @@ import com.hedvig.android.design.system.hedvig.tokens.MediumTabTokens
 import com.hedvig.android.design.system.hedvig.tokens.MiniTabTokens
 import com.hedvig.android.design.system.hedvig.tokens.SmallTabTokens
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun HedvigTabRow(
   tabTitles: List<String>,
@@ -59,12 +64,22 @@ fun HedvigTabRow(
 ) {
   val density = LocalDensity.current
   val currentWidthMap = remember { mutableStateMapOf<Int, Int>() }
-  val indicatorOffset: Dp by animateDpAsState(
-    targetValue = calculateOffset(currentWidthMap, selectedTabIndex, density),
+  val currentHeightMap = remember { mutableStateMapOf<Int, Int>() }
+  val currentOffsetMap = remember { mutableStateMapOf<Int, Offset>() }
+  val indicatorOffsetX: Dp by animateDpAsState(
+    targetValue = with(density) { calculateIndicatorOffset(currentOffsetMap, selectedTabIndex).x.toDp() },
+    animationSpec = tween(easing = LinearEasing),
+  )
+  val indicatorOffsetY: Dp by animateDpAsState(
+    targetValue = with(density) { calculateIndicatorOffset(currentOffsetMap, selectedTabIndex).y.toDp() },
     animationSpec = tween(easing = LinearEasing),
   )
   val indicatorWidth: Dp by animateDpAsState(
     targetValue = calculateIndicatorWidth(currentWidthMap, selectedTabIndex, density),
+    animationSpec = tween(easing = LinearEasing),
+  )
+  val indicatorHeight: Dp by animateDpAsState(
+    targetValue = calculateIndicatorHeight(currentHeightMap, selectedTabIndex, density),
     animationSpec = tween(easing = LinearEasing),
   )
   Box(
@@ -75,46 +90,45 @@ fun HedvigTabRow(
       .padding(tabSize.rowPadding),
   ) {
     TabIndicator(
+      indicatorHeight = indicatorHeight,
       indicatorWidth = indicatorWidth,
-      indicatorOffset = indicatorOffset,
+      indicatorOffsetX = indicatorOffsetX,
+      indicatorOffsetY = indicatorOffsetY,
       indicatorColor = tabStyle.colors.chosenTabBackground,
       indicatorShape = tabSize.tabShape,
     )
-    Row(
+    FlowRow(
       horizontalArrangement = Arrangement.Start,
-      verticalAlignment = Alignment.CenterVertically,
+      verticalArrangement = Arrangement.Center,
+      maxItemsInEachRow = maxItemsInTheRow,
       modifier = Modifier
         .clip(tabSize.rowShape)
         .fillMaxWidth(),
     ) {
-      tabTitles.mapIndexed { index, text ->
+      tabTitles.forEachIndexed { index, title ->
         TabItem(
           modifier = Modifier
             .clip(tabSize.tabShape)
-            .weight(1f),
+            .weight(1f)
+            .onPlaced {
+              currentOffsetMap[index] = it.positionInParent()
+            },
           onClick = {
             onTabChosen(index)
           },
-          text = text,
+          text = title,
           textStyle = tabSize.textStyle,
           tabTextColor = tabStyle.colors.textColor,
           contentPadding = tabSize.tabPadding,
           onTextMeasured = {
             currentWidthMap[index] = it
           },
+          onHeightMeasured = {
+            currentHeightMap[index] = it
+          },
         )
       }
     }
-  }
-}
-
-private fun calculateOffset(map: SnapshotStateMap<Int, Int>, selectedTabIndex: Int, density: Density): Dp {
-  var offset = 0
-  for (i in 0..<selectedTabIndex) {
-    offset += map[i] ?: 0
-  }
-  return with(density) {
-    offset.toDp()
   }
 }
 
@@ -124,9 +138,20 @@ private fun calculateIndicatorWidth(map: SnapshotStateMap<Int, Int>, selectedTab
   }
 }
 
+private fun calculateIndicatorHeight(map: SnapshotStateMap<Int, Int>, selectedTabIndex: Int, density: Density): Dp {
+  return with(density) {
+    map[selectedTabIndex]?.toDp() ?: 5.dp
+  }
+}
+
+private fun calculateIndicatorOffset(map: SnapshotStateMap<Int, Offset>, selectedTabIndex: Int): Offset {
+  return map[selectedTabIndex] ?: Offset(0f, 0f)
+}
+
 object TabDefaults {
   internal val defaultSize: TabSize = Mini
   internal val defaultStyle: TabStyle = Default
+  internal const val maxItemsInTheRow = 3
 
   sealed class TabSize {
     @get:Composable
@@ -299,6 +324,7 @@ private fun TabItem(
   tabTextColor: Color,
   contentPadding: PaddingValues,
   onTextMeasured: (width: Int) -> Unit,
+  onHeightMeasured: (height: Int) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   HedvigText(
@@ -312,6 +338,7 @@ private fun TabItem(
       .layout { measurable, constraints ->
         val placeable = measurable.measure(constraints)
         onTextMeasured(placeable.width)
+        onHeightMeasured(placeable.height)
         layout(placeable.width, placeable.height) {
           placeable.placeRelative(0, 0)
         }
@@ -319,21 +346,30 @@ private fun TabItem(
       .padding(contentPadding),
     text = text,
     style = textStyle,
+    overflow = TextOverflow.Ellipsis,
     color = tabTextColor,
     textAlign = TextAlign.Center,
   )
 }
 
 @Composable
-private fun TabIndicator(indicatorWidth: Dp, indicatorOffset: Dp, indicatorColor: Color, indicatorShape: Shape) {
+private fun TabIndicator(
+  indicatorHeight: Dp,
+  indicatorWidth: Dp,
+  indicatorOffsetX: Dp,
+  indicatorOffsetY: Dp,
+  indicatorColor: Color,
+  indicatorShape: Shape,
+) {
   Box(
     modifier = Modifier
-      .fillMaxHeight()
       .width(
         width = indicatorWidth,
       )
+      .height(indicatorHeight)
       .offset(
-        x = indicatorOffset,
+        x = indicatorOffsetX,
+        y = indicatorOffsetY,
       )
       .clip(
         shape = indicatorShape,
