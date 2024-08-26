@@ -164,7 +164,7 @@ internal fun ChatMessageEntity.toChatMessage(): CbmChatMessage? {
     failedToSend != null -> {
       when {
         failedToSend == TEXT && text != null -> {
-          CbmChatMessage.FailedToBeSent.ChatMessageText(id.toString(), sentAt, text!!)
+          CbmChatMessage.FailedToBeSent.ChatMessageText(id.toString(), sentAt, text!!.trim())
         }
 
         failedToSend == PHOTO && url != null -> {
@@ -184,7 +184,7 @@ internal fun ChatMessageEntity.toChatMessage(): CbmChatMessage? {
       }
     }
 
-    text != null -> CbmChatMessage.ChatMessageText(id.toString(), sender, sentAt, text!!)
+    text != null -> CbmChatMessage.ChatMessageText(id.toString(), sender, sentAt, text!!.trim())
     gifUrl != null -> CbmChatMessage.ChatMessageGif(id.toString(), sender, sentAt, gifUrl!!)
     url != null && mimeType != null -> {
       val mimeType = CbmChatMessage.ChatMessageFile.MimeType.valueOf(mimeType!!)
