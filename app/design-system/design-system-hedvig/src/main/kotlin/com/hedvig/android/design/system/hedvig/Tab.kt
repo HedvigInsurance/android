@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.FlowRowOverflow
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -43,6 +44,7 @@ import com.hedvig.android.design.system.hedvig.TabDefaults.TabSize.Mini
 import com.hedvig.android.design.system.hedvig.TabDefaults.TabStyle
 import com.hedvig.android.design.system.hedvig.TabDefaults.TabStyle.Default
 import com.hedvig.android.design.system.hedvig.TabDefaults.maxItemsInTheRow
+import com.hedvig.android.design.system.hedvig.TabDefaults.maxLines
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.ButtonSecondaryAltResting
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.ButtonSecondaryResting
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.SurfacePrimary
@@ -101,6 +103,8 @@ fun HedvigTabRow(
       horizontalArrangement = Arrangement.Start,
       verticalArrangement = Arrangement.Center,
       maxItemsInEachRow = maxItemsInTheRow,
+      maxLines = maxLines,
+      overflow = FlowRowOverflow.Visible,
       modifier = Modifier
         .clip(tabSize.rowShape)
         .fillMaxWidth(),
@@ -162,6 +166,7 @@ object TabDefaults {
   internal val defaultSize: TabSize = Mini
   internal val defaultStyle: TabStyle = Default
   internal const val maxItemsInTheRow = 3
+  internal const val maxLines = 1
 
   sealed class TabSize {
     @get:Composable
@@ -341,7 +346,7 @@ private fun TabItem(
     modifier = modifier
       .clickable(
         interactionSource = remember { MutableInteractionSource() },
-        indication = null, //as the sliding indicator is enough, I think
+        indication = null, // as the sliding indicator is enough, I think
       ) {
         onClick()
       }
