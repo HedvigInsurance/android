@@ -67,11 +67,11 @@ fun HedvigTabRow(
   val currentHeightMap = remember { mutableStateMapOf<Int, Int>() }
   val currentOffsetMap = remember { mutableStateMapOf<Int, Offset>() }
   val indicatorOffsetX: Dp by animateDpAsState(
-    targetValue = with(density) { calculateIndicatorOffset(currentOffsetMap, selectedTabIndex).x.toDp() },
+    targetValue = calculateIndicatorOffsetX(currentOffsetMap, selectedTabIndex, density),
     animationSpec = tween(easing = LinearEasing),
   )
   val indicatorOffsetY: Dp by animateDpAsState(
-    targetValue = with(density) { calculateIndicatorOffset(currentOffsetMap, selectedTabIndex).y.toDp() },
+    targetValue = calculateIndicatorOffsetY(currentOffsetMap, selectedTabIndex, density),
     animationSpec = tween(easing = LinearEasing),
   )
   val indicatorWidth: Dp by animateDpAsState(
@@ -144,8 +144,18 @@ private fun calculateIndicatorHeight(map: SnapshotStateMap<Int, Int>, selectedTa
   }
 }
 
-private fun calculateIndicatorOffset(map: SnapshotStateMap<Int, Offset>, selectedTabIndex: Int): Offset {
-  return map[selectedTabIndex] ?: Offset(0f, 0f)
+private fun calculateIndicatorOffsetX(map: SnapshotStateMap<Int, Offset>, selectedTabIndex: Int, density: Density): Dp {
+  val result = map[selectedTabIndex]?.x ?: 0f
+  return with(density) {
+    result.toDp()
+  }
+}
+
+private fun calculateIndicatorOffsetY(map: SnapshotStateMap<Int, Offset>, selectedTabIndex: Int, density: Density): Dp {
+  val result = map[selectedTabIndex]?.y ?: 0f
+  return with(density) {
+    result.toDp()
+  }
 }
 
 object TabDefaults {
@@ -331,7 +341,7 @@ private fun TabItem(
     modifier = modifier
       .clickable(
         interactionSource = remember { MutableInteractionSource() },
-        indication = null,
+        indication = null, //as the sliding indicator is enough, I think
       ) {
         onClick()
       }
