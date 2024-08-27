@@ -91,9 +91,9 @@ private fun ExpandablePerilCard(
     content = {
       Spacer(
         Modifier
-          .size(24.dp)
+          .size(size.circleSize)
           .wrapContentSize(Alignment.Center)
-          .size(16.dp)
+          .size(size.circleSize) // todo: look here again
           .background(color, CircleShape),
       )
       Spacer(Modifier.width(8.dp))
@@ -247,6 +247,7 @@ object PerilDefaults {
     internal abstract val padding: PaddingValues
     internal abstract val extendedPadding: PaddingValues
     internal abstract val verticalSpaceBetween: Dp
+    internal abstract val circleSize: Dp
 
     @get:Composable
     internal abstract val labelTextStyle: TextStyle
@@ -271,6 +272,8 @@ object PerilDefaults {
         )
       override val verticalSpaceBetween: Dp
         get() = PerilSmallTokens.VerticalSpaceBetween
+      override val circleSize: Dp
+        get() = PerilSmallTokens.CircleSize
       override val labelTextStyle: TextStyle
         @Composable
         @ReadOnlyComposable
@@ -306,6 +309,8 @@ object PerilDefaults {
         get() = PerilLargeTokens.DescriptionTextFont.value
       override val verticalSpaceBetween: Dp
         get() = PerilLargeTokens.VerticalSpaceBetween
+      override val circleSize: Dp
+        get() = PerilLargeTokens.CircleSize
     }
   }
 }

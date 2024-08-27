@@ -27,6 +27,7 @@ internal object PerilSmallTokens {
   val LabelTextFont = TypographyKeyTokens.BodySmall
   val DescriptionTextFont = TypographyKeyTokens.Label
   val VerticalSpaceBetween = 17.dp
+  val CircleSize = 16.dp
 }
 
 internal object PerilLargeTokens {
@@ -40,4 +41,5 @@ internal object PerilLargeTokens {
   val LabelTextFont = TypographyKeyTokens.BodyMedium
   val DescriptionTextFont = TypographyKeyTokens.Label
   val VerticalSpaceBetween = 18.dp
+  val CircleSize = 24.dp
 }
