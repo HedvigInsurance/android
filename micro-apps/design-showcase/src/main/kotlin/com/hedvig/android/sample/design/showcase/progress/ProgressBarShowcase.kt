@@ -9,25 +9,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.design.system.hedvig.HedvigCircularProgressBar
-import com.hedvig.android.design.system.hedvig.HedvigLinearProgressBar
-import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.HedvigCircularProgressIndicator
+import com.hedvig.android.design.system.hedvig.HedvigLinearProgressIndicator
 import com.hedvig.android.design.system.hedvig.ThreeDotsLoading
 
 @Composable
 fun ProgressBarShowcase() {
-  Surface(color = Color.White, modifier = Modifier.fillMaxSize()) {
-    Column(
-      horizontalAlignment = Alignment.CenterHorizontally,
-      verticalArrangement = Arrangement.Center,
-    ) {
-      HedvigLinearProgressBar(Modifier.padding(32.dp))
-      Spacer(Modifier.height(32.dp))
-      ThreeDotsLoading()
-      Spacer(Modifier.height(32.dp))
-      HedvigCircularProgressBar()
-    }
+  Column(
+    horizontalAlignment = Alignment.CenterHorizontally,
+    verticalArrangement = Arrangement.Center,
+    modifier = Modifier.fillMaxSize(),
+  ) {
+    HedvigLinearProgressIndicator(Modifier.padding(32.dp))
+    Spacer(Modifier.height(32.dp))
+    ThreeDotsLoading()
+    Spacer(Modifier.height(32.dp))
+    HedvigCircularProgressIndicator()
   }
 }
