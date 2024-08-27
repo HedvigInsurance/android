@@ -28,7 +28,8 @@ fun PerilsShowcase() {
     Column(
       Modifier
         .padding(16.dp)
-        .verticalScroll(rememberScrollState())) {
+        .verticalScroll(rememberScrollState()),
+    ) {
       Spacer(Modifier.height(32.dp))
       PerilList(
         previewPerils,
