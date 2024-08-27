@@ -3,7 +3,9 @@ package com.hedvig.android.design.system.hedvig.tokens
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.SpringSpec
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 
 internal object ProgressIndicatorTokens
@@ -58,3 +60,14 @@ internal val ProgressAnimationSpec = SpringSpec(
   // large and noticeable. We purposefully choose a smaller threshold.
   visibilityThreshold = 1 / 1000f,
 )
+
+internal object ThreeDotsProgressIndicatorTokens {
+  val ActiveIndicatorColor = ColorSchemeKeyTokens.FillPrimary
+  val TrackColor = ColorSchemeKeyTokens.SurfaceSecondary
+  val IndicatorDiameter = 6.dp
+  val IndicatorSpacing = 6.dp
+  val Size = DpSize(IndicatorDiameter * 3 + IndicatorSpacing * 2, IndicatorDiameter)
+  val AnimationDuration = 1500
+  val AnimationDelay = 333
+  val Easing = CubicBezierEasing(0.2f, 0.2f, 0.4f, 0.8f)
+}

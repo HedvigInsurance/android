@@ -1,5 +1,8 @@
 package com.hedvig.android.design.system.hedvig
 
+import androidx.compose.animation.core.InfiniteTransition
+import androidx.compose.animation.core.RepeatMode.Reverse
+import androidx.compose.animation.core.StartOffset
 import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateValue
@@ -11,6 +14,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.progressSemantics
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -23,6 +27,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import com.hedvig.android.design.system.hedvig.tokens.CircularProgressIndicatorTokens
 import com.hedvig.android.design.system.hedvig.tokens.LinearProgressIndicatorTokens
+import com.hedvig.android.design.system.hedvig.tokens.ThreeDotsProgressIndicatorTokens
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.max
@@ -196,6 +201,29 @@ fun HedvigCircularProgressIndicator(modifier: Modifier = Modifier) {
   }
 }
 
+@Composable
+fun HedvigThreeDotsProgressIndicator(modifier: Modifier = Modifier) {
+  val density = LocalDensity.current
+  val color: Color = ThreeDotsProgressIndicatorTokens.ActiveIndicatorColor.value
+  val trackColor: Color = ThreeDotsProgressIndicatorTokens.TrackColor.value
+  val indicatorDiameter = with(density) { ThreeDotsProgressIndicatorTokens.IndicatorDiameter.toPx() }
+  val spaceBetween = with(density) { ThreeDotsProgressIndicatorTokens.IndicatorSpacing.toPx() }
+
+  val transition = rememberInfiniteTransition()
+  val dot1 = transition.animateLoadingDot(StartOffset(0))
+  val dot2 = transition.animateLoadingDot(StartOffset(ThreeDotsProgressIndicatorTokens.AnimationDelay))
+  val dot3 = transition.animateLoadingDot(StartOffset(ThreeDotsProgressIndicatorTokens.AnimationDelay * 2))
+  Canvas(
+    modifier = modifier
+      .progressSemantics()
+      .size(ThreeDotsProgressIndicatorTokens.Size),
+  ) {
+    drawLoadingDot(color, trackColor, indicatorDiameter, dot1.value, 0f)
+    drawLoadingDot(color, trackColor, indicatorDiameter, dot2.value, indicatorDiameter + spaceBetween)
+    drawLoadingDot(color, trackColor, indicatorDiameter, dot3.value, indicatorDiameter * 2 + spaceBetween * 2)
+  }
+}
+
 private fun DrawScope.drawLinearIndicatorTrack(color: Color, strokeWidth: Float, strokeCap: StrokeCap) =
   drawLinearIndicator(0f, 1f, color, strokeWidth, strokeCap)
 
@@ -276,4 +304,34 @@ private fun DrawScope.drawIndeterminateCircularIndicator(
   val adjustedSweep = max(sweep, 0.1f)
 
   drawCircularIndicator(adjustedStartAngle, adjustedSweep, color, stroke)
+}
+
+@Composable
+private fun InfiniteTransition.animateLoadingDot(startOffset: StartOffset): State<Float> = animateValue(
+  0f,
+  1f,
+  Float.VectorConverter,
+  infiniteRepeatable(
+    animation = tween(
+      // Half the duration since we want the `Reverse` animation to be included in this duration
+      durationMillis = ThreeDotsProgressIndicatorTokens.AnimationDuration / 2,
+      easing = ThreeDotsProgressIndicatorTokens.Easing,
+    ),
+    repeatMode = Reverse,
+    initialStartOffset = startOffset,
+  ),
+)
+
+private fun DrawScope.drawLoadingDot(color: Color, trackColor: Color, diameter: Float, value: Float, xOffset: Float) {
+  val center = Offset(diameter / 2 + xOffset, diameter / 2)
+  drawCircle(
+    color = trackColor,
+    radius = diameter / 2,
+    center = center,
+  )
+  drawCircle(
+    color = color,
+    radius = (diameter / 2) * value,
+    center = center,
+  )
 }
