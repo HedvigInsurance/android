@@ -1,14 +1,9 @@
 package com.hedvig.android.design.system.hedvig.tokens
 
 import androidx.compose.animation.core.CubicBezierEasing
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.SpringSpec
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-
-internal object ProgressIndicatorTokens
 
 internal object CircularProgressIndicatorTokens {
   val ActiveIndicatorColor = ColorSchemeKeyTokens.FillPrimary
@@ -52,14 +47,6 @@ internal object LinearProgressIndicatorTokens {
   val SecondLineHeadEasing = CubicBezierEasing(0f, 0f, 0.65f, 1f)
   val SecondLineTailEasing = CubicBezierEasing(0.1f, 0f, 0.45f, 1f)
 }
-
-internal val ProgressAnimationSpec = SpringSpec(
-  dampingRatio = Spring.DampingRatioNoBouncy,
-  stiffness = Spring.StiffnessVeryLow,
-  // The default threshold is 0.01, or 1% of the overall progress range, which is quite
-  // large and noticeable. We purposefully choose a smaller threshold.
-  visibilityThreshold = 1 / 1000f,
-)
 
 internal object ThreeDotsProgressIndicatorTokens {
   val ActiveIndicatorColor = ColorSchemeKeyTokens.FillPrimary
