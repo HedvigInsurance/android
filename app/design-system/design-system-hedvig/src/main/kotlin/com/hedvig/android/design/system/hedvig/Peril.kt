@@ -8,6 +8,8 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,6 +32,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.TextStyle
@@ -151,9 +154,16 @@ fun ExpandablePlusCard(
   modifier: Modifier = Modifier,
 ) {
   Surface(
-    onClick = onClick,
-    shape = PerilCommonTokens.ContainerShape.value,
-    modifier = modifier,
+    modifier = modifier
+      .clip(PerilCommonTokens.ContainerShape.value)
+      .clickable(
+        interactionSource = remember { MutableInteractionSource() },
+        indication = ripple(
+          bounded = true,
+          radius = 1000.dp,
+        ),
+        onClick = onClick,
+      ),
   ) {
     Column(
       modifier = Modifier.padding(size.padding),
