@@ -38,6 +38,17 @@ fun InternalSnackBar(
   action: (() -> Unit)? = null,
   actionLabel: String? = null,
 ) {
+  val contentModifier = if (actionLabel != null) Modifier.padding(
+    top = 16.dp,
+    bottom = 16.dp,
+    end = 8.dp,
+  ) else Modifier
+    .padding(
+      top = 16.dp,
+      bottom = 16.dp,
+    )
+    .fillMaxWidth()
+  val contentHorizontalArrangement = if (actionLabel != null) Arrangement.Start else Arrangement.Center
   val snackbarHostState = remember { SnackbarHostState() }
   LaunchedEffect(showSnackbar, snackbarText) {
     if (!showSnackbar) return@LaunchedEffect
@@ -57,17 +68,21 @@ fun InternalSnackBar(
   }
   SnackbarHost(snackbarHostState, modifier.padding(16.dp)) { _ ->
     Snackbar(
-      action = {
-        if (actionLabel != null) {
+      action =
+      if (actionLabel == null) null else {
+        {
           ActionContent(
             actionLabel,
             textStyle,
-            modifier = Modifier.clip(shape).clickable(enabled = true, onClick = action ?: showedSnackbar).padding(
-              top = 16.dp,
-              bottom = 16.dp,
-              start = 8.dp,
-              end = 8.dp,
-            ),
+            modifier = Modifier
+              .clip(shape)
+              .clickable(enabled = true, onClick = action ?: showedSnackbar)
+              .padding(
+                top = 16.dp,
+                bottom = 16.dp,
+                start = 8.dp,
+                end = 8.dp,
+              ),
           )
         }
       },
@@ -78,30 +93,13 @@ fun InternalSnackBar(
       contentColor = colors.textColor,
       actionContentColor = colors.textColor,
     ) {
-      if (actionLabel != null) {
-        SnackContentForAction(
-          icon = icon,
-          snackbarText = snackbarText,
-          textStyle = textStyle,
-          modifier = Modifier.padding(
-            top = 16.dp,
-            bottom = 16.dp,
-            end = 8.dp,
-          ),
-        )
-      } else {
-        PlainSnackContent(
-          icon = icon,
-          snackbarText = snackbarText,
-          textStyle = textStyle,
-          modifier = Modifier
-            .padding(
-              top = 16.dp,
-              bottom = 16.dp,
-            )
-            .fillMaxWidth(),
-        )
-      }
+      SnackContent(
+        icon = icon,
+        snackbarText = snackbarText,
+        textStyle = textStyle,
+        modifier = contentModifier,
+        horizontalArrangement = contentHorizontalArrangement,
+      )
     }
   }
 }
@@ -116,32 +114,15 @@ private fun ActionContent(actionLabel: String, textStyle: TextStyle, modifier: M
 }
 
 @Composable
-private fun PlainSnackContent(
+private fun SnackContent(
   icon: @Composable () -> Unit,
   snackbarText: String,
   textStyle: TextStyle,
+  horizontalArrangement: Arrangement.Horizontal,
   modifier: Modifier,
 ) {
   Row(
-    horizontalArrangement = Arrangement.Center,
-    verticalAlignment = Alignment.CenterVertically,
-    modifier = modifier,
-  ) {
-    icon()
-    Spacer(Modifier.width(8.dp))
-    Text(snackbarText, style = textStyle)
-  }
-}
-
-@Composable
-private fun SnackContentForAction(
-  icon: @Composable () -> Unit,
-  snackbarText: String,
-  textStyle: TextStyle,
-  modifier: Modifier,
-) {
-  Row(
-    horizontalArrangement = Arrangement.Start,
+    horizontalArrangement = horizontalArrangement,
     verticalAlignment = Alignment.CenterVertically,
     modifier = modifier,
   ) {
