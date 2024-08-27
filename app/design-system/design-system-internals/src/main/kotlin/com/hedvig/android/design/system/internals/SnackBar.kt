@@ -2,6 +2,7 @@ package com.hedvig.android.design.system.internals
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -38,15 +39,11 @@ fun InternalSnackBar(
   action: (() -> Unit)? = null,
   actionLabel: String? = null,
 ) {
-  val contentModifier = if (actionLabel != null) Modifier.padding(
-    top = 16.dp,
-    bottom = 16.dp,
-    end = 8.dp,
-  ) else Modifier
-    .padding(
-      top = 16.dp,
-      bottom = 16.dp,
-    )
+  val contentModifier = if (actionLabel != null)
+    Modifier.padding(paddingForContentWithAction)
+  else
+    Modifier
+    .padding(paddingForContentWithoutAction)
     .fillMaxWidth()
   val contentHorizontalArrangement = if (actionLabel != null) Arrangement.Start else Arrangement.Center
   val snackbarHostState = remember { SnackbarHostState() }
@@ -57,7 +54,6 @@ fun InternalSnackBar(
       Dismissed -> {
         showedSnackbar()
       }
-
       ActionPerformed -> {
         if (action != null) {
           action()
@@ -66,7 +62,7 @@ fun InternalSnackBar(
       }
     }
   }
-  SnackbarHost(snackbarHostState, modifier.padding(16.dp)) { _ ->
+  SnackbarHost(snackbarHostState, modifier) { _ ->
     Snackbar(
       action =
       if (actionLabel == null) null else {
@@ -77,12 +73,7 @@ fun InternalSnackBar(
             modifier = Modifier
               .clip(shape)
               .clickable(enabled = true, onClick = action ?: showedSnackbar)
-              .padding(
-                top = 16.dp,
-                bottom = 16.dp,
-                start = 8.dp,
-                end = 8.dp,
-              ),
+              .padding(actionPadding),
           )
         }
       },
@@ -137,3 +128,21 @@ data class NotificationColors(
   val textColor: Color,
   val iconColor: Color,
 )
+
+private val actionPadding = PaddingValues(
+  top = 16.dp,
+  bottom = 16.dp,
+  start = 8.dp,
+  end = 8.dp,
+)
+
+private val paddingForContentWithAction = PaddingValues(
+  top = 16.dp,
+  bottom = 16.dp,
+  end = 8.dp,
+)
+private val paddingForContentWithoutAction = PaddingValues(
+  top = 16.dp,
+  bottom = 16.dp,
+)
+
