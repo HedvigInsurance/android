@@ -17,7 +17,6 @@ fun HedvigSnackbar(
   val snackbarHostState = remember { SnackbarHostState() }
   LaunchedEffect(showSnackbar, snackbarText) {
     if (!showSnackbar) return@LaunchedEffect
-    snackbarHostState.showSnackbar(snackbarText)
     showedSnackbar()
   }
   SnackbarHost(snackbarHostState, modifier)

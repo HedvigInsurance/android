@@ -284,10 +284,7 @@ private fun CardNotConnectedWarningCard(
 }
 
 @Composable
-private fun UpcomingPaymentInfoCard(
-  upcomingPaymentInfo: UpcomingPaymentInfo?,
-  modifier: Modifier = Modifier,
-) {
+private fun UpcomingPaymentInfoCard(upcomingPaymentInfo: UpcomingPaymentInfo?, modifier: Modifier = Modifier) {
   Box(modifier) {
     when (upcomingPaymentInfo) {
       UpcomingPaymentInfo.NoInfo -> {}
