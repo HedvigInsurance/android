@@ -42,6 +42,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.compose.dropUnlessResumed
 import coil.ImageLoader
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
@@ -84,6 +85,7 @@ internal fun InsuranceDestination(
   onInsuranceCardClick: (contractId: String) -> Unit,
   onCrossSellClick: (String) -> Unit,
   navigateToCancelledInsurances: () -> Unit,
+  onNavigateToMovingFlow: () -> Unit,
   imageLoader: ImageLoader,
 ) {
   val uiState: InsuranceUiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -111,6 +113,7 @@ internal fun InsuranceDestination(
     onInsuranceCardClick = onInsuranceCardClick,
     onCrossSellClick = onCrossSellClick,
     navigateToCancelledInsurances = navigateToCancelledInsurances,
+    onNavigateToMovingFlow = onNavigateToMovingFlow,
     imageLoader = imageLoader,
   )
 }
@@ -122,6 +125,7 @@ private fun InsuranceScreen(
   onInsuranceCardClick: (contractId: String) -> Unit,
   onCrossSellClick: (String) -> Unit,
   navigateToCancelledInsurances: () -> Unit,
+  onNavigateToMovingFlow: () -> Unit,
   imageLoader: ImageLoader,
 ) {
   val isRetrying = uiState.isRetrying
@@ -170,10 +174,11 @@ private fun InsuranceScreen(
             uiState = state,
             imageLoader = imageLoader,
             showNotificationBadge = state.showNotificationBadge,
+            quantityOfCancelledInsurances = state.quantityOfCancelledInsurances,
             onInsuranceCardClick = onInsuranceCardClick,
             onCrossSellClick = onCrossSellClick,
             navigateToCancelledInsurances = navigateToCancelledInsurances,
-            quantityOfCancelledInsurances = state.quantityOfCancelledInsurances,
+            onNavigateToMovingFlow = onNavigateToMovingFlow,
             modifier = Modifier.fillMaxSize(),
           )
         }
@@ -196,10 +201,11 @@ private fun InsuranceScreenContent(
   uiState: InsuranceUiState,
   imageLoader: ImageLoader,
   showNotificationBadge: Boolean,
+  quantityOfCancelledInsurances: Int,
   onInsuranceCardClick: (contractId: String) -> Unit,
   onCrossSellClick: (String) -> Unit,
   navigateToCancelledInsurances: () -> Unit,
-  quantityOfCancelledInsurances: Int,
+  onNavigateToMovingFlow: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -224,8 +230,8 @@ private fun InsuranceScreenContent(
       )
       if (uiState.shouldSuggestMovingFlow) {
         MovingFlowSuggestionSection(
-          {},
-          Modifier.padding(horizontal = 16.dp),
+          onNavigateToMovingFlow = onNavigateToMovingFlow,
+          modifier = Modifier.padding(horizontal = 16.dp),
         )
       }
       if (uiState.crossSells.isNotEmpty()) {
@@ -321,7 +327,7 @@ private fun TerminatedContractsButton(text: String, onClick: () -> Unit, modifie
 private fun MovingFlowSuggestionSection(onNavigateToMovingFlow: () -> Unit, modifier: Modifier = Modifier) {
   Column(modifier, Arrangement.spacedBy(8.dp)) {
     HedvigText(
-      stringResource(R.string.insurances_tab_moving_flow_section_title),
+      text = stringResource(R.string.insurances_tab_moving_flow_section_title),
       style = com.hedvig.android.design.system.hedvig.HedvigTheme.typography.headlineSmall,
     )
     HedvigNotificationCard(
@@ -329,7 +335,7 @@ private fun MovingFlowSuggestionSection(onNavigateToMovingFlow: () -> Unit, modi
       priority = NotificationPriority.Campaign,
       style = InfoCardStyle.Button(
         stringResource(R.string.insurances_tab_moving_flow_info_button_title),
-        onNavigateToMovingFlow,
+        dropUnlessResumed { onNavigateToMovingFlow() },
       ),
     )
   }
@@ -369,6 +375,7 @@ private fun PreviewInsuranceScreen(
         {},
         {},
         {},
+        {},
         rememberPreviewImageLoader(),
       )
     }
@@ -391,6 +398,7 @@ private fun PreviewInsuranceDestinationAnimation() {
             onInsuranceCardClick = {},
             onCrossSellClick = {},
             navigateToCancelledInsurances = {},
+            onNavigateToMovingFlow = {},
           )
         },
       )
