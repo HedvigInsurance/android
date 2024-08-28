@@ -10,8 +10,8 @@ import com.hedvig.android.sample.design.showcase.dialog.DialogShowcase
 import com.hedvig.android.sample.design.showcase.freetext.FreeTextShowcase
 import com.hedvig.android.sample.design.showcase.highlight.HighlightShowcase
 import com.hedvig.android.sample.design.showcase.icons.ShowcaseIcons
-import com.hedvig.android.sample.design.showcase.progress.ProgressBarShowcase
 import com.hedvig.android.sample.design.showcase.notifications.NotificationsSnackbarShowcase
+import com.hedvig.android.sample.design.showcase.progress.ProgressBarShowcase
 import com.hedvig.android.sample.design.showcase.radio.ShowCaseRadioGroups
 import com.hedvig.android.sample.design.showcase.stepper.StepperShowcase
 import com.hedvig.android.sample.design.showcase.textfield.ShowcaseTextField
