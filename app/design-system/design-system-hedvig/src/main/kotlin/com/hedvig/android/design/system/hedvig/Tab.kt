@@ -43,8 +43,6 @@ import com.hedvig.android.design.system.hedvig.TabDefaults.TabSize
 import com.hedvig.android.design.system.hedvig.TabDefaults.TabSize.Mini
 import com.hedvig.android.design.system.hedvig.TabDefaults.TabStyle
 import com.hedvig.android.design.system.hedvig.TabDefaults.TabStyle.Default
-import com.hedvig.android.design.system.hedvig.TabDefaults.maxItemsInTheRow
-import com.hedvig.android.design.system.hedvig.TabDefaults.maxLines
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.ButtonSecondaryAltResting
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.ButtonSecondaryResting
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.SurfacePrimary
@@ -114,8 +112,8 @@ fun HedvigTabRow(
     FlowRow(
       horizontalArrangement = Arrangement.Start,
       verticalArrangement = Arrangement.Center,
-      maxItemsInEachRow = maxItemsInTheRow,
-      maxLines = maxLines,
+      maxItemsInEachRow = MAX_ITEMS_IN_ROW,
+      maxLines = MAX_LINES,
       overflow = FlowRowOverflow.Visible,
       modifier = Modifier
         .clip(tabSize.rowShape)
@@ -177,8 +175,6 @@ private fun calculateIndicatorOffsetY(map: SnapshotStateMap<Int, Offset>, select
 object TabDefaults {
   internal val defaultSize: TabSize = Mini
   internal val defaultStyle: TabStyle = Default
-  internal const val maxItemsInTheRow = 3
-  internal const val maxLines = 1
 
   sealed class TabSize {
     @get:Composable
@@ -406,3 +402,6 @@ private fun TabIndicator(
       ),
   )
 }
+
+private const val MAX_ITEMS_IN_ROW = 3
+private const val MAX_LINES = 1
