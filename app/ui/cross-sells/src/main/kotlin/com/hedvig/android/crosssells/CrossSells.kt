@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -37,6 +38,8 @@ import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmal
 import com.hedvig.android.core.designsystem.material3.lightTypeContainer
 import com.hedvig.android.core.designsystem.material3.onLightTypeContainer
 import com.hedvig.android.core.designsystem.material3.squircleLarge
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.data.contract.android.CrossSell
 import com.hedvig.android.data.contract.android.iconRes
 import com.hedvig.android.placeholder.PlaceholderHighlight
@@ -46,45 +49,51 @@ import com.hedvig.android.placeholder.shimmer
 import hedvig.resources.R
 
 @Composable
-fun ColumnScope.CrossSellsSection(
+fun CrossSellsSection(
   showNotificationBadge: Boolean,
   crossSells: List<CrossSell>,
   onCrossSellClick: (String) -> Unit,
+  modifier: Modifier = Modifier,
 ) {
-  CrossSellsSubHeaderWithDivider(showNotificationBadge)
-  for ((index, crossSell) in crossSells.withIndex()) {
-    CrossSellItem(crossSell, onCrossSellClick, Modifier.padding(horizontal = 16.dp))
-    if (index != crossSells.lastIndex) {
-      Spacer(Modifier.height(16.dp))
+  Column(modifier) {
+    CrossSellsSubHeaderWithDivider(showNotificationBadge)
+    for ((index, crossSell) in crossSells.withIndex()) {
+      CrossSellItem(crossSell, onCrossSellClick, Modifier.padding(horizontal = 16.dp))
+      if (index != crossSells.lastIndex) {
+        Spacer(Modifier.height(16.dp))
+      }
     }
   }
 }
 
 @Composable
-fun ColumnScope.CrossSellItemPlaceholder() {
-  CrossSellsSubHeaderWithDivider(false)
-  CrossSellItem(
-    crossSellTitle = "HHHH",
-    crossSellSubtitle = "HHHHHHHH\nHHHHHHHHHHH",
-    storeUrl = "",
-    type = CrossSell.CrossSellType.HOME,
-    onCrossSellClick = {},
-    isLoading = true,
-    modifier = Modifier.padding(horizontal = 16.dp),
-  )
+fun CrossSellItemPlaceholder() {
+  Column {
+    CrossSellsSubHeaderWithDivider(false)
+    CrossSellItem(
+      crossSellTitle = "HHHH",
+      crossSellSubtitle = "HHHHHHHH\nHHHHHHHHHHH",
+      storeUrl = "",
+      type = CrossSell.CrossSellType.HOME,
+      onCrossSellClick = {},
+      isLoading = true,
+      modifier = Modifier.padding(horizontal = 16.dp),
+    )
+  }
 }
 
 @Composable
-private fun ColumnScope.CrossSellsSubHeaderWithDivider(showNotificationBadge: Boolean) {
-  Spacer(Modifier.height(32.dp))
-  NotificationSubheading(
-    text = stringResource(R.string.insurance_tab_cross_sells_title),
-    showNotification = showNotificationBadge,
-    modifier = Modifier.padding(horizontal = 16.dp),
-  )
-  Spacer(Modifier.height(16.dp))
-  HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-  Spacer(Modifier.height(16.dp))
+private fun CrossSellsSubHeaderWithDivider(showNotificationBadge: Boolean) {
+  Column {
+    NotificationSubheading(
+      text = stringResource(R.string.insurance_tab_cross_sells_title),
+      showNotification = showNotificationBadge,
+      modifier = Modifier.padding(horizontal = 16.dp),
+    )
+    Spacer(Modifier.height(16.dp))
+    HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+    Spacer(Modifier.height(16.dp))
+  }
 }
 
 @Composable
@@ -193,5 +202,19 @@ private fun NotificationSubheading(text: String, showNotification: Boolean, modi
       }
     }
     Text(text = text)
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewCrossSellsSection() {
+  HedvigTheme {
+    Surface(color = MaterialTheme.colorScheme.background) {
+      CrossSellsSection(
+        true,
+        List(2) { CrossSell("id", "title", "subtitle", "storeUrl", CrossSell.CrossSellType.HOME) },
+        {},
+      )
+    }
   }
 }
