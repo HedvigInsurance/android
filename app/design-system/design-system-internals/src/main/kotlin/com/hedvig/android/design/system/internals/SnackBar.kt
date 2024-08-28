@@ -39,12 +39,13 @@ fun InternalSnackBar(
   action: (() -> Unit)? = null,
   actionLabel: String? = null,
 ) {
-  val contentModifier = if (actionLabel != null)
+  val contentModifier = if (actionLabel != null) {
     Modifier.padding(paddingForContentWithAction)
-  else
+  } else {
     Modifier
-    .padding(paddingForContentWithoutAction)
-    .fillMaxWidth()
+      .padding(paddingForContentWithoutAction)
+      .fillMaxWidth()
+  }
   val contentHorizontalArrangement = if (actionLabel != null) Arrangement.Start else Arrangement.Center
   val snackbarHostState = remember { SnackbarHostState() }
   LaunchedEffect(showSnackbar, snackbarText) {
@@ -65,18 +66,20 @@ fun InternalSnackBar(
   SnackbarHost(snackbarHostState, modifier) { _ ->
     Snackbar(
       action =
-      if (actionLabel == null) null else {
-        {
-          ActionContent(
-            actionLabel,
-            textStyle,
-            modifier = Modifier
-              .clip(shape)
-              .clickable(enabled = true, onClick = action ?: showedSnackbar)
-              .padding(actionPadding),
-          )
-        }
-      },
+        if (actionLabel == null) {
+          null
+        } else {
+          {
+            ActionContent(
+              actionLabel,
+              textStyle,
+              modifier = Modifier
+                .clip(shape)
+                .clickable(enabled = true, onClick = action ?: showedSnackbar)
+                .padding(actionPadding),
+            )
+          }
+        },
       dismissAction = null,
       actionOnNewLine = false,
       shape = shape,
@@ -145,4 +148,3 @@ private val paddingForContentWithoutAction = PaddingValues(
   top = 16.dp,
   bottom = 16.dp,
 )
-

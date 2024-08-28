@@ -11,6 +11,7 @@ import com.hedvig.android.sample.design.showcase.freetext.FreeTextShowcase
 import com.hedvig.android.sample.design.showcase.highlight.HighlightShowcase
 import com.hedvig.android.sample.design.showcase.icons.ShowcaseIcons
 import com.hedvig.android.sample.design.showcase.notifications.NotificationsSnackbarShowcase
+import com.hedvig.android.sample.design.showcase.progress.ProgressBarShowcase
 import com.hedvig.android.sample.design.showcase.radio.ShowCaseRadioGroups
 import com.hedvig.android.sample.design.showcase.stepper.StepperShowcase
 import com.hedvig.android.sample.design.showcase.tabs.TabsShowcase
@@ -42,6 +43,8 @@ internal fun DesignShowcase(modifier: Modifier = Modifier) {
       FreeTextShowcase()
     } else if (showHighLight) {
       HighlightShowcase()
+    } else if (showProgressBar) {
+      ProgressBarShowcase()
     } else if (showSnacks) {
       NotificationsSnackbarShowcase()
     } else if (showTabs) {
@@ -61,5 +64,6 @@ private val showDialog = false
 private val showDatePicker = false
 private val showFreeTextOverlay = false
 private val showHighLight = false
+private val showProgressBar = false
 private val showSnacks = false
 private val showTabs = true
