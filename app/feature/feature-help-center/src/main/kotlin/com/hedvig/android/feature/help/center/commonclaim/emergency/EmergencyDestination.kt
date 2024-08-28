@@ -6,10 +6,17 @@ import androidx.compose.ui.Modifier
 import com.hedvig.android.ui.emergency.EmergencyScreen
 
 @Composable
-internal fun EmergencyDestination(emergencyNumber: String?, navigateUp: () -> Unit) {
+internal fun EmergencyDestination(
+  emergencyNumber: String?,
+  emergencyUrl: String?,
+  navigateUp: () -> Unit,
+  openUrl: (String) -> Unit,
+) {
   EmergencyScreen(
     emergencyNumber = emergencyNumber,
     navigateUp = navigateUp,
     modifier = Modifier.fillMaxSize(),
+    openUrl = openUrl,
+    emergencyUrl = emergencyUrl,
   )
 }

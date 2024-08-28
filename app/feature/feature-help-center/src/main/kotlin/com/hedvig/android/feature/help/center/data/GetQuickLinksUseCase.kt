@@ -92,6 +92,7 @@ internal class GetQuickLinksUseCase(
           QuickAction.StandaloneQuickLink(
             quickLinkDestination = QuickLinkDestination.InnerHelpCenterDestination.QuickLinkSickAbroad(
               emergencyNumber = memberActionOptions.sickAbroadAction.partners[0].phoneNumber,
+              emergencyUrl = memberActionOptions.sickAbroadAction.partners[0].url,
             ),
             titleRes = R.string.HC_QUICK_ACTIONS_SICK_ABROAD_TITLE,
             hintTextRes = R.string.HC_QUICK_ACTIONS_SICK_ABROAD_SUBTITLE,
@@ -161,6 +162,7 @@ sealed interface QuickLinkDestination {
   sealed interface InnerHelpCenterDestination : QuickLinkDestination {
     data class QuickLinkSickAbroad(
       val emergencyNumber: String?,
+      val emergencyUrl: String?,
     ) : InnerHelpCenterDestination
 
     data class FirstVet(

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -44,7 +45,13 @@ import com.hedvig.android.logger.logcat
 import hedvig.resources.R
 
 @Composable
-fun EmergencyScreen(emergencyNumber: String?, navigateUp: () -> Unit, modifier: Modifier = Modifier) {
+fun EmergencyScreen(
+  emergencyNumber: String?,
+  emergencyUrl: String?,
+  openUrl: (String) -> Unit,
+  navigateUp: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
   HedvigScaffold(
     topAppBarText = stringResource(id = R.string.HC_QUICK_ACTIONS_SICK_ABROAD_TITLE),
     navigateUp = navigateUp,
@@ -91,13 +98,30 @@ fun EmergencyScreen(emergencyNumber: String?, navigateUp: () -> Unit, modifier: 
             ),
             modifier = Modifier.fillMaxWidth(),
           )
-          if (emergencyNumber != null) {
+          if (emergencyUrl != null) {
             Spacer(Modifier.height(24.dp))
+            HedvigContainedSmallButton(
+              text = stringResource(
+                R.string.SUBMIT_CLAIM_GLOBAL_ASSISTANCE_URL_LABEL,
+                emergencyUrl,
+              ),
+              onClick = {
+                openUrl(emergencyUrl)
+              },
+              modifier = Modifier.fillMaxWidth(),
+            )
+          }
+          if (emergencyNumber != null) {
+            Spacer(Modifier.height(8.dp))
             val context = LocalContext.current
             HedvigContainedSmallButton(
               text = stringResource(
                 R.string.SUBMIT_CLAIM_GLOBAL_ASSISTANCE_CALL_LABEL,
                 emergencyNumber,
+              ),
+              colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.alwaysBlackContainer,
+                contentColor = MaterialTheme.colorScheme.onAlwaysBlackContainer,
               ),
               onClick = {
                 try {
@@ -189,7 +213,9 @@ private fun PreviewEmergencyScreen() {
     Surface(color = MaterialTheme.colorScheme.background) {
       EmergencyScreen(
         emergencyNumber = "123456",
+        emergencyUrl = "url",
         navigateUp = {},
+        openUrl = {},
       )
     }
   }

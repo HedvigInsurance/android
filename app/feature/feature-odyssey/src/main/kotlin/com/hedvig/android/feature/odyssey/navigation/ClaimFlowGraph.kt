@@ -308,6 +308,7 @@ fun NavGraphBuilder.claimFlowGraph(
       DeflectEmergencyDestination(
         deflectEmergency = this,
         navigateUp = navigator::navigateUp,
+        openUrl = openUrl,
       )
     }
     navdestination<ClaimFlowDestination.DeflectPests>(
