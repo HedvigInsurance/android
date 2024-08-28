@@ -1,5 +1,6 @@
 package com.hedvig.android.design.system.hedvig
 
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -70,19 +71,27 @@ fun HedvigTabRow(
   val currentOffsetMap = remember { mutableStateMapOf<Int, Offset>() }
   val indicatorOffsetX: Dp by animateDpAsState(
     targetValue = calculateIndicatorOffsetX(currentOffsetMap, selectedTabIndex, density),
-    animationSpec = tween(easing = LinearEasing),
+    animationSpec = tween(
+      durationMillis = 600,
+      easing = FastOutSlowInEasing),
   )
   val indicatorOffsetY: Dp by animateDpAsState(
     targetValue = calculateIndicatorOffsetY(currentOffsetMap, selectedTabIndex, density),
-    animationSpec = tween(easing = LinearEasing),
+    animationSpec = tween(
+      durationMillis = 600,
+      easing = FastOutSlowInEasing),
   )
   val indicatorWidth: Dp by animateDpAsState(
     targetValue = calculateIndicatorWidth(currentWidthMap, selectedTabIndex, density),
-    animationSpec = tween(easing = LinearEasing),
+    animationSpec = tween(
+      durationMillis = 600,
+      easing = FastOutSlowInEasing),
   )
   val indicatorHeight: Dp by animateDpAsState(
     targetValue = calculateIndicatorHeight(currentHeightMap, selectedTabIndex, density),
-    animationSpec = tween(easing = LinearEasing),
+    animationSpec = tween(
+      durationMillis = 600,
+      easing = FastOutSlowInEasing),
   )
   Box(
     modifier = modifier
