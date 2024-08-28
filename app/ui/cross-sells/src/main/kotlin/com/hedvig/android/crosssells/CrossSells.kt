@@ -91,8 +91,6 @@ private fun CrossSellsSubHeaderWithDivider(showNotificationBadge: Boolean) {
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(16.dp))
-    HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-    Spacer(Modifier.height(16.dp))
   }
 }
 
