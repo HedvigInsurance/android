@@ -52,8 +52,11 @@ import com.hedvig.android.logger.logcat
 
 @Composable
 fun PerilList(perilItems: List<PerilData>, size: PerilSize, modifier: Modifier = Modifier) {
-  Column(modifier) {
-    for ((index, perilItem) in perilItems.withIndex()) {
+  Column(
+    modifier,
+    verticalArrangement = Arrangement.spacedBy(4.dp),
+  ) {
+    for (perilItem in perilItems) {
       var isExpanded by rememberSaveable { mutableStateOf(false) }
       ExpandablePerilCard(
         isExpanded = isExpanded,
@@ -71,9 +74,6 @@ fun PerilList(perilItems: List<PerilData>, size: PerilSize, modifier: Modifier =
         size = size,
         isEnabled = perilItem.isEnabled,
       )
-      if (index != perilItems.lastIndex) {
-        Spacer(Modifier.height(4.dp))
-      }
     }
   }
 }
@@ -113,6 +113,7 @@ private fun ExpandablePerilCard(
       Column(
         Modifier.padding(size.extendedPadding),
       ) {
+        Spacer(Modifier.height(size.verticalSpaceBetween))
         Spacer(Modifier.height(12.dp))
         HedvigText(
           text = description,
@@ -145,15 +146,15 @@ private fun ExpandablePerilCard(
       }
     },
     modifier = modifier,
-    size = size,
+    shrunkContentPadding = size.padding,
   )
 }
 
 @Composable
-fun ExpandablePlusCard(
+internal fun ExpandablePlusCard(
   isExpanded: Boolean,
   onClick: () -> Unit,
-  size: PerilSize,
+  shrunkContentPadding: PaddingValues,
   content: @Composable RowScope.() -> Unit,
   expandedContent: @Composable () -> Unit,
   modifier: Modifier = Modifier,
@@ -171,7 +172,7 @@ fun ExpandablePlusCard(
       ),
   ) {
     Column(
-      modifier = Modifier.padding(size.padding),
+      modifier = Modifier.padding(shrunkContentPadding),
     ) {
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
@@ -219,7 +220,6 @@ fun ExpandablePlusCard(
         exit = fadeOut() + shrinkVertically(clip = false, shrinkTowards = Alignment.Top),
       ) {
         Column {
-          Spacer(Modifier.height(size.verticalSpaceBetween))
           expandedContent()
         }
       }
