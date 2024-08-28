@@ -52,7 +52,5 @@ private val previewPerils: List<PerilData> = List(4) { index ->
       "ption description description description description$index",
     covered = listOf("Covered#$index", "Also covered#$index"),
     colorCode = "#FFD0ECFB",
-    // colorCode = null
-    // colorCode = "#FFD0ECFBsfawefawesfaw"
   )
 }
