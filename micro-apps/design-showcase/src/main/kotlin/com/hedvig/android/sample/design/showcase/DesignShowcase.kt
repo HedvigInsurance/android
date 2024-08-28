@@ -3,6 +3,7 @@ package com.hedvig.android.sample.design.showcase
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.hedvig.android.sample.design.showcase.accrodion.AccordionShowCase
 import com.hedvig.android.sample.design.showcase.bottomSheet.ShowcaseBottomSheet
 import com.hedvig.android.sample.design.showcase.button.ShowcaseButton
 import com.hedvig.android.sample.design.showcase.datepicker.DatePickerShowcase
@@ -46,6 +47,8 @@ internal fun DesignShowcase(modifier: Modifier = Modifier) {
       NotificationsSnackbarShowcase()
     } else if (showPerils) {
       PerilsShowcase()
+    } else if (showAccordion) {
+      AccordionShowCase()
     }
   }
 }
@@ -62,4 +65,5 @@ private val showDatePicker = false
 private val showFreeTextOverlay = false
 private val showHighLight = false
 private val showSnacks = false
-private val showPerils = true
+private val showPerils = false
+private val showAccordion = true

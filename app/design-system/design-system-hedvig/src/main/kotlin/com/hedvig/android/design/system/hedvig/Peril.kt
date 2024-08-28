@@ -113,6 +113,7 @@ private fun ExpandablePerilCard(
       Column(
         Modifier.padding(size.extendedPadding),
       ) {
+        Spacer(Modifier.height(size.verticalSpaceBetween))
         Spacer(Modifier.height(12.dp))
         HedvigText(
           text = description,
@@ -145,15 +146,15 @@ private fun ExpandablePerilCard(
       }
     },
     modifier = modifier,
-    size = size,
+    shrunkContentPadding = size.padding,
   )
 }
 
 @Composable
-fun ExpandablePlusCard(
+internal fun ExpandablePlusCard(
   isExpanded: Boolean,
   onClick: () -> Unit,
-  size: PerilSize,
+  shrunkContentPadding: PaddingValues,
   content: @Composable RowScope.() -> Unit,
   expandedContent: @Composable () -> Unit,
   modifier: Modifier = Modifier,
@@ -171,7 +172,7 @@ fun ExpandablePlusCard(
       ),
   ) {
     Column(
-      modifier = Modifier.padding(size.padding),
+      modifier = Modifier.padding(shrunkContentPadding),
     ) {
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
@@ -219,7 +220,6 @@ fun ExpandablePlusCard(
         exit = fadeOut() + shrinkVertically(clip = false, shrinkTowards = Alignment.Top),
       ) {
         Column {
-          Spacer(Modifier.height(size.verticalSpaceBetween))
           expandedContent()
         }
       }
