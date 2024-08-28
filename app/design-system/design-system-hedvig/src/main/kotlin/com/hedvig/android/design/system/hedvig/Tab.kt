@@ -354,7 +354,7 @@ private fun TabItem(
     modifier = modifier
       .clickable(
         interactionSource = remember { MutableInteractionSource() },
-        indication = null, // as the sliding indicator is enough, I think
+        indication = null,
       ) {
         onClick()
       }
