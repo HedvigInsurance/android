@@ -53,7 +53,6 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.card.InsuranceCard
 import com.hedvig.android.core.ui.card.InsuranceCardPlaceholder
-import com.hedvig.android.core.ui.debugBorder
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.crosssells.CrossSellItemPlaceholder
 import com.hedvig.android.crosssells.CrossSellsSection
@@ -61,6 +60,10 @@ import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.contract.android.CrossSell
 import com.hedvig.android.data.productvariant.ProductVariant
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceContract
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceScreenEvent
@@ -219,6 +222,12 @@ private fun InsuranceScreenContent(
         onInsuranceCardClick = onInsuranceCardClick,
         contracts = uiState.contracts,
       )
+      if (uiState.shouldSuggestMovingFlow) {
+        MovingFlowSuggestionSection(
+          {},
+          Modifier.padding(horizontal = 16.dp),
+        )
+      }
       if (uiState.crossSells.isNotEmpty()) {
         CrossSellsSection(
           showNotificationBadge = showNotificationBadge,
@@ -268,7 +277,7 @@ private fun ContractsSection(
 }
 
 @Composable
-fun InsuranceCard(
+private fun InsuranceCard(
   contract: InsuranceContract,
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
@@ -305,6 +314,24 @@ private fun TerminatedContractsButton(text: String, onClick: () -> Unit, modifie
     ) {
       Text(text)
     }
+  }
+}
+
+@Composable
+private fun MovingFlowSuggestionSection(onNavigateToMovingFlow: () -> Unit, modifier: Modifier = Modifier) {
+  Column(modifier, Arrangement.spacedBy(8.dp)) {
+    HedvigText(
+      stringResource(R.string.insurances_tab_moving_flow_section_title),
+      style = com.hedvig.android.design.system.hedvig.HedvigTheme.typography.headlineSmall,
+    )
+    HedvigNotificationCard(
+      message = stringResource(R.string.insurances_tab_moving_flow_info_title),
+      priority = NotificationPriority.Campaign,
+      style = InfoCardStyle.Button(
+        stringResource(R.string.insurances_tab_moving_flow_info_button_title),
+        onNavigateToMovingFlow,
+      ),
+    )
   }
 }
 
