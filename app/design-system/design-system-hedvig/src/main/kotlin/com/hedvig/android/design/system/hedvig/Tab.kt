@@ -1,7 +1,6 @@
 package com.hedvig.android.design.system.hedvig
 
 import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -73,25 +72,29 @@ fun HedvigTabRow(
     targetValue = calculateIndicatorOffsetX(currentOffsetMap, selectedTabIndex, density),
     animationSpec = tween(
       durationMillis = 600,
-      easing = FastOutSlowInEasing),
+      easing = FastOutSlowInEasing,
+    ),
   )
   val indicatorOffsetY: Dp by animateDpAsState(
     targetValue = calculateIndicatorOffsetY(currentOffsetMap, selectedTabIndex, density),
     animationSpec = tween(
       durationMillis = 600,
-      easing = FastOutSlowInEasing),
+      easing = FastOutSlowInEasing,
+    ),
   )
   val indicatorWidth: Dp by animateDpAsState(
     targetValue = calculateIndicatorWidth(currentWidthMap, selectedTabIndex, density),
     animationSpec = tween(
       durationMillis = 600,
-      easing = FastOutSlowInEasing),
+      easing = FastOutSlowInEasing,
+    ),
   )
   val indicatorHeight: Dp by animateDpAsState(
     targetValue = calculateIndicatorHeight(currentHeightMap, selectedTabIndex, density),
     animationSpec = tween(
       durationMillis = 600,
-      easing = FastOutSlowInEasing),
+      easing = FastOutSlowInEasing,
+    ),
   )
   Box(
     modifier = modifier
@@ -147,13 +150,13 @@ fun HedvigTabRow(
 
 private fun calculateIndicatorWidth(map: SnapshotStateMap<Int, Int>, selectedTabIndex: Int, density: Density): Dp {
   return with(density) {
-    map[selectedTabIndex]?.toDp() ?: 5.dp
+    map[selectedTabIndex]?.toDp() ?: 0.dp
   }
 }
 
 private fun calculateIndicatorHeight(map: SnapshotStateMap<Int, Int>, selectedTabIndex: Int, density: Density): Dp {
   return with(density) {
-    map[selectedTabIndex]?.toDp() ?: 5.dp
+    map[selectedTabIndex]?.toDp() ?: 0.dp
   }
 }
 
