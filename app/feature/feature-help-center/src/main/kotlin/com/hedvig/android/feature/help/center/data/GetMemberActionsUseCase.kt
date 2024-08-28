@@ -4,8 +4,8 @@ import arrow.core.Either
 import arrow.core.raise.either
 import arrow.fx.coroutines.parZip
 import com.apollographql.apollo.ApolloClient
+import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
@@ -29,8 +29,10 @@ internal class GetMemberActionsUseCaseImpl(
         { featureManager.isFeatureEnabled(Feature.MOVING_FLOW).first() },
         { featureManager.isFeatureEnabled(Feature.PAYMENT_SCREEN).first() },
         {
-          apolloClient.query(MemberActionsQuery()).safeExecute().toEither(::ErrorMessage)
-            .onLeft { logcat { "Cannot load memberActions" } }
+          apolloClient
+            .query(MemberActionsQuery())
+            .safeExecute(::ErrorMessage)
+            .onLeft { logcat { "Cannot load memberActions: $it" } }
             .bind().currentMember.memberActions
         },
       ) { isCoInsuredFeatureOn, isMovingFeatureOn, isConnectPaymentFeatureOn, memberActions ->

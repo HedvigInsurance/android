@@ -115,7 +115,6 @@ import com.hedvig.android.feature.chat.cbm.model.Sender.MEMBER
 import com.hedvig.android.feature.chat.ui.ChatBanner
 import com.hedvig.android.feature.chat.ui.ChatInput
 import com.hedvig.android.feature.chat.ui.TextWithClickableUrls
-import com.hedvig.android.feature.chat.ui.chatScrollBehavior
 import com.hedvig.android.placeholder.PlaceholderHighlight
 import com.hedvig.android.placeholder.fade
 import com.hedvig.android.placeholder.placeholder
@@ -760,7 +759,7 @@ private fun PreviewChatLoadedScreen() {
             ),
             lazyListState = rememberLazyListState(),
             imageLoader = rememberPreviewImageLoader(),
-            topAppBarScrollBehavior = TopAppBarDefaults.chatScrollBehavior(),
+            topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
             openUrl = {},
             onBannerLinkClicked = {},
             onRetrySendChatMessage = {},

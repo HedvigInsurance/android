@@ -6,8 +6,8 @@ import arrow.core.raise.either
 import arrow.core.raise.ensureNotNull
 import arrow.core.toNonEmptyListOrNull
 import com.apollographql.apollo.ApolloClient
+import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
@@ -29,8 +29,7 @@ internal class GetNeedsCoInsuredInfoRemindersUseCaseImpl(
       }
 
       val contracts = apolloClient.query(NeedsCoInsuredInfoReminderQuery())
-        .safeExecute()
-        .toEither(::ErrorMessage)
+        .safeExecute(::ErrorMessage)
         .mapLeft(CoInsuredInfoReminderError::NetworkError)
         .bind()
         .currentMember

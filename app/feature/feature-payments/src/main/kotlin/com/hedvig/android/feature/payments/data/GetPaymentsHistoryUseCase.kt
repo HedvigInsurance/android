@@ -5,8 +5,8 @@ import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.fetchPolicy
+import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import octopus.ShortPaymentHistoryQuery
 
@@ -20,8 +20,7 @@ internal class GetPaymentsHistoryUseCaseImpl(
   override suspend fun invoke(): Either<ErrorMessage, List<PaymentHistoryItem>> = either {
     val result = apolloClient.query(ShortPaymentHistoryQuery())
       .fetchPolicy(FetchPolicy.NetworkFirst)
-      .safeExecute()
-      .toEither(::ErrorMessage)
+      .safeExecute(::ErrorMessage)
       .bind()
     val pastCharges = result.currentMember.pastCharges.map {
       it.toPaymentHistoryItem()

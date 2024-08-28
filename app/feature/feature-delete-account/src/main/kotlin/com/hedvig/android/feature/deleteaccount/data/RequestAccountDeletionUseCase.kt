@@ -5,7 +5,6 @@ import arrow.core.raise.catch
 import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.apollo.toEither
 import com.hedvig.android.auth.MemberIdService
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
@@ -28,18 +27,17 @@ internal class RequestAccountDeletionUseCase(
         raise(RequestAccountError.NoMemberIdFound)
       }
       val userErrorMessage = apolloClient.mutation(MemberDeletionRequestMutation())
-        .safeExecute()
-        .toEither { message, throwable ->
-          logcat(LogPriority.WARN, throwable) {
-            "RequestAccountDeletionUseCase failed to request account deletion. Message:$message."
+        .safeExecute {
+          logcat(LogPriority.WARN, it.throwable) {
+            "RequestAccountDeletionUseCase failed to request account deletion. Message:$it."
           }
-          RequestAccountError.NetworkError(message, throwable)
+          RequestAccountError.NetworkError
         }
         .bind()
         .memberDeletionRequest
         ?.message
       if (userErrorMessage != null) {
-        raise(RequestAccountError.NetworkError(userErrorMessage, null))
+        raise(RequestAccountError.NetworkError)
       }
       catch({ deleteAccountRequestStorage.storeTerminationRequest(memberId) }) {
         raise(RequestAccountError.FailedToPersistDeletionRequest)
@@ -50,7 +48,7 @@ internal class RequestAccountDeletionUseCase(
 }
 
 internal sealed interface RequestAccountError {
-  data class NetworkError(val message: String?, val throwable: Throwable?) : RequestAccountError
+  data object NetworkError : RequestAccountError
 
   data object FailedToPersistDeletionRequest : RequestAccountError
 

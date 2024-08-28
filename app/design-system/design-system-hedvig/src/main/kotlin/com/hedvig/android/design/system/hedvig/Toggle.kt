@@ -642,7 +642,8 @@ private fun TogglePreview() {
         HedvigToggle(
           turnedOn = enabled,
           onClick = { enabled = !enabled },
-          labelText = "LargeLarge optionLarge optionLarge optionLarge optionLarge optionLarge optionLarge optionLarge optionLarge optionLarge optionLarge optionLarge optionLarge option",
+          labelText = "LargeLarge onLarge optionLarge optionLarge optionLarge " +
+            "optionLarge optionLarge optionLarge option",
           toggleStyle = Default(ToggleDefaults.ToggleDefaultStyleSize.Large),
         )
         Spacer(Modifier.height(8.dp))

@@ -15,9 +15,10 @@ import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.doNotStore
 import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.benasher44.uuid.Uuid
+import com.hedvig.android.apollo.ApolloOperationError
+import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.safeFlow
-import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.fileupload.FileService
 import com.hedvig.android.core.retrofit.toErrorMessage
@@ -61,7 +62,7 @@ import okhttp3.MediaType.Companion.toMediaType
 internal interface CbmChatRepository {
   suspend fun createConversation(conversationId: Uuid): Either<ErrorMessage, Info>
 
-  fun getConversationInfo(conversationId: Uuid): Flow<Either<ErrorMessage, ConversationInfo>>
+  fun getConversationInfo(conversationId: Uuid): Flow<Either<ApolloOperationError, ConversationInfo>>
 
   fun bannerText(conversationId: Uuid): Flow<BannerText?>
 
@@ -92,19 +93,18 @@ internal class CbmChatRepositoryImpl(
     return either {
       apolloClient
         .mutation(ConversationStartMutation(conversationId.toString()))
-        .safeExecute()
-        .toEither(::ErrorMessage)
+        .safeExecute(::ErrorMessage)
         .bind()
         .conversationStart
         .toConversationInfo()
     }
   }
 
-  override fun getConversationInfo(conversationId: Uuid): Flow<Either<ErrorMessage, ConversationInfo>> {
+  override fun getConversationInfo(conversationId: Uuid): Flow<Either<ApolloOperationError, ConversationInfo>> {
     return apolloClient
       .query(ConversationInfoQuery(conversationId.toString()))
       .fetchPolicy(FetchPolicy.CacheAndNetwork)
-      .safeFlow(::ErrorMessage)
+      .safeFlow()
       .map { response ->
         response.map {
           it.conversation.toConversationInfo()
@@ -128,8 +128,7 @@ internal class CbmChatRepositoryImpl(
       apolloClient
         .query(ConversationStatusMessageQuery(conversationId.toString()))
         .fetchPolicy(FetchPolicy.CacheOnly)
-        .safeExecute()
-        .toEither(::ErrorMessage)
+        .safeExecute(::ErrorMessage)
         .onRight {
           emit(it.toBannerText())
         }
@@ -137,8 +136,7 @@ internal class CbmChatRepositoryImpl(
         val result = apolloClient
           .query(ConversationStatusMessageQuery(conversationId.toString()))
           .fetchPolicy(FetchPolicy.NetworkOnly)
-          .safeExecute()
-          .toEither(::ErrorMessage)
+          .safeExecute(::ErrorMessage)
         when (result) {
           is Left -> {
             emit(null)
@@ -254,8 +252,7 @@ internal class CbmChatRepositoryImpl(
     return either {
       val response = apolloClient
         .mutation(ConversationSendMessageMutation(conversationId.toString(), input.text, input.fileUploadToken))
-        .safeExecute()
-        .toEither(::ErrorMessage)
+        .safeExecute(::ErrorMessage)
         .mapLeft { it.toString() }
         .bind()
       val sentMessage = response.conversationSendMessage.message
@@ -289,9 +286,8 @@ internal class CbmChatRepositoryImpl(
         ).doNotStore(true)
         .fetchPolicy(FetchPolicy.NetworkOnly)
         .safeExecute()
-        .toEither()
         .mapLeft {
-          "${it.message} + ${it.throwable?.message}"
+          "$it + ${it.throwable?.message}"
         }.bind()
       val messagePage = data.conversation?.messagePage
       ensureNotNull(messagePage) {

@@ -80,6 +80,10 @@ internal class GetHomeUseCaseTest {
           NumberOfChatMessagesQuery(),
           NumberOfChatMessagesQuery.Data(OctopusFakeResolver),
         )
+        apolloClient.registerTestResponse(
+          CbmNumberOfChatMessagesQuery(),
+          CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver),
+        )
       },
       testGetMemberRemindersUseCase,
       FakeFeatureManager2(true),
@@ -123,6 +127,10 @@ internal class GetHomeUseCaseTest {
           NumberOfChatMessagesQuery(),
           NumberOfChatMessagesQuery.Data(OctopusFakeResolver),
         )
+        apolloClient.registerTestResponse(
+          CbmNumberOfChatMessagesQuery(),
+          CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver),
+        )
       },
       testGetMemberRemindersUseCase,
       FakeFeatureManager2(true),
@@ -165,6 +173,10 @@ internal class GetHomeUseCaseTest {
       NumberOfChatMessagesQuery(),
       NumberOfChatMessagesQuery.Data(OctopusFakeResolver),
     )
+    apolloClient.registerTestResponse(
+      CbmNumberOfChatMessagesQuery(),
+      CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver),
+    )
     val result = getHomeDataUseCase.invoke(true).first()
 
     assertThat(result)
@@ -193,6 +205,10 @@ internal class GetHomeUseCaseTest {
     apolloClient.registerTestResponse(
       NumberOfChatMessagesQuery(),
       NumberOfChatMessagesQuery.Data(OctopusFakeResolver),
+    )
+    apolloClient.registerTestResponse(
+      CbmNumberOfChatMessagesQuery(),
+      CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver),
     )
     val result = getHomeDataUseCase.invoke(true).first()
 
@@ -226,6 +242,10 @@ internal class GetHomeUseCaseTest {
       NumberOfChatMessagesQuery(),
       NumberOfChatMessagesQuery.Data(OctopusFakeResolver),
     )
+    apolloClient.registerTestResponse(
+      CbmNumberOfChatMessagesQuery(),
+      CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver),
+    )
     val result = getHomeDataUseCase.invoke(true).first()
 
     val claimStatusCardsUiState: Assert<NonEmptyList<ClaimStatusCardUiState>> = assertThat(result)
@@ -257,6 +277,10 @@ internal class GetHomeUseCaseTest {
       NumberOfChatMessagesQuery(),
       NumberOfChatMessagesQuery.Data(OctopusFakeResolver),
     )
+    apolloClient.registerTestResponse(
+      CbmNumberOfChatMessagesQuery(),
+      CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver),
+    )
     val result = getHomeDataUseCase.invoke(true).first()
 
     assertThat(result)
@@ -287,6 +311,10 @@ internal class GetHomeUseCaseTest {
     apolloClient.registerTestResponse(
       NumberOfChatMessagesQuery(),
       NumberOfChatMessagesQuery.Data(OctopusFakeResolver),
+    )
+    apolloClient.registerTestResponse(
+      CbmNumberOfChatMessagesQuery(),
+      CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver),
     )
     val result = getHomeDataUseCase.invoke(true).first()
 
@@ -329,6 +357,10 @@ internal class GetHomeUseCaseTest {
       NumberOfChatMessagesQuery(),
       NumberOfChatMessagesQuery.Data(OctopusFakeResolver),
     )
+    apolloClient.registerTestResponse(
+      CbmNumberOfChatMessagesQuery(),
+      CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver),
+    )
     val result = getHomeDataUseCase.invoke(true).first()
 
     assertThat(result)
@@ -369,6 +401,10 @@ internal class GetHomeUseCaseTest {
     apolloClient.registerTestResponse(
       NumberOfChatMessagesQuery(),
       NumberOfChatMessagesQuery.Data(OctopusFakeResolver),
+    )
+    apolloClient.registerTestResponse(
+      CbmNumberOfChatMessagesQuery(),
+      CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver),
     )
     val result = getHomeDataUseCase.invoke(true).first()
 

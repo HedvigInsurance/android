@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -169,12 +170,14 @@ private fun ConversationCard(
       HorizontalItemsWithMaximumSpaceTaken(
         {
           Text(
-            text = when (val header = conversation.header) {
+            text = when (conversation.header) {
               Legacy -> stringResource(R.string.CHAT_CONVERSATION_HISTORY_TITLE)
               is ClaimConversation -> stringResource(R.string.home_claim_card_pill_claim)
               ServiceConversation -> stringResource(R.string.CHAT_CONVERSATION_QUESTION_TITLE)
             },
             style = MaterialTheme.typography.bodyLarge,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
             modifier = Modifier.wrapContentSize(Alignment.TopStart),
           )
         },
@@ -229,7 +232,7 @@ private fun ConversationCard(
         val message = when (latestMessage) {
           is Text -> latestMessage.text
           is File -> stringResource(R.string.CHAT_SENT_A_FILE)
-          is Unknown -> "Sent a message" // todo copy
+          is Unknown -> stringResource(R.string.CHAT_SENT_A_MESSAGE)
         }
         Text(
           text = "$sender: $message",
@@ -241,7 +244,7 @@ private fun ConversationCard(
             )
           },
           overflow = TextOverflow.Ellipsis,
-          maxLines = 2,
+          maxLines = 1,
         )
       }
     }
@@ -249,13 +252,23 @@ private fun ConversationCard(
 }
 
 @HedvigPreview
+@PreviewFontScale
 @Composable
 private fun InboxSuccessScreenPreview() {
   com.hedvig.android.core.designsystem.theme.HedvigTheme {
     com.hedvig.android.design.system.hedvig.HedvigTheme {
       Surface(color = MaterialTheme.colorScheme.background) {
         InboxScreen(
-          InboxUiState.Success(listOf(mockInboxConversation1, mockInboxConversation2, mockInboxConversationLegacy)),
+          InboxUiState.Success(
+            listOf(
+              mockInboxConversation1,
+              mockInboxConversation2,
+              mockInboxConversation3,
+              mockInboxConversation2.copy(conversationId = "100"),
+              mockInboxConversation3.copy(conversationId = "101"),
+              mockInboxConversationLegacy,
+            ),
+          ),
           {},
           {},
           {},
@@ -266,12 +279,13 @@ private fun InboxSuccessScreenPreview() {
 }
 
 @HedvigPreview
+@PreviewFontScale
 @Composable
 private fun ConversationCardPreview(
   @PreviewParameter(TripleBooleanCollectionPreviewParameterProvider::class) cases: TripleCase,
 ) {
   com.hedvig.android.core.designsystem.theme.HedvigTheme {
-    com.hedvig.android.core.designsystem.theme.HedvigTheme {
+    com.hedvig.android.design.system.hedvig.HedvigTheme {
       Surface(color = MaterialTheme.colorScheme.background) {
         ConversationCard(
           conversation = when (cases) {
@@ -290,7 +304,7 @@ private val mockInboxConversation1 = InboxConversation(
   conversationId = "1",
   header = Header.ClaimConversation("claimType"),
   latestMessage = InboxConversation.LatestMessage.Text(
-    "Please tell as more about how the phone broke.",
+    "Please tell us more about how the phone broke.",
     Sender.HEDVIG,
     Clock.System.now(),
   ),
@@ -306,10 +320,18 @@ private val mockInboxConversation2 = InboxConversation(
   createdAt = Clock.System.now(),
 )
 
-private val mockInboxConversationLegacy = InboxConversation(
+private val mockInboxConversation3 = InboxConversation(
   conversationId = "3",
-  header = Header.Legacy,
+  header = Header.ServiceConversation,
   latestMessage = InboxConversation.LatestMessage.File(Sender.MEMBER, Clock.System.now()),
   hasNewMessages = false,
+  createdAt = Clock.System.now(),
+)
+
+private val mockInboxConversationLegacy = InboxConversation(
+  conversationId = "999",
+  header = Header.Legacy,
+  latestMessage = InboxConversation.LatestMessage.File(Sender.MEMBER, Clock.System.now()),
+  hasNewMessages = true,
   createdAt = Clock.System.now(),
 )
