@@ -14,32 +14,35 @@ internal object PerilCommonTokens {
   val DefaultIconColor = ColorSchemeKeyTokens.FillPrimary
   val DisabledTextColor = ColorSchemeKeyTokens.TextDisabled
   val DisabledIconColor = ColorSchemeKeyTokens.FillDisabled
+  val PlusIconSize = 24.dp
 }
 
 internal object PerilSmallTokens {
+  val CircleSize = 16.dp
   val PaddingTop = 15.dp
   val PaddingBottom = 17.dp
   val PaddingHorizontal = 16.dp
   val ExpandedPaddingTop = 0.dp
   val ExpandedPaddingBottom = 15.dp
-  val ExpandedPaddingStart = 28.dp
+  val LabelLineSpacerWidth = 8.dp
+  val ExpandedPaddingStart = CircleSize + LabelLineSpacerWidth
   val ExpandedPaddingEnd = 8.dp
   val LabelTextFont = TypographyKeyTokens.BodySmall
   val DescriptionTextFont = TypographyKeyTokens.Label
   val VerticalSpaceBetween = 17.dp
-  val CircleSize = 16.dp
 }
 
 internal object PerilLargeTokens {
+  val CircleSize = 24.dp
   val PaddingTop = 16.dp
   val PaddingBottom = 18.dp
   val PaddingHorizontal = 16.dp
   val ExpandedPaddingTop = 0.dp
   val ExpandedPaddingBottom = 14.dp
-  val ExpandedPaddingStart = 32.dp
+  val LabelLineSpacerWidth = 8.dp
+  val ExpandedPaddingStart = CircleSize + LabelLineSpacerWidth
   val ExpandedPaddingEnd = 8.dp
   val LabelTextFont = TypographyKeyTokens.BodyMedium
   val DescriptionTextFont = TypographyKeyTokens.Label
   val VerticalSpaceBetween = 18.dp
-  val CircleSize = 24.dp
 }

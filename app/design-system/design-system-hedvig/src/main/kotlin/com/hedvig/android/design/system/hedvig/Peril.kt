@@ -44,6 +44,7 @@ import com.hedvig.android.design.system.hedvig.icon.Minus
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.TextPrimary
 import com.hedvig.android.design.system.hedvig.tokens.PerilCommonTokens
 import com.hedvig.android.design.system.hedvig.tokens.PerilCommonTokens.IconAnimationSpec
+import com.hedvig.android.design.system.hedvig.tokens.PerilCommonTokens.PlusIconSize
 import com.hedvig.android.design.system.hedvig.tokens.PerilLargeTokens
 import com.hedvig.android.design.system.hedvig.tokens.PerilSmallTokens
 import com.hedvig.android.logger.LogPriority
@@ -59,7 +60,11 @@ fun PerilList(perilItems: List<PerilData>, size: PerilSize, modifier: Modifier =
         onClick = {
           isExpanded = !isExpanded
         },
-        color = if (perilItem.isEnabled) parseColorString(perilItem.colorCode) else perilColors.disabledIconColor,
+        color = if (perilItem.isEnabled) {
+          parseColorString(perilItem.colorCode)
+        } else {
+          perilColors.disabledIconColor
+        },
         title = perilItem.title,
         description = perilItem.description,
         expandedDescriptionList = perilItem.covered,
@@ -91,12 +96,12 @@ private fun ExpandablePerilCard(
     content = {
       Spacer(
         Modifier
-          .size(size.circleSize)
           .wrapContentSize(Alignment.Center)
-          .size(size.circleSize) // todo: look here again
+          .size(size.circleSize)
+          .padding(1.dp)
           .background(color, CircleShape),
       )
-      Spacer(Modifier.width(8.dp))
+      Spacer(Modifier.width(size.labelLineSpacerWidth))
       HedvigText(
         text = title,
         style = size.labelTextStyle,
@@ -188,7 +193,7 @@ fun ExpandablePlusCard(
               animationSpec = IconAnimationSpec,
             )
             Box {
-              val iconModifier = Modifier.size(16.dp) // todo
+              val iconModifier = Modifier.size(PlusIconSize)
               Icon(
                 HedvigIcons.Minus,
                 contentDescription = null,
@@ -248,6 +253,7 @@ object PerilDefaults {
     internal abstract val extendedPadding: PaddingValues
     internal abstract val verticalSpaceBetween: Dp
     internal abstract val circleSize: Dp
+    internal abstract val labelLineSpacerWidth: Dp
 
     @get:Composable
     internal abstract val labelTextStyle: TextStyle
@@ -274,6 +280,8 @@ object PerilDefaults {
         get() = PerilSmallTokens.VerticalSpaceBetween
       override val circleSize: Dp
         get() = PerilSmallTokens.CircleSize
+      override val labelLineSpacerWidth: Dp
+        get() = PerilSmallTokens.LabelLineSpacerWidth
       override val labelTextStyle: TextStyle
         @Composable
         @ReadOnlyComposable
@@ -292,6 +300,8 @@ object PerilDefaults {
           start = PerilLargeTokens.PaddingHorizontal,
           end = PerilLargeTokens.PaddingHorizontal,
         )
+      override val labelLineSpacerWidth: Dp
+        get() = PerilLargeTokens.LabelLineSpacerWidth
       override val extendedPadding: PaddingValues
         get() = PaddingValues(
           top = PerilLargeTokens.ExpandedPaddingTop,
