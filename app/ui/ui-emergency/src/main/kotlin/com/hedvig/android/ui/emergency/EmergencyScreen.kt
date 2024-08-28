@@ -24,6 +24,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineBreak
@@ -112,6 +113,14 @@ fun EmergencyScreen(
             )
           }
           if (emergencyNumber != null) {
+            val colors = if (emergencyUrl != null) {
+              ButtonDefaults.buttonColors(
+                containerColor = Color.Transparent,
+                contentColor = MaterialTheme.colorScheme.onAlwaysBlackContainer,
+              )
+            } else {
+              ButtonDefaults.buttonColors()
+            }
             Spacer(Modifier.height(8.dp))
             val context = LocalContext.current
             HedvigContainedSmallButton(
@@ -119,10 +128,7 @@ fun EmergencyScreen(
                 R.string.SUBMIT_CLAIM_GLOBAL_ASSISTANCE_CALL_LABEL,
                 emergencyNumber,
               ),
-              colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.alwaysBlackContainer,
-                contentColor = MaterialTheme.colorScheme.onAlwaysBlackContainer,
-              ),
+              colors = colors,
               onClick = {
                 try {
                   context.startActivity(
@@ -144,8 +150,10 @@ fun EmergencyScreen(
           Text(
             text = stringResource(R.string.SUBMIT_CLAIM_GLOBAL_ASSISTANCE_FOOTNOTE),
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.fillMaxWidth(),
+            style = MaterialTheme.typography.bodySmall.copy(
+              color = LocalContentColor.current.copy(alpha = 0.7f),
+            ),
           )
           Spacer(Modifier.height(8.dp))
         }
