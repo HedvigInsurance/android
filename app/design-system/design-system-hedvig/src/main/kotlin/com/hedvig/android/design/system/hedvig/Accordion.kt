@@ -1,5 +1,6 @@
 package com.hedvig.android.design.system.hedvig
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -22,8 +23,9 @@ import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.TextP
 
 @Composable
 fun AccordionList(items: List<AccordionData>, modifier: Modifier = Modifier, size: Size = Size.Small) {
-  Column(modifier) {
-    for ((index, perilItem) in items.withIndex()) {
+  Column(modifier,
+    verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    for (perilItem in items) {
       var isExpanded by rememberSaveable { mutableStateOf(false) }
       AccordionItem(
         isExpanded = isExpanded,
@@ -34,15 +36,12 @@ fun AccordionList(items: List<AccordionData>, modifier: Modifier = Modifier, siz
         description = perilItem.description,
         size = size,
       )
-      if (index != items.lastIndex) {
-        Spacer(Modifier.height(4.dp))
-      }
     }
   }
 }
 
 @Composable
-fun AccordionItem(
+private fun AccordionItem(
   isExpanded: Boolean,
   onClick: () -> Unit,
   title: String,

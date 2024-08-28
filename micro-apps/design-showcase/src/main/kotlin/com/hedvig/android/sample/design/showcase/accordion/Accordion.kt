@@ -1,4 +1,4 @@
-package com.hedvig.android.sample.design.showcase.accrodion
+package com.hedvig.android.sample.design.showcase.accordion
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

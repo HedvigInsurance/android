@@ -52,8 +52,11 @@ import com.hedvig.android.logger.logcat
 
 @Composable
 fun PerilList(perilItems: List<PerilData>, size: PerilSize, modifier: Modifier = Modifier) {
-  Column(modifier) {
-    for ((index, perilItem) in perilItems.withIndex()) {
+  Column(
+    modifier,
+    verticalArrangement = Arrangement.spacedBy(4.dp),
+  ) {
+    for (perilItem in perilItems) {
       var isExpanded by rememberSaveable { mutableStateOf(false) }
       ExpandablePerilCard(
         isExpanded = isExpanded,
@@ -71,9 +74,6 @@ fun PerilList(perilItems: List<PerilData>, size: PerilSize, modifier: Modifier =
         size = size,
         isEnabled = perilItem.isEnabled,
       )
-      if (index != perilItems.lastIndex) {
-        Spacer(Modifier.height(4.dp))
-      }
     }
   }
 }
