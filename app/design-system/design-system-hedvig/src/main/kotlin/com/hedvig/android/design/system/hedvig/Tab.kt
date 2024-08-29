@@ -1,7 +1,7 @@
 package com.hedvig.android.design.system.hedvig
 
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateIntOffsetAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -18,17 +18,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateMap
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.onPlaced
@@ -42,8 +40,6 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.toSize
-import com.hedvig.android.compose.ui.withoutPlacement
 import com.hedvig.android.design.system.hedvig.TabDefaults.TabSize
 import com.hedvig.android.design.system.hedvig.TabDefaults.TabSize.Mini
 import com.hedvig.android.design.system.hedvig.TabDefaults.TabStyle
@@ -67,7 +63,8 @@ fun HedvigTabRow(
   tabSize: TabSize = TabDefaults.defaultSize,
   tabStyle: TabStyle = TabDefaults.defaultStyle,
 ) {
-  val currentSizeMap = remember { mutableStateMapOf<Int, Size>() }
+  val currentWidthMap = remember { mutableStateMapOf<Int, Int>() }
+  val currentHeightMap = remember { mutableStateMapOf<Int, Int>() }
   val currentOffsetMap = remember { mutableStateMapOf<Int, IntOffset>() }
   val indicatorOffset: IntOffset by animateIntOffsetAsState(
     targetValue = calculateIndicatorOffset(currentOffsetMap, selectedTabIndex),
@@ -77,63 +74,85 @@ fun HedvigTabRow(
     ),
     label = "",
   )
+  val density = LocalDensity.current
+  val indicatorWidth: Dp by animateDpAsState(
+    targetValue = calculateIndicatorWidth(currentWidthMap, selectedTabIndex, density),
+    animationSpec = tween(
+      durationMillis = 600,
+      easing = FastOutSlowInEasing,
+    ),
+  )
+  val indicatorHeight: Dp by animateDpAsState(
+    targetValue = calculateIndicatorHeight(currentHeightMap, selectedTabIndex, density),
+    animationSpec = tween(
+      durationMillis = 600,
+      easing = FastOutSlowInEasing,
+    ),
+  )
   Box(
     modifier = modifier
-        .clip(tabSize.rowShape)
-        .background(tabStyle.colors.tabRowBackground)
-        .height(intrinsicSize = IntrinsicSize.Min)
-        .padding(tabSize.rowPadding),
+      .clip(tabSize.rowShape)
+      .background(tabStyle.colors.tabRowBackground)
+      .height(intrinsicSize = IntrinsicSize.Min)
+      .padding(tabSize.rowPadding),
   ) {
-      TabIndicator(
-        indicatorSize = calculateIndicatorSize(currentSizeMap, selectedTabIndex),
-        indicatorOffset = indicatorOffset,
-        indicatorColor = tabStyle.colors.chosenTabBackground,
-        indicatorShape = tabSize.tabShape,
-      )
-      FlowRow(
-        horizontalArrangement = Arrangement.Start,
-        verticalArrangement = Arrangement.Center,
-        maxItemsInEachRow = MAX_ITEMS_IN_ROW,
-        maxLines = MAX_LINES,
-        overflow = FlowRowOverflow.Visible,
-        modifier = Modifier
-            .clip(tabSize.rowShape)
-            .fillMaxWidth(),
-      ) {
-        tabTitles.forEachIndexed { index, title ->
-          TabItem(
-            modifier = Modifier
-                .clip(tabSize.tabShape)
-                .weight(1f)
-                .onPlaced {
-                    val offsetX = it.positionInParent().x.toInt()
-                    val offsetY = it.positionInParent().y.toInt()
-                    currentOffsetMap[index] = IntOffset(x = offsetX, y = offsetY)
-                }
-                .onSizeChanged {
-                    currentSizeMap[index] = it.toSize()
-                },
-            onClick = {
-              onTabChosen(index)
+    TabIndicator(
+      indicatorHeight = indicatorHeight,
+      indicatorWidth = indicatorWidth,
+      indicatorOffset = indicatorOffset,
+      indicatorColor = tabStyle.colors.chosenTabBackground,
+      indicatorShape = tabSize.tabShape,
+    )
+    FlowRow(
+      horizontalArrangement = Arrangement.Start,
+      verticalArrangement = Arrangement.Center,
+      maxItemsInEachRow = MAX_ITEMS_IN_ROW,
+      maxLines = MAX_LINES,
+      overflow = FlowRowOverflow.Visible,
+      modifier = Modifier
+        .clip(tabSize.rowShape)
+        .fillMaxWidth(),
+    ) {
+      tabTitles.forEachIndexed { index, title ->
+        TabItem(
+          modifier = Modifier
+            .clip(tabSize.tabShape)
+            .weight(1f)
+            .onPlaced {
+              val offsetX = it.positionInParent().x.toInt()
+              val offsetY = it.positionInParent().y.toInt()
+              currentOffsetMap[index] = IntOffset(x = offsetX, y = offsetY)
+            }
+            .onSizeChanged {
+              currentWidthMap[index] = it.width
+              currentHeightMap[index] = it.height
             },
-            text = title,
-            textStyle = tabSize.textStyle,
-            tabTextColor = tabStyle.colors.textColor,
-            contentPadding = tabSize.tabPadding,
-          )
-        }
+          onClick = {
+            onTabChosen(index)
+          },
+          text = title,
+          textStyle = tabSize.textStyle,
+          tabTextColor = tabStyle.colors.textColor,
+          contentPadding = tabSize.tabPadding,
+        )
       }
     }
   }
-
-private fun calculateIndicatorSize(map: SnapshotStateMap<Int, Size>, selectedTabIndex: Int): Size {
-  return map[selectedTabIndex] ?: Size(0f,0f)
 }
 
-private fun calculateIndicatorOffset(
-  map: SnapshotStateMap<Int, IntOffset>,
-  selectedTabIndex: Int,
-): IntOffset {
+private fun calculateIndicatorWidth(map: SnapshotStateMap<Int, Int>, selectedTabIndex: Int, density: Density): Dp {
+  return with(density) {
+    map[selectedTabIndex]?.toDp() ?: 0.dp
+  }
+}
+
+private fun calculateIndicatorHeight(map: SnapshotStateMap<Int, Int>, selectedTabIndex: Int, density: Density): Dp {
+  return with(density) {
+    map[selectedTabIndex]?.toDp() ?: 0.dp
+  }
+}
+
+private fun calculateIndicatorOffset(map: SnapshotStateMap<Int, IntOffset>, selectedTabIndex: Int): IntOffset {
   val result = map[selectedTabIndex] ?: IntOffset(0, 0)
   return result
 }
@@ -316,13 +335,13 @@ private fun TabItem(
 ) {
   HedvigText(
     modifier = modifier
-        .clickable(
-            interactionSource = remember { MutableInteractionSource() },
-            indication = null,
-        ) {
-            onClick()
-        }
-        .padding(contentPadding),
+      .clickable(
+        interactionSource = remember { MutableInteractionSource() },
+        indication = null,
+      ) {
+        onClick()
+      }
+      .padding(contentPadding),
     text = text,
     style = textStyle,
     overflow = TextOverflow.Ellipsis,
@@ -333,29 +352,25 @@ private fun TabItem(
 
 @Composable
 private fun TabIndicator(
-  indicatorSize: Size,
+  indicatorHeight: Dp,
+  indicatorWidth: Dp,
   indicatorOffset: IntOffset,
   indicatorColor: Color,
   indicatorShape: Shape,
 ) {
-  val density = LocalDensity.current
-  val size = with(density) {
-    indicatorSize.toDpSize()
-  }
   Box(
     modifier = Modifier
+      .width(indicatorWidth)
+      .height(indicatorHeight)
       .offset {
         indicatorOffset
       }
-        .animateContentSize()
-        .size(size)
-
-        .clip(
-            shape = indicatorShape,
-        )
-        .background(
-            color = indicatorColor,
-        ),
+      .clip(
+        shape = indicatorShape,
+      )
+      .background(
+        color = indicatorColor,
+      ),
   )
 }
 
