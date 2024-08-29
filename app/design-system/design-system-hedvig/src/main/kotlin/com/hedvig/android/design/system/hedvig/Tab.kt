@@ -23,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Modifier
@@ -75,15 +76,15 @@ fun HedvigTabRow(
     label = "",
   )
   val density = LocalDensity.current
-  val indicatorWidth: Dp by animateDpAsState(
-    targetValue = calculateIndicatorWidth(currentWidthMap, selectedTabIndex, density),
+  val indicatorWidth: Dp by if(currentWidthMap.isEmpty()) remember { mutableStateOf(0.dp) } else animateDpAsState(
+    targetValue = calculateIndicatorDimension(currentWidthMap, selectedTabIndex, density),
     animationSpec = tween(
       durationMillis = 600,
       easing = FastOutSlowInEasing,
     ),
   )
-  val indicatorHeight: Dp by animateDpAsState(
-    targetValue = calculateIndicatorHeight(currentHeightMap, selectedTabIndex, density),
+  val indicatorHeight: Dp by if(currentHeightMap.isEmpty()) remember { mutableStateOf(0.dp) } else animateDpAsState(
+    targetValue = calculateIndicatorDimension(currentHeightMap, selectedTabIndex, density),
     animationSpec = tween(
       durationMillis = 600,
       easing = FastOutSlowInEasing,
@@ -96,13 +97,15 @@ fun HedvigTabRow(
       .height(intrinsicSize = IntrinsicSize.Min)
       .padding(tabSize.rowPadding),
   ) {
-    TabIndicator(
-      indicatorHeight = indicatorHeight,
-      indicatorWidth = indicatorWidth,
-      indicatorOffset = indicatorOffset,
-      indicatorColor = tabStyle.colors.chosenTabBackground,
-      indicatorShape = tabSize.tabShape,
-    )
+    if(indicatorHeight!=0.dp && indicatorWidth!=0.dp) {
+      TabIndicator(
+        indicatorHeight = indicatorHeight,
+        indicatorWidth = indicatorWidth,
+        indicatorOffset = indicatorOffset,
+        indicatorColor = tabStyle.colors.chosenTabBackground,
+        indicatorShape = tabSize.tabShape,
+      )
+    }
     FlowRow(
       horizontalArrangement = Arrangement.Start,
       verticalArrangement = Arrangement.Center,
@@ -140,13 +143,8 @@ fun HedvigTabRow(
   }
 }
 
-private fun calculateIndicatorWidth(map: SnapshotStateMap<Int, Int>, selectedTabIndex: Int, density: Density): Dp {
-  return with(density) {
-    map[selectedTabIndex]?.toDp() ?: 0.dp
-  }
-}
 
-private fun calculateIndicatorHeight(map: SnapshotStateMap<Int, Int>, selectedTabIndex: Int, density: Density): Dp {
+private fun calculateIndicatorDimension(map: SnapshotStateMap<Int, Int>, selectedTabIndex: Int, density: Density): Dp {
   return with(density) {
     map[selectedTabIndex]?.toDp() ?: 0.dp
   }
