@@ -40,6 +40,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.TabDefaults.TabSize
 import com.hedvig.android.design.system.hedvig.TabDefaults.TabSize.Mini
@@ -54,7 +55,6 @@ import com.hedvig.android.design.system.hedvig.tokens.MediumTabTokens
 import com.hedvig.android.design.system.hedvig.tokens.MiniTabTokens
 import com.hedvig.android.design.system.hedvig.tokens.SmallTabTokens
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun HedvigTabRow(
   tabTitles: List<String>,
@@ -76,14 +76,14 @@ fun HedvigTabRow(
     label = "",
   )
   val density = LocalDensity.current
-  val indicatorWidth: Dp by if(currentWidthMap.isEmpty()) remember { mutableStateOf(0.dp) } else animateDpAsState(
+  val indicatorWidth: Dp by if (currentWidthMap.isEmpty()) remember { mutableStateOf(0.dp) } else animateDpAsState(
     targetValue = calculateIndicatorDimension(currentWidthMap, selectedTabIndex, density),
     animationSpec = tween(
       durationMillis = 600,
       easing = FastOutSlowInEasing,
     ),
   )
-  val indicatorHeight: Dp by if(currentHeightMap.isEmpty()) remember { mutableStateOf(0.dp) } else animateDpAsState(
+  val indicatorHeight: Dp by if (currentHeightMap.isEmpty()) remember { mutableStateOf(0.dp) } else animateDpAsState(
     targetValue = calculateIndicatorDimension(currentHeightMap, selectedTabIndex, density),
     animationSpec = tween(
       durationMillis = 600,
@@ -92,12 +92,12 @@ fun HedvigTabRow(
   )
   Box(
     modifier = modifier
-      .clip(tabSize.rowShape)
-      .background(tabStyle.colors.tabRowBackground)
-      .height(intrinsicSize = IntrinsicSize.Min)
-      .padding(tabSize.rowPadding),
+        .clip(tabSize.rowShape)
+        .background(tabStyle.colors.tabRowBackground)
+        .height(intrinsicSize = IntrinsicSize.Min)
+        .padding(tabSize.rowPadding),
   ) {
-    if(indicatorHeight!=0.dp && indicatorWidth!=0.dp) {
+    if (indicatorHeight != 0.dp && indicatorWidth != 0.dp) {
       TabIndicator(
         indicatorHeight = indicatorHeight,
         indicatorWidth = indicatorWidth,
@@ -106,40 +106,22 @@ fun HedvigTabRow(
         indicatorShape = tabSize.tabShape,
       )
     }
-    FlowRow(
-      horizontalArrangement = Arrangement.Start,
-      verticalArrangement = Arrangement.Center,
-      maxItemsInEachRow = MAX_ITEMS_IN_ROW,
-      maxLines = MAX_LINES,
-      overflow = FlowRowOverflow.Visible,
-      modifier = Modifier
-        .clip(tabSize.rowShape)
-        .fillMaxWidth(),
-    ) {
-      tabTitles.forEachIndexed { index, title ->
-        TabItem(
-          modifier = Modifier
-            .clip(tabSize.tabShape)
-            .weight(1f)
-            .onPlaced {
-              val offsetX = it.positionInParent().x.toInt()
-              val offsetY = it.positionInParent().y.toInt()
-              currentOffsetMap[index] = IntOffset(x = offsetX, y = offsetY)
-            }
-            .onSizeChanged {
-              currentWidthMap[index] = it.width
-              currentHeightMap[index] = it.height
-            },
-          onClick = {
-            onTabChosen(index)
-          },
-          text = title,
-          textStyle = tabSize.textStyle,
-          tabTextColor = tabStyle.colors.textColor,
-          contentPadding = tabSize.tabPadding,
-        )
-      }
-    }
+    TabFlowRow(
+      rowShape = tabSize.rowShape,
+      tabTitles = tabTitles,
+      textStyle = tabSize.textStyle,
+      textColor = tabStyle.colors.textColor,
+      contentPadding = tabSize.tabPadding,
+      onTabChosen = onTabChosen,
+      onItemPlaced = { index: Int, offset: IntOffset ->
+        currentOffsetMap[index] = offset
+      },
+      onSizeChanged = {index: Int, size: IntSize ->
+                    currentWidthMap[index] = size.width
+            currentHeightMap[index] = size.height
+      },
+      tabShape = tabSize.tabShape
+    )
   }
 }
 
@@ -322,6 +304,54 @@ object TabDefaults {
   }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun TabFlowRow(
+  rowShape: Shape,
+  tabShape: Shape,
+  tabTitles: List<String>,
+  onItemPlaced: (index: Int, offset: IntOffset ) -> Unit,
+  onSizeChanged: (index: Int, size: IntSize) -> Unit,
+  onTabChosen: (Int) -> Unit,
+  textStyle: TextStyle,
+  textColor: Color,
+  contentPadding: PaddingValues,
+) {
+  FlowRow(
+    horizontalArrangement = Arrangement.Start,
+    verticalArrangement = Arrangement.Center,
+    maxItemsInEachRow = MAX_ITEMS_IN_ROW,
+    maxLines = MAX_LINES,
+    overflow = FlowRowOverflow.Visible,
+    modifier = Modifier
+        .clip(rowShape)
+        .fillMaxWidth(),
+  ) {
+    tabTitles.forEachIndexed { index, title ->
+      TabItem(
+        modifier = Modifier
+            .clip(tabShape)
+            .weight(1f)
+            .onPlaced { coordinates ->
+                val offsetX = coordinates.positionInParent().x.toInt()
+                val offsetY = coordinates.positionInParent().y.toInt()
+                onItemPlaced(index, IntOffset(x = offsetX, y = offsetY))
+            }
+            .onSizeChanged { size ->
+                onSizeChanged(index, size)
+            },
+        onClick = {
+          onTabChosen(index)
+        },
+        text = title,
+        textStyle = textStyle,
+        tabTextColor = textColor,
+        contentPadding = contentPadding,
+      )
+    }
+  }
+}
+
 @Composable
 private fun TabItem(
   onClick: () -> Unit,
@@ -333,13 +363,13 @@ private fun TabItem(
 ) {
   HedvigText(
     modifier = modifier
-      .clickable(
-        interactionSource = remember { MutableInteractionSource() },
-        indication = null,
-      ) {
-        onClick()
-      }
-      .padding(contentPadding),
+        .clickable(
+            interactionSource = remember { MutableInteractionSource() },
+            indication = null,
+        ) {
+            onClick()
+        }
+        .padding(contentPadding),
     text = text,
     style = textStyle,
     overflow = TextOverflow.Ellipsis,
@@ -358,17 +388,17 @@ private fun TabIndicator(
 ) {
   Box(
     modifier = Modifier
-      .width(indicatorWidth)
-      .height(indicatorHeight)
-      .offset {
-        indicatorOffset
-      }
-      .clip(
-        shape = indicatorShape,
-      )
-      .background(
-        color = indicatorColor,
-      ),
+        .width(indicatorWidth)
+        .height(indicatorHeight)
+        .offset {
+            indicatorOffset
+        }
+        .clip(
+            shape = indicatorShape,
+        )
+        .background(
+            color = indicatorColor,
+        ),
   )
 }
 
