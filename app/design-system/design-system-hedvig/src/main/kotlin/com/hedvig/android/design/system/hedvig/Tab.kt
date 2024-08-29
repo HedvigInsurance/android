@@ -1,5 +1,6 @@
 package com.hedvig.android.design.system.hedvig
 
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateIntOffsetAsState
@@ -30,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.Layout
@@ -73,9 +75,9 @@ fun HedvigTabRowMaxSixTabs(
 ) {
   val currentWidthMap = remember { mutableStateMapOf<Int, Int>() }
   val currentHeightMap = remember { mutableStateMapOf<Int, Int>() }
-  val currentOffsetMap = remember { mutableStateMapOf<Int, IntOffset>() }
+  var currentIndicatorOffset by remember {mutableStateOf(IntOffset(0,0))}
   val indicatorOffset: IntOffset by animateIntOffsetAsState(
-    targetValue = calculateIndicatorOffset(currentOffsetMap, selectedTabIndex),
+    targetValue = currentIndicatorOffset,
     animationSpec = tween(
       durationMillis = 600,
       easing = FastOutSlowInEasing,
@@ -100,10 +102,10 @@ fun HedvigTabRowMaxSixTabs(
   var oneLineHeight by remember { mutableIntStateOf(0) }
   Box(
     modifier = modifier
-        .clip(tabSize.rowShape)
-        .background(tabStyle.colors.tabRowBackground)
-        .height(intrinsicSize = IntrinsicSize.Min)
-        .padding(tabSize.rowPadding),
+      .clip(tabSize.rowShape)
+      .background(tabStyle.colors.tabRowBackground)
+      .height(intrinsicSize = IntrinsicSize.Min)
+      .padding(tabSize.rowPadding),
   ) {
     Box(Modifier.withoutPlacement()) {
       HedvigText(
@@ -150,7 +152,7 @@ fun HedvigTabRowMaxSixTabs(
         val desiredItemWidth =
           if (itemMeasurables.any { it.minIntrinsicWidth(oneLineHeight) > fullWidth / 3 }) fullWidth / 2
           else fullWidth / 3
-        val howManyLines = itemMeasurables.size * desiredItemWidth / fullWidth
+        val howManyLines = (itemMeasurables.size * desiredItemWidth)/fullWidth
         val howManyItemsInEachLine = fullWidth / desiredItemWidth
         val mapOfOffsets = mutableMapOf<Int, IntOffset>()
         itemMeasurables.forEachIndexed { index, _ ->
@@ -191,16 +193,17 @@ fun HedvigTabRowMaxSixTabs(
         )
         layout(
           width = fullWidth,
-          height = if (listOfPlaceables.size <= 3) oneLineHeight else oneLineHeight * 2,
+          height = howManyLines * oneLineHeight,
         ) {
-          indicatorPlaceable.placeRelative(mapOfOffsets[selectedTabIndex]!!.x, mapOfOffsets[selectedTabIndex]!!.y)
+          currentIndicatorOffset = IntOffset(mapOfOffsets[selectedTabIndex]!!.x,mapOfOffsets[selectedTabIndex]!!.y)
+          indicatorPlaceable.placeRelative(indicatorOffset)
           listOfPlaceables.forEachIndexed { index, placeable ->
             placeable.placeRelative(
               x = mapOfOffsets[index]!!.x,
               y = mapOfOffsets[index]!!.y,
             )
           }
-        } //todo: only for up to 6 TabItems
+        } //only for up to 6 TabItems
       }
     }
 //
@@ -229,22 +232,6 @@ fun HedvigTabRowMaxSixTabs(
 //        },
 //        tabShape = tabSize.tabShape,
 //    )
-  }
-}
-
-private fun calculateOffsetYinLayout(index: Int, firstItemRowHeight: Int): Int {
-  return if (index <= 2) {
-    0
-  } else firstItemRowHeight
-}
-
-private fun calculateOffsetXinLayout(index: Int, itemWidth: Int): Int {
-  return if (index == 0 || index == 3) {
-    0
-  } else if (index == 1 || index == 4) {
-    itemWidth
-  } else {
-    2 * itemWidth
   }
 }
 
@@ -447,22 +434,22 @@ private fun TabFlowRow(
     maxLines = MAX_LINES,
     overflow = FlowRowOverflow.Visible,
     modifier = Modifier
-        .clip(rowShape)
-        .fillMaxWidth(),
+      .clip(rowShape)
+      .fillMaxWidth(),
   ) {
     tabTitles.forEachIndexed { index, title ->
       TabItem(
         modifier = Modifier
-            .clip(tabShape)
-            .weight(1f)
-            .onPlaced { coordinates ->
-                val offsetX = coordinates.positionInParent().x.toInt()
-                val offsetY = coordinates.positionInParent().y.toInt()
-                onItemPlaced(index, IntOffset(x = offsetX, y = offsetY))
-            }
-            .onSizeChanged { size ->
-                onSizeChanged(index, size)
-            },
+          .clip(tabShape)
+          .weight(1f)
+          .onPlaced { coordinates ->
+            val offsetX = coordinates.positionInParent().x.toInt()
+            val offsetY = coordinates.positionInParent().y.toInt()
+            onItemPlaced(index, IntOffset(x = offsetX, y = offsetY))
+          }
+          .onSizeChanged { size ->
+            onSizeChanged(index, size)
+          },
         onClick = {
           onTabChosen(index)
         },
@@ -503,16 +490,12 @@ private fun TabItem(
 
 @Composable
 private fun TabIndicator(
-//  indicatorHeight: Dp,
-//  indicatorWidth: Dp,
   indicatorOffset: IntOffset,
   indicatorColor: Color,
   indicatorShape: Shape,
 ) {
   Box(
     modifier = Modifier
-//        .width(indicatorWidth)
-//        .height(indicatorHeight)
         .offset {
             indicatorOffset
         }
