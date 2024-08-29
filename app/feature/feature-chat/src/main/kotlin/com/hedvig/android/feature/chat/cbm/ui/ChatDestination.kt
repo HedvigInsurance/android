@@ -52,8 +52,6 @@ import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Loaded.TopAppBarText.L
 import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Loaded.TopAppBarText.NewConversation
 import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Loaded.TopAppBarText.ServiceConversation
 import com.hedvig.android.feature.chat.cbm.CbmChatViewModel
-import com.hedvig.android.feature.chat.ui.chatScrollBehavior
-import com.hedvig.android.feature.chat.ui.chatTopAppBarWindowInsets
 import com.hedvig.android.logger.logcat
 import hedvig.resources.R
 import kotlinx.datetime.Instant
@@ -116,7 +114,7 @@ private fun ChatScreen(
     color = MaterialTheme.colorScheme.background,
     modifier = Modifier.fillMaxSize(),
   ) {
-    val topAppBarScrollBehavior = TopAppBarDefaults.chatScrollBehavior()
+    val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     Column {
       val density = LocalDensity.current
       var topAppBarHeight by remember { mutableStateOf(0.dp) }
@@ -217,7 +215,6 @@ private fun ChatTopAppBar(
         content = { Icon(imageVector = Icons.Hedvig.ArrowBack, contentDescription = null) },
       )
     },
-    windowInsets = chatTopAppBarWindowInsets(TopAppBarDefaults.windowInsets, topAppBarScrollBehavior),
     colors = TopAppBarDefaults.topAppBarColors(
       containerColor = MaterialTheme.colorScheme.background,
       scrolledContainerColor = MaterialTheme.colorScheme.surface,

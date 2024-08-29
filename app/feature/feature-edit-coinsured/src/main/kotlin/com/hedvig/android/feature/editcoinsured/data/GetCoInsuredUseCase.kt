@@ -4,9 +4,8 @@ import arrow.core.Either
 import arrow.core.raise.either
 import arrow.core.raise.ensureNotNull
 import com.apollographql.apollo.ApolloClient
+import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.apollo.toEither
-import com.hedvig.android.core.common.ErrorMessage
 import octopus.CoInsuredQuery
 
 internal interface GetCoInsuredUseCase {
@@ -18,8 +17,7 @@ internal class GetCoInsuredUseCaseImpl(
 ) : GetCoInsuredUseCase {
   override suspend fun invoke(contractId: String): Either<CoInsuredError, CoInsuredResult> = either {
     val result = apolloClient.query(CoInsuredQuery())
-      .safeExecute()
-      .toEither(::ErrorMessage)
+      .safeExecute(::ErrorMessage)
       .mapLeft { CoInsuredError.GenericError(it.message) }
       .bind()
 

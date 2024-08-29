@@ -4,8 +4,8 @@ import arrow.core.Either
 import arrow.core.raise.either
 import arrow.core.raise.ensure
 import com.apollographql.apollo.ApolloClient
+import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
@@ -29,8 +29,7 @@ internal class GetConnectPaymentReminderUseCaseImpl(
         ConnectPaymentReminderError.NonPayingMember
       }
       val result = apolloClient.query(GetPayinMethodStatusQuery())
-        .safeExecute()
-        .toEither(::ErrorMessage)
+        .safeExecute(::ErrorMessage)
         .mapLeft(ConnectPaymentReminderError::NetworkError)
         .bind()
       val missingPaymentsContractTerminationDate = result.currentMember.activeContracts

@@ -5,12 +5,12 @@ import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
 import com.benasher44.uuid.Uuid
+import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.chat.cbm.BannerText
 import com.hedvig.android.feature.chat.cbm.CbmChatRepository
 import com.hedvig.android.feature.chat.cbm.ChatMessagePageResponse
 import com.hedvig.android.feature.chat.cbm.ConversationInfo
-import com.hedvig.android.feature.chat.cbm.ConversationInfo.Info.ClaimInfo
 import com.hedvig.android.feature.chat.cbm.PagingToken
 import com.hedvig.android.feature.chat.cbm.model.CbmChatMessage
 import kotlinx.coroutines.flow.Flow
@@ -31,7 +31,7 @@ internal class CbmChatRepositoryDemo(
     return info.right()
   }
 
-  override fun getConversationInfo(conversationId: Uuid): Flow<Either<ErrorMessage, ConversationInfo>> {
+  override fun getConversationInfo(conversationId: Uuid): Flow<Either<ApolloOperationError, ConversationInfo>> {
     return flowOf(info.right())
   }
 

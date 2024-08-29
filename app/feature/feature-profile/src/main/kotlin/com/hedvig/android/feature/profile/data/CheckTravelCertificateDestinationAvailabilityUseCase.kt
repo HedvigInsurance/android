@@ -5,7 +5,6 @@ import arrow.core.raise.either
 import arrow.core.raise.ensure
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
@@ -21,9 +20,8 @@ internal class CheckTravelCertificateDestinationAvailabilityUseCaseImpl(
   override suspend fun invoke(): Either<TravelCertificateAvailabilityError, Unit> {
     return either {
       val isTravelCertificateEnabledResult = apolloClient.query(TravelCertificateAvailabilityQuery())
-        .safeExecute()
-        .toEither { message, _ ->
-          ErrorMessage("Could not check isTravelCertificateEnabled: $message")
+        .safeExecute {
+          ErrorMessage("Could not check isTravelCertificateEnabled: $it")
         }
         .map {
           it.currentMember.memberActions?.isTravelCertificateEnabled

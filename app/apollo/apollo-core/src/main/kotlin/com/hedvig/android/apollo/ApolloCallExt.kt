@@ -1,57 +1,137 @@
 package com.hedvig.android.apollo
 
 import arrow.core.Either
+import arrow.core.raise.Raise
+import arrow.core.raise.either
 import com.apollographql.apollo.ApolloCall
 import com.apollographql.apollo.api.ApolloResponse
 import com.apollographql.apollo.api.Operation
+import com.apollographql.apollo.api.Query
+import com.apollographql.apollo.cache.normalized.watch
 import com.apollographql.apollo.exception.ApolloException
-import kotlinx.coroutines.CancellationException
+import com.apollographql.apollo.exception.CacheMissException
+import com.hedvig.android.apollo.ApolloOperationError.CacheMiss
+import com.hedvig.android.apollo.ApolloOperationError.OperationError
+import com.hedvig.android.apollo.ApolloOperationError.OperationException
+import com.hedvig.android.core.common.ErrorMessage
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
-suspend fun <D : Operation.Data> ApolloCall<D>.safeExecute(): OperationResult<D> {
-  return try {
-    executeV3().toOperationResult()
-  } catch (apolloException: ApolloException) {
-    OperationResult.Error.NetworkError(apolloException)
-  } catch (throwable: Throwable) {
-    if (throwable is CancellationException) {
-      throw throwable
+sealed interface ApolloOperationError {
+  val throwable: Throwable?
+
+  data class CacheMiss(override val throwable: CacheMissException) : ApolloOperationError {
+    override fun toString(): String {
+      return "CacheMiss(throwableMessage=${throwable.message}, throwable=$throwable)"
     }
-    OperationResult.Error.GeneralError(throwable)
+  }
+
+  data class OperationException(override val throwable: ApolloException) : ApolloOperationError {
+    override fun toString(): String {
+      return "OperationException(throwableMessage=${throwable.message}, throwable=$throwable)"
+    }
+  }
+
+  data class OperationError(private val message: String) : ApolloOperationError {
+    override val throwable: Throwable? = null
   }
 }
 
-fun <D : Operation.Data, ErrorType> ApolloCall<D>.safeFlow(
-  ifEmpty: (message: String?, throwable: Throwable?) -> ErrorType,
-): Flow<Either<ErrorType, D>> {
-  return toFlowV3()
-    .map(ApolloResponse<D>::toOperationResult)
-    .map { it.toEither(ifEmpty) }
-    .catch { throwable ->
-      if (throwable is ApolloException) {
-        OperationResult.Error.NetworkError(throwable)
-      } else {
-        OperationResult.Error.GeneralError(throwable)
-      }.also {
-        emit(it.toEither(ifEmpty))
-      }
-    }
+suspend fun <D : Operation.Data> ApolloCall<D>.safeExecute(): Either<ApolloOperationError, D> {
+  return either { parseResponse(execute()) }
 }
 
-private fun <D : Operation.Data> ApolloResponse<D>.toOperationResult(): OperationResult<D> {
-  val data = data
-  return when {
-    hasErrors() -> {
-      val exception = errors?.first()?.extensions?.get("exception")
-      val body = (exception as? Map<*, *>)?.get("body")
-      val message = (body as? Map<*, *>)?.get("message") as? String
+suspend fun <D : Operation.Data, ErrorType> ApolloCall<D>.safeExecute(
+  mapError: (ApolloOperationError) -> ErrorType,
+): Either<ErrorType, D> {
+  return safeExecute().mapLeft(mapError)
+}
 
-      OperationResult.Error.OperationError(message ?: errors?.first()?.message)
+fun <D : Operation.Data> ApolloCall<D>.safeFlow(): Flow<Either<ApolloOperationError, D>> {
+  return flow<ApolloResponse<D>> {
+    var hasEmitted = false
+    var errorResponse: ApolloResponse<D>? = null
+    toFlow().collect {
+      if (it.exception != null) {
+        // Some errors may be followed by valid responses.
+        // In that case, wait for the next response to come instead.
+        errorResponse = it
+      } else {
+        hasEmitted = true
+        emit(it)
+      }
     }
+    val errorResponseValue = errorResponse
+    if (!hasEmitted && errorResponseValue != null) {
+      // Flow has terminated without a valid response, emit the error one if it exists.
+      emit(errorResponseValue)
+    }
+  }.map { either { parseResponse(it) } }
+}
 
-    data != null -> OperationResult.Success(data)
-    else -> OperationResult.Error.NoDataError("No data")
+fun <D : Operation.Data, ErrorType> ApolloCall<D>.safeFlow(
+  mapError: (ApolloOperationError) -> ErrorType,
+): Flow<Either<ErrorType, D>> {
+  return safeFlow().map { it.mapLeft(mapError) }
+}
+
+fun <D : Query.Data> ApolloCall<D>.safeWatch(): Flow<Either<ApolloOperationError, D>> {
+  return this.watch().map { either { parseResponse(it) } }
+}
+
+fun ErrorMessage(apolloOperationError: ApolloOperationError): ErrorMessage = object : ErrorMessage {
+  override val message = when (apolloOperationError) {
+    is CacheMiss -> "Cache miss"
+    is OperationError -> apolloOperationError.toString()
+    is OperationException -> apolloOperationError.throwable.message
+  }
+  override val throwable = when (apolloOperationError) {
+    is CacheMiss -> apolloOperationError.throwable
+    is OperationError -> null
+    is OperationException -> apolloOperationError.throwable
+  }
+
+  override fun toString(): String {
+    return "ErrorMessage(message=$message, throwable=$throwable)"
+  }
+}
+
+// https://www.apollographql.com/docs/kotlin/essentials/errors/#truth-table
+private fun <D : Operation.Data> Raise<ApolloOperationError>.parseResponse(response: ApolloResponse<D>): D {
+  val exception = response.exception
+  val data = response.data
+  val errors = response.errors
+  if (exception == null && data == null && errors == null) {
+    error("Non compliant server")
+  }
+  if (exception != null && errors != null) {
+    error("Impossible. Exceptions and errors can't exist at the same time")
+  }
+  if (exception != null && data != null) {
+    error("Impossible. Exceptions and data can't exist at the same time")
+  }
+  if (exception != null) {
+    if (exception is CacheMissException) {
+      raise(ApolloOperationError.CacheMiss(exception))
+    }
+    raise(ApolloOperationError.OperationException(exception))
+  }
+  if (errors != null) {
+    raise(
+      ApolloOperationError.OperationError(
+        message = errors.map { error ->
+          buildString {
+            append(error.message)
+            if (error.extensions != null) {
+              append(error.extensions!!.toList().joinToString(prefix = " ext: [", postfix = "]", separator = ", "))
+            }
+          }
+        }.joinToString(separator = " | "),
+      ),
+    )
+  }
+  return requireNotNull(data) {
+    "Data must be null after checking all other possible scenarios"
   }
 }

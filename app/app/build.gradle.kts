@@ -25,7 +25,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "12.7.5"
+    versionName = "12.8.0"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -187,6 +187,7 @@ dependencies {
   implementation(projects.datadogCore)
   implementation(projects.datadogDemoTracking)
   implementation(projects.designSystemHedvig)
+  implementation(projects.designSystemInternals)
   implementation(projects.featureChangeaddress)
   implementation(projects.featureChat)
   implementation(projects.featureClaimDetails)

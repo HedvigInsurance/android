@@ -578,6 +578,7 @@ private fun CrossSellBottomSheet(
     onDismissed = onDismissed,
     content = {
       Column {
+        Spacer(Modifier.height(32.dp))
         CrossSellsSection(
           showNotificationBadge = false,
           crossSells = crossSells,

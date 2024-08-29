@@ -93,6 +93,12 @@ data class ColorScheme(
   val highlightYellowFill1: Color,
   val highlightYellowFill2: Color,
   val highlightYellowFill3: Color,
+  val highlightRedFill1: Color,
+  val highlightRedFill2: Color,
+  val highlightRedFill3: Color,
+  val highlightAmberFill1: Color,
+  val highlightAmberFill2: Color,
+  val highlightAmberFill3: Color,
   val highlightGreenFill1: Color,
   val highlightGreenFill2: Color,
   val highlightGreenFill3: Color,
@@ -189,6 +195,12 @@ internal val lightColorScheme: ColorScheme = ColorScheme(
   highlightYellowFill1 = ColorLightTokens.HighlightYellowFill1,
   highlightYellowFill2 = ColorLightTokens.HighlightYellowFill2,
   highlightYellowFill3 = ColorLightTokens.HighlightYellowFill3,
+  highlightAmberFill1 = ColorLightTokens.HighlightAmberFill1,
+  highlightAmberFill2 = ColorLightTokens.HighlightAmberFill2,
+  highlightAmberFill3 = ColorLightTokens.HighlightAmberFill3,
+  highlightRedFill1 = ColorLightTokens.HighlightRedFill1,
+  highlightRedFill2 = ColorLightTokens.HighlightRedFill2,
+  highlightRedFill3 = ColorLightTokens.HighlightRedFill3,
   highlightGreenFill1 = ColorLightTokens.HighlightGreenFill1,
   highlightGreenFill2 = ColorLightTokens.HighlightGreenFill2,
   highlightGreenFill3 = ColorLightTokens.HighlightGreenFill3,
@@ -297,6 +309,12 @@ internal val darkColorScheme: ColorScheme = ColorScheme(
   highlightPurpleFill1 = ColorDarkTokens.HighlightPurpleFill1,
   highlightPurpleFill2 = ColorDarkTokens.HighlightPurpleFill2,
   highlightPurpleFill3 = ColorDarkTokens.HighlightPurpleFill3,
+  highlightAmberFill1 = ColorDarkTokens.HighlightAmberFill1,
+  highlightAmberFill2 = ColorDarkTokens.HighlightAmberFill2,
+  highlightAmberFill3 = ColorDarkTokens.HighlightAmberFill3,
+  highlightRedFill1 = ColorDarkTokens.HighlightRedFill1,
+  highlightRedFill2 = ColorDarkTokens.HighlightRedFill2,
+  highlightRedFill3 = ColorDarkTokens.HighlightRedFill3,
   transparent = ColorDarkTokens.Transparent,
 )
 
@@ -407,6 +425,12 @@ internal fun ColorScheme.fromToken(value: ColorSchemeKeyTokens): Color {
     ColorSchemeKeyTokens.HighlightYellowFill1 -> highlightYellowFill1
     ColorSchemeKeyTokens.HighlightYellowFill2 -> highlightYellowFill2
     ColorSchemeKeyTokens.HighlightYellowFill3 -> highlightYellowFill3
+    ColorSchemeKeyTokens.HighlightRedFill1 -> highlightRedFill1
+    ColorSchemeKeyTokens.HighlightRedFill2 -> highlightRedFill2
+    ColorSchemeKeyTokens.HighlightRedFill3 -> highlightRedFill3
+    ColorSchemeKeyTokens.HighlightAmberFill1 -> highlightAmberFill1
+    ColorSchemeKeyTokens.HighlightAmberFill2 -> highlightAmberFill2
+    ColorSchemeKeyTokens.HighlightAmberFill3 -> highlightAmberFill3
     ColorSchemeKeyTokens.HighlightGreenFill1 -> highlightGreenFill1
     ColorSchemeKeyTokens.HighlightGreenFill2 -> highlightGreenFill2
     ColorSchemeKeyTokens.HighlightGreenFill3 -> highlightGreenFill3

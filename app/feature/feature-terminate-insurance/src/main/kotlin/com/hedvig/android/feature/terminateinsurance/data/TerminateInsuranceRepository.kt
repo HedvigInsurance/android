@@ -4,8 +4,8 @@ import arrow.core.Either
 import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
+import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.terminateinsurance.InsuranceId
 import kotlinx.datetime.LocalDate
@@ -36,8 +36,7 @@ internal class TerminateInsuranceRepositoryImpl(
     return either {
       val result = apolloClient
         .mutation(FlowTerminationStartMutation(FlowTerminationStartInput(insuranceId.id)))
-        .safeExecute()
-        .toEither(::ErrorMessage)
+        .safeExecute(::ErrorMessage)
         .bind()
         .flowTerminationStart
       terminationFlowContextStorage.saveContext(result.context)
@@ -54,8 +53,7 @@ internal class TerminateInsuranceRepositoryImpl(
             input = FlowTerminationDateInput(terminationDate),
           ),
         )
-        .safeExecute()
-        .toEither(::ErrorMessage)
+        .safeExecute(::ErrorMessage)
         .bind()
         .flowTerminationDateNext
       terminationFlowContextStorage.saveContext(result.context)
@@ -79,8 +77,7 @@ internal class TerminateInsuranceRepositoryImpl(
             ),
           ),
         )
-        .safeExecute()
-        .toEither(::ErrorMessage)
+        .safeExecute(::ErrorMessage)
         .bind()
         .flowTerminationSurveyNext
       terminationFlowContextStorage.saveContext(result.context)
@@ -92,8 +89,7 @@ internal class TerminateInsuranceRepositoryImpl(
     return either {
       val result = apolloClient
         .mutation(FlowTerminationDeletionNextMutation(terminationFlowContextStorage.getContext()))
-        .safeExecute()
-        .toEither(::ErrorMessage)
+        .safeExecute(::ErrorMessage)
         .bind()
         .flowTerminationDeletionNext
       terminationFlowContextStorage.saveContext(result.context)

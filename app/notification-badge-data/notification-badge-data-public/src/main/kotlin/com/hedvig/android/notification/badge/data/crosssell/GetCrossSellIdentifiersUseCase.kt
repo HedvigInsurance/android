@@ -1,9 +1,7 @@
 package com.hedvig.android.notification.badge.data.crosssell
 
 import com.apollographql.apollo.ApolloClient
-import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.apollo.toEither
 import com.hedvig.android.logger.logcat
 import octopus.CrossSellTypesQuery
 
@@ -21,11 +19,10 @@ internal class GetCrossSellIdentifiersUseCaseImpl(
     return apolloClient
       .query(CrossSellTypesQuery())
       .safeExecute()
-      .toEither()
       .fold(
-        { operationResultError: OperationResult.Error ->
-          logcat(throwable = operationResultError.throwable) {
-            "Error when loading potential cross-sells: $operationResultError"
+        {
+          logcat(throwable = it.throwable) {
+            "Error when loading potential cross-sells: $it"
           }
           emptySet()
         },
