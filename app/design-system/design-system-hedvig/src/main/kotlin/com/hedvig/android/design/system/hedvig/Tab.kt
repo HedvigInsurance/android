@@ -98,16 +98,6 @@ fun HedvigTabRowMaxSixTabs(
     ),
   )
   var oneLineHeight by remember { mutableIntStateOf(0) }
-  Box(Modifier.withoutPlacement()) {
-    HedvigText(
-      text = "measurement", style = tabSize.textStyle,
-      modifier = Modifier
-          .onSizeChanged {
-              oneLineHeight = it.height
-          }
-          .padding(tabSize.tabPadding),
-    )
-  }
   Box(
     modifier = modifier
         .clip(tabSize.rowShape)
@@ -115,6 +105,16 @@ fun HedvigTabRowMaxSixTabs(
         .height(intrinsicSize = IntrinsicSize.Min)
         .padding(tabSize.rowPadding),
   ) {
+    Box(Modifier.withoutPlacement()) {
+      HedvigText(
+        text = "measurement", style = tabSize.textStyle,
+        modifier = Modifier
+          .onSizeChanged {
+            oneLineHeight = it.height
+          }
+          .padding(tabSize.tabPadding),
+      )
+    }
     Layout(
       contents = listOf(
         {
