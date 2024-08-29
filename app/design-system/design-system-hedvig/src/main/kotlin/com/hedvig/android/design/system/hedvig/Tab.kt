@@ -5,6 +5,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateIntOffsetAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -18,18 +19,22 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.Measurable
+import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.layout.positionInParent
@@ -37,11 +42,13 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.compose.ui.withoutPlacement
 import com.hedvig.android.design.system.hedvig.TabDefaults.TabSize
 import com.hedvig.android.design.system.hedvig.TabDefaults.TabSize.Mini
 import com.hedvig.android.design.system.hedvig.TabDefaults.TabStyle
@@ -56,7 +63,7 @@ import com.hedvig.android.design.system.hedvig.tokens.MiniTabTokens
 import com.hedvig.android.design.system.hedvig.tokens.SmallTabTokens
 
 @Composable
-fun HedvigTabRow(
+fun HedvigTabRowMaxSixTabs(
   tabTitles: List<String>,
   selectedTabIndex: Int,
   onTabChosen: (index: Int) -> Unit,
@@ -90,6 +97,17 @@ fun HedvigTabRow(
       easing = FastOutSlowInEasing,
     ),
   )
+  var oneLineHeight by remember { mutableIntStateOf(0) }
+  Box(Modifier.withoutPlacement()) {
+    HedvigText(
+      text = "measurement", style = tabSize.textStyle,
+      modifier = Modifier
+          .onSizeChanged {
+              oneLineHeight = it.height
+          }
+          .padding(tabSize.tabPadding),
+    )
+  }
   Box(
     modifier = modifier
         .clip(tabSize.rowShape)
@@ -97,31 +115,136 @@ fun HedvigTabRow(
         .height(intrinsicSize = IntrinsicSize.Min)
         .padding(tabSize.rowPadding),
   ) {
-    if (indicatorHeight != 0.dp && indicatorWidth != 0.dp) {
-      TabIndicator(
-        indicatorHeight = indicatorHeight,
-        indicatorWidth = indicatorWidth,
-        indicatorOffset = indicatorOffset,
-        indicatorColor = tabStyle.colors.chosenTabBackground,
-        indicatorShape = tabSize.tabShape,
-      )
+    Layout(
+      contents = listOf(
+        {
+          TabIndicator(
+            indicatorOffset = indicatorOffset,
+            indicatorColor = tabStyle.colors.chosenTabBackground,
+            indicatorShape = tabSize.tabShape,
+          )
+        },
+        {
+          tabTitles.forEachIndexed { index, title ->
+            TabItem(
+              modifier = Modifier
+                .clip(tabSize.tabShape),
+              onClick = {
+                onTabChosen(index)
+              },
+              text = title,
+              textStyle = tabSize.textStyle,
+              tabTextColor = tabStyle.colors.textColor,
+              contentPadding = tabSize.tabPadding,
+            )
+          }
+        },
+      ),
+    ) { measurablesList: List<List<Measurable>>, constraints ->
+      val itemMeasurables = measurablesList[1]
+      if (itemMeasurables.size <= 1) {
+        layout(0, 0) {}
+      } else {
+        val fullWidth = constraints.maxWidth
+        val listOfPlaceables = mutableListOf<Placeable>()
+        val desiredItemWidth =
+          if (itemMeasurables.any { it.minIntrinsicWidth(oneLineHeight) > fullWidth / 3 }) fullWidth / 2
+          else fullWidth / 3
+        val howManyLines = itemMeasurables.size * desiredItemWidth / fullWidth
+        val howManyItemsInEachLine = fullWidth / desiredItemWidth
+        val mapOfOffsets = mutableMapOf<Int, IntOffset>()
+        itemMeasurables.forEachIndexed { index, _ ->
+          if (index<=howManyItemsInEachLine-1) { //first line
+            mapOfOffsets[index] = IntOffset( desiredItemWidth * index, 0)
+          } else if (index<=(2*howManyItemsInEachLine-1)) { //second line
+            mapOfOffsets[index] = IntOffset(
+              y = oneLineHeight,
+              x = desiredItemWidth * (index - howManyItemsInEachLine)
+            )
+          } else { //third line
+            mapOfOffsets[index] = IntOffset(
+              y = oneLineHeight*2,
+              x = desiredItemWidth * (index - howManyItemsInEachLine)
+            )
+          }
+        }
+        for (item in itemMeasurables) {
+          val desiredItemHeight = oneLineHeight
+          val placeable = item.measure(
+            constraints.copy(
+              maxWidth = desiredItemWidth,
+              minWidth = desiredItemWidth,
+              maxHeight = desiredItemHeight,
+              minHeight = desiredItemHeight,
+            ),
+          )
+          listOfPlaceables.add(placeable)
+        }
+        val chosenItem = listOfPlaceables[selectedTabIndex]
+        val indicatorPlaceable = measurablesList[0][0].measure(
+          Constraints(
+            minWidth = chosenItem.width,
+            minHeight = chosenItem.height,
+            maxHeight = chosenItem.height,
+            maxWidth = chosenItem.width,
+          ),
+        )
+        layout(
+          width = fullWidth,
+          height = if (listOfPlaceables.size <= 3) oneLineHeight else oneLineHeight * 2,
+        ) {
+          indicatorPlaceable.placeRelative(mapOfOffsets[selectedTabIndex]!!.x, mapOfOffsets[selectedTabIndex]!!.y)
+          listOfPlaceables.forEachIndexed { index, placeable ->
+            placeable.placeRelative(
+              x = mapOfOffsets[index]!!.x,
+              y = mapOfOffsets[index]!!.y,
+            )
+          }
+        } //todo: only for up to 6 TabItems
+      }
     }
-    TabFlowRow(
-      rowShape = tabSize.rowShape,
-      tabTitles = tabTitles,
-      textStyle = tabSize.textStyle,
-      textColor = tabStyle.colors.textColor,
-      contentPadding = tabSize.tabPadding,
-      onTabChosen = onTabChosen,
-      onItemPlaced = { index: Int, offset: IntOffset ->
-        currentOffsetMap[index] = offset
-      },
-      onSizeChanged = {index: Int, size: IntSize ->
-                    currentWidthMap[index] = size.width
-            currentHeightMap[index] = size.height
-      },
-      tabShape = tabSize.tabShape
-    )
+//
+//    if (indicatorHeight != 0.dp && indicatorWidth != 0.dp) {
+//      TabIndicator(
+//        indicatorHeight = indicatorHeight,
+//        indicatorWidth = indicatorWidth,
+//        indicatorOffset = indicatorOffset,
+//        indicatorColor = tabStyle.colors.chosenTabBackground,
+//        indicatorShape = tabSize.tabShape,
+//      )
+//    }
+//    TabFlowRow(
+//        rowShape = tabSize.rowShape,
+//        tabTitles = tabTitles,
+//        textStyle = tabSize.textStyle,
+//        textColor = tabStyle.colors.textColor,
+//        contentPadding = tabSize.tabPadding,
+//        onTabChosen = onTabChosen,
+//        onItemPlaced = { index: Int, offset: IntOffset ->
+//            currentOffsetMap[index] = offset
+//        },
+//        onSizeChanged = { index: Int, size: IntSize ->
+//            currentWidthMap[index] = size.width
+//            currentHeightMap[index] = size.height
+//        },
+//        tabShape = tabSize.tabShape,
+//    )
+  }
+}
+
+private fun calculateOffsetYinLayout(index: Int, firstItemRowHeight: Int): Int {
+  return if (index <= 2) {
+    0
+  } else firstItemRowHeight
+}
+
+private fun calculateOffsetXinLayout(index: Int, itemWidth: Int): Int {
+  return if (index == 0 || index == 3) {
+    0
+  } else if (index == 1 || index == 4) {
+    itemWidth
+  } else {
+    2 * itemWidth
   }
 }
 
@@ -310,7 +433,7 @@ private fun TabFlowRow(
   rowShape: Shape,
   tabShape: Shape,
   tabTitles: List<String>,
-  onItemPlaced: (index: Int, offset: IntOffset ) -> Unit,
+  onItemPlaced: (index: Int, offset: IntOffset) -> Unit,
   onSizeChanged: (index: Int, size: IntSize) -> Unit,
   onTabChosen: (Int) -> Unit,
   textStyle: TextStyle,
@@ -380,16 +503,16 @@ private fun TabItem(
 
 @Composable
 private fun TabIndicator(
-  indicatorHeight: Dp,
-  indicatorWidth: Dp,
+//  indicatorHeight: Dp,
+//  indicatorWidth: Dp,
   indicatorOffset: IntOffset,
   indicatorColor: Color,
   indicatorShape: Shape,
 ) {
   Box(
     modifier = Modifier
-        .width(indicatorWidth)
-        .height(indicatorHeight)
+//        .width(indicatorWidth)
+//        .height(indicatorHeight)
         .offset {
             indicatorOffset
         }

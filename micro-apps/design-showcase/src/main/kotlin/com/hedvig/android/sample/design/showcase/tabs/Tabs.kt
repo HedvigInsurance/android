@@ -17,7 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.design.system.hedvig.HedvigTabRow
+import com.hedvig.android.design.system.hedvig.HedvigTabRowMaxSixTabs
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
@@ -50,7 +50,7 @@ fun TabsShowcase() {
     ) {
       HedvigText(text = "Small, Filled and Default")
       Spacer(modifier = Modifier.height(16.dp))
-      HedvigTabRow(
+      HedvigTabRowMaxSixTabs(
         modifier = Modifier.fillMaxWidth(),
         tabStyle = Filled,
         tabSize = Small,
@@ -61,7 +61,7 @@ fun TabsShowcase() {
         },
       )
       Spacer(modifier = Modifier.height(16.dp))
-      HedvigTabRow(
+      HedvigTabRowMaxSixTabs(
         modifier = Modifier.fillMaxWidth(),
         tabStyle = Default,
         tabSize = Small,
@@ -74,7 +74,7 @@ fun TabsShowcase() {
       Spacer(modifier = Modifier.height(16.dp))
       HedvigText(text = "Mini Filled")
       Spacer(modifier = Modifier.height(16.dp))
-      HedvigTabRow(
+      HedvigTabRowMaxSixTabs(
         modifier = Modifier.fillMaxWidth(),
         tabStyle = Filled,
         tabSize = Mini,
@@ -87,7 +87,7 @@ fun TabsShowcase() {
       Spacer(modifier = Modifier.height(16.dp))
       HedvigText(text = "Medium Filled")
       Spacer(modifier = Modifier.height(16.dp))
-      HedvigTabRow(
+      HedvigTabRowMaxSixTabs(
         modifier = Modifier.fillMaxWidth(),
         tabStyle = Filled,
         tabSize = Medium,
@@ -100,7 +100,7 @@ fun TabsShowcase() {
       Spacer(modifier = Modifier.height(16.dp))
       HedvigText(text = "Large Filled")
       Spacer(modifier = Modifier.height(16.dp))
-      HedvigTabRow(
+      HedvigTabRowMaxSixTabs(
         modifier = Modifier.fillMaxWidth(),
         tabStyle = Filled,
         tabSize = Large,
@@ -115,4 +115,4 @@ fun TabsShowcase() {
   }
 }
 
-private val titles = listOf("Overview", "C", "Documents")
+private val titles = listOf("Overview", "C", "Documents","Something else")
