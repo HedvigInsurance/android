@@ -42,6 +42,7 @@ dependencies {
   implementation(projects.dataContractPublic)
   implementation(projects.dataProductVariantAndroid)
   implementation(projects.dataProductVariantPublic)
+  implementation(projects.designSystemHedvig)
   implementation(projects.featureFlagsPublic)
   implementation(projects.languageCore)
   implementation(projects.moleculeAndroid)

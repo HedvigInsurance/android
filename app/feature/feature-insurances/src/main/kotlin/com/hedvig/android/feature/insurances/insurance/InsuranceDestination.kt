@@ -5,9 +5,9 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -42,6 +42,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.compose.dropUnlessResumed
 import coil.ImageLoader
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
@@ -60,6 +61,10 @@ import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.contract.android.CrossSell
 import com.hedvig.android.data.productvariant.ProductVariant
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceContract
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceScreenEvent
@@ -80,6 +85,7 @@ internal fun InsuranceDestination(
   onInsuranceCardClick: (contractId: String) -> Unit,
   onCrossSellClick: (String) -> Unit,
   navigateToCancelledInsurances: () -> Unit,
+  onNavigateToMovingFlow: () -> Unit,
   imageLoader: ImageLoader,
 ) {
   val uiState: InsuranceUiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -107,6 +113,7 @@ internal fun InsuranceDestination(
     onInsuranceCardClick = onInsuranceCardClick,
     onCrossSellClick = onCrossSellClick,
     navigateToCancelledInsurances = navigateToCancelledInsurances,
+    onNavigateToMovingFlow = onNavigateToMovingFlow,
     imageLoader = imageLoader,
   )
 }
@@ -118,6 +125,7 @@ private fun InsuranceScreen(
   onInsuranceCardClick: (contractId: String) -> Unit,
   onCrossSellClick: (String) -> Unit,
   navigateToCancelledInsurances: () -> Unit,
+  onNavigateToMovingFlow: () -> Unit,
   imageLoader: ImageLoader,
 ) {
   val isRetrying = uiState.isRetrying
@@ -156,23 +164,23 @@ private fun InsuranceScreen(
         },
         label = "uiState",
       ) { state ->
-        Column(
-          Modifier
-            .fillMaxSize(),
-        ) {
-          if (state.hasError) {
-            HedvigErrorSection(onButtonClick = reload)
-          } else {
-            InsuranceScreenContent(
-              uiState = state,
-              imageLoader = imageLoader,
-              showNotificationBadge = state.showNotificationBadge,
-              onInsuranceCardClick = onInsuranceCardClick,
-              onCrossSellClick = onCrossSellClick,
-              navigateToCancelledInsurances = navigateToCancelledInsurances,
-              quantityOfCancelledInsurances = state.quantityOfCancelledInsurances,
-            )
-          }
+        if (state.hasError) {
+          HedvigErrorSection(
+            onButtonClick = reload,
+            modifier = Modifier.fillMaxSize(),
+          )
+        } else {
+          InsuranceScreenContent(
+            uiState = state,
+            imageLoader = imageLoader,
+            showNotificationBadge = state.showNotificationBadge,
+            quantityOfCancelledInsurances = state.quantityOfCancelledInsurances,
+            onInsuranceCardClick = onInsuranceCardClick,
+            onCrossSellClick = onCrossSellClick,
+            navigateToCancelledInsurances = navigateToCancelledInsurances,
+            onNavigateToMovingFlow = onNavigateToMovingFlow,
+            modifier = Modifier.fillMaxSize(),
+          )
         }
       }
       Spacer(Modifier.height(16.dp))
@@ -189,56 +197,67 @@ private fun InsuranceScreen(
 
 @Suppress("UnusedReceiverParameter")
 @Composable
-private fun ColumnScope.InsuranceScreenContent(
+private fun InsuranceScreenContent(
   uiState: InsuranceUiState,
   imageLoader: ImageLoader,
   showNotificationBadge: Boolean,
+  quantityOfCancelledInsurances: Int,
   onInsuranceCardClick: (contractId: String) -> Unit,
   onCrossSellClick: (String) -> Unit,
   navigateToCancelledInsurances: () -> Unit,
-  quantityOfCancelledInsurances: Int,
+  onNavigateToMovingFlow: () -> Unit,
+  modifier: Modifier = Modifier,
 ) {
-  val insuranceCardModifier = Modifier
-    .padding(horizontal = 16.dp)
-    .clip(MaterialTheme.shapes.squircleMedium)
-  if (uiState.isLoading) {
-    Spacer(Modifier.height(16.dp))
-    InsuranceCardPlaceholder(
-      imageLoader = imageLoader,
-      modifier = insuranceCardModifier,
-    )
-    CrossSellItemPlaceholder()
-  } else {
-    ContractsSection(
-      imageLoader = imageLoader,
-      modifier = insuranceCardModifier,
-      onInsuranceCardClick = onInsuranceCardClick,
-      contracts = uiState.contracts,
-    )
-    if (uiState.crossSells.isNotEmpty()) {
-      CrossSellsSection(
-        showNotificationBadge = showNotificationBadge,
-        crossSells = uiState.crossSells,
-        onCrossSellClick = onCrossSellClick,
+  Column(
+    modifier = modifier.padding(top = 16.dp),
+    verticalArrangement = Arrangement.spacedBy(24.dp),
+  ) {
+    val insuranceCardModifier = Modifier
+      .padding(horizontal = 16.dp)
+      .clip(MaterialTheme.shapes.squircleMedium)
+    if (uiState.isLoading) {
+      InsuranceCardPlaceholder(
+        imageLoader = imageLoader,
+        modifier = insuranceCardModifier,
       )
-    }
-    if (quantityOfCancelledInsurances > 0) {
-      Spacer(Modifier.height(24.dp))
-      TerminatedContractsButton(
-        text = pluralStringResource(
-          R.plurals.insurances_tab_terminated_insurance_subtitile,
-          quantityOfCancelledInsurances,
-          quantityOfCancelledInsurances,
-        ),
-        onClick = navigateToCancelledInsurances,
-        modifier = Modifier.padding(horizontal = 16.dp),
+      CrossSellItemPlaceholder()
+    } else {
+      ContractsSection(
+        imageLoader = imageLoader,
+        modifier = insuranceCardModifier,
+        onInsuranceCardClick = onInsuranceCardClick,
+        contracts = uiState.contracts,
       )
+      if (uiState.shouldSuggestMovingFlow) {
+        MovingFlowSuggestionSection(
+          onNavigateToMovingFlow = onNavigateToMovingFlow,
+          modifier = Modifier.padding(horizontal = 16.dp),
+        )
+      }
+      if (uiState.crossSells.isNotEmpty()) {
+        CrossSellsSection(
+          showNotificationBadge = showNotificationBadge,
+          crossSells = uiState.crossSells,
+          onCrossSellClick = onCrossSellClick,
+        )
+      }
+      if (quantityOfCancelledInsurances > 0) {
+        TerminatedContractsButton(
+          text = pluralStringResource(
+            R.plurals.insurances_tab_terminated_insurance_subtitile,
+            quantityOfCancelledInsurances,
+            quantityOfCancelledInsurances,
+          ),
+          onClick = navigateToCancelledInsurances,
+          modifier = Modifier.padding(horizontal = 16.dp),
+        )
+      }
     }
   }
 }
 
 @Composable
-private fun ColumnScope.ContractsSection(
+private fun ContractsSection(
   contracts: List<InsuranceContract>,
   imageLoader: ImageLoader,
   onInsuranceCardClick: (contractId: String) -> Unit,
@@ -250,23 +269,21 @@ private fun ColumnScope.ContractsSection(
       withDefaultVerticalSpacing = true,
     )
   } else {
-    Spacer(Modifier.height(16.dp))
-    for ((index, contract) in contracts.withIndex()) {
-      InsuranceCard(
-        contract = contract,
-        imageLoader = imageLoader,
-        modifier = modifier,
-        onInsuranceCardClick = onInsuranceCardClick,
-      )
-      if (index != contracts.lastIndex) {
-        Spacer(Modifier.height(8.dp))
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+      for (contract in contracts) {
+        InsuranceCard(
+          contract = contract,
+          imageLoader = imageLoader,
+          modifier = modifier,
+          onInsuranceCardClick = onInsuranceCardClick,
+        )
       }
     }
   }
 }
 
 @Composable
-fun InsuranceCard(
+private fun InsuranceCard(
   contract: InsuranceContract,
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
@@ -306,6 +323,24 @@ private fun TerminatedContractsButton(text: String, onClick: () -> Unit, modifie
   }
 }
 
+@Composable
+private fun MovingFlowSuggestionSection(onNavigateToMovingFlow: () -> Unit, modifier: Modifier = Modifier) {
+  Column(modifier, Arrangement.spacedBy(8.dp)) {
+    HedvigText(
+      text = stringResource(R.string.insurances_tab_moving_flow_section_title),
+      style = com.hedvig.android.design.system.hedvig.HedvigTheme.typography.headlineSmall,
+    )
+    HedvigNotificationCard(
+      message = stringResource(R.string.insurances_tab_moving_flow_info_title),
+      priority = NotificationPriority.Campaign,
+      style = InfoCardStyle.Button(
+        stringResource(R.string.insurances_tab_moving_flow_info_button_title),
+        dropUnlessResumed { onNavigateToMovingFlow() },
+      ),
+    )
+  }
+}
+
 @HedvigPreview
 @Composable
 private fun PreviewInsuranceScreen(
@@ -331,10 +366,12 @@ private fun PreviewInsuranceScreen(
           ),
           showNotificationBadge = false,
           quantityOfCancelledInsurances = 1,
+          shouldSuggestMovingFlow = true,
           hasError = false,
           isLoading = false,
           isRetrying = false,
         ),
+        {},
         {},
         {},
         {},
@@ -361,6 +398,7 @@ private fun PreviewInsuranceDestinationAnimation() {
             onInsuranceCardClick = {},
             onCrossSellClick = {},
             navigateToCancelledInsurances = {},
+            onNavigateToMovingFlow = {},
           )
         },
       )
@@ -378,6 +416,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       isRetrying = false,
       quantityOfCancelledInsurances = 0,
       showNotificationBadge = false,
+      shouldSuggestMovingFlow = true,
     ),
     InsuranceUiState(
       contracts =
@@ -396,6 +435,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       hasError = false,
       isLoading = false,
       isRetrying = false,
+      shouldSuggestMovingFlow = true,
     ),
     InsuranceUiState(
       contracts = listOf(),
@@ -405,6 +445,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       isRetrying = false,
       quantityOfCancelledInsurances = 0,
       showNotificationBadge = false,
+      shouldSuggestMovingFlow = true,
     ),
     InsuranceUiState(
       contracts = listOf(),
@@ -429,6 +470,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       isRetrying = false,
       quantityOfCancelledInsurances = 0,
       showNotificationBadge = false,
+      shouldSuggestMovingFlow = true,
     ),
     InsuranceUiState(
       contracts = listOf(),
@@ -438,6 +480,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       isRetrying = false,
       quantityOfCancelledInsurances = 0,
       showNotificationBadge = false,
+      shouldSuggestMovingFlow = true,
     ),
     InsuranceUiState(
       contracts = listOf(),
@@ -447,6 +490,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       isRetrying = false,
       quantityOfCancelledInsurances = 0,
       showNotificationBadge = false,
+      shouldSuggestMovingFlow = true,
     ),
   ),
 )

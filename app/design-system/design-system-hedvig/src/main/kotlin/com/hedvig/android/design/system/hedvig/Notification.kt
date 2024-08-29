@@ -1,10 +1,11 @@
 package com.hedvig.android.design.system.hedvig
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -17,7 +18,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Small
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.SecondaryAlt
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle.Button
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle.Buttons
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle.Default
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
@@ -81,30 +85,47 @@ fun HedvigNotificationCard(
         }
         Column {
           HedvigText(text = message)
-          if (style is Buttons) {
-            Row {
-              HedvigTheme(darkTheme = false) {
-                HedvigButton(
-                  enabled = true,
-                  onClick = style.onLeftButtonClick,
-                  buttonStyle = ButtonDefaults.ButtonStyle.SecondaryAlt,
-                  buttonSize = ButtonDefaults.ButtonSize.Small,
-                  modifier = Modifier.weight(1f),
-                ) {
-                  HedvigText(style.leftButtonText, style = textStyle)
-                }
-                Spacer(Modifier.width(4.dp))
-                HedvigButton(
-                  enabled = true,
-                  onClick = style.onRightButtonClick,
-                  buttonStyle = ButtonDefaults.ButtonStyle.SecondaryAlt,
-                  buttonSize = ButtonDefaults.ButtonSize.Small,
-                  modifier = Modifier.weight(1f),
-                ) {
-                  HedvigText(style.rightButtonText, style = textStyle)
+          when (style) {
+            is Buttons -> {
+              Row {
+                HedvigTheme(darkTheme = false) {
+                  HedvigButton(
+                    enabled = true,
+                    onClick = style.onLeftButtonClick,
+                    buttonStyle = SecondaryAlt,
+                    buttonSize = Small,
+                    modifier = Modifier.weight(1f),
+                  ) {
+                    HedvigText(style.leftButtonText, style = textStyle)
+                  }
+                  Spacer(Modifier.width(4.dp))
+                  HedvigButton(
+                    enabled = true,
+                    onClick = style.onRightButtonClick,
+                    buttonStyle = SecondaryAlt,
+                    buttonSize = Small,
+                    modifier = Modifier.weight(1f),
+                  ) {
+                    HedvigText(style.rightButtonText, style = textStyle)
+                  }
                 }
               }
             }
+
+            is Button -> {
+              HedvigTheme(darkTheme = false) {
+                HedvigButton(
+                  enabled = true,
+                  onClick = style.onButtonClick,
+                  buttonStyle = SecondaryAlt,
+                  buttonSize = Small,
+                  modifier = Modifier.fillMaxWidth(),
+                ) {
+                  HedvigText(style.buttonText, style = textStyle)
+                }
+              }
+            }
+            Default -> {}
           }
         }
       }
@@ -273,6 +294,11 @@ object NotificationDefaults {
   sealed class InfoCardStyle {
     data object Default : InfoCardStyle()
 
+    data class Button(
+      val buttonText: String,
+      val onButtonClick: () -> Unit,
+    ) : InfoCardStyle()
+
     data class Buttons(
       val leftButtonText: String,
       val rightButtonText: String,
@@ -293,6 +319,7 @@ private fun PreviewNotificationCard(
         Modifier
           .width(330.dp)
           .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
       ) {
         HedvigNotificationCard(
           priority = priority,
@@ -300,28 +327,36 @@ private fun PreviewNotificationCard(
           withIcon = false,
           style = Default,
         )
-        Spacer(Modifier.height(16.dp))
         HedvigNotificationCard(
           priority = priority,
           message = "A short message about something that needs attention.",
           withIcon = true,
           style = Default,
         )
-        Spacer(Modifier.height(16.dp))
+        HedvigNotificationCard(
+          priority = priority,
+          message = "A short message about something that needs attention.",
+          withIcon = false,
+          style = Button("Button", {}),
+        )
+        HedvigNotificationCard(
+          priority = priority,
+          message = "A short message about something that needs attention.",
+          withIcon = true,
+          style = Button("Button", {}),
+        )
         HedvigNotificationCard(
           priority = priority,
           message = "A short message about something that needs attention.",
           withIcon = false,
           style = Buttons("Left", "Right", {}, {}),
         )
-        Spacer(Modifier.height(16.dp))
         HedvigNotificationCard(
           priority = priority,
           message = "A short message about something that needs attention.",
           withIcon = true,
           style = Buttons("Left", "Right", {}, {}),
         )
-        Spacer(Modifier.height(16.dp))
       }
     }
   }
