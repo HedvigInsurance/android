@@ -121,7 +121,6 @@ fun HedvigTabRowMaxSixTabs(
       contents = listOf(
         {
           TabIndicator(
-            indicatorOffset = indicatorOffset,
             indicatorColor = tabStyle.colors.chosenTabBackground,
             indicatorShape = tabSize.tabShape,
           )
@@ -490,15 +489,11 @@ private fun TabItem(
 
 @Composable
 private fun TabIndicator(
-  indicatorOffset: IntOffset,
   indicatorColor: Color,
   indicatorShape: Shape,
 ) {
   Box(
     modifier = Modifier
-        .offset {
-            indicatorOffset
-        }
         .clip(
             shape = indicatorShape,
         )
