@@ -98,7 +98,10 @@ private fun Modifier.animatedNavigationBarInsetsConsumption(hedvigAppState: Hedv
   val density = LocalDensity.current
   val insetsToConsume = when (hedvigAppState.navigationSuiteType) {
     NavigationSuiteType.NavigationBar -> WindowInsets.systemBars.only(WindowInsetsSides.Bottom).asPaddingValues(density)
-    NavigationSuiteType.NavigationRail ->
+    NavigationSuiteType.None -> PaddingValues(0.dp)
+    NavigationSuiteType.NavigationRail,
+    NavigationSuiteType.NavigationRailXLarge,
+    ->
       WindowInsets.systemBars
         .union(WindowInsets.displayCutout)
         .only(WindowInsetsSides.Left)
