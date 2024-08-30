@@ -30,6 +30,11 @@ import com.hedvig.android.design.system.hedvig.TabDefaults.TabStyle.Filled
 
 @Composable
 fun TabsShowcase() {
+  var selectedIndex00 by remember { mutableStateOf(0) }
+  var selectedIndex01 by remember { mutableStateOf(0) }
+  var selectedIndex02 by remember { mutableStateOf(0) }
+  var selectedIndex03 by remember { mutableStateOf(0) }
+  var selectedIndex04 by remember { mutableStateOf(0) }
   var selectedIndex by remember { mutableStateOf(0) }
   var selectedIndex2 by remember { mutableStateOf(0) }
   var selectedIndex3 by remember { mutableStateOf(0) }
@@ -48,13 +53,78 @@ fun TabsShowcase() {
         .verticalScroll(rememberScrollState()),
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+      HedvigText(text = "2 tabs")
+      Spacer(modifier = Modifier.height(16.dp))
+      HedvigTabRowMaxSixTabs(
+        modifier = Modifier.fillMaxWidth(),
+        tabStyle = Filled,
+        tabSize = Small,
+        tabTitles = titles2,
+        selectedTabIndex = selectedIndex00,
+        onTabChosen = {
+          selectedIndex00 = it
+        },
+      )
+      Spacer(modifier = Modifier.height(16.dp))
+      HedvigText(text = "3 tabs")
+      Spacer(modifier = Modifier.height(16.dp))
+      HedvigTabRowMaxSixTabs(
+        modifier = Modifier.fillMaxWidth(),
+        tabStyle = Filled,
+        tabSize = Small,
+        tabTitles = titles3,
+        selectedTabIndex = selectedIndex01,
+        onTabChosen = {
+          selectedIndex01 = it
+        },
+      )
+      Spacer(modifier = Modifier.height(16.dp))
+      HedvigText(text = "4 tabs")
+      Spacer(modifier = Modifier.height(16.dp))
+      HedvigTabRowMaxSixTabs(
+        modifier = Modifier.fillMaxWidth(),
+        tabStyle = Filled,
+        tabSize = Small,
+        tabTitles = titles4,
+        selectedTabIndex = selectedIndex02,
+        onTabChosen = {
+          selectedIndex02 = it
+        },
+      )
+      Spacer(modifier = Modifier.height(16.dp))
+      HedvigText(text = "5 tabs")
+      Spacer(modifier = Modifier.height(16.dp))
+      HedvigTabRowMaxSixTabs(
+        modifier = Modifier.fillMaxWidth(),
+        tabStyle = Filled,
+        tabSize = Small,
+        tabTitles = titles5,
+        selectedTabIndex = selectedIndex03,
+        onTabChosen = {
+          selectedIndex03 = it
+        },
+      )
+      Spacer(modifier = Modifier.height(16.dp))
+      HedvigText(text = "6 tabs")
+      Spacer(modifier = Modifier.height(16.dp))
+      HedvigTabRowMaxSixTabs(
+        modifier = Modifier.fillMaxWidth(),
+        tabStyle = Filled,
+        tabSize = Small,
+        tabTitles = titles6,
+        selectedTabIndex = selectedIndex04,
+        onTabChosen = {
+          selectedIndex04 = it
+        },
+      )
+      Spacer(modifier = Modifier.height(16.dp))
       HedvigText(text = "Small, Filled and Default")
       Spacer(modifier = Modifier.height(16.dp))
       HedvigTabRowMaxSixTabs(
         modifier = Modifier.fillMaxWidth(),
         tabStyle = Filled,
         tabSize = Small,
-        tabTitles = titles,
+        tabTitles = titles3,
         selectedTabIndex = selectedIndex,
         onTabChosen = {
           selectedIndex = it
@@ -65,7 +135,7 @@ fun TabsShowcase() {
         modifier = Modifier.fillMaxWidth(),
         tabStyle = Default,
         tabSize = Small,
-        tabTitles = titles,
+        tabTitles = titles3,
         selectedTabIndex = selectedIndex2,
         onTabChosen = {
           selectedIndex2 = it
@@ -78,7 +148,7 @@ fun TabsShowcase() {
         modifier = Modifier.fillMaxWidth(),
         tabStyle = Filled,
         tabSize = Mini,
-        tabTitles = titles,
+        tabTitles = titles3,
         selectedTabIndex = selectedIndex3,
         onTabChosen = {
           selectedIndex3 = it
@@ -91,7 +161,7 @@ fun TabsShowcase() {
         modifier = Modifier.fillMaxWidth(),
         tabStyle = Filled,
         tabSize = Medium,
-        tabTitles = titles,
+        tabTitles = titles3,
         selectedTabIndex = selectedIndex4,
         onTabChosen = {
           selectedIndex4 = it
@@ -104,7 +174,7 @@ fun TabsShowcase() {
         modifier = Modifier.fillMaxWidth(),
         tabStyle = Filled,
         tabSize = Large,
-        tabTitles = titles,
+        tabTitles = titles3,
         selectedTabIndex = selectedIndex5,
         onTabChosen = {
           selectedIndex5 = it
@@ -115,4 +185,8 @@ fun TabsShowcase() {
   }
 }
 
-private val titles = listOf("Overview", "C", "Documents","Something else")
+private val titles2 = listOf("Overview", "Documents")
+private val titles3 = listOf("Overview", "C", "Documents")
+private val titles4 = listOf("Overview", "C", "Documents", "Something else")
+private val titles5 = listOf("Overview", "C", "Documents", "Something else", "Documents2")
+private val titles6 = listOf("Overview", "C", "Documents", "Something else", "Overview", "Overview")
