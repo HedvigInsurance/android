@@ -20,6 +20,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.navigation.NavDestination
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.design.system.hedvig.NavigationBar
+import com.hedvig.android.design.system.hedvig.NavigationRail
 import com.hedvig.android.navigation.core.TopLevelGraph
 
 @Composable
@@ -43,11 +45,12 @@ internal fun NavigationSuite(
         enter = expandHorizontally(expandFrom = Alignment.End),
         exit = shrinkHorizontally(shrinkTowards = Alignment.End),
       ) {
-        HedvigNavRail(
+        NavigationRail(
           destinations = topLevelGraphs,
           destinationsWithNotifications = topLevelGraphsWithNotifications,
           onNavigateToDestination = onNavigateToTopLevelGraph,
-          currentDestination = currentDestination,
+          getIsCurrentlySelected = currentDestination::isTopLevelGraphInHierarchy,
+          isExtraTall = navigationSuiteType == NavigationSuiteType.NavigationRailXLarge,
         )
       }
       content()
@@ -57,11 +60,11 @@ internal fun NavigationSuite(
       enter = expandVertically(expandFrom = Alignment.Top),
       exit = shrinkVertically(shrinkTowards = Alignment.Top),
     ) {
-      HedvigNavigationBar(
+      NavigationBar(
         destinations = topLevelGraphs,
         destinationsWithNotifications = topLevelGraphsWithNotifications,
         onNavigateToDestination = onNavigateToTopLevelGraph,
-        currentDestination = currentDestination,
+        getIsCurrentlySelected = currentDestination::isTopLevelGraphInHierarchy,
       )
     }
   }
