@@ -123,7 +123,7 @@ fun HedvigTabRowMaxSixTabs(
             // If it's still not enough, the text itself gets eclipsed later on
           } else if (tabItemsMeasurables.size == 2) {
             fullWidth / 2
-            // two tabs always take full width
+            // if there are only two tabs they always take full width
           } else {
             fullWidth / 3
             // basic
