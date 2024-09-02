@@ -16,4 +16,5 @@ dependencies {
   implementation(projects.composeUi)
   implementation(projects.coreResources)
   implementation(projects.designSystemInternals)
+  implementation(projects.navigationCore)
 }

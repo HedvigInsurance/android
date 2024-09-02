@@ -1,6 +1,7 @@
 package com.hedvig.android.app.ui
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
@@ -109,11 +110,14 @@ internal class HedvigAppState(
     @Composable
     get() {
       if (!shouldShowNavBars) return NavigationSuiteType.None
-      val bottomBarWidthRequirements = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact
-      return if (bottomBarWidthRequirements) {
-        NavigationSuiteType.NavigationBar
-      } else {
-        NavigationSuiteType.NavigationRail
+      return when (windowSizeClass.widthSizeClass) {
+        WindowWidthSizeClass.Compact -> NavigationSuiteType.NavigationBar
+        else -> {
+          when (windowSizeClass.heightSizeClass) {
+            WindowHeightSizeClass.Expanded -> NavigationSuiteType.NavigationRailXLarge
+            else -> NavigationSuiteType.NavigationRail
+          }
+        }
       }
     }
 
@@ -248,6 +252,7 @@ value class NavigationSuiteType private constructor(
   companion object {
     val NavigationBar = NavigationSuiteType(description = "NavigationBar")
     val NavigationRail = NavigationSuiteType(description = "NavigationRail")
+    val NavigationRailXLarge = NavigationSuiteType(description = "NavigationRailXL")
     val None = NavigationSuiteType(description = "None")
   }
 }
