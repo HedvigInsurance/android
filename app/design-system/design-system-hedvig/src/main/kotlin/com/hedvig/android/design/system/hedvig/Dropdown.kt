@@ -11,8 +11,10 @@ import com.hedvig.android.design.system.hedvig.DropdownItem.SimpleDropdownItem
 fun DropdownWithDialog(
   style: DropdownStyle,
   size: DropdownDefaults.DropdownSize,
+  hintText: String,
   modifier: Modifier = Modifier,
   chosenItemIndex: Int? = null,
+  isEnabled: Boolean = true,
   hasError: Boolean = false,
   errorText: String? = null
 ) {
@@ -49,10 +51,15 @@ object DropdownDefaults {
 
 sealed class DropdownItem {
   abstract val text: String
+  abstract val enabled: Boolean
 
-  data class SimpleDropdownItem(override val text: String) : DropdownItem()
+  data class SimpleDropdownItem(
+    override val text: String,
+    override val enabled: Boolean = true) : DropdownItem()
+
   data class DropdownItemWithIcon(
     override val text: String,
     val iconResource: IconResource,
+    override val enabled: Boolean = true
   ) : DropdownItem()
 }
