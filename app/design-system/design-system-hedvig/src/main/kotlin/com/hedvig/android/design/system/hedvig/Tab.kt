@@ -167,7 +167,7 @@ fun HedvigTabRowMaxSixTabs(
               lastIndex = tabItemsMeasurables.lastIndex,
             )
           } else { // full line
-            val adjustedIndex = index - currentRow * howManyItemsInEachLine
+            val adjustedIndex = index - (currentRow * howManyItemsInEachLine)
             desiredItemWidth * adjustedIndex
           }
 
