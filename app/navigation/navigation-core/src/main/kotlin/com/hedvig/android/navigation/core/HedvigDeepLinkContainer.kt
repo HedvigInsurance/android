@@ -28,6 +28,7 @@ interface HedvigDeepLinkContainer {
   val eurobonus: String // The destination allowing to edit your current Eurobonus (SAS) number
   val payments: String // The payments screen, showing the payments history and the upcoming payment information
   val deleteAccount: String // The screen where the member may request for their account data to be GDPR wiped
+  val contactInfo: String // The screen where one can change their contact information, like their email and phone.
 
   val chat: String // Hedvig Chat
   val inbox: String // Hedvig CBM inbox
@@ -63,6 +64,7 @@ internal class HedvigDeepLinkContainerImpl(
   override val eurobonus: String = "$baseDeepLinkDomain/eurobonus"
   override val payments: String = "$baseDeepLinkDomain/payments"
   override val deleteAccount: String = "$baseDeepLinkDomain/delete-account"
+  override val contactInfo: String = "$baseDeepLinkDomain/contact-info"
 
   override val chat: String = "$baseDeepLinkDomain/chat"
   override val inbox: String = "$baseDeepLinkDomain/inbox"
