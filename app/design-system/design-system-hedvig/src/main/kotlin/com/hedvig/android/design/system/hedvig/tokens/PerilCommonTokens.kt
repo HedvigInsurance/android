@@ -18,7 +18,7 @@ internal object PerilCommonTokens {
 }
 
 internal object PerilSmallTokens {
-  val CircleSize = 16.dp
+  val CircleSize = 20.dp
   val PaddingTop = 15.dp
   val PaddingBottom = 17.dp
   val PaddingHorizontal = 16.dp
