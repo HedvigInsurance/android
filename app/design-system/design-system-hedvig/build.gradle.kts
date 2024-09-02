@@ -6,8 +6,8 @@ plugins {
 }
 
 dependencies {
-  implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.activity.compose)
+  implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.foundationLayout)
   implementation(libs.androidx.compose.materialRipple)
   implementation(libs.androidx.compose.uiGraphics)
@@ -16,4 +16,5 @@ dependencies {
   implementation(projects.composeUi)
   implementation(projects.coreResources)
   implementation(projects.designSystemInternals)
+  implementation(projects.navigationCore)
 }

@@ -10,18 +10,22 @@ import com.hedvig.android.ui.emergency.EmergencyScreen
 internal fun DeflectEmergencyDestination(
   deflectEmergency: ClaimFlowDestination.DeflectEmergency,
   navigateUp: () -> Unit,
+  openUrl: (String) -> Unit,
 ) {
   DeflectEmergencyScreen(
     partners = deflectEmergency.partners,
     navigateUp = navigateUp,
+    openUrl = openUrl,
   )
 }
 
 @Composable
-private fun DeflectEmergencyScreen(partners: List<DeflectPartner>, navigateUp: () -> Unit) {
+private fun DeflectEmergencyScreen(partners: List<DeflectPartner>, navigateUp: () -> Unit, openUrl: (String) -> Unit) {
   EmergencyScreen(
     emergencyNumber = partners.firstNotNullOfOrNull { it.phoneNumber },
+    emergencyUrl = partners.firstNotNullOfOrNull { it.url },
     navigateUp = navigateUp,
+    openUrl = openUrl,
   )
 }
 
@@ -38,5 +42,6 @@ private fun DeflectEmergencyScreenPreview() {
       ),
     ),
     navigateUp = {},
+    openUrl = {},
   )
 }

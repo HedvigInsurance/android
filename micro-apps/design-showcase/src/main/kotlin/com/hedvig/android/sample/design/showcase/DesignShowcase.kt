@@ -3,6 +3,7 @@ package com.hedvig.android.sample.design.showcase
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.hedvig.android.sample.design.showcase.accordion.AccordionShowCase
 import com.hedvig.android.sample.design.showcase.bottomSheet.ShowcaseBottomSheet
 import com.hedvig.android.sample.design.showcase.button.ShowcaseButton
 import com.hedvig.android.sample.design.showcase.datepicker.DatePickerShowcase
@@ -11,6 +12,7 @@ import com.hedvig.android.sample.design.showcase.freetext.FreeTextShowcase
 import com.hedvig.android.sample.design.showcase.highlight.HighlightShowcase
 import com.hedvig.android.sample.design.showcase.icons.ShowcaseIcons
 import com.hedvig.android.sample.design.showcase.notifications.NotificationsSnackbarShowcase
+import com.hedvig.android.sample.design.showcase.peril.PerilsShowcase
 import com.hedvig.android.sample.design.showcase.progress.ProgressBarShowcase
 import com.hedvig.android.sample.design.showcase.radio.ShowCaseRadioGroups
 import com.hedvig.android.sample.design.showcase.stepper.StepperShowcase
@@ -49,6 +51,10 @@ internal fun DesignShowcase(modifier: Modifier = Modifier) {
       NotificationsSnackbarShowcase()
     } else if (showTabs) {
       TabsShowcase()
+    } else if (showPerils) {
+      PerilsShowcase()
+    } else if (showAccordion) {
+      AccordionShowCase()
     }
   }
 }
@@ -65,5 +71,7 @@ private val showDatePicker = false
 private val showFreeTextOverlay = false
 private val showHighLight = false
 private val showProgressBar = false
+private val showPerils = false
+private val showAccordion = false
 private val showSnacks = false
 private val showTabs = true

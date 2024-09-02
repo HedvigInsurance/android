@@ -35,7 +35,7 @@ internal sealed interface HelpCenterDestinations {
   }
 
   @Serializable
-  data class Emergency(val emergencyNumber: String?) : HelpCenterDestinations, Destination
+  data class Emergency(val emergencyNumber: String?, val emergencyUrl: String?) : HelpCenterDestinations, Destination
 
   @Serializable
   data class FirstVet(val sections: List<FirstVetSection>) : HelpCenterDestinations, Destination {

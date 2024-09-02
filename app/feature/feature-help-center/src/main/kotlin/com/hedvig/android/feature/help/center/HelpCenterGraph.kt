@@ -27,6 +27,7 @@ fun NavGraphBuilder.helpCenterGraph(
   navigator: Navigator,
   onNavigateToQuickLink: (NavBackStackEntry, QuickLinkDestination.OuterDestination) -> Unit,
   onNavigateToNewConversation: (NavBackStackEntry, AppDestination.Chat.ChatContext?) -> Unit,
+  openUrl: (String) -> Unit,
 ) {
   navgraph<HelpCenterDestination>(
     startDestination = HelpCenterDestinations.HelpCenter::class,
@@ -60,7 +61,12 @@ fun NavGraphBuilder.helpCenterGraph(
                 }
                 is QuickLinkDestination.InnerHelpCenterDestination.QuickLinkSickAbroad -> {
                   with(navigator) {
-                    backStackEntry.navigate(HelpCenterDestinations.Emergency(destination.emergencyNumber))
+                    backStackEntry.navigate(
+                      HelpCenterDestinations.Emergency(
+                        destination.emergencyNumber,
+                        destination.emergencyUrl,
+                      ),
+                    )
                   }
                 }
               }
@@ -117,7 +123,9 @@ fun NavGraphBuilder.helpCenterGraph(
     navdestination<HelpCenterDestinations.Emergency> {
       EmergencyDestination(
         emergencyNumber = emergencyNumber,
+        emergencyUrl = emergencyUrl,
         navigateUp = navigator::navigateUp,
+        openUrl = openUrl,
       )
     }
   }

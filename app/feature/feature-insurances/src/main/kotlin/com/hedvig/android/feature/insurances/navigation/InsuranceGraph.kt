@@ -53,6 +53,7 @@ fun NavGraphBuilder.insuranceGraph(
         navigateToCancelledInsurances = {
           with(navigator) { backStackEntry.navigate(InsurancesDestinations.TerminatedInsurances) }
         },
+        onNavigateToMovingFlow = { startMovingFlow(backStackEntry) },
         imageLoader = imageLoader,
       )
     }
