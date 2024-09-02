@@ -94,7 +94,7 @@ fun HedvigTabRowMaxSixTabs(
           )
         },
         {
-          tabTitles.forEachIndexed { index, title ->
+          tabTitles.take(6).forEachIndexed { index, title ->
             TabItem(
               modifier = Modifier
                 .clip(tabSize.tabShape),
