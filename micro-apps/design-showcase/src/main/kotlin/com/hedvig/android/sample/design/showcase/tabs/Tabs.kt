@@ -40,6 +40,7 @@ fun TabsShowcase() {
   var selectedIndex3 by remember { mutableStateOf(0) }
   var selectedIndex4 by remember { mutableStateOf(0) }
   var selectedIndex5 by remember { mutableStateOf(0) }
+  var selectedIndex6 by remember { mutableStateOf(0) }
   Surface(
     modifier = Modifier
       .fillMaxSize(),
@@ -181,12 +182,23 @@ fun TabsShowcase() {
         },
       )
       Spacer(modifier = Modifier.height(16.dp))
+      HedvigTabRowMaxSixTabs(
+        modifier = Modifier.fillMaxWidth(),
+        tabStyle = Filled,
+        tabSize = Large,
+        tabTitles = titles6,
+        selectedTabIndex = selectedIndex6,
+        onTabChosen = {
+          selectedIndex6 = it
+        },
+      )
+      Spacer(modifier = Modifier.height(16.dp))
     }
   }
 }
 
 private val titles2 = listOf("Overview", "Documents")
 private val titles3 = listOf("Overview", "C", "Documents")
-private val titles4 = listOf("Overview", "C", "Documents", "Something else")
-private val titles5 = listOf("Overview", "C", "Documents", "Something else", "Documents2")
+private val titles4 = listOf("Overview", "C", "Documents", "Documents2")
+private val titles5 = listOf("Overview", "C", "Documents", "Documents2", "Something else")
 private val titles6 = listOf("Overview", "C", "Documents", "Something else", "Overview", "Overview")
