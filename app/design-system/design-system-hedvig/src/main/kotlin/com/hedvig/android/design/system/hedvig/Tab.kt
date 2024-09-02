@@ -7,9 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
@@ -70,7 +68,6 @@ fun HedvigTabRowMaxSixTabs(
     modifier = modifier
       .clip(tabSize.rowShape)
       .background(tabStyle.colors.tabRowBackground)
-      .height(intrinsicSize = IntrinsicSize.Min)
       .padding(tabSize.rowPadding),
   ) {
     Box(Modifier.withoutPlacement()) {
@@ -117,13 +114,13 @@ fun HedvigTabRowMaxSixTabs(
         // calculate the size
         val fullWidth = constraints.maxWidth
         val desiredItemWidth =
-          if (tabItemsMeasurables.any { it.minIntrinsicWidth(oneLineHeight) > fullWidth / 3 }) {
+          if (tabItemsMeasurables.size == 2) {
+            fullWidth / 2
+            // if there are only two tabs they always take full width
+          } else if (tabItemsMeasurables.any { it.minIntrinsicWidth(oneLineHeight) > fullWidth / 3 }) {
             fullWidth / 2
             // this is the maximum width we give the item, if the text is too big for the basic 1/3 of the full width.
             // If it's still not enough, the text itself gets eclipsed later on
-          } else if (tabItemsMeasurables.size == 2) {
-            fullWidth / 2
-            // if there are only two tabs they always take full width
           } else {
             fullWidth / 3
             // basic
@@ -139,9 +136,8 @@ fun HedvigTabRowMaxSixTabs(
         } else {
           howManyItemsInEachLine - (fullLayoutCapacity - tabItemsMeasurables.size)
         }
-        val (indicesToCenter, _) = tabItemsMeasurables.indices.partition {
-          it >
-            tabItemsMeasurables.size - 1 - howManyItemsToCenter
+        val indicesToCenter = tabItemsMeasurables.indices.filter {
+          it > tabItemsMeasurables.lastIndex - howManyItemsToCenter
         }
 
         val mapOfOffsets = mutableMapOf<Int, IntOffset>()
