@@ -61,7 +61,7 @@ class ContactInfoSender(
   companion object {
     private const val NOTIFICATION_TYPE_CONTACT_INFO = "OPEN_CONTACT_INFO"
 
-    // Randomly chosen, holds no specific imporatance
+    // Randomly chosen, holds no specific importance
     private const val ContactInfoNotificationId = 100
   }
 }
