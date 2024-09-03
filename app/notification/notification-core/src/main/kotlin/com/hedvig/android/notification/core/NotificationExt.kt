@@ -15,6 +15,7 @@ fun sendHedvigNotification(
   notificationSender: String?,
   notificationId: Int,
   notification: Notification,
+  notificationChannel: HedvigNotificationChannel,
 ) {
   logcat { "$notificationSender is going to send a notification" }
   if (
@@ -23,6 +24,7 @@ fun sendHedvigNotification(
       Manifest.permission.POST_NOTIFICATIONS,
     ) == PackageManager.PERMISSION_GRANTED
   ) {
+    notificationChannel.createChannel(context)
     NotificationManagerCompat
       .from(context)
       .notify(notificationId, notification)

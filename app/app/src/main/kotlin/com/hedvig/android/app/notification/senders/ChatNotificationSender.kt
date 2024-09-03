@@ -19,7 +19,6 @@ import com.benasher44.uuid.Uuid
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.app.notification.getMutablePendingIntentFlags
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
-import com.hedvig.android.core.common.android.notification.setupNotificationChannel
 import com.hedvig.android.feature.chat.navigation.ChatDestinations
 import com.hedvig.android.feature.claim.details.navigation.ClaimDetailDestinations
 import com.hedvig.android.feature.home.home.navigation.HomeDestination
@@ -30,6 +29,7 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.compose.typedHasRoute
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
+import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
 import hedvig.resources.R
@@ -61,16 +61,8 @@ class ChatNotificationSender(
   private val hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   private val featureManager: FeatureManager,
   private val buildConstants: HedvigBuildConstants,
+  private val notificationChannel: HedvigNotificationChannel,
 ) : NotificationSender {
-  override fun createChannel() {
-    setupNotificationChannel(
-      context,
-      CHAT_CHANNEL_ID,
-      context.resources.getString(R.string.NOTIFICATION_CHAT_CHANNEL_NAME),
-      context.resources.getString(R.string.NOTIFICATION_CHAT_CHANNEL_DESCRIPTION),
-    )
-  }
-
   override suspend fun sendNotification(type: String, remoteMessage: RemoteMessage) {
     val isAppForegrounded = ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)
     val currentDestination = CurrentDestinationInMemoryStorage.currentDestination
@@ -163,15 +155,11 @@ class ChatNotificationSender(
     )
 
     val notification = NotificationCompat
-      .Builder(
-        context,
-        CHAT_CHANNEL_ID,
-      )
+      .Builder(context, notificationChannel.channelId)
       .setSmallIcon(R.drawable.ic_hedvig_h)
       .setStyle(style)
       .setPriority(NotificationCompat.PRIORITY_MAX)
       .setAutoCancel(true)
-      .setChannelId(CHAT_CHANNEL_ID)
       .setCategory(NotificationCompat.CATEGORY_MESSAGE)
       .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
       .setContentIntent(chatPendingIntent)
@@ -182,6 +170,7 @@ class ChatNotificationSender(
       notificationSender = "ChatNotificationSender",
       notificationId = CHAT_NOTIFICATION_ID,
       notification = notification,
+      notificationChannel = notificationChannel,
     )
   }
 
@@ -216,7 +205,6 @@ class ChatNotificationSender(
   companion object {
     private const val MainActivityFullyQualifiedName = "com.hedvig.android.app.MainActivity"
 
-    private const val CHAT_CHANNEL_ID = "hedvig-chat"
     private const val CHAT_NOTIFICATION_ID = 1
     private const val HEDVIG_PERSON_KEY = "HEDVIG"
     private const val YOU_PERSON_KEY = "YOU"
