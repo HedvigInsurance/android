@@ -40,10 +40,10 @@ class GenericNotificationSender(
 
     sendHedvigNotification(
       context = context,
-      notificationSender = "GenericNotificationSender",
       notificationId = id.getAndIncrement(),
       notification = notification,
       notificationChannel = notificationChannel,
+      notificationSenderName = "GenericNotificationSender",
     )
   }
 

@@ -24,6 +24,7 @@ import com.hedvig.android.app.apollo.DeviceIdInterceptor
 import com.hedvig.android.app.apollo.LoggingInterceptor
 import com.hedvig.android.app.apollo.LogoutOnUnauthenticatedInterceptor
 import com.hedvig.android.app.notification.senders.ChatNotificationSender
+import com.hedvig.android.app.notification.senders.ContactInfoSender
 import com.hedvig.android.app.notification.senders.CrossSellNotificationSender
 import com.hedvig.android.app.notification.senders.GenericNotificationSender
 import com.hedvig.android.app.notification.senders.PaymentNotificationSender
@@ -221,6 +222,14 @@ private val notificationModule = module {
       get<FeatureManager>(),
       get<HedvigBuildConstants>(),
       HedvigNotificationChannel.Chat,
+    )
+  } bind NotificationSender::class
+  single<ContactInfoSender> {
+    ContactInfoSender(
+      get<Context>(),
+      get<HedvigBuildConstants>(),
+      get<HedvigDeepLinkContainer>(),
+      HedvigNotificationChannel.Other,
     )
   } bind NotificationSender::class
 }

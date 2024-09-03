@@ -41,10 +41,10 @@ class CrossSellNotificationSender(
       )
       sendHedvigNotification(
         context = context,
-        notificationSender = "CrossSellNotificationSender",
         notificationId = CROSS_SELL_NOTIFICATION_ID,
         notification = notification,
         notificationChannel = notificationChannel,
+        notificationSenderName = "CrossSellNotificationSender",
       )
     }
   }

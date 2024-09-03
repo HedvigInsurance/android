@@ -167,10 +167,10 @@ class ChatNotificationSender(
 
     sendHedvigNotification(
       context = context,
-      notificationSender = "ChatNotificationSender",
       notificationId = CHAT_NOTIFICATION_ID,
       notification = notification,
       notificationChannel = notificationChannel,
+      notificationSenderName = "ChatNotificationSender",
     )
   }
 
@@ -203,19 +203,13 @@ class ChatNotificationSender(
   }
 
   companion object {
-    private const val MainActivityFullyQualifiedName = "com.hedvig.android.app.MainActivity"
-
     private const val CHAT_NOTIFICATION_ID = 1
     private const val HEDVIG_PERSON_KEY = "HEDVIG"
     private const val YOU_PERSON_KEY = "YOU"
 
     private const val NOTIFICATION_TYPE_NEW_MESSAGE = "NEW_MESSAGE"
 
-    private fun Map<String, String>.titleFromCustomerIoData(): String? {
-      // From customerIO https://www.customer.io/docs/send-push/#standard-payload
-      return get("title")
-    }
-
+    // From customerIO https://www.customer.io/docs/send-push/#standard-payload part of our custom payload there
     private fun Map<String, String>.conversationIdFromCustomerIoData(): String? {
       return get("conversationId")
     }
