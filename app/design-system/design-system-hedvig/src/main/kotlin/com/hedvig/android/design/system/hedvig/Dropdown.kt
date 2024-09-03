@@ -3,6 +3,8 @@ package com.hedvig.android.design.system.hedvig
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.text.TextStyle
 import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownStyle
 import com.hedvig.android.design.system.hedvig.DropdownItem.DropdownItemWithIcon
 import com.hedvig.android.design.system.hedvig.DropdownItem.SimpleDropdownItem
@@ -25,19 +27,33 @@ object DropdownDefaults {
 
   sealed class DropdownSize {
     protected abstract val padding: PaddingValues
+    protected abstract val shape: Shape
+    protected abstract val textStyle: TextStyle
 
     data object Large : DropdownSize() {
       override val padding: PaddingValues
+        get() = TODO("Not yet implemented")
+      override val shape: Shape
+        get() = TODO("Not yet implemented")
+      override val textStyle: TextStyle
         get() = TODO("Not yet implemented")
     }
 
     data object Medium : DropdownSize() {
       override val padding: PaddingValues
         get() = TODO("Not yet implemented")
+      override val shape: Shape
+        get() = TODO("Not yet implemented")
+      override val textStyle: TextStyle
+        get() = TODO("Not yet implemented")
     }
 
     data object Small : DropdownSize() {
       override val padding: PaddingValues
+        get() = TODO("Not yet implemented")
+      override val shape: Shape
+        get() = TODO("Not yet implemented")
+      override val textStyle: TextStyle
         get() = TODO("Not yet implemented")
     }
   }

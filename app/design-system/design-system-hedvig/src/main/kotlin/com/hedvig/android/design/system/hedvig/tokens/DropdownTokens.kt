@@ -21,64 +21,50 @@ internal object DropdownTokens {
   val ChevronSize = 24.dp
 }
 
-internal object LargeSizeDefaultDropdownTokens {//TODO - check them all!
+internal object LargeSizeDefaultDropdownTokens {
   val HorizontalPadding = 16.dp
   val TopPadding = 16.dp
   val BottomPadding = 18.dp
   val TextFont = TypographyKeyTokens.BodyMedium
-  val ErrorTextStartPadding = 16.dp
-  val ErrorTextEndPadding = 16.dp
-
-  //val MinHeight = 64.dp //todo: remove?
+  val ErrorTextHorizontalPadding = 16.dp
 }
 
-internal object MediumSizeDefaultDropdownTokens {//TODO - check them all!
+internal object MediumSizeDefaultDropdownTokens {
   val HorizontalPadding = 16.dp
   val TopPadding = 16.dp
   val BottomPadding = 18.dp
-
   val TextFont = TypographyKeyTokens.BodySmall
-  val ErrorTextStartPadding = 14.dp
-  val ErrorTextEndPadding = 16.dp
-  val MinHeight = 64.dp
+  val ErrorTextHorizontalPadding = 16.dp
 }
 
-internal object SmallSizeDefaultDropdownTokens {//TODO - check them all!
+internal object SmallSizeDefaultDropdownTokens {
   val HorizontalPadding = 14.dp
   val TopPadding = 15.dp
   val BottomPadding = 17.dp
-
-  val DropdownTopPadding = 0.dp
-  val DropdownBottomPadding = 0.dp
   val TextFont = TypographyKeyTokens.BodySmall
   val ErrorTextStartPadding = 14.dp
   val ErrorTextEndPadding = 16.dp
-  val MinHeight = 56.dp
 }
 
-internal object LargeSizeLabeledDropdownTokens {//TODO - check them all!
+internal object LargeSizeLabeledDropdownTokens {
   val HorizontalPadding = 16.dp
   val TopPadding = 10.dp
   val BottomPadding = 9.dp
   val LabelTextFont = TypographyKeyTokens.Label
   val TextFont = TypographyKeyTokens.BodyMedium
-  val ErrorTextStartPadding = 16.dp
-  val ErrorTextEndPadding = 16.dp
-  val MinHeight = 64.dp
+  val ErrorTextHorizontalPadding = 16.dp
 }
 
-internal object MediumSizeLabeledDropdownTokens {//TODO - check them all!
+internal object MediumSizeLabeledDropdownTokens {
   val HorizontalPadding = 16.dp
   val TopPadding = 11.5.dp
   val BottomPadding = 12.5.dp
   val LabelTextFont = TypographyKeyTokens.Label
   val TextFont = TypographyKeyTokens.BodySmall
-  val ErrorTextStartPadding = 14.dp
-  val ErrorTextEndPadding = 16.dp
-  val MinHeight = 64.dp
+  val ErrorTextHorizontalPadding = 16.dp
 }
 
-internal object SmallSizeLabeledDropdownTokens {//TODO - check them all!
+internal object SmallSizeLabeledDropdownTokens {
   val HorizontalPadding = 14.dp
   val TopPadding = 8.5.dp
   val BottomPadding = 7.5.dp
@@ -86,5 +72,4 @@ internal object SmallSizeLabeledDropdownTokens {//TODO - check them all!
   val TextFont = TypographyKeyTokens.BodySmall
   val ErrorTextStartPadding = 14.dp
   val ErrorTextEndPadding = 16.dp
-  val MinHeight = 56.dp
 }
