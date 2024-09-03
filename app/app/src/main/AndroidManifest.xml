@@ -131,6 +131,16 @@
         android:value="androidx.startup"
         tools:node="remove" />
     </provider>
+    <receiver
+      android:name="com.google.firebase.iid.FirebaseInstanceIdReceiver"
+      android:exported="true"
+      android:permission="@null"
+      tools:replace="android:permission">
+      <intent-filter>
+        <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+        <category android:name="com.hedvig.dev.app" />
+      </intent-filter>
+    </receiver>
   </application>
 
   <queries>
