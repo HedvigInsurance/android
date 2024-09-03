@@ -10,7 +10,6 @@ internal object DropdownTokens {
   val DisabledTextColor = ColorSchemeKeyTokens.TextDisabled
   val LabelColor = ColorSchemeKeyTokens.TextSecondary
   val HintColor = ColorSchemeKeyTokens.TextSecondary
-  val DisabledLabelColor = ColorSchemeKeyTokens.TextDisabled
   val PulsatingContainerColor = ColorSchemeKeyTokens.SignalAmberFill
   val PulsatingContentColor = ColorSchemeKeyTokens.SignalAmberText
   val ErrorIconColor = ColorSchemeKeyTokens.SignalAmberElement
@@ -19,6 +18,7 @@ internal object DropdownTokens {
   val ContainerShape = ShapeKeyTokens.CornerLarge
   val ErrorTextFont = TypographyKeyTokens.Label
   val ChevronSize = 24.dp
+  val IconSize = 32.dp
 }
 
 internal object LargeSizeDefaultDropdownTokens {

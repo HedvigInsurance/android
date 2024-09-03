@@ -12,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
@@ -44,7 +45,28 @@ fun DropdownWithDialog(
   hasError: Boolean = false,
   errorText: String? = null,
 ) {
-
+  val containerColor = dropdownColors.containerColor(showError = hasError)
+  val selectorLabelColor = dropdownColors.labelColor(showError = hasError, isEnabled = isEnabled)
+  val selectorTextColor = dropdownColors.textColor(showError = hasError, isEnabled = isEnabled)
+  val chevronColor = dropdownColors.chevronColor(isEnabled = isEnabled)
+  val errorTextColor = dropdownColors.errorTextColor
+  val errorIconColor = dropdownColors.errorIconColor
+  
+  var isDialogVisible by rememberSaveable { mutableStateOf(false) }
+  if (isDialogVisible) {
+    HedvigDialog(
+      onDismissRequest = {
+        isDialogVisible = false
+      },
+      style = DialogDefaults.DialogStyle.NoButtons
+    ) {
+      EmptyState(
+        text = "Are you sure?",
+        description = "Long description description description description description",
+        iconStyle = BANK_ID,
+        buttonStyle = NoButton,
+      )
+    }
 }
 
 object DropdownDefaults {
@@ -197,6 +219,7 @@ private data class DropdownColors(
   private val containerColor: Color,
   private val labelColor: Color,
   private val textColor: Color,
+  private val hintColor: Color,
   private val enabledChevronColor: Color,
   private val disabledChevronColor: Color,
   private val disabledTextColor: Color,
@@ -220,6 +243,23 @@ private data class DropdownColors(
     val targetValue = when {
       shouldPulsate -> pulsatingContainerColor
       else -> containerColor
+    }
+    return animateColorAsState(
+      targetValue = targetValue,
+      animationSpec = tween(
+        durationMillis = AnimationTokens().errorPulsatingDuration,
+      ),
+      label = "",
+    )
+  }
+
+  @Composable
+  fun hintColor(showError: Boolean, isEnabled: Boolean): State<Color> {
+    val shouldPulsate = shouldPulsate(showError)
+    val targetValue = when {
+      shouldPulsate -> pulsatingContentColor
+      !isEnabled -> disabledTextColor
+      else -> hintColor
     }
     return animateColorAsState(
       targetValue = targetValue,
@@ -283,7 +323,7 @@ private data class DropdownColors(
   }
 }
 
-private val stepperColors: DropdownColors
+private val dropdownColors: DropdownColors
   @Composable
   get() = with(HedvigTheme.colorScheme) {
     remember(this) {
@@ -299,6 +339,8 @@ private val stepperColors: DropdownColors
         disabledTextColor = fromToken(DropdownTokens.DisabledTextColor),
         pulsatingChevronColor = fromToken(DropdownTokens.PulsatingChevronColor),
         errorIconColor = fromToken(DropdownTokens.ErrorIconColor),
+        hintColor = fromToken(DropdownTokens.HintColor)
       )
     }
   }
+  
