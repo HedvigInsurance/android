@@ -26,6 +26,7 @@ fun NavGraphBuilder.helpCenterGraph(
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   navigator: Navigator,
   onNavigateToQuickLink: (NavBackStackEntry, QuickLinkDestination.OuterDestination) -> Unit,
+  onNavigateToInbox: (NavBackStackEntry) -> Unit,
   onNavigateToNewConversation: (NavBackStackEntry, AppDestination.Chat.ChatContext?) -> Unit,
   openUrl: (String) -> Unit,
 ) {
@@ -52,6 +53,7 @@ fun NavGraphBuilder.helpCenterGraph(
             is QuickLinkDestination.OuterDestination -> {
               onNavigateToQuickLink(backStackEntry, destination)
             }
+
             is QuickLinkDestination.InnerHelpCenterDestination -> {
               when (destination) {
                 is QuickLinkDestination.InnerHelpCenterDestination.FirstVet -> {
@@ -59,6 +61,7 @@ fun NavGraphBuilder.helpCenterGraph(
                     backStackEntry.navigate(HelpCenterDestinations.FirstVet(destination.sections))
                   }
                 }
+
                 is QuickLinkDestination.InnerHelpCenterDestination.QuickLinkSickAbroad -> {
                   with(navigator) {
                     backStackEntry.navigate(
@@ -73,7 +76,10 @@ fun NavGraphBuilder.helpCenterGraph(
             }
           }
         },
-        openChat = {
+        onNavigateToInbox = {
+          onNavigateToInbox(backStackEntry)
+        },
+        onNavigateToNewConversation = {
           onNavigateToNewConversation(backStackEntry, null)
         },
         onNavigateUp = navigator::navigateUp,
@@ -90,9 +96,8 @@ fun NavGraphBuilder.helpCenterGraph(
         },
         onNavigateUp = navigator::navigateUp,
         onNavigateBack = navigator::popBackStack,
-        openChat = {
-          onNavigateToNewConversation(backStackEntry, topic.chatContext)
-        },
+        onNavigateToInbox = { onNavigateToInbox(backStackEntry) },
+        onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry, topic.chatContext) },
       )
     }
     navdestination<HelpCenterDestinations.Question>(
@@ -104,11 +109,10 @@ fun NavGraphBuilder.helpCenterGraph(
         onNavigateToQuestion = { question ->
           navigateToQuestion(resources, question, navigator, backStackEntry)
         },
+        onNavigateToInbox = { onNavigateToInbox(backStackEntry) },
+        onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry, question.chatContext) },
         onNavigateUp = navigator::navigateUp,
         onNavigateBack = navigator::popBackStack,
-        openChat = {
-          onNavigateToNewConversation(backStackEntry, question.chatContext)
-        },
       )
     }
     navdestination<HelpCenterDestinations.FirstVet>(

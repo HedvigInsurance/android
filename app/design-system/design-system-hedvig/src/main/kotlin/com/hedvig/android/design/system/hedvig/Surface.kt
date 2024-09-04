@@ -65,7 +65,6 @@ fun Surface(
   CompositionLocalProvider(LocalContentColor provides contentColor) {
     Box(
       modifier = modifier
-        .minimumInteractiveComponentSize()
         .surface(
           shape = shape,
           backgroundColor = color,

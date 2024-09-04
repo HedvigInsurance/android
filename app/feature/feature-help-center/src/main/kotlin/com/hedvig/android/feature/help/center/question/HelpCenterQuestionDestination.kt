@@ -46,9 +46,10 @@ import hedvig.resources.R
 internal fun HelpCenterQuestionDestination(
   questionId: Question,
   onNavigateToQuestion: (questionId: Question) -> Unit,
+  onNavigateToInbox: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   onNavigateUp: () -> Unit,
   onNavigateBack: () -> Unit,
-  openChat: () -> Unit,
 ) {
   Text("HelpCenterDestinations.Question:$questionId")
   val question = Question.entries.find { it == questionId }
@@ -63,7 +64,8 @@ internal fun HelpCenterQuestionDestination(
     onNavigateToQuestion = onNavigateToQuestion,
     onNavigateUp = onNavigateUp,
     onNavigateBack = onNavigateBack,
-    openChat = openChat,
+    onNavigateToInbox = onNavigateToInbox,
+    onNavigateToNewConversation = onNavigateToNewConversation,
   )
 }
 
@@ -72,9 +74,10 @@ private fun HelpCenterQuestionScreen(
   question: Question?,
   relatedQuestions: List<Question>,
   onNavigateToQuestion: (questionId: Question) -> Unit,
+  onNavigateToInbox: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   onNavigateUp: () -> Unit,
   onNavigateBack: () -> Unit,
-  openChat: () -> Unit,
 ) {
   Surface(color = MaterialTheme.colorScheme.background) {
     Column(Modifier.fillMaxSize()) {
@@ -153,7 +156,9 @@ private fun HelpCenterQuestionScreen(
           Spacer(Modifier.weight(1f))
           Spacer(Modifier.height(40.dp))
           StillNeedHelpSection(
-            openChat = openChat,
+            onNavigateToInbox = onNavigateToInbox,
+            onNavigateToNewConversation = onNavigateToNewConversation,
+            showNavigateToInboxButton = true, // todo use real value here
             contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom).asPaddingValues(),
           )
         }
@@ -183,9 +188,11 @@ private fun PreviewHelpCenterQuestionScreen(
           listOf()
         },
         onNavigateToQuestion = {},
+        onNavigateToInbox = {},
+        onNavigateToNewConversation = {},
         onNavigateUp = {},
         onNavigateBack = {},
-      ) {}
+      )
     }
   }
 }

@@ -108,7 +108,8 @@ internal fun HelpCenterHomeDestination(
   onNavigateToQuestion: (question: Question) -> Unit,
   onNavigateToQuickLink: (QuickLinkDestination) -> Unit,
   onNavigateUp: () -> Unit,
-  openChat: () -> Unit,
+  onNavigateToInbox: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -126,7 +127,8 @@ internal fun HelpCenterHomeDestination(
     onDismissQuickActionDialog = {
       viewModel.emit(HelpCenterEvent.OnDismissQuickActionDialog)
     },
-    openChat = openChat,
+    onNavigateToInbox = onNavigateToInbox,
+    onNavigateToNewConversation = onNavigateToNewConversation,
     onNavigateUp = onNavigateUp,
     search = uiState.search,
     onUpdateSearchResults = { searchQuery, helpSearchResults ->
@@ -150,7 +152,8 @@ private fun HelpCenterHomeScreen(
   onNavigateToQuickLink: (QuickLinkDestination) -> Unit,
   onQuickActionsSelected: (QuickAction) -> Unit,
   onDismissQuickActionDialog: () -> Unit,
-  openChat: () -> Unit,
+  onNavigateToInbox: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   onNavigateUp: () -> Unit,
   onUpdateSearchResults: (String, HelpCenterUiState.HelpSearchResults?) -> Unit,
   onClearSearch: () -> Unit,
@@ -248,7 +251,8 @@ private fun HelpCenterHomeScreen(
               onNavigateToTopic = onNavigateToTopic,
               questions = questions,
               onNavigateToQuestion = onNavigateToQuestion,
-              openChat = openChat,
+              onNavigateToInbox = onNavigateToInbox,
+              onNavigateToNewConversation = onNavigateToNewConversation,
             )
           } else {
             SearchResults(
@@ -275,7 +279,8 @@ private fun ContentWithoutSearch(
   onNavigateToTopic: (topic: Topic) -> Unit,
   questions: List<Question>,
   onNavigateToQuestion: (question: Question) -> Unit,
-  openChat: () -> Unit,
+  onNavigateToInbox: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
 ) {
   Column {
     Spacer(Modifier.height(32.dp))
@@ -348,7 +353,9 @@ private fun ContentWithoutSearch(
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(40.dp))
     StillNeedHelpSection(
-      openChat = openChat,
+      onNavigateToInbox = onNavigateToInbox,
+      onNavigateToNewConversation = onNavigateToNewConversation,
+      showNavigateToInboxButton = true, // todo use real value here
       contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom).asPaddingValues(),
     )
   }
@@ -679,7 +686,8 @@ private fun PreviewHelpCenterHomeScreen(
         onNavigateToQuickLink = {},
         onQuickActionsSelected = {},
         onDismissQuickActionDialog = {},
-        openChat = {},
+        onNavigateToInbox = {},
+        onNavigateToNewConversation = {},
         onNavigateUp = {},
         quickLinksUiState = quickLinksUiState,
         onClearSearch = {},
@@ -708,7 +716,8 @@ private fun PreviewQuickLinkAnimations() {
           onNavigateToQuickLink = {},
           onQuickActionsSelected = {},
           onDismissQuickActionDialog = {},
-          openChat = {},
+          onNavigateToInbox = {},
+          onNavigateToNewConversation = {},
           onNavigateUp = {},
           quickLinksUiState = quickLinkUiState,
           onClearSearch = {},

@@ -22,7 +22,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.compose.ui.preview.DoubleBooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.material3.infoContainer
 import com.hedvig.android.core.designsystem.material3.onInfoContainer
@@ -41,9 +40,10 @@ import hedvig.resources.R
 internal fun HelpCenterTopicDestination(
   topic: Topic,
   onNavigateToQuestion: (question: Question) -> Unit,
+  onNavigateToInbox: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   onNavigateUp: () -> Unit,
   onNavigateBack: () -> Unit,
-  openChat: () -> Unit,
 ) {
   val commonQuestions = topic
     .commonQuestionIds
@@ -64,7 +64,8 @@ internal fun HelpCenterTopicDestination(
     onNavigateToQuestion = onNavigateToQuestion,
     onNavigateUp = onNavigateUp,
     onNavigateBack = onNavigateBack,
-    openChat = openChat,
+    onNavigateToInbox = onNavigateToInbox,
+    onNavigateToNewConversation = onNavigateToNewConversation,
   )
 }
 
@@ -74,9 +75,10 @@ private fun HelpCenterTopicScreen(
   commonQuestions: List<Question>,
   allQuestions: List<Question>,
   onNavigateToQuestion: (questionId: Question) -> Unit,
+  onNavigateToInbox: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   onNavigateUp: () -> Unit,
   onNavigateBack: () -> Unit,
-  openChat: () -> Unit,
 ) {
   Surface(color = MaterialTheme.colorScheme.background) {
     Column(Modifier.fillMaxSize()) {
@@ -145,7 +147,9 @@ private fun HelpCenterTopicScreen(
           Spacer(Modifier.weight(1f))
           Spacer(Modifier.height(40.dp))
           StillNeedHelpSection(
-            openChat = openChat,
+            onNavigateToInbox = onNavigateToInbox,
+            onNavigateToNewConversation = onNavigateToNewConversation,
+            showNavigateToInboxButton = true, // todo use real value here
             contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom).asPaddingValues(),
           )
         }
@@ -177,6 +181,7 @@ private fun PreviewHelpCenterTopicScreen(
         } else {
           listOf()
         },
+        {},
         {},
         {},
         {},
