@@ -146,81 +146,45 @@ internal class GetHomeDataUseCaseImpl(
     return !isEligibleToShowTheChatIcon
   }
 
-  private fun isEligibleToShowTheChatIcon(): Flow<Either<ErrorMessage, Boolean>> {
-    return featureManager.isFeatureEnabled(Feature.ENABLE_CBM).flatMapLatest { isCbmEnabled ->
-      if (isCbmEnabled) {
-        apolloClient.query(CbmNumberOfChatMessagesQuery())
-          .fetchPolicy(FetchPolicy.CacheAndNetwork)
-          .safeFlow()
-          .map { result ->
-            logcat { "GQL Operation CbmNumberOfChatMessagesQuery:$result" }
-            either {
-              val data = result
-                .onLeft { apolloOperationError ->
-                  when (apolloOperationError) {
-                    is CacheMiss -> return@either false
-                    is OperationError,
-                    is OperationException,
-                    -> {
-                      logcat(LogPriority.ERROR, apolloOperationError.throwable) {
-                        "isEligibleToShowTheChatIcon cant determine if the chat icon should be shown. $apolloOperationError"
-                      }
-                    }
+  private fun isEligibleToShowTheChatIcon(): Flow<Either<ApolloOperationError, Boolean>> {
+    return apolloClient.query(CbmNumberOfChatMessagesQuery())
+      .fetchPolicy(FetchPolicy.CacheAndNetwork)
+      .safeFlow()
+      .map { result ->
+        either {
+          val data = result
+            .onLeft { apolloOperationError ->
+              when (apolloOperationError) {
+                is CacheMiss -> return@either false
+                is OperationError,
+                is OperationException,
+                -> {
+                  logcat(LogPriority.ERROR, apolloOperationError.throwable) {
+                    "isEligibleToShowTheChatIcon cant determine if the chat icon should be shown. $apolloOperationError"
                   }
                 }
-                .mapLeft(::ErrorMessage)
-                .bind()
-              val eligibleFromLegacyConversation = data
-                .currentMember
-                .legacyConversation
-                ?.messagePage
-                ?.messages
-                ?.map { ChatMessage(it.id, it.sender.toChatMessageSender()) }
-                ?.isEligibleToShowTheChatIcon() == true
-              if (eligibleFromLegacyConversation) {
-                return@either true
               }
-              val conversations = data.currentMember.conversations
-              val showChatIcon = conversations.any { conversation ->
-                val isOpenConversation = conversation.isOpen
-                val hasAnyMessageSent = conversation.newestMessage != null
-                isOpenConversation || hasAnyMessageSent
-              }
-              showChatIcon
             }
+            .bind()
+          val eligibleFromLegacyConversation = data
+            .currentMember
+            .legacyConversation
+            ?.messagePage
+            ?.messages
+            ?.map { ChatMessage(it.id, it.sender.toChatMessageSender()) }
+            ?.isEligibleToShowTheChatIcon() == true
+          if (eligibleFromLegacyConversation) {
+            return@either true
           }
-      } else {
-        apolloClient.query(NumberOfChatMessagesQuery())
-          .safeWatch()
-          .map { result ->
-            either {
-              val data = result
-                .onLeft { apolloOperationError ->
-                  if (apolloOperationError is CacheMiss) {
-                    throw apolloOperationError.throwable
-                  }
-                }
-                .mapLeft(::ErrorMessage)
-                .bind()
-              val chatMessages = data.chat.messages.map { message ->
-                ChatMessage(
-                  message.id,
-                  message.sender.toChatMessageSender(),
-                )
-              }
-              chatMessages.isEligibleToShowTheChatIcon()
-            }
+          val conversations = data.currentMember.conversations
+          val showChatIcon = conversations.any { conversation ->
+            val isOpenConversation = conversation.isOpen
+            val hasAnyMessageSent = conversation.newestMessage != null
+            isOpenConversation || hasAnyMessageSent
           }
-          .retryWhen { cause, attempt ->
-            val shouldRetry = cause is CacheMissException
-            if (shouldRetry) {
-              emit(ErrorMessage("").left())
-              delay(attempt.coerceAtMost(3).seconds)
-            }
-            shouldRetry
-          }
+          showChatIcon
+        }
       }
-    }
   }
 
   private fun List<ChatMessage>.isEligibleToShowTheChatIcon(): Boolean {
