@@ -8,7 +8,7 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.border
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownStyle
 import com.hedvig.android.design.system.hedvig.DropdownItem.DropdownItemWithIcon
 import com.hedvig.android.design.system.hedvig.DropdownItem.SimpleDropdownItem
+import com.hedvig.android.design.system.hedvig.icon.Checkmark
 import com.hedvig.android.design.system.hedvig.icon.ChevronDown
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.WarningFilled
@@ -86,17 +87,24 @@ fun DropdownWithDialog(
       },
       style = DialogDefaults.DialogStyle.NoButtons,
     ) {
-      style.items.forEachIndexed { index, item ->
-        DropdownOption(
-          item = item,
-          size = size,
-          style = style,
-          onClick = {
-            onItemChosen(index)
-            isDialogVisible = false //todo: sure here?
-          },
-          isSelected = index == chosenItemIndex,
-        )
+      Column(
+        modifier = Modifier.background(
+          color = dropdownColors.containerColor(false).value,
+          shape = size.shape,
+        ),
+      ) {
+        style.items.forEachIndexed { index, item ->
+          DropdownOption(
+            item = item,
+            size = size,
+            style = style,
+            onClick = {
+              onItemChosen(index)
+              isDialogVisible = false // todo: sure here?
+            },
+            isSelected = index == chosenItemIndex,
+          )
+        }
       }
     }
   }
@@ -149,11 +157,14 @@ private fun DropdownSelector(
     ) {
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
-          val textColor = if (isHint) dropdownColors.hintColor(showError, isEnabled).value
-          else dropdownColors.textColor(
-            showError = showError,
-            isEnabled = isEnabled,
-          ).value
+          val textColor = if (isHint) {
+            dropdownColors.hintColor(showError, isEnabled).value
+          } else {
+            dropdownColors.textColor(
+              showError = showError,
+              isEnabled = isEnabled,
+            ).value
+          }
           val labelColor = dropdownColors.labelColor(showError, isEnabled).value
           when (style) {
             is DropdownStyle.Default -> DefaultStyleStartSlot(
@@ -178,7 +189,6 @@ private fun DropdownSelector(
               labelTextStyle = size.labelTextStyle,
             )
           }
-
         },
         endSlot = {
           val fullRotation by animateFloatAsState(
@@ -191,7 +201,8 @@ private fun DropdownSelector(
           ) {
             AnimatedVisibility(showError, enter = fadeIn(), exit = fadeOut()) {
               Icon(
-                HedvigIcons.WarningFilled, "",
+                HedvigIcons.WarningFilled,
+                "",
                 tint = dropdownColors.errorIconColor,
               )
             }
@@ -205,7 +216,8 @@ private fun DropdownSelector(
                 },
             ) {
               Icon(
-                HedvigIcons.ChevronDown, "",
+                HedvigIcons.ChevronDown,
+                "",
                 tint = dropdownColors.chevronColor(isEnabled),
               )
             }
@@ -230,11 +242,7 @@ private fun DropdownSelector(
 }
 
 @Composable
-fun DefaultStyleStartSlot(
-  text: String,
-  textStyle: TextStyle,
-  textColor: Color,
-) {
+fun DefaultStyleStartSlot(text: String, textStyle: TextStyle, textColor: Color) {
   Row(verticalAlignment = Alignment.CenterVertically) {
     HedvigText(
       text = text,
@@ -246,21 +254,20 @@ fun DefaultStyleStartSlot(
 }
 
 @Composable
-fun IconStyleStartSlot(
-  text: String,
-  textStyle: TextStyle,
-  textColor: Color,
-  icon: IconResource,
-) {
-
+fun IconStyleStartSlot(text: String, textStyle: TextStyle, textColor: Color, icon: IconResource) {
   Row(verticalAlignment = Alignment.CenterVertically) {
     when (icon) {
-      is IconResource.Painter -> Icon(painterResource(icon.painterResId), "",
+      is IconResource.Painter -> Icon(
+        painterResource(icon.painterResId),
+        "",
         Modifier.size(DropdownTokens.IconSize),
-        tint = Color.Unspecified,)
-      is IconResource.Vector -> Icon(icon.imageVector, "",
+        tint = Color.Unspecified,
+      )
+      is IconResource.Vector -> Icon(
+        icon.imageVector,
+        "",
         Modifier.size(DropdownTokens.IconSize),
-        tint = Color.Unspecified
+        tint = Color.Unspecified,
       )
     }
     Spacer(Modifier.width(8.dp))
@@ -282,7 +289,7 @@ fun LabelStyleStartSlot(
   textColor: Color,
 ) {
   Row(verticalAlignment = Alignment.CenterVertically) {
-    Column (verticalArrangement = Arrangement.spacedBy((-2).dp)){
+    Column(verticalArrangement = Arrangement.spacedBy((-2).dp)) {
       HedvigText(
         text = labelText,
         style = labelTextStyle,
@@ -306,16 +313,71 @@ private fun DropdownOption(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val containerColor = dropdownColors.containerColor(showError = false)
-  val selectorLabelColor = dropdownColors.labelColor(showError = false, isEnabled = true)
-  val selectorTextColor = dropdownColors.textColor(showError = false, isEnabled = true)
-  val chevronColor = dropdownColors.chevronColor(isEnabled = true)
-  val errorTextColor = dropdownColors.errorTextColor
-  val errorIconColor = dropdownColors.errorIconColor
+  val containerColor = dropdownColors.containerColor(showError = false).value
+  val checkSymbolColor = dropdownColors.chevronColor(isEnabled = true)
+  Column(
+    modifier = modifier,
+  ) {
+    Surface(
+      shape = size.shape,
+      color = containerColor,
+      modifier = Modifier
+        .clip(size.shape)
+        .clickable(
+          interactionSource = remember { MutableInteractionSource() },
+          indication = ripple(
+            bounded = true,
+            radius = 1000.dp,
+          ),
+          onClick = onClick,
+        ),
+    ) {
+      HorizontalItemsWithMaximumSpaceTaken(
+        modifier = Modifier.padding(size.optionContentPadding(style)),
+        startSlot = {
+          val textColor = dropdownColors.textColor(
+            showError = false,
+            isEnabled = true,
+          ).value
+          when (style) {
+            is DropdownStyle.Default, is DropdownStyle.Label ->
+              DefaultStyleStartSlot(
+                textColor = textColor,
+                text = item.text,
+                textStyle = size.textStyle,
+              )
+            is DropdownStyle.Icon -> IconStyleStartSlot(
+              textColor = textColor,
+              text = item.text,
+              textStyle = size.textStyle,
+              icon = (item as DropdownItemWithIcon).painter,
+            )
+          }
+        },
+        endSlot = {
+          Row(
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically,
+          ) {
+            AnimatedVisibility(isSelected) {
+              if (isSelected) {
+                Icon(
+                  HedvigIcons.Checkmark,
+                  "",
+                  tint = checkSymbolColor,
+                  modifier = Modifier.size(DropdownTokens.IconSize),
+                )
+              }
+            }
+          }
+        },
+        spaceBetween = 8.dp,
+      )
+    }
+  }
 }
 
 object DropdownDefaults {
-
   sealed class DropdownSize {
     protected abstract val defaultPadding: PaddingValues
     protected abstract val labelContentPadding: PaddingValues
@@ -334,6 +396,14 @@ object DropdownDefaults {
 
     @get:Composable
     internal abstract val textStyle: TextStyle
+
+    internal fun optionContentPadding(style: DropdownStyle): PaddingValues {
+      return when (style) {
+        is DropdownStyle.Default -> defaultPadding
+        is DropdownStyle.Icon -> iconContentPadding
+        is DropdownStyle.Label -> defaultPadding
+      }
+    }
 
     internal fun contentPadding(style: DropdownStyle): PaddingValues {
       return when (style) {
@@ -364,7 +434,7 @@ object DropdownDefaults {
           bottom = LargeSizeIconDropdownTokens.BottomPadding,
           start = LargeSizeIconDropdownTokens.HorizontalPadding,
           end = LargeSizeIconDropdownTokens.HorizontalPadding,
-          )
+        )
       override val errorTextPadding: PaddingValues
         get() = PaddingValues(horizontal = LargeSizeLabeledDropdownTokens.HorizontalPadding)
       override val labelTextStyle: TextStyle
@@ -462,7 +532,9 @@ object DropdownDefaults {
     abstract val items: List<DropdownItem>
 
     data class Default(override val items: List<SimpleDropdownItem>) : DropdownStyle()
+
     data class Icon(override val items: List<DropdownItemWithIcon>, val defaultIcon: IconResource) : DropdownStyle()
+
     data class Label(override val items: List<SimpleDropdownItem>, val label: String) : DropdownStyle()
   }
 }
@@ -479,7 +551,6 @@ sealed class DropdownItem {
     val painter: IconResource,
   ) : DropdownItem()
 }
-
 
 @Immutable
 private data class DropdownColors(
@@ -610,4 +681,3 @@ private val dropdownColors: DropdownColors
       )
     }
   }
-  
