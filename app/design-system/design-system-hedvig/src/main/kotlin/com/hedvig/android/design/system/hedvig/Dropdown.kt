@@ -1,8 +1,19 @@
 package com.hedvig.android.design.system.hedvig
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
@@ -15,13 +26,19 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownStyle
 import com.hedvig.android.design.system.hedvig.DropdownItem.DropdownItemWithIcon
 import com.hedvig.android.design.system.hedvig.DropdownItem.SimpleDropdownItem
+import com.hedvig.android.design.system.hedvig.icon.ChevronDown
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.tokens.AnimationTokens
 import com.hedvig.android.design.system.hedvig.tokens.DropdownTokens
 import com.hedvig.android.design.system.hedvig.tokens.LargeSizeDefaultDropdownTokens
@@ -39,34 +56,147 @@ fun DropdownWithDialog(
   style: DropdownStyle,
   size: DropdownDefaults.DropdownSize,
   hintText: String,
+  onItemChosen: (chosenIndex: Int) -> Unit,
   modifier: Modifier = Modifier,
   chosenItemIndex: Int? = null,
   isEnabled: Boolean = true,
   hasError: Boolean = false,
   errorText: String? = null,
 ) {
-  val containerColor = dropdownColors.containerColor(showError = hasError)
-  val selectorLabelColor = dropdownColors.labelColor(showError = hasError, isEnabled = isEnabled)
-  val selectorTextColor = dropdownColors.textColor(showError = hasError, isEnabled = isEnabled)
-  val chevronColor = dropdownColors.chevronColor(isEnabled = isEnabled)
-  val errorTextColor = dropdownColors.errorTextColor
-  val errorIconColor = dropdownColors.errorIconColor
-  
   var isDialogVisible by rememberSaveable { mutableStateOf(false) }
   if (isDialogVisible) {
     HedvigDialog(
       onDismissRequest = {
         isDialogVisible = false
       },
-      style = DialogDefaults.DialogStyle.NoButtons
+      style = DialogDefaults.DialogStyle.NoButtons,
     ) {
-      EmptyState(
-        text = "Are you sure?",
-        description = "Long description description description description description",
-        iconStyle = BANK_ID,
-        buttonStyle = NoButton,
+      style.items.forEachIndexed { index, item ->
+        DropdownOption(
+          item = item,
+          size = size,
+          style = style,
+          onClick = {
+            onItemChosen(index)
+          },
+          isSelected = index==chosenItemIndex
+        )
+      }
+    }
+  }
+  DropdownSelector(
+    text = if (chosenItemIndex == null) hintText else style.items[chosenItemIndex].text,
+    size = size,
+    isHint = chosenItemIndex == null,
+    isEnabled = isEnabled,
+    showError = hasError,
+    modifier = modifier,
+    style = style,
+    onClick = {
+      isDialogVisible = true
+    },
+    errorText = errorText,
+    isDialogOpen = isDialogVisible
+  )
+}
+
+@Composable
+private fun DropdownSelector(
+  text: String,
+  size: DropdownDefaults.DropdownSize,
+  isHint: Boolean,
+  isEnabled: Boolean,
+  isDialogOpen: Boolean,
+  showError: Boolean,
+  errorText: String?,
+  style: DropdownStyle,
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Surface(
+    shape = size.shape,
+    color = dropdownColors.containerColor(showError).value,
+    modifier =modifier
+      .clip(size.shape)
+      .clickable(
+    interactionSource = remember { MutableInteractionSource() },
+  indication = ripple(
+    bounded = true,
+    radius = 1000.dp,
+  ),
+  onClick = onClick,
+  ),
+  ) {
+    HorizontalItemsWithMaximumSpaceTaken(
+      startSlot = {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+          HedvigText(
+            text = text,
+            style = size.textStyle,
+            modifier = Modifier,
+            color = if (isHint) dropdownColors.hintColor(showError, isEnabled).value
+            else dropdownColors.textColor(
+              showError = showError,
+              isEnabled = isEnabled,
+            ).value,
+          )
+        }
+      },
+      endSlot = {
+        val fullRotation by animateFloatAsState(
+          targetValue = if (isDialogOpen) -180f else 0f,
+          animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+        )
+        Row(
+          horizontalArrangement = Arrangement.End,
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
+          IconButton(
+            onClick = onClick,
+            enabled = isEnabled,
+            modifier = Modifier.size(DropdownTokens.IconSize).graphicsLayer {
+              rotationZ = fullRotation
+            },
+          ) {
+            Icon(
+              HedvigIcons.ChevronDown, "",
+              tint = dropdownColors.chevronColor(isEnabled),
+
+            )
+          }
+        }
+      },
+      spaceBetween = 4.dp,
+      modifier = Modifier.padding(size.contentPadding(style)),
+    )
+  }
+  AnimatedVisibility(showError) {
+    if (errorText != null) {
+      HedvigText(
+        text = errorText,
+        color = dropdownColors.errorTextColor,
+        style = size.labelTextStyle,
+        modifier = Modifier.padding(size.errorTextPadding),
       )
     }
+  }
+}
+
+@Composable
+private fun DropdownOption(
+  item: DropdownItem,
+  size: DropdownDefaults.DropdownSize,
+  style: DropdownStyle,
+  isSelected: Boolean,
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  val containerColor = dropdownColors.containerColor(showError = false)
+  val selectorLabelColor = dropdownColors.labelColor(showError = false, isEnabled = true)
+  val selectorTextColor = dropdownColors.textColor(showError = false, isEnabled = true)
+  val chevronColor = dropdownColors.chevronColor(isEnabled = true)
+  val errorTextColor = dropdownColors.errorTextColor
+  val errorIconColor = dropdownColors.errorIconColor
 }
 
 object DropdownDefaults {
@@ -191,25 +321,24 @@ object DropdownDefaults {
   }
 
   sealed class DropdownStyle {
-    data class Default(val items: List<SimpleDropdownItem>) : DropdownStyle()
-    data class Icon(val items: List<DropdownItemWithIcon>, val defaultIcon: IconResource) : DropdownStyle()
-    data class Label(val items: List<SimpleDropdownItem>, val label: String) : DropdownStyle()
+    abstract val items: List<DropdownItem>
+
+    data class Default(override val items: List<SimpleDropdownItem>) : DropdownStyle()
+    data class Icon(override val items: List<DropdownItemWithIcon>, val defaultIcon: IconResource) : DropdownStyle()
+    data class Label(override val items: List<SimpleDropdownItem>, val label: String) : DropdownStyle()
   }
 }
 
 sealed class DropdownItem {
   abstract val text: String
-  abstract val enabled: Boolean
 
   data class SimpleDropdownItem(
     override val text: String,
-    override val enabled: Boolean = true,
   ) : DropdownItem()
 
   data class DropdownItemWithIcon(
     override val text: String,
     val iconResource: IconResource,
-    override val enabled: Boolean = true,
   ) : DropdownItem()
 }
 
@@ -339,7 +468,7 @@ private val dropdownColors: DropdownColors
         disabledTextColor = fromToken(DropdownTokens.DisabledTextColor),
         pulsatingChevronColor = fromToken(DropdownTokens.PulsatingChevronColor),
         errorIconColor = fromToken(DropdownTokens.ErrorIconColor),
-        hintColor = fromToken(DropdownTokens.HintColor)
+        hintColor = fromToken(DropdownTokens.HintColor),
       )
     }
   }
