@@ -22,6 +22,7 @@ import com.hedvig.android.apollo.octopus.test.OctopusFakeResolverWithFilledLists
 import com.hedvig.android.apollo.test.TestApolloClientRule
 import com.hedvig.android.apollo.test.TestNetworkTransportType
 import com.hedvig.android.core.common.test.isRight
+import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
 import com.hedvig.android.feature.home.home.data.HomeData.VeryImportantMessage.LinkInfo
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
@@ -79,6 +80,7 @@ internal class GetHomeUseCaseTest {
           CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver),
         )
       },
+      HasAnyActiveConversationUseCase(apolloClient),
       testGetMemberRemindersUseCase,
       FakeFeatureManager2(true),
       TestClock(),
@@ -122,6 +124,7 @@ internal class GetHomeUseCaseTest {
           CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver),
         )
       },
+      HasAnyActiveConversationUseCase(apolloClient),
       testGetMemberRemindersUseCase,
       FakeFeatureManager2(true),
       TestClock(),
@@ -607,6 +610,7 @@ internal class GetHomeUseCaseTest {
   ): GetHomeDataUseCase {
     return GetHomeDataUseCaseImpl(
       apolloClient,
+      HasAnyActiveConversationUseCase(apolloClient),
       TestGetMemberRemindersUseCase().apply { memberReminders.add(MemberReminders()) },
       faetureManager,
       testClock,

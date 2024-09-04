@@ -12,6 +12,7 @@ import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.data.contract.android.CrossSell
+import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
@@ -22,14 +23,11 @@ import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.android.ui.emergency.FirstVetSection
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
-import octopus.CbmNumberOfChatMessagesQuery
 import octopus.HomeQuery
-import octopus.type.ChatMessageSender
 import octopus.type.CrossSellType
 
 internal interface GetHomeDataUseCase {
@@ -38,6 +36,7 @@ internal interface GetHomeDataUseCase {
 
 internal class GetHomeDataUseCaseImpl(
   private val apolloClient: ApolloClient,
+  private val hasAnyActiveConversationUseCase: HasAnyActiveConversationUseCase,
   private val getMemberRemindersUseCase: GetMemberRemindersUseCase,
   private val featureManager: FeatureManager,
   private val clock: Clock,
@@ -48,7 +47,7 @@ internal class GetHomeDataUseCaseImpl(
       apolloClient.query(HomeQuery())
         .fetchPolicy(if (forceNetworkFetch) FetchPolicy.NetworkOnly else FetchPolicy.CacheFirst)
         .safeFlow(),
-      isEligibleToShowTheChatIconFlow(),
+      hasAnyActiveConversationUseCase.invoke(alwaysHitTheNetwork = true),
       getMemberRemindersUseCase.invoke(),
       featureManager.isFeatureEnabled(Feature.DISABLE_CHAT),
       featureManager.isFeatureEnabled(Feature.HELP_CENTER),
@@ -134,47 +133,6 @@ internal class GetHomeDataUseCaseImpl(
     return !isEligibleToShowTheChatIcon
   }
 
-  private fun isEligibleToShowTheChatIconFlow(): Flow<Either<ApolloOperationError, Boolean>> {
-    return apolloClient.query(CbmNumberOfChatMessagesQuery())
-      .fetchPolicy(FetchPolicy.CacheAndNetwork)
-      .safeFlow()
-      .map { result ->
-        either {
-          val data = result
-            .onLeft { apolloOperationError ->
-              logcat(LogPriority.ERROR, apolloOperationError.throwable) {
-                "isEligibleToShowTheChatIcon cant determine if the chat icon should be shown. $apolloOperationError"
-              }
-            }
-            .bind()
-          val eligibleFromLegacyConversation = data
-            .currentMember
-            .legacyConversation
-            ?.messagePage
-            ?.messages
-            ?.map { ChatMessage(it.id, it.sender.toChatMessageSender()) }
-            ?.isEligibleToShowTheChatIcon() == true
-          if (eligibleFromLegacyConversation) {
-            return@either true
-          }
-          val conversations = data.currentMember.conversations
-          val showChatIcon = conversations.any { conversation ->
-            val isOpenConversation = conversation.isOpen
-            val hasAnyMessageSent = conversation.newestMessage != null
-            isOpenConversation || hasAnyMessageSent
-          }
-          showChatIcon
-        }
-      }
-  }
-
-  private fun List<ChatMessage>.isEligibleToShowTheChatIcon(): Boolean {
-    // If there are *any* messages from the member, then we should show the chat icon
-    if (this.any { it.sender == ChatMessage.Sender.MEMBER }) return true
-    // There is always an automatic message sent by Hedvig, therefore we need to check for > 1
-    return this.filter { it.sender == ChatMessage.Sender.HEDVIG }.size > 1
-  }
-
   private fun HomeQuery.Data.CurrentMember.toContractStatus(): HomeData.ContractStatus {
     val activeInTheFutureDate = activeInTheFutureDate()
     if (activeInTheFutureDate != null) {
@@ -233,24 +191,6 @@ private fun HomeQuery.Data.claimStatusCards(): HomeData.ClaimStatusCardsData? {
   val claimStatusCards: NonEmptyList<HomeQuery.Data.CurrentMember.Claim> =
     this.currentMember.claims.toNonEmptyListOrNull() ?: return null
   return HomeData.ClaimStatusCardsData(claimStatusCards.map(ClaimStatusCardUiState::fromClaimStatusCardsQuery))
-}
-
-private data class ChatMessage(
-  val id: String,
-  val sender: Sender,
-) {
-  enum class Sender {
-    HEDVIG,
-    MEMBER,
-  }
-}
-
-private fun ChatMessageSender.toChatMessageSender(): ChatMessage.Sender {
-  return when (this) {
-    ChatMessageSender.MEMBER -> ChatMessage.Sender.MEMBER
-    ChatMessageSender.HEDVIG -> ChatMessage.Sender.HEDVIG
-    ChatMessageSender.UNKNOWN__ -> ChatMessage.Sender.HEDVIG
-  }
 }
 
 internal data class HomeData(

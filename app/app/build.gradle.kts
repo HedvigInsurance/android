@@ -181,6 +181,7 @@ dependencies {
   implementation(projects.dataChatReadTimestampPublic)
   implementation(projects.dataClaimFlow)
   implementation(projects.dataContractPublic)
+  implementation(projects.dataConversations)
   implementation(projects.dataPayingMember)
   implementation(projects.dataSettingsDatastorePublic)
   implementation(projects.dataTermination)

@@ -22,6 +22,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.compose.ui.preview.DoubleBooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.material3.infoContainer
@@ -31,6 +32,7 @@ import com.hedvig.android.core.designsystem.material3.purpleContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
+import com.hedvig.android.feature.help.center.ShowNavigateToInboxViewModel
 import com.hedvig.android.feature.help.center.model.Question
 import com.hedvig.android.feature.help.center.model.Topic
 import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
@@ -39,11 +41,13 @@ import hedvig.resources.R
 
 @Composable
 internal fun HelpCenterTopicDestination(
+  showNavigateToInboxViewModel: ShowNavigateToInboxViewModel,
   topic: Topic,
   onNavigateToQuestion: (question: Question) -> Unit,
+  onNavigateToInbox: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   onNavigateUp: () -> Unit,
   onNavigateBack: () -> Unit,
-  openChat: () -> Unit,
 ) {
   val commonQuestions = topic
     .commonQuestionIds
@@ -61,10 +65,12 @@ internal fun HelpCenterTopicDestination(
     topic = topic,
     commonQuestions = commonQuestions,
     allQuestions = allQuestions,
+    showNavigateToInboxButton = showNavigateToInboxViewModel.uiState.collectAsStateWithLifecycle().value,
     onNavigateToQuestion = onNavigateToQuestion,
     onNavigateUp = onNavigateUp,
     onNavigateBack = onNavigateBack,
-    openChat = openChat,
+    onNavigateToInbox = onNavigateToInbox,
+    onNavigateToNewConversation = onNavigateToNewConversation,
   )
 }
 
@@ -73,10 +79,12 @@ private fun HelpCenterTopicScreen(
   topic: Topic?,
   commonQuestions: List<Question>,
   allQuestions: List<Question>,
+  showNavigateToInboxButton: Boolean,
   onNavigateToQuestion: (questionId: Question) -> Unit,
+  onNavigateToInbox: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   onNavigateUp: () -> Unit,
   onNavigateBack: () -> Unit,
-  openChat: () -> Unit,
 ) {
   Surface(color = MaterialTheme.colorScheme.background) {
     Column(Modifier.fillMaxSize()) {
@@ -145,7 +153,9 @@ private fun HelpCenterTopicScreen(
           Spacer(Modifier.weight(1f))
           Spacer(Modifier.height(40.dp))
           StillNeedHelpSection(
-            openChat = openChat,
+            onNavigateToInbox = onNavigateToInbox,
+            onNavigateToNewConversation = onNavigateToNewConversation,
+            showNavigateToInboxButton = showNavigateToInboxButton,
             contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom).asPaddingValues(),
           )
         }
@@ -157,9 +167,7 @@ private fun HelpCenterTopicScreen(
 @HedvigPreview
 @Composable
 private fun PreviewHelpCenterTopicScreen(
-  @PreviewParameter(
-    com.hedvig.android.compose.ui.preview.DoubleBooleanCollectionPreviewParameterProvider::class,
-  ) input: Pair<Boolean, Boolean>,
+  @PreviewParameter(DoubleBooleanCollectionPreviewParameterProvider::class) input: Pair<Boolean, Boolean>,
 ) {
   val hasTopic = input.first
   val hasQuestions = input.second
@@ -177,6 +185,8 @@ private fun PreviewHelpCenterTopicScreen(
         } else {
           listOf()
         },
+        true,
+        {},
         {},
         {},
         {},
