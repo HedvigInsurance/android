@@ -14,6 +14,7 @@ import com.hedvig.android.core.tracking.logError
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 
 internal class LoggingInterceptor : ApolloInterceptor {
@@ -21,7 +22,9 @@ internal class LoggingInterceptor : ApolloInterceptor {
     request: ApolloRequest<D>,
     chain: ApolloInterceptorChain,
   ): Flow<ApolloResponse<D>> {
+    logcat { "GraphQL request for ${request.operation.name()} START." }
     return chain.proceed(request).onEach { response ->
+      logcat { "GraphQL request for ${request.operation.name()} EMISSION. Response data: ${response.data}" }
       val data = response.data
       val errors = response.errors.orEmpty().map { it.toGraphqlError() }
       if (errors.isNotEmpty() && !errors.isUnathenticated()) {
@@ -32,6 +35,8 @@ internal class LoggingInterceptor : ApolloInterceptor {
           "GraphQL exception for ${request.operation.name()}: ${response.exception}"
         }
       }
+    }.onCompletion {
+      logcat { "GraphQL request for ${request.operation.name()} END." }
     }
   }
 
