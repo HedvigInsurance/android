@@ -3,21 +3,17 @@ package com.hedvig.android.feature.home.home.data
 import androidx.compose.runtime.Immutable
 import arrow.core.Either
 import arrow.core.NonEmptyList
-import arrow.core.left
 import arrow.core.raise.either
 import arrow.core.raise.nullable
 import arrow.core.toNonEmptyListOrNull
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.fetchPolicy
-import com.apollographql.apollo.exception.CacheMissException
+import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.apollo.ApolloOperationError.CacheMiss
 import com.hedvig.android.apollo.ApolloOperationError.OperationError
 import com.hedvig.android.apollo.ApolloOperationError.OperationException
-import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeFlow
-import com.hedvig.android.apollo.safeWatch
-import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.contract.android.CrossSell
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
@@ -27,25 +23,20 @@ import com.hedvig.android.memberreminders.GetMemberRemindersUseCase
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.android.ui.emergency.FirstVetSection
-import kotlin.time.Duration.Companion.seconds
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.retryWhen
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import octopus.CbmNumberOfChatMessagesQuery
 import octopus.HomeQuery
-import octopus.NumberOfChatMessagesQuery
 import octopus.type.ChatMessageSender
 import octopus.type.CrossSellType
 
 internal interface GetHomeDataUseCase {
-  fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, HomeData>>
+  fun invoke(forceNetworkFetch: Boolean): Flow<Either<ApolloOperationError, HomeData>>
 }
 
 internal class GetHomeDataUseCaseImpl(
@@ -55,11 +46,11 @@ internal class GetHomeDataUseCaseImpl(
   private val clock: Clock,
   private val timeZone: TimeZone,
 ) : GetHomeDataUseCase {
-  override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, HomeData>> {
+  override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ApolloOperationError, HomeData>> {
     return combine(
       apolloClient.query(HomeQuery())
         .fetchPolicy(if (forceNetworkFetch) FetchPolicy.NetworkOnly else FetchPolicy.CacheFirst)
-        .safeFlow(::ErrorMessage),
+        .safeFlow(),
       isEligibleToShowTheChatIcon(),
       getMemberRemindersUseCase.invoke(),
       featureManager.isFeatureEnabled(Feature.DISABLE_CHAT),
@@ -128,8 +119,8 @@ internal class GetHomeDataUseCaseImpl(
           firstVetSections = firstVetActions,
           crossSells = crossSells,
         )
-      }.onLeft { errorMessage ->
-        logcat(throwable = errorMessage.throwable) { "GetHomeDataUseCase failed with ${errorMessage.message}" }
+      }.onLeft { error: ApolloOperationError ->
+        logcat(throwable = error.throwable) { "GetHomeDataUseCase failed with $error" }
       }
     }
   }
