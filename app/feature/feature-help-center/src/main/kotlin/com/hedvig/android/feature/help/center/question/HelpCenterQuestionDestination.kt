@@ -24,8 +24,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.halilibo.richtext.markdown.Markdown
 import com.halilibo.richtext.ui.material3.RichText
+import com.hedvig.android.compose.ui.preview.DoubleBooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.material3.infoContainer
 import com.hedvig.android.core.designsystem.material3.onInfoContainer
@@ -36,6 +38,7 @@ import com.hedvig.android.core.designsystem.material3.typeContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
+import com.hedvig.android.feature.help.center.ShowNavigateToInboxViewModel
 import com.hedvig.android.feature.help.center.model.Question
 import com.hedvig.android.feature.help.center.ui.HelpCenterSection
 import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
@@ -44,6 +47,7 @@ import hedvig.resources.R
 
 @Composable
 internal fun HelpCenterQuestionDestination(
+  showNavigateToInboxViewModel: ShowNavigateToInboxViewModel,
   questionId: Question,
   onNavigateToQuestion: (questionId: Question) -> Unit,
   onNavigateToInbox: () -> Unit,
@@ -51,7 +55,6 @@ internal fun HelpCenterQuestionDestination(
   onNavigateUp: () -> Unit,
   onNavigateBack: () -> Unit,
 ) {
-  Text("HelpCenterDestinations.Question:$questionId")
   val question = Question.entries.find { it == questionId }
   val relatedQuestions = question
     ?.relatedQuestionIds
@@ -61,6 +64,7 @@ internal fun HelpCenterQuestionDestination(
   HelpCenterQuestionScreen(
     question = question,
     relatedQuestions = relatedQuestions,
+    showNavigateToInboxButton = showNavigateToInboxViewModel.uiState.collectAsStateWithLifecycle().value,
     onNavigateToQuestion = onNavigateToQuestion,
     onNavigateUp = onNavigateUp,
     onNavigateBack = onNavigateBack,
@@ -73,6 +77,7 @@ internal fun HelpCenterQuestionDestination(
 private fun HelpCenterQuestionScreen(
   question: Question?,
   relatedQuestions: List<Question>,
+  showNavigateToInboxButton: Boolean,
   onNavigateToQuestion: (questionId: Question) -> Unit,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
@@ -158,7 +163,7 @@ private fun HelpCenterQuestionScreen(
           StillNeedHelpSection(
             onNavigateToInbox = onNavigateToInbox,
             onNavigateToNewConversation = onNavigateToNewConversation,
-            showNavigateToInboxButton = true, // todo use real value here
+            showNavigateToInboxButton = showNavigateToInboxButton,
             contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom).asPaddingValues(),
           )
         }
@@ -170,9 +175,7 @@ private fun HelpCenterQuestionScreen(
 @HedvigPreview
 @Composable
 private fun PreviewHelpCenterQuestionScreen(
-  @PreviewParameter(
-    com.hedvig.android.compose.ui.preview.DoubleBooleanCollectionPreviewParameterProvider::class,
-  ) input: Pair<Boolean, Boolean>,
+  @PreviewParameter(DoubleBooleanCollectionPreviewParameterProvider::class) input: Pair<Boolean, Boolean>,
 ) {
   val hasQuestion = input.first
   val hasRelatedQuestions = input.second
@@ -187,6 +190,7 @@ private fun PreviewHelpCenterQuestionScreen(
         } else {
           listOf()
         },
+        showNavigateToInboxButton = true,
         onNavigateToQuestion = {},
         onNavigateToInbox = {},
         onNavigateToNewConversation = {},

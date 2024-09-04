@@ -89,7 +89,9 @@ fun NavGraphBuilder.helpCenterGraph(
       HelpCenterDestinations.Topic,
     ) { backStackEntry ->
       val resources = LocalContext.current.resources
+      val viewModel = koinViewModel<ShowNavigateToInboxViewModel>()
       HelpCenterTopicDestination(
+        showNavigateToInboxViewModel = viewModel,
         topic = topic,
         onNavigateToQuestion = { question ->
           navigateToQuestion(resources, question, navigator, backStackEntry)
@@ -103,8 +105,10 @@ fun NavGraphBuilder.helpCenterGraph(
     navdestination<HelpCenterDestinations.Question>(
       HelpCenterDestinations.Question,
     ) { backStackEntry ->
+      val viewModel = koinViewModel<ShowNavigateToInboxViewModel>()
       val resources = LocalContext.current.resources
       HelpCenterQuestionDestination(
+        showNavigateToInboxViewModel = viewModel,
         questionId = question,
         onNavigateToQuestion = { question ->
           navigateToQuestion(resources, question, navigator, backStackEntry)
