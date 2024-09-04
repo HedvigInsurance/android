@@ -10,9 +10,6 @@ import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ApolloOperationError
-import com.hedvig.android.apollo.ApolloOperationError.CacheMiss
-import com.hedvig.android.apollo.ApolloOperationError.OperationError
-import com.hedvig.android.apollo.ApolloOperationError.OperationException
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.data.contract.android.CrossSell
 import com.hedvig.android.featureflags.FeatureManager
@@ -51,7 +48,7 @@ internal class GetHomeDataUseCaseImpl(
       apolloClient.query(HomeQuery())
         .fetchPolicy(if (forceNetworkFetch) FetchPolicy.NetworkOnly else FetchPolicy.CacheFirst)
         .safeFlow(),
-      isEligibleToShowTheChatIcon(),
+      isEligibleToShowTheChatIconFlow(),
       getMemberRemindersUseCase.invoke(),
       featureManager.isFeatureEnabled(Feature.DISABLE_CHAT),
       featureManager.isFeatureEnabled(Feature.HELP_CENTER),
@@ -137,7 +134,7 @@ internal class GetHomeDataUseCaseImpl(
     return !isEligibleToShowTheChatIcon
   }
 
-  private fun isEligibleToShowTheChatIcon(): Flow<Either<ApolloOperationError, Boolean>> {
+  private fun isEligibleToShowTheChatIconFlow(): Flow<Either<ApolloOperationError, Boolean>> {
     return apolloClient.query(CbmNumberOfChatMessagesQuery())
       .fetchPolicy(FetchPolicy.CacheAndNetwork)
       .safeFlow()
@@ -145,15 +142,8 @@ internal class GetHomeDataUseCaseImpl(
         either {
           val data = result
             .onLeft { apolloOperationError ->
-              when (apolloOperationError) {
-                is CacheMiss -> return@either false
-                is OperationError,
-                is OperationException,
-                -> {
-                  logcat(LogPriority.ERROR, apolloOperationError.throwable) {
-                    "isEligibleToShowTheChatIcon cant determine if the chat icon should be shown. $apolloOperationError"
-                  }
-                }
+              logcat(LogPriority.ERROR, apolloOperationError.throwable) {
+                "isEligibleToShowTheChatIcon cant determine if the chat icon should be shown. $apolloOperationError"
               }
             }
             .bind()
