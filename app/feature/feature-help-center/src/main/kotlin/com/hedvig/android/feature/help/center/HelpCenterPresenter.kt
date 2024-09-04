@@ -2,17 +2,21 @@ package com.hedvig.android.feature.help.center
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import arrow.core.NonEmptyList
+import arrow.core.merge
+import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
 import com.hedvig.android.feature.help.center.data.GetQuickLinksUseCase
 import com.hedvig.android.feature.help.center.model.Question
 import com.hedvig.android.feature.help.center.model.QuickAction
 import com.hedvig.android.feature.help.center.model.Topic
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import kotlinx.coroutines.flow.map
 
 internal sealed interface HelpCenterEvent {
   data class OnQuickActionSelected(val quickAction: QuickAction) : HelpCenterEvent
@@ -33,6 +37,7 @@ internal data class HelpCenterUiState(
   val quickLinksUiState: QuickLinkUiState,
   val selectedQuickAction: QuickAction?,
   val search: Search?,
+  val showNavigateToInboxButton: Boolean,
 ) {
   data class QuickLink(val quickAction: QuickAction)
 
@@ -63,6 +68,7 @@ internal data class HelpCenterUiState(
 
 internal class HelpCenterPresenter(
   private val getQuickLinksUseCase: GetQuickLinksUseCase,
+  private val hasAnyActiveConversationUseCase: HasAnyActiveConversationUseCase,
 ) : MoleculePresenter<HelpCenterEvent, HelpCenterUiState> {
   @Composable
   override fun MoleculePresenterScope<HelpCenterEvent>.present(lastState: HelpCenterUiState): HelpCenterUiState {
@@ -71,6 +77,9 @@ internal class HelpCenterPresenter(
     var currentState by remember {
       mutableStateOf(lastState)
     }
+    val hasAnyActiveConversation by remember(hasAnyActiveConversationUseCase) {
+      hasAnyActiveConversationUseCase.invoke().map { it.mapLeft { false }.merge() }
+    }.collectAsState(false)
 
     CollectEvents { event ->
       when (event) {
@@ -120,6 +129,7 @@ internal class HelpCenterPresenter(
     return currentState.copy(
       quickLinksUiState = quickLinksUiState,
       selectedQuickAction = selectedQuickAction,
+      showNavigateToInboxButton = hasAnyActiveConversation,
     )
   }
 }

@@ -127,6 +127,7 @@ internal fun HelpCenterHomeDestination(
     onDismissQuickActionDialog = {
       viewModel.emit(HelpCenterEvent.OnDismissQuickActionDialog)
     },
+    showNavigateToInboxButton = uiState.showNavigateToInboxButton,
     onNavigateToInbox = onNavigateToInbox,
     onNavigateToNewConversation = onNavigateToNewConversation,
     onNavigateUp = onNavigateUp,
@@ -152,6 +153,7 @@ private fun HelpCenterHomeScreen(
   onNavigateToQuickLink: (QuickLinkDestination) -> Unit,
   onQuickActionsSelected: (QuickAction) -> Unit,
   onDismissQuickActionDialog: () -> Unit,
+  showNavigateToInboxButton: Boolean,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
   onNavigateUp: () -> Unit,
@@ -251,6 +253,7 @@ private fun HelpCenterHomeScreen(
               onNavigateToTopic = onNavigateToTopic,
               questions = questions,
               onNavigateToQuestion = onNavigateToQuestion,
+              showNavigateToInboxButton = showNavigateToInboxButton,
               onNavigateToInbox = onNavigateToInbox,
               onNavigateToNewConversation = onNavigateToNewConversation,
             )
@@ -279,6 +282,7 @@ private fun ContentWithoutSearch(
   onNavigateToTopic: (topic: Topic) -> Unit,
   questions: List<Question>,
   onNavigateToQuestion: (question: Question) -> Unit,
+  showNavigateToInboxButton: Boolean,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
 ) {
@@ -355,7 +359,7 @@ private fun ContentWithoutSearch(
     StillNeedHelpSection(
       onNavigateToInbox = onNavigateToInbox,
       onNavigateToNewConversation = onNavigateToNewConversation,
-      showNavigateToInboxButton = true, // todo use real value here
+      showNavigateToInboxButton = showNavigateToInboxButton,
       contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom).asPaddingValues(),
     )
   }
@@ -686,6 +690,7 @@ private fun PreviewHelpCenterHomeScreen(
         onNavigateToQuickLink = {},
         onQuickActionsSelected = {},
         onDismissQuickActionDialog = {},
+        showNavigateToInboxButton = true,
         onNavigateToInbox = {},
         onNavigateToNewConversation = {},
         onNavigateUp = {},
@@ -716,6 +721,7 @@ private fun PreviewQuickLinkAnimations() {
           onNavigateToQuickLink = {},
           onQuickActionsSelected = {},
           onDismissQuickActionDialog = {},
+          showNavigateToInboxButton = true,
           onNavigateToInbox = {},
           onNavigateToNewConversation = {},
           onNavigateUp = {},
