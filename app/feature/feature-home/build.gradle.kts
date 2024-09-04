@@ -49,6 +49,7 @@ dependencies {
   implementation(projects.crossSells)
   implementation(projects.dataChatReadTimestampPublic)
   implementation(projects.dataContractAndroid)
+  implementation(projects.dataConversations)
   implementation(projects.designSystemHedvig)
   implementation(projects.featureFlagsPublic)
   implementation(projects.languageCore)
