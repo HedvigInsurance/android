@@ -92,10 +92,10 @@ class ReferralsNotificationSender(
   private fun sendNotificationInner(id: Int, notification: Notification) {
     sendHedvigNotification(
       context = context,
-      notificationSender = "ReferralsNotificationSender",
       notificationId = id,
       notification = notification,
       notificationChannel = notificationChannel,
+      notificationSenderName = "ReferralsNotificationSender",
     )
   }
 

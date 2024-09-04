@@ -87,10 +87,10 @@ class PaymentNotificationSender(
   private fun sendNotificationInner(id: Int, notification: Notification) {
     sendHedvigNotification(
       context = context,
-      notificationSender = "PaymentNotificationSender",
       notificationId = id,
       notification = notification,
       notificationChannel = notificationChannel,
+      notificationSenderName = "PaymentNotificationSender",
     )
   }
 
