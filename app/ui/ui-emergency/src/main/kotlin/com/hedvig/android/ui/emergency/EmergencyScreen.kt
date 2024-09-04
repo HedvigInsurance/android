@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -23,6 +24,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineBreak
@@ -44,7 +46,13 @@ import com.hedvig.android.logger.logcat
 import hedvig.resources.R
 
 @Composable
-fun EmergencyScreen(emergencyNumber: String?, navigateUp: () -> Unit, modifier: Modifier = Modifier) {
+fun EmergencyScreen(
+  emergencyNumber: String?,
+  emergencyUrl: String?,
+  openUrl: (String) -> Unit,
+  navigateUp: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
   HedvigScaffold(
     topAppBarText = stringResource(id = R.string.HC_QUICK_ACTIONS_SICK_ABROAD_TITLE),
     navigateUp = navigateUp,
@@ -91,14 +99,36 @@ fun EmergencyScreen(emergencyNumber: String?, navigateUp: () -> Unit, modifier: 
             ),
             modifier = Modifier.fillMaxWidth(),
           )
-          if (emergencyNumber != null) {
+          if (emergencyUrl != null) {
             Spacer(Modifier.height(24.dp))
+            HedvigContainedSmallButton(
+              text = stringResource(
+                R.string.SUBMIT_CLAIM_GLOBAL_ASSISTANCE_URL_LABEL,
+                emergencyUrl,
+              ),
+              onClick = {
+                openUrl(emergencyUrl)
+              },
+              modifier = Modifier.fillMaxWidth(),
+            )
+          }
+          if (emergencyNumber != null) {
+            val colors = if (emergencyUrl != null) {
+              ButtonDefaults.buttonColors(
+                containerColor = Color.Transparent,
+                contentColor = MaterialTheme.colorScheme.onAlwaysBlackContainer,
+              )
+            } else {
+              ButtonDefaults.buttonColors()
+            }
+            Spacer(Modifier.height(8.dp))
             val context = LocalContext.current
             HedvigContainedSmallButton(
               text = stringResource(
                 R.string.SUBMIT_CLAIM_GLOBAL_ASSISTANCE_CALL_LABEL,
                 emergencyNumber,
               ),
+              colors = colors,
               onClick = {
                 try {
                   context.startActivity(
@@ -120,8 +150,10 @@ fun EmergencyScreen(emergencyNumber: String?, navigateUp: () -> Unit, modifier: 
           Text(
             text = stringResource(R.string.SUBMIT_CLAIM_GLOBAL_ASSISTANCE_FOOTNOTE),
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.fillMaxWidth(),
+            style = MaterialTheme.typography.bodySmall.copy(
+              color = LocalContentColor.current.copy(alpha = 0.7f),
+            ),
           )
           Spacer(Modifier.height(8.dp))
         }
@@ -189,7 +221,9 @@ private fun PreviewEmergencyScreen() {
     Surface(color = MaterialTheme.colorScheme.background) {
       EmergencyScreen(
         emergencyNumber = "123456",
+        emergencyUrl = "url",
         navigateUp = {},
+        openUrl = {},
       )
     }
   }

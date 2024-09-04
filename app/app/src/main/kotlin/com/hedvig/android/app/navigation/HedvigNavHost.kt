@@ -347,6 +347,10 @@ internal fun HedvigNavHost(
         // todo cbm check if we're gonna use chatContext
         navigateToNewConversationWithContext(backStackEntry, chatContext)
       },
+      onNavigateToInbox = { backStackEntry ->
+        navigateToInbox(backStackEntry)
+      },
+      openUrl = openUrl,
     )
   }
 }

@@ -87,7 +87,11 @@ fun NavGraphBuilder.profileGraph(
         navigateUp = navigator::navigateUp,
       )
     }
-    navdestination<ProfileDestinations.MyInfo> {
+    navdestination<ProfileDestinations.MyInfo>(
+      deepLinks = listOf(
+        navDeepLink { uriPattern = hedvigDeepLinkContainer.contactInfo },
+      ),
+    ) {
       val viewModel: MyInfoViewModel = koinViewModel()
       MyInfoDestination(
         viewModel = viewModel,

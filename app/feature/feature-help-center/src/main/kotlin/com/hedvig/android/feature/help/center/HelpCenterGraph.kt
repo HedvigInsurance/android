@@ -26,7 +26,9 @@ fun NavGraphBuilder.helpCenterGraph(
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   navigator: Navigator,
   onNavigateToQuickLink: (NavBackStackEntry, QuickLinkDestination.OuterDestination) -> Unit,
+  onNavigateToInbox: (NavBackStackEntry) -> Unit,
   onNavigateToNewConversation: (NavBackStackEntry, AppDestination.Chat.ChatContext?) -> Unit,
+  openUrl: (String) -> Unit,
 ) {
   navgraph<HelpCenterDestination>(
     startDestination = HelpCenterDestinations.HelpCenter::class,
@@ -51,6 +53,7 @@ fun NavGraphBuilder.helpCenterGraph(
             is QuickLinkDestination.OuterDestination -> {
               onNavigateToQuickLink(backStackEntry, destination)
             }
+
             is QuickLinkDestination.InnerHelpCenterDestination -> {
               when (destination) {
                 is QuickLinkDestination.InnerHelpCenterDestination.FirstVet -> {
@@ -58,16 +61,25 @@ fun NavGraphBuilder.helpCenterGraph(
                     backStackEntry.navigate(HelpCenterDestinations.FirstVet(destination.sections))
                   }
                 }
+
                 is QuickLinkDestination.InnerHelpCenterDestination.QuickLinkSickAbroad -> {
                   with(navigator) {
-                    backStackEntry.navigate(HelpCenterDestinations.Emergency(destination.emergencyNumber))
+                    backStackEntry.navigate(
+                      HelpCenterDestinations.Emergency(
+                        destination.emergencyNumber,
+                        destination.emergencyUrl,
+                      ),
+                    )
                   }
                 }
               }
             }
           }
         },
-        openChat = {
+        onNavigateToInbox = {
+          onNavigateToInbox(backStackEntry)
+        },
+        onNavigateToNewConversation = {
           onNavigateToNewConversation(backStackEntry, null)
         },
         onNavigateUp = navigator::navigateUp,
@@ -77,32 +89,34 @@ fun NavGraphBuilder.helpCenterGraph(
       HelpCenterDestinations.Topic,
     ) { backStackEntry ->
       val resources = LocalContext.current.resources
+      val viewModel = koinViewModel<ShowNavigateToInboxViewModel>()
       HelpCenterTopicDestination(
+        showNavigateToInboxViewModel = viewModel,
         topic = topic,
         onNavigateToQuestion = { question ->
           navigateToQuestion(resources, question, navigator, backStackEntry)
         },
         onNavigateUp = navigator::navigateUp,
         onNavigateBack = navigator::popBackStack,
-        openChat = {
-          onNavigateToNewConversation(backStackEntry, topic.chatContext)
-        },
+        onNavigateToInbox = { onNavigateToInbox(backStackEntry) },
+        onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry, topic.chatContext) },
       )
     }
     navdestination<HelpCenterDestinations.Question>(
       HelpCenterDestinations.Question,
     ) { backStackEntry ->
+      val viewModel = koinViewModel<ShowNavigateToInboxViewModel>()
       val resources = LocalContext.current.resources
       HelpCenterQuestionDestination(
+        showNavigateToInboxViewModel = viewModel,
         questionId = question,
         onNavigateToQuestion = { question ->
           navigateToQuestion(resources, question, navigator, backStackEntry)
         },
+        onNavigateToInbox = { onNavigateToInbox(backStackEntry) },
+        onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry, question.chatContext) },
         onNavigateUp = navigator::navigateUp,
         onNavigateBack = navigator::popBackStack,
-        openChat = {
-          onNavigateToNewConversation(backStackEntry, question.chatContext)
-        },
       )
     }
     navdestination<HelpCenterDestinations.FirstVet>(
@@ -117,7 +131,9 @@ fun NavGraphBuilder.helpCenterGraph(
     navdestination<HelpCenterDestinations.Emergency> {
       EmergencyDestination(
         emergencyNumber = emergencyNumber,
+        emergencyUrl = emergencyUrl,
         navigateUp = navigator::navigateUp,
+        openUrl = openUrl,
       )
     }
   }

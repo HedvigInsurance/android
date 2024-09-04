@@ -11,24 +11,18 @@ import com.hedvig.android.app.notification.DATA_MESSAGE_BODY
 import com.hedvig.android.app.notification.DATA_MESSAGE_TITLE
 import com.hedvig.android.app.notification.getImmutablePendingIntentFlags
 import com.hedvig.android.core.common.ApplicationScope
-import com.hedvig.android.core.common.android.notification.setupNotificationChannel
+import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
+import hedvig.resources.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class CrossSellNotificationSender(
   private val context: Context,
   private val applicationScope: ApplicationScope,
+  private val notificationChannel: HedvigNotificationChannel,
 ) : NotificationSender {
-  override fun createChannel() {
-    setupNotificationChannel(
-      context,
-      CROSS_SELL_CHANNEL_ID,
-      context.resources.getString(hedvig.resources.R.string.NOTIFICATION_CHANNEL_CROSS_SELL_TITLE),
-    )
-  }
-
   override suspend fun sendNotification(type: String, remoteMessage: RemoteMessage) {
     val title = remoteMessage.data[DATA_MESSAGE_TITLE]
     val body = remoteMessage.data[DATA_MESSAGE_BODY]
@@ -47,9 +41,10 @@ class CrossSellNotificationSender(
       )
       sendHedvigNotification(
         context = context,
-        notificationSender = "CrossSellNotificationSender",
         notificationId = CROSS_SELL_NOTIFICATION_ID,
         notification = notification,
+        notificationChannel = notificationChannel,
+        notificationSenderName = "CrossSellNotificationSender",
       )
     }
   }
@@ -71,22 +66,17 @@ class CrossSellNotificationSender(
     pendingIntent: PendingIntent?,
   ): Notification {
     return NotificationCompat
-      .Builder(
-        context,
-        CROSS_SELL_CHANNEL_ID,
-      )
-      .setSmallIcon(hedvig.resources.R.drawable.ic_hedvig_h)
+      .Builder(context, notificationChannel.channelId)
+      .setSmallIcon(R.drawable.ic_hedvig_h)
       .setContentTitle(title)
       .setContentText(body)
       .setPriority(NotificationCompat.PRIORITY_DEFAULT)
       .setAutoCancel(true)
-      .setChannelId(CROSS_SELL_CHANNEL_ID)
       .setContentIntent(pendingIntent)
       .build()
   }
 
   companion object {
-    private const val CROSS_SELL_CHANNEL_ID = "hedvig-cross-sell"
     private const val CROSS_SELL_ID = "CROSS_SELL_ID"
     private const val CROSS_SELL_NOTIFICATION_ID = 11
 

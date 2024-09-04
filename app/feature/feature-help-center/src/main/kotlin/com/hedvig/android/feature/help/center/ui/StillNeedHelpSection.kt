@@ -14,15 +14,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
+import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.design.system.hedvig.ButtonDefaults
+import com.hedvig.android.design.system.hedvig.HedvigButton
 import hedvig.resources.R
 
 @Composable
 internal fun StillNeedHelpSection(
-  openChat: () -> Unit,
+  onNavigateToInbox: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
+  showNavigateToInboxButton: Boolean,
   modifier: Modifier = Modifier,
   contentPadding: PaddingValues = PaddingValues(),
 ) {
@@ -48,7 +53,27 @@ internal fun StillNeedHelpSection(
         color = MaterialTheme.colorScheme.onSurfaceVariant,
       )
       Spacer(modifier = Modifier.height(16.dp))
-      HedvigContainedSmallButton(text = stringResource(R.string.HC_CHAT_BUTTON), onClick = openChat)
+      if (showNavigateToInboxButton) {
+        HedvigButton(
+          text = stringResource(R.string.HC_CHAT_GO_TO_INBOX),
+          onClick = onNavigateToInbox,
+          enabled = true,
+          buttonStyle = ButtonDefaults.ButtonStyle.Primary,
+          buttonSize = ButtonDefaults.ButtonSize.Medium,
+        )
+        Spacer(Modifier.height(8.dp))
+      }
+      HedvigButton(
+        text = stringResource(R.string.HC_CHAT_BUTTON),
+        onClick = onNavigateToNewConversation,
+        enabled = true,
+        buttonStyle = if (showNavigateToInboxButton) {
+          ButtonDefaults.ButtonStyle.Ghost
+        } else {
+          ButtonDefaults.ButtonStyle.Primary
+        },
+        buttonSize = ButtonDefaults.ButtonSize.Medium,
+      )
       Spacer(modifier = Modifier.height(24.dp))
     }
   }
@@ -56,10 +81,12 @@ internal fun StillNeedHelpSection(
 
 @HedvigPreview
 @Composable
-private fun PreviewStillNeedHelpSection() {
+private fun PreviewStillNeedHelpSection(
+  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) showNavigateToInboxButton: Boolean,
+) {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      StillNeedHelpSection({})
+      StillNeedHelpSection({}, {}, showNavigateToInboxButton)
     }
   }
 }

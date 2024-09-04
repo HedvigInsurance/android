@@ -24,6 +24,7 @@ import com.hedvig.android.app.apollo.DeviceIdInterceptor
 import com.hedvig.android.app.apollo.LoggingInterceptor
 import com.hedvig.android.app.apollo.LogoutOnUnauthenticatedInterceptor
 import com.hedvig.android.app.notification.senders.ChatNotificationSender
+import com.hedvig.android.app.notification.senders.ContactInfoSender
 import com.hedvig.android.app.notification.senders.CrossSellNotificationSender
 import com.hedvig.android.app.notification.senders.GenericNotificationSender
 import com.hedvig.android.app.notification.senders.PaymentNotificationSender
@@ -33,6 +34,7 @@ import com.hedvig.android.auth.di.authModule
 import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
 import com.hedvig.android.core.appreview.di.coreAppReviewModule
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.di.coreCommonModule
 import com.hedvig.android.core.common.di.databaseFileQualifier
 import com.hedvig.android.core.common.di.datastoreFileQualifier
@@ -42,6 +44,7 @@ import com.hedvig.android.core.fileupload.fileUploadModule
 import com.hedvig.android.data.chat.di.dataChatModule
 import com.hedvig.android.data.chat.read.timestamp.di.chatReadTimestampModule
 import com.hedvig.android.data.claimflow.di.claimFlowDataModule
+import com.hedvig.android.data.conversations.di.dataConversationsModule
 import com.hedvig.android.data.paying.member.di.dataPayingMemberModule
 import com.hedvig.android.data.settings.datastore.di.settingsDatastoreModule
 import com.hedvig.android.data.termination.di.terminationDataModule
@@ -76,6 +79,7 @@ import com.hedvig.android.memberreminders.di.memberRemindersModule
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.di.deepLinkModule
 import com.hedvig.android.notification.badge.data.di.notificationBadgeModule
+import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.firebase.di.firebaseNotificationModule
 import com.hedvig.android.shared.foreverui.ui.di.foreverModule
@@ -195,12 +199,39 @@ private val buildConstantsModule = module {
 }
 
 private val notificationModule = module {
-  single { PaymentNotificationSender(get(), get(), get()) } bind NotificationSender::class
-  single { CrossSellNotificationSender(get(), get()) } bind NotificationSender::class
-  single { ReferralsNotificationSender(get(), get()) } bind NotificationSender::class
-  single { GenericNotificationSender(get()) } bind NotificationSender::class
+  single {
+    PaymentNotificationSender(
+      get<Context>(),
+      get<ApplicationScope>(),
+      get<HedvigDeepLinkContainer>(),
+      HedvigNotificationChannel.Payments,
+    )
+  } bind NotificationSender::class
+  single {
+    CrossSellNotificationSender(get<Context>(), get<ApplicationScope>(), HedvigNotificationChannel.CrossSell)
+  } bind NotificationSender::class
+  single {
+    ReferralsNotificationSender(get<Context>(), get<HedvigDeepLinkContainer>(), HedvigNotificationChannel.Referrals)
+  } bind NotificationSender::class
+  single {
+    GenericNotificationSender(get<Context>(), HedvigNotificationChannel.Other)
+  } bind NotificationSender::class
   single<ChatNotificationSender> {
-    ChatNotificationSender(get(), get<HedvigDeepLinkContainer>(), get<FeatureManager>(), get<HedvigBuildConstants>())
+    ChatNotificationSender(
+      get<Context>(),
+      get<HedvigDeepLinkContainer>(),
+      get<FeatureManager>(),
+      get<HedvigBuildConstants>(),
+      HedvigNotificationChannel.Chat,
+    )
+  } bind NotificationSender::class
+  single<ContactInfoSender> {
+    ContactInfoSender(
+      get<Context>(),
+      get<HedvigBuildConstants>(),
+      get<HedvigDeepLinkContainer>(),
+      HedvigNotificationChannel.Other,
+    )
   } bind NotificationSender::class
 }
 
@@ -279,6 +310,7 @@ val applicationModule = module {
       coreAppReviewModule,
       coreCommonModule,
       dataChatModule,
+      dataConversationsModule,
       dataPayingMemberModule,
       dataStoreModule,
       databaseChatAndroidModule,
