@@ -205,6 +205,7 @@ private fun DropdownSelector(
                 "",
                 tint = dropdownColors.errorIconColor,
               )
+              Spacer(Modifier.width(4.dp))
             }
             IconButton(
               onClick = onClick,

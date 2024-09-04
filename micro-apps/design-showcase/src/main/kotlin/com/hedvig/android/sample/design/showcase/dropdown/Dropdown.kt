@@ -57,7 +57,7 @@ fun DropdownShowcase() {
           chosenIndex = it
         },
         hasError = error,
-        size = DropdownDefaults.DropdownSize.Small,
+        size = DropdownDefaults.DropdownSize.Large,
         errorText = "You must select something",
         onSelectorClick = {
           error = false
@@ -75,7 +75,7 @@ fun DropdownShowcase() {
           chosenIndex2 = it
         },
         hasError = error2,
-        size = DropdownDefaults.DropdownSize.Small,
+        size = DropdownDefaults.DropdownSize.Medium,
         errorText = "You must select something",
         onSelectorClick = {
           error2 = false
