@@ -13,12 +13,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.DropdownDefaults
 import com.hedvig.android.design.system.hedvig.DropdownItem
 import com.hedvig.android.design.system.hedvig.DropdownWithDialog
+import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.icon.Camera
+import com.hedvig.android.design.system.hedvig.icon.Chat
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.InfoFilled
+import com.hedvig.android.design.showcase.R
+import com.hedvig.android.design.system.hedvig.IconResource
+
 
 @Composable
 fun DropdownShowcase() {
@@ -28,6 +38,11 @@ fun DropdownShowcase() {
     color = HedvigTheme.colorScheme.backgroundPrimary,
   ) {
     var chosenIndex by remember { mutableStateOf<Int?>(null) }
+    var error by remember { mutableStateOf(false) }
+    var chosenIndex2 by remember { mutableStateOf<Int?>(null) }
+    var error2 by remember { mutableStateOf(false) }
+    var chosenIndex3 by remember { mutableStateOf<Int?>(null) }
+    var error3 by remember { mutableStateOf(false) }
     Column(
       modifier = Modifier
         .safeContentPadding()
@@ -38,14 +53,65 @@ fun DropdownShowcase() {
       Spacer(Modifier.height(16.dp))
       DropdownWithDialog(
         style = DropdownDefaults.DropdownStyle.Default(
-          simpleItems
+          simpleItems,
         ),
         chosenItemIndex = chosenIndex,
         hintText = "Select...",
         onItemChosen = {
           chosenIndex = it
         },
-        size = DropdownDefaults.DropdownSize.Small
+        hasError = error,
+        size = DropdownDefaults.DropdownSize.Small,
+        errorText = "You must select something",
+        onSelectorClick = {
+          error = false
+        },
+      )
+      Spacer(Modifier.height(16.dp))
+      DropdownWithDialog(
+        style = DropdownDefaults.DropdownStyle.Label(
+          simpleItems,
+          "Label"
+        ),
+        chosenItemIndex = chosenIndex2,
+        hintText = "Select...",
+        onItemChosen = {
+          chosenIndex2 = it
+        },
+        hasError = error2,
+        size = DropdownDefaults.DropdownSize.Small,
+        errorText = "You must select something",
+        onSelectorClick = {
+          error2 = false
+        },
+      )
+      Spacer(Modifier.height(16.dp))
+      DropdownWithDialog(
+        style = DropdownDefaults.DropdownStyle.Icon(
+          iconItems,
+          IconResource.Painter(R.drawable.ic_pillow_cat),
+        ),
+        chosenItemIndex = chosenIndex3,
+        hintText = "Select...",
+        onItemChosen = {
+          chosenIndex3 = it
+        },
+        hasError = error3,
+        size = DropdownDefaults.DropdownSize.Small,
+        errorText = "You must select something",
+        onSelectorClick = {
+          error3 = false
+        },
+      )
+      Spacer(Modifier.height(16.dp))
+      HedvigButton(
+        text = "Check selection",
+        enabled = true,
+        onClick = {
+          error = chosenIndex == null
+          error2 = chosenIndex2 == null
+          error3 = chosenIndex3 == null
+        },
       )
     }
   }
@@ -55,5 +121,11 @@ private val simpleItems = listOf(
   DropdownItem.SimpleDropdownItem("Home"),
   DropdownItem.SimpleDropdownItem("Cat"),
   DropdownItem.SimpleDropdownItem("UFO"),
-  DropdownItem.SimpleDropdownItem("Canary")
+  DropdownItem.SimpleDropdownItem("Canary"),
+)
+private val iconItems = listOf(
+  DropdownItem.DropdownItemWithIcon("Home", IconResource.Painter(R.drawable.ic_pillow_cat) ),
+  DropdownItem.DropdownItemWithIcon("Cat", IconResource.Painter(R.drawable.ic_pillow_homeowner)),
+  DropdownItem.DropdownItemWithIcon("UFO", IconResource.Painter(R.drawable.ic_pillow_dog)),
+  DropdownItem.DropdownItemWithIcon("Canary", IconResource.Painter(R.drawable.ic_pillow_home)),
 )
