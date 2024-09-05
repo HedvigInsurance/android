@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.chat.cbm.data
+package com.hedvig.android.feature.chat.data
 
 import arrow.core.Either
 import arrow.core.raise.either
@@ -10,10 +10,10 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.chat.database.ConversationDao
 import com.hedvig.android.data.chat.database.asIdToTimestampMap
-import com.hedvig.android.feature.chat.cbm.model.InboxConversation
-import com.hedvig.android.feature.chat.cbm.model.InboxConversation.LatestMessage
-import com.hedvig.android.feature.chat.cbm.model.Sender
-import com.hedvig.android.feature.chat.cbm.model.toSender
+import com.hedvig.android.feature.chat.model.InboxConversation
+import com.hedvig.android.feature.chat.model.InboxConversation.LatestMessage
+import com.hedvig.android.feature.chat.model.Sender
+import com.hedvig.android.feature.chat.model.toSender
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay

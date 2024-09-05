@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.chat.cbm.ui
+package com.hedvig.android.feature.chat
 
 import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
@@ -99,22 +99,24 @@ import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.core.ui.layout.adjustSizeToImageRatio
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
-import com.hedvig.android.feature.chat.cbm.BannerText
-import com.hedvig.android.feature.chat.cbm.BannerText.ClosedConversation
-import com.hedvig.android.feature.chat.cbm.CbmChatUiState
-import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Loaded
-import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Loaded.LatestChatMessage
-import com.hedvig.android.feature.chat.cbm.CbmUiChatMessage
-import com.hedvig.android.feature.chat.cbm.ConversationInfo
-import com.hedvig.android.feature.chat.cbm.ConversationInfo.Info.ClaimInfo
-import com.hedvig.android.feature.chat.cbm.model.CbmChatMessage
-import com.hedvig.android.feature.chat.cbm.model.CbmChatMessage.ChatMessageFile.MimeType.IMAGE
-import com.hedvig.android.feature.chat.cbm.model.Sender
-import com.hedvig.android.feature.chat.cbm.model.Sender.HEDVIG
-import com.hedvig.android.feature.chat.cbm.model.Sender.MEMBER
+import com.hedvig.android.feature.chat.CbmChatUiState.Loaded
+import com.hedvig.android.feature.chat.CbmChatUiState.Loaded.LatestChatMessage
+import com.hedvig.android.feature.chat.data.BannerText
+import com.hedvig.android.feature.chat.data.BannerText.ClosedConversation
+import com.hedvig.android.feature.chat.data.ConversationInfo
+import com.hedvig.android.feature.chat.data.ConversationInfo.Info.ClaimInfo
+import com.hedvig.android.feature.chat.model.CbmChatMessage
+import com.hedvig.android.feature.chat.model.CbmChatMessage.ChatMessageFile.MimeType.IMAGE
+import com.hedvig.android.feature.chat.model.Sender
+import com.hedvig.android.feature.chat.model.Sender.HEDVIG
+import com.hedvig.android.feature.chat.model.Sender.MEMBER
 import com.hedvig.android.feature.chat.ui.ChatBanner
 import com.hedvig.android.feature.chat.ui.ChatInput
 import com.hedvig.android.feature.chat.ui.TextWithClickableUrls
+import com.hedvig.android.feature.chat.ui.backgroundColor
+import com.hedvig.android.feature.chat.ui.formattedDateTime
+import com.hedvig.android.feature.chat.ui.messageHorizontalAlignment
+import com.hedvig.android.feature.chat.ui.onBackgroundColor
 import com.hedvig.android.placeholder.PlaceholderHighlight
 import com.hedvig.android.placeholder.fade
 import com.hedvig.android.placeholder.placeholder
@@ -755,7 +757,7 @@ private fun PreviewChatLoadedScreen() {
               ),
               messages = flowOf(PagingData.from(fakeChatMessages)).collectAsLazyPagingItems(),
               latestMessage = null,
-              bannerText = BannerText.ClosedConversation,
+              bannerText = ClosedConversation,
             ),
             lazyListState = rememberLazyListState(),
             imageLoader = rememberPreviewImageLoader(),

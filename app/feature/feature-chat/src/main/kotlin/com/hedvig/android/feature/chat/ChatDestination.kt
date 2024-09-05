@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.chat.cbm.ui
+package com.hedvig.android.feature.chat
 
 import android.net.Uri
 import androidx.compose.foundation.layout.Box
@@ -42,16 +42,13 @@ import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.LocalTextStyle
-import com.hedvig.android.feature.chat.cbm.CbmChatEvent
-import com.hedvig.android.feature.chat.cbm.CbmChatUiState
-import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Error
-import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Initializing
-import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Loaded
-import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Loaded.TopAppBarText.ClaimConversation
-import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Loaded.TopAppBarText.Legacy
-import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Loaded.TopAppBarText.NewConversation
-import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Loaded.TopAppBarText.ServiceConversation
-import com.hedvig.android.feature.chat.cbm.CbmChatViewModel
+import com.hedvig.android.feature.chat.CbmChatUiState.Error
+import com.hedvig.android.feature.chat.CbmChatUiState.Initializing
+import com.hedvig.android.feature.chat.CbmChatUiState.Loaded
+import com.hedvig.android.feature.chat.CbmChatUiState.Loaded.TopAppBarText.ClaimConversation
+import com.hedvig.android.feature.chat.CbmChatUiState.Loaded.TopAppBarText.Legacy
+import com.hedvig.android.feature.chat.CbmChatUiState.Loaded.TopAppBarText.NewConversation
+import com.hedvig.android.feature.chat.CbmChatUiState.Loaded.TopAppBarText.ServiceConversation
 import com.hedvig.android.logger.logcat
 import hedvig.resources.R
 import kotlinx.datetime.Instant

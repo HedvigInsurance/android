@@ -1,7 +1,0 @@
-query ChatLatestMessageTimestamps {
-  chat(until: null) {
-    messages {
-      sentAt
-    }
-  }
-}

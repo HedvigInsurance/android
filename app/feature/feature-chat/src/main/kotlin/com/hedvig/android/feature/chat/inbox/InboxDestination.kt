@@ -1,4 +1,5 @@
-package com.hedvig.android.feature.chat.cbm.inbox
+
+package com.hedvig.android.feature.chat.inbox
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,15 +46,12 @@ import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.feature.chat.cbm.model.InboxConversation
-import com.hedvig.android.feature.chat.cbm.model.InboxConversation.Header
-import com.hedvig.android.feature.chat.cbm.model.InboxConversation.Header.ClaimConversation
-import com.hedvig.android.feature.chat.cbm.model.InboxConversation.Header.Legacy
-import com.hedvig.android.feature.chat.cbm.model.InboxConversation.Header.ServiceConversation
-import com.hedvig.android.feature.chat.cbm.model.InboxConversation.LatestMessage.File
-import com.hedvig.android.feature.chat.cbm.model.InboxConversation.LatestMessage.Text
-import com.hedvig.android.feature.chat.cbm.model.InboxConversation.LatestMessage.Unknown
-import com.hedvig.android.feature.chat.cbm.model.Sender
+import com.hedvig.android.feature.chat.model.InboxConversation
+import com.hedvig.android.feature.chat.model.InboxConversation.Header
+import com.hedvig.android.feature.chat.model.InboxConversation.LatestMessage.File
+import com.hedvig.android.feature.chat.model.InboxConversation.LatestMessage.Text
+import com.hedvig.android.feature.chat.model.InboxConversation.LatestMessage.Unknown
+import com.hedvig.android.feature.chat.model.Sender
 import com.hedvig.android.feature.chat.ui.formattedChatDateTime
 import hedvig.resources.R
 import kotlinx.datetime.Clock
@@ -171,9 +169,9 @@ private fun ConversationCard(
         {
           Text(
             text = when (conversation.header) {
-              Legacy -> stringResource(R.string.CHAT_CONVERSATION_HISTORY_TITLE)
-              is ClaimConversation -> stringResource(R.string.home_claim_card_pill_claim)
-              ServiceConversation -> stringResource(R.string.CHAT_CONVERSATION_QUESTION_TITLE)
+              Header.Legacy -> stringResource(R.string.CHAT_CONVERSATION_HISTORY_TITLE)
+              is Header.ClaimConversation -> stringResource(R.string.home_claim_card_pill_claim)
+              Header.ServiceConversation -> stringResource(R.string.CHAT_CONVERSATION_QUESTION_TITLE)
             },
             style = MaterialTheme.typography.bodyLarge,
             maxLines = 1,
@@ -209,9 +207,9 @@ private fun ConversationCard(
         spaceBetween = 8.dp,
       )
       val subtitle = when (val header = conversation.header) {
-        Legacy -> null
-        is ClaimConversation -> header.claimType
-        ServiceConversation -> null
+        Header.Legacy -> null
+        is Header.ClaimConversation -> header.claimType
+        Header.ServiceConversation -> null
       }
       if (subtitle != null) {
         Text(

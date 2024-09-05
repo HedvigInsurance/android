@@ -10,7 +10,6 @@ import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState
 import com.hedvig.android.featureflags.FeatureManager
-import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.audio.player.data.SignedAudioUrl
 import kotlin.time.Duration.Companion.seconds
@@ -18,8 +17,8 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.isActive
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -35,18 +34,18 @@ internal class GetClaimDetailUiStateUseCase(
   private val featureManager: FeatureManager,
 ) {
   operator fun invoke(claimId: String): Flow<Either<Error, ClaimDetailUiState.Content>> {
-    return featureManager.isFeatureEnabled(Feature.ENABLE_CBM).transformLatest { isCbmEnabled ->
+    return flow {
       while (currentCoroutineContext().isActive) {
-        val queryFlow = queryFlow(claimId, isCbmEnabled)
+        val queryFlow = queryFlow(claimId)
         emitAll(queryFlow)
         delay(POLL_INTERVAL)
       }
     }
   }
 
-  private fun queryFlow(claimId: String, isCbmEnabled: Boolean): Flow<Either<Error, ClaimDetailUiState.Content>> {
+  private fun queryFlow(claimId: String): Flow<Either<Error, ClaimDetailUiState.Content>> {
     return apolloClient
-      .query(ClaimsQuery(isCbmEnabled))
+      .query(ClaimsQuery())
       .fetchPolicy(FetchPolicy.CacheAndNetwork)
       .safeFlow { Error.NetworkError }
       .map { response: Either<Error.NetworkError, ClaimsQuery.Data> ->

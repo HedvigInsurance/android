@@ -68,7 +68,6 @@ import com.hedvig.android.feature.payments.di.paymentsModule
 import com.hedvig.android.feature.profile.di.profileModule
 import com.hedvig.android.feature.terminateinsurance.di.terminateInsuranceModule
 import com.hedvig.android.feature.travelcertificate.di.travelCertificateModule
-import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.di.featureManagerModule
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.language.di.languageMigrationModule
@@ -220,7 +219,6 @@ private val notificationModule = module {
     ChatNotificationSender(
       get<Context>(),
       get<HedvigDeepLinkContainer>(),
-      get<FeatureManager>(),
       get<HedvigBuildConstants>(),
       HedvigNotificationChannel.Chat,
     )
