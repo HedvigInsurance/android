@@ -92,7 +92,6 @@ fun DropdownShowcase() {
           showAllGood = !chosenMap.containsValue(null)
         },
       )
-
     }
   }
 }
