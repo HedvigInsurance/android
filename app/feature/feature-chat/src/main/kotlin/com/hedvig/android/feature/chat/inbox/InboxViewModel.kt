@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.chat.cbm.inbox
+package com.hedvig.android.feature.chat.inbox
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -7,8 +7,8 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.hedvig.android.feature.chat.cbm.data.GetAllConversationsUseCase
-import com.hedvig.android.feature.chat.cbm.model.InboxConversation
+import com.hedvig.android.feature.chat.data.GetAllConversationsUseCase
+import com.hedvig.android.feature.chat.model.InboxConversation
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope

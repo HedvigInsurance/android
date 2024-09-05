@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.chat.cbm.model
+package com.hedvig.android.feature.chat.model
 
 import com.hedvig.android.data.chat.database.ChatMessageEntity
 import octopus.type.ChatMessageSender

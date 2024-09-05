@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.help.center.model
 
 import androidx.annotation.StringRes
-import com.hedvig.android.navigation.core.AppDestination
 import hedvig.resources.R
 import kotlinx.serialization.Serializable
 
@@ -10,7 +9,6 @@ internal enum class Topic(
   @StringRes val titleRes: Int,
   val commonQuestionIds: List<Question>,
   val allQuestionIds: List<Question>,
-  val chatContext: AppDestination.Chat.ChatContext,
 ) {
   PAYMENTS(
     titleRes = R.string.HC_PAYMENTS_TITLE,
@@ -31,7 +29,6 @@ internal enum class Topic(
       Question.PAYMENTS_Q13,
       Question.PAYMENTS_Q14,
     ),
-    chatContext = AppDestination.Chat.ChatContext.PAYMENT,
   ),
   CLAIMS(
     titleRes = R.string.HC_CLAIMS_TITLE,
@@ -50,7 +47,6 @@ internal enum class Topic(
       Question.CLAIMS_Q11,
       Question.CLAIMS_Q12,
     ),
-    chatContext = AppDestination.Chat.ChatContext.CLAIMS,
   ),
   INSURANCE(
     titleRes = R.string.HC_INSURANCES_TITLE,
@@ -67,7 +63,6 @@ internal enum class Topic(
       Question.INSURANCE_Q9,
       Question.INSURANCE_Q10,
     ),
-    chatContext = AppDestination.Chat.ChatContext.INSURANCE,
   ),
   COVERAGE(
     titleRes = R.string.HC_COVERAGE_TITLE,
@@ -95,7 +90,6 @@ internal enum class Topic(
       Question.COVERAGE_Q21,
       Question.COVERAGE_Q22,
     ),
-    chatContext = AppDestination.Chat.ChatContext.COVERAGE,
   ),
   OTHER(
     titleRes = R.string.HC_ALL_QUESTION_TITLE,
@@ -106,7 +100,6 @@ internal enum class Topic(
       Question.OTHER_Q3,
       Question.OTHER_Q4,
     ),
-    chatContext = AppDestination.Chat.ChatContext.OTHER,
   ),
 }
 

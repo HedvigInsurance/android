@@ -22,18 +22,14 @@ import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.feature.chat.navigation.ChatDestinations
 import com.hedvig.android.feature.claim.details.navigation.ClaimDetailDestinations
 import com.hedvig.android.feature.home.home.navigation.HomeDestination
-import com.hedvig.android.featureflags.FeatureManager
-import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority.ERROR
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.compose.typedHasRoute
-import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
 import hedvig.resources.R
-import kotlinx.coroutines.flow.first
 
 /**
  * An in-memory storage of the current route, used to *not* show the chat notification if we are in a select list of
@@ -51,7 +47,6 @@ object CurrentDestinationInMemoryStorage {
 private val listOfDestinationsWhichShouldNotShowChatNotification = setOf(
   ChatDestinations.Chat::class,
   ChatDestinations.Inbox::class,
-  AppDestination.Chat::class,
   HomeDestination.Home::class,
   ClaimDetailDestinations.ClaimOverviewDestination::class,
 )
@@ -59,7 +54,6 @@ private val listOfDestinationsWhichShouldNotShowChatNotification = setOf(
 class ChatNotificationSender(
   private val context: Context,
   private val hedvigDeepLinkContainer: HedvigDeepLinkContainer,
-  private val featureManager: FeatureManager,
   private val buildConstants: HedvigBuildConstants,
   private val notificationChannel: HedvigNotificationChannel,
 ) : NotificationSender {
@@ -112,7 +106,6 @@ class ChatNotificationSender(
       context = context,
       style = messagingStyle,
       remoteMessage = remoteMessage,
-      isCbmEnabled = featureManager.isFeatureEnabled(Feature.ENABLE_CBM).first(),
     )
   }
 
@@ -121,26 +114,17 @@ class ChatNotificationSender(
   private fun defaultMessagingStyle(message: NotificationCompat.MessagingStyle.Message): MessagingStyle =
     NotificationCompat.MessagingStyle(youPerson).addMessage(message)
 
-  private fun sendChatNotificationInner(
-    context: Context,
-    style: MessagingStyle,
-    remoteMessage: RemoteMessage,
-    isCbmEnabled: Boolean,
-  ) {
+  private fun sendChatNotificationInner(context: Context, style: MessagingStyle, remoteMessage: RemoteMessage) {
+    val conversationId = remoteMessage.data.conversationIdFromCustomerIoData()
+    val isValidUuid = conversationId.isValidUuid()
     val intentUri = Uri.parse(
-      if (isCbmEnabled) {
-        val conversationId = remoteMessage.data.conversationIdFromCustomerIoData()
-        val isValidUuid = conversationId.isValidUuid()
-        if (conversationId != null && isValidUuid) {
-          hedvigDeepLinkContainer.conversation.replace("{conversationId}", conversationId)
-        } else {
-          hedvigDeepLinkContainer.inbox
-        }
+      if (conversationId != null && isValidUuid) {
+        hedvigDeepLinkContainer.conversation.replace("{conversationId}", conversationId)
       } else {
-        hedvigDeepLinkContainer.chat
+        hedvigDeepLinkContainer.inbox
       },
     )
-    logcat { "ChatNotificationSender sending notification with isCbmEnabled:$isCbmEnabled to uri:$intentUri" }
+    logcat { "ChatNotificationSender sending notification with deeplink uri:$intentUri" }
     val chatIntent = Intent().apply {
       action = Intent.ACTION_VIEW
       data = intentUri

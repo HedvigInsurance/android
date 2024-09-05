@@ -3,8 +3,8 @@ package com.hedvig.android.feature.chat.data
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.ProdOrDemoProvider
 
-internal class GetChatRepositoryProvider(
+internal class GetCbmChatRepositoryProvider(
   override val demoManager: DemoManager,
-  override val demoImpl: ChatRepository,
-  override val prodImpl: ChatRepository,
-) : ProdOrDemoProvider<ChatRepository>
+  override val demoImpl: CbmChatRepository,
+  override val prodImpl: CbmChatRepository,
+) : ProdOrDemoProvider<CbmChatRepository>

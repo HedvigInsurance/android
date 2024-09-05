@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.chat.cbm.data
+package com.hedvig.android.feature.chat.data
 
 import android.net.Uri
 import arrow.core.Either
@@ -7,12 +7,7 @@ import arrow.core.right
 import com.benasher44.uuid.Uuid
 import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.feature.chat.cbm.BannerText
-import com.hedvig.android.feature.chat.cbm.CbmChatRepository
-import com.hedvig.android.feature.chat.cbm.ChatMessagePageResponse
-import com.hedvig.android.feature.chat.cbm.ConversationInfo
-import com.hedvig.android.feature.chat.cbm.PagingToken
-import com.hedvig.android.feature.chat.cbm.model.CbmChatMessage
+import com.hedvig.android.feature.chat.model.CbmChatMessage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.datetime.Clock

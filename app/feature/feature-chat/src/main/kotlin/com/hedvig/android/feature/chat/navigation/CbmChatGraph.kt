@@ -1,15 +1,13 @@
-package com.hedvig.android.feature.chat.cbm.navigation
+package com.hedvig.android.feature.chat.navigation
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
 import coil.ImageLoader
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
-import com.hedvig.android.feature.chat.cbm.CbmChatViewModel
-import com.hedvig.android.feature.chat.cbm.inbox.InboxDestination
-import com.hedvig.android.feature.chat.cbm.inbox.InboxViewModel
-import com.hedvig.android.feature.chat.cbm.ui.CbmChatDestination
-import com.hedvig.android.feature.chat.navigation.ChatDestination
-import com.hedvig.android.feature.chat.navigation.ChatDestinations
+import com.hedvig.android.feature.chat.CbmChatDestination
+import com.hedvig.android.feature.chat.CbmChatViewModel
+import com.hedvig.android.feature.chat.inbox.InboxDestination
+import com.hedvig.android.feature.chat.inbox.InboxViewModel
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
@@ -30,6 +28,7 @@ fun NavGraphBuilder.cbmChatGraph(
     navdestination<ChatDestinations.Inbox>(
       deepLinks = listOf(
         navDeepLink { uriPattern = hedvigDeepLinkContainer.inbox },
+        navDeepLink { uriPattern = hedvigDeepLinkContainer.chat },
       ),
     ) { backStackEntry ->
       val viewModel: InboxViewModel = koinViewModel()

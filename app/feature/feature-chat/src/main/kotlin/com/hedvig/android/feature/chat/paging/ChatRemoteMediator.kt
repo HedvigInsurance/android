@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.chat.cbm.paging
+package com.hedvig.android.feature.chat.paging
 
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
@@ -15,9 +15,9 @@ import com.hedvig.android.data.chat.database.ConversationDao
 import com.hedvig.android.data.chat.database.ConversationEntity
 import com.hedvig.android.data.chat.database.RemoteKeyDao
 import com.hedvig.android.data.chat.database.RemoteKeyEntity
-import com.hedvig.android.feature.chat.cbm.CbmChatRepository
-import com.hedvig.android.feature.chat.cbm.PagingToken
-import com.hedvig.android.feature.chat.cbm.model.toChatMessageEntity
+import com.hedvig.android.feature.chat.data.CbmChatRepository
+import com.hedvig.android.feature.chat.data.PagingToken
+import com.hedvig.android.feature.chat.model.toChatMessageEntity
 import com.hedvig.android.logger.LogPriority.VERBOSE
 import com.hedvig.android.logger.logcat
 import kotlin.time.Duration.Companion.hours

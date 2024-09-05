@@ -9,24 +9,6 @@ import kotlinx.serialization.Serializable
 
 sealed interface AppDestination {
   @Serializable
-  data class Chat(
-    val chatContext: ChatContext? = null,
-  ) : AppDestination, Destination {
-    @Serializable
-    enum class ChatContext {
-      PAYMENT,
-      CLAIMS,
-      COVERAGE,
-      INSURANCE,
-      OTHER,
-    }
-
-    companion object : DestinationNavTypeAware {
-      override val typeList: List<KType> = listOf(typeOf<ChatContext?>())
-    }
-  }
-
-  @Serializable
   data object ChangeAddress : AppDestination, Destination
 
   // Workaround for https://issuetracker.google.com/issues/353898971

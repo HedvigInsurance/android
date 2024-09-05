@@ -555,7 +555,6 @@ internal class GetHomeUseCaseTest {
       mapOf(
         Feature.DISABLE_CHAT to false,
         Feature.HELP_CENTER to true,
-        Feature.ENABLE_CBM to true,
       ),
     )
     val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)
