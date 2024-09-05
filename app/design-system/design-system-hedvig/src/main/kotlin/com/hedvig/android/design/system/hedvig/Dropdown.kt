@@ -228,8 +228,9 @@ private fun DropdownSelector(
         modifier = Modifier.padding(size.contentPadding(style)),
       )
     }
-    AnimatedVisibility(showError, enter = fadeIn(), exit = fadeOut()) {
-      if (showError && errorText != null) {
+
+    if (errorText != null) {
+      AnimatedVisibility(showError) {
         HedvigText(
           text = errorText,
           color = dropdownColors.errorTextColor,
