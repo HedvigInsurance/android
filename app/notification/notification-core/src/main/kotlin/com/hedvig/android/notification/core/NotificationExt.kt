@@ -12,21 +12,23 @@ import com.hedvig.android.logger.logcat
 @SuppressLint("MissingPermission")
 fun sendHedvigNotification(
   context: Context,
-  notificationSender: String?,
   notificationId: Int,
   notification: Notification,
+  notificationChannel: HedvigNotificationChannel,
+  notificationSenderName: String?,
 ) {
-  logcat { "$notificationSender is going to send a notification" }
+  logcat { "$notificationSenderName is going to send a notification" }
   if (
     ActivityCompat.checkSelfPermission(
       context,
       Manifest.permission.POST_NOTIFICATIONS,
     ) == PackageManager.PERMISSION_GRANTED
   ) {
+    notificationChannel.createChannel(context)
     NotificationManagerCompat
       .from(context)
-      .notify(notificationId, notification)
+      .notify(notificationSenderName, notificationId, notification)
   } else {
-    logcat { "$notificationSender did not have notification permission" }
+    logcat { "$notificationSenderName did not have notification permission" }
   }
 }

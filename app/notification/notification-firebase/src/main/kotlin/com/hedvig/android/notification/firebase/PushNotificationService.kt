@@ -1,6 +1,5 @@
 package com.hedvig.android.notification.firebase
 
-import android.content.ComponentCallbacks
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.logger.LogPriority
@@ -17,13 +16,8 @@ import org.koin.android.ext.android.inject
 class PushNotificationService : FirebaseMessagingService() {
   private val coroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
-  private val notificationSenders by injectAll<NotificationSender>()
+  private val notificationSenders by lazy { getKoin().getAll<NotificationSender>().toSet<NotificationSender>() }
   private val fcmTokenManager: FCMTokenManager by inject()
-
-  override fun onCreate() {
-    super.onCreate()
-    notificationSenders.forEach { it.createChannel() }
-  }
 
   override fun onNewToken(token: String) {
     logcat(LogPriority.INFO) { "FCM onNewToken:$token" }
@@ -59,10 +53,4 @@ class PushNotificationService : FirebaseMessagingService() {
   companion object {
     private const val NOTIFICATION_TYPE_KEY = "TYPE"
   }
-}
-
-private inline fun <reified T : Any> ComponentCallbacks.injectAll(
-  mode: LazyThreadSafetyMode = LazyThreadSafetyMode.SYNCHRONIZED,
-): Lazy<Set<T>> {
-  return lazy(mode) { getKoin().getAll<T>().toSet() }
 }

@@ -13,7 +13,7 @@ import assertk.assertions.isTrue
 import assertk.assertions.prop
 import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
-import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.data.chat.read.timestamp.FakeChatLastMessageReadRepository
 import com.hedvig.android.data.contract.android.CrossSell
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
@@ -49,14 +49,14 @@ internal class HomePresenterTest {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
       assertThat(getHomeDataUseCase.forceNetworkFetchTurbine.awaitItem()).isFalse()
 
-      getHomeDataUseCase.responseTurbine.add(ErrorMessage().left())
+      getHomeDataUseCase.responseTurbine.add(ApolloOperationError.OperationError("").left())
       assertThat(awaitItem()).isInstanceOf<HomeUiState.Error>()
 
       sendEvent(HomeEvent.RefreshData)
       assertThat(getHomeDataUseCase.forceNetworkFetchTurbine.awaitItem()).isTrue()
       assertThat(awaitItem()).isInstanceOf<HomeUiState.Loading>()
 
-      getHomeDataUseCase.responseTurbine.add(ErrorMessage().left())
+      getHomeDataUseCase.responseTurbine.add(ApolloOperationError.OperationError("").left())
       assertThat(awaitItem()).isInstanceOf<HomeUiState.Error>()
     }
   }
@@ -75,7 +75,7 @@ internal class HomePresenterTest {
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
 
-      getHomeDataUseCase.responseTurbine.add(ErrorMessage().left())
+      getHomeDataUseCase.responseTurbine.add(ApolloOperationError.OperationError("").left())
       assertThat(awaitItem()).isInstanceOf<HomeUiState.Error>()
 
       sendEvent(HomeEvent.RefreshData)
@@ -212,7 +212,7 @@ internal class HomePresenterTest {
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
 
-      getHomeDataUseCase.responseTurbine.add(ErrorMessage().left())
+      getHomeDataUseCase.responseTurbine.add(ApolloOperationError.OperationError("").left())
       assertThat(awaitItem()).isInstanceOf<HomeUiState.Error>()
 
       getHomeDataUseCase.responseTurbine.add(someIrrelevantHomeDataInstance.right())
@@ -487,9 +487,9 @@ internal class HomePresenterTest {
 
   private class TestGetHomeDataUseCase : GetHomeDataUseCase {
     val forceNetworkFetchTurbine = Turbine<Boolean>()
-    val responseTurbine = Turbine<Either<ErrorMessage, HomeData>>()
+    val responseTurbine = Turbine<Either<ApolloOperationError, HomeData>>()
 
-    override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, HomeData>> {
+    override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ApolloOperationError, HomeData>> {
       forceNetworkFetchTurbine.add(forceNetworkFetch)
       return responseTurbine.asChannel().receiveAsFlow()
     }
