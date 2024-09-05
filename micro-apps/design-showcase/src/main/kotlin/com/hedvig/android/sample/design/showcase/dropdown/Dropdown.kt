@@ -36,13 +36,6 @@ fun DropdownShowcase() {
       .fillMaxSize(),
     color = HedvigTheme.colorScheme.backgroundPrimary,
   ) {
-//    var chosenIndex by remember { mutableStateOf<Int?>(null) }
-//    var error by remember { mutableStateOf(false) }
-//    var chosenIndex2 by remember { mutableStateOf<Int?>(null) }
-//    var error2 by remember { mutableStateOf(false) }
-//    var chosenIndex3 by remember { mutableStateOf<Int?>(null) }
-//    var error3 by remember { mutableStateOf(false) }
-    var allGood by remember { mutableStateOf(true) }
     var showAllGood by remember { mutableStateOf(false) }
     val listOfCombo = buildList {
       for (style in styles) {
@@ -83,6 +76,9 @@ fun DropdownShowcase() {
           },
         )
       }
+      AnimatedVisibility(showAllGood) {
+        HedvigText("All good!")
+      }
       HedvigButton(
         text = "Check selection",
         enabled = true,
@@ -96,10 +92,7 @@ fun DropdownShowcase() {
           showAllGood = !chosenMap.containsValue(null)
         },
       )
-      Spacer(Modifier.height(8.dp))
-      AnimatedVisibility(showAllGood) {
-        HedvigText("All good!")
-      }
+
     }
   }
 }
