@@ -8,6 +8,7 @@ internal object NotificationsTokens {
   val EndPadding = 16.dp
   val TopPadding = 11.dp
   val BottomPadding = 12.dp
+  val SpaceBetweenTextAndButtons = 8.dp
   val ContainerShape = ShapeKeyTokens.CornerLarge
   val LabelTextFont = TypographyKeyTokens.Label
   val SnackbarContainerShape = ShapeKeyTokens.CornerMedium
