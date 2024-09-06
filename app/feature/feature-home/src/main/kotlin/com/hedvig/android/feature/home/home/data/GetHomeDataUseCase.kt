@@ -96,6 +96,12 @@ internal class GetHomeDataUseCaseImpl(
           isEligibleToShowTheChatIcon = isEligibleToShowTheChatIconResult.bind(),
           isHelpCenterEnabled = isHelpCenterEnabled,
         )
+        val hasUnseenChatMessages = homeQueryData
+          .currentMember
+          .conversations
+          .map { it.unreadMessageCount }
+          .plus(homeQueryData.currentMember.legacyConversation?.unreadMessageCount)
+          .any { it != null && it > 0 }
         val firstVetActions = homeQueryData.currentMember.memberActions
           ?.firstVetAction?.sections?.map { section ->
             FirstVetSection(
@@ -111,6 +117,7 @@ internal class GetHomeDataUseCaseImpl(
           veryImportantMessages = veryImportantMessages,
           memberReminders = memberReminders,
           showChatIcon = showChatIcon,
+          hasUnseenChatMessages = hasUnseenChatMessages,
           showHelpCenter = isHelpCenterEnabled,
           firstVetSections = firstVetActions,
           crossSells = crossSells,
@@ -199,6 +206,7 @@ internal data class HomeData(
   val veryImportantMessages: List<VeryImportantMessage>,
   val memberReminders: MemberReminders,
   val showChatIcon: Boolean,
+  val hasUnseenChatMessages: Boolean,
   val showHelpCenter: Boolean,
   val firstVetSections: List<FirstVetSection>,
   val crossSells: List<CrossSell>,

@@ -26,7 +26,6 @@ import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.chat.database.AppDatabase
 import com.hedvig.android.data.chat.database.ChatDao
 import com.hedvig.android.data.chat.database.ChatMessageEntity
-import com.hedvig.android.data.chat.database.ConversationDao
 import com.hedvig.android.data.chat.database.RemoteKeyDao
 import com.hedvig.android.feature.chat.ConversationInfoStatus.Failed
 import com.hedvig.android.feature.chat.ConversationInfoStatus.Initializing
@@ -61,7 +60,6 @@ internal class CbmChatViewModel(
   database: AppDatabase,
   chatDao: ChatDao,
   remoteKeyDao: RemoteKeyDao,
-  conversationDao: ConversationDao,
   chatRepository: Provider<CbmChatRepository>,
   clock: Clock,
 ) : MoleculeViewModel<CbmChatEvent, CbmChatUiState>(
@@ -71,7 +69,6 @@ internal class CbmChatViewModel(
       database,
       chatDao,
       remoteKeyDao,
-      conversationDao,
       chatRepository,
       clock,
     ),
@@ -82,7 +79,6 @@ internal class CbmChatPresenter(
   private val database: AppDatabase,
   private val chatDao: ChatDao,
   private val remoteKeyDao: RemoteKeyDao,
-  private val conversationDao: ConversationDao,
   private val chatRepository: Provider<CbmChatRepository>,
   private val clock: Clock,
 ) : MoleculePresenter<CbmChatEvent, CbmChatUiState> {
@@ -171,7 +167,6 @@ internal class CbmChatPresenter(
           database,
           chatDao,
           remoteKeyDao,
-          conversationDao,
           chatRepository,
           clock,
         )
@@ -188,7 +183,6 @@ private fun presentLoadedChat(
   database: AppDatabase,
   chatDao: ChatDao,
   remoteKeyDao: RemoteKeyDao,
-  conversationDao: ConversationDao,
   chatRepository: Provider<CbmChatRepository>,
   clock: Clock,
 ): CbmChatUiState.Loaded {
@@ -201,7 +195,7 @@ private fun presentLoadedChat(
   }.collectAsState(null)
   val pagingDataFlow = remember(backendConversationInfo) {
     val remoteMediator =
-      ChatRemoteMediator(conversationId, database, chatDao, remoteKeyDao, conversationDao, chatRepository, clock)
+      ChatRemoteMediator(conversationId, database, chatDao, remoteKeyDao, chatRepository, clock)
     Pager(
       config = PagingConfig(pageSize = 50, prefetchDistance = 50, jumpThreshold = 10),
       remoteMediator = remoteMediator,

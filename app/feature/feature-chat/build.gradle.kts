@@ -52,7 +52,6 @@ dependencies {
   implementation(projects.coreRetrofit)
   implementation(projects.coreUi)
   implementation(projects.dataChat)
-  implementation(projects.dataChatReadTimestampPublic)
   implementation(projects.designSystemHedvig)
   implementation(projects.featureFlagsPublic)
   implementation(projects.languageCore)

@@ -40,7 +40,7 @@ internal fun <T> HelpCenterSectionWithClickableRows(
     contentColor = contentColor,
     content = {
       Column {
-        for ((index, question) in items.withIndex()) {
+        for (question in items) {
           Column(
             verticalArrangement = Arrangement.spacedBy(4.dp),
             modifier = Modifier.clickable { onClickItem(question) }

@@ -38,28 +38,12 @@ query Home {
     }
     activeContracts {
       masterInceptionDate
-      currentAgreement {
-        productVariant {
-          commonClaimDescriptions {
-            id
-            title
-            layout {
-              ... on CommonClaimLayoutEmergency {
-                emergencyNumber
-              }
-              ... on CommonClaimLayoutTitleAndBulletPoints {
-                bulletPoints {
-                  title
-                  description
-                  icon {
-                    ...IconsFragment
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+    }
+    conversations {
+      unreadMessageCount
+    }
+    legacyConversation {
+      unreadMessageCount
     }
   }
 }

@@ -178,7 +178,6 @@ dependencies {
   implementation(projects.coreUi)
   implementation(projects.crossSells)
   implementation(projects.dataChat)
-  implementation(projects.dataChatReadTimestampPublic)
   implementation(projects.dataClaimFlow)
   implementation(projects.dataContractPublic)
   implementation(projects.dataConversations)

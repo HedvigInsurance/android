@@ -11,7 +11,7 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val claimDetailsModule = module {
-  single<GetClaimDetailUiStateUseCase> { GetClaimDetailUiStateUseCase(get<ApolloClient>(), get<FeatureManager>()) }
+  single<GetClaimDetailUiStateUseCase> { GetClaimDetailUiStateUseCase(get<ApolloClient>()) }
   viewModel<AddFilesViewModel> { (targetUploadUrl: String, initialFilesUri: List<String>) ->
     AddFilesViewModel(
       uploadFileUseCase = get(),

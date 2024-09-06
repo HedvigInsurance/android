@@ -9,9 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
-import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.core.demomode.Provider
-import com.hedvig.android.data.chat.read.timestamp.ChatLastMessageReadRepository
 import com.hedvig.android.data.contract.android.CrossSell
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
@@ -28,7 +26,6 @@ import kotlinx.datetime.LocalDate
 
 internal class HomePresenter(
   private val getHomeDataUseCaseProvider: Provider<GetHomeDataUseCase>,
-  private val chatLastMessageReadRepository: ChatLastMessageReadRepository,
   private val seenImportantMessagesStorage: SeenImportantMessagesStorage,
   private val crossSellCardNotificationBadgeServiceProvider: Provider<CrossSellCardNotificationBadgeService>,
   private val applicationScope: CoroutineScope,
@@ -42,16 +39,13 @@ internal class HomePresenter(
     val alreadySeenImportantMessages: List<String>
       by seenImportantMessagesStorage.seenMessages.collectAsState()
 
-    val hasUnseenChatMessages by remember(chatLastMessageReadRepository) {
-      chatLastMessageReadRepository.isNewestMessageNewerThanLastReadTimestamp()
-    }.collectAsState(lastState.safeCast<HomeUiState.Success>()?.hasUnseenChatMessages ?: false)
-
     CollectEvents { homeEvent: HomeEvent ->
       when (homeEvent) {
         HomeEvent.RefreshData -> loadIteration++
         is HomeEvent.MarkMessageAsSeen -> {
           seenImportantMessagesStorage.markMessageAsSeen(homeEvent.messageId)
         }
+
         HomeEvent.MarkCardCrossSellsAsSeen -> {
           applicationScope.launch { crossSellCardNotificationBadgeServiceProvider.provide().markAsSeen() }
         }
@@ -77,9 +71,7 @@ internal class HomePresenter(
           Snapshot.withMutableSnapshot {
             hasError = false
             isReloading = false
-            successData = SuccessData.fromHomeData(
-              homeData,
-            )
+            successData = SuccessData.fromHomeData(homeData)
           }
         }
       }
@@ -102,7 +94,7 @@ internal class HomePresenter(
             !alreadySeenImportantMessages.contains(it.id)
           },
           isHelpCenterEnabled = successData.showHelpCenter,
-          hasUnseenChatMessages = hasUnseenChatMessages,
+          hasUnseenChatMessages = successData.hasUnseenChatMessages,
           chatAction = successData.chatAction,
           firstVetAction = successData.firstVetAction,
           crossSellsAction = successData.crossSellsAction,
@@ -157,6 +149,7 @@ private data class SuccessData(
   val chatAction: HomeTopBarAction.ChatAction?,
   val firstVetAction: HomeTopBarAction.FirstVetAction?,
   val crossSellsAction: HomeTopBarAction.CrossSellsAction?,
+  val hasUnseenChatMessages: Boolean,
 ) {
   companion object {
     fun fromLastState(lastState: HomeUiState): SuccessData? {
@@ -170,6 +163,7 @@ private data class SuccessData(
         chatAction = lastState.chatAction,
         crossSellsAction = lastState.crossSellsAction,
         firstVetAction = lastState.firstVetAction,
+        hasUnseenChatMessages = lastState.hasUnseenChatMessages,
       )
     }
 
@@ -204,6 +198,7 @@ private data class SuccessData(
         chatAction = chatAction,
         firstVetAction = firstVetAction,
         crossSellsAction = crossSellsAction,
+        hasUnseenChatMessages = homeData.hasUnseenChatMessages,
       )
     }
   }
