@@ -62,8 +62,10 @@ fun FirstVetScreen(
               HedvigText(text = section.title ?: "${sections.indexOf(section)}")
             }
             Spacer(modifier = Modifier.height(16.dp))
-            HedvigText(text = section.description ?: "",
-              color = HedvigTheme.colorScheme.textTertiary) //todo: check!!!
+            HedvigText(
+              text = section.description ?: "",
+              color = HedvigTheme.colorScheme.textTertiary,
+            ) // todo: check!!!
             Spacer(modifier = Modifier.height(16.dp))
             HedvigButton(
               buttonSize = ButtonDefaults.ButtonSize.Medium,

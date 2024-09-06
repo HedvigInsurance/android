@@ -29,7 +29,7 @@ import com.hedvig.android.design.system.hedvig.Scaffold
 import com.hedvig.android.design.system.hedvig.ShapeDefaults
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import com.hedvig.android.design.system.hedvig.icon.flag.FlagDenmark
+import com.hedvig.android.design.system.hedvig.icon.HelipadOutline
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import hedvig.resources.R
@@ -49,35 +49,33 @@ fun EmergencyScreen(
   ) {
     Spacer(Modifier.height(8.dp))
     HedvigInfoCard(
-        message = stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_INFO_LABEL),
-        modifier = Modifier.padding(horizontal = 16.dp),
-        style = NotificationDefaults.InfoCardStyle.Default,
-        priority = NotificationDefaults.NotificationPriority.Attention,
+      message = stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_INFO_LABEL),
+      modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+      style = NotificationDefaults.InfoCardStyle.Default,
+      priority = NotificationDefaults.NotificationPriority.Attention,
     )
     Spacer(Modifier.height(8.dp))
-    Surface(
-      shape = ShapeDefaults.CornerXLarge,
-      color = HedvigTheme.colorScheme.backgroundBlack,  //todo: don't forget
-      modifier = Modifier
+    HedvigTheme(true) {
+      Surface(
+        shape = ShapeDefaults.CornerXLarge,
+        modifier = Modifier
           .padding(horizontal = 16.dp)
           .fillMaxWidth(),
-    ) {
-      HedvigTheme(darkTheme = true) { //todo: don't forget
+      ) {
         Column(Modifier.padding(16.dp)) {
           Spacer(Modifier.height(16.dp))
           Icon(
-            imageVector = HedvigIcons.FlagDenmark, //todo: don't forget
+            imageVector = HedvigIcons.HelipadOutline,
             contentDescription = null,
             modifier = Modifier
-                .fillMaxWidth()
-                .height(80.dp),
+              .fillMaxWidth()
+              .height(80.dp),
           )
           Spacer(Modifier.height(24.dp))
           HedvigText(
             text = stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_GLOBAL_ASSISTANCE_TITLE),
             textAlign = TextAlign.Center,
             style = HedvigTheme.typography.bodySmall,
-            color = HedvigTheme.colorScheme.textNegative,
             modifier = Modifier.fillMaxWidth(),
           )
           Spacer(Modifier.height(2.dp))
@@ -94,7 +92,6 @@ fun EmergencyScreen(
             Spacer(Modifier.height(24.dp))
             HedvigButton(
               buttonSize = ButtonDefaults.ButtonSize.Medium,
-              buttonStyle = ButtonDefaults.ButtonStyle.SecondaryAlt,
               enabled = true,
               text = stringResource(
                 R.string.SUBMIT_CLAIM_GLOBAL_ASSISTANCE_URL_LABEL,
@@ -116,6 +113,7 @@ fun EmergencyScreen(
             val context = LocalContext.current
             HedvigButton(
               buttonStyle = style,
+              buttonSize = ButtonDefaults.ButtonSize.Medium,
               text = stringResource(
                 R.string.SUBMIT_CLAIM_GLOBAL_ASSISTANCE_CALL_LABEL,
                 emergencyNumber,
@@ -140,11 +138,11 @@ fun EmergencyScreen(
           }
           Spacer(Modifier.height(16.dp))
           HedvigText(
-              text = stringResource(R.string.SUBMIT_CLAIM_GLOBAL_ASSISTANCE_FOOTNOTE),
-              textAlign = TextAlign.Center,
-              modifier = Modifier.fillMaxWidth(),
-              color = HedvigTheme.colorScheme.textTertiary,
-              style = HedvigTheme.typography.finePrint,
+            text = stringResource(R.string.SUBMIT_CLAIM_GLOBAL_ASSISTANCE_FOOTNOTE),
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(),
+            color = HedvigTheme.colorScheme.textTertiary,
+            style = HedvigTheme.typography.finePrint,
           )
           Spacer(Modifier.height(8.dp))
         }

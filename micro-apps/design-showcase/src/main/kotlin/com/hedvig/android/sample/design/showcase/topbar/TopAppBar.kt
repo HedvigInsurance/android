@@ -28,39 +28,41 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 
 @Composable
 fun TopAppBarShowcase() {
-  var showScreenTwo by remember {mutableStateOf(false)}
+  var showScreenTwo by remember { mutableStateOf(false) }
 
-    Scaffold(
-      navigateUp = {},
-      topAppBarText = "Screen 1"
+  Scaffold(
+    navigateUp = {},
+    topAppBarText = "Screen 1",
+  ) {
+    Column(
+      modifier = Modifier.fillMaxSize(),
+      verticalArrangement = Arrangement.Center,
+      horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-      Column (
+      HedvigButton(onClick = { showScreenTwo = true }, text = "Go to screen 2", enabled = true)
+    }
+  }
+  AnimatedVisibility(
+    showScreenTwo,
+    enter = fadeIn() + slideInHorizontally(),
+    exit = fadeOut() + slideOutHorizontally(),
+  ) {
+    Scaffold(
+      navigateUp = { showScreenTwo = false },
+      topAppBarText = "Screen 2",
+      topAppBarActions = {
+        IconButton(onClick = { showScreenTwo = false }, Modifier.size(24.dp)) {
+          Icon(HedvigIcons.Close, "")
+        }
+      },
+    ) {
+      Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally) {
-        HedvigButton(onClick = {showScreenTwo = true}, text = "Go to screen 2", enabled = true)
+        horizontalAlignment = Alignment.CenterHorizontally,
+      ) {
+        HedvigText(text = "Screen 2", fontSize = 40.sp)
       }
     }
- AnimatedVisibility(showScreenTwo,
-   enter = fadeIn() + slideInHorizontally(),
-   exit =  fadeOut() + slideOutHorizontally()) {
-   Scaffold(
-     navigateUp = {showScreenTwo = false},
-     topAppBarText = "Screen 2",
-     topAppBarActions = {
-       IconButton(onClick = {showScreenTwo = false},Modifier.size(24.dp)) {
-         Icon(HedvigIcons.Close, "")
-       }
-     }
-   ) {
-     Column (
-       modifier = Modifier.fillMaxSize(), //todo: what about strange bottom padding??
-       verticalArrangement = Arrangement.Center,
-       horizontalAlignment = Alignment.CenterHorizontally) {
-       HedvigText(text = "Screen 2", fontSize = 40.sp)
-     }
-   }
- }
-
-
+  }
 }

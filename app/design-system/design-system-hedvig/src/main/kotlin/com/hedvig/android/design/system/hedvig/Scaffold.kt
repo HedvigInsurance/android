@@ -20,6 +20,8 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,7 +44,7 @@ fun Scaffold(
   content: @Composable ColumnScope.() -> Unit,
 ) {
   Surface(
-    color = HedvigTheme.colorScheme.backgroundPrimary, //todo: to tokens
+    color = HedvigTheme.colorScheme.backgroundPrimary, // todo: to tokens
     modifier = modifier.fillMaxSize(),
   ) {
     Column {
@@ -55,13 +57,14 @@ fun Scaffold(
       Column(
         horizontalAlignment = itemsColumnHorizontalAlignment,
         modifier = Modifier
-            .fillMaxSize()
-            .windowInsetsPadding(
-                WindowInsets.safeDrawing.only(
-                    WindowInsetsSides.Horizontal
-                            + WindowInsetsSides.Bottom,
-                ),
+          .fillMaxSize()
+          .verticalScroll(rememberScrollState())
+          .windowInsetsPadding(
+            WindowInsets.safeDrawing.only(
+              WindowInsetsSides.Horizontal +
+                WindowInsetsSides.Bottom,
             ),
+          ),
       ) {
         content()
       }
@@ -70,20 +73,17 @@ fun Scaffold(
 }
 
 @Composable
-fun TopAppBarLayoutForActions(
-  modifier: Modifier = Modifier,
-  actions: @Composable RowScope.() -> Unit = {},
-) {
+fun TopAppBarLayoutForActions(modifier: Modifier = Modifier, actions: @Composable RowScope.() -> Unit = {}) {
   Row(
     horizontalArrangement = Arrangement.End,
     verticalAlignment = Alignment.CenterVertically,
     modifier = modifier
-        .windowInsetsPadding(
-            windowInsets,
-        )
-        .height(64.dp)// todo: to tokens
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp),// todo: to tokens
+      .windowInsetsPadding(
+        windowInsets,
+      )
+      .height(64.dp) // todo: to tokens
+      .fillMaxWidth()
+      .padding(horizontal = 16.dp), // todo: to tokens
   ) {
     actions()
   }
@@ -130,53 +130,53 @@ fun TopAppBar(
   Row(
     verticalAlignment = Alignment.CenterVertically,
     modifier =
-    modifier
+      modifier
         .windowInsetsPadding(windowInsets)
-        .height(64.dp)// todo: to tokens
+        .height(64.dp) // todo: to tokens
         .fillMaxWidth()
-        .padding(start = 16.dp, end = 16.dp),// todo: to tokens. but also we don't really know them,
+        .padding(start = 16.dp, end = 16.dp), // todo: to tokens. but also we don't really know them,
   ) {
     HorizontalItemsWithMaximumSpaceTaken(
-        startSlot = {
-            Row(
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                IconButton(
-                    onClick = { onClick() },
-                    modifier = Modifier.size(24.dp),
-                    content = {
-                        Icon(
-                            imageVector = when (actionType) {
-                                TopAppBarActionType.BACK -> HedvigIcons.ArrowLeft //todo: check here!
-                                TopAppBarActionType.CLOSE -> HedvigIcons.Close //todo: check here!
-                            },
-                            contentDescription = null,
-                            //todo: to tokens!
-                        )
-                    },
-                )
-                Spacer(Modifier.width(8.dp))
-                HedvigText(
-                    text = title,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.padding(top = 10.dp, bottom = 10.dp), //todo: to tokens
-                    style = TypographyKeyTokens.HeadlineSmall.value, //todo: to tokens!
-                )
-            }
-        },
-        endSlot = {
-            if (topAppBarActions != null) {
-                Row(
-                    horizontalArrangement = Arrangement.End,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    topAppBarActions()
-                }
-            }
-        },
-        spaceBetween = 8.dp,
+      startSlot = {
+        Row(
+          horizontalArrangement = Arrangement.Start,
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
+          IconButton(
+            onClick = { onClick() },
+            modifier = Modifier.size(24.dp),
+            content = {
+              Icon(
+                imageVector = when (actionType) {
+                  TopAppBarActionType.BACK -> HedvigIcons.ArrowLeft // todo: check here!
+                  TopAppBarActionType.CLOSE -> HedvigIcons.Close // todo: check here!
+                },
+                contentDescription = null,
+                // todo: to tokens!
+              )
+            },
+          )
+          Spacer(Modifier.width(8.dp))
+          HedvigText(
+            text = title,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.padding(top = 10.dp, bottom = 10.dp), // todo: to tokens
+            style = TypographyKeyTokens.HeadlineSmall.value, // todo: to tokens!
+          )
+        }
+      },
+      endSlot = {
+        if (topAppBarActions != null) {
+          Row(
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically,
+          ) {
+            topAppBarActions()
+          }
+        }
+      },
+      spaceBetween = 8.dp,
     )
   }
 }

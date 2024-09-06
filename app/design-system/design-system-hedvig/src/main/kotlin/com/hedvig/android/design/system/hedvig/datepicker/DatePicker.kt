@@ -1,6 +1,5 @@
 package com.hedvig.android.design.system.hedvig.datepicker
 
-import android.widget.DatePicker
 import androidx.compose.foundation.background
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember

@@ -85,7 +85,7 @@ fun HedvigInfoCard(
           Spacer(Modifier.width(6.dp))
         }
         Column {
-          HedvigText(text = message)
+          HedvigText(text = message, color = priority.colors.textColor)
           when (style) {
             is Buttons -> {
               Spacer(Modifier.height(NotificationsTokens.SpaceBetweenTextAndButtons))
@@ -320,9 +320,9 @@ private fun PreviewNotificationCard(
   HedvigTheme(darkTheme = true) {
     Surface(color = HedvigTheme.colorScheme.backgroundWhite) {
       Column(
-          Modifier
-              .width(330.dp)
-              .padding(16.dp),
+        Modifier
+          .width(330.dp)
+          .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
       ) {
         HedvigInfoCard(
