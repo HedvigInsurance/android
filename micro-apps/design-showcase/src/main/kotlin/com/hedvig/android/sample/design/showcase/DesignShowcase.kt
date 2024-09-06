@@ -19,6 +19,7 @@ import com.hedvig.android.sample.design.showcase.stepper.StepperShowcase
 import com.hedvig.android.sample.design.showcase.tabs.TabsShowcase
 import com.hedvig.android.sample.design.showcase.textfield.ShowcaseTextField
 import com.hedvig.android.sample.design.showcase.toggle.ToggleShowcase
+import com.hedvig.android.sample.design.showcase.topbar.TopAppBarShowcase
 
 @Composable
 internal fun DesignShowcase(modifier: Modifier = Modifier) {
@@ -55,6 +56,8 @@ internal fun DesignShowcase(modifier: Modifier = Modifier) {
       PerilsShowcase()
     } else if (showAccordion) {
       AccordionShowCase()
+    } else if (showTopBar) {
+      TopAppBarShowcase()
     }
   }
 }
@@ -74,4 +77,5 @@ private val showProgressBar = false
 private val showPerils = false
 private val showAccordion = false
 private val showSnacks = false
-private val showTabs = true
+private val showTabs = false
+private val showTopBar = true
