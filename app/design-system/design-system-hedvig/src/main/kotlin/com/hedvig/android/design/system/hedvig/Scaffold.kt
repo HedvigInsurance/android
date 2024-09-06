@@ -1,5 +1,6 @@
 package com.hedvig.android.design.system.hedvig
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.width
@@ -23,8 +25,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.design.system.hedvig.TopAppBarDefaults.windowInsets
 import com.hedvig.android.design.system.hedvig.icon.ArrowLeft
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -56,10 +60,11 @@ fun Scaffold(
         horizontalAlignment = itemsColumnHorizontalAlignment,
         modifier = Modifier
             .fillMaxSize()
-            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal
+              + WindowInsetsSides.Bottom)
+            ) ,
       ) {
         content()
-        Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
       }
     }
   }
@@ -74,9 +79,7 @@ fun TopAppBarLayoutForActions(
     verticalAlignment = Alignment.CenterVertically,
     modifier = modifier
         .windowInsetsPadding(
-            WindowInsets.systemBars
-                .union(WindowInsets.displayCutout)
-                .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top),
+          windowInsets,
         )
         .height(64.dp)// todo: to tokens
         .fillMaxWidth()
@@ -110,7 +113,9 @@ enum class TopAppBarActionType {
 internal object TopAppBarDefaults {
   val windowInsets: WindowInsets
     @Composable
-    get() = WindowInsets.systemBars.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
+    get() = WindowInsets.systemBars
+      .union(WindowInsets.displayCutout)
+      .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
 }
 
 @Composable
@@ -123,10 +128,13 @@ fun TopAppBar(
   windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
 ) {
   Row(
-    modifier = modifier.windowInsetsPadding(windowInsets)
+    verticalAlignment = Alignment.CenterVertically,
+    modifier =
+    modifier.windowInsetsPadding(windowInsets)
     .height(64.dp)// todo: to tokens
     .fillMaxWidth()
-    .padding(horizontal = 16.dp),// todo: to tokens
+    .padding(start = 16.dp,end  = 16.dp)
+      ,// todo: to tokens. but also we don't really know them,
   ) {
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
@@ -135,6 +143,7 @@ fun TopAppBar(
           verticalAlignment = Alignment.CenterVertically,) {
           IconButton(
             onClick = { onClick() },
+            modifier = Modifier.size(24.dp),
             content = {
               Icon(
                 imageVector = when (actionType) {
@@ -142,15 +151,16 @@ fun TopAppBar(
                   TopAppBarActionType.CLOSE -> HedvigIcons.Close //todo: check here!
                 },
                 contentDescription = null,
+                 //todo: to tokens!
               )
             },
           )
-          Spacer(Modifier.width(4.dp))
+          Spacer(Modifier.width(8.dp))
           HedvigText(
             text = title,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.padding(vertical = 10.dp), //todo: to tokens
+            modifier = Modifier.padding(top = 10.dp, bottom = 10.dp) , //todo: to tokens
             style = TypographyKeyTokens.HeadlineSmall.value, //todo: to tokens!
           )
         }

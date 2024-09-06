@@ -8,16 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -29,18 +19,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
-import com.hedvig.android.core.designsystem.component.card.HedvigCard
-import com.hedvig.android.core.designsystem.material3.alwaysBlackContainer
-import com.hedvig.android.core.designsystem.material3.onAlwaysBlackContainer
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.hedvig.normal.Hedvig
-import com.hedvig.android.core.ui.card.ExpandablePlusCard
-import com.hedvig.android.core.ui.infocard.VectorWarningCard
-import com.hedvig.android.core.ui.scaffold.HedvigScaffold
+import com.hedvig.android.design.system.hedvig.AccordionList
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Scaffold
+import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import hedvig.resources.R
@@ -53,7 +38,7 @@ fun EmergencyScreen(
   navigateUp: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  HedvigScaffold(
+  Scaffold(
     topAppBarText = stringResource(id = R.string.HC_QUICK_ACTIONS_SICK_ABROAD_TITLE),
     navigateUp = navigateUp,
     modifier = modifier,
@@ -160,7 +145,7 @@ fun EmergencyScreen(
       }
     }
     Spacer(Modifier.height(24.dp))
-    Text(
+    HedvigText(
       text = stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_INSURANCE_COVER_TITLE),
       modifier = Modifier.padding(horizontal = 16.dp),
     )
@@ -197,6 +182,7 @@ private fun QuestionsAndAnswers(modifier: Modifier = Modifier) {
       stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ6_LABEL),
   )
   Column(modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    AccordionList()
     faqList.forEachIndexed { index, faqItem ->
       ExpandablePlusCard(
         isExpanded = expandedItem == index,
@@ -214,11 +200,11 @@ private fun QuestionsAndAnswers(modifier: Modifier = Modifier) {
   }
 }
 
-@HedvigPreview
+@Preview
 @Composable
 private fun PreviewEmergencyScreen() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       EmergencyScreen(
         emergencyNumber = "123456",
         emergencyUrl = "url",
