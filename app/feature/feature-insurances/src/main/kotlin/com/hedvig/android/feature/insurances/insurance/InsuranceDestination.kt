@@ -61,7 +61,7 @@ import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.contract.android.CrossSell
 import com.hedvig.android.data.productvariant.ProductVariant
-import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
+import com.hedvig.android.design.system.hedvig.HedvigInfoCard
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
@@ -330,7 +330,7 @@ private fun MovingFlowSuggestionSection(onNavigateToMovingFlow: () -> Unit, modi
       text = stringResource(R.string.insurances_tab_moving_flow_section_title),
       style = com.hedvig.android.design.system.hedvig.HedvigTheme.typography.headlineSmall,
     )
-    HedvigNotificationCard(
+    HedvigInfoCard(
       message = stringResource(R.string.insurances_tab_moving_flow_info_title),
       priority = NotificationPriority.Campaign,
       style = InfoCardStyle.Button(
