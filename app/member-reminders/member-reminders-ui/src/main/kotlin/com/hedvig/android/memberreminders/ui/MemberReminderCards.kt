@@ -33,6 +33,7 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.infocard.InfoCardTextButton
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.infocard.VectorWarningCard
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.notification.permission.NotificationPermissionState
 import hedvig.resources.R
@@ -194,7 +195,7 @@ fun ReminderCardEnableNotifications(
   requestNotificationPermission: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  VectorInfoCard(
+  HedvigNotificationCard(
     text = stringResource(R.string.PROFILE_ALLOW_NOTIFICATIONS_INFO_LABEL),
     modifier = modifier,
   ) {
