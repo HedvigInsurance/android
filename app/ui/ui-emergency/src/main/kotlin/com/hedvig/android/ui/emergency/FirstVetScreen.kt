@@ -10,9 +10,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -42,57 +45,67 @@ fun FirstVetScreen(
     topAppBarText = stringResource(id = R.string.HC_QUICK_ACTIONS_FIRSTVET_TITLE),
     navigateUp = navigateUp,
   ) {
-    Spacer(modifier = Modifier.height(8.dp))
     Column(
-      verticalArrangement = Arrangement.spacedBy(8.dp),
-      modifier = modifier.padding(horizontal = 16.dp),
+      Modifier.verticalScroll(rememberScrollState()),
+      horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-      for (section in sections) {
-        Surface(
-          shape = ShapeDefaults.CornerXLarge,
-          modifier = Modifier
-            .fillMaxWidth(),
-        ) {
-          Column(Modifier.padding(16.dp)) {
-            Row(
-              horizontalArrangement = Arrangement.spacedBy(8.dp),
-              verticalAlignment = Alignment.CenterVertically,
-            ) {
-              Icon(HedvigIcons.ColoredFirstVet, "", Modifier.size(28.dp))
-              HedvigText(text = section.title ?: "${sections.indexOf(section)}")
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            HedvigText(
-              text = section.description ?: "",
-              color = HedvigTheme.colorScheme.textTertiary,
-            ) // todo: check!!!
-            Spacer(modifier = Modifier.height(16.dp))
-            HedvigButton(
-              buttonSize = ButtonDefaults.ButtonSize.Medium,
-              buttonStyle = ButtonDefaults.ButtonStyle.SecondaryAlt,
-              enabled = true,
-              text = section.buttonTitle
-                ?: stringResource(R.string.SUBMIT_CLAIM_GLASS_DAMAGE_ONLINE_BOOKING_BUTTON),
-              onClick = {
-                val url = section.url ?: "https://app.adjust.com/11u5tuxu"
-                context.startActivity(
-                  Intent(Intent.ACTION_VIEW, Uri.parse(url)),
+      Spacer(modifier = Modifier.height(8.dp))
+      Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = modifier.padding(horizontal = 16.dp),
+      ) {
+        for (section in sections) {
+          Surface(
+            shape = ShapeDefaults.CornerXLarge,
+            modifier = Modifier
+              .fillMaxWidth(),
+          ) {
+            Column(Modifier.padding(16.dp)) {
+              Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+              ) {
+                Icon(
+                  HedvigIcons.ColoredFirstVet,
+                  "",
+                  Modifier.size(28.dp),
+                  tint = Color.Unspecified,
                 )
-              },
-              modifier = Modifier.fillMaxWidth(),
-            )
+                HedvigText(text = section.title ?: "${sections.indexOf(section)}")
+              }
+              Spacer(modifier = Modifier.height(16.dp))
+              HedvigText(
+                text = section.description ?: "",
+                color = HedvigTheme.colorScheme.textSecondary,
+              )
+              Spacer(modifier = Modifier.height(16.dp))
+              HedvigButton(
+                buttonSize = ButtonDefaults.ButtonSize.Medium,
+                buttonStyle = ButtonDefaults.ButtonStyle.SecondaryAlt,
+                enabled = true,
+                text = section.buttonTitle
+                  ?: stringResource(R.string.SUBMIT_CLAIM_GLASS_DAMAGE_ONLINE_BOOKING_BUTTON),
+                onClick = {
+                  val url = section.url ?: "https://app.adjust.com/11u5tuxu"
+                  context.startActivity(
+                    Intent(Intent.ACTION_VIEW, Uri.parse(url)),
+                  )
+                },
+                modifier = Modifier.fillMaxWidth(),
+              )
+            }
           }
         }
       }
+      Spacer(modifier = Modifier.weight(1f))
+      Spacer(modifier = Modifier.height(16.dp))
+      HedvigTextButton(
+        text = stringResource(R.string.general_close_button),
+        onClick = navigateBack,
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
+      Spacer(modifier = Modifier.height(16.dp))
     }
-    Spacer(modifier = Modifier.weight(1f))
-    Spacer(modifier = Modifier.height(16.dp))
-    HedvigTextButton(
-      text = stringResource(R.string.general_close_button),
-      onClick = navigateBack,
-      modifier = Modifier.padding(horizontal = 16.dp),
-    )
-    Spacer(modifier = Modifier.height(16.dp))
   }
 }
 
