@@ -36,3 +36,15 @@ apollo {
     dependsOn(projects.apolloOctopusPublic, true)
   }
 }
+
+// // https://issuetracker.google.com/issues/341381075#comment6
+// val androidComponents = project.extensions.getByType(ApplicationAndroidComponentsExtension::class.java)
+// androidComponents.onVariants(androidComponents.selector().all()) { variant ->
+//  (variant as HasUnitTest).unitTest?.let {
+//    System.err.println(it.runtimeConfiguration)
+//    with(it.runtimeConfiguration.resolutionStrategy.dependencySubstitution) {
+//      substitute(module("androidx.sqlite:sqlite-bundled:${libs.versions.sqlite.get()}"))
+//        .using(module("androidx.sqlite:sqlite-bundled-jvm:${libs.versions.sqlite.get()}"))
+//    }
+//  }
+// }

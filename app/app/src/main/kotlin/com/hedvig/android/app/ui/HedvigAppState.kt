@@ -132,14 +132,6 @@ internal class HedvigAppState(
       false,
     )
 
-  val isCbmEnabled: StateFlow<Boolean> = featureManager
-    .isFeatureEnabled(Feature.ENABLE_CBM)
-    .stateIn(
-      coroutineScope,
-      SharingStarted.Eagerly,
-      false,
-    )
-
   val topLevelGraphs: StateFlow<Set<TopLevelGraph>> = flow {
     val onlyHasNonPayingContracts = getOnlyHasNonPayingContractsUseCase.provide().invoke().getOrNull()
     emit(

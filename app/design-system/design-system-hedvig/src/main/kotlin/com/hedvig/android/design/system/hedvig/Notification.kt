@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -87,6 +88,7 @@ fun HedvigNotificationCard(
           HedvigText(text = message)
           when (style) {
             is Buttons -> {
+              Spacer(Modifier.height(NotificationsTokens.SpaceBetweenTextAndButtons))
               Row {
                 HedvigTheme(darkTheme = false) {
                   HedvigButton(
@@ -113,6 +115,7 @@ fun HedvigNotificationCard(
             }
 
             is Button -> {
+              Spacer(Modifier.height(NotificationsTokens.SpaceBetweenTextAndButtons))
               HedvigTheme(darkTheme = false) {
                 HedvigButton(
                   enabled = true,
@@ -125,6 +128,7 @@ fun HedvigNotificationCard(
                 }
               }
             }
+
             Default -> {}
           }
         }
@@ -316,9 +320,9 @@ private fun PreviewNotificationCard(
   HedvigTheme(darkTheme = true) {
     Surface(color = HedvigTheme.colorScheme.backgroundWhite) {
       Column(
-        Modifier
-          .width(330.dp)
-          .padding(16.dp),
+          Modifier
+              .width(330.dp)
+              .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
       ) {
         HedvigNotificationCard(

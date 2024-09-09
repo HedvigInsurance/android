@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.chat.cbm
+package com.hedvig.android.feature.chat.data
 
 import android.net.Uri
 import android.util.Patterns
@@ -31,12 +31,10 @@ import com.hedvig.android.data.chat.database.ConversationDao
 import com.hedvig.android.data.chat.database.ConversationEntity
 import com.hedvig.android.data.chat.database.RemoteKeyDao
 import com.hedvig.android.data.chat.database.RemoteKeyEntity
-import com.hedvig.android.feature.chat.cbm.ConversationInfo.Info
-import com.hedvig.android.feature.chat.cbm.model.CbmChatMessage
-import com.hedvig.android.feature.chat.cbm.model.toChatMessageEntity
-import com.hedvig.android.feature.chat.cbm.model.toSender
-import com.hedvig.android.feature.chat.data.BotServiceService
-import com.hedvig.android.feature.chat.data.uploadFile
+import com.hedvig.android.feature.chat.data.ConversationInfo.Info
+import com.hedvig.android.feature.chat.model.CbmChatMessage
+import com.hedvig.android.feature.chat.model.toChatMessageEntity
+import com.hedvig.android.feature.chat.model.toSender
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.LogPriority.ERROR
 import com.hedvig.android.logger.logcat

@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.chat.cbm.model
+package com.hedvig.android.feature.chat.model
 
 import android.net.Uri
 import com.benasher44.uuid.Uuid
@@ -6,7 +6,7 @@ import com.hedvig.android.data.chat.database.ChatMessageEntity
 import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.MEDIA
 import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.PHOTO
 import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.TEXT
-import com.hedvig.android.feature.chat.cbm.CbmChatUiState.Loaded.LatestChatMessage
+import com.hedvig.android.feature.chat.CbmChatUiState.Loaded.LatestChatMessage
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import kotlinx.datetime.Instant
