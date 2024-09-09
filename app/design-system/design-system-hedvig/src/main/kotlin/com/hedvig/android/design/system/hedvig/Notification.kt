@@ -320,9 +320,9 @@ private fun PreviewNotificationCard(
   HedvigTheme(darkTheme = true) {
     Surface(color = HedvigTheme.colorScheme.backgroundWhite) {
       Column(
-          Modifier
-              .width(330.dp)
-              .padding(16.dp),
+        Modifier
+          .width(330.dp)
+          .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
       ) {
         HedvigNotificationCard(

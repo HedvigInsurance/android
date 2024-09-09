@@ -23,8 +23,10 @@ import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.TextP
 
 @Composable
 fun AccordionList(items: List<AccordionData>, modifier: Modifier = Modifier, size: Size = Size.Small) {
-  Column(modifier,
-    verticalArrangement = Arrangement.spacedBy(4.dp)) {
+  Column(
+    modifier,
+    verticalArrangement = Arrangement.spacedBy(4.dp),
+  ) {
     for (perilItem in items) {
       var isExpanded by rememberSaveable { mutableStateOf(false) }
       AccordionItem(
