@@ -13,8 +13,7 @@ internal class DatadogMemberIdProviderImpl(
   override fun provide(): Flow<Pair<String, String?>> {
     return memberIdService
       .getMemberId()
-      .map { MEMBER_ID_TRACKING_KEY to it }
-      .onEach { (key, memberId) ->
+      .onEach { memberId ->
         logcat(LogPriority.INFO) {
           if (memberId == null) {
             "Removing from global RUM attribute:$MEMBER_ID_TRACKING_KEY"
@@ -23,6 +22,7 @@ internal class DatadogMemberIdProviderImpl(
           }
         }
       }
+      .map { MEMBER_ID_TRACKING_KEY to it }
   }
 
   companion object {

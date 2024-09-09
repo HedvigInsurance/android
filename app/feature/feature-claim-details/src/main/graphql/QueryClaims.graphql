@@ -4,6 +4,7 @@ query Claims {
       ...ClaimFragment
       conversation {
         id
+        unreadMessageCount
       }
     }
   }

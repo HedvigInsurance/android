@@ -40,6 +40,7 @@ dependencies {
   implementation(projects.audioPlayerUi)
   implementation(projects.claimStatus)
   implementation(projects.composePhotoCaptureState)
+  implementation(projects.composeUi)
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreDemoMode)

@@ -42,7 +42,6 @@ import com.hedvig.android.core.datastore.di.dataStoreModule
 import com.hedvig.android.core.demomode.di.demoModule
 import com.hedvig.android.core.fileupload.fileUploadModule
 import com.hedvig.android.data.chat.di.dataChatModule
-import com.hedvig.android.data.chat.read.timestamp.di.chatReadTimestampModule
 import com.hedvig.android.data.claimflow.di.claimFlowDataModule
 import com.hedvig.android.data.conversations.di.dataConversationsModule
 import com.hedvig.android.data.paying.member.di.dataPayingMemberModule
@@ -298,7 +297,6 @@ val applicationModule = module {
       buildConstantsModule,
       changeAddressModule,
       chatModule,
-      chatReadTimestampModule,
       claimDetailsModule,
       claimFlowDataModule,
       claimTriagingModule,

@@ -7,7 +7,6 @@ import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.fileupload.FileService
 import com.hedvig.android.data.chat.database.AppDatabase
 import com.hedvig.android.data.chat.database.ChatDao
-import com.hedvig.android.data.chat.database.ConversationDao
 import com.hedvig.android.data.chat.database.RemoteKeyDao
 import com.hedvig.android.feature.chat.CbmChatViewModel
 import com.hedvig.android.feature.chat.data.BotServiceService
@@ -39,7 +38,7 @@ val chatModule = module {
   }
 
   single<GetAllConversationsUseCase> {
-    GetAllConversationsUseCaseImpl(get<ApolloClient>(), get<ConversationDao>())
+    GetAllConversationsUseCaseImpl(get<ApolloClient>())
   }
 
   viewModel<InboxViewModel> {
@@ -52,7 +51,6 @@ val chatModule = module {
       database = get<AppDatabase>(),
       chatDao = get<ChatDao>(),
       remoteKeyDao = get<RemoteKeyDao>(),
-      conversationDao = get<ConversationDao>(),
       fileService = get<FileService>(),
       botServiceService = get<BotServiceService>(),
       clock = get<Clock>(),
@@ -76,7 +74,6 @@ val chatModule = module {
       database = get<AppDatabase>(),
       chatDao = get<ChatDao>(),
       remoteKeyDao = get<RemoteKeyDao>(),
-      conversationDao = get<ConversationDao>(),
       chatRepository = get<GetCbmChatRepositoryProvider>(),
       clock = get<Clock>(),
     )

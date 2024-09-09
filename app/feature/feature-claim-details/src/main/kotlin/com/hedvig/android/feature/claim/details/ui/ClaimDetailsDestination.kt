@@ -47,12 +47,14 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import com.hedvig.android.audio.player.HedvigAudioPlayer
 import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
 import com.hedvig.android.compose.photo.capture.state.rememberPhotoCaptureState
+import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
@@ -62,6 +64,7 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.fileupload.ui.FilePickerBottomSheet
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.colored.hedvig.Chat
+import com.hedvig.android.core.icons.hedvig.compose.notificationCircle
 import com.hedvig.android.core.icons.hedvig.normal.ArrowBack
 import com.hedvig.android.core.icons.hedvig.small.hedvig.ArrowNorthEast
 import com.hedvig.android.core.ui.DynamicFilesGridBetweenOtherThings
@@ -143,6 +146,7 @@ private fun ClaimDetailScreen(
   ) {
     Column(Modifier.fillMaxSize()) {
       ClaimDetailTopAppBar(
+        hasUnreadMessages = uiState.safeCast<ClaimDetailUiState.Content>()?.hasUnreadMessages ?: false,
         navigateUp = navigateUp,
         navigateToConversation = uiState.safeCast<ClaimDetailUiState.Content>()?.conversationId?.let {
           { navigateToConversation(it) }
@@ -268,7 +272,11 @@ private fun ClaimDetailScreen(
 }
 
 @Composable
-private fun ClaimDetailTopAppBar(navigateUp: () -> Unit, navigateToConversation: (() -> Unit)?) {
+private fun ClaimDetailTopAppBar(
+  hasUnreadMessages: Boolean,
+  navigateUp: () -> Unit,
+  navigateToConversation: (() -> Unit)?,
+) {
   TopAppBar(
     title = {
       Text(
@@ -297,6 +305,7 @@ private fun ClaimDetailTopAppBar(navigateUp: () -> Unit, navigateToConversation:
             tint = com.hedvig.android.design.system.hedvig.HedvigTheme.colorScheme.fillSecondary,
             modifier = Modifier
               .size(32.dp)
+              .notificationCircle(hasUnreadMessages)
               .clip(CircleShape),
           )
         }
@@ -570,6 +579,7 @@ private fun PreviewClaimDetailScreen() {
           uiState = ClaimDetailUiState.Content(
             claimId = "id",
             conversationId = "idd",
+            hasUnreadMessages = true,
             submittedContent = ClaimDetailUiState.Content.SubmittedContent.FreeText("Some free input text"),
             claimStatusCardUiState = ClaimStatusCardUiState(
               id = "id",
@@ -674,11 +684,17 @@ private fun PreviewClaimDetailScreen() {
 
 @HedvigPreview
 @Composable
-private fun PreviewClaimDetailTopAppBar() {
+private fun PreviewClaimDetailTopAppBar(
+  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) withNotification: Boolean,
+) {
   com.hedvig.android.core.designsystem.theme.HedvigTheme {
     com.hedvig.android.design.system.hedvig.HedvigTheme {
       Surface(color = MaterialTheme.colorScheme.background) {
-        ClaimDetailTopAppBar({}, {})
+        ClaimDetailTopAppBar(
+          withNotification,
+          {},
+          {},
+        )
       }
     }
   }

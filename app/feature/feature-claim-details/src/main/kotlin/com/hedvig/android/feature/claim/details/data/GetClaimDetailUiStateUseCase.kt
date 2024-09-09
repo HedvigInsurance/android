@@ -9,7 +9,6 @@ import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState
-import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.audio.player.data.SignedAudioUrl
 import kotlin.time.Duration.Companion.seconds
@@ -31,7 +30,6 @@ import octopus.type.InsuranceDocumentType
 
 internal class GetClaimDetailUiStateUseCase(
   private val apolloClient: ApolloClient,
-  private val featureManager: FeatureManager,
 ) {
   operator fun invoke(claimId: String): Flow<Either<Error, ClaimDetailUiState.Content>> {
     return flow {
@@ -79,6 +77,7 @@ internal class GetClaimDetailUiStateUseCase(
     return ClaimDetailUiState.Content(
       claimId = claim.id,
       conversationId = conversation?.id,
+      hasUnreadMessages = (conversation?.unreadMessageCount ?: 0) > 0,
       submittedContent = when {
         audioUrl != null -> {
           ClaimDetailUiState.Content.SubmittedContent.Audio(SignedAudioUrl.fromSignedAudioUrlString(audioUrl))
@@ -129,7 +128,7 @@ internal class GetClaimDetailUiStateUseCase(
   }
 
   companion object {
-    private val POLL_INTERVAL = 30.seconds
+    private val POLL_INTERVAL = 10.seconds
   }
 }
 
