@@ -20,8 +20,6 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,7 +45,10 @@ fun Scaffold(
     color = HedvigTheme.colorScheme.backgroundPrimary, // todo: to tokens
     modifier = modifier.fillMaxSize(),
   ) {
-    Column {
+    Column(
+      Modifier
+        .fillMaxSize(),
+    ) {
       TopAppBar(
         title = topAppBarText ?: "",
         onClick = navigateUp,
@@ -58,7 +59,6 @@ fun Scaffold(
         horizontalAlignment = itemsColumnHorizontalAlignment,
         modifier = Modifier
           .fillMaxSize()
-          .verticalScroll(rememberScrollState())
           .windowInsetsPadding(
             WindowInsets.safeDrawing.only(
               WindowInsetsSides.Horizontal +
