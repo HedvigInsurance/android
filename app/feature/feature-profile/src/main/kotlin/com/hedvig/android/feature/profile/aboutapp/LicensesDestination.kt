@@ -9,14 +9,11 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.hedvig.android.composewebview.WebView
 import com.hedvig.android.composewebview.rememberWebViewState
-import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
 import hedvig.resources.R
 
 private const val licensesUrl = "file:///android_asset/open_source_licenses.html"

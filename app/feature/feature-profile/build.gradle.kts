@@ -14,9 +14,10 @@ android {
 
 dependencies {
 
+  implementation(libs.androidx.compose.foundation)
+  implementation(projects.designSystemHedvig)
   implementation(libs.accompanist.permissions)
   implementation(libs.androidx.activity.compose)
-  implementation(libs.androidx.compose.material3.windowSizeClass)
   implementation(libs.androidx.compose.runtime)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.apollo.normalizedCache)
@@ -38,10 +39,8 @@ dependencies {
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDatastorePublic)
   implementation(projects.coreDemoMode)
-  implementation(projects.coreDesignSystem)
   implementation(projects.coreIcons)
   implementation(projects.coreResources)
-  implementation(projects.coreUi)
   implementation(projects.coreUiData)
   implementation(projects.dataSettingsDatastorePublic)
   implementation(projects.featureFlagsPublic)

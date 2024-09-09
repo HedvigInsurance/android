@@ -29,12 +29,6 @@ import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -52,17 +46,14 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
-import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.hedvig.normal.ContactInformation
-import com.hedvig.android.core.icons.hedvig.normal.Eurobonus
-import com.hedvig.android.core.icons.hedvig.normal.Info
-import com.hedvig.android.core.icons.hedvig.normal.MultipleDocuments
-import com.hedvig.android.core.icons.hedvig.normal.Settings
-import com.hedvig.android.core.ui.dialog.HedvigAlertDialog
-import com.hedvig.android.core.ui.plus
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.InfoFilled
+import com.hedvig.android.design.system.hedvig.icon.Settings
 import com.hedvig.android.memberreminders.ui.MemberReminderCards
 import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
@@ -160,9 +151,9 @@ private fun ProfileScreen(
           .fillMaxWidth()
           .padding(horizontal = 16.dp),
       ) {
-        Text(
+        HedvigText(
           text = stringResource(id = R.string.PROFILE_TITLE),
-          style = MaterialTheme.typography.titleLarge,
+          style = HedvigTheme.typography.titleLarge,
         )
       }
       Spacer(Modifier.height(16.dp))
@@ -204,7 +195,7 @@ private fun ProfileScreen(
       HedvigTextButton(
         text = stringResource(R.string.LOGOUT_BUTTON),
         colors = ButtonDefaults.textButtonColors(
-          contentColor = MaterialTheme.colorScheme.error,
+          contentColor = HedvigTheme.colorScheme.error,
         ),
         onClick = {
           showLogoutDialog = true
@@ -263,25 +254,25 @@ private fun ProfileRows(
 private fun ColumnScope.ProfileItemRowsPlaceholders() {
   ProfileRow(
     title = stringResource(R.string.PROFILE_MY_INFO_ROW_TITLE),
-    icon = Icons.Hedvig.Info,
+    icon = HedvigIcons.InfoFilled,
     isLoading = true,
     onClick = {},
   )
   ProfileRow(
     title = stringResource(R.string.PROFILE_ROW_TRAVEL_CERTIFICATE),
-    icon = Icons.Hedvig.Info,
+    icon = HedvigIcons.InfoFilled,
     isLoading = true,
     onClick = {},
   )
   ProfileRow(
     title = stringResource(R.string.PROFILE_ABOUT_ROW),
-    icon = Icons.Hedvig.Info,
+    icon = HedvigIcons.InfoFilled,
     isLoading = true,
     onClick = {},
   )
   ProfileRow(
     title = stringResource(R.string.profile_appSettingsSection_row_headline),
-    icon = Icons.Hedvig.Info,
+    icon = HedvigIcons.InfoFilled,
     isLoading = true,
     onClick = {},
   )
@@ -299,14 +290,14 @@ private fun ColumnScope.ProfileItemRows(
 ) {
   ProfileRow(
     title = stringResource(R.string.PROFILE_MY_INFO_ROW_TITLE),
-    icon = Icons.Hedvig.ContactInformation,
+    icon = HedvigIcons.ContactInformation,
     onClick = showMyInfo,
     isLoading = false,
   )
   if (profileUiState.travelCertificateAvailable) {
     ProfileRow(
       title = stringResource(R.string.PROFILE_ROW_TRAVEL_CERTIFICATE),
-      icon = Icons.Hedvig.MultipleDocuments,
+      icon = HedvigIcons.MultipleDocuments,
       onClick = navigateToTravelCertificate,
       isLoading = false,
     )
@@ -314,20 +305,20 @@ private fun ColumnScope.ProfileItemRows(
   if (profileUiState.euroBonus != null) {
     ProfileRow(
       title = stringResource(R.string.sas_integration_title),
-      icon = Icons.Hedvig.Eurobonus,
+      icon = HedvigIcons.Eurobonus,
       onClick = navigateToEurobonus,
       isLoading = false,
     )
   }
   ProfileRow(
     title = stringResource(R.string.PROFILE_ABOUT_ROW),
-    icon = Icons.Hedvig.Info,
+    icon = HedvigIcons.InfoFilled,
     onClick = showAboutApp,
     isLoading = false,
   )
   ProfileRow(
     title = stringResource(R.string.profile_appSettingsSection_row_headline),
-    icon = Icons.Hedvig.Settings,
+    icon = HedvigIcons.Settings,
     onClick = showSettings,
     isLoading = false,
   )
@@ -356,20 +347,19 @@ private fun ProfileRow(
         .placeholder(isLoading, highlight = PlaceholderHighlight.shimmer()),
     )
     Spacer(Modifier.width(16.dp))
-    Text(
+    HedvigText(
       text = title,
-      style = MaterialTheme.typography.bodyLarge,
+      style = HedvigTheme.typography.bodyLarge,
       modifier = Modifier
         .placeholder(isLoading, highlight = PlaceholderHighlight.shimmer()),
     )
   }
 }
 
-@HedvigPreview
 @Composable
 private fun PreviewProfileItemRows() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       PreviewContentWithProvidedParametersAnimatedOnClick(
         parametersList = ProfileUiStateProvider().values.toList(),
       ) { uiState ->

@@ -12,9 +12,8 @@ dependencies {
   implementation(libs.kotlinx.datetime)
   implementation(projects.composePagerIndicator)
   implementation(projects.coreCommonAndroidPublic)
-  implementation(projects.coreDesignSystem)
-  implementation(projects.coreIcons)
   implementation(projects.coreResources)
-  implementation(projects.coreUi)
   implementation(projects.notificationPermission)
+  implementation(libs.androidx.compose.foundation)
+  implementation(projects.designSystemHedvig)
 }
