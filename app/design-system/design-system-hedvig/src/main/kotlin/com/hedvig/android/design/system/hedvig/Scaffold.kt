@@ -21,15 +21,17 @@ import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.TopAppBarDefaults.windowInsets
 import com.hedvig.android.design.system.hedvig.icon.ArrowLeft
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import com.hedvig.android.design.system.hedvig.tokens.TypographyKeyTokens
+import com.hedvig.android.design.system.hedvig.tokens.ScaffoldTokens
 
 @Composable
 fun Scaffold(
@@ -42,7 +44,7 @@ fun Scaffold(
   content: @Composable ColumnScope.() -> Unit,
 ) {
   Surface(
-    color = HedvigTheme.colorScheme.backgroundPrimary, // todo: to tokens
+    color = scaffoldColors.background,
     modifier = modifier.fillMaxSize(),
   ) {
     Column(
@@ -78,12 +80,10 @@ fun TopAppBarLayoutForActions(modifier: Modifier = Modifier, actions: @Composabl
     horizontalArrangement = Arrangement.End,
     verticalAlignment = Alignment.CenterVertically,
     modifier = modifier
-      .windowInsetsPadding(
-        windowInsets,
-      )
-      .height(64.dp) // todo: to tokens
+      .windowInsetsPadding(windowInsets)
+      .height(ScaffoldTokens.TopAppBarHeight)
       .fillMaxWidth()
-      .padding(horizontal = 16.dp), // todo: to tokens
+      .padding(horizontal = ScaffoldTokens.TopAppBarHorizontalPadding),
   ) {
     actions()
   }
@@ -132,9 +132,9 @@ fun TopAppBar(
     modifier =
       modifier
         .windowInsetsPadding(windowInsets)
-        .height(64.dp) // todo: to tokens
+        .height(ScaffoldTokens.TopAppBarHeight)
         .fillMaxWidth()
-        .padding(start = 16.dp, end = 16.dp), // todo: to tokens. but also we don't really know them,
+        .padding(horizontal = ScaffoldTokens.TopAppBarHorizontalPadding),
   ) {
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
@@ -148,11 +148,10 @@ fun TopAppBar(
             content = {
               Icon(
                 imageVector = when (actionType) {
-                  TopAppBarActionType.BACK -> HedvigIcons.ArrowLeft // todo: check here!
-                  TopAppBarActionType.CLOSE -> HedvigIcons.Close // todo: check here!
+                  TopAppBarActionType.BACK -> HedvigIcons.ArrowLeft
+                  TopAppBarActionType.CLOSE -> HedvigIcons.Close
                 },
                 contentDescription = null,
-                // todo: to tokens!
               )
             },
           )
@@ -161,8 +160,8 @@ fun TopAppBar(
             text = title,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.padding(top = 10.dp, bottom = 10.dp), // todo: to tokens
-            style = TypographyKeyTokens.HeadlineSmall.value, // todo: to tokens!
+            modifier = Modifier.padding(top = 10.dp, bottom = 10.dp),
+            style = ScaffoldTokens.TopAppBarTextStyle.value,
           )
         }
       },
@@ -180,3 +179,17 @@ fun TopAppBar(
     )
   }
 }
+
+private data class ScaffoldColors(
+  val background: Color,
+)
+
+private val scaffoldColors: ScaffoldColors
+  @Composable
+  get() = with(HedvigTheme.colorScheme) {
+    remember(this) {
+      ScaffoldColors(
+        background = fromToken(ScaffoldTokens.BackgroundColor),
+      )
+    }
+  }
