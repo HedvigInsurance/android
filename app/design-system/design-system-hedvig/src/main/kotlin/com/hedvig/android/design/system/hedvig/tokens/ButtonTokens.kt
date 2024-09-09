@@ -11,6 +11,7 @@ internal object PrimaryStyleButtonTokens {
   val DisabledContentColor = ColorSchemeKeyTokens.TextTertiary
   val ActiveLoadingIndicatorColor = ColorSchemeKeyTokens.FillNegative
   val InactiveLoadingIndicatorColor = ColorSchemeKeyTokens.SurfaceSecondaryTransparent
+  val RedContentColor = ColorSchemeKeyTokens.SignalRedText
 }
 
 internal object PrimaryAltStyleButtonTokens {

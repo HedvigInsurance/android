@@ -60,7 +60,7 @@ internal fun DesignShowcase(modifier: Modifier = Modifier) {
 }
 
 private val showStepper = false
-private val showIcons = false
+private val showIcons = true
 private val showButton = false
 private val showTextField = false
 private val showBottomSheet = false
@@ -74,4 +74,4 @@ private val showProgressBar = false
 private val showPerils = false
 private val showAccordion = false
 private val showSnacks = false
-private val showTabs = true
+private val showTabs = false
