@@ -27,6 +27,18 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.design.system.hedvig.FadeAnimatedContent
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigErrorSection
+import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigTextField
+import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Scaffold
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.clearFocusOnTap
+import com.hedvig.android.feature.profile.myinfo.MyInfoUiState.Success
 import hedvig.resources.R
 
 @Composable
@@ -63,7 +75,7 @@ private fun MyInfoScreen(
   Box(
     modifier = Modifier.fillMaxSize(),
   ) {
-    HedvigScaffold(
+    Scaffold(
       topAppBarText = stringResource(R.string.PROFILE_MY_INFO_ROW_TITLE),
       navigateUp = navigateUp,
       modifier = Modifier.clearFocusOnTap(),
@@ -76,16 +88,16 @@ private fun MyInfoScreen(
         Column(Modifier.fillMaxSize()) {
           when (animatedUiState) {
             MyInfoUiState.Loading -> {
-              HedvigFullScreenCenterAlignedProgressDebounced()
+              HedvigFullScreenCenterAlignedProgressDebounced() // todo: check ui here
             }
 
             MyInfoUiState.Error -> {
               Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                HedvigErrorSection(onButtonClick = reload)
+                HedvigErrorSection(onButtonClick = reload) // todo: check ui here
               }
             }
 
-            is MyInfoUiState.Success -> {
+            is Success -> {
               SuccessState(animatedUiState, phoneNumberChanged, emailChanged, updateEmailAndPhoneNumber, focusManager)
             }
           }
@@ -106,38 +118,47 @@ private fun ColumnScope.SuccessState(
   var emailInput by rememberSaveable { mutableStateOf(uiState.member.email) }
   var phoneInput by rememberSaveable { mutableStateOf(uiState.member.phoneNumber ?: "") }
   Spacer(Modifier.height(16.dp))
-  val errorText = uiState.member.phoneNumberErrorMessage?.let { stringResource(id = it) }
+  val phoneErrorText = uiState.member.phoneNumberErrorMessage?.let { stringResource(id = it) }
   HedvigTextField(
-    value = phoneInput,
+    text = phoneInput,
     onValueChange = onValueChange@{ newInput ->
       if (newInput.any { it.isWhitespace() }) return@onValueChange
       phoneNumberChanged(newInput)
       phoneInput = newInput
     },
-    label = { Text(stringResource(R.string.PHONE_NUMBER_ROW_TITLE)) },
-    errorText = errorText,
+    labelText = stringResource(R.string.PHONE_NUMBER_ROW_TITLE),
+    errorState = if (phoneErrorText == null) {
+      HedvigTextFieldDefaults.ErrorState.NoError
+    } else {
+      HedvigTextFieldDefaults.ErrorState.Error.WithMessage(phoneErrorText)
+    },
     keyboardOptions = KeyboardOptions(
       keyboardType = KeyboardType.Phone,
       imeAction = ImeAction.Next,
     ),
-    withNewDesign = true,
+    textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium, // todo: what size should we put here??
     modifier = Modifier
       .fillMaxWidth()
       .padding(horizontal = 16.dp),
   )
-  AnimatedVisibility(visible = errorText != null) {
+  AnimatedVisibility(visible = phoneErrorText != null) {
     Spacer(Modifier.height(4.dp))
   }
   Spacer(Modifier.height(4.dp))
+  val emailErrorText = uiState.member.emailErrorMessage?.let { stringResource(id = it) }
   HedvigTextField(
-    value = emailInput,
+    text = emailInput,
     onValueChange = onValueChange@{ newInput ->
       if (newInput.any { it.isWhitespace() }) return@onValueChange
       emailChanged(newInput)
       emailInput = newInput
     },
-    label = { Text(stringResource(R.string.PROFILE_MY_INFO_EMAIL_LABEL)) },
-    errorText = uiState.member.emailErrorMessage?.let { stringResource(id = it) },
+    labelText = stringResource(R.string.PROFILE_MY_INFO_EMAIL_LABEL),
+    errorState = if (emailErrorText == null) {
+      HedvigTextFieldDefaults.ErrorState.NoError
+    } else {
+      HedvigTextFieldDefaults.ErrorState.Error.WithMessage(emailErrorText)
+    },
     keyboardOptions = KeyboardOptions(
       keyboardType = KeyboardType.Email,
       imeAction = ImeAction.Done,
@@ -148,7 +169,7 @@ private fun ColumnScope.SuccessState(
         focusManager.clearFocus()
       },
     ),
-    withNewDesign = true,
+    textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium, // todo: what size should we put here??
     modifier = Modifier
       .fillMaxWidth()
       .padding(horizontal = 16.dp),
@@ -159,7 +180,7 @@ private fun ColumnScope.SuccessState(
     enter = fadeIn(),
     exit = fadeOut(),
   ) {
-    HedvigContainedButton(
+    HedvigButton(
       text = stringResource(R.string.general_save_button),
       enabled = uiState.canSubmit,
       onClick = {
@@ -177,9 +198,9 @@ private fun ColumnScope.SuccessState(
 @Composable
 private fun PreviewMyInfoScreen() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       MyInfoScreen(
-        uiState = MyInfoUiState.Success(
+        uiState = Success(
           member = MyInfoMember(
             "email@email.com",
             null,
