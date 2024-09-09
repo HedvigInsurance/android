@@ -60,7 +60,7 @@ import com.hedvig.android.design.system.internals.InternalSnackBar
 import com.hedvig.android.design.system.internals.NotificationColors
 
 @Composable
-fun HedvigNotificationCard(
+fun HedvigInfoCard(
   message: String,
   priority: NotificationPriority,
   modifier: Modifier = Modifier,
@@ -85,7 +85,7 @@ fun HedvigNotificationCard(
           Spacer(Modifier.width(6.dp))
         }
         Column {
-          HedvigText(text = message)
+          HedvigText(text = message, color = priority.colors.textColor)
           when (style) {
             is Buttons -> {
               Spacer(Modifier.height(NotificationsTokens.SpaceBetweenTextAndButtons))
@@ -325,37 +325,37 @@ private fun PreviewNotificationCard(
           .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
       ) {
-        HedvigNotificationCard(
+        HedvigInfoCard(
           priority = priority,
           message = "A short message about something that needs attention.",
           withIcon = false,
           style = Default,
         )
-        HedvigNotificationCard(
+        HedvigInfoCard(
           priority = priority,
           message = "A short message about something that needs attention.",
           withIcon = true,
           style = Default,
         )
-        HedvigNotificationCard(
+        HedvigInfoCard(
           priority = priority,
           message = "A short message about something that needs attention.",
           withIcon = false,
           style = Button("Button", {}),
         )
-        HedvigNotificationCard(
+        HedvigInfoCard(
           priority = priority,
           message = "A short message about something that needs attention.",
           withIcon = true,
           style = Button("Button", {}),
         )
-        HedvigNotificationCard(
+        HedvigInfoCard(
           priority = priority,
           message = "A short message about something that needs attention.",
           withIcon = false,
           style = Buttons("Left", "Right", {}, {}),
         )
-        HedvigNotificationCard(
+        HedvigInfoCard(
           priority = priority,
           message = "A short message about something that needs attention.",
           withIcon = true,
