@@ -60,4 +60,9 @@ interface HedvigBuildConstants {
    * do sometimes want to know the difference.
    */
   val isProduction: Boolean
+
+  /**
+   * The Android SDK version we are currently running on
+   */
+  val buildApiVersion: Int
 }
