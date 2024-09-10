@@ -117,7 +117,7 @@ internal fun AudioRecorder(
           Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
-              .shadow(10.dp, CircleShape)
+              .shadow(2.dp, CircleShape)
               .size(72.dp)
               .background(Color.White, CircleShape)
               .clickable {
