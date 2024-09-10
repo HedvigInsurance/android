@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -27,6 +28,7 @@ import com.hedvig.android.design.system.hedvig.DialogDefaults.DialogStyle.NoButt
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButtonStyle
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.ERROR
 import com.hedvig.android.design.system.hedvig.tokens.DialogTokens
+import hedvig.resources.R
 
 @Composable
 fun HedvigDialogError(
@@ -51,6 +53,37 @@ fun HedvigDialogError(
         onButtonClick = onButtonClick,
       ),
     )
+  }
+}
+
+@Composable
+fun HedvigDialogAlertWithButtons(
+  titleText: String,
+  descriptionText: String,
+  confirmButtonText: String,
+  dismissButtonText: String,
+  onConfirmClick: () -> Unit,
+  onDismissRequest: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  HedvigDialog (
+    style = DialogStyle.Buttons(
+      onConfirmButtonClick = onConfirmClick,
+      onDismissRequest = onDismissRequest,
+      confirmButtonText = confirmButtonText,
+      dismissButtonText = dismissButtonText,
+    ),
+    onDismissRequest = onDismissRequest,
+    modifier = modifier
+  ) {
+    HedvigText(
+      titleText,
+      style = HedvigTheme.typography.bodySmall,
+      color = HedvigTheme.colorScheme.textPrimary)
+    HedvigText(
+      descriptionText,
+      style = HedvigTheme.typography.bodySmall,
+      color = HedvigTheme.colorScheme.textSecondary)
   }
 }
 

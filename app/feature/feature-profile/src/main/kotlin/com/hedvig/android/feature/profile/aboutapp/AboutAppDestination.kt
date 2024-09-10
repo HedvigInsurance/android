@@ -55,8 +55,7 @@ private fun AboutAppScreen(
   isProduction: Boolean,
   appVersionName: String,
   appVersionCode: String,
-) {
-  HedvigScaffold(
+) { HedvigScaffold(
     topAppBarText = stringResource(R.string.PROFILE_ABOUT_APP_TITLE),
     navigateUp = onBackPressed,
     modifier = Modifier.clearFocusOnTap(),

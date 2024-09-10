@@ -20,6 +20,7 @@ import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButt
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.BANK_ID
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigDialog
+import com.hedvig.android.design.system.hedvig.HedvigDialogAlertWithButtons
 import com.hedvig.android.design.system.hedvig.HedvigDialogError
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.Surface
@@ -63,6 +64,18 @@ fun DialogShowcase() {
     )
   }
 
+  var isAlertDialogVisible by rememberSaveable { mutableStateOf(false) }
+  if (isAlertDialogVisible) {
+    HedvigDialogAlertWithButtons(
+      onDismissRequest = { isAlertDialogVisible = false },
+      titleText = "Title",
+      descriptionText = "Description",
+      onConfirmClick = {},
+      confirmButtonText = "Confirm",
+      dismissButtonText = "Dismiss"
+    )
+  }
+
   Surface(
     modifier = Modifier
       .fillMaxSize(),
@@ -90,6 +103,15 @@ fun DialogShowcase() {
         },
       ) {
         HedvigText("Open error dialog")
+      }
+      Spacer(Modifier.height(16.dp))
+      HedvigButton(
+        enabled = true,
+        onClick = {
+          isAlertDialogVisible = true
+        },
+      ) {
+        HedvigText("Open alert dialog")
       }
     }
   }

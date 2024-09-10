@@ -24,7 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.compose.pager.indicator.HorizontalPagerIndicator
 import com.hedvig.android.core.common.android.time.daysUntil
-import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
+import com.hedvig.android.design.system.hedvig.HedvigInfoCard
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
@@ -191,7 +191,7 @@ fun ReminderCardEnableNotifications(
   requestNotificationPermission: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  HedvigNotificationCard(
+  HedvigInfoCard(
     message = stringResource(R.string.PROFILE_ALLOW_NOTIFICATIONS_INFO_LABEL),
     modifier = modifier,
     priority = NotificationPriority.Info,
@@ -206,7 +206,7 @@ fun ReminderCardEnableNotifications(
 
 @Composable
 private fun ReminderCardConnectPayment(navigateToConnectPayment: () -> Unit, modifier: Modifier = Modifier) {
-  HedvigNotificationCard(
+  HedvigInfoCard(
     message = stringResource(R.string.info_card_missing_payment_body),
     modifier = modifier,
     priority = NotificationPriority.Attention,
@@ -223,7 +223,7 @@ private fun ReminderCardMissingPayment(
   onNavigateToNewConversation: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  HedvigNotificationCard(
+  HedvigInfoCard(
     message = stringResource(R.string.info_card_missing_payment_missing_payments_body, terminationDate),
     modifier = modifier,
     priority = NotificationPriority.Attention,
@@ -249,7 +249,7 @@ private fun ReminderCardUpcomingRenewals(
       buttonText = stringResource(R.string.CONTRACT_VIEW_CERTIFICATE_BUTTON),
     )
   } ?: InfoCardStyle.Default
-  HedvigNotificationCard(
+  HedvigInfoCard(
     message = stringResource(R.string.DASHBOARD_RENEWAL_PROMPTER_BODY, daysUntilRenewal),
     modifier = modifier,
     priority = NotificationPriority.Info,
@@ -259,7 +259,7 @@ private fun ReminderCardUpcomingRenewals(
 
 @Composable
 private fun ReminderCoInsuredInfo(navigateToContractDetail: () -> Unit, modifier: Modifier = Modifier) {
-  HedvigNotificationCard(
+  HedvigInfoCard(
     message = stringResource(R.string.CONTRACT_COINSURED_MISSING_INFO_TEXT),
     modifier = modifier,
     priority = NotificationPriority.Attention,
