@@ -58,6 +58,7 @@ fun HedvigDialogError(
 fun HedvigDialog(
   onDismissRequest: () -> Unit,
   modifier: Modifier = Modifier,
+  applyDefaultPadding: Boolean = false,
   style: DialogStyle = DialogDefaults.defaultDialogStyle,
   content: @Composable () -> Unit,
 ) {
@@ -73,8 +74,9 @@ fun HedvigDialog(
       color = DialogDefaults.containerColor,
       modifier = modifier,
     ) {
+      val padding = if (applyDefaultPadding) DialogDefaults.padding else PaddingValues()
       Column(
-        Modifier.padding(DialogDefaults.padding),
+        Modifier.padding(padding),
       ) {
         when (style) {
           is Buttons -> {
