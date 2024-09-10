@@ -11,7 +11,7 @@ import com.hedvig.android.design.system.hedvig.tokens.ShapeTokens
 import com.hedvig.android.design.system.hedvig.tokens.ShapeTokens.CornerTopOnlyXLarge
 
 @Immutable
-data class Shapes(
+data class Shapes internal constructor(
   val cornerXXLarge: Shape = ShapeTokens.CornerXXLarge,
   val cornerXLarge: Shape = ShapeTokens.CornerXLarge,
   val cornerLarge: Shape = ShapeTokens.CornerLarge,

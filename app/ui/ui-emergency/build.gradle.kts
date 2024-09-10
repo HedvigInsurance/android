@@ -8,15 +8,14 @@ plugins {
 
 dependencies {
   implementation(libs.androidx.compose.foundationLayout)
-  implementation(libs.androidx.compose.material3)
+  implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.runtime)
   implementation(libs.androidx.compose.uiCore)
   implementation(libs.androidx.compose.uiUtil)
   implementation(libs.androidx.lifecycle.compose)
+  implementation(projects.designSystemHedvig)
   implementation(libs.kotlinx.serialization.core)
-  implementation(projects.coreDesignSystem)
   implementation(projects.coreResources)
-  implementation(projects.coreUi)
   implementation(projects.coreUiData)
   implementation(projects.dataContractAndroid)
   implementation(projects.placeholder)
