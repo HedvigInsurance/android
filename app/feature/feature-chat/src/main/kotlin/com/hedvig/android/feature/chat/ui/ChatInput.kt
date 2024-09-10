@@ -46,6 +46,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -300,10 +301,9 @@ private fun ChatClickableSquare(
 private fun Modifier.chatInputOutline(chatShape: Shape, outlineColor: Color): Modifier = drawWithCache {
   val stroke = Stroke(Dp.Hairline.toPx())
   val outline = chatShape.createOutline(size.copy(size.width, size.height), layoutDirection, this)
-  val path = (outline as Outline.Generic).path
   onDrawWithContent {
     drawContent()
-    drawPath(path, outlineColor, style = stroke)
+    drawOutline(outline, outlineColor, style = stroke)
   }
 }
 
