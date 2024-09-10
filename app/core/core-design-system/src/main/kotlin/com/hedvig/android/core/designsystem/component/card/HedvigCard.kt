@@ -110,7 +110,6 @@ private fun Card(
     shape = shape,
     color = colors.containerColor(enabled = true),
     contentColor = colors.contentColor(enabled = true),
-    tonalElevation = elevation.tonalElevation(enabled = true),
     shadowElevation = elevation.shadowElevation(enabled = true, interactionSource = null).value,
     border = border,
   ) {
@@ -141,7 +140,6 @@ private fun Card(
     shape = shape,
     color = colors.containerColor(enabled),
     contentColor = colors.contentColor(enabled),
-    tonalElevation = elevation.tonalElevation(enabled),
     shadowElevation = elevation.shadowElevation(enabled, interactionSource).value,
     border = border,
     interactionSource = interactionSource,

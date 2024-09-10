@@ -168,7 +168,7 @@ private fun EditCoInsuredScreen(
             shape = MaterialTheme.shapes.squircleLargeTop,
             sheetState = sheetState,
             tonalElevation = 0.dp,
-            windowInsets = BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top),
+            contentWindowInsets = { BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top) },
           ) {
             AddCoInsuredBottomSheetContent(
               bottomSheetState = uiState.addBottomSheetState,
@@ -199,7 +199,7 @@ private fun EditCoInsuredScreen(
             shape = MaterialTheme.shapes.squircleLargeTop,
             sheetState = sheetState,
             tonalElevation = 0.dp,
-            windowInsets = BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top),
+            contentWindowInsets = { BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top) },
           ) {
             RemoveCoInsuredBottomSheetContent(
               onRemove = { onRemoveCoInsured(it) },

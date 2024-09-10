@@ -68,7 +68,7 @@ internal class TerminatedContractsPresenter(
               TerminatedContractsUiState.Success(terminatedContracts)
             }
           }.fold(
-            ifLeft = { errorMessage ->
+            ifLeft = {
               currentState = TerminatedContractsUiState.Error
             },
             ifRight = { uiState ->

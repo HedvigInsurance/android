@@ -342,8 +342,8 @@ private fun HedvigFreeTextDecorationBox(
 
   val decoratedPlaceholder: @Composable ((Modifier) -> Unit)? =
     if (placeholder != null && transformedText.isEmpty()) {
-      @Composable { modifier ->
-        Box(modifier) {
+      @Composable { decoratedPlaceholderModifier ->
+        Box(decoratedPlaceholderModifier) {
           Decoration(
             contentColor = freeTextColors.hintColor,
             typography = FreeTextDefaults.textStyle.value,

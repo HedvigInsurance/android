@@ -3,7 +3,6 @@ package com.hedvig.android.feature.home.di
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.demomode.DemoManager
-import com.hedvig.android.data.chat.read.timestamp.ChatLastMessageReadRepository
 import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCaseDemo
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCaseImpl
@@ -45,7 +44,6 @@ val homeModule = module {
   viewModel<HomeViewModel> {
     HomeViewModel(
       get<GetHomeDataUseCaseProvider>(),
-      get<ChatLastMessageReadRepository>(),
       get<SeenImportantMessagesStorage>(),
       get<CrossSellCardNotificationBadgeServiceProvider>(),
       get<ApplicationScope>(),

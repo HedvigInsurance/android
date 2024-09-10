@@ -42,7 +42,6 @@ import com.hedvig.android.core.datastore.di.dataStoreModule
 import com.hedvig.android.core.demomode.di.demoModule
 import com.hedvig.android.core.fileupload.fileUploadModule
 import com.hedvig.android.data.chat.di.dataChatModule
-import com.hedvig.android.data.chat.read.timestamp.di.chatReadTimestampModule
 import com.hedvig.android.data.claimflow.di.claimFlowDataModule
 import com.hedvig.android.data.conversations.di.dataConversationsModule
 import com.hedvig.android.data.paying.member.di.dataPayingMemberModule
@@ -193,6 +192,7 @@ private val buildConstantsModule = module {
       override val isDebug: Boolean = BuildConfig.DEBUG
       override val isProduction: Boolean =
         BuildConfig.BUILD_TYPE == "release" && BuildConfig.APPLICATION_ID == "com.hedvig.app"
+      override val buildApiVersion: Int = Build.VERSION.SDK_INT
     }
   }
 }
@@ -298,7 +298,6 @@ val applicationModule = module {
       buildConstantsModule,
       changeAddressModule,
       chatModule,
-      chatReadTimestampModule,
       claimDetailsModule,
       claimFlowDataModule,
       claimTriagingModule,

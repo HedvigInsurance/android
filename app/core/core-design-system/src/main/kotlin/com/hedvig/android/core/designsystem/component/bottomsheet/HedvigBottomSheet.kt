@@ -71,7 +71,7 @@ fun HedvigBottomSheet(
     sheetState = sheetState,
     tonalElevation = 0.dp,
     shape = MaterialTheme.shapes.squircleLargeTop,
-    windowInsets = BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top),
+    contentWindowInsets = { BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top) },
   ) {
     Column(
       modifier = Modifier.verticalScroll(rememberScrollState()),
