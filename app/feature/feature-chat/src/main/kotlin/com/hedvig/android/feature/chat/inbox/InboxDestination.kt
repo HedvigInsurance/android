@@ -1,4 +1,3 @@
-
 package com.hedvig.android.feature.chat.inbox
 
 import androidx.compose.foundation.layout.Box
@@ -46,6 +45,10 @@ import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HighlightLabel
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighLightSize
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade
 import com.hedvig.android.feature.chat.model.InboxConversation
 import com.hedvig.android.feature.chat.model.InboxConversation.Header
 import com.hedvig.android.feature.chat.model.InboxConversation.LatestMessage.File
@@ -182,19 +185,17 @@ private fun ConversationCard(
         {
           Box(modifier = Modifier.wrapContentSize(Alignment.TopEnd)) {
             if (conversation.hasNewMessages) {
-              HedvigCard(
-                colors = CardDefaults.outlinedCardColors(
-                  containerColor = MaterialTheme.colorScheme.infoContainer,
-                  contentColor = MaterialTheme.colorScheme.onInfoContainer,
-                ),
-                shape = MaterialTheme.shapes.squircleExtraSmall,
-              ) {
-                Text(
-                  text = stringResource(R.string.CHAT_NEW_MESSAGE),
-                  style = MaterialTheme.typography.labelLarge,
-                  modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp),
-                )
-              }
+              HighlightLabel(
+                stringResource(R.string.CHAT_NEW_MESSAGE),
+                HighLightSize.Small,
+                HighlightColor.Blue(HighlightShade.LIGHT),
+              )
+            } else if (conversation.isClosed) {
+              HighlightLabel(
+                stringResource(R.string.claim_status_bar_closed),
+                HighLightSize.Small,
+                HighlightColor.Grey(HighlightShade.LIGHT),
+              )
             } else {
               val formattedLastMessageSent = conversation.lastMessageTimestamp.formattedChatDateTime(getLocale())
               Text(
@@ -308,6 +309,7 @@ private val mockInboxConversation1 = InboxConversation(
   ),
   hasNewMessages = true,
   createdAt = Clock.System.now(),
+  isClosed = false,
 )
 
 private val mockInboxConversation2 = InboxConversation(
@@ -316,6 +318,7 @@ private val mockInboxConversation2 = InboxConversation(
   latestMessage = InboxConversation.LatestMessage.File(Sender.MEMBER, Clock.System.now()),
   hasNewMessages = false,
   createdAt = Clock.System.now(),
+  isClosed = false,
 )
 
 private val mockInboxConversation3 = InboxConversation(
@@ -324,6 +327,7 @@ private val mockInboxConversation3 = InboxConversation(
   latestMessage = InboxConversation.LatestMessage.File(Sender.MEMBER, Clock.System.now()),
   hasNewMessages = false,
   createdAt = Clock.System.now(),
+  isClosed = true,
 )
 
 private val mockInboxConversationLegacy = InboxConversation(
@@ -332,4 +336,5 @@ private val mockInboxConversationLegacy = InboxConversation(
   latestMessage = InboxConversation.LatestMessage.File(Sender.MEMBER, Clock.System.now()),
   hasNewMessages = true,
   createdAt = Clock.System.now(),
+  isClosed = false,
 )
