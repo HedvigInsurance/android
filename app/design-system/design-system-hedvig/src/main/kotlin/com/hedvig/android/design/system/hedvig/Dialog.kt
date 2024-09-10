@@ -28,6 +28,8 @@ import com.hedvig.android.design.system.hedvig.DialogDefaults.DialogStyle.Button
 import com.hedvig.android.design.system.hedvig.DialogDefaults.DialogStyle.NoButtons
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButtonStyle
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.ERROR
+import com.hedvig.android.design.system.hedvig.LockedState.NotLocked
+import com.hedvig.android.design.system.hedvig.RadioOptionDefaults.RadioOptionStyle
 import com.hedvig.android.design.system.hedvig.tokens.DialogTokens
 import hedvig.resources.R
 
@@ -92,6 +94,41 @@ fun HedvigAlertDialog(
     }
   }
 }
+
+@Composable
+fun <T> SingleSelectDialog(
+  title: String,
+  optionsList: List<RadioOptionData>,
+  radioOptionStyle: RadioOptionStyle,
+  onSelected: (RadioOptionData) -> Unit,
+  onDismissRequest: () -> Unit,
+  radioOptionSize: RadioOptionDefaults.RadioOptionSize = RadioOptionDefaults.RadioOptionSize.Large,
+) {
+  HedvigDialog(onDismissRequest = { onDismissRequest.invoke() }) {
+    Column(
+      horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+      HedvigText(title, style = HedvigTheme.typography.bodySmall)
+    }
+    Spacer(Modifier.height(24.dp))
+    optionsList.forEachIndexed { index, radioOptionData ->
+      RadioOption(
+        data = radioOptionData,
+        radioOptionStyle = radioOptionStyle,
+        radioOptionSize = radioOptionSize,
+        groupLockedState = NotLocked,
+        onOptionClick = {
+          onSelected(radioOptionData)
+          onDismissRequest()
+        },
+      )
+      if (index!=optionsList.lastIndex) {
+        Spacer(Modifier.height(8.dp))
+      }
+    }
+  }
+}
+
 
 @Composable
 fun HedvigDialog(
