@@ -131,4 +131,5 @@ private val TestHedvigBuildConstants = object : HedvigBuildConstants {
   override val appId: String = ""
   override val isDebug: Boolean = false
   override val isProduction: Boolean = true
+  override val buildApiVersion: Int = Int.MAX_VALUE
 }

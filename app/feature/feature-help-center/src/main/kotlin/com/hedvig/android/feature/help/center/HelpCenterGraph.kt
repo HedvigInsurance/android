@@ -17,7 +17,6 @@ import com.hedvig.android.feature.help.center.question.HelpCenterQuestionDestina
 import com.hedvig.android.feature.help.center.topic.HelpCenterTopicDestination
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
-import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
 import org.koin.androidx.compose.koinViewModel
@@ -27,7 +26,7 @@ fun NavGraphBuilder.helpCenterGraph(
   navigator: Navigator,
   onNavigateToQuickLink: (NavBackStackEntry, QuickLinkDestination.OuterDestination) -> Unit,
   onNavigateToInbox: (NavBackStackEntry) -> Unit,
-  onNavigateToNewConversation: (NavBackStackEntry, AppDestination.Chat.ChatContext?) -> Unit,
+  onNavigateToNewConversation: (NavBackStackEntry) -> Unit,
   openUrl: (String) -> Unit,
 ) {
   navgraph<HelpCenterDestination>(
@@ -80,7 +79,7 @@ fun NavGraphBuilder.helpCenterGraph(
           onNavigateToInbox(backStackEntry)
         },
         onNavigateToNewConversation = {
-          onNavigateToNewConversation(backStackEntry, null)
+          onNavigateToNewConversation(backStackEntry)
         },
         onNavigateUp = navigator::navigateUp,
       )
@@ -99,7 +98,7 @@ fun NavGraphBuilder.helpCenterGraph(
         onNavigateUp = navigator::navigateUp,
         onNavigateBack = navigator::popBackStack,
         onNavigateToInbox = { onNavigateToInbox(backStackEntry) },
-        onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry, topic.chatContext) },
+        onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry) },
       )
     }
     navdestination<HelpCenterDestinations.Question>(
@@ -114,7 +113,7 @@ fun NavGraphBuilder.helpCenterGraph(
           navigateToQuestion(resources, question, navigator, backStackEntry)
         },
         onNavigateToInbox = { onNavigateToInbox(backStackEntry) },
-        onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry, question.chatContext) },
+        onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry) },
         onNavigateUp = navigator::navigateUp,
         onNavigateBack = navigator::popBackStack,
       )

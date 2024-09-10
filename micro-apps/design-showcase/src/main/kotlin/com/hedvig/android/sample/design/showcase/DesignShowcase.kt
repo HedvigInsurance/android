@@ -8,6 +8,7 @@ import com.hedvig.android.sample.design.showcase.bottomSheet.ShowcaseBottomSheet
 import com.hedvig.android.sample.design.showcase.button.ShowcaseButton
 import com.hedvig.android.sample.design.showcase.datepicker.DatePickerShowcase
 import com.hedvig.android.sample.design.showcase.dialog.DialogShowcase
+import com.hedvig.android.sample.design.showcase.dropdown.DropdownShowcase
 import com.hedvig.android.sample.design.showcase.freetext.FreeTextShowcase
 import com.hedvig.android.sample.design.showcase.highlight.HighlightShowcase
 import com.hedvig.android.sample.design.showcase.icons.ShowcaseIcons
@@ -20,6 +21,7 @@ import com.hedvig.android.sample.design.showcase.stepper.StepperShowcase
 import com.hedvig.android.sample.design.showcase.tabs.TabsShowcase
 import com.hedvig.android.sample.design.showcase.textfield.ShowcaseTextField
 import com.hedvig.android.sample.design.showcase.toggle.ToggleShowcase
+import com.hedvig.android.sample.design.showcase.topbar.TopAppBarShowcase
 
 @Composable
 internal fun DesignShowcase(modifier: Modifier = Modifier) {
@@ -58,6 +60,10 @@ internal fun DesignShowcase(modifier: Modifier = Modifier) {
       AccordionShowCase()
     } else if (showClickableList) {
       ClickableListShowcase()
+    } else if (showDropdown) {
+      DropdownShowcase()
+    } else if (showTopBar) {
+      TopAppBarShowcase()
     }
   }
 }
@@ -79,3 +85,5 @@ private val showAccordion = false
 private val showSnacks = false
 private val showTabs = false
 private val showClickableList = true
+private val showTopBar = false
+private val showDropdown = false

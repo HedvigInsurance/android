@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -120,7 +121,8 @@ fun NotificationsSnackbarShowcase() {
         },
         modifier = Modifier
           .windowInsetsPadding(WindowInsets.safeDrawing)
-          .align(Alignment.BottomCenter),
+          .align(Alignment.BottomCenter)
+          .padding(16.dp),
       )
       HedvigSnackbar(
         snackbarText = "Something went wrong",

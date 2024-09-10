@@ -41,6 +41,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import octopus.CbmNumberOfChatMessagesQuery
 import octopus.HomeQuery
+import octopus.UnreadMessageCountQuery
 import octopus.type.ChatMessageSender
 import octopus.type.buildChatMessagePage
 import octopus.type.buildChatMessageText
@@ -74,6 +75,10 @@ internal class GetHomeUseCaseTest {
         registerTestResponse(
           HomeQuery(),
           HomeQuery.Data(OctopusFakeResolver),
+        )
+        apolloClient.registerTestResponse(
+          UnreadMessageCountQuery(),
+          UnreadMessageCountQuery.Data(OctopusFakeResolver),
         )
         apolloClient.registerTestResponse(
           CbmNumberOfChatMessagesQuery(),
@@ -120,6 +125,10 @@ internal class GetHomeUseCaseTest {
           HomeQuery.Data(OctopusFakeResolver),
         )
         apolloClient.registerTestResponse(
+          UnreadMessageCountQuery(),
+          UnreadMessageCountQuery.Data(OctopusFakeResolver),
+        )
+        apolloClient.registerTestResponse(
           CbmNumberOfChatMessagesQuery(),
           CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver),
         )
@@ -163,6 +172,10 @@ internal class GetHomeUseCaseTest {
       },
     )
     apolloClient.registerTestResponse(
+      UnreadMessageCountQuery(),
+      UnreadMessageCountQuery.Data(OctopusFakeResolver),
+    )
+    apolloClient.registerTestResponse(
       CbmNumberOfChatMessagesQuery(),
       CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver),
     )
@@ -190,6 +203,10 @@ internal class GetHomeUseCaseTest {
           importantMessages = emptyList()
         }
       },
+    )
+    apolloClient.registerTestResponse(
+      UnreadMessageCountQuery(),
+      UnreadMessageCountQuery.Data(OctopusFakeResolver),
     )
     apolloClient.registerTestResponse(
       CbmNumberOfChatMessagesQuery(),
@@ -224,6 +241,10 @@ internal class GetHomeUseCaseTest {
       },
     )
     apolloClient.registerTestResponse(
+      UnreadMessageCountQuery(),
+      UnreadMessageCountQuery.Data(OctopusFakeResolver),
+    )
+    apolloClient.registerTestResponse(
       CbmNumberOfChatMessagesQuery(),
       CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver),
     )
@@ -255,6 +276,10 @@ internal class GetHomeUseCaseTest {
       },
     )
     apolloClient.registerTestResponse(
+      UnreadMessageCountQuery(),
+      UnreadMessageCountQuery.Data(OctopusFakeResolver),
+    )
+    apolloClient.registerTestResponse(
       CbmNumberOfChatMessagesQuery(),
       CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver),
     )
@@ -284,6 +309,10 @@ internal class GetHomeUseCaseTest {
           )
         }
       },
+    )
+    apolloClient.registerTestResponse(
+      UnreadMessageCountQuery(),
+      UnreadMessageCountQuery.Data(OctopusFakeResolver),
     )
     apolloClient.registerTestResponse(
       CbmNumberOfChatMessagesQuery(),
@@ -327,6 +356,10 @@ internal class GetHomeUseCaseTest {
       },
     )
     apolloClient.registerTestResponse(
+      UnreadMessageCountQuery(),
+      UnreadMessageCountQuery.Data(OctopusFakeResolver),
+    )
+    apolloClient.registerTestResponse(
       CbmNumberOfChatMessagesQuery(),
       CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver),
     )
@@ -368,6 +401,10 @@ internal class GetHomeUseCaseTest {
       },
     )
     apolloClient.registerTestResponse(
+      UnreadMessageCountQuery(),
+      UnreadMessageCountQuery.Data(OctopusFakeResolver),
+    )
+    apolloClient.registerTestResponse(
       CbmNumberOfChatMessagesQuery(),
       CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver),
     )
@@ -402,6 +439,10 @@ internal class GetHomeUseCaseTest {
     apolloClient.registerTestResponse(
       HomeQuery(),
       HomeQuery.Data(OctopusFakeResolver),
+    )
+    apolloClient.registerTestResponse(
+      UnreadMessageCountQuery(),
+      UnreadMessageCountQuery.Data(OctopusFakeResolver),
     )
     apolloClient.registerTestResponse(
       CbmNumberOfChatMessagesQuery(),
@@ -462,6 +503,10 @@ internal class GetHomeUseCaseTest {
     apolloClient.registerTestResponse(
       HomeQuery(),
       HomeQuery.Data(OctopusFakeResolver),
+    )
+    apolloClient.registerTestResponse(
+      UnreadMessageCountQuery(),
+      UnreadMessageCountQuery.Data(OctopusFakeResolver),
     )
     apolloClient.registerTestResponse(
       CbmNumberOfChatMessagesQuery(),
@@ -527,6 +572,10 @@ internal class GetHomeUseCaseTest {
       HomeQuery.Data(OctopusFakeResolver),
     )
     apolloClient.registerTestResponse(
+      UnreadMessageCountQuery(),
+      UnreadMessageCountQuery.Data(OctopusFakeResolver),
+    )
+    apolloClient.registerTestResponse(
       CbmNumberOfChatMessagesQuery(),
       CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver),
     )
@@ -555,7 +604,6 @@ internal class GetHomeUseCaseTest {
       mapOf(
         Feature.DISABLE_CHAT to false,
         Feature.HELP_CENTER to true,
-        Feature.ENABLE_CBM to true,
       ),
     )
     val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)
@@ -563,6 +611,10 @@ internal class GetHomeUseCaseTest {
     apolloClient.registerTestResponse(
       HomeQuery(),
       HomeQuery.Data(OctopusFakeResolver),
+    )
+    apolloClient.registerTestResponse(
+      UnreadMessageCountQuery(),
+      UnreadMessageCountQuery.Data(OctopusFakeResolver),
     )
     apolloClient.registerTestResponse(
       CbmNumberOfChatMessagesQuery(),
@@ -597,6 +649,52 @@ internal class GetHomeUseCaseTest {
           hasAtLeastOneOpenConversation -> isTrue()
           closedConversationHasAtLeastOneMessage -> isTrue()
           else -> isFalse()
+        }
+      }
+  }
+
+  @Test
+  fun `Chat notification dot shows depending on if there are unread messages or not`(
+    @TestParameter hasUnreadMessages: Boolean,
+  ) = runTest {
+    val featureManager = FakeFeatureManager2(true)
+    val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)
+
+    apolloClient.registerTestResponse(
+      HomeQuery(),
+      HomeQuery.Data(OctopusFakeResolver),
+    )
+    apolloClient.registerTestResponse(
+      UnreadMessageCountQuery(),
+      UnreadMessageCountQuery.Data(OctopusFakeResolver) {
+        this.currentMember = this.buildMember {
+          this.legacyConversation = buildConversation {
+            this.unreadMessageCount = if (hasUnreadMessages) 1 else 0
+          }
+          this.conversations = listOf(
+            this.buildConversation {
+              this.unreadMessageCount = if (hasUnreadMessages) 1 else 0
+            },
+          )
+        }
+      },
+    )
+    apolloClient.registerTestResponse(
+      CbmNumberOfChatMessagesQuery(),
+      CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver),
+    )
+
+    val result = getHomeDataUseCase.invoke(true).first()
+
+    assertThat(result)
+      .isNotNull()
+      .isRight()
+      .prop(HomeData::hasUnseenChatMessages)
+      .apply {
+        if (hasUnreadMessages) {
+          isTrue()
+        } else {
+          isFalse()
         }
       }
   }

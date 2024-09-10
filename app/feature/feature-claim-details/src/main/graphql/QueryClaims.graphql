@@ -1,9 +1,10 @@
-query Claims($isCbmEnabled: Boolean!) {
+query Claims {
   currentMember {
     claims {
       ...ClaimFragment
-      conversation @include(if: $isCbmEnabled) {
+      conversation {
         id
+        unreadMessageCount
       }
     }
   }

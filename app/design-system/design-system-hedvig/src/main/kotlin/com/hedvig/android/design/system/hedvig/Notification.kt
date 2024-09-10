@@ -85,7 +85,7 @@ fun HedvigNotificationCard(
           Spacer(Modifier.width(6.dp))
         }
         Column {
-          HedvigText(text = message)
+          HedvigText(text = message, color = priority.colors.textColor)
           when (style) {
             is Buttons -> {
               Spacer(Modifier.height(NotificationsTokens.SpaceBetweenTextAndButtons))

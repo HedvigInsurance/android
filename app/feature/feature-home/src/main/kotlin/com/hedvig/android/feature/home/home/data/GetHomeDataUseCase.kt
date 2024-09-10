@@ -21,13 +21,20 @@ import com.hedvig.android.memberreminders.GetMemberRemindersUseCase
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.android.ui.emergency.FirstVetSection
+import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.isActive
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import octopus.HomeQuery
+import octopus.UnreadMessageCountQuery
 import octopus.type.CrossSellType
 
 internal interface GetHomeDataUseCase {
@@ -47,11 +54,29 @@ internal class GetHomeDataUseCaseImpl(
       apolloClient.query(HomeQuery())
         .fetchPolicy(if (forceNetworkFetch) FetchPolicy.NetworkOnly else FetchPolicy.CacheFirst)
         .safeFlow(),
+      flow {
+        while (currentCoroutineContext().isActive) {
+          emitAll(
+            apolloClient.query(UnreadMessageCountQuery())
+              .fetchPolicy(FetchPolicy.CacheAndNetwork)
+              .safeFlow(),
+          )
+          delay(5.seconds)
+        }
+      },
       hasAnyActiveConversationUseCase.invoke(alwaysHitTheNetwork = true),
       getMemberRemindersUseCase.invoke(),
-      featureManager.isFeatureEnabled(Feature.DISABLE_CHAT),
-      featureManager.isFeatureEnabled(Feature.HELP_CENTER),
-    ) { homeQueryDataResult, isEligibleToShowTheChatIconResult, memberReminders, isChatDisabled, isHelpCenterEnabled ->
+      combine(
+        featureManager.isFeatureEnabled(Feature.DISABLE_CHAT),
+        featureManager.isFeatureEnabled(Feature.HELP_CENTER),
+      ) { isChatDisabled, isHelpCenterEnabled -> isChatDisabled to isHelpCenterEnabled },
+    ) {
+        homeQueryDataResult,
+        unreadMessageCountResult,
+        isEligibleToShowTheChatIconResult,
+        memberReminders,
+        (isChatDisabled, isHelpCenterEnabled),
+      ->
       either {
         val homeQueryData: HomeQuery.Data = homeQueryDataResult.bind()
         val contractStatus = homeQueryData.currentMember.toContractStatus()
@@ -96,6 +121,13 @@ internal class GetHomeDataUseCaseImpl(
           isEligibleToShowTheChatIcon = isEligibleToShowTheChatIconResult.bind(),
           isHelpCenterEnabled = isHelpCenterEnabled,
         )
+        val unreadMessageCountData = unreadMessageCountResult.bind()
+        val hasUnseenChatMessages = unreadMessageCountData
+          .currentMember
+          .conversations
+          .map { it.unreadMessageCount }
+          .plus(unreadMessageCountData.currentMember.legacyConversation?.unreadMessageCount)
+          .any { it != null && it > 0 }
         val firstVetActions = homeQueryData.currentMember.memberActions
           ?.firstVetAction?.sections?.map { section ->
             FirstVetSection(
@@ -111,6 +143,7 @@ internal class GetHomeDataUseCaseImpl(
           veryImportantMessages = veryImportantMessages,
           memberReminders = memberReminders,
           showChatIcon = showChatIcon,
+          hasUnseenChatMessages = hasUnseenChatMessages,
           showHelpCenter = isHelpCenterEnabled,
           firstVetSections = firstVetActions,
           crossSells = crossSells,
@@ -199,6 +232,7 @@ internal data class HomeData(
   val veryImportantMessages: List<VeryImportantMessage>,
   val memberReminders: MemberReminders,
   val showChatIcon: Boolean,
+  val hasUnseenChatMessages: Boolean,
   val showHelpCenter: Boolean,
   val firstVetSections: List<FirstVetSection>,
   val crossSells: List<CrossSell>,

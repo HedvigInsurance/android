@@ -2,30 +2,9 @@ package com.hedvig.android.navigation.core
 
 import androidx.annotation.Keep
 import com.hedvig.android.navigation.compose.Destination
-import com.hedvig.android.navigation.compose.DestinationNavTypeAware
-import kotlin.reflect.KType
-import kotlin.reflect.typeOf
 import kotlinx.serialization.Serializable
 
 sealed interface AppDestination {
-  @Serializable
-  data class Chat(
-    val chatContext: ChatContext? = null,
-  ) : AppDestination, Destination {
-    @Serializable
-    enum class ChatContext {
-      PAYMENT,
-      CLAIMS,
-      COVERAGE,
-      INSURANCE,
-      OTHER,
-    }
-
-    companion object : DestinationNavTypeAware {
-      override val typeList: List<KType> = listOf(typeOf<ChatContext?>())
-    }
-  }
-
   @Serializable
   data object ChangeAddress : AppDestination, Destination
 
