@@ -472,7 +472,7 @@ private fun ImportantMessages(
         veryImportantMessage = animatedList.first(),
         modifier = Modifier.padding(contentPadding),
       )
-    } else {
+    } else { // todo: should we probably check for else if (animatedList.size>1) here?
       val pagerState = rememberPagerState(pageCount = { animatedList.size })
       Column {
         HorizontalPager(

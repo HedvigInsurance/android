@@ -9,6 +9,9 @@ import com.hedvig.android.core.designsystem.material3.onInfoContainer
 import com.hedvig.android.core.ui.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.feature.chat.model.CbmChatMessage
 import com.hedvig.android.feature.chat.model.Sender
+import java.time.temporal.TemporalAdjusters
+import java.util.Locale
+import kotlin.time.Duration.Companion.days
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
@@ -17,9 +20,6 @@ import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toKotlinLocalDateTime
 import kotlinx.datetime.toLocalDateTime
-import java.time.temporal.TemporalAdjusters
-import java.util.Locale
-import kotlin.time.Duration.Companion.days
 
 @Composable
 internal fun CbmChatMessage.backgroundColor(): Color = when (sender) {
