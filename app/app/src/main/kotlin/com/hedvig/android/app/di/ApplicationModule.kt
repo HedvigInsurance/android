@@ -192,6 +192,7 @@ private val buildConstantsModule = module {
       override val isDebug: Boolean = BuildConfig.DEBUG
       override val isProduction: Boolean =
         BuildConfig.BUILD_TYPE == "release" && BuildConfig.APPLICATION_ID == "com.hedvig.app"
+      override val buildApiVersion: Int = Build.VERSION.SDK_INT
     }
   }
 }

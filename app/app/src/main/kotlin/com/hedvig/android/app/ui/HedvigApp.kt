@@ -22,6 +22,7 @@ import com.hedvig.android.app.urihandler.DeepLinkFirstUriHandler
 import com.hedvig.android.app.urihandler.SafeAndroidUriHandler
 import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
+import com.hedvig.android.compose.ui.UseSimplerShapesForOldAndroidVersions
 import com.hedvig.android.core.appreview.WaitUntilAppReviewDialogShouldBeOpenedUseCase
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
@@ -99,7 +100,10 @@ internal fun HedvigApp(
         navController = hedvigAppState.navController,
         delegate = SafeAndroidUriHandler(LocalContext.current),
       )
-      CompositionLocalProvider(LocalUriHandler provides deepLinkFirstUriHandler) {
+      CompositionLocalProvider(
+        LocalUriHandler provides deepLinkFirstUriHandler,
+        UseSimplerShapesForOldAndroidVersions provides (hedvigBuildConstants.buildApiVersion <= 27),
+      ) {
         HedvigAppUi(
           hedvigAppState = hedvigAppState,
           hedvigDeepLinkContainer = hedvigDeepLinkContainer,

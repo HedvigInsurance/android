@@ -105,7 +105,7 @@ private fun MarketingScreen(
           containerColor = MaterialTheme.colorScheme.background,
           onDismissRequest = { showPreferencesSheet = false },
           sheetState = sheetState,
-          windowInsets = BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top),
+          contentWindowInsets = { BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top) },
         ) {
           Column(Modifier.verticalScroll(rememberScrollState())) {
             PreferencesSheetContent(

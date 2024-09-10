@@ -77,7 +77,7 @@ internal fun CoverageTab(
       shape = MaterialTheme.shapes.squircleLargeTop,
       sheetState = sheetState,
       tonalElevation = 0.dp,
-      windowInsets = BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top),
+      contentWindowInsets = { BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top) },
     ) {
       Column(
         Modifier
