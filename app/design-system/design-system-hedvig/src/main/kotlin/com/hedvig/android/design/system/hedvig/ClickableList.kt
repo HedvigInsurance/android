@@ -53,6 +53,9 @@ fun ClickableList(
         size = size,
         style = style,
       )
+      if (style is ClickableListDefaults.Style.Default && index != items.lastIndex) {
+        HorizontalDivider(color = listColors.dividerColor)
+      }
     }
   }
 }
@@ -96,9 +99,6 @@ private fun ClickableListItem(
         },
         spaceBetween = 4.dp,
       )
-    }
-    if (style is ClickableListDefaults.Style.Default) {
-      HorizontalDivider(color = listColors.dividerColor)
     }
   }
 }
