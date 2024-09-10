@@ -11,8 +11,6 @@ import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.chat.database.AppDatabase
 import com.hedvig.android.data.chat.database.ChatDao
 import com.hedvig.android.data.chat.database.ChatMessageEntity
-import com.hedvig.android.data.chat.database.ConversationDao
-import com.hedvig.android.data.chat.database.ConversationEntity
 import com.hedvig.android.data.chat.database.RemoteKeyDao
 import com.hedvig.android.data.chat.database.RemoteKeyEntity
 import com.hedvig.android.feature.chat.data.CbmChatRepository
@@ -29,7 +27,6 @@ internal class ChatRemoteMediator(
   private val database: AppDatabase,
   private val chatDao: ChatDao,
   private val remoteKeyDao: RemoteKeyDao,
-  private val conversationDao: ConversationDao,
   private val chatRepository: Provider<CbmChatRepository>,
   private val clock: Clock,
 ) : RemoteMediator<Int, ChatMessageEntity>() {
@@ -53,7 +50,6 @@ internal class ChatRemoteMediator(
       logcat { "ChatRemoteMediator: Failed to fetch chat messages: $it [MediatorResult.Error(it)]" }
       return MediatorResult.Error(it)
     }
-    conversationDao.insertNewLatestTimestampIfApplicable(ConversationEntity(conversationId, clock.now()))
     // The mediator gets a [LoadType.REFRESH] request when we jump enough items to trigger the jumpThreshold of the
     // Pager. This is distinguished from the initial Refresh by seeing if we already have pages loaded.
     // This normally clears the entire cache, but we do not want to do that here, so that already loaded messages are

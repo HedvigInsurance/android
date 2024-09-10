@@ -283,7 +283,7 @@ private fun ToggleBackground(
 ) {
   Surface(
     color = color,
-    shape = ShapeDefaults.CornerLarge,
+    shape = HedvigTheme.shapes.cornerLarge,
     modifier = modifier,
   ) {
     Box(

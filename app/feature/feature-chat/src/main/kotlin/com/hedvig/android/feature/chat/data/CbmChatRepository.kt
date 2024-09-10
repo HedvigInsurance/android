@@ -27,8 +27,6 @@ import com.hedvig.android.data.chat.database.ChatDao
 import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.MEDIA
 import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.PHOTO
 import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.TEXT
-import com.hedvig.android.data.chat.database.ConversationDao
-import com.hedvig.android.data.chat.database.ConversationEntity
 import com.hedvig.android.data.chat.database.RemoteKeyDao
 import com.hedvig.android.data.chat.database.RemoteKeyEntity
 import com.hedvig.android.feature.chat.data.ConversationInfo.Info
@@ -82,7 +80,6 @@ internal class CbmChatRepositoryImpl(
   private val database: AppDatabase,
   private val chatDao: ChatDao,
   private val remoteKeyDao: RemoteKeyDao,
-  private val conversationDao: ConversationDao,
   private val fileService: FileService,
   private val botServiceService: BotServiceService,
   private val clock: Clock,
@@ -173,7 +170,6 @@ internal class CbmChatRepositoryImpl(
                 ?: RemoteKeyEntity(conversationId, null, null)
               remoteKeyDao.insert(existingRemoteKey.copy(newerToken = messagePageResponse.newerToken))
               chatDao.insertAll(messagePageResponse.messages.map { it.toChatMessageEntity(conversationId) })
-              conversationDao.insertNewLatestTimestampIfApplicable(ConversationEntity(conversationId, clock.now()))
             }
           },
         )
@@ -262,7 +258,6 @@ internal class CbmChatRepositoryImpl(
         "Unknown chat message type"
       }
       chatDao.insert(chatMessage.toChatMessageEntity(conversationId))
-      conversationDao.insertNewLatestTimestampIfApplicable(ConversationEntity(conversationId, clock.now()))
       chatMessage
     }.onLeft {
       logcat { "Failed to send message, with error message:$it" }
@@ -281,7 +276,8 @@ internal class CbmChatRepositoryImpl(
             newerToken = pagingToken?.newerToken,
             olderToken = pagingToken?.olderToken,
           ),
-        ).doNotStore(true)
+        )
+        .doNotStore(true)
         .fetchPolicy(FetchPolicy.NetworkOnly)
         .safeExecute()
         .mapLeft {

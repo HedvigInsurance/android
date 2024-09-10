@@ -68,7 +68,7 @@ fun NavGraphBuilder.travelCertificateGraph(density: Density, navigator: Navigato
       )
     }
 
-    navdestination<TravelCertificateDestination.TravelCertificateDateInput> { navBackStackEntry ->
+    navdestination<TravelCertificateDestination.TravelCertificateDateInput> {
       val viewModel: TravelCertificateDateInputViewModel = koinViewModel(
         parameters = {
           parametersOf(contractId)

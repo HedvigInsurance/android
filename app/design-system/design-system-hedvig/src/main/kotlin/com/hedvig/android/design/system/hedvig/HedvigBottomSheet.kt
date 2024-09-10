@@ -111,9 +111,9 @@ private fun DragHandle(modifier: Modifier = Modifier) {
       .width(40.dp)
       .height(4.dp)
       .background(
-        shape = ShapeDefaults.CornerSmall,
+        shape = HedvigTheme.shapes.cornerSmall,
         color = bottomSheetColors.chipColor,
-      ).clip(ShapeDefaults.CornerSmall),
+      ).clip(HedvigTheme.shapes.cornerSmall),
   ) {}
 }
 

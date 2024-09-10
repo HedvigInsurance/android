@@ -7,7 +7,6 @@ import com.hedvig.android.core.common.di.databaseFileQualifier
 import com.hedvig.android.core.common.di.ioDispatcherQualifier
 import com.hedvig.android.data.chat.database.AppDatabase
 import com.hedvig.android.data.chat.database.ChatDao
-import com.hedvig.android.data.chat.database.ConversationDao
 import com.hedvig.android.data.chat.database.RemoteKeyDao
 import java.io.File
 import kotlin.coroutines.CoroutineContext
@@ -19,7 +18,6 @@ val dataChatModule = module {
     val applicationContext = get<Context>()
     Room
       .databaseBuilder<AppDatabase>(applicationContext, dbFile.absolutePath)
-      .fallbackToDestructiveMigration(true)
       .setQueryCoroutineContext(get<CoroutineContext>(ioDispatcherQualifier))
   }
   single<AppDatabase> {
@@ -30,8 +28,5 @@ val dataChatModule = module {
   }
   single<RemoteKeyDao> {
     get<AppDatabase>().remoteKeyDao()
-  }
-  single<ConversationDao> {
-    get<AppDatabase>().conversationDao()
   }
 }
