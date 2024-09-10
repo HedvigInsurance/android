@@ -104,9 +104,9 @@ private fun ConfirmEmergencyScreen(
       Column {
         WarningTextWithIcon(
           modifier = Modifier
-              .padding(horizontal = 16.dp)
-              .fillMaxWidth()
-              .wrapContentWidth(),
+            .padding(horizontal = 16.dp)
+            .fillMaxWidth()
+            .wrapContentWidth(),
           text = stringResource(R.string.CLAIMS_SELECT_CATEGORY),
         )
         Spacer(Modifier.height(16.dp))
@@ -116,8 +116,8 @@ private fun ConfirmEmergencyScreen(
       horizontalArrangement = Arrangement.spacedBy(8.dp),
       maxItemsInEachRow = 2,
       modifier = Modifier
-          .padding(horizontal = 16.dp)
-          .fillMaxWidth(),
+        .padding(horizontal = 16.dp)
+        .fillMaxWidth(),
     ) {
       for (item in uiState.options) {
         key(item) {
