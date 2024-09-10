@@ -113,6 +113,7 @@ val Shapes.squircleLargeTop: Shape
 
 /**
  * Turns the shape into one where only the top corners apply, by combining the path with a square path at the bottom.
+ * This is only to be used with Outline.Generic paths, otherwise it just crashes.
  */
 private fun Shape.top(): Shape = object : Shape {
   override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {

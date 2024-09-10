@@ -58,7 +58,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.graphics.painter.Painter
@@ -539,10 +539,9 @@ private fun AttachedFileMessage(
       .drawWithCache {
         val stroke = Stroke(1.dp.toPx())
         val outline = shape.createOutline(size.copy(size.width, size.height), layoutDirection, this)
-        val path = (outline as Outline.Generic).path
         onDrawWithContent {
           drawContent()
-          drawPath(path, borderColor, style = stroke)
+          drawOutline(outline, borderColor, style = stroke)
         }
       }
       .clip(MaterialTheme.shapes.squircleMedium)

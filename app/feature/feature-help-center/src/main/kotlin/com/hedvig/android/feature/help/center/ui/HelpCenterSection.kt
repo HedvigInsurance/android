@@ -16,7 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -59,10 +59,9 @@ internal fun HelpCenterSection(
         .drawWithCache {
           val stroke = Stroke(Dp.Hairline.toPx())
           val outline = pillShape.createOutline(size.copy(size.width, size.height), layoutDirection, this)
-          val path = (outline as Outline.Generic).path
           onDrawWithContent {
             drawContent()
-            drawPath(path, outlineColor, style = stroke)
+            drawOutline(outline, outlineColor, style = stroke)
           }
         },
     ) {
