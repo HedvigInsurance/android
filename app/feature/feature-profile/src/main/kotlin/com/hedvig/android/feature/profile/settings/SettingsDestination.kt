@@ -26,13 +26,26 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.PermissionStatus
+import com.google.accompanist.permissions.PermissionStatus.Granted
 import com.google.accompanist.permissions.isGranted
+import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigRedTextButton
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Scaffold
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.clearFocusOnTap
+import com.hedvig.android.feature.profile.settings.SettingsUiState.Loaded
 import com.hedvig.android.language.Language
+import com.hedvig.android.language.Language.EN_SE
+import com.hedvig.android.language.Language.SV_SE
 import com.hedvig.android.memberreminders.ui.ReminderCardEnableNotifications
 import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.NotificationPermissionState
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
 import com.hedvig.android.theme.Theme
+import com.hedvig.android.theme.Theme.SYSTEM_DEFAULT
 import hedvig.resources.R
 
 @Composable
@@ -74,7 +87,7 @@ private fun SettingsScreen(
     uiState.selectedTheme?.apply()
   }
   val context = LocalContext.current
-  HedvigScaffold(
+  Scaffold(
     topAppBarText = stringResource(R.string.SETTINGS_TITLE),
     navigateUp = navigateUp,
     modifier = Modifier.clearFocusOnTap(),
@@ -152,10 +165,9 @@ private fun SettingsScreen(
         }
         Spacer(Modifier.height(16.dp))
         Spacer(Modifier.weight(1f))
-        HedvigTextButton(
+        HedvigRedTextButton(
           text = stringResource(R.string.SETTINGS_SCREEN_DELETE_ACCOUNT_BUTTON),
           onClick = onTerminateAccountClicked,
-          colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
           modifier = Modifier.padding(horizontal = 16.dp),
         )
         Spacer(Modifier.height(16.dp))
@@ -317,10 +329,10 @@ fun PreviewSettingsScreen() {
   HedvigTheme {
     Surface {
       SettingsScreen(
-        uiState = SettingsUiState.Loaded(
-          selectedLanguage = Language.SV_SE,
-          languageOptions = listOf(Language.SV_SE, Language.EN_SE),
-          selectedTheme = Theme.SYSTEM_DEFAULT,
+        uiState = Loaded(
+          selectedLanguage = SV_SE,
+          languageOptions = listOf(SV_SE, EN_SE),
+          selectedTheme = SYSTEM_DEFAULT,
           showNotificationReminder = true,
           isSubscribedToEmails = true,
           showEmailSubscriptionPreferences = true,
@@ -334,7 +346,7 @@ fun PreviewSettingsScreen() {
           override fun launchPermissionRequest() {}
 
           override val permission: String = ""
-          override val status: PermissionStatus = PermissionStatus.Granted
+          override val status: PermissionStatus = Granted
         },
         navigateUp = {},
         openAppSettings = {},
