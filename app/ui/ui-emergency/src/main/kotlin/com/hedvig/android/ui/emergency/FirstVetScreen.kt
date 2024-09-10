@@ -26,7 +26,6 @@ import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.Scaffold
-import com.hedvig.android.design.system.hedvig.ShapeDefaults
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.colored.ColoredFirstVet
@@ -56,7 +55,7 @@ fun FirstVetScreen(
       ) {
         for (section in sections) {
           Surface(
-            shape = ShapeDefaults.CornerXLarge,
+            shape = HedvigTheme.shapes.cornerXLarge,
             modifier = Modifier
               .fillMaxWidth(),
           ) {

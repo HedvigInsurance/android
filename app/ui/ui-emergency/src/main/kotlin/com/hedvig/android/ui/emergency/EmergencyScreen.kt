@@ -29,7 +29,6 @@ import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.Scaffold
-import com.hedvig.android.design.system.hedvig.ShapeDefaults
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.HelipadOutline
@@ -64,7 +63,7 @@ fun EmergencyScreen(
       Spacer(Modifier.height(8.dp))
       HedvigTheme(true) {
         Surface(
-          shape = ShapeDefaults.CornerXLarge,
+          shape = HedvigTheme.shapes.cornerXLarge,
           modifier = Modifier
             .padding(horizontal = 16.dp)
             .fillMaxWidth(),
