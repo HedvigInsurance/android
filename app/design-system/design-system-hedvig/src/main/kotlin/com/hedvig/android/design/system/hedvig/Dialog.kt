@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
@@ -57,33 +58,38 @@ fun HedvigDialogError(
 }
 
 @Composable
-fun HedvigDialogAlertWithButtons(
+fun HedvigAlertDialog(
+// todo: we don't really have alert dialog with one black one red text buttons,
+// so I just used the standard one from DS
   titleText: String,
   descriptionText: String,
-  confirmButtonText: String,
-  dismissButtonText: String,
   onConfirmClick: () -> Unit,
   onDismissRequest: () -> Unit,
   modifier: Modifier = Modifier,
+  confirmButtonLabel: String = stringResource(R.string.GENERAL_YES),
+  dismissButtonLabel: String = stringResource(R.string.GENERAL_NO),
 ) {
-  HedvigDialog (
-    style = DialogStyle.Buttons(
+  HedvigDialog(
+    style = Buttons(
       onConfirmButtonClick = onConfirmClick,
       onDismissRequest = onDismissRequest,
-      confirmButtonText = confirmButtonText,
-      dismissButtonText = dismissButtonText,
+      confirmButtonText = confirmButtonLabel,
+      dismissButtonText = dismissButtonLabel,
     ),
     onDismissRequest = onDismissRequest,
-    modifier = modifier
+    modifier = modifier,
   ) {
-    HedvigText(
-      titleText,
-      style = HedvigTheme.typography.bodySmall,
-      color = HedvigTheme.colorScheme.textPrimary)
-    HedvigText(
-      descriptionText,
-      style = HedvigTheme.typography.bodySmall,
-      color = HedvigTheme.colorScheme.textSecondary)
+    Column(
+      Modifier.fillMaxWidth(),
+      horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+      EmptyState(
+        text = titleText,
+        description = descriptionText,
+        iconStyle = EmptyStateDefaults.EmptyStateIconStyle.NO_ICON,
+        buttonStyle = EmptyStateButtonStyle.NoButton,
+      )
+    }
   }
 }
 
@@ -122,6 +128,7 @@ fun HedvigDialog(
                   confirmButtonText = style.confirmButtonText,
                 )
               }
+
               SMALL -> {
                 SmallHorizontalButtons(
                   onDismissRequest = style.onDismissRequest,
@@ -132,6 +139,7 @@ fun HedvigDialog(
               }
             }
           }
+
           NoButtons -> content()
         }
       }

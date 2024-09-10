@@ -28,14 +28,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.PermissionStatus.Granted
 import com.google.accompanist.permissions.isGranted
-import com.hedvig.android.design.system.hedvig.DialogDefaults.DialogStyle
+import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigBigCard
-import com.hedvig.android.design.system.hedvig.HedvigDialog
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigRedTextButton
 import com.hedvig.android.design.system.hedvig.HedvigText
-import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Scaffold
 import com.hedvig.android.design.system.hedvig.Surface
@@ -220,32 +218,22 @@ internal fun EmailSubscriptionWithDialog(
   hasError: Boolean,
   modifier: Modifier = Modifier,
 ) {
-  var showLanguagePickerDialog by rememberSaveable { mutableStateOf(false) }
-  if (showLanguagePickerDialog) {
-    HedvigDialog (
-      style = DialogStyle.Buttons(
-        onConfirmButtonClick = onConfirmUnsubscribeClick,
-        onDismissRequest = { showLanguagePickerDialog = false },
-        confirmButtonText = stringResource(R.string.SETTINGS_SCREEN_CONFIRM_UNSUBSCRIBE),
-        dismissButtonText = stringResource(R.string.general_close_button),
-      ),
-      onDismissRequest = { showLanguagePickerDialog = false },
-    ) {
-      HedvigText(
-        stringResource(R.string.SETTINGS_SCREEN_EMAIL_PREFERENCES),
-        style = HedvigTheme.typography.bodySmall,
-        color = HedvigTheme.colorScheme.textPrimary)
-      HedvigText(
-        stringResource(R.string.SETTINGS_SCREEN_UNSUBSCRIBE_DESCRIPTION),
-        style = HedvigTheme.typography.bodySmall,
-        color = HedvigTheme.colorScheme.textSecondary)
-    }
+  var showSubscriptionPrefDialog by rememberSaveable { mutableStateOf(false) }
+  if (showSubscriptionPrefDialog) {
+    HedvigAlertDialog(
+      onConfirmClick = onConfirmUnsubscribeClick,
+      onDismissRequest = { showSubscriptionPrefDialog = false },
+      confirmButtonLabel = stringResource(R.string.SETTINGS_SCREEN_CONFIRM_UNSUBSCRIBE),
+      dismissButtonLabel = stringResource(R.string.general_close_button),
+      titleText = stringResource(R.string.SETTINGS_SCREEN_EMAIL_PREFERENCES),
+      descriptionText = stringResource(R.string.SETTINGS_SCREEN_UNSUBSCRIBE_DESCRIPTION),
+    )
   }
   Column {
     HedvigBigCard(
       onClick = {
         if (isSubscribedToEmails) {
-          showLanguagePickerDialog = true
+          showSubscriptionPrefDialog = true
         } else {
           onSubscribeClick()
         }

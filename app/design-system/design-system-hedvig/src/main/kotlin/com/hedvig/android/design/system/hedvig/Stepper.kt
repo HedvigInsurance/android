@@ -218,7 +218,7 @@ private fun LabeledStepper(
     Surface(
       shape = stepperSize.size.shape,
       color = containerColor,
-      ) {
+    ) {
       HorizontalItemsWithMaximumSpaceTaken(
         modifier = Modifier.padding(stepperSize.size.contentPadding(Labeled(labelText))),
         startSlot = {

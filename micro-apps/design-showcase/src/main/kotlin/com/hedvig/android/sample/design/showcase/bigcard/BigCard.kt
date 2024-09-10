@@ -24,10 +24,10 @@ fun BigCardShowcase() {
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       HedvigBigCard(
-          onClick = {},
-          labelText = "Label",
-          inputText = "Input text long",
-          modifier = Modifier.fillMaxWidth(),
+        onClick = {},
+        labelText = "Label",
+        inputText = "Input text long",
+        modifier = Modifier.fillMaxWidth(),
       )
     }
   }

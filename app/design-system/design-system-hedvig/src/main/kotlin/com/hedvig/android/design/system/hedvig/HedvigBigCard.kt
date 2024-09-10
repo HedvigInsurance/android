@@ -22,7 +22,7 @@ import com.hedvig.android.design.system.hedvig.tokens.TypographyKeyTokens
  */
 @Composable
 fun HedvigBigCard(
-//todo: rename after complete migration to new DS to ButtonWithLabelTextField
+// todo: rename after complete migration to new DS to ButtonWithLabelTextField
 // or something more descriptive mb
   onClick: () -> Unit,
   labelText: String,
@@ -37,8 +37,7 @@ fun HedvigBigCard(
       .clickable(
         onClick = onClick,
         enabled = enabled,
-      )
-      ,
+      ),
   ) {
     Column(Modifier.padding(padding)) {
       HedvigText(
