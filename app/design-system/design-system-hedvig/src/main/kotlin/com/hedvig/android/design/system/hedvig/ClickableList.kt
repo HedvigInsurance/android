@@ -1,7 +1,6 @@
 package com.hedvig.android.design.system.hedvig
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -71,20 +70,13 @@ private fun ClickableListItem(
     ClickableListDefaults.Style.Default -> RectangleShape
     ClickableListDefaults.Style.Filled -> size.shape
   }
-  Column {
+  Column(modifier) {
     Surface(
       shape = shape,
       color = containerColor,
-      modifier = modifier
+      modifier = Modifier
         .clip(shape)
-        .clickable(
-          interactionSource = remember { MutableInteractionSource() },
-          indication = ripple(
-            bounded = true,
-            radius = 1000.dp,
-          ),
-          onClick = onItemClick,
-        ),
+        .clickable(onClick = onItemClick),
     ) {
       HorizontalItemsWithMaximumSpaceTaken(
         modifier = Modifier.padding(size.padding(style)),
@@ -113,6 +105,7 @@ private fun ClickableListItem(
 
 object ClickableListDefaults {
   internal val iconSize = 24.dp
+
   sealed class Size {
     @get:Composable
     internal abstract val shape: Shape
@@ -207,6 +200,7 @@ object ClickableListDefaults {
 
   sealed class Style {
     data object Default : Style()
+
     data object Filled : Style()
   }
 }
