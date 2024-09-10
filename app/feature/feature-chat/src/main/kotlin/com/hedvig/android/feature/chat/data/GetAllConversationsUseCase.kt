@@ -48,8 +48,11 @@ internal class GetAllConversationsUseCaseImpl(
                     add(legacyConversation.toInboxConversation(isLegacy = true))
                   }
                 }
-                val (closedConversations, openConversations) = allConversations.partition { it.isClosed }
-                openConversations.sortByLastMessageTimestamp() + closedConversations.sortByLastMessageTimestamp()
+                val (closedConversationsWithoutNewMessages, openConversations) = allConversations.partition {
+                  it.isClosed && !it.hasNewMessages
+                }
+                openConversations.sortByLastMessageTimestamp() +
+                  closedConversationsWithoutNewMessages.sortByLastMessageTimestamp()
               }
               inboxConversations
             },
