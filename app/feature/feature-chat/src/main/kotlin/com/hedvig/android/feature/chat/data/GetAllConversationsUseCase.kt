@@ -42,12 +42,14 @@ internal class GetAllConversationsUseCaseImpl(
             .map { response ->
               val inboxConversations = either {
                 val currentMember = response.bind().currentMember
-                buildList {
+                val allConversations = buildList {
                   addAll(currentMember.conversations.map { it.toInboxConversation(isLegacy = false) })
                   currentMember.legacyConversation?.let<LegacyConversation, Unit> { legacyConversation ->
                     add(legacyConversation.toInboxConversation(isLegacy = true))
                   }
-                }.sortedByDescending { it.latestMessage?.sentAt ?: it.createdAt }
+                }
+                val (closedConversations, openConversations) = allConversations.partition { it.isClosed }
+                openConversations.sortByLastMessageTimestamp() + closedConversations.sortByLastMessageTimestamp()
               }
               inboxConversations
             },
@@ -56,6 +58,10 @@ internal class GetAllConversationsUseCaseImpl(
       }
     }
   }
+}
+
+private fun List<InboxConversation>.sortByLastMessageTimestamp(): List<InboxConversation> {
+  return this.sortedBy { it.latestMessage?.sentAt ?: it.createdAt }
 }
 
 private fun ConversationFragment.toInboxConversation(isLegacy: Boolean): InboxConversation {
@@ -80,5 +86,6 @@ private fun ConversationFragment.toInboxConversation(isLegacy: Boolean): InboxCo
     latestMessage = latestMessage,
     hasNewMessages = unreadMessageCount > 0,
     createdAt = createdAt,
+    isClosed = !isOpen,
   )
 }

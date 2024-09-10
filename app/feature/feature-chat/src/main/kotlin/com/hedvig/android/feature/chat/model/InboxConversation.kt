@@ -8,6 +8,7 @@ internal data class InboxConversation(
   val latestMessage: LatestMessage?,
   val hasNewMessages: Boolean,
   val createdAt: Instant,
+  val isClosed: Boolean,
 ) {
   val lastMessageTimestamp: Instant = latestMessage?.sentAt ?: createdAt
 
