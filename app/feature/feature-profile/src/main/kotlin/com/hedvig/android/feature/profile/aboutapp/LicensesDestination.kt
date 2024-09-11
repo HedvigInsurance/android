@@ -14,6 +14,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.hedvig.android.composewebview.WebView
 import com.hedvig.android.composewebview.rememberWebViewState
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
 import hedvig.resources.R
 
 private const val licensesUrl = "file:///android_asset/open_source_licenses.html"
@@ -21,7 +24,7 @@ private const val licensesUrl = "file:///android_asset/open_source_licenses.html
 @Composable
 internal fun LicensesDestination(onBackPressed: () -> Unit) {
   Surface(
-    color = MaterialTheme.colorScheme.background,
+    color = HedvigTheme.colorScheme.backgroundPrimary,
     modifier = Modifier.fillMaxSize(),
   ) {
     Column {

@@ -127,7 +127,6 @@ private fun EurobonusNumberField(
   setEurobonusText: (String) -> Unit,
   onSubmitEurobonus: () -> Unit,
 ) {
-  var mmm = stringResource(hedvig.resources.R.string.sas_integration_number_placeholder) //todo: remove
   var numberValue by remember {
     mutableStateOf(number)
   }
@@ -150,7 +149,7 @@ private fun EurobonusNumberField(
       HedvigTextFieldDefaults.ErrorState.Error.WithMessage(stringResource(hedvig.resources.R.string.something_went_wrong))
     } else {
       HedvigTextFieldDefaults.ErrorState.NoError
-      // there was a supporting text
+      // todo: there was a supporting text
            // Text(stringResource(hedvig.resources.R.string.sas_integration_number_placeholder))
       // here, not sure what to do with that, can't find it in figma?
     },

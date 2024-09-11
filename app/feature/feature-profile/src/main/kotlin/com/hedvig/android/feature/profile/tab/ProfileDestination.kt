@@ -54,9 +54,12 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.Document
+import com.hedvig.android.design.system.hedvig.icon.Eurobonus
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.ID
 import com.hedvig.android.design.system.hedvig.icon.InfoFilled
+import com.hedvig.android.design.system.hedvig.icon.InfoOutline
+import com.hedvig.android.design.system.hedvig.icon.MultipleDocuments
 import com.hedvig.android.design.system.hedvig.icon.Settings
 import com.hedvig.android.design.system.hedvig.icon.Travel
 import com.hedvig.android.design.system.hedvig.plus
@@ -152,6 +155,7 @@ private fun ProfileScreen(
         .pullRefresh(pullRefreshState)
         .verticalScroll(rememberScrollState())
         .windowInsetsPadding(WindowInsets.safeDrawing),
+      horizontalAlignment = Alignment.CenterHorizontally
     ) {
       Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -304,7 +308,7 @@ private fun ColumnScope.ProfileItemRows(
   if (profileUiState.travelCertificateAvailable) {
     ProfileRow(
       title = stringResource(R.string.PROFILE_ROW_TRAVEL_CERTIFICATE),
-      icon = HedvigIcons.Document, // todo: there is no Multiple Documents icon
+      icon = HedvigIcons.MultipleDocuments,
       onClick = navigateToTravelCertificate,
       isLoading = false,
     )
@@ -312,14 +316,14 @@ private fun ColumnScope.ProfileItemRows(
   if (profileUiState.euroBonus != null) {
     ProfileRow(
       title = stringResource(R.string.sas_integration_title),
-      icon = HedvigIcons.Travel, // todo: there is no Eurobonus icon
+      icon = HedvigIcons.Eurobonus,
       onClick = navigateToEurobonus,
       isLoading = false,
     )
   }
   ProfileRow(
     title = stringResource(R.string.PROFILE_ABOUT_ROW),
-    icon = HedvigIcons.InfoFilled,
+    icon = HedvigIcons.InfoOutline,
     onClick = showAboutApp,
     isLoading = false,
   )
@@ -351,14 +355,15 @@ private fun ProfileRow(
       contentDescription = null,
       modifier = Modifier
         .size(24.dp)
-        .placeholder(isLoading, highlight = PlaceholderHighlight.shimmer()),
+        .placeholder(isLoading,
+          highlight = PlaceholderHighlight.shimmer()),
     )
     Spacer(Modifier.width(16.dp))
     HedvigText(
       text = title,
-      style = HedvigTheme.typography.bodyLarge,
       modifier = Modifier
-        .placeholder(isLoading, highlight = PlaceholderHighlight.shimmer()),
+        .placeholder(isLoading,
+          highlight = PlaceholderHighlight.shimmer()),
     )
   }
 }
