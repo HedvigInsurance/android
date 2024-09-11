@@ -9,9 +9,11 @@ import com.hedvig.android.sample.design.showcase.bottomSheet.ShowcaseBottomSheet
 import com.hedvig.android.sample.design.showcase.button.ShowcaseButton
 import com.hedvig.android.sample.design.showcase.datepicker.DatePickerShowcase
 import com.hedvig.android.sample.design.showcase.dialog.DialogShowcase
+import com.hedvig.android.sample.design.showcase.dropdown.DropdownShowcase
 import com.hedvig.android.sample.design.showcase.freetext.FreeTextShowcase
 import com.hedvig.android.sample.design.showcase.highlight.HighlightShowcase
 import com.hedvig.android.sample.design.showcase.icons.ShowcaseIcons
+import com.hedvig.android.sample.design.showcase.list.ClickableListShowcase
 import com.hedvig.android.sample.design.showcase.notifications.NotificationsSnackbarShowcase
 import com.hedvig.android.sample.design.showcase.peril.PerilsShowcase
 import com.hedvig.android.sample.design.showcase.progress.ProgressBarShowcase
@@ -57,6 +59,10 @@ internal fun DesignShowcase(modifier: Modifier = Modifier) {
       PerilsShowcase()
     } else if (showAccordion) {
       AccordionShowCase()
+    } else if (showClickableList) {
+      ClickableListShowcase()
+    } else if (showDropdown) {
+      DropdownShowcase()
     } else if (showTopBar) {
       TopAppBarShowcase()
     } else if (showBigCard) {
@@ -72,7 +78,7 @@ private val showTextField = false
 private val showBottomSheet = false
 private val showRadio = false
 private val showToggle = false
-private val showDialog = true
+private val showDialog = false
 private val showDatePicker = false
 private val showFreeTextOverlay = false
 private val showHighLight = false
@@ -81,5 +87,7 @@ private val showPerils = false
 private val showAccordion = false
 private val showSnacks = false
 private val showTabs = false
+private val showClickableList = false
 private val showTopBar = false
-private val showBigCard = false
+private val showDropdown = false
+private val showBigCard = true

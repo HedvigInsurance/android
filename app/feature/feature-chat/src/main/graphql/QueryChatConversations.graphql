@@ -12,6 +12,8 @@ query ChatConversations {
 fragment ConversationFragment on Conversation {
   id
   createdAt
+  unreadMessageCount
+  isOpen
   claim {
     claimType
   }

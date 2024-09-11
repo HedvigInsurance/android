@@ -60,7 +60,7 @@ import com.hedvig.android.design.system.internals.InternalSnackBar
 import com.hedvig.android.design.system.internals.NotificationColors
 
 @Composable
-fun HedvigInfoCard(
+fun HedvigNotificationCard(
   message: String,
   priority: NotificationPriority,
   modifier: Modifier = Modifier,
@@ -325,37 +325,37 @@ private fun PreviewNotificationCard(
           .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
       ) {
-        HedvigInfoCard(
+        HedvigNotificationCard(
           priority = priority,
           message = "A short message about something that needs attention.",
           withIcon = false,
           style = Default,
         )
-        HedvigInfoCard(
+        HedvigNotificationCard(
           priority = priority,
           message = "A short message about something that needs attention.",
           withIcon = true,
           style = Default,
         )
-        HedvigInfoCard(
+        HedvigNotificationCard(
           priority = priority,
           message = "A short message about something that needs attention.",
           withIcon = false,
           style = Button("Button", {}),
         )
-        HedvigInfoCard(
+        HedvigNotificationCard(
           priority = priority,
           message = "A short message about something that needs attention.",
           withIcon = true,
           style = Button("Button", {}),
         )
-        HedvigInfoCard(
+        HedvigNotificationCard(
           priority = priority,
           message = "A short message about something that needs attention.",
           withIcon = false,
           style = Buttons("Left", "Right", {}, {}),
         )
-        HedvigInfoCard(
+        HedvigNotificationCard(
           priority = priority,
           message = "A short message about something that needs attention.",
           withIcon = true,

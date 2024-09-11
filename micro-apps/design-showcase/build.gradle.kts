@@ -19,6 +19,12 @@ android {
     versionName = "0.0.1"
   }
 
+  sourceSets {
+    getByName("main") {
+      res.srcDirs("resources/main")
+    }
+  }
+
   buildTypes {
     @Suppress("UNUSED_VARIABLE")
     val debug by getting {

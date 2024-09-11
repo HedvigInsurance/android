@@ -8,6 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighLightSize
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor
@@ -114,6 +115,7 @@ fun HighlightLabel(labelText: String, size: HighLightSize, color: HighlightColor
         DARK -> highLightColors.textColorForGreyDark
       }
     }
+
     else -> highLightColors.defaultTextColor
   }
   Surface(
@@ -124,6 +126,7 @@ fun HighlightLabel(labelText: String, size: HighLightSize, color: HighlightColor
     HedvigText(
       text = labelText,
       textAlign = TextAlign.Center,
+      style = size.textStyle,
       color = textColor,
       modifier = Modifier.padding(size.contentPadding),
     )
@@ -137,6 +140,9 @@ object HighlightLabelDefaults {
     @get:Composable
     abstract val shape: Shape
 
+    @get:Composable
+    abstract val textStyle: TextStyle
+
     data object Large : HighLightSize() {
       override val contentPadding: PaddingValues = PaddingValues(
         top = HighlightLabelTokens.LargePaddingTop,
@@ -148,6 +154,11 @@ object HighlightLabelDefaults {
         @Composable
         @ReadOnlyComposable
         get() = HighlightLabelTokens.ContainerShapeLarge.value
+
+      override val textStyle: TextStyle
+        @Composable
+        @ReadOnlyComposable
+        get() = HighlightLabelTokens.TypographyLarge.value
     }
 
     data object Medium : HighLightSize() {
@@ -161,6 +172,10 @@ object HighlightLabelDefaults {
         @Composable
         @ReadOnlyComposable
         get() = HighlightLabelTokens.ContainerShapeMedium.value
+      override val textStyle: TextStyle
+        @Composable
+        @ReadOnlyComposable
+        get() = HighlightLabelTokens.TypographyMedium.value
     }
 
     data object Small : HighLightSize() {
@@ -174,6 +189,10 @@ object HighlightLabelDefaults {
         @Composable
         @ReadOnlyComposable
         get() = HighlightLabelTokens.ContainerShapeSmall.value
+      override val textStyle: TextStyle
+        @Composable
+        @ReadOnlyComposable
+        get() = HighlightLabelTokens.TypographySmall.value
     }
   }
 

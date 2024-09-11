@@ -167,7 +167,11 @@ private fun Shape.withBeak(beakDirection: BeakDirection): Shape {
         layoutDirection,
         density,
       )
-      val squirclePath: Path = (squircleOutline as Outline.Generic).path
+      val squirclePath: Path = when (squircleOutline) {
+        is Outline.Generic -> squircleOutline.path
+        is Outline.Rectangle -> Path().apply { addRect(squircleOutline.rect) }
+        is Outline.Rounded -> Path().apply { addRoundRect(squircleOutline.roundRect) }
+      }
       val squircleOffset: Offset = when (beakDirection) {
         BottomCenter, BottomStart, BottomEnd -> Offset(x = 0f, y = 0f)
         TopCenter, TopStart, TopEnd -> Offset(x = 0f, y = arrowHeight)

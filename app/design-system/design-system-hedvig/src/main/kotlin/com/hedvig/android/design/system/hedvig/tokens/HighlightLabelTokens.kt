@@ -7,6 +7,9 @@ internal object HighlightLabelTokens {
   val ContainerShapeLarge = ShapeKeyTokens.CornerMedium
   val ContainerShapeMedium = ShapeKeyTokens.CornerSmall
   val ContainerShapeSmall = ShapeKeyTokens.CornerExtraSmall
+  val TypographyLarge = TypographyKeyTokens.BodySmall
+  val TypographyMedium = TypographyKeyTokens.Label
+  val TypographySmall = TypographyKeyTokens.Label
   val LargePaddingTop: Dp = 7.dp
   val LargePaddingBottom: Dp = 9.dp
   val LargePaddingStart: Dp = 12.dp
