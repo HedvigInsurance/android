@@ -30,6 +30,17 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.WarningFilled
+import com.hedvig.android.design.system.hedvig.ButtonDefaults
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextField
+import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Scaffold
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.clearFocusOnTap
 
 @Composable
 internal fun EurobonusDestination(viewModel: EurobonusViewModel, navigateUp: () -> Unit) {
@@ -65,7 +76,7 @@ private fun EurobonusScreen(
     if (uiState.isLoading) {
       HedvigFullScreenCenterAlignedProgressDebounced()
     } else {
-      HedvigScaffold(
+      Scaffold(
         topAppBarText = stringResource(hedvig.resources.R.string.sas_integration_title),
         navigateUp = navigateUp,
         modifier = Modifier.clearFocusOnTap(),
@@ -73,12 +84,12 @@ private fun EurobonusScreen(
         Box(
           contentAlignment = Alignment.BottomStart,
           modifier = Modifier
-            .heightIn(80.dp)
-            .fillMaxWidth(),
+              .heightIn(80.dp)
+              .fillMaxWidth(),
         ) {
-          Text(
+          HedvigText(
             text = stringResource(hedvig.resources.R.string.sas_integration_connect_your_eurobonus),
-            style = MaterialTheme.typography.titleLarge,
+            style = HedvigTheme.typography.headlineMedium, //todo: font size here??? no 22.sp in the nbew DS
             modifier = Modifier.padding(16.dp),
           )
         }
@@ -91,16 +102,18 @@ private fun EurobonusScreen(
           setEurobonusText = setEurobonusNumber,
         )
         Spacer(Modifier.height(16.dp))
-        Text(
+        HedvigText(
           text = stringResource(hedvig.resources.R.string.sas_integration_info),
-          style = MaterialTheme.typography.bodyMedium,
+          style = HedvigTheme.typography.bodySmall, //todo: font size here??? 14.sp is for label?
           modifier = Modifier.padding(horizontal = 16.dp),
         )
         Spacer(Modifier.height(16.dp))
-        HedvigContainedButton(
+        HedvigButton(
           text = stringResource(hedvig.resources.R.string.general_save_button),
           enabled = uiState.canSubmit,
           onClick = { onSave() },
+          buttonStyle = ButtonDefaults.ButtonStyle.Primary,
+          buttonSize = ButtonDefaults.ButtonSize.Large,
           modifier = Modifier.padding(horizontal = 16.dp),
           isLoading = uiState.isSubmitting,
         )
@@ -119,11 +132,12 @@ private fun EurobonusNumberField(
   setEurobonusText: (String) -> Unit,
   onSubmitEurobonus: () -> Unit,
 ) {
+  var mmm = stringResource(hedvig.resources.R.string.sas_integration_number_placeholder) //todo: remove
   var numberValue by remember {
     mutableStateOf(number)
   }
   HedvigTextField(
-    value = numberValue,
+    text = numberValue,
     onValueChange = { newInput ->
       if (newInput.indices.all { newInput[it].isWhitespace().not() }) {
         numberValue = newInput
@@ -131,34 +145,20 @@ private fun EurobonusNumberField(
       }
     },
     enabled = canEditText,
-    label = {
-      Text(
-        buildString {
-          append(stringResource(hedvig.resources.R.string.sas_integration_title))
-          append(" ")
-          append(stringResource(hedvig.resources.R.string.sas_integration_number))
-        },
-      )
+    labelText = buildString {
+      append(stringResource(hedvig.resources.R.string.sas_integration_title))
+      append(" ")
+      append(stringResource(hedvig.resources.R.string.sas_integration_number))
     },
-    supportingText = {
-      if (hasError) {
-        Row(
-          verticalAlignment = Alignment.CenterVertically,
-        ) {
-          Icon(
-            imageVector = Icons.Hedvig.WarningFilled,
-            contentDescription = null,
-            modifier = Modifier.size(16.dp),
-            tint = MaterialTheme.colorScheme.warningElement,
-          )
-          Spacer(Modifier.width(6.dp))
-          Text(stringResource(hedvig.resources.R.string.something_went_wrong))
-        }
-      } else {
-        Text(stringResource(hedvig.resources.R.string.sas_integration_number_placeholder))
-      }
+    errorState =
+    if (hasError) {
+      HedvigTextFieldDefaults.ErrorState.Error.WithMessage(stringResource(hedvig.resources.R.string.something_went_wrong))
+    } else {
+      HedvigTextFieldDefaults.ErrorState.NoError
+      // there was a supporting text
+           // Text(stringResource(hedvig.resources.R.string.sas_integration_number_placeholder))
+      // here, not sure what to do with that, can't find it in figma?
     },
-    isError = hasError,
     keyboardOptions = KeyboardOptions(
       capitalization = KeyboardCapitalization.Characters,
       keyboardType = KeyboardType.Text,
@@ -171,10 +171,10 @@ private fun EurobonusNumberField(
         }
       },
     ),
-    withNewDesign = true,
+    textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Large,//todo: what textField size here??
     modifier = Modifier
-      .fillMaxWidth()
-      .padding(horizontal = 16.dp),
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
   )
 }
 
@@ -186,7 +186,7 @@ private fun PreviewEurobonusScreen(
   ) hasError: Boolean,
 ) {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       EurobonusScreen(
         EurobonusUiState(
           eurobonusNumber = "ABC-123",
