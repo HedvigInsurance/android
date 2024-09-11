@@ -25,7 +25,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
-import com.hedvig.android.design.system.hedvig.Scaffold
+import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.ShapeDefaults
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -42,7 +42,7 @@ fun EmergencyScreen(
   navigateUp: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  Scaffold(
+  HedvigScaffold(
     topAppBarText = stringResource(id = R.string.HC_QUICK_ACTIONS_SICK_ABROAD_TITLE),
     navigateUp = navigateUp,
     modifier = modifier,

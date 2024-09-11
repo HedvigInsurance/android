@@ -28,6 +28,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.PermissionStatus.Granted
 import com.google.accompanist.permissions.isGranted
+import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
+import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigBigCard
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
@@ -35,7 +37,9 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigRedTextButton
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.Scaffold
+import com.hedvig.android.design.system.hedvig.HedvigScaffold
+import com.hedvig.android.design.system.hedvig.RadioOptionData
+import com.hedvig.android.design.system.hedvig.SingleSelectDialog
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
 import com.hedvig.android.feature.profile.settings.SettingsUiState.Loaded
@@ -89,7 +93,7 @@ private fun SettingsScreen(
     uiState.selectedTheme?.apply()
   }
   val context = LocalContext.current
-  Scaffold(
+  HedvigScaffold(
     topAppBarText = stringResource(R.string.SETTINGS_TITLE),
     navigateUp = navigateUp,
     modifier = Modifier.clearFocusOnTap(),
@@ -189,13 +193,23 @@ internal fun LanguageWithDialog(
   val context = LocalContext.current
   var showLanguagePickerDialog by rememberSaveable { mutableStateOf(false) }
   if (showLanguagePickerDialog) {
+    val entries = buildList {
+      languageOptions.forEachIndexed { index, language ->
+        add(RadioOptionData(
+          id = index.toString(),
+          optionText = language.name,
+          chosenState = if ( selectedLanguage == language) Chosen else NotChosen
+        ))
+      }
+    }
     SingleSelectDialog(
       title = stringResource(R.string.language_picker_modal_title),
-      optionsList = languageOptions,
-      onSelected = selectLanguage,
-      getDisplayText = { context.getString(it.label) },
-      getIsSelected = { selectedLanguage == it },
-      getId = { it.name },
+      optionsList = entries,
+      onSelected = {
+        val index = it.id.toInt()
+        val language = languageOptions[index]
+        selectLanguage(language)
+      },
       onDismissRequest = { showLanguagePickerDialog = false },
     )
   }
@@ -225,8 +239,8 @@ internal fun EmailSubscriptionWithDialog(
       onDismissRequest = { showSubscriptionPrefDialog = false },
       confirmButtonLabel = stringResource(R.string.SETTINGS_SCREEN_CONFIRM_UNSUBSCRIBE),
       dismissButtonLabel = stringResource(R.string.general_close_button),
-      titleText = stringResource(R.string.SETTINGS_SCREEN_EMAIL_PREFERENCES),
-      descriptionText = stringResource(R.string.SETTINGS_SCREEN_UNSUBSCRIBE_DESCRIPTION),
+      title = stringResource(R.string.SETTINGS_SCREEN_EMAIL_PREFERENCES),
+      text = stringResource(R.string.SETTINGS_SCREEN_UNSUBSCRIBE_DESCRIPTION),
     )
   }
   Column {
@@ -268,13 +282,23 @@ internal fun ThemeWithDialog(
   val context = LocalContext.current
   var showThemePickerDialog by rememberSaveable { mutableStateOf(false) }
   if (showThemePickerDialog) {
+    val entries = buildList {
+      Theme.entries.forEachIndexed { index, theme ->
+        add(RadioOptionData(
+          id =  index.toString(),
+          optionText = theme.name,
+          chosenState = if (selectedTheme == theme) Chosen else NotChosen
+          ))
+      }
+    }
     SingleSelectDialog(
       title = stringResource(R.string.SETTINGS_THEME_TITLE),
-      optionsList = Theme.entries,
-      onSelected = selectTheme,
-      getDisplayText = { context.getString(it.getLabel()) },
-      getIsSelected = { selectedTheme == it },
-      getId = { it.name },
+      optionsList = entries,
+      onSelected = {
+        val index = it.id.toInt()
+        val theme = Theme.entries[index] //todo: could be outOfBounds etc?
+        selectTheme(theme)
+      },
       onDismissRequest = { showThemePickerDialog = false },
     )
   }

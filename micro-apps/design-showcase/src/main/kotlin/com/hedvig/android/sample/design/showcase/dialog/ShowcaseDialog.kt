@@ -68,8 +68,8 @@ fun DialogShowcase() {
   if (isAlertDialogVisible) {
     HedvigAlertDialog(
       onDismissRequest = { isAlertDialogVisible = false },
-      titleText = "Title",
-      descriptionText = "Description tralala tralala tralala tralala tralala tralala tralala tralala tralala ",
+      title = "Title",
+      text = "Description tralala tralala tralala tralala tralala tralala tralala tralala tralala ",
       onConfirmClick = {},
       confirmButtonLabel = "Confirm",
       dismissButtonLabel = "Dismiss",

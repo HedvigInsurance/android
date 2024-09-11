@@ -25,7 +25,7 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
-import com.hedvig.android.design.system.hedvig.Scaffold
+import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.ShapeDefaults
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -41,7 +41,7 @@ fun FirstVetScreen(
   modifier: Modifier = Modifier,
 ) {
   val context = LocalContext.current
-  Scaffold(
+  HedvigScaffold(
     topAppBarText = stringResource(id = R.string.HC_QUICK_ACTIONS_FIRSTVET_TITLE),
     navigateUp = navigateUp,
   ) {

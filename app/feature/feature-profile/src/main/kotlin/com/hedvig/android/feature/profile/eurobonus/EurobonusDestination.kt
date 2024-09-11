@@ -1,15 +1,12 @@
 package com.hedvig.android.feature.profile.eurobonus
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
@@ -28,8 +25,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.hedvig.normal.WarningFilled
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
@@ -38,7 +33,7 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.Scaffold
+import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
 
@@ -76,7 +71,7 @@ private fun EurobonusScreen(
     if (uiState.isLoading) {
       HedvigFullScreenCenterAlignedProgressDebounced()
     } else {
-      Scaffold(
+      HedvigScaffold(
         topAppBarText = stringResource(hedvig.resources.R.string.sas_integration_title),
         navigateUp = navigateUp,
         modifier = Modifier.clearFocusOnTap(),

@@ -35,7 +35,7 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.Scaffold
+import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
 import com.hedvig.android.feature.profile.myinfo.MyInfoUiState.Success
@@ -75,7 +75,7 @@ private fun MyInfoScreen(
   Box(
     modifier = Modifier.fillMaxSize(),
   ) {
-    Scaffold(
+    HedvigScaffold(
       topAppBarText = stringResource(R.string.PROFILE_MY_INFO_ROW_TITLE),
       navigateUp = navigateUp,
       modifier = Modifier.clearFocusOnTap(),

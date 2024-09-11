@@ -63,8 +63,8 @@ fun HedvigDialogError(
 fun HedvigAlertDialog(
 // todo: we don't really have alert dialog with one black one red text buttons,
 // so I just used the standard one from DS
-  titleText: String,
-  descriptionText: String,
+  title: String,
+  text: String?,
   onConfirmClick: () -> Unit,
   onDismissRequest: () -> Unit,
   modifier: Modifier = Modifier,
@@ -86,8 +86,8 @@ fun HedvigAlertDialog(
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       EmptyState(
-        text = titleText,
-        description = descriptionText,
+        text = title,
+        description = text,
         iconStyle = EmptyStateDefaults.EmptyStateIconStyle.NO_ICON,
         buttonStyle = EmptyStateButtonStyle.NoButton,
       )
@@ -96,13 +96,13 @@ fun HedvigAlertDialog(
 }
 
 @Composable
-fun <T> SingleSelectDialog(
+fun SingleSelectDialog(
   title: String,
   optionsList: List<RadioOptionData>,
-  radioOptionStyle: RadioOptionStyle,
   onSelected: (RadioOptionData) -> Unit,
   onDismissRequest: () -> Unit,
-  radioOptionSize: RadioOptionDefaults.RadioOptionSize = RadioOptionDefaults.RadioOptionSize.Large,
+  radioOptionStyle: RadioOptionStyle = RadioOptionStyle.LeftAligned,
+  radioOptionSize: RadioOptionDefaults.RadioOptionSize = RadioOptionDefaults.RadioOptionSize.Medium,
 ) {
   HedvigDialog(onDismissRequest = { onDismissRequest.invoke() }) {
     Column(

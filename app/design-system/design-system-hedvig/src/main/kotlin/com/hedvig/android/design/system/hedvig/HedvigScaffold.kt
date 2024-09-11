@@ -34,7 +34,7 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.tokens.ScaffoldTokens
 
 @Composable
-fun Scaffold(
+fun HedvigScaffold(
   navigateUp: () -> Unit,
   modifier: Modifier = Modifier,
   topAppBarText: String? = null,

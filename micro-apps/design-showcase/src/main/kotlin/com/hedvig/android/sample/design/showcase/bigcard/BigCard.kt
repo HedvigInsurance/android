@@ -10,11 +10,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigBigCard
-import com.hedvig.android.design.system.hedvig.Scaffold
+import com.hedvig.android.design.system.hedvig.HedvigScaffold
 
 @Composable
 fun BigCardShowcase() {
-  Scaffold(
+  HedvigScaffold(
     navigateUp = {},
     topAppBarText = "Screen",
   ) {
