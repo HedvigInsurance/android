@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
@@ -23,7 +24,7 @@ import com.hedvig.android.design.system.hedvig.tokens.TypographyKeyTokens
 @Composable
 fun HedvigBigCard(
 // todo: rename after complete migration to new DS to ButtonWithLabelTextField
-// or something more descriptive mb
+// or something more descriptive mb. And it's not big now! It's medium
   onClick: () -> Unit,
   labelText: String,
   inputText: String?,
@@ -34,6 +35,7 @@ fun HedvigBigCard(
     shape = HedvigTheme.shapes.cornerLarge,
     color = bigCardColors.containerColor,
     modifier = modifier
+      .clip(HedvigTheme.shapes.cornerLarge)
       .clickable(
         onClick = onClick,
         enabled = enabled,
@@ -62,7 +64,7 @@ private object BigCardDefaults {
     get() = TypographyKeyTokens.Label.value
   val inputTextStyle: TextStyle
     @Composable
-    get() = TypographyKeyTokens.BodyMedium.value
+    get() = TypographyKeyTokens.BodySmall.value
   val padding = PaddingValues(
     top = 11.dp,
     bottom = 10.dp,

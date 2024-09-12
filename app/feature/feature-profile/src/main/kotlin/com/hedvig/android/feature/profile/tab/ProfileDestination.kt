@@ -46,14 +46,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
-import com.hedvig.android.design.system.hedvig.DialogDefaults
-import com.hedvig.android.design.system.hedvig.HedvigDialog
+import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigRedTextButton
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.icon.Document
 import com.hedvig.android.design.system.hedvig.icon.Eurobonus
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.ID
@@ -61,7 +59,6 @@ import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.icon.InfoOutline
 import com.hedvig.android.design.system.hedvig.icon.MultipleDocuments
 import com.hedvig.android.design.system.hedvig.icon.Settings
-import com.hedvig.android.design.system.hedvig.icon.Travel
 import com.hedvig.android.design.system.hedvig.plus
 import com.hedvig.android.memberreminders.ui.MemberReminderCards
 import com.hedvig.android.notification.permission.NotificationPermissionDialog
@@ -135,17 +132,14 @@ private fun ProfileScreen(
   )
   var showLogoutDialog by rememberSaveable { mutableStateOf(false) }
   if (showLogoutDialog) {
-    HedvigDialog(
+    HedvigAlertDialog(
+      title = stringResource(id = R.string.PROFILE_LOGOUT_DIALOG_MESSAGE),
       onDismissRequest = { showLogoutDialog = false },
-      style = DialogDefaults.DialogStyle.Buttons(
-        confirmButtonText = stringResource(R.string.GENERAL_YES),
-        dismissButtonText = stringResource(id = R.string.general_cancel_button),
-        onConfirmButtonClick = onLogout,
-        onDismissRequest = { showLogoutDialog = false },
-      ),
-    ) {
-      HedvigText(text = stringResource(id = R.string.PROFILE_LOGOUT_DIALOG_MESSAGE)) // todo: check here
-    }
+      onConfirmClick = onLogout,
+      text = null,
+      confirmButtonLabel = stringResource(R.string.GENERAL_YES),
+      dismissButtonLabel = stringResource(id = R.string.general_cancel_button),
+    )
   }
 
   Box(Modifier.fillMaxSize()) {
@@ -155,7 +149,7 @@ private fun ProfileScreen(
         .pullRefresh(pullRefreshState)
         .verticalScroll(rememberScrollState())
         .windowInsetsPadding(WindowInsets.safeDrawing),
-      horizontalAlignment = Alignment.CenterHorizontally
+      horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -355,15 +349,19 @@ private fun ProfileRow(
       contentDescription = null,
       modifier = Modifier
         .size(24.dp)
-        .placeholder(isLoading,
-          highlight = PlaceholderHighlight.shimmer()),
+        .placeholder(
+          isLoading,
+          highlight = PlaceholderHighlight.shimmer(),
+        ),
     )
     Spacer(Modifier.width(16.dp))
     HedvigText(
       text = title,
       modifier = Modifier
-        .placeholder(isLoading,
-          highlight = PlaceholderHighlight.shimmer()),
+        .placeholder(
+          isLoading,
+          highlight = PlaceholderHighlight.shimmer(),
+        ),
     )
   }
 }

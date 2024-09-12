@@ -45,7 +45,7 @@ fun NavGraphBuilder.profileGraph(
       deepLinks = listOf(
         navDeepLink { uriPattern = hedvigDeepLinkContainer.profile },
       ),
-      enterTransition = { fadeIn() }, //todo: sure here?
+      enterTransition = { fadeIn() }, // todo: sure here?
       exitTransition = { fadeOut() },
     ) { backStackEntry ->
       val viewModel: ProfileViewModel = koinViewModel()

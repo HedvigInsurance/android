@@ -11,8 +11,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,10 +34,10 @@ import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
 import com.hedvig.android.feature.profile.myinfo.MyInfoUiState.Success
@@ -85,7 +87,11 @@ private fun MyInfoScreen(
         contentKey = { it::class },
         modifier = Modifier.weight(1f),
       ) { animatedUiState ->
-        Column(Modifier.fillMaxSize()) {
+        Column(
+          Modifier.fillMaxSize()
+            .verticalScroll(rememberScrollState()),
+          horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
           when (animatedUiState) {
             MyInfoUiState.Loading -> {
               HedvigFullScreenCenterAlignedProgressDebounced() // todo: check ui here
@@ -93,7 +99,7 @@ private fun MyInfoScreen(
 
             MyInfoUiState.Error -> {
               Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                HedvigErrorSection(onButtonClick = reload) // todo: check ui here
+                HedvigErrorSection(onButtonClick = reload)
               }
             }
 
@@ -136,7 +142,7 @@ private fun ColumnScope.SuccessState(
       keyboardType = KeyboardType.Phone,
       imeAction = ImeAction.Next,
     ),
-    textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium, // todo: what size should we put here??
+    textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
     modifier = Modifier
       .fillMaxWidth()
       .padding(horizontal = 16.dp),
@@ -169,7 +175,7 @@ private fun ColumnScope.SuccessState(
         focusManager.clearFocus()
       },
     ),
-    textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium, // todo: what size should we put here??
+    textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
     modifier = Modifier
       .fillMaxWidth()
       .padding(horizontal = 16.dp),

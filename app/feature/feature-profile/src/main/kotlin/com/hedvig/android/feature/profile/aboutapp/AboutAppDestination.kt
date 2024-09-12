@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -89,7 +88,7 @@ private fun AboutAppScreen(
     ) {
       HedvigText(stringResource(id = R.string.PROFILE_ABOUT_APP_MEMBER_ID))
       HedvigText(memberId ?: "", color = HedvigTheme.colorScheme.textSecondary)
-      //todo: is this the right color?
+      // todo: is this the right color?
     }
     Row(
       horizontalArrangement = Arrangement.SpaceBetween,

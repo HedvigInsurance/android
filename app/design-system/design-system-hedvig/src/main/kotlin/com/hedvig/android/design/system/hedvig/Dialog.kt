@@ -15,12 +15,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.compose.ui.window.DialogWindowProvider
 import com.hedvig.android.design.system.hedvig.DialogDefaults.ButtonSize.BIG
 import com.hedvig.android.design.system.hedvig.DialogDefaults.ButtonSize.SMALL
 import com.hedvig.android.design.system.hedvig.DialogDefaults.DialogStyle
@@ -61,8 +60,6 @@ fun HedvigDialogError(
 
 @Composable
 fun HedvigAlertDialog(
-// todo: we don't really have alert dialog with one black one red text buttons,
-// so I just used the standard one from DS
   title: String,
   text: String?,
   onConfirmClick: () -> Unit,
@@ -73,16 +70,18 @@ fun HedvigAlertDialog(
 ) {
   HedvigDialog(
     style = Buttons(
-      onConfirmButtonClick = onConfirmClick,
-      onDismissRequest = onDismissRequest,
       confirmButtonText = confirmButtonLabel,
       dismissButtonText = dismissButtonLabel,
+      onDismissRequest = onDismissRequest,
+      onConfirmButtonClick = onConfirmClick,
     ),
     onDismissRequest = onDismissRequest,
     modifier = modifier,
   ) {
     Column(
-      Modifier.fillMaxWidth(),
+      Modifier
+        .fillMaxWidth()
+        .padding(top = 24.dp, start = 24.dp, end = 24.dp),
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       EmptyState(
@@ -107,28 +106,29 @@ fun SingleSelectDialog(
   HedvigDialog(onDismissRequest = { onDismissRequest.invoke() }) {
     Column(
       horizontalAlignment = Alignment.CenterHorizontally,
+      modifier = Modifier.padding(16.dp),
     ) {
-      HedvigText(title, style = HedvigTheme.typography.bodySmall)
-    }
-    Spacer(Modifier.height(24.dp))
-    optionsList.forEachIndexed { index, radioOptionData ->
-      RadioOption(
-        data = radioOptionData,
-        radioOptionStyle = radioOptionStyle,
-        radioOptionSize = radioOptionSize,
-        groupLockedState = NotLocked,
-        onOptionClick = {
-          onSelected(radioOptionData)
-          onDismissRequest()
-        },
-      )
-      if (index!=optionsList.lastIndex) {
-        Spacer(Modifier.height(8.dp))
+      Spacer(Modifier.height(8.dp))
+      HedvigText(title, style = HedvigTheme.typography.bodySmall, textAlign = TextAlign.Center)
+      Spacer(Modifier.height(24.dp))
+      optionsList.forEachIndexed { index, radioOptionData ->
+        RadioOption(
+          data = radioOptionData,
+          radioOptionStyle = radioOptionStyle,
+          radioOptionSize = radioOptionSize,
+          groupLockedState = NotLocked,
+          onOptionClick = {
+            onSelected(radioOptionData)
+            onDismissRequest()
+          },
+        )
+        if (index != optionsList.lastIndex) {
+          Spacer(Modifier.height(8.dp))
+        }
       }
     }
   }
 }
-
 
 @Composable
 fun HedvigDialog(
@@ -142,9 +142,11 @@ fun HedvigDialog(
     onDismissRequest = onDismissRequest,
     properties = DialogDefaults.defaultProperties,
   ) {
-    (LocalView.current.parent as DialogWindowProvider).window.setDimAmount(0.2f)
-    // a workaround to stop the overlay from dimming background too much, otherwise in the dark theme the overlay color
+    // (LocalView.current.parent as DialogWindowProvider).window.setDimAmount(0.2f)
+    // a workaround to stop the overlay from dimming background too much,
+    // otherwise in the dark theme the overlay color
     // becomes the same as the background color of the dialog itself.
+    // todo: that workaround stopped working btw
     Surface(
       shape = DialogDefaults.shape,
       color = DialogDefaults.containerColor,
@@ -193,7 +195,10 @@ private fun SmallHorizontalButtons(
   onConfirmButtonClick: () -> Unit,
   confirmButtonText: String,
 ) {
-  Row {
+  Row(
+    Modifier.padding(start = 24.dp, end = 24.dp, bottom = 24.dp),
+    verticalAlignment = Alignment.CenterVertically,
+  ) {
     HedvigButton(
       modifier = Modifier.weight(1f),
       onClick = onDismissRequest,
