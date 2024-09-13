@@ -3,19 +3,18 @@ package com.hedvig.android.feature.terminateinsurance.step.terminationfailure
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.button.HedvigOutlinedTextButton
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.preview.calculateForPreview
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.calculateForPreview
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationInfoScreen
 import hedvig.resources.R
 
@@ -52,12 +51,13 @@ private fun TerminationFailureScreen(
     navigateUp = navigateUp,
   ) {
     Column {
-      HedvigOutlinedTextButton(
+      HedvigButton(
         text = stringResource(id = R.string.open_chat),
+        enabled = true,
         onClick = onNavigateToNewConversation,
       )
       Spacer(Modifier.height(16.dp))
-      HedvigContainedButton(
+      HedvigTextButton(
         text = stringResource(R.string.general_done_button),
         onClick = navigateBack,
       )
@@ -69,7 +69,7 @@ private fun TerminationFailureScreen(
 @Composable
 private fun PreviewTerminationFailureScreen() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       TerminationFailureScreen(WindowSizeClass.calculateForPreview(), ErrorMessage(), {}, {}, {})
     }
   }

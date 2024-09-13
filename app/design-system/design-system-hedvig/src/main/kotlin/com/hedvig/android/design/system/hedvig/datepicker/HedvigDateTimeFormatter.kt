@@ -40,12 +40,13 @@ fun rememberHedvigDateTimeFormatter(): DateTimeFormatter {
   return remember(locale) { hedvigDateTimeFormatter(locale) }
 }
 
+@Suppress("unused")
 @Composable
 fun rememberHedvigMonthDateTimeFormatter(): DateTimeFormatter {
   val locale = getLocale()
   return remember(locale) { hedvigMonthDateTimeFormatter(locale) }
 }
-
+@Suppress("unused")
 @Composable
 fun rememberHedvigBirthDateDateTimeFormatter(): DateTimeFormatter {
   val locale = getLocale()
@@ -148,7 +149,6 @@ private val yearMonthDateAndTime: DateTimeFormatterBuilder = DateTimeFormatterBu
   .appendValue(ChronoField.HOUR_OF_DAY, 2)
   .appendLiteral(':')
   .appendValue(ChronoField.MINUTE_OF_HOUR, 2)
-
 
 @Composable
 @ReadOnlyComposable

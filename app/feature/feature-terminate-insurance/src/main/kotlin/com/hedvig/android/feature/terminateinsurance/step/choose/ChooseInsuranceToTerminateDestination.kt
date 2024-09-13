@@ -3,16 +3,14 @@ package com.hedvig.android.feature.terminateinsurance.step.choose
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -23,22 +21,25 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.scaffold.HedvigScaffold
-import com.hedvig.android.core.ui.text.WarningTextWithIcon
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.termination.data.TerminatableInsurance
 import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
 import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
+import com.hedvig.android.design.system.hedvig.EmptyState
+import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.ERROR
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigErrorSection
+import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigScaffold
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.RadioGroup
 import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupSize
 import com.hedvig.android.design.system.hedvig.RadioGroupDefaults.RadioGroupStyle
 import com.hedvig.android.design.system.hedvig.RadioOptionData
 import com.hedvig.android.design.system.hedvig.RadioOptionGroupData.RadioOptionGroupDataWithLabel
+import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationScaffold
 import hedvig.resources.R
@@ -112,10 +113,10 @@ private fun ChooseInsuranceToTerminateScreen(
         closeTerminationFlow = closeTerminationFlow,
         textForInfoIcon = stringResource(id = R.string.TERMINATION_FLOW_CANCEL_INFO_TEXT),
       ) {
-        Text(
-          style = MaterialTheme.typography.headlineSmall.copy(
+        HedvigText(
+          style = HedvigTheme.typography.headlineMedium.copy(
             lineBreak = LineBreak.Heading,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = HedvigTheme.colorScheme.textSecondary,
           ),
           text = stringResource(id = R.string.TERMINATION_FLOW_CHOOSE_CONTRACT_SUBTITLE),
           modifier = Modifier.padding(horizontal = 16.dp),
@@ -128,12 +129,14 @@ private fun ChooseInsuranceToTerminateScreen(
           exit = fadeOut(),
         ) {
           Column {
-            WarningTextWithIcon(
+            EmptyState(
               modifier = Modifier
                 .padding(horizontal = 16.dp)
                 .fillMaxWidth()
                 .wrapContentWidth(),
               text = stringResource(R.string.something_went_wrong),
+              iconStyle = ERROR,
+              description = null,
             )
             Spacer(Modifier.height(16.dp))
           }
@@ -148,21 +151,22 @@ private fun ChooseInsuranceToTerminateScreen(
           radioGroupStyle = RadioGroupStyle.Vertical.Label(radioOptionData),
         )
         Spacer(Modifier.height(12.dp))
-        HedvigContainedButton(
-          stringResource(id = R.string.general_continue_button),
-          enabled = uiState.selectedInsurance != null,
-          modifier = Modifier.padding(horizontal = 16.dp),
-          colors = ButtonDefaults.buttonColors(
-            disabledContainerColor = MaterialTheme.colorScheme.surface,
-            disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-          ),
-          onClick = {
-            uiState.selectedInsurance?.let { selectedInsurance ->
-              fetchTerminationStep(selectedInsurance)
-            }
-          },
-          isLoading = uiState.isNavigationStepLoading,
-        )
+        Row(
+          horizontalArrangement = Arrangement.Center,
+          modifier = Modifier.fillMaxWidth(),
+        ) {
+          HedvigButton(
+            stringResource(id = R.string.general_continue_button),
+            enabled = uiState.selectedInsurance != null,
+            modifier = Modifier.padding(horizontal = 16.dp),
+            onClick = {
+              uiState.selectedInsurance?.let { selectedInsurance ->
+                fetchTerminationStep(selectedInsurance)
+              }
+            },
+            isLoading = uiState.isNavigationStepLoading,
+          )
+        }
         Spacer(Modifier.height(16.dp))
       }
     }
@@ -192,7 +196,7 @@ private fun PreviewChooseInsuranceToTerminateScreen(
   ) uiState: ChooseInsuranceToTerminateStepUiState,
 ) {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       ChooseInsuranceToTerminateScreen(
         uiState,
         {},

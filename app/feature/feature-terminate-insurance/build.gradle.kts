@@ -48,6 +48,8 @@ dependencies {
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
   implementation(projects.designSystemHedvig)
+  implementation(libs.androidx.compose.foundation)
+  implementation(libs.androidx.compose.material3.windowSizeClass)
 
   testImplementation(libs.apollo.testingSupport)
   testImplementation(libs.assertK)

@@ -2,6 +2,7 @@ package com.hedvig.android.feature.terminateinsurance.step.terminationreview
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -12,35 +13,28 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.material.icons.Icons
-import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.LineBreak
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedLinearProgress
-import com.hedvig.android.core.designsystem.material3.warningElement
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.hedvig.normal.WarningFilled
-import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
+import com.hedvig.android.design.system.hedvig.EmptyState
+import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.ERROR
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedLinearProgress
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Termination
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
@@ -103,53 +97,37 @@ private fun AreYouSureScreen(
       .padding(horizontal = 16.dp),
   ) {
     Spacer(modifier = Modifier.weight(1f))
-    Spacer(Modifier.height(16.dp))
-    Icon(
-      imageVector = Icons.Hedvig.WarningFilled,
-      contentDescription = null,
-      tint = MaterialTheme.colorScheme.warningElement,
-    )
-    Spacer(Modifier.height(16.dp))
-    Text(
+    EmptyState(
+      iconStyle = ERROR,
       text = stringResource(id = R.string.GENERAL_ARE_YOU_SURE),
-      textAlign = TextAlign.Center,
-      style = LocalTextStyle.current.copy(
-        lineBreak = LineBreak.Heading,
-      ),
-      modifier = Modifier.fillMaxWidth(),
-    )
-    Spacer(Modifier.height(2.dp))
-    val subtitle = when (type) {
-      TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Deletion ->
-        stringResource(id = R.string.TERMINATION_FLOW_CONFIRMATION)
+      description = when (type) {
+        TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Deletion ->
+          stringResource(id = R.string.TERMINATION_FLOW_CONFIRMATION)
 
-      is TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Termination ->
-        stringResource(
-          id = R.string.TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TERMINATION,
-          dateTimeFormatter.format(type.terminationDate.toJavaLocalDate()),
-        )
-    }
-    Text(
-      text = subtitle,
-      textAlign = TextAlign.Center,
-      style = LocalTextStyle.current.copy(
-        lineBreak = LineBreak.Heading,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-      ),
-      modifier = Modifier.fillMaxWidth(),
+        is Termination ->
+          stringResource(
+            id = R.string.TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TERMINATION,
+            dateTimeFormatter.format(type.terminationDate.toJavaLocalDate()),
+          )
+      },
     )
     Spacer(modifier = Modifier.weight(1f))
     Spacer(Modifier.height(16.dp))
-    HedvigContainedButton(
+    HedvigButton(
       stringResource(id = R.string.TERMINATION_FLOW_CONFIRM_BUTTON),
       enabled = true,
       onClick = onContinue,
     )
     Spacer(Modifier.height(8.dp))
-    HedvigTextButton(
-      stringResource(id = R.string.general_close_button),
-      onClick = navigateUp,
-    )
+    Row(
+      horizontalArrangement = Arrangement.Center,
+      modifier = Modifier.fillMaxWidth(),
+    ) {
+      HedvigTextButton(
+        stringResource(id = R.string.general_close_button),
+        onClick = navigateUp,
+      )
+    }
     Spacer(Modifier.height(16.dp))
     Spacer(
       Modifier.padding(
@@ -164,11 +142,11 @@ private fun AreYouSureScreen(
 @Composable
 private fun OverviewScreenPreviewDeletion(
   @PreviewParameter(
-    com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider::class,
+    BooleanCollectionPreviewParameterProvider::class,
   ) isLoading: Boolean,
 ) {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       TerminationConfirmationScreen(
         uiState = OverviewUiState(
           terminationType = TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Deletion,
@@ -187,14 +165,14 @@ private fun OverviewScreenPreviewDeletion(
 @Composable
 private fun OverviewScreenPreview(
   @PreviewParameter(
-    com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider::class,
+    BooleanCollectionPreviewParameterProvider::class,
   ) isLoading: Boolean,
 ) {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       TerminationConfirmationScreen(
         uiState = OverviewUiState(
-          terminationType = TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Termination(
+          terminationType = Termination(
             LocalDate(2024, 8, 9),
           ),
           nextStep = null,

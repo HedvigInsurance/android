@@ -2,14 +2,16 @@ package com.hedvig.android.feature.terminateinsurance.step.unknown
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.button.HedvigOutlinedTextButton
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationInfoScreen
 import hedvig.resources.R
 
@@ -42,13 +44,17 @@ private fun UnknownScreenScreen(
     bodyText = stringResource(R.string.EMBARK_UPDATE_APP_BODY),
     navigateUp = navigateUp,
   ) {
-    Column {
-      HedvigOutlinedTextButton(
+    Column(
+      horizontalAlignment = Alignment.CenterHorizontally,
+      modifier = Modifier.fillMaxWidth(),
+    ) {
+      HedvigButton(
         text = stringResource(R.string.EMBARK_UPDATE_APP_BUTTON),
+        enabled = true,
         onClick = openPlayStore,
       )
       Spacer(Modifier.height(16.dp))
-      HedvigContainedButton(
+      HedvigTextButton(
         text = stringResource(R.string.general_close_button),
         onClick = navigateBack,
       )
