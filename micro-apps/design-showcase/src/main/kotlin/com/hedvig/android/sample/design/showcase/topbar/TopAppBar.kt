@@ -61,7 +61,8 @@ fun TopAppBarShowcase() {
       },
     ) {
       Column(
-        modifier = Modifier.fillMaxSize().border(1.dp, Color.Red)
+        modifier = Modifier
+          .fillMaxSize()
           .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
