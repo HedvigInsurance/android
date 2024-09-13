@@ -22,7 +22,7 @@ import hedvig.resources.R
 internal fun RemoveCoInsuredBottomSheetContent(
   onRemove: (CoInsured) -> Unit,
   isLoading: Boolean,
-  errorMessage: String?, // todo: not used??
+  errorMessage: String?,
   coInsured: CoInsured,
 ) {
   Column(
