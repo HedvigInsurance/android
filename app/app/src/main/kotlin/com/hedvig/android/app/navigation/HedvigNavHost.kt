@@ -52,6 +52,7 @@ import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.compose.Destination
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.AppDestination
+import com.hedvig.android.navigation.core.AppDestination.ClaimDetails
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
 
@@ -265,6 +266,9 @@ internal fun HedvigNavHost(
       hedvigBuildConstants = hedvigBuildConstants,
       imageLoader = imageLoader,
       openUrl = openUrl,
+      onNavigateToClaimDetails = { claimId ->
+        hedvigAppState.navController.navigate(ClaimDetails(claimId))
+      },
       navigator = navigator,
     )
     connectPaymentGraph(
