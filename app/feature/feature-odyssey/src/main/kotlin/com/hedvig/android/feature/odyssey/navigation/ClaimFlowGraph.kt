@@ -369,7 +369,6 @@ fun NavGraphBuilder.terminalClaimFlowStepDestinations(
   }
   navdestination<ClaimFlowDestination.ClaimSuccess> { backStackEntry ->
     ClaimSuccessDestination(
-      onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry) },
       closeSuccessScreen = navigator::popBackStack,
     )
   }
