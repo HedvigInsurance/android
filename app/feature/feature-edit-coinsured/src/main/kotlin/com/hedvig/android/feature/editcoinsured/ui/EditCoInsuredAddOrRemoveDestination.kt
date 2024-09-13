@@ -48,6 +48,8 @@ import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.data.Member
+import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.InfoFromSsn
+import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.ManualInfo
 import hedvig.resources.R
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
@@ -360,6 +362,8 @@ private fun EditCoInsuredScreenEditablePreview() {
           ),
           addBottomSheetState = EditCoInsuredState.Loaded.AddBottomSheetState(
             isLoading = false,
+            manualInfo = ManualInfo(),
+            infoFromSsn = InfoFromSsn()
           ),
           removeBottomSheetState = EditCoInsuredState.Loaded.RemoveBottomSheetState(),
         ),
@@ -418,6 +422,8 @@ private fun EditCoInsuredScreenNonEditablePreview() {
           ),
           addBottomSheetState = EditCoInsuredState.Loaded.AddBottomSheetState(
             isLoading = false,
+            manualInfo = ManualInfo(),
+            infoFromSsn = InfoFromSsn()
           ),
           removeBottomSheetState = EditCoInsuredState.Loaded.RemoveBottomSheetState(),
         ),

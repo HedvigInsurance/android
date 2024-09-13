@@ -62,6 +62,8 @@ import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.ui.text.WarningTextWithIconForInput
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.AddBottomSheetState
+import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.InfoFromSsn
+import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.ManualInfo
 import hedvig.resources.R
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
@@ -103,7 +105,7 @@ internal fun AddCoInsuredBottomSheetContent(
     } else {
       AnimatedVisibility(visible = bottomSheetState.showManualInput) {
         ManualInputFields(
-          birthDate = bottomSheetState.birthDate,
+          birthDate = bottomSheetState.manualInfo.birthDate,
           errorMessage = bottomSheetState.errorMessage,
           onBirthDateChanged = onBirthDateChanged,
           onFirstNameChanged = onFirstNameChanged,
@@ -460,6 +462,8 @@ private fun AddCoInsuredBottomSheetContentPreview() {
       AddCoInsuredBottomSheetContent(
         bottomSheetState = AddBottomSheetState(
           errorMessage = "Error",
+          manualInfo = ManualInfo(),
+          infoFromSsn = InfoFromSsn(),
           selectableCoInsured = listOf(
             CoInsured(
               "Test",
@@ -501,8 +505,9 @@ private fun AddCoInsuredBottomSheetContentWithCoInsuredPreview() {
           errorMessage = "errorMessage",
           showUnderAgedInfo = true,
           showManualInput = true,
-          birthDate = LocalDate(2016, 7, 28),
-        ),
+          infoFromSsn = InfoFromSsn(),
+          manualInfo = ManualInfo(birthDate = LocalDate(2016, 7, 28),
+        )),
         onSsnChanged = {},
         onContinue = {},
         onManualInputSwitchChanged = {},
