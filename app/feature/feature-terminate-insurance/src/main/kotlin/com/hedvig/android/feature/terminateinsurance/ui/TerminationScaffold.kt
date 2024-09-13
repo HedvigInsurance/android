@@ -3,48 +3,32 @@ package com.hedvig.android.feature.terminateinsurance.ui
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.SheetState
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
-import com.hedvig.android.core.designsystem.material3.squircleLargeTop
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.hedvig.normal.Info
-import com.hedvig.android.core.ui.appbar.TopAppBarWithBackAndClose
-import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigScaffold
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.IconButton
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
+import com.hedvig.android.design.system.hedvig.icon.Close
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.InfoOutline
 import hedvig.resources.R
-import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
 
@@ -58,70 +42,48 @@ internal fun TerminationScaffold(
 ) {
   var showExplanationBottomSheet by rememberSaveable { mutableStateOf(false) }
   if (textForInfoIcon != null) {
-    val coroutineScope = rememberCoroutineScope()
-    val referralExplanationSheetState = rememberModalBottomSheetState(true)
-
-    if (showExplanationBottomSheet) {
-      ExplanationBottomSheet(
-        onDismiss = {
-          coroutineScope.launch {
-            referralExplanationSheetState.hide()
-          }.invokeOnCompletion {
-            showExplanationBottomSheet = false
-          }
-        },
-        sheetState = referralExplanationSheetState,
-        text = textForInfoIcon,
-      )
-    }
+    ExplanationBottomSheet(
+      onDismiss = { showExplanationBottomSheet = false },
+      text = textForInfoIcon,
+      isVisible = showExplanationBottomSheet,
+    )
   }
-
-  Surface(
-    color = MaterialTheme.colorScheme.background,
-    modifier = modifier.fillMaxSize(),
-  ) {
-    Column {
-      val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-      TopAppBarWithBackAndClose(
-        onNavigateUp = navigateUp,
-        onClose = closeTerminationFlow,
-        title = "",
-        scrollBehavior = topAppBarScrollBehavior,
-        extraActions = {
-          if (textForInfoIcon != null) {
-            IconButton(
-              onClick = { showExplanationBottomSheet = true },
-              content = {
-                Icon(
-                  imageVector = Icons.Hedvig.Info,
-                  contentDescription = null,
-                )
-              },
+  HedvigScaffold(
+    modifier = modifier,
+    navigateUp = navigateUp,
+    topAppBarText = "",
+    topAppBarActions = {
+      if (textForInfoIcon != null) {
+        IconButton(
+          modifier = Modifier.size(24.dp),
+          onClick = { showExplanationBottomSheet = true },
+          content = {
+            Icon(
+              imageVector = HedvigIcons.InfoOutline,
+              contentDescription = null,
             )
-          }
+          },
+        )
+      }
+      IconButton(
+        modifier = Modifier.size(24.dp),
+        onClick = { closeTerminationFlow() },
+        content = {
+          Icon(
+            imageVector = HedvigIcons.Close,
+            contentDescription = null,
+          )
         },
       )
-
-      Column(
-        modifier = Modifier
-          .fillMaxSize()
-          .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
-          .verticalScroll(rememberScrollState())
-          .windowInsetsPadding(
-            WindowInsets.safeDrawing.only(
-              WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom,
-            ),
-          ),
-      ) {
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-          text = stringResource(id = R.string.TERMINATION_FLOW_CANCELLATION_TITLE),
-          style = MaterialTheme.typography.headlineSmall,
-          modifier = Modifier.padding(horizontal = 16.dp),
-        )
-        content()
-      }
-    }
+    },
+  ) {
+    Spacer(modifier = Modifier.height(8.dp))
+    HedvigText(
+      text = stringResource(id = R.string.TERMINATION_FLOW_CANCELLATION_TITLE),
+      style = HedvigTheme.typography.headlineMedium,
+      modifier = Modifier.padding(horizontal = 16.dp),
+    )
+    content()
   }
 }
 
@@ -172,36 +134,35 @@ private fun CommonQuestions(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun ExplanationBottomSheet(onDismiss: () -> Unit, sheetState: SheetState, text: String) {
-  ModalBottomSheet(
-    containerColor = MaterialTheme.colorScheme.background,
-    onDismissRequest = {
-      onDismiss()
+private fun ExplanationBottomSheet(
+  onDismiss: () -> Unit,
+  text: String,
+  isVisible: Boolean,
+) {
+  HedvigBottomSheet(
+    onVisibleChange = { visible ->
+      if (!visible) {
+        onDismiss()
+      }
     },
-    shape = MaterialTheme.shapes.squircleLargeTop,
-    sheetState = sheetState,
-    tonalElevation = 0.dp,
+    bottomButtonText = stringResource(id = R.string.general_close_button),
+    isVisible = isVisible,
   ) {
-    Text(
+    HedvigText(
       text = stringResource(id = R.string.TERMINATION_FLOW_CANCEL_INFO_TITLE),
       modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 24.dp),
+          .fillMaxWidth()
+          .padding(horizontal = 24.dp),
     )
     Spacer(Modifier.height(8.dp))
-    Text(
+    HedvigText(
       text = text,
-      color = MaterialTheme.colorScheme.onSurfaceVariant,
+      color = HedvigTheme.colorScheme.textSecondary,
       modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 24.dp),
+          .fillMaxWidth()
+          .padding(horizontal = 24.dp),
     )
     Spacer(Modifier.height(32.dp))
-    HedvigTextButton(
-      text = stringResource(id = R.string.general_close_button),
-      onClick = { onDismiss() },
-      modifier = Modifier.padding(start = 24.dp, end = 24.dp, bottom = 16.dp),
-    )
   }
 }
 
@@ -216,10 +177,11 @@ private fun terminationDateText(terminationDate: LocalDate): String {
 @Composable
 private fun PreviewTerminationOverviewScreenScaffold() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       TerminationScaffold(
         navigateUp = {},
         closeTerminationFlow = {},
+        textForInfoIcon = "Icon text",
       ) {
       }
     }
