@@ -140,7 +140,9 @@ internal class EditCoInsuredPresenterTest {
       skipItems(1)
       sendEvent(EditCoInsuredEvent.OnLastNameChanged("New last name manual"))
       val state2 = awaitItem()
-      assertThat((state2 as EditCoInsuredState.Loaded).addBottomSheetState.manualInfo.lastName).isEqualTo("New last name manual")
+      assertThat(
+        (state2 as EditCoInsuredState.Loaded).addBottomSheetState.manualInfo.lastName,
+      ).isEqualTo("New last name manual")
       sendEvent(EditCoInsuredEvent.OnBottomSheetContinue)
       skipItems(1)
       testCreateMidTermChangeUseCase.addCreateMidtermChangeResult(
