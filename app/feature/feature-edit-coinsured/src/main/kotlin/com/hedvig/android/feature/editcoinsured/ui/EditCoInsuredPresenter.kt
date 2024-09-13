@@ -49,10 +49,12 @@ internal class EditCoInsuredPresenter(
     }
     var addBottomSheetState by remember {
       val lastBottomSheetState = lastState.safeCast<Loaded>()?.addBottomSheetState
-      mutableStateOf(lastBottomSheetState ?: Loaded.AddBottomSheetState(
-        manualInfo = ManualInfo(),
-        infoFromSsn = InfoFromSsn()
-      ))
+      mutableStateOf(
+        lastBottomSheetState ?: Loaded.AddBottomSheetState(
+          manualInfo = ManualInfo(),
+          infoFromSsn = InfoFromSsn(),
+        ),
+      )
     }
     var removeBottomSheetState by remember {
       val lastBottomSheetState = lastState.safeCast<Loaded>()?.removeBottomSheetState
@@ -122,8 +124,11 @@ internal class EditCoInsuredPresenter(
           if (event.ssn.length <= 12) {
             addBottomSheetState = addBottomSheetState.copy(
               manualInfo = ManualInfo(),
-              infoFromSsn = InfoFromSsn(ssn = event.ssn,firstName = null,
-                lastName = null, ),
+              infoFromSsn = InfoFromSsn(
+                ssn = event.ssn,
+                firstName = null,
+                lastName = null,
+              ),
               errorMessage = null,
             )
           }
@@ -131,26 +136,29 @@ internal class EditCoInsuredPresenter(
         is EditCoInsuredEvent.OnBirthDateChanged ->
           addBottomSheetState =
             addBottomSheetState.copy(
-              manualInfo = addBottomSheetState.manualInfo.copy(birthDate = event.birthDate), errorMessage = null)
+              manualInfo = addBottomSheetState.manualInfo.copy(birthDate = event.birthDate),
+              errorMessage = null,
+            )
 
         is EditCoInsuredEvent.OnFirstNameChanged ->
           addBottomSheetState =
             addBottomSheetState.copy(
               manualInfo = addBottomSheetState.manualInfo.copy(firstName = event.firstName),
-              errorMessage = null)
+              errorMessage = null,
+            )
 
         is EditCoInsuredEvent.OnLastNameChanged ->
           addBottomSheetState =
             addBottomSheetState.copy(
-              manualInfo = addBottomSheetState.manualInfo.copy(lastName = event.lastName), errorMessage = null)
+              manualInfo = addBottomSheetState.manualInfo.copy(lastName = event.lastName),
+              errorMessage = null,
+            )
 
         is EditCoInsuredEvent.OnManualInputSwitchChanged -> {
           addBottomSheetState = addBottomSheetState.copy(
             showManualInput = event.show,
-//            ssn = null,
-//            birthDate = null,
-//            firstName = null,
-//            lastName = null
+            errorMessage = null,
+            showUnderAgedInfo = false,
           )
         }
 
@@ -160,7 +168,8 @@ internal class EditCoInsuredPresenter(
             manualInfo = ManualInfo(
               firstName = event.coInsured.firstName,
               lastName = event.coInsured.lastName,
-              birthDate = event.coInsured.birthDate),
+              birthDate = event.coInsured.birthDate,
+            ),
             infoFromSsn = InfoFromSsn(
               firstName = event.coInsured.firstName,
               lastName = event.coInsured.lastName,
@@ -194,7 +203,7 @@ internal class EditCoInsuredPresenter(
         ResetAddBottomSheetState -> {
           addBottomSheetState = Loaded.AddBottomSheetState(
             infoFromSsn = InfoFromSsn(),
-            manualInfo = ManualInfo()
+            manualInfo = ManualInfo(),
           )
         }
 
@@ -213,9 +222,11 @@ internal class EditCoInsuredPresenter(
           when (result) {
             is CoInsuredPersonalInformation.FullInfo -> {
               addBottomSheetState = addBottomSheetState.copy(
-                infoFromSsn = InfoFromSsn( firstName = result.firstName,
+                infoFromSsn = InfoFromSsn(
+                  firstName = result.firstName,
                   lastName = result.lastName,
-                  ssn = ssn,),
+                  ssn = ssn,
+                ),
                 errorMessage = null,
               )
             }
@@ -225,7 +236,7 @@ internal class EditCoInsuredPresenter(
                 Loaded.AddBottomSheetState(
                   showManualInput = true,
                   show = true,
-                  manualInfo = ManualInfo(null,null, birthDate = result.dateOfBirth),
+                  manualInfo = ManualInfo(null, null, birthDate = result.dateOfBirth),
                   infoFromSsn = InfoFromSsn(),
                   showUnderAgedInfo = true,
                 )
@@ -273,8 +284,9 @@ internal class EditCoInsuredPresenter(
                 selectedCoInsuredId = null
                 addBottomSheetState = Loaded.AddBottomSheetState(
                   show = false,
-                  manualInfo = ManualInfo(null,null, birthDate = null),
-                  infoFromSsn = InfoFromSsn(null,null,null),)
+                  manualInfo = ManualInfo(null, null, birthDate = null),
+                  infoFromSsn = InfoFromSsn(null, null, null),
+                )
                 removeBottomSheetState = Loaded.RemoveBottomSheetState(show = false)
                 editedCoInsuredList = null
               }
@@ -436,7 +448,6 @@ internal sealed interface EditCoInsuredState {
       val validFrom: LocalDate,
     )
 
-
     data class ManualInfo(
       val firstName: String? = null,
       val lastName: String? = null,
@@ -448,7 +459,6 @@ internal sealed interface EditCoInsuredState {
       val lastName: String? = null,
       val ssn: String? = null,
     )
-
 
     data class AddBottomSheetState(
       val infoFromSsn: InfoFromSsn,

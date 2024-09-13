@@ -7,14 +7,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -77,16 +72,13 @@ internal fun AddCoInsuredBottomSheetContent(
   onSsnChanged: (String) -> Unit,
   onContinue: () -> Unit,
   onManualInputSwitchChanged: (Boolean) -> Unit,
-  onDismiss: () -> Unit,
   onBirthDateChanged: (LocalDate) -> Unit,
   onFirstNameChanged: (String) -> Unit,
   onLastNameChanged: (String) -> Unit,
   onAddNewCoInsured: () -> Unit,
   onCoInsuredSelected: (CoInsured) -> Unit,
 ) {
-  Column(
-    modifier = Modifier.padding(horizontal = 16.dp),
-  ) {
+  Column {
     Spacer(Modifier.height(16.dp))
     Text(
       text = stringResource(id = R.string.CONTRACT_ADD_COINSURED),
@@ -106,6 +98,8 @@ internal fun AddCoInsuredBottomSheetContent(
       AnimatedVisibility(visible = bottomSheetState.showManualInput) {
         ManualInputFields(
           birthDate = bottomSheetState.manualInfo.birthDate,
+          firstName = bottomSheetState.manualInfo.firstName,
+          lastName = bottomSheetState.manualInfo.lastName,
           errorMessage = bottomSheetState.errorMessage,
           onBirthDateChanged = onBirthDateChanged,
           onFirstNameChanged = onFirstNameChanged,
@@ -115,6 +109,7 @@ internal fun AddCoInsuredBottomSheetContent(
       AnimatedVisibility(visible = !bottomSheetState.showManualInput) {
         FetchFromSsnFields(
           displayName = bottomSheetState.displayName,
+          ssn = bottomSheetState.infoFromSsn.ssn,
           errorMessage = bottomSheetState.errorMessage,
           onSsnChanged = onSsnChanged,
           onContinue = onContinue,
@@ -169,13 +164,6 @@ internal fun AddCoInsuredBottomSheetContent(
       isLoading = bottomSheetState.isLoading,
     )
     Spacer(Modifier.height(8.dp))
-    HedvigTextButton(
-      onClick = onDismiss,
-      text = stringResource(id = R.string.general_cancel_button),
-      modifier = Modifier.fillMaxWidth(),
-    )
-    Spacer(Modifier.height(16.dp))
-    Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
   }
 }
 
@@ -206,12 +194,13 @@ internal fun SelectableCoInsuredList(
 
 @Composable
 private fun FetchFromSsnFields(
+  ssn: String?,
   displayName: String,
   errorMessage: String?,
   onSsnChanged: (String) -> Unit,
   onContinue: () -> Unit,
 ) {
-  var ssnInput by remember { mutableStateOf("") }
+  var ssnInput by remember { mutableStateOf(ssn ?: "") }
   val mask = stringResource(id = R.string.edit_coinsured_ssn_placeholder)
   val maskColor = MaterialTheme.colorScheme.onSurfaceVariant
   Column {
@@ -298,13 +287,15 @@ private class PersonalNumberVisualTransformation(
 @Composable
 private fun ManualInputFields(
   birthDate: LocalDate?,
+  firstName: String?,
+  lastName: String?,
   onBirthDateChanged: (LocalDate) -> Unit,
   onFirstNameChanged: (String) -> Unit,
   onLastNameChanged: (String) -> Unit,
   errorMessage: String?,
 ) {
-  var firstNameInput by remember { mutableStateOf("") }
-  var lastNameInput by remember { mutableStateOf("") }
+  var firstNameInput by remember { mutableStateOf(firstName ?: "") }
+  var lastNameInput by remember { mutableStateOf(lastName ?: "") }
 
   Column {
     DatePickerWithDialog(
@@ -484,7 +475,6 @@ private fun AddCoInsuredBottomSheetContentPreview() {
         onSsnChanged = {},
         onContinue = {},
         onManualInputSwitchChanged = {},
-        onDismiss = {},
         onBirthDateChanged = {},
         onFirstNameChanged = {},
         onLastNameChanged = {},
@@ -506,12 +496,13 @@ private fun AddCoInsuredBottomSheetContentWithCoInsuredPreview() {
           showUnderAgedInfo = true,
           showManualInput = true,
           infoFromSsn = InfoFromSsn(),
-          manualInfo = ManualInfo(birthDate = LocalDate(2016, 7, 28),
-        )),
+          manualInfo = ManualInfo(
+            birthDate = LocalDate(2016, 7, 28),
+          ),
+        ),
         onSsnChanged = {},
         onContinue = {},
         onManualInputSwitchChanged = {},
-        onDismiss = {},
         onBirthDateChanged = {},
         onFirstNameChanged = {},
         onLastNameChanged = {},
