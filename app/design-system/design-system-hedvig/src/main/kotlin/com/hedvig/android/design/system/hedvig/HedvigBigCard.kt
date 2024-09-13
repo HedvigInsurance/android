@@ -64,7 +64,7 @@ private object BigCardDefaults {
     get() = TypographyKeyTokens.Label.value
   val inputTextStyle: TextStyle
     @Composable
-    get() = TypographyKeyTokens.BodySmall.value
+    get() = TypographyKeyTokens.BodyMedium.value
   val padding = PaddingValues(
     top = 11.dp,
     bottom = 10.dp,

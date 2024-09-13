@@ -115,7 +115,7 @@ private fun MyInfoScreen(
 
 @Composable
 private fun ColumnScope.SuccessState(
-  uiState: MyInfoUiState.Success,
+  uiState: Success,
   phoneNumberChanged: (String) -> Unit,
   emailChanged: (String) -> Unit,
   updateEmailAndPhoneNumber: () -> Unit,
@@ -142,7 +142,7 @@ private fun ColumnScope.SuccessState(
       keyboardType = KeyboardType.Phone,
       imeAction = ImeAction.Next,
     ),
-    textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
+    textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Large,
     modifier = Modifier
       .fillMaxWidth()
       .padding(horizontal = 16.dp),
@@ -175,7 +175,7 @@ private fun ColumnScope.SuccessState(
         focusManager.clearFocus()
       },
     ),
-    textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
+    textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Large,
     modifier = Modifier
       .fillMaxWidth()
       .padding(horizontal = 16.dp),
