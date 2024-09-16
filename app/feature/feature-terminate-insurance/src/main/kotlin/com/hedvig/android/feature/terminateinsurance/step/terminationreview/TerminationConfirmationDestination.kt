@@ -23,6 +23,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.EmptyState
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.ERROR
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -91,11 +92,12 @@ private fun AreYouSureScreen(
     modifier = modifier
       .padding(
         WindowInsets.safeDrawing
-          .only(WindowInsetsSides.Horizontal)
+          .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
           .asPaddingValues(),
       )
       .padding(horizontal = 16.dp),
   ) {
+    Spacer(Modifier.height(16.dp))
     Spacer(modifier = Modifier.weight(1f))
     EmptyState(
       iconStyle = ERROR,
@@ -117,6 +119,7 @@ private fun AreYouSureScreen(
       stringResource(id = R.string.TERMINATION_FLOW_CONFIRM_BUTTON),
       enabled = true,
       onClick = onContinue,
+      modifier = Modifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(8.dp))
     Row(
@@ -126,6 +129,8 @@ private fun AreYouSureScreen(
       HedvigTextButton(
         stringResource(id = R.string.general_close_button),
         onClick = navigateUp,
+        modifier = Modifier.fillMaxWidth(),
+        buttonSize = Large,
       )
     }
     Spacer(Modifier.height(16.dp))

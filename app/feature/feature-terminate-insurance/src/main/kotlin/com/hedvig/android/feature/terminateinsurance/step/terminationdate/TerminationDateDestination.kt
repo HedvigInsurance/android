@@ -19,6 +19,7 @@ import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.Checkbox
+import com.hedvig.android.design.system.hedvig.CheckboxDefaults.CheckboxSize.Small
 import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
 import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -99,7 +100,7 @@ private fun TerminationDateScreen(
     Spacer(modifier = Modifier.height(4.dp))
     DateButton(
       datePickerState = uiState.datePickerState,
-      modifier = Modifier,
+      modifier = Modifier.padding(horizontal = 16.dp),
       onSelectedDateChange = { long ->
         changeSelectedDate(long)
       },
@@ -121,7 +122,7 @@ private fun TerminationDateScreen(
         text = stringResource(id = R.string.TERMINATION_FLOW_CANCEL_INSURANCE_BUTTON),
         onClick = submit,
         enabled = uiState.canSubmit,
-        modifier = Modifier.padding(horizontal = 16.dp),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
       )
     }
     Spacer(Modifier.height(16.dp))
@@ -151,12 +152,15 @@ private fun ImportantInfoCheckBox(isChecked: Boolean, onCheckedChange: () -> Uni
           color = HedvigTheme.colorScheme.textSecondary,
         )
         Spacer(Modifier.height(16.dp))
-        Checkbox(
-          optionText = stringResource(R.string.TERMINATION_FLOW_I_UNDERSTAND_TEXT),
-          chosenState = if (isChecked) Chosen else NotChosen,
-          onClick = onCheckedChange,
-          containerColor = HedvigTheme.colorScheme.fillNegative,
-        )
+        HedvigTheme(darkTheme = false) {
+          Checkbox(
+            checkboxSize = Small,
+            optionText = stringResource(R.string.TERMINATION_FLOW_I_UNDERSTAND_TEXT),
+            chosenState = if (isChecked) Chosen else NotChosen,
+            onClick = onCheckedChange,
+            containerColor = HedvigTheme.colorScheme.fillNegative,
+          )
+        }
       }
     }
   }

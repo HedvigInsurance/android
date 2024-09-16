@@ -136,6 +136,7 @@ fun HedvigTextButton(
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
   interactionSource: MutableInteractionSource? = null,
+  buttonSize: ButtonDefaults.ButtonSize = ButtonDefaults.ButtonSize.Medium,
 ) {
   HedvigButton(
     text = text,
@@ -143,7 +144,7 @@ fun HedvigTextButton(
     enabled = enabled,
     modifier = modifier,
     buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
-    buttonSize = ButtonDefaults.ButtonSize.Medium,
+    buttonSize = buttonSize,
     interactionSource = interactionSource,
   )
 }

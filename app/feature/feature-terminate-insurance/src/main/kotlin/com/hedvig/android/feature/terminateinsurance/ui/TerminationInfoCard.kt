@@ -73,54 +73,52 @@ internal fun TerminationInfoCardDate(
   }
 
   Surface(
-    modifier = modifierWithClick
-      .fillMaxWidth()
-      .padding(horizontal = 16.dp),
+    modifier = modifierWithClick,
     shape = HedvigTheme.shapes.cornerLarge,
   ) {
-  }
-  HorizontalItemsWithMaximumSpaceTaken(
-    startSlot = {
-      Column {
-        HedvigText(
-          text = stringResource(id = R.string.TERMINATION_FLOW_DATE_FIELD_TEXT),
-          style = HedvigTheme.typography.label,
-          color = HedvigTheme.colorScheme.textSecondary,
-        )
-        HedvigText(
-          text = dateValue ?: stringResource(R.string.TERMINATION_FLOW_DATE_FIELD_PLACEHOLDER),
-          style = HedvigTheme.typography.bodySmall,
-          color = if (dateValue == null) {
-            HedvigTheme.colorScheme.textSecondary
-          } else {
-            Color.Unspecified
-          },
-        )
-      }
-    },
-    endSlot = {
-      Row(
-        horizontalArrangement = Arrangement.End,
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
-        if (isLocked) {
-          Icon(
-            imageVector = HedvigIcons.Lock,
-            contentDescription = null,
-            tint = HedvigTheme.colorScheme.fillPrimary,
+    HorizontalItemsWithMaximumSpaceTaken(
+      startSlot = {
+        Column {
+          HedvigText(
+            text = stringResource(id = R.string.TERMINATION_FLOW_DATE_FIELD_TEXT),
+            style = HedvigTheme.typography.label,
+            color = HedvigTheme.colorScheme.textSecondary,
           )
-        } else {
-          Icon(
-            imageVector = HedvigIcons.ChevronDown,
-            modifier = Modifier.size(16.dp),
-            contentDescription = null,
-            tint = HedvigTheme.colorScheme.fillPrimary,
+          HedvigText(
+            text = dateValue ?: stringResource(R.string.TERMINATION_FLOW_DATE_FIELD_PLACEHOLDER),
+            style = HedvigTheme.typography.bodySmall,
+            color = if (dateValue == null) {
+              HedvigTheme.colorScheme.textSecondary
+            } else {
+              Color.Unspecified
+            },
           )
         }
-      }
-    },
-    modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
-  )
+      },
+      endSlot = {
+        Row(
+          horizontalArrangement = Arrangement.End,
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
+          if (isLocked) {
+            Icon(
+              imageVector = HedvigIcons.Lock,
+              contentDescription = null,
+              tint = HedvigTheme.colorScheme.fillPrimary,
+            )
+          } else {
+            Icon(
+              imageVector = HedvigIcons.ChevronDown,
+              modifier = Modifier.size(16.dp),
+              contentDescription = null,
+              tint = HedvigTheme.colorScheme.fillPrimary,
+            )
+          }
+        }
+      },
+      modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+    )
+  }
 }
 
 @HedvigPreview

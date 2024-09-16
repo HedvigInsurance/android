@@ -55,6 +55,9 @@ internal fun InsuranceDeletionDestination(
       dateValue = stringResource(id = R.string.TERMINATION_FLOW_TODAY),
       onClick = null,
       isLocked = true,
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
     )
     Spacer(modifier = Modifier.height(8.dp))
     HedvigNotificationCard(
@@ -72,7 +75,7 @@ internal fun InsuranceDeletionDestination(
       HedvigButton(
         text = stringResource(id = R.string.TERMINATION_FLOW_CANCEL_INSURANCE_BUTTON),
         onClick = onContinue,
-        modifier = Modifier.padding(horizontal = 16.dp),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
         enabled = true,
       )
     }

@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
@@ -44,11 +43,13 @@ internal fun TerminationInfoScreen(
     val sideSpacingModifier = if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded) {
       Modifier
         .fillMaxWidth(0.8f)
-        .wrapContentWidth(Alignment.Start)
+        .padding(horizontal = 16.dp)
         .align(Alignment.CenterHorizontally)
     } else {
-      Modifier.padding(horizontal = 16.dp)
+      Modifier.fillMaxWidth().padding(horizontal = 16.dp)
     }
+    Spacer(Modifier.height(16.dp))
+    Spacer(Modifier.weight(1f))
     EmptyState(
       modifier = sideSpacingModifier,
       text = headerText,
@@ -61,6 +62,7 @@ internal fun TerminationInfoScreen(
       bottomContent()
     }
     Spacer(Modifier.height(16.dp))
+    // }
   }
 }
 
@@ -85,6 +87,7 @@ private fun PreviewTerminationInfoScreen() {
           modifier = Modifier.fillMaxWidth(),
         ) {
           HedvigButton(
+            modifier = Modifier.fillMaxWidth(),
             text = stringResource(R.string.general_done_button),
             enabled = true,
             onClick = { },

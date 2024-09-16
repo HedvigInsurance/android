@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,7 +16,11 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -34,14 +37,28 @@ import kotlinx.datetime.toJavaLocalDate
 
 @Composable
 internal fun TerminationSuccessDestination(terminationDate: LocalDate?, onDone: () -> Unit) {
-  Surface(color = HedvigTheme.colorScheme.backgroundPrimary, modifier = Modifier.fillMaxSize()) {
+  Surface(
+    color = HedvigTheme.colorScheme.backgroundPrimary,
+    modifier = Modifier.fillMaxSize(),
+  ) {
+    val connection = remember {
+      object : NestedScrollConnection {}
+    }
     Column(
+      horizontalAlignment = Alignment.CenterHorizontally,
       modifier = Modifier
         .fillMaxSize()
+        .nestedScroll(connection)
         .verticalScroll(rememberScrollState())
-        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+        .windowInsetsPadding(
+          WindowInsets.safeDrawing.only(
+            WindowInsetsSides.Horizontal +
+              WindowInsetsSides.Bottom,
+          ),
+        ),
     ) {
       Spacer(Modifier.height(16.dp))
+      Spacer(Modifier.weight(1f))
       EmptyState(
         text = stringResource(id = R.string.TERMINATION_FLOW_SUCCESS_TITLE),
         description = terminationDate?.let {
@@ -53,6 +70,7 @@ internal fun TerminationSuccessDestination(terminationDate: LocalDate?, onDone: 
         iconStyle = SUCCESS,
       )
       Spacer(Modifier.height(16.dp))
+      Spacer(Modifier.weight(1f))
       Row(
         horizontalArrangement = Arrangement.Center,
         modifier = Modifier.fillMaxWidth(),
@@ -61,17 +79,13 @@ internal fun TerminationSuccessDestination(terminationDate: LocalDate?, onDone: 
           text = stringResource(id = R.string.general_done_button),
           enabled = true,
           onClick = onDone,
-          modifier = Modifier.padding(horizontal = 16.dp),
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
         )
       }
 
       Spacer(Modifier.height(16.dp))
-      Spacer(
-        Modifier.padding(
-          WindowInsets.safeDrawing
-            .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom).asPaddingValues(),
-        ),
-      )
     }
   }
 }

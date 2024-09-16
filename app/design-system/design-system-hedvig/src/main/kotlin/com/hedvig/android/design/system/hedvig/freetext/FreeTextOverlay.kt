@@ -165,6 +165,7 @@ private fun FreeTextOverlayContent(
     modifier
       .fillMaxSize()
       .safeDrawingPadding()
+      .padding(top = 8.dp)
       .padding(FreeTextDefaults.fieldPadding),
   ) {
     BasicTextField(

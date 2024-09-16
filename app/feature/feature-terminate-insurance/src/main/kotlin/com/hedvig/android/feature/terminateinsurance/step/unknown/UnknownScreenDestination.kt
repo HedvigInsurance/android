@@ -10,8 +10,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.calculateForPreview
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationInfoScreen
 import hedvig.resources.R
 
@@ -49,14 +54,32 @@ private fun UnknownScreenScreen(
       modifier = Modifier.fillMaxWidth(),
     ) {
       HedvigButton(
+        modifier = Modifier.fillMaxWidth(),
         text = stringResource(R.string.EMBARK_UPDATE_APP_BUTTON),
         enabled = true,
         onClick = openPlayStore,
       )
-      Spacer(Modifier.height(16.dp))
+      Spacer(Modifier.height(8.dp))
       HedvigTextButton(
+        buttonSize = Large,
+        modifier = Modifier.fillMaxWidth(),
         text = stringResource(R.string.general_close_button),
         onClick = navigateBack,
+      )
+    }
+  }
+}
+
+@Composable
+@HedvigPreview
+fun PreviewSettingsScreen() {
+  HedvigTheme {
+    Surface {
+      UnknownScreenDestination(
+        navigateUp = {},
+        navigateBack = {},
+        windowSizeClass = WindowSizeClass.calculateForPreview(),
+        openPlayStore = {},
       )
     }
   }

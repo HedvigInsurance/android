@@ -158,7 +158,7 @@ private fun ChooseInsuranceToTerminateScreen(
           HedvigButton(
             stringResource(id = R.string.general_continue_button),
             enabled = uiState.selectedInsurance != null,
-            modifier = Modifier.padding(horizontal = 16.dp),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             onClick = {
               uiState.selectedInsurance?.let { selectedInsurance ->
                 fetchTerminationStep(selectedInsurance)

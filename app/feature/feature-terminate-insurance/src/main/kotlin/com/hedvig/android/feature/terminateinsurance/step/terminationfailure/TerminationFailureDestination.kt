@@ -2,13 +2,17 @@ package com.hedvig.android.feature.terminateinsurance.step.terminationfailure
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
@@ -50,16 +54,22 @@ private fun TerminationFailureScreen(
     bodyText = errorMessage.message ?: stringResource(R.string.something_went_wrong),
     navigateUp = navigateUp,
   ) {
-    Column {
+    Column(
+      Modifier.fillMaxWidth(),
+      horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
       HedvigButton(
+        modifier = Modifier.fillMaxSize(),
         text = stringResource(id = R.string.open_chat),
         enabled = true,
         onClick = onNavigateToNewConversation,
       )
-      Spacer(Modifier.height(16.dp))
+      Spacer(Modifier.height(8.dp))
       HedvigTextButton(
+        modifier = Modifier.fillMaxSize(),
         text = stringResource(R.string.general_done_button),
         onClick = navigateBack,
+        buttonSize = Large,
       )
     }
   }
@@ -69,8 +79,14 @@ private fun TerminationFailureScreen(
 @Composable
 private fun PreviewTerminationFailureScreen() {
   HedvigTheme {
-    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      TerminationFailureScreen(WindowSizeClass.calculateForPreview(), ErrorMessage(), {}, {}, {})
+    Surface {
+      TerminationFailureScreen(
+        WindowSizeClass.calculateForPreview(),
+        ErrorMessage(),
+        {},
+        {},
+        {},
+      )
     }
   }
 }

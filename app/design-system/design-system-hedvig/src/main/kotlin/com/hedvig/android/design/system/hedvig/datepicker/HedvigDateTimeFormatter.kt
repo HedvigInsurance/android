@@ -46,6 +46,7 @@ fun rememberHedvigMonthDateTimeFormatter(): DateTimeFormatter {
   val locale = getLocale()
   return remember(locale) { hedvigMonthDateTimeFormatter(locale) }
 }
+
 @Suppress("unused")
 @Composable
 fun rememberHedvigBirthDateDateTimeFormatter(): DateTimeFormatter {

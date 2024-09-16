@@ -140,7 +140,10 @@ private fun TerminationSurveyScreen(
           enter = fadeIn(),
           exit = fadeOut(),
         ) {
-          Column {
+          Column(
+            Modifier.weight(1f),
+            verticalArrangement = Arrangement.Center,
+          ) {
             EmptyState(
               modifier = Modifier
                 .padding(horizontal = 16.dp)
@@ -182,6 +185,7 @@ private fun TerminationSurveyScreen(
                     }
                   }
                   HedvigNotificationCard(
+                    modifier = Modifier.padding(horizontal = 16.dp),
                     message = text,
                     priority = NotificationPriority.Campaign,
                     style = InfoCardStyle.Button(
@@ -193,12 +197,14 @@ private fun TerminationSurveyScreen(
                 }
                 if (reason.surveyOption.feedBackRequired) {
                   FreeTextDisplay(
+                    modifier = Modifier.padding(horizontal = 16.dp),
                     onClick = {
                       onLaunchFullScreenEditText(reason.surveyOption)
                     },
                     freeTextValue = reason.feedBack,
                     freeTextPlaceholder = stringResource(id = R.string.TERMINATION_SURVEY_FEEDBACK_HINT),
                   )
+                  Spacer(modifier = (Modifier.height(4.dp)))
                 }
               }
             }
@@ -212,7 +218,7 @@ private fun TerminationSurveyScreen(
           HedvigButton(
             stringResource(id = R.string.general_continue_button),
             enabled = uiState.continueAllowed,
-            modifier = Modifier.padding(horizontal = 16.dp),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             onClick = onContinueClick,
             isLoading = uiState.navigationStepLoadingForReason != null,
           )
