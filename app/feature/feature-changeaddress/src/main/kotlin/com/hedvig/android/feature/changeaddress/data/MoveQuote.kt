@@ -1,12 +1,12 @@
 package com.hedvig.android.feature.changeaddress.data
 
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.InsurableLimit
 import com.hedvig.android.data.productvariant.ProductVariant
 import kotlinx.datetime.LocalDate
-import octopus.type.CurrencyCode
 
 internal data class MoveQuote(
   val id: String,
@@ -27,7 +27,7 @@ internal data class MoveQuote(
         id = index.toString(),
         insuranceName = "Insurance #$index",
         moveIntentId = MoveIntentId(""),
-        premium = UiMoney(99.0 * index, CurrencyCode.SEK),
+        premium = UiMoney(99.0 * index, UiCurrencyCode.SEK),
         startDate = LocalDate(2023, 5, 13),
         isExpanded = index == 1,
         productVariant = ProductVariant(

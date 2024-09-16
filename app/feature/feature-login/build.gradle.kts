@@ -15,7 +15,6 @@ dependencies {
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.androidx.lifecycle.viewModel)
   implementation(libs.androidx.navigation.compose)
-  implementation(libs.kiwi.navigationCompose)
   implementation(libs.koin.compose)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.core)
@@ -35,6 +34,7 @@ dependencies {
   implementation(projects.marketSet)
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
+  implementation(projects.navigationCompose)
   implementation(projects.navigationCore)
 
   testImplementation(libs.androidx.datastore.core)

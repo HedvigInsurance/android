@@ -9,23 +9,17 @@ import com.hedvig.android.app.MainActivity
 import com.hedvig.android.app.notification.DATA_MESSAGE_BODY
 import com.hedvig.android.app.notification.DATA_MESSAGE_TITLE
 import com.hedvig.android.app.notification.getImmutablePendingIntentFlags
-import com.hedvig.android.core.common.android.notification.setupNotificationChannel
+import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
+import hedvig.resources.R
 import java.util.concurrent.atomic.AtomicInteger
 
 class GenericNotificationSender(
   private val context: Context,
+  private val notificationChannel: HedvigNotificationChannel,
 ) : NotificationSender {
   private val id = AtomicInteger(100)
-
-  override fun createChannel() {
-    setupNotificationChannel(
-      context,
-      GENERIC_CHANNEL_ID,
-      context.resources.getString(hedvig.resources.R.string.NOTIFICATION_CHANNEL_GENERIC_TITLE),
-    )
-  }
 
   override suspend fun sendNotification(type: String, remoteMessage: RemoteMessage) {
     val title = remoteMessage.data[DATA_MESSAGE_TITLE]
@@ -35,24 +29,21 @@ class GenericNotificationSender(
       .addNextIntent(Intent(context, MainActivity::class.java))
       .getPendingIntent(0, getImmutablePendingIntentFlags())
     val notification = NotificationCompat
-      .Builder(
-        context,
-        GENERIC_CHANNEL_ID,
-      )
-      .setSmallIcon(hedvig.resources.R.drawable.ic_hedvig_h)
+      .Builder(context, notificationChannel.channelId)
+      .setSmallIcon(R.drawable.ic_hedvig_h)
       .setContentTitle(title)
       .setContentText(body)
       .setPriority(NotificationCompat.PRIORITY_DEFAULT)
       .setAutoCancel(true)
-      .setChannelId(GENERIC_CHANNEL_ID)
       .setContentIntent(pendingIntent)
       .build()
 
     sendHedvigNotification(
       context = context,
-      notificationSender = "GenericNotificationSender",
       notificationId = id.getAndIncrement(),
       notification = notification,
+      notificationChannel = notificationChannel,
+      notificationSenderName = "GenericNotificationSender",
     )
   }
 
@@ -61,7 +52,5 @@ class GenericNotificationSender(
 
   companion object {
     const val NOTIFICATION_TYPE_GENERIC_COMMUNICATION = "GENERIC_COMMUNICATION"
-
-    private const val GENERIC_CHANNEL_ID = "hedvig-generic"
   }
 }

@@ -4,8 +4,8 @@ import arrow.core.Either
 import arrow.core.raise.either
 import arrow.core.raise.ensureNotNull
 import com.apollographql.apollo.ApolloClient
+import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.appreview.SelfServiceCompletedEventManager
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiMoney
@@ -34,8 +34,7 @@ internal class NetworkChangeAddressRepository(
     return either {
       val result = apolloClient
         .mutation(MoveIntentCreateMutation())
-        .safeExecute()
-        .toEither(::ErrorMessage)
+        .safeExecute(::ErrorMessage)
         .bind()
         .moveIntentCreate
 
@@ -56,8 +55,7 @@ internal class NetworkChangeAddressRepository(
     return either {
       val result = apolloClient
         .mutation(input.toMoveIntentRequestMutation())
-        .safeExecute()
-        .toEither(::ErrorMessage)
+        .safeExecute(::ErrorMessage)
         .bind()
         .moveIntentRequest
 
@@ -79,8 +77,7 @@ internal class NetworkChangeAddressRepository(
     return either {
       val result = apolloClient
         .mutation(MoveIntentCommitMutation(id.id))
-        .safeExecute()
-        .toEither(::ErrorMessage)
+        .safeExecute(::ErrorMessage)
         .bind()
         .moveIntentCommit
 
@@ -120,10 +117,7 @@ private fun MoveIntentRequestMutation.Data.MoveIntentRequest.MoveIntent.toMoveQu
       id = id,
       insuranceName = quote.exposureName ?: quote.productVariant.displayName,
       moveIntentId = MoveIntentId(id),
-      premium = UiMoney(
-        amount = quote.premium.amount,
-        currencyCode = quote.premium.currencyCode,
-      ),
+      premium = UiMoney.fromMoneyFragment(quote.premium),
       startDate = quote.startDate,
       productVariant = quote.productVariant.toProductVariant(),
       displayItems = quote.displayItems

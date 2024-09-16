@@ -44,6 +44,7 @@ import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.dialog.ErrorDialog
 import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.data.Member
@@ -51,7 +52,6 @@ import hedvig.resources.R
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
-import octopus.type.CurrencyCode
 
 @Composable
 internal fun EditCoInsuredAddOrRemoveDestination(
@@ -168,7 +168,7 @@ private fun EditCoInsuredScreen(
             shape = MaterialTheme.shapes.squircleLargeTop,
             sheetState = sheetState,
             tonalElevation = 0.dp,
-            windowInsets = BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top),
+            contentWindowInsets = { BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top) },
           ) {
             AddCoInsuredBottomSheetContent(
               bottomSheetState = uiState.addBottomSheetState,
@@ -199,7 +199,7 @@ private fun EditCoInsuredScreen(
             shape = MaterialTheme.shapes.squircleLargeTop,
             sheetState = sheetState,
             tonalElevation = 0.dp,
-            windowInsets = BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top),
+            contentWindowInsets = { BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top) },
           ) {
             RemoveCoInsuredBottomSheetContent(
               onRemove = { onRemoveCoInsured(it) },
@@ -352,8 +352,8 @@ private fun EditCoInsuredScreenEditablePreview() {
               ssn = "197312331093",
             ),
             priceInfo = EditCoInsuredState.Loaded.PriceInfo(
-              previousPrice = UiMoney(100.0, CurrencyCode.SEK),
-              newPrice = UiMoney(200.0, CurrencyCode.SEK),
+              previousPrice = UiMoney(100.0, UiCurrencyCode.SEK),
+              newPrice = UiMoney(200.0, UiCurrencyCode.SEK),
               validFrom = LocalDate.fromEpochDays(400),
             ),
             allCoInsured = listOf(),

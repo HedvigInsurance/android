@@ -57,11 +57,11 @@ import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.scaffold.ClaimFlowScaffold
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.claimflow.CheckoutMethod
 import com.hedvig.android.data.claimflow.ClaimFlowDestination
 import hedvig.resources.R
-import octopus.type.CurrencyCode
 
 @Composable
 internal fun SingleItemCheckoutDestination(
@@ -151,11 +151,11 @@ private fun SingleItemCheckoutScreen(
           verticalAlignment = Alignment.CenterVertically,
         ) {
           val explanationText = when (uiState.compensation) {
-            is ClaimFlowDestination.Compensation.Known.RepairCompensation -> stringResource(
+            is ClaimFlowDestination.SingleItemCheckout.Compensation.Known.RepairCompensation -> stringResource(
               id = R.string.CLAIMS_CHECKOUT_REPAIR_CALCULATION_TEXT,
             )
 
-            is ClaimFlowDestination.Compensation.Known.ValueCompensation -> stringResource(
+            is ClaimFlowDestination.SingleItemCheckout.Compensation.Known.ValueCompensation -> stringResource(
               id = R.string.CLAIMS_CHECKOUT_NO_REPAIR_CALCULATION_TEXT,
             )
           }
@@ -180,7 +180,7 @@ private fun SingleItemCheckoutScreen(
     CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
       Column(sideSpacingModifier) {
         val pairs = when (uiState.compensation) {
-          is ClaimFlowDestination.Compensation.Known.RepairCompensation -> listOf(
+          is ClaimFlowDestination.SingleItemCheckout.Compensation.Known.RepairCompensation -> listOf(
             stringResource(
               R.string.CLAIMS_CHECKOUT_REPAIR_TITLE,
               uiState.modelDisplayName,
@@ -188,7 +188,7 @@ private fun SingleItemCheckoutScreen(
             stringResource(R.string.claims_payout_age_deductable) to "-" + uiState.compensation.deductible.toString(),
           )
 
-          is ClaimFlowDestination.Compensation.Known.ValueCompensation -> listOf(
+          is ClaimFlowDestination.SingleItemCheckout.Compensation.Known.ValueCompensation -> listOf(
             stringResource(R.string.KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE) to uiState.compensation.price.toString(),
             stringResource(R.string.claims_payout_age_deduction) to "-" + uiState.compensation.depreciation.toString(),
             stringResource(R.string.claims_payout_age_deductable) to "-" + uiState.compensation.deductible.toString(),
@@ -233,12 +233,12 @@ private fun SingleItemCheckoutScreen(
     )
     Spacer(Modifier.height(16.dp))
     when (uiState.compensation) {
-      is ClaimFlowDestination.Compensation.Known.RepairCompensation -> {
+      is ClaimFlowDestination.SingleItemCheckout.Compensation.Known.RepairCompensation -> {
         VectorInfoCard(stringResource(R.string.CLAIMS_CHECKOUT_REPAIR_INFO_TEXT), sideSpacingModifier)
         Spacer(Modifier.height(16.dp))
       }
 
-      is ClaimFlowDestination.Compensation.Known.ValueCompensation -> {
+      is ClaimFlowDestination.SingleItemCheckout.Compensation.Known.ValueCompensation -> {
         HorizontalDivider(sideSpacingModifier, thickness = Dp.Hairline)
         Spacer(Modifier.height(16.dp))
       }
@@ -285,7 +285,7 @@ private fun SingleItemCheckoutScreen(
     )
     Spacer(Modifier.height(16.dp))
     Spacer(Modifier.weight(1f))
-    if (uiState.compensation is ClaimFlowDestination.Compensation.Known.ValueCompensation) {
+    if (uiState.compensation is ClaimFlowDestination.SingleItemCheckout.Compensation.Known.ValueCompensation) {
       VectorInfoCard(stringResource(R.string.CLAIMS_CHECKOUT_NOTICE), sideSpacingModifier)
       Spacer(Modifier.height(16.dp))
     }
@@ -377,17 +377,17 @@ private fun PreviewSingleItemCheckoutScreenWithRepair() {
   val checkoutNr1 = CheckoutMethod.Known.AutomaticAutogiro(
     "#1",
     "Fancy payment method",
-    UiMoney(2499.0, CurrencyCode.SEK),
+    UiMoney(2499.0, UiCurrencyCode.SEK),
   )
   var selected: CheckoutMethod.Known by remember { mutableStateOf(checkoutNr1) }
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       SingleItemCheckoutScreen(
         uiState = SingleItemCheckoutUiState.Content(
-          compensation = ClaimFlowDestination.Compensation.Known.RepairCompensation(
-            repairCost = UiMoney(3999.0, CurrencyCode.SEK),
-            deductible = UiMoney(1000.0, CurrencyCode.SEK),
-            payoutAmount = UiMoney(2999.0, CurrencyCode.SEK),
+          compensation = ClaimFlowDestination.SingleItemCheckout.Compensation.Known.RepairCompensation(
+            repairCost = UiMoney(3999.0, UiCurrencyCode.SEK),
+            deductible = UiMoney(1000.0, UiCurrencyCode.SEK),
+            payoutAmount = UiMoney(2999.0, UiCurrencyCode.SEK),
           ),
           availableCheckoutMethods = buildList {
             add(checkoutNr1)
@@ -413,23 +413,23 @@ private fun PreviewSingleItemCheckoutScreenValueCompensation(
   val checkoutNr1 = CheckoutMethod.Known.AutomaticAutogiro(
     "#1",
     "Autogiro".repeat(4),
-    UiMoney(2499.0, CurrencyCode.SEK),
+    UiMoney(2499.0, UiCurrencyCode.SEK),
   )
   val checkoutNr2 = CheckoutMethod.Known.AutomaticAutogiro(
     "#2",
     "Bankenbanken",
-    UiMoney(2499.0, CurrencyCode.SEK),
+    UiMoney(2499.0, UiCurrencyCode.SEK),
   )
   var selected: CheckoutMethod.Known by remember { mutableStateOf(checkoutNr1) }
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       SingleItemCheckoutScreen(
         SingleItemCheckoutUiState.Content(
-          ClaimFlowDestination.Compensation.Known.ValueCompensation(
-            price = UiMoney(3999.0, CurrencyCode.SEK),
-            depreciation = UiMoney(500.0, CurrencyCode.SEK),
-            deductible = UiMoney(1000.0, CurrencyCode.SEK),
-            payoutAmount = UiMoney(2499.0, CurrencyCode.SEK),
+          ClaimFlowDestination.SingleItemCheckout.Compensation.Known.ValueCompensation(
+            price = UiMoney(3999.0, UiCurrencyCode.SEK),
+            depreciation = UiMoney(500.0, UiCurrencyCode.SEK),
+            deductible = UiMoney(1000.0, UiCurrencyCode.SEK),
+            payoutAmount = UiMoney(2499.0, UiCurrencyCode.SEK),
           ),
           buildList {
             add(checkoutNr1)

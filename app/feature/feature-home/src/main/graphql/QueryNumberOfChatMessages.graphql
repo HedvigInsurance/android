@@ -1,8 +1,0 @@
-query NumberOfChatMessages {
-  chat(until: null) {
-    messages {
-      id
-      sender
-    }
-  }
-}

@@ -19,6 +19,12 @@ android {
     versionName = "0.0.1"
   }
 
+  sourceSets {
+    getByName("main") {
+      res.srcDirs("resources/main")
+    }
+  }
+
   buildTypes {
     @Suppress("UNUSED_VARIABLE")
     val debug by getting {
@@ -48,6 +54,7 @@ dependencies {
   implementation(libs.androidx.graphicsShapes)
   implementation(libs.coil.coil)
   implementation(libs.datadog.sdk.core)
+  implementation(libs.kotlinx.datetime)
   implementation(libs.material.components)
   implementation(libs.timber)
   implementation(libs.zoomable)

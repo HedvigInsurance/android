@@ -41,6 +41,7 @@ internal data class InsuranceUiState(
   val crossSells: List<CrossSell>,
   val showNotificationBadge: Boolean,
   val quantityOfCancelledInsurances: Int,
+  val shouldSuggestMovingFlow: Boolean,
   val hasError: Boolean,
   val isLoading: Boolean,
   val isRetrying: Boolean,
@@ -51,6 +52,7 @@ internal data class InsuranceUiState(
       crossSells = listOf(),
       showNotificationBadge = false,
       quantityOfCancelledInsurances = 0,
+      shouldSuggestMovingFlow = false,
       hasError = false,
       isLoading = true,
       isRetrying = false,
@@ -129,6 +131,7 @@ internal class InsurancePresenter(
       crossSells = insuranceData.crossSells,
       showNotificationBadge = showNotificationBadge,
       quantityOfCancelledInsurances = insuranceData.quantityOfCancelledInsurances,
+      shouldSuggestMovingFlow = insuranceData.isEligibleToPerformMovingFlow,
       hasError = didFailToLoad && !isLoading && !isRetrying,
       isLoading = isLoading,
       isRetrying = isRetrying,
@@ -171,6 +174,9 @@ private suspend fun loadInsuranceData(
         contracts = insuranceCards,
         crossSells = crossSells,
         quantityOfCancelledInsurances = contracts.count(InsuranceContract::isTerminated),
+        isEligibleToPerformMovingFlow = contracts.any {
+          !it.isTerminated && it.upcomingInsuranceAgreement == null && it.supportsAddressChange
+        },
       )
     }
   }.onLeft {
@@ -184,6 +190,7 @@ private data class InsuranceData(
   val contracts: List<InsuranceContract>,
   val crossSells: List<CrossSell>,
   val quantityOfCancelledInsurances: Int,
+  val isEligibleToPerformMovingFlow: Boolean,
 ) {
   companion object {
     fun fromUiState(uiState: InsuranceUiState): InsuranceData {
@@ -191,6 +198,7 @@ private data class InsuranceData(
         contracts = uiState.contracts,
         crossSells = uiState.crossSells,
         quantityOfCancelledInsurances = uiState.quantityOfCancelledInsurances,
+        isEligibleToPerformMovingFlow = uiState.shouldSuggestMovingFlow,
       )
     }
 
@@ -198,6 +206,7 @@ private data class InsuranceData(
       contracts = listOf(),
       crossSells = listOf(),
       quantityOfCancelledInsurances = 0,
+      isEligibleToPerformMovingFlow = false,
     )
   }
 }

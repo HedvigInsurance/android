@@ -14,7 +14,7 @@ import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 
 internal class PaymentDetailsViewModel(
-  chargeId: String,
+  chargeId: String?,
   getChargeDetailsUseCase: GetChargeDetailsUseCase,
 ) : MoleculeViewModel<PaymentDetailsEvent, PaymentDetailsUiState>(
     initialState = PaymentDetailsUiState.Loading,
@@ -25,7 +25,7 @@ internal class PaymentDetailsViewModel(
   )
 
 private class PaymentDetailsPresenter(
-  private val chargeId: String,
+  private val chargeId: String?,
   private val getChargeDetailsUseCase: GetChargeDetailsUseCase,
 ) : MoleculePresenter<PaymentDetailsEvent, PaymentDetailsUiState> {
   @Composable

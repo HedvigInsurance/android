@@ -13,8 +13,8 @@ import com.hedvig.android.app.MainActivity
 import com.hedvig.android.app.notification.DATA_MESSAGE_BODY
 import com.hedvig.android.app.notification.DATA_MESSAGE_TITLE
 import com.hedvig.android.app.notification.getImmutablePendingIntentFlags
-import com.hedvig.android.core.common.android.notification.setupNotificationChannel
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
+import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
 import hedvig.resources.R
@@ -22,16 +22,8 @@ import hedvig.resources.R
 class ReferralsNotificationSender(
   private val context: Context,
   private val hedvigDeepLinkContainer: HedvigDeepLinkContainer,
+  private val notificationChannel: HedvigNotificationChannel,
 ) : NotificationSender {
-  override fun createChannel() {
-    setupNotificationChannel(
-      context,
-      REFERRAL_CHANNEL_ID,
-      context.resources.getString(R.string.NOTIFICATION_REFERRAL_CHANNEL_NAME),
-      context.resources.getString(R.string.NOTIFICATION_REFERRAL_CHANNEL_DESCRIPTION),
-    )
-  }
-
   override suspend fun sendNotification(type: String, remoteMessage: RemoteMessage) {
     when (type) {
       NOTIFICATION_TYPE_REFERRAL_SUCCESS -> sendReferralSuccessfulNotification(remoteMessage)
@@ -100,9 +92,10 @@ class ReferralsNotificationSender(
   private fun sendNotificationInner(id: Int, notification: Notification) {
     sendHedvigNotification(
       context = context,
-      notificationSender = "ReferralsNotificationSender",
       notificationId = id,
       notification = notification,
+      notificationChannel = notificationChannel,
+      notificationSenderName = "ReferralsNotificationSender",
     )
   }
 
@@ -112,18 +105,16 @@ class ReferralsNotificationSender(
     body: String?,
     pendingIntent: PendingIntent?,
   ) = NotificationCompat
-    .Builder(context, REFERRAL_CHANNEL_ID)
+    .Builder(context, notificationChannel.channelId)
     .setSmallIcon(R.drawable.ic_hedvig_h)
     .setContentText(title)
     .setContentText(body)
     .setContentTitle(context.resources.getString(R.string.NOTIFICATION_REFERRAL_COMPLETED_TITLE))
     .setPriority(NotificationCompat.PRIORITY_DEFAULT)
     .setAutoCancel(true)
-    .setChannelId(REFERRAL_CHANNEL_ID)
     .setContentIntent(pendingIntent)
 
   companion object {
-    private const val REFERRAL_CHANNEL_ID = "hedvig-referral"
     private const val REFERRAL_NOTIFICATION_ID = 2
 
     private const val REFERRALS_CAMPAIGN_ID = 12

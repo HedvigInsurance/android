@@ -120,7 +120,11 @@ private fun Shape.withTopRightPointingArrow(): Shape {
         layoutDirection,
         density,
       )
-      val squirclePath: Path = (squircleOutline as Outline.Generic).path
+      val squirclePath: Path = when (squircleOutline) {
+        is Outline.Generic -> squircleOutline.path
+        is Outline.Rectangle -> Path().apply { addRect(squircleOutline.rect) }
+        is Outline.Rounded -> Path().apply { addRoundRect(squircleOutline.roundRect) }
+      }
       val arrowPath: Path = Path().apply {
         // first 4 dps are straight, the tip is only curved
         val straightLineSize = with(density) { 4.dp.toPx() }

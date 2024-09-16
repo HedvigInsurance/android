@@ -7,32 +7,23 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
-import androidx.navigation.NavOptions
+import androidx.navigation.NavOptionsBuilder
+import com.hedvig.android.navigation.compose.Destination
 import com.hedvig.android.navigation.core.Navigator
-import com.kiwi.navigationcompose.typed.Destination
-import com.kiwi.navigationcompose.typed.navigate
 
 @Composable
 internal fun rememberNavigator(navController: NavController, finishApp: () -> Unit): Navigator {
   val updatedFinishApp by rememberUpdatedState(finishApp)
   return remember(navController) {
     object : Navigator {
-      override fun NavBackStackEntry.navigate(
-        destination: Destination,
-        navOptions: NavOptions?,
-        navigatorExtras: androidx.navigation.Navigator.Extras?,
-      ) {
+      override fun NavBackStackEntry.navigate(destination: Destination, builder: NavOptionsBuilder.() -> Unit) {
         if (lifecycle.currentState == Lifecycle.State.RESUMED) {
-          navigateUnsafe(destination, navOptions, navigatorExtras)
+          navigateUnsafe(destination, builder)
         }
       }
 
-      override fun navigateUnsafe(
-        destination: Destination,
-        navOptions: NavOptions?,
-        navigatorExtras: androidx.navigation.Navigator.Extras?,
-      ) {
-        navController.navigate(destination, navOptions, navigatorExtras)
+      override fun navigateUnsafe(destination: Destination, builder: NavOptionsBuilder.() -> Unit) {
+        navController.navigate(destination, builder)
       }
 
       override fun navigateUp() {

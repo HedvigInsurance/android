@@ -5,7 +5,6 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.apollo.toEither
 import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.logger.logcat
@@ -39,7 +38,6 @@ internal class FCMTokenUploadWorker(
     return apolloClient
       .mutation(MemberDeviceRegisterMutation(storedToken))
       .safeExecute()
-      .toEither()
       .fold(
         ifLeft = {
           logcat { "NotificationRegisterDeviceMutation failed with token:$storedToken. Will retry later. Error:$it" }

@@ -15,24 +15,24 @@ import com.hedvig.android.feature.help.center.navigation.HelpCenterDestination
 import com.hedvig.android.feature.help.center.navigation.HelpCenterDestinations
 import com.hedvig.android.feature.help.center.question.HelpCenterQuestionDestination
 import com.hedvig.android.feature.help.center.topic.HelpCenterTopicDestination
-import com.hedvig.android.navigation.core.AppDestination
+import com.hedvig.android.navigation.compose.navdestination
+import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
-import com.kiwi.navigationcompose.typed.composable
-import com.kiwi.navigationcompose.typed.createRoutePattern
-import com.kiwi.navigationcompose.typed.navigation
 import org.koin.androidx.compose.koinViewModel
 
 fun NavGraphBuilder.helpCenterGraph(
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   navigator: Navigator,
   onNavigateToQuickLink: (NavBackStackEntry, QuickLinkDestination.OuterDestination) -> Unit,
-  onNavigateToNewConversation: (NavBackStackEntry, AppDestination.Chat.ChatContext?) -> Unit,
+  onNavigateToInbox: (NavBackStackEntry) -> Unit,
+  onNavigateToNewConversation: (NavBackStackEntry) -> Unit,
+  openUrl: (String) -> Unit,
 ) {
-  navigation<HelpCenterDestination>(
-    startDestination = createRoutePattern<HelpCenterDestinations.HelpCenter>(),
+  navgraph<HelpCenterDestination>(
+    startDestination = HelpCenterDestinations.HelpCenter::class,
   ) {
-    composable<HelpCenterDestinations.HelpCenter>(
+    navdestination<HelpCenterDestinations.HelpCenter>(
       deepLinks = listOf(
         navDeepLink { uriPattern = hedvigDeepLinkContainer.helpCenter },
       ),
@@ -52,6 +52,7 @@ fun NavGraphBuilder.helpCenterGraph(
             is QuickLinkDestination.OuterDestination -> {
               onNavigateToQuickLink(backStackEntry, destination)
             }
+
             is QuickLinkDestination.InnerHelpCenterDestination -> {
               when (destination) {
                 is QuickLinkDestination.InnerHelpCenterDestination.FirstVet -> {
@@ -59,60 +60,79 @@ fun NavGraphBuilder.helpCenterGraph(
                     backStackEntry.navigate(HelpCenterDestinations.FirstVet(destination.sections))
                   }
                 }
+
                 is QuickLinkDestination.InnerHelpCenterDestination.QuickLinkSickAbroad -> {
                   with(navigator) {
-                    backStackEntry.navigate(HelpCenterDestinations.Emergency(destination.emergencyNumber))
+                    backStackEntry.navigate(
+                      HelpCenterDestinations.Emergency(
+                        destination.emergencyNumber,
+                        destination.emergencyUrl,
+                      ),
+                    )
                   }
                 }
               }
             }
           }
         },
-        openChat = {
-          onNavigateToNewConversation(backStackEntry, null)
+        onNavigateToInbox = {
+          onNavigateToInbox(backStackEntry)
+        },
+        onNavigateToNewConversation = {
+          onNavigateToNewConversation(backStackEntry)
         },
         onNavigateUp = navigator::navigateUp,
       )
     }
-    composable<HelpCenterDestinations.Topic> { backStackEntry ->
+    navdestination<HelpCenterDestinations.Topic>(
+      HelpCenterDestinations.Topic,
+    ) { backStackEntry ->
       val resources = LocalContext.current.resources
+      val viewModel = koinViewModel<ShowNavigateToInboxViewModel>()
       HelpCenterTopicDestination(
+        showNavigateToInboxViewModel = viewModel,
         topic = topic,
         onNavigateToQuestion = { question ->
           navigateToQuestion(resources, question, navigator, backStackEntry)
         },
         onNavigateUp = navigator::navigateUp,
         onNavigateBack = navigator::popBackStack,
-        openChat = {
-          onNavigateToNewConversation(backStackEntry, topic.chatContext)
-        },
+        onNavigateToInbox = { onNavigateToInbox(backStackEntry) },
+        onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry) },
       )
     }
-    composable<HelpCenterDestinations.Question> { backStackEntry ->
+    navdestination<HelpCenterDestinations.Question>(
+      HelpCenterDestinations.Question,
+    ) { backStackEntry ->
+      val viewModel = koinViewModel<ShowNavigateToInboxViewModel>()
       val resources = LocalContext.current.resources
       HelpCenterQuestionDestination(
+        showNavigateToInboxViewModel = viewModel,
         questionId = question,
         onNavigateToQuestion = { question ->
           navigateToQuestion(resources, question, navigator, backStackEntry)
         },
+        onNavigateToInbox = { onNavigateToInbox(backStackEntry) },
+        onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry) },
         onNavigateUp = navigator::navigateUp,
         onNavigateBack = navigator::popBackStack,
-        openChat = {
-          onNavigateToNewConversation(backStackEntry, question.chatContext)
-        },
       )
     }
-    composable<HelpCenterDestinations.FirstVet> {
+    navdestination<HelpCenterDestinations.FirstVet>(
+      HelpCenterDestinations.FirstVet,
+    ) {
       FirstVetDestination(
         sections = sections,
         navigateUp = navigator::navigateUp,
         navigateBack = navigator::popBackStack,
       )
     }
-    composable<HelpCenterDestinations.Emergency> {
+    navdestination<HelpCenterDestinations.Emergency> {
       EmergencyDestination(
         emergencyNumber = emergencyNumber,
+        emergencyUrl = emergencyUrl,
         navigateUp = navigator::navigateUp,
+        openUrl = openUrl,
       )
     }
   }

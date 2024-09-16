@@ -57,8 +57,7 @@ private class ClaimDetailPresenter(
     LaunchedEffect(loadIteration) {
       isLoading = true
       hasError = false
-      val forceNetworkFetch = loadIteration != 0
-      getClaimDetailUiStateUseCase.invoke(claimId, forceNetworkFetch).collect { result ->
+      getClaimDetailUiStateUseCase.invoke(claimId).collect { result ->
         isLoading = false
         result.fold(
           ifLeft = {
@@ -157,6 +156,7 @@ internal sealed interface ClaimDetailUiState {
   data class Content(
     val claimId: String,
     val conversationId: String?,
+    val hasUnreadMessages: Boolean,
     val submittedContent: SubmittedContent?,
     val files: List<UiFile>,
     val claimStatusCardUiState: ClaimStatusCardUiState,

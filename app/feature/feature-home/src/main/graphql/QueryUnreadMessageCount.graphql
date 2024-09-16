@@ -1,0 +1,10 @@
+query UnreadMessageCount {
+  currentMember {
+    conversations {
+      unreadMessageCount
+    }
+    legacyConversation {
+      unreadMessageCount
+    }
+  }
+}

@@ -25,7 +25,6 @@ dependencies {
   implementation(libs.arrow.fx)
   implementation(libs.coil.coil)
   implementation(libs.coil.compose)
-  implementation(libs.kiwi.navigationCompose)
   implementation(libs.koin.compose)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.datetime)
@@ -41,6 +40,7 @@ dependencies {
   implementation(projects.audioPlayerUi)
   implementation(projects.claimStatus)
   implementation(projects.composePhotoCaptureState)
+  implementation(projects.composeUi)
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreDemoMode)
@@ -55,6 +55,7 @@ dependencies {
   implementation(projects.featureFlagsPublic)
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
+  implementation(projects.navigationCompose)
   implementation(projects.navigationCore)
   implementation(projects.placeholder)
 }

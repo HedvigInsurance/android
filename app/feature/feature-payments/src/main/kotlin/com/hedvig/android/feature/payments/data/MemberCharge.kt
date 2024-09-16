@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.payments.data
 
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
@@ -15,7 +16,7 @@ import octopus.type.MemberChargeStatus
 internal data class MemberCharge(
   val grossAmount: UiMoney,
   val netAmount: UiMoney,
-  val id: String,
+  val id: String?,
   val status: MemberChargeStatus,
   val dueDate: LocalDate,
   val failedCharge: FailedCharge?,
@@ -96,7 +97,7 @@ internal fun MemberChargeFragment.toMemberCharge(
   referralInformation: PaymentHistoryWithDetailsQuery.Data.CurrentMember.ReferralInformation,
   clock: Clock,
 ) = MemberCharge(
-  id = id ?: "",
+  id = id,
   grossAmount = UiMoney.fromMoneyFragment(gross),
   netAmount = UiMoney.fromMoneyFragment(net),
   status = when (status) {
@@ -140,7 +141,10 @@ internal fun MemberChargeFragment.toMemberCharge(
       }?.onlyApplicableToContracts?.firstOrNull()?.exposureDisplayName,
       description = relatedRedeemedCampaign?.description,
       expiredState = Discount.ExpiredState.from(relatedRedeemedCampaign?.expiresAt, clock),
-      amount = UiMoney(discountBreakdown.discount.amount.unaryMinus(), discountBreakdown.discount.currencyCode),
+      amount = UiMoney(
+        discountBreakdown.discount.amount.unaryMinus(),
+        UiCurrencyCode.fromCurrencyCode(discountBreakdown.discount.currencyCode),
+      ),
       isReferral = discountBreakdown.isReferral,
     )
   },

@@ -6,6 +6,7 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
 import com.hedvig.android.core.common.test.MainCoroutineRule
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.data.claimflow.ClaimFlowDestination
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.ItemBrand
@@ -18,7 +19,6 @@ import java.util.Locale
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.Clock
-import octopus.type.CurrencyCode
 import octopus.type.FlowClaimItemBrandInput
 import octopus.type.FlowClaimItemModelInput
 import org.junit.Rule
@@ -306,7 +306,7 @@ class SingleItemViewModelTest {
   companion object {
     private fun testSingleItem(itemBrands: List<ItemBrand> = emptyList(), itemModels: List<ItemModel> = emptyList()) =
       ClaimFlowDestination.SingleItem(
-        CurrencyCode.SEK,
+        UiCurrencyCode.SEK,
         null,
         null,
         purchasePriceApplicable = true,

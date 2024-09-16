@@ -4,33 +4,52 @@ import com.hedvig.android.feature.changeaddress.data.AddressId
 import com.hedvig.android.feature.changeaddress.data.ExtraBuilding
 import com.hedvig.android.feature.changeaddress.data.ExtraBuildingType
 import com.hedvig.android.feature.changeaddress.data.HousingType
-import com.kiwi.navigationcompose.typed.Destination
+import com.hedvig.android.navigation.compose.Destination
+import com.hedvig.android.navigation.compose.DestinationNavTypeAware
+import kotlin.reflect.KType
+import kotlin.reflect.typeOf
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
-internal sealed interface ChangeAddressDestination : Destination {
+internal sealed interface ChangeAddressDestination {
   @Serializable
-  data object SelectHousingType : ChangeAddressDestination
+  data object SelectHousingType : ChangeAddressDestination, Destination
 
   @Serializable
   data class EnterNewAddress(
     val previousDestinationParameters: SelectHousingTypeParameters,
-  ) : ChangeAddressDestination
+  ) : ChangeAddressDestination, Destination {
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<SelectHousingTypeParameters>())
+    }
+  }
 
   @Serializable
   data class EnterVillaInformation(
     val previousDestinationParameters: MovingParameters,
-  ) : ChangeAddressDestination
+  ) : ChangeAddressDestination, Destination {
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<MovingParameters>())
+    }
+  }
 
   @Serializable
   data class Offer(
     val previousDestinationParameters: MovingParameters,
-  ) : ChangeAddressDestination
+  ) : ChangeAddressDestination, Destination {
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<MovingParameters>())
+    }
+  }
 
   @Serializable
   data class AddressResult(
     val movingDate: LocalDate?,
-  ) : ChangeAddressDestination
+  ) : ChangeAddressDestination, Destination {
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<LocalDate?>())
+    }
+  }
 }
 
 @Serializable

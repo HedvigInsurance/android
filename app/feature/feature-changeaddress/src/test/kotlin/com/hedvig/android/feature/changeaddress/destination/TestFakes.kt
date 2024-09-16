@@ -3,6 +3,7 @@ package com.hedvig.android.feature.changeaddress.destination
 import app.cash.turbine.Turbine
 import arrow.core.Either
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
@@ -26,7 +27,6 @@ import com.hedvig.android.feature.changeaddress.navigation.NewAddressParameters
 import com.hedvig.android.feature.changeaddress.navigation.SelectHousingTypeParameters
 import com.hedvig.android.feature.changeaddress.navigation.VillaOnlyParameters
 import kotlinx.datetime.LocalDate
-import octopus.type.CurrencyCode
 
 internal val fakeMoveIntent = MoveIntent(
   id = MoveIntentId("moveintentid"),
@@ -101,7 +101,7 @@ internal val fakeMoveQuote = MoveQuote(
   id = "fakeId",
   insuranceName = "Insurance Good Home",
   moveIntentId = MoveIntentId(""),
-  premium = UiMoney(99.0, CurrencyCode.SEK),
+  premium = UiMoney(99.0, UiCurrencyCode.SEK),
   startDate = LocalDate(2023, 5, 13),
   isExpanded = false,
   productVariant = ProductVariant(

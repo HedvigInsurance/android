@@ -36,6 +36,7 @@ apollo {
     generateApolloMetadata = true
     generateDataBuilders = true
 
+    failOnWarnings = true
     // https://www.apollographql.com/docs/android/advanced/operation-variables/#make-nullable-variables-non-optional
     generateOptionalOperationVariables = false
     outputDirConnection {

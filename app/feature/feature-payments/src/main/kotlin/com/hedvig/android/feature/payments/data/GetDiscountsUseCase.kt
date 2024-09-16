@@ -5,16 +5,16 @@ import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.fetchPolicy
+import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
 import octopus.DiscountsQuery
-import octopus.type.CurrencyCode
 import octopus.type.RedeemedCampaignType
 
 internal interface GetDiscountsUseCase {
@@ -28,8 +28,7 @@ internal class GetDiscountsUseCaseImpl(
   override suspend fun invoke(): Either<ErrorMessage, List<Discount>> = either {
     val result = apolloClient.query(DiscountsQuery())
       .fetchPolicy(FetchPolicy.NetworkFirst)
-      .safeExecute()
-      .toEither(::ErrorMessage)
+      .safeExecute(::ErrorMessage)
       .bind()
 
     val discounts = result.currentMember.redeemedCampaigns
@@ -62,7 +61,8 @@ private fun discountFromReferral(
     expiredState = Discount.ExpiredState.NotExpired,
     amount = UiMoney(
       referralInformation.referrals.sumOf { it.activeDiscount?.amount?.unaryMinus() ?: 0.0 },
-      referralInformation.referrals.first().activeDiscount?.currencyCode ?: CurrencyCode.SEK,
+      referralInformation.referrals.first().activeDiscount?.currencyCode?.let { UiCurrencyCode.fromCurrencyCode(it) }
+        ?: UiCurrencyCode.SEK,
     ),
     isReferral = true,
   )

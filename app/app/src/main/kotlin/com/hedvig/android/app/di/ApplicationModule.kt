@@ -16,22 +16,25 @@ import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.cache.normalized.api.MemoryCacheFactory
 import com.apollographql.apollo.cache.normalized.api.NormalizedCacheFactory
 import com.apollographql.apollo.cache.normalized.normalizedCache
-import com.apollographql.apollo.interceptor.ApolloInterceptor
 import com.apollographql.apollo.network.okHttpClient
 import com.hedvig.android.apollo.auth.listeners.di.apolloAuthListenersModule
 import com.hedvig.android.apollo.auth.listeners.di.languageAuthListenersModule
 import com.hedvig.android.apollo.di.networkCacheManagerModule
-import com.hedvig.android.app.apollo.DatadogInterceptor
 import com.hedvig.android.app.apollo.DeviceIdInterceptor
+import com.hedvig.android.app.apollo.LoggingInterceptor
+import com.hedvig.android.app.apollo.LogoutOnUnauthenticatedInterceptor
 import com.hedvig.android.app.notification.senders.ChatNotificationSender
+import com.hedvig.android.app.notification.senders.ContactInfoSender
 import com.hedvig.android.app.notification.senders.CrossSellNotificationSender
 import com.hedvig.android.app.notification.senders.GenericNotificationSender
 import com.hedvig.android.app.notification.senders.PaymentNotificationSender
 import com.hedvig.android.app.notification.senders.ReferralsNotificationSender
+import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.di.authModule
 import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
 import com.hedvig.android.core.appreview.di.coreAppReviewModule
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.di.coreCommonModule
 import com.hedvig.android.core.common.di.databaseFileQualifier
 import com.hedvig.android.core.common.di.datastoreFileQualifier
@@ -39,8 +42,8 @@ import com.hedvig.android.core.datastore.di.dataStoreModule
 import com.hedvig.android.core.demomode.di.demoModule
 import com.hedvig.android.core.fileupload.fileUploadModule
 import com.hedvig.android.data.chat.di.dataChatModule
-import com.hedvig.android.data.chat.read.timestamp.di.chatReadTimestampModule
 import com.hedvig.android.data.claimflow.di.claimFlowDataModule
+import com.hedvig.android.data.conversations.di.dataConversationsModule
 import com.hedvig.android.data.paying.member.di.dataPayingMemberModule
 import com.hedvig.android.data.settings.datastore.di.settingsDatastoreModule
 import com.hedvig.android.data.termination.di.terminationDataModule
@@ -64,7 +67,6 @@ import com.hedvig.android.feature.payments.di.paymentsModule
 import com.hedvig.android.feature.profile.di.profileModule
 import com.hedvig.android.feature.terminateinsurance.di.terminateInsuranceModule
 import com.hedvig.android.feature.travelcertificate.di.travelCertificateModule
-import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.di.featureManagerModule
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.language.di.languageMigrationModule
@@ -75,6 +77,7 @@ import com.hedvig.android.memberreminders.di.memberRemindersModule
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.di.deepLinkModule
 import com.hedvig.android.notification.badge.data.di.notificationBadgeModule
+import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.firebase.di.firebaseNotificationModule
 import com.hedvig.android.shared.foreverui.ui.di.foreverModule
@@ -135,18 +138,13 @@ private val networkModule = module {
     val okHttpBuilder = get<OkHttpClient.Builder>().addInterceptor(get<AuthTokenRefreshingInterceptor>())
     okHttpBuilder.build()
   }
-  single<DatadogInterceptor> { DatadogInterceptor() } bind ApolloInterceptor::class
   single<ApolloClient.Builder> {
-    val interceptors = getAll<ApolloInterceptor>().distinct()
     ApolloClient
       .Builder()
       .okHttpClient(get<OkHttpClient>())
+      .addInterceptor(LoggingInterceptor())
+      .addInterceptor(LogoutOnUnauthenticatedInterceptor(get<AuthTokenService>()))
       .normalizedCache(get<NormalizedCacheFactory>())
-      .apply {
-        for (interceptor in interceptors) {
-          addInterceptor(interceptor)
-        }
-      }
   }
   single<ApolloClient> {
     get<ApolloClient.Builder>()
@@ -194,17 +192,44 @@ private val buildConstantsModule = module {
       override val isDebug: Boolean = BuildConfig.DEBUG
       override val isProduction: Boolean =
         BuildConfig.BUILD_TYPE == "release" && BuildConfig.APPLICATION_ID == "com.hedvig.app"
+      override val buildApiVersion: Int = Build.VERSION.SDK_INT
     }
   }
 }
 
 private val notificationModule = module {
-  single { PaymentNotificationSender(get(), get(), get()) } bind NotificationSender::class
-  single { CrossSellNotificationSender(get(), get()) } bind NotificationSender::class
-  single { ReferralsNotificationSender(get(), get()) } bind NotificationSender::class
-  single { GenericNotificationSender(get()) } bind NotificationSender::class
+  single {
+    PaymentNotificationSender(
+      get<Context>(),
+      get<ApplicationScope>(),
+      get<HedvigDeepLinkContainer>(),
+      HedvigNotificationChannel.Payments,
+    )
+  } bind NotificationSender::class
+  single {
+    CrossSellNotificationSender(get<Context>(), get<ApplicationScope>(), HedvigNotificationChannel.CrossSell)
+  } bind NotificationSender::class
+  single {
+    ReferralsNotificationSender(get<Context>(), get<HedvigDeepLinkContainer>(), HedvigNotificationChannel.Referrals)
+  } bind NotificationSender::class
+  single {
+    GenericNotificationSender(get<Context>(), HedvigNotificationChannel.Other)
+  } bind NotificationSender::class
   single<ChatNotificationSender> {
-    ChatNotificationSender(get(), get<HedvigDeepLinkContainer>(), get<FeatureManager>(), get<HedvigBuildConstants>())
+    ChatNotificationSender(
+      get<Context>(),
+      get<HedvigDeepLinkContainer>(),
+      get<HedvigBuildConstants>(),
+      HedvigNotificationChannel.Chat,
+    )
+  } bind NotificationSender::class
+  single<ContactInfoSender> {
+    ContactInfoSender(
+      get<Context>(),
+      get<HedvigBuildConstants>(),
+      get<HedvigDeepLinkContainer>(),
+      HedvigNotificationChannel.Other,
+    )
   } bind NotificationSender::class
 }
 
@@ -273,7 +298,6 @@ val applicationModule = module {
       buildConstantsModule,
       changeAddressModule,
       chatModule,
-      chatReadTimestampModule,
       claimDetailsModule,
       claimFlowDataModule,
       claimTriagingModule,
@@ -283,6 +307,7 @@ val applicationModule = module {
       coreAppReviewModule,
       coreCommonModule,
       dataChatModule,
+      dataConversationsModule,
       dataPayingMemberModule,
       dataStoreModule,
       databaseChatAndroidModule,

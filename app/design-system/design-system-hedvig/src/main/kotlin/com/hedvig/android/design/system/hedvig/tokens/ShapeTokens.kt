@@ -1,6 +1,8 @@
 package com.hedvig.android.design.system.hedvig.tokens
 
 import androidx.annotation.FloatRange
+import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
@@ -21,8 +23,20 @@ internal object ShapeTokens {
   val CornerLarge: Shape = FigmaShape(12.dp)
   val CornerMedium: Shape = FigmaShape(10.dp)
   val CornerSmall: Shape = FigmaShape(8.dp)
-  val CornerExtraSmall: Shape = FigmaShape(4.dp)
+  val CornerExtraSmall: Shape = FigmaShape(6.dp)
   val CornerNone: Shape = RectangleShape
+  val CornerTopOnlyXLarge: Shape = SquircleTopShape(16.dp)
+
+  val RoundedCornerXXLarge: Shape = RoundedCornerShape(24.dp)
+  val RoundedCornerXLarge: Shape = RoundedCornerShape(16.dp)
+  val RoundedCornerLarge: Shape = RoundedCornerShape(12.dp)
+  val RoundedCornerMedium: Shape = RoundedCornerShape(10.dp)
+  val RoundedCornerSmall: Shape = RoundedCornerShape(8.dp)
+  val RoundedCornerExtraSmall: Shape = RoundedCornerShape(6.dp)
+  val RoundedCornerTopOnlyXLarge: Shape = RoundedCornerShape(16.dp).copy(
+    bottomStart = CornerSize(0),
+    bottomEnd = CornerSize(0),
+  )
 }
 
 private fun RoundedPolygon.Companion.squircle(
@@ -46,7 +60,6 @@ private fun RoundedPolygon.Companion.squircle(
   ).toPath().asComposePath()
 }
 
-// to use with BottomSheet implementation
 @Suppress("unused")
 private fun RoundedPolygon.Companion.squircleTop(
   width: Float,
@@ -80,6 +93,21 @@ private class FigmaShape(
 ) : Shape {
   override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
     val squirclePath = RoundedPolygon.squircle(
+      width = size.width,
+      height = size.height,
+      cornerRadius = with(density) { radius.toPx() },
+      smoothing = smoothing,
+    )
+    return Outline.Generic(squirclePath)
+  }
+}
+
+private class SquircleTopShape(
+  private val radius: Dp,
+  @FloatRange(from = 0.0, to = 1.0) private val smoothing: Float = 0.6f,
+) : Shape {
+  override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
+    val squirclePath = RoundedPolygon.squircleTop(
       width = size.width,
       height = size.height,
       cornerRadius = with(density) { radius.toPx() },

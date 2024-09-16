@@ -3,6 +3,7 @@ package com.hedvig.android.data.claimflow
 import android.content.res.Resources
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Immutable
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.core.uidata.UiNullableMoney
@@ -10,37 +11,57 @@ import com.hedvig.android.data.claimflow.ItemBrand.Unknown.displayName
 import com.hedvig.android.data.claimflow.ItemModel.Unknown.displayName
 import com.hedvig.android.data.claimflow.model.AudioUrl
 import com.hedvig.android.data.claimflow.model.FlowId
+import com.hedvig.android.navigation.compose.Destination
+import com.hedvig.android.navigation.compose.DestinationNavTypeAware
 import com.hedvig.audio.player.data.SignedAudioUrl
-import com.kiwi.navigationcompose.typed.Destination
+import kotlin.reflect.KType
+import kotlin.reflect.typeOf
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
-import octopus.type.CurrencyCode
 
-sealed interface ClaimFlowDestination : Destination {
+sealed interface ClaimFlowDestination {
   @Serializable
-  object HonestyPledge : ClaimFlowDestination
+  object HonestyPledge : ClaimFlowDestination, Destination
 
   @Serializable
-  object NotificationPermission : ClaimFlowDestination
+  object NotificationPermission : ClaimFlowDestination, Destination
 
   @Serializable
   data class AudioRecording(
     val flowId: FlowId,
     val questions: List<String>,
     val audioContent: AudioContent?,
-  ) : ClaimFlowDestination
+  ) : ClaimFlowDestination, Destination {
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(
+        typeOf<FlowId>(),
+        typeOf<AudioContent?>(),
+      )
+    }
+  }
 
   @Serializable
   data class DateOfOccurrence(
     val dateOfOccurrence: LocalDate?,
     val maxDate: LocalDate,
-  ) : ClaimFlowDestination
+  ) : ClaimFlowDestination, Destination {
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(
+        typeOf<LocalDate?>(),
+        typeOf<LocalDate>(),
+      )
+    }
+  }
 
   @Serializable
   data class Location(
     val selectedLocation: String?,
     val locationOptions: List<LocationOption>,
-  ) : ClaimFlowDestination
+  ) : ClaimFlowDestination, Destination {
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<List<LocationOption>>())
+    }
+  }
 
   @Serializable
   data class DateOfOccurrencePlusLocation(
@@ -48,19 +69,31 @@ sealed interface ClaimFlowDestination : Destination {
     val maxDate: LocalDate,
     val selectedLocation: String?,
     val locationOptions: List<LocationOption>,
-  ) : ClaimFlowDestination
+  ) : ClaimFlowDestination, Destination {
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(
+        typeOf<LocalDate?>(),
+        typeOf<LocalDate>(),
+        typeOf<List<LocationOption>>(),
+      )
+    }
+  }
 
   @Serializable
-  data class PhoneNumber(val phoneNumber: String) : ClaimFlowDestination
+  data class PhoneNumber(val phoneNumber: String) : ClaimFlowDestination, Destination
 
   @Serializable
   data class SelectContract(
     val options: List<LocalContractContractOption>,
-  ) : ClaimFlowDestination
+  ) : ClaimFlowDestination, Destination {
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<List<LocalContractContractOption>>())
+    }
+  }
 
   @Serializable
   data class SingleItem(
-    val preferredCurrency: CurrencyCode,
+    val preferredCurrency: UiCurrencyCode,
     val purchaseDate: LocalDate?,
     val purchasePrice: UiNullableMoney?,
     val purchasePriceApplicable: Boolean,
@@ -71,39 +104,76 @@ sealed interface ClaimFlowDestination : Destination {
     val customName: String?,
     val availableItemProblems: List<ItemProblem>?,
     val selectedItemProblems: List<String>?,
-  ) : ClaimFlowDestination
+  ) : ClaimFlowDestination, Destination {
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(
+        typeOf<UiCurrencyCode>(),
+        typeOf<LocalDate?>(),
+        typeOf<UiNullableMoney?>(),
+        typeOf<List<ItemBrand>?>(),
+        typeOf<List<ItemModel>?>(),
+        typeOf<List<ItemProblem>?>(),
+      )
+    }
+  }
 
   @Serializable
   data class DeflectGlassDamage(
     val partners: List<DeflectPartner>,
-  ) : ClaimFlowDestination
+  ) : ClaimFlowDestination, Destination {
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<List<DeflectPartner>>())
+    }
+  }
 
   @Serializable
   data class DeflectTowing(
     val partners: List<DeflectPartner>,
-  ) : ClaimFlowDestination
+  ) : ClaimFlowDestination, Destination {
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<List<DeflectPartner>>())
+    }
+  }
 
   @Serializable
   data class DeflectCarOtherDamage(
     val partners: List<DeflectPartner>,
-  ) : ClaimFlowDestination
+  ) : ClaimFlowDestination, Destination {
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<List<DeflectPartner>>())
+    }
+  }
 
   @Serializable
   data class ConfirmEmergency(
     val text: String,
     val confirmEmergency: Boolean?,
     val options: List<EmergencyOption>,
-  ) : ClaimFlowDestination
+  ) : ClaimFlowDestination, Destination {
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(
+        typeOf<List<EmergencyOption>>(),
+      )
+    }
+  }
 
   @Serializable
   data class DeflectEmergency(
     val partners: List<DeflectPartner>,
-  ) : ClaimFlowDestination
+  ) : ClaimFlowDestination, Destination {
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<List<DeflectPartner>>())
+    }
+  }
 
   @Serializable
   data class DeflectPests(
     val partners: List<DeflectPartner>,
-  ) : ClaimFlowDestination
+  ) : ClaimFlowDestination, Destination {
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<List<DeflectPartner>>())
+    }
+  }
 
   @Serializable
   data class Summary(
@@ -111,8 +181,6 @@ sealed interface ClaimFlowDestination : Destination {
     val selectedLocation: String?,
     val locationOptions: List<LocationOption>,
     val dateOfOccurrence: LocalDate?,
-    val maxDate: LocalDate,
-    val preferredCurrency: CurrencyCode?,
     val purchaseDate: LocalDate?,
     val purchasePrice: UiNullableMoney?,
     val availableItemBrands: List<ItemBrand>?,
@@ -124,7 +192,20 @@ sealed interface ClaimFlowDestination : Destination {
     val selectedItemProblems: List<String>?,
     val submittedContent: SubmittedContent?,
     val files: List<UiFile>,
-  ) : ClaimFlowDestination
+  ) : ClaimFlowDestination, Destination {
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(
+        typeOf<List<LocationOption>>(),
+        typeOf<LocalDate?>(),
+        typeOf<UiNullableMoney?>(),
+        typeOf<List<ItemBrand>?>(),
+        typeOf<List<ItemModel>?>(),
+        typeOf<List<ItemProblem>?>(),
+        typeOf<SubmittedContent?>(),
+        typeOf<List<UiFile>>(),
+      )
+    }
+  }
 
   @Serializable
   data class SingleItemCheckout(
@@ -133,55 +214,70 @@ sealed interface ClaimFlowDestination : Destination {
     val modelName: String?,
     val brandName: String?,
     val customName: String?,
-  ) : ClaimFlowDestination
+  ) : ClaimFlowDestination, Destination {
+    @Serializable
+    sealed interface Compensation {
+      sealed interface Known : Compensation {
+        val deductible: UiMoney
+        val payoutAmount: UiMoney
 
-  @Serializable
-  sealed interface Compensation {
-    sealed interface Known : Compensation {
-      val deductible: UiMoney
-      val payoutAmount: UiMoney
+        @Serializable
+        data class ValueCompensation(
+          val price: UiMoney,
+          val depreciation: UiMoney,
+          override val deductible: UiMoney,
+          override val payoutAmount: UiMoney,
+        ) : Known
+
+        @Serializable
+        data class RepairCompensation(
+          val repairCost: UiMoney,
+          override val deductible: UiMoney,
+          override val payoutAmount: UiMoney,
+        ) : Known
+      }
 
       @Serializable
-      data class ValueCompensation(
-        val price: UiMoney,
-        val depreciation: UiMoney,
-        override val deductible: UiMoney,
-        override val payoutAmount: UiMoney,
-      ) : Known
-
-      @Serializable
-      data class RepairCompensation(
-        val repairCost: UiMoney,
-        override val deductible: UiMoney,
-        override val payoutAmount: UiMoney,
-      ) : Known
+      data object Unknown : Compensation
     }
 
-    @Serializable
-    data object Unknown : Compensation
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(
+        typeOf<Compensation>(),
+        typeOf<List<CheckoutMethod.Known>>(),
+      )
+    }
   }
 
   // Local-only destination, not matching to a flow step, used to handle payout logic
   @Serializable
   data class SingleItemPayout(
     val checkoutMethod: CheckoutMethod.Known,
-  ) : ClaimFlowDestination
+  ) : ClaimFlowDestination, Destination {
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<CheckoutMethod.Known>())
+    }
+  }
 
   @Serializable
   data class FileUpload(
     val title: String,
     val targetUploadUrl: String,
     val uploads: List<UiFile>,
-  ) : ClaimFlowDestination
+  ) : ClaimFlowDestination, Destination {
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<List<UiFile>>())
+    }
+  }
 
   @Serializable
-  object ClaimSuccess : ClaimFlowDestination
+  object ClaimSuccess : ClaimFlowDestination, Destination
 
   @Serializable
-  object Failure : ClaimFlowDestination
+  object Failure : ClaimFlowDestination, Destination
 
   @Serializable
-  object UpdateApp : ClaimFlowDestination
+  object UpdateApp : ClaimFlowDestination, Destination
 }
 
 @Serializable

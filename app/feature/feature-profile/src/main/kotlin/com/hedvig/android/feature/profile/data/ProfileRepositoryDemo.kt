@@ -2,7 +2,6 @@ package com.hedvig.android.feature.profile.data
 
 import arrow.core.Either
 import arrow.core.raise.either
-import com.hedvig.android.apollo.OperationResult
 
 internal class ProfileRepositoryDemo : ProfileRepository {
   private var email = "google@gmail.com"
@@ -17,16 +16,16 @@ internal class ProfileRepositoryDemo : ProfileRepository {
       email = email,
     )
 
-  override suspend fun profile(): Either<OperationResult.Error, ProfileData> = either {
+  override suspend fun profile(): Either<Unit, ProfileData> = either {
     ProfileData(member = demoMember)
   }
 
-  override suspend fun updateEmail(input: String): Either<OperationResult.Error, ProfileData.Member> = either {
+  override suspend fun updateEmail(input: String): Either<Unit, ProfileData.Member> = either {
     email = input
     demoMember
   }
 
-  override suspend fun updatePhoneNumber(input: String): Either<OperationResult.Error, ProfileData.Member> = either {
+  override suspend fun updatePhoneNumber(input: String): Either<Unit, ProfileData.Member> = either {
     phoneNumber = input
     demoMember
   }

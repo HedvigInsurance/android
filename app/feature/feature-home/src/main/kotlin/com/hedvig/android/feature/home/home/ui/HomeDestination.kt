@@ -472,7 +472,7 @@ private fun ImportantMessages(
         veryImportantMessage = animatedList.first(),
         modifier = Modifier.padding(contentPadding),
       )
-    } else {
+    } else { // todo: should we probably check for else if (animatedList.size>1) here?
       val pagerState = rememberPagerState(pageCount = { animatedList.size })
       Column {
         HorizontalPager(
@@ -578,6 +578,7 @@ private fun CrossSellBottomSheet(
     onDismissed = onDismissed,
     content = {
       Column {
+        Spacer(Modifier.height(32.dp))
         CrossSellsSection(
           showNotificationBadge = false,
           crossSells = crossSells,

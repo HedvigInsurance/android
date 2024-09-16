@@ -1,6 +1,6 @@
 package com.hedvig.android.feature.chat.navigation
 
-import com.kiwi.navigationcompose.typed.Destination
+import com.hedvig.android.navigation.compose.Destination
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -13,6 +13,5 @@ sealed interface ChatDestinations {
   @Serializable
   data class Chat(
     val conversationId: String,
-  ) : ChatDestinations,
-    Destination
+  ) : ChatDestinations, Destination
 }

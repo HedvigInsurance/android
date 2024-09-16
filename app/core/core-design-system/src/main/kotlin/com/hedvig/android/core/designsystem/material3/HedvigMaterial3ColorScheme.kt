@@ -9,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
-import com.hedvig.android.core.designsystem.component.navigation.HedvigNavigationBarItemColors
 import com.hedvig.android.core.designsystem.component.tokens.HedvigColorSchemeKeyTokens
 import com.hedvig.android.core.designsystem.newtheme.hedvigTonalPalette
 
@@ -89,9 +88,7 @@ class HedvigMaterial3ColorScheme(
   val onPurpleContainer: Color,
   // The new Self-service flows
   val borderSecondary: Color,
-) {
-  internal var defaultNavigationBarItemColorsCached: HedvigNavigationBarItemColors? = null
-}
+)
 
 val ColorScheme.containedButtonContainer: Color
   @ReadOnlyComposable

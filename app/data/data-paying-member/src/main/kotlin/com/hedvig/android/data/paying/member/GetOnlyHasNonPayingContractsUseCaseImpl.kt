@@ -3,8 +3,8 @@ package com.hedvig.android.data.paying.member
 import arrow.core.Either
 import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
+import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.contract.toContractType
@@ -17,8 +17,7 @@ internal class GetOnlyHasNonPayingContractsUseCaseImpl(
     return either {
       val contractTypes: List<ContractType> =
         apolloClient.query(ActiveInsuranceContractTypesQuery())
-          .safeExecute()
-          .toEither(::ErrorMessage)
+          .safeExecute(::ErrorMessage)
           .bind()
           .currentMember
           .activeContracts

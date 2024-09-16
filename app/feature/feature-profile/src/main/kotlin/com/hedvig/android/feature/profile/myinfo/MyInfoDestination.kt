@@ -22,7 +22,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.platform.LocalFocusManager
@@ -63,7 +62,6 @@ internal fun MyInfoDestination(viewModel: MyInfoViewModel, navigateUp: () -> Uni
   )
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun MyInfoScreen(
   uiState: MyInfoUiState,
@@ -92,11 +90,13 @@ private fun MyInfoScreen(
             MyInfoUiState.Loading -> {
               HedvigFullScreenCenterAlignedProgressDebounced()
             }
+
             MyInfoUiState.Error -> {
               Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
                 HedvigErrorSection(onButtonClick = reload)
               }
             }
+
             is MyInfoUiState.Success -> {
               SuccessState(animatedUiState, phoneNumberChanged, emailChanged, updateEmailAndPhoneNumber, focusManager)
             }

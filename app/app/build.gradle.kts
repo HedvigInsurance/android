@@ -25,7 +25,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "12.7.2"
+    versionName = "12.8.6"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -96,9 +96,9 @@ android {
 
   configurations.all {
     resolutionStrategy.force(
-      "org.hamcrest:hamcrest-core:2.2",
-      "org.hamcrest:hamcrest-library:2.2",
-      "org.hamcrest:hamcrest:2.2",
+      "org.hamcrest:hamcrest-core:3.0",
+      "org.hamcrest:hamcrest-library:3.0",
+      "org.hamcrest:hamcrest:3.0",
     )
   }
 }
@@ -118,7 +118,6 @@ dependencies {
   implementation(libs.androidx.compose.uiUnit)
   implementation(libs.androidx.lifecycle.common)
   implementation(libs.androidx.lifecycle.compose)
-  implementation(libs.androidx.lifecycle.liveData)
   implementation(libs.androidx.lifecycle.process)
   implementation(libs.androidx.lifecycle.runtime)
   implementation(libs.androidx.lifecycle.viewModel)
@@ -148,7 +147,6 @@ dependencies {
   implementation(libs.firebase.crashlytics)
   implementation(libs.firebase.dynamicLinks)
   implementation(libs.firebase.messaging)
-  implementation(libs.kiwi.navigationCompose)
   implementation(libs.koin.android)
   implementation(libs.koin.compose)
   implementation(libs.koin.workManager)
@@ -180,15 +178,16 @@ dependencies {
   implementation(projects.coreUi)
   implementation(projects.crossSells)
   implementation(projects.dataChat)
-  implementation(projects.dataChatReadTimestampPublic)
   implementation(projects.dataClaimFlow)
   implementation(projects.dataContractPublic)
+  implementation(projects.dataConversations)
   implementation(projects.dataPayingMember)
   implementation(projects.dataSettingsDatastorePublic)
   implementation(projects.dataTermination)
   implementation(projects.datadogCore)
   implementation(projects.datadogDemoTracking)
   implementation(projects.designSystemHedvig)
+  implementation(projects.designSystemInternals)
   implementation(projects.featureChangeaddress)
   implementation(projects.featureChat)
   implementation(projects.featureClaimDetails)
@@ -220,6 +219,7 @@ dependencies {
   implementation(projects.marketSet)
   implementation(projects.memberRemindersPublic)
   implementation(projects.navigationActivity)
+  implementation(projects.navigationCompose)
   implementation(projects.navigationCore)
   implementation(projects.navigationUi)
   implementation(projects.notificationBadgeDataPublic)

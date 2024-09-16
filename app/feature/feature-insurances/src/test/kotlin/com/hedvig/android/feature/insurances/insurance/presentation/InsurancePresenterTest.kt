@@ -9,6 +9,8 @@ import assertk.assertions.containsSubList
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isTrue
+import com.google.testing.junit.testparameterinjector.TestParameter
+import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
@@ -28,7 +30,9 @@ import octopus.CrossSellsQuery
 import octopus.type.CrossSellType
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
 
+@RunWith(TestParameterInjector::class)
 internal class InsurancePresenterTest {
   @get:Rule
   val testLogcatLogger = TestLogcatLoggingRule()
@@ -323,6 +327,28 @@ internal class InsurancePresenterTest {
   }
 
   @Test
+  fun `The existence of movable contracts determines whether we show the moving flow section or not`(
+    @TestParameter supportsAddressChange: Boolean,
+  ) = runTest {
+    val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
+    val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
+    val presenter = InsurancePresenter(
+      { getInsuranceContractsUseCase },
+      { getCrossSellsUseCase },
+      { FakeCrossSellCardNotificationBadgeService() },
+      backgroundScope,
+    )
+    val contracts = validContracts.map { it.copy(supportsAddressChange = supportsAddressChange) }
+    presenter.test(InsuranceUiState.initialState) {
+      skipItems(1)
+
+      getInsuranceContractsUseCase.contracts.add(contracts)
+      getCrossSellsUseCase.crossSells.add(validCrossSells)
+      assertThat(awaitItem().shouldSuggestMovingFlow).isEqualTo(supportsAddressChange)
+    }
+  }
+
+  @Test
   fun `marking cross sells as seen correctly updates storage and the UI state`() = runTest {
     val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
     val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
@@ -364,6 +390,7 @@ internal class InsurancePresenterTest {
       crossSells = listOf(),
       showNotificationBadge = false,
       quantityOfCancelledInsurances = 0,
+      shouldSuggestMovingFlow = false,
       hasError = false,
       isLoading = false,
       isRetrying = false,

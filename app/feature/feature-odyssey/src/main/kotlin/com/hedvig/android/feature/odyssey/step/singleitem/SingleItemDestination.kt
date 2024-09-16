@@ -49,6 +49,7 @@ import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.scaffold.ClaimFlowScaffold
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.ItemBrand
 import com.hedvig.android.data.claimflow.ItemModel
@@ -58,7 +59,6 @@ import com.hedvig.android.feature.odyssey.ui.DatePickerWithDialog
 import com.hedvig.android.feature.odyssey.ui.MonetaryAmountInput
 import hedvig.resources.R
 import java.util.Locale
-import octopus.type.CurrencyCode
 
 @Composable
 internal fun SingleItemDestination(
@@ -337,7 +337,7 @@ private fun PriceOfPurchase(uiState: PurchasePriceUiState, canInteract: Boolean,
     hintText = stringResource(R.string.claims_payout_purchase_price),
     canInteract = canInteract,
     onInput = { uiState.updateAmount(it) },
-    currency = uiState.uiMoney.currencyCode.rawValue,
+    currency = uiState.uiMoney.currencyCode.name,
     focusRequester = focusRequester,
     modifier = modifier,
   )
@@ -416,7 +416,7 @@ private fun PreviewSingleItemScreen(
       SingleItemScreen(
         SingleItemUiState(
           datePickerUiState = remember { DatePickerUiState(Locale.ENGLISH, null) },
-          purchasePriceUiState = PurchasePriceUiState(if (hasPriceInput) 299.90 else null, CurrencyCode.SEK),
+          purchasePriceUiState = PurchasePriceUiState(if (hasPriceInput) 299.90 else null, UiCurrencyCode.SEK),
           itemBrandsUiState = ItemBrandsUiState.Content(
             nonEmptyListOf(ItemBrand.Known("Item Brand", "", "")),
             ItemBrand.Known("Item Brand #1", "", ""),

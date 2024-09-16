@@ -15,7 +15,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import coil.ImageLoader
@@ -23,6 +22,7 @@ import com.hedvig.android.app.urihandler.DeepLinkFirstUriHandler
 import com.hedvig.android.app.urihandler.SafeAndroidUriHandler
 import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
+import com.hedvig.android.compose.ui.UseSimplerShapesForOldAndroidVersions
 import com.hedvig.android.core.appreview.WaitUntilAppReviewDialogShouldBeOpenedUseCase
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
@@ -36,11 +36,12 @@ import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.navigation.activity.ExternalNavigator
+import com.hedvig.android.navigation.compose.typedHasRoute
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
-import com.kiwi.navigationcompose.typed.createRoutePattern
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -99,7 +100,10 @@ internal fun HedvigApp(
         navController = hedvigAppState.navController,
         delegate = SafeAndroidUriHandler(LocalContext.current),
       )
-      CompositionLocalProvider(LocalUriHandler provides deepLinkFirstUriHandler) {
+      CompositionLocalProvider(
+        LocalUriHandler provides deepLinkFirstUriHandler,
+        UseSimplerShapesForOldAndroidVersions provides (hedvigBuildConstants.buildApiVersion <= 27),
+      ) {
         HedvigAppUi(
           hedvigAppState = hedvigAppState,
           hedvigDeepLinkContainer = hedvigDeepLinkContainer,
@@ -193,25 +197,22 @@ private fun LogoutOnInvalidCredentialsEffect(
   }
   val lifecycle = LocalLifecycleOwner.current.lifecycle
   LaunchedEffect(lifecycle, hedvigAppState, authTokenService, demoManager) {
-    val loginGraphRoute = createRoutePattern<LoginDestination>()
     lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
       combine(
         authTokenService.authStatus.onEach(authStatusLog).filterNotNull().distinctUntilChanged(),
         demoManager.isDemoMode().distinctUntilChanged(),
-      ) { authStatus: AuthStatus, isDemoMode: Boolean ->
-        authStatus to isDemoMode
-      }.collect { (authStatus, isDemoMode) ->
-        val navBackStackEntry: NavBackStackEntry = hedvigAppState.navController.currentBackStackEntryFlow.first()
+        hedvigAppState.navController.currentBackStackEntryFlow,
+      ) { authStatus: AuthStatus, isDemoMode: Boolean, navBackStackEntry ->
         val isLoggedOut = navBackStackEntry.destination.hierarchy.any { navDestination ->
-          navDestination.route?.contains(loginGraphRoute) == true
+          navDestination.typedHasRoute<LoginDestination>()
         }
         if (isLoggedOut) {
-          return@collect
+          return@combine
         }
         if (!isDemoMode && authStatus !is AuthStatus.LoggedIn) {
           hedvigAppState.navigateToLoggedOut()
         }
-      }
+      }.collect()
     }
   }
 }

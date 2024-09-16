@@ -10,10 +10,11 @@ import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.app.MainActivity
 import com.hedvig.android.app.notification.getImmutablePendingIntentFlags
 import com.hedvig.android.core.common.ApplicationScope
-import com.hedvig.android.core.common.android.notification.setupNotificationChannel
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
+import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
+import hedvig.resources.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -21,16 +22,8 @@ class PaymentNotificationSender(
   private val context: Context,
   private val applicationScope: ApplicationScope,
   private val hedvigDeepLinkContainer: HedvigDeepLinkContainer,
+  private val notificationChannel: HedvigNotificationChannel,
 ) : NotificationSender {
-  override fun createChannel() {
-    setupNotificationChannel(
-      context,
-      PAYMENTS_CHANNEL_ID,
-      context.resources.getString(hedvig.resources.R.string.NOTIFICATION_CHANNEL_PAYMENT_TITLE),
-      context.resources.getString(hedvig.resources.R.string.NOTIFICATION_CHANNEL_PAYMENT_DESCRIPTION),
-    )
-  }
-
   override suspend fun sendNotification(type: String, remoteMessage: RemoteMessage) {
     when (type) {
       NOTIFICATION_TYPE_CONNECT_DIRECT_DEBIT -> sendConnectDirectDebitNotification()
@@ -54,16 +47,12 @@ class PaymentNotificationSender(
         .getPendingIntent(0, getImmutablePendingIntentFlags())
 
       val notification = NotificationCompat
-        .Builder(
-          context,
-          PAYMENTS_CHANNEL_ID,
-        )
-        .setSmallIcon(hedvig.resources.R.drawable.ic_hedvig_h)
-        .setContentTitle(context.getString(hedvig.resources.R.string.NOTIFICATION_CONNECT_DD_TITLE))
-        .setContentText(context.getString(hedvig.resources.R.string.NOTIFICATION_CONNECT_DD_BODY))
+        .Builder(context, notificationChannel.channelId)
+        .setSmallIcon(R.drawable.ic_hedvig_h)
+        .setContentTitle(context.getString(R.string.NOTIFICATION_CONNECT_DD_TITLE))
+        .setContentText(context.getString(R.string.NOTIFICATION_CONNECT_DD_BODY))
         .setPriority(NotificationCompat.PRIORITY_MAX)
         .setAutoCancel(true)
-        .setChannelId(PAYMENTS_CHANNEL_ID)
         .setContentIntent(pendingIntent)
         .build()
 
@@ -83,16 +72,12 @@ class PaymentNotificationSender(
       .getPendingIntent(0, getImmutablePendingIntentFlags())
 
     val notification = NotificationCompat
-      .Builder(
-        context,
-        PAYMENTS_CHANNEL_ID,
-      )
-      .setSmallIcon(hedvig.resources.R.drawable.ic_hedvig_h)
-      .setContentTitle(context.getString(hedvig.resources.R.string.NOTIFICATION_PAYMENT_FAILED_TITLE))
-      .setContentText(context.getString(hedvig.resources.R.string.NOTIFICATION_PAYMENT_FAILED_BODY))
+      .Builder(context, notificationChannel.channelId)
+      .setSmallIcon(R.drawable.ic_hedvig_h)
+      .setContentTitle(context.getString(R.string.NOTIFICATION_PAYMENT_FAILED_TITLE))
+      .setContentText(context.getString(R.string.NOTIFICATION_PAYMENT_FAILED_BODY))
       .setPriority(NotificationCompat.PRIORITY_MAX)
       .setAutoCancel(true)
-      .setChannelId(PAYMENTS_CHANNEL_ID)
       .setContentIntent(pendingIntent)
       .build()
 
@@ -102,14 +87,14 @@ class PaymentNotificationSender(
   private fun sendNotificationInner(id: Int, notification: Notification) {
     sendHedvigNotification(
       context = context,
-      notificationSender = "PaymentNotificationSender",
       notificationId = id,
       notification = notification,
+      notificationChannel = notificationChannel,
+      notificationSenderName = "PaymentNotificationSender",
     )
   }
 
   companion object {
-    private const val PAYMENTS_CHANNEL_ID = "hedvig-payments"
     private const val CONNECT_DIRECT_DEBIT_NOTIFICATION_ID = 3
     private const val PAYMENT_FAILED_NOTIFICATION_ID = 5
     private const val NOTIFICATION_TYPE_CONNECT_DIRECT_DEBIT = "CONNECT_DIRECT_DEBIT"

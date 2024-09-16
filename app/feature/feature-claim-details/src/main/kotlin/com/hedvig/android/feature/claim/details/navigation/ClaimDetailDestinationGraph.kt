@@ -10,11 +10,10 @@ import com.hedvig.android.feature.claim.details.ui.AddFilesDestination
 import com.hedvig.android.feature.claim.details.ui.AddFilesViewModel
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailsDestination
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailsViewModel
+import com.hedvig.android.navigation.compose.navdestination
+import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.Navigator
-import com.kiwi.navigationcompose.typed.composable
-import com.kiwi.navigationcompose.typed.createRoutePattern
-import com.kiwi.navigationcompose.typed.navigation
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -27,10 +26,10 @@ fun NavGraphBuilder.claimDetailsGraph(
   navigator: Navigator,
   applicationId: String,
 ) {
-  navigation<AppDestination.ClaimDetails>(
-    startDestination = createRoutePattern<ClaimDetailDestinations.ClaimOverviewDestination>(),
+  navgraph<AppDestination.ClaimDetails>(
+    startDestination = ClaimDetailDestinations.ClaimOverviewDestination::class,
   ) {
-    composable<ClaimDetailDestinations.ClaimOverviewDestination> { backStackEntry ->
+    navdestination<ClaimDetailDestinations.ClaimOverviewDestination> { backStackEntry ->
       val viewModel: ClaimDetailsViewModel = koinViewModel { parametersOf(claimId) }
       val context = LocalContext.current
       ClaimDetailsDestination(
@@ -55,7 +54,7 @@ fun NavGraphBuilder.claimDetailsGraph(
         },
       )
     }
-    composable<ClaimDetailDestinations.AddFilesDestination> {
+    navdestination<ClaimDetailDestinations.AddFilesDestination> {
       val viewModel: AddFilesViewModel = koinViewModel { parametersOf(targetUploadUrl, initialFilesUri) }
       AddFilesDestination(
         viewModel = viewModel,

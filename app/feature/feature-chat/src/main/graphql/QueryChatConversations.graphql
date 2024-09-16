@@ -11,9 +11,12 @@ query ChatConversations {
 
 fragment ConversationFragment on Conversation {
   id
-  title
-  subtitle
   createdAt
+  unreadMessageCount
+  isOpen
+  claim {
+    claimType
+  }
   newestMessage {
     sender
     sentAt

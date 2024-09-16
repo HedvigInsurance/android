@@ -1,55 +1,53 @@
 package com.hedvig.android.feature.editcoinsured.navigation
 
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredAddMissingInfoDestination
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredAddOrRemoveDestination
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredSuccessDestination
+import com.hedvig.android.navigation.compose.navdestination
+import com.hedvig.android.navigation.compose.navgraph
+import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.AppDestination
-import com.kiwi.navigationcompose.typed.composable
-import com.kiwi.navigationcompose.typed.createRoutePattern
-import com.kiwi.navigationcompose.typed.navigate
-import com.kiwi.navigationcompose.typed.navigation
-import com.kiwi.navigationcompose.typed.popUpTo
+import com.hedvig.android.navigation.core.Navigator
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-fun NavGraphBuilder.editCoInsuredGraph(navigateUp: () -> Unit, navController: NavHostController) {
-  navigation<AppDestination.EditCoInsured>(
-    startDestination = createRoutePattern<AppDestination.CoInsuredAddOrRemove>(),
+fun NavGraphBuilder.editCoInsuredGraph(navigator: Navigator) {
+  navgraph<AppDestination.EditCoInsured>(
+    startDestination = AppDestination.CoInsuredAddOrRemove::class,
   ) {
-    composable<AppDestination.CoInsuredAddInfo> {
+    navdestination<AppDestination.CoInsuredAddInfo> {
       EditCoInsuredAddMissingInfoDestination(
         viewModel = koinViewModel { parametersOf(contractId) },
         navigateToSuccessScreen = {
-          navController.navigate(EditCoInsuredDestination.Success(it)) {
-            popUpTo<AppDestination.EditCoInsured> {
+          navigator.navigateUnsafe(EditCoInsuredDestination.Success(it)) {
+            typedPopUpTo<AppDestination.EditCoInsured> {
               inclusive = true
             }
           }
         },
-        navigateUp = navigateUp,
+        navigateUp = navigator::navigateUp,
       )
     }
-    composable<AppDestination.CoInsuredAddOrRemove> {
+    navdestination<AppDestination.CoInsuredAddOrRemove> {
       EditCoInsuredAddOrRemoveDestination(
         koinViewModel { parametersOf(contractId) },
         navigateToSuccessScreen = {
-          navController.navigate(EditCoInsuredDestination.Success(it)) {
-            popUpTo<AppDestination.EditCoInsured> {
+          navigator.navigateUnsafe(EditCoInsuredDestination.Success(it)) {
+            typedPopUpTo<AppDestination.EditCoInsured> {
               inclusive = true
             }
           }
         },
-        navigateUp = navigateUp,
+        navigateUp = navigator::navigateUp,
       )
     }
-    composable<EditCoInsuredDestination.Success> {
+    navdestination<EditCoInsuredDestination.Success>(
+      EditCoInsuredDestination.Success,
+    ) {
       EditCoInsuredSuccessDestination(
         date = date,
-        popBackstack = {
-          navController.popBackStack()
-        },
+        popBackstack = navigator::popBackStack,
       )
     }
   }

@@ -8,7 +8,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -52,23 +51,19 @@ internal fun EnterVillaInformationDestination(
       onNavigateToOfferDestination(movingParameters)
     }
   }
-
   var showExtraBuildingsBottomSheet by rememberSaveable { mutableStateOf(false) }
-  val sheetState = rememberModalBottomSheetState(true)
-  if (showExtraBuildingsBottomSheet) {
-    ExtraBuildingBottomSheet(
-      extraBuildingTypes = uiState.extraBuildingTypes,
-      onDismiss = {
-        showExtraBuildingsBottomSheet = false
-      },
-      onSave = {
-        showExtraBuildingsBottomSheet = false
-        viewModel.emit(EnterVillaInformationEvent.AddExtraBuilding(it))
-      },
-      sheetState = sheetState,
-    )
-  }
-
+  ExtraBuildingBottomSheet(
+    extraBuildingTypes = uiState.extraBuildingTypes,
+    onDismiss = {
+      showExtraBuildingsBottomSheet = false
+    },
+    onSave = {
+      showExtraBuildingsBottomSheet = false
+      viewModel.emit(EnterVillaInformationEvent.AddExtraBuilding(it))
+    },
+    isVisible = showExtraBuildingsBottomSheet,
+    onVisibleChange = { showExtraBuildingsBottomSheet = it },
+  )
   ChangeAddressEnterVillaInformationScreen(
     uiState = uiState,
     navigateUp = navigateUp,
@@ -178,6 +173,7 @@ private fun ChangeAddressEnterVillaInformationScreen(
       checked = uiState.isSublet.input,
       onCheckedChange = onIsSubletSelected,
       onClick = { onIsSubletSelected(!uiState.isSublet.input) },
+      modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(modifier = Modifier.height(8.dp))
     ExtraBuildingContainer(

@@ -98,7 +98,7 @@ internal fun YourInfoTab(
       shape = MaterialTheme.shapes.squircleLargeTop,
       sheetState = sheetState,
       tonalElevation = 0.dp,
-      windowInsets = BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top),
+      contentWindowInsets = { BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top) },
     ) {
       EditInsuranceBottomSheetContent(
         allowChangeAddress = allowChangeAddress,
@@ -148,7 +148,7 @@ internal fun YourInfoTab(
       shape = MaterialTheme.shapes.squircleLargeTop,
       sheetState = sheetState,
       tonalElevation = 0.dp,
-      windowInsets = BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top),
+      contentWindowInsets = { BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top) },
     ) {
       UpcomingChangesBottomSheetContent(
         infoText = stringResource(

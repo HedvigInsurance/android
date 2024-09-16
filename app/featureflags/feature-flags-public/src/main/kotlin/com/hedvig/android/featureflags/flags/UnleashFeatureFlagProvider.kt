@@ -20,7 +20,6 @@ internal class UnleashFeatureFlagProvider(
           Feature.UPDATE_NECESSARY -> hedvigUnleashClient.client.isEnabled("update_necessary", false)
           Feature.EDIT_COINSURED -> hedvigUnleashClient.client.isEnabled("edit_coinsured", false)
           Feature.HELP_CENTER -> hedvigUnleashClient.client.isEnabled("help_center", true)
-          Feature.ENABLE_CBM -> hedvigUnleashClient.client.isEnabled("enable_conversation_based_messages", false)
         }
       }.distinctUntilChanged()
   }

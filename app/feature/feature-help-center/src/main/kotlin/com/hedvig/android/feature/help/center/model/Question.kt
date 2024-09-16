@@ -1,14 +1,14 @@
 package com.hedvig.android.feature.help.center.model
 
 import androidx.annotation.StringRes
-import com.hedvig.android.navigation.core.AppDestination
 import hedvig.resources.R
+import kotlinx.serialization.Serializable
 
+@Serializable
 internal enum class Question(
   @StringRes val titleRes: Int,
   @StringRes val questionRes: Int,
   @StringRes val answerRes: Int,
-  val chatContext: AppDestination.Chat.ChatContext,
   val relatedQuestionIds: List<Question> = listOf(),
 ) {
   // CLAIMS
@@ -16,73 +16,61 @@ internal enum class Question(
     R.string.HC_CLAIMS_TITLE,
     R.string.HC_CLAIMS_Q_01,
     R.string.HC_CLAIMS_A_01,
-    AppDestination.Chat.ChatContext.CLAIMS,
   ),
   CLAIMS_Q2(
     R.string.HC_CLAIMS_TITLE,
     R.string.HC_CLAIMS_Q_02,
     R.string.HC_CLAIMS_A_02,
-    AppDestination.Chat.ChatContext.CLAIMS,
   ),
   CLAIMS_Q3(
     R.string.HC_CLAIMS_TITLE,
     R.string.HC_CLAIMS_Q_03,
     R.string.HC_CLAIMS_A_03,
-    AppDestination.Chat.ChatContext.CLAIMS,
   ),
   CLAIMS_Q4(
     R.string.HC_CLAIMS_TITLE,
     R.string.HC_CLAIMS_Q_04,
     R.string.HC_CLAIMS_A_04,
-    AppDestination.Chat.ChatContext.CLAIMS,
   ),
   CLAIMS_Q5(
     R.string.HC_CLAIMS_TITLE,
     R.string.HC_CLAIMS_Q_05,
     R.string.HC_CLAIMS_A_05,
-    AppDestination.Chat.ChatContext.CLAIMS,
   ),
   CLAIMS_Q6(
     R.string.HC_CLAIMS_TITLE,
     R.string.HC_CLAIMS_Q_06,
     R.string.HC_CLAIMS_A_06,
-    AppDestination.Chat.ChatContext.CLAIMS,
   ),
   CLAIMS_Q7(
     R.string.HC_CLAIMS_TITLE,
     R.string.HC_CLAIMS_Q_07,
     R.string.HC_CLAIMS_A_07,
-    AppDestination.Chat.ChatContext.CLAIMS,
   ),
   CLAIMS_Q8(
     R.string.HC_CLAIMS_TITLE,
     R.string.HC_CLAIMS_Q_08,
     R.string.HC_CLAIMS_A_08,
-    AppDestination.Chat.ChatContext.CLAIMS,
   ),
   CLAIMS_Q9(
     R.string.HC_CLAIMS_TITLE,
     R.string.HC_CLAIMS_Q_09,
     R.string.HC_CLAIMS_A_09,
-    AppDestination.Chat.ChatContext.CLAIMS,
   ),
   CLAIMS_Q10(
     R.string.HC_CLAIMS_TITLE,
     R.string.HC_CLAIMS_Q_10,
     R.string.HC_CLAIMS_A_10,
-    AppDestination.Chat.ChatContext.CLAIMS,
   ),
   CLAIMS_Q11(
     R.string.HC_CLAIMS_TITLE,
     R.string.HC_CLAIMS_Q_11,
     R.string.HC_CLAIMS_A_11,
-    AppDestination.Chat.ChatContext.CLAIMS,
   ),
   CLAIMS_Q12(
     R.string.HC_CLAIMS_TITLE,
     R.string.HC_CLAIMS_Q_12,
     R.string.HC_CLAIMS_A_12,
-    AppDestination.Chat.ChatContext.CLAIMS,
   ),
 
   // COVERAGE
@@ -90,127 +78,106 @@ internal enum class Question(
     R.string.HC_COVERAGE_TITLE,
     R.string.HC_COVERAGE_Q_01,
     R.string.HC_COVERAGE_A_01,
-    AppDestination.Chat.ChatContext.COVERAGE,
   ),
   COVERAGE_Q2(
     R.string.HC_COVERAGE_TITLE,
     R.string.HC_COVERAGE_Q_02,
     R.string.HC_COVERAGE_A_02,
-    AppDestination.Chat.ChatContext.COVERAGE,
   ),
   COVERAGE_Q3(
     R.string.HC_COVERAGE_TITLE,
     R.string.HC_COVERAGE_Q_03,
     R.string.HC_COVERAGE_A_03,
-    AppDestination.Chat.ChatContext.COVERAGE,
   ),
   COVERAGE_Q4(
     R.string.HC_COVERAGE_TITLE,
     R.string.HC_COVERAGE_Q_04,
     R.string.HC_COVERAGE_A_04,
-    AppDestination.Chat.ChatContext.COVERAGE,
   ),
   COVERAGE_Q5(
     R.string.HC_COVERAGE_TITLE,
     R.string.HC_COVERAGE_Q_05,
     R.string.HC_COVERAGE_A_05,
-    AppDestination.Chat.ChatContext.COVERAGE,
   ),
   COVERAGE_Q6(
     R.string.HC_COVERAGE_TITLE,
     R.string.HC_COVERAGE_Q_06,
     R.string.HC_COVERAGE_A_06,
-    AppDestination.Chat.ChatContext.COVERAGE,
   ),
   COVERAGE_Q7(
     R.string.HC_COVERAGE_TITLE,
     R.string.HC_COVERAGE_Q_07,
     R.string.HC_COVERAGE_A_07,
-    AppDestination.Chat.ChatContext.COVERAGE,
   ),
   COVERAGE_Q8(
     R.string.HC_COVERAGE_TITLE,
     R.string.HC_COVERAGE_Q_08,
     R.string.HC_COVERAGE_A_08,
-    AppDestination.Chat.ChatContext.COVERAGE,
   ),
   COVERAGE_Q9(
     R.string.HC_COVERAGE_TITLE,
     R.string.HC_COVERAGE_Q_09,
     R.string.HC_COVERAGE_A_09,
-    AppDestination.Chat.ChatContext.COVERAGE,
   ),
   COVERAGE_Q10(
     R.string.HC_COVERAGE_TITLE,
     R.string.HC_COVERAGE_Q_10,
     R.string.HC_COVERAGE_A_10,
-    AppDestination.Chat.ChatContext.COVERAGE,
   ),
   COVERAGE_Q11(
     R.string.HC_COVERAGE_TITLE,
     R.string.HC_COVERAGE_Q_11,
     R.string.HC_COVERAGE_A_11,
-    AppDestination.Chat.ChatContext.COVERAGE,
   ),
   COVERAGE_Q12(
     R.string.HC_COVERAGE_TITLE,
     R.string.HC_COVERAGE_Q_12,
     R.string.HC_COVERAGE_A_12,
-    AppDestination.Chat.ChatContext.COVERAGE,
   ),
   COVERAGE_Q13(
     R.string.HC_COVERAGE_TITLE,
     R.string.HC_COVERAGE_Q_13,
     R.string.HC_COVERAGE_A_13,
-    AppDestination.Chat.ChatContext.COVERAGE,
   ),
   COVERAGE_Q14(
     R.string.HC_COVERAGE_TITLE,
     R.string.HC_COVERAGE_Q_14,
     R.string.HC_COVERAGE_A_14,
-    AppDestination.Chat.ChatContext.COVERAGE,
   ),
   COVERAGE_Q15(
     R.string.HC_COVERAGE_TITLE,
     R.string.HC_COVERAGE_Q_15,
     R.string.HC_COVERAGE_A_15,
-    AppDestination.Chat.ChatContext.COVERAGE,
   ),
   COVERAGE_Q17(
     R.string.HC_COVERAGE_TITLE,
     R.string.HC_COVERAGE_Q_17,
     R.string.HC_COVERAGE_A_17,
-    AppDestination.Chat.ChatContext.COVERAGE,
   ),
   COVERAGE_Q18(
     R.string.HC_COVERAGE_TITLE,
     R.string.HC_COVERAGE_Q_18,
     R.string.HC_COVERAGE_A_18,
-    AppDestination.Chat.ChatContext.COVERAGE,
   ),
   COVERAGE_Q19(
     R.string.HC_COVERAGE_TITLE,
     R.string.HC_COVERAGE_Q_19,
     R.string.HC_COVERAGE_A_19,
-    AppDestination.Chat.ChatContext.COVERAGE,
   ),
   COVERAGE_Q20(
     R.string.HC_COVERAGE_TITLE,
     R.string.HC_COVERAGE_Q_20,
     R.string.HC_COVERAGE_A_20,
-    AppDestination.Chat.ChatContext.COVERAGE,
   ),
   COVERAGE_Q21(
     R.string.HC_COVERAGE_TITLE,
     R.string.HC_COVERAGE_Q_21,
     R.string.HC_COVERAGE_A_21,
-    AppDestination.Chat.ChatContext.COVERAGE,
   ),
   COVERAGE_Q22(
     R.string.HC_COVERAGE_TITLE,
     R.string.HC_COVERAGE_Q_22,
     R.string.HC_COVERAGE_A_22,
-    AppDestination.Chat.ChatContext.COVERAGE,
   ),
 
   // INSURANCE
@@ -218,61 +185,51 @@ internal enum class Question(
     R.string.HC_INSURANCES_TITLE,
     R.string.HC_INSURANCE_Q_01,
     R.string.HC_INSURANCE_A_01,
-    AppDestination.Chat.ChatContext.INSURANCE,
   ),
   INSURANCE_Q2(
     R.string.HC_INSURANCES_TITLE,
     R.string.HC_INSURANCE_Q_02,
     R.string.HC_INSURANCE_A_02,
-    AppDestination.Chat.ChatContext.INSURANCE,
   ),
   INSURANCE_Q3(
     R.string.HC_INSURANCES_TITLE,
     R.string.HC_INSURANCE_Q_03,
     R.string.HC_INSURANCE_A_03,
-    AppDestination.Chat.ChatContext.INSURANCE,
   ),
   INSURANCE_Q4(
     R.string.HC_INSURANCES_TITLE,
     R.string.HC_INSURANCE_Q_04,
     R.string.HC_INSURANCE_A_04,
-    AppDestination.Chat.ChatContext.INSURANCE,
   ),
   INSURANCE_Q5(
     R.string.HC_INSURANCES_TITLE,
     R.string.HC_INSURANCE_Q_05,
     R.string.HC_INSURANCE_A_05,
-    AppDestination.Chat.ChatContext.INSURANCE,
   ),
   INSURANCE_Q6(
     R.string.HC_INSURANCES_TITLE,
     R.string.HC_INSURANCE_Q_06,
     R.string.HC_INSURANCE_A_06,
-    AppDestination.Chat.ChatContext.INSURANCE,
   ),
   INSURANCE_Q7(
     R.string.HC_INSURANCES_TITLE,
     R.string.HC_INSURANCE_Q_07,
     R.string.HC_INSURANCE_A_07,
-    AppDestination.Chat.ChatContext.INSURANCE,
   ),
   INSURANCE_Q8(
     R.string.HC_INSURANCES_TITLE,
     R.string.HC_INSURANCE_Q_08,
     R.string.HC_INSURANCE_A_08,
-    AppDestination.Chat.ChatContext.INSURANCE,
   ),
   INSURANCE_Q9(
     R.string.HC_INSURANCES_TITLE,
     R.string.HC_INSURANCE_Q_09,
     R.string.HC_INSURANCE_A_09,
-    AppDestination.Chat.ChatContext.INSURANCE,
   ),
   INSURANCE_Q10(
     R.string.HC_INSURANCES_TITLE,
     R.string.HC_INSURANCE_Q_10,
     R.string.HC_INSURANCE_A_10,
-    AppDestination.Chat.ChatContext.INSURANCE,
   ),
 
   // OTHER
@@ -280,25 +237,21 @@ internal enum class Question(
     R.string.HC_INSURANCES_TITLE,
     R.string.HC_OTHER_Q_01,
     R.string.HC_OTHER_A_01,
-    AppDestination.Chat.ChatContext.OTHER,
   ),
   OTHER_Q2(
     R.string.HC_INSURANCES_TITLE,
     R.string.HC_OTHER_Q_02,
     R.string.HC_OTHER_A_02,
-    AppDestination.Chat.ChatContext.OTHER,
   ),
   OTHER_Q3(
     R.string.HC_INSURANCES_TITLE,
     R.string.HC_OTHER_Q_03,
     R.string.HC_OTHER_A_03,
-    AppDestination.Chat.ChatContext.OTHER,
   ),
   OTHER_Q4(
     R.string.HC_INSURANCES_TITLE,
     R.string.HC_OTHER_Q_04,
     R.string.HC_OTHER_A_04,
-    AppDestination.Chat.ChatContext.OTHER,
   ),
 
   // PAYMENTS
@@ -306,85 +259,71 @@ internal enum class Question(
     R.string.HC_PAYMENTS_TITLE,
     R.string.HC_PAYMENTS_Q_01,
     R.string.HC_PAYMENTS_A_01,
-    AppDestination.Chat.ChatContext.PAYMENT,
   ),
   PAYMENTS_Q2(
     R.string.HC_PAYMENTS_TITLE,
     R.string.HC_PAYMENTS_Q_02,
     R.string.HC_PAYMENTS_A_02,
-    AppDestination.Chat.ChatContext.PAYMENT,
   ),
   PAYMENTS_Q3(
     R.string.HC_PAYMENTS_TITLE,
     R.string.HC_PAYMENTS_Q_03,
     R.string.HC_PAYMENTS_A_03,
-    AppDestination.Chat.ChatContext.PAYMENT,
   ),
   PAYMENTS_Q4(
     R.string.HC_PAYMENTS_TITLE,
     R.string.HC_PAYMENTS_Q_04,
     R.string.HC_PAYMENTS_A_04,
-    AppDestination.Chat.ChatContext.PAYMENT,
   ),
   PAYMENTS_Q5(
     R.string.HC_PAYMENTS_TITLE,
     R.string.HC_PAYMENTS_Q_05,
     R.string.HC_PAYMENTS_A_05,
-    AppDestination.Chat.ChatContext.PAYMENT,
   ),
   PAYMENTS_Q6(
     R.string.HC_PAYMENTS_TITLE,
     R.string.HC_PAYMENTS_Q_06,
     R.string.HC_PAYMENTS_A_06,
-    AppDestination.Chat.ChatContext.PAYMENT,
   ),
   PAYMENTS_Q7(
     R.string.HC_PAYMENTS_TITLE,
     R.string.HC_PAYMENTS_Q_07,
     R.string.HC_PAYMENTS_A_07,
-    AppDestination.Chat.ChatContext.PAYMENT,
   ),
   PAYMENTS_Q8(
     R.string.HC_PAYMENTS_TITLE,
     R.string.HC_PAYMENTS_Q_08,
     R.string.HC_PAYMENTS_A_08,
-    AppDestination.Chat.ChatContext.PAYMENT,
   ),
   PAYMENTS_Q9(
     R.string.HC_PAYMENTS_TITLE,
     R.string.HC_PAYMENTS_Q_09,
     R.string.HC_PAYMENTS_A_09,
-    AppDestination.Chat.ChatContext.PAYMENT,
   ),
   PAYMENTS_Q10(
     R.string.HC_PAYMENTS_TITLE,
     R.string.HC_PAYMENTS_Q_10,
     R.string.HC_PAYMENTS_A_10,
-    AppDestination.Chat.ChatContext.PAYMENT,
   ),
   PAYMENTS_Q11(
     R.string.HC_PAYMENTS_TITLE,
     R.string.HC_PAYMENTS_Q_11,
     R.string.HC_PAYMENTS_A_11,
-    AppDestination.Chat.ChatContext.PAYMENT,
   ),
   PAYMENTS_Q12(
     R.string.HC_PAYMENTS_TITLE,
     R.string.HC_PAYMENTS_Q_12,
     R.string.HC_PAYMENTS_A_12,
-    AppDestination.Chat.ChatContext.PAYMENT,
   ),
   PAYMENTS_Q13(
     R.string.HC_PAYMENTS_TITLE,
     R.string.HC_PAYMENTS_Q_13,
     R.string.HC_PAYMENTS_A_13,
-    AppDestination.Chat.ChatContext.PAYMENT,
   ),
   PAYMENTS_Q14(
     R.string.HC_PAYMENTS_TITLE,
     R.string.HC_PAYMENTS_Q_14,
     R.string.HC_PAYMENTS_A_14,
-    AppDestination.Chat.ChatContext.PAYMENT,
   ),
 }
 

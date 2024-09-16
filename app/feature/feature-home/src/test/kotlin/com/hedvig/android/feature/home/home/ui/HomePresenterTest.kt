@@ -13,8 +13,7 @@ import assertk.assertions.isTrue
 import assertk.assertions.prop
 import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
-import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.data.chat.read.timestamp.FakeChatLastMessageReadRepository
+import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.data.contract.android.CrossSell
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
@@ -39,7 +38,6 @@ internal class HomePresenterTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
-      FakeChatLastMessageReadRepository(),
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellCardNotificationBadgeService() },
       backgroundScope,
@@ -49,14 +47,14 @@ internal class HomePresenterTest {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
       assertThat(getHomeDataUseCase.forceNetworkFetchTurbine.awaitItem()).isFalse()
 
-      getHomeDataUseCase.responseTurbine.add(ErrorMessage().left())
+      getHomeDataUseCase.responseTurbine.add(ApolloOperationError.OperationError("").left())
       assertThat(awaitItem()).isInstanceOf<HomeUiState.Error>()
 
       sendEvent(HomeEvent.RefreshData)
       assertThat(getHomeDataUseCase.forceNetworkFetchTurbine.awaitItem()).isTrue()
       assertThat(awaitItem()).isInstanceOf<HomeUiState.Loading>()
 
-      getHomeDataUseCase.responseTurbine.add(ErrorMessage().left())
+      getHomeDataUseCase.responseTurbine.add(ApolloOperationError.OperationError("").left())
       assertThat(awaitItem()).isInstanceOf<HomeUiState.Error>()
     }
   }
@@ -66,7 +64,6 @@ internal class HomePresenterTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
-      FakeChatLastMessageReadRepository(),
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellCardNotificationBadgeService() },
       backgroundScope,
@@ -75,7 +72,7 @@ internal class HomePresenterTest {
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
 
-      getHomeDataUseCase.responseTurbine.add(ErrorMessage().left())
+      getHomeDataUseCase.responseTurbine.add(ApolloOperationError.OperationError("").left())
       assertThat(awaitItem()).isInstanceOf<HomeUiState.Error>()
 
       sendEvent(HomeEvent.RefreshData)
@@ -91,7 +88,6 @@ internal class HomePresenterTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
-      FakeChatLastMessageReadRepository(),
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellCardNotificationBadgeService() },
       backgroundScope,
@@ -118,6 +114,7 @@ internal class HomePresenterTest {
           veryImportantMessages = listOf(),
           memberReminders = MemberReminders(),
           showChatIcon = true,
+          hasUnseenChatMessages = false,
           showHelpCenter = false,
           crossSells = listOf(),
           firstVetSections = listOf(),
@@ -156,7 +153,6 @@ internal class HomePresenterTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
-      FakeChatLastMessageReadRepository(),
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellCardNotificationBadgeService() },
       backgroundScope,
@@ -174,6 +170,7 @@ internal class HomePresenterTest {
             enableNotifications = MemberReminder.EnableNotifications(),
           ),
           showChatIcon = false,
+          hasUnseenChatMessages = false,
           crossSells = listOf(),
           firstVetSections = listOf(),
           showHelpCenter = false,
@@ -203,7 +200,6 @@ internal class HomePresenterTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
-      FakeChatLastMessageReadRepository(),
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellCardNotificationBadgeService() },
       backgroundScope,
@@ -212,7 +208,7 @@ internal class HomePresenterTest {
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
 
-      getHomeDataUseCase.responseTurbine.add(ErrorMessage().left())
+      getHomeDataUseCase.responseTurbine.add(ApolloOperationError.OperationError("").left())
       assertThat(awaitItem()).isInstanceOf<HomeUiState.Error>()
 
       getHomeDataUseCase.responseTurbine.add(someIrrelevantHomeDataInstance.right())
@@ -221,14 +217,12 @@ internal class HomePresenterTest {
   }
 
   @Test
-  fun `with a successfull response, the unread chat state is set according to the ChatLastMessageReadRepository`(
+  fun `with a successfull response, the unread chat state is set according to the unread message count`(
     @TestParameter hasNotification: Boolean,
   ) = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
-    val chatLastMessageReadRepository = FakeChatLastMessageReadRepository()
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
-      chatLastMessageReadRepository,
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellCardNotificationBadgeService() },
       backgroundScope,
@@ -237,7 +231,6 @@ internal class HomePresenterTest {
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
 
-      chatLastMessageReadRepository.isNewestMessageNewerThanLastReadTimestamp.add(hasNotification)
       getHomeDataUseCase.responseTurbine.add(
         HomeData(
           contractStatus = HomeData.ContractStatus.Active,
@@ -247,6 +240,7 @@ internal class HomePresenterTest {
             enableNotifications = MemberReminder.EnableNotifications(),
           ),
           showChatIcon = false,
+          hasUnseenChatMessages = hasNotification,
           showHelpCenter = false,
           firstVetSections = listOf(),
           crossSells = listOf(),
@@ -264,7 +258,6 @@ internal class HomePresenterTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
-      FakeChatLastMessageReadRepository(),
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellCardNotificationBadgeService() },
       backgroundScope,
@@ -280,6 +273,7 @@ internal class HomePresenterTest {
           veryImportantMessages = listOf(),
           memberReminders = MemberReminders(),
           showChatIcon = false,
+          hasUnseenChatMessages = false,
           crossSells = listOf(),
           firstVetSections = listOf(),
           showHelpCenter = false,
@@ -307,7 +301,6 @@ internal class HomePresenterTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
-      FakeChatLastMessageReadRepository(),
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellCardNotificationBadgeService() },
       backgroundScope,
@@ -328,6 +321,7 @@ internal class HomePresenterTest {
           veryImportantMessages = listOf(),
           memberReminders = MemberReminders(),
           showChatIcon = false,
+          hasUnseenChatMessages = false,
           crossSells = listOf(),
           firstVetSections = listOf(
             firstVet,
@@ -357,7 +351,6 @@ internal class HomePresenterTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
-      FakeChatLastMessageReadRepository(),
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellCardNotificationBadgeService() },
       backgroundScope,
@@ -379,6 +372,7 @@ internal class HomePresenterTest {
           veryImportantMessages = listOf(),
           memberReminders = MemberReminders(),
           showChatIcon = false,
+          hasUnseenChatMessages = false,
           crossSells = listOf(crossSell),
           firstVetSections = listOf(),
           showHelpCenter = false,
@@ -406,7 +400,6 @@ internal class HomePresenterTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
-      FakeChatLastMessageReadRepository(),
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellCardNotificationBadgeService() },
       backgroundScope,
@@ -421,6 +414,7 @@ internal class HomePresenterTest {
           veryImportantMessages = listOf(),
           memberReminders = MemberReminders(),
           showChatIcon = true,
+          hasUnseenChatMessages = false,
           crossSells = listOf(),
           firstVetSections = listOf(),
           showHelpCenter = false,
@@ -448,7 +442,6 @@ internal class HomePresenterTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
-      FakeChatLastMessageReadRepository(),
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellCardNotificationBadgeService() },
       backgroundScope,
@@ -463,6 +456,7 @@ internal class HomePresenterTest {
           veryImportantMessages = listOf(),
           memberReminders = MemberReminders(),
           showChatIcon = false,
+          hasUnseenChatMessages = false,
           crossSells = listOf(),
           firstVetSections = listOf(),
           showHelpCenter = false,
@@ -487,9 +481,9 @@ internal class HomePresenterTest {
 
   private class TestGetHomeDataUseCase : GetHomeDataUseCase {
     val forceNetworkFetchTurbine = Turbine<Boolean>()
-    val responseTurbine = Turbine<Either<ErrorMessage, HomeData>>()
+    val responseTurbine = Turbine<Either<ApolloOperationError, HomeData>>()
 
-    override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, HomeData>> {
+    override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ApolloOperationError, HomeData>> {
       forceNetworkFetchTurbine.add(forceNetworkFetch)
       return responseTurbine.asChannel().receiveAsFlow()
     }
@@ -501,6 +495,7 @@ internal class HomePresenterTest {
     veryImportantMessages = listOf(),
     memberReminders = MemberReminders(),
     showChatIcon = false,
+    hasUnseenChatMessages = false,
     showHelpCenter = false,
     firstVetSections = listOf(),
     crossSells = listOf(),

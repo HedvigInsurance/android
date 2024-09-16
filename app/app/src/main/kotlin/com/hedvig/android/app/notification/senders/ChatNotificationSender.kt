@@ -14,25 +14,22 @@ import androidx.core.content.getSystemService
 import androidx.core.graphics.drawable.IconCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ProcessLifecycleOwner
+import androidx.navigation.NavDestination
 import com.benasher44.uuid.Uuid
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.app.notification.getMutablePendingIntentFlags
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
-import com.hedvig.android.core.common.android.notification.setupNotificationChannel
 import com.hedvig.android.feature.chat.navigation.ChatDestinations
 import com.hedvig.android.feature.claim.details.navigation.ClaimDetailDestinations
 import com.hedvig.android.feature.home.home.navigation.HomeDestination
-import com.hedvig.android.featureflags.FeatureManager
-import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority.ERROR
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.navigation.core.AppDestination
+import com.hedvig.android.navigation.compose.typedHasRoute
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
+import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
-import com.kiwi.navigationcompose.typed.createRoutePattern
 import hedvig.resources.R
-import kotlinx.coroutines.flow.first
 
 /**
  * An in-memory storage of the current route, used to *not* show the chat notification if we are in a select list of
@@ -44,36 +41,30 @@ import kotlinx.coroutines.flow.first
  * thought we should.
  */
 object CurrentDestinationInMemoryStorage {
-  var currentDestination: String? = null
+  var currentDestination: NavDestination? = null
 }
 
 private val listOfDestinationsWhichShouldNotShowChatNotification = setOf(
-  createRoutePattern<ChatDestinations.Chat>(),
-  createRoutePattern<ChatDestinations.Inbox>(),
-  createRoutePattern<AppDestination.Chat>(),
-  createRoutePattern<HomeDestination.Home>(),
-  createRoutePattern<ClaimDetailDestinations.ClaimOverviewDestination>(),
+  ChatDestinations.Chat::class,
+  ChatDestinations.Inbox::class,
+  HomeDestination.Home::class,
+  ClaimDetailDestinations.ClaimOverviewDestination::class,
 )
 
 class ChatNotificationSender(
   private val context: Context,
   private val hedvigDeepLinkContainer: HedvigDeepLinkContainer,
-  private val featureManager: FeatureManager,
   private val buildConstants: HedvigBuildConstants,
+  private val notificationChannel: HedvigNotificationChannel,
 ) : NotificationSender {
-  override fun createChannel() {
-    setupNotificationChannel(
-      context,
-      CHAT_CHANNEL_ID,
-      context.resources.getString(R.string.NOTIFICATION_CHAT_CHANNEL_NAME),
-      context.resources.getString(R.string.NOTIFICATION_CHAT_CHANNEL_DESCRIPTION),
-    )
-  }
-
   override suspend fun sendNotification(type: String, remoteMessage: RemoteMessage) {
     val isAppForegrounded = ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)
     val currentDestination = CurrentDestinationInMemoryStorage.currentDestination
-    if (currentDestination in listOfDestinationsWhichShouldNotShowChatNotification && isAppForegrounded) {
+    val currentlyOnDestinationWhichForbidsShowingChatNotification =
+      listOfDestinationsWhichShouldNotShowChatNotification.any { clazz ->
+        currentDestination?.typedHasRoute(clazz) == true
+      }
+    if (currentlyOnDestinationWhichForbidsShowingChatNotification && isAppForegrounded) {
       logcat { "ChatNotificationSender ignoring notification since we are showing destination $currentDestination" }
       return
     }
@@ -115,7 +106,6 @@ class ChatNotificationSender(
       context = context,
       style = messagingStyle,
       remoteMessage = remoteMessage,
-      isCbmEnabled = featureManager.isFeatureEnabled(Feature.ENABLE_CBM).first(),
     )
   }
 
@@ -124,26 +114,17 @@ class ChatNotificationSender(
   private fun defaultMessagingStyle(message: NotificationCompat.MessagingStyle.Message): MessagingStyle =
     NotificationCompat.MessagingStyle(youPerson).addMessage(message)
 
-  private fun sendChatNotificationInner(
-    context: Context,
-    style: MessagingStyle,
-    remoteMessage: RemoteMessage,
-    isCbmEnabled: Boolean,
-  ) {
+  private fun sendChatNotificationInner(context: Context, style: MessagingStyle, remoteMessage: RemoteMessage) {
+    val conversationId = remoteMessage.data.conversationIdFromCustomerIoData()
+    val isValidUuid = conversationId.isValidUuid()
     val intentUri = Uri.parse(
-      if (isCbmEnabled) {
-        val conversationId = remoteMessage.data.conversationIdFromCustomerIoData()
-        val isValidUuid = conversationId.isValidUuid()
-        if (conversationId != null && isValidUuid) {
-          hedvigDeepLinkContainer.conversation.replace("{conversationId}", conversationId)
-        } else {
-          hedvigDeepLinkContainer.inbox
-        }
+      if (conversationId != null && isValidUuid) {
+        hedvigDeepLinkContainer.conversation.replace("{conversationId}", conversationId)
       } else {
-        hedvigDeepLinkContainer.chat
+        hedvigDeepLinkContainer.inbox
       },
     )
-    logcat { "ChatNotificationSender sending notification with isCbmEnabled:$isCbmEnabled to uri:$intentUri" }
+    logcat { "ChatNotificationSender sending notification with deeplink uri:$intentUri" }
     val chatIntent = Intent().apply {
       action = Intent.ACTION_VIEW
       data = intentUri
@@ -151,22 +132,18 @@ class ChatNotificationSender(
     }
 
     val chatPendingIntent: PendingIntent? = PendingIntent.getActivity(
-      /* context = */ context,
-      /* requestCode = */ 0,
-      /* intent = */ chatIntent,
-      /* flags = */ getMutablePendingIntentFlags(),
+      context,
+      0,
+      chatIntent,
+      getMutablePendingIntentFlags(),
     )
 
     val notification = NotificationCompat
-      .Builder(
-        context,
-        CHAT_CHANNEL_ID,
-      )
+      .Builder(context, notificationChannel.channelId)
       .setSmallIcon(R.drawable.ic_hedvig_h)
       .setStyle(style)
       .setPriority(NotificationCompat.PRIORITY_MAX)
       .setAutoCancel(true)
-      .setChannelId(CHAT_CHANNEL_ID)
       .setCategory(NotificationCompat.CATEGORY_MESSAGE)
       .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
       .setContentIntent(chatPendingIntent)
@@ -174,9 +151,10 @@ class ChatNotificationSender(
 
     sendHedvigNotification(
       context = context,
-      notificationSender = "ChatNotificationSender",
       notificationId = CHAT_NOTIFICATION_ID,
       notification = notification,
+      notificationChannel = notificationChannel,
+      notificationSenderName = "ChatNotificationSender",
     )
   }
 
@@ -209,20 +187,13 @@ class ChatNotificationSender(
   }
 
   companion object {
-    private const val MainActivityFullyQualifiedName = "com.hedvig.android.app.MainActivity"
-
-    private const val CHAT_CHANNEL_ID = "hedvig-chat"
     private const val CHAT_NOTIFICATION_ID = 1
     private const val HEDVIG_PERSON_KEY = "HEDVIG"
     private const val YOU_PERSON_KEY = "YOU"
 
     private const val NOTIFICATION_TYPE_NEW_MESSAGE = "NEW_MESSAGE"
 
-    private fun Map<String, String>.titleFromCustomerIoData(): String? {
-      // From customerIO https://www.customer.io/docs/send-push/#standard-payload
-      return get("title")
-    }
-
+    // From customerIO https://www.customer.io/docs/send-push/#standard-payload part of our custom payload there
     private fun Map<String, String>.conversationIdFromCustomerIoData(): String? {
       return get("conversationId")
     }

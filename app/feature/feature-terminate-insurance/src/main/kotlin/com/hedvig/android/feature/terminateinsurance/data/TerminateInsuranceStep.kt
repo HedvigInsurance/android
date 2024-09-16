@@ -4,6 +4,7 @@ import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuran
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.navigation.compose.Destination
 import kotlinx.datetime.LocalDate
 import octopus.fragment.FlowTerminationSurveyOptionSuggestionActionFlowTerminationSurveyOptionSuggestionFragment
 import octopus.fragment.FlowTerminationSurveyOptionSuggestionFragment
@@ -65,7 +66,8 @@ internal fun TerminationFlowStepFragment.CurrentStep.toTerminateInsuranceStep():
   }
 }
 
-private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Option>.toOptionList(): List<TerminationSurveyOption> {
+private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Option>.toOptionList():
+  List<TerminationSurveyOption> {
   return map {
     TerminationSurveyOption(
       id = it.id,
@@ -78,7 +80,8 @@ private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentSte
   }
 }
 
-private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Option.SubOption>.toSubOptionList(): List<TerminationSurveyOption> {
+private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Option.SubOption>.toSubOptionList():
+  List<TerminationSurveyOption> {
   return map {
     TerminationSurveyOption(
       id = it.id,
@@ -128,7 +131,7 @@ private fun FlowTerminationSurveyOptionSuggestionFragment.toSuggestion(): Survey
 
 internal fun TerminateInsuranceStep.toTerminateInsuranceDestination(
   commonParams: TerminationGraphParameters,
-): TerminateInsuranceDestination {
+): Destination {
   return when (this) {
     is TerminateInsuranceStep.Failure -> TerminateInsuranceDestination.TerminationFailure(message)
 

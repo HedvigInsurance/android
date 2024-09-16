@@ -1,6 +1,7 @@
 package com.hedvig.android.app.ui
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
@@ -34,14 +35,14 @@ import com.hedvig.android.feature.profile.navigation.profileBottomNavPermittedDe
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.navigation.compose.Destination
+import com.hedvig.android.navigation.compose.typedHasRoute
+import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.notification.badge.data.tab.BottomNavTab
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
 import com.hedvig.android.theme.Theme
-import com.kiwi.navigationcompose.typed.Destination
-import com.kiwi.navigationcompose.typed.createRoutePattern
-import com.kiwi.navigationcompose.typed.navigate
-import com.kiwi.navigationcompose.typed.popUpTo
+import kotlin.reflect.KClass
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
@@ -109,11 +110,14 @@ internal class HedvigAppState(
     @Composable
     get() {
       if (!shouldShowNavBars) return NavigationSuiteType.None
-      val bottomBarWidthRequirements = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact
-      return if (bottomBarWidthRequirements) {
-        NavigationSuiteType.NavigationBar
-      } else {
-        NavigationSuiteType.NavigationRail
+      return when (windowSizeClass.widthSizeClass) {
+        WindowWidthSizeClass.Compact -> NavigationSuiteType.NavigationBar
+        else -> {
+          when (windowSizeClass.heightSizeClass) {
+            WindowHeightSizeClass.Expanded -> NavigationSuiteType.NavigationRailXLarge
+            else -> NavigationSuiteType.NavigationRail
+          }
+        }
       }
     }
 
@@ -125,14 +129,6 @@ internal class HedvigAppState(
     .stateIn(
       coroutineScope,
       SharingStarted.WhileSubscribed(5.seconds),
-      false,
-    )
-
-  val isCbmEnabled: StateFlow<Boolean> = featureManager
-    .isFeatureEnabled(Feature.ENABLE_CBM)
-    .stateIn(
-      coroutineScope,
-      SharingStarted.Eagerly,
       false,
     )
 
@@ -212,8 +208,8 @@ internal class HedvigAppState(
    * https://issuetracker.google.com/issues/334413738
    */
   fun navigateToLoggedIn() {
-    navController.navigate(RootGraph.route) {
-      popUpTo<LoginDestination> {
+    navController.navigate(RootGraph) {
+      typedPopUpTo<LoginDestination> {
         inclusive = true
       }
     }
@@ -221,7 +217,7 @@ internal class HedvigAppState(
 
   fun navigateToLoggedOut() {
     navController.navigate(LoginDestination) {
-      popUpTo(RootGraph.route) {
+      typedPopUpTo<RootGraph> {
         inclusive = true
       }
     }
@@ -248,6 +244,7 @@ value class NavigationSuiteType private constructor(
   companion object {
     val NavigationBar = NavigationSuiteType(description = "NavigationBar")
     val NavigationRail = NavigationSuiteType(description = "NavigationRail")
+    val NavigationRailXLarge = NavigationSuiteType(description = "NavigationRailXL")
     val None = NavigationSuiteType(description = "None")
   }
 }
@@ -260,8 +257,8 @@ private fun RegisterOnDestinationChangedListenerSideEffect(
 ) {
   DisposableEffect(navController, tabNotificationBadgeService, coroutineScope) {
     val listener = NavController.OnDestinationChangedListener { _, destination, bundle ->
-      logcat { "Navigated to route:${destination.route} | bundle:${bundle}" }
-      CurrentDestinationInMemoryStorage.currentDestination = destination.route
+      logcat { "Navigated to route:${destination.route} | bundle:$bundle" }
+      CurrentDestinationInMemoryStorage.currentDestination = destination
       val topLevelDestination = destination.toTopLevelAppDestination() ?: return@OnDestinationChangedListener
       when (topLevelDestination) {
         TopLevelDestination.Home -> {
@@ -298,24 +295,25 @@ private fun RegisterOnDestinationChangedListenerSideEffect(
 }
 
 private fun NavDestination?.toTopLevelAppDestination(): TopLevelDestination? {
-  return when (this?.route) {
-    createRoutePattern<HomeDestination.Home>() -> TopLevelDestination.Home
-    createRoutePattern<InsurancesDestination.Insurances>() -> TopLevelDestination.Insurances
-    createRoutePattern<ForeverDestination.Forever>() -> TopLevelDestination.Forever
-    createRoutePattern<PaymentsDestination.Payments>() -> TopLevelDestination.Payments
-    createRoutePattern<ProfileDestination.Profile>() -> TopLevelDestination.Profile
+  return when {
+    this == null -> null
+    typedHasRoute<HomeDestination.Home>() -> TopLevelDestination.Home
+    typedHasRoute<InsurancesDestination.Insurances>() -> TopLevelDestination.Insurances
+    typedHasRoute<ForeverDestination.Forever>() -> TopLevelDestination.Forever
+    typedHasRoute<PaymentsDestination.Payments>() -> TopLevelDestination.Payments
+    typedHasRoute<ProfileDestination.Profile>() -> TopLevelDestination.Profile
     else -> null
   }
 }
 
 private fun NavDestination?.isInListOfNonTopLevelNavBarPermittedDestinations(): Boolean {
-  return this?.route in bottomNavPermittedDestinations
+  return bottomNavPermittedDestinations.any { this?.typedHasRoute(it) == true }
 }
 
 /**
  * Special routes, which despite not being top level should still show the navigation bars.
  */
-private val bottomNavPermittedDestinations: List<String> = buildList {
+private val bottomNavPermittedDestinations: List<KClass<out Destination>> = buildList {
   addAll(profileBottomNavPermittedDestinations)
   addAll(insurancesBottomNavPermittedDestinations)
 }
