@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
@@ -36,7 +35,6 @@ internal fun TerminationInfoCardInsurance(displayName: String, exposureName: Str
     Row(
       verticalAlignment = Alignment.CenterVertically,
       modifier = Modifier
-        .heightIn(72.dp)
         .fillMaxWidth()
         .padding(horizontal = 16.dp, vertical = 10.dp),
     ) {
