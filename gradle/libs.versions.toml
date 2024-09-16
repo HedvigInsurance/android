@@ -50,7 +50,7 @@ androidxGraphicsShapes = "1.0.1"
 arrow = "1.2.4"
 assertK = "0.28.1"
 coil = "2.7.0"
-composeRichtext = "0.20.0"
+composeRichtext = "1.0.0-alpha01"
 concatAdapterExtension = "1.2.1"
 coreLibraryDesugaring = "2.1.2"
 coroutines = "1.8.1"
@@ -147,6 +147,7 @@ coil-gif = { module = "io.coil-kt:coil-gif", version.ref = "coil" }
 coil-svg = { module = "io.coil-kt:coil-svg", version.ref = "coil" }
 compose-richtext = { module = "com.halilibo.compose-richtext:richtext-commonmark", version.ref = "composeRichtext" }
 compose-richtextUi = { module = "com.halilibo.compose-richtext:richtext-ui-material3", version.ref = "composeRichtext" }
+compose-richtextMarkdown = { module = "com.halilibo.compose-richtext:richtext-markdown", version.ref = "composeRichtext" }
 concatAdapterExtension = { module = "com.github.carousell:ConcatAdapterExtension", version.ref = "concatAdapterExtension" }
 coreLibraryDesugaring = { module = "com.android.tools:desugar_jdk_libs", version.ref = "coreLibraryDesugaring" }
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }

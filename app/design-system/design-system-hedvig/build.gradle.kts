@@ -18,4 +18,5 @@ dependencies {
   implementation(projects.designSystemInternals)
   implementation(projects.navigationCore)
   implementation(libs.androidx.compose.material3.windowSizeClass)
+  implementation(libs.compose.richtext)
 }

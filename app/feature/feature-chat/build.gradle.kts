@@ -22,6 +22,7 @@ dependencies {
   implementation(libs.coil.compose)
   implementation(libs.compose.richtext)
   implementation(libs.compose.richtextUi)
+  implementation(libs.compose.richtextMarkdown)
   implementation(libs.coroutines.core)
   implementation(libs.koin.compose)
   implementation(libs.koin.core)

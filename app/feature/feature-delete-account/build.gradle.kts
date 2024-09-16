@@ -19,6 +19,7 @@ dependencies {
   implementation(libs.arrow.core)
   implementation(libs.compose.richtext)
   implementation(libs.compose.richtextUi)
+  implementation(libs.compose.richtextMarkdown)
   implementation(libs.coroutines.core)
   implementation(libs.koin.compose)
   implementation(libs.koin.core)
