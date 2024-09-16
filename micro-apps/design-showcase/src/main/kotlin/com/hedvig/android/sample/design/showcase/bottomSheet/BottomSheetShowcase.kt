@@ -94,7 +94,6 @@ private fun BottomSheetWithList(isBottomSheetVisible: Boolean, onVisibleChange: 
         .fillMaxWidth(),
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-      Spacer(Modifier.height(40.dp))
       RadioGroup(
         radioGroupStyle = RadioGroupStyle.Vertical.Default(listOfOptions),
         onOptionClick = { chosenOption.value = it.toInt() },
@@ -134,7 +133,6 @@ private fun BottomSheetWithLongList(isBottomSheetVisible: Boolean, onVisibleChan
         .fillMaxWidth(),
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-      Spacer(Modifier.height(40.dp))
       RadioGroup(
         radioGroupStyle = RadioGroupStyle.Vertical.Default(listOfOptions),
         onOptionClick = { chosenOption.value = it.toInt() },
@@ -165,7 +163,6 @@ private fun BottomSheetWithEditText(isBottomSheetVisible: Boolean, onVisibleChan
         .fillMaxWidth(),
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-      Spacer(Modifier.height(40.dp))
       HedvigTextField(
         text = textFieldValue.value,
         onValueChange = {

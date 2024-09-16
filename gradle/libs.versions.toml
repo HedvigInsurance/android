@@ -31,7 +31,7 @@ accompanist = "0.34.0"
 androidx-activity-compose = "1.9.2"
 androidx-activity-core = "1.9.2"
 androidx-annotation = "1.8.2"
-androidx-composeBom = "2024.09.00"
+androidx-composeBom = "2024.09.01"
 androidx-datastore = "1.1.1"
 androidx-junit = "1.2.1"
 androidx-lifecycle = "2.8.5"
@@ -63,7 +63,6 @@ koinBom = "3.5.6"
 kotlinx-serialization = "1.7.2"
 kotlinxDatetime = "0.6.1"
 leakCanary = "2.14"
-modalSheet = "0.7.0"
 moneta = "1.4.4"
 navigationRecentsUrlSharing = "1.0.0"
 okhttp = "4.12.0"
@@ -178,7 +177,6 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 ktor = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
 leakCanary = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakCanary" }
 material-components = { module = "com.google.android.material:material", version = "1.12.0" }
-modal-sheet = { module = "io.github.oleksandrbalan:modalsheet", version.ref = "modalSheet" }
 molecule = { module = "app.cash.molecule:molecule-runtime", version.ref = "molecule" }
 moneta = { module = "org.javamoney.moneta:moneta-core", version.ref = "moneta" }
 navigationRecentsUrlSharing = { module = "com.stylianosgakis.navigation.recents.url.sharing:navigation-recents-url-sharing", version.ref = "navigationRecentsUrlSharing" }

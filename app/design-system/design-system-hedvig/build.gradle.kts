@@ -12,7 +12,6 @@ dependencies {
   implementation(libs.androidx.compose.materialRipple)
   implementation(libs.androidx.compose.uiGraphics)
   implementation(libs.androidx.graphicsShapes)
-  implementation(libs.modal.sheet)
   implementation(projects.composeUi)
   implementation(projects.coreResources)
   implementation(projects.designSystemInternals)

@@ -5,17 +5,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -32,26 +28,77 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Ghost
 import com.hedvig.android.design.system.hedvig.icon.ArrowDown
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.tokens.BottomSheetTokens
-import eu.wewox.modalsheet.ExperimentalSheetApi
-import eu.wewox.modalsheet.ModalSheet
+import com.hedvig.android.design.system.internals.HedvigBottomSheetInternal
 
-@OptIn(ExperimentalSheetApi::class, ExperimentalLayoutApi::class)
+@Composable
+fun HedvigBottomSheet(
+  isVisible: Boolean,
+  onVisibleChange: (Boolean) -> Unit,
+  topButtonText: String,
+  onTopButtonClick: () -> Unit,
+  bottomButtonText: String,
+  onBottomButtonClick: () -> Unit = { onVisibleChange(false) },
+  content: @Composable ColumnScope.() -> Unit,
+) {
+  HedvigBottomSheet(
+    isVisible = isVisible,
+    onVisibleChange = onVisibleChange,
+  ) {
+    content()
+    HedvigButton(
+      onClick = onTopButtonClick,
+      text = topButtonText,
+      enabled = true,
+      buttonStyle = Ghost,
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(8.dp))
+    HedvigButton(
+      onClick = onBottomButtonClick,
+      text = bottomButtonText,
+      enabled = true,
+      buttonStyle = Ghost,
+      modifier = Modifier.fillMaxWidth(),
+    )
+  }
+}
+
 @Composable
 fun HedvigBottomSheet(
   isVisible: Boolean,
   onVisibleChange: (Boolean) -> Unit,
   bottomButtonText: String,
-  onSystemBack: (() -> Unit)? = { onVisibleChange(false) },
   onBottomButtonClick: () -> Unit = { onVisibleChange(false) },
-  sheetPadding: PaddingValues? = null,
-  cancelable: Boolean = true,
   content: @Composable ColumnScope.() -> Unit,
 ) {
+  HedvigBottomSheet(
+    isVisible = isVisible,
+    onVisibleChange = onVisibleChange,
+  ) {
+    content()
+    HedvigButton(
+      onClick = onBottomButtonClick,
+      text = bottomButtonText,
+      enabled = true,
+      buttonStyle = Ghost,
+      modifier = Modifier.fillMaxWidth(),
+    )
+  }
+}
+
+@Composable
+fun HedvigBottomSheet(
+  isVisible: Boolean,
+  onVisibleChange: (Boolean) -> Unit,
+  content: @Composable ColumnScope.() -> Unit,
+) {
+  val sheetStyle = bottomSheetStyle
   val scrollState = rememberScrollState()
   var scrollDown by remember { mutableStateOf(false) }
   LaunchedEffect(scrollDown) {
@@ -59,39 +106,28 @@ fun HedvigBottomSheet(
       scrollState.animateScrollTo(scrollState.maxValue)
     }
   }
-  val defaultPadding = WindowInsets.safeDrawing.asPaddingValues()
-  val finalSheetPadding = sheetPadding ?: defaultPadding
-  ModalSheet(
+  HedvigBottomSheetInternal(
     visible = isVisible,
     onVisibleChange = onVisibleChange,
-    cancelable = cancelable,
-    scrimColor = bottomSheetColors.scrimColor,
-    backgroundColor = bottomSheetColors.bottomSheetBackgroundColor,
+    containerColor = bottomSheetColors.backgroundColor,
     contentColor = bottomSheetColors.contentColor,
-    sheetPadding = finalSheetPadding,
-    onSystemBack = onSystemBack,
-    shape = bottomSheetShape.shape,
+    scrimColor = bottomSheetColors.scrimColor,
+    shape = sheetStyle.shape,
+    dragHandle = { DragHandle(sheetStyle) },
   ) {
     Box {
       Column(
-        modifier = Modifier.padding(horizontal = bottomSheetShape.contentHorizontalPadding)
+        modifier = Modifier
+          .padding(horizontal = sheetStyle.contentHorizontalPadding)
           .verticalScroll(scrollState),
       ) {
-        Spacer(modifier = Modifier.height(8.dp))
-        DragHandle(modifier = Modifier.align(Alignment.CenterHorizontally))
-        Spacer(modifier = Modifier.height(20.dp))
         content()
-        HedvigButton(
-          onClick = onBottomButtonClick,
-          text = bottomButtonText,
-          enabled = true,
-          buttonStyle = Ghost,
-          modifier = Modifier.fillMaxWidth(),
-        )
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(Modifier.height(sheetStyle.contentBottomPadding))
       }
       Crossfade(
-        modifier = Modifier.align(Alignment.BottomEnd).padding(horizontal = 32.dp, vertical = 16.dp),
+        modifier = Modifier
+          .align(Alignment.BottomEnd)
+          .padding(horizontal = 16.dp, vertical = 16.dp),
         targetState = scrollDown,
       ) { animatedScrollDown ->
         if (scrollState.canScrollForward && !animatedScrollDown) {
@@ -105,16 +141,13 @@ fun HedvigBottomSheet(
 }
 
 @Composable
-private fun DragHandle(modifier: Modifier = Modifier) {
-  Surface(
+private fun DragHandle(style: BottomSheetStyle, modifier: Modifier = Modifier) {
+  Box(
     modifier = modifier
-      .width(40.dp)
-      .height(4.dp)
-      .background(
-        shape = HedvigTheme.shapes.cornerSmall,
-        color = bottomSheetColors.chipColor,
-      ).clip(HedvigTheme.shapes.cornerSmall),
-  ) {}
+      .padding(style.dragHandlePadding)
+      .size(style.dragHandleSize)
+      .background(bottomSheetColors.dragHandleColor, style.dragHandleShape),
+  )
 }
 
 @Composable
@@ -122,7 +155,9 @@ private fun HintArrowDown(onClick: () -> Unit, modifier: Modifier = Modifier) {
   Row(modifier = modifier) {
     IconButton(
       onClick = onClick,
-      modifier = Modifier.clip(CircleShape).background(bottomSheetColors.arrowBackgroundColor),
+      modifier = Modifier
+        .clip(CircleShape)
+        .background(bottomSheetColors.arrowBackgroundColor),
     ) {
       Icon(
         HedvigIcons.ArrowDown,
@@ -134,24 +169,24 @@ private fun HintArrowDown(onClick: () -> Unit, modifier: Modifier = Modifier) {
 }
 
 @Immutable
-internal data class BottomSheetColors(
+private data class BottomSheetColors(
   val scrimColor: Color,
-  val bottomSheetBackgroundColor: Color,
+  val backgroundColor: Color,
   val contentColor: Color,
-  val chipColor: Color,
+  val dragHandleColor: Color,
   val arrowColor: Color,
   val arrowBackgroundColor: Color,
 )
 
-internal val bottomSheetColors: BottomSheetColors
+private val bottomSheetColors: BottomSheetColors
   @Composable
   get() = with(HedvigTheme.colorScheme) {
     remember(this) {
       BottomSheetColors(
-        scrimColor = fromToken(BottomSheetTokens.ScrimColor),
-        bottomSheetBackgroundColor = fromToken(BottomSheetTokens.BottomSheetBackgroundColor),
+        scrimColor = fromToken(BottomSheetTokens.ScrimColor).copy(alpha = BottomSheetTokens.ScrimOpacity),
+        backgroundColor = fromToken(BottomSheetTokens.BackgroundColor),
         contentColor = fromToken(BottomSheetTokens.ContentColor),
-        chipColor = fromToken(BottomSheetTokens.UpperChipColor),
+        dragHandleColor = fromToken(BottomSheetTokens.DragHandleColor),
         arrowColor = fromToken(BottomSheetTokens.ArrowColor),
         arrowBackgroundColor = fromToken(BottomSheetTokens.ArrowColorBackground),
       )
@@ -159,14 +194,30 @@ internal val bottomSheetColors: BottomSheetColors
   }
 
 @Immutable
-internal data class BottomSheetShape(
+private data class BottomSheetStyle(
   val shape: Shape,
+  val contentBottomPadding: Dp,
   val contentHorizontalPadding: Dp,
+  val dragHandleSize: DpSize,
+  val dragHandleShape: Shape,
+  val dragHandlePadding: PaddingValues,
 )
 
-internal val bottomSheetShape: BottomSheetShape
+private val bottomSheetStyle: BottomSheetStyle
   @Composable
-  get() = BottomSheetShape(
+  get() = BottomSheetStyle(
     shape = BottomSheetTokens.ContainerShape.value,
-    contentHorizontalPadding = BottomSheetTokens.ContentPadding,
+    contentBottomPadding = BottomSheetTokens.ContentBottomPadding,
+    contentHorizontalPadding = BottomSheetTokens.ContentHorizontalPadding,
+    dragHandleSize = DpSize(
+      BottomSheetTokens.DragHandleWidth,
+      BottomSheetTokens.DragHandleHeight,
+    ),
+    dragHandleShape = BottomSheetTokens.DragHandleShape.value,
+    dragHandlePadding = PaddingValues(
+      start = BottomSheetTokens.ContentHorizontalPadding,
+      end = BottomSheetTokens.ContentHorizontalPadding,
+      top = BottomSheetTokens.DragHandleTopPadding,
+      bottom = BottomSheetTokens.DragHandleBottomPadding,
+    ),
   )

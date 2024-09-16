@@ -1,6 +1,7 @@
 package com.hedvig.android.design.system.hedvig.tokens
 
 import androidx.annotation.FloatRange
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.geometry.Size
@@ -19,13 +20,12 @@ import androidx.graphics.shapes.toPath
 
 internal object ShapeTokens {
   val CornerXXLarge: Shape = FigmaShape(24.dp)
+  val CornerXLargeTopOnly: Shape = SquircleTopShape(16.dp)
   val CornerXLarge: Shape = FigmaShape(16.dp)
   val CornerLarge: Shape = FigmaShape(12.dp)
   val CornerMedium: Shape = FigmaShape(10.dp)
   val CornerSmall: Shape = FigmaShape(8.dp)
   val CornerExtraSmall: Shape = FigmaShape(6.dp)
-  val CornerNone: Shape = RectangleShape
-  val CornerTopOnlyXLarge: Shape = SquircleTopShape(16.dp)
 
   val RoundedCornerXXLarge: Shape = RoundedCornerShape(24.dp)
   val RoundedCornerXLarge: Shape = RoundedCornerShape(16.dp)
@@ -37,6 +37,9 @@ internal object ShapeTokens {
     bottomStart = CornerSize(0),
     bottomEnd = CornerSize(0),
   )
+
+  val CornerFull: Shape = CircleShape
+  val CornerNone: Shape = RectangleShape
 }
 
 private fun RoundedPolygon.Companion.squircle(
