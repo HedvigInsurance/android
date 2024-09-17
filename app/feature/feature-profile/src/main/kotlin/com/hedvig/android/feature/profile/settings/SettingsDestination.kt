@@ -16,14 +16,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -32,20 +30,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.PermissionStatus.Granted
 import com.google.accompanist.permissions.isGranted
-import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Medium
 import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
 import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
-import com.hedvig.android.design.system.hedvig.DialogDefaults.DialogStyle
-import com.hedvig.android.design.system.hedvig.EmptyState
+import com.hedvig.android.design.system.hedvig.DialogDefaults.ButtonSize.BIG
+import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigBigCard
-import com.hedvig.android.design.system.hedvig.HedvigButton
-import com.hedvig.android.design.system.hedvig.HedvigDialog
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigRedTextButton
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
-import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.RadioOptionData
 import com.hedvig.android.design.system.hedvig.SingleSelectDialog
@@ -249,38 +243,18 @@ internal fun EmailSubscriptionWithDialog(
 ) {
   var showSubscriptionPrefDialog by rememberSaveable { mutableStateOf(false) }
   if (showSubscriptionPrefDialog) {
-    HedvigDialog(
-      style = DialogStyle.NoButtons,
+    HedvigAlertDialog(
+      buttonSize = BIG,
       onDismissRequest = { showSubscriptionPrefDialog = false },
-    ) {
-      EmptyState(
-        modifier = Modifier.padding(top = 24.dp, start = 24.dp, end = 24.dp),
-        text = stringResource(R.string.SETTINGS_SCREEN_EMAIL_PREFERENCES),
-        description = stringResource(R.string.SETTINGS_SCREEN_UNSUBSCRIBE_DESCRIPTION),
-      )
-      Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(24.dp),
-      ) {
-        HedvigTextButton(
-          modifier = Modifier.weight(1f),
-          text = stringResource(R.string.general_close_button),
-          onClick = { showSubscriptionPrefDialog = false },
-        )
-        Spacer(Modifier.width(8.dp))
-        HedvigButton(
-          buttonSize = Medium,
-          enabled = true,
-          onClick = {
-            onConfirmUnsubscribeClick()
-            showSubscriptionPrefDialog = false
-          },
-          text = stringResource(R.string.SETTINGS_SCREEN_CONFIRM_UNSUBSCRIBE),
-        )
-      }
-    }
+      onConfirmClick = {
+        onConfirmUnsubscribeClick()
+        showSubscriptionPrefDialog = false
+      },
+      dismissButtonLabel = stringResource(R.string.general_close_button),
+      confirmButtonLabel = stringResource(R.string.SETTINGS_SCREEN_CONFIRM_UNSUBSCRIBE),
+      title = stringResource(R.string.SETTINGS_SCREEN_EMAIL_PREFERENCES),
+      text = stringResource(R.string.SETTINGS_SCREEN_UNSUBSCRIBE_DESCRIPTION),
+    )
   }
   Column {
     HedvigBigCard(

@@ -25,6 +25,7 @@ import com.hedvig.android.design.system.hedvig.DialogDefaults.ButtonSize.SMALL
 import com.hedvig.android.design.system.hedvig.DialogDefaults.DialogStyle
 import com.hedvig.android.design.system.hedvig.DialogDefaults.DialogStyle.Buttons
 import com.hedvig.android.design.system.hedvig.DialogDefaults.DialogStyle.NoButtons
+import com.hedvig.android.design.system.hedvig.DialogDefaults.defaultButtonSize
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButtonStyle
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.ERROR
 import com.hedvig.android.design.system.hedvig.LockedState.NotLocked
@@ -67,6 +68,7 @@ fun HedvigAlertDialog(
   modifier: Modifier = Modifier,
   confirmButtonLabel: String = stringResource(R.string.GENERAL_YES),
   dismissButtonLabel: String = stringResource(R.string.GENERAL_NO),
+  buttonSize: DialogDefaults.ButtonSize = defaultButtonSize,
 ) {
   HedvigDialog(
     style = Buttons(
@@ -74,22 +76,25 @@ fun HedvigAlertDialog(
       dismissButtonText = dismissButtonLabel,
       onDismissRequest = onDismissRequest,
       onConfirmButtonClick = onConfirmClick,
+      buttonSize = buttonSize,
     ),
     onDismissRequest = onDismissRequest,
     modifier = modifier,
   ) {
     Column(
-      Modifier
-        .fillMaxWidth()
-        .padding(top = 24.dp, start = 24.dp, end = 24.dp),
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-      EmptyState(
+      HedvigText(
         text = title,
-        description = text,
-        iconStyle = EmptyStateDefaults.EmptyStateIconStyle.NO_ICON,
-        buttonStyle = EmptyStateButtonStyle.NoButton,
+        textAlign = TextAlign.Center,
       )
+      if (text != null) {
+        HedvigText(
+          text = text,
+          textAlign = TextAlign.Center,
+          color = HedvigTheme.colorScheme.textSecondary,
+        )
+      }
     }
   }
 }
@@ -106,7 +111,6 @@ fun SingleSelectDialog(
   HedvigDialog(onDismissRequest = { onDismissRequest.invoke() }) {
     Column(
       horizontalAlignment = Alignment.CenterHorizontally,
-      modifier = Modifier.padding(16.dp),
     ) {
       Spacer(Modifier.height(8.dp))
       HedvigText(title, style = HedvigTheme.typography.bodySmall, textAlign = TextAlign.Center)
@@ -134,7 +138,7 @@ fun SingleSelectDialog(
 fun HedvigDialog(
   onDismissRequest: () -> Unit,
   modifier: Modifier = Modifier,
-  applyDefaultPadding: Boolean = false,
+  applyDefaultPadding: Boolean = true,
   style: DialogStyle = DialogDefaults.defaultDialogStyle,
   content: @Composable () -> Unit,
 ) {
@@ -147,14 +151,14 @@ fun HedvigDialog(
       color = DialogDefaults.containerColor,
       modifier = modifier,
     ) {
-      val padding = if (applyDefaultPadding) DialogDefaults.padding else PaddingValues()
+      val padding = if (applyDefaultPadding) DialogDefaults.padding(style) else PaddingValues()
       Column(
         Modifier.padding(padding),
       ) {
         when (style) {
           is Buttons -> {
             content()
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(40.dp))
             when (style.buttonSize) {
               BIG -> {
                 BigVerticalButtons(
@@ -191,7 +195,6 @@ private fun SmallHorizontalButtons(
   confirmButtonText: String,
 ) {
   Row(
-    Modifier.padding(start = 24.dp, end = 24.dp, bottom = 24.dp),
     verticalAlignment = Alignment.CenterVertically,
   ) {
     HedvigButton(
@@ -260,7 +263,17 @@ object DialogDefaults {
       }
     }
 
-  internal val padding = PaddingValues(DialogTokens.Padding)
+  internal fun padding(style: DialogStyle): PaddingValues {
+    return when (style) {
+      is Buttons -> {
+        when (style.buttonSize) {
+          BIG -> DialogTokens.BigButtonsPadding
+          SMALL -> DialogTokens.SmallButtonsPadding
+        }
+      }
+      NoButtons -> DialogTokens.NoButtonsPadding
+    }
+  }
 
   sealed class DialogStyle {
     data class Buttons(
