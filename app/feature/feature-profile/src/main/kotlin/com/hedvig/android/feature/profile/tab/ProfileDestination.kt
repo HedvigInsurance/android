@@ -163,7 +163,6 @@ private fun ProfileScreen(
           style = HedvigTheme.typography.oldDesignTopAppBar, // TODO: change to HeadlineSmall afterwards!
         )
       }
-      Spacer(Modifier.height(16.dp))
       ProfileRows(
         profileUiState = uiState,
         showMyInfo = navigateToMyInfo,

@@ -15,17 +15,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.TopAppBarDefaults.windowInsets
-import com.hedvig.android.design.system.hedvig.icon.ArrowLeft
-import com.hedvig.android.design.system.hedvig.icon.Close
-import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.tokens.ScaffoldTokens
 
 @Composable
@@ -40,14 +33,10 @@ fun HedvigScaffold(
 ) {
   Surface(
     color = scaffoldColors.background,
-    modifier = modifier.fillMaxSize(),
+    modifier = modifier,
   ) {
     val connection = remember {
-      object : NestedScrollConnection {
-        override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-          return super.onPreScroll(available, source)
-        }
-      }
+      object : NestedScrollConnection {}
     }
     Column {
       TopAppBar(
@@ -55,6 +44,10 @@ fun HedvigScaffold(
         actionType = topAppBarActionType,
         onActionClick = navigateUp,
         topAppBarActions = topAppBarActions,
+        windowInsets = WindowInsets.safeDrawing.only(
+          WindowInsetsSides.Horizontal +
+            WindowInsetsSides.Top,
+        ),
       )
       Column(
         horizontalAlignment = itemsColumnHorizontalAlignment,

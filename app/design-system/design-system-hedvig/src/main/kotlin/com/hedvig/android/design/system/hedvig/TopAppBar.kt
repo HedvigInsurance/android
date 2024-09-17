@@ -47,8 +47,9 @@ fun TopAppBar(
       verticalAlignment = Alignment.CenterVertically,
       modifier = modifier
         .windowInsetsPadding(windowInsets)
-        .height(TopAppBarTokens.ContainerHeight)
-        .padding(horizontal = TopAppBarTokens.ContentHorizontalPadding),
+        .height(TopAppBarTokens.ContainerHeight),
+      // .padding(horizontal = TopAppBarTokens.ContentHorizontalPadding),
+      // todo removed here @Stelios
     ) {
       IconButton(
         onClick = onActionClick,
@@ -91,13 +92,13 @@ fun TopAppBar(
     color = TopAppBarTokens.ContainerColor.value,
     contentColor = TopAppBarTokens.ContentColor.value,
     modifier = modifier
+      .windowInsetsPadding(windowInsets)
       .fillMaxWidth()
       .height(TopAppBarTokens.ContainerHeight),
   ) {
     Row(
       verticalAlignment = Alignment.CenterVertically,
       modifier = Modifier
-        .windowInsetsPadding(windowInsets)
         .padding(horizontal = TopAppBarTokens.ContentHorizontalPadding),
     ) {
       HorizontalItemsWithMaximumSpaceTaken(
@@ -161,7 +162,7 @@ internal fun TopAppBarLayoutForActions(modifier: Modifier = Modifier, actions: @
 }
 
 @Composable
-internal fun TopAppBarWithBack(
+fun TopAppBarWithBack(
   title: String,
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
