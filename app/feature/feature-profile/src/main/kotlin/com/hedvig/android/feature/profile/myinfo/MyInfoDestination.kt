@@ -40,7 +40,6 @@ import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
-import com.hedvig.android.feature.profile.myinfo.MyInfoUiState.Loading
 import com.hedvig.android.feature.profile.myinfo.MyInfoUiState.Success
 import hedvig.resources.R
 
