@@ -104,53 +104,53 @@ private fun HelpCenterQuestionScreen(
         LocalConfiguration.current
         val resources = LocalContext.current.resources
         Column(
-          modifier = Modifier
-            .fillMaxSize()
+          Modifier.fillMaxSize()
             .verticalScroll(rememberScrollState()),
         ) {
-          Spacer(Modifier.height(16.dp))
-          HelpCenterSection(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            title = stringResource(id = R.string.HC_QUESTION_TITLE),
-            chipContainerColor = HighlightColor.Blue(LIGHT),
-            content = {
-              HedvigText(
-                text = stringResource(question.questionRes),
-                style = HedvigTheme.typography.bodySmall,
-                modifier = Modifier
-                  .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-              )
-            },
-          )
-          Spacer(Modifier.height(32.dp))
-          HelpCenterSection(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            title = stringResource(R.string.HC_ANSWER_TITLE),
-            chipContainerColor = HighlightColor.Green(LIGHT),
-            content = {
-              ProvideTextStyle(
-                HedvigTheme.typography.bodySmall.copy(color = HedvigTheme.colorScheme.textSecondary),
-              ) {
-                RichText( // todo: will this work???
-                  modifier = Modifier
-                    .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-                ) {
-                  Markdown(
-                    content = stringResource(id = question.answerRes),
-                  )
-                }
-              }
-            },
-          )
-          if (relatedQuestions.isNotEmpty()) {
-            Spacer(Modifier.height(96.dp))
-            HelpCenterSectionWithClickableRows(
-              title = "Related questions",
-              chipContainerColor = HighlightColor.Pink(LIGHT),
-              items = relatedQuestions,
-              itemText = { resources.getString(it.questionRes) },
-              onClickItem = { onNavigateToQuestion(it) },
+          Column(
+            modifier =
+              Modifier.padding(
+                WindowInsets
+                  .safeDrawing.only(WindowInsetsSides.Horizontal).asPaddingValues() + PaddingValues(horizontal = 16.dp),
+              ),
+          ) {
+            Spacer(Modifier.height(16.dp))
+            HelpCenterSection(
+              title = stringResource(id = R.string.HC_QUESTION_TITLE),
+              chipContainerColor = HighlightColor.Blue(LIGHT),
+              content = {
+                HedvigText(
+                  text = stringResource(question.questionRes),
+                  style = HedvigTheme.typography.bodySmall,
+                )
+              },
             )
+            Spacer(Modifier.height(32.dp))
+            HelpCenterSection(
+              title = stringResource(R.string.HC_ANSWER_TITLE),
+              chipContainerColor = HighlightColor.Green(LIGHT),
+              content = {
+                ProvideTextStyle(
+                  HedvigTheme.typography.bodySmall.copy(color = HedvigTheme.colorScheme.textSecondary),
+                ) {
+                  RichText {
+                    Markdown(
+                      content = stringResource(id = question.answerRes),
+                    )
+                  }
+                }
+              },
+            )
+            if (relatedQuestions.isNotEmpty()) {
+              Spacer(Modifier.height(96.dp))
+              HelpCenterSectionWithClickableRows(
+                title = "Related questions",
+                chipContainerColor = HighlightColor.Pink(LIGHT),
+                items = relatedQuestions,
+                itemText = { resources.getString(it.questionRes) },
+                onClickItem = { onNavigateToQuestion(it) },
+              )
+            }
           }
           Spacer(Modifier.weight(1f))
           Spacer(Modifier.height(40.dp))

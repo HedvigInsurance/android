@@ -126,29 +126,34 @@ private fun HelpCenterTopicScreen(
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
         ) {
-          Spacer(Modifier.height(16.dp))
-          if (commonQuestions.isNotEmpty()) {
-            HelpCenterSectionWithClickableRows(
-              modifier = Modifier.padding(PaddingValues(horizontal = 16.dp)),
-              title = stringResource(id = R.string.HC_COMMON_QUESTIONS_TITLE),
-              chipContainerColor = HighlightColor.Blue(LIGHT),
-              items = commonQuestions,
-              itemText = { resources.getString(it.questionRes) },
-              onClickItem = { onNavigateToQuestion(it) },
-            )
-          }
-          if (commonQuestions.isNotEmpty() && allQuestions.isNotEmpty()) {
-            Spacer(Modifier.height(40.dp))
-          }
-          if (allQuestions.isNotEmpty()) {
-            HelpCenterSectionWithClickableRows(
-              modifier = Modifier.padding(PaddingValues(horizontal = 16.dp)),
-              title = stringResource(id = R.string.HC_ALL_QUESTION_TITLE),
-              chipContainerColor = HighlightColor.Purple(LIGHT),
-              items = allQuestions,
-              itemText = { resources.getString(it.questionRes) },
-              onClickItem = { onNavigateToQuestion(it) },
-            )
+          Column(
+            modifier = Modifier
+              .padding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal).asPaddingValues()),
+          ) {
+            Spacer(Modifier.height(16.dp))
+            if (commonQuestions.isNotEmpty()) {
+              HelpCenterSectionWithClickableRows(
+                modifier = Modifier.padding(PaddingValues(horizontal = 16.dp)),
+                title = stringResource(id = R.string.HC_COMMON_QUESTIONS_TITLE),
+                chipContainerColor = HighlightColor.Blue(LIGHT),
+                items = commonQuestions,
+                itemText = { resources.getString(it.questionRes) },
+                onClickItem = { onNavigateToQuestion(it) },
+              )
+            }
+            if (commonQuestions.isNotEmpty() && allQuestions.isNotEmpty()) {
+              Spacer(Modifier.height(40.dp))
+            }
+            if (allQuestions.isNotEmpty()) {
+              HelpCenterSectionWithClickableRows(
+                modifier = Modifier.padding(PaddingValues(horizontal = 16.dp)),
+                title = stringResource(id = R.string.HC_ALL_QUESTION_TITLE),
+                chipContainerColor = HighlightColor.Purple(LIGHT),
+                items = allQuestions,
+                itemText = { resources.getString(it.questionRes) },
+                onClickItem = { onNavigateToQuestion(it) },
+              )
+            }
           }
           Spacer(Modifier.weight(1f))
           Spacer(Modifier.height(40.dp))

@@ -298,72 +298,74 @@ private fun ContentWithoutSearch(
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
 ) {
-  Column(
-    modifier =
-      Modifier.padding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal).asPaddingValues()),
-  ) {
-    Spacer(Modifier.height(32.dp))
-    Image(
-      painter = painterResource(id = R.drawable.pillow_hedvig),
-      contentDescription = null,
-      modifier = Modifier
-        .size(170.dp)
-        .align(Alignment.CenterHorizontally),
-    )
-    Spacer(Modifier.height(50.dp))
+  Column {
     Column(
-      verticalArrangement = Arrangement.spacedBy(8.dp),
-      modifier = Modifier
-        .padding(horizontal = 20.dp),
+      modifier =
+        Modifier.padding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal).asPaddingValues()),
     ) {
-      HedvigText(stringResource(id = R.string.HC_HOME_VIEW_QUESTION))
-      HedvigText(
-        text = stringResource(id = R.string.HC_HOME_VIEW_ANSWER),
-        color = HedvigTheme.colorScheme.textSecondary,
+      Spacer(Modifier.height(32.dp))
+      Image(
+        painter = painterResource(id = R.drawable.pillow_hedvig),
+        contentDescription = null,
+        modifier = Modifier
+          .size(170.dp)
+          .align(Alignment.CenterHorizontally),
       )
-    }
-    Spacer(Modifier.height(24.dp))
-
-    Column {
-      AnimatedVisibility(
-        visible = quickLinksUiState !is HelpCenterUiState.QuickLinkUiState.NoQuickLinks,
-        enter = QuickLinksSectionEnterTransition,
-        exit = QuickLinksSectionExitTransition,
+      Spacer(Modifier.height(50.dp))
+      Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier
+          .padding(horizontal = 20.dp),
       ) {
-        Column {
-          QuickLinksSection(quickLinksUiState, onQuickActionsSelected)
-          Spacer(Modifier.height(32.dp))
-        }
+        HedvigText(stringResource(id = R.string.HC_HOME_VIEW_QUESTION))
+        HedvigText(
+          text = stringResource(id = R.string.HC_HOME_VIEW_ANSWER),
+          color = HedvigTheme.colorScheme.textSecondary,
+        )
       }
-      HelpCenterSection(
-        modifier = Modifier.padding(PaddingValues(horizontal = 16.dp)),
-        title = stringResource(id = R.string.HC_COMMON_TOPICS_TITLE),
-        chipContainerColor = HighlightColor.Yellow(LIGHT), // todo: maybe Amber???
-        content = {
-          Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            for (topic in topics) {
-              HedvigCard(
-                onClick = { onNavigateToTopic(topic) },
-                modifier = Modifier
-                  .fillMaxWidth(),
-              ) {
-                HedvigText(stringResource(topic.titleRes), Modifier.padding(16.dp))
+      Spacer(Modifier.height(24.dp))
+
+      Column {
+        AnimatedVisibility(
+          visible = quickLinksUiState !is HelpCenterUiState.QuickLinkUiState.NoQuickLinks,
+          enter = QuickLinksSectionEnterTransition,
+          exit = QuickLinksSectionExitTransition,
+        ) {
+          Column {
+            QuickLinksSection(quickLinksUiState, onQuickActionsSelected)
+            Spacer(Modifier.height(32.dp))
+          }
+        }
+        HelpCenterSection(
+          modifier = Modifier.padding(PaddingValues(horizontal = 16.dp)),
+          title = stringResource(id = R.string.HC_COMMON_TOPICS_TITLE),
+          chipContainerColor = HighlightColor.Yellow(LIGHT),
+          content = {
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+              for (topic in topics) {
+                HedvigCard(
+                  onClick = { onNavigateToTopic(topic) },
+                  modifier = Modifier
+                    .fillMaxWidth(),
+                ) {
+                  HedvigText(stringResource(topic.titleRes), Modifier.padding(16.dp))
+                }
               }
             }
-          }
-        },
-      )
-      Spacer(Modifier.height(32.dp))
-      LocalConfiguration.current
-      val resources = LocalContext.current.resources
-      HelpCenterSectionWithClickableRows(
-        modifier = Modifier.padding(PaddingValues(horizontal = 16.dp)),
-        title = stringResource(id = R.string.HC_COMMON_QUESTIONS_TITLE),
-        chipContainerColor = HighlightColor.Blue(LIGHT),
-        items = questions,
-        itemText = { resources.getString(it.questionRes) },
-        onClickItem = { onNavigateToQuestion(it) },
-      )
+          },
+        )
+        Spacer(Modifier.height(32.dp))
+        LocalConfiguration.current
+        val resources = LocalContext.current.resources
+        HelpCenterSectionWithClickableRows(
+          modifier = Modifier.padding(PaddingValues(horizontal = 16.dp)),
+          title = stringResource(id = R.string.HC_COMMON_QUESTIONS_TITLE),
+          chipContainerColor = HighlightColor.Blue(LIGHT),
+          items = questions,
+          itemText = { resources.getString(it.questionRes) },
+          onClickItem = { onNavigateToQuestion(it) },
+        )
+      }
     }
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(40.dp))

@@ -100,7 +100,7 @@ fun DropdownWithDialog(
             style = style,
             onClick = {
               onItemChosen(index)
-              isDialogVisible = false // todo: sure here?
+              isDialogVisible = false
             },
             isSelected = index == chosenItemIndex,
           )
