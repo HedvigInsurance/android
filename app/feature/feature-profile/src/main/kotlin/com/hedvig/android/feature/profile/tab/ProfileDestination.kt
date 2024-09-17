@@ -160,7 +160,7 @@ private fun ProfileScreen(
       ) {
         HedvigText(
           text = stringResource(id = R.string.PROFILE_TITLE),
-          style = HedvigTheme.typography.headlineSmall, // todo: check here!
+          style = HedvigTheme.typography.oldDesignTopAppBar, // TODO: change to HeadlineSmall afterwards!
         )
       }
       Spacer(Modifier.height(16.dp))

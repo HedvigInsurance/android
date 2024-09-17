@@ -12,4 +12,5 @@ internal enum class TypographyKeyTokens {
   HeadlineSmall,
   Label,
   FinePrint,
+  OldDesignTopAppBar, // TODO: remove when the DS migration is over
 }

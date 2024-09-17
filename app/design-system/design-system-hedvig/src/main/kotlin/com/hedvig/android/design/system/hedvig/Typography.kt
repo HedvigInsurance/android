@@ -21,6 +21,7 @@ data class Typography(
   val headlineSmall: TextStyle = TypographyTokens.HeadlineSmall,
   val label: TextStyle = TypographyTokens.Label,
   val finePrint: TextStyle = TypographyTokens.FinePrint,
+  val oldDesignTopAppBar: TextStyle = TypographyTokens.OldDesignTopAppBar, // TODO: remove when the DS migration is over
 )
 
 internal fun Typography.fromToken(value: TypographyKeyTokens): TextStyle {
@@ -36,6 +37,7 @@ internal fun Typography.fromToken(value: TypographyKeyTokens): TextStyle {
     TypographyKeyTokens.HeadlineSmall -> headlineSmall
     TypographyKeyTokens.Label -> label
     TypographyKeyTokens.FinePrint -> finePrint
+    TypographyKeyTokens.OldDesignTopAppBar -> oldDesignTopAppBar // TODO: remove when the DS migration is over
   }
 }
 

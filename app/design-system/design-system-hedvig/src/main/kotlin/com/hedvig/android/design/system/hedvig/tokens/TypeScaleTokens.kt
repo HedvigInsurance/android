@@ -63,4 +63,11 @@ internal object TypeScaleTokens {
   val FinePrintSize = 12.0.sp
   val FinePrintTracking = 0.0.sp
   val FinePrintWeight = TypefaceTokens.WeightRegular
+
+  // TODO: remove when the DS migration is over
+  val OldDesignTopAppFont = TypefaceTokens.Plain
+  val OldDesignTopAppLineHeight = 28.0.sp
+  val OldDesignTopAppSize = 22.sp
+  val OldDesignTopAppTracking = 0.0.sp
+  val OldDesignTopAppWeight = TypefaceTokens.WeightRegular
 }
