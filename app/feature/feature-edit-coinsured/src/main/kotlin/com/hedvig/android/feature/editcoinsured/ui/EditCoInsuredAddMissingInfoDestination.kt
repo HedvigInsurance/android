@@ -4,7 +4,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
@@ -23,6 +25,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
@@ -154,7 +157,11 @@ private fun EditCoInsuredScreen(
 
         Column(
           modifier = Modifier
-            .weight(1f)
+            .fillMaxSize()
+            .padding(
+              WindowInsets
+                .safeDrawing.only(WindowInsetsSides.Horizontal).asPaddingValues(),
+            )
             .verticalScroll(state = rememberScrollState()),
         ) {
           CoInsuredList(
@@ -162,6 +169,7 @@ private fun EditCoInsuredScreen(
             onRemove = {},
             onEdit = onCoInsuredClicked,
             allowEdit = true,
+            modifier = Modifier.padding(horizontal = 16.dp),
           )
           Spacer(Modifier.height(8.dp))
 
@@ -170,23 +178,23 @@ private fun EditCoInsuredScreen(
               text = stringResource(
                 id = R.string.CONTRACT_ADD_COINSURED_REVIEW_INFO,
               ),
-              modifier = Modifier.padding(horizontal = 16.dp),
-            )
-          }
-        }
-
-        Column {
-          if (uiState.listState.priceInfo != null && uiState.listState.hasMadeChanges()) {
-            Spacer(Modifier.height(8.dp))
-            HedvigContainedButton(
-              text = stringResource(id = R.string.GENERAL_SAVE_CHANGES_BUTTON),
-              onClick = onCommitChanges,
-              enabled = true,
-              isLoading = uiState.listState.isCommittingUpdate,
-              modifier = Modifier.padding(horizontal = 16.dp),
+              modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
             )
           }
 
+          Spacer(Modifier.weight(1f))
+          Column {
+            if (uiState.listState.priceInfo != null && uiState.listState.hasMadeChanges()) {
+              Spacer(Modifier.height(8.dp))
+              HedvigContainedButton(
+                text = stringResource(id = R.string.GENERAL_SAVE_CHANGES_BUTTON),
+                onClick = onCommitChanges,
+                enabled = true,
+                isLoading = uiState.listState.isCommittingUpdate,
+                modifier = Modifier.padding(horizontal = 16.dp),
+              )
+            }
+          }
           Spacer(Modifier.height(8.dp))
           HedvigTextButton(
             onClick = navigateUp,
@@ -194,8 +202,8 @@ private fun EditCoInsuredScreen(
             modifier = Modifier.padding(horizontal = 16.dp),
           )
           Spacer(Modifier.height(16.dp))
+          Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
         }
-        Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
       }
 
       EditCoInsuredState.Loading -> HedvigFullScreenCenterAlignedProgressDebounced()
@@ -204,7 +212,7 @@ private fun EditCoInsuredScreen(
 }
 
 @Composable
-@HedvigPreview
+@HedvigMultiScreenPreview
 private fun EditCoInsuredScreenEditablePreview() {
   HedvigTheme {
     Surface {

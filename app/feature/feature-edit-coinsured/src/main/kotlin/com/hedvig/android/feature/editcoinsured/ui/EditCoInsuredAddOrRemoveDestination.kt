@@ -23,7 +23,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
@@ -33,6 +36,7 @@ import com.hedvig.android.core.designsystem.component.button.HedvigContainedButt
 import com.hedvig.android.core.designsystem.component.button.HedvigSecondaryContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
@@ -149,62 +153,67 @@ private fun EditCoInsuredScreen(
       }
 
       is EditCoInsuredState.Loaded -> {
-        LaunchedEffect(uiState.contractUpdateDate) {
-          if (uiState.contractUpdateDate != null) {
-            onCompleted(uiState.contractUpdateDate)
-          }
-        }
-        HedvigBottomSheet(
-          bottomButtonText = stringResource(id = R.string.general_cancel_button),
-          isVisible = uiState.addBottomSheetState.show,
-          onVisibleChange = { isVisible ->
-            if (!isVisible) {
-              onResetAddBottomSheetState()
-            }
-          },
-        ) {
-          AddCoInsuredBottomSheetContent(
-            bottomSheetState = uiState.addBottomSheetState,
-            onContinue = onSave,
-            onSsnChanged = onSsnChanged,
-            onFirstNameChanged = onFirstNameChanged,
-            onLastNameChanged = onLastNameChanged,
-            onBirthDateChanged = onBirthDateChanged,
-            onManualInputSwitchChanged = onManualInputSwitchChanged,
-            onAddNewCoInsured = onAddNewCoInsured,
-            onCoInsuredSelected = onCoInsuredSelected,
-          )
-        }
-
-        HedvigBottomSheet(
-          bottomButtonText = stringResource(R.string.general_cancel_button),
-          isVisible = uiState.removeBottomSheetState.show && uiState.removeBottomSheetState.coInsured != null,
-          onVisibleChange = { isVisible ->
-            if (!isVisible) {
-              onResetRemoveBottomSheetState()
-            }
-          },
-        ) {
-          if (uiState.removeBottomSheetState.coInsured != null) {
-            RemoveCoInsuredBottomSheetContent(
-              onRemove = { onRemoveCoInsured(it) },
-              isLoading = uiState.removeBottomSheetState.isLoading,
-              coInsured = uiState.removeBottomSheetState.coInsured,
-              errorMessage = uiState.removeBottomSheetState.errorMessage,
-            )
-          }
-        }
-
         Column(
-          modifier = Modifier
-            .weight(1f)
+          Modifier
+            .fillMaxSize()
+            .padding(
+              WindowInsets
+                .safeDrawing.only(WindowInsetsSides.Horizontal).asPaddingValues(),
+            )
+            .nestedScroll(remember { object : NestedScrollConnection {} })
             .verticalScroll(state = rememberScrollState()),
         ) {
+          LaunchedEffect(uiState.contractUpdateDate) {
+            if (uiState.contractUpdateDate != null) {
+              onCompleted(uiState.contractUpdateDate)
+            }
+          }
+          HedvigBottomSheet(
+            bottomButtonText = stringResource(id = R.string.general_cancel_button),
+            isVisible = uiState.addBottomSheetState.show,
+            onVisibleChange = { isVisible ->
+              if (!isVisible) {
+                onResetAddBottomSheetState()
+              }
+            },
+          ) {
+            AddCoInsuredBottomSheetContent(
+              bottomSheetState = uiState.addBottomSheetState,
+              onContinue = onSave,
+              onSsnChanged = onSsnChanged,
+              onFirstNameChanged = onFirstNameChanged,
+              onLastNameChanged = onLastNameChanged,
+              onBirthDateChanged = onBirthDateChanged,
+              onManualInputSwitchChanged = onManualInputSwitchChanged,
+              onAddNewCoInsured = onAddNewCoInsured,
+              onCoInsuredSelected = onCoInsuredSelected,
+            )
+          }
+
+          HedvigBottomSheet(
+            bottomButtonText = stringResource(R.string.general_cancel_button),
+            isVisible = uiState.removeBottomSheetState.show && uiState.removeBottomSheetState.coInsured != null,
+            onVisibleChange = { isVisible ->
+              if (!isVisible) {
+                onResetRemoveBottomSheetState()
+              }
+            },
+          ) {
+            if (uiState.removeBottomSheetState.coInsured != null) {
+              RemoveCoInsuredBottomSheetContent(
+                onRemove = { onRemoveCoInsured(it) },
+                isLoading = uiState.removeBottomSheetState.isLoading,
+                coInsured = uiState.removeBottomSheetState.coInsured,
+                errorMessage = uiState.removeBottomSheetState.errorMessage,
+              )
+            }
+          }
           CoInsuredList(
             uiState = uiState.listState,
             onRemove = onRemoveCoInsuredClicked,
             onEdit = {},
             allowEdit = false,
+            modifier = Modifier.padding(horizontal = 16.dp),
           )
 
           Spacer(Modifier.height(8.dp))
@@ -215,35 +224,36 @@ private fun EditCoInsuredScreen(
               modifier = Modifier.padding(horizontal = 16.dp),
             )
           }
-        }
 
-        Column {
-          if (uiState.listState.priceInfo != null && uiState.listState.hasMadeChanges()) {
+          Spacer(Modifier.weight(1f))
+          Column {
+            if (uiState.listState.priceInfo != null && uiState.listState.hasMadeChanges()) {
+              Spacer(Modifier.height(8.dp))
+              PriceInfo(uiState.listState.priceInfo)
+              HedvigContainedButton(
+                text = stringResource(id = R.string.CONTRACT_ADD_COINSURED_CONFIRM_CHANGES),
+                onClick = onCommitChanges,
+                isLoading = uiState.listState.isCommittingUpdate,
+                modifier = Modifier.padding(horizontal = 16.dp),
+              )
+            }
+
             Spacer(Modifier.height(8.dp))
-            PriceInfo(uiState.listState.priceInfo)
-            HedvigContainedButton(
-              text = stringResource(id = R.string.CONTRACT_ADD_COINSURED_CONFIRM_CHANGES),
-              onClick = onCommitChanges,
-              isLoading = uiState.listState.isCommittingUpdate,
-              modifier = Modifier.padding(horizontal = 16.dp),
+            HedvigTextButton(
+              onClick = navigateUp,
+              text = stringResource(id = R.string.general_cancel_button),
+              modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            )
+            Spacer(Modifier.height(16.dp))
+            Spacer(
+              Modifier.padding(
+                WindowInsets.safeDrawing
+                  .only(WindowInsetsSides.Bottom).asPaddingValues(),
+              ),
             )
           }
-
-          Spacer(Modifier.height(8.dp))
-          HedvigTextButton(
-            onClick = navigateUp,
-            text = stringResource(id = R.string.general_cancel_button),
-            modifier = Modifier
-              .fillMaxWidth()
-              .padding(horizontal = 16.dp),
-          )
-          Spacer(Modifier.height(16.dp))
-          Spacer(
-            Modifier.padding(
-              WindowInsets.safeDrawing
-                .only(WindowInsetsSides.Bottom).asPaddingValues(),
-            ),
-          )
         }
       }
 
@@ -367,7 +377,7 @@ private fun EditCoInsuredScreenEditablePreview() {
 }
 
 @Composable
-@HedvigPreview
+@HedvigMultiScreenPreview
 private fun EditCoInsuredScreenNonEditablePreview() {
   HedvigTheme {
     Surface {
