@@ -16,18 +16,17 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
@@ -37,7 +36,7 @@ import com.hedvig.android.core.designsystem.component.button.HedvigContainedButt
 import com.hedvig.android.core.designsystem.component.button.HedvigSecondaryContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
-import com.hedvig.android.core.designsystem.material3.squircleLargeTop
+import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
@@ -46,10 +45,12 @@ import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.data.Member
+import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.InfoFromSsn
+import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.ManualInfo
 import hedvig.resources.R
-import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
 
@@ -152,23 +153,29 @@ private fun EditCoInsuredScreen(
       }
 
       is EditCoInsuredState.Loaded -> {
-        val coroutineScope = rememberCoroutineScope()
-
-        LaunchedEffect(uiState.contractUpdateDate) {
-          if (uiState.contractUpdateDate != null) {
-            onCompleted(uiState.contractUpdateDate)
+        Column(
+          Modifier
+            .fillMaxSize()
+            .padding(
+              WindowInsets
+                .safeDrawing.only(WindowInsetsSides.Horizontal).asPaddingValues(),
+            )
+            .nestedScroll(remember { object : NestedScrollConnection {} })
+            .verticalScroll(state = rememberScrollState()),
+        ) {
+          LaunchedEffect(uiState.contractUpdateDate) {
+            if (uiState.contractUpdateDate != null) {
+              onCompleted(uiState.contractUpdateDate)
+            }
           }
-        }
-
-        if (uiState.addBottomSheetState.show) {
-          val sheetState = rememberModalBottomSheetState(true)
-          ModalBottomSheet(
-            containerColor = MaterialTheme.colorScheme.background,
-            onDismissRequest = onResetAddBottomSheetState,
-            shape = MaterialTheme.shapes.squircleLargeTop,
-            sheetState = sheetState,
-            tonalElevation = 0.dp,
-            contentWindowInsets = { BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top) },
+          HedvigBottomSheet(
+            bottomButtonText = stringResource(id = R.string.general_cancel_button),
+            isVisible = uiState.addBottomSheetState.show,
+            onVisibleChange = { isVisible ->
+              if (!isVisible) {
+                onResetAddBottomSheetState()
+              }
+            },
           ) {
             AddCoInsuredBottomSheetContent(
               bottomSheetState = uiState.addBottomSheetState,
@@ -180,53 +187,33 @@ private fun EditCoInsuredScreen(
               onManualInputSwitchChanged = onManualInputSwitchChanged,
               onAddNewCoInsured = onAddNewCoInsured,
               onCoInsuredSelected = onCoInsuredSelected,
-              onDismiss = {
-                coroutineScope.launch {
-                  sheetState.hide()
-                }.invokeOnCompletion {
-                  onResetAddBottomSheetState()
-                }
-              },
             )
           }
-        }
 
-        if (uiState.removeBottomSheetState.show && uiState.removeBottomSheetState.coInsured != null) {
-          val sheetState = rememberModalBottomSheetState(true)
-          ModalBottomSheet(
-            containerColor = MaterialTheme.colorScheme.background,
-            onDismissRequest = onResetRemoveBottomSheetState,
-            shape = MaterialTheme.shapes.squircleLargeTop,
-            sheetState = sheetState,
-            tonalElevation = 0.dp,
-            contentWindowInsets = { BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top) },
+          HedvigBottomSheet(
+            bottomButtonText = stringResource(R.string.general_cancel_button),
+            isVisible = uiState.removeBottomSheetState.show && uiState.removeBottomSheetState.coInsured != null,
+            onVisibleChange = { isVisible ->
+              if (!isVisible) {
+                onResetRemoveBottomSheetState()
+              }
+            },
           ) {
-            RemoveCoInsuredBottomSheetContent(
-              onRemove = { onRemoveCoInsured(it) },
-              onDismiss = {
-                coroutineScope.launch {
-                  sheetState.hide()
-                }.invokeOnCompletion {
-                  onResetRemoveBottomSheetState()
-                }
-              },
-              isLoading = uiState.removeBottomSheetState.isLoading,
-              coInsured = uiState.removeBottomSheetState.coInsured,
-              errorMessage = uiState.removeBottomSheetState.errorMessage,
-            )
+            if (uiState.removeBottomSheetState.coInsured != null) {
+              RemoveCoInsuredBottomSheetContent(
+                onRemove = { onRemoveCoInsured(it) },
+                isLoading = uiState.removeBottomSheetState.isLoading,
+                coInsured = uiState.removeBottomSheetState.coInsured,
+                errorMessage = uiState.removeBottomSheetState.errorMessage,
+              )
+            }
           }
-        }
-
-        Column(
-          modifier = Modifier
-            .weight(1f)
-            .verticalScroll(state = rememberScrollState()),
-        ) {
           CoInsuredList(
             uiState = uiState.listState,
             onRemove = onRemoveCoInsuredClicked,
             onEdit = {},
             allowEdit = false,
+            modifier = Modifier.padding(horizontal = 16.dp),
           )
 
           Spacer(Modifier.height(8.dp))
@@ -237,33 +224,36 @@ private fun EditCoInsuredScreen(
               modifier = Modifier.padding(horizontal = 16.dp),
             )
           }
-        }
 
-        Column {
-          if (uiState.listState.priceInfo != null && uiState.listState.hasMadeChanges()) {
+          Spacer(Modifier.weight(1f))
+          Column {
+            if (uiState.listState.priceInfo != null && uiState.listState.hasMadeChanges()) {
+              Spacer(Modifier.height(8.dp))
+              PriceInfo(uiState.listState.priceInfo)
+              HedvigContainedButton(
+                text = stringResource(id = R.string.CONTRACT_ADD_COINSURED_CONFIRM_CHANGES),
+                onClick = onCommitChanges,
+                isLoading = uiState.listState.isCommittingUpdate,
+                modifier = Modifier.padding(horizontal = 16.dp),
+              )
+            }
+
             Spacer(Modifier.height(8.dp))
-            PriceInfo(uiState.listState.priceInfo)
-            HedvigContainedButton(
-              text = stringResource(id = R.string.CONTRACT_ADD_COINSURED_CONFIRM_CHANGES),
-              onClick = onCommitChanges,
-              isLoading = uiState.listState.isCommittingUpdate,
-              modifier = Modifier.padding(horizontal = 16.dp),
+            HedvigTextButton(
+              onClick = navigateUp,
+              text = stringResource(id = R.string.general_cancel_button),
+              modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            )
+            Spacer(Modifier.height(16.dp))
+            Spacer(
+              Modifier.padding(
+                WindowInsets.safeDrawing
+                  .only(WindowInsetsSides.Bottom).asPaddingValues(),
+              ),
             )
           }
-
-          Spacer(Modifier.height(8.dp))
-          HedvigTextButton(
-            onClick = navigateUp,
-            text = stringResource(id = R.string.general_cancel_button),
-            modifier = Modifier.fillMaxWidth(),
-          )
-          Spacer(Modifier.height(16.dp))
-          Spacer(
-            Modifier.padding(
-              WindowInsets.safeDrawing
-                .only(WindowInsetsSides.Bottom).asPaddingValues(),
-            ),
-          )
         }
       }
 
@@ -360,6 +350,8 @@ private fun EditCoInsuredScreenEditablePreview() {
           ),
           addBottomSheetState = EditCoInsuredState.Loaded.AddBottomSheetState(
             isLoading = false,
+            manualInfo = ManualInfo(),
+            infoFromSsn = InfoFromSsn(),
           ),
           removeBottomSheetState = EditCoInsuredState.Loaded.RemoveBottomSheetState(),
         ),
@@ -385,7 +377,7 @@ private fun EditCoInsuredScreenEditablePreview() {
 }
 
 @Composable
-@HedvigPreview
+@HedvigMultiScreenPreview
 private fun EditCoInsuredScreenNonEditablePreview() {
   HedvigTheme {
     Surface {
@@ -418,6 +410,8 @@ private fun EditCoInsuredScreenNonEditablePreview() {
           ),
           addBottomSheetState = EditCoInsuredState.Loaded.AddBottomSheetState(
             isLoading = false,
+            manualInfo = ManualInfo(),
+            infoFromSsn = InfoFromSsn(),
           ),
           removeBottomSheetState = EditCoInsuredState.Loaded.RemoveBottomSheetState(),
         ),

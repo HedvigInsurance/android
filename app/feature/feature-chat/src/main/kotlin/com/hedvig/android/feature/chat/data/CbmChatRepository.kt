@@ -339,7 +339,10 @@ internal sealed interface ConversationInfo {
     val createdAt: Instant,
     val isLegacy: Boolean,
   ) : ConversationInfo {
-    data class ClaimInfo(val claimType: String?)
+    data class ClaimInfo(
+      val claimId: String,
+      val claimType: String?,
+    )
   }
 }
 
@@ -357,7 +360,10 @@ private fun octopus.fragment.ConversationInfo.toConversationInfo(): Conversation
     createdAt = createdAt,
     isLegacy = isLegacy,
     claimInfo = claim?.let {
-      ConversationInfo.Info.ClaimInfo(it.claimType)
+      ConversationInfo.Info.ClaimInfo(
+        it.id,
+        it.claimType,
+      )
     },
   )
 }
