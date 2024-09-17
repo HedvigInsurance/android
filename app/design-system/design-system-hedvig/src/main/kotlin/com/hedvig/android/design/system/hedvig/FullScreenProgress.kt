@@ -31,7 +31,7 @@ fun HedvigFullScreenCenterAlignedProgressDebounced(
   }
 
   HedvigFullScreenCenterAlignedProgress(
-    modifier = modifier,
+    modifier = modifier.fillMaxSize(),
     show = show && debounce,
   )
 }
@@ -58,5 +58,13 @@ fun HedvigFullScreenCenterAlignedProgress(modifier: Modifier = Modifier, show: B
 private fun PreviewHedvigFullScreenCenterAlignedProgress() {
   HedvigTheme {
     HedvigFullScreenCenterAlignedProgress()
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewHedvigFullScreenCenterAlignedProgressDebounced() {
+  HedvigTheme {
+    HedvigFullScreenCenterAlignedProgressDebounced()
   }
 }

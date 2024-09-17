@@ -88,7 +88,6 @@ private fun AboutAppScreen(
     ) {
       HedvigText(stringResource(id = R.string.PROFILE_ABOUT_APP_MEMBER_ID))
       HedvigText(memberId ?: "", color = HedvigTheme.colorScheme.textSecondary)
-      // todo: is this the right color?
     }
     Row(
       horizontalArrangement = Arrangement.SpaceBetween,

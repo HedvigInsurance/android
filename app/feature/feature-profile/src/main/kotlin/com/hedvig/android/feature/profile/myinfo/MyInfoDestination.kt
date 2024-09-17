@@ -40,6 +40,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
+import com.hedvig.android.feature.profile.myinfo.MyInfoUiState.Loading
 import com.hedvig.android.feature.profile.myinfo.MyInfoUiState.Success
 import hedvig.resources.R
 
@@ -94,7 +95,9 @@ private fun MyInfoScreen(
         ) {
           when (animatedUiState) {
             MyInfoUiState.Loading -> {
-              HedvigFullScreenCenterAlignedProgressDebounced() // todo: check ui here
+              Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                HedvigFullScreenCenterAlignedProgressDebounced()
+              }
             }
 
             MyInfoUiState.Error -> {
@@ -194,7 +197,7 @@ private fun ColumnScope.SuccessState(
         updateEmailAndPhoneNumber()
       },
       isLoading = uiState.isSubmitting,
-      modifier = Modifier.padding(horizontal = 16.dp),
+      modifier = Modifier.padding(horizontal = 16.dp).fillMaxSize(),
     )
     Spacer(Modifier.height(16.dp))
   }
@@ -206,6 +209,7 @@ private fun PreviewMyInfoScreen() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       MyInfoScreen(
+        // uiState = Loading,
         uiState = Success(
           member = MyInfoMember(
             "email@email.com",

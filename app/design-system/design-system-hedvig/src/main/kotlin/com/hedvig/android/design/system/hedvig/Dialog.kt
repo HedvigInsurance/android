@@ -142,11 +142,6 @@ fun HedvigDialog(
     onDismissRequest = onDismissRequest,
     properties = DialogDefaults.defaultProperties,
   ) {
-    // (LocalView.current.parent as DialogWindowProvider).window.setDimAmount(0.2f)
-    // a workaround to stop the overlay from dimming background too much,
-    // otherwise in the dark theme the overlay color
-    // becomes the same as the background color of the dialog itself.
-    // todo: that workaround stopped working btw
     Surface(
       shape = DialogDefaults.shape,
       color = DialogDefaults.containerColor,

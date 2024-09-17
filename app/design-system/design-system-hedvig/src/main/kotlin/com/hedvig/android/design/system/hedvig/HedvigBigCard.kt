@@ -24,7 +24,6 @@ import com.hedvig.android.design.system.hedvig.tokens.TypographyKeyTokens
 @Composable
 fun HedvigBigCard(
 // todo: rename after complete migration to new DS to ButtonWithLabelTextField
-// or something more descriptive mb. And it's not big now! It's medium
   onClick: () -> Unit,
   labelText: String,
   inputText: String?,
