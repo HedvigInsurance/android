@@ -13,8 +13,6 @@ android {
 dependencies {
   implementation(libs.accompanist.permissions)
   implementation(libs.androidx.activity.compose)
-  implementation(libs.androidx.compose.material3)
-  implementation(libs.androidx.compose.material3.windowSizeClass)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.androidx.lifecycle.viewmodelCompose)
   implementation(libs.androidx.navigation.common)
@@ -35,9 +33,7 @@ dependencies {
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDatastorePublic)
-  implementation(projects.coreDesignSystem)
   implementation(projects.coreResources)
-  implementation(projects.coreUi)
   implementation(projects.coreUiData)
   implementation(projects.dataContractAndroid)
   implementation(projects.dataContractPublic)
@@ -51,6 +47,9 @@ dependencies {
   implementation(projects.navigationCompose)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
+  implementation(projects.designSystemHedvig)
+  implementation(libs.androidx.compose.foundation)
+  implementation(libs.androidx.compose.material3.windowSizeClass)
 
   testImplementation(libs.apollo.testingSupport)
   testImplementation(libs.assertK)
