@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.terminateinsurance.step.terminationdate
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -114,17 +113,14 @@ private fun TerminationDateScreen(
       )
     }
     Spacer(Modifier.height(16.dp))
-    Row(
-      horizontalArrangement = Arrangement.Center,
-      modifier = Modifier.fillMaxWidth(),
-    ) {
-      HedvigButton(
-        text = stringResource(id = R.string.TERMINATION_FLOW_CANCEL_INSURANCE_BUTTON),
-        onClick = submit,
-        enabled = uiState.canSubmit,
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-      )
-    }
+
+    HedvigButton(
+      text = stringResource(id = R.string.TERMINATION_FLOW_CANCEL_INSURANCE_BUTTON),
+      onClick = submit,
+      enabled = uiState.canSubmit,
+      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+    )
+
     Spacer(Modifier.height(16.dp))
   }
 }

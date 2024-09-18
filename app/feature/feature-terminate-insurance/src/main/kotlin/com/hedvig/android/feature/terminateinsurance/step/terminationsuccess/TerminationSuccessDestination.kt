@@ -1,8 +1,6 @@
 package com.hedvig.android.feature.terminateinsurance.step.terminationsuccess
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -71,19 +69,15 @@ internal fun TerminationSuccessDestination(terminationDate: LocalDate?, onDone: 
       )
       Spacer(Modifier.height(16.dp))
       Spacer(Modifier.weight(1f))
-      Row(
-        horizontalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxWidth(),
-      ) {
-        HedvigButton(
-          text = stringResource(id = R.string.general_done_button),
-          enabled = true,
-          onClick = onDone,
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        )
-      }
+
+      HedvigButton(
+        text = stringResource(id = R.string.general_done_button),
+        enabled = true,
+        onClick = onDone,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+      )
 
       Spacer(Modifier.height(16.dp))
     }
