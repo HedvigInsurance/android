@@ -1,7 +1,5 @@
 package com.hedvig.android.feature.terminateinsurance.step.deletion
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -68,17 +66,14 @@ internal fun InsuranceDeletionDestination(
       priority = NotificationPriority.Info,
     )
     Spacer(Modifier.height(16.dp))
-    Row(
-      horizontalArrangement = Arrangement.Center,
-      modifier = Modifier.fillMaxWidth(),
-    ) {
-      HedvigButton(
-        text = stringResource(id = R.string.TERMINATION_FLOW_CANCEL_INSURANCE_BUTTON),
-        onClick = onContinue,
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-        enabled = true,
-      )
-    }
+
+    HedvigButton(
+      text = stringResource(id = R.string.TERMINATION_FLOW_CANCEL_INSURANCE_BUTTON),
+      onClick = onContinue,
+      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+      enabled = true,
+    )
+
     Spacer(Modifier.height(16.dp))
   }
 }

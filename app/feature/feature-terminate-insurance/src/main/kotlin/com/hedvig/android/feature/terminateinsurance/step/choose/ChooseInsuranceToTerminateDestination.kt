@@ -3,9 +3,7 @@ package com.hedvig.android.feature.terminateinsurance.step.choose
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -151,22 +149,19 @@ private fun ChooseInsuranceToTerminateScreen(
           radioGroupStyle = RadioGroupStyle.Vertical.Label(radioOptionData),
         )
         Spacer(Modifier.height(12.dp))
-        Row(
-          horizontalArrangement = Arrangement.Center,
-          modifier = Modifier.fillMaxWidth(),
-        ) {
-          HedvigButton(
-            stringResource(id = R.string.general_continue_button),
-            enabled = uiState.selectedInsurance != null,
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-            onClick = {
-              uiState.selectedInsurance?.let { selectedInsurance ->
-                fetchTerminationStep(selectedInsurance)
-              }
-            },
-            isLoading = uiState.isNavigationStepLoading,
-          )
-        }
+
+        HedvigButton(
+          stringResource(id = R.string.general_continue_button),
+          enabled = uiState.selectedInsurance != null,
+          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+          onClick = {
+            uiState.selectedInsurance?.let { selectedInsurance ->
+              fetchTerminationStep(selectedInsurance)
+            }
+          },
+          isLoading = uiState.isNavigationStepLoading,
+        )
+
         Spacer(Modifier.height(16.dp))
       }
     }

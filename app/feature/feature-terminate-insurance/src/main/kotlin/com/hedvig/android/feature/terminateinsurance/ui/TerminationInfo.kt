@@ -1,8 +1,6 @@
 package com.hedvig.android.feature.terminateinsurance.ui
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -62,7 +60,6 @@ internal fun TerminationInfoScreen(
       bottomContent()
     }
     Spacer(Modifier.height(16.dp))
-    // }
   }
 }
 
@@ -82,17 +79,12 @@ private fun PreviewTerminationInfoScreen() {
         """.trimIndent(),
         navigateUp = {},
       ) {
-        Row(
-          horizontalArrangement = Arrangement.Center,
+        HedvigButton(
           modifier = Modifier.fillMaxWidth(),
-        ) {
-          HedvigButton(
-            modifier = Modifier.fillMaxWidth(),
-            text = stringResource(R.string.general_done_button),
-            enabled = true,
-            onClick = { },
-          )
-        }
+          text = stringResource(R.string.general_done_button),
+          enabled = true,
+          onClick = { },
+        )
       }
     }
   }
