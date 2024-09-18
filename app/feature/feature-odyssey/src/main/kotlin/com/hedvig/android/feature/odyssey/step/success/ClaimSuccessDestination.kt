@@ -25,22 +25,18 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import hedvig.resources.R
 
 @Composable
-internal fun ClaimSuccessDestination(onNavigateToNewConversation: () -> Unit, closeSuccessScreen: () -> Unit) {
-  ClaimSuccessScreen(
-    onNavigateToNewConversation = onNavigateToNewConversation,
-    closeSuccessScreen = closeSuccessScreen,
-  )
+internal fun ClaimSuccessDestination(closeSuccessScreen: () -> Unit) {
+  ClaimSuccessScreen(closeSuccessScreen = closeSuccessScreen)
 }
 
 @Composable
-private fun ClaimSuccessScreen(onNavigateToNewConversation: () -> Unit, closeSuccessScreen: () -> Unit) {
+private fun ClaimSuccessScreen(closeSuccessScreen: () -> Unit) {
   Surface(
     color = MaterialTheme.colorScheme.background,
     modifier = Modifier.fillMaxSize(),
@@ -79,14 +75,6 @@ private fun ClaimSuccessScreen(onNavigateToNewConversation: () -> Unit, closeSuc
         }
       }
       Spacer(Modifier.height(16.dp))
-      HedvigContainedButton(
-        text = stringResource(R.string.open_chat),
-        onClick = onNavigateToNewConversation,
-        modifier = Modifier
-          .padding(horizontal = 16.dp)
-          .fillMaxWidth(),
-      )
-      Spacer(Modifier.height(8.dp))
       HedvigTextButton(
         onClick = closeSuccessScreen,
         text = stringResource(R.string.general_close_button),
@@ -105,7 +93,7 @@ private fun ClaimSuccessScreen(onNavigateToNewConversation: () -> Unit, closeSuc
 fun PreviewClaimSuccessScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      ClaimSuccessScreen({}, {})
+      ClaimSuccessScreen({})
     }
   }
 }

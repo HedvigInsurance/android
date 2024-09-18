@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.chat
 
 import android.net.Uri
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -8,20 +9,17 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.icons.Icons
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
@@ -29,19 +27,20 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.compose.dropUnlessResumed
 import coil.ImageLoader
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.hedvig.normal.ArrowBack
 import com.hedvig.android.core.ui.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.LocalTextStyle
+import com.hedvig.android.design.system.hedvig.TopAppBar
+import com.hedvig.android.design.system.hedvig.TopAppBarActionType
 import com.hedvig.android.feature.chat.CbmChatUiState.Error
 import com.hedvig.android.feature.chat.CbmChatUiState.Initializing
 import com.hedvig.android.feature.chat.CbmChatUiState.Loaded
@@ -62,6 +61,7 @@ internal fun CbmChatDestination(
   imageLoader: ImageLoader,
   appPackageId: String,
   openUrl: (String) -> Unit,
+  onNavigateToClaimDetails: (String) -> Unit,
   onNavigateUp: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -72,6 +72,7 @@ internal fun CbmChatDestination(
     openUrl = openUrl,
     onBannerLinkClicked = openUrl,
     onNavigateUp = onNavigateUp,
+    onNavigateToClaimDetails = onNavigateToClaimDetails,
     onSendMessage = { message: String ->
       viewModel.emit(CbmChatEvent.SendTextMessage(message))
     },
@@ -101,6 +102,7 @@ private fun ChatScreen(
   openUrl: (String) -> Unit,
   onBannerLinkClicked: (String) -> Unit,
   onNavigateUp: () -> Unit,
+  onNavigateToClaimDetails: (String) -> Unit,
   onSendMessage: (String) -> Unit,
   onSendPhoto: (Uri) -> Unit,
   onSendMedia: (Uri) -> Unit,
@@ -118,7 +120,7 @@ private fun ChatScreen(
       ChatTopAppBar(
         uiState = uiState,
         onNavigateUp = onNavigateUp,
-        topAppBarScrollBehavior = topAppBarScrollBehavior,
+        onNavigateToClaimDetails = onNavigateToClaimDetails,
         modifier = Modifier.onSizeChanged {
           with(density) { topAppBarHeight = it.height.toDp() }
         },
@@ -144,7 +146,6 @@ private fun ChatScreen(
               uiState = uiState,
               imageLoader = imageLoader,
               appPackageId = appPackageId,
-              topAppBarScrollBehavior = topAppBarScrollBehavior,
               openUrl = openUrl,
               onBannerLinkClicked = onBannerLinkClicked,
               onRetrySendChatMessage = onRetrySendChatMessage,
@@ -163,15 +164,29 @@ private fun ChatScreen(
 private fun ChatTopAppBar(
   uiState: CbmChatUiState,
   onNavigateUp: () -> Unit,
-  topAppBarScrollBehavior: TopAppBarScrollBehavior,
+  onNavigateToClaimDetails: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   TopAppBar(
-    modifier = modifier.fillMaxWidth(),
-    title = {
-      CompositionLocalProvider(LocalTextStyle provides HedvigTheme.typography.headlineSmall) {
-        when (uiState) {
-          is Loaded -> {
+    TopAppBarActionType.BACK,
+    onNavigateUp,
+    modifier,
+  ) {
+    Box(
+      Modifier
+        .then(
+          if (uiState is Loaded && uiState.claimId != null) {
+            Modifier.clickable(onClick = dropUnlessResumed { onNavigateToClaimDetails(uiState.claimId) })
+          } else {
+            Modifier
+          },
+        )
+        .wrapContentHeight(Alignment.CenterVertically),
+    ) {
+      when (uiState) {
+        is Loaded -> {
+          val textStyle = HedvigTheme.typography.headlineSmall
+          CompositionLocalProvider(LocalTextStyle provides textStyle) {
             when (val topAppBarText = uiState.topAppBarText) {
               Legacy -> HedvigText(stringResource(R.string.CHAT_CONVERSATION_HISTORY_TITLE))
               NewConversation -> {
@@ -201,23 +216,12 @@ private fun ChatTopAppBar(
               }
             }
           }
-
-          else -> HedvigText(stringResource(R.string.CHAT_TITLE))
         }
+
+        else -> HedvigText(stringResource(R.string.CHAT_TITLE))
       }
-    },
-    navigationIcon = {
-      IconButton(
-        onClick = onNavigateUp,
-        content = { Icon(imageVector = Icons.Hedvig.ArrowBack, contentDescription = null) },
-      )
-    },
-    colors = TopAppBarDefaults.topAppBarColors(
-      containerColor = MaterialTheme.colorScheme.background,
-      scrolledContainerColor = MaterialTheme.colorScheme.surface,
-    ),
-    scrollBehavior = topAppBarScrollBehavior,
-  )
+    }
+  }
 }
 
 @Composable
@@ -253,6 +257,7 @@ private fun PreviewChatScreen(
             appPackageId = "",
             openUrl = {},
             onBannerLinkClicked = {},
+            onNavigateToClaimDetails = {},
             onNavigateUp = {},
             onSendMessage = {},
             onSendPhoto = {},

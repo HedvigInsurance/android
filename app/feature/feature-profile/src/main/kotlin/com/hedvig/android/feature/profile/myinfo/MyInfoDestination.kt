@@ -94,7 +94,9 @@ private fun MyInfoScreen(
         ) {
           when (animatedUiState) {
             MyInfoUiState.Loading -> {
-              HedvigFullScreenCenterAlignedProgressDebounced() // todo: check ui here
+              Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                HedvigFullScreenCenterAlignedProgressDebounced()
+              }
             }
 
             MyInfoUiState.Error -> {
@@ -142,7 +144,7 @@ private fun ColumnScope.SuccessState(
       keyboardType = KeyboardType.Phone,
       imeAction = ImeAction.Next,
     ),
-    textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Large,
+    textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
     modifier = Modifier
       .fillMaxWidth()
       .padding(horizontal = 16.dp),
@@ -175,7 +177,7 @@ private fun ColumnScope.SuccessState(
         focusManager.clearFocus()
       },
     ),
-    textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Large,
+    textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
     modifier = Modifier
       .fillMaxWidth()
       .padding(horizontal = 16.dp),
@@ -194,7 +196,7 @@ private fun ColumnScope.SuccessState(
         updateEmailAndPhoneNumber()
       },
       isLoading = uiState.isSubmitting,
-      modifier = Modifier.padding(horizontal = 16.dp),
+      modifier = Modifier.padding(horizontal = 16.dp).fillMaxSize(),
     )
     Spacer(Modifier.height(16.dp))
   }
@@ -206,6 +208,7 @@ private fun PreviewMyInfoScreen() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       MyInfoScreen(
+        // uiState = Loading,
         uiState = Success(
           member = MyInfoMember(
             "email@email.com",

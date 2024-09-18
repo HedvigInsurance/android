@@ -3,6 +3,7 @@ fragment ConversationInfo on Conversation {
   createdAt
   isLegacy
   claim {
+    id
     claimType
   }
 }

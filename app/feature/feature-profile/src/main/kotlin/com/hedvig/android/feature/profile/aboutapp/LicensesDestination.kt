@@ -25,7 +25,10 @@ private const val licensesUrl = "file:///android_asset/open_source_licenses.html
 internal fun LicensesDestination(onBackPressed: () -> Unit) {
   Surface(
     color = HedvigTheme.colorScheme.backgroundPrimary,
-    modifier = Modifier.fillMaxSize(),
+    modifier = Modifier.fillMaxSize()
+      .windowInsetsPadding(
+        WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal),
+      ),
   ) {
     Column {
       TopAppBarWithBack(
@@ -43,7 +46,7 @@ internal fun LicensesDestination(onBackPressed: () -> Unit) {
           modifier = Modifier
             .fillMaxSize()
             .windowInsetsPadding(
-              WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal),
+              WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom),
             ),
         )
       }

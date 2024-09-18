@@ -64,7 +64,7 @@ internal class GetAllConversationsUseCaseImpl(
 }
 
 private fun List<InboxConversation>.sortByLastMessageTimestamp(): List<InboxConversation> {
-  return this.sortedBy { it.latestMessage?.sentAt ?: it.createdAt }
+  return this.sortedByDescending { it.latestMessage?.sentAt ?: it.createdAt }
 }
 
 private fun ConversationFragment.toInboxConversation(isLegacy: Boolean): InboxConversation {
