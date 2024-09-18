@@ -258,7 +258,8 @@ private fun HorizontalWithLabelRadioOption(
         interactionSource = interactionSource,
         indication = ripple(
           bounded = false,
-          radius = 50.dp),
+          radius = 50.dp,
+        ),
       ) {
         if (enabled) {
           onClick()

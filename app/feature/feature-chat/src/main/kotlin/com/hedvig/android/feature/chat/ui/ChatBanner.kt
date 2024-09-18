@@ -60,7 +60,6 @@ internal fun ChatBanner(text: String, onBannerLinkClicked: (String) -> Unit, mod
       RichText {
         Markdown(
           content = text,
-//          onLinkClicked = onBannerLinkClicked //TODO: no onLinkClicked argument now
         )
       }
     }
