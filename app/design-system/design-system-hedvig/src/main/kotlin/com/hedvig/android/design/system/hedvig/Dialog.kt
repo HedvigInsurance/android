@@ -20,6 +20,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.hedvig.android.design.system.hedvig.CheckboxDefaults.CheckboxSize.Medium
+import com.hedvig.android.design.system.hedvig.CheckboxDefaults.CheckboxStyle
 import com.hedvig.android.design.system.hedvig.DialogDefaults.ButtonSize.BIG
 import com.hedvig.android.design.system.hedvig.DialogDefaults.ButtonSize.SMALL
 import com.hedvig.android.design.system.hedvig.DialogDefaults.DialogStyle
@@ -122,6 +124,42 @@ fun SingleSelectDialog(
           radioOptionSize = radioOptionSize,
           groupLockedState = NotLocked,
           onOptionClick = {
+            onSelected(radioOptionData)
+            onDismissRequest()
+          },
+        )
+        if (index != optionsList.lastIndex) {
+          Spacer(Modifier.height(8.dp))
+        }
+      }
+    }
+  }
+}
+
+@Composable
+fun MultiSelectDialog( // todo: not tested yet
+  title: String,
+  optionsList: List<RadioOptionData>,
+  onSelected: (RadioOptionData) -> Unit,
+  onDismissRequest: () -> Unit,
+  checkboxStyle: CheckboxStyle = CheckboxStyle.Default,
+  checkboxSize: CheckboxDefaults.CheckboxSize = Medium,
+) {
+  HedvigDialog(onDismissRequest = { onDismissRequest.invoke() }) {
+    Column(
+      horizontalAlignment = Alignment.CenterHorizontally,
+      modifier = Modifier.padding(16.dp),
+    ) {
+      Spacer(Modifier.height(8.dp))
+      HedvigText(title, style = HedvigTheme.typography.bodySmall, textAlign = TextAlign.Center)
+      Spacer(Modifier.height(24.dp))
+      optionsList.forEachIndexed { index, radioOptionData ->
+        Checkbox(
+          data = radioOptionData,
+          checkboxStyle = checkboxStyle,
+          checkboxSize = checkboxSize,
+          lockedState = NotLocked,
+          onClick = {
             onSelected(radioOptionData)
             onDismissRequest()
           },

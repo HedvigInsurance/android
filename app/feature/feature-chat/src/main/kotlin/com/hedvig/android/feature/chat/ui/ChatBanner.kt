@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.unit.dp
-import com.halilibo.richtext.markdown.Markdown
+import com.halilibo.richtext.commonmark.Markdown
 import com.halilibo.richtext.ui.material3.RichText
 import com.hedvig.android.compose.ui.LayoutWithoutPlacement
 import com.hedvig.android.core.designsystem.component.card.HedvigInfoCard
@@ -58,7 +58,9 @@ internal fun ChatBanner(text: String, onBannerLinkClicked: (String) -> Unit, mod
       }
       Spacer(Modifier.width(8.dp))
       RichText {
-        Markdown(content = text, onLinkClicked = onBannerLinkClicked)
+        Markdown(
+          content = text,
+        )
       }
     }
   }
