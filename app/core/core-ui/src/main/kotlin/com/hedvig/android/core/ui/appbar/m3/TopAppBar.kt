@@ -27,8 +27,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.hedvig.normal.ArrowBack
 import com.hedvig.android.core.icons.hedvig.normal.X
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.icon.ArrowLeft
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 
 /**
  * Just the layout and placing of the top app bar, without the background, drag handling and so on. Can be used to
@@ -97,7 +99,7 @@ fun TopAppBar(
     title = {
       Text(
         text = title,
-        style = MaterialTheme.typography.titleLarge,
+        style = HedvigTheme.typography.headlineSmall,
       )
     },
     navigationIcon = {
@@ -106,7 +108,7 @@ fun TopAppBar(
         content = {
           Icon(
             imageVector = when (actionType) {
-              TopAppBarActionType.BACK -> Icons.Hedvig.ArrowBack
+              TopAppBarActionType.BACK -> HedvigIcons.ArrowLeft
               TopAppBarActionType.CLOSE -> Icons.Hedvig.X
             },
             contentDescription = null,

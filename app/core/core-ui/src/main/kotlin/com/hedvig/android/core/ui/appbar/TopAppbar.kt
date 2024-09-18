@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.ArrowBack
 import com.hedvig.android.core.icons.hedvig.normal.X
+import com.hedvig.android.design.system.hedvig.HedvigTheme
 
 @Composable
 fun TopAppBarWithBack(
@@ -103,7 +104,7 @@ fun TopAppBarWithBackAndClose(
     title = {
       Text(
         text = title,
-        style = MaterialTheme.typography.titleLarge,
+        style = HedvigTheme.typography.headlineSmall,
       )
     },
     navigationIcon = {

@@ -218,7 +218,6 @@ private fun LabeledStepper(
     Surface(
       shape = stepperSize.size.shape,
       color = containerColor,
-      //  modifier = Modifier.defaultMinSize(minHeight = stepperSize.size.minHeight(Labeled(labelText))),
     ) {
       HorizontalItemsWithMaximumSpaceTaken(
         modifier = Modifier.padding(stepperSize.size.contentPadding(Labeled(labelText))),

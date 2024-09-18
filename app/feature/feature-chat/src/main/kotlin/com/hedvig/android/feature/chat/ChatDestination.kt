@@ -14,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,6 +38,7 @@ import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.TopAppBar
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType
 import com.hedvig.android.feature.chat.CbmChatUiState.Error
@@ -183,31 +185,34 @@ private fun ChatTopAppBar(
     ) {
       when (uiState) {
         is Loaded -> {
-          when (val topAppBarText = uiState.topAppBarText) {
-            Legacy -> HedvigText(stringResource(R.string.CHAT_CONVERSATION_HISTORY_TITLE))
-            NewConversation -> {
-              Column {
-                HedvigText(stringResource(R.string.CHAT_NEW_CONVERSATION_TITLE))
-                HedvigText(
-                  stringResource(R.string.CHAT_NEW_CONVERSATION_SUBTITLE),
-                  color = HedvigTheme.colorScheme.textSecondary,
-                )
+          val textStyle = HedvigTheme.typography.headlineSmall
+          CompositionLocalProvider(LocalTextStyle provides textStyle) {
+            when (val topAppBarText = uiState.topAppBarText) {
+              Legacy -> HedvigText(stringResource(R.string.CHAT_CONVERSATION_HISTORY_TITLE))
+              NewConversation -> {
+                Column {
+                  HedvigText(stringResource(R.string.CHAT_NEW_CONVERSATION_TITLE))
+                  HedvigText(
+                    stringResource(R.string.CHAT_NEW_CONVERSATION_SUBTITLE),
+                    color = HedvigTheme.colorScheme.textSecondary,
+                  )
+                }
               }
-            }
 
-            is ClaimConversation -> {
-              Column {
-                HedvigText(topAppBarText.claimType ?: stringResource(R.string.home_claim_card_pill_claim))
-                val subtitle = chatTopAppBarFormattedSubtitle(topAppBarText.createdAt)
-                HedvigText(subtitle, color = HedvigTheme.colorScheme.textSecondary)
+              is ClaimConversation -> {
+                Column {
+                  HedvigText(topAppBarText.claimType ?: stringResource(R.string.home_claim_card_pill_claim))
+                  val subtitle = chatTopAppBarFormattedSubtitle(topAppBarText.createdAt)
+                  HedvigText(subtitle, color = HedvigTheme.colorScheme.textSecondary)
+                }
               }
-            }
 
-            is ServiceConversation -> {
-              Column {
-                HedvigText(stringResource(R.string.CHAT_CONVERSATION_QUESTION_TITLE))
-                val subtitle = chatTopAppBarFormattedSubtitle(topAppBarText.createdAt)
-                HedvigText(subtitle, color = HedvigTheme.colorScheme.textSecondary)
+              is ServiceConversation -> {
+                Column {
+                  HedvigText(stringResource(R.string.CHAT_CONVERSATION_QUESTION_TITLE))
+                  val subtitle = chatTopAppBarFormattedSubtitle(topAppBarText.createdAt)
+                  HedvigText(subtitle, color = HedvigTheme.colorScheme.textSecondary)
+                }
               }
             }
           }

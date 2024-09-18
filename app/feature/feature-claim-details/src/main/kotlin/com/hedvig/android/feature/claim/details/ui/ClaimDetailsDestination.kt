@@ -65,7 +65,6 @@ import com.hedvig.android.core.fileupload.ui.FilePickerBottomSheet
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.colored.hedvig.Chat
 import com.hedvig.android.core.icons.hedvig.compose.notificationCircle
-import com.hedvig.android.core.icons.hedvig.normal.ArrowBack
 import com.hedvig.android.core.icons.hedvig.small.hedvig.ArrowNorthEast
 import com.hedvig.android.core.ui.DynamicFilesGridBetweenOtherThings
 import com.hedvig.android.core.ui.dialog.ErrorDialog
@@ -78,6 +77,8 @@ import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
+import com.hedvig.android.design.system.hedvig.icon.ArrowLeft
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.ClaimOutcome.UNKNOWN
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.ClaimStatus.CLOSED
 import com.hedvig.android.logger.logcat
@@ -290,7 +291,7 @@ private fun ClaimDetailTopAppBar(
         onClick = navigateUp,
         content = {
           Icon(
-            imageVector = Icons.Hedvig.ArrowBack,
+            imageVector = HedvigIcons.ArrowLeft,
             contentDescription = null,
           )
         },

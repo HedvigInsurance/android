@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.hedvig.android.sample.design.showcase.accordion.AccordionShowCase
+import com.hedvig.android.sample.design.showcase.bigcard.BigCardShowcase
 import com.hedvig.android.sample.design.showcase.bottomSheet.ShowcaseBottomSheet
 import com.hedvig.android.sample.design.showcase.button.ShowcaseButton
 import com.hedvig.android.sample.design.showcase.datepicker.DatePickerShowcase
@@ -64,6 +65,8 @@ internal fun DesignShowcase(modifier: Modifier = Modifier) {
       DropdownShowcase()
     } else if (showTopBar) {
       TopAppBarShowcase()
+    } else if (showBigCard) {
+      BigCardShowcase()
     }
   }
 }
@@ -84,6 +87,7 @@ private val showPerils = false
 private val showAccordion = false
 private val showSnacks = false
 private val showTabs = false
-private val showClickableList = true
+private val showClickableList = false
 private val showTopBar = false
 private val showDropdown = false
+private val showBigCard = true

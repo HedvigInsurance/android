@@ -285,7 +285,7 @@ internal fun ForeverContent(
       ) {
         Text(
           text = stringResource(R.string.TAB_REFERRALS_TITLE),
-          style = MaterialTheme.typography.titleLarge,
+          style = com.hedvig.android.design.system.hedvig.HedvigTheme.typography.headlineSmall,
         )
         if (uiState.foreverData?.incentive != null) {
           IconButton(
@@ -450,7 +450,7 @@ internal fun ReferralCodeCard(campaignCode: String, modifier: Modifier = Modifie
 private fun PreviewForeverContent(
   @PreviewParameter(ForeverUiStateProvider::class) foreverUiState: ForeverUiState,
 ) {
-  HedvigTheme {
+  com.hedvig.android.core.designsystem.theme.HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       ForeverContent(
         foreverUiState,
