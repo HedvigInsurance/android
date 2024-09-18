@@ -24,12 +24,12 @@ import com.hedvig.android.design.system.hedvig.tokens.TypographyKeyTokens
 @Composable
 fun HedvigBigCard(
 // todo: rename after complete migration to new DS to ButtonWithLabelTextField
-// or something more descriptive mb. And it's not big now! It's medium
   onClick: () -> Unit,
   labelText: String,
   inputText: String?,
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
+  textStyle: TextStyle = inputTextStyle,
 ) {
   Surface(
     shape = HedvigTheme.shapes.cornerLarge,
@@ -50,7 +50,7 @@ fun HedvigBigCard(
       if (inputText != null) {
         HedvigText(
           text = inputText,
-          style = inputTextStyle,
+          style = textStyle,
           color = bigCardColors.inputTextColor,
         )
       }
@@ -64,7 +64,7 @@ private object BigCardDefaults {
     get() = TypographyKeyTokens.Label.value
   val inputTextStyle: TextStyle
     @Composable
-    get() = TypographyKeyTokens.BodyMedium.value
+    get() = TypographyKeyTokens.BodySmall.value
   val padding = PaddingValues(
     top = 11.dp,
     bottom = 10.dp,

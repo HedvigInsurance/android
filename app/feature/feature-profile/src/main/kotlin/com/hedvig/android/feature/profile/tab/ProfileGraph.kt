@@ -1,11 +1,10 @@
 package com.hedvig.android.feature.profile.tab
 
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.design.system.hedvig.MotionDefaults
 import com.hedvig.android.feature.profile.aboutapp.AboutAppDestination
 import com.hedvig.android.feature.profile.aboutapp.AboutAppViewModel
 import com.hedvig.android.feature.profile.aboutapp.LicensesDestination
@@ -45,8 +44,8 @@ fun NavGraphBuilder.profileGraph(
       deepLinks = listOf(
         navDeepLink { uriPattern = hedvigDeepLinkContainer.profile },
       ),
-      enterTransition = { fadeIn() }, // todo: sure here?
-      exitTransition = { fadeOut() },
+      enterTransition = { MotionDefaults.fadeThroughEnter },
+      exitTransition = { MotionDefaults.fadeThroughExit },
     ) { backStackEntry ->
       val viewModel: ProfileViewModel = koinViewModel()
       ProfileDestination(

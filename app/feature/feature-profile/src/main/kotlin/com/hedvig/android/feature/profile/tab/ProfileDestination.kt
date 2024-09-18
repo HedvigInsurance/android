@@ -160,10 +160,9 @@ private fun ProfileScreen(
       ) {
         HedvigText(
           text = stringResource(id = R.string.PROFILE_TITLE),
-          style = HedvigTheme.typography.headlineSmall, // todo: check here!
+          style = HedvigTheme.typography.headlineSmall,
         )
       }
-      Spacer(Modifier.height(16.dp))
       ProfileRows(
         profileUiState = uiState,
         showMyInfo = navigateToMyInfo,
@@ -184,7 +183,7 @@ private fun ProfileScreen(
         val padding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
           .exclude(consumedWindowInsets)
           .only(WindowInsetsSides.Horizontal)
-          .asPaddingValues() // todo: check if the padding is right
+          .asPaddingValues()
         MemberReminderCards(
           memberReminders = memberReminders,
           navigateToConnectPayment = navigateToConnectPayment,
@@ -206,7 +205,7 @@ private fun ProfileScreen(
           showLogoutDialog = true
         },
         modifier = Modifier
-          .padding(horizontal = 16.dp)
+          .padding(horizontal = 16.dp).fillMaxWidth()
           .testTag("logout"),
       )
       Spacer(Modifier.height(16.dp))

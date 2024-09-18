@@ -47,11 +47,13 @@ import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuran
 import com.hedvig.android.feature.terminateinsurance.navigation.terminateInsuranceGraph
 import com.hedvig.android.feature.travelcertificate.navigation.travelCertificateGraph
 import com.hedvig.android.language.LanguageService
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.Market
 import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.compose.Destination
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.AppDestination
+import com.hedvig.android.navigation.core.AppDestination.ClaimDetails
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
 
@@ -265,6 +267,10 @@ internal fun HedvigNavHost(
       hedvigBuildConstants = hedvigBuildConstants,
       imageLoader = imageLoader,
       openUrl = openUrl,
+      onNavigateToClaimDetails = { claimId ->
+        logcat { "Navigating to claim details from chat" }
+        hedvigAppState.navController.navigate(ClaimDetails(claimId))
+      },
       navigator = navigator,
     )
     connectPaymentGraph(

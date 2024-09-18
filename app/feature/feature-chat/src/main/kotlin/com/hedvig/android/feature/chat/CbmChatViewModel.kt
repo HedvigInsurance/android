@@ -285,6 +285,10 @@ internal sealed interface CbmChatUiState {
         }
       }
     }
+    val claimId: String? = when (backendConversationInfo) {
+      NoConversation -> null
+      is Info -> backendConversationInfo.claimInfo?.claimId
+    }
 
     data class LatestChatMessage(
       val id: Uuid,

@@ -3,11 +3,11 @@ package com.hedvig.android.feature.editcoinsured.ui
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
-import assertk.assertions.isTrue
-import assertk.assertions.prop
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.editcoinsured.data.CoInsuredResult
+import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.InfoFromSsn
+import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.ManualInfo
 import com.hedvig.android.feature.editcoinsured.ui.data.TestCommitMidtermChangeUseCase
 import com.hedvig.android.feature.editcoinsured.ui.data.TestCreateMidTermChangeUseCase
 import com.hedvig.android.feature.editcoinsured.ui.data.TestFetchCoInsuredPersonalInformationUseCase
@@ -78,7 +78,10 @@ internal class EditCoInsuredPresenterTest {
           member = testMember,
           allCoInsured = listOf(),
         ),
-        addBottomSheetState = EditCoInsuredState.Loaded.AddBottomSheetState(),
+        addBottomSheetState = EditCoInsuredState.Loaded.AddBottomSheetState(
+          infoFromSsn = InfoFromSsn(),
+          manualInfo = ManualInfo(),
+        ),
         removeBottomSheetState = EditCoInsuredState.Loaded.RemoveBottomSheetState(),
       ),
     ) {
@@ -90,16 +93,16 @@ internal class EditCoInsuredPresenterTest {
       assertThat(item).isInstanceOf<EditCoInsuredState.Loaded>()
       val uiState = item as EditCoInsuredState.Loaded
 
-      assertThat(uiState.addBottomSheetState.firstName).isEqualTo(coInsuredTestList[0].firstName)
-      assertThat(uiState.addBottomSheetState.lastName).isEqualTo(coInsuredTestList[0].lastName)
-      assertThat(uiState.addBottomSheetState.ssn).isEqualTo(coInsuredTestList[0].ssn)
-      assertThat(uiState.addBottomSheetState.birthDate).isEqualTo(coInsuredTestList[0].birthDate)
+      assertThat(uiState.addBottomSheetState.manualInfo.firstName).isEqualTo(coInsuredTestList[0].firstName)
+      assertThat(uiState.addBottomSheetState.manualInfo.lastName).isEqualTo(coInsuredTestList[0].lastName)
+      assertThat(uiState.addBottomSheetState.infoFromSsn.ssn).isEqualTo(coInsuredTestList[0].ssn)
+      assertThat(uiState.addBottomSheetState.manualInfo.birthDate).isEqualTo(coInsuredTestList[0].birthDate)
       assertThat(uiState.addBottomSheetState.show).isEqualTo(true)
     }
   }
 
   @Test
-  fun `should update co-insured when saving from bottom sheet`() = runTest {
+  fun `should update co-insured from the right mode, manual or ssn fetch, when saving from bottom sheet`() = runTest {
     val testGetCoInsuredUseCase = TestGetCoInsuredUseCase()
     val testFetchCoInsuredPersonalInformationUseCase = TestFetchCoInsuredPersonalInformationUseCase()
     val testCreateMidTermChangeUseCase = TestCreateMidTermChangeUseCase()
@@ -120,38 +123,40 @@ internal class EditCoInsuredPresenterTest {
           member = testMember,
           allCoInsured = listOf(),
         ),
-        addBottomSheetState = EditCoInsuredState.Loaded.AddBottomSheetState(),
+        addBottomSheetState = EditCoInsuredState.Loaded.AddBottomSheetState(
+          showManualInput = false,
+          infoFromSsn = InfoFromSsn(),
+          manualInfo = ManualInfo(),
+        ),
         removeBottomSheetState = EditCoInsuredState.Loaded.RemoveBottomSheetState(),
       ),
     ) {
       skipItems(1)
       sendEvent(EditCoInsuredEvent.OnEditCoInsuredClicked(coInsuredTestList[2]))
       skipItems(1)
+      sendEvent(EditCoInsuredEvent.OnSsnChanged("5555"))
+      skipItems(1)
       sendEvent(EditCoInsuredEvent.OnManualInputSwitchChanged(show = true))
       skipItems(1)
-      sendEvent(EditCoInsuredEvent.OnSsnChanged("4321"))
-      skipItems(1)
+      sendEvent(EditCoInsuredEvent.OnLastNameChanged("New last name manual"))
+      val state2 = awaitItem()
+      assertThat(
+        (state2 as EditCoInsuredState.Loaded).addBottomSheetState.manualInfo.lastName,
+      ).isEqualTo("New last name manual")
       sendEvent(EditCoInsuredEvent.OnBottomSheetContinue)
-
-      val state = awaitItem()
-      assertThat(state).isInstanceOf<EditCoInsuredState.Loaded>().run {
-        prop(EditCoInsuredState.Loaded::addBottomSheetState)
-          .prop(EditCoInsuredState.Loaded.AddBottomSheetState::isLoading)
-          .isTrue()
-      }
-
+      skipItems(1)
       testCreateMidTermChangeUseCase.addCreateMidtermChangeResult(
         "test",
         currentPremium = UiMoney(300.0, UiCurrencyCode.SEK),
         newPremium = UiMoney(400.0, UiCurrencyCode.SEK),
         activatedDate = LocalDate.fromEpochDays(400),
       )
-
       val item = awaitItem()
       assertThat(item).isInstanceOf<EditCoInsuredState.Loaded>()
       val uiState = item as EditCoInsuredState.Loaded
-
-      assertThat(uiState.listState.coInsured[2].ssn).isEqualTo("4321")
+      assertThat(uiState.addBottomSheetState.manualInfo).isEqualTo(ManualInfo())
+      assertThat(uiState.listState.coInsured[2].ssn).isEqualTo(null)
+      assertThat(uiState.listState.coInsured[2].lastName).isEqualTo("New last name manual")
     }
   }
 }

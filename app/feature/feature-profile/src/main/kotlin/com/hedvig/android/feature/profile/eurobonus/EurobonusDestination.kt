@@ -1,11 +1,11 @@
 package com.hedvig.android.feature.profile.eurobonus
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -28,7 +28,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
-import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextField
@@ -79,12 +79,10 @@ private fun EurobonusScreen(
         Box(
           contentAlignment = Alignment.BottomStart,
           modifier = Modifier
-            .heightIn(80.dp)
             .fillMaxWidth(),
         ) {
           HedvigText(
             text = stringResource(hedvig.resources.R.string.sas_integration_connect_your_eurobonus),
-            style = HedvigTheme.typography.headlineMedium, // todo: font size here??? no 22.sp in the nbew DS
             modifier = Modifier.padding(16.dp),
           )
         }
@@ -99,9 +97,9 @@ private fun EurobonusScreen(
         Spacer(Modifier.height(16.dp))
         HedvigText(
           text = stringResource(hedvig.resources.R.string.sas_integration_info),
-          style = HedvigTheme.typography.bodySmall, // todo: font size here??? 14.sp is for label?
           modifier = Modifier.padding(horizontal = 16.dp),
         )
+        Spacer(Modifier.weight(1f))
         Spacer(Modifier.height(16.dp))
         HedvigButton(
           text = stringResource(hedvig.resources.R.string.general_save_button),
@@ -109,7 +107,7 @@ private fun EurobonusScreen(
           onClick = { onSave() },
           buttonStyle = ButtonDefaults.ButtonStyle.Primary,
           buttonSize = ButtonDefaults.ButtonSize.Large,
-          modifier = Modifier.padding(horizontal = 16.dp),
+          modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
           isLoading = uiState.isSubmitting,
         )
         Spacer(Modifier.height(16.dp))
@@ -130,51 +128,58 @@ private fun EurobonusNumberField(
   var numberValue by remember {
     mutableStateOf(number)
   }
-  HedvigTextField(
-    text = numberValue,
-    onValueChange = { newInput ->
-      if (newInput.indices.all { newInput[it].isWhitespace().not() }) {
-        numberValue = newInput
-        setEurobonusText(newInput)
-      }
-    },
-    enabled = canEditText,
-    labelText = buildString {
-      append(stringResource(hedvig.resources.R.string.sas_integration_title))
-      append(" ")
-      append(stringResource(hedvig.resources.R.string.sas_integration_number))
-    },
-    errorState =
-      if (hasError) {
-        HedvigTextFieldDefaults.ErrorState.Error.WithMessage(
-          stringResource(hedvig.resources.R.string.something_went_wrong),
-        )
-      } else {
-        HedvigTextFieldDefaults.ErrorState.NoError
-        // todo: there was a supporting text
-        // Text(stringResource(hedvig.resources.R.string.sas_integration_number_placeholder))
-        // here, not sure what to do with that, can't find it in figma?
-      },
-    keyboardOptions = KeyboardOptions(
-      capitalization = KeyboardCapitalization.Characters,
-      keyboardType = KeyboardType.Text,
-      imeAction = ImeAction.Done,
-    ),
-    keyboardActions = KeyboardActions(
-      onDone = {
-        if (canSubmit) {
-          onSubmitEurobonus()
+  Column {
+    HedvigTextField(
+      text = numberValue,
+      onValueChange = { newInput ->
+        if (newInput.indices.all { newInput[it].isWhitespace().not() }) {
+          numberValue = newInput
+          setEurobonusText(newInput)
         }
       },
-    ),
-    textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Large, // todo: what textField size here??
-    modifier = Modifier
-      .fillMaxWidth()
-      .padding(horizontal = 16.dp),
-  )
+      enabled = canEditText,
+      labelText = buildString {
+        append(stringResource(hedvig.resources.R.string.sas_integration_title))
+        append(" ")
+        append(stringResource(hedvig.resources.R.string.sas_integration_number))
+      },
+      errorState =
+        if (hasError) {
+          HedvigTextFieldDefaults.ErrorState.Error.WithMessage(
+            stringResource(hedvig.resources.R.string.something_went_wrong),
+          )
+        } else {
+          HedvigTextFieldDefaults.ErrorState.NoError
+        },
+      keyboardOptions = KeyboardOptions(
+        capitalization = KeyboardCapitalization.Characters,
+        keyboardType = KeyboardType.Text,
+        imeAction = ImeAction.Done,
+      ),
+      keyboardActions = KeyboardActions(
+        onDone = {
+          if (canSubmit) {
+            onSubmitEurobonus()
+          }
+        },
+      ),
+      textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
+    )
+    if (!hasError) {
+      HedvigText(
+        stringResource(hedvig.resources.R.string.sas_integration_number_placeholder),
+        color = HedvigTheme.colorScheme.textSecondary,
+        style = HedvigTheme.typography.label,
+        modifier = Modifier.padding(horizontal = 32.dp, vertical = 4.dp),
+      )
+    }
+  }
 }
 
-@HedvigPreview
+@HedvigMultiScreenPreview
 @Composable
 private fun PreviewEurobonusScreen(
   @PreviewParameter(
@@ -187,7 +192,7 @@ private fun PreviewEurobonusScreen(
         EurobonusUiState(
           eurobonusNumber = "ABC-123",
           canSubmit = true,
-          isLoading = true,
+          isLoading = false,
           hasError = hasError,
         ),
         {},

@@ -162,7 +162,7 @@ fun HedvigRedTextButton(
     enabled = enabled,
     modifier = modifier,
     buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
-    buttonSize = ButtonDefaults.ButtonSize.Medium,
+    buttonSize = ButtonDefaults.ButtonSize.Large,
     interactionSource = interactionSource,
   ) {
     HedvigText(text, color = ButtonDefaults.ButtonStyle.Ghost.style.buttonColors.redTextColor)
