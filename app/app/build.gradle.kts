@@ -228,6 +228,7 @@ dependencies {
   implementation(projects.theme)
   implementation(projects.trackingCore)
   implementation(projects.trackingDatadog)
+  implementation(projects.featureChooseTier)
 
   debugImplementation(libs.androidx.compose.uiTestManifest)
   debugImplementation(libs.androidx.compose.uiTooling)
