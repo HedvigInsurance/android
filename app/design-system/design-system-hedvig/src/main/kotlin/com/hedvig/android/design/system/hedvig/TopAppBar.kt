@@ -47,11 +47,11 @@ fun TopAppBar(
       verticalAlignment = Alignment.CenterVertically,
       modifier = modifier
         .windowInsetsPadding(windowInsets)
-        .height(TopAppBarTokens.ContainerHeight),
-      // .padding(horizontal = TopAppBarTokens.ContentHorizontalPadding),
-      // todo removed here @Stelios
+        .height(TopAppBarTokens.ContainerHeight)
+        .padding(horizontal = TopAppBarTokens.ContentHorizontalPadding),
     ) {
       IconButton(
+        modifier = Modifier.size(24.dp),
         onClick = onActionClick,
         content = {
           Icon(
@@ -60,11 +60,10 @@ fun TopAppBar(
               TopAppBarActionType.CLOSE -> HedvigIcons.Close
             },
             contentDescription = null,
-            modifier = Modifier.size(24.dp),
           )
         },
       )
-      Spacer(Modifier.width(8.dp))
+      Spacer(Modifier.width(TopAppBarTokens.IconTitleSpacerWidth))
       CompositionLocalProvider(LocalTextStyle provides TopAppBarTokens.TextStyle.value) {
         Box(
           Modifier
@@ -120,7 +119,7 @@ fun TopAppBar(
                 )
               },
             )
-            Spacer(Modifier.width(8.dp))
+            Spacer(Modifier.width(TopAppBarTokens.IconTitleSpacerWidth))
             HedvigText(
               text = title,
               maxLines = 1,

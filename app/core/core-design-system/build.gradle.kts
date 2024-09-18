@@ -15,6 +15,7 @@ dependencies {
   implementation(projects.composeUi)
   implementation(projects.coreIcons)
   implementation(projects.coreResources)
+  implementation(projects.designSystemHedvig)
 }
 
 android {

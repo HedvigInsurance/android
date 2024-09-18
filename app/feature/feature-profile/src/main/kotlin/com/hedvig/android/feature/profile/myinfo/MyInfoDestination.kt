@@ -144,7 +144,7 @@ private fun ColumnScope.SuccessState(
       keyboardType = KeyboardType.Phone,
       imeAction = ImeAction.Next,
     ),
-    textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Large,
+    textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
     modifier = Modifier
       .fillMaxWidth()
       .padding(horizontal = 16.dp),
@@ -177,7 +177,7 @@ private fun ColumnScope.SuccessState(
         focusManager.clearFocus()
       },
     ),
-    textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Large,
+    textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
     modifier = Modifier
       .fillMaxWidth()
       .padding(horizontal = 16.dp),

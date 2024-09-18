@@ -82,13 +82,6 @@ internal object TypographyTokens {
     lineHeight = TypeScaleTokens.FinePrintLineHeight,
     letterSpacing = TypeScaleTokens.FinePrintTracking,
   )
-  val OldDesignTopAppBar = DefaultTextStyle.copy(
-    fontFamily = TypeScaleTokens.OldDesignTopAppFont,
-    fontWeight = TypeScaleTokens.OldDesignTopAppWeight,
-    fontSize = TypeScaleTokens.OldDesignTopAppSize,
-    lineHeight = TypeScaleTokens.OldDesignTopAppLineHeight,
-    letterSpacing = TypeScaleTokens.OldDesignTopAppTracking,
-  ) // TODO: remove when the DS migration is over
 }
 
 private val DefaultPlatformTextStyle = PlatformTextStyle()

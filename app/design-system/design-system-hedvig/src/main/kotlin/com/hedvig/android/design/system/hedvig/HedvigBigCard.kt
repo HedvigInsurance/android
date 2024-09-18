@@ -29,6 +29,7 @@ fun HedvigBigCard(
   inputText: String?,
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
+  textStyle: TextStyle = inputTextStyle,
 ) {
   Surface(
     shape = HedvigTheme.shapes.cornerLarge,
@@ -49,7 +50,7 @@ fun HedvigBigCard(
       if (inputText != null) {
         HedvigText(
           text = inputText,
-          style = inputTextStyle,
+          style = textStyle,
           color = bigCardColors.inputTextColor,
         )
       }
@@ -63,7 +64,7 @@ private object BigCardDefaults {
     get() = TypographyKeyTokens.Label.value
   val inputTextStyle: TextStyle
     @Composable
-    get() = TypographyKeyTokens.BodyMedium.value
+    get() = TypographyKeyTokens.BodySmall.value
   val padding = PaddingValues(
     top = 11.dp,
     bottom = 10.dp,

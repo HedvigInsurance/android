@@ -63,6 +63,7 @@ import com.hedvig.android.data.contract.android.CrossSell
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
@@ -154,7 +155,7 @@ private fun InsuranceScreen(
       ) {
         Text(
           text = stringResource(id = R.string.DASHBOARD_SCREEN_TITLE),
-          style = MaterialTheme.typography.titleLarge,
+          style = HedvigTheme.typography.headlineSmall,
         )
       }
       AnimatedContent(
@@ -346,7 +347,7 @@ private fun MovingFlowSuggestionSection(onNavigateToMovingFlow: () -> Unit, modi
 private fun PreviewInsuranceScreen(
   @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) withContracts: Boolean,
 ) {
-  HedvigTheme {
+  com.hedvig.android.core.designsystem.theme.HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       InsuranceScreen(
         InsuranceUiState(
@@ -386,7 +387,7 @@ private fun PreviewInsuranceScreen(
 @Composable
 private fun PreviewInsuranceDestinationAnimation() {
   val values = InsuranceUiStateProvider().values.toList()
-  HedvigTheme {
+  com.hedvig.android.core.designsystem.theme.HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       PreviewContentWithProvidedParametersAnimatedOnClick(
         parametersList = values,

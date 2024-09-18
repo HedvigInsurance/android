@@ -38,6 +38,7 @@ dependencies {
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
   implementation(projects.pullrefresh)
+  implementation(projects.designSystemHedvig)
 }
 
 apollo {

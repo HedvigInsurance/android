@@ -70,6 +70,7 @@ import com.hedvig.android.core.ui.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.feature.payments.payments.PaymentsUiState.Content.ConnectedPaymentInfo.Connected
 import com.hedvig.android.feature.payments.payments.PaymentsUiState.Content.ConnectedPaymentInfo.NotConnected
 import com.hedvig.android.feature.payments.payments.PaymentsUiState.Content.ConnectedPaymentInfo.Pending
@@ -138,7 +139,7 @@ private fun PaymentsScreen(
           title = {
             Text(
               text = stringResource(R.string.PROFILE_PAYMENT_TITLE),
-              style = MaterialTheme.typography.titleLarge,
+              style = HedvigTheme.typography.headlineSmall,
             )
           },
           colors = TopAppBarDefaults.topAppBarColors(
@@ -484,7 +485,7 @@ private fun PaymentsListItem(
 private fun PreviewPaymentScreen(
   @PreviewParameter(PaymentsStatePreviewProvider::class) uiState: PaymentsUiState,
 ) {
-  HedvigTheme {
+  com.hedvig.android.core.designsystem.theme.HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       PaymentsScreen(
         uiState = uiState,
