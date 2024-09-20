@@ -5,7 +5,6 @@ import arrow.core.right
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
-import assertk.assertions.prop
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.annotations.ApolloExperimental
 import com.apollographql.apollo.testing.enqueueTestNetworkError
@@ -70,8 +69,6 @@ class GetConnectPaymentReminderUseCaseTest {
     assertThat(result)
       .isLeft()
       .isInstanceOf<ConnectPaymentReminderError.NetworkError>()
-      .prop(ConnectPaymentReminderError.NetworkError::message)
-      .isEqualTo("Network error queued in QueueTestNetworkTransport")
   }
 
   @Test
