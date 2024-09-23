@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.change.tier.ui
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -25,6 +27,8 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.android.toPillow
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
+import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
+import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownSize.Small
 import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownStyle.Label
 import com.hedvig.android.design.system.hedvig.DropdownDefaults.LockedState
@@ -37,13 +41,21 @@ import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HighlightLabel
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighLightSize
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.MEDIUM
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
+import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.change.tier.data.CustomizeContractData
+import com.hedvig.android.feature.change.tier.data.Deductible
+import com.hedvig.android.feature.change.tier.data.Tier
+import com.hedvig.android.feature.change.tier.data.description
 import hedvig.resources.R
 
 @Composable
@@ -112,6 +124,7 @@ fun SelectTierScreen(
     )
     Spacer(Modifier.height(4.dp))
     HedvigTextButton(
+      buttonSize = Large,
       modifier = Modifier
         .fillMaxWidth()
         .padding(horizontal = 16.dp),
@@ -123,7 +136,7 @@ fun SelectTierScreen(
     Spacer(Modifier.height(8.dp))
     HedvigButton(
       buttonSize = Large,
-      text = "Continue",
+      text = stringResource(R.string.general_continue_button),
       enabled = !isCurrentChosen,
       onClick = {
         onContinueClick()
@@ -149,6 +162,8 @@ private fun CustomizationCard(
   isCurrentChosen: Boolean,
   modifier: Modifier = Modifier,
 ) {
+  var locallyChosenTierIndex by remember { mutableIntStateOf(chosenTierIndex) }
+  var locallyChosenDeductibleIndex by remember { mutableIntStateOf(chosenDeductible) }
   Surface(
     modifier = modifier,
     shape = HedvigTheme.shapes.cornerXLarge,
@@ -160,41 +175,143 @@ private fun CustomizationCard(
         displaySubtitle = data.displaySubtitle,
       )
       Spacer(Modifier.height(16.dp))
+      val tierSimpleItems = buildList {
+        for (tier in data.tierData) {
+          add(SimpleDropdownItem(tier.tierName))
+        }
+      }
       DropdownWithDialog(
         lockedState = tierLockedState,
         style = Label(
           label = stringResource(R.string.TIER_FLOW_COVERAGE_LABEL),
-          items = data.tierDropdownData,
+          items = tierSimpleItems,
         ),
         size = Small,
         hintText = "", // todo: check here
-        onItemChosen = { chosenIndex ->
-          onChooseTierClick(chosenIndex)
-        },
-        chosenItemIndex = chosenTierIndex,
-        onSelectorClick = {
-          // todo
-        },
+        onItemChosen = { _ -> }, // not needed, as we not use the default dialog content
+        chosenItemIndex = locallyChosenTierIndex,
+        onSelectorClick = {},
         containerColor = HedvigTheme.colorScheme.fillNegative,
-      )
-      Spacer(Modifier.height(4.dp))
-      DropdownWithDialog(
-        lockedState = deductibleLockedState,
-        style = Label(
-          label = stringResource(R.string.TIER_FLOW_DEDUCTIBLE_LABEL),
-          items = data.deductibleDropdownData,
-        ),
-        size = Small,
-        hintText = "", // todo: check here
-        onItemChosen = { chosenIndex ->
-          onChooseDeductibleClick(chosenIndex)
-        },
-        chosenItemIndex = chosenDeductible,
-        onSelectorClick = {
-          // todo
-        },
-        containerColor = HedvigTheme.colorScheme.fillNegative,
-      )
+      ) { onDismissRequest ->
+        Column {
+          HedvigText(
+            stringResource(R.string.TIER_FLOW_SELECT_COVERAGE_TITLE),
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = Companion.Center,
+          )
+          Spacer(Modifier.height(16.dp))
+          data.tierData.forEachIndexed { index, tier ->
+            RadioOption(
+              chosenState = if (locallyChosenTierIndex == index) Chosen else NotChosen,
+              onClick = {
+                locallyChosenTierIndex = index
+              },
+              optionContent = {
+                ExpandedOptionContent(
+                  title = tier.tierName,
+                  premium = tier.displayPremium,
+                  comment = tier.info,
+                )
+              },
+            )
+            if (index != data.tierData.lastIndex) {
+              Spacer(Modifier.height(4.dp))
+            }
+          }
+          Spacer(Modifier.height(16.dp))
+          HedvigButton(
+            text = stringResource(R.string.general_continue_button),
+            onClick = {
+              onChooseTierClick(locallyChosenTierIndex)
+              onDismissRequest()
+            },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = true,
+          )
+          Spacer(Modifier.height(8.dp))
+          HedvigTextButton(
+            text = stringResource(R.string.general_cancel_button),
+            onClick = {
+              locallyChosenTierIndex = chosenTierIndex
+              onDismissRequest()
+            },
+            modifier = Modifier.fillMaxWidth(),
+            buttonSize = Large,
+          )
+        }
+      }
+      if (data.deductibleData.isNotEmpty()) {
+        Spacer(Modifier.height(4.dp))
+        val deductibleSimpleItems = buildList {
+          for (deductible in data.deductibleData) {
+            add(SimpleDropdownItem(deductible.optionText))
+          }
+        }
+        DropdownWithDialog(
+          lockedState = deductibleLockedState,
+          style = Label(
+            label = stringResource(R.string.TIER_FLOW_DEDUCTIBLE_LABEL),
+            items = deductibleSimpleItems,
+          ),
+          size = Small,
+          hintText = "", // todo: check here
+          onItemChosen = { chosenIndex ->
+            onChooseDeductibleClick(chosenIndex)
+          },
+          chosenItemIndex = locallyChosenDeductibleIndex,
+          onSelectorClick = {
+            // todo
+          },
+          containerColor = HedvigTheme.colorScheme.fillNegative,
+        ) { onDismissRequest ->
+          Column {
+            HedvigText(
+              stringResource(R.string.TIER_FLOW_SELECT_DEDUCTIBLE_TITLE),
+              modifier = Modifier.fillMaxWidth(),
+              textAlign = Companion.Center,
+            )
+            Spacer(Modifier.height(16.dp))
+            data.deductibleData.forEachIndexed { index, deductible ->
+              RadioOption(
+                chosenState = if (locallyChosenDeductibleIndex == index) Chosen else NotChosen,
+                onClick = {
+                  locallyChosenDeductibleIndex = index
+                },
+                optionContent = {
+                  ExpandedOptionContent(
+                    title = deductible.optionText,
+                    premium = deductible.displayPremium,
+                    comment = deductible.description(),
+                  )
+                },
+              )
+              if (index != data.tierData.lastIndex) {
+                Spacer(Modifier.height(4.dp))
+              }
+            }
+            Spacer(Modifier.height(16.dp))
+            HedvigButton(
+              text = stringResource(R.string.general_continue_button),
+              onClick = {
+                onChooseDeductibleClick(locallyChosenDeductibleIndex)
+                onDismissRequest()
+              },
+              modifier = Modifier.fillMaxWidth(),
+              enabled = true,
+            )
+            Spacer(Modifier.height(8.dp))
+            HedvigTextButton(
+              modifier = Modifier.fillMaxWidth(),
+              buttonSize = Large,
+              text = stringResource(R.string.general_cancel_button),
+              onClick = {
+                locallyChosenDeductibleIndex = chosenDeductible
+                onDismissRequest()
+              },
+            )
+          }
+        }
+      }
       Spacer(Modifier.height(16.dp))
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
@@ -248,6 +365,32 @@ private fun PillAndBasicInfo(contractGroup: ContractGroup, displayName: String, 
   }
 }
 
+@Composable
+private fun ExpandedOptionContent(title: String, premium: String, comment: String?) {
+  Column {
+    HorizontalItemsWithMaximumSpaceTaken(
+      startSlot = {
+        HedvigText(title)
+      },
+      spaceBetween = 8.dp,
+      endSlot = {
+        Row(horizontalArrangement = Arrangement.End) {
+          HighlightLabel(labelText = premium, size = HighLightSize.Small, color = HighlightColor.Grey(MEDIUM))
+        }
+      },
+    )
+    if (comment != null) {
+      Spacer(Modifier.height(8.dp))
+      HedvigText(
+        text = comment,
+        modifier = Modifier.fillMaxWidth(),
+        style = HedvigTheme.typography.label,
+        color = HedvigTheme.colorScheme.textSecondary,
+      )
+    }
+  }
+}
+
 @HedvigPreview
 @Composable
 private fun CustomizationCardPreview() {
@@ -275,7 +418,7 @@ private fun SelectTierScreenPreview() {
       chosenTierIndex = 2,
       chosenDeductibleIndex = 1,
       newDisplayPremium = "249 kr/mo",
-      tierLockedState = LockedState.Locked({}),
+      tierLockedState = LockedState.NotLocked,
       deductibleLockedState = LockedState.NotLocked,
       isCurrentChosen = false,
       onCompareClick = {},
@@ -289,15 +432,15 @@ private val dataForPreview = CustomizeContractData(
   contractGroup = ContractGroup.HOMEOWNER,
   displayName = "Home Homeowner",
   displaySubtitle = "Addressvägen 777",
-  tierDropdownData = listOf(
-    SimpleDropdownItem("Bas"),
-    SimpleDropdownItem("Standard"),
-    SimpleDropdownItem("Max"),
+  tierData = listOf(
+    Tier("Bas", displayPremium = "199 kr/mo", tierLevel = 0, info = "Vårt paket med grundläggande villkor."),
+    Tier("Standard", displayPremium = "449 kr/mo", tierLevel = 1, info = "Vårt mellanpaket med hög ersättning."),
+    Tier("Max", displayPremium = "799 kr/mo", tierLevel = 1, info = "Vårt största paket med högst ersättning."),
   ),
-  deductibleDropdownData = listOf(
-    SimpleDropdownItem("1750 kr"),
-    SimpleDropdownItem("2500 kr"),
-    SimpleDropdownItem("3500 kr"),
+  deductibleData = listOf(
+    Deductible("0 kr", deductiblePercentage = "25%", displayPremium = "1 167 kr/mån"),
+    Deductible("1500 kr", deductiblePercentage = "25%", displayPremium = "999 kr/mån"),
+    Deductible("3500 kr", deductiblePercentage = "25%", displayPremium = "599 kr/mån"),
   ),
   currentDisplayPremium = "279 kr/mo",
 )

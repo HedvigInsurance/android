@@ -84,7 +84,7 @@ fun DropdownWithDialog(
   errorText: String? = null,
   containerColor: Color? = null,
   lockedState: LockedState = NotLocked,
-  dialogContent: (@Composable () -> Unit)? = null,
+  dialogContent: (@Composable (onDismissRequest: () -> Unit) -> Unit)? = null,
 ) {
   var isDialogVisible by rememberSaveable { mutableStateOf(false) }
   if (isDialogVisible) {
@@ -95,7 +95,9 @@ fun DropdownWithDialog(
       style = DialogDefaults.DialogStyle.NoButtons,
     ) {
       if (dialogContent != null) {
-        dialogContent()
+        dialogContent {
+          isDialogVisible = false
+        }
       } else {
         Column(
           modifier = Modifier.background(
