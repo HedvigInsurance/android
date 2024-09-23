@@ -17,6 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextAlign.Companion
@@ -24,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.android.toPillow
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
-import com.hedvig.android.design.system.hedvig.DropdownDefaults
 import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownSize.Small
 import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownStyle.Label
 import com.hedvig.android.design.system.hedvig.DropdownDefaults.LockedState
@@ -44,6 +44,7 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.change.tier.data.CustomizeContractData
+import hedvig.resources.R
 
 @Composable
 fun SelectTierScreen(
@@ -52,8 +53,8 @@ fun SelectTierScreen(
   data: CustomizeContractData,
   newDisplayPremium: String,
   isCurrentChosen: Boolean,
-  tierLockedState: DropdownDefaults.LockedState,
-  deductibleLockedState: DropdownDefaults.LockedState,
+  tierLockedState: LockedState,
+  deductibleLockedState: LockedState,
   navigateUp: () -> Unit,
   onCompareClick: () -> Unit,
   onContinueClick: () -> Unit,
@@ -78,7 +79,7 @@ fun SelectTierScreen(
   ) {
     Spacer(modifier = Modifier.height(8.dp))
     HedvigText(
-      text = "Customise your insurance", // TODO: string here
+      text = stringResource(R.string.TIER_FLOW_TITLE),
       style = HedvigTheme.typography.headlineMedium,
       modifier = Modifier.padding(horizontal = 16.dp),
     )
@@ -88,7 +89,7 @@ fun SelectTierScreen(
         lineBreak = LineBreak.Heading,
         color = HedvigTheme.colorScheme.textSecondary,
       ),
-      text = "Select your coverage and deductible", // TODO: string here
+      text = stringResource(R.string.TIER_FLOW_SUBTITLE),
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.weight(1f))
@@ -114,7 +115,7 @@ fun SelectTierScreen(
       modifier = Modifier
         .fillMaxWidth()
         .padding(horizontal = 16.dp),
-      text = "Compare coverage levels", // todo: string here
+      text = stringResource(R.string.TIER_FLOW_COMPARE_BUTTON),
       onClick = {
         onCompareClick()
       },
@@ -141,8 +142,8 @@ private fun CustomizationCard(
   chosenTierIndex: Int,
   chosenDeductible: Int,
   newDisplayPremium: String,
-  tierLockedState: DropdownDefaults.LockedState,
-  deductibleLockedState: DropdownDefaults.LockedState,
+  tierLockedState: LockedState,
+  deductibleLockedState: LockedState,
   onChooseDeductibleClick: (index: Int) -> Unit,
   onChooseTierClick: (index: Int) -> Unit,
   isCurrentChosen: Boolean,
@@ -162,7 +163,7 @@ private fun CustomizationCard(
       DropdownWithDialog(
         lockedState = tierLockedState,
         style = Label(
-          label = "Coverage level", // todo: string here!
+          label = stringResource(R.string.TIER_FLOW_COVERAGE_LABEL),
           items = data.tierDropdownData,
         ),
         size = Small,
@@ -180,7 +181,7 @@ private fun CustomizationCard(
       DropdownWithDialog(
         lockedState = deductibleLockedState,
         style = Label(
-          label = "Deductible", // todo: string here!
+          label = stringResource(R.string.TIER_FLOW_DEDUCTIBLE_LABEL),
           items = data.deductibleDropdownData,
         ),
         size = Small,
@@ -198,9 +199,9 @@ private fun CustomizationCard(
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
           HedvigText(
-            "Total",
+            stringResource(R.string.TIER_FLOW_TOTAL),
             style = HedvigTheme.typography.bodySmall,
-          ) // todo: String here!
+          )
         },
         spaceBetween = 8.dp,
         endSlot = {
@@ -215,10 +216,10 @@ private fun CustomizationCard(
         HedvigText(
           modifier = Modifier.fillMaxWidth(),
           textAlign = Companion.End,
-          text = "Previous price ${data.currentDisplayPremium}",
+          text = stringResource(R.string.TIER_FLOW_PREVIOUS_PRICE, data.currentDisplayPremium),
           style = HedvigTheme.typography.label,
           color = HedvigTheme.colorScheme.textSecondary,
-        ) // todo: String here
+        )
       }
     }
   }
