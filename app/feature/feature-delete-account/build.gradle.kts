@@ -8,7 +8,6 @@ plugins {
 }
 
 dependencies {
-
   implementation(libs.androidx.datastore.core)
   implementation(libs.androidx.datastore.preferencesCore)
   implementation(libs.androidx.lifecycle.compose)
@@ -18,8 +17,8 @@ dependencies {
   implementation(libs.apollo.normalizedCache)
   implementation(libs.arrow.core)
   implementation(libs.compose.richtext)
-  implementation(libs.compose.richtextUi)
   implementation(libs.compose.richtextMarkdown)
+  implementation(libs.compose.richtextUi)
   implementation(libs.coroutines.core)
   implementation(libs.koin.compose)
   implementation(libs.koin.core)

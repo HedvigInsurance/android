@@ -13,6 +13,7 @@ android {
 
 dependencies {
   implementation(libs.androidx.compose.foundation)
+  implementation(libs.androidx.core)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.androidx.lifecycle.viewModel)
   implementation(libs.androidx.navigation.compose)
@@ -37,7 +38,6 @@ dependencies {
   implementation(projects.moleculePublic)
   implementation(projects.navigationCompose)
   implementation(projects.navigationCore)
-  implementation(libs.androidx.core)
 
   testImplementation(libs.androidx.datastore.core)
   testImplementation(libs.androidx.datastore.preferencesCore)

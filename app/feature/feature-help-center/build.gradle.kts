@@ -11,6 +11,8 @@ plugins {
 dependencies {
   implementation(libs.accompanist.permissions)
   implementation(libs.androidx.activity.compose)
+  implementation(libs.androidx.compose.foundation)
+  implementation(libs.androidx.compose.material3.windowSizeClass)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.androidx.navigation.common)
   implementation(libs.androidx.navigation.compose)
@@ -45,10 +47,6 @@ dependencies {
   implementation(projects.navigationCore)
   implementation(projects.placeholder)
   implementation(projects.uiEmergency)
-
-  implementation(projects.designSystemHedvig)
-  implementation(libs.androidx.compose.foundation)
-  implementation(libs.androidx.compose.material3.windowSizeClass)
 }
 
 apollo {

@@ -13,11 +13,9 @@ android {
 }
 
 dependencies {
-
-  implementation(libs.androidx.compose.foundation)
-  implementation(projects.designSystemHedvig)
   implementation(libs.accompanist.permissions)
   implementation(libs.androidx.activity.compose)
+  implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.runtime)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.apollo.normalizedCache)
@@ -43,6 +41,7 @@ dependencies {
   implementation(projects.coreResources)
   implementation(projects.coreUiData)
   implementation(projects.dataSettingsDatastorePublic)
+  implementation(projects.designSystemHedvig)
   implementation(projects.featureFlagsPublic)
   implementation(projects.languageCore)
   implementation(projects.languageData)
