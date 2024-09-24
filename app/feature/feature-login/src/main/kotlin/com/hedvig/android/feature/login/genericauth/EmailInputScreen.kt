@@ -68,7 +68,7 @@ fun EmailInputScreen(
         text = stringResource(hedvig.resources.R.string.login_continue_button),
         onClick = onSubmitEmail,
         enabled = true,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
       )
       Spacer(Modifier.height(16.dp))
     }
