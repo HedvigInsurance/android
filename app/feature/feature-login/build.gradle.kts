@@ -13,7 +13,6 @@ android {
 
 dependencies {
   implementation(libs.androidx.compose.foundation)
-  implementation(libs.androidx.core)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.androidx.lifecycle.viewModel)
   implementation(libs.androidx.navigation.compose)
