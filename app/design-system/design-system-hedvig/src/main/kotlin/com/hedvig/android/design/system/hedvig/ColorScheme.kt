@@ -64,6 +64,7 @@ data class ColorScheme(
   val surfaceSecondary: Color,
   val surfacePrimaryTransparent: Color,
   val surfaceSecondaryTransparent: Color,
+  val surfaceHighlightTransparent: Color,
   val backgroundPrimary: Color,
   val backgroundNegative: Color,
   val backgroundBlack: Color,
@@ -167,6 +168,7 @@ internal val lightColorScheme: ColorScheme = ColorScheme(
   surfaceSecondary = ColorLightTokens.SurfaceSecondary,
   surfacePrimaryTransparent = ColorLightTokens.SurfacePrimaryTransparent,
   surfaceSecondaryTransparent = ColorLightTokens.SurfaceSecondaryTransparent,
+  surfaceHighlightTransparent = ColorLightTokens.SurfaceHighlightTransparent,
   backgroundPrimary = ColorLightTokens.BackgroundPrimary,
   backgroundNegative = ColorLightTokens.BackgroundNegative,
   backgroundBlack = ColorLightTokens.BackgroundBlack,
@@ -270,6 +272,7 @@ internal val darkColorScheme: ColorScheme = ColorScheme(
   surfaceSecondary = ColorDarkTokens.SurfaceSecondary,
   surfacePrimaryTransparent = ColorDarkTokens.SurfacePrimaryTransparent,
   surfaceSecondaryTransparent = ColorDarkTokens.SurfaceSecondaryTransparent,
+  surfaceHighlightTransparent = ColorDarkTokens.SurfaceHighlightTransparent,
   backgroundPrimary = ColorDarkTokens.BackgroundPrimary,
   backgroundNegative = ColorDarkTokens.BackgroundNegative,
   backgroundBlack = ColorDarkTokens.BackgroundBlack,
@@ -399,6 +402,7 @@ internal fun ColorScheme.fromToken(value: ColorSchemeKeyTokens): Color {
     ColorSchemeKeyTokens.SurfaceSecondary -> surfaceSecondary
     ColorSchemeKeyTokens.SurfacePrimaryTransparent -> surfacePrimaryTransparent
     ColorSchemeKeyTokens.SurfaceSecondaryTransparent -> surfaceSecondaryTransparent
+    ColorSchemeKeyTokens.SurfaceHighlightTransparent -> surfaceHighlightTransparent
     ColorSchemeKeyTokens.BackgroundPrimary -> backgroundPrimary
     ColorSchemeKeyTokens.BackgroundNegative -> backgroundNegative
     ColorSchemeKeyTokens.BackgroundBlack -> backgroundBlack

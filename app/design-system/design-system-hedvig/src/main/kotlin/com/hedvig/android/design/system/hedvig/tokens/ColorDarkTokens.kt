@@ -54,6 +54,7 @@ internal object ColorDarkTokens {
   val SurfaceSecondary: Color = PaletteTokens.G800
   val SurfacePrimaryTransparent: Color = PaletteTokens.G900TDark
   val SurfaceSecondaryTransparent: Color = PaletteTokens.G800TDark
+  val SurfaceHighlightTransparent: Color = PaletteTokens.G900TDark
   val BackgroundPrimary: Color = PaletteTokens.Black
   val BackgroundNegative: Color = PaletteTokens.White
   val BackgroundBlack: Color = PaletteTokens.Black

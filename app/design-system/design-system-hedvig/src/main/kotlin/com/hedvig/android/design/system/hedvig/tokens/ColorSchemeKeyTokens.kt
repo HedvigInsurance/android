@@ -53,6 +53,7 @@ enum class ColorSchemeKeyTokens {
   SurfaceSecondary,
   SurfacePrimaryTransparent,
   SurfaceSecondaryTransparent,
+  SurfaceHighlightTransparent,
   BackgroundPrimary,
   BackgroundNegative,
   BackgroundBlack,
