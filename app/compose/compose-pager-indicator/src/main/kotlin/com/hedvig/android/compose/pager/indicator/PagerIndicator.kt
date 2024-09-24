@@ -31,10 +31,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.material3.DisabledAlpha
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
 import kotlin.math.absoluteValue
 import kotlin.math.sign
 
@@ -66,7 +68,7 @@ fun HorizontalPagerIndicator(
   modifier: Modifier = Modifier,
   pageIndexMapping: (Int) -> Int = { it },
   activeColor: Color = LocalContentColor.current,
-  inactiveColor: Color = activeColor.copy(DisabledAlpha),
+  inactiveColor: Color = HedvigTheme.colorScheme.fillDisabled,
   indicatorWidth: Dp = 8.dp,
   indicatorHeight: Dp = indicatorWidth,
   spacing: Dp = indicatorWidth,
@@ -123,5 +125,15 @@ fun HorizontalPagerIndicator(
           },
         ),
     )
+  }
+}
+
+@Preview
+@Composable
+fun PreviewHorizontalPagerIndicator() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      HorizontalPagerIndicator(PagerState { 3 }, 3, pageIndexMapping = { it })
+    }
   }
 }
