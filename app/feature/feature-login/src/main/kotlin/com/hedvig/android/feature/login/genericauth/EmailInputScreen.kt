@@ -8,19 +8,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -30,20 +21,21 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.hedvig.normal.Info
-import com.hedvig.android.core.icons.hedvig.normal.X
-import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigCircularProgressIndicator
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextField
+import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
 
 @Composable
 fun EmailInputScreen(
   onUpClick: () -> Unit,
   onInputChanged: (String) -> Unit,
   onSubmitEmail: () -> Unit,
-  onClear: () -> Unit,
   emailInput: String,
   error: String?,
   loading: Boolean,
@@ -64,17 +56,19 @@ fun EmailInputScreen(
         .verticalScroll(rememberScrollState()),
     ) {
       Spacer(Modifier.height(60.dp))
-      Text(
+      HedvigText(
         text = stringResource(hedvig.resources.R.string.login_enter_your_email_address),
-        style = MaterialTheme.typography.headlineMedium,
+        style = HedvigTheme.typography.headlineMedium,
       )
       Spacer(Modifier.height(40.dp))
-      EmailTextField(emailInput, onInputChanged, onSubmitEmail, error, loading, onClear)
+      EmailTextField(emailInput, onInputChanged, onSubmitEmail, error, loading)
       Spacer(Modifier.weight(1f))
       Spacer(Modifier.height(16.dp))
-      HedvigContainedButton(
+      HedvigButton(
         text = stringResource(hedvig.resources.R.string.login_continue_button),
         onClick = onSubmitEmail,
+        enabled = true,
+        modifier = Modifier.fillMaxWidth()
       )
       Spacer(Modifier.height(16.dp))
     }
@@ -88,54 +82,31 @@ private fun EmailTextField(
   onSubmitEmail: () -> Unit,
   error: String?,
   loading: Boolean,
-  onClear: () -> Unit,
 ) {
-  OutlinedTextField(
-    value = emailInput,
+  HedvigTextField(
+    text = emailInput,
     onValueChange = onInputChanged,
-    modifier = Modifier
-      .fillMaxWidth()
-      .submitOnEnter(onSubmitEmail),
-    label = { Text(stringResource(hedvig.resources.R.string.login_text_input_email_address)) },
-    trailingIcon = {
-      TrailingIcon(error, loading, emailInput, onClear)
+    textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Large,
+    labelText = stringResource(hedvig.resources.R.string.login_text_input_email_address),
+    suffix = if (loading) {
+      { HedvigCircularProgressIndicator() }
+    } else {
+      null
     },
-    isError = error != null,
+    errorState = if (error != null) {
+      HedvigTextFieldDefaults.ErrorState.Error.WithMessage(error)
+    } else {
+      HedvigTextFieldDefaults.ErrorState.NoError
+    },
     keyboardOptions = KeyboardOptions(
       imeAction = ImeAction.Done,
     ),
     keyboardActions = KeyboardActions(onDone = { onSubmitEmail() }),
     singleLine = true,
+    modifier = Modifier
+      .fillMaxWidth()
+      .submitOnEnter(onSubmitEmail),
   )
-  if (error != null) {
-    Text(
-      text = error,
-      style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.error),
-      modifier = Modifier.padding(horizontal = 16.dp),
-    )
-  }
-}
-
-@Composable
-private fun TrailingIcon(error: String?, loading: Boolean, emailInput: String, onClear: () -> Unit) {
-  if (error != null) {
-    Icon(
-      imageVector = Icons.Hedvig.Info,
-      contentDescription = null,
-      tint = MaterialTheme.colorScheme.error,
-    )
-  } else if (loading) {
-    CircularProgressIndicator(modifier = Modifier.size(24.dp))
-  } else if (emailInput.isNotBlank()) {
-    IconButton(onClick = onClear) {
-      Icon(
-        imageVector = Icons.Hedvig.X,
-        contentDescription = stringResource(
-          hedvig.resources.R.string.login_text_input_email_address_icon_description_clear_all,
-        ),
-      )
-    }
-  }
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -156,12 +127,11 @@ private fun Modifier.submitOnEnter(action: () -> Unit) = composed {
 @Composable
 private fun PreviewEmailInputScreenValid() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       EmailInputScreen(
         onUpClick = {},
         onInputChanged = {},
         onSubmitEmail = {},
-        onClear = {},
         emailInput = "example@example.com",
         error = null,
         loading = false,
@@ -174,12 +144,11 @@ private fun PreviewEmailInputScreenValid() {
 @Composable
 private fun PreviewEmailInputScreenInvalid() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       EmailInputScreen(
         onUpClick = {},
         onInputChanged = {},
         onSubmitEmail = {},
-        onClear = {},
         emailInput = "example.com",
         error = "Invalid email",
         loading = false,

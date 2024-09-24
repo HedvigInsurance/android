@@ -12,6 +12,7 @@ android {
 }
 
 dependencies {
+  implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.androidx.lifecycle.viewModel)
   implementation(libs.androidx.navigation.compose)
@@ -22,13 +23,13 @@ dependencies {
   implementation(projects.apolloCore)
   implementation(projects.authCorePublic)
   implementation(projects.authCoreTest)
+  implementation(projects.composeUi)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDemoMode)
-  implementation(projects.coreDesignSystem)
   implementation(projects.coreIcons)
   implementation(projects.coreResources)
-  implementation(projects.coreUi)
+  implementation(projects.designSystemHedvig)
   implementation(projects.languageCore)
   implementation(projects.marketCore)
   implementation(projects.marketSet)
@@ -36,6 +37,7 @@ dependencies {
   implementation(projects.moleculePublic)
   implementation(projects.navigationCompose)
   implementation(projects.navigationCore)
+  implementation(libs.androidx.core)
 
   testImplementation(libs.androidx.datastore.core)
   testImplementation(libs.androidx.datastore.preferencesCore)

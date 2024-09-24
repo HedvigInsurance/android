@@ -124,6 +124,52 @@ fun HedvigTextField(
   )
 }
 
+@Composable
+fun HedvigTextField(
+  text: String,
+  onValueChange: (String) -> Unit,
+  labelText: String,
+  textFieldSize: HedvigTextFieldDefaults.TextFieldSize,
+  supportingText: @Composable (() -> Unit)?,
+  modifier: Modifier = Modifier,
+  suffix: @Composable (() -> Unit)? = null,
+  leadingContent: @Composable (() -> Unit)? = null,
+  enabled: Boolean = true,
+  readOnly: Boolean = false,
+  keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+  keyboardActions: KeyboardActions = KeyboardActions.Default,
+  singleLine: Boolean = true,
+  maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
+  minLines: Int = 1,
+  visualTransformation: VisualTransformation = VisualTransformation.None,
+  onTextLayout: (TextLayoutResult) -> Unit = {},
+  interactionSource: MutableInteractionSource? = null,
+) {
+  HedvigTextField(
+    value = text,
+    onValueChange = onValueChange,
+    colors = HedvigTextFieldDefaults.colors(),
+    configuration = HedvigTextFieldDefaults.configuration(),
+    size = textFieldSize.size,
+    modifier = modifier,
+    enabled = enabled,
+    readOnly = readOnly,
+    label = { HedvigText(text = labelText) },
+    suffix = suffix,
+    leadingContent = leadingContent,
+    supportingText = supportingText,
+    isError = false,
+    visualTransformation = visualTransformation,
+    onTextLayout = onTextLayout,
+    keyboardOptions = keyboardOptions,
+    keyboardActions = keyboardActions,
+    singleLine = singleLine,
+    maxLines = maxLines,
+    minLines = minLines,
+    interactionSource = interactionSource ?: remember { MutableInteractionSource() },
+  )
+}
+
 // region text field configuration
 
 object HedvigTextFieldDefaults {
