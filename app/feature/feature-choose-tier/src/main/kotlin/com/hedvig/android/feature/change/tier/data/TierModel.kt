@@ -1,9 +1,6 @@
 package com.hedvig.android.feature.change.tier.data
 
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.stringResource
 import com.hedvig.android.data.contract.ContractGroup
-import hedvig.resources.R
 
 data class CustomizeContractData(
   val contractGroup: ContractGroup,
@@ -25,6 +22,7 @@ data class Deductible(
   val deductibleAmount: String?,
   val deductiblePercentage: String?,
   val displayPremium: String,
+  val description: String,
 ) {
   val optionText = if (deductiblePercentage !=
     null
@@ -33,17 +31,4 @@ data class Deductible(
   } else {
     deductibleAmount ?: ""
   }
-}
-
-@Composable
-fun Deductible.description() = if (deductiblePercentage != null &&
-  deductibleAmount != null
-) {
-  stringResource(R.string.TIER_FLOW_DEDUCTIBLE_FIXED_AND_PERCENTAGE, deductiblePercentage)
-} else if (deductibleAmount == null &&
-  deductiblePercentage != null
-) {
-  stringResource(R.string.TIER_FLOW_DEDUCTIBLE_PERCENTAGE_ONLY, deductiblePercentage)
-} else {
-  null
 }

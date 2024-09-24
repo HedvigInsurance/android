@@ -41,6 +41,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownStyle
 import com.hedvig.android.design.system.hedvig.DropdownDefaults.LockedState
 import com.hedvig.android.design.system.hedvig.DropdownDefaults.LockedState.Locked
@@ -84,11 +85,15 @@ fun DropdownWithDialog(
   errorText: String? = null,
   containerColor: Color? = null,
   lockedState: LockedState = NotLocked,
+  dialogProperties: DialogProperties = DialogDefaults.defaultProperties,
+  onLockedClick: (() -> Unit)? = null,
   dialogContent: (@Composable (onDismissRequest: () -> Unit) -> Unit)? = null,
 ) {
   var isDialogVisible by rememberSaveable { mutableStateOf(false) }
   if (isDialogVisible) {
     HedvigDialog(
+      applyDefaultPadding = dialogContent == null,
+      dialogProperties = dialogProperties,
       onDismissRequest = {
         isDialogVisible = false
       },
@@ -137,6 +142,7 @@ fun DropdownWithDialog(
     isDialogOpen = isDialogVisible,
     containerColor = containerColor,
     lockedState = lockedState,
+    onLockedClick = onLockedClick,
   )
 }
 
@@ -154,9 +160,10 @@ private fun DropdownSelector(
   lockedState: LockedState,
   modifier: Modifier = Modifier,
   containerColor: Color? = null,
+  onLockedClick: (() -> Unit)? = null,
 ) {
   val conditionedOnClick = when (lockedState) {
-    is Locked -> lockedState.onLockedClick
+    is Locked -> onLockedClick ?: {}
     NotLocked -> onClick
   }
   Column(
@@ -408,9 +415,7 @@ object DropdownDefaults {
   sealed class LockedState {
     data object NotLocked : LockedState()
 
-    data class Locked(
-      val onLockedClick: () -> Unit,
-    ) : LockedState()
+    data object Locked : LockedState()
   }
 
   sealed class DropdownSize {
