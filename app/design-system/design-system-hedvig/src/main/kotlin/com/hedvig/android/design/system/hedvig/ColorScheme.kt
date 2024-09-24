@@ -87,6 +87,7 @@ data class ColorScheme(
   val signalBlueHighlight: Color,
   val signalBlueElement: Color,
   val signalBlueText: Color,
+  val signalGreyElement: Color,
   val highlightPinkFill1: Color,
   val highlightPinkFill2: Color,
   val highlightPinkFill3: Color,
@@ -189,6 +190,7 @@ internal val lightColorScheme: ColorScheme = ColorScheme(
   signalBlueHighlight = ColorLightTokens.SignalBlueHighlight,
   signalBlueElement = ColorLightTokens.SignalBlueElement,
   signalBlueText = ColorLightTokens.SignalBlueText,
+  signalGreyElement = ColorLightTokens.SignalGreyElement,
   highlightPinkFill1 = ColorLightTokens.HighlightPinkFill1,
   highlightPinkFill2 = ColorLightTokens.HighlightPinkFill2,
   highlightPinkFill3 = ColorLightTokens.HighlightPinkFill3,
@@ -291,6 +293,7 @@ internal val darkColorScheme: ColorScheme = ColorScheme(
   signalBlueHighlight = ColorDarkTokens.SignalBlueHighlight,
   signalBlueElement = ColorDarkTokens.SignalBlueElement,
   signalBlueText = ColorDarkTokens.SignalBlueText,
+  signalGreyElement = ColorDarkTokens.SignalGreyElement,
   highlightPinkFill1 = ColorDarkTokens.HighlightPinkFill1,
   highlightPinkFill2 = ColorDarkTokens.HighlightPinkFill2,
   highlightPinkFill3 = ColorDarkTokens.HighlightPinkFill3,
@@ -419,6 +422,7 @@ internal fun ColorScheme.fromToken(value: ColorSchemeKeyTokens): Color {
     ColorSchemeKeyTokens.SignalBlueHighlight -> signalBlueHighlight
     ColorSchemeKeyTokens.SignalBlueElement -> signalBlueElement
     ColorSchemeKeyTokens.SignalBlueText -> signalBlueText
+    ColorSchemeKeyTokens.SignalGreyElement -> signalGreyElement
     ColorSchemeKeyTokens.HighlightPinkFill1 -> highlightPinkFill1
     ColorSchemeKeyTokens.HighlightPinkFill2 -> highlightPinkFill2
     ColorSchemeKeyTokens.HighlightPinkFill3 -> highlightPinkFill3

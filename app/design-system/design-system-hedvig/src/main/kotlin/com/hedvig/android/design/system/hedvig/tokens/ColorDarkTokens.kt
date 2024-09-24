@@ -77,6 +77,7 @@ internal object ColorDarkTokens {
   val SignalBlueHighlight: Color = PaletteTokens.Blue500
   val SignalBlueElement: Color = PaletteTokens.Blue650
   val SignalBlueText: Color = PaletteTokens.Blue900
+  val SignalGreyElement: Color = PaletteTokens.G750
   val HighlightPinkFill1: Color = PaletteTokens.Pink200
   val HighlightPinkFill2: Color = PaletteTokens.Pink300
   val HighlightPinkFill3: Color = PaletteTokens.Pink500

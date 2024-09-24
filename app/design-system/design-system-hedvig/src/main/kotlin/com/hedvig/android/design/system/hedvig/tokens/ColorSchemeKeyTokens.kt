@@ -76,6 +76,7 @@ enum class ColorSchemeKeyTokens {
   SignalBlueHighlight,
   SignalBlueElement,
   SignalBlueText,
+  SignalGreyElement,
   HighlightPinkFill1,
   HighlightPinkFill2,
   HighlightPinkFill3,
