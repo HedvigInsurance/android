@@ -38,10 +38,6 @@ internal class GenericAuthViewModel(
     }
   }
 
-  fun clear() {
-    _viewState.update { GenericAuthViewState(marketManager.market.value) }
-  }
-
   fun submitEmail() {
     val emailInput = _viewState.value.emailInputWithoutWhitespaces
     if (emailInput.isValid) {

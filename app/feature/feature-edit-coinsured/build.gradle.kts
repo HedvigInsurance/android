@@ -13,7 +13,6 @@ android {
 }
 
 dependencies {
-
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.lifecycle.compose)
@@ -39,12 +38,12 @@ dependencies {
   implementation(projects.coreResources)
   implementation(projects.coreUi)
   implementation(projects.coreUiData)
+  implementation(projects.designSystemHedvig)
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
   implementation(projects.navigationCompose)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
-  implementation(projects.designSystemHedvig)
 
   testImplementation(libs.apollo.testingSupport)
   testImplementation(libs.assertK)
