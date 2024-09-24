@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -89,7 +90,7 @@ private fun EmailTextField(
     textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Large,
     labelText = stringResource(hedvig.resources.R.string.login_text_input_email_address),
     suffix = if (loading) {
-      { HedvigCircularProgressIndicator() }
+      { HedvigCircularProgressIndicator(Modifier.size(24.dp)) }
     } else {
       null
     },
