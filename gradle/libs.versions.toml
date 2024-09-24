@@ -84,6 +84,7 @@ unleash = "1.0.0"
 uuid = "0.8.4"
 zXing = "3.5.3"
 zoomable = "1.6.2"
+core = "1.13.0"
 
 [libraries]
 
@@ -217,6 +218,7 @@ kotlinter-gradlePlugin = { module = "org.jmailen.gradle:kotlinter-gradle", versi
 
 # lint dependencies
 lintApi = { module = "com.android.tools.lint:lint-api", version.ref = "lintApi" }
+androidx-core = { group = "androidx.core", name = "core", version.ref = "core" }
 
 [bundles]
 
