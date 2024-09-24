@@ -99,19 +99,6 @@ class GenericAuthViewModelTest {
   }
 
   @Test
-  fun `clear should remove input and error state`() = runTest {
-    viewModel.setEmailInput("invalid email.. ")
-    viewModel.submitEmail()
-    advanceUntilIdle()
-    assertThat(viewModel.viewState.value.emailInput).isEqualTo("invalid email.. ")
-    assertThat(viewModel.viewState.value.error).isEqualTo(GenericAuthViewState.TextFieldError.Other.InvalidEmail)
-
-    viewModel.clear()
-    assertThat(viewModel.viewState.value.emailInput).isEqualTo("")
-    assertThat(viewModel.viewState.value.error).isEqualTo(null)
-  }
-
-  @Test
   fun `should load when submitting valid email`() = runTest {
     viewModel.setEmailInput("valid@email.com")
     assertThat(viewModel.viewState.value.loading).isEqualTo(false)

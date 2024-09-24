@@ -2,7 +2,7 @@ package com.hedvig.android.feature.login.navigation
 
 import android.net.Uri
 import androidx.navigation.NavGraphBuilder
-import com.hedvig.android.core.ui.getLocale
+import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.feature.login.genericauth.GenericAuthDestination
 import com.hedvig.android.feature.login.genericauth.GenericAuthViewModel
 import com.hedvig.android.feature.login.marketing.MarketingDestination

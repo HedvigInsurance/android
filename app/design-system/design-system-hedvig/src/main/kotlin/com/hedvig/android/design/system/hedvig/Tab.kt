@@ -15,6 +15,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,7 +57,7 @@ fun HedvigTabRowMaxSixTabs(
   tabSize: TabSize = TabDefaults.defaultSize,
   tabStyle: TabStyle = TabDefaults.defaultStyle,
 ) {
-  var currentIndicatorOffset by remember { mutableStateOf(IntOffset(0, 0)) }
+  var currentIndicatorOffset by rememberSaveable(stateSaver = IntOffset.Saver) { mutableStateOf(IntOffset(0, 0)) }
   val indicatorOffset: IntOffset by animateIntOffsetAsState(
     targetValue = currentIndicatorOffset,
     animationSpec = tween(
@@ -437,3 +440,9 @@ private fun TabIndicator(indicatorColor: Color, indicatorShape: Shape) {
       ),
   )
 }
+
+private val IntOffset.Companion.Saver: Saver<IntOffset, Any>
+  get() = listSaver(
+    save = { listOf(it.x, it.y) },
+    restore = { IntOffset(it[0], it[1]) },
+  )
