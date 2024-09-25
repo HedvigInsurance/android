@@ -20,6 +20,8 @@ import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightC
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.Purple
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.Red
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.Teal
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.TranslucentSecondary
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.TranslucentTertiary
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.Yellow
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.DARK
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.LIGHT
@@ -106,6 +108,10 @@ fun HighlightLabel(labelText: String, size: HighLightSize, color: HighlightColor
         DARK -> highLightColors.yellowDark
       }
     }
+
+    is TranslucentSecondary -> highLightColors.translucentSecondary
+
+    is TranslucentTertiary -> highLightColors.translucentTertiary
   }
   val textColor = when (color) {
     is Grey -> {
@@ -115,7 +121,9 @@ fun HighlightLabel(labelText: String, size: HighLightSize, color: HighlightColor
         DARK -> highLightColors.textColorForGreyDark
       }
     }
-
+    is TranslucentTertiary, is TranslucentSecondary -> {
+      highLightColors.textColorForTranslucent
+    }
     else -> highLightColors.defaultTextColor
   }
   Surface(
@@ -222,6 +230,16 @@ object HighlightLabelDefaults {
     data class Pink(override val shade: HighlightShade) : HighlightColor()
 
     data class Grey(override val shade: HighlightShade) : HighlightColor()
+
+    data object TranslucentTertiary : HighlightColor() {
+      override val shade: HighlightShade
+        get() = MEDIUM
+    }
+
+    data object TranslucentSecondary : HighlightColor() {
+      override val shade: HighlightShade
+        get() = MEDIUM
+    }
   }
 }
 
@@ -257,6 +275,9 @@ private data class HighLightColors(
   val textColorForGreyLight: Color,
   val textColorForGreyMedium: Color,
   val textColorForGreyDark: Color,
+  val translucentTertiary: Color,
+  val translucentSecondary: Color,
+  val textColorForTranslucent: Color,
 )
 
 private val highLightColors: HighLightColors
@@ -295,6 +316,9 @@ private val highLightColors: HighLightColors
         textColorForGreyLight = fromToken(TextPrimary),
         textColorForGreyMedium = fromToken(TextPrimary),
         textColorForGreyDark = fromToken(TextNegative),
+        translucentTertiary = fromToken(ColorSchemeKeyTokens.FillTertiaryTransparent),
+        translucentSecondary = fromToken(ColorSchemeKeyTokens.FillSecondaryTransparent),
+        textColorForTranslucent = fromToken(ColorSchemeKeyTokens.TextWhite),
       )
     }
   }
