@@ -1,4 +1,4 @@
-package com.hedvig.android.core.ui.appbar.m3
+package com.hedvig.android.feature.home.home.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -7,28 +7,26 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.hedvig.colored.hedvig.Chat
-import com.hedvig.android.core.icons.hedvig.colored.hedvig.ColoredCircleWithCampaign
-import com.hedvig.android.core.icons.hedvig.colored.hedvig.FirstVet
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.icon.Chat
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.colored.ColoredCampaign
+import com.hedvig.android.design.system.hedvig.icon.colored.ColoredFirstVet
 import hedvig.resources.R
 
 @Composable
 fun ToolbarChatIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
   Icon(
-    imageVector = Icons.Hedvig.Chat,
+    imageVector = HedvigIcons.Chat,
     contentDescription = stringResource(R.string.DASHBOARD_OPEN_CHAT),
     tint = com.hedvig.android.design.system.hedvig.HedvigTheme.colorScheme.signalGreyElement,
     modifier = modifier
@@ -42,7 +40,7 @@ fun ToolbarChatIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
 @Composable
 fun ToolbarFirstVetIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
   Image(
-    imageVector = Icons.Hedvig.FirstVet,
+    imageVector = HedvigIcons.ColoredFirstVet,
     contentDescription = stringResource(R.string.HC_QUICK_ACTIONS_FIRSTVET_TITLE),
     modifier = modifier
       .size(40.dp)
@@ -55,7 +53,7 @@ fun ToolbarFirstVetIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
 @Composable
 fun ToolbarCrossSellsIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
   Image(
-    imageVector = Icons.Hedvig.ColoredCircleWithCampaign,
+    imageVector = HedvigIcons.ColoredCampaign,
     contentDescription = stringResource(R.string.insurance_tab_cross_sells_title),
     modifier = modifier
       .size(40.dp)
@@ -69,7 +67,7 @@ fun ToolbarCrossSellsIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
 @Composable
 private fun PreviewToolbarChatIcon() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       Row {
         ToolbarCrossSellsIcon({})
         Spacer(modifier = Modifier.width(8.dp))
