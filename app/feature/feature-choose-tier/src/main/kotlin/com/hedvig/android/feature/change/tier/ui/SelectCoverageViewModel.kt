@@ -11,29 +11,31 @@ internal class SelectCoverageViewModel(
   insuranceId: String?,
   getTiersAndDeductiblesUseCase: GetTiersAndDeductiblesUseCase,
 ) : MoleculeViewModel<SelectCoverageEvent, SelectCoverageUiState>(
-  initialState = SelectCoverageUiState.Loading,
-  presenter = SelectCoveragePresenter(
-    insuranceId = insuranceId,
-    getTiersAndDeductiblesUseCase = getTiersAndDeductiblesUseCase,
-  ),
-)
+    initialState = SelectCoverageUiState.Loading,
+    presenter = SelectCoveragePresenter(
+      insuranceId = insuranceId,
+      getTiersAndDeductiblesUseCase = getTiersAndDeductiblesUseCase,
+    ),
+  )
 
 private class SelectCoveragePresenter(
   private val insuranceId: String?,
   private val getTiersAndDeductiblesUseCase: GetTiersAndDeductiblesUseCase,
 ) : MoleculePresenter<SelectCoverageEvent, SelectCoverageUiState> {
   @Composable
-  override fun MoleculePresenterScope<SelectCoverageEvent>.present(lastState: SelectCoverageUiState)
-    : SelectCoverageUiState {
+  override fun MoleculePresenterScope<SelectCoverageEvent>.present(
+    lastState: SelectCoverageUiState,
+  ): SelectCoverageUiState {
     TODO("Not yet implemented")
   }
 }
 
-internal sealed interface SelectCoverageEvent {
-}
+internal sealed interface SelectCoverageEvent
 
 internal sealed interface SelectCoverageUiState {
   data object Loading : SelectCoverageUiState
+
   data class Success(val data: CustomizeContractData) : SelectCoverageUiState
+
   data object Failure : SelectCoverageUiState
 }

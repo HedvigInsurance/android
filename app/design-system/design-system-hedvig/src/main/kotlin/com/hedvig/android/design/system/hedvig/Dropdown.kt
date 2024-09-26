@@ -43,9 +43,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownStyle
-import com.hedvig.android.design.system.hedvig.DropdownDefaults.LockedState
-import com.hedvig.android.design.system.hedvig.DropdownDefaults.LockedState.Locked
-import com.hedvig.android.design.system.hedvig.DropdownDefaults.LockedState.NotLocked
 import com.hedvig.android.design.system.hedvig.DropdownItem.DropdownItemWithIcon
 import com.hedvig.android.design.system.hedvig.DropdownItem.SimpleDropdownItem
 import com.hedvig.android.design.system.hedvig.icon.Checkmark
@@ -84,9 +81,7 @@ fun DropdownWithDialog(
   hasError: Boolean = false,
   errorText: String? = null,
   containerColor: Color? = null,
-  lockedState: LockedState = NotLocked,
   dialogProperties: DialogProperties = DialogDefaults.defaultProperties,
-  onLockedClick: (() -> Unit)? = null,
   dialogContent: (@Composable (onDismissRequest: () -> Unit) -> Unit)? = null,
 ) {
   var isDialogVisible by rememberSaveable { mutableStateOf(false) }
@@ -141,8 +136,6 @@ fun DropdownWithDialog(
     errorText = errorText,
     isDialogOpen = isDialogVisible,
     containerColor = containerColor,
-    lockedState = lockedState,
-    onLockedClick = onLockedClick,
   )
 }
 
@@ -157,15 +150,9 @@ private fun DropdownSelector(
   errorText: String?,
   style: DropdownStyle,
   onClick: () -> Unit,
-  lockedState: LockedState,
   modifier: Modifier = Modifier,
   containerColor: Color? = null,
-  onLockedClick: (() -> Unit)? = null,
 ) {
-  val conditionedOnClick = when (lockedState) {
-    is Locked -> onLockedClick ?: {}
-    NotLocked -> onClick
-  }
   Column(
     modifier = modifier,
   ) {
@@ -180,7 +167,7 @@ private fun DropdownSelector(
             bounded = true,
             radius = 1000.dp,
           ),
-          onClick = conditionedOnClick,
+          onClick = onClick,
         ),
     ) {
       HorizontalItemsWithMaximumSpaceTaken(
@@ -236,7 +223,7 @@ private fun DropdownSelector(
               Spacer(Modifier.width(4.dp))
             }
             IconButton(
-              onClick = conditionedOnClick,
+              onClick = onClick,
               enabled = isEnabled,
               modifier = Modifier
                 .size(DropdownTokens.ChevronSize)
@@ -244,9 +231,9 @@ private fun DropdownSelector(
                   rotationZ = fullRotation
                 },
             ) {
-              val icon = when (lockedState) {
-                is Locked -> HedvigIcons.Lock
-                NotLocked -> HedvigIcons.ChevronDown
+              val icon = when (isEnabled) {
+                false -> HedvigIcons.Lock
+                true -> HedvigIcons.ChevronDown
               }
               Icon(
                 icon,
@@ -297,6 +284,7 @@ fun IconStyleStartSlot(text: String, textStyle: TextStyle, textColor: Color, ico
         Modifier.size(DropdownTokens.IconSize),
         tint = Color.Unspecified,
       )
+
       is IconResource.Vector -> Icon(
         icon.imageVector,
         "",
@@ -380,6 +368,7 @@ private fun DropdownOption(
                 text = item.text,
                 textStyle = size.textStyle,
               )
+
             is DropdownStyle.Icon -> IconStyleStartSlot(
               textColor = textColor,
               text = item.text,
@@ -412,12 +401,6 @@ private fun DropdownOption(
 }
 
 object DropdownDefaults {
-  sealed class LockedState {
-    data object NotLocked : LockedState()
-
-    data object Locked : LockedState()
-  }
-
   sealed class DropdownSize {
     protected abstract val defaultPadding: PaddingValues
     protected abstract val labelContentPadding: PaddingValues

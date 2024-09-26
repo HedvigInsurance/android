@@ -35,10 +35,8 @@ import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
 import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownSize.Small
 import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownStyle.Label
-import com.hedvig.android.design.system.hedvig.DropdownDefaults.LockedState
 import com.hedvig.android.design.system.hedvig.DropdownItem.SimpleDropdownItem
 import com.hedvig.android.design.system.hedvig.DropdownWithDialog
-import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -69,15 +67,13 @@ fun SelectTierScreen(
   data: CustomizeContractData,
   newDisplayPremium: String,
   isCurrentChosen: Boolean,
-  tierLockedState: LockedState,
-  deductibleLockedState: LockedState,
+  isTierChoiceEnabled: Boolean,
   navigateUp: () -> Unit,
   onCompareClick: () -> Unit,
   onContinueClick: () -> Unit,
 ) {
   var showTierDialog by remember { mutableStateOf(false) }
   var showDeductibleDialog by remember { mutableStateOf(false) }
-  var showLockedTierInfo by remember { mutableStateOf(false) }
   HedvigScaffold(
     navigateUp = navigateUp,
     topAppBarText = "",
@@ -94,20 +90,6 @@ fun SelectTierScreen(
       )
     },
   ) {
-    HedvigBottomSheet( // todo: check here in the app, not preview - what's up with bottom insets?
-      isVisible = showLockedTierInfo,
-      bottomButtonText = stringResource(R.string.general_close_button),
-      onVisibleChange = {
-        showLockedTierInfo = it
-      },
-    ) {
-      HedvigText(text = stringResource(R.string.TIER_FLOW_LOCKED_INFO_TITLE))
-      HedvigText(
-        text = stringResource(R.string.TIER_FLOW_LOCKED_INFO_DESCRIPTION),
-        color = HedvigTheme.colorScheme.textSecondary,
-      )
-      Spacer(Modifier.height(32.dp))
-    }
     Spacer(modifier = Modifier.height(8.dp))
     HedvigText(
       text = stringResource(R.string.TIER_FLOW_TITLE),
@@ -137,12 +119,8 @@ fun SelectTierScreen(
       },
       chosenDeductible = chosenDeductibleIndex,
       newDisplayPremium = newDisplayPremium,
-      tierLockedState = tierLockedState,
-      deductibleLockedState = deductibleLockedState,
       isCurrentChosen = isCurrentChosen,
-      onLockedTierClick = {
-        showLockedTierInfo = true
-      },
+      isTierChoiceEnabled = isTierChoiceEnabled,
     )
     Spacer(Modifier.height(4.dp))
     HedvigTextButton(
@@ -177,11 +155,9 @@ private fun CustomizationCard(
   chosenTierIndex: Int,
   chosenDeductible: Int,
   newDisplayPremium: String,
-  tierLockedState: LockedState,
-  deductibleLockedState: LockedState,
+  isTierChoiceEnabled: Boolean,
   onChooseDeductibleClick: (index: Int) -> Unit,
   onChooseTierClick: (index: Int) -> Unit,
-  onLockedTierClick: () -> Unit,
   isCurrentChosen: Boolean,
   modifier: Modifier = Modifier,
 ) {
@@ -204,9 +180,8 @@ private fun CustomizationCard(
         }
       }
       DropdownWithDialog(
-        onLockedClick = onLockedTierClick,
         dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
-        lockedState = tierLockedState,
+        isEnabled = isTierChoiceEnabled,
         style = Label(
           label = stringResource(R.string.TIER_FLOW_COVERAGE_LABEL),
           items = tierSimpleItems,
@@ -246,6 +221,14 @@ private fun CustomizationCard(
           data = listOfOptions,
         )
       }
+      if (!isTierChoiceEnabled) {
+        HedvigText(
+          stringResource(R.string.TIER_FLOW_LOCKED_INFO_DESCRIPTION),
+          color = HedvigTheme.colorScheme.textSecondary,
+          style = HedvigTheme.typography.label,
+          modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp, top = 4.dp),
+        )
+      }
       if (data.deductibleData.isNotEmpty()) {
         Spacer(Modifier.height(4.dp))
         val deductibleSimpleItems = buildList {
@@ -255,7 +238,6 @@ private fun CustomizationCard(
         }
         DropdownWithDialog(
           dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
-          lockedState = deductibleLockedState,
           style = Label(
             label = stringResource(R.string.TIER_FLOW_DEDUCTIBLE_LABEL),
             items = deductibleSimpleItems,
@@ -447,10 +429,8 @@ private fun CustomizationCardPreview() {
       onChooseTierClick = {},
       onChooseDeductibleClick = {},
       newDisplayPremium = "249 kr/mo",
-      tierLockedState = LockedState.Locked,
-      deductibleLockedState = LockedState.NotLocked,
       isCurrentChosen = false,
-      onLockedTierClick = {},
+      isTierChoiceEnabled = true,
     )
   }
 }
@@ -464,12 +444,11 @@ private fun SelectTierScreenPreview() {
       chosenTierIndex = 2,
       chosenDeductibleIndex = 1,
       newDisplayPremium = "249 kr/mo",
-      tierLockedState = LockedState.Locked,
-      deductibleLockedState = LockedState.NotLocked,
       isCurrentChosen = false,
       onCompareClick = {},
       onContinueClick = {},
       navigateUp = {},
+      isTierChoiceEnabled = false,
     )
   }
 }
