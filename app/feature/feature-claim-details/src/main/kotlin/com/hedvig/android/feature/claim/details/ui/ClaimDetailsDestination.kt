@@ -325,7 +325,7 @@ private fun BeforeGridContent(uiState: ClaimDetailUiState.Content, downloadFromU
     Spacer(Modifier.height(8.dp))
     HedvigCard {
       Column {
-        ClaimStatusCardContent(uiState = uiState.claimStatusCardUiState)
+        ClaimStatusCardContent(uiState = uiState.claimStatusCardUiState, withInfoIcon = false, Modifier.padding(16.dp))
         val claimIsInUndeterminedState = uiState.claimStatus == CLOSED && uiState.claimOutcome == UNKNOWN
         if (!claimIsInUndeterminedState) {
           HorizontalDivider()
@@ -588,8 +588,8 @@ private fun PreviewClaimDetailScreen() {
               insuranceDisplayName = null, // "Home Insurance Homeowner",
               submittedDate = Instant.parse("2024-05-01T00:00:00Z"),
               pillTypes = listOf(
-                ClaimPillType.Open,
-                ClaimPillType.Reopened,
+                ClaimPillType.Claim,
+                ClaimPillType.Closed.GenericClosed,
                 ClaimPillType.Closed.Paid,
                 ClaimPillType.PaymentAmount(UiMoney(399.0, UiCurrencyCode.SEK)),
                 ClaimPillType.Closed.NotCompensated,
@@ -598,15 +598,15 @@ private fun PreviewClaimDetailScreen() {
               claimProgressItemsUiState = listOf(
                 ClaimProgressSegment(
                   ClaimProgressSegment.SegmentText.Submitted,
-                  ClaimProgressSegment.SegmentType.PAID,
+                  ClaimProgressSegment.SegmentType.ACTIVE,
                 ),
                 ClaimProgressSegment(
                   ClaimProgressSegment.SegmentText.BeingHandled,
-                  ClaimProgressSegment.SegmentType.PAID,
+                  ClaimProgressSegment.SegmentType.ACTIVE,
                 ),
                 ClaimProgressSegment(
                   ClaimProgressSegment.SegmentText.Closed,
-                  ClaimProgressSegment.SegmentType.PAID,
+                  ClaimProgressSegment.SegmentType.ACTIVE,
                 ),
               ),
             ),

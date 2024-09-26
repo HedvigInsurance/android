@@ -621,11 +621,11 @@ private fun PreviewHomeScreen(
             nonEmptyListOf(
               ClaimStatusCardUiState(
                 id = "id",
-                pillTypes = listOf(ClaimPillType.Open, ClaimPillType.Closed.NotCompensated),
+                pillTypes = listOf(ClaimPillType.Claim, ClaimPillType.Closed.NotCompensated),
                 claimProgressItemsUiState = listOf(
                   ClaimProgressSegment(
                     ClaimProgressSegment.SegmentText.Closed,
-                    ClaimProgressSegment.SegmentType.PAID,
+                    ClaimProgressSegment.SegmentType.INACTIVE,
                   ),
                 ),
                 claimType = "Broken item",
