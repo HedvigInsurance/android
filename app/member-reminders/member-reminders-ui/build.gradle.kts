@@ -9,11 +9,11 @@ dependencies {
   api(projects.memberRemindersPublic)
 
   implementation(libs.accompanist.permissions)
+  implementation(libs.androidx.compose.foundation)
   implementation(libs.kotlinx.datetime)
   implementation(projects.composePagerIndicator)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreResources)
-  implementation(projects.notificationPermission)
-  implementation(libs.androidx.compose.foundation)
   implementation(projects.designSystemHedvig)
+  implementation(projects.notificationPermission)
 }

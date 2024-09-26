@@ -44,10 +44,62 @@ import eu.wewox.modalsheet.ModalSheet
 fun HedvigBottomSheet(
   isVisible: Boolean,
   onVisibleChange: (Boolean) -> Unit,
+  onSystemBack: (() -> Unit)? = { onVisibleChange(false) },
+  sheetPadding: PaddingValues? = null,
+  contentPadding: PaddingValues? = null,
+  cancelable: Boolean = true,
+  content: @Composable ColumnScope.() -> Unit,
+) {
+  InternalHedvigBottomSheet(
+    isVisible = isVisible,
+    onVisibleChange = onVisibleChange,
+    onSystemBack = onSystemBack,
+    sheetPadding = sheetPadding,
+    contentPadding = contentPadding,
+    cancelable = cancelable,
+    content = content,
+  )
+}
+
+@OptIn(ExperimentalSheetApi::class)
+@Composable
+fun HedvigBottomSheet(
+  isVisible: Boolean,
+  onVisibleChange: (Boolean) -> Unit,
   bottomButtonText: String,
   onSystemBack: (() -> Unit)? = { onVisibleChange(false) },
   onBottomButtonClick: () -> Unit = { onVisibleChange(false) },
   sheetPadding: PaddingValues? = null,
+  cancelable: Boolean = true,
+  content: @Composable ColumnScope.() -> Unit,
+) {
+  InternalHedvigBottomSheet(
+    isVisible = isVisible,
+    onVisibleChange = onVisibleChange,
+    onSystemBack = onSystemBack,
+    sheetPadding = sheetPadding,
+    cancelable = cancelable,
+  ) {
+    content()
+    HedvigButton(
+      onClick = onBottomButtonClick,
+      text = bottomButtonText,
+      enabled = true,
+      buttonStyle = Ghost,
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(modifier = Modifier.height(32.dp))
+  }
+}
+
+@OptIn(ExperimentalSheetApi::class)
+@Composable
+private fun InternalHedvigBottomSheet(
+  isVisible: Boolean,
+  onVisibleChange: (Boolean) -> Unit,
+  onSystemBack: (() -> Unit)? = { onVisibleChange(false) },
+  sheetPadding: PaddingValues? = null,
+  contentPadding: PaddingValues? = null,
   cancelable: Boolean = true,
   content: @Composable ColumnScope.() -> Unit,
 ) {
@@ -73,24 +125,25 @@ fun HedvigBottomSheet(
   ) {
     Box {
       Column(
-        modifier = Modifier.padding(horizontal = bottomSheetShape.contentHorizontalPadding)
+        modifier = Modifier
+          .then(
+            if (contentPadding != null) {
+              Modifier.padding(contentPadding)
+            } else {
+              Modifier.padding(horizontal = bottomSheetShape.contentHorizontalPadding)
+            },
+          )
           .verticalScroll(scrollState),
       ) {
         Spacer(modifier = Modifier.height(8.dp))
         DragHandle(modifier = Modifier.align(Alignment.CenterHorizontally))
         Spacer(modifier = Modifier.height(20.dp))
         content()
-        HedvigButton(
-          onClick = onBottomButtonClick,
-          text = bottomButtonText,
-          enabled = true,
-          buttonStyle = Ghost,
-          modifier = Modifier.fillMaxWidth(),
-        )
-        Spacer(modifier = Modifier.height(32.dp))
       }
       Crossfade(
-        modifier = Modifier.align(Alignment.BottomEnd).padding(horizontal = 32.dp, vertical = 16.dp),
+        modifier = Modifier
+          .align(Alignment.BottomEnd)
+          .padding(horizontal = 32.dp, vertical = 16.dp),
         targetState = scrollDown,
       ) { animatedScrollDown ->
         if (scrollState.canScrollForward && !animatedScrollDown) {
@@ -112,7 +165,8 @@ private fun DragHandle(modifier: Modifier = Modifier) {
       .background(
         shape = HedvigTheme.shapes.cornerSmall,
         color = bottomSheetColors.chipColor,
-      ).clip(HedvigTheme.shapes.cornerSmall),
+      )
+      .clip(HedvigTheme.shapes.cornerSmall),
   ) {}
 }
 
@@ -121,7 +175,9 @@ private fun HintArrowDown(onClick: () -> Unit, modifier: Modifier = Modifier) {
   Row(modifier = modifier) {
     IconButton(
       onClick = onClick,
-      modifier = Modifier.clip(CircleShape).background(bottomSheetColors.arrowBackgroundColor),
+      modifier = Modifier
+        .clip(CircleShape)
+        .background(bottomSheetColors.arrowBackgroundColor),
     ) {
       Icon(
         HedvigIcons.ArrowDown,

@@ -8,6 +8,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.hedvig.android.data.contract.android.toDrawableRes
 import com.hedvig.android.data.contract.isTrialContract
+import com.hedvig.android.design.system.hedvig.ChipType.GENERAL
+import com.hedvig.android.design.system.hedvig.ChipType.TIER
+import com.hedvig.android.design.system.hedvig.ChipUiData
 import com.hedvig.android.feature.insurances.data.InsuranceContract
 import hedvig.resources.R
 import kotlinx.datetime.Clock
@@ -15,11 +18,14 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
 
 @Composable
-internal fun InsuranceContract.createChips(): List<String> {
+internal fun InsuranceContract.createChips(): List<ChipUiData> {
   val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
   return listOfNotNull(
+    tierName?.let {
+      ChipUiData(chipText = it, chipType = TIER)
+    },
     terminationDate?.let { terminationDate ->
-      if (terminationDate == today) {
+      val text = if (terminationDate == today) {
         if (currentInsuranceAgreement.productVariant.contractType.isTrialContract()) {
           stringResource(R.string.CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE_TOMORROW)
         } else {
@@ -34,15 +40,19 @@ internal fun InsuranceContract.createChips(): List<String> {
           stringResource(R.string.CONTRACT_STATUS_TO_BE_TERMINATED, terminationDate)
         }
       }
+      ChipUiData(text, GENERAL)
     },
     upcomingInsuranceAgreement?.activeFrom?.let { activeFromDate ->
-      stringResource(R.string.DASHBOARD_INSURANCE_STATUS_ACTIVE_UPDATE_DATE, activeFromDate)
+      val text = stringResource(R.string.DASHBOARD_INSURANCE_STATUS_ACTIVE_UPDATE_DATE, activeFromDate)
+      ChipUiData(text, GENERAL)
     },
     inceptionDate.let { inceptionDate ->
       if (inceptionDate > today) {
-        stringResource(R.string.CONTRACT_STATUS_ACTIVE_IN_FUTURE, inceptionDate)
+        val text = stringResource(R.string.CONTRACT_STATUS_ACTIVE_IN_FUTURE, inceptionDate)
+        ChipUiData(text, GENERAL)
       } else if (terminationDate == null) {
-        stringResource(id = R.string.DASHBOARD_INSURANCE_STATUS_ACTIVE)
+        val text = stringResource(id = R.string.DASHBOARD_INSURANCE_STATUS_ACTIVE)
+        ChipUiData(text, GENERAL)
       } else {
         null
       }

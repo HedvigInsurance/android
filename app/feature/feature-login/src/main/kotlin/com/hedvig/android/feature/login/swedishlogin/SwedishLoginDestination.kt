@@ -16,9 +16,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
@@ -41,18 +38,25 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.common.BitMatrix
 import com.google.zxing.qrcode.QRCodeWriter
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
-import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
-import com.hedvig.android.core.ui.dialog.HedvigAlertDialog
-import com.hedvig.android.core.ui.scaffold.HedvigScaffold
+import com.hedvig.android.design.system.hedvig.ButtonDefaults
+import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigErrorSection
+import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigScaffold
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import hedvig.resources.R
@@ -98,39 +102,49 @@ private fun SwedishLoginScreen(
     var showStartDemoDialog by remember { mutableStateOf(false) }
     if (showStartDemoDialog) {
       HedvigAlertDialog(
-        title = null,
-        text = "${stringResource(R.string.DEMO_MODE_START)}?",
+        title = "${stringResource(R.string.DEMO_MODE_START)}?",
+        text = null,
         onDismissRequest = { showStartDemoDialog = false },
         onConfirmClick = enterDemoMode,
       )
     }
     val demoModeModifier = remember(uiState) {
-      Modifier.testTag("qr_code").pointerInput(Unit) {
-        awaitEachGesture {
-          val down = awaitFirstDown(requireUnconsumed = false)
-          val longPress: PointerInputChange? = awaitLongPressOrCancellation(down.id)
-          if (longPress != null) {
-            showStartDemoDialog = true
+      Modifier
+        .testTag("qr_code")
+        .pointerInput(Unit) {
+          awaitEachGesture {
+            val down = awaitFirstDown(requireUnconsumed = false)
+            val longPress: PointerInputChange? = awaitLongPressOrCancellation(down.id)
+            if (longPress != null) {
+              showStartDemoDialog = true
+            }
           }
         }
-      }
     }
     when (uiState) {
       BankIdUiState.StartLoginAttemptFailed -> {
         Box(
           contentAlignment = Alignment.Center,
-          modifier = Modifier.weight(1f).fillMaxWidth(),
+          modifier = Modifier
+            .weight(1f)
+            .fillMaxWidth(),
         ) {
           Column {
-            HedvigErrorSection(onButtonClick = retry, subTitle = null, withDefaultVerticalSpacing = false)
-            Box(Modifier.size(48.dp).then(demoModeModifier))
+            HedvigErrorSection(onButtonClick = retry, subTitle = null)
+            Box(
+              Modifier
+                .size(48.dp)
+                .then(demoModeModifier),
+            )
           }
         }
       }
 
       is BankIdUiState.BankIdError -> {
         Box(
-          Modifier.weight(1f).fillMaxWidth(),
+          Modifier
+            .weight(1f)
+            .fillMaxWidth(),
           Alignment.Center,
         ) {
           Column {
@@ -138,15 +152,22 @@ private fun SwedishLoginScreen(
               title = stringResource(R.string.general_error),
               subTitle = uiState.message,
               onButtonClick = retry,
-              withDefaultVerticalSpacing = false,
             )
-            Box(Modifier.size(48.dp).then(demoModeModifier))
+            Box(
+              Modifier
+                .size(48.dp)
+                .then(demoModeModifier),
+            )
           }
         }
       }
 
       is BankIdUiState.Loading -> {
-        HedvigFullScreenCenterAlignedProgress(Modifier.weight(1f).fillMaxWidth())
+        HedvigFullScreenCenterAlignedProgress(
+          Modifier
+            .weight(1f)
+            .fillMaxWidth(),
+        )
       }
 
       is BankIdUiState.HandlingBankId -> {
@@ -165,35 +186,45 @@ private fun SwedishLoginScreen(
         ) {
           QRCode(
             autoStartToken = uiState.bankIdLiveQrCodeData,
-            modifier = Modifier.size(180.dp).then(demoModeModifier),
+            modifier = Modifier
+              .size(180.dp)
+              .then(demoModeModifier),
           )
           Spacer(Modifier.height(32.dp))
-          Text(
+          HedvigText(
             text = stringResource(R.string.AUTHENTICATION_BANKID_LOGIN_TITLE),
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth(),
           )
-          Text(
+          HedvigText(
             text = stringResource(R.string.AUTHENTICATION_BANKID_LOGIN_LABEL),
             textAlign = TextAlign.Center,
-            style = LocalTextStyle.current.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
+            color = HedvigTheme.colorScheme.textSecondary,
             modifier = Modifier.fillMaxWidth(),
           )
         }
         Spacer(Modifier.height(16.dp))
         Spacer(Modifier.weight(1f))
         if (bankIdState.canOpenBankId) {
-          HedvigContainedButton(
+          HedvigButton(
             text = stringResource(R.string.AUTHENTICATION_BANKID_OPEN_BUTTON),
             onClick = bankIdState::tryOpenBankId,
-            modifier = Modifier.padding(horizontal = 16.dp),
+            enabled = true,
+            buttonStyle = ButtonDefaults.ButtonStyle.Primary,
+            buttonSize = ButtonDefaults.ButtonSize.Large,
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(horizontal = 16.dp),
           )
           Spacer(Modifier.height(8.dp))
         }
         HedvigTextButton(
           text = stringResource(R.string.bankid_missing_login_email_button),
           onClick = loginWithEmail,
-          modifier = Modifier.padding(horizontal = 16.dp),
+          buttonSize = ButtonDefaults.ButtonSize.Large,
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
         )
         Spacer(Modifier.height(16.dp))
       }
@@ -282,3 +313,32 @@ private class BankIdStateImpl(
   @SuppressLint("QueryPermissionsNeeded")
   private fun Context.canOpenUri(uri: Uri) = Intent(Intent.ACTION_VIEW, uri).resolveActivity(packageManager) != null
 }
+
+@HedvigPreview
+@Composable
+private fun Preview(
+  @PreviewParameter(BankIdUiStateProvider::class) uiState: BankIdUiState,
+) {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      SwedishLoginScreen(
+        uiState,
+        {},
+        {},
+        {},
+        {},
+        {},
+      )
+    }
+  }
+}
+
+private class BankIdUiStateProvider : CollectionPreviewParameterProvider<BankIdUiState>(
+  listOf(
+    BankIdUiState.HandlingBankId("", BankIdUiState.HandlingBankId.AutoStartToken(""), null, false, false),
+    BankIdUiState.BankIdError("BankIdError"),
+    BankIdUiState.StartLoginAttemptFailed,
+    BankIdUiState.Loading,
+    BankIdUiState.LoggedIn,
+  ),
+)
