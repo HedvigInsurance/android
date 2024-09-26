@@ -14,14 +14,13 @@ import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighLightS
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.Amber
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.Blue
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.Frosted
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.Green
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.Grey
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.Pink
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.Purple
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.Red
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.Teal
-import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.TranslucentSecondary
-import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.TranslucentTertiary
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.Yellow
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.DARK
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.LIGHT
@@ -109,9 +108,11 @@ fun HighlightLabel(labelText: String, size: HighLightSize, color: HighlightColor
       }
     }
 
-    is TranslucentSecondary -> highLightColors.translucentSecondary
-
-    is TranslucentTertiary -> highLightColors.translucentTertiary
+    is Frosted -> when (color.shade) {
+      LIGHT -> highLightColors.frostedLight
+      MEDIUM -> highLightColors.frostedMedium
+      DARK -> highLightColors.frostedDark
+    }
   }
   val textColor = when (color) {
     is Grey -> {
@@ -121,9 +122,11 @@ fun HighlightLabel(labelText: String, size: HighLightSize, color: HighlightColor
         DARK -> highLightColors.textColorForGreyDark
       }
     }
-    is TranslucentTertiary, is TranslucentSecondary -> {
-      highLightColors.textColorForTranslucent
+
+    is Frosted -> {
+      highLightColors.textColorForFrosted
     }
+
     else -> highLightColors.defaultTextColor
   }
   Surface(
@@ -231,15 +234,7 @@ object HighlightLabelDefaults {
 
     data class Grey(override val shade: HighlightShade) : HighlightColor()
 
-    data object TranslucentTertiary : HighlightColor() {
-      override val shade: HighlightShade
-        get() = MEDIUM
-    }
-
-    data object TranslucentSecondary : HighlightColor() {
-      override val shade: HighlightShade
-        get() = MEDIUM
-    }
+    data class Frosted(override val shade: HighlightShade) : HighlightColor()
   }
 }
 
@@ -275,9 +270,10 @@ private data class HighLightColors(
   val textColorForGreyLight: Color,
   val textColorForGreyMedium: Color,
   val textColorForGreyDark: Color,
-  val translucentTertiary: Color,
-  val translucentSecondary: Color,
-  val textColorForTranslucent: Color,
+  val textColorForFrosted: Color,
+  val frostedLight: Color,
+  val frostedMedium: Color,
+  val frostedDark: Color,
 )
 
 private val highLightColors: HighLightColors
@@ -285,40 +281,41 @@ private val highLightColors: HighLightColors
   get() = with(HedvigTheme.colorScheme) {
     remember(this) {
       HighLightColors(
-        blueLight = fromToken(ColorSchemeKeyTokens.HighlightBlueFill1),
-        blueMedium = fromToken(ColorSchemeKeyTokens.HighlightBlueFill2),
-        blueDark = fromToken(ColorSchemeKeyTokens.HighlightBlueFill3),
-        tealLight = fromToken(ColorSchemeKeyTokens.HighlightTealFill1),
-        tealMedium = fromToken(ColorSchemeKeyTokens.HighlightTealFill2),
-        tealDark = fromToken(ColorSchemeKeyTokens.HighlightTealFill3),
-        purpleLight = fromToken(ColorSchemeKeyTokens.HighlightPurpleFill1),
-        purpleMedium = fromToken(ColorSchemeKeyTokens.HighlightPurpleFill2),
-        purpleDark = fromToken(ColorSchemeKeyTokens.HighlightPurpleFill3),
-        greenLight = fromToken(ColorSchemeKeyTokens.HighlightGreenFill1),
-        greenMedium = fromToken(ColorSchemeKeyTokens.HighlightGreenFill2),
-        greenDark = fromToken(ColorSchemeKeyTokens.HighlightGreenFill3),
-        yellowLight = fromToken(ColorSchemeKeyTokens.HighlightYellowFill1),
-        yellowMedium = fromToken(ColorSchemeKeyTokens.HighlightYellowFill2),
-        yellowDark = fromToken(ColorSchemeKeyTokens.HighlightYellowFill3),
-        amberLight = fromToken(ColorSchemeKeyTokens.HighlightAmberFill1),
-        amberMedium = fromToken(ColorSchemeKeyTokens.HighlightAmberFill2),
-        amberDark = fromToken(ColorSchemeKeyTokens.HighlightAmberFill3),
-        redLight = fromToken(ColorSchemeKeyTokens.HighlightRedFill1),
-        redMedium = fromToken(ColorSchemeKeyTokens.HighlightRedFill2),
-        redDark = fromToken(ColorSchemeKeyTokens.HighlightRedFill3),
-        pinkLight = fromToken(ColorSchemeKeyTokens.HighlightPinkFill1),
-        pinkMedium = fromToken(ColorSchemeKeyTokens.HighlightPinkFill1),
-        pinkDark = fromToken(ColorSchemeKeyTokens.HighlightPinkFill1),
-        greyLight = fromToken(SurfacePrimary),
-        greyMedium = fromToken(SurfaceSecondary),
-        greyDark = fromToken(BackgroundNegative),
-        defaultTextColor = fromToken(ColorSchemeKeyTokens.TextBlack),
-        textColorForGreyLight = fromToken(TextPrimary),
-        textColorForGreyMedium = fromToken(TextPrimary),
-        textColorForGreyDark = fromToken(TextNegative),
-        translucentTertiary = fromToken(ColorSchemeKeyTokens.FillTertiaryTransparent),
-        translucentSecondary = fromToken(ColorSchemeKeyTokens.FillSecondaryTransparent),
-        textColorForTranslucent = fromToken(ColorSchemeKeyTokens.TextWhite),
+          blueLight = fromToken(ColorSchemeKeyTokens.HighlightBlueFill1),
+          blueMedium = fromToken(ColorSchemeKeyTokens.HighlightBlueFill2),
+          blueDark = fromToken(ColorSchemeKeyTokens.HighlightBlueFill3),
+          tealLight = fromToken(ColorSchemeKeyTokens.HighlightTealFill1),
+          tealMedium = fromToken(ColorSchemeKeyTokens.HighlightTealFill2),
+          tealDark = fromToken(ColorSchemeKeyTokens.HighlightTealFill3),
+          purpleLight = fromToken(ColorSchemeKeyTokens.HighlightPurpleFill1),
+          purpleMedium = fromToken(ColorSchemeKeyTokens.HighlightPurpleFill2),
+          purpleDark = fromToken(ColorSchemeKeyTokens.HighlightPurpleFill3),
+          greenLight = fromToken(ColorSchemeKeyTokens.HighlightGreenFill1),
+          greenMedium = fromToken(ColorSchemeKeyTokens.HighlightGreenFill2),
+          greenDark = fromToken(ColorSchemeKeyTokens.HighlightGreenFill3),
+          yellowLight = fromToken(ColorSchemeKeyTokens.HighlightYellowFill1),
+          yellowMedium = fromToken(ColorSchemeKeyTokens.HighlightYellowFill2),
+          yellowDark = fromToken(ColorSchemeKeyTokens.HighlightYellowFill3),
+          amberLight = fromToken(ColorSchemeKeyTokens.HighlightAmberFill1),
+          amberMedium = fromToken(ColorSchemeKeyTokens.HighlightAmberFill2),
+          amberDark = fromToken(ColorSchemeKeyTokens.HighlightAmberFill3),
+          redLight = fromToken(ColorSchemeKeyTokens.HighlightRedFill1),
+          redMedium = fromToken(ColorSchemeKeyTokens.HighlightRedFill2),
+          redDark = fromToken(ColorSchemeKeyTokens.HighlightRedFill3),
+          pinkLight = fromToken(ColorSchemeKeyTokens.HighlightPinkFill1),
+          pinkMedium = fromToken(ColorSchemeKeyTokens.HighlightPinkFill1),
+          pinkDark = fromToken(ColorSchemeKeyTokens.HighlightPinkFill1),
+          greyLight = fromToken(SurfacePrimary),
+          greyMedium = fromToken(SurfaceSecondary),
+          greyDark = fromToken(BackgroundNegative),
+          defaultTextColor = fromToken(ColorSchemeKeyTokens.TextBlack),
+          textColorForGreyLight = fromToken(TextPrimary),
+          textColorForGreyMedium = fromToken(TextPrimary),
+          textColorForGreyDark = fromToken(TextNegative),
+          textColorForFrosted = fromToken(ColorSchemeKeyTokens.TextWhite),
+          frostedLight = fromToken(ColorSchemeKeyTokens.SurfaceSecondaryTransparent),
+          frostedMedium = fromToken(ColorSchemeKeyTokens.FillTertiaryTransparent),
+          frostedDark = fromToken(ColorSchemeKeyTokens.FillSecondaryTransparent),
       )
     }
   }

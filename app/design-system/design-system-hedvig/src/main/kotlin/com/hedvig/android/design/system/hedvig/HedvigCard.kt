@@ -30,8 +30,9 @@ import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterPr
 import com.hedvig.android.design.system.hedvig.ChipType.GENERAL
 import com.hedvig.android.design.system.hedvig.ChipType.TIER
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighLightSize.Small
-import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.TranslucentSecondary
-import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.TranslucentTertiary
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.Frosted
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.DARK
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.MEDIUM
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.HelipadOutline
 import com.hedvig.android.placeholder.PlaceholderHighlight
@@ -42,14 +43,14 @@ import com.hedvig.android.placeholder.shimmer
 fun HedvigCard(modifier: Modifier = Modifier, onClick: (() -> Unit)? = null, content: @Composable () -> Unit) {
   Surface(
     modifier = modifier
-      .clip(HedvigTheme.shapes.cornerLarge)
-      .then(
-        if (onClick != null) {
-          Modifier.clickable(onClick = onClick)
-        } else {
-          Modifier
-        },
-      ),
+        .clip(HedvigTheme.shapes.cornerLarge)
+        .then(
+            if (onClick != null) {
+                Modifier.clickable(onClick = onClick)
+            } else {
+                Modifier
+            },
+        ),
   ) {
     content()
   }
@@ -72,8 +73,8 @@ fun InsuranceCard(
       Image(
         painter = ColorPainter(Color.Black.copy(alpha = 0.3f)),
         modifier = Modifier
-          .matchParentSize()
-          .placeholder(visible = true, highlight = PlaceholderHighlight.shimmer()),
+            .matchParentSize()
+            .placeholder(visible = true, highlight = PlaceholderHighlight.shimmer()),
         contentDescription = null,
       )
     } else {
@@ -138,8 +139,8 @@ private fun Chip(chip: ChipUiData, modifier: Modifier = Modifier) {
       size = Small,
       labelText = chip.chipText,
       color = when (chip.chipType) {
-        GENERAL -> TranslucentTertiary
-        TIER -> TranslucentSecondary
+        GENERAL -> Frosted(MEDIUM)
+        TIER -> Frosted(DARK)
       },
     )
   }
