@@ -303,7 +303,7 @@ private fun ClaimDetailTopAppBar(
           Icon(
             imageVector = Icons.Hedvig.Chat,
             contentDescription = stringResource(R.string.DASHBOARD_OPEN_CHAT),
-            tint = com.hedvig.android.design.system.hedvig.HedvigTheme.colorScheme.fillSecondary,
+            tint = com.hedvig.android.design.system.hedvig.HedvigTheme.colorScheme.signalGreyElement,
             modifier = Modifier
               .size(32.dp)
               .notificationCircle(hasUnreadMessages)

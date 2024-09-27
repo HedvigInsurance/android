@@ -49,11 +49,11 @@ import com.hedvig.android.design.system.hedvig.TooltipDefaults.TooltipStyle
 import com.hedvig.android.design.system.hedvig.TooltipDefaults.TooltipStyle.Campaign
 import com.hedvig.android.design.system.hedvig.TooltipDefaults.TooltipStyle.Campaign.Brightness.BLEAK
 import com.hedvig.android.design.system.hedvig.TooltipDefaults.TooltipStyle.Campaign.Brightness.BRIGHT
+import com.hedvig.android.design.system.hedvig.TooltipDefaults.TooltipStyle.Inbox
 import com.hedvig.android.design.system.hedvig.TooltipDefaults.arrowHeightDp
 import com.hedvig.android.design.system.hedvig.TooltipDefaults.arrowSpaceFromEdgeWhenOffCenteredDp
 import com.hedvig.android.design.system.hedvig.TooltipDefaults.arrowWidthDp
 import com.hedvig.android.design.system.hedvig.TooltipDefaults.defaultStyle
-import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens
 import com.hedvig.android.design.system.hedvig.tokens.TooltipTokens
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
@@ -131,6 +131,7 @@ private fun InnerChatTooltip(
           HedvigText(
             text = message,
             style = TooltipDefaults.textStyle,
+            color = tooltipStyle.textColor,
             textAlign = TextAlign.Center,
           )
           if (tooltipStyle is Campaign) {
@@ -330,6 +331,15 @@ object TooltipDefaults {
           BLEAK -> tooltipColors.bleakSubMessageColor
         }
     }
+
+    data object Inbox : TooltipStyle() {
+      override val textColor: Color
+        @Composable
+        get() = tooltipColors.inboxMessageColor
+      override val containerColor: Color
+        @Composable
+        get() = tooltipColors.inboxContainerColor
+    }
   }
 }
 
@@ -343,6 +353,8 @@ private data class TooltipColors(
   val bleakContainerColor: Color,
   val bleakTextColor: Color,
   val bleakSubMessageColor: Color,
+  val inboxContainerColor: Color,
+  val inboxMessageColor: Color,
 )
 
 private val tooltipColors: TooltipColors
@@ -350,14 +362,16 @@ private val tooltipColors: TooltipColors
   get() = with(HedvigTheme.colorScheme) {
     remember(this) {
       TooltipColors(
-        defaultContainerColor = fromToken(ColorSchemeKeyTokens.FillPrimary),
-        defaultTextColor = fromToken(ColorSchemeKeyTokens.TextNegative),
-        brightContainerColor = fromToken(ColorSchemeKeyTokens.SignalGreenFill),
-        brightTextColor = fromToken(ColorSchemeKeyTokens.TextBlack),
-        brightSubMessageColor = fromToken(ColorSchemeKeyTokens.SignalGreenText),
-        bleakContainerColor = fromToken(ColorSchemeKeyTokens.SurfaceSecondary),
-        bleakTextColor = fromToken(ColorSchemeKeyTokens.TextPrimary),
-        bleakSubMessageColor = fromToken(ColorSchemeKeyTokens.TextSecondary),
+        defaultContainerColor = fromToken(TooltipTokens.DefaultContainerColor),
+        defaultTextColor = fromToken(TooltipTokens.DefaultTextColor),
+        brightContainerColor = fromToken(TooltipTokens.BrightContainerColor),
+        brightTextColor = fromToken(TooltipTokens.BrightTextColor),
+        brightSubMessageColor = fromToken(TooltipTokens.BrightSubMessageColor),
+        bleakContainerColor = fromToken(TooltipTokens.BleakContainerColor),
+        bleakTextColor = fromToken(TooltipTokens.BleakTextColor),
+        bleakSubMessageColor = fromToken(TooltipTokens.BleakSubMessageColor),
+        inboxContainerColor = fromToken(TooltipTokens.InboxContainerColor),
+        inboxMessageColor = fromToken(TooltipTokens.InboxMessageColor),
       )
     }
   }
@@ -396,5 +410,6 @@ private class TooltipStyleProvider : CollectionPreviewParameterProvider<TooltipS
     TooltipStyle.Default,
     Campaign("Then you pay 399 kr/mo", BRIGHT),
     Campaign("Then you pay 399 kr/mo", BLEAK),
+    Inbox,
   ),
 )

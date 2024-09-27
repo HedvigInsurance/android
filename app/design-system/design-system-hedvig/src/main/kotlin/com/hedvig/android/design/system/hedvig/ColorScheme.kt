@@ -64,6 +64,7 @@ data class ColorScheme(
   val surfaceSecondary: Color,
   val surfacePrimaryTransparent: Color,
   val surfaceSecondaryTransparent: Color,
+  val surfaceHighlightTransparent: Color,
   val backgroundPrimary: Color,
   val backgroundNegative: Color,
   val backgroundBlack: Color,
@@ -87,6 +88,7 @@ data class ColorScheme(
   val signalBlueHighlight: Color,
   val signalBlueElement: Color,
   val signalBlueText: Color,
+  val signalGreyElement: Color,
   val highlightPinkFill1: Color,
   val highlightPinkFill2: Color,
   val highlightPinkFill3: Color,
@@ -166,6 +168,7 @@ internal val lightColorScheme: ColorScheme = ColorScheme(
   surfaceSecondary = ColorLightTokens.SurfaceSecondary,
   surfacePrimaryTransparent = ColorLightTokens.SurfacePrimaryTransparent,
   surfaceSecondaryTransparent = ColorLightTokens.SurfaceSecondaryTransparent,
+  surfaceHighlightTransparent = ColorLightTokens.SurfaceHighlightTransparent,
   backgroundPrimary = ColorLightTokens.BackgroundPrimary,
   backgroundNegative = ColorLightTokens.BackgroundNegative,
   backgroundBlack = ColorLightTokens.BackgroundBlack,
@@ -189,6 +192,7 @@ internal val lightColorScheme: ColorScheme = ColorScheme(
   signalBlueHighlight = ColorLightTokens.SignalBlueHighlight,
   signalBlueElement = ColorLightTokens.SignalBlueElement,
   signalBlueText = ColorLightTokens.SignalBlueText,
+  signalGreyElement = ColorLightTokens.SignalGreyElement,
   highlightPinkFill1 = ColorLightTokens.HighlightPinkFill1,
   highlightPinkFill2 = ColorLightTokens.HighlightPinkFill2,
   highlightPinkFill3 = ColorLightTokens.HighlightPinkFill3,
@@ -268,6 +272,7 @@ internal val darkColorScheme: ColorScheme = ColorScheme(
   surfaceSecondary = ColorDarkTokens.SurfaceSecondary,
   surfacePrimaryTransparent = ColorDarkTokens.SurfacePrimaryTransparent,
   surfaceSecondaryTransparent = ColorDarkTokens.SurfaceSecondaryTransparent,
+  surfaceHighlightTransparent = ColorDarkTokens.SurfaceHighlightTransparent,
   backgroundPrimary = ColorDarkTokens.BackgroundPrimary,
   backgroundNegative = ColorDarkTokens.BackgroundNegative,
   backgroundBlack = ColorDarkTokens.BackgroundBlack,
@@ -291,6 +296,7 @@ internal val darkColorScheme: ColorScheme = ColorScheme(
   signalBlueHighlight = ColorDarkTokens.SignalBlueHighlight,
   signalBlueElement = ColorDarkTokens.SignalBlueElement,
   signalBlueText = ColorDarkTokens.SignalBlueText,
+  signalGreyElement = ColorDarkTokens.SignalGreyElement,
   highlightPinkFill1 = ColorDarkTokens.HighlightPinkFill1,
   highlightPinkFill2 = ColorDarkTokens.HighlightPinkFill2,
   highlightPinkFill3 = ColorDarkTokens.HighlightPinkFill3,
@@ -396,6 +402,7 @@ internal fun ColorScheme.fromToken(value: ColorSchemeKeyTokens): Color {
     ColorSchemeKeyTokens.SurfaceSecondary -> surfaceSecondary
     ColorSchemeKeyTokens.SurfacePrimaryTransparent -> surfacePrimaryTransparent
     ColorSchemeKeyTokens.SurfaceSecondaryTransparent -> surfaceSecondaryTransparent
+    ColorSchemeKeyTokens.SurfaceHighlightTransparent -> surfaceHighlightTransparent
     ColorSchemeKeyTokens.BackgroundPrimary -> backgroundPrimary
     ColorSchemeKeyTokens.BackgroundNegative -> backgroundNegative
     ColorSchemeKeyTokens.BackgroundBlack -> backgroundBlack
@@ -419,6 +426,7 @@ internal fun ColorScheme.fromToken(value: ColorSchemeKeyTokens): Color {
     ColorSchemeKeyTokens.SignalBlueHighlight -> signalBlueHighlight
     ColorSchemeKeyTokens.SignalBlueElement -> signalBlueElement
     ColorSchemeKeyTokens.SignalBlueText -> signalBlueText
+    ColorSchemeKeyTokens.SignalGreyElement -> signalGreyElement
     ColorSchemeKeyTokens.HighlightPinkFill1 -> highlightPinkFill1
     ColorSchemeKeyTokens.HighlightPinkFill2 -> highlightPinkFill2
     ColorSchemeKeyTokens.HighlightPinkFill3 -> highlightPinkFill3
