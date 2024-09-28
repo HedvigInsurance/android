@@ -1,10 +1,12 @@
-package com.hedvig.android.feature.change.tier.ui
+package com.hedvig.android.feature.change.tier.ui.stepcustomize
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -27,6 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextAlign.Companion
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.android.toPillow
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
@@ -61,13 +64,33 @@ import com.hedvig.android.feature.change.tier.data.Tier
 import hedvig.resources.R
 
 @Composable
-fun SelectTierScreen(
-  chosenTierIndex: Int,
-  chosenDeductibleIndex: Int,
-  data: CustomizeContractData,
-  newDisplayPremium: String,
-  isCurrentChosen: Boolean,
-  isTierChoiceEnabled: Boolean,
+internal fun SelectTierDestination(
+  viewModel: SelectCoverageViewModel,
+  navigateUp: () -> Unit,
+  openChat: () -> Unit,
+  navigateToSummary: () -> Unit
+) {
+  val uiState: SelectCoverageUiState by viewModel.uiState.collectAsStateWithLifecycle()
+  Box(
+    Modifier.fillMaxSize()
+  ) {
+    var showComparisonTable by remember { mutableStateOf(false) }
+    SelectTierScreen(
+      uiState = uiState,
+      navigateUp = navigateUp,
+      onCompareClick = {
+        showComparisonTable = true
+      },
+      onContinueClick = {
+        viewModel.emit()
+      }
+    )
+  }
+}
+
+@Composable
+private fun SelectTierScreen(
+  uiState: SelectCoverageUiState,
   navigateUp: () -> Unit,
   onCompareClick: () -> Unit,
   onContinueClick: () -> Unit,

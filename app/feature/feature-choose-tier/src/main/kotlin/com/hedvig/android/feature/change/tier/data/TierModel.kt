@@ -1,15 +1,9 @@
 package com.hedvig.android.feature.change.tier.data
 
+import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup
-
-data class CustomizeContractData(
-  val contractGroup: ContractGroup,
-  val displayName: String,
-  val displaySubtitle: String,
-  val tierData: List<Tier>,
-  val deductibleData: List<Deductible>,
-  val currentDisplayPremium: String,
-)
+import com.hedvig.android.data.productvariant.ProductVariant
+import kotlinx.datetime.LocalDate
 
 data class Tier(
   val tierName: String,
@@ -32,3 +26,24 @@ data class Deductible(
     deductibleAmount ?: ""
   }
 }
+
+data class ChangeTierDeductibleIntent(
+  val activationDate: LocalDate,
+  val quotes: List<TierDeductibleQuote>,
+)
+
+data class TierDeductibleQuote(
+  val id: String,
+  val tier: Tier,
+  val deductible: Deductible,
+  val premium: UiMoney,
+  val displayItems: List<ChangeTierDeductibleDisplayItem>,
+  val productVariant: ProductVariant,
+)
+
+data class ChangeTierDeductibleDisplayItem (
+  val displayTitle: String,
+  val displaySubtitle: String?,
+  val displayValue: String,
+)
+
