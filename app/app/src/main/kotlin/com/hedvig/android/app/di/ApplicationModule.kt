@@ -50,6 +50,7 @@ import com.hedvig.android.data.termination.di.terminationDataModule
 import com.hedvig.android.datadog.core.addDatadogConfiguration
 import com.hedvig.android.datadog.core.di.datadogModule
 import com.hedvig.android.datadog.demo.tracking.di.datadogDemoTrackingModule
+import com.hedvig.android.feature.change.tier.di.chooseTierModule
 import com.hedvig.android.feature.changeaddress.di.changeAddressModule
 import com.hedvig.android.feature.chat.di.chatModule
 import com.hedvig.android.feature.claim.details.di.claimDetailsModule
@@ -297,6 +298,7 @@ val applicationModule = module {
       authModule,
       buildConstantsModule,
       changeAddressModule,
+      chooseTierModule,
       chatModule,
       claimDetailsModule,
       claimFlowDataModule,
