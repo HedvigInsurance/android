@@ -30,9 +30,12 @@ import androidx.compose.ui.text.style.TextAlign.Companion
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup
+import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.contract.android.toPillow
+import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.ChosenState
 import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
@@ -195,8 +198,8 @@ private fun SelectTierScreen(
     HedvigTextButton(
       buttonSize = Large,
       modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp),
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
       text = stringResource(R.string.TIER_FLOW_COMPARE_BUTTON),
       onClick = {
         onCompareClick()
@@ -211,8 +214,8 @@ private fun SelectTierScreen(
         onContinueClick()
       },
       modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp),
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(16.dp))
   }
@@ -398,9 +401,9 @@ private fun DropdownContent(
   modifier: Modifier = Modifier,
 ) {
   Column(
-    modifier
-      .padding(16.dp)
-      .verticalScroll(rememberScrollState()),
+      modifier
+          .padding(16.dp)
+          .verticalScroll(rememberScrollState()),
   ) {
     Spacer(Modifier.height(16.dp))
     HedvigText(
@@ -506,12 +509,18 @@ private fun CustomizationCardPreview() {
     CustomizationCard(
       data = dataForPreview,
       chosenTier = Tier("Bas", tierLevel = 0, info = "Vårt paket med grundläggande villkor."),
-      chosenDeductible = 1,
       onChooseTierClick = {},
       onChooseDeductibleClick = {},
-      newDisplayPremium = "249 kr/mo",
+      newDisplayPremium = UiMoney(199.0, SEK),
       isCurrentChosen = false,
       isTierChoiceEnabled = true,
+      chosenQuote = quotesForPreview[0],
+      quotesForChosenTier = quotesForPreview,
+      tiers = listOf(
+        Tier("Bas", tierLevel = 0, info = "Vårt paket med grundläggande villkor.") to "199 kr/mo",
+        Tier("Standard", tierLevel = 1, info = "Vårt mellanpaket med hög ersättning.") to "449 kr/mo",
+        Tier("Max", tierLevel = 1, info = "Vårt största paket med högst ersättning.") to "799 kr/mo",
+      ),
     )
   }
 }
@@ -528,11 +537,11 @@ private fun SelectTierScreenPreview() {
           Tier("Standard", tierLevel = 1, info = "Vårt mellanpaket med hög ersättning.") to "449 kr/mo",
           Tier("Max", tierLevel = 1, info = "Vårt största paket med högst ersättning.") to "799 kr/mo",
         ),
-        quotesForChosenTier = ,
+        quotesForChosenTier = quotesForPreview,
         isCurrentChosen = false,
-        isTierChoiceEnabled = false,
+        isTierChoiceEnabled = true,
         chosenTier = Tier("Bas", tierLevel = 0, info = "Vårt paket med grundläggande villkor."),
-        chosenQuote =
+        chosenQuote = quotesForPreview[0]
       ),
       {}, {}, {},
     )
@@ -543,23 +552,69 @@ private val dataForPreview = ContractData(
   contractGroup = ContractGroup.HOMEOWNER,
   contractDisplayName = "Home Homeowner",
   contractDisplaySubtitle = "Addressvägen 777",
-  activeDisplayPremium = "999 kr/mån",
+  activeDisplayPremium = "449 kr/mo",
+)
 
-  deductibleData = listOf(
-    Deductible(
-      "0 kr",
-      deductiblePercentage = "25%",
-      description = "Endast en rörlig del om 25% av skadekostnaden.",
+
+private val quotesForPreview = listOf<TierDeductibleQuote>(
+    TierDeductibleQuote(
+        id = "id0",
+        deductible = Deductible(
+            "0 kr",
+            deductiblePercentage = "25%",
+            description = "Endast en rörlig del om 25% av skadekostnaden.",
+        ),
+        displayItems = listOf(),
+        premium = UiMoney(199.0, SEK),
+        tier = Tier("Bas", tierLevel = 0, info = "Vårt paket med grundläggande villkor."),
+        productVariant = ProductVariant(
+            displayName = "Test",
+            contractGroup = ContractGroup.RENTAL,
+            contractType = ContractType.SE_APARTMENT_RENT,
+            partner = "test",
+            perils = listOf(),
+            insurableLimits = listOf(),
+            documents = listOf(),
+        ),
     ),
-    Deductible(
-      "1500 kr",
+  TierDeductibleQuote(
+    id = "id0",
+    deductible = Deductible(
+      "1000 kr",
       deductiblePercentage = "25%",
-      description = "En fast del och en rörlig del om 25% av skadekostnaden",
+      description = "En fast del och en rörlig del om 25% av skadekostnaden.",
     ),
-    Deductible(
+    displayItems = listOf(),
+    premium = UiMoney(255.0, SEK),
+    tier = Tier("Bas", tierLevel = 0, info = "Vårt paket med grundläggande villkor."),
+    productVariant = ProductVariant(
+      displayName = "Test",
+      contractGroup = ContractGroup.RENTAL,
+      contractType = ContractType.SE_APARTMENT_RENT,
+      partner = "test",
+      perils = listOf(),
+      insurableLimits = listOf(),
+      documents = listOf(),
+    ),
+  ),
+  TierDeductibleQuote(
+    id = "id0",
+    deductible =     Deductible(
       "3500 kr",
       deductiblePercentage = "25%",
       description = "En fast del och en rörlig del om 25% av skadekostnaden",
+    ),
+    displayItems = listOf(),
+    premium = UiMoney(355.0, SEK),
+    tier = Tier("Bas", tierLevel = 0, info = "Vårt paket med grundläggande villkor."),
+    productVariant = ProductVariant(
+      displayName = "Test",
+      contractGroup = ContractGroup.RENTAL,
+      contractType = ContractType.SE_APARTMENT_RENT,
+      partner = "test",
+      perils = listOf(),
+      insurableLimits = listOf(),
+      documents = listOf(),
     ),
   ),
 )
