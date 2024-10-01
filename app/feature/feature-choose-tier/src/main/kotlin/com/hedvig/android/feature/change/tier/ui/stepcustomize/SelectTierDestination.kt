@@ -247,7 +247,9 @@ private fun CustomizationCard(
       Spacer(Modifier.height(16.dp))
       val tierSimpleItems = buildList {
         for (tier in tiers) {
-          add(SimpleDropdownItem(tier.first.tierName))
+          tier.first.tierName?. let {
+            add(SimpleDropdownItem(it)) //todo: what happens if don't have tierName?
+          }
         }
       }
       DropdownWithDialog(
@@ -268,17 +270,19 @@ private fun CustomizationCard(
       ) { onDismissRequest ->
         val listOfOptions = buildList {
           tiers.forEachIndexed { index, pair ->
-            add(
-              ExpandedRadioOptionData(
-                chosenState = if (locallyChosenTier == pair.first) Chosen else NotChosen,
-                title = pair.first.tierName,
-                premium = pair.second,
-                info = pair.first.info,
-                onRadioOptionClick = {
-                  locallyChosenTier = tiers.getOrNull(index)?.first
-                },
-              ),
-            )
+            pair.first.tierName?.let { //todo: what to do if it's null? can it be null?
+              add(
+                ExpandedRadioOptionData(
+                  chosenState = if (locallyChosenTier == pair.first) Chosen else NotChosen,
+                  title = it,
+                  premium = pair.second,
+                  info = pair.first.info,
+                  onRadioOptionClick = {
+                    locallyChosenTier = tiers.getOrNull(index)?.first
+                  },
+                ),
+              )
+            }
           }
         }
         DropdownContent(
@@ -309,7 +313,9 @@ private fun CustomizationCard(
         Spacer(Modifier.height(4.dp))
         val deductibleSimpleItems = buildList {
           for (quote in quotesForChosenTier) {
-            add(SimpleDropdownItem(quote.deductible.optionText))
+            quote.deductible?.let {
+              add(SimpleDropdownItem(it.optionText))
+            }
           }
         }
         DropdownWithDialog(
@@ -329,17 +335,19 @@ private fun CustomizationCard(
         ) { onDismissRequest ->
           val listOfOptions = buildList {
             quotesForChosenTier.forEach { quote ->
-              add(
-                ExpandedRadioOptionData(
-                  chosenState = if (locallyChosenQuote == quote) Chosen else NotChosen,
-                  title = quote.deductible.optionText,
-                  premium = quote.premium.toString(),
-                  info = quote.deductible.description,
-                  onRadioOptionClick = {
-                    locallyChosenQuote = quote
-                  },
-                ),
-              )
+              quote.deductible?.let{
+                add(
+                  ExpandedRadioOptionData(
+                    chosenState = if (locallyChosenQuote == quote) Chosen else NotChosen,
+                    title = it.optionText,
+                    premium = quote.premium.toString(),
+                    info = it.description,
+                    onRadioOptionClick = {
+                      locallyChosenQuote = quote
+                    },
+                  ),
+                )
+              }
             }
           }
           DropdownContent(
@@ -558,8 +566,8 @@ private val quotesForPreview = listOf<TierDeductibleQuote>(
   TierDeductibleQuote(
     id = "id0",
     deductible = Deductible(
-      "0 kr",
-      deductiblePercentage = "25%",
+      UiMoney(0.0, SEK),
+      deductiblePercentage = 25,
       description = "Endast en rörlig del om 25% av skadekostnaden.",
     ),
     displayItems = listOf(),
@@ -578,8 +586,8 @@ private val quotesForPreview = listOf<TierDeductibleQuote>(
   TierDeductibleQuote(
     id = "id0",
     deductible = Deductible(
-      "1000 kr",
-      deductiblePercentage = "25%",
+      UiMoney(1000.0, SEK),
+      deductiblePercentage = 25,
       description = "En fast del och en rörlig del om 25% av skadekostnaden.",
     ),
     displayItems = listOf(),
@@ -598,8 +606,8 @@ private val quotesForPreview = listOf<TierDeductibleQuote>(
   TierDeductibleQuote(
     id = "id0",
     deductible = Deductible(
-      "3500 kr",
-      deductiblePercentage = "25%",
+      UiMoney(3500.0, SEK),
+      deductiblePercentage = 25,
       description = "En fast del och en rörlig del om 25% av skadekostnaden",
     ),
     displayItems = listOf(),

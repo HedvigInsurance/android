@@ -157,7 +157,7 @@ private fun buildListOfTiersAndPremiums(
       // but if this doesn't work, the lowest for this coverage
       val premium = map[tier]!!.firstOrNull {
         it.deductible == currentDeductible
-      }?.premium ?: map[tier]!!.minBy { it.tier.tierLevel }.premium
+      }?.premium ?: map[tier]!!.minBy { it.tier.tierLevel!! }.premium //TODO!!!!!!!!!! check here, what's up with nullable TierLevel???
       add(tier to premium.toString())
     }
   }
