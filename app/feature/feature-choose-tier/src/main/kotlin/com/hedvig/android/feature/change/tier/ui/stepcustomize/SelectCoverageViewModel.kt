@@ -9,12 +9,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateMap
+import com.hedvig.android.data.changetier.data.ChangeTierDeductibleIntent
+import com.hedvig.android.data.changetier.data.Deductible
+import com.hedvig.android.data.changetier.data.Tier
+import com.hedvig.android.data.changetier.data.TierDeductibleQuote
 import com.hedvig.android.data.contract.ContractGroup
-import com.hedvig.android.feature.change.tier.data.ChangeTierDeductibleIntent
-import com.hedvig.android.feature.change.tier.data.Deductible
 import com.hedvig.android.feature.change.tier.data.GetCurrentContractDataUseCase
-import com.hedvig.android.feature.change.tier.data.Tier
-import com.hedvig.android.feature.change.tier.data.TierDeductibleQuote
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.ChangeDeductibleForChosenTier
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.ChangeTier
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.ClearNavigationStep
