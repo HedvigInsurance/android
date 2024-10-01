@@ -1,5 +1,5 @@
-mutation ChangeTierDeductibleCreateIntent($input: ChangeTierDeductibleCreateIntentInput!) {
-  changeTierDeductibleCreateIntent(input: $input) {
+mutation ChangeTierDeductibleCreateIntent($contractId: ID!, $source: ChangeTierDeductibleSource!) {
+  changeTierDeductibleCreateIntent(input:{ contractId: $contractId, source: $source }) {
     intent {
       activationDate
       currentTierLevel

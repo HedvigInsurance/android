@@ -19,6 +19,7 @@ dependencies {
   implementation(projects.dataContractPublic)
   implementation(projects.featureFlagsPublic)
   implementation(projects.dataProductVariantPublic)
+  implementation(projects.dataProductVariantAndroid)
 }
 
 apollo {
