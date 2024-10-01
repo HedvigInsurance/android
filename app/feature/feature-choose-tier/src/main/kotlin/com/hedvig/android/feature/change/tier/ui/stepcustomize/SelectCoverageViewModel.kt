@@ -32,13 +32,13 @@ internal class SelectCoverageViewModel(
   intent: ChangeTierDeductibleIntent,
   getCurrentContractDataUseCase: GetCurrentContractDataUseCase,
 ) : MoleculeViewModel<SelectCoverageEvent, SelectCoverageState>(
-  initialState = Loading,
-  presenter = SelectCoveragePresenter(
-    insuranceId = insuranceId,
-    intent = intent,
-    getCurrentContractDataUseCase = getCurrentContractDataUseCase,
-  ),
-)
+    initialState = Loading,
+    presenter = SelectCoveragePresenter(
+      insuranceId = insuranceId,
+      intent = intent,
+      getCurrentContractDataUseCase = getCurrentContractDataUseCase,
+    ),
+  )
 
 private class SelectCoveragePresenter(
   val insuranceId: String,
@@ -49,7 +49,6 @@ private class SelectCoveragePresenter(
   override fun MoleculePresenterScope<SelectCoverageEvent>.present(
     lastState: SelectCoverageState,
   ): SelectCoverageState {
-
     var chosenTier by remember { mutableStateOf(if (lastState is Success) lastState.uiState.chosenTier else null) }
     var chosenQuote by remember { mutableStateOf(if (lastState is Success) lastState.uiState.chosenQuote else null) }
     var quoteToNavigateFurther by remember { mutableStateOf<TierDeductibleQuote?>(null) }
@@ -67,9 +66,9 @@ private class SelectCoveragePresenter(
         is ChangeTier -> {
           val state = currentPartialState
           if (state !is PartialUiState.Success) return@CollectEvents
-          //set newly chosen tier
+          // set newly chosen tier
           chosenTier = event.tier
-          //try to pre-choose a quote with the same deductible and newly chosen coverage
+          // try to pre-choose a quote with the same deductible and newly chosen coverage
           // if there is no such quote, the deductible will not be per-chosen
           val currentlyChosenDeductible = chosenQuote?.deductible
           val quoteWithNewTierOldDeductible =
@@ -107,20 +106,20 @@ private class SelectCoveragePresenter(
             displayItems = listOf(),
             premium = currentContractData.currentDisplayPremium,
           )
-          //pre-choosing current quote
+          // pre-choosing current quote
           chosenTier = current.tier
           chosenQuote = current
           currentPartialState = PartialUiState.Success(
-              contractData = ContractData(
-                  activeDisplayPremium = current.premium.toString(),
-                  contractGroup = current.productVariant.contractGroup,
-                  contractDisplayName = current.productVariant.displayName,
-                  contractDisplaySubtitle = currentContractData.currentExposureName,
-              ),
-              //setting current quote aside for comparison later
-              currentActiveQuote = current,
-              //adding current tierName and quote to the list, create map
-              map = mapQuotesToTiersAndQuotes(intent.quotes + listOf(current)),
+            contractData = ContractData(
+              activeDisplayPremium = current.premium.toString(),
+              contractGroup = current.productVariant.contractGroup,
+              contractDisplayName = current.productVariant.displayName,
+              contractDisplaySubtitle = currentContractData.currentExposureName,
+            ),
+            // setting current quote aside for comparison later
+            currentActiveQuote = current,
+            // adding current tierName and quote to the list, create map
+            map = mapQuotesToTiersAndQuotes(intent.quotes + listOf(current)),
           )
         },
       )
@@ -129,20 +128,20 @@ private class SelectCoveragePresenter(
       PartialUiState.Failure -> Failure
       PartialUiState.Loading -> Loading
       is PartialUiState.Success -> Success(
-          map = (currentPartialState as PartialUiState.Success).map,
-          currentActiveQuote = (currentPartialState as PartialUiState.Success).currentActiveQuote,
-          uiState = SelectCoverageSuccessUiState(
-              isCurrentChosen = chosenQuote == (currentPartialState as PartialUiState.Success).currentActiveQuote,
-              chosenQuote = chosenQuote,
-              chosenTier = chosenTier,
-              tiers = buildListOfTiersAndPremiums(
-                  map = (currentPartialState as PartialUiState.Success).map,
-                  currentDeductible = chosenQuote?.deductible,
-              ),
-              quotesForChosenTier = (currentPartialState as PartialUiState.Success).map[chosenTier]!!,
-              isTierChoiceEnabled = (currentPartialState as PartialUiState.Success).map.keys.size > 1,
-              contractData = (currentPartialState as PartialUiState.Success).contractData,
+        map = (currentPartialState as PartialUiState.Success).map,
+        currentActiveQuote = (currentPartialState as PartialUiState.Success).currentActiveQuote,
+        uiState = SelectCoverageSuccessUiState(
+          isCurrentChosen = chosenQuote == (currentPartialState as PartialUiState.Success).currentActiveQuote,
+          chosenQuote = chosenQuote,
+          chosenTier = chosenTier,
+          tiers = buildListOfTiersAndPremiums(
+            map = (currentPartialState as PartialUiState.Success).map,
+            currentDeductible = chosenQuote?.deductible,
           ),
+          quotesForChosenTier = (currentPartialState as PartialUiState.Success).map[chosenTier]!!,
+          isTierChoiceEnabled = (currentPartialState as PartialUiState.Success).map.keys.size > 1,
+          contractData = (currentPartialState as PartialUiState.Success).contractData,
+        ),
       )
     }
   }
@@ -164,8 +163,9 @@ private fun buildListOfTiersAndPremiums(
   }
 }
 
-private fun mapQuotesToTiersAndQuotes(quotes: List<TierDeductibleQuote>)
-  : SnapshotStateMap<Tier, List<TierDeductibleQuote>> {
+private fun mapQuotesToTiersAndQuotes(
+  quotes: List<TierDeductibleQuote>,
+): SnapshotStateMap<Tier, List<TierDeductibleQuote>> {
   val grouped = quotes
     .groupBy {
       it.tier
@@ -179,12 +179,15 @@ private fun mapQuotesToTiersAndQuotes(quotes: List<TierDeductibleQuote>)
   return result
 }
 
-
 internal sealed interface SelectCoverageEvent {
   data object SubmitChosenQuoteToContinue : SelectCoverageEvent
+
   data class ChangeDeductibleForChosenTier(val quote: TierDeductibleQuote) : SelectCoverageEvent
+
   data class ChangeTier(val tier: Tier) : SelectCoverageEvent
+
   data object ClearNavigationStep : SelectCoverageEvent
+
   data object Reload : SelectCoverageEvent
 }
 
@@ -193,16 +196,18 @@ private fun mapLastStateToPartial(state: SelectCoverageState): PartialUiState {
     Loading -> PartialUiState.Loading
     Failure -> PartialUiState.Failure
     is Success -> PartialUiState.Success(
-        contractData = state.uiState.contractData,
-        currentActiveQuote = state.currentActiveQuote,
-        map = state.map,
+      contractData = state.uiState.contractData,
+      currentActiveQuote = state.currentActiveQuote,
+      map = state.map,
     )
   }
 }
 
 private sealed interface PartialUiState {
   data object Loading : PartialUiState
+
   data object Failure : PartialUiState
+
   data class Success(
     val contractData: ContractData,
     val currentActiveQuote: TierDeductibleQuote,
@@ -239,6 +244,5 @@ internal data class ContractData(
   val contractDisplaySubtitle: String,
   val activeDisplayPremium: String,
 )
-
 
 private const val CURRENT_ID = "current"

@@ -95,7 +95,7 @@ internal fun SelectTierDestination(
         LaunchedEffect(state.uiState.quoteToNavigateFurther) {
           if (state.uiState.quoteToNavigateFurther != null) {
             viewModel.emit(ClearNavigationStep)
-            navigateToSummary(state.uiState.quoteToNavigateFurther) //todo: check here
+            navigateToSummary(state.uiState.quoteToNavigateFurther) // todo: check here
           }
         }
         var showComparisonTable by remember { mutableStateOf(false) }
@@ -110,7 +110,7 @@ internal fun SelectTierDestination(
           },
         )
         HedvigAlertDialog(
-          title = "Here be dragons", //TODO: instead of the dialog comparison screen here!
+          title = "Here be dragons", // TODO: instead of the dialog comparison screen here!
           onConfirmClick = { showComparisonTable = false },
           onDismissRequest = { showComparisonTable = false },
           text = null,
@@ -121,9 +121,7 @@ internal fun SelectTierDestination(
 }
 
 @Composable
-private fun FailureScreen(
-  reload: () -> Unit,
-) {
+private fun FailureScreen(reload: () -> Unit) {
   Box(Modifier.fillMaxSize()) {
     HedvigErrorSection(onButtonClick = reload, modifier = Modifier.fillMaxSize())
   }
@@ -131,9 +129,8 @@ private fun FailureScreen(
 
 @Composable
 private fun LoadingScreen() {
-  //todo
+  // todo
 }
-
 
 @Composable
 private fun SelectTierScreen(
@@ -198,8 +195,8 @@ private fun SelectTierScreen(
     HedvigTextButton(
       buttonSize = Large,
       modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
       text = stringResource(R.string.TIER_FLOW_COMPARE_BUTTON),
       onClick = {
         onCompareClick()
@@ -214,8 +211,8 @@ private fun SelectTierScreen(
         onContinueClick()
       },
       modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(16.dp))
   }
@@ -401,9 +398,9 @@ private fun DropdownContent(
   modifier: Modifier = Modifier,
 ) {
   Column(
-      modifier
-          .padding(16.dp)
-          .verticalScroll(rememberScrollState()),
+    modifier
+      .padding(16.dp)
+      .verticalScroll(rememberScrollState()),
   ) {
     Spacer(Modifier.height(16.dp))
     HedvigText(
@@ -541,9 +538,11 @@ private fun SelectTierScreenPreview() {
         isCurrentChosen = false,
         isTierChoiceEnabled = true,
         chosenTier = Tier("Bas", tierLevel = 0, info = "Vårt paket med grundläggande villkor."),
-        chosenQuote = quotesForPreview[0]
+        chosenQuote = quotesForPreview[0],
       ),
-      {}, {}, {},
+      {},
+      {},
+      {},
     )
   }
 }
@@ -555,28 +554,27 @@ private val dataForPreview = ContractData(
   activeDisplayPremium = "449 kr/mo",
 )
 
-
 private val quotesForPreview = listOf<TierDeductibleQuote>(
-    TierDeductibleQuote(
-        id = "id0",
-        deductible = Deductible(
-            "0 kr",
-            deductiblePercentage = "25%",
-            description = "Endast en rörlig del om 25% av skadekostnaden.",
-        ),
-        displayItems = listOf(),
-        premium = UiMoney(199.0, SEK),
-        tier = Tier("Bas", tierLevel = 0, info = "Vårt paket med grundläggande villkor."),
-        productVariant = ProductVariant(
-            displayName = "Test",
-            contractGroup = ContractGroup.RENTAL,
-            contractType = ContractType.SE_APARTMENT_RENT,
-            partner = "test",
-            perils = listOf(),
-            insurableLimits = listOf(),
-            documents = listOf(),
-        ),
+  TierDeductibleQuote(
+    id = "id0",
+    deductible = Deductible(
+      "0 kr",
+      deductiblePercentage = "25%",
+      description = "Endast en rörlig del om 25% av skadekostnaden.",
     ),
+    displayItems = listOf(),
+    premium = UiMoney(199.0, SEK),
+    tier = Tier("Bas", tierLevel = 0, info = "Vårt paket med grundläggande villkor."),
+    productVariant = ProductVariant(
+      displayName = "Test",
+      contractGroup = ContractGroup.RENTAL,
+      contractType = ContractType.SE_APARTMENT_RENT,
+      partner = "test",
+      perils = listOf(),
+      insurableLimits = listOf(),
+      documents = listOf(),
+    ),
+  ),
   TierDeductibleQuote(
     id = "id0",
     deductible = Deductible(
@@ -599,7 +597,7 @@ private val quotesForPreview = listOf<TierDeductibleQuote>(
   ),
   TierDeductibleQuote(
     id = "id0",
-    deductible =     Deductible(
+    deductible = Deductible(
       "3500 kr",
       deductiblePercentage = "25%",
       description = "En fast del och en rörlig del om 25% av skadekostnaden",

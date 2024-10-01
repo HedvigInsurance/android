@@ -42,6 +42,8 @@ dependencies {
   implementation(projects.navigationCompose)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
+  implementation(projects.dataChangetier)
+  implementation(projects.featureFlagsPublic)
 
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)

@@ -41,6 +41,7 @@ import com.hedvig.android.core.common.di.datastoreFileQualifier
 import com.hedvig.android.core.datastore.di.dataStoreModule
 import com.hedvig.android.core.demomode.di.demoModule
 import com.hedvig.android.core.fileupload.fileUploadModule
+import com.hedvig.android.data.changetier.di.dataChangeTierModule
 import com.hedvig.android.data.chat.di.dataChatModule
 import com.hedvig.android.data.claimflow.di.claimFlowDataModule
 import com.hedvig.android.data.conversations.di.dataConversationsModule
@@ -309,6 +310,7 @@ val applicationModule = module {
       coreAppReviewModule,
       coreCommonModule,
       dataChatModule,
+      dataChangeTierModule,
       dataConversationsModule,
       dataPayingMemberModule,
       dataStoreModule,
