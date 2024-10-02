@@ -66,6 +66,8 @@ import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.feature.change.tier.ui.stepcustomize.FailureReason.GENERAL
+import com.hedvig.android.feature.change.tier.ui.stepcustomize.FailureReason.QUOTES_ARE_EMPTY
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.ClearNavigationStep
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Failure
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Loading
@@ -84,10 +86,12 @@ internal fun SelectTierDestination(
     Modifier.fillMaxSize(),
   ) {
     when (val state = uiState) {
-      Failure -> FailureScreen(
+      is Failure -> FailureScreen(
+        reason = state.reason,
         reload = {
           viewModel.emit(SelectCoverageEvent.Reload)
         },
+        navigateUp = navigateUp,
       )
       Loading -> LoadingScreen()
       is Success -> {
@@ -119,9 +123,33 @@ internal fun SelectTierDestination(
 }
 
 @Composable
-private fun FailureScreen(reload: () -> Unit) {
+private fun FailureScreen(reload: () -> Unit, navigateUp: () -> Unit, reason: FailureReason) {
   Box(Modifier.fillMaxSize()) {
-    HedvigErrorSection(onButtonClick = reload, modifier = Modifier.fillMaxSize())
+    val subTitle = when (reason) {
+      GENERAL -> stringResource(R.string.GENERAL_ERROR_BODY)
+      QUOTES_ARE_EMPTY -> "Turns out you're already at the best possible coverage and price!"
+      // todo: remove hardcoded string!!
+    }
+    val action = when (reason) {
+      GENERAL -> reload
+      QUOTES_ARE_EMPTY -> navigateUp
+    }
+    val title = when (reason) {
+      GENERAL -> stringResource(R.string.GENERAL_ERROR_BODY)
+      QUOTES_ARE_EMPTY -> "Oops!" // todo: another copy??
+    }
+    val buttonText = when (reason) {
+      GENERAL -> stringResource(R.string.GENERAL_ERROR_BODY)
+      QUOTES_ARE_EMPTY -> stringResource(R.string.general_back_button)
+      // todo: remove hardcoded string!!
+    }
+    HedvigErrorSection(
+      onButtonClick = action,
+      modifier = Modifier.fillMaxSize(),
+      subTitle = subTitle,
+      title = title,
+      buttonText = buttonText,
+    )
   }
 }
 

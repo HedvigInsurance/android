@@ -7,9 +7,8 @@ import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.data.chat.database.converter.TierQuoteTypeConverter
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
-import com.hedvig.android.data.productvariant.InsurableLimit
-import com.hedvig.android.data.productvariant.InsuranceVariantDocument
-import com.hedvig.android.data.productvariant.ProductVariantPeril
+import com.hedvig.android.data.productvariant.InsurableLimit.InsurableLimitType
+import com.hedvig.android.data.productvariant.InsuranceVariantDocument.InsuranceDocumentType
 import kotlinx.serialization.Serializable
 
 @Entity(tableName = "change_tier_quotes")
@@ -60,6 +59,7 @@ data class DeductibleDbModel(
   val description: String,
 )
 
+@Serializable
 @Entity
 data class ProductVariantDbModel(
   val displayName: String,
@@ -67,11 +67,40 @@ data class ProductVariantDbModel(
   val contractType: ContractType,
   val partner: String?,
   @TypeConverters(TierQuoteTypeConverter::class)
-  val perils: List<ProductVariantPeril>,
+  val perils: List<ProductVariantPerilDBM>,
   @TypeConverters(TierQuoteTypeConverter::class)
-  val insurableLimits: List<InsurableLimit>,
+  val insurableLimits: List<InsurableLimitDBM>,
   @TypeConverters(TierQuoteTypeConverter::class)
-  val documents: List<InsuranceVariantDocument>,
+  val documents: List<InsuranceVariantDocumentDBM>,
   val tierName: String?,
   val tierNameLong: String?,
+)
+
+@Serializable
+@Entity
+data class ProductVariantPerilDBM(
+  val id: String,
+  val title: String,
+  val description: String,
+  val info: String,
+  val covered: List<String>,
+  val exceptions: List<String>,
+  val colorCode: String?,
+)
+
+@Serializable
+@Entity
+data class InsurableLimitDBM(
+  val label: String,
+  val limit: String,
+  val description: String,
+  val type: InsurableLimitType,
+)
+
+@Serializable
+@Entity
+data class InsuranceVariantDocumentDBM(
+  val displayName: String,
+  val url: String,
+  val type: InsuranceDocumentType,
 )

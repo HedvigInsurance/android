@@ -8,10 +8,16 @@ import com.hedvig.android.data.changetier.data.TierDeductibleQuote
 import com.hedvig.android.data.chat.database.ChangeTierDeductibleDisplayItemDbModel
 import com.hedvig.android.data.chat.database.ChangeTierQuoteEntity
 import com.hedvig.android.data.chat.database.DeductibleDbModel
+import com.hedvig.android.data.chat.database.InsurableLimitDBM
+import com.hedvig.android.data.chat.database.InsuranceVariantDocumentDBM
 import com.hedvig.android.data.chat.database.ProductVariantDbModel
+import com.hedvig.android.data.chat.database.ProductVariantPerilDBM
 import com.hedvig.android.data.chat.database.TierDbModel
 import com.hedvig.android.data.chat.database.UiMoneyDbModel
+import com.hedvig.android.data.productvariant.InsurableLimit
+import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import com.hedvig.android.data.productvariant.ProductVariant
+import com.hedvig.android.data.productvariant.ProductVariantPeril
 
 internal class TierQuoteMapper {
   fun quoteToDbModel(quote: TierDeductibleQuote): ChangeTierQuoteEntity {
@@ -106,9 +112,9 @@ internal class TierQuoteMapper {
       contractGroup = variant.contractGroup,
       contractType = variant.contractType,
       partner = variant.partner,
-      perils = variant.perils,
-      insurableLimits = variant.insurableLimits,
-      documents = variant.documents,
+      perils = variant.perils.map { productVariantPerilToDbModel(it) },
+      insurableLimits = variant.insurableLimits.map { insurableLimitToDbModel(it) },
+      documents = variant.documents.map { insuranceVariantDocumentToDbModel(it) },
       tierName = variant.tierName,
       tierNameLong = variant.tierNameLong,
     )
@@ -120,11 +126,69 @@ internal class TierQuoteMapper {
       contractGroup = variantDbModel.contractGroup,
       contractType = variantDbModel.contractType,
       partner = variantDbModel.partner,
-      perils = variantDbModel.perils,
-      insurableLimits = variantDbModel.insurableLimits,
-      documents = variantDbModel.documents,
+      perils = variantDbModel.perils.map { productVariantPerilFromDbModel(it) },
+      insurableLimits = variantDbModel.insurableLimits.map { insurableLimitFromDbModel(it) },
+      documents = variantDbModel.documents.map { insuranceVariantDocumentFromDbModel(it) },
       tierName = variantDbModel.tierName,
       tierNameLong = variantDbModel.tierNameLong,
+    )
+  }
+
+  fun productVariantPerilToDbModel(peril: ProductVariantPeril): ProductVariantPerilDBM {
+    return ProductVariantPerilDBM(
+      id = peril.id,
+      title = peril.title,
+      description = peril.description,
+      info = peril.info,
+      covered = peril.covered,
+      exceptions = peril.exceptions,
+      colorCode = peril.colorCode,
+    )
+  }
+
+  fun productVariantPerilFromDbModel(perilDb: ProductVariantPerilDBM): ProductVariantPeril {
+    return ProductVariantPeril(
+      id = perilDb.id,
+      title = perilDb.title,
+      description = perilDb.description,
+      info = perilDb.info,
+      covered = perilDb.covered,
+      exceptions = perilDb.exceptions,
+      colorCode = perilDb.colorCode,
+    )
+  }
+
+  fun insurableLimitToDbModel(limit: InsurableLimit): InsurableLimitDBM {
+    return InsurableLimitDBM(
+      label = limit.label,
+      limit = limit.limit,
+      description = limit.description,
+      type = limit.type,
+    )
+  }
+
+  fun insurableLimitFromDbModel(limitDb: InsurableLimitDBM): InsurableLimit {
+    return InsurableLimit(
+      label = limitDb.label,
+      limit = limitDb.limit,
+      description = limitDb.description,
+      type = limitDb.type,
+    )
+  }
+
+  fun insuranceVariantDocumentToDbModel(doc: InsuranceVariantDocument): InsuranceVariantDocumentDBM {
+    return InsuranceVariantDocumentDBM(
+      displayName = doc.displayName,
+      url = doc.url,
+      type = doc.type,
+    )
+  }
+
+  fun insuranceVariantDocumentFromDbModel(docDb: InsuranceVariantDocumentDBM): InsuranceVariantDocument {
+    return InsuranceVariantDocument(
+      displayName = docDb.displayName,
+      url = docDb.url,
+      type = docDb.type,
     )
   }
 }

@@ -5,6 +5,7 @@ import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.auth.listeners.UploadLanguagePreferenceToBackendUseCase
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.core.demomode.DemoManager
+import com.hedvig.android.data.changetier.data.ChangeTierRepository
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.feature.profile.aboutapp.AboutAppViewModel
 import com.hedvig.android.feature.profile.data.ChangeEmailSubscriptionPreferencesUseCase
@@ -41,6 +42,8 @@ val profileModule = module {
       get<EnableNotificationsReminderManager>(),
       get<FeatureManager>(),
       get<LogoutUseCase>(),
+      // todo: remove mock!
+      get<ChangeTierRepository>(),
     )
   }
   viewModel<EurobonusViewModel> {

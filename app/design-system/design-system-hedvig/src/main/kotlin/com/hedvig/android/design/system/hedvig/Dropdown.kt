@@ -130,8 +130,10 @@ fun DropdownWithDialog(
     modifier = modifier,
     style = style,
     onClick = {
-      onSelectorClick()
-      isDialogVisible = true
+      if (isEnabled) {
+        onSelectorClick()
+        isDialogVisible = true
+      }
     },
     errorText = errorText,
     isDialogOpen = isDialogVisible,
