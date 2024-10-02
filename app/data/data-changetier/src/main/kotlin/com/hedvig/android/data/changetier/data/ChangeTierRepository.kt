@@ -11,8 +11,6 @@ interface ChangeTierRepository {
     source: ChangeTierCreateSource,
   ): Either<ErrorMessage, ChangeTierDeductibleIntent>
 
-  suspend fun clearQuotes()
-
   suspend fun getQuoteById(id: String): TierDeductibleQuote // TODO: I guess it better to be Either too?
 
   suspend fun getQuotesById(ids: List<String>): List<TierDeductibleQuote>
@@ -27,6 +25,7 @@ internal class ChangeTierRepositoryImpl(
     insuranceId: String,
     source: ChangeTierCreateSource,
   ): Either<ErrorMessage, ChangeTierDeductibleIntent> {
+    tierQuoteDao.clearAllQuotes()
     val result = createChangeTierDeductibleIntentUseCase.invoke(insuranceId, source)
     result.onRight { intent ->
       val quotes = intent.quotes.map { quote ->
@@ -35,10 +34,6 @@ internal class ChangeTierRepositoryImpl(
       tierQuoteDao.insertAll(quotes)
     }
     return result
-  }
-
-  override suspend fun clearQuotes() {
-    tierQuoteDao.clearAllQuotes()
   }
 
   override suspend fun getQuoteById(id: String): TierDeductibleQuote {

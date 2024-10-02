@@ -10,10 +10,14 @@ import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectTierDestina
 import com.hedvig.android.feature.change.tier.ui.stepsummary.ChangeTierSummaryDestination
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryViewModel
 import com.hedvig.android.feature.change.tier.ui.sucess.SuccessScreen
+import com.hedvig.android.navigation.compose.DestinationNavTypeAware
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.typed.getRouteFromBackStack
 import com.hedvig.android.navigation.core.Navigator
+import kotlin.reflect.KType
+import kotlin.reflect.typeOf
+import kotlinx.datetime.LocalDate
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -25,6 +29,9 @@ fun NavGraphBuilder.changeTierGraph(
 ) {
   navgraph<ChooseTierGraphDestination>(
     startDestination = ChooseTierDestination.SelectTierAndDeductible::class,
+    destinationNavTypeAware = object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<InsuranceCustomizationParameters>())
+    },
   ) {
     navdestination<ChooseTierDestination.SelectTierAndDeductible> { backStackEntry ->
       val chooseTierGraphDestination = navController
@@ -70,7 +77,7 @@ fun NavGraphBuilder.changeTierGraph(
 
     navdestination<ChooseTierDestination.ChangingTierSuccess> { _ ->
       SuccessScreen(
-        activationDate,
+        LocalDate.fromEpochDays(activationDate),
         navigateUp = navigator::navigateUp,
       )
     }

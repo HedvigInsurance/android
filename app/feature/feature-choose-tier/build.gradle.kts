@@ -5,6 +5,7 @@ plugins {
   id("hedvig.android.library.compose")
   alias(libs.plugins.serialization) //todo: maybe not needed at all - check!
   alias(libs.plugins.squareSortDependencies)
+  id("kotlin-parcelize")
 }
 
 android {
@@ -26,6 +27,7 @@ dependencies {
   implementation(libs.koin.compose)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
+  implementation(libs.kotlinx.serialization.json)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.coreCommonPublic)

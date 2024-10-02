@@ -123,7 +123,6 @@ internal class TerminationSurveyPresenter(
     LaunchedEffect(loadBetterQuotesSource) {
       val source = loadBetterQuotesSource
       if (source != null) {
-        changeTierRepository.clearQuotes() // TODO: do we need to clear them somewhere else???
         loadBetterQuotesSource = null
         val insuranceId = terminateInsuranceRepository.getContractId()
         val result =
