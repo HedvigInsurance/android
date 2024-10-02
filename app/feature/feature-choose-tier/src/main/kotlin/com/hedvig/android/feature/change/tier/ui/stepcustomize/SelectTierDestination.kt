@@ -47,7 +47,6 @@ import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownSize.Sma
 import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownStyle.Label
 import com.hedvig.android.design.system.hedvig.DropdownItem.SimpleDropdownItem
 import com.hedvig.android.design.system.hedvig.DropdownWithDialog
-import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
@@ -78,6 +77,7 @@ internal fun SelectTierDestination(
   viewModel: SelectCoverageViewModel,
   navigateUp: () -> Unit,
   navigateToSummary: (quote: TierDeductibleQuote) -> Unit,
+  navigateToComparison: (listOfQuotes: List<TierDeductibleQuote>) -> Unit,
 ) {
   val uiState: SelectCoverageState by viewModel.uiState.collectAsStateWithLifecycle()
   Box(
@@ -89,7 +89,6 @@ internal fun SelectTierDestination(
           viewModel.emit(SelectCoverageEvent.Reload)
         },
       )
-
       Loading -> LoadingScreen()
       is Success -> {
         LaunchedEffect(state.uiState.quoteToNavigateFurther) {
@@ -98,22 +97,21 @@ internal fun SelectTierDestination(
             navigateToSummary(state.uiState.quoteToNavigateFurther) // todo: check here
           }
         }
-        var showComparisonTable by remember { mutableStateOf(false) }
+        LaunchedEffect(state.uiState.quotesToCompare) {
+          if (state.uiState.quotesToCompare != null) {
+            viewModel.emit(ClearNavigationStep)
+            navigateToComparison(state.uiState.quotesToCompare) // todo: check here
+          }
+        }
         SelectTierScreen(
           uiState = state.uiState,
           navigateUp = navigateUp,
           onCompareClick = {
-            showComparisonTable = true
+            viewModel.emit(SelectCoverageEvent.LaunchComparison)
           },
           onContinueClick = {
             viewModel.emit(SelectCoverageEvent.SubmitChosenQuoteToContinue)
           },
-        )
-        HedvigAlertDialog(
-          title = "Here be dragons", // TODO: instead of the dialog comparison screen here!
-          onConfirmClick = { showComparisonTable = false },
-          onDismissRequest = { showComparisonTable = false },
-          text = null,
         )
       }
     }
@@ -247,9 +245,7 @@ private fun CustomizationCard(
       Spacer(Modifier.height(16.dp))
       val tierSimpleItems = buildList {
         for (tier in tiers) {
-          tier.first.tierName?. let {
-            add(SimpleDropdownItem(it)) //todo: what happens if don't have tierName?
-          }
+          add(SimpleDropdownItem(tier.first.tierName))
         }
       }
       DropdownWithDialog(
@@ -270,19 +266,17 @@ private fun CustomizationCard(
       ) { onDismissRequest ->
         val listOfOptions = buildList {
           tiers.forEachIndexed { index, pair ->
-            pair.first.tierName?.let { //todo: what to do if it's null? can it be null?
-              add(
-                ExpandedRadioOptionData(
-                  chosenState = if (locallyChosenTier == pair.first) Chosen else NotChosen,
-                  title = it,
-                  premium = pair.second,
-                  info = pair.first.info,
-                  onRadioOptionClick = {
-                    locallyChosenTier = tiers.getOrNull(index)?.first
-                  },
-                ),
-              )
-            }
+            add(
+              ExpandedRadioOptionData(
+                chosenState = if (locallyChosenTier == pair.first) Chosen else NotChosen,
+                title = pair.first.tierName,
+                premium = pair.second,
+                info = pair.first.info,
+                onRadioOptionClick = {
+                  locallyChosenTier = tiers.getOrNull(index)?.first
+                },
+              ),
+            )
           }
         }
         DropdownContent(
@@ -335,7 +329,7 @@ private fun CustomizationCard(
         ) { onDismissRequest ->
           val listOfOptions = buildList {
             quotesForChosenTier.forEach { quote ->
-              quote.deductible?.let{
+              quote.deductible?.let {
                 add(
                   ExpandedRadioOptionData(
                     chosenState = if (locallyChosenQuote == quote) Chosen else NotChosen,
@@ -384,7 +378,7 @@ private fun CustomizationCard(
           )
         },
       )
-      if (!isCurrentChosen) {
+      if (!isCurrentChosen && data.activeDisplayPremium != null) {
         HedvigText(
           modifier = Modifier.fillMaxWidth(),
           textAlign = Companion.End,
@@ -562,7 +556,7 @@ private val dataForPreview = ContractData(
   activeDisplayPremium = "449 kr/mo",
 )
 
-private val quotesForPreview = listOf<TierDeductibleQuote>(
+private val quotesForPreview = listOf(
   TierDeductibleQuote(
     id = "id0",
     deductible = Deductible(

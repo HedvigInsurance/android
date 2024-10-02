@@ -5,7 +5,6 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.changetier.data.Deductible
-import com.hedvig.android.data.changetier.data.Tier
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.featureflags.FeatureManager
 
@@ -25,7 +24,6 @@ internal class GetCurrentContractDataUseCaseImpl(
 data class CurrentContractData(
   val currentExposureName: String,
   val currentDisplayPremium: UiMoney,
-  val tier: Tier,
   val deductible: Deductible,
   val productVariant: ProductVariant,
 )

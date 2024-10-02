@@ -31,8 +31,8 @@ data class ChangeTierDeductibleDisplayItem(
 )
 
 data class Tier(
-  val tierName: String?,
-  val tierLevel: Int?,
+  val tierName: String,
+  val tierLevel: Int,
   val info: String?,
 )
 
@@ -41,9 +41,9 @@ data class Deductible(
   val deductiblePercentage: Int?,
   val description: String,
 ) {
-  val optionText = if (deductiblePercentage != null && deductibleAmount!=null) {
-    "${deductibleAmount.toString()} + $deductiblePercentage%"
-  } else if (deductiblePercentage != null ) {
+  val optionText = if (deductiblePercentage != null && deductibleAmount != null) {
+    "$deductibleAmount + $deductiblePercentage%"
+  } else if (deductiblePercentage != null) {
     "$deductiblePercentage%"
   } else {
     deductibleAmount?.toString() ?: ""
@@ -56,7 +56,7 @@ enum class ChangeTierCreateSource {
   TERMINATION_BETTER_PRICE,
 }
 
-fun ChangeTierCreateSource.toSource(): ChangeTierDeductibleSource {
+internal fun ChangeTierCreateSource.toSource(): ChangeTierDeductibleSource {
   return when (this) {
     SELF_SERVICE -> ChangeTierDeductibleSource.SELF_SERVICE
     TERMINATION_BETTER_COVERAGE -> ChangeTierDeductibleSource.TERMINATION_BETTER_COVERAGE

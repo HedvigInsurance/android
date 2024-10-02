@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.data.changetier.data.ChangeTierDeductibleIntent
 import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
 import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.EmptyState
@@ -39,6 +40,10 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextDisplay
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
 import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion
+import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion.Action.DowngradePriceByChangingTier
+import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion.Action.UpdateAddress
+import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion.Action.UpgradeCoverageByChangingTier
+import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion.Redirect
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 import com.hedvig.android.feature.terminateinsurance.data.TerminationReason
 import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
@@ -54,8 +59,16 @@ internal fun TerminationSurveyDestination(
   openUrl: (String) -> Unit,
   navigateToNextStep: (step: TerminateInsuranceStep) -> Unit,
   navigateToSubOptions: ((List<TerminationSurveyOption>) -> Unit)?,
+  redirectToChangeTierFlow: (Pair<String, ChangeTierDeductibleIntent>) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  LaunchedEffect(uiState.intentAndIdToRedirectToChangeTierFlow) {
+    val intent = uiState.intentAndIdToRedirectToChangeTierFlow
+    if (intent != null) {
+      viewModel.emit(TerminationSurveyEvent.ClearNextStep)
+      redirectToChangeTierFlow(intent)
+    }
+  }
   LaunchedEffect(uiState.nextNavigationStep) {
     val nextStep = uiState.nextNavigationStep
     if (nextStep != null) {
@@ -93,6 +106,12 @@ internal fun TerminationSurveyDestination(
       viewModel.emit(TerminationSurveyEvent.ShowFullScreenEditText(it))
     },
     openUrl = openUrl,
+    tryToDowngradePrice = {
+      viewModel.emit(TerminationSurveyEvent.TryToDowngradePrice)
+    },
+    tryToUpgradeCoverage = {
+      viewModel.emit(TerminationSurveyEvent.TryToUpgradeCoverage)
+    },
   )
 }
 
@@ -108,6 +127,8 @@ private fun TerminationSurveyScreen(
   onLaunchFullScreenEditText: (option: TerminationSurveyOption) -> Unit,
   changeFeedbackForSelectedReason: (feedback: String?) -> Unit,
   onContinueClick: () -> Unit,
+  tryToUpgradeCoverage: () -> Unit,
+  tryToDowngradePrice: () -> Unit,
 ) {
   FreeTextOverlay(
     freeTextMaxLength = 2000,
@@ -176,12 +197,23 @@ private fun TerminationSurveyScreen(
                   val text = suggestion.description
                   val buttonText = suggestion.buttonTitle
                   val onSuggestionButtonClick: () -> Unit = when (suggestion) {
-                    is SurveyOptionSuggestion.Action.UpdateAddress -> {
+                    is UpdateAddress -> {
                       { navigateToMovingFlow() }
                     }
 
-                    is SurveyOptionSuggestion.Redirect -> {
+                    is Redirect -> {
                       { openUrl(suggestion.url) }
+                    }
+
+                    is DowngradePriceByChangingTier -> {
+                      {
+                        tryToDowngradePrice
+                      }
+                    }
+                    is UpgradeCoverageByChangingTier -> {
+                      {
+                        tryToUpgradeCoverage()
+                      }
                     }
                   }
                   HedvigNotificationCard(
@@ -249,6 +281,8 @@ private fun ShowSurveyScreenPreview(
         onCloseFullScreenEditText = {},
         onLaunchFullScreenEditText = {},
         openUrl = {},
+        tryToDowngradePrice = {},
+        tryToUpgradeCoverage = {},
       )
     }
   }
