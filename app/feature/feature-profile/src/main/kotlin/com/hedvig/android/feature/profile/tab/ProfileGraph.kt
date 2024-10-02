@@ -35,6 +35,7 @@ fun NavGraphBuilder.profileGraph(
   navigateToDeleteAccountFeature: (navBackStackEntry: NavBackStackEntry) -> Unit,
   openAppSettings: () -> Unit,
   onNavigateToNewConversation: (navBackStackEntry: NavBackStackEntry) -> Unit,
+  testChangeTierFlow: (navBackStackEntry: NavBackStackEntry) -> Unit,
   openUrl: (String) -> Unit,
 ) {
   navgraph<ProfileDestination.Graph>(
@@ -74,6 +75,10 @@ fun NavGraphBuilder.profileGraph(
         onNavigateToNewConversation = {
           onNavigateToNewConversation(backStackEntry)
         },
+        testChangeTierFlow = {
+          testChangeTierFlow(backStackEntry)
+        },
+        // todo: remove mock!!!
       )
     }
     navdestination<ProfileDestinations.Eurobonus>(

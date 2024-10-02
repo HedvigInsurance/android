@@ -5,6 +5,12 @@ import com.hedvig.android.data.changetier.data.ChangeTierDeductibleDisplayItem
 import com.hedvig.android.data.changetier.data.Deductible
 import com.hedvig.android.data.changetier.data.Tier
 import com.hedvig.android.data.changetier.data.TierDeductibleQuote
+import com.hedvig.android.data.chat.database.ChangeTierDeductibleDisplayItemDbModel
+import com.hedvig.android.data.chat.database.ChangeTierQuoteEntity
+import com.hedvig.android.data.chat.database.DeductibleDbModel
+import com.hedvig.android.data.chat.database.ProductVariantDbModel
+import com.hedvig.android.data.chat.database.TierDbModel
+import com.hedvig.android.data.chat.database.UiMoneyDbModel
 import com.hedvig.android.data.productvariant.ProductVariant
 
 internal class TierQuoteMapper {

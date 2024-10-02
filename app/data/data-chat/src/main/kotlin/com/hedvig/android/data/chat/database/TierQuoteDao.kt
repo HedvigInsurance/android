@@ -1,4 +1,4 @@
-package com.hedvig.android.data.changetier.database
+package com.hedvig.android.data.chat.database
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -6,7 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 
 @Dao
-internal interface TierQuoteDao {
+interface TierQuoteDao {
   @Insert(onConflict = OnConflictStrategy.REPLACE)
   suspend fun insertAll(quotes: List<ChangeTierQuoteEntity>)
 

@@ -2,8 +2,8 @@ package com.hedvig.android.data.changetier.data
 
 import arrow.core.Either
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.data.changetier.database.TierQuoteDao
 import com.hedvig.android.data.changetier.database.TierQuoteMapper
+import com.hedvig.android.data.chat.database.TierQuoteDao
 
 interface ChangeTierRepository {
   suspend fun startChangeTierIntentAndGetQuotesId(

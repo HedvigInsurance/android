@@ -4,8 +4,6 @@ plugins {
   alias(libs.plugins.squareSortDependencies)
   alias(libs.plugins.apollo)
   alias(libs.plugins.serialization)
-  alias(libs.plugins.ksp)
-  alias(libs.plugins.room)
 }
 
 dependencies {
@@ -25,21 +23,7 @@ dependencies {
   implementation(projects.dataProductVariantAndroid)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)
-
-  ksp(libs.room.ksp)
-  api(libs.paging.common)
-  api(libs.room.runtime)
-}
-
-room {
-  schemaDirectory(
-    project
-      .rootDir
-      .resolve("app")
-      .resolve("database") //todo: check here!!
-      .resolve("schemas")
-      .absolutePath,
-  )
+  implementation(projects.dataChat)
 }
 
 apollo {

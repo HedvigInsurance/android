@@ -1,9 +1,10 @@
-package com.hedvig.android.data.changetier.database
+package com.hedvig.android.data.chat.database
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.hedvig.android.core.uidata.UiCurrencyCode
+import com.hedvig.android.data.chat.database.converter.TierQuoteTypeConverter
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.InsurableLimit
@@ -12,7 +13,7 @@ import com.hedvig.android.data.productvariant.ProductVariantPeril
 import kotlinx.serialization.Serializable
 
 @Entity(tableName = "change_tier_quotes")
-internal data class ChangeTierQuoteEntity(
+data class ChangeTierQuoteEntity(
   @PrimaryKey
   val id: String,
   @TypeConverters(TierQuoteTypeConverter::class)

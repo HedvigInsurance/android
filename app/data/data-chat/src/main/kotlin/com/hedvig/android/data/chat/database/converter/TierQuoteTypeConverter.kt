@@ -1,6 +1,11 @@
-package com.hedvig.android.data.changetier.database
+package com.hedvig.android.data.chat.database.converter
 
 import androidx.room.TypeConverter
+import com.hedvig.android.data.chat.database.ChangeTierDeductibleDisplayItemDbModel
+import com.hedvig.android.data.chat.database.DeductibleDbModel
+import com.hedvig.android.data.chat.database.ProductVariantDbModel
+import com.hedvig.android.data.chat.database.TierDbModel
+import com.hedvig.android.data.chat.database.UiMoneyDbModel
 import com.hedvig.android.data.productvariant.InsurableLimit
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import com.hedvig.android.data.productvariant.ProductVariantPeril

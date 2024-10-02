@@ -47,6 +47,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
+import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigRedTextButton
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
@@ -85,6 +86,7 @@ internal fun ProfileDestination(
   openUrl: (String) -> Unit,
   onNavigateToNewConversation: () -> Unit,
   viewModel: ProfileViewModel,
+  testChangeTierFlow: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   ProfileScreen(
@@ -102,6 +104,7 @@ internal fun ProfileDestination(
     snoozeNotificationPermission = { viewModel.emit(ProfileUiEvent.SnoozeNotificationPermission) },
     onLogout = { viewModel.emit(ProfileUiEvent.Logout) },
     onNavigateToNewConversation = onNavigateToNewConversation,
+    testChangeTierFlow = testChangeTierFlow,
   )
 }
 
@@ -121,6 +124,7 @@ private fun ProfileScreen(
   onNavigateToNewConversation: () -> Unit,
   snoozeNotificationPermission: () -> Unit,
   onLogout: () -> Unit,
+  testChangeTierFlow: () -> Unit,
 ) {
   val systemBarInsetTopDp = with(LocalDensity.current) {
     WindowInsets.systemBars.getTop(this).toDp()
@@ -199,6 +203,14 @@ private fun ProfileScreen(
           Spacer(Modifier.height(16.dp))
         }
       }
+
+      // todo: remove mock!!!!
+      HedvigButton(
+        text = "Test change tier flow",
+        enabled = true,
+        onClick = testChangeTierFlow,
+      )
+
       HedvigRedTextButton(
         text = stringResource(R.string.LOGOUT_BUTTON),
         onClick = {

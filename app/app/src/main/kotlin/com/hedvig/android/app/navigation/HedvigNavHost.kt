@@ -59,6 +59,7 @@ import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.AppDestination.ClaimDetails
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
+import kotlinx.datetime.LocalDate
 
 @Composable
 internal fun HedvigNavHost(
@@ -288,6 +289,22 @@ internal fun HedvigNavHost(
       openUrl = openUrl,
       onNavigateToNewConversation = { backStackEntry ->
         navigateToNewConversation(backStackEntry)
+      },
+      // todo: remove mock!!
+      testChangeTierFlow = { backStackEntry ->
+        with(navigator) {
+          backStackEntry.navigate(
+            ChooseTierGraphDestination(
+              InsuranceCustomizationParameters(
+                insuranceId = "test_insurance",
+                activationDateEpochDays = LocalDate(2024, 10, 3).toEpochDays(),
+                currentTierLevel = 1,
+                currentTierName = "Standard",
+                quoteIds = listOf("id0", "id1", "id2", "id3", "id4"),
+              ),
+            ),
+          )
+        }
       },
     )
     cbmChatGraph(
