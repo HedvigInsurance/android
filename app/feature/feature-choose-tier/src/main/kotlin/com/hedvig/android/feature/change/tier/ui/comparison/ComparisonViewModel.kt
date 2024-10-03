@@ -32,11 +32,10 @@ private class ComparisonPresenter(
 ) : MoleculePresenter<ComparisonEvent, ComparisonState> {
   @Composable
   override fun MoleculePresenterScope<ComparisonEvent>.present(lastState: ComparisonState): ComparisonState {
-
     var currentState by remember { mutableStateOf(lastState) }
 
     LaunchedEffect(Unit) {
-      //TODO: add error state!!! and either!
+      // TODO: add error state!!! and either!
       val result = tierRepository.getQuotesById(quoteIds)
       currentState = Success(result)
     }
@@ -54,7 +53,7 @@ private class ComparisonPresenter(
 internal sealed interface ComparisonState {
   data object Loading : ComparisonState
 
-  data class Success ( val quotes: List<TierDeductibleQuote>): ComparisonState
+  data class Success(val quotes: List<TierDeductibleQuote>) : ComparisonState
 }
 
 internal sealed interface ComparisonEvent {

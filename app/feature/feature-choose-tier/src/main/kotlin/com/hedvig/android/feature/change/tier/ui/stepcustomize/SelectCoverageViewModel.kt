@@ -110,7 +110,7 @@ private class SelectCoveragePresenter(
 
         LaunchComparison -> {
           if (currentPartialState !is PartialUiState.Success) return@CollectEvents
-           val flattened = (currentPartialState as PartialUiState.Success).map.values.flatten().distinctBy {
+          val flattened = (currentPartialState as PartialUiState.Success).map.values.flatten().distinctBy {
             it.tier
           }
           quotesToCompare =
@@ -161,7 +161,7 @@ private class SelectCoveragePresenter(
               }
             logcat { "Mariia: got this current: $current" }
             current?.let {
-                tierRepository.addQuotesToDb(listOf(it))
+              tierRepository.addQuotesToDb(listOf(it))
             }
             val quotes = buildList {
               addAll(quotesResult)

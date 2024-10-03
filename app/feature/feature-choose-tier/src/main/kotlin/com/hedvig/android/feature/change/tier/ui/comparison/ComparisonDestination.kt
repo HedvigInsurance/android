@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -45,10 +43,7 @@ import com.hedvig.android.logger.logcat
 import hedvig.resources.R
 
 @Composable
-internal fun ComparisonDestination(
-  viewModel: ComparisonViewModel,
-  navigateUp: () -> Unit,
-) {
+internal fun ComparisonDestination(viewModel: ComparisonViewModel, navigateUp: () -> Unit) {
   val uiState: ComparisonState by viewModel.uiState.collectAsStateWithLifecycle()
   when (val state = uiState) {
     Loading -> {
@@ -65,15 +60,12 @@ internal fun ComparisonDestination(
 }
 
 @Composable
-private fun ComparisonScreen(
-  uiState: ComparisonState.Success,
-  navigateUp: () -> Unit,
-) {
+private fun ComparisonScreen(uiState: ComparisonState.Success, navigateUp: () -> Unit) {
   logcat { "mariia comparison: ${uiState.quotes}" }
   HedvigScaffold(navigateUp = navigateUp) {
     var selectedTabIndex by rememberSaveable { mutableIntStateOf(0) }
     HedvigText(
-      text = stringResource(R.string.TIER_FLOW_COMPARE_BUTTON), //todo: change copy??
+      text = stringResource(R.string.TIER_FLOW_COMPARE_BUTTON), // todo: change copy??
       textAlign = TextAlign.Center,
       modifier = Modifier
         .fillMaxWidth()
@@ -81,9 +73,10 @@ private fun ComparisonScreen(
     )
     Spacer(Modifier.height(20.dp))
     val titles = uiState.quotes.map { it.tier.tierName }
-    logcat { "mariia comparison: ${titles}" }
+    logcat { "mariia comparison: $titles" }
     CoveragePagerSelector(
-      selectedTabIndex = selectedTabIndex, selectTabIndex = { selectedTabIndex = it },
+      selectedTabIndex = selectedTabIndex,
+      selectTabIndex = { selectedTabIndex = it },
       tabTitles = titles,
       modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
     )
@@ -100,9 +93,9 @@ private fun ComparisonScreen(
       },
     ) { index ->
       Column(Modifier.padding(horizontal = 16.dp)) {
-        val quote = uiState.quotes[index] //todo: not safe!!
-        //todo: these are not display items maybe????
-        quote.displayItems.forEachIndexed() { itemIndex, item ->
+        val quote = uiState.quotes[index] // todo: not safe!!
+        // todo: these are not display items maybe????
+        quote.displayItems.forEachIndexed { itemIndex, item ->
           item.displaySubtitle?.let { subTitle ->
             HorizontalItemsWithMaximumSpaceTaken(
               startSlot = {
@@ -139,7 +132,6 @@ private fun ComparisonScreen(
     }
   }
 }
-
 
 @Composable
 private fun CoveragePagerSelector(
