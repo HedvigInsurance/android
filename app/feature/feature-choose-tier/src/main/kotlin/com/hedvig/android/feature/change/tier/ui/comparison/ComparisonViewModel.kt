@@ -1,7 +1,13 @@
 package com.hedvig.android.feature.change.tier.ui.comparison
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import com.hedvig.android.data.changetier.data.ChangeTierRepository
+import com.hedvig.android.data.changetier.data.TierDeductibleQuote
 import com.hedvig.android.feature.change.tier.ui.comparison.ComparisonEvent.ShowTab
 import com.hedvig.android.feature.change.tier.ui.comparison.ComparisonState.Loading
 import com.hedvig.android.feature.change.tier.ui.comparison.ComparisonState.Success
@@ -26,21 +32,27 @@ private class ComparisonPresenter(
 ) : MoleculePresenter<ComparisonEvent, ComparisonState> {
   @Composable
   override fun MoleculePresenterScope<ComparisonEvent>.present(lastState: ComparisonState): ComparisonState {
+
+    var currentState by remember { mutableStateOf(lastState) }
+
+    LaunchedEffect(Unit) {
+
+    }
+
     CollectEvents { event ->
       when (event) {
         is ShowTab -> TODO()
       }
     }
     // todo!!!!
-    return Success
+    return currentState
   }
 }
 
 internal sealed interface ComparisonState {
   data object Loading : ComparisonState
 
-  data object Success : ComparisonState
-  //   val quote: TierDeductibleQuote,
+  data class Success ( val quotes: List<TierDeductibleQuote>): ComparisonState
 }
 
 internal sealed interface ComparisonEvent {
