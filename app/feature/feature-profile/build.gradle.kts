@@ -58,9 +58,6 @@ dependencies {
   implementation(projects.pullrefresh)
   implementation(projects.theme)
 
-  //todo: remove mock!!
-  implementation(projects.dataChangetier)
-
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)

@@ -30,7 +30,6 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,7 +47,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
-import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigRedTextButton
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
@@ -62,8 +60,6 @@ import com.hedvig.android.design.system.hedvig.icon.InfoOutline
 import com.hedvig.android.design.system.hedvig.icon.MultipleDocuments
 import com.hedvig.android.design.system.hedvig.icon.Settings
 import com.hedvig.android.design.system.hedvig.plus
-import com.hedvig.android.feature.profile.tab.ProfileUiEvent.RemoveTier
-import com.hedvig.android.feature.profile.tab.ProfileUiState.Success
 import com.hedvig.android.memberreminders.ui.MemberReminderCards
 import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
@@ -89,19 +85,8 @@ internal fun ProfileDestination(
   openUrl: (String) -> Unit,
   onNavigateToNewConversation: () -> Unit,
   viewModel: ProfileViewModel,
-  testChangeTierFlow: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-  // todo: remove mock!!!!!!!
-  if (uiState is Success) {
-    LaunchedEffect((uiState as Success).canNavigateToTier) {
-      if ((uiState as Success).canNavigateToTier) {
-        testChangeTierFlow()
-        viewModel.emit(ProfileUiEvent.RemoveTier)
-      }
-    }
-  }
 
   ProfileScreen(
     uiState = uiState,
@@ -118,9 +103,6 @@ internal fun ProfileDestination(
     snoozeNotificationPermission = { viewModel.emit(ProfileUiEvent.SnoozeNotificationPermission) },
     onLogout = { viewModel.emit(ProfileUiEvent.Logout) },
     onNavigateToNewConversation = onNavigateToNewConversation,
-    tryTiers = {
-      viewModel.emit(ProfileUiEvent.TryTiers)
-    },
   )
 }
 
@@ -140,8 +122,6 @@ private fun ProfileScreen(
   onNavigateToNewConversation: () -> Unit,
   snoozeNotificationPermission: () -> Unit,
   onLogout: () -> Unit,
-  // todo: remove mock!!!!!!!
-  tryTiers: () -> Unit,
 ) {
   val systemBarInsetTopDp = with(LocalDensity.current) {
     WindowInsets.systemBars.getTop(this).toDp()
@@ -220,21 +200,14 @@ private fun ProfileScreen(
           Spacer(Modifier.height(16.dp))
         }
       }
-
-      // todo: remove mock!!!!
-      HedvigButton(
-        text = "Test change tier flow",
-        enabled = true,
-        onClick = tryTiers,
-      )
-
       HedvigRedTextButton(
         text = stringResource(R.string.LOGOUT_BUTTON),
         onClick = {
           showLogoutDialog = true
         },
         modifier = Modifier
-          .padding(horizontal = 16.dp).fillMaxWidth()
+          .padding(horizontal = 16.dp)
+          .fillMaxWidth()
           .testTag("logout"),
       )
       Spacer(Modifier.height(16.dp))
