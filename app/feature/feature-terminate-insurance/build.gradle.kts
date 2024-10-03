@@ -49,6 +49,7 @@ dependencies {
   implementation(projects.navigationCompose)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
+  implementation(projects.dataChangetier)
 
   testImplementation(libs.apollo.testingSupport)
   testImplementation(libs.assertK)
