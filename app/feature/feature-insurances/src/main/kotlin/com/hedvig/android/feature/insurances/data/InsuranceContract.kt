@@ -21,7 +21,6 @@ data class InsuranceContract(
   val supportsAddressChange: Boolean,
   val supportsEditCoInsured: Boolean,
   val isTerminated: Boolean,
-  val tierName: String? = null,
 )
 
 data class InsuranceAgreement(

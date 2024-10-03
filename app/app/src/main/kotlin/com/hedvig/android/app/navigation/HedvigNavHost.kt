@@ -16,9 +16,6 @@ import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.toClaimFlowDestination
-import com.hedvig.android.feature.change.tier.navigation.ChooseTierGraphDestination
-import com.hedvig.android.feature.change.tier.navigation.InsuranceCustomizationParameters
-import com.hedvig.android.feature.change.tier.navigation.changeTierGraph
 import com.hedvig.android.feature.changeaddress.navigation.changeAddressGraph
 import com.hedvig.android.feature.chat.navigation.ChatDestination
 import com.hedvig.android.feature.chat.navigation.ChatDestinations
@@ -161,14 +158,6 @@ internal fun HedvigNavHost(
       openUrl = openUrl,
       navigator = navigator,
     )
-    changeTierGraph(
-      openUrl = openUrl,
-      navigator = navigator,
-      navController = hedvigAppState.navController,
-      onNavigateToNewConversation = { backStackEntry ->
-        navigateToNewConversation(backStackEntry)
-      },
-    )
     insuranceGraph(
       nestedGraphs = {
         terminateInsuranceGraph(
@@ -204,27 +193,6 @@ internal fun HedvigNavHost(
              */
             if (!hedvigAppState.navController.popBackStack<TerminateInsuranceGraphDestination>(inclusive = true)) {
               finishApp()
-            }
-          },
-          redirectToChangeTierFlow = { backStackEntry, idWithIntent ->
-            with(navigator) {
-              backStackEntry.navigate(
-                destination = ChooseTierGraphDestination(
-                  InsuranceCustomizationParameters(
-                    insuranceId = idWithIntent.first,
-                    activationDateEpochDays = idWithIntent.second.activationDate.toEpochDays(),
-                    currentTierLevel = idWithIntent.second.currentTierLevel,
-                    currentTierName = idWithIntent.second.currentTierName,
-                    quoteIds = idWithIntent.second.quotes.map {
-                      it.id
-                    },
-                  ),
-                ),
-              ) {
-                typedPopUpTo<TerminateInsuranceGraphDestination> {
-                  inclusive = true
-                }
-              }
             }
           },
         )

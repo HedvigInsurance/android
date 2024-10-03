@@ -41,9 +41,7 @@ internal sealed interface TerminateInsuranceStep {
   data class UnknownStep(val message: String? = "") : TerminateInsuranceStep
 }
 
-internal fun TerminationFlowStepFragment.CurrentStep.toTerminateInsuranceStep(
-  isTierFeatureEnabled: Boolean,
-): TerminateInsuranceStep {
+internal fun TerminationFlowStepFragment.CurrentStep.toTerminateInsuranceStep(): TerminateInsuranceStep {
   return when (this) {
     is TerminationFlowStepFragment.FlowTerminationDateStepCurrentStep -> {
       TerminateInsuranceStep.TerminateInsuranceDate(minDate, maxDate)
@@ -60,7 +58,7 @@ internal fun TerminationFlowStepFragment.CurrentStep.toTerminateInsuranceStep(
 
     is TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep -> {
       TerminateInsuranceStep.Survey(
-        options.toOptionList(isTierFeatureEnabled),
+        options.toOptionList(),
       )
     }
 
@@ -68,24 +66,22 @@ internal fun TerminationFlowStepFragment.CurrentStep.toTerminateInsuranceStep(
   }
 }
 
-private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Option>.toOptionList(
-  isTierFeatureEnabled: Boolean,
-): List<TerminationSurveyOption> {
+private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Option>.toOptionList():
+  List<TerminationSurveyOption> {
   return map {
     TerminationSurveyOption(
       id = it.id,
       title = it.title,
       listIndex = this.indexOf(it),
       feedBackRequired = it.feedBack != null,
-      subOptions = it.subOptions?.toSubOptionList(isTierFeatureEnabled) ?: listOf(),
-      suggestion = it.suggestion?.toSuggestion(isTierFeatureEnabled),
+      subOptions = it.subOptions?.toSubOptionList() ?: listOf(),
+      suggestion = it.suggestion?.toSuggestion(),
     )
   }
 }
 
-private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Option.SubOption>.toSubOptionList(
-  isTierFeatureEnabled: Boolean,
-): List<TerminationSurveyOption> {
+private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Option.SubOption>.toSubOptionList():
+  List<TerminationSurveyOption> {
   return map {
     TerminationSurveyOption(
       id = it.id,
@@ -93,62 +89,25 @@ private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentSte
       feedBackRequired = it.feedBack != null,
       subOptions = listOf(),
       listIndex = this.indexOf(it),
-      suggestion = it.suggestion?.toSuggestion(isTierFeatureEnabled),
+      suggestion = it.suggestion?.toSuggestion(),
     )
   }
 }
 
-private fun FlowTerminationSurveyOptionSuggestionFragment.toSuggestion(
-  isTierFeatureEnabled: Boolean,
-): SurveyOptionSuggestion? {
+private fun FlowTerminationSurveyOptionSuggestionFragment.toSuggestion(): SurveyOptionSuggestion? {
   return when (this) {
     is FlowTerminationSurveyOptionSuggestionActionFlowTerminationSurveyOptionSuggestionFragment -> {
-      when (action) {
-        FlowTerminationSurveyRedirectAction.UPDATE_ADDRESS -> {
-          SurveyOptionSuggestion.Action.UpdateAddress(
-            description = description,
-            buttonTitle = buttonTitle,
-          )
-        }
-        FlowTerminationSurveyRedirectAction.CHANGE_TIER_FOUND_BETTER_PRICE -> {
-          if (isTierFeatureEnabled) {
-            SurveyOptionSuggestion.Action.DowngradePriceByChangingTier(
-              description = description,
-              buttonTitle = buttonTitle,
-            )
-          } else {
-            logcat(
-              LogPriority.ERROR,
-              message = {
-                "FlowTerminationSurveyStepCurrentStep suggestion: CHANGE_TIER_FOUND_BETTER_PRICE but tier feature flag is disabled!"
-              },
-            )
-            null
-          }
-        }
-        FlowTerminationSurveyRedirectAction.CHANGE_TIER_MISSING_COVERAGE_AND_TERMS -> {
-          if (isTierFeatureEnabled) {
-            SurveyOptionSuggestion.Action.UpgradeCoverageByChangingTier(
-              description = description,
-              buttonTitle = buttonTitle,
-            )
-          } else {
-            logcat(
-              LogPriority.ERROR,
-              message = {
-                "FlowTerminationSurveyStepCurrentStep suggestion: CHANGE_TIER_MISSING_COVERAGE_AND_TERMS but tier feature flag is disabled!"
-              },
-            )
-            null
-          }
-        }
-        else -> {
-          logcat(
-            LogPriority.WARN,
-            message = { "FlowTerminationSurveyStepCurrentStep unknown suggestion type: ${this.action.rawValue}" },
-          )
-          null
-        }
+      if (action == FlowTerminationSurveyRedirectAction.UPDATE_ADDRESS) {
+        SurveyOptionSuggestion.Action.UpdateAddress(
+          description = description,
+          buttonTitle = buttonTitle,
+        )
+      } else {
+        logcat(
+          LogPriority.WARN,
+          message = { "FlowTerminationSurveyStepCurrentStep unknown suggestion type: ${this.action.rawValue}" },
+        )
+        null
       }
     }
 

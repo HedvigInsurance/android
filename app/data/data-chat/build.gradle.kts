@@ -4,7 +4,6 @@ plugins {
   alias(libs.plugins.ksp)
   alias(libs.plugins.room)
   alias(libs.plugins.squareSortDependencies)
-  alias(libs.plugins.serialization)
 }
 
 dependencies {
@@ -17,12 +16,6 @@ dependencies {
   implementation(libs.sqlite.bundled)
   implementation(libs.uuid)
   implementation(projects.coreCommonPublic)
-  implementation(projects.dataProductVariantPublic)
-  implementation(projects.dataContractPublic)
-  implementation(projects.coreUiData)
-  implementation(libs.kotlinx.serialization.core)
-  implementation(libs.kotlinx.serialization.json)
-
 }
 
 room {

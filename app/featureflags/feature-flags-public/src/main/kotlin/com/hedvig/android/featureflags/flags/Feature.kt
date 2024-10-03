@@ -16,5 +16,4 @@ enum class Feature(
   ),
   EDIT_COINSURED("Let member edit co insured"),
   HELP_CENTER("Enable the help center screens"),
-  TIER("Let members change tier"),
 }

@@ -177,13 +177,12 @@ fun HedvigDialog(
   onDismissRequest: () -> Unit,
   modifier: Modifier = Modifier,
   applyDefaultPadding: Boolean = true,
-  dialogProperties: DialogProperties = DialogDefaults.defaultProperties,
   style: DialogStyle = DialogDefaults.defaultDialogStyle,
   content: @Composable () -> Unit,
 ) {
   Dialog(
     onDismissRequest = onDismissRequest,
-    properties = dialogProperties,
+    properties = DialogDefaults.defaultProperties,
   ) {
     Surface(
       shape = DialogDefaults.shape,
