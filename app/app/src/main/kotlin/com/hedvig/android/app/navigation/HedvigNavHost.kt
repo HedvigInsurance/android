@@ -209,7 +209,7 @@ internal fun HedvigNavHost(
           redirectToChangeTierFlow = { backStackEntry, idWithIntent ->
             with(navigator) {
               backStackEntry.navigate(
-                ChooseTierGraphDestination(
+                destination = ChooseTierGraphDestination(
                   InsuranceCustomizationParameters(
                     insuranceId = idWithIntent.first,
                     activationDateEpochDays = idWithIntent.second.activationDate.toEpochDays(),
@@ -220,7 +220,11 @@ internal fun HedvigNavHost(
                     },
                   ),
                 ),
-              )
+              ) {
+                typedPopUpTo<TerminateInsuranceGraphDestination> {
+                  inclusive = true
+                }
+              }
             }
           },
         )
