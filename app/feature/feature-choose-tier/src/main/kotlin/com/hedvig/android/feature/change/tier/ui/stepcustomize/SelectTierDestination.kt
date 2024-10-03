@@ -46,6 +46,7 @@ import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownStyle.La
 import com.hedvig.android.design.system.hedvig.DropdownItem.SimpleDropdownItem
 import com.hedvig.android.design.system.hedvig.DropdownWithDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigCircularProgressIndicator
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -165,7 +166,12 @@ private fun FailureScreen(reload: () -> Unit, navigateUp: () -> Unit, reason: Fa
 
 @Composable
 private fun LoadingScreen() {
-  // todo
+  Box(
+    Modifier.fillMaxSize(),
+    contentAlignment = Alignment.Center,
+  ) {
+    HedvigCircularProgressIndicator()
+  }
 }
 
 @Composable

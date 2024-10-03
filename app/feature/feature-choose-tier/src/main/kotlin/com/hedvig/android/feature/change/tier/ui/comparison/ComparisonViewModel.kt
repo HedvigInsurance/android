@@ -36,7 +36,9 @@ private class ComparisonPresenter(
     var currentState by remember { mutableStateOf(lastState) }
 
     LaunchedEffect(Unit) {
-
+      //TODO: add error state!!! and either!
+      val result = tierRepository.getQuotesById(quoteIds)
+      currentState = Success(result)
     }
 
     CollectEvents { event ->
@@ -44,7 +46,7 @@ private class ComparisonPresenter(
         is ShowTab -> TODO()
       }
     }
-    // todo!!!!
+
     return currentState
   }
 }

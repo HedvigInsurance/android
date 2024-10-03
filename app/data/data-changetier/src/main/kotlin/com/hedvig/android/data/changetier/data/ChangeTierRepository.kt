@@ -15,6 +15,8 @@ interface ChangeTierRepository {
   suspend fun getQuoteById(id: String): TierDeductibleQuote // TODO: I guess it better to be Either too?
 
   suspend fun getQuotesById(ids: List<String>): List<TierDeductibleQuote>
+
+  suspend fun addQuotesToDb(quotes: List<TierDeductibleQuote>)
 }
 
 internal class ChangeTierRepositoryImpl(
@@ -48,5 +50,12 @@ internal class ChangeTierRepositoryImpl(
     return list.map { entity ->
       mapper.dbModelToQuote(entity)
     }
+  }
+
+  override suspend fun addQuotesToDb(quotes: List<TierDeductibleQuote>) {
+    val mapped = quotes.map { quote ->
+      mapper.quoteToDbModel(quote)
+    }
+    tierQuoteDao.insertAll(mapped)
   }
 }
