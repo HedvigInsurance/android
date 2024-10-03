@@ -171,11 +171,12 @@ private fun TerminationSurveyScreen(
               GENERAL -> stringResource(R.string.GENERAL_ERROR_BODY)
               // todo: remove hardcoded string!!
               EMPTY_QUOTES -> "Turns out you're already at the best possible coverage and price!"
-              null -> TODO()
+              null -> ""
             }
             val title = when (uiState.errorWhileLoadingNextStep) {
               GENERAL -> stringResource(R.string.GENERAL_ERROR_BODY)
               EMPTY_QUOTES -> "Oops!" // todo: another copy??
+              null -> ""
             }
             EmptyState(
               modifier = Modifier
