@@ -16,6 +16,8 @@ import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepo
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 import com.hedvig.android.feature.terminateinsurance.data.TerminationReason
 import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
+import com.hedvig.android.feature.terminateinsurance.step.survey.ErrorReason.EMPTY_QUOTES
+import com.hedvig.android.feature.terminateinsurance.step.survey.ErrorReason.GENERAL
 import com.hedvig.android.feature.terminateinsurance.step.survey.SurveyNavigationStep.NavigateToSubOptions
 import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyEvent.ChangeFeedbackForSelectedReason
 import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyEvent.ClearNextStep
@@ -87,12 +89,12 @@ internal class TerminationSurveyPresenter(
         }
 
         is SelectOption -> {
-          currentState = currentState.copy(selectedOption = event.option, errorWhileLoadingNextStep = false)
+          currentState = currentState.copy(selectedOption = event.option, errorWhileLoadingNextStep = null)
         }
 
         is Continue -> {
           val selectedOption = currentState.selectedOption ?: return@CollectEvents
-          currentState = currentState.copy(errorWhileLoadingNextStep = false)
+          currentState = currentState.copy(errorWhileLoadingNextStep = null)
           if (selectedOption.subOptions.isNotEmpty()) {
             currentState = currentState.copy(nextNavigationStep = NavigateToSubOptions)
           } else {
@@ -122,25 +124,40 @@ internal class TerminationSurveyPresenter(
 
     LaunchedEffect(loadBetterQuotesSource) {
       val source = loadBetterQuotesSource
+      logcat { "Mariiaaa: $source" }
       if (source != null) {
-        loadBetterQuotesSource = null
+        currentState = currentState.copy(actionButtonLoading = true, errorWhileLoadingNextStep = null)
         val insuranceId = terminateInsuranceRepository.getContractId()
         val result =
           changeTierRepository.startChangeTierIntentAndGetQuotesId(insuranceId = insuranceId, source = source)
+        logcat { "Mariiaaa: $result" }
         result.fold(
           ifLeft = { errorMessage ->
             logcat(LogPriority.ERROR) {
               "Received error while creating changeTierDeductibleIntent from termination flow"
             }
             currentState = currentState.copy(
-              errorWhileLoadingNextStep = true, // todo: here we don't customise the error message, but we should
+              actionButtonLoading = false,
+              errorWhileLoadingNextStep = GENERAL,
             )
+            loadBetterQuotesSource = null
           },
           ifRight = { changeTierIntent ->
-            currentState = currentState.copy(
-              errorWhileLoadingNextStep = false,
-              intentAndIdToRedirectToChangeTierFlow = insuranceId to changeTierIntent,
-            )
+            logcat { "Mariiaaa: ${changeTierIntent.quotes.map { it.tier to it.deductible }}" }
+            if (changeTierIntent.quotes.isEmpty()) {
+              currentState = currentState.copy(
+                actionButtonLoading = false,
+                errorWhileLoadingNextStep = EMPTY_QUOTES,
+              )
+              loadBetterQuotesSource = null
+            } else {
+              currentState = currentState.copy(
+                errorWhileLoadingNextStep = null,
+                actionButtonLoading = false,
+                intentAndIdToRedirectToChangeTierFlow = insuranceId to changeTierIntent,
+              )
+              loadBetterQuotesSource = null
+            }
           },
         )
       }
@@ -159,7 +176,7 @@ internal class TerminationSurveyPresenter(
               loadNextStep = false
               currentState.copy(
                 navigationStepLoadingForReason = null,
-                errorWhileLoadingNextStep = true,
+                errorWhileLoadingNextStep = GENERAL,
               )
             },
             ifRight = { step ->
@@ -169,7 +186,7 @@ internal class TerminationSurveyPresenter(
               loadNextStep = false
               currentState.copy(
                 navigationStepLoadingForReason = null,
-                errorWhileLoadingNextStep = false,
+                errorWhileLoadingNextStep = null,
                 nextNavigationStep = SurveyNavigationStep.NavigateToNextTerminationStep(step),
               )
             },
@@ -213,8 +230,9 @@ internal data class TerminationSurveyState(
   val nextNavigationStep: SurveyNavigationStep? = null,
   // this one is not Boolean entirely for the sake of more convenient testing
   val navigationStepLoadingForReason: TerminationReason? = null,
-  val errorWhileLoadingNextStep: Boolean = false,
+  val errorWhileLoadingNextStep: ErrorReason? = null,
   val intentAndIdToRedirectToChangeTierFlow: Pair<String, ChangeTierDeductibleIntent>? = null,
+  val actionButtonLoading: Boolean = false,
 ) {
   val continueAllowed: Boolean = selectedOption != null && selectedOption.suggestion == null
 }
@@ -223,4 +241,9 @@ internal sealed interface SurveyNavigationStep {
   data class NavigateToNextTerminationStep(val step: TerminateInsuranceStep) : SurveyNavigationStep
 
   data object NavigateToSubOptions : SurveyNavigationStep
+}
+
+internal enum class ErrorReason {
+  GENERAL,
+  EMPTY_QUOTES,
 }

@@ -3,18 +3,21 @@ package com.hedvig.android.data.changetier.data
 import arrow.core.Either
 import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.cache.normalized.FetchPolicy
+import com.apollographql.apollo.cache.normalized.fetchPolicy
+import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
+import com.hedvig.android.data.productVariant.android.toProductVariant
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority.ERROR
 import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.flow.first
-import kotlinx.datetime.LocalDate
 import octopus.ChangeTierDeductibleCreateIntentMutation
 
 internal interface CreateChangeTierDeductibleIntentUseCase {
@@ -38,61 +41,60 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
         logcat(ERROR) { "Tried to get changeTierQuotes when feature flag is disabled!" }
         raise(ErrorMessage())
       } else {
-        ChangeTierDeductibleIntent(
-          activationDate = LocalDate(2024, 10, 3),
-          currentTierName = "Standard",
-          currentTierLevel = 1,
-          quotes = quotesForPreview,
-        )
-      }
-      // todo: remove mock!!!
+//        ChangeTierDeductibleIntent(
+//          activationDate = LocalDate(2024, 10, 3),
+//          currentTierName = "Standard",
+//          currentTierLevel = 1,
+//          quotes = quotesForPreview,
+//        )
+        // todo: remove mock!!!
 
-//        val changeTierDeductibleResponse = apolloClient
-//          .mutation(
-//            ChangeTierDeductibleCreateIntentMutation(
-//              contractId = insuranceId,
-//              source = source.toSource(),
-//            ),
-//          )
-//          .fetchPolicy(FetchPolicy.NetworkOnly)
-//          .safeExecute()
-//        val intent = changeTierDeductibleResponse.getOrNull()?.changeTierDeductibleCreateIntent?.intent
-//        if (intent != null) {
-//          try {
-//            val quotes = intent.quotes.map {
-//              TierDeductibleQuote(
-//                id = it.id,
-//                deductible = it.deductible.toDeductible(),
-//                displayItems = it.displayItems.toDisplayItems(),
-//                premium = UiMoney.fromMoneyFragment(it.premium),
-//                productVariant = it.productVariant.toProductVariant(),
-//                tier = Tier(
-//                  tierName = it.tierName!!,
-//                  tierLevel = it.tierLevel!!,
-//                  info = it.productVariant.displayNameTierLong,
-//                ),
-//              )
-//            }
-//            ChangeTierDeductibleIntent(
-//              activationDate = intent.activationDate,
-//              currentTierLevel = intent.currentTierLevel,
-//              currentTierName = intent.currentTierName,
-//              quotes = quotes,
-//            )
-//          } catch (e: Exception) {
-//            logcat(ERROR) { "Tried to get changeTierQuotes but quotes have tierLevel or tierName == null!" }
-//            raise(ErrorMessage())
-//          }
-//        } else {
-//          if (changeTierDeductibleResponse.isRight()) {
-//            logcat(ERROR) { "Tried to get changeTierQuotes but output intent is null!" }
-//          }
-//          if (changeTierDeductibleResponse.isLeft()) {
-//            logcat(ERROR) { "Tried to get changeTierQuotes but got error: $changeTierDeductibleResponse!" }
-//          }
-//          raise(ErrorMessage())
-//        }
-//      }
+        val changeTierDeductibleResponse = apolloClient
+          .mutation(
+            ChangeTierDeductibleCreateIntentMutation(
+              contractId = insuranceId,
+              source = source.toSource(),
+            ),
+          )
+          .fetchPolicy(FetchPolicy.NetworkOnly)
+          .safeExecute()
+        val intent = changeTierDeductibleResponse.getOrNull()?.changeTierDeductibleCreateIntent?.intent
+        if (intent != null) {
+          try {
+            val quotes = intent.quotes.map {
+              TierDeductibleQuote(
+                id = it.id,
+                deductible = it.deductible.toDeductible(),
+                displayItems = it.displayItems.toDisplayItems(),
+                premium = UiMoney.fromMoneyFragment(it.premium),
+                productVariant = it.productVariant.toProductVariant(),
+                tier = Tier(
+                  tierName = it.tierName!!,
+                  tierLevel = it.tierLevel!!,
+                  info = it.productVariant.displayNameTierLong,
+                ),
+              )
+            }
+            ChangeTierDeductibleIntent(
+              activationDate = intent.activationDate,
+              currentTierLevel = intent.currentTierLevel,
+              currentTierName = intent.currentTierName,
+              quotes = quotes,
+            )
+          } catch (e: Exception) {
+            logcat(ERROR) { "Tried to get changeTierQuotes but quotes have tierLevel or tierName == null!" }
+            raise(ErrorMessage())
+          }
+        } else {
+          if (changeTierDeductibleResponse.isRight()) {
+            logcat(ERROR) { "Tried to get changeTierQuotes but output intent is null!" }
+          }
+          if (changeTierDeductibleResponse.isLeft()) {
+            logcat(ERROR) { "Tried to get changeTierQuotes but got error: $changeTierDeductibleResponse!" }
+          }
+          raise(ErrorMessage())
+        }
+      }
     }
   }
 }
@@ -189,7 +191,7 @@ private val quotesForPreview = listOf(
     ),
     displayItems = listOf(),
     premium = UiMoney(230.0, SEK),
-    tier = Tier("Standard", tierLevel = 0, info = "Vårt mellanpaket med hög ersättning."),
+    tier = Tier("Standard", tierLevel = 1, info = "Vårt mellanpaket med hög ersättning."),
     productVariant = ProductVariant(
       displayName = "Test",
       contractGroup = ContractGroup.RENTAL,
@@ -209,7 +211,7 @@ private val quotesForPreview = listOf(
     ),
     displayItems = listOf(),
     premium = UiMoney(655.0, SEK),
-    tier = Tier("Standard", tierLevel = 0, info = "Vårt mellanpaket med hög ersättning."),
+    tier = Tier("Standard", tierLevel = 1, info = "Vårt mellanpaket med hög ersättning."),
     productVariant = ProductVariant(
       displayName = "Test",
       contractGroup = ContractGroup.RENTAL,

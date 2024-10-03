@@ -47,6 +47,8 @@ import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 import com.hedvig.android.feature.terminateinsurance.data.TerminationReason
 import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
+import com.hedvig.android.feature.terminateinsurance.step.survey.ErrorReason.EMPTY_QUOTES
+import com.hedvig.android.feature.terminateinsurance.step.survey.ErrorReason.GENERAL
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationScaffold
 import hedvig.resources.R
 
@@ -157,7 +159,7 @@ private fun TerminationSurveyScreen(
         Spacer(Modifier.weight(1f))
         Spacer(Modifier.height(16.dp))
         AnimatedVisibility(
-          visible = uiState.errorWhileLoadingNextStep,
+          visible = uiState.errorWhileLoadingNextStep != null,
           enter = fadeIn(),
           exit = fadeOut(),
         ) {
@@ -165,14 +167,24 @@ private fun TerminationSurveyScreen(
             Modifier.weight(1f),
             verticalArrangement = Arrangement.Center,
           ) {
+            val subTitle = when (uiState.errorWhileLoadingNextStep) {
+              GENERAL -> stringResource(R.string.GENERAL_ERROR_BODY)
+              // todo: remove hardcoded string!!
+              EMPTY_QUOTES -> "Turns out you're already at the best possible coverage and price!"
+              null -> TODO()
+            }
+            val title = when (uiState.errorWhileLoadingNextStep) {
+              GENERAL -> stringResource(R.string.GENERAL_ERROR_BODY)
+              EMPTY_QUOTES -> "Oops!" // todo: another copy??
+            }
             EmptyState(
               modifier = Modifier
                 .padding(horizontal = 16.dp)
                 .fillMaxWidth()
                 .wrapContentWidth(),
-              text = stringResource(R.string.something_went_wrong),
+              text = title,
               iconStyle = ERROR,
-              description = null,
+              description = subTitle,
             )
             Spacer(Modifier.height(16.dp))
           }
@@ -207,7 +219,7 @@ private fun TerminationSurveyScreen(
 
                     is DowngradePriceByChangingTier -> {
                       {
-                        tryToDowngradePrice
+                        tryToDowngradePrice()
                       }
                     }
                     is UpgradeCoverageByChangingTier -> {
@@ -217,6 +229,7 @@ private fun TerminationSurveyScreen(
                     }
                   }
                   HedvigNotificationCard(
+                    buttonLoading = uiState.actionButtonLoading,
                     modifier = Modifier.padding(horizontal = 16.dp),
                     message = text,
                     priority = NotificationPriority.Campaign,
@@ -306,7 +319,7 @@ private class ShowSurveyUiStateProvider :
       TerminationSurveyState(
         nextNavigationStep = null,
         navigationStepLoadingForReason = null,
-        errorWhileLoadingNextStep = true,
+        errorWhileLoadingNextStep = null,
         selectedOption = previewReason2.surveyOption,
         reasons = listOf(previewReason1, previewReason2, previewReason3),
       ),
