@@ -6,6 +6,7 @@ plugins {
   alias(libs.plugins.serialization) //todo: maybe not needed at all - check!
   alias(libs.plugins.squareSortDependencies)
   id("kotlin-parcelize")
+  alias(libs.plugins.apollo)
 }
 
 android {
@@ -13,6 +14,8 @@ android {
 }
 
 dependencies {
+  implementation(libs.apollo.normalizedCache)
+  implementation(libs.apollo.runtime)
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.androidx.navigation.common)
@@ -55,4 +58,11 @@ dependencies {
   testImplementation(projects.languageTest)
   testImplementation(projects.loggingTest)
   testImplementation(projects.moleculeTest)
+}
+
+apollo {
+  service("octopus") {
+    packageName = "octopus"
+    dependsOn(projects.apolloOctopusPublic, true)
+  }
 }

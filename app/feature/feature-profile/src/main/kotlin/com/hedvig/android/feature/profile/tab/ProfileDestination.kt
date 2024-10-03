@@ -87,6 +87,7 @@ internal fun ProfileDestination(
   viewModel: ProfileViewModel,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
   ProfileScreen(
     uiState = uiState,
     reload = { viewModel.emit(ProfileUiEvent.Reload) },
@@ -205,7 +206,8 @@ private fun ProfileScreen(
           showLogoutDialog = true
         },
         modifier = Modifier
-          .padding(horizontal = 16.dp).fillMaxWidth()
+          .padding(horizontal = 16.dp)
+          .fillMaxWidth()
           .testTag("logout"),
       )
       Spacer(Modifier.height(16.dp))

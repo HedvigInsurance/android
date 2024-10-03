@@ -17,8 +17,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -66,6 +64,8 @@ import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.feature.change.tier.ui.stepcustomize.FailureReason.GENERAL
+import com.hedvig.android.feature.change.tier.ui.stepcustomize.FailureReason.QUOTES_ARE_EMPTY
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.ClearNavigationStep
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Failure
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Loading
@@ -84,10 +84,12 @@ internal fun SelectTierDestination(
     Modifier.fillMaxSize(),
   ) {
     when (val state = uiState) {
-      Failure -> FailureScreen(
+      is Failure -> FailureScreen(
+        reason = state.reason,
         reload = {
           viewModel.emit(SelectCoverageEvent.Reload)
         },
+        navigateUp = navigateUp,
       )
       Loading -> LoadingScreen()
       is Success -> {
@@ -112,6 +114,18 @@ internal fun SelectTierDestination(
           onContinueClick = {
             viewModel.emit(SelectCoverageEvent.SubmitChosenQuoteToContinue)
           },
+          onChooseTierClick = {
+            viewModel.emit(SelectCoverageEvent.ChangeTier)
+          },
+          onChooseDeductibleClick = {
+            viewModel.emit(SelectCoverageEvent.ChangeDeductibleForChosenTier)
+          },
+          onChooseDeductibleInDialogClick = { quote ->
+            viewModel.emit(SelectCoverageEvent.ChangeDeductibleInDialog(quote))
+          },
+          onChooseTierInDialogClick = { tier ->
+            viewModel.emit(SelectCoverageEvent.ChangeTierInDialog(tier))
+          },
         )
       }
     }
@@ -119,9 +133,33 @@ internal fun SelectTierDestination(
 }
 
 @Composable
-private fun FailureScreen(reload: () -> Unit) {
+private fun FailureScreen(reload: () -> Unit, navigateUp: () -> Unit, reason: FailureReason) {
   Box(Modifier.fillMaxSize()) {
-    HedvigErrorSection(onButtonClick = reload, modifier = Modifier.fillMaxSize())
+    val subTitle = when (reason) {
+      GENERAL -> stringResource(R.string.GENERAL_ERROR_BODY)
+      QUOTES_ARE_EMPTY -> "Turns out you're already at the best possible coverage and price!"
+      // todo: remove hardcoded string!!
+    }
+    val action = when (reason) {
+      GENERAL -> reload
+      QUOTES_ARE_EMPTY -> navigateUp
+    }
+    val title = when (reason) {
+      GENERAL -> stringResource(R.string.GENERAL_ERROR_BODY)
+      QUOTES_ARE_EMPTY -> "Oops!" // todo: another copy??
+    }
+    val buttonText = when (reason) {
+      GENERAL -> stringResource(R.string.GENERAL_ERROR_BODY)
+      QUOTES_ARE_EMPTY -> stringResource(R.string.general_back_button)
+      // todo: remove hardcoded string!!
+    }
+    HedvigErrorSection(
+      onButtonClick = action,
+      modifier = Modifier.fillMaxSize(),
+      subTitle = subTitle,
+      title = title,
+      buttonText = buttonText,
+    )
   }
 }
 
@@ -136,9 +174,11 @@ private fun SelectTierScreen(
   navigateUp: () -> Unit,
   onCompareClick: () -> Unit,
   onContinueClick: () -> Unit,
+  onChooseDeductibleClick: () -> Unit,
+  onChooseTierClick: () -> Unit,
+  onChooseDeductibleInDialogClick: (quote: TierDeductibleQuote) -> Unit,
+  onChooseTierInDialogClick: (tier: Tier) -> Unit,
 ) {
-  var showTierDialog by remember { mutableStateOf(false) }
-  var showDeductibleDialog by remember { mutableStateOf(false) }
   HedvigScaffold(
     navigateUp = navigateUp,
     topAppBarText = "",
@@ -175,12 +215,8 @@ private fun SelectTierScreen(
     CustomizationCard(
       modifier = Modifier.padding(horizontal = 16.dp),
       data = uiState.contractData,
-      onChooseTierClick = {
-        showTierDialog = true
-      },
-      onChooseDeductibleClick = {
-        showDeductibleDialog = true
-      },
+      onChooseTierClick = onChooseTierClick,
+      onChooseDeductibleClick = onChooseDeductibleClick,
       newDisplayPremium = uiState.chosenQuote?.premium,
       isCurrentChosen = uiState.isCurrentChosen,
       chosenTier = uiState.chosenTier,
@@ -188,6 +224,10 @@ private fun SelectTierScreen(
       isTierChoiceEnabled = uiState.isTierChoiceEnabled,
       quotesForChosenTier = uiState.quotesForChosenTier,
       tiers = uiState.tiers,
+      chosenTierInDialog = uiState.chosenInDialogTier,
+      chosenQuoteInDialog = uiState.chosenInDialogQuote,
+      onChooseDeductibleInDialogClick = onChooseDeductibleInDialogClick,
+      onChooseTierInDialogClick = onChooseTierInDialogClick,
     )
     Spacer(Modifier.height(4.dp))
     HedvigTextButton(
@@ -223,15 +263,17 @@ private fun CustomizationCard(
   quotesForChosenTier: List<TierDeductibleQuote>,
   chosenTier: Tier?,
   chosenQuote: TierDeductibleQuote?,
+  chosenTierInDialog: Tier?,
+  chosenQuoteInDialog: TierDeductibleQuote?,
+  onChooseDeductibleInDialogClick: (quote: TierDeductibleQuote) -> Unit,
+  onChooseTierInDialogClick: (tier: Tier) -> Unit,
   newDisplayPremium: UiMoney?,
   isTierChoiceEnabled: Boolean,
-  onChooseDeductibleClick: (quote: TierDeductibleQuote) -> Unit,
-  onChooseTierClick: (tier: Tier) -> Unit,
+  onChooseDeductibleClick: () -> Unit,
+  onChooseTierClick: () -> Unit,
   isCurrentChosen: Boolean,
   modifier: Modifier = Modifier,
 ) {
-  var locallyChosenTier by remember { mutableStateOf(chosenTier) }
-  var locallyChosenQuote by remember { mutableStateOf(chosenQuote) }
   Surface(
     modifier = modifier,
     shape = HedvigTheme.shapes.cornerXLarge,
@@ -258,9 +300,7 @@ private fun CustomizationCard(
         size = Small,
         hintText = stringResource(R.string.TIER_FLOW_COVERAGE_PLACEHOLDER),
         onItemChosen = { _ -> }, // not needed, as we not use the default dialog content
-        chosenItemIndex = tiers.indexOfFirst { pair ->
-          pair.first == locallyChosenTier
-        },
+        chosenItemIndex = tiers.indexOfFirst { it.first.tierLevel == chosenTier?.tierLevel },
         onSelectorClick = {},
         containerColor = HedvigTheme.colorScheme.fillNegative,
       ) { onDismissRequest ->
@@ -268,12 +308,12 @@ private fun CustomizationCard(
           tiers.forEachIndexed { index, pair ->
             add(
               ExpandedRadioOptionData(
-                chosenState = if (locallyChosenTier == pair.first) Chosen else NotChosen,
+                chosenState = if (chosenTierInDialog == pair.first) Chosen else NotChosen,
                 title = pair.first.tierName,
                 premium = pair.second,
                 info = pair.first.info,
                 onRadioOptionClick = {
-                  locallyChosenTier = tiers.getOrNull(index)?.first
+                  onChooseTierInDialogClick(pair.first)
                 },
               ),
             )
@@ -281,14 +321,11 @@ private fun CustomizationCard(
         }
         DropdownContent(
           onContinueButtonClick = {
-            val chosen = locallyChosenTier
-            if (chosen != null) {
-              onChooseTierClick(chosen)
-              onDismissRequest()
-            }
+            onChooseTierClick()
+            onDismissRequest()
           },
           onCancelButtonClick = {
-            locallyChosenTier = chosenTier
+            // todo: locally chosen after dismiss stays
             onDismissRequest()
           },
           title = stringResource(R.string.TIER_FLOW_SELECT_COVERAGE_TITLE),
@@ -318,12 +355,11 @@ private fun CustomizationCard(
             label = stringResource(R.string.TIER_FLOW_DEDUCTIBLE_LABEL),
             items = deductibleSimpleItems,
           ),
+          isEnabled = quotesForChosenTier.size > 1,
           size = Small,
           hintText = stringResource(R.string.TIER_FLOW_DEDUCTIBLE_PLACEHOLDER),
           onItemChosen = { _ -> }, // not needed, as we not use the default dialog content,
-          chosenItemIndex = quotesForChosenTier.indexOfFirst { quote ->
-            quote == locallyChosenQuote
-          },
+          chosenItemIndex = quotesForChosenTier.indexOfFirst { it == chosenQuote },
           onSelectorClick = {},
           containerColor = HedvigTheme.colorScheme.fillNegative,
         ) { onDismissRequest ->
@@ -332,12 +368,12 @@ private fun CustomizationCard(
               quote.deductible?.let {
                 add(
                   ExpandedRadioOptionData(
-                    chosenState = if (locallyChosenQuote == quote) Chosen else NotChosen,
+                    chosenState = if (chosenQuoteInDialog == quote) Chosen else NotChosen,
                     title = it.optionText,
                     premium = quote.premium.toString(),
                     info = it.description,
                     onRadioOptionClick = {
-                      locallyChosenQuote = quote
+                      onChooseDeductibleInDialogClick(quote)
                     },
                   ),
                 )
@@ -346,14 +382,11 @@ private fun CustomizationCard(
           }
           DropdownContent(
             onContinueButtonClick = {
-              val chosen = locallyChosenQuote
-              if (chosen != null) {
-                onChooseDeductibleClick(chosen)
-                onDismissRequest()
-              }
+              onChooseDeductibleClick()
+              onDismissRequest()
             },
             onCancelButtonClick = {
-              locallyChosenQuote = chosenQuote
+              // todo: locally chosen after dismiss stays
               onDismissRequest()
             },
             title = stringResource(R.string.TIER_FLOW_SELECT_DEDUCTIBLE_TITLE),
@@ -520,6 +553,10 @@ private fun CustomizationCardPreview() {
         Tier("Standard", tierLevel = 1, info = "Vårt mellanpaket med hög ersättning.") to "449 kr/mo",
         Tier("Max", tierLevel = 1, info = "Vårt största paket med högst ersättning.") to "799 kr/mo",
       ),
+      chosenTierInDialog = Tier("Bas", tierLevel = 0, info = "Vårt paket med grundläggande villkor."),
+      chosenQuoteInDialog = quotesForPreview[0],
+      onChooseDeductibleInDialogClick = {},
+      onChooseTierInDialogClick = {},
     )
   }
 }
@@ -541,7 +578,13 @@ private fun SelectTierScreenPreview() {
         isTierChoiceEnabled = true,
         chosenTier = Tier("Bas", tierLevel = 0, info = "Vårt paket med grundläggande villkor."),
         chosenQuote = quotesForPreview[0],
+        chosenInDialogTier = Tier("Bas", tierLevel = 0, info = "Vårt paket med grundläggande villkor."),
+        chosenInDialogQuote = quotesForPreview[0],
       ),
+      {},
+      {},
+      {},
+      {},
       {},
       {},
       {},
