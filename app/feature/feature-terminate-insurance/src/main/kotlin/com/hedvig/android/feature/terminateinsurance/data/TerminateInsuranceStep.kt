@@ -73,26 +73,36 @@ private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentSte
   isTierFeatureEnabled: Boolean,
 ): List<TerminationSurveyOption> {
   return map {
+    // remade a bit of logic here. If we receive unknown actions in suggestion for one of the subOptions
+    // (or the option itself),
+    // subOptions then become empty and instead the freeTextField becomes available
     TerminationSurveyOption(
       id = it.id,
       title = it.title,
       listIndex = this.indexOf(it),
-      feedBackRequired = it.feedBack != null,
+      feedBackRequired = it.feedBack != null ||
+        (it.suggestion?.toSuggestion(isTierFeatureEnabled) == UnknownAction) ||
+        it.subOptions?.noUnknownActions(isTierFeatureEnabled) == false,
       subOptions = it.subOptions?.toSubOptionList(isTierFeatureEnabled) ?: listOf(),
       suggestion = it.suggestion?.toSuggestion(isTierFeatureEnabled),
     )
   }
 }
 
+private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Option.SubOption>.noUnknownActions(
+  isTierFeatureEnabled: Boolean,
+): Boolean {
+  return none { subOption ->
+    subOption.suggestion?.toSuggestion(isTierFeatureEnabled) == UnknownAction
+  }
+}
+
 private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Option.SubOption>.toSubOptionList(
   isTierFeatureEnabled: Boolean,
 ): List<TerminationSurveyOption> {
-  // todo: here I'm probably over-complicating things.
   // no subOptions if one of them contains some action that we don't know how to handle
   val filtered = takeIf { subs ->
-    subs.none { subOption ->
-      subOption.suggestion?.toSuggestion(isTierFeatureEnabled) == UnknownAction
-    }
+    subs.noUnknownActions(isTierFeatureEnabled)
   } ?: listOf()
   return filtered.map { subOption ->
     TerminationSurveyOption(
