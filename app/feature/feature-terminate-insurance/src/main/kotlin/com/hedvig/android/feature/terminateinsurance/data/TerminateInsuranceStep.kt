@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.terminateinsurance.data
 
+import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion.Action.UnknownAction
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
 import com.hedvig.android.logger.LogPriority
@@ -86,14 +87,21 @@ private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentSte
 private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Option.SubOption>.toSubOptionList(
   isTierFeatureEnabled: Boolean,
 ): List<TerminationSurveyOption> {
-  return map {
+  // todo: here I'm probably over-complicating things.
+  // no subOptions if one of them contains some action that we don't know how to handle
+  val filtered = takeIf { subs ->
+    subs.none { subOption ->
+      subOption.suggestion?.toSuggestion(isTierFeatureEnabled) == UnknownAction
+    }
+  } ?: listOf()
+  return filtered.map { subOption ->
     TerminationSurveyOption(
-      id = it.id,
-      title = it.title,
-      feedBackRequired = it.feedBack != null,
+      id = subOption.id,
+      title = subOption.title,
+      feedBackRequired = subOption.feedBack != null,
       subOptions = listOf(),
-      listIndex = this.indexOf(it),
-      suggestion = it.suggestion?.toSuggestion(isTierFeatureEnabled),
+      listIndex = filtered.indexOf(subOption),
+      suggestion = subOption.suggestion?.toSuggestion(isTierFeatureEnabled),
     )
   }
 }
@@ -110,6 +118,7 @@ private fun FlowTerminationSurveyOptionSuggestionFragment.toSuggestion(
             buttonTitle = buttonTitle,
           )
         }
+
         FlowTerminationSurveyRedirectAction.CHANGE_TIER_FOUND_BETTER_PRICE -> {
           if (isTierFeatureEnabled) {
             SurveyOptionSuggestion.Action.DowngradePriceByChangingTier(
@@ -123,9 +132,10 @@ private fun FlowTerminationSurveyOptionSuggestionFragment.toSuggestion(
                 "FlowTerminationSurveyStepCurrentStep suggestion: CHANGE_TIER_FOUND_BETTER_PRICE but tier feature flag is disabled!"
               },
             )
-            null
+            UnknownAction
           }
         }
+
         FlowTerminationSurveyRedirectAction.CHANGE_TIER_MISSING_COVERAGE_AND_TERMS -> {
           if (isTierFeatureEnabled) {
             SurveyOptionSuggestion.Action.UpgradeCoverageByChangingTier(
@@ -139,15 +149,16 @@ private fun FlowTerminationSurveyOptionSuggestionFragment.toSuggestion(
                 "FlowTerminationSurveyStepCurrentStep suggestion: CHANGE_TIER_MISSING_COVERAGE_AND_TERMS but tier feature flag is disabled!"
               },
             )
-            null
+            UnknownAction
           }
         }
+
         else -> {
           logcat(
             LogPriority.WARN,
             message = { "FlowTerminationSurveyStepCurrentStep unknown suggestion type: ${this.action.rawValue}" },
           )
-          null
+          UnknownAction
         }
       }
     }
