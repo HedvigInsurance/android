@@ -29,7 +29,6 @@ import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEve
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Failure
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Loading
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Success
-import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -132,17 +131,11 @@ private class SelectCoveragePresenter(
         },
         ifRight = { currentContractData ->
           val quotesResult: List<TierDeductibleQuote> = tierRepository.getQuotesById(params.quoteIds)
-          logcat { "Mariia: got this quotes from repo: $quotesResult" }
           if (quotesResult.isEmpty()) {
             currentPartialState = PartialUiState.Failure(QUOTES_ARE_EMPTY)
           } else {
-            logcat { "Mariia: got this quotes: $quotesResult" }
             val current: TierDeductibleQuote? =
               if (params.currentTierName != null && params.currentTierLevel != null) {
-                val info = quotesResult.firstOrNull { it.tier.tierLevel == 1 }
-                logcat {
-                  "Mariia: got this tierLevel for current: ${params.currentTierLevel} and corresponding quote: $info"
-                }
                 TierDeductibleQuote(
                   id = CURRENT_ID,
                   deductible = currentContractData.deductible,
@@ -159,7 +152,6 @@ private class SelectCoveragePresenter(
               } else {
                 null
               }
-            logcat { "Mariia: got this current: $current" }
             current?.let {
               tierRepository.addQuotesToDb(listOf(it))
             }
@@ -194,8 +186,6 @@ private class SelectCoveragePresenter(
       is PartialUiState.Failure -> Failure((currentPartialState as PartialUiState.Failure).reason)
       PartialUiState.Loading -> Loading
       is PartialUiState.Success -> {
-        val currentlyChosenQuote = chosenQuote
-        logcat { "mariia: currentlyChosenQuote is $currentlyChosenQuote" }
         Success(
           map = (currentPartialState as PartialUiState.Success).map,
           currentActiveQuote = (currentPartialState as PartialUiState.Success).currentActiveQuote,

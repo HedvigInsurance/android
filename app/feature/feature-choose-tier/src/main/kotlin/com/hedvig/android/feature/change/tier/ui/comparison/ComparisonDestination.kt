@@ -39,7 +39,6 @@ import com.hedvig.android.design.system.hedvig.PerilList
 import com.hedvig.android.design.system.hedvig.TabDefaults
 import com.hedvig.android.feature.change.tier.ui.comparison.ComparisonState.Loading
 import com.hedvig.android.feature.change.tier.ui.comparison.ComparisonState.Success
-import com.hedvig.android.logger.logcat
 import hedvig.resources.R
 
 @Composable
@@ -60,8 +59,7 @@ internal fun ComparisonDestination(viewModel: ComparisonViewModel, navigateUp: (
 }
 
 @Composable
-private fun ComparisonScreen(uiState: ComparisonState.Success, navigateUp: () -> Unit) {
-  logcat { "mariia comparison: ${uiState.quotes}" }
+private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
   HedvigScaffold(
     navigateUp = navigateUp,
     topAppBarText = stringResource(R.string.TIER_FLOW_COMPARE_BUTTON), // todo: change copy??
@@ -69,7 +67,6 @@ private fun ComparisonScreen(uiState: ComparisonState.Success, navigateUp: () ->
     var selectedTabIndex by rememberSaveable { mutableIntStateOf(0) }
     Spacer(Modifier.height(20.dp))
     val titles = uiState.quotes.map { it.tier.tierDisplayName ?: "-" }
-    logcat { "mariia comparison: $titles" }
     CoveragePagerSelector(
       selectedTabIndex = selectedTabIndex,
       selectTabIndex = { selectedTabIndex = it },
@@ -88,10 +85,10 @@ private fun ComparisonScreen(uiState: ComparisonState.Success, navigateUp: () ->
         }
       },
     ) { index ->
+      // todo: will use different API for this
       Column(Modifier.padding(horizontal = 16.dp)) {
-        val quote = uiState.quotes[index] // todo: not safe!!
+        val quote = uiState.quotes[index]
         quote.productVariant.insurableLimits.forEachIndexed { i, insurableLimit ->
-          // todo: could there be more than one?
           HorizontalItemsWithMaximumSpaceTaken(
             modifier = Modifier.padding(vertical = 16.dp),
             startSlot = {
