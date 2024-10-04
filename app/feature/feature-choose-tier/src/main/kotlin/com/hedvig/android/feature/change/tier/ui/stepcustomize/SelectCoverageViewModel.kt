@@ -149,7 +149,8 @@ private class SelectCoveragePresenter(
                   tier = Tier(
                     tierName = params.currentTierName,
                     tierLevel = params.currentTierLevel,
-                    info = currentContractData.productVariant.tierNameLong,
+                    info = currentContractData.productVariant.displayTierNameLong,
+                    tierDisplayName = currentContractData.productVariant.displayTierName,
                   ),
                   productVariant = currentContractData.productVariant,
                   displayItems = listOf(),

@@ -62,17 +62,13 @@ internal fun ComparisonDestination(viewModel: ComparisonViewModel, navigateUp: (
 @Composable
 private fun ComparisonScreen(uiState: ComparisonState.Success, navigateUp: () -> Unit) {
   logcat { "mariia comparison: ${uiState.quotes}" }
-  HedvigScaffold(navigateUp = navigateUp) {
+  HedvigScaffold(
+    navigateUp = navigateUp,
+    topAppBarText = stringResource(R.string.TIER_FLOW_COMPARE_BUTTON), // todo: change copy??
+  ) {
     var selectedTabIndex by rememberSaveable { mutableIntStateOf(0) }
-    HedvigText(
-      text = stringResource(R.string.TIER_FLOW_COMPARE_BUTTON), // todo: change copy??
-      textAlign = TextAlign.Center,
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp),
-    )
     Spacer(Modifier.height(20.dp))
-    val titles = uiState.quotes.map { it.tier.tierName }
+    val titles = uiState.quotes.map { it.tier.tierDisplayName ?: "-" }
     logcat { "mariia comparison: $titles" }
     CoveragePagerSelector(
       selectedTabIndex = selectedTabIndex,

@@ -21,7 +21,7 @@ import kotlinx.datetime.LocalDate
 import org.junit.Rule
 import org.junit.Test
 
- class TerminationSurveyPresenterTest {
+class TerminationSurveyPresenterTest {
   @get:Rule
   val testLogcatLogger = TestLogcatLoggingRule()
 
@@ -199,9 +199,9 @@ import org.junit.Test
       assertThat(awaitItem().nextNavigationStep).isEqualTo(SurveyNavigationStep.NavigateToSubOptions)
     }
   }
- }
+}
 
- private class FakeTerminateInsuranceRepository : TerminateInsuranceRepository {
+private class FakeTerminateInsuranceRepository : TerminateInsuranceRepository {
   val terminationFlowTurbine = Turbine<Either<ErrorMessage, TerminateInsuranceStep>>()
 
   override suspend fun startTerminationFlow(insuranceId: InsuranceId): Either<ErrorMessage, TerminateInsuranceStep> =
@@ -220,4 +220,4 @@ import org.junit.Test
   override suspend fun getContractId(): String {
     TODO("Not yet implemented")
   }
- }
+}

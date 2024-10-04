@@ -48,6 +48,7 @@ data class TierDbModel(
   val tierName: String,
   val tierLevel: Int,
   val info: String?,
+  val tierDisplayName: String?,
 )
 
 @Serializable
