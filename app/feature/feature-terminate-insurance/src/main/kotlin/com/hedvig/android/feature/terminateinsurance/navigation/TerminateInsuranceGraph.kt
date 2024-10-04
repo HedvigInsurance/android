@@ -7,7 +7,6 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.navDeepLink
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.data.changetier.data.ChangeTierDeductibleIntent
 import com.hedvig.android.data.termination.data.TerminatableInsurance
 import com.hedvig.android.feature.terminateinsurance.data.toTerminateInsuranceDestination
 import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateDestination
@@ -43,7 +42,6 @@ fun NavGraphBuilder.terminateInsuranceGraph(
   openPlayStore: () -> Unit,
   navigateToInsurances: (NavOptionsBuilder.() -> Unit) -> Unit,
   closeTerminationFlow: () -> Unit,
-  redirectToChangeTierFlow: (NavBackStackEntry, Pair<String, ChangeTierDeductibleIntent>) -> Unit,
 ) {
   navdestination<TerminateInsuranceDestination.TerminationFailure> { backStackEntry ->
     TerminationFailureDestination(
@@ -132,9 +130,6 @@ fun NavGraphBuilder.terminateInsuranceGraph(
         },
         navigateToMovingFlow = { navigateToMovingFlow(backStackEntry) },
         openUrl = openUrl,
-        redirectToChangeTierFlow = { intent ->
-          redirectToChangeTierFlow(backStackEntry, intent)
-        },
       )
     }
 
@@ -156,9 +151,6 @@ fun NavGraphBuilder.terminateInsuranceGraph(
         },
         navigateToMovingFlow = { navigateToMovingFlow(backStackEntry) },
         openUrl = openUrl,
-        redirectToChangeTierFlow = { intent ->
-          redirectToChangeTierFlow(backStackEntry, intent)
-        },
       )
     }
 

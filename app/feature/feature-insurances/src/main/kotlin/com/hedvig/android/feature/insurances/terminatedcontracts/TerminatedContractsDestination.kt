@@ -21,12 +21,12 @@ import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenC
 import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.card.InsuranceCard
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
-import com.hedvig.android.design.system.hedvig.InsuranceCard
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceContract
 import com.hedvig.android.feature.insurances.ui.createChips
@@ -83,6 +83,7 @@ private fun TerminatedContractsScreen(
             topText = contract.currentInsuranceAgreement.productVariant.displayName,
             bottomText = contract.exposureDisplayName,
             imageLoader = imageLoader,
+            shape = MaterialTheme.shapes.squircleMedium,
             modifier = Modifier
               .padding(horizontal = 16.dp)
               .clip(MaterialTheme.shapes.squircleMedium)
@@ -125,7 +126,6 @@ private class PreviewTerminatedContractsUiStateProvider :
           InsuranceContract(
             "1",
             "Test123",
-            tierName = "Premium",
             exposureDisplayName = "Test exposure",
             inceptionDate = LocalDate.fromEpochDays(200),
             terminationDate = LocalDate.fromEpochDays(400),

@@ -22,7 +22,6 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.data.changetier.data.ChangeTierDeductibleIntent
 import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
 import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.EmptyState
@@ -40,15 +39,9 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextDisplay
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
 import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion
-import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion.Action.DowngradePriceByChangingTier
-import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion.Action.UpdateAddress
-import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion.Action.UpgradeCoverageByChangingTier
-import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion.Redirect
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 import com.hedvig.android.feature.terminateinsurance.data.TerminationReason
 import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
-import com.hedvig.android.feature.terminateinsurance.step.survey.ErrorReason.EMPTY_QUOTES
-import com.hedvig.android.feature.terminateinsurance.step.survey.ErrorReason.GENERAL
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationScaffold
 import hedvig.resources.R
 
@@ -61,16 +54,8 @@ internal fun TerminationSurveyDestination(
   openUrl: (String) -> Unit,
   navigateToNextStep: (step: TerminateInsuranceStep) -> Unit,
   navigateToSubOptions: ((List<TerminationSurveyOption>) -> Unit)?,
-  redirectToChangeTierFlow: (Pair<String, ChangeTierDeductibleIntent>) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  LaunchedEffect(uiState.intentAndIdToRedirectToChangeTierFlow) {
-    val intent = uiState.intentAndIdToRedirectToChangeTierFlow
-    if (intent != null) {
-      viewModel.emit(TerminationSurveyEvent.ClearNextStep)
-      redirectToChangeTierFlow(intent)
-    }
-  }
   LaunchedEffect(uiState.nextNavigationStep) {
     val nextStep = uiState.nextNavigationStep
     if (nextStep != null) {
@@ -108,12 +93,6 @@ internal fun TerminationSurveyDestination(
       viewModel.emit(TerminationSurveyEvent.ShowFullScreenEditText(it))
     },
     openUrl = openUrl,
-    tryToDowngradePrice = {
-      viewModel.emit(TerminationSurveyEvent.TryToDowngradePrice)
-    },
-    tryToUpgradeCoverage = {
-      viewModel.emit(TerminationSurveyEvent.TryToUpgradeCoverage)
-    },
   )
 }
 
@@ -129,8 +108,6 @@ private fun TerminationSurveyScreen(
   onLaunchFullScreenEditText: (option: TerminationSurveyOption) -> Unit,
   changeFeedbackForSelectedReason: (feedback: String?) -> Unit,
   onContinueClick: () -> Unit,
-  tryToUpgradeCoverage: () -> Unit,
-  tryToDowngradePrice: () -> Unit,
 ) {
   FreeTextOverlay(
     freeTextMaxLength = 2000,
@@ -159,7 +136,7 @@ private fun TerminationSurveyScreen(
         Spacer(Modifier.weight(1f))
         Spacer(Modifier.height(16.dp))
         AnimatedVisibility(
-          visible = uiState.errorWhileLoadingNextStep != null,
+          visible = uiState.errorWhileLoadingNextStep,
           enter = fadeIn(),
           exit = fadeOut(),
         ) {
@@ -167,25 +144,14 @@ private fun TerminationSurveyScreen(
             Modifier.weight(1f),
             verticalArrangement = Arrangement.Center,
           ) {
-            val subTitle = when (uiState.errorWhileLoadingNextStep) {
-              GENERAL -> stringResource(R.string.GENERAL_ERROR_BODY)
-              // todo: remove hardcoded string!!
-              EMPTY_QUOTES -> "Turns out you're already at the best possible coverage and price!"
-              null -> ""
-            }
-            val title = when (uiState.errorWhileLoadingNextStep) {
-              GENERAL -> stringResource(R.string.GENERAL_ERROR_BODY)
-              EMPTY_QUOTES -> "Oops!" // todo: another copy??
-              null -> ""
-            }
             EmptyState(
               modifier = Modifier
                 .padding(horizontal = 16.dp)
                 .fillMaxWidth()
                 .wrapContentWidth(),
-              text = title,
+              text = stringResource(R.string.something_went_wrong),
               iconStyle = ERROR,
-              description = subTitle,
+              description = null,
             )
             Spacer(Modifier.height(16.dp))
           }
@@ -210,27 +176,15 @@ private fun TerminationSurveyScreen(
                   val text = suggestion.description
                   val buttonText = suggestion.buttonTitle
                   val onSuggestionButtonClick: () -> Unit = when (suggestion) {
-                    is UpdateAddress -> {
+                    is SurveyOptionSuggestion.Action.UpdateAddress -> {
                       { navigateToMovingFlow() }
                     }
 
-                    is Redirect -> {
+                    is SurveyOptionSuggestion.Redirect -> {
                       { openUrl(suggestion.url) }
-                    }
-
-                    is DowngradePriceByChangingTier -> {
-                      {
-                        tryToDowngradePrice()
-                      }
-                    }
-                    is UpgradeCoverageByChangingTier -> {
-                      {
-                        tryToUpgradeCoverage()
-                      }
                     }
                   }
                   HedvigNotificationCard(
-                    buttonLoading = uiState.actionButtonLoading,
                     modifier = Modifier.padding(horizontal = 16.dp),
                     message = text,
                     priority = NotificationPriority.Campaign,
@@ -295,8 +249,6 @@ private fun ShowSurveyScreenPreview(
         onCloseFullScreenEditText = {},
         onLaunchFullScreenEditText = {},
         openUrl = {},
-        tryToDowngradePrice = {},
-        tryToUpgradeCoverage = {},
       )
     }
   }
@@ -320,7 +272,7 @@ private class ShowSurveyUiStateProvider :
       TerminationSurveyState(
         nextNavigationStep = null,
         navigationStepLoadingForReason = null,
-        errorWhileLoadingNextStep = null,
+        errorWhileLoadingNextStep = true,
         selectedOption = previewReason2.surveyOption,
         reasons = listOf(previewReason1, previewReason2, previewReason3),
       ),

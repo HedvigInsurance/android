@@ -41,14 +41,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
 import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownStyle
 import com.hedvig.android.design.system.hedvig.DropdownItem.DropdownItemWithIcon
 import com.hedvig.android.design.system.hedvig.DropdownItem.SimpleDropdownItem
 import com.hedvig.android.design.system.hedvig.icon.Checkmark
 import com.hedvig.android.design.system.hedvig.icon.ChevronDown
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import com.hedvig.android.design.system.hedvig.icon.Lock
 import com.hedvig.android.design.system.hedvig.icon.WarningFilled
 import com.hedvig.android.design.system.hedvig.tokens.AnimationTokens
 import com.hedvig.android.design.system.hedvig.tokens.CommonLargeDropdownTokens
@@ -80,43 +78,32 @@ fun DropdownWithDialog(
   isEnabled: Boolean = true,
   hasError: Boolean = false,
   errorText: String? = null,
-  containerColor: Color? = null,
-  dialogProperties: DialogProperties = DialogDefaults.defaultProperties,
-  dialogContent: (@Composable (onDismissRequest: () -> Unit) -> Unit)? = null,
 ) {
   var isDialogVisible by rememberSaveable { mutableStateOf(false) }
   if (isDialogVisible) {
     HedvigDialog(
-      applyDefaultPadding = dialogContent == null,
-      dialogProperties = dialogProperties,
       onDismissRequest = {
         isDialogVisible = false
       },
       style = DialogDefaults.DialogStyle.NoButtons,
     ) {
-      if (dialogContent != null) {
-        dialogContent {
-          isDialogVisible = false
-        }
-      } else {
-        Column(
-          modifier = Modifier.background(
-            color = dropdownColors.containerColor(false).value,
-            shape = size.shape,
-          ),
-        ) {
-          style.items.forEachIndexed { index, item ->
-            DropdownOption(
-              item = item,
-              size = size,
-              style = style,
-              onClick = {
-                onItemChosen(index)
-                isDialogVisible = false
-              },
-              isSelected = index == chosenItemIndex,
-            )
-          }
+      Column(
+        modifier = Modifier.background(
+          color = dropdownColors.containerColor(false).value,
+          shape = size.shape,
+        ),
+      ) {
+        style.items.forEachIndexed { index, item ->
+          DropdownOption(
+            item = item,
+            size = size,
+            style = style,
+            onClick = {
+              onItemChosen(index)
+              isDialogVisible = false
+            },
+            isSelected = index == chosenItemIndex,
+          )
         }
       }
     }
@@ -130,14 +117,11 @@ fun DropdownWithDialog(
     modifier = modifier,
     style = style,
     onClick = {
-      if (isEnabled) {
-        onSelectorClick()
-        isDialogVisible = true
-      }
+      onSelectorClick()
+      isDialogVisible = true
     },
     errorText = errorText,
     isDialogOpen = isDialogVisible,
-    containerColor = containerColor,
   )
 }
 
@@ -153,14 +137,13 @@ private fun DropdownSelector(
   style: DropdownStyle,
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
-  containerColor: Color? = null,
 ) {
   Column(
     modifier = modifier,
   ) {
     Surface(
       shape = size.shape,
-      color = containerColor ?: dropdownColors.containerColor(showError).value,
+      color = dropdownColors.containerColor(showError).value,
       modifier = Modifier
         .clip(size.shape)
         .clickable(
@@ -233,12 +216,8 @@ private fun DropdownSelector(
                   rotationZ = fullRotation
                 },
             ) {
-              val icon = when (isEnabled) {
-                false -> HedvigIcons.Lock
-                true -> HedvigIcons.ChevronDown
-              }
               Icon(
-                icon,
+                HedvigIcons.ChevronDown,
                 "",
                 tint = dropdownColors.chevronColor(isEnabled),
               )
@@ -286,7 +265,6 @@ fun IconStyleStartSlot(text: String, textStyle: TextStyle, textColor: Color, ico
         Modifier.size(DropdownTokens.IconSize),
         tint = Color.Unspecified,
       )
-
       is IconResource.Vector -> Icon(
         icon.imageVector,
         "",
@@ -370,7 +348,6 @@ private fun DropdownOption(
                 text = item.text,
                 textStyle = size.textStyle,
               )
-
             is DropdownStyle.Icon -> IconStyleStartSlot(
               textColor = textColor,
               text = item.text,

@@ -46,19 +46,17 @@ import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
+import com.hedvig.android.core.ui.card.InsuranceCard
+import com.hedvig.android.core.ui.card.InsuranceCardPlaceholder
 import com.hedvig.android.core.ui.plus
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
-import com.hedvig.android.data.contract.ContractGroup.RENTAL
-import com.hedvig.android.data.contract.ContractType.SE_APARTMENT_RENT
+import com.hedvig.android.data.contract.ContractGroup
+import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import com.hedvig.android.data.productvariant.ProductVariant
-import com.hedvig.android.design.system.hedvig.InsuranceCard
-import com.hedvig.android.design.system.hedvig.InsuranceCardPlaceholder
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
-import com.hedvig.android.feature.insurances.data.InsuranceAgreement.CreationCause.NEW_CONTRACT
 import com.hedvig.android.feature.insurances.data.InsuranceContract
-import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailsUiState.Success
 import com.hedvig.android.feature.insurances.insurancedetail.coverage.CoverageTab
 import com.hedvig.android.feature.insurances.insurancedetail.documents.DocumentsTab
 import com.hedvig.android.feature.insurances.insurancedetail.yourinfo.YourInfoTab
@@ -326,11 +324,10 @@ private fun PreviewContractDetailScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       ContractDetailScreen(
-        uiState = Success(
+        uiState = ContractDetailsUiState.Success(
           InsuranceContract(
             "1",
             "Test123",
-            tierName = "Premium",
             exposureDisplayName = "Test exposure",
             inceptionDate = LocalDate.fromEpochDays(200),
             terminationDate = LocalDate.fromEpochDays(400),
@@ -340,8 +337,8 @@ private fun PreviewContractDetailScreen() {
               displayItems = listOf(),
               productVariant = ProductVariant(
                 displayName = "Variant",
-                contractGroup = RENTAL,
-                contractType = SE_APARTMENT_RENT,
+                contractGroup = ContractGroup.RENTAL,
+                contractType = ContractType.SE_APARTMENT_RENT,
                 partner = null,
                 perils = listOf(),
                 insurableLimits = listOf(),
@@ -349,7 +346,7 @@ private fun PreviewContractDetailScreen() {
               ),
               certificateUrl = null,
               coInsured = listOf(),
-              creationCause = NEW_CONTRACT,
+              creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
             ),
             upcomingInsuranceAgreement = null,
             renewalDate = LocalDate.fromEpochDays(500),

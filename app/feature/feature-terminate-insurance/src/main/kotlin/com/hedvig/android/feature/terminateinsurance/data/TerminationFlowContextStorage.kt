@@ -18,20 +18,6 @@ class TerminationFlowContextStorage(
       .first()!!
   }
 
-  suspend fun getContractId(): String {
-    return datastore.data
-      .map { preferences: Preferences ->
-        preferences[TERMINATION_FLOW_CONTRACT_ID_KEY]
-      }
-      .first()!!
-  }
-
-  suspend fun saveContractId(contractId: String) {
-    datastore.edit { preferences ->
-      preferences[TERMINATION_FLOW_CONTRACT_ID_KEY] = contractId
-    }
-  }
-
   suspend fun saveContext(context: String) {
     datastore.edit { preferences ->
       preferences[TERMINATION_FLOW_CONTEXT_KEY] = context
@@ -39,7 +25,6 @@ class TerminationFlowContextStorage(
   }
 
   companion object {
-    private val TERMINATION_FLOW_CONTEXT_KEY = stringPreferencesKey("CLAIM_FLOW_CONTEXT_KEY") // todo: Stelios, should it be CLAIM_FLOW here?
-    private val TERMINATION_FLOW_CONTRACT_ID_KEY = stringPreferencesKey("TERMINATION_FLOW_CONTRACT_ID_KEY")
+    private val TERMINATION_FLOW_CONTEXT_KEY = stringPreferencesKey("CLAIM_FLOW_CONTEXT_KEY")
   }
 }
