@@ -94,26 +94,29 @@ private fun ComparisonScreen(uiState: ComparisonState.Success, navigateUp: () ->
     ) { index ->
       Column(Modifier.padding(horizontal = 16.dp)) {
         val quote = uiState.quotes[index] // todo: not safe!!
-        // todo: these are not display items maybe????
-        quote.displayItems.forEachIndexed { itemIndex, item ->
-          item.displaySubtitle?.let { subTitle ->
-            HorizontalItemsWithMaximumSpaceTaken(
-              startSlot = {
-                HedvigText(item.displayTitle)
-              },
-              endSlot = {
-                Row(
-                  horizontalArrangement = Arrangement.End,
-                  verticalAlignment = Alignment.CenterVertically,
-                ) {
-                  HedvigText(subTitle, color = HedvigTheme.colorScheme.textSecondary, textAlign = TextAlign.End)
-                }
-              },
-              spaceBetween = 8.dp,
-            )
-            if (itemIndex != quote.displayItems.lastIndex) {
-              HorizontalDivider()
-            }
+        quote.productVariant.insurableLimits.forEachIndexed { i, insurableLimit ->
+          // todo: could there be more than one?
+          HorizontalItemsWithMaximumSpaceTaken(
+            modifier = Modifier.padding(vertical = 16.dp),
+            startSlot = {
+              HedvigText(insurableLimit.label)
+            },
+            endSlot = {
+              Row(
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically,
+              ) {
+                HedvigText(
+                  insurableLimit.limit,
+                  color = HedvigTheme.colorScheme.textSecondary,
+                  textAlign = TextAlign.End,
+                )
+              }
+            },
+            spaceBetween = 8.dp,
+          )
+          if (i != quote.productVariant.insurableLimits.lastIndex) {
+            HorizontalDivider()
           }
         }
         Spacer(Modifier.height(16.dp))
