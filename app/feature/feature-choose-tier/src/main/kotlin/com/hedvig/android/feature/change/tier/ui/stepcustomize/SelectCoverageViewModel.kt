@@ -171,7 +171,9 @@ private class SelectCoveragePresenter(
             }
             // pre-choosing current quote
             chosenTier = current?.tier
+            chosenTierInDialog = current?.tier
             chosenQuote = current
+            chosenQuoteInDialog = current
             currentPartialState = PartialUiState.Success(
               contractData = ContractData(
                 activeDisplayPremium = current?.premium.toString(),
