@@ -232,6 +232,8 @@ private fun buildListOfTiersAndPremiums(
       }?.premium ?: map[tier]!!.minBy { it.tier.tierLevel }.premium
       add(tier to premium.toString())
     }
+  }.sortedBy { pair ->
+    pair.first.tierLevel
   }
 }
 
