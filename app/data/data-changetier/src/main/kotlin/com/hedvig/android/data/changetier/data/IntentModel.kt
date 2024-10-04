@@ -42,9 +42,10 @@ data class Deductible(
   val deductiblePercentage: Int?,
   val description: String,
 ) {
-  val optionText = if (deductiblePercentage != null && deductibleAmount != null) {
+  val percentageNotZero = deductiblePercentage != null && deductiblePercentage != 0
+  val optionText = if (percentageNotZero && deductibleAmount != null) {
     "$deductibleAmount + $deductiblePercentage%"
-  } else if (deductiblePercentage != null) {
+  } else if (percentageNotZero) {
     "$deductiblePercentage%"
   } else {
     deductibleAmount?.toString() ?: ""

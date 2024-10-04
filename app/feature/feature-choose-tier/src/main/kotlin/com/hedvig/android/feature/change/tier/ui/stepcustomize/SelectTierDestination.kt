@@ -331,11 +331,11 @@ private fun CustomizationCard(
             onDismissRequest()
           },
           onCancelButtonClick = {
-            // todo: locally chosen after dismiss stays
             onDismissRequest()
           },
           title = stringResource(R.string.TIER_FLOW_SELECT_COVERAGE_TITLE),
           data = listOfOptions,
+          subTitle = stringResource(R.string.TIER_FLOW_SELECT_COVERAGE_SUBTITLE),
         )
       }
       if (!isTierChoiceEnabled) {
@@ -392,11 +392,11 @@ private fun CustomizationCard(
               onDismissRequest()
             },
             onCancelButtonClick = {
-              // todo: locally chosen after dismiss stays
               onDismissRequest()
             },
             title = stringResource(R.string.TIER_FLOW_SELECT_DEDUCTIBLE_TITLE),
             data = listOfOptions,
+            subTitle = stringResource(R.string.TIER_FLOW_SELECT_DEDUCTIBLE_SUBTITLE),
           )
         }
       }
@@ -433,6 +433,7 @@ private fun CustomizationCard(
 @Composable
 private fun DropdownContent(
   title: String,
+  subTitle: String,
   onContinueButtonClick: () -> Unit,
   onCancelButtonClick: () -> Unit,
   data: List<ExpandedRadioOptionData>,
@@ -446,6 +447,12 @@ private fun DropdownContent(
     Spacer(Modifier.height(16.dp))
     HedvigText(
       title,
+      modifier = Modifier.fillMaxWidth(),
+      textAlign = Companion.Center,
+    )
+    HedvigText(
+      subTitle,
+      color = HedvigTheme.colorScheme.textSecondary,
       modifier = Modifier.fillMaxWidth(),
       textAlign = Companion.Center,
     )
