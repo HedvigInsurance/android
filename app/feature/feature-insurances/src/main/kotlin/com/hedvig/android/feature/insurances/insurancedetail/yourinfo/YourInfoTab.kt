@@ -73,6 +73,8 @@ internal fun YourInfoTab(
   allowChangeAddress: Boolean,
   allowTerminatingInsurance: Boolean,
   allowEditCoInsured: Boolean,
+  allowChangeTier: Boolean,
+  onChangeTierClick: () -> Unit,
   upcomingChangesInsuranceAgreement: InsuranceAgreement?,
   onEditCoInsuredClick: () -> Unit,
   onMissingInfoClick: () -> Unit,
@@ -103,6 +105,15 @@ internal fun YourInfoTab(
       EditInsuranceBottomSheetContent(
         allowChangeAddress = allowChangeAddress,
         allowEditCoInsured = allowEditCoInsured,
+        allowChangeTier = allowChangeTier,
+        onChangeTierClick = {
+          coroutineScope.launch {
+            sheetState.hide()
+          }.invokeOnCompletion {
+            showEditYourInfoBottomSheet = false
+            onChangeTierClick()
+          }
+        },
         onEditCoInsuredClick = {
           coroutineScope.launch {
             sheetState.hide()
@@ -539,6 +550,8 @@ private fun PreviewYourInfoTab() {
         contractHolderSSN = "19910113-1093",
         onMissingInfoClick = {},
         openUrl = {},
+        allowChangeTier = true,
+        onChangeTierClick = {},
       )
     }
   }

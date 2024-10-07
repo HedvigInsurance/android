@@ -14,10 +14,22 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
+/**
+ * The start of the flow, where we have only insurance ID and start the flow as self-service
+ */
+@Serializable
+data class StartTierFlowDestination(
+  val insuranceId: String,
+) : Destination {
+  companion object : DestinationNavTypeAware {
+    override val typeList: List<KType> = listOf(typeOf<String>())
+  }
+}
+
 @Serializable
 data class ChooseTierGraphDestination(
   /**
-   * The ID to the contract and the change tier intent info with activation date, current tier level and all quotes
+   * The ID to the contract and the change tier intent info with activation date, current tier level and all quote ids
    */
   @SerialName("customization_params")
   val parameters: InsuranceCustomizationParameters,
@@ -41,7 +53,7 @@ internal sealed interface ChooseTierDestination {
   @Serializable
   data class Comparison(val quoteIds: List<String>) : ChooseTierDestination, Destination {
     companion object : DestinationNavTypeAware {
-      override val typeList: List<KType> = listOf(typeOf<List<String>>()) // todo: quote or list of quotes here?
+      override val typeList: List<KType> = listOf(typeOf<List<String>>())
     }
   }
 

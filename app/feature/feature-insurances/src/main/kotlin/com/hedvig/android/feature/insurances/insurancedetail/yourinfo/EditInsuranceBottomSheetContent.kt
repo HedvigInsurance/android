@@ -29,8 +29,10 @@ import hedvig.resources.R
 internal fun EditInsuranceBottomSheetContent(
   allowChangeAddress: Boolean,
   allowEditCoInsured: Boolean,
+  allowChangeTier: Boolean,
   onEditCoInsuredClick: () -> Unit,
   onChangeAddressClick: () -> Unit,
+  onChangeTierClick: () -> Unit,
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -76,6 +78,19 @@ internal fun EditInsuranceBottomSheetContent(
           },
         )
       }
+      if (allowChangeTier) {
+        SelectableHedvigCard(
+          text = stringResource(R.string.insurance_details_change_coverage),
+          isSelected = selectedItemIndex == 2,
+          onClick = {
+            selectedItemIndex = if (selectedItemIndex == 2) {
+              -1
+            } else {
+              2
+            }
+          },
+        )
+      }
     }
     Spacer(modifier = Modifier.height(16.dp))
     HedvigContainedButton(
@@ -86,6 +101,8 @@ internal fun EditInsuranceBottomSheetContent(
           onChangeAddressClick()
         } else if (selectedItemIndex == 1 && allowEditCoInsured) {
           onEditCoInsuredClick()
+        } else if (selectedItemIndex == 2 && allowChangeTier) {
+          onChangeTierClick()
         }
       },
     )
@@ -106,6 +123,8 @@ private fun PreviewEditInsuranceBottomSheetContent() {
       EditInsuranceBottomSheetContent(
         allowChangeAddress = true,
         allowEditCoInsured = true,
+        allowChangeTier = true,
+        onChangeTierClick = {},
         onEditCoInsuredClick = {},
         onChangeAddressClick = {},
         onDismiss = {},

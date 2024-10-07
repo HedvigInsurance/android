@@ -7,6 +7,7 @@ import com.hedvig.android.feature.change.tier.data.GetCurrentContractDataUseCase
 import com.hedvig.android.feature.change.tier.navigation.InsuranceCustomizationParameters
 import com.hedvig.android.feature.change.tier.ui.comparison.ComparisonViewModel
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageViewModel
+import com.hedvig.android.feature.change.tier.ui.stepstart.StartTierFlowViewModel
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryViewModel
 import com.hedvig.android.featureflags.FeatureManager
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -18,6 +19,13 @@ val chooseTierModule = module {
       params = params.get<InsuranceCustomizationParameters>(),
       tierRepository = get<ChangeTierRepository>(),
       getCurrentContractDataUseCase = get<GetCurrentContractDataUseCase>(),
+    )
+  }
+
+  viewModel<StartTierFlowViewModel> { params ->
+    StartTierFlowViewModel(
+      insuranceID = params.get<String>(),
+      tierRepository = get<ChangeTierRepository>(),
     )
   }
 

@@ -72,6 +72,7 @@ internal class GetInsuranceContractsUseCaseDemo : GetInsuranceContractsUseCase {
           isTerminated = false,
           contractHolderDisplayName = "Test Member",
           contractHolderSSN = "1111111111-33322",
+          supportsTierChange = true,
         ),
       ).right(),
     )
