@@ -39,7 +39,6 @@ import com.hedvig.android.design.system.hedvig.PerilList
 import com.hedvig.android.design.system.hedvig.TabDefaults
 import com.hedvig.android.feature.change.tier.ui.comparison.ComparisonState.Loading
 import com.hedvig.android.feature.change.tier.ui.comparison.ComparisonState.Success
-import com.hedvig.android.logger.logcat
 import hedvig.resources.R
 
 @Composable
@@ -60,20 +59,14 @@ internal fun ComparisonDestination(viewModel: ComparisonViewModel, navigateUp: (
 }
 
 @Composable
-private fun ComparisonScreen(uiState: ComparisonState.Success, navigateUp: () -> Unit) {
-  logcat { "mariia comparison: ${uiState.quotes}" }
-  HedvigScaffold(navigateUp = navigateUp) {
+private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
+  HedvigScaffold(
+    navigateUp = navigateUp,
+    topAppBarText = stringResource(R.string.TIER_FLOW_COMPARE_BUTTON), // todo: change copy??
+  ) {
     var selectedTabIndex by rememberSaveable { mutableIntStateOf(0) }
-    HedvigText(
-      text = stringResource(R.string.TIER_FLOW_COMPARE_BUTTON), // todo: change copy??
-      textAlign = TextAlign.Center,
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp),
-    )
     Spacer(Modifier.height(20.dp))
-    val titles = uiState.quotes.map { it.tier.tierName }
-    logcat { "mariia comparison: $titles" }
+    val titles = uiState.quotes.map { it.tier.tierDisplayName ?: "-" }
     CoveragePagerSelector(
       selectedTabIndex = selectedTabIndex,
       selectTabIndex = { selectedTabIndex = it },
@@ -92,28 +85,31 @@ private fun ComparisonScreen(uiState: ComparisonState.Success, navigateUp: () ->
         }
       },
     ) { index ->
+      // todo: will use different API for this
       Column(Modifier.padding(horizontal = 16.dp)) {
-        val quote = uiState.quotes[index] // todo: not safe!!
-        // todo: these are not display items maybe????
-        quote.displayItems.forEachIndexed { itemIndex, item ->
-          item.displaySubtitle?.let { subTitle ->
-            HorizontalItemsWithMaximumSpaceTaken(
-              startSlot = {
-                HedvigText(item.displayTitle)
-              },
-              endSlot = {
-                Row(
-                  horizontalArrangement = Arrangement.End,
-                  verticalAlignment = Alignment.CenterVertically,
-                ) {
-                  HedvigText(subTitle, color = HedvigTheme.colorScheme.textSecondary, textAlign = TextAlign.End)
-                }
-              },
-              spaceBetween = 8.dp,
-            )
-            if (itemIndex != quote.displayItems.lastIndex) {
-              HorizontalDivider()
-            }
+        val quote = uiState.quotes[index]
+        quote.productVariant.insurableLimits.forEachIndexed { i, insurableLimit ->
+          HorizontalItemsWithMaximumSpaceTaken(
+            modifier = Modifier.padding(vertical = 16.dp),
+            startSlot = {
+              HedvigText(insurableLimit.label)
+            },
+            endSlot = {
+              Row(
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically,
+              ) {
+                HedvigText(
+                  insurableLimit.limit,
+                  color = HedvigTheme.colorScheme.textSecondary,
+                  textAlign = TextAlign.End,
+                )
+              }
+            },
+            spaceBetween = 8.dp,
+          )
+          if (i != quote.productVariant.insurableLimits.lastIndex) {
+            HorizontalDivider()
           }
         }
         Spacer(Modifier.height(16.dp))

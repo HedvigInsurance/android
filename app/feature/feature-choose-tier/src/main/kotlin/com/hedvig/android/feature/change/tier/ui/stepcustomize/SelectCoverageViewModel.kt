@@ -29,7 +29,6 @@ import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEve
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Failure
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Loading
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Success
-import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -110,11 +109,10 @@ private class SelectCoveragePresenter(
 
         LaunchComparison -> {
           if (currentPartialState !is PartialUiState.Success) return@CollectEvents
-          val flattened = (currentPartialState as PartialUiState.Success).map.values.flatten().distinctBy {
-            it.tier
-          }
+          val filtered = (currentPartialState as PartialUiState.Success).map.values.flatten()
+            .filter { it.deductible == chosenQuote?.deductible }
           quotesToCompare =
-            flattened // we don't show deductible in the comparison table, so we send only one quote of each Tier for comparison
+            filtered
         }
 
         is ChangeDeductibleInDialog -> {
@@ -133,24 +131,19 @@ private class SelectCoveragePresenter(
         },
         ifRight = { currentContractData ->
           val quotesResult: List<TierDeductibleQuote> = tierRepository.getQuotesById(params.quoteIds)
-          logcat { "Mariia: got this quotes from repo: $quotesResult" }
           if (quotesResult.isEmpty()) {
             currentPartialState = PartialUiState.Failure(QUOTES_ARE_EMPTY)
           } else {
-            logcat { "Mariia: got this quotes: $quotesResult" }
             val current: TierDeductibleQuote? =
               if (params.currentTierName != null && params.currentTierLevel != null) {
-                val info = quotesResult.firstOrNull { it.tier.tierLevel == 1 }
-                logcat {
-                  "Mariia: got this tierLevel for current: ${params.currentTierLevel} and corresponding quote: $info"
-                }
                 TierDeductibleQuote(
                   id = CURRENT_ID,
                   deductible = currentContractData.deductible,
                   tier = Tier(
                     tierName = params.currentTierName,
                     tierLevel = params.currentTierLevel,
-                    info = currentContractData.productVariant.tierNameLong,
+                    info = currentContractData.productVariant.displayTierNameLong,
+                    tierDisplayName = currentContractData.productVariant.displayTierName,
                   ),
                   productVariant = currentContractData.productVariant,
                   displayItems = listOf(),
@@ -159,7 +152,6 @@ private class SelectCoveragePresenter(
               } else {
                 null
               }
-            logcat { "Mariia: got this current: $current" }
             current?.let {
               tierRepository.addQuotesToDb(listOf(it))
             }
@@ -171,7 +163,9 @@ private class SelectCoveragePresenter(
             }
             // pre-choosing current quote
             chosenTier = current?.tier
+            chosenTierInDialog = current?.tier
             chosenQuote = current
+            chosenQuoteInDialog = current
             currentPartialState = PartialUiState.Success(
               contractData = ContractData(
                 activeDisplayPremium = current?.premium.toString(),
@@ -192,8 +186,6 @@ private class SelectCoveragePresenter(
       is PartialUiState.Failure -> Failure((currentPartialState as PartialUiState.Failure).reason)
       PartialUiState.Loading -> Loading
       is PartialUiState.Success -> {
-        val currentlyChosenQuote = chosenQuote
-        logcat { "mariia: currentlyChosenQuote is $currentlyChosenQuote" }
         Success(
           map = (currentPartialState as PartialUiState.Success).map,
           currentActiveQuote = (currentPartialState as PartialUiState.Success).currentActiveQuote,
@@ -232,6 +224,8 @@ private fun buildListOfTiersAndPremiums(
       }?.premium ?: map[tier]!!.minBy { it.tier.tierLevel }.premium
       add(tier to premium.toString())
     }
+  }.sortedBy { pair ->
+    pair.first.tierLevel
   }
 }
 

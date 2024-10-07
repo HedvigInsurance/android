@@ -4,7 +4,6 @@ import arrow.core.Either
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.changetier.database.TierQuoteMapper
 import com.hedvig.android.data.chat.database.TierQuoteDao
-import com.hedvig.android.logger.logcat
 
 interface ChangeTierRepository {
   suspend fun startChangeTierIntentAndGetQuotesId(
@@ -30,7 +29,6 @@ internal class ChangeTierRepositoryImpl(
   ): Either<ErrorMessage, ChangeTierDeductibleIntent> {
     tierQuoteDao.clearAllQuotes()
     val result = createChangeTierDeductibleIntentUseCase.invoke(insuranceId, source)
-    logcat { "Mariia: got this quotes from createChangeTierDeductibleIntentUseCase: $result" }
     result.onRight { intent ->
       val quotes = intent.quotes.map { quote ->
         mapper.quoteToDbModel(quote)

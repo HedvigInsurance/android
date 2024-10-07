@@ -41,6 +41,7 @@ import com.hedvig.android.design.system.hedvig.freetext.FreeTextDisplay
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
 import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion
 import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion.Action.DowngradePriceByChangingTier
+import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion.Action.UnknownAction
 import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion.Action.UpdateAddress
 import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion.Action.UpgradeCoverageByChangingTier
 import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion.Redirect
@@ -169,13 +170,12 @@ private fun TerminationSurveyScreen(
           ) {
             val subTitle = when (uiState.errorWhileLoadingNextStep) {
               GENERAL -> stringResource(R.string.GENERAL_ERROR_BODY)
-              // todo: remove hardcoded string!!
-              EMPTY_QUOTES -> "Turns out you're already at the best possible coverage and price!"
+              EMPTY_QUOTES -> stringResource(R.string.TERMINATION_NO_TIER_QUOTES_SUBTITLE)
               null -> ""
             }
             val title = when (uiState.errorWhileLoadingNextStep) {
               GENERAL -> stringResource(R.string.GENERAL_ERROR_BODY)
-              EMPTY_QUOTES -> "Oops!" // todo: another copy??
+              EMPTY_QUOTES -> stringResource(R.string.TERMINATION_NO_TIER_QUOTES_TITLE)
               null -> ""
             }
             EmptyState(
@@ -206,7 +206,7 @@ private fun TerminationSurveyScreen(
             AnimatedVisibility(visible = reason.surveyOption == uiState.selectedOption) {
               Column {
                 val suggestion = reason.surveyOption.suggestion
-                if (suggestion != null) {
+                if (suggestion != null && suggestion != UnknownAction) {
                   val text = suggestion.description
                   val buttonText = suggestion.buttonTitle
                   val onSuggestionButtonClick: () -> Unit = when (suggestion) {
@@ -227,6 +227,10 @@ private fun TerminationSurveyScreen(
                       {
                         tryToUpgradeCoverage()
                       }
+                    }
+
+                    UnknownAction -> {
+                      {}
                     }
                   }
                   HedvigNotificationCard(

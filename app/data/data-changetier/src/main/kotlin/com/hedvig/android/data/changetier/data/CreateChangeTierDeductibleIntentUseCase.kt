@@ -72,6 +72,7 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
                   tierName = it.tierName!!,
                   tierLevel = it.tierLevel!!,
                   info = it.productVariant.displayNameTierLong,
+                  tierDisplayName = it.productVariant.displayNameTier,
                 ),
               )
             }
@@ -131,7 +132,7 @@ private val quotesForPreview = listOf(
     ),
     displayItems = listOf(),
     premium = UiMoney(199.0, SEK),
-    tier = Tier("Bas", tierLevel = 0, info = "Vårt paket med grundläggande villkor."),
+    tier = Tier("BAS", tierLevel = 0, info = "Vårt paket med grundläggande villkor.", tierDisplayName = "Bas"),
     productVariant = ProductVariant(
       displayName = "Test",
       contractGroup = ContractGroup.RENTAL,
@@ -151,7 +152,7 @@ private val quotesForPreview = listOf(
     ),
     displayItems = listOf(),
     premium = UiMoney(255.0, SEK),
-    tier = Tier("Bas", tierLevel = 0, info = "Vårt paket med grundläggande villkor."),
+    tier = Tier("BAS", tierLevel = 0, info = "Vårt paket med grundläggande villkor.", tierDisplayName = "Bas"),
     productVariant = ProductVariant(
       displayName = "Test",
       contractGroup = ContractGroup.RENTAL,
@@ -171,7 +172,7 @@ private val quotesForPreview = listOf(
     ),
     displayItems = listOf(),
     premium = UiMoney(355.0, SEK),
-    tier = Tier("Bas", tierLevel = 0, info = "Vårt paket med grundläggande villkor."),
+    tier = Tier("BAS", tierLevel = 0, info = "Vårt paket med grundläggande villkor.", tierDisplayName = "Bas"),
     productVariant = ProductVariant(
       displayName = "Test",
       contractGroup = ContractGroup.RENTAL,
@@ -191,7 +192,7 @@ private val quotesForPreview = listOf(
     ),
     displayItems = listOf(),
     premium = UiMoney(230.0, SEK),
-    tier = Tier("Standard", tierLevel = 1, info = "Vårt mellanpaket med hög ersättning."),
+    tier = Tier("STANDARD", tierLevel = 1, info = "Vårt mellanpaket med hög ersättning.", tierDisplayName = "Standard"),
     productVariant = ProductVariant(
       displayName = "Test",
       contractGroup = ContractGroup.RENTAL,
@@ -211,7 +212,7 @@ private val quotesForPreview = listOf(
     ),
     displayItems = listOf(),
     premium = UiMoney(655.0, SEK),
-    tier = Tier("Standard", tierLevel = 1, info = "Vårt mellanpaket med hög ersättning."),
+    tier = Tier("STANDARD", tierLevel = 1, info = "Vårt mellanpaket med hög ersättning.", tierDisplayName = "Standard"),
     productVariant = ProductVariant(
       displayName = "Test",
       contractGroup = ContractGroup.RENTAL,

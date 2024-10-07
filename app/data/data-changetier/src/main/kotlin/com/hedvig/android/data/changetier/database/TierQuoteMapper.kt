@@ -47,6 +47,7 @@ internal class TierQuoteMapper {
       tierName = tier.tierName,
       tierLevel = tier.tierLevel,
       info = tier.info,
+      tierDisplayName = tier.tierDisplayName,
     )
   }
 
@@ -55,6 +56,7 @@ internal class TierQuoteMapper {
       tierName = tierDbModel.tierName,
       tierLevel = tierDbModel.tierLevel,
       info = tierDbModel.info,
+      tierDisplayName = tierDbModel.tierDisplayName,
     )
   }
 
@@ -115,8 +117,8 @@ internal class TierQuoteMapper {
       perils = variant.perils.map { productVariantPerilToDbModel(it) },
       insurableLimits = variant.insurableLimits.map { insurableLimitToDbModel(it) },
       documents = variant.documents.map { insuranceVariantDocumentToDbModel(it) },
-      tierName = variant.tierName,
-      tierNameLong = variant.tierNameLong,
+      tierName = variant.displayTierName,
+      tierNameLong = variant.displayTierNameLong,
     )
   }
 
@@ -129,8 +131,8 @@ internal class TierQuoteMapper {
       perils = variantDbModel.perils.map { productVariantPerilFromDbModel(it) },
       insurableLimits = variantDbModel.insurableLimits.map { insurableLimitFromDbModel(it) },
       documents = variantDbModel.documents.map { insuranceVariantDocumentFromDbModel(it) },
-      tierName = variantDbModel.tierName,
-      tierNameLong = variantDbModel.tierNameLong,
+      displayTierName = variantDbModel.tierName,
+      displayTierNameLong = variantDbModel.tierNameLong,
     )
   }
 

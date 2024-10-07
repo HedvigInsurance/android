@@ -48,7 +48,6 @@ internal class GetCurrentContractDataUseCaseImpl(
               deductiblePercentage = dataResult.currentAgreement.deductible?.percentage,
               description = dataResult.currentAgreement.deductible?.displayText ?: "",
             )
-            logcat { "Mariiaaa: current deductible: $deductible" }
             CurrentContractData(
               currentExposureName = dataResult.exposureDisplayName,
               currentDisplayPremium = UiMoney.fromMoneyFragment(dataResult.currentAgreement.premium),

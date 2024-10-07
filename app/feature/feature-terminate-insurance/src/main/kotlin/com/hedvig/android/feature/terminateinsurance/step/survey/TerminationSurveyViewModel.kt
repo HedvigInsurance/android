@@ -124,13 +124,11 @@ internal class TerminationSurveyPresenter(
 
     LaunchedEffect(loadBetterQuotesSource) {
       val source = loadBetterQuotesSource
-      logcat { "Mariiaaa: $source" }
       if (source != null) {
         currentState = currentState.copy(actionButtonLoading = true, errorWhileLoadingNextStep = null)
         val insuranceId = terminateInsuranceRepository.getContractId()
         val result =
           changeTierRepository.startChangeTierIntentAndGetQuotesId(insuranceId = insuranceId, source = source)
-        logcat { "Mariiaaa: $result" }
         result.fold(
           ifLeft = { errorMessage ->
             logcat(LogPriority.ERROR) {
@@ -143,7 +141,6 @@ internal class TerminationSurveyPresenter(
             loadBetterQuotesSource = null
           },
           ifRight = { changeTierIntent ->
-            logcat { "Mariiaaa: ${changeTierIntent.quotes.map { it.tier to it.deductible }}" }
             if (changeTierIntent.quotes.isEmpty()) {
               currentState = currentState.copy(
                 actionButtonLoading = false,
