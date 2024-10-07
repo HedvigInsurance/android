@@ -24,6 +24,18 @@ internal sealed interface SurveyOptionSuggestion {
       override val description: String,
       override val buttonTitle: String,
     ) : Action
+
+    @Serializable
+    data class UpgradeCoverageByChangingTier(
+      override val description: String,
+      override val buttonTitle: String,
+    ) : Action
+
+    @Serializable
+    data class DowngradePriceByChangingTier(
+      override val description: String,
+      override val buttonTitle: String,
+    ) : Action
   }
 
   @Serializable
