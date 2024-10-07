@@ -30,7 +30,7 @@ fun ToolbarChatIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
   Icon(
     imageVector = Icons.Hedvig.Chat,
     contentDescription = stringResource(R.string.DASHBOARD_OPEN_CHAT),
-    tint = com.hedvig.android.design.system.hedvig.HedvigTheme.colorScheme.fillSecondary,
+    tint = com.hedvig.android.design.system.hedvig.HedvigTheme.colorScheme.signalGreyElement,
     modifier = modifier
       .size(40.dp)
       .shadow(4.dp, CircleShape)

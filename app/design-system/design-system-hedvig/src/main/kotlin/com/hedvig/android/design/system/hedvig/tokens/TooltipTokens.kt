@@ -15,4 +15,14 @@ internal object TooltipTokens {
   val DefaultMinWidth = 36.dp // A sane default, so that the arrow can always look attached to the squircle
   val DefaultMaxWidth = 280.dp
   val TextFont = TypographyKeyTokens.Label
+  val DefaultContainerColor = ColorSchemeKeyTokens.FillPrimary
+  val DefaultTextColor = ColorSchemeKeyTokens.TextNegative
+  val BrightContainerColor = ColorSchemeKeyTokens.SignalGreenFill
+  val BrightTextColor = ColorSchemeKeyTokens.TextBlack
+  val BrightSubMessageColor = ColorSchemeKeyTokens.SignalGreenText
+  val BleakContainerColor = ColorSchemeKeyTokens.SurfaceSecondary
+  val BleakTextColor = ColorSchemeKeyTokens.TextPrimary
+  val BleakSubMessageColor = ColorSchemeKeyTokens.TextSecondary
+  val InboxContainerColor = ColorSchemeKeyTokens.SignalGreyElement
+  val InboxMessageColor = ColorSchemeKeyTokens.TextWhite
 }

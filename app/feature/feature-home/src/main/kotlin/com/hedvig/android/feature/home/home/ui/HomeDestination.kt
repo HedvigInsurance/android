@@ -83,8 +83,9 @@ import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.plus
 import com.hedvig.android.crosssells.CrossSellsSection
 import com.hedvig.android.data.contract.android.CrossSell
-import com.hedvig.android.feature.home.home.ChatTooltip
-import com.hedvig.android.feature.home.home.ChatTooltipMessage
+import com.hedvig.android.design.system.hedvig.HedvigTooltip
+import com.hedvig.android.design.system.hedvig.TooltipDefaults.BeakDirection.TopEnd
+import com.hedvig.android.design.system.hedvig.TooltipDefaults.TooltipStyle.Inbox
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.home.data.HomeData.VeryImportantMessage.LinkInfo
 import com.hedvig.android.memberreminders.MemberReminder
@@ -284,9 +285,11 @@ private fun HomeScreen(
             }
         }
         if (shouldShowGotQuestionsTooltip) {
-          ChatTooltip(
-            chatTooltipMessage = ChatTooltipMessage.GotQuestions,
+          HedvigTooltip(
+            message = stringResource(R.string.home_tab_chat_hint_text),
             showTooltip = shouldShowGotQuestionsTooltip,
+            tooltipStyle = Inbox,
+            beakDirection = TopEnd,
             tooltipShown = {
               context.setLastEpochDayWhenChatTooltipWasShown(
                 java.time.LocalDate
@@ -299,9 +302,11 @@ private fun HomeScreen(
               .padding(horizontal = 16.dp),
           )
         } else if (shouldShowNewMessageTooltip) {
-          ChatTooltip(
-            chatTooltipMessage = ChatTooltipMessage.NewMessage,
+          HedvigTooltip(
+            message = stringResource(R.string.CHAT_NEW_MESSAGE),
             showTooltip = shouldShowNewMessageTooltip,
+            tooltipStyle = Inbox,
+            beakDirection = TopEnd,
             tooltipShown = {},
             modifier = Modifier
               .align(Alignment.End)

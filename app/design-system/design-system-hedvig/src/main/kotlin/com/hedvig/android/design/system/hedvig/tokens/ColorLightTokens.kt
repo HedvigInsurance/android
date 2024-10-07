@@ -54,6 +54,7 @@ internal object ColorLightTokens {
   val SurfaceSecondary: Color = PaletteTokens.G200
   val SurfacePrimaryTransparent: Color = PaletteTokens.G100TLight
   val SurfaceSecondaryTransparent: Color = PaletteTokens.G200TLight
+  val SurfaceHighlightTransparent: Color = PaletteTokens.G50TLight
   val BackgroundPrimary: Color = PaletteTokens.White
   val BackgroundNegative: Color = PaletteTokens.Black
   val BackgroundBlack: Color = PaletteTokens.Black
@@ -77,6 +78,7 @@ internal object ColorLightTokens {
   val SignalBlueHighlight: Color = PaletteTokens.Blue300
   val SignalBlueElement: Color = PaletteTokens.Blue600
   val SignalBlueText: Color = PaletteTokens.Blue800
+  val SignalGreyElement: Color = PaletteTokens.G700
   val HighlightPinkFill1: Color = PaletteTokens.Pink100
   val HighlightPinkFill2: Color = PaletteTokens.Pink200
   val HighlightPinkFill3: Color = PaletteTokens.Pink300
