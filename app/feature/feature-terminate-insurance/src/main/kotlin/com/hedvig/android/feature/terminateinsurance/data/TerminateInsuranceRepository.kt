@@ -8,6 +8,9 @@ import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.terminateinsurance.InsuranceId
+import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.featureflags.flags.Feature.TIER
+import kotlinx.coroutines.flow.first
 import kotlinx.datetime.LocalDate
 import octopus.FlowTerminationDateNextMutation
 import octopus.FlowTerminationDeletionNextMutation
@@ -26,26 +29,32 @@ internal interface TerminateInsuranceRepository {
   suspend fun submitReasonForCancelling(reason: TerminationReason): Either<ErrorMessage, TerminateInsuranceStep>
 
   suspend fun confirmDeletion(): Either<ErrorMessage, TerminateInsuranceStep>
+
+  suspend fun getContractId(): String
 }
 
 internal class TerminateInsuranceRepositoryImpl(
   private val apolloClient: ApolloClient,
+  private val featureManager: FeatureManager,
   private val terminationFlowContextStorage: TerminationFlowContextStorage,
 ) : TerminateInsuranceRepository {
   override suspend fun startTerminationFlow(insuranceId: InsuranceId): Either<ErrorMessage, TerminateInsuranceStep> {
     return either {
+      val isTierEnabled = featureManager.isFeatureEnabled(TIER).first()
       val result = apolloClient
         .mutation(FlowTerminationStartMutation(FlowTerminationStartInput(insuranceId.id)))
         .safeExecute(::ErrorMessage)
         .bind()
         .flowTerminationStart
       terminationFlowContextStorage.saveContext(result.context)
-      result.currentStep.toTerminateInsuranceStep()
+      terminationFlowContextStorage.saveContractId(insuranceId.id)
+      result.currentStep.toTerminateInsuranceStep(isTierEnabled)
     }
   }
 
   override suspend fun setTerminationDate(terminationDate: LocalDate): Either<ErrorMessage, TerminateInsuranceStep> {
     return either {
+      val isTierEnabled = featureManager.isFeatureEnabled(TIER).first()
       val result = apolloClient
         .mutation(
           FlowTerminationDateNextMutation(
@@ -57,7 +66,7 @@ internal class TerminateInsuranceRepositoryImpl(
         .bind()
         .flowTerminationDateNext
       terminationFlowContextStorage.saveContext(result.context)
-      result.currentStep.toTerminateInsuranceStep()
+      result.currentStep.toTerminateInsuranceStep(isTierEnabled)
     }
   }
 
@@ -65,6 +74,7 @@ internal class TerminateInsuranceRepositoryImpl(
     reason: TerminationReason,
   ): Either<ErrorMessage, TerminateInsuranceStep> {
     return either {
+      val isTierEnabled = featureManager.isFeatureEnabled(TIER).first()
       val result = apolloClient
         .mutation(
           FlowTerminationSurveyNextMutation(
@@ -81,19 +91,24 @@ internal class TerminateInsuranceRepositoryImpl(
         .bind()
         .flowTerminationSurveyNext
       terminationFlowContextStorage.saveContext(result.context)
-      result.currentStep.toTerminateInsuranceStep()
+      result.currentStep.toTerminateInsuranceStep(isTierEnabled)
     }
   }
 
   override suspend fun confirmDeletion(): Either<ErrorMessage, TerminateInsuranceStep> {
     return either {
+      val isTierEnabled = featureManager.isFeatureEnabled(TIER).first()
       val result = apolloClient
         .mutation(FlowTerminationDeletionNextMutation(terminationFlowContextStorage.getContext()))
         .safeExecute(::ErrorMessage)
         .bind()
         .flowTerminationDeletionNext
       terminationFlowContextStorage.saveContext(result.context)
-      result.currentStep.toTerminateInsuranceStep()
+      result.currentStep.toTerminateInsuranceStep(isTierEnabled)
     }
+  }
+
+  override suspend fun getContractId(): String {
+    return terminationFlowContextStorage.getContractId()
   }
 }

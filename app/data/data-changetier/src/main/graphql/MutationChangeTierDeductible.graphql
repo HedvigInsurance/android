@@ -1,0 +1,32 @@
+mutation ChangeTierDeductibleCreateIntent($contractId: ID!, $source: ChangeTierDeductibleSource!) {
+  changeTierDeductibleCreateIntent(input:{ contractId: $contractId, source: $source }) {
+    intent {
+      activationDate
+      currentTierLevel
+      currentTierName
+      quotes {
+        deductible {
+          amount {
+            ...MoneyFragment
+          }
+          displayText
+          percentage
+        }
+        displayItems {
+          displaySubtitle
+          displayTitle
+          displayValue
+        }
+        id
+        premium {
+          ...MoneyFragment
+        }
+        productVariant {
+          ...ProductVariantFragment
+        }
+        tierLevel
+        tierName
+      }
+    }
+  }
+}

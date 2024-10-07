@@ -41,6 +41,7 @@ import com.hedvig.android.core.common.di.datastoreFileQualifier
 import com.hedvig.android.core.datastore.di.dataStoreModule
 import com.hedvig.android.core.demomode.di.demoModule
 import com.hedvig.android.core.fileupload.fileUploadModule
+import com.hedvig.android.data.changetier.di.dataChangeTierModule
 import com.hedvig.android.data.chat.di.dataChatModule
 import com.hedvig.android.data.claimflow.di.claimFlowDataModule
 import com.hedvig.android.data.conversations.di.dataConversationsModule
@@ -50,6 +51,7 @@ import com.hedvig.android.data.termination.di.terminationDataModule
 import com.hedvig.android.datadog.core.addDatadogConfiguration
 import com.hedvig.android.datadog.core.di.datadogModule
 import com.hedvig.android.datadog.demo.tracking.di.datadogDemoTrackingModule
+import com.hedvig.android.feature.change.tier.di.chooseTierModule
 import com.hedvig.android.feature.changeaddress.di.changeAddressModule
 import com.hedvig.android.feature.chat.di.chatModule
 import com.hedvig.android.feature.claim.details.di.claimDetailsModule
@@ -297,6 +299,7 @@ val applicationModule = module {
       authModule,
       buildConstantsModule,
       changeAddressModule,
+      chooseTierModule,
       chatModule,
       claimDetailsModule,
       claimFlowDataModule,
@@ -307,6 +310,7 @@ val applicationModule = module {
       coreAppReviewModule,
       coreCommonModule,
       dataChatModule,
+      dataChangeTierModule,
       dataConversationsModule,
       dataPayingMemberModule,
       dataStoreModule,

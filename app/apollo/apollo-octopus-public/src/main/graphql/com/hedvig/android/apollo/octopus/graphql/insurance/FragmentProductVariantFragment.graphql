@@ -1,5 +1,7 @@
 fragment ProductVariantFragment on ProductVariant {
   displayName
+  displayNameTier
+  displayNameTierLong
   typeOfContract
   partner
   perils {
