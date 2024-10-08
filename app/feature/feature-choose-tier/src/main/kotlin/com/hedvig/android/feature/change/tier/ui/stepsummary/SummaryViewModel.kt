@@ -58,7 +58,7 @@ private class SummaryPresenter(
         ClearNavigation -> {
           if (currentState !is Success) return@CollectEvents
           currentState = (currentState as Success).copy(
-            navigateToSuccessActivationDate = null,
+            navigateToSuccess = false,
             navigateToFail = false)
         }
       }
@@ -71,11 +71,11 @@ private class SummaryPresenter(
         tierRepository.submitChangeTierQuote(params.quoteIdToSubmit).fold(
           ifLeft = {
             currentState =
-              (previousState as Success).copy(navigateToSuccessActivationDate = null, navigateToFail = true)
+              (previousState as Success).copy(navigateToSuccess = false, navigateToFail = true)
           },
           ifRight = {
             currentState = (previousState as Success).copy(
-              navigateToSuccessActivationDate = params.activationDateEpochDays,
+              navigateToSuccess = true,
               navigateToFail = false,
             )
           },
@@ -117,7 +117,7 @@ internal sealed interface SummaryState {
   data class Success(
     val quote: TierDeductibleQuote,
     val currentContractData: ContractData,
-    val navigateToSuccessActivationDate: Int? = null,
+    val navigateToSuccess: Boolean = false,
     val navigateToFail: Boolean = false,
   ) : SummaryState
 
