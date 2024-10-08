@@ -63,7 +63,13 @@ fun NavGraphBuilder.changeTierGraph(
         viewModel = viewModel,
         navigateUp = navigator::navigateUp,
         navigateToSummary = { quote ->
-          navigator.navigateUnsafe(ChooseTierDestination.Summary(quote.id)) // todo: Unsafe???
+          navigator.navigateUnsafe(ChooseTierDestination.Summary(
+            SummaryParameters(
+              quoteIdToSubmit = quote.id,
+              activationDateEpochDays = chooseTierGraphDestination.parameters.activationDateEpochDays,
+              insuranceId = chooseTierGraphDestination.parameters.insuranceId)
+
+          )) // todo: Unsafe???
         },
         navigateToComparison = { listOfQuotes ->
           navigator.navigateUnsafe(ChooseTierDestination.Comparison(listOfQuotes.map { it.id })) // todo: Unsafe???
@@ -83,7 +89,7 @@ fun NavGraphBuilder.changeTierGraph(
 
     navdestination<ChooseTierDestination.Summary> { backStackEntry ->
       val viewModel: SummaryViewModel = koinViewModel {
-        parametersOf(quoteIdToSubmit)
+        parametersOf(this.params)
       }
       ChangeTierSummaryDestination(
         viewModel = viewModel,

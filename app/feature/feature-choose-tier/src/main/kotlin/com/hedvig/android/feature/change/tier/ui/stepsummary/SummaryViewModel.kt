@@ -57,7 +57,9 @@ private class SummaryPresenter(
         SubmitQuote -> submitIteration++
         ClearNavigation -> {
           if (currentState !is Success) return@CollectEvents
-          currentState = (currentState as Success).copy(navigateToSuccessActivationDate = null, navigateToFail = false)
+          currentState = (currentState as Success).copy(
+            navigateToSuccessActivationDate = null,
+            navigateToFail = false)
         }
       }
     }
