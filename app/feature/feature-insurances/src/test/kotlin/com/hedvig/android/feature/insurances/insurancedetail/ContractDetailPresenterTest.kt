@@ -270,6 +270,7 @@ class ContractDetailPresenterTest {
       isTerminated = false,
       contractHolderSSN = "",
       contractHolderDisplayName = "",
+      supportsTierChange = true,
     )
 
     private val insuranceWithTerminationDate = InsuranceContract(
@@ -302,6 +303,7 @@ class ContractDetailPresenterTest {
       isTerminated = false,
       contractHolderSSN = "",
       contractHolderDisplayName = "",
+      supportsTierChange = true,
     )
 
     private val responseTurbine = Turbine<Either<GetContractForContractIdError, InsuranceContract>>()
