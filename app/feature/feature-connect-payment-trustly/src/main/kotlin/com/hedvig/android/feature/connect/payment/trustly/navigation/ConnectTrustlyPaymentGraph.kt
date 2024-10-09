@@ -13,7 +13,6 @@ import com.hedvig.android.feature.connect.payment.trustly.TrustlyViewModel
 import com.hedvig.android.feature.connect.payment.trustly.ui.TrustlyDestination
 import com.hedvig.android.market.Market
 import com.hedvig.android.navigation.compose.navdestination
-import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
 import hedvig.resources.R
@@ -24,7 +23,7 @@ fun NavGraphBuilder.connectPaymentGraph(
   market: Market,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
 ) {
-  navdestination<AppDestination.ConnectPayment>(
+  navdestination<TrustlyDestination>(
     deepLinks = listOf(
       navDeepLink { uriPattern = hedvigDeepLinkContainer.connectPayment },
       navDeepLink { uriPattern = hedvigDeepLinkContainer.directDebit },

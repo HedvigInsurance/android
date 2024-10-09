@@ -27,6 +27,7 @@ import com.hedvig.android.feature.claim.details.navigation.claimDetailsGraph
 import com.hedvig.android.feature.claimtriaging.ClaimTriagingDestination
 import com.hedvig.android.feature.claimtriaging.claimTriagingDestinations
 import com.hedvig.android.feature.connect.payment.connectPaymentGraph
+import com.hedvig.android.feature.connect.payment.trustly.ui.TrustlyDestination
 import com.hedvig.android.feature.deleteaccount.navigation.DeleteAccountDestination
 import com.hedvig.android.feature.deleteaccount.navigation.deleteAccountGraph
 import com.hedvig.android.feature.editcoinsured.navigation.editCoInsuredGraph
@@ -78,7 +79,7 @@ internal fun HedvigNavHost(
   val navigator: Navigator = rememberNavigator(hedvigAppState.navController, finishApp)
 
   val navigateToConnectPayment = {
-    hedvigAppState.navController.navigate(AppDestination.ConnectPayment)
+    hedvigAppState.navController.navigate(TrustlyDestination)
   }
   val navigateToInbox = { backStackEntry: NavBackStackEntry ->
     with(navigator) {
@@ -317,7 +318,7 @@ internal fun HedvigNavHost(
           is QuickLinkDestination.OuterDestination.QuickLinkCoInsuredAddOrRemove ->
             AppDestination.CoInsuredAddOrRemove(quickLinkDestination.contractId)
 
-          QuickLinkDestination.OuterDestination.QuickLinkConnectPayment -> AppDestination.ConnectPayment
+          QuickLinkDestination.OuterDestination.QuickLinkConnectPayment -> TrustlyDestination
           QuickLinkDestination.OuterDestination.QuickLinkTermination -> TerminateInsuranceGraphDestination(null)
           QuickLinkDestination.OuterDestination.QuickLinkTravelCertificate -> AppDestination.TravelCertificate
         }
