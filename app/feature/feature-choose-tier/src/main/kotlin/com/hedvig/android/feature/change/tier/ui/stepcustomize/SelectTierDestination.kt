@@ -138,7 +138,7 @@ private fun FailureScreen(reload: () -> Unit, navigateUp: () -> Unit, reason: Fa
   Box(Modifier.fillMaxSize()) {
     val subTitle = when (reason) {
       GENERAL -> stringResource(R.string.GENERAL_ERROR_BODY)
-      QUOTES_ARE_EMPTY -> stringResource(R.string.TERMINATION_NO_TIER_QUOTES_SUBTITLE)
+      QUOTES_ARE_EMPTY -> null
     }
     val action = when (reason) {
       GENERAL -> reload
@@ -146,7 +146,7 @@ private fun FailureScreen(reload: () -> Unit, navigateUp: () -> Unit, reason: Fa
     }
     val title = when (reason) {
       GENERAL -> stringResource(R.string.GENERAL_ERROR_BODY)
-      QUOTES_ARE_EMPTY -> stringResource(R.string.TERMINATION_NO_TIER_QUOTES_TITLE)
+      QUOTES_ARE_EMPTY -> stringResource(R.string.TERMINATION_NO_TIER_QUOTES_SUBTITLE)
     }
     val buttonText = when (reason) {
       GENERAL -> stringResource(R.string.GENERAL_ERROR_BODY)
