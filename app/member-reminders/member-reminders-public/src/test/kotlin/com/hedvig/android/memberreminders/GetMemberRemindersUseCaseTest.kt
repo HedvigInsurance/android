@@ -37,7 +37,7 @@ class GetMemberRemindersUseCaseTest {
     getMemberRemindersUseCase.invoke().test {
       expectNoEvents()
       enableNotificationsReminderManager.showNotification.add(false)
-      getConnectPaymentReminderUseCase.turbine.add(ConnectPaymentReminderError.AlreadySetup.left())
+      getConnectPaymentReminderUseCase.turbine.add(ConnectPaymentReminderError.DomainError.AlreadySetup.left())
       getUpcomingRenewalRemindersUseCase.turbine.add(UpcomingRenewalReminderError.NoUpcomingRenewals.left())
       getNeedsCoInsuredInfoRemindersUseCase.turbine.add(CoInsuredInfoReminderError.NoCoInsuredReminders.left())
       assertAll {

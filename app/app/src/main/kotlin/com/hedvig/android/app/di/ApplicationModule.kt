@@ -56,7 +56,6 @@ import com.hedvig.android.feature.changeaddress.di.changeAddressModule
 import com.hedvig.android.feature.chat.di.chatModule
 import com.hedvig.android.feature.claim.details.di.claimDetailsModule
 import com.hedvig.android.feature.claimtriaging.di.claimTriagingModule
-import com.hedvig.android.feature.connect.payment.adyen.di.adyenFeatureModule
 import com.hedvig.android.feature.connect.payment.trustly.di.connectPaymentTrustlyModule
 import com.hedvig.android.feature.deleteaccount.di.deleteAccountModule
 import com.hedvig.android.feature.editcoinsured.di.editCoInsuredModule
@@ -293,7 +292,6 @@ private val coilModule = module {
 val applicationModule = module {
   includes(
     listOf(
-      adyenFeatureModule,
       apolloAuthListenersModule,
       appModule,
       authModule,
