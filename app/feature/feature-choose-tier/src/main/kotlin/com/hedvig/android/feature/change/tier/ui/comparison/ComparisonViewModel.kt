@@ -8,7 +8,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.data.changetier.data.ChangeTierRepository
 import com.hedvig.android.data.changetier.data.TierDeductibleQuote
-import com.hedvig.android.feature.change.tier.ui.comparison.ComparisonEvent.ShowTab
 import com.hedvig.android.feature.change.tier.ui.comparison.ComparisonState.Loading
 import com.hedvig.android.feature.change.tier.ui.comparison.ComparisonState.Success
 import com.hedvig.android.molecule.android.MoleculeViewModel
@@ -19,12 +18,12 @@ internal class ComparisonViewModel(
   quoteIds: List<String>,
   tierRepository: ChangeTierRepository,
 ) : MoleculeViewModel<ComparisonEvent, ComparisonState>(
-    initialState = Loading,
-    presenter = ComparisonPresenter(
-      quoteIds = quoteIds,
-      tierRepository = tierRepository,
-    ),
-  )
+  initialState = Loading,
+  presenter = ComparisonPresenter(
+    quoteIds = quoteIds,
+    tierRepository = tierRepository,
+  ),
+)
 
 private class ComparisonPresenter(
   private val quoteIds: List<String>,
@@ -40,12 +39,6 @@ private class ComparisonPresenter(
       currentState = Success(result)
     }
 
-    CollectEvents { event ->
-      when (event) {
-        is ShowTab -> TODO()
-      }
-    }
-
     return currentState
   }
 }
@@ -57,5 +50,4 @@ internal sealed interface ComparisonState {
 }
 
 internal sealed interface ComparisonEvent {
-  data class ShowTab(val index: Int) : ComparisonEvent
 }

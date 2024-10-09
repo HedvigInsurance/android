@@ -62,7 +62,7 @@ internal fun ComparisonDestination(viewModel: ComparisonViewModel, navigateUp: (
 private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
   HedvigScaffold(
     navigateUp = navigateUp,
-    topAppBarText = stringResource(R.string.TIER_FLOW_COMPARE_BUTTON), // todo: change copy??
+    topAppBarText = stringResource(R.string.TIER_FLOW_COMPARE_BUTTON),
   ) {
     var selectedTabIndex by rememberSaveable { mutableIntStateOf(0) }
     Spacer(Modifier.height(20.dp))

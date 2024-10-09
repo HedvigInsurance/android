@@ -41,14 +41,6 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
         logcat(ERROR) { "Tried to get changeTierQuotes when feature flag is disabled!" }
         raise(ErrorMessage())
       } else {
-//        ChangeTierDeductibleIntent(
-//          activationDate = LocalDate(2024, 10, 3),
-//          currentTierName = "Standard",
-//          currentTierLevel = 1,
-//          quotes = quotesForPreview,
-//        )
-        // todo: remove mock!!!
-
         val changeTierDeductibleResponse = apolloClient
           .mutation(
             ChangeTierDeductibleCreateIntentMutation(
@@ -122,6 +114,7 @@ private fun List<ChangeTierDeductibleCreateIntentMutation.Data.ChangeTierDeducti
   }
 }
 
+//todo: leaving these quotes here for testing purposes (e.g. multiple deductibles still not tested in ui)
 private val quotesForPreview = listOf(
   TierDeductibleQuote(
     id = "id0",
