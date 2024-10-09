@@ -6,12 +6,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -44,6 +49,9 @@ import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownSize.Sma
 import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownStyle.Label
 import com.hedvig.android.design.system.hedvig.DropdownItem.SimpleDropdownItem
 import com.hedvig.android.design.system.hedvig.DropdownWithDialog
+import com.hedvig.android.design.system.hedvig.EmptyState
+import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButtonStyle.NoButton
+import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.INFO
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
@@ -136,29 +144,46 @@ internal fun SelectTierDestination(
 @Composable
 private fun FailureScreen(reload: () -> Unit, navigateUp: () -> Unit, reason: FailureReason) {
   Box(Modifier.fillMaxSize()) {
-    val subTitle = when (reason) {
-      GENERAL -> stringResource(R.string.GENERAL_ERROR_BODY)
-      QUOTES_ARE_EMPTY -> null
+    when (reason) {
+      GENERAL -> {
+        HedvigErrorSection(
+          onButtonClick = reload,
+          modifier = Modifier.fillMaxSize(),
+          subTitle = stringResource(R.string.GENERAL_ERROR_BODY),
+          title = stringResource(R.string.GENERAL_ERROR_BODY),
+          buttonText = stringResource(R.string.GENERAL_ERROR_BODY),
+        )
+      }
+      QUOTES_ARE_EMPTY -> {
+        Column(
+          modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp)
+            .windowInsetsPadding(
+              WindowInsets.safeDrawing.only(
+                WindowInsetsSides.Horizontal +
+                  WindowInsetsSides.Bottom,
+              ),
+            ),
+        ) {
+          Spacer(Modifier.weight(1f))
+          EmptyState(
+            text = stringResource(R.string.TERMINATION_NO_TIER_QUOTES_SUBTITLE),
+            iconStyle = INFO,
+            buttonStyle = NoButton,
+            description = null,
+          )
+          Spacer(Modifier.weight(1f))
+          HedvigTextButton(
+            stringResource(R.string.general_close_button),
+            onClick = navigateUp,
+            buttonSize = Large,
+            modifier = Modifier.fillMaxWidth(),
+          )
+          Spacer(Modifier.height(32.dp))
+        }
+      }
     }
-    val action = when (reason) {
-      GENERAL -> reload
-      QUOTES_ARE_EMPTY -> navigateUp
-    }
-    val title = when (reason) {
-      GENERAL -> stringResource(R.string.GENERAL_ERROR_BODY)
-      QUOTES_ARE_EMPTY -> stringResource(R.string.TERMINATION_NO_TIER_QUOTES_SUBTITLE)
-    }
-    val buttonText = when (reason) {
-      GENERAL -> stringResource(R.string.GENERAL_ERROR_BODY)
-      QUOTES_ARE_EMPTY -> stringResource(R.string.general_back_button)
-    }
-    HedvigErrorSection(
-      onButtonClick = action,
-      modifier = Modifier.fillMaxSize(),
-      subTitle = subTitle,
-      title = title,
-      buttonText = buttonText,
-    )
   }
 }
 
