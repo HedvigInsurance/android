@@ -17,40 +17,47 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.EmptyState
-import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButtonStyle.NoButton
-import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.SUCCESS
+import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButtonStyle.Button
+import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.ERROR
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 
-
 @Composable
-internal fun SubmitTierSuccessScreen(
-  activationDateEpochDays: Int,
-  navigateUp: () -> Unit,
-) {
+internal fun SubmitTierFailureScreen(navigateUp: () -> Unit) {
   Column(
-      modifier = Modifier
-          .fillMaxSize()
+    modifier = Modifier
+        .fillMaxSize()
         .padding(horizontal = 16.dp)
-          .windowInsetsPadding(
-              WindowInsets.safeDrawing.only(
-                  WindowInsetsSides.Horizontal +
-                          WindowInsetsSides.Bottom,
-              ),
-          ),
+        .windowInsetsPadding(
+            WindowInsets.safeDrawing.only(
+                WindowInsetsSides.Horizontal +
+                        WindowInsetsSides.Bottom,
+            ),
+        ),
   ) {
     Spacer(Modifier.weight(1f))
     EmptyState(
-        text = stringResource(R.string.TIER_FLOW_COMMIT_PROCESSING_TITLE),
-        description = stringResource(R.string.TIER_FLOW_COMMIT_PROCESSING_DESCRIPTION,
-          LocalDate.fromEpochDays(activationDateEpochDays)),
-        iconStyle = SUCCESS,
-        buttonStyle = NoButton,
+      text = stringResource(R.string.something_went_wrong),
+      description = stringResource(
+          R.string.TIER_FLOW_COMMIT_PROCESSING_ERROR_DESCRIPTION,
+      ),
+      iconStyle = ERROR,
+      buttonStyle = Button(
+          buttonText = stringResource(R.string.GENERAL_RETRY),
+          onButtonClick = {
+              navigateUp()
+          },
+      ),
     )
     Spacer(Modifier.weight(1f))
-    HedvigTextButton(stringResource(R.string.general_close_button), onClick = navigateUp, buttonSize = Large, modifier = Modifier.fillMaxWidth())
+    HedvigTextButton(
+        stringResource(R.string.general_close_button),
+        onClick = navigateUp,
+        buttonSize = Large,
+        modifier = Modifier.fillMaxWidth(),
+    )
     Spacer(Modifier.height(32.dp))
   }
 }
@@ -58,6 +65,6 @@ internal fun SubmitTierSuccessScreen(
 
 @HedvigPreview
 @Composable
-private fun SubmitTierSuccessScreenPreview() {
-  SubmitTierSuccessScreen(LocalDate(2024,9,23).toEpochDays(), {})
+private fun SubmitTierFailureScreenPreview() {
+  SubmitTierFailureScreen({})
 }

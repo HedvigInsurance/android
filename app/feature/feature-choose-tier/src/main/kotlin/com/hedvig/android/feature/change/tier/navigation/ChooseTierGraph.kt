@@ -10,6 +10,8 @@ import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectTierDestina
 import com.hedvig.android.feature.change.tier.ui.stepstart.StartChangeTierFlowDestination
 import com.hedvig.android.feature.change.tier.ui.stepstart.StartTierFlowViewModel
 import com.hedvig.android.feature.change.tier.ui.stepsummary.ChangeTierSummaryDestination
+import com.hedvig.android.feature.change.tier.ui.stepsummary.SubmitTierFailureScreen
+import com.hedvig.android.feature.change.tier.ui.stepsummary.SubmitTierSuccessScreen
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryViewModel
 import com.hedvig.android.feature.change.tier.ui.sucess.SuccessScreen
 import com.hedvig.android.navigation.compose.DestinationNavTypeAware
@@ -94,16 +96,33 @@ fun NavGraphBuilder.changeTierGraph(
       ChangeTierSummaryDestination(
         viewModel = viewModel,
         navigateUp = navigator::navigateUp,
-        onNavigateToNewConversation = {
-          onNavigateToNewConversation(backStackEntry)
-        },
         openUrl = openUrl,
+        onFailure = {
+          navigator.navigateUnsafe(ChooseTierDestination.SubmitFailure)
+        },
+        onSuccess = {
+          navigator.navigateUnsafe(ChooseTierDestination.SubmitSuccess(this.params.activationDateEpochDays)) {
+            typedPopUpTo<ChooseTierDestination.Summary> {
+              inclusive = true
+            }
+          }
+        },
       )
     }
 
-    navdestination<ChooseTierDestination.ChangingTierSuccess> { _ ->
-      SuccessScreen(
-        LocalDate.fromEpochDays(activationDate),
+    navdestination<ChooseTierDestination.SubmitSuccess> { backStackEntry ->
+      SubmitTierSuccessScreen(
+        activationDate,
+        navigateUp = {
+          // todo: we don't need to pop up anything more here, right?
+          //  we did it before in ChooseTierDestination.Summary
+          navigator.navigateUp()
+        },
+      )
+    }
+
+    navdestination<ChooseTierDestination.SubmitFailure> { _ ->
+      SubmitTierFailureScreen(
         navigateUp = navigator::navigateUp,
       )
     }

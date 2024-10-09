@@ -44,13 +44,6 @@ internal sealed interface ChooseTierDestination {
   data object SelectTierAndDeductible : ChooseTierDestination, Destination
 
   @Serializable
-  data class ChangingTierSuccess(val activationDate: Int) : ChooseTierDestination, Destination {
-    companion object : DestinationNavTypeAware {
-      override val typeList: List<KType> = listOf(typeOf<Int>())
-    }
-  }
-
-  @Serializable
   data class Comparison(val quoteIds: List<String>) : ChooseTierDestination, Destination {
     companion object : DestinationNavTypeAware {
       override val typeList: List<KType> = listOf(typeOf<List<String>>())
@@ -63,6 +56,16 @@ internal sealed interface ChooseTierDestination {
       override val typeList: List<KType> = listOf(typeOf<SummaryParameters>())
     }
   }
+
+  @Serializable
+  data class SubmitSuccess(val activationDate: Int) : ChooseTierDestination, Destination {
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<Int>())
+    }
+  }
+
+  @Serializable
+  data object SubmitFailure: ChooseTierDestination, Destination
 }
 
 @Serializable
