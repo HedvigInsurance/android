@@ -487,7 +487,7 @@ private data class ExpandedRadioOptionData(
 )
 
 @Composable
-private fun PillAndBasicInfo(contractGroup: ContractGroup, displayName: String, displaySubtitle: String) {
+internal fun PillAndBasicInfo(contractGroup: ContractGroup, displayName: String, displaySubtitle: String) {
   Row(verticalAlignment = Alignment.CenterVertically) {
     Image(
       painter = painterResource(id = contractGroup.toPillow()),

@@ -51,9 +51,11 @@ internal sealed interface ChooseTierDestination {
   }
 
   @Serializable
-  data class Summary(val params: SummaryParameters) : ChooseTierDestination, Destination {
+  data class Summary(
+    @SerialName("tier_summary_params")
+    val params: SummaryParameters) : ChooseTierDestination, Destination {
     companion object : DestinationNavTypeAware {
-      override val typeList: List<KType> = listOf(typeOf<SummaryParameters>())
+      override val typeList: List<KType> = listOf(typeOf<SummaryParametersType>())
     }
   }
 
@@ -110,3 +112,29 @@ class InsuranceCustomizationParametersType() : NavType<InsuranceCustomizationPar
     bundle.putParcelable(key, value)
   }
 }
+
+ class SummaryParametersType() : NavType<SummaryParameters>(
+  isNullableAllowed = false,
+) {
+  override fun get(bundle: Bundle, key: String): SummaryParameters? {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      bundle.getParcelable(key, SummaryParameters::class.java)
+    } else {
+      @Suppress("DEPRECATION")
+      bundle.getParcelable(key)
+    }
+  }
+
+  override fun parseValue(value: String): SummaryParameters {
+    return Json.decodeFromString<SummaryParameters>(value)
+  }
+
+  override fun serializeAsValue(value: SummaryParameters): String {
+    return Json.encodeToString(value)
+  }
+
+  override fun put(bundle: Bundle, key: String, value: SummaryParameters) {
+    bundle.putParcelable(key, value)
+  }
+}
+

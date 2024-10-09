@@ -1,8 +1,10 @@
 package com.hedvig.android.feature.change.tier.navigation
 
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import com.hedvig.android.core.common.android.sharePDF
 import com.hedvig.android.feature.change.tier.ui.comparison.ComparisonDestination
 import com.hedvig.android.feature.change.tier.ui.comparison.ComparisonViewModel
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageViewModel
@@ -31,6 +33,7 @@ fun NavGraphBuilder.changeTierGraph(
   navController: NavController,
   onNavigateToNewConversation: (NavBackStackEntry) -> Unit,
   openUrl: (String) -> Unit,
+  applicationId: String,
 ) {
   navdestination<StartTierFlowDestination> { _ ->
     val viewModel: StartTierFlowViewModel = koinViewModel {
@@ -71,10 +74,10 @@ fun NavGraphBuilder.changeTierGraph(
               activationDateEpochDays = chooseTierGraphDestination.parameters.activationDateEpochDays,
               insuranceId = chooseTierGraphDestination.parameters.insuranceId)
 
-          )) // todo: Unsafe???
+          ))
         },
         navigateToComparison = { listOfQuotes ->
-          navigator.navigateUnsafe(ChooseTierDestination.Comparison(listOfQuotes.map { it.id })) // todo: Unsafe???
+          navigator.navigateUnsafe(ChooseTierDestination.Comparison(listOfQuotes.map { it.id }))
         },
       )
     }
@@ -93,12 +96,15 @@ fun NavGraphBuilder.changeTierGraph(
       val viewModel: SummaryViewModel = koinViewModel {
         parametersOf(this.params)
       }
+      val context = LocalContext.current
       ChangeTierSummaryDestination(
         viewModel = viewModel,
         navigateUp = navigator::navigateUp,
-        openUrl = openUrl,
         onFailure = {
           navigator.navigateUnsafe(ChooseTierDestination.SubmitFailure)
+        },
+        sharePdf = {
+          context.sharePDF(it, applicationId)
         },
         onSuccess = {
           navigator.navigateUnsafe(ChooseTierDestination.SubmitSuccess(this.params.activationDateEpochDays)) {
