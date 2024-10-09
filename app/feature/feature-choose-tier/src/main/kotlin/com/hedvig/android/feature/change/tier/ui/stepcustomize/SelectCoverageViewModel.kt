@@ -29,7 +29,6 @@ import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEve
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Failure
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Loading
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Success
-import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -132,9 +131,6 @@ private class SelectCoveragePresenter(
         },
         ifRight = { currentContractData ->
           val quotesResult: List<TierDeductibleQuote> = tierRepository.getQuotesById(params.quoteIds)
-          logcat {
-            "Mariia: having ${quotesResult.size} quotes with deductibles: ${quotesResult.map { it.deductible }}"
-          }
           if (quotesResult.isEmpty()) {
             currentPartialState = PartialUiState.Failure(QUOTES_ARE_EMPTY)
           } else {

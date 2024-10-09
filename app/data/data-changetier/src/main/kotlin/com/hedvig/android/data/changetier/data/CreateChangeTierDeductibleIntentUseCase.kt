@@ -114,7 +114,7 @@ private fun List<ChangeTierDeductibleCreateIntentMutation.Data.ChangeTierDeducti
   }
 }
 
-//todo: leaving these quotes here for testing purposes (e.g. multiple deductibles still not tested in ui)
+// todo: leaving these quotes here for testing purposes (e.g. multiple deductibles still not tested in ui)
 private val quotesForPreview = listOf(
   TierDeductibleQuote(
     id = "id0",

@@ -18,12 +18,12 @@ internal class ComparisonViewModel(
   quoteIds: List<String>,
   tierRepository: ChangeTierRepository,
 ) : MoleculeViewModel<ComparisonEvent, ComparisonState>(
-  initialState = Loading,
-  presenter = ComparisonPresenter(
-    quoteIds = quoteIds,
-    tierRepository = tierRepository,
-  ),
-)
+    initialState = Loading,
+    presenter = ComparisonPresenter(
+      quoteIds = quoteIds,
+      tierRepository = tierRepository,
+    ),
+  )
 
 private class ComparisonPresenter(
   private val quoteIds: List<String>,
@@ -49,5 +49,4 @@ internal sealed interface ComparisonState {
   data class Success(val quotes: List<TierDeductibleQuote>) : ComparisonState
 }
 
-internal sealed interface ComparisonEvent {
-}
+internal sealed interface ComparisonEvent
