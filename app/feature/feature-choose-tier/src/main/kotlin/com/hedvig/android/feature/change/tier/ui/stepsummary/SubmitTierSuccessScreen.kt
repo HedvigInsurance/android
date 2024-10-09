@@ -24,40 +24,42 @@ import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 
-
 @Composable
-internal fun SubmitTierSuccessScreen(
-  activationDateEpochDays: Int,
-  navigateUp: () -> Unit,
-) {
+internal fun SubmitTierSuccessScreen(activationDateEpochDays: Int, navigateUp: () -> Unit) {
   Column(
-      modifier = Modifier
-          .fillMaxSize()
-        .padding(horizontal = 16.dp)
-          .windowInsetsPadding(
-              WindowInsets.safeDrawing.only(
-                  WindowInsetsSides.Horizontal +
-                          WindowInsetsSides.Bottom,
-              ),
-          ),
+    modifier = Modifier
+      .fillMaxSize()
+      .padding(horizontal = 16.dp)
+      .windowInsetsPadding(
+        WindowInsets.safeDrawing.only(
+          WindowInsetsSides.Horizontal +
+            WindowInsetsSides.Bottom,
+        ),
+      ),
   ) {
     Spacer(Modifier.weight(1f))
     EmptyState(
-        text = stringResource(R.string.TIER_FLOW_COMMIT_PROCESSING_TITLE),
-        description = stringResource(R.string.TIER_FLOW_COMMIT_PROCESSING_DESCRIPTION,
-          LocalDate.fromEpochDays(activationDateEpochDays)),
-        iconStyle = SUCCESS,
-        buttonStyle = NoButton,
+      text = stringResource(R.string.TIER_FLOW_COMMIT_PROCESSING_TITLE),
+      description = stringResource(
+        R.string.TIER_FLOW_COMMIT_PROCESSING_DESCRIPTION,
+        LocalDate.fromEpochDays(activationDateEpochDays),
+      ),
+      iconStyle = SUCCESS,
+      buttonStyle = NoButton,
     )
     Spacer(Modifier.weight(1f))
-    HedvigTextButton(stringResource(R.string.general_close_button), onClick = navigateUp, buttonSize = Large, modifier = Modifier.fillMaxWidth())
+    HedvigTextButton(
+      stringResource(R.string.general_close_button),
+      onClick = navigateUp,
+      buttonSize = Large,
+      modifier = Modifier.fillMaxWidth(),
+    )
     Spacer(Modifier.height(32.dp))
   }
 }
 
-
 @HedvigPreview
 @Composable
 private fun SubmitTierSuccessScreenPreview() {
-  SubmitTierSuccessScreen(LocalDate(2024,9,23).toEpochDays(), {})
+  SubmitTierSuccessScreen(LocalDate(2024, 9, 23).toEpochDays(), {})
 }

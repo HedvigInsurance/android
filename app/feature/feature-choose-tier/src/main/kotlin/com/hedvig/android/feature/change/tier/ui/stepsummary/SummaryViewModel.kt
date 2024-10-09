@@ -35,14 +35,14 @@ internal class SummaryViewModel(
   downloadPdfUseCase: DownloadPdfUseCase,
   getCurrentContractDataUseCase: GetCurrentContractDataUseCase,
 ) : MoleculeViewModel<SummaryEvent, SummaryState>(
-  initialState = Loading,
-  presenter = SummaryPresenter(
-    params = params,
-    tierRepository = tierRepository,
-    getCurrentContractDataUseCase = getCurrentContractDataUseCase,
-    downloadPdfUseCase = downloadPdfUseCase
-  ),
-)
+    initialState = Loading,
+    presenter = SummaryPresenter(
+      params = params,
+      tierRepository = tierRepository,
+      getCurrentContractDataUseCase = getCurrentContractDataUseCase,
+      downloadPdfUseCase = downloadPdfUseCase,
+    ),
+  )
 
 private class SummaryPresenter(
   private val params: SummaryParameters,
@@ -86,7 +86,7 @@ private class SummaryPresenter(
         HandledSharingPdfFile -> {
           if (currentState !is Success) return@CollectEvents
           currentState = (currentState as Success).copy(
-              savedFileUri = null,
+            savedFileUri = null,
           )
         }
       }
@@ -142,7 +142,7 @@ private class SummaryPresenter(
             // we only putting log on this, but no error state in the UI
             val state = currentState
             if (state !is Success) return@LaunchedEffect
-            currentState = state.copy( isLoadingPdf = false)
+            currentState = state.copy(isLoadingPdf = false)
             downloadingUrl = null
           },
           ifRight = { uri ->
@@ -151,7 +151,7 @@ private class SummaryPresenter(
             ) { "Downloading terms and conditions succeeded. Result uri:${uri.absolutePath}" }
             val state = currentState
             if (state !is Success) return@LaunchedEffect
-            currentState = state.copy( isLoadingPdf = false, savedFileUri = uri)
+            currentState = state.copy(isLoadingPdf = false, savedFileUri = uri)
             downloadingUrl = null
           },
         )
@@ -164,8 +164,9 @@ private class SummaryPresenter(
 internal sealed interface SummaryState {
   data object Loading : SummaryState
 
-  data class MakingChanges(val navigateToSuccess: Boolean = false,
-                           ) : SummaryState
+  data class MakingChanges(
+    val navigateToSuccess: Boolean = false,
+  ) : SummaryState
 
   data class Success(
     val quote: TierDeductibleQuote,

@@ -8,7 +8,6 @@ import com.hedvig.android.core.common.await
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import java.io.File
-import java.io.IOException
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -47,7 +46,6 @@ internal class DownloadPdfUseCaseImpl(
         )
 
         val downloadedFile = File(context.filesDir, FILE_NAME + now + FILE_EXT)
-
 
         val response = okHttpClient.newCall(request).await()
         downloadedFile.sink().buffer().use { fileSink ->

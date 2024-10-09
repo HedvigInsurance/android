@@ -43,7 +43,7 @@ val chooseTierModule = module {
       params = params.get<SummaryParameters>(),
       tierRepository = get<ChangeTierRepository>(),
       getCurrentContractDataUseCase = get<GetCurrentContractDataUseCase>(),
-      downloadPdfUseCase = get<DownloadPdfUseCase>()
+      downloadPdfUseCase = get<DownloadPdfUseCase>(),
     )
   }
 

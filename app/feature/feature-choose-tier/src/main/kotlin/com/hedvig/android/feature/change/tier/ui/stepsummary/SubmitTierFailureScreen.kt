@@ -22,46 +22,44 @@ import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIcon
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import hedvig.resources.R
-import kotlinx.datetime.LocalDate
 
 @Composable
 internal fun SubmitTierFailureScreen(navigateUp: () -> Unit) {
   Column(
     modifier = Modifier
-        .fillMaxSize()
-        .padding(horizontal = 16.dp)
-        .windowInsetsPadding(
-            WindowInsets.safeDrawing.only(
-                WindowInsetsSides.Horizontal +
-                        WindowInsetsSides.Bottom,
-            ),
+      .fillMaxSize()
+      .padding(horizontal = 16.dp)
+      .windowInsetsPadding(
+        WindowInsets.safeDrawing.only(
+          WindowInsetsSides.Horizontal +
+            WindowInsetsSides.Bottom,
         ),
+      ),
   ) {
     Spacer(Modifier.weight(1f))
     EmptyState(
       text = stringResource(R.string.something_went_wrong),
       description = stringResource(
-          R.string.TIER_FLOW_COMMIT_PROCESSING_ERROR_DESCRIPTION,
+        R.string.TIER_FLOW_COMMIT_PROCESSING_ERROR_DESCRIPTION,
       ),
       iconStyle = ERROR,
       buttonStyle = Button(
-          buttonText = stringResource(R.string.GENERAL_RETRY),
-          onButtonClick = {
-              navigateUp()
-          },
+        buttonText = stringResource(R.string.GENERAL_RETRY),
+        onButtonClick = {
+          navigateUp()
+        },
       ),
     )
     Spacer(Modifier.weight(1f))
     HedvigTextButton(
-        stringResource(R.string.general_close_button),
-        onClick = navigateUp,
-        buttonSize = Large,
-        modifier = Modifier.fillMaxWidth(),
+      stringResource(R.string.general_close_button),
+      onClick = navigateUp,
+      buttonSize = Large,
+      modifier = Modifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(32.dp))
   }
 }
-
 
 @HedvigPreview
 @Composable
