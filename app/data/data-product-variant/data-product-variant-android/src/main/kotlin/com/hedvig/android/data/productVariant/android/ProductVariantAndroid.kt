@@ -22,6 +22,8 @@ fun InsuranceVariantDocument.InsuranceDocumentType.getStringRes() = when (this) 
 }
 
 fun ProductVariantFragment.toProductVariant() = ProductVariant(
+  displayTierNameLong = displayNameTierLong,
+  displayTierName = displayNameTier,
   displayName = this.displayName,
   contractGroup = this.typeOfContract.toContractGroup(),
   contractType = this.typeOfContract.toContractType(),

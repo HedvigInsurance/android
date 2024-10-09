@@ -109,6 +109,51 @@ internal fun calculateLockedStateForItemInGroup(data: RadioOptionData, groupLock
   return if (groupLockedState == Locked) Locked else data.lockedState
 }
 
+/*
+* Overload with Left-Aligned style, Medium size, with Composable content parameter
+ */
+@Composable
+fun RadioOption(
+  chosenState: ChosenState,
+  onClick: () -> Unit,
+  optionContent: @Composable () -> Unit,
+  modifier: Modifier = Modifier,
+  lockedState: LockedState = NotLocked,
+) {
+  val fixedSize = RadioOptionDefaults.RadioOptionSize.Medium.size(LeftAligned)
+  val interactionSource = remember { MutableInteractionSource() }
+  val clickableModifier =
+    modifier
+      .clip(fixedSize.shape)
+      .semantics { role = Role.RadioButton }
+      .clickable(
+        enabled = when (lockedState) {
+          Locked -> false
+          NotLocked -> true
+        },
+        interactionSource = interactionSource,
+        indication = LocalIndication.current,
+      ) {
+        onClick()
+      }
+
+  Surface(
+    modifier = clickableModifier,
+    shape = fixedSize.shape,
+    color = radioOptionColors.containerColor,
+  ) {
+    Row(
+      modifier = Modifier.padding(fixedSize.contentPadding),
+    ) {
+      SelectIndicationCircle(chosenState, lockedState)
+      Spacer(Modifier.width(8.dp))
+      Row(Modifier.weight(1f)) {
+        optionContent()
+      }
+    }
+  }
+}
+
 @Composable
 fun RadioOption(
   optionText: String,
@@ -248,6 +293,7 @@ internal fun SelectIndicationCircle(
                   NotLocked -> Modifier.border(8.dp, radioOptionColors.chosenIndicatorColor, CircleShape)
                 }
               }
+
               NotChosen -> {
                 when (lockedState) {
                   Locked -> Modifier.border(8.dp, radioOptionColors.disabledIndicatorColor, CircleShape)

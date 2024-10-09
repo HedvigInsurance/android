@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.terminateinsurance.data
 
+import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion.Action.UnknownAction
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
 import com.hedvig.android.logger.LogPriority
@@ -41,7 +42,9 @@ internal sealed interface TerminateInsuranceStep {
   data class UnknownStep(val message: String? = "") : TerminateInsuranceStep
 }
 
-internal fun TerminationFlowStepFragment.CurrentStep.toTerminateInsuranceStep(): TerminateInsuranceStep {
+internal fun TerminationFlowStepFragment.CurrentStep.toTerminateInsuranceStep(
+  isTierFeatureEnabled: Boolean,
+): TerminateInsuranceStep {
   return when (this) {
     is TerminationFlowStepFragment.FlowTerminationDateStepCurrentStep -> {
       TerminateInsuranceStep.TerminateInsuranceDate(minDate, maxDate)
@@ -58,7 +61,7 @@ internal fun TerminationFlowStepFragment.CurrentStep.toTerminateInsuranceStep():
 
     is TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep -> {
       TerminateInsuranceStep.Survey(
-        options.toOptionList(),
+        options.toOptionList(isTierFeatureEnabled),
       )
     }
 
@@ -66,48 +69,107 @@ internal fun TerminationFlowStepFragment.CurrentStep.toTerminateInsuranceStep():
   }
 }
 
-private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Option>.toOptionList():
-  List<TerminationSurveyOption> {
+private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Option>.toOptionList(
+  isTierFeatureEnabled: Boolean,
+): List<TerminationSurveyOption> {
   return map {
+    // remade a bit of logic here. If we receive unknown actions in suggestion for one of the subOptions
+    // (or the option itself),
+    // subOptions then become empty and instead the freeTextField becomes available
     TerminationSurveyOption(
       id = it.id,
       title = it.title,
       listIndex = this.indexOf(it),
-      feedBackRequired = it.feedBack != null,
-      subOptions = it.subOptions?.toSubOptionList() ?: listOf(),
-      suggestion = it.suggestion?.toSuggestion(),
+      feedBackRequired = it.feedBack != null ||
+        (it.suggestion?.toSuggestion(isTierFeatureEnabled) == UnknownAction) ||
+        it.subOptions?.noUnknownActions(isTierFeatureEnabled) == false,
+      subOptions = it.subOptions?.toSubOptionList(isTierFeatureEnabled) ?: listOf(),
+      suggestion = it.suggestion?.toSuggestion(isTierFeatureEnabled),
     )
   }
 }
 
-private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Option.SubOption>.toSubOptionList():
-  List<TerminationSurveyOption> {
-  return map {
+private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Option.SubOption>.noUnknownActions(
+  isTierFeatureEnabled: Boolean,
+): Boolean {
+  return none { subOption ->
+    subOption.suggestion?.toSuggestion(isTierFeatureEnabled) == UnknownAction
+  }
+}
+
+private fun List<TerminationFlowStepFragment.FlowTerminationSurveyStepCurrentStep.Option.SubOption>.toSubOptionList(
+  isTierFeatureEnabled: Boolean,
+): List<TerminationSurveyOption> {
+  // no subOptions if one of them contains some action that we don't know how to handle
+  val filtered = takeIf { subs ->
+    subs.noUnknownActions(isTierFeatureEnabled)
+  } ?: listOf()
+  return filtered.map { subOption ->
     TerminationSurveyOption(
-      id = it.id,
-      title = it.title,
-      feedBackRequired = it.feedBack != null,
+      id = subOption.id,
+      title = subOption.title,
+      feedBackRequired = subOption.feedBack != null,
       subOptions = listOf(),
-      listIndex = this.indexOf(it),
-      suggestion = it.suggestion?.toSuggestion(),
+      listIndex = filtered.indexOf(subOption),
+      suggestion = subOption.suggestion?.toSuggestion(isTierFeatureEnabled),
     )
   }
 }
 
-private fun FlowTerminationSurveyOptionSuggestionFragment.toSuggestion(): SurveyOptionSuggestion? {
+private fun FlowTerminationSurveyOptionSuggestionFragment.toSuggestion(
+  isTierFeatureEnabled: Boolean,
+): SurveyOptionSuggestion? {
   return when (this) {
     is FlowTerminationSurveyOptionSuggestionActionFlowTerminationSurveyOptionSuggestionFragment -> {
-      if (action == FlowTerminationSurveyRedirectAction.UPDATE_ADDRESS) {
-        SurveyOptionSuggestion.Action.UpdateAddress(
-          description = description,
-          buttonTitle = buttonTitle,
-        )
-      } else {
-        logcat(
-          LogPriority.WARN,
-          message = { "FlowTerminationSurveyStepCurrentStep unknown suggestion type: ${this.action.rawValue}" },
-        )
-        null
+      when (action) {
+        FlowTerminationSurveyRedirectAction.UPDATE_ADDRESS -> {
+          SurveyOptionSuggestion.Action.UpdateAddress(
+            description = description,
+            buttonTitle = buttonTitle,
+          )
+        }
+
+        FlowTerminationSurveyRedirectAction.CHANGE_TIER_FOUND_BETTER_PRICE -> {
+          if (isTierFeatureEnabled) {
+            SurveyOptionSuggestion.Action.DowngradePriceByChangingTier(
+              description = description,
+              buttonTitle = buttonTitle,
+            )
+          } else {
+            logcat(
+              LogPriority.ERROR,
+              message = {
+                "FlowTerminationSurveyStepCurrentStep suggestion: CHANGE_TIER_FOUND_BETTER_PRICE but tier feature flag is disabled!"
+              },
+            )
+            UnknownAction
+          }
+        }
+
+        FlowTerminationSurveyRedirectAction.CHANGE_TIER_MISSING_COVERAGE_AND_TERMS -> {
+          if (isTierFeatureEnabled) {
+            SurveyOptionSuggestion.Action.UpgradeCoverageByChangingTier(
+              description = description,
+              buttonTitle = buttonTitle,
+            )
+          } else {
+            logcat(
+              LogPriority.ERROR,
+              message = {
+                "FlowTerminationSurveyStepCurrentStep suggestion: CHANGE_TIER_MISSING_COVERAGE_AND_TERMS but tier feature flag is disabled!"
+              },
+            )
+            UnknownAction
+          }
+        }
+
+        else -> {
+          logcat(
+            LogPriority.WARN,
+            message = { "FlowTerminationSurveyStepCurrentStep unknown suggestion type: ${this.action.rawValue}" },
+          )
+          UnknownAction
+        }
       }
     }
 

@@ -216,4 +216,8 @@ private class FakeTerminateInsuranceRepository : TerminateInsuranceRepository {
 
   override suspend fun confirmDeletion(): Either<ErrorMessage, TerminateInsuranceStep> =
     terminationFlowTurbine.awaitItem()
+
+  override suspend fun getContractId(): String {
+    TODO("Not yet implemented")
+  }
 }

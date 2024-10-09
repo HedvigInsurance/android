@@ -11,6 +11,8 @@ data class ProductVariant(
   val perils: List<ProductVariantPeril>,
   val insurableLimits: List<InsurableLimit>,
   val documents: List<InsuranceVariantDocument>,
+  val displayTierName: String? = null,
+  val displayTierNameLong: String? = null,
 )
 
 data class ProductVariantPeril(
