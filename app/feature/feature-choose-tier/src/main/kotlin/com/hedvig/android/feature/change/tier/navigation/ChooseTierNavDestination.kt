@@ -31,11 +31,10 @@ data class ChooseTierGraphDestination(
   /**
    * The ID to the contract and the change tier intent info with activation date, current tier level and all quote ids
    */
-  @SerialName("customization_params")
   val parameters: InsuranceCustomizationParameters,
 ) : Destination {
   companion object : DestinationNavTypeAware {
-    override val typeList: List<KType> = listOf(typeOf<InsuranceCustomizationParametersType>())
+    override val typeList: List<KType> = listOf(typeOf<InsuranceCustomizationParameters>())
   }
 }
 
@@ -52,10 +51,10 @@ internal sealed interface ChooseTierDestination {
 
   @Serializable
   data class Summary(
-    @SerialName("tier_summary_params")
-    val params: SummaryParameters) : ChooseTierDestination, Destination {
+    val params: SummaryParameters
+  ) : ChooseTierDestination, Destination {
     companion object : DestinationNavTypeAware {
-      override val typeList: List<KType> = listOf(typeOf<SummaryParametersType>())
+      override val typeList: List<KType> = listOf(typeOf<SummaryParameters>())
     }
   }
 
@@ -71,70 +70,18 @@ internal sealed interface ChooseTierDestination {
 }
 
 @Serializable
-@Parcelize
 data class SummaryParameters(
   val quoteIdToSubmit: String,
   val insuranceId: String,
   val activationDateEpochDays: Int,
-) : Parcelable
+)
 
 @Serializable
-@Parcelize
 data class InsuranceCustomizationParameters(
   val insuranceId: String,
   val activationDateEpochDays: Int,
   val currentTierLevel: Int?,
   val currentTierName: String?,
   val quoteIds: List<String>,
-) : Parcelable
-
-class InsuranceCustomizationParametersType() : NavType<InsuranceCustomizationParameters>(
-  isNullableAllowed = false,
-) {
-  override fun get(bundle: Bundle, key: String): InsuranceCustomizationParameters? {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-      bundle.getParcelable(key, InsuranceCustomizationParameters::class.java)
-    } else {
-      @Suppress("DEPRECATION")
-      bundle.getParcelable(key)
-    }
-  }
-
-  override fun parseValue(value: String): InsuranceCustomizationParameters {
-    return Json.decodeFromString<InsuranceCustomizationParameters>(value)
-  }
-
-  override fun serializeAsValue(value: InsuranceCustomizationParameters): String {
-    return Json.encodeToString(value)
-  }
-
-  override fun put(bundle: Bundle, key: String, value: InsuranceCustomizationParameters) {
-    bundle.putParcelable(key, value)
-  }
-}
-
- class SummaryParametersType() : NavType<SummaryParameters>(
-  isNullableAllowed = false,
-) {
-  override fun get(bundle: Bundle, key: String): SummaryParameters? {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-      bundle.getParcelable(key, SummaryParameters::class.java)
-    } else {
-      @Suppress("DEPRECATION")
-      bundle.getParcelable(key)
-    }
-  }
-
-  override fun parseValue(value: String): SummaryParameters {
-    return Json.decodeFromString<SummaryParameters>(value)
-  }
-
-  override fun serializeAsValue(value: SummaryParameters): String {
-    return Json.encodeToString(value)
-  }
-
-  override fun put(bundle: Bundle, key: String, value: SummaryParameters) {
-    bundle.putParcelable(key, value)
-  }
-}
+)
 

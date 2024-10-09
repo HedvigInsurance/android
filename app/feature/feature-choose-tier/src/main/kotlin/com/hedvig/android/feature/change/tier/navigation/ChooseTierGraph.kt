@@ -54,9 +54,7 @@ fun NavGraphBuilder.changeTierGraph(
 
   navgraph<ChooseTierGraphDestination>(
     startDestination = ChooseTierDestination.SelectTierAndDeductible::class,
-    destinationNavTypeAware = object : DestinationNavTypeAware {
-      override val typeList: List<KType> = listOf(typeOf<InsuranceCustomizationParameters>())
-    },
+    destinationNavTypeAware = ChooseTierGraphDestination,
   ) {
     navdestination<ChooseTierDestination.SelectTierAndDeductible> { backStackEntry ->
       val chooseTierGraphDestination = navController
@@ -92,7 +90,9 @@ fun NavGraphBuilder.changeTierGraph(
       )
     }
 
-    navdestination<ChooseTierDestination.Summary> { backStackEntry ->
+    navdestination<ChooseTierDestination.Summary>(
+      destinationNavTypeAware = ChooseTierDestination.Summary.Companion
+    ) { backStackEntry ->
       val viewModel: SummaryViewModel = koinViewModel {
         parametersOf(this.params)
       }
