@@ -9,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import arrow.core.NonEmptyList
 import arrow.core.merge
+import arrow.core.toNonEmptyListOrNull
 import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
 import com.hedvig.android.feature.help.center.data.GetQuickLinksUseCase
 import com.hedvig.android.feature.help.center.model.Question
@@ -46,7 +47,7 @@ internal data class HelpCenterUiState(
 
     data object NoQuickLinks : QuickLinkUiState
 
-    data class QuickLinks(val quickLinks: List<QuickLink>) : QuickLinkUiState
+    data class QuickLinks(val quickLinks: NonEmptyList<QuickLink>) : QuickLinkUiState
   }
 
   data class Search(
@@ -117,11 +118,15 @@ internal class HelpCenterPresenter(
         ifLeft = {
           HelpCenterUiState.QuickLinkUiState.NoQuickLinks
         },
-        ifRight = {
-          val list = it.map { action ->
-            HelpCenterUiState.QuickLink(action)
+        ifRight = { quickActionList ->
+          val list = quickActionList.map { quickAction ->
+            HelpCenterUiState.QuickLink(quickAction)
+          }.toNonEmptyListOrNull()
+          if (list == null) {
+            HelpCenterUiState.QuickLinkUiState.NoQuickLinks
+          } else {
+            HelpCenterUiState.QuickLinkUiState.QuickLinks(list)
           }
-          HelpCenterUiState.QuickLinkUiState.QuickLinks(list)
         },
       )
     }
