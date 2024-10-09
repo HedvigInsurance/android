@@ -15,16 +15,11 @@ import com.hedvig.android.feature.change.tier.ui.stepsummary.ChangeTierSummaryDe
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SubmitTierFailureScreen
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SubmitTierSuccessScreen
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryViewModel
-import com.hedvig.android.feature.change.tier.ui.sucess.SuccessScreen
-import com.hedvig.android.navigation.compose.DestinationNavTypeAware
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.typed.getRouteFromBackStack
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.Navigator
-import kotlin.reflect.KType
-import kotlin.reflect.typeOf
-import kotlinx.datetime.LocalDate
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -66,13 +61,15 @@ fun NavGraphBuilder.changeTierGraph(
         viewModel = viewModel,
         navigateUp = navigator::navigateUp,
         navigateToSummary = { quote ->
-          navigator.navigateUnsafe(ChooseTierDestination.Summary(
-            SummaryParameters(
-              quoteIdToSubmit = quote.id,
-              activationDateEpochDays = chooseTierGraphDestination.parameters.activationDateEpochDays,
-              insuranceId = chooseTierGraphDestination.parameters.insuranceId)
-
-          ))
+          navigator.navigateUnsafe(
+            ChooseTierDestination.Summary(
+              SummaryParameters(
+                quoteIdToSubmit = quote.id,
+                activationDateEpochDays = chooseTierGraphDestination.parameters.activationDateEpochDays,
+                insuranceId = chooseTierGraphDestination.parameters.insuranceId,
+              ),
+            ),
+          )
         },
         navigateToComparison = { listOfQuotes ->
           navigator.navigateUnsafe(ChooseTierDestination.Comparison(listOfQuotes.map { it.id }))
@@ -91,7 +88,7 @@ fun NavGraphBuilder.changeTierGraph(
     }
 
     navdestination<ChooseTierDestination.Summary>(
-      destinationNavTypeAware = ChooseTierDestination.Summary.Companion
+      destinationNavTypeAware = ChooseTierDestination.Summary.Companion,
     ) { backStackEntry ->
       val viewModel: SummaryViewModel = koinViewModel {
         parametersOf(this.params)
@@ -108,7 +105,7 @@ fun NavGraphBuilder.changeTierGraph(
         },
         onSuccess = {
           navigator.navigateUnsafe(ChooseTierDestination.SubmitSuccess(this.params.activationDateEpochDays)) {
-            typedPopUpTo<ChooseTierGraphDestination> {
+            typedPopUpTo<ChooseTierDestination.SelectTierAndDeductible> {
               inclusive = true
             }
           }

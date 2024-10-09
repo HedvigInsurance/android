@@ -114,10 +114,9 @@ internal fun ChangeTierSummaryDestination(
 private fun MakingChangesScreen() {
   HedvigFullScreenCenterAlignedLinearProgress(
     title =
-    stringResource(R.string.TIER_FLOW_COMMIT_PROCESSING_LOADING_TITLE),
+      stringResource(R.string.TIER_FLOW_COMMIT_PROCESSING_LOADING_TITLE),
   )
 }
-
 
 @Composable
 private fun SummarySuccessScreen(
@@ -139,15 +138,15 @@ private fun SummarySuccessScreen(
     SummaryCard(
       uiState = uiState,
       modifier = Modifier
-          .fillMaxWidth()
-          .padding(16.dp),
+        .fillMaxWidth()
+        .padding(16.dp),
       downloadFromUrl = downloadFromUrl,
     )
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(16.dp))
     Column(
-        Modifier
-            .padding(horizontal = 16.dp),
+      Modifier
+        .padding(horizontal = 16.dp),
     ) {
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
@@ -174,6 +173,7 @@ private fun SummarySuccessScreen(
         enabled = true,
         onClick = onConfirmClick,
       )
+      Spacer(Modifier.height(16.dp))
     }
   }
 }
@@ -224,15 +224,19 @@ private fun SummaryCard(
       )
       AnimatedVisibility(showExpanded) {
         ExtendedCardContent(
-            quote = uiState.quote, downloadFromUrl = downloadFromUrl,
-            isPDFLoading = uiState.isLoadingPdf,
+          quote = uiState.quote,
+          downloadFromUrl = downloadFromUrl,
+          isPDFLoading = uiState.isLoadingPdf,
         )
       }
       Spacer(Modifier.height(16.dp))
       HedvigButton(
         modifier = Modifier.fillMaxWidth(),
-        text = if (showExpanded) stringResource(R.string.TIER_FLOW_SUMMARY_HIDE_DETAILS_BUTTON)
-        else stringResource(R.string.TIER_FLOW_SUMMARY_SHOW_DETAILS),
+        text = if (showExpanded) {
+          stringResource(R.string.TIER_FLOW_SUMMARY_HIDE_DETAILS_BUTTON)
+        } else {
+          stringResource(R.string.TIER_FLOW_SUMMARY_SHOW_DETAILS)
+        },
         onClick = { showExpanded = !showExpanded },
         enabled = true,
         buttonStyle = Secondary,
