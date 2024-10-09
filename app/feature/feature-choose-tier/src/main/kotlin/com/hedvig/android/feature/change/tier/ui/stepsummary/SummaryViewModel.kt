@@ -64,11 +64,17 @@ private class SummaryPresenter(
         Reload -> loadDataIteration++
         SubmitQuote -> submitIteration++
         ClearNavigation -> {
-          if (currentState !is Success) return@CollectEvents
-          currentState = (currentState as Success).copy(
+          if (currentState is MakingChanges) {
+            currentState = (currentState as MakingChanges).copy(
               navigateToSuccess = false,
+            )
+          } else if (currentState is Success) {
+            currentState = (currentState as Success).copy(
               navigateToFail = false,
-          )
+            )
+          } else {
+            return@CollectEvents
+          }
         }
 
         is DownLoadFromUrl -> {
@@ -81,8 +87,6 @@ private class SummaryPresenter(
           if (currentState !is Success) return@CollectEvents
           currentState = (currentState as Success).copy(
               savedFileUri = null,
-              navigateToSuccess = false,
-              navigateToFail = false,
           )
         }
       }
@@ -91,16 +95,15 @@ private class SummaryPresenter(
     LaunchedEffect(submitIteration) {
       if (submitIteration > 0) {
         val previousState = currentState
-        currentState = MakingChanges
+        currentState = MakingChanges()
         tierRepository.submitChangeTierQuote(params.quoteIdToSubmit).fold(
           ifLeft = {
             currentState =
-              (previousState as Success).copy(navigateToSuccess = false, navigateToFail = true)
+              (previousState as Success).copy(navigateToFail = true)
           },
           ifRight = {
-            currentState = (previousState as Success).copy(
+            currentState = MakingChanges(
               navigateToSuccess = true,
-              navigateToFail = false,
             )
           },
         )
@@ -161,15 +164,15 @@ private class SummaryPresenter(
 internal sealed interface SummaryState {
   data object Loading : SummaryState
 
-  data object MakingChanges : SummaryState
+  data class MakingChanges(val navigateToSuccess: Boolean = false,
+                           ) : SummaryState
 
   data class Success(
     val quote: TierDeductibleQuote,
     val currentContractData: ContractData,
-    val navigateToSuccess: Boolean = false,
-    val navigateToFail: Boolean = false,
     val savedFileUri: File? = null,
     val isLoadingPdf: Boolean = false,
+    val navigateToFail: Boolean = false,
   ) : SummaryState
 
   data object Failure : SummaryState

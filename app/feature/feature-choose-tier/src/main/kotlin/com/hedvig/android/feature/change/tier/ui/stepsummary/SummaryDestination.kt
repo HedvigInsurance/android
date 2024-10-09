@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -36,6 +38,7 @@ import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProg
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HedvigThreeDotsProgressIndicator
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
@@ -71,7 +74,17 @@ internal fun ChangeTierSummaryDestination(
 
     Loading -> HedvigFullScreenCenterAlignedProgress()
 
-    MakingChanges -> MakingChangesScreen()
+    is MakingChanges -> {
+      val state = uiState as MakingChanges
+      LaunchedEffect(state.navigateToSuccess) {
+        val success = state.navigateToSuccess
+        if (success) {
+          viewModel.emit(SummaryEvent.ClearNavigation)
+          onSuccess()
+        }
+      }
+      MakingChangesScreen()
+    }
 
     is Success -> {
       val state = uiState as Success
@@ -82,22 +95,16 @@ internal fun ChangeTierSummaryDestination(
           onFailure()
         }
       }
-      LaunchedEffect(state.navigateToSuccess) {
-        val success = state.navigateToSuccess
-        if (success) {
-          viewModel.emit(SummaryEvent.ClearNavigation)
-          onSuccess()
-        }
-      }
+
       SummarySuccessScreen(
-          uiState = state,
-          navigateUp = navigateUp,
-          onConfirmClick = { viewModel.emit(SummaryEvent.SubmitQuote) },
-          downloadFromUrl = { url -> viewModel.emit(SummaryEvent.DownLoadFromUrl(url)) },
-          sharePdf = { file ->
-              viewModel.emit(SummaryEvent.HandledSharingPdfFile)
-              sharePdf(file)
-          },
+        uiState = state,
+        navigateUp = navigateUp,
+        onConfirmClick = { viewModel.emit(SummaryEvent.SubmitQuote) },
+        downloadFromUrl = { url -> viewModel.emit(SummaryEvent.DownLoadFromUrl(url)) },
+        sharePdf = { file ->
+          viewModel.emit(SummaryEvent.HandledSharingPdfFile)
+          sharePdf(file)
+        },
       )
     }
   }
@@ -129,14 +136,19 @@ private fun SummarySuccessScreen(
     navigateUp,
     topAppBarText = stringResource(R.string.TIER_FLOW_SUMMARY_TITLE),
   ) {
-    Column(Modifier.padding(16.dp)) {
-      SummaryCard(
-          uiState = uiState,
-          modifier = Modifier.fillMaxWidth(),
-          downloadFromUrl = downloadFromUrl,
-      )
-      Spacer(Modifier.weight(1f))
-      Spacer(Modifier.height(32.dp))
+    SummaryCard(
+      uiState = uiState,
+      modifier = Modifier
+          .fillMaxWidth()
+          .padding(16.dp),
+      downloadFromUrl = downloadFromUrl,
+    )
+    Spacer(Modifier.weight(1f))
+    Spacer(Modifier.height(16.dp))
+    Column(
+        Modifier
+            .padding(horizontal = 16.dp),
+    ) {
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
           HedvigText(
@@ -184,53 +196,55 @@ private fun SummaryCard(
         displaySubtitle = uiState.currentContractData.contractDisplaySubtitle,
       )
       Spacer(Modifier.height(16.dp))
-    }
-    Spacer(Modifier.height(16.dp))
-    HorizontalItemsWithMaximumSpaceTaken(
-      startSlot = {
-        HedvigText(
-          stringResource(R.string.TIER_FLOW_TOTAL),
-          style = HedvigTheme.typography.bodySmall,
+      HorizontalItemsWithMaximumSpaceTaken(
+        startSlot = {
+          HedvigText(
+            stringResource(R.string.TIER_FLOW_TOTAL),
+            style = HedvigTheme.typography.bodySmall,
+          )
+        },
+        spaceBetween = 8.dp,
+        endSlot = {
+          HedvigText(
+            text = uiState.quote.premium.toString(),
+            textAlign = TextAlign.End,
+            style = HedvigTheme.typography.bodySmall,
+          )
+        },
+      )
+      HedvigText(
+        modifier = Modifier.fillMaxWidth(),
+        textAlign = TextAlign.End,
+        text = stringResource(
+          R.string.TIER_FLOW_PREVIOUS_PRICE,
+          uiState.currentContractData.activeDisplayPremium.toString(),
+        ),
+        style = HedvigTheme.typography.label,
+        color = HedvigTheme.colorScheme.textSecondary,
+      )
+      AnimatedVisibility(showExpanded) {
+        ExtendedCardContent(
+            quote = uiState.quote, downloadFromUrl = downloadFromUrl,
+            isPDFLoading = uiState.isLoadingPdf,
         )
-      },
-      spaceBetween = 8.dp,
-      endSlot = {
-        HedvigText(
-          text = uiState.quote.premium.toString(),
-          textAlign = TextAlign.End,
-          style = HedvigTheme.typography.bodySmall,
-        )
-      },
-    )
-    HedvigText(
-      modifier = Modifier.fillMaxWidth(),
-      textAlign = TextAlign.End,
-      text = stringResource(
-        R.string.TIER_FLOW_PREVIOUS_PRICE,
-        uiState.currentContractData.activeDisplayPremium.toString(),
-      ),
-      style = HedvigTheme.typography.label,
-      color = HedvigTheme.colorScheme.textSecondary,
-    )
-    AnimatedVisibility(showExpanded) {
-      ExtendedCardContent(uiState.quote, downloadFromUrl = downloadFromUrl)
+      }
+      Spacer(Modifier.height(16.dp))
+      HedvigButton(
+        modifier = Modifier.fillMaxWidth(),
+        text = if (showExpanded) stringResource(R.string.TIER_FLOW_SUMMARY_HIDE_DETAILS_BUTTON)
+        else stringResource(R.string.TIER_FLOW_SUMMARY_SHOW_DETAILS),
+        onClick = { showExpanded = !showExpanded },
+        enabled = true,
+        buttonStyle = Secondary,
+        buttonSize = ButtonSize.Medium,
+      )
     }
-    Spacer(Modifier.height(16.dp))
-    HedvigButton(
-      text = if (showExpanded) stringResource(R.string.TIER_FLOW_SUMMARY_HIDE_DETAILS_BUTTON)
-      else stringResource(R.string.TIER_FLOW_SUMMARY_SHOW_DETAILS),
-      onClick = { showExpanded = !showExpanded },
-      enabled = true,
-      buttonStyle = Secondary,
-      buttonSize = ButtonSize.Medium,
-    )
   }
 }
 
 @Composable
 fun DisplayItemRowSecondaryColor(leftText: String, rightText: String) {
   HorizontalItemsWithMaximumSpaceTaken(
-    modifier = Modifier.padding(vertical = 16.dp),
     startSlot = {
       HedvigText(leftText, color = HedvigTheme.colorScheme.textSecondary)
     },
@@ -251,13 +265,18 @@ fun DisplayItemRowSecondaryColor(leftText: String, rightText: String) {
 }
 
 @Composable
-private fun ExtendedCardContent(quote: TierDeductibleQuote, downloadFromUrl: (url: String) -> Unit) {
+private fun ExtendedCardContent(
+  isPDFLoading: Boolean,
+  quote: TierDeductibleQuote,
+  downloadFromUrl: (url: String) -> Unit,
+) {
   Column {
     Spacer(Modifier.height(16.dp))
     HorizontalDivider()
+    Spacer(Modifier.height(16.dp))
     HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_OVERVIEW_SUBTITLE))
     quote.displayItems.forEachIndexed { _, item ->
-      DisplayItemRowSecondaryColor(item.displayTitle, item.displayValue) //todo: check!
+      DisplayItemRowSecondaryColor(item.displayTitle, item.displayValue)
     }
     Spacer(Modifier.height(16.dp))
     HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_COVERAGE_SUBTITLE))
@@ -265,13 +284,17 @@ private fun ExtendedCardContent(quote: TierDeductibleQuote, downloadFromUrl: (ur
       DisplayItemRowSecondaryColor(insurableLimit.label, insurableLimit.limit)
     }
     Spacer(Modifier.height(16.dp))
-    HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_DOCUMENTS_SUBTITLE))
+    Row(verticalAlignment = Alignment.CenterVertically) {
+      HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_DOCUMENTS_SUBTITLE))
+      Spacer(Modifier.width(16.dp))
+      AnimatedVisibility(isPDFLoading) { HedvigThreeDotsProgressIndicator() }
+    }
     quote.productVariant.documents.forEach { document ->
       DocumentRow(
-          name = document.displayName,
-          downloadFromUrl = {
-              downloadFromUrl(document.url)
-          },
+        name = document.displayName,
+        downloadFromUrl = {
+          downloadFromUrl(document.url)
+        },
       )
     }
   }
@@ -284,22 +307,27 @@ private fun DocumentRow(name: String, downloadFromUrl: () -> Unit) {
   ) {
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
-        HedvigText(
-          text = buildAnnotatedString {
-            append(name)
-            withStyle(
-              SpanStyle(
-                baselineShift = BaselineShift(0.3f),
-                fontSize = HedvigTheme.typography.bodySmall.fontSize,
-              ),
-            ) {
-              append("PDF")
-            }
-          },
-        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+          HedvigText(
+            color = HedvigTheme.colorScheme.textSecondary,
+            text = buildAnnotatedString {
+              append(name)
+              withStyle(
+                SpanStyle(
+                  baselineShift = BaselineShift(0.3f),
+                  fontSize = HedvigTheme.typography.label.fontSize,
+                  color = HedvigTheme.colorScheme.textSecondary,
+                ),
+              ) {
+                append("PDF")
+              }
+            },
+          )
+        }
       },
       endSlot = {
         IconButton(
+          modifier = Modifier.size(24.dp),
           onClick = {
             downloadFromUrl()
           },

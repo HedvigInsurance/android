@@ -108,7 +108,7 @@ fun NavGraphBuilder.changeTierGraph(
         },
         onSuccess = {
           navigator.navigateUnsafe(ChooseTierDestination.SubmitSuccess(this.params.activationDateEpochDays)) {
-            typedPopUpTo<ChooseTierDestination.Summary> {
+            typedPopUpTo<ChooseTierGraphDestination> {
               inclusive = true
             }
           }
