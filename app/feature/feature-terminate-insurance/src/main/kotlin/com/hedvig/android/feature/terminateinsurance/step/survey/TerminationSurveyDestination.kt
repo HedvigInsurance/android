@@ -7,9 +7,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -21,17 +27,25 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.data.changetier.data.ChangeTierDeductibleIntent
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.ChosenState.Chosen
 import com.hedvig.android.design.system.hedvig.ChosenState.NotChosen
 import com.hedvig.android.design.system.hedvig.EmptyState
+import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButtonStyle.NoButton
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.ERROR
+import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.INFO
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigDialog
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.LockedState.Locked
+import com.hedvig.android.design.system.hedvig.LockedState.NotLocked
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.RadioOption
@@ -48,8 +62,6 @@ import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 import com.hedvig.android.feature.terminateinsurance.data.TerminationReason
 import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
-import com.hedvig.android.feature.terminateinsurance.step.survey.ErrorReason.EMPTY_QUOTES
-import com.hedvig.android.feature.terminateinsurance.step.survey.ErrorReason.GENERAL
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationScaffold
 import hedvig.resources.R
 
@@ -115,6 +127,9 @@ internal fun TerminationSurveyDestination(
     tryToUpgradeCoverage = {
       viewModel.emit(TerminationSurveyEvent.TryToUpgradeCoverage)
     },
+    closeEmptyQuotesDialog = {
+      viewModel.emit(TerminationSurveyEvent.ClearEmptyQuotes)
+    },
   )
 }
 
@@ -132,6 +147,7 @@ private fun TerminationSurveyScreen(
   onContinueClick: () -> Unit,
   tryToUpgradeCoverage: () -> Unit,
   tryToDowngradePrice: () -> Unit,
+  closeEmptyQuotesDialog: () -> Unit,
 ) {
   FreeTextOverlay(
     freeTextMaxLength = 2000,
@@ -149,6 +165,40 @@ private fun TerminationSurveyScreen(
         navigateUp = navigateUp,
         closeTerminationFlow = closeTerminationFlow,
       ) {
+        AnimatedVisibility(uiState.showEmptyQuotesDialog) {
+          HedvigDialog(
+            onDismissRequest = closeEmptyQuotesDialog,
+            dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
+          ) {
+            Column(
+              modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp)
+                .windowInsetsPadding(
+                  WindowInsets.safeDrawing.only(
+                    WindowInsetsSides.Horizontal +
+                      WindowInsetsSides.Bottom,
+                  ),
+                ),
+            ) {
+              Spacer(Modifier.weight(1f))
+              EmptyState(
+                text = stringResource(R.string.TERMINATION_NO_TIER_QUOTES_SUBTITLE),
+                iconStyle = INFO,
+                buttonStyle = NoButton,
+                description = null,
+              )
+              Spacer(Modifier.weight(1f))
+              HedvigTextButton(
+                stringResource(R.string.general_close_button),
+                onClick = closeEmptyQuotesDialog,
+                buttonSize = Large,
+                modifier = Modifier.fillMaxWidth(),
+              )
+              Spacer(Modifier.height(32.dp))
+            }
+          }
+        }
         HedvigText(
           style = HedvigTheme.typography.headlineMedium.copy(
             lineBreak = LineBreak.Heading,
@@ -160,7 +210,7 @@ private fun TerminationSurveyScreen(
         Spacer(Modifier.weight(1f))
         Spacer(Modifier.height(16.dp))
         AnimatedVisibility(
-          visible = uiState.errorWhileLoadingNextStep != null,
+          visible = uiState.errorWhileLoadingNextStep,
           enter = fadeIn(),
           exit = fadeOut(),
         ) {
@@ -168,16 +218,8 @@ private fun TerminationSurveyScreen(
             Modifier.weight(1f),
             verticalArrangement = Arrangement.Center,
           ) {
-            val subTitle = when (uiState.errorWhileLoadingNextStep) {
-              GENERAL -> stringResource(R.string.GENERAL_ERROR_BODY)
-              EMPTY_QUOTES -> stringResource(R.string.TERMINATION_NO_TIER_QUOTES_SUBTITLE)
-              null -> ""
-            }
-            val title = when (uiState.errorWhileLoadingNextStep) {
-              GENERAL -> stringResource(R.string.GENERAL_ERROR_BODY)
-              EMPTY_QUOTES -> stringResource(R.string.TERMINATION_NO_TIER_QUOTES_TITLE)
-              null -> ""
-            }
+            val subTitle = stringResource(R.string.GENERAL_ERROR_BODY)
+            val title = stringResource(R.string.GENERAL_ERROR_BODY)
             EmptyState(
               modifier = Modifier
                 .padding(horizontal = 16.dp)
@@ -198,12 +240,21 @@ private fun TerminationSurveyScreen(
               modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
-              onClick = { selectOption(reason.surveyOption) },
+              onClick = {
+                if (!reason.surveyOption.isDisabled) {
+                  selectOption(reason.surveyOption)
+                }
+              },
+              lockedState = if (reason.surveyOption.isDisabled) Locked else NotLocked,
               radioOptionSize = RadioOptionDefaults.RadioOptionSize.Medium,
             )
-
             Spacer(modifier = (Modifier.height(4.dp)))
-            AnimatedVisibility(visible = reason.surveyOption == uiState.selectedOption) {
+            AnimatedVisibility(
+              visible = (
+                reason.surveyOption == uiState.selectedOption &&
+                  !reason.surveyOption.isDisabled
+              ),
+            ) {
               Column {
                 val suggestion = reason.surveyOption.suggestion
                 if (suggestion != null && suggestion != UnknownAction) {
@@ -223,6 +274,7 @@ private fun TerminationSurveyScreen(
                         tryToDowngradePrice()
                       }
                     }
+
                     is UpgradeCoverageByChangingTier -> {
                       {
                         tryToUpgradeCoverage()
@@ -268,7 +320,9 @@ private fun TerminationSurveyScreen(
           HedvigButton(
             stringResource(id = R.string.general_continue_button),
             enabled = uiState.continueAllowed,
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(horizontal = 16.dp),
             onClick = onContinueClick,
             isLoading = uiState.navigationStepLoadingForReason != null,
           )
@@ -301,6 +355,7 @@ private fun ShowSurveyScreenPreview(
         openUrl = {},
         tryToDowngradePrice = {},
         tryToUpgradeCoverage = {},
+        closeEmptyQuotesDialog = {},
       )
     }
   }
@@ -324,7 +379,7 @@ private class ShowSurveyUiStateProvider :
       TerminationSurveyState(
         nextNavigationStep = null,
         navigationStepLoadingForReason = null,
-        errorWhileLoadingNextStep = null,
+        errorWhileLoadingNextStep = false,
         selectedOption = previewReason2.surveyOption,
         reasons = listOf(previewReason1, previewReason2, previewReason3),
       ),
