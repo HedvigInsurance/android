@@ -2,6 +2,7 @@ package com.hedvig.android.feature.terminateinsurance.step.survey
 
 import app.cash.turbine.Turbine
 import arrow.core.Either
+import arrow.core.raise.either
 import arrow.core.right
 import assertk.assertThat
 import assertk.assertions.isEqualTo
@@ -240,6 +241,10 @@ private class FakeChangeTierRepository() : ChangeTierRepository {
   }
 
   override suspend fun addQuotesToDb(quotes: List<TierDeductibleQuote>) {
+  }
+
+  override suspend fun submitChangeTierQuote(quoteId: String): Either<ErrorMessage, Unit> {
+    return either {}
   }
 }
 
