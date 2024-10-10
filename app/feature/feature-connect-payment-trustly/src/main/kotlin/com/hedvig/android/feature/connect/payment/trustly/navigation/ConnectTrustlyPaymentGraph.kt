@@ -6,6 +6,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
@@ -42,7 +43,7 @@ fun NavGraphBuilder.connectPaymentGraph(
         modifier = Modifier.fillMaxSize(),
       ) {
         HedvigErrorSection(
-          onButtonClick = { navigator.popBackStack() },
+          onButtonClick = dropUnlessResumed { navigator.popBackStack() },
           modifier = Modifier.wrapContentHeight(),
           title = stringResource(R.string.something_went_wrong),
           subTitle = null,
