@@ -192,6 +192,7 @@ private class SelectCoveragePresenter(
       is PartialUiState.Failure -> Failure((currentPartialState as PartialUiState.Failure).reason)
       PartialUiState.Loading -> Loading
       is PartialUiState.Success -> {
+
         Success(
           map = (currentPartialState as PartialUiState.Success).map,
           currentActiveQuote = (currentPartialState as PartialUiState.Success).currentActiveQuote,
@@ -244,7 +245,7 @@ private fun mapQuotesToTiersAndQuotes(
     }
     .map { entry ->
       entry.key to entry.value.sortedBy {
-        it.premium.amount
+        it.deductible?.deductibleAmount?.amount ?: it.premium.amount
       }
     }
   val result = mutableStateMapOf(*grouped.toTypedArray())
