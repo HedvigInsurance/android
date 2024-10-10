@@ -5,6 +5,8 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.core.common.android.sharePDF
+import com.hedvig.android.feature.change.tier.ui.chooseinsurance.ChooseInsuranceToChangeTierDestination
+import com.hedvig.android.feature.change.tier.ui.chooseinsurance.ChooseInsuranceViewModel
 import com.hedvig.android.feature.change.tier.ui.comparison.ComparisonDestination
 import com.hedvig.android.feature.change.tier.ui.comparison.ComparisonViewModel
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageViewModel
@@ -38,6 +40,21 @@ fun NavGraphBuilder.changeTierGraph(
       viewModel = viewModel,
       navigateUp = navigator::navigateUp,
       launchFlow = { params: InsuranceCustomizationParameters ->
+        navigator.navigateUnsafe(ChooseTierGraphDestination(params)) {
+          typedPopUpTo<StartTierFlowDestination> {
+            inclusive = true
+          }
+        }
+      },
+    )
+  }
+
+  navdestination<StartTierFlowChooseInsuranceDestination> {
+    val viewModel: ChooseInsuranceViewModel = koinViewModel()
+    ChooseInsuranceToChangeTierDestination(
+      viewModel = viewModel,
+      navigateUp = navigator::navigateUp,
+      navigateToNextStep = { params: InsuranceCustomizationParameters ->
         navigator.navigateUnsafe(ChooseTierGraphDestination(params)) {
           typedPopUpTo<StartTierFlowDestination> {
             inclusive = true

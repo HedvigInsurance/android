@@ -14,6 +14,7 @@ query MemberActions {
       isEditCoInsuredEnabled
       isMovingEnabled
       isTravelCertificateEnabled
+      isChangeTierEnabled
       memberId
       sickAbroadAction {
         partners {

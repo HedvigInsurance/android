@@ -18,6 +18,12 @@ data class StartTierFlowDestination(
   }
 }
 
+/**
+ * The start of the flow, where we have can choose insurance to change its tier
+ */
+@Serializable
+data object StartTierFlowChooseInsuranceDestination : Destination
+
 @Serializable
 data class ChooseTierGraphDestination(
   /**
