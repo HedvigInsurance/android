@@ -63,7 +63,7 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
                 tier = Tier(
                   tierName = it.tierName!!,
                   tierLevel = it.tierLevel!!,
-                  info = it.productVariant.displayNameTierLong,
+                  info = it.productVariant.tierDescription,
                   tierDisplayName = it.productVariant.displayNameTier,
                 ),
               )
