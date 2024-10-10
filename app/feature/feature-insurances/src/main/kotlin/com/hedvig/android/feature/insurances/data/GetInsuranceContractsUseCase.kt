@@ -124,6 +124,7 @@ private fun ContractFragment.toContract(
     supportsAddressChange = supportsMoving && isMovingFlowEnabled,
     supportsEditCoInsured = supportsCoInsured && isEditCoInsuredEnabled,
     isTerminated = isTerminated,
+    supportsTierChange = supportsChangeTier && isTierEnabled,
   )
 }
 

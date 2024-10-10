@@ -18,6 +18,7 @@ import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.toClaimFlowDestination
 import com.hedvig.android.feature.change.tier.navigation.ChooseTierGraphDestination
 import com.hedvig.android.feature.change.tier.navigation.InsuranceCustomizationParameters
+import com.hedvig.android.feature.change.tier.navigation.StartTierFlowDestination
 import com.hedvig.android.feature.change.tier.navigation.changeTierGraph
 import com.hedvig.android.feature.changeaddress.navigation.changeAddressGraph
 import com.hedvig.android.feature.chat.navigation.ChatDestination
@@ -251,6 +252,16 @@ internal fun HedvigNavHost(
       startEditCoInsured = { backStackEntry: NavBackStackEntry, contractId: String ->
         with(navigator) {
           backStackEntry.navigate(AppDestination.CoInsuredAddOrRemove(contractId))
+        }
+      },
+      onNavigateToStartChangeTier = { backStackEntry: NavBackStackEntry, contractId: String ->
+        with(navigator) {
+          backStackEntry.navigate(
+            destination =
+              StartTierFlowDestination(
+                insuranceId = contractId,
+              ),
+          )
         }
       },
       startEditCoInsuredAddMissingInfo = { backStackEntry: NavBackStackEntry, contractId: String ->

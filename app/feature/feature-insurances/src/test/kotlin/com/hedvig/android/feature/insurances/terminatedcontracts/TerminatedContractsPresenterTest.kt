@@ -214,6 +214,7 @@ class TerminatedContractsPresenterTest {
         isTerminated = true,
         contractHolderSSN = "",
         contractHolderDisplayName = "",
+        supportsTierChange = true,
       ),
       InsuranceContract(
         "contractId2",
@@ -245,6 +246,7 @@ class TerminatedContractsPresenterTest {
         isTerminated = true,
         contractHolderSSN = "",
         contractHolderDisplayName = "",
+        supportsTierChange = true,
       ),
     )
 
@@ -278,6 +280,7 @@ class TerminatedContractsPresenterTest {
       isTerminated = true,
       contractHolderSSN = "",
       contractHolderDisplayName = "",
+      supportsTierChange = true,
     )
 
     private val activeInsurances = listOf(
@@ -311,6 +314,7 @@ class TerminatedContractsPresenterTest {
         isTerminated = false,
         contractHolderSSN = "",
         contractHolderDisplayName = "",
+        supportsTierChange = true,
       ),
       InsuranceContract(
         "contractId4",
@@ -342,6 +346,7 @@ class TerminatedContractsPresenterTest {
         isTerminated = false,
         contractHolderSSN = "",
         contractHolderDisplayName = "",
+        supportsTierChange = true,
       ),
     )
   }

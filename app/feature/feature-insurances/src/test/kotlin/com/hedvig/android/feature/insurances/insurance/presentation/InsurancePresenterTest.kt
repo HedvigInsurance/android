@@ -68,6 +68,7 @@ internal class InsurancePresenterTest {
       isTerminated = false,
       contractHolderSSN = "",
       contractHolderDisplayName = "",
+      supportsTierChange = true,
     ),
     InsuranceContract(
       id = "contractId#2",
@@ -99,6 +100,7 @@ internal class InsurancePresenterTest {
       isTerminated = false,
       contractHolderSSN = "",
       contractHolderDisplayName = "",
+      supportsTierChange = true,
     ),
   )
   private val terminatedContracts: List<InsuranceContract> = listOf(
@@ -132,6 +134,7 @@ internal class InsurancePresenterTest {
       isTerminated = true,
       contractHolderSSN = "",
       contractHolderDisplayName = "",
+      supportsTierChange = true,
     ),
     InsuranceContract(
       id = "contractId#4",
@@ -163,6 +166,7 @@ internal class InsurancePresenterTest {
       isTerminated = true,
       contractHolderSSN = "",
       contractHolderDisplayName = "",
+      supportsTierChange = true,
     ),
   )
   private val validCrossSells: List<CrossSellsQuery.Data.CurrentMember.CrossSell> = listOf(

@@ -45,8 +45,8 @@ import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownStyle.La
 import com.hedvig.android.design.system.hedvig.DropdownItem.SimpleDropdownItem
 import com.hedvig.android.design.system.hedvig.DropdownWithDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
-import com.hedvig.android.design.system.hedvig.HedvigCircularProgressIndicator
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
+import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
@@ -92,7 +92,7 @@ internal fun SelectTierDestination(
         navigateUp = navigateUp,
       )
 
-      Loading -> LoadingScreen()
+      Loading -> HedvigFullScreenCenterAlignedProgress()
       is Success -> {
         LaunchedEffect(state.uiState.quoteToNavigateFurther) {
           if (state.uiState.quoteToNavigateFurther != null) {
@@ -138,8 +138,7 @@ private fun FailureScreen(reload: () -> Unit, navigateUp: () -> Unit, reason: Fa
   Box(Modifier.fillMaxSize()) {
     val subTitle = when (reason) {
       GENERAL -> stringResource(R.string.GENERAL_ERROR_BODY)
-      QUOTES_ARE_EMPTY -> "Turns out you're already at the best possible coverage and price!"
-      // todo: remove hardcoded string!!
+      QUOTES_ARE_EMPTY -> stringResource(R.string.TERMINATION_NO_TIER_QUOTES_SUBTITLE)
     }
     val action = when (reason) {
       GENERAL -> reload
@@ -147,12 +146,11 @@ private fun FailureScreen(reload: () -> Unit, navigateUp: () -> Unit, reason: Fa
     }
     val title = when (reason) {
       GENERAL -> stringResource(R.string.GENERAL_ERROR_BODY)
-      QUOTES_ARE_EMPTY -> "Oops!" // todo: another copy??
+      QUOTES_ARE_EMPTY -> stringResource(R.string.TERMINATION_NO_TIER_QUOTES_TITLE)
     }
     val buttonText = when (reason) {
       GENERAL -> stringResource(R.string.GENERAL_ERROR_BODY)
       QUOTES_ARE_EMPTY -> stringResource(R.string.general_back_button)
-      // todo: remove hardcoded string!!
     }
     HedvigErrorSection(
       onButtonClick = action,
@@ -161,16 +159,6 @@ private fun FailureScreen(reload: () -> Unit, navigateUp: () -> Unit, reason: Fa
       title = title,
       buttonText = buttonText,
     )
-  }
-}
-
-@Composable
-private fun LoadingScreen() {
-  Box(
-    Modifier.fillMaxSize(),
-    contentAlignment = Alignment.Center,
-  ) {
-    HedvigCircularProgressIndicator()
   }
 }
 

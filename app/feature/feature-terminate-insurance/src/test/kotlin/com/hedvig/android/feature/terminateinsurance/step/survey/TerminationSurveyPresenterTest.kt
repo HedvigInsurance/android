@@ -8,6 +8,10 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.data.changetier.data.ChangeTierCreateSource
+import com.hedvig.android.data.changetier.data.ChangeTierDeductibleIntent
+import com.hedvig.android.data.changetier.data.ChangeTierRepository
+import com.hedvig.android.data.changetier.data.TierDeductibleQuote
 import com.hedvig.android.feature.terminateinsurance.InsuranceId
 import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
@@ -66,9 +70,11 @@ class TerminationSurveyPresenterTest {
   @Test
   fun `if tap on feedback field it would open full screen input field`() = runTest {
     val repository = FakeTerminateInsuranceRepository()
+    val changeTierRepository = FakeChangeTierRepository()
     val presenter = TerminationSurveyPresenter(
-      listOfOptionsForHome,
-      repository,
+      options = listOfOptionsForHome,
+      terminateInsuranceRepository = repository,
+      changeTierRepository,
     )
     presenter.test(initialState = TerminationSurveyState()) {
       assertThat(awaitItem().reasons.map { it.surveyOption }).isEqualTo(listOfOptionsForHome)
@@ -82,9 +88,11 @@ class TerminationSurveyPresenterTest {
   @Test
   fun `if full screen input field is dismissed do not show full screen input field`() = runTest {
     val repository = FakeTerminateInsuranceRepository()
+    val changeTierRepository = FakeChangeTierRepository()
     val presenter = TerminationSurveyPresenter(
       listOfOptionsForHome,
       repository,
+      changeTierRepository,
     )
     presenter.test(initialState = TerminationSurveyState()) {
       skipItems(1)
@@ -100,9 +108,11 @@ class TerminationSurveyPresenterTest {
   @Test
   fun `the received options are displayed in the correct order`() = runTest {
     val repository = FakeTerminateInsuranceRepository()
+    val changeTierRepository = FakeChangeTierRepository()
     val presenter = TerminationSurveyPresenter(
       listOfOptionsForHome,
       repository,
+      changeTierRepository,
     )
     presenter.test(initialState = TerminationSurveyState()) {
       assertThat(awaitItem().reasons.map { it.surveyOption }).isEqualTo(listOfOptionsForHome)
@@ -112,9 +122,11 @@ class TerminationSurveyPresenterTest {
   @Test
   fun `if feedback for a reason is changed the right reason is updated with the new feedback`() = runTest {
     val repository = FakeTerminateInsuranceRepository()
+    val changeTierRepository = FakeChangeTierRepository()
     val presenter = TerminationSurveyPresenter(
       listOfOptionsForHome,
       repository,
+      changeTierRepository,
     )
     presenter.test(initialState = TerminationSurveyState()) {
       skipItems(1)
@@ -140,9 +152,11 @@ class TerminationSurveyPresenterTest {
   @Test
   fun `when survey is submitted the right option with the right feedback is submitted`() = runTest {
     val repository = FakeTerminateInsuranceRepository()
+    val changeTierRepository = FakeChangeTierRepository()
     val presenter = TerminationSurveyPresenter(
       listOfOptionsForHome,
       repository,
+      changeTierRepository,
     )
     val nextStep = TerminateInsuranceStep.TerminateInsuranceDate(
       LocalDate(2024, 6, 1),
@@ -165,9 +179,11 @@ class TerminationSurveyPresenterTest {
   @Test
   fun `when survey is submitted for option with no subOptions navigate to nex termination step`() = runTest {
     val repository = FakeTerminateInsuranceRepository()
+    val changeTierRepository = FakeChangeTierRepository()
     val presenter = TerminationSurveyPresenter(
       listOfOptionsForHome,
       repository,
+      changeTierRepository,
     )
     val nextStep = TerminateInsuranceStep.TerminateInsuranceDate(
       LocalDate(2024, 6, 1),
@@ -187,9 +203,11 @@ class TerminationSurveyPresenterTest {
   @Test
   fun `when survey is submitted for option with subOptions navigate to next survey screen`() = runTest {
     val repository = FakeTerminateInsuranceRepository()
+    val changeTierRepository = FakeChangeTierRepository()
     val presenter = TerminationSurveyPresenter(
       listOfOptionsForHome,
       repository,
+      changeTierRepository,
     )
     presenter.test(initialState = TerminationSurveyState()) {
       skipItems(1)
@@ -198,6 +216,30 @@ class TerminationSurveyPresenterTest {
       sendEvent(TerminationSurveyEvent.Continue)
       assertThat(awaitItem().nextNavigationStep).isEqualTo(SurveyNavigationStep.NavigateToSubOptions)
     }
+  }
+}
+
+private class FakeChangeTierRepository() : ChangeTierRepository {
+  val changeTierIntentTurbine = Turbine<Either<ErrorMessage, ChangeTierDeductibleIntent>>()
+  val quoteTurbine = Turbine<TierDeductibleQuote>()
+  val quoteListTurbine = Turbine<List<TierDeductibleQuote>>()
+
+  override suspend fun startChangeTierIntentAndGetQuotesId(
+    insuranceId: String,
+    source: ChangeTierCreateSource,
+  ): Either<ErrorMessage, ChangeTierDeductibleIntent> {
+    return changeTierIntentTurbine.awaitItem()
+  }
+
+  override suspend fun getQuoteById(id: String): TierDeductibleQuote {
+    return quoteTurbine.awaitItem()
+  }
+
+  override suspend fun getQuotesById(ids: List<String>): List<TierDeductibleQuote> {
+    return quoteListTurbine.awaitItem()
+  }
+
+  override suspend fun addQuotesToDb(quotes: List<TierDeductibleQuote>) {
   }
 }
 
@@ -218,6 +260,8 @@ private class FakeTerminateInsuranceRepository : TerminateInsuranceRepository {
     terminationFlowTurbine.awaitItem()
 
   override suspend fun getContractId(): String {
-    TODO("Not yet implemented")
+    return fakeContractId
   }
 }
+
+private val fakeContractId = "fakeContractId"
