@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.EmptyState
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButtonStyle.NoButton
@@ -50,7 +51,7 @@ internal fun SubmitTierSuccessScreen(activationDateEpochDays: Int, navigateUp: (
     Spacer(Modifier.weight(1f))
     HedvigTextButton(
       stringResource(R.string.general_close_button),
-      onClick = navigateUp,
+      onClick = dropUnlessResumed { navigateUp() },
       buttonSize = Large,
       modifier = Modifier.fillMaxWidth(),
     )

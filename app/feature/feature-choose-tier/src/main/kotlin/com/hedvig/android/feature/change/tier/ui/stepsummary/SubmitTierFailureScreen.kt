@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.EmptyState
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButtonStyle.Button
@@ -45,9 +46,7 @@ internal fun SubmitTierFailureScreen(navigateUp: () -> Unit) {
       iconStyle = ERROR,
       buttonStyle = Button(
         buttonText = stringResource(R.string.GENERAL_RETRY),
-        onButtonClick = {
-          navigateUp()
-        },
+        onButtonClick = dropUnlessResumed { navigateUp() },
       ),
     )
     Spacer(Modifier.weight(1f))

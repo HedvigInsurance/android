@@ -35,7 +35,7 @@ private class ComparisonPresenter(
 
     LaunchedEffect(Unit) {
       // TODO: add error state!!! and either!
-      val result = tierRepository.getQuotesById(quoteIds)
+      val result = tierRepository.getQuotesById(quoteIds).sortedBy { it.tier.tierLevel }
       currentState = Success(result)
     }
 
