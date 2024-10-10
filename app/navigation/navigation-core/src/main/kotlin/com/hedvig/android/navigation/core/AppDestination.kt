@@ -19,14 +19,6 @@ sealed interface AppDestination {
   @Serializable
   data object ClaimsFlow : AppDestination, Destination
 
-  // Handles connecting payment with Trustly. Auto-navigates to Adyen for NO/DK
-  @Serializable
-  data object ConnectPayment : AppDestination, Destination
-
-  // To be deprecated as soon as Adyen support is dropped
-  @Serializable
-  data object ConnectPaymentAdyen : AppDestination, Destination
-
   @Serializable
   data class ClaimDetails(
     val claimId: String,

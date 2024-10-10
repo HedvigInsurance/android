@@ -50,7 +50,12 @@ import com.hedvig.android.feature.connect.payment.trustly.webview.TrustlyJavascr
 import com.hedvig.android.feature.connect.payment.trustly.webview.TrustlyWebChromeClient
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.navigation.compose.Destination
 import hedvig.resources.R
+import kotlinx.serialization.Serializable
+
+@Serializable
+data object TrustlyDestination : Destination
 
 @Composable
 internal fun TrustlyDestination(viewModel: TrustlyViewModel, navigateUp: () -> Unit, finishTrustlyFlow: () -> Unit) {

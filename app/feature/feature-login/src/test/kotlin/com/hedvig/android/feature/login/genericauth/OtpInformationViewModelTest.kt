@@ -6,6 +6,7 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
+import assertk.assertions.isTrue
 import assertk.assertions.prop
 import com.hedvig.android.auth.event.AuthEvent
 import com.hedvig.android.auth.test.FakeAuthRepository
@@ -86,25 +87,22 @@ class OtpInformationViewModelTest {
     val authTokenService = TestAuthTokenService()
     val viewModel = testViewModel(authRepository, authTokenService)
 
-    viewModel.events.test {
-      viewModel.submitCode("123456")
-      runCurrent()
-      assertThat(viewModel.viewState.value.loadingCode).isEqualTo(true)
-      assertThat(viewModel.viewState.value.loadingResend).isEqualTo(false)
+    viewModel.submitCode("123456")
+    runCurrent()
+    assertThat(viewModel.viewState.value.loadingCode).isEqualTo(true)
+    assertThat(viewModel.viewState.value.loadingResend).isEqualTo(false)
 
-      authRepository.submitOtpResponse.add(SubmitOtpResult.Success(AuthorizationCodeGrant("")))
-      authRepository.exchangeResponse.add(AuthTokenResult.Success(accessToken, refreshToken))
-      runCurrent()
+    authRepository.submitOtpResponse.add(SubmitOtpResult.Success(AuthorizationCodeGrant("")))
+    authRepository.exchangeResponse.add(AuthTokenResult.Success(accessToken, refreshToken))
+    runCurrent()
 
-      assertThat(viewModel.viewState.value.loadingCode).isEqualTo(false)
-      val authEvent = authTokenService.authEventTurbine.awaitItem()
-      assertThat(authEvent).isInstanceOf<AuthEvent.LoggedIn>().run {
-        prop(AuthEvent.LoggedIn::accessToken).isEqualTo(accessToken.token)
-        prop(AuthEvent.LoggedIn::refreshToken).isEqualTo(refreshToken.token)
-      }
-      val event = awaitItem()
-      assertThat(event).isEqualTo(OtpInputViewModel.Event.Success(accessToken.token))
+    assertThat(viewModel.viewState.value.loadingCode).isEqualTo(false)
+    val authEvent = authTokenService.authEventTurbine.awaitItem()
+    assertThat(authEvent).isInstanceOf<AuthEvent.LoggedIn>().run {
+      prop(AuthEvent.LoggedIn::accessToken).isEqualTo(accessToken.token)
+      prop(AuthEvent.LoggedIn::refreshToken).isEqualTo(refreshToken.token)
     }
+    assertThat(viewModel.viewState.value.navigateToLoginScreen).isTrue()
   }
 
   @Test

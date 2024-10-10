@@ -2,16 +2,21 @@ package com.hedvig.android.feature.login.otpinput
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.AuthTokenResult
 import com.hedvig.authlib.ResendOtpResult.Error
 import com.hedvig.authlib.ResendOtpResult.Success
 import com.hedvig.authlib.SubmitOtpResult
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.WhileSubscribed
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -22,8 +27,19 @@ class OtpInputViewModel(
   private val authTokenService: AuthTokenService,
   private val authRepository: AuthRepository,
 ) : ViewModel() {
-  private val _viewState = MutableStateFlow(ViewState(credential = credential))
-  val viewState = _viewState.asStateFlow()
+  private val _viewState = MutableStateFlow(ViewState.initial(credential = credential))
+  val viewState = combine(
+    _viewState,
+    authTokenService.authStatus,
+  ) { viewState, authStatus ->
+    viewState.copy(
+      navigateToLoginScreen = authStatus is AuthStatus.LoggedIn,
+    )
+  }.stateIn(
+    viewModelScope,
+    SharingStarted.WhileSubscribed(5.seconds),
+    _viewState.value,
+  )
 
   private val _events = Channel<Event>(Channel.UNLIMITED)
   val events = _events.receiveAsFlow()
@@ -31,14 +47,24 @@ class OtpInputViewModel(
   data class ViewState(
     val input: String = "",
     val credential: String,
-    val networkErrorMessage: String? = null,
-    val loadingResend: Boolean = false,
-    val loadingCode: Boolean = false,
-  )
+    val networkErrorMessage: String?,
+    val loadingResend: Boolean,
+    val loadingCode: Boolean,
+    val navigateToLoginScreen: Boolean,
+  ) {
+    companion object {
+      fun initial(credential: String): ViewState = ViewState(
+        credential = credential,
+        input = "",
+        networkErrorMessage = null,
+        loadingResend = false,
+        loadingCode = false,
+        navigateToLoginScreen = false,
+      )
+    }
+  }
 
   sealed class Event {
-    data class Success(val authToken: String) : Event()
-
     object CodeResent : Event()
   }
 
@@ -76,7 +102,6 @@ class OtpInputViewModel(
           authCodeResult.accessToken,
           authCodeResult.refreshToken,
         )
-        _events.trySend(Event.Success(authCodeResult.accessToken.token))
         _viewState.update {
           it.copy(loadingCode = false)
         }

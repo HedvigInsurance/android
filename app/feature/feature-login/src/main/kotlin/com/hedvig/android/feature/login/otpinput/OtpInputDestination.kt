@@ -60,7 +60,6 @@ fun OtpInputDestination(
   LaunchedEffect(viewModel) {
     viewModel.events.collectLatest { event ->
       when (event) {
-        is OtpInputViewModel.Event.Success -> onNavigateToLoggedIn()
         OtpInputViewModel.Event.CodeResent -> {
           try {
             delay(1.seconds)
@@ -74,6 +73,11 @@ fun OtpInputDestination(
     }
   }
   val viewState by viewModel.viewState.collectAsStateWithLifecycle()
+  val navigateToLoginScreen = viewState.navigateToLoginScreen
+  LaunchedEffect(navigateToLoginScreen) {
+    if (!navigateToLoginScreen) return@LaunchedEffect
+    onNavigateToLoggedIn()
+  }
   OtpInputScreen(
     onInputChanged = viewModel::setInput,
     onOpenEmailApp = onOpenEmailApp,
@@ -161,7 +165,7 @@ private fun OtpInputScreenContents(
     Spacer(Modifier.height(16.dp))
     HedvigText(
       text = stringResource(hedvig.resources.R.string.login_subtitle_verification_code_email, credential),
-      style = HedvigTheme.typography.bodyLarge,
+      style = HedvigTheme.typography.bodySmall,
     )
     Spacer(Modifier.height(40.dp))
     SixDigitCodeInputField(inputValue, onInputChanged, keyboardController, onSubmitCode, otpErrorMessage)

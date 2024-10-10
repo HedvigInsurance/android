@@ -64,10 +64,6 @@ class GenericAuthViewModelTest {
         error("Not yet implemented")
       }
 
-      override suspend fun loginStatus(statusUrl: StatusUrl): LoginStatusResult {
-        error("Not yet implemented")
-      }
-
       override suspend fun revoke(token: String): RevokeResult {
         error("Not yet implemented")
       }

@@ -4,6 +4,7 @@ plugins {
   id("hedvig.android.library")
   id("hedvig.android.library.compose")
   alias(libs.plugins.apollo)
+  alias(libs.plugins.serialization)
   alias(libs.plugins.squareSortDependencies)
 }
 
@@ -20,6 +21,7 @@ dependencies {
   implementation(libs.arrow.core)
   implementation(libs.koin.compose)
   implementation(libs.koin.core)
+  implementation(libs.kotlinx.serialization.core)
   implementation(projects.apolloCore)
   implementation(projects.apolloNetworkCacheManager)
   implementation(projects.apolloOctopusPublic)

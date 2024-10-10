@@ -27,8 +27,8 @@ import com.hedvig.android.feature.chat.navigation.cbmChatGraph
 import com.hedvig.android.feature.claim.details.navigation.claimDetailsGraph
 import com.hedvig.android.feature.claimtriaging.ClaimTriagingDestination
 import com.hedvig.android.feature.claimtriaging.claimTriagingDestinations
-import com.hedvig.android.feature.connect.payment.adyen.connectAdyenPaymentGraph
 import com.hedvig.android.feature.connect.payment.connectPaymentGraph
+import com.hedvig.android.feature.connect.payment.trustly.ui.TrustlyDestination
 import com.hedvig.android.feature.deleteaccount.navigation.DeleteAccountDestination
 import com.hedvig.android.feature.deleteaccount.navigation.deleteAccountGraph
 import com.hedvig.android.feature.editcoinsured.navigation.editCoInsuredGraph
@@ -80,12 +80,7 @@ internal fun HedvigNavHost(
   val navigator: Navigator = rememberNavigator(hedvigAppState.navController, finishApp)
 
   val navigateToConnectPayment = {
-    when (market) {
-      Market.SE -> hedvigAppState.navController.navigate(AppDestination.ConnectPayment)
-      Market.NO,
-      Market.DK,
-      -> hedvigAppState.navController.navigate(AppDestination.ConnectPaymentAdyen)
-    }
+    hedvigAppState.navController.navigate(TrustlyDestination)
   }
   val navigateToInbox = { backStackEntry: NavBackStackEntry ->
     with(navigator) {
@@ -320,18 +315,8 @@ internal fun HedvigNavHost(
       navigator = navigator,
       market = market,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-      navigateToAdyenConnectPayment = {
-        navigator.navigateUnsafe(
-          AppDestination.ConnectPaymentAdyen,
-        ) {
-          typedPopUpTo<AppDestination.ConnectPayment> {
-            inclusive = true
-          }
-        }
-      },
     )
     editCoInsuredGraph(navigator)
-    connectAdyenPaymentGraph(navigator)
     helpCenterGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       navigator = navigator,
@@ -344,7 +329,7 @@ internal fun HedvigNavHost(
           is QuickLinkDestination.OuterDestination.QuickLinkCoInsuredAddOrRemove ->
             AppDestination.CoInsuredAddOrRemove(quickLinkDestination.contractId)
 
-          QuickLinkDestination.OuterDestination.QuickLinkConnectPayment -> AppDestination.ConnectPayment
+          QuickLinkDestination.OuterDestination.QuickLinkConnectPayment -> TrustlyDestination
           QuickLinkDestination.OuterDestination.QuickLinkTermination -> TerminateInsuranceGraphDestination(null)
           QuickLinkDestination.OuterDestination.QuickLinkTravelCertificate -> AppDestination.TravelCertificate
         }

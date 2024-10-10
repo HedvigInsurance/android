@@ -18,9 +18,6 @@ mapping.txt
 schema.json
 schema.graphqls
 
-# adyen credentials
-adyen.xml
-
 open_source_licenses.html
 
 # lokalise credentials

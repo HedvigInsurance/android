@@ -10,6 +10,10 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.market.Market
+import com.hedvig.android.market.MarketManager
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.datetime.LocalDate
 import octopus.GetPayinMethodStatusQuery
 import octopus.type.MemberPaymentConnectionStatus
@@ -21,12 +25,16 @@ internal interface GetConnectPaymentReminderUseCase {
 internal class GetConnectPaymentReminderUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val getOnlyHasNonPayingContractsUseCaseProvider: Provider<GetOnlyHasNonPayingContractsUseCase>,
+  private val marketManager: MarketManager,
 ) : GetConnectPaymentReminderUseCase {
   override suspend fun invoke(): Either<ConnectPaymentReminderError, PaymentReminder> {
     return either {
+      ensure(marketManager.selectedMarket().filterNotNull().first() == Market.SE) {
+        ConnectPaymentReminderError.DomainError.NotSwedishMarket
+      }
       val onlyHasNonPayingContracts = getOnlyHasNonPayingContractsUseCaseProvider.provide().invoke().getOrNull() == true
       ensure(onlyHasNonPayingContracts == false) {
-        ConnectPaymentReminderError.NonPayingMember
+        ConnectPaymentReminderError.DomainError.NonPayingMember
       }
       val result = apolloClient.query(GetPayinMethodStatusQuery())
         .safeExecute(::ErrorMessage)
@@ -42,21 +50,27 @@ internal class GetConnectPaymentReminderUseCaseImpl(
       }
       val payStatus = result.currentMember.paymentInformation.status
       ensure(payStatus == MemberPaymentConnectionStatus.NEEDS_SETUP) {
-        ConnectPaymentReminderError.AlreadySetup
+        ConnectPaymentReminderError.DomainError.AlreadySetup
       }
       PaymentReminder.ShowConnectPaymentReminder
     }.onLeft {
-      logcat { "GetConnectPaymentReminderUseCase failed with error:$it" }
+      if (it !is ConnectPaymentReminderError.DomainError) {
+        logcat { "GetConnectPaymentReminderUseCase failed with error:$it" }
+      }
     }
   }
 }
 
 sealed interface ConnectPaymentReminderError {
-  data object AlreadySetup : ConnectPaymentReminderError
-
-  data object NonPayingMember : ConnectPaymentReminderError
-
   data class NetworkError(val errorMessage: ErrorMessage) : ConnectPaymentReminderError, ErrorMessage by errorMessage
+
+  sealed interface DomainError : ConnectPaymentReminderError {
+    data object AlreadySetup : DomainError
+
+    data object NonPayingMember : DomainError
+
+    data object NotSwedishMarket : DomainError
+  }
 }
 
 sealed interface PaymentReminder {

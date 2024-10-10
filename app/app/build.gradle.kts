@@ -192,7 +192,6 @@ dependencies {
   implementation(projects.featureChat)
   implementation(projects.featureClaimDetails)
   implementation(projects.featureClaimTriaging)
-  implementation(projects.featureConnectPaymentAdyen)
   implementation(projects.featureConnectPaymentTrustly)
   implementation(projects.featureDeleteAccount)
   implementation(projects.featureEditCoinsured)

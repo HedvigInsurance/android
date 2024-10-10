@@ -47,10 +47,6 @@ class FakeAuthRepository : AuthRepository {
     return exchangeResponse.awaitItem()
   }
 
-  override suspend fun loginStatus(statusUrl: StatusUrl): LoginStatusResult {
-    error("Not implemented")
-  }
-
   override suspend fun revoke(token: String): RevokeResult {
     error("Not implemented")
   }
