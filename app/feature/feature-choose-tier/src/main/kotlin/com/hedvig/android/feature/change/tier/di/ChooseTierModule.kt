@@ -5,8 +5,11 @@ import com.hedvig.android.core.fileupload.DownloadPdfUseCase
 import com.hedvig.android.data.changetier.data.ChangeTierRepository
 import com.hedvig.android.feature.change.tier.data.GetCurrentContractDataUseCase
 import com.hedvig.android.feature.change.tier.data.GetCurrentContractDataUseCaseImpl
+import com.hedvig.android.feature.change.tier.data.GetCustomizableInsurancesUseCase
+import com.hedvig.android.feature.change.tier.data.GetCustomizableInsurancesUseCaseImpl
 import com.hedvig.android.feature.change.tier.navigation.InsuranceCustomizationParameters
 import com.hedvig.android.feature.change.tier.navigation.SummaryParameters
+import com.hedvig.android.feature.change.tier.ui.chooseinsurance.ChooseInsuranceViewModel
 import com.hedvig.android.feature.change.tier.ui.comparison.ComparisonViewModel
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageViewModel
 import com.hedvig.android.feature.change.tier.ui.stepstart.StartTierFlowViewModel
@@ -31,8 +34,22 @@ val chooseTierModule = module {
     )
   }
 
+  viewModel<ChooseInsuranceViewModel> {
+    ChooseInsuranceViewModel(
+      getCustomizableInsurancesUseCase = get<GetCustomizableInsurancesUseCase>(),
+      tierRepository = get<ChangeTierRepository>(),
+    )
+  }
+
   single<GetCurrentContractDataUseCase> {
     GetCurrentContractDataUseCaseImpl(
+      apolloClient = get<ApolloClient>(),
+      featureManager = get<FeatureManager>(),
+    )
+  }
+
+  single<GetCustomizableInsurancesUseCase> {
+    GetCustomizableInsurancesUseCaseImpl(
       apolloClient = get<ApolloClient>(),
       featureManager = get<FeatureManager>(),
     )
