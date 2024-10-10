@@ -31,6 +31,7 @@ import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Primary
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
+import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedLinearProgress
@@ -135,6 +136,17 @@ private fun SummarySuccessScreen(
     navigateUp,
     topAppBarText = stringResource(R.string.TIER_FLOW_SUMMARY_TITLE),
   ) {
+    var showConfirmationDialog by remember { mutableStateOf(false) }
+    if (showConfirmationDialog) {
+      HedvigAlertDialog(
+        title = stringResource(R.string.TIER_FLOW_CONFIRMATION_DIALOG_TEXT),
+        onDismissRequest = { showConfirmationDialog = false },
+        onConfirmClick = onConfirmClick,
+        confirmButtonLabel = stringResource(R.string.GENERAL_CONFIRM),
+        dismissButtonLabel = stringResource(R.string.general_cancel_button),
+        text = null,
+      )
+    }
     SummaryCard(
       uiState = uiState,
       modifier = Modifier
@@ -171,7 +183,9 @@ private fun SummarySuccessScreen(
         buttonStyle = Primary,
         buttonSize = Large,
         enabled = true,
-        onClick = onConfirmClick,
+        onClick = {
+          showConfirmationDialog = true
+        },
       )
       Spacer(Modifier.height(16.dp))
     }
