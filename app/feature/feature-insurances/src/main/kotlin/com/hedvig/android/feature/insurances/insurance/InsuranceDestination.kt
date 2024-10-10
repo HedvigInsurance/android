@@ -525,4 +525,5 @@ private val previewInsurance = InsuranceContract(
   contractHolderDisplayName = "Hhhhh Hhhhh",
   contractHolderSSN = "19910913-1893",
   tierName = "Bas",
+  supportsTierChange = true,
 )

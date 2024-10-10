@@ -73,6 +73,7 @@ internal fun ContractDetailDestination(
   viewModel: ContractDetailViewModel,
   onEditCoInsuredClick: (String) -> Unit,
   onMissingInfoClick: (String) -> Unit,
+  onChangeTierClick: (String) -> Unit,
   onChangeAddressClick: () -> Unit,
   onCancelInsuranceClick: (cancelInsuranceData: CancelInsuranceData) -> Unit,
   onNavigateToNewConversation: () -> Unit,
@@ -94,6 +95,7 @@ internal fun ContractDetailDestination(
     openUrl = openUrl,
     navigateUp = navigateUp,
     navigateBack = navigateBack,
+    onChangeTierClick = onChangeTierClick,
   )
 }
 
@@ -105,6 +107,7 @@ private fun ContractDetailScreen(
   retry: () -> Unit,
   onEditCoInsuredClick: (String) -> Unit,
   onMissingInfoClick: (String) -> Unit,
+  onChangeTierClick: (String) -> Unit,
   onChangeAddressClick: () -> Unit,
   onCancelInsuranceClick: (cancelInsuranceData: CancelInsuranceData) -> Unit,
   navigateUp: () -> Unit,
@@ -219,6 +222,10 @@ private fun ContractDetailScreen(
                       contractHolderSSN = state.insuranceContract.contractHolderSSN,
                       allowChangeAddress = state.insuranceContract.supportsAddressChange,
                       allowTerminatingInsurance = state.allowTerminatingInsurance,
+                      allowChangeTier = state.insuranceContract.supportsTierChange,
+                      onChangeTierClick = {
+                        onChangeTierClick(state.insuranceContract.id)
+                      },
                       onEditCoInsuredClick = {
                         onEditCoInsuredClick(state.insuranceContract.id)
                       },
@@ -358,6 +365,7 @@ private fun PreviewContractDetailScreen() {
             isTerminated = false,
             contractHolderDisplayName = "Hugo Linder",
             contractHolderSSN = "199101131093",
+            supportsTierChange = true,
           ),
           true,
         ),
@@ -372,6 +380,7 @@ private fun PreviewContractDetailScreen() {
         onNavigateToNewConversation = {},
         onMissingInfoClick = {},
         openUrl = {},
+        onChangeTierClick = {},
       )
     }
   }
