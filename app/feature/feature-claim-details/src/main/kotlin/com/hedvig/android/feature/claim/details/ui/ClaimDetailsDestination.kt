@@ -63,7 +63,6 @@ import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenC
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.fileupload.ui.FilePickerBottomSheet
 import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.hedvig.colored.hedvig.Chat
 import com.hedvig.android.core.icons.hedvig.compose.notificationCircle
 import com.hedvig.android.core.icons.hedvig.small.hedvig.ArrowNorthEast
 import com.hedvig.android.core.ui.DynamicFilesGridBetweenOtherThings
@@ -78,6 +77,7 @@ import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.icon.ArrowLeft
+import com.hedvig.android.design.system.hedvig.icon.Chat
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.ClaimOutcome.UNKNOWN
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.ClaimStatus.CLOSED
@@ -301,7 +301,7 @@ private fun ClaimDetailTopAppBar(
       if (navigateToConversation != null) {
         IconButton(navigateToConversation, Modifier.size(40.dp)) {
           Icon(
-            imageVector = Icons.Hedvig.Chat,
+            imageVector = HedvigIcons.Chat,
             contentDescription = stringResource(R.string.DASHBOARD_OPEN_CHAT),
             tint = com.hedvig.android.design.system.hedvig.HedvigTheme.colorScheme.signalGreyElement,
             modifier = Modifier
