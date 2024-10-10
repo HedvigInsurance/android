@@ -289,14 +289,14 @@ internal fun SelectIndicationCircle(
             when (currentState) {
               Chosen -> {
                 when (lockedState) {
-                  Locked -> Modifier.border(8.dp, radioOptionColors.disabledIndicatorColor, CircleShape)
+                  Locked -> Modifier.border(8.dp, radioOptionColors.notChosenIndicatorColor, CircleShape)
                   NotLocked -> Modifier.border(8.dp, radioOptionColors.chosenIndicatorColor, CircleShape)
                 }
               }
 
               NotChosen -> {
                 when (lockedState) {
-                  Locked -> Modifier.border(8.dp, radioOptionColors.disabledIndicatorColor, CircleShape)
+                  Locked -> Modifier.border(2.dp, radioOptionColors.notChosenIndicatorColor, CircleShape)
                   NotLocked -> Modifier.border(2.dp, radioOptionColors.notChosenIndicatorColor, CircleShape)
                 }
               }

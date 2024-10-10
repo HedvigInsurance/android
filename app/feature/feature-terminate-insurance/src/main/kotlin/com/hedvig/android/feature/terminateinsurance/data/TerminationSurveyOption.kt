@@ -10,6 +10,7 @@ internal data class TerminationSurveyOption(
   val feedBackRequired: Boolean,
   val suggestion: SurveyOptionSuggestion?,
   val subOptions: List<TerminationSurveyOption>,
+  val isDisabled: Boolean = false,
 )
 
 @Serializable

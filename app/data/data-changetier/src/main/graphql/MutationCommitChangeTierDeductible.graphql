@@ -1,0 +1,7 @@
+mutation ChangeTierDeductibleCommitIntent($quoteId: ID!) {
+  changeTierDeductibleCommitIntent(input: {quoteId: $quoteId}) {
+    userError {
+      message
+    }
+  }
+}

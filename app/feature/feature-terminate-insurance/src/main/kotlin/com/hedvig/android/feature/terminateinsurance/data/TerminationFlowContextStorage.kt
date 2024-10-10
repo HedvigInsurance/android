@@ -39,7 +39,7 @@ class TerminationFlowContextStorage(
   }
 
   companion object {
-    private val TERMINATION_FLOW_CONTEXT_KEY = stringPreferencesKey("CLAIM_FLOW_CONTEXT_KEY") // todo: Stelios, should it be CLAIM_FLOW here?
+    private val TERMINATION_FLOW_CONTEXT_KEY = stringPreferencesKey("CLAIM_FLOW_CONTEXT_KEY")
     private val TERMINATION_FLOW_CONTRACT_ID_KEY = stringPreferencesKey("TERMINATION_FLOW_CONTRACT_ID_KEY")
   }
 }

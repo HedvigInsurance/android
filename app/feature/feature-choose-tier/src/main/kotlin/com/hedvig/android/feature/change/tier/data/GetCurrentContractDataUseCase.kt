@@ -57,25 +57,6 @@ internal class GetCurrentContractDataUseCaseImpl(
           }
         }
       }
-//    // todo: remove mock!!!
-//      CurrentContractData(
-//        currentExposureName = "Testsgatan 555",
-//        currentDisplayPremium = UiMoney(295.0, SEK),
-//        deductible = Deductible(
-//          UiMoney(1000.0, SEK),
-//          deductiblePercentage = 25,
-//          description = "En fast del och en rörlig del om 25% av skadekostnaden.",
-//        ),
-//        productVariant = ProductVariant(
-//          displayName = "Test",
-//          contractGroup = ContractGroup.RENTAL,
-//          contractType = ContractType.SE_APARTMENT_RENT,
-//          partner = "test",
-//          perils = listOf(),
-//          insurableLimits = listOf(),
-//          documents = listOf(),
-//        ),
-//      )
     }
   }
 }
