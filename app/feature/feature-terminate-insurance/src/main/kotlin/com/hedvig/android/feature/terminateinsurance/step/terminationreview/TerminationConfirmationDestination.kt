@@ -128,9 +128,9 @@ private fun AreYouSureScreen(
     ) {
       HedvigTextButton(
         stringResource(id = R.string.general_close_button),
-        onClick = navigateUp,
         modifier = Modifier.fillMaxWidth(),
         buttonSize = Large,
+        onClick = navigateUp,
       )
     }
     Spacer(Modifier.height(16.dp))

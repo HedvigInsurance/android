@@ -31,6 +31,8 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import com.hedvig.android.compose.ui.LayoutWithoutPlacement
 import com.hedvig.android.compose.ui.withoutPlacement
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Medium
 import com.hedvig.android.design.system.hedvig.tokens.GhostStyleButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.LargeSizeButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.MediumSizeButtonTokens
@@ -132,11 +134,11 @@ fun HedvigButton(
 @Composable
 fun HedvigTextButton(
   text: String,
-  onClick: () -> Unit,
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
   interactionSource: MutableInteractionSource? = null,
-  buttonSize: ButtonDefaults.ButtonSize = ButtonDefaults.ButtonSize.Medium,
+  buttonSize: ButtonSize = Medium,
+  onClick: () -> Unit,
 ) {
   HedvigButton(
     text = text,

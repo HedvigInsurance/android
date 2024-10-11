@@ -225,11 +225,11 @@ private fun SelectTierScreen(
     )
     Spacer(Modifier.height(4.dp))
     HedvigTextButton(
-      buttonSize = Large,
+      text = stringResource(R.string.TIER_FLOW_COMPARE_BUTTON),
       modifier = Modifier
         .fillMaxWidth()
         .padding(horizontal = 16.dp),
-      text = stringResource(R.string.TIER_FLOW_COMPARE_BUTTON),
+      buttonSize = Large,
       onClick = {
         onCompareClick()
       },
@@ -471,9 +471,9 @@ private fun DropdownContent(
     Spacer(Modifier.height(8.dp))
     HedvigTextButton(
       text = stringResource(R.string.general_cancel_button),
-      onClick = onCancelButtonClick,
       modifier = Modifier.fillMaxWidth(),
       buttonSize = Large,
+      onClick = onCancelButtonClick,
     )
   }
 }
