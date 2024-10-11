@@ -33,7 +33,6 @@ fun ProductVariantFragment.toProductVariant() = ProductVariant(
       id = peril.id,
       title = peril.title,
       description = peril.description,
-      info = peril.info,
       covered = peril.covered,
       exceptions = peril.exceptions,
       colorCode = peril.colorCode,

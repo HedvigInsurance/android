@@ -326,7 +326,6 @@ private val previewPerils: List<ProductVariantPeril> = List(4) { index ->
     description = "description$index",
     covered = listOf("Covered#$index"),
     colorCode = "0xFFC45D4F",
-    info = "test",
     exceptions = listOf(),
   )
 }
