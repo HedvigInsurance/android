@@ -1,9 +1,15 @@
 package com.hedvig.android.data.changetier.data
 
 import arrow.core.Either
+import arrow.core.raise.either
+import com.apollographql.apollo.ApolloClient
+import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.changetier.database.TierQuoteMapper
 import com.hedvig.android.data.chat.database.TierQuoteDao
+import com.hedvig.android.logger.LogPriority.ERROR
+import com.hedvig.android.logger.logcat
+import octopus.ChangeTierDeductibleCommitIntentMutation
 
 interface ChangeTierRepository {
   suspend fun startChangeTierIntentAndGetQuotesId(
@@ -16,12 +22,15 @@ interface ChangeTierRepository {
   suspend fun getQuotesById(ids: List<String>): List<TierDeductibleQuote>
 
   suspend fun addQuotesToDb(quotes: List<TierDeductibleQuote>)
+
+  suspend fun submitChangeTierQuote(quoteId: String): Either<ErrorMessage, Unit>
 }
 
 internal class ChangeTierRepositoryImpl(
   private val createChangeTierDeductibleIntentUseCase: CreateChangeTierDeductibleIntentUseCase,
   private val tierQuoteDao: TierQuoteDao,
   private val mapper: TierQuoteMapper,
+  private val apolloClient: ApolloClient,
 ) : ChangeTierRepository {
   override suspend fun startChangeTierIntentAndGetQuotesId(
     insuranceId: String,
@@ -55,5 +64,18 @@ internal class ChangeTierRepositoryImpl(
       mapper.quoteToDbModel(quote)
     }
     tierQuoteDao.insertAll(mapped)
+  }
+
+  override suspend fun submitChangeTierQuote(quoteId: String): Either<ErrorMessage, Unit> {
+    val result = apolloClient.mutation(ChangeTierDeductibleCommitIntentMutation(quoteId)).safeExecute()
+    return either {
+      result.fold(
+        ifRight = { },
+        ifLeft = { left ->
+          logcat(ERROR) { "Tried to submit change tier quoteId: $quoteId but got error: $left" }
+          raise(ErrorMessage())
+        },
+      )
+    }
   }
 }

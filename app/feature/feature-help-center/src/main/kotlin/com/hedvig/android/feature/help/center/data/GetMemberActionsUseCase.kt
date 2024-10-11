@@ -28,6 +28,7 @@ internal class GetMemberActionsUseCaseImpl(
         { featureManager.isFeatureEnabled(Feature.EDIT_COINSURED).first() },
         { featureManager.isFeatureEnabled(Feature.MOVING_FLOW).first() },
         { featureManager.isFeatureEnabled(Feature.PAYMENT_SCREEN).first() },
+        { featureManager.isFeatureEnabled(Feature.TIER).first() },
         {
           apolloClient
             .query(MemberActionsQuery())
@@ -35,7 +36,7 @@ internal class GetMemberActionsUseCaseImpl(
             .onLeft { logcat { "Cannot load memberActions: $it" } }
             .bind().currentMember.memberActions
         },
-      ) { isCoInsuredFeatureOn, isMovingFeatureOn, isConnectPaymentFeatureOn, memberActions ->
+      ) { isCoInsuredFeatureOn, isMovingFeatureOn, isConnectPaymentFeatureOn, isTierEnabled, memberActions ->
         MemberAction(
           isCancelInsuranceEnabled = memberActions?.isCancelInsuranceEnabled ?: false,
           isConnectPaymentEnabled = isConnectPaymentFeatureOn && memberActions?.isConnectPaymentEnabled ?: false,
@@ -44,6 +45,7 @@ internal class GetMemberActionsUseCaseImpl(
           isTravelCertificateEnabled = memberActions?.isTravelCertificateEnabled ?: false,
           sickAbroadAction = memberActions?.sickAbroadAction.toSickAbroadAction(),
           firstVetAction = memberActions?.firstVetAction?.toVetAction(),
+          isTierChangeEnabled = isTierEnabled && memberActions?.isChangeTierEnabled ?: false,
         )
       }
     }
@@ -56,6 +58,7 @@ internal data class MemberAction(
   val isEditCoInsuredEnabled: Boolean,
   val isMovingEnabled: Boolean,
   val isTravelCertificateEnabled: Boolean,
+  val isTierChangeEnabled: Boolean,
   val sickAbroadAction: MemberActionWithDetails.SickAbroadAction?,
   val firstVetAction: MemberActionWithDetails.FirstVetAction?,
 )
