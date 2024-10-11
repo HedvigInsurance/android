@@ -34,7 +34,7 @@ data class Tier(
   val tierName: String,
   val tierLevel: Int,
   val tierDisplayName: String?,
-  val info: String?,
+  val tierDescription: String?,
 )
 
 data class Deductible(

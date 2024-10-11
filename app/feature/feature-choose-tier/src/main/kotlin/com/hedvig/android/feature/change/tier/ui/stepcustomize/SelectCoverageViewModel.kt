@@ -29,6 +29,7 @@ import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEve
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Failure
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Loading
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Success
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -80,16 +81,19 @@ private class SelectCoveragePresenter(
           val state = currentPartialState
           if (state !is PartialUiState.Success) return@CollectEvents
           // set newly chosen tier
-          val locallyChosen = chosenTierInDialog
-          locallyChosen?.let { local ->
-            chosenTier = local
-            // try to pre-choose a quote with the same deductible and newly chosen coverage
-            // if there is no such quote, the deductible will not be per-chosen
-            val previouslyChosenDeductible = chosenQuote?.deductible
-            val quoteWithNewTierOldDeductible =
-              state.map[local]!!.firstOrNull { it.deductible == previouslyChosenDeductible }
-            chosenQuote = quoteWithNewTierOldDeductible
-          }
+          chosenTier = chosenTierInDialog
+          chosenQuote = if (state.map[chosenTier]?.size==1) state.map[chosenTier]?.get(0) else  null
+          chosenQuoteInDialog = chosenQuote
+//          val locallyChosen = chosenTierInDialog
+//          locallyChosen?.let { local ->
+//            chosenTier = local
+//            // try to pre-choose a quote with the same deductible and newly chosen coverage
+//            // if there is no such quote, the deductible will not be per-chosen
+//            val previouslyChosenDeductible = chosenQuote?.deductible
+//            val quoteWithNewTierOldDeductible =
+//              state.map[local]!!.firstOrNull { it.deductible == previouslyChosenDeductible }
+//            chosenQuote = quoteWithNewTierOldDeductible
+//          }
         }
 
         ClearNavigationStep -> {
@@ -118,6 +122,7 @@ private class SelectCoveragePresenter(
         is ChangeDeductibleInDialog -> {
           chosenQuoteInDialog = event.quote
         }
+
         is ChangeTierInDialog -> {
           chosenTierInDialog = event.tier
         }
@@ -125,67 +130,80 @@ private class SelectCoveragePresenter(
     }
 
     LaunchedEffect(currentContractLoadIteration) {
-      getCurrentContractDataUseCase.invoke(params.insuranceId).fold(
-        ifLeft = {
-          currentPartialState = PartialUiState.Failure(GENERAL)
-        },
-        ifRight = { currentContractData ->
-          val quotesResult: List<TierDeductibleQuote> = tierRepository.getQuotesById(params.quoteIds)
-          if (quotesResult.isEmpty()) {
-            currentPartialState = PartialUiState.Failure(QUOTES_ARE_EMPTY)
-          } else {
-            val current: TierDeductibleQuote? =
-              if (params.currentTierName != null && params.currentTierLevel != null) {
-                TierDeductibleQuote(
-                  id = CURRENT_ID,
-                  deductible = currentContractData.deductible,
-                  tier = Tier(
-                    tierName = params.currentTierName,
-                    tierLevel = params.currentTierLevel,
-                    info = currentContractData.productVariant.displayTierNameLong,
-                    tierDisplayName = currentContractData.productVariant.displayTierName,
-                  ),
-                  productVariant = currentContractData.productVariant,
-                  displayItems = listOf(),
-                  premium = currentContractData.currentDisplayPremium,
-                )
-              } else {
-                null
-              }
-            current?.let {
-              tierRepository.addQuotesToDb(listOf(it))
-            }
-            val quotes = buildList {
-              addAll(quotesResult)
+      if (lastState !is Success) {
+        // todo: added this here, because if we go to comparison,
+        //   it could take a long time, and we don't want to lose the member's tier choice if we exceed 15 sec
+        getCurrentContractDataUseCase.invoke(params.insuranceId).fold(
+          ifLeft = {
+            currentPartialState = PartialUiState.Failure(GENERAL)
+          },
+          ifRight = { currentContractData ->
+            val quotesResult: List<TierDeductibleQuote> = tierRepository.getQuotesById(params.quoteIds)
+            if (quotesResult.isEmpty()) {
+              currentPartialState = PartialUiState.Failure(QUOTES_ARE_EMPTY)
+            } else {
+              val current: TierDeductibleQuote? =
+                if (params.currentTierName != null && params.currentTierLevel != null) {
+                  TierDeductibleQuote(
+                    id = CURRENT_ID,
+                    deductible = currentContractData.deductible,
+                    tier = Tier(
+                      tierName = params.currentTierName,
+                      tierLevel = params.currentTierLevel,
+                      tierDescription = currentContractData.productVariant.tierDescription,
+                      tierDisplayName = currentContractData.productVariant.displayTierName,
+                    ),
+                    productVariant = currentContractData.productVariant,
+                    displayItems = listOf(),
+                    premium = currentContractData.currentDisplayPremium,
+                  )
+                } else {
+                  null
+                }
               current?.let {
-                add(it)
+                tierRepository.addQuotesToDb(listOf(it))
               }
+              val quotes = buildList {
+                addAll(quotesResult)
+                current?.let {
+                  add(it)
+                }
+              }
+              // pre-choosing current quote
+              chosenTier = current?.tier
+              chosenTierInDialog = current?.tier
+              chosenQuote = current
+              chosenQuoteInDialog = current
+              currentPartialState = PartialUiState.Success(
+                contractData = ContractData(
+                  activeDisplayPremium = current?.premium.toString(),
+                  contractGroup = current?.productVariant?.contractGroup ?: quotes[0].productVariant.contractGroup,
+                  contractDisplayName = current?.productVariant?.displayName ?: quotes[0].productVariant.displayName,
+                  contractDisplaySubtitle = currentContractData.currentExposureName,
+                ),
+                // setting current quote aside for comparison later
+                currentActiveQuote = current,
+                // adding current tierName and quote to the list, create map
+                map = mapQuotesToTiersAndQuotes(quotes),
+              )
             }
-            // pre-choosing current quote
-            chosenTier = current?.tier
-            chosenTierInDialog = current?.tier
-            chosenQuote = current
-            chosenQuoteInDialog = current
-            currentPartialState = PartialUiState.Success(
-              contractData = ContractData(
-                activeDisplayPremium = current?.premium.toString(),
-                contractGroup = current?.productVariant?.contractGroup ?: quotes[0].productVariant.contractGroup,
-                contractDisplayName = current?.productVariant?.displayName ?: quotes[0].productVariant.displayName,
-                contractDisplaySubtitle = currentContractData.currentExposureName,
-              ),
-              // setting current quote aside for comparison later
-              currentActiveQuote = current,
-              // adding current tierName and quote to the list, create map
-              map = mapQuotesToTiersAndQuotes(quotes),
-            )
-          }
-        },
-      )
+          },
+        )
+      }
     }
+
     return when (currentPartialState) {
       is PartialUiState.Failure -> Failure((currentPartialState as PartialUiState.Failure).reason)
       PartialUiState.Loading -> Loading
       is PartialUiState.Success -> {
+        logcat { "Mariia:" +
+          "chosenTier: $chosenTier" +
+          "quotesForChosenTier: ${(currentPartialState as PartialUiState.Success).map[chosenTier]!!.map { it.tier to it.deductible }}" +
+          "chosenQuote: ${chosenQuote?.deductible}" +
+          "chosenQuoteInDialog: ${chosenQuoteInDialog?.deductible}" }
+
+        val chosenQuoteIndex = (currentPartialState as PartialUiState.Success).map[chosenTier]?.indexOf(chosenQuote).takeIf { it!=-1 }
+        val chosenTierIndex = (currentPartialState as PartialUiState.Success).map.keys.sortedBy{it.tierLevel}.indexOf(chosenTier).takeIf { it!=-1 }
         Success(
           map = (currentPartialState as PartialUiState.Success).map,
           currentActiveQuote = (currentPartialState as PartialUiState.Success).currentActiveQuote,
@@ -204,6 +222,8 @@ private class SelectCoveragePresenter(
             quotesToCompare = quotesToCompare,
             chosenInDialogQuote = chosenQuoteInDialog,
             chosenInDialogTier = chosenTierInDialog,
+            chosenTierIndex = chosenTierIndex,
+            chosenQuoteIndex = chosenQuoteIndex
           ),
         )
       }
@@ -221,8 +241,8 @@ private fun buildListOfTiersAndPremiums(
       // but if this doesn't work, the lowest for this coverage
       val premium = map[tier]!!.firstOrNull {
         it.deductible == currentDeductible
-      }?.premium ?: map[tier]!!.minBy { it.tier.tierLevel }.premium
-      add(tier to premium.toString())
+      }?.premium?.toString() ?: "Fr. ${map[tier]!!.minBy { it.tier.tierLevel }.premium}" // todo: hardcoded string, but may be ok?
+      add(tier to premium)
     }
   }.sortedBy { pair ->
     pair.first.tierLevel
@@ -238,7 +258,7 @@ private fun mapQuotesToTiersAndQuotes(
     }
     .map { entry ->
       entry.key to entry.value.sortedBy {
-        it.premium.amount
+        it.deductible?.deductibleAmount?.amount ?: it.premium.amount
       }
     }
   val result = mutableStateMapOf(*grouped.toTypedArray())
@@ -307,7 +327,9 @@ internal enum class FailureReason {
 internal data class SelectCoverageSuccessUiState(
   val contractData: ContractData,
   val chosenTier: Tier?,
+  val chosenTierIndex: Int?,
   val chosenQuote: TierDeductibleQuote?,
+  val chosenQuoteIndex: Int?,
   val chosenInDialogTier: Tier?,
   val chosenInDialogQuote: TierDeductibleQuote?,
   val isCurrentChosen: Boolean,

@@ -6,7 +6,7 @@ import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.PopUpToBuilder
 import kotlin.reflect.KClass
 
-public inline fun <reified T : Any> NavOptionsBuilder.typedPopUpTo(
+inline fun <reified T : Destination> NavOptionsBuilder.typedPopUpTo(
   noinline popUpToBuilder: PopUpToBuilder.() -> Unit = {},
 ) = popUpTo<T>(popUpToBuilder)
 

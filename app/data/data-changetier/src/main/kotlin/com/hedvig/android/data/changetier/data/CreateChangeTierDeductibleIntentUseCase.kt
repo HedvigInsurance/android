@@ -41,14 +41,6 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
         logcat(ERROR) { "Tried to get changeTierQuotes when feature flag is disabled!" }
         raise(ErrorMessage())
       } else {
-//        ChangeTierDeductibleIntent(
-//          activationDate = LocalDate(2024, 10, 3),
-//          currentTierName = "Standard",
-//          currentTierLevel = 1,
-//          quotes = quotesForPreview,
-//        )
-        // todo: remove mock!!!
-
         val changeTierDeductibleResponse = apolloClient
           .mutation(
             ChangeTierDeductibleCreateIntentMutation(
@@ -71,7 +63,7 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
                 tier = Tier(
                   tierName = it.tierName!!,
                   tierLevel = it.tierLevel!!,
-                  info = it.productVariant.displayNameTierLong,
+                  tierDescription = it.productVariant.tierDescription,
                   tierDisplayName = it.productVariant.displayNameTier,
                 ),
               )
@@ -122,6 +114,7 @@ private fun List<ChangeTierDeductibleCreateIntentMutation.Data.ChangeTierDeducti
   }
 }
 
+// todo: leaving these quotes here for testing purposes (e.g. multiple deductibles still not tested in ui)
 private val quotesForPreview = listOf(
   TierDeductibleQuote(
     id = "id0",
@@ -132,7 +125,7 @@ private val quotesForPreview = listOf(
     ),
     displayItems = listOf(),
     premium = UiMoney(199.0, SEK),
-    tier = Tier("BAS", tierLevel = 0, info = "Vårt paket med grundläggande villkor.", tierDisplayName = "Bas"),
+    tier = Tier("BAS", tierLevel = 0, tierDescription = "Vårt paket med grundläggande villkor.", tierDisplayName = "Bas"),
     productVariant = ProductVariant(
       displayName = "Test",
       contractGroup = ContractGroup.RENTAL,
@@ -152,7 +145,7 @@ private val quotesForPreview = listOf(
     ),
     displayItems = listOf(),
     premium = UiMoney(255.0, SEK),
-    tier = Tier("BAS", tierLevel = 0, info = "Vårt paket med grundläggande villkor.", tierDisplayName = "Bas"),
+    tier = Tier("BAS", tierLevel = 0, tierDescription = "Vårt paket med grundläggande villkor.", tierDisplayName = "Bas"),
     productVariant = ProductVariant(
       displayName = "Test",
       contractGroup = ContractGroup.RENTAL,
@@ -172,7 +165,7 @@ private val quotesForPreview = listOf(
     ),
     displayItems = listOf(),
     premium = UiMoney(355.0, SEK),
-    tier = Tier("BAS", tierLevel = 0, info = "Vårt paket med grundläggande villkor.", tierDisplayName = "Bas"),
+    tier = Tier("BAS", tierLevel = 0, tierDescription = "Vårt paket med grundläggande villkor.", tierDisplayName = "Bas"),
     productVariant = ProductVariant(
       displayName = "Test",
       contractGroup = ContractGroup.RENTAL,
@@ -192,7 +185,7 @@ private val quotesForPreview = listOf(
     ),
     displayItems = listOf(),
     premium = UiMoney(230.0, SEK),
-    tier = Tier("STANDARD", tierLevel = 1, info = "Vårt mellanpaket med hög ersättning.", tierDisplayName = "Standard"),
+    tier = Tier("STANDARD", tierLevel = 1, tierDescription = "Vårt mellanpaket med hög ersättning.", tierDisplayName = "Standard"),
     productVariant = ProductVariant(
       displayName = "Test",
       contractGroup = ContractGroup.RENTAL,
@@ -212,7 +205,7 @@ private val quotesForPreview = listOf(
     ),
     displayItems = listOf(),
     premium = UiMoney(655.0, SEK),
-    tier = Tier("STANDARD", tierLevel = 1, info = "Vårt mellanpaket med hög ersättning.", tierDisplayName = "Standard"),
+    tier = Tier("STANDARD", tierLevel = 1, tierDescription = "Vårt mellanpaket med hög ersättning.", tierDisplayName = "Standard"),
     productVariant = ProductVariant(
       displayName = "Test",
       contractGroup = ContractGroup.RENTAL,

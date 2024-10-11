@@ -153,6 +153,7 @@ private class PreviewTerminatedContractsUiStateProvider :
             isTerminated = true,
             contractHolderDisplayName = "Hugo Linder",
             contractHolderSSN = "19910113-1093",
+            supportsTierChange = false,
           ),
         ),
       ),

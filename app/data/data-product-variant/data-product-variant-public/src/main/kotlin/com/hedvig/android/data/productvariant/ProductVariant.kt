@@ -12,14 +12,13 @@ data class ProductVariant(
   val insurableLimits: List<InsurableLimit>,
   val documents: List<InsuranceVariantDocument>,
   val displayTierName: String? = null,
-  val displayTierNameLong: String? = null,
+  val tierDescription: String? = null,
 )
 
 data class ProductVariantPeril(
   val id: String,
   val title: String,
   val description: String,
-  val info: String,
   val covered: List<String>,
   val exceptions: List<String>,
   val colorCode: String?,
