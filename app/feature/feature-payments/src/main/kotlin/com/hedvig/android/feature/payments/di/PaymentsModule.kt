@@ -24,6 +24,7 @@ import com.hedvig.android.feature.payments.overview.data.GetUpcomingPaymentUseCa
 import com.hedvig.android.feature.payments.overview.data.GetUpcomingPaymentUseCaseImpl
 import com.hedvig.android.feature.payments.overview.data.GetUpcomingPaymentUseCaseProvider
 import com.hedvig.android.feature.payments.payments.PaymentsViewModel
+import com.hedvig.android.market.MarketManager
 import kotlinx.datetime.Clock
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -75,6 +76,7 @@ val paymentsModule = module {
   viewModel<PaymentsViewModel> {
     PaymentsViewModel(
       get<GetUpcomingPaymentUseCaseProvider>(),
+      get<MarketManager>(),
     )
   }
 

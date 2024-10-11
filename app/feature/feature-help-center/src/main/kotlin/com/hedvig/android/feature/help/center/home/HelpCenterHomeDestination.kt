@@ -777,7 +777,7 @@ private class QuickLinkUiStatePreviewProvider :
               ),
             ),
           )
-        },
+        }.toNonEmptyListOrNull()!!,
       ),
     ),
   )
