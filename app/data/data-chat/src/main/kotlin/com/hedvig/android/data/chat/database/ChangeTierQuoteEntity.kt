@@ -47,7 +47,7 @@ data class ChangeTierDeductibleDisplayItemDbModel(
 data class TierDbModel(
   val tierName: String,
   val tierLevel: Int,
-  val info: String?,
+  val tierDescription: String?,
   val tierDisplayName: String?,
 )
 
@@ -74,7 +74,7 @@ data class ProductVariantDbModel(
   @TypeConverters(TierQuoteTypeConverter::class)
   val documents: List<InsuranceVariantDocumentDBM>,
   val tierName: String?,
-  val tierNameLong: String?,
+  val tierDescription: String?,
 )
 
 @Serializable
