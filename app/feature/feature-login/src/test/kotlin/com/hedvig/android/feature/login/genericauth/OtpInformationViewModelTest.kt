@@ -20,7 +20,6 @@ import com.hedvig.authlib.RefreshToken
 import com.hedvig.authlib.ResendOtpResult
 import com.hedvig.authlib.SubmitOtpResult
 import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
@@ -37,14 +36,12 @@ class OtpInformationViewModelTest {
     viewModel.viewState.test {
       skipItems(1)
       viewModel.submitCode("123456")
-      runCurrent()
       with(awaitItem()) {
         assertThat(this.loadingCode).isEqualTo(true)
         assertThat(this.networkErrorMessage).isEqualTo(null)
       }
 
       authRepository.submitOtpResponse.add(SubmitOtpResult.Error("Error"))
-      runCurrent()
 
       with(awaitItem()) {
         assertThat(this.loadingCode).isEqualTo(false)
@@ -62,14 +59,12 @@ class OtpInformationViewModelTest {
     viewModel.viewState.test {
       skipItems(1)
       viewModel.submitCode("123456")
-      runCurrent()
       with(awaitItem()) {
         assertThat(this.loadingCode).isEqualTo(true)
         assertThat(this.loadingResend).isEqualTo(false)
       }
 
       authRepository.submitOtpResponse.add(SubmitOtpResult.Error(errorMessage))
-      runCurrent()
       assertThat(awaitItem().networkErrorMessage).isEqualTo(errorMessage)
       viewModel.dismissError()
       assertThat(awaitItem().networkErrorMessage).isEqualTo(null)
@@ -84,14 +79,12 @@ class OtpInformationViewModelTest {
     viewModel.viewState.test {
       skipItems(1)
       viewModel.submitCode("123456")
-      runCurrent()
       with(awaitItem()) {
         assertThat(this.loadingCode).isEqualTo(true)
         assertThat(this.loadingResend).isEqualTo(false)
       }
 
       authRepository.submitOtpResponse.add(SubmitOtpResult.Error(""))
-      runCurrent()
       assertThat(awaitItem().networkErrorMessage).isNotNull()
     }
   }
@@ -105,7 +98,6 @@ class OtpInformationViewModelTest {
     viewModel.viewState.test {
       skipItems(1)
       viewModel.submitCode("123456")
-      runCurrent()
       with(awaitItem()) {
         assertThat(this.loadingCode).isEqualTo(true)
         assertThat(this.loadingResend).isEqualTo(false)
@@ -113,9 +105,7 @@ class OtpInformationViewModelTest {
 
       authRepository.submitOtpResponse.add(SubmitOtpResult.Success(AuthorizationCodeGrant("")))
       authRepository.exchangeResponse.add(AuthTokenResult.Success(accessToken, refreshToken))
-      runCurrent()
 
-      // // todo ste
       with(awaitItem()) {
         assertThat(this.loadingCode).isEqualTo(false)
         val authEvent = authTokenService.authEventTurbine.awaitItem()
@@ -137,14 +127,12 @@ class OtpInformationViewModelTest {
     viewModel.viewState.test {
       skipItems(1)
       viewModel.resendCode()
-      runCurrent()
       with(awaitItem()) {
         assertThat(this.loadingCode).isEqualTo(false)
         assertThat(this.loadingResend).isEqualTo(true)
       }
 
       authRepository.resendOtpResponse.add(ResendOtpResult.Error(errorMessage))
-      runCurrent()
       assertThat(awaitItem().networkErrorMessage).isEqualTo(errorMessage)
     }
   }
@@ -159,14 +147,12 @@ class OtpInformationViewModelTest {
       val viewStateContext = this
       viewModel.events.test {
         viewModel.resendCode()
-        runCurrent()
         with(viewStateContext.awaitItem()) {
           assertThat(this.loadingCode).isEqualTo(false)
           assertThat(this.loadingResend).isEqualTo(true)
         }
 
         authRepository.resendOtpResponse.add(ResendOtpResult.Success)
-        runCurrent()
         assertThat(viewStateContext.awaitItem().loadingResend).isEqualTo(false)
         val event = awaitItem()
         assertThat(event).isEqualTo(OtpInputViewModel.Event.CodeResent)
@@ -203,7 +189,6 @@ class OtpInformationViewModelTest {
     viewModel.viewState.test {
       skipItems(1)
       viewModel.submitCode("111111")
-      runCurrent()
       with(awaitItem()) {
         assertThat(this.loadingCode).isEqualTo(true)
         assertThat(this.loadingResend).isEqualTo(false)
@@ -211,7 +196,6 @@ class OtpInformationViewModelTest {
       }
 
       authRepository.submitOtpResponse.add(SubmitOtpResult.Error(""))
-      runCurrent()
       with(awaitItem()) {
         assertThat(this.loadingCode).isEqualTo(false)
         assertThat(this.networkErrorMessage).isNotNull()
